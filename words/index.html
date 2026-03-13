@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="theme-color" content="#0f0f1a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Rosie Fun</title>
+  <title>WordMaster Pro</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <meta name="apple-mobile-web-app-title" content="RosieFun">
+  <meta name="apple-mobile-web-app-title" content="WordMaster">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap"
@@ -1826,6 +1826,23 @@
         border-top: 1px solid rgba(255, 255, 255, .07);
       }
 
+      /* normal-mode（双栏）在移动端：上下各占50% */
+      #imm-vocab-body.normal-mode .imm-left {
+        width: 100% !important;
+        height: 42%;
+        left: 0;
+        opacity: 1;
+      }
+
+      #imm-vocab-body.normal-mode .imm-right {
+        width: 100% !important;
+        height: 58%;
+        bottom: 0;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, .07);
+        cursor: default;
+      }
+
       #imm-vocab-body.word-visible .imm-left {
         width: 100%;
         height: 42%;
@@ -1894,7 +1911,7 @@
 
 <header class="app-header">
   <div class="header-inner">
-    <div class="app-logo">📚 Rosie Fun</div>
+    <div class="app-logo">📚 WordMaster Pro</div>
 
     <!-- 中间：Tab 导航 -->
     <nav class="nav-tabs">
@@ -6562,7 +6579,7 @@
     ws['!cols'] = [{wch: 10}, {wch: 12}, {wch: 22}, {wch: 45}, {wch: 18}, {wch: 50}];
 
     XLSX.utils.book_append_sheet(wb, ws, '单词数据');
-    XLSX.writeFile(wb, 'RosieFunWords.xlsx');
+    XLSX.writeFile(wb, 'WordMaster_词库.xlsx');
   }
 
 
@@ -7120,11 +7137,11 @@
 
     <!-- LEFT: word card -->
     <div class="imm-left" id="imm-left-panel">
-      <div class="imm-tags" id="imm-tags"></div>
-      <div class="imm-word" id="imm-word"></div>
-      <div class="imm-ipa" id="imm-ipa"></div>
-      <div class="imm-left-divider" id="imm-left-divider" style="display:none"></div>
-      <div class="imm-example-block" id="imm-example-wrap" style="display:none">
+      <div class="imm-tags"          id="imm-tags"></div>
+      <div class="imm-word"          id="imm-word"></div>
+      <div class="imm-ipa"           id="imm-ipa"></div>
+      <div class="imm-left-divider"  id="imm-left-divider"   style="display:none"></div>
+      <div class="imm-example-block" id="imm-example-wrap"   style="display:none">
         <div class="imm-example-label">例句</div>
         <div class="imm-example" id="imm-example"></div>
       </div>
@@ -7156,16 +7173,16 @@
   <div id="imm-quiz-body" style="display:none">
     <div class="imm-quiz-card" id="imm-quiz-card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-        <div class="imm-q-badge" id="imm-q-badge"></div>
+        <div class="imm-q-badge"    id="imm-q-badge"></div>
         <div class="imm-quiz-score" id="imm-quiz-score">✓ 0</div>
       </div>
-      <div class="imm-quiz-q" id="imm-quiz-q"></div>
+      <div class="imm-quiz-q"   id="imm-quiz-q"></div>
       <div class="imm-quiz-sub" id="imm-quiz-sub"></div>
       <div id="imm-opts" class="imm-opts"></div>
       <div id="imm-spell-wrap" class="imm-spell-wrap" style="display:none">
         <input class="imm-spell-input" id="imm-spell-input" type="text"
-               placeholder="请输入单词或短语…"
-               autocomplete="off" autocorrect="off" spellcheck="false">
+          placeholder="请输入单词或短语…"
+          autocomplete="off" autocorrect="off" spellcheck="false">
         <button class="imm-submit" id="imm-submit-btn" onclick="immCheckSpell()">✓ 确认</button>
         <div class="imm-feedback" id="imm-spell-fb" style="display:none"></div>
       </div>
@@ -7174,9 +7191,9 @@
     <div class="imm-results" id="imm-results" style="display:none">
       <div class="imm-res-emoji" id="imm-res-emoji">🎉</div>
       <div class="imm-res-score" id="imm-res-score">0/0</div>
-      <div class="imm-res-text" id="imm-res-text"></div>
+      <div class="imm-res-text"  id="imm-res-text"></div>
       <button class="imm-retry" onclick="immRetry()">🔄 再练一次</button>
-      <button class="imm-exit" onclick="exitImmersive()">退出沉浸模式</button>
+      <button class="imm-exit"  onclick="exitImmersive()">退出沉浸模式</button>
     </div>
   </div><!-- /imm-quiz-body -->
 
