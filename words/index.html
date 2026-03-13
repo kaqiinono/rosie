@@ -1318,7 +1318,7 @@
     /* Big phonics word */
     .imm-word {
       font-family: 'Nunito', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-size: clamp(3rem, 6vw, 5.5rem);
       font-weight: 900;
       line-height: 1.15;
       text-align: center;
@@ -1326,16 +1326,16 @@
     }
 
     .imm-word.is-phrase {
-      font-size: clamp(1.5rem, 3.8vw, 2.8rem);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
     }
 
     .imm-word.is-long {
-      font-size: clamp(1.1rem, 2.8vw, 2rem);
+      font-size: clamp(1.6rem, 3.2vw, 2.8rem);
     }
 
     /* IPA */
     .imm-ipa {
-      font-size: clamp(.85rem, 1.8vw, 1.1rem);
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
       color: #f0abfc;
       font-style: italic;
       font-weight: 600;
@@ -1359,7 +1359,7 @@
     }
 
     .imm-example-label {
-      font-size: .58rem;
+      font-size: .72rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .12em;
@@ -1368,7 +1368,7 @@
     }
 
     .imm-example {
-      font-size: clamp(.8rem, 1.6vw, .97rem);
+      font-size: clamp(1rem, 1.8vw, 1.25rem);
       font-weight: 600;
       line-height: 1.85;
       color: rgba(220, 220, 255, .42);
@@ -1473,7 +1473,7 @@
     }
 
     .imm-expl-label {
-      font-size: .6rem;
+      font-size: .78rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .12em;
@@ -1481,7 +1481,7 @@
     }
 
     .imm-expl {
-      font-size: clamp(1.15rem, 3.8vw, 2.1rem);
+      font-size: clamp(1.5rem, 3.2vw, 2.2rem);
       font-weight: 700;
       line-height: 1.75;
       color: #f0f0ff;
@@ -1490,7 +1490,7 @@
 
     /* Slightly smaller text when split */
     #imm-vocab-body.word-visible .imm-expl {
-      font-size: clamp(1rem, 2.2vw, 1.4rem);
+      font-size: clamp(1.3rem, 2.6vw, 1.9rem);
     }
 
     #imm-vocab-body.word-visible .imm-expl-label {
@@ -1870,7 +1870,40 @@
       }
 
       .imm-word {
-        font-size: clamp(1.8rem, 7vw, 2.8rem);
+        font-size: clamp(2.8rem, 11vw, 4rem);
+      }
+
+      .imm-word.is-phrase {
+        font-size: clamp(2rem, 8vw, 3rem);
+      }
+
+      .imm-word.is-long {
+        font-size: clamp(1.6rem, 6.5vw, 2.4rem);
+      }
+
+      .imm-ipa {
+        font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+      }
+
+      .imm-expl {
+        font-size: clamp(1.5rem, 5.5vw, 2rem);
+      }
+
+      #imm-vocab-body.word-visible .imm-expl,
+      #imm-vocab-body.normal-mode .imm-expl {
+        font-size: clamp(1.3rem, 4.8vw, 1.8rem);
+      }
+
+      .imm-example {
+        font-size: clamp(1rem, 4vw, 1.25rem);
+      }
+
+      .imm-expl-label {
+        font-size: .78rem;
+      }
+
+      .imm-example-label {
+        font-size: .72rem;
       }
     }
 
