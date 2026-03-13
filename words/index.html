@@ -559,6 +559,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 }
 @keyframes immFadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .imm-animate{animation:immFadeIn .28s cubic-bezier(.4,0,.2,1);}
+@keyframes immFadeInFast{from{opacity:0}to{opacity:1}}
+.imm-animate{animation:immFadeIn .28s cubic-bezier(.4,0,.2,1);}
+  to  {opacity:1;transform:translateY(0)}
+}
 @keyframes immSlideLeft{
   from{opacity:0;transform:translateX(24px)}
   to  {opacity:1;transform:translateX(0)}
@@ -568,19 +572,133 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .imm-animate{animation:immFadeIn .28s ease;}
 .imm-animate{animation:immFadeIn .3s ease;}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
 <header class="app-header">
   <div class="header-inner">
     <div class="app-logo">📚 WordMaster Pro</div>
+
+    <!-- 中间：Tab 导航 -->
     <nav class="nav-tabs">
       <button class="nav-tab active" onclick="switchModule('vocab')">🃏 背单词</button>
       <button class="nav-tab" onclick="switchModule('practice')">✏️ 单词练习</button>
     </nav>
-    <button class="imm-btn" onclick="enterImmersive()">⚡ 沉浸模式</button>
+
+    <!-- 右侧：工具按钮组 -->
+    <div class="header-actions">
+      <!-- 词库管理下拉 -->
+      <div class="hdr-dropdown" id="vocab-dropdown">
+        <button class="hdr-btn hdr-btn-ghost" onclick="toggleVocabMenu()" id="vocab-menu-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          词库管理
+          <svg class="dropdown-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="hdr-dropdown-menu" id="vocab-menu">
+          <button class="hdr-menu-item" onclick="openImportModal();closeVocabMenu()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            导入单词表
+          </button>
+          <button class="hdr-menu-item" onclick="downloadVocab();closeVocabMenu()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载词库 Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- 沉浸模式主按钮 -->
+      <button class="hdr-btn hdr-btn-primary" onclick="enterImmersive()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        沉浸模式
+      </button>
+    </div>
   </div>
 </header>
+
+<!-- ===== IMPORT MODAL ===== -->
+<div id="import-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div style="background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:32px;max-width:520px;width:90%;position:relative;">
+    <button onclick="closeImportModal()" style="position:absolute;top:14px;right:16px;background:transparent;border:none;color:rgba(255,255,255,.4);font-size:1.2rem;cursor:pointer;">✕</button>
+    <div style="font-family:'Fredoka One',cursive;font-size:1.3rem;background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">📥 导入单词表</div>
+    <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:22px;">支持 .xlsx 格式，列顺序：Unit / Lesson / 单词 / 释义 / 音标 / 例句</div>
+    <div id="import-dropzone"
+      onclick="document.getElementById('import-file-input').click()"
+      ondragover="event.preventDefault();this.classList.add('dz-over')"
+      ondragleave="this.classList.remove('dz-over')"
+      ondrop="handleImportDrop(event)"
+      style="border:2px dashed rgba(255,255,255,.15);border-radius:14px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">📂</div>
+      <div style="font-weight:700;color:rgba(255,255,255,.6);margin-bottom:5px;">点击选择文件，或拖拽到这里</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.28);">.xlsx 格式</div>
+    </div>
+    <input id="import-file-input" type="file" accept=".xlsx" style="display:none" onchange="handleImportFile(this.files[0])">
+    <div id="import-status" style="display:none;padding:12px 16px;border-radius:10px;font-size:.82rem;font-weight:700;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="closeImportModal()" style="padding:9px 20px;background:transparent;border:1.5px solid rgba(255,255,255,.15);border-radius:10px;color:rgba(255,255,255,.5);font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;">取消</button>
+      <button id="import-confirm-btn" onclick="confirmImport()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#16a34a,#4ade80);border:none;border-radius:10px;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;">✓ 确认导入</button>
+    </div>
+  </div>
+</div>
+<style>
+/* ── Header Actions ── */
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* Ghost + Primary button base */
+.hdr-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:10px;
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;
+  cursor:pointer;transition:all .2s;white-space:nowrap;border:none;
+}
+.hdr-btn-ghost{
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.7);
+}
+.hdr-btn-ghost:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.2);
+  color:#fff;
+}
+.hdr-btn-primary{
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(124,58,237,.35);
+}
+.hdr-btn-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 16px rgba(124,58,237,.5);
+}
+.dropdown-caret{transition:transform .2s;flex-shrink:0;}
+
+/* Dropdown */
+.hdr-dropdown{position:relative;}
+.hdr-dropdown-menu{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;
+  background:#1e1e35;border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;overflow:hidden;min-width:160px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:200;
+  animation:dropIn .18s cubic-bezier(.4,0,.2,1);
+}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.hdr-dropdown-menu.open{display:block;}
+.hdr-dropdown.open .dropdown-caret{transform:rotate(180deg);}
+.hdr-menu-item{
+  display:flex;align-items:center;gap:9px;width:100%;
+  padding:10px 14px;background:transparent;border:none;
+  color:rgba(255,255,255,.75);font-family:'Nunito',sans-serif;
+  font-weight:700;font-size:.82rem;cursor:pointer;transition:all .15s;
+  text-align:left;
+}
+.hdr-menu-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.hdr-menu-item + .hdr-menu-item{border-top:1px solid rgba(255,255,255,.06);}
+.hdr-menu-item svg{opacity:.7;flex-shrink:0;}
+.hdr-menu-item:hover svg{opacity:1;}
+
+/* Import dropzone */
+#import-dropzone.dz-over{border-color:#4ade80;background:rgba(74,222,128,.06);}
+</style>
 
 <div class="filter-bar" id="filter-bar">
   <div class="filter-inner">
@@ -1109,7 +1227,7 @@ function renderQ(){
     sub.textContent='请选出正确的释义：';
     const opts=shuffle([q.word,...shuffle(dPool,Date.now()+curQ).slice(0,3)],Date.now()+curQ+10);
     const g=document.getElementById('opts-grid');g.style.display='grid';
-    g.innerHTML=opts.map(o=>`<button class="opt-btn" onclick="checkMC(this,'${o.word.replace(/'/g,"\\'").replace(/"/g,"&quot;")}','${q.word.word.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">${escHtml(o.explanation)}</button>`).join('');
+    g.innerHTML=opts.map(o=>`<button class="opt-btn" data-val="${escHtml(o.word)}" onclick="checkMC(this,'${o.word.replace(/'/g,"\\'").replace(/"/g,"&quot;")}','${q.word.word.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">${escHtml(o.explanation)}</button>`).join('');
   }else{
     badge.textContent='题型 C：看释义 → 默写单词';badge.className='q-badge qc';
     qq.textContent=q.word.explanation;sub.textContent='请拼写出对应的英文单词或短语：';
@@ -1538,6 +1656,131 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('SW failed:', err));
   });
 }
+
+// ============================================================
+//  EXCEL IMPORT
+// ============================================================
+let _importedVocab = null;
+
+function openImportModal(){
+  _importedVocab = null;
+  document.getElementById('import-file-input').value = '';
+  document.getElementById('import-status').style.display = 'none';
+  document.getElementById('import-confirm-btn').style.display = 'none';
+  document.getElementById('import-dropzone').innerHTML = `
+    <div style="font-size:2.2rem;margin-bottom:10px;">📂</div>
+    <div style="font-weight:700;color:rgba(255,255,255,.6);margin-bottom:5px;">点击选择文件，或拖拽到这里</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.28);">.xlsx 格式</div>`;
+  const modal = document.getElementById('import-modal');
+  modal.style.display = 'flex';
+}
+function closeImportModal(){
+  document.getElementById('import-modal').style.display = 'none';
+}
+function handleImportDrop(e){
+  e.preventDefault();
+  document.getElementById('import-dropzone').classList.remove('dz-over');
+  const file = e.dataTransfer.files[0];
+  if(file) handleImportFile(file);
+}
+function handleImportFile(file){
+  if(!file) return;
+  const st = document.getElementById('import-status');
+  st.style.display = 'block';
+  st.style.background = 'rgba(96,165,250,.12)';
+  st.style.color = '#93c5fd';
+  st.textContent = '⏳ 正在解析文件…';
+  document.getElementById('import-dropzone').innerHTML =
+    `<div style="font-size:1.1rem;font-weight:700;color:rgba(255,255,255,.7);">📄 ${file.name}</div>`;
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      // Use first sheet
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+
+      // Skip header row (row 0)
+      const vocab = [];
+      for(let i = 1; i < rows.length; i++){
+        const r = rows[i];
+        const unit   = (r[0]||'').toString().trim();
+        const lesson = (r[1]||'').toString().trim();
+        const word   = (r[2]||'').toString().trim();
+        if(!unit || !lesson || !word) continue;
+        vocab.push({
+          unit,
+          lesson,
+          word,
+          explanation: (r[3]||'').toString().trim(),
+          ipa:         (r[4]||'').toString().trim(),
+          example:     (r[5]||'').toString().trim(),
+        });
+      }
+
+      if(vocab.length === 0){
+        st.style.background = 'rgba(248,113,113,.12)';
+        st.style.color = '#fca5a5';
+        st.textContent = '❌ 未找到有效单词，请检查文件格式（需要 Unit/Lesson/单词 三列）';
+        return;
+      }
+
+      _importedVocab = vocab;
+      st.style.background = 'rgba(74,222,128,.12)';
+      st.style.color = '#4ade80';
+      st.textContent = `✅ 解析成功！共 ${vocab.length} 个单词，来自 ${[...new Set(vocab.map(v=>v.unit))].length} 个 Unit`;
+      document.getElementById('import-confirm-btn').style.display = 'block';
+    } catch(err){
+      st.style.background = 'rgba(248,113,113,.12)';
+      st.style.color = '#fca5a5';
+      st.textContent = '❌ 文件解析失败：' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+function confirmImport(){
+  if(!_importedVocab) return;
+  // Replace VOCAB in memory
+  VOCAB.length = 0;
+  _importedVocab.forEach(v => VOCAB.push(v));
+  closeImportModal();
+  // Reset filters and re-render
+  selUnits.clear(); selLessons.clear(); selWords.clear();
+  initFilters();
+}
+
+// ── Header dropdown ──────────────────────────────────────────
+function toggleVocabMenu(){
+  const dd = document.getElementById('vocab-dropdown');
+  const menu = document.getElementById('vocab-menu');
+  const isOpen = dd.classList.contains('open');
+  if(isOpen){ closeVocabMenu(); }
+  else { dd.classList.add('open'); menu.classList.add('open'); }
+}
+function closeVocabMenu(){
+  document.getElementById('vocab-dropdown').classList.remove('open');
+  document.getElementById('vocab-menu').classList.remove('open');
+}
+// Close on outside click
+document.addEventListener('click', e => {
+  const dd = document.getElementById('vocab-dropdown');
+  if(dd && !dd.contains(e.target)) closeVocabMenu();
+});
+
+// ── Download vocab as Excel (using SheetJS) ───────────────────
+function downloadVocab(){
+  const wb = XLSX.utils.book_new();
+  const headers = ['Unit','Lesson','单词 (word)','释义 (explanation)','音标 (ipa)','例句 (example)'];
+  const rows = [headers, ...VOCAB.map(v => [v.unit, v.lesson, v.word, v.explanation, v.ipa||'', v.example||''])];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+
+  // Column widths
+  ws['!cols'] = [{wch:10},{wch:12},{wch:22},{wch:45},{wch:18},{wch:50}];
+
+  XLSX.utils.book_append_sheet(wb, ws, '单词数据');
+  XLSX.writeFile(wb, 'WordMaster_词库.xlsx');
+}
 </script>
 
 <!-- ===== IMMERSIVE MODE OVERLAY ===== -->
@@ -1547,7 +1790,7 @@ if ('serviceWorker' in navigator) {
     <div class="imm-title" id="imm-mode-label">⚡ 沉浸模式</div>
     <div class="imm-progress" id="imm-progress-text">1 / 1</div>
     <div class="imm-toggle-pill" id="imm-defonly-pill" onclick="toggleDefOnly()" style="display:none">
-      <span class="tp-icon">👁</span>
+      <span class="tp-icon">✨</span>
       <span class="tp-label">仅看释义</span>
       <div class="tp-switch"></div>
     </div>
