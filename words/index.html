@@ -1843,6 +1843,17 @@
         cursor: default;
       }
 
+      /* defOnly模式（无word-visible/normal-mode）：释义全屏显示 */
+      #imm-vocab-body:not(.word-visible):not(.normal-mode) .imm-right {
+        bottom: 0;
+        height: 100%;
+      }
+
+      #imm-vocab-body:not(.word-visible):not(.normal-mode) .imm-left {
+        opacity: 0;
+        pointer-events: none;
+      }
+
       #imm-vocab-body.word-visible .imm-left {
         width: 100%;
         height: 42%;
