@@ -270,15 +270,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 }
 
 /* ── LEFT PANEL (word card) ─────────────────────────────────
-   Default state: hidden off-screen to the right.
-   When .visible → slides in from right, occupies 50% width.
+   Default state: visible, occupies full width.
+   When .word-visible → shrinks to 50% (split view with right).
+   In defOnly mode: starts hidden off-screen left, slides in on click.
    ─────────────────────────────────────────────────────────── */
 .imm-left{
-  /* Static: always occupies left half */
   position:absolute;
   top:0;bottom:0;left:0;
-  width:100%;           /* full width when definition panel is hidden */
-  transition:width .45s cubic-bezier(.4,0,.2,1);
+  width:50%;
+  left:-50%;           /* hidden off left edge by default in defOnly */
+  transition:left .45s cubic-bezier(.4,0,.2,1),
+             width .45s cubic-bezier(.4,0,.2,1),
+             opacity .35s ease;
+  opacity:0;
 
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -359,19 +363,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 }
 
 /* ── RIGHT PANEL (definition) ────────────────────────────────
-   Default: full-width.
-   When word panel is .visible → shrinks to left 50%.
-   Cursor pointer + subtle hover hint guide clicking.
+   Default: full-width, always visible (definition shown first).
+   When word is revealed (.word-visible) → shrinks to right 50%.
    ─────────────────────────────────────────────────────────── */
 .imm-right{
-  /* Off-screen default: hidden off right edge */
   position:absolute;
-  top:0;bottom:0;
-  width:50%;
-  right:-50%;           /* starts hidden off right edge */
-  transition:right .45s cubic-bezier(.4,0,.2,1),
+  top:0;bottom:0;right:0;
+  width:100%;           /* full width by default */
+  transition:width .45s cubic-bezier(.4,0,.2,1),
              opacity .35s ease;
-  opacity:0;
+  opacity:1;
 
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -379,18 +380,28 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   background:
     radial-gradient(ellipse at 60% 55%,rgba(96,165,250,.07) 0,transparent 60%),
     #0c0c1a;
-  border-left:1px solid rgba(255,255,255,.07);
   cursor:pointer;
   z-index:2;
 }
-/* When word is visible → right shrinks to 50% */
-/* When definition panel is visible: left shrinks to 50%, right slides in */
+/* When word is revealed: left slides in from left, right shrinks to 50% */
 #imm-vocab-body.word-visible .imm-left{
-  width:50%;
+  left:0;
+  opacity:1;
 }
 #imm-vocab-body.word-visible .imm-right{
-  right:0;
+  width:50%;
+  border-left:1px solid rgba(255,255,255,.07);
+}
+/* Normal mode (defOnly OFF): left panel always visible at 50%, right at 50% */
+#imm-vocab-body.normal-mode .imm-left{
+  left:0;
+  width:50%;
   opacity:1;
+}
+#imm-vocab-body.normal-mode .imm-right{
+  width:50%;
+  border-left:1px solid rgba(255,255,255,.07);
+  cursor:default;
 }
 
 /* Click-to-expand hint at bottom */
@@ -548,10 +559,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 }
 @keyframes immFadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .imm-animate{animation:immFadeIn .28s cubic-bezier(.4,0,.2,1);}
-@keyframes immFadeInFast{from{opacity:0}to{opacity:1}}
-.imm-animate{animation:immFadeIn .28s cubic-bezier(.4,0,.2,1);}
-  to  {opacity:1;transform:translateY(0)}
-}
 @keyframes immSlideLeft{
   from{opacity:0;transform:translateX(24px)}
   to  {opacity:1;transform:translateX(0)}
@@ -1177,14 +1184,15 @@ function enterImmersive(){
   immMode  = getCurrentModule();
 
   _defOnlyOn = false;
-  _wordShown = false;
+  _wordShown = true;
 
   // reset toggle
   document.getElementById('imm-defonly-pill').classList.remove('active');
 
-  // reset slide state
+  // reset slide state to normal mode (both panels visible)
   const body = document.getElementById('imm-vocab-body');
   body.classList.remove('word-visible');
+  body.classList.add('normal-mode');
   document.getElementById('imm-left-panel').classList.remove('visible');
 
   document.getElementById('imm-overlay').classList.add('active');
@@ -1203,10 +1211,8 @@ function enterImmersive(){
     document.getElementById('imm-defonly-pill').style.display = 'flex';
     immIdx = 0;
     immRenderVocab();
-    // In defOnly mode, clicking left panel shows definition
-    document.getElementById('imm-left-panel').onclick = () => {
-      if(_defOnlyOn && !_wordShown) slideWordIn();
-    };
+    // left panel click is not used in defOnly mode (right panel handles toggle)
+    document.getElementById('imm-left-panel').onclick = null;
   } else {
     document.getElementById('imm-mode-label').textContent = '⚡ 沉浸模式 · 单词练习';
     document.getElementById('imm-quiz-body').style.display = 'flex';
@@ -1221,46 +1227,62 @@ function exitImmersive(){
 
 // ─── Slide helpers ──────────────────────────────────────────
 function slideWordIn(){
-  // "word shown" = actually means the DEFINITION panel is visible (split view)
+  // "word visible" = left panel (word) is shown alongside right panel (definition)
   _wordShown = true;
-  document.getElementById('imm-vocab-body').classList.add('word-visible');
+  const body = document.getElementById('imm-vocab-body');
+  body.classList.add('word-visible');
+  body.classList.remove('normal-mode');
   updateHint();
 }
 function slideWordOut(){
+  // "word hidden" = only right panel (definition) is shown fullscreen
   _wordShown = false;
-  document.getElementById('imm-vocab-body').classList.remove('word-visible');
+  const body = document.getElementById('imm-vocab-body');
+  body.classList.remove('word-visible');
+  body.classList.remove('normal-mode');
+  updateHint();
+}
+function setNormalMode(){
+  // Normal mode (defOnly OFF): both panels side by side, no animation needed
+  _wordShown = true;
+  const body = document.getElementById('imm-vocab-body');
+  body.classList.remove('word-visible');
+  body.classList.add('normal-mode');
   updateHint();
 }
 function updateHint(){
-  const hint = document.getElementById('imm-right-hint');
-  // In normal mode (defOnly off): no hint needed on the right panel
-  // In defOnly mode: right panel is the word/definition area — show hint on LEFT panel
-  // Actually: clicking LEFT panel (word side) toggles definition; hint stays on left
-  // Re-design: the hint lives inside .imm-left, clicking word side shows/hides def
-  // But since right slides from right, hint is inside right panel pointing direction
+  const rightHint = document.getElementById('imm-right-hint');
+  const leftHint  = document.getElementById('imm-left-hint');
   if(_defOnlyOn){
     if(_wordShown){
-      // definition visible — hint says "click to hide definition"
-      hint.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M9 18l6-6-6-6"/></svg>点击隐藏释义`;
+      // word revealed — hint on right says "click to hide word"
+      rightHint.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M15 18l-6-6 6-6"/></svg>点击隐藏单词`;
+      rightHint.style.display = '';
+      leftHint.style.display  = 'none';
     } else {
-      // definition hidden — but right panel is off-screen, hint not visible
-      // The hint on LEFT panel tells user to click
+      // definition only — hint on right says "click to reveal word"
+      rightHint.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M15 18l-6-6 6-6"/></svg>点击查看单词`;
+      rightHint.style.display = '';
+      leftHint.style.display  = 'none';
     }
-    hint.style.display = _wordShown ? '' : 'none';
   } else {
-    hint.style.display = 'none';
+    rightHint.style.display = 'none';
+    leftHint.style.display  = 'none';
   }
 }
 
-// ─── Click on right (definition) panel — hides it (slides back right) ───
+// ─── Click on right (definition) panel — reveals or hides word ───
 function handleRightClick(){
   if(!_defOnlyOn) return;
-  // Right panel is visible → slide it back out
   if(_wordShown){
+    // Word is shown → hide it (back to definition-only fullscreen)
     slideWordOut();
+  } else {
+    // Only definition showing → reveal word on left
+    slideWordIn();
   }
-  // (When right is hidden, it's off-screen, can't be clicked)
 }
 
 // ─── 仅看释义 toggle ────────────────────────────────────────
@@ -1269,17 +1291,15 @@ function toggleDefOnly(){
   document.getElementById('imm-defonly-pill').classList.toggle('active', _defOnlyOn);
 
   if(_defOnlyOn){
-    // Hide definition panel — left (word) shows full screen
+    // defOnly ON: show definition fullscreen, hide word (left panel)
     slideWordOut();
-    // Show a hint on the left panel
-    document.getElementById('imm-left-panel').style.cursor = 'pointer';
-    document.getElementById('imm-left-hint').style.display = 'flex';
-  } else {
-    // Show definition panel — normal split view
-    slideWordIn();
     document.getElementById('imm-left-panel').style.cursor = 'default';
-    document.getElementById('imm-left-hint').style.display = 'none';
-    document.getElementById('imm-right-hint').style.display = 'none';
+    document.getElementById('imm-left-hint').style.display  = 'none';
+  } else {
+    // defOnly OFF: normal split view, both panels visible
+    setNormalMode();
+    document.getElementById('imm-left-panel').style.cursor = 'default';
+    document.getElementById('imm-left-hint').style.display  = 'none';
   }
 }
 
@@ -1349,14 +1369,14 @@ function immRenderVocab(){
   void expl.offsetWidth;
 
   // Reset slide state for each new word:
-  // defOnly ON  → definition hidden, left panel full-screen (click left to reveal)
-  // defOnly OFF → split view, definition visible on right
+  // defOnly ON  → show definition fullscreen (right), word hidden (left off-screen)
+  // defOnly OFF → normal split view, both panels visible
   if(_defOnlyOn){
     slideWordOut();
-    document.getElementById('imm-left-panel').style.cursor = 'pointer';
-    document.getElementById('imm-left-hint').style.display = 'flex';
+    document.getElementById('imm-left-panel').style.cursor = 'default';
+    document.getElementById('imm-left-hint').style.display = 'none';
   } else {
-    slideWordIn();
+    setNormalMode();
     document.getElementById('imm-left-panel').style.cursor = 'default';
     document.getElementById('imm-left-hint').style.display = 'none';
   }
