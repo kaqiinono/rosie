@@ -7098,3 +7098,95 @@
   }
 
 </script>
+
+<div id="imm-overlay">
+
+  <div class="imm-header">
+    <div class="imm-title" id="imm-mode-label">⚡ 沉浸模式</div>
+    <div class="imm-progress" id="imm-progress-text">1 / 1</div>
+    <div class="imm-toggle-pill" id="imm-defonly-pill" onclick="toggleDefOnly()" style="display:none">
+      <span class="tp-icon">👁</span>
+      <span class="tp-label">仅看释义</span>
+      <div class="tp-switch"></div>
+    </div>
+    <button class="imm-close" onclick="exitImmersive()">✕ 退出</button>
+  </div>
+  <div class="imm-prog-bar-wrap">
+    <div class="imm-prog-bar" id="imm-prog-bar" style="width:0%"></div>
+  </div>
+
+  <!-- ── VOCAB BODY ── -->
+  <div id="imm-vocab-body" style="display:none">
+
+    <!-- LEFT: word card -->
+    <div class="imm-left" id="imm-left-panel">
+      <div class="imm-tags" id="imm-tags"></div>
+      <div class="imm-word" id="imm-word"></div>
+      <div class="imm-ipa" id="imm-ipa"></div>
+      <div class="imm-left-divider" id="imm-left-divider" style="display:none"></div>
+      <div class="imm-example-block" id="imm-example-wrap" style="display:none">
+        <div class="imm-example-label">例句</div>
+        <div class="imm-example" id="imm-example"></div>
+      </div>
+      <div class="imm-left-hint" id="imm-left-hint" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        点击查看释义
+      </div>
+    </div>
+
+    <!-- RIGHT: definition -->
+    <div class="imm-right" id="imm-right-panel" onclick="handleRightClick()">
+      <div class="imm-expl-section">
+        <div class="imm-expl-label">释义</div>
+        <div class="imm-expl" id="imm-expl"></div>
+      </div>
+      <div class="imm-right-hint" id="imm-right-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        点击查看释义
+      </div>
+    </div>
+
+  </div><!-- /imm-vocab-body -->
+
+  <!-- ── PRACTICE BODY ── -->
+  <div id="imm-quiz-body" style="display:none">
+    <div class="imm-quiz-card" id="imm-quiz-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div class="imm-q-badge" id="imm-q-badge"></div>
+        <div class="imm-quiz-score" id="imm-quiz-score">✓ 0</div>
+      </div>
+      <div class="imm-quiz-q" id="imm-quiz-q"></div>
+      <div class="imm-quiz-sub" id="imm-quiz-sub"></div>
+      <div id="imm-opts" class="imm-opts"></div>
+      <div id="imm-spell-wrap" class="imm-spell-wrap" style="display:none">
+        <input class="imm-spell-input" id="imm-spell-input" type="text"
+               placeholder="请输入单词或短语…"
+               autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="imm-submit" id="imm-submit-btn" onclick="immCheckSpell()">✓ 确认</button>
+        <div class="imm-feedback" id="imm-spell-fb" style="display:none"></div>
+      </div>
+      <button class="imm-quiz-next" id="imm-quiz-next" onclick="immNextQ()">下一题 →</button>
+    </div>
+    <div class="imm-results" id="imm-results" style="display:none">
+      <div class="imm-res-emoji" id="imm-res-emoji">🎉</div>
+      <div class="imm-res-score" id="imm-res-score">0/0</div>
+      <div class="imm-res-text" id="imm-res-text"></div>
+      <button class="imm-retry" onclick="immRetry()">🔄 再练一次</button>
+      <button class="imm-exit" onclick="exitImmersive()">退出沉浸模式</button>
+    </div>
+  </div><!-- /imm-quiz-body -->
+
+  <!-- Footer nav (vocab only) -->
+  <div class="imm-nav" id="imm-nav" style="display:none">
+    <button class="imm-prev-btn" id="imm-prev-btn" onclick="immPrev()" disabled>← 上一个</button>
+    <div class="imm-counter" id="imm-counter">1 / 1</div>
+    <button class="imm-next-btn" id="imm-next-btn" onclick="immNext()">下一个 →</button>
+  </div>
+
+</div><!-- /imm-overlay -->
+</body>
+</html>
