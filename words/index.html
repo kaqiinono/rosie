@@ -185,6 +185,204 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .card-wrapper:nth-child(7){animation-delay:.19s}
 .card-wrapper:nth-child(8){animation-delay:.22s}
 .card-wrapper:nth-child(n+9){animation-delay:.25s}
+
+/* ===== IMMERSIVE MODE ===== */
+.imm-btn{
+  padding:7px 16px;
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  border:none;border-radius:8px;color:#fff;
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;
+  white-space:nowrap;
+}
+.imm-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,.4);}
+
+/* Full-screen overlay */
+#imm-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:var(--bg);
+  flex-direction:column;overflow:hidden;
+}
+#imm-overlay.active{display:flex;}
+
+/* Overlay header */
+.imm-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;background:rgba(26,26,46,.95);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.imm-title{font-family:'Fredoka One',cursive;font-size:1.2rem;
+  background:linear-gradient(135deg,#a855f7,#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.imm-progress{font-size:.8rem;font-weight:700;color:var(--text-dim);}
+.imm-close{
+  padding:6px 14px;background:transparent;border:1.5px solid var(--border);
+  border-radius:8px;color:var(--text-dim);font-family:'Nunito',sans-serif;
+  font-size:.78rem;font-weight:700;cursor:pointer;transition:all .18s;
+}
+.imm-close:hover{border-color:var(--accent);color:var(--accent);}
+
+/* Progress bar */
+.imm-prog-bar-wrap{height:4px;background:var(--surface);flex-shrink:0;}
+.imm-prog-bar{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);transition:width .4s ease;}
+
+/* ── VOCAB split layout ── */
+#imm-vocab-body{
+  flex:1;display:flex;overflow:hidden;
+  /* subtle body bg */
+  background:radial-gradient(ellipse at 20% 30%,rgba(124,58,237,.08) 0,transparent 55%),
+             radial-gradient(ellipse at 80% 70%,rgba(96,165,250,.06) 0,transparent 55%),
+             var(--bg);
+}
+
+.imm-left{
+  flex:1;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 32px;gap:18px;overflow:auto;
+}
+.imm-right{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 32px;overflow:auto;
+}
+
+/* Word display */
+.imm-word-wrap{text-align:center;}
+.imm-tags{display:flex;gap:6px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+.imm-tag{padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
+.imm-tag-unit{background:rgba(233,69,96,.2);color:var(--accent);border:1px solid rgba(233,69,96,.3);}
+.imm-tag-lesson{background:rgba(96,165,250,.2);color:var(--accent4);border:1px solid rgba(96,165,250,.3);}
+.imm-word{font-family:'Nunito',sans-serif;font-size:clamp(2rem,6vw,3.8rem);font-weight:900;
+  line-height:1.2;text-align:center;word-break:break-word;}
+.imm-word.is-phrase{font-size:clamp(1.4rem,4vw,2.6rem);}
+.imm-word.is-long{font-size:clamp(1.1rem,3vw,2rem);}
+.imm-ipa{font-size:clamp(.9rem,2vw,1.2rem);color:var(--accent2);font-style:italic;font-weight:600;
+  text-align:center;margin-top:6px;opacity:.9;}
+
+/* Right: explanation */
+
+.imm-example-wrap{
+  margin-top:20px;padding-top:18px;
+  border-top:1px solid rgba(255,255,255,.08);
+  text-align:center;width:100%;
+}
+.imm-example-label{
+  font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+  color:#4ade80;opacity:.7;margin-bottom:8px;
+}
+.imm-example{
+  font-size:clamp(.85rem,2vw,1.1rem);font-weight:600;
+  line-height:1.7;color:var(--text-dim);font-style:italic;
+}
+.imm-example strong{
+  color:#4ade80;font-style:normal;font-weight:800;
+}
+.imm-expl-label{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+  color:#a855f7;opacity:.7;margin-bottom:12px;}
+.imm-expl{font-size:clamp(1rem,2.5vw,1.5rem);font-weight:700;line-height:1.7;
+  text-align:center;color:var(--text);}
+
+/* Nav row */
+.imm-nav{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:18px 20px;background:rgba(26,26,46,.95);
+  border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;
+}
+.imm-counter{font-size:.85rem;font-weight:700;color:var(--text-dim);min-width:80px;text-align:center;}
+.imm-prev-btn,.imm-next-btn{
+  padding:10px 28px;border:none;border-radius:10px;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .2s;
+}
+.imm-prev-btn{background:var(--surface2);border:2px solid var(--border);color:var(--text-dim);}
+.imm-prev-btn:hover{border-color:var(--accent4);color:var(--text);}
+.imm-next-btn{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;
+  box-shadow:0 4px 14px rgba(124,58,237,.35);}
+.imm-next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(124,58,237,.5);}
+.imm-next-btn:disabled{opacity:.5;transform:none;cursor:default;}
+
+/* ── PRACTICE full-screen layout ── */
+#imm-quiz-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 20px;overflow:auto;
+  background:radial-gradient(ellipse at 20% 30%,rgba(124,58,237,.08) 0,transparent 55%),var(--bg);
+}
+.imm-quiz-card{
+  width:100%;max-width:700px;
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:36px 32px;display:flex;flex-direction:column;gap:20px;
+}
+.imm-q-badge{display:inline-block;padding:4px 12px;border-radius:20px;
+  font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;width:fit-content;}
+.imm-quiz-q{font-size:clamp(1.1rem,3vw,1.6rem);font-weight:900;line-height:1.5;color:var(--text);}
+.imm-quiz-sub{font-size:.85rem;color:var(--text-dim);font-weight:600;}
+.imm-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.imm-opt{
+  padding:14px 16px;background:var(--surface2);border:2px solid var(--border);
+  border-radius:12px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-weight:700;font-size:.9rem;cursor:pointer;transition:all .18s;
+  text-align:left;line-height:1.4;word-break:break-word;
+}
+.imm-opt:hover:not(:disabled){border-color:#a855f7;background:rgba(168,85,247,.1);}
+.imm-opt.correct{border-color:var(--accent3)!important;background:rgba(74,222,128,.15)!important;color:var(--accent3)!important;}
+.imm-opt.wrong{border-color:var(--accent)!important;background:rgba(233,69,96,.15)!important;color:var(--accent)!important;}
+.imm-opt:disabled{cursor:default;}
+.imm-spell-wrap{display:flex;flex-direction:column;gap:10px;}
+.imm-spell-input{
+  width:100%;padding:16px;background:var(--surface2);border:2px solid var(--border);
+  border-radius:12px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:1.4rem;font-weight:700;text-align:center;letter-spacing:.06em;outline:none;transition:border-color .2s;
+}
+.imm-spell-input:focus{border-color:#a855f7;}
+.imm-spell-input.correct{border-color:var(--accent3);background:rgba(74,222,128,.1);}
+.imm-spell-input.wrong{border-color:var(--accent);background:rgba(233,69,96,.1);}
+.imm-submit{
+  padding:13px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;
+  border-radius:12px;color:#fff;font-family:'Nunito',sans-serif;
+  font-weight:800;font-size:.9rem;cursor:pointer;transition:all .18s;
+}
+.imm-submit:hover{transform:translateY(-1px);}
+.imm-feedback{text-align:center;font-size:.9rem;font-weight:700;padding:10px;border-radius:10px;}
+.imm-fb-ok{background:rgba(74,222,128,.15);color:var(--accent3);}
+.imm-fb-err{background:rgba(233,69,96,.15);color:var(--accent);}
+.imm-quiz-next{
+  padding:12px 32px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;
+  border-radius:12px;color:#fff;font-family:'Nunito',sans-serif;
+  font-weight:800;font-size:.92rem;cursor:pointer;transition:all .2s;align-self:center;
+  box-shadow:0 4px 14px rgba(124,58,237,.35);display:none;
+}
+.imm-quiz-next:hover{transform:translateY(-2px);}
+.imm-quiz-score{font-size:.8rem;font-weight:700;color:var(--text-dim);}
+
+/* Results */
+.imm-results{
+  width:100%;max-width:500px;text-align:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px 32px;
+}
+.imm-res-emoji{font-size:4rem;margin-bottom:12px;}
+.imm-res-score{font-family:'Fredoka One',cursive;font-size:3.5rem;
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.imm-res-text{color:var(--text-dim);font-size:.95rem;margin-bottom:24px;line-height:1.6;}
+.imm-retry{
+  padding:12px 28px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;
+  border-radius:12px;color:#fff;font-family:'Nunito',sans-serif;
+  font-weight:800;font-size:.9rem;cursor:pointer;margin-right:10px;
+}
+.imm-exit{
+  padding:12px 28px;background:transparent;border:2px solid var(--border);
+  border-radius:12px;color:var(--text-dim);font-family:'Nunito',sans-serif;
+  font-weight:700;font-size:.9rem;cursor:pointer;
+}
+
+@media(max-width:700px){
+  #imm-vocab-body{flex-direction:column;}
+  .imm-left{border-right:none;border-bottom:1px solid var(--border);padding:28px 20px;flex:none;}
+  .imm-right{padding:20px;flex:none;}
+  .imm-opts{grid-template-columns:1fr;}
+  .imm-word{font-size:clamp(1.6rem,7vw,2.4rem);}
+}
+@keyframes immFadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.imm-animate{animation:immFadeIn .3s ease;}
 </style>
 </head>
 <body>
@@ -196,6 +394,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <button class="nav-tab active" onclick="switchModule('vocab')">🃏 背单词</button>
       <button class="nav-tab" onclick="switchModule('practice')">✏️ 单词练习</button>
     </nav>
+    <button class="imm-btn" onclick="enterImmersive()">⚡ 沉浸模式</button>
   </div>
 </header>
 
@@ -299,8 +498,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 // ============================================================
 //  DATA
 // ============================================================
-const VOCAB = [{"unit": "Unit 1", "lesson": "Lesson 1", "word": "a great time", "explanation": "a fun and happy time doing something you enjoy", "ipa": "/ə ɡreɪt taɪm/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "Look at the time!", "explanation": "used to show surprise about what time it is, often when it's later than expected", "ipa": "/lʊk æt ðə taɪm/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "on time", "explanation": "at the arranged or correct time; not late", "ipa": "/ɒn taɪm/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "waste (one's) time", "explanation": "to use time doing something that is not useful or fun", "ipa": "/weɪst wʌnz taɪm/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "time for", "explanation": "the right or planned moment to do something", "ipa": "/taɪm fɔːr/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "laugh", "explanation": "to make the sounds and movements of your face that show you think something is funny or silly", "ipa": "/lɑːf/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "enjoy", "explanation": "to have fun or feel happy when doing something", "ipa": "/ɪnˈdʒɔɪ/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "grandchild", "explanation": "a child of your son or daughter", "ipa": "/ˈɡræntʃaɪld/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "lazy", "explanation": "unwilling to work or be active; doing as little as possible", "ipa": "/ˈleɪzi/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "only child", "explanation": "a child who has no brothers or sisters", "ipa": "/ˈəʊnli tʃaɪld/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "nephew", "explanation": "the son of your brother or sister", "ipa": "/ˈnefjuː/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "niece", "explanation": "the daughter of your brother or sister", "ipa": "/niːs/"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "waste", "explanation": "to use too much of something or use something badly when there is a limited amount of it", "ipa": "/weɪst/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "population", "explanation": "a particular group of people or animals living in a particular area", "ipa": "/ˌpɒpjuˈleɪʃn/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "hunt", "explanation": "to go after wild animals in order to catch or kill them for food, sport or to make money", "ipa": "/hʌnt/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "hurt", "explanation": "to cause physical pain to somebody/yourself; to injure somebody/yourself", "ipa": "/hɜːrt/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "protect", "explanation": "to make sure that somebody/something is not harmed, injured, damaged, etc.", "ipa": "/prəˈtekt/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "danger", "explanation": "the possibility of something happening that will injure, harm or kill somebody, or damage or destroy something", "ipa": "/ˈdeɪndʒər/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "kill", "explanation": "to make somebody/something die", "ipa": "/kɪl/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "care for", "explanation": "to look after somebody who is sick, very old, very young, etc.", "ipa": "/keər fɔːr/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "frightened of", "explanation": "feeling scared or afraid about something specific", "ipa": "/ˈfraɪtnd ɒv/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "in fact", "explanation": "used to give extra details about something that has just been mentioned", "ipa": "/ɪn fækt/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "look after", "explanation": "to be responsible for or to take care of somebody/something/yourself", "ipa": "/lʊk ˈɑːftər/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "reach", "explanation": "to come to somebody's attention", "ipa": "/riːtʃ/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "livestock", "explanation": "the animals kept on a farm, for example cows or sheep", "ipa": "/ˈlaɪvstɒk/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "roar", "explanation": "a loud deep sound made by an animal, especially a lion, or by somebody's voice", "ipa": "/rɔːr/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "big cat", "explanation": "Any large wild animal of the cat family. Lions, tigers and leopards are all big cats.", "ipa": "/bɪɡ kæt/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "conservationist", "explanation": "a person who takes an active part in the protection of the environment", "ipa": "/ˌkɒnsəˈveɪʃənɪst/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "frightening", "explanation": "making you feel afraid", "ipa": "/ˈfraɪtnɪŋ/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "initiative", "explanation": "a new plan for dealing with a particular problem or for achieving a particular purpose", "ipa": "/ɪˈnɪʃətɪv/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "million", "explanation": "1,000,000", "ipa": "/ˈmɪljən/"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "affect", "explanation": "to produce a change in somebody/something", "ipa": "/əˈfekt/"}, {"unit": "Unit 1", "lesson": "Lesson 3", "word": "diver", "explanation": "a person who swims underwater using special equipment, usually for their job", "ipa": "/ˈdaɪvər/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "pay", "explanation": "to give somebody money for work, goods, services, etc.", "ipa": "/peɪ/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "save (money)", "explanation": "to keep money instead of spending it, especially in order to buy a particular thing", "ipa": "/seɪv ˈmʌni/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "awful", "explanation": "very bad or unpleasant", "ipa": "/ˈɔːfl/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "careful", "explanation": "giving attention or thought to what you are doing so that you avoid hurting yourself, damaging something or doing something wrong", "ipa": "/ˈkeərfl/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "hate", "explanation": "to dislike somebody/something very much", "ipa": "/heɪt/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "rich", "explanation": "having a lot of money or property", "ipa": "/rɪtʃ/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "armchair", "explanation": "a comfortable chair with sides on which you can rest your arms", "ipa": "/ˈɑːrmtʃeər/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "coffee table", "explanation": "a small low table for putting magazines, cups, etc. on, usually in front of a sofa", "ipa": "/ˈkɒfi ˌteɪbl/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "fridge", "explanation": "a piece of electrical equipment in which food is kept cold so that it stays fresh", "ipa": "/frɪdʒ/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "oven", "explanation": "the part of a cooker that is like a box with a door on the front, in which food is cooked or heated", "ipa": "/ˈʌvn/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "shower", "explanation": "a piece of equipment producing a flow of water that you stand under to wash yourself", "ipa": "/ˈʃaʊər/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "sink", "explanation": "a large open container in a kitchen that has taps to supply water and that you use for washing dishes in", "ipa": "/sɪŋk/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "sofa", "explanation": "a long comfortable seat with a back and arms, for two or more people to sit on", "ipa": "/ˈsəʊfə/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "toilet", "explanation": "a large bowl attached to a pipe that you sit on or stand over when you get rid of waste matter from your body", "ipa": "/ˈtɔɪlət/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "wardrobe", "explanation": "a large cupboard for hanging clothes in, which is either a piece of furniture or built into the wall", "ipa": "/ˈwɔːdrəʊb/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "move in", "explanation": "to start to live in your new home", "ipa": "/muːv ɪn/"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "move out", "explanation": "to leave your old home", "ipa": "/muːv aʊt/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "furniture", "explanation": "objects that can be moved, such as tables, chairs and beds, that are put into a house or an office to make it suitable for living or working in", "ipa": "/ˈfɜːrnɪtʃər/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "glass", "explanation": "a hard, usually clear, substance used, for example, for making windows and bottles", "ipa": "/ɡlɑːs/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "modern", "explanation": "using the latest technology, designs, materials, ideas, etc.", "ipa": "/ˈmɒdərn/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "plastic", "explanation": "made of plastic (=a light strong material that is produced by chemical processes and can be formed into shapes when heated)", "ipa": "/ˈplæstɪk/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "reuse", "explanation": "to use something again", "ipa": "/ˌriːˈjuːz/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "rubbish", "explanation": "things that you throw away because you no longer want or need them", "ipa": "/ˈrʌbɪʃ/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "earthquake", "explanation": "a sudden, violent shaking of the earth's surface", "ipa": "/ˈɜːrθkweɪk/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "balcony", "explanation": "a platform that is built on the upstairs outside wall of a building, with a wall or rail around it", "ipa": "/ˈbælkəni/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "vacuum cleaner", "explanation": "an electrical machine that cleans floors, carpets, etc. by sucking up dirt and dust", "ipa": "/ˈvækjuəm ˌkliːnər/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "bookcase", "explanation": "a piece of furniture with shelves for keeping books on", "ipa": "/ˈbʊkkeɪs/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "washing machine", "explanation": "an electric machine for washing clothes", "ipa": "/ˈwɒʃɪŋ məˌʃiːn/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "floor", "explanation": "the surface of a room that you walk on", "ipa": "/flɔːr/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "microwave oven", "explanation": "a type of oven that cooks or heats food very quickly using electromagnetic waves rather than heat", "ipa": "/ˈmaɪkrəweɪv ˌʌvn/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "roof", "explanation": "the structure that covers or forms the top of a building or vehicle", "ipa": "/ruːf/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "rug", "explanation": "a piece of thick material like a small carpet that is used for covering or decorating part of a floor", "ipa": "/rʌɡ/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "recycle", "explanation": "to treat things that have already been used so that they can be used again", "ipa": "/ˌriːˈsaɪkl/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "ecological", "explanation": "connected with the relation of plants and living creatures to each other and to their environment", "ipa": "/ˌiːkəˈlɒdʒɪkl/"}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "type", "explanation": "a kind or sort", "ipa": "/taɪp/"}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "sitting room", "explanation": "a room in a house where people sit together, watch television, etc.", "ipa": "/ˈsɪtɪŋ ruːm/"}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "appliance", "explanation": "a machine that is designed to do a particular thing in the home, such as preparing food, heating or cleaning", "ipa": "/əˈplaɪəns/"}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "throw away", "explanation": "to get rid of something that you no longer want", "ipa": "/θrəʊ əˈweɪ/"}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "late", "explanation": "arriving, happening or done after the expected, arranged or usual time", "ipa": "/leɪt/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "deep", "explanation": "having a large distance from the top or surface to the bottom", "ipa": "/diːp/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "wrong", "explanation": "causing problems or difficulties; not as it should be", "ipa": "/rɒŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "dive", "explanation": "to jump into water with your head and arms going in first", "ipa": "/daɪv/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "equipment", "explanation": "the things that are needed for a particular purpose or activity", "ipa": "/ɪˈkwɪpmənt/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "explore", "explanation": "to travel to or around an area or a country in order to learn about it", "ipa": "/ɪkˈsplɔːr/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "hobby", "explanation": "an activity that you do for pleasure when you are not working", "ipa": "/ˈhɒbi/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "sure", "explanation": "confident that you know something or that you are right", "ipa": "/ʃʊər/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "end up", "explanation": "to find yourself in a place or situation at the end of a process or period of time", "ipa": "/end ʌp/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "give up", "explanation": "to stop trying to do something", "ipa": "/ɡɪv ʌp/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "take up", "explanation": "to learn or start to do something, especially for pleasure", "ipa": "/teɪk ʌp/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "try out", "explanation": "to test or use somebody/something in order to see how good or effective they are", "ipa": "/traɪ aʊt/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "turn on", "explanation": "to start the flow of electricity, gas, water, etc. by moving a switch, button, etc.", "ipa": "/tɜːrn ɒn/"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "scuba diving", "explanation": "a sport or activity in which you swim underwater using an air tank and a special breathing machine that you strap on your body", "ipa": "/ˈskuːbə ˌdaɪvɪŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "trick", "explanation": "a clever action that somebody/something performs as a way of entertaining people", "ipa": "/trɪk/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "show off", "explanation": "to try to impress others by talking about your abilities, possessions, etc.", "ipa": "/ʃəʊ ɒf/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "hill", "explanation": "an area of land that is higher than the land around it, but not as high as a mountain", "ipa": "/hɪl/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "pull", "explanation": "to take hold of something and use force in order to move it or try to move it towards yourself", "ipa": "/pʊl/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "rope", "explanation": "very strong thick string made by twisting thinner strings, wires, etc. together", "ipa": "/rəʊp/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "slide", "explanation": "to move easily over a smooth or wet surface; to make something move in this way", "ipa": "/slaɪd/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "bored", "explanation": "feeling tired and impatient because you have lost interest in somebody/something or because you have nothing to do", "ipa": "/bɔːrd/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "boring", "explanation": "not interesting; making you feel tired and impatient", "ipa": "/ˈbɔːrɪŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "excited", "explanation": "feeling or showing happiness and enthusiasm", "ipa": "/ɪkˈsaɪtɪd/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "exciting", "explanation": "causing great interest or excitement", "ipa": "/ɪkˈsaɪtɪŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "interested", "explanation": "giving your attention to something because you enjoy finding out about it or doing it; showing interest in something and finding it exciting", "ipa": "/ˈɪntrəstɪd/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "interesting", "explanation": "attracting your attention because it is/they are special, exciting or unusual", "ipa": "/ˈɪntrəstɪŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "relaxed", "explanation": "(of a person) calm and not anxious or worried", "ipa": "/rɪˈlækst/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "relaxing", "explanation": "helping you to rest and become less anxious", "ipa": "/rɪˈlæksɪŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "tired", "explanation": "feeling that you would like to sleep or rest; needing rest", "ipa": "/ˈtaɪərd/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "tiring", "explanation": "making you feel the need to sleep or rest", "ipa": "/ˈtaɪərɪŋ/"}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "use up", "explanation": "to use all of something so that there is none left", "ipa": "/juːz ʌp/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "pastime", "explanation": "something that you enjoy doing when you are not working", "ipa": "/ˈpɑːstaɪm/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "blog", "explanation": "a website on which someone writes about personal opinions, activities, and experiences", "ipa": "/blɒɡ/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "blog (verb)", "explanation": "to write something in a blog", "ipa": "/blɒɡ/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "code", "explanation": "to change (information) into a set of letters, numbers, or symbols that can be read by a computer", "ipa": "/kəʊd/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "post", "explanation": "to put information or pictures on a website", "ipa": "/pəʊst/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "link", "explanation": "a connection between documents on the internet", "ipa": "/lɪŋk/"}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "comment", "explanation": "something that you say or write that gives an opinion on or explains somebody/something", "ipa": "/ˈkɒment/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "Hang on!", "explanation": "used to ask someone to wait for a short time or to stop what they are doing", "ipa": "/hæŋ ɒn/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "have got no idea", "explanation": "you really don't know something at all", "ipa": "/hæv ɡɒt nəʊ aɪˈdɪə/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "I don't believe it.", "explanation": "what you say when you're very surprised or shocked", "ipa": "/aɪ dəʊnt bɪˈliːv ɪt/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "have a snack", "explanation": "to eat a small amount of food between meals", "ipa": "/hæv ə snæk/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "Hurry up!", "explanation": "to do something more quickly because there is not much time", "ipa": "/ˈhʌri ʌp/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "disgusting", "explanation": "extremely unpleasant", "ipa": "/dɪsˈɡʌstɪŋ/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "delicious", "explanation": "having a very pleasant taste or smell", "ipa": "/dɪˈlɪʃəs/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "full", "explanation": "having had enough to eat", "ipa": "/fʊl/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "thirsty", "explanation": "needing or wanting to drink", "ipa": "/ˈθɜːrsti/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "altogether", "explanation": "used to give a total number or amount", "ipa": "/ˌɔːltəˈɡeðər/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "buffet", "explanation": "a meal at which people serve themselves from a table and then stand or sit somewhere else to eat", "ipa": "/ˈbʊfeɪ/"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "lobby", "explanation": "a large area inside the entrance of a public building where people can meet and wait", "ipa": "/ˈlɒbi/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "meat", "explanation": "the soft part of an animal or a bird that can be eaten as food; a particular type of this", "ipa": "/miːt/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "healthy", "explanation": "good for your health", "ipa": "/ˈhelθi/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "pot", "explanation": "a deep round container used for cooking things in", "ipa": "/pɒt/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "raw", "explanation": "not cooked", "ipa": "/rɔː/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "sauce", "explanation": "a thick liquid that is eaten with food to add taste to it", "ipa": "/sɔːs/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "seafood", "explanation": "fish and sea creatures that can be eaten, especially shellfish", "ipa": "/ˈsiːfuːd/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "soup", "explanation": "a liquid food made by boiling meat, vegetables, etc. in water, often eaten as the first course of a meal", "ipa": "/suːp/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "add", "explanation": "to put something together with something else so as to increase the size, number, amount, etc.", "ipa": "/æd/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "boil", "explanation": "when a liquid boils or when you boil it, it is heated to the point where it forms bubbles and turns to steam or vapour", "ipa": "/bɔɪl/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "chop", "explanation": "to cut something into pieces with a sharp tool such as a knife", "ipa": "/tʃɒp/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "fry", "explanation": "to cook something in hot fat or oil; to be cooked in hot fat or oil", "ipa": "/fraɪ/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "mix", "explanation": "to combine two or more substances or things, usually in a way that means they cannot easily be separated", "ipa": "/mɪks/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "slice", "explanation": "to cut something into slices (= thin flat pieces of bread, meat, cheese, etc. that has been cut off a larger piece)", "ipa": "/slaɪs/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "dip", "explanation": "to put something quickly into a liquid and take it out again", "ipa": "/dɪp/"}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "dish", "explanation": "the food served in a dish", "ipa": "/dɪʃ/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "chilli pepper (AmE Chili pepper)", "explanation": "the small green or red fruit of a type of pepper plant that is used in cooking to give a hot taste to food, often dried or made into powder", "ipa": "/ˈtʃɪli ˌpepər/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "pan", "explanation": "a container, usually made of metal, with a handle or handles, used for cooking food in", "ipa": "/pæn/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "gently", "explanation": "in a way that is soft and light, not strong, extreme or violent", "ipa": "/ˈdʒentli/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "recipe", "explanation": "a set of instructions for making food", "ipa": "/ˈresəpi/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "remove", "explanation": "to take somebody/something away from a place", "ipa": "/rɪˈmuːv/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "pour", "explanation": "to cause (something) to flow in a steady stream from or into a container or place", "ipa": "/pɔːr/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "serving", "explanation": "an amount of food for one person", "ipa": "/ˈsɜːrvɪŋ/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "tablespoon", "explanation": "a large spoon, used especially for serving food", "ipa": "/ˈteɪblspuːn/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "consume", "explanation": "to eat or drink something", "ipa": "/kənˈsjuːm/"}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "reject", "explanation": "to refuse to accept or consider something", "ipa": "/rɪˈdʒekt/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "bell", "explanation": "a hollow, metal object, shaped like a cup, with a metal part inside that hits the side of the cup and makes a ringing sound", "ipa": "/bel/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "canteen", "explanation": "a place where food and drink are served in a factory, a school, etc.", "ipa": "/kænˈtiːn/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "magazine", "explanation": "a thin book published every week or month, that has shiny, colourful pages with articles and pictures", "ipa": "/ˌmæɡəˈziːn/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "sweatshirt", "explanation": "a piece of clothing for the upper part of the body, with long sleeves, usually made of thick cotton and often worn for sports", "ipa": "/ˈswetʃɜːrt/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "break", "explanation": "a short period of time when you stop what you are doing and rest, eat, etc.", "ipa": "/breɪk/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "term", "explanation": "(especially in the UK) one of the three periods in the year during which classes are held in schools, universities, etc.", "ipa": "/tɜːrm/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "cheat", "explanation": "to behave in a way that is not honest or fair in order to win something or to get something", "ipa": "/tʃiːt/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "fair", "explanation": "acceptable and appropriate in a particular situation", "ipa": "/feər/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "head teacher", "explanation": "a teacher who is in charge of a school", "ipa": "/hed ˈtiːtʃər/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "strict", "explanation": "A strict person makes sure that children or people working for them behave well and does not allow them to break any rules", "ipa": "/strɪkt/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "test", "explanation": "a set of questions to measure someone's knowledge or ability", "ipa": "/test/"}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "fencing", "explanation": "the sport of fighting with long thin swords", "ipa": "/ˈfensɪŋ/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "exam", "explanation": "an official test of how much you know about something, or how well you can do something", "ipa": "/ɪɡˈzæm/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "nature reserve", "explanation": "an area of land where the animals and plants are protected", "ipa": "/ˈneɪtʃər rɪˌzɜːrv/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "discuss", "explanation": "to talk about something with somebody, especially in order to decide something", "ipa": "/dɪˈskʌs/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "friendship", "explanation": "a relationship between friends", "ipa": "/ˈfrendʃɪp/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "in the wild", "explanation": "in nature", "ipa": "/ɪn ðə waɪld/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "understanding", "explanation": "knowledge about a subject, situation, etc. or about how something works", "ipa": "/ˌʌndəˈstændɪŋ/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "boarding school", "explanation": "a school where children can live during the school year", "ipa": "/ˈbɔːrdɪŋ skuːl/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "education", "explanation": "the process of teaching and learning in a school or college, or the knowledge that you get from this", "ipa": "/ˌedʒuˈkeɪʃn/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "marks", "explanation": "numbers or letters that are written on a piece of work, showing how good the work is", "ipa": "/mɑːrks/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "report", "explanation": "something teachers write about a child's progress at school for their parents", "ipa": "/rɪˈpɔːrt/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "time off", "explanation": "time when you are not working or studying", "ipa": "/taɪm ɒf/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "natural", "explanation": "existing in nature", "ipa": "/ˈnætʃrəl/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "solve", "explanation": "to find a way to deal with and end (a problem)", "ipa": "/sɒlv/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "path", "explanation": "a track that is made by people or animals walking over the ground", "ipa": "/pɑːθ/"}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "imagine", "explanation": "to form a picture in your mind of what something might be like", "ipa": "/ɪˈmædʒɪn/"}, {"unit": "Unit 5", "lesson": "Lesson 3", "word": "interview", "explanation": "to question or talk with (someone) in order to get information or learn about that person", "ipa": "/ˈɪntəvjuː/"}, {"unit": "Unit 5", "lesson": "Lesson 3", "word": "project", "explanation": "a task or problem in school that requires careful work over a long period of time", "ipa": "/ˈprɒdʒekt/"}, {"unit": "Unit 5", "lesson": "Lesson 3", "word": "brilliant", "explanation": "very good", "ipa": "/ˈbrɪliənt/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "(catch a) cold", "explanation": "to become ill with a cold", "ipa": "/kætʃ ə kəʊld/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "earache", "explanation": "pain inside the ear", "ipa": "/ˈɪəreɪk/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "cough", "explanation": "to force air through your throat with a short, loud noise often because you are sick", "ipa": "/kɒf/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "headache", "explanation": "a continuous pain in the head", "ipa": "/ˈhedeɪk/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "sneeze", "explanation": "to suddenly force air out through your nose and mouth in a way that you cannot control, for example because you have a cold", "ipa": "/sniːz/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "stomach ache (also stomachache)", "explanation": "pain in or near your stomach", "ipa": "/ˈstʌmək eɪk/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "ache", "explanation": "a continuous feeling of pain in a part of the body", "ipa": "/eɪk/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "toothache", "explanation": "a pain in your teeth or in one tooth", "ipa": "/ˈtuːθeɪk/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "thermometer", "explanation": "an instrument used for measuring temperature", "ipa": "/θəˈmɒmɪtər/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "temperature", "explanation": "the measurement in degrees of how hot or cold a thing or place is", "ipa": "/ˈtemprətʃər/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "ankle", "explanation": "the joint where the foot joins the leg", "ipa": "/ˈæŋkl/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "chest", "explanation": "the front part of the body between the neck and the stomach", "ipa": "/tʃest/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "elbow", "explanation": "the joint where your arm bends", "ipa": "/ˈelbəʊ/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "knee", "explanation": "the joint that bends at the middle of your leg", "ipa": "/niː/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "shoulder", "explanation": "the part of your body where your arm is connected", "ipa": "/ˈʃəʊldər/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "stomach", "explanation": "the organ inside the body where food goes when you eat it", "ipa": "/ˈstʌmək/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "tail", "explanation": "the part of an animal's body that extends from the animal's back end", "ipa": "/teɪl/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "back flip (also backflip)", "explanation": "a type of somersault (= movement in which you turn over completely) which involves turning backwards and landing on your feet", "ipa": "/bæk flɪp/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "stump", "explanation": "the bottom part of a tree left in the ground after the rest has fallen or been cut down", "ipa": "/stʌmp/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "common", "explanation": "happening often", "ipa": "/ˈkɒmən/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "virus", "explanation": "a living thing, too small to be seen without a microscope, that causes disease in people, animals and plants", "ipa": "/ˈvaɪrəs/"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "throat", "explanation": "the front part of the neck", "ipa": "/θrəʊt/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "bleed", "explanation": "to lose blood, especially from a wound or an injury", "ipa": "/bliːd/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "injure", "explanation": "to hurt or cause physical harm to a person or animal", "ipa": "/ˈɪndʒər/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "lungs", "explanation": "the two organs in the chest that you use for breathing", "ipa": "/lʌŋz/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "mummy", "explanation": "a dead body of a person or animal prepared for burial in the manner of the ancient Egyptians", "ipa": "/ˈmʌmi/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "ill", "explanation": "suffering from an illness or disease; not feeling well", "ipa": "/ɪl/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "weak", "explanation": "not physically strong", "ipa": "/wiːk/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "skin", "explanation": "the layer of tissue that covers the body", "ipa": "/skɪn/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "sore", "explanation": "feeling or affected by pain", "ipa": "/sɔːr/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "tattoo", "explanation": "a picture or word that is drawn on a person's skin by using a needle and ink", "ipa": "/təˈtuː/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "ancient", "explanation": "belonging to a period of history that is thousands of years in the past", "ipa": "/ˈeɪnʃənt/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "mystery", "explanation": "something that is difficult to understand or to explain", "ipa": "/ˈmɪstəri/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "discovery", "explanation": "the act of finding or learning something for the first time", "ipa": "/dɪˈskʌvəri/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "arrowhead", "explanation": "the sharp pointed end of an arrow", "ipa": "/ˈærəʊhed/"}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "perhaps", "explanation": "maybe", "ipa": "/pərˈhæps/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "living", "explanation": "a way or style of life", "ipa": "/ˈlɪvɪŋ/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "pollinate", "explanation": "to put pollen into a flower or plant so that it produces seeds", "ipa": "/ˈpɒlɪneɪt/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "active", "explanation": "always busy doing things, especially physical activities", "ipa": "/ˈæktɪv/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "honeycomb", "explanation": "a group of wax cells with six sides that are built by honeybees in their hive and that contain young bees or honey", "ipa": "/ˈhʌnikəʊm/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "screen", "explanation": "the flat surface at the front of a television, computer, or other electronic device, on which you see pictures or information", "ipa": "/skriːn/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "beehive", "explanation": "a structure made for bees to live in", "ipa": "/ˈbiːhaɪv/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "hydrated", "explanation": "having absorbed enough water or other liquid", "ipa": "/haɪˈdreɪtɪd/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "especially", "explanation": "used to indicate something that deserves special mention", "ipa": "/ɪˈspeʃəli/"}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "stretch", "explanation": "to put your arms or legs out straight and contract your muscles", "ipa": "/stretʃ/"}];
-
+const VOCAB = [{"unit": "Unit 1", "lesson": "Lesson 1", "word": "a great time", "explanation": "a fun and happy time doing something you enjoy", "ipa": "/ə ɡreɪt taɪm/", "example": "We had a great time at the theme park yesterday."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "Look at the time!", "explanation": "used to show surprise about what time it is, often when it's later than expected", "ipa": "/lʊk æt ðə taɪm/", "example": "Look at the time! We're going to be late for school!"}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "on time", "explanation": "at the arranged or correct time; not late", "ipa": "/ɒn taɪm/", "example": "The train arrived on time, so we didn't have to wait."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "waste (one's) time", "explanation": "to use time doing something that is not useful or fun", "ipa": "/weɪst wʌnz taɪm/", "example": "Don't waste your time playing games all day."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "time for", "explanation": "the right or planned moment to do something", "ipa": "/taɪm fɔːr/", "example": "It's time for dinner — please come to the table."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "laugh", "explanation": "to make the sounds and movements of your face that show you think something is funny or silly", "ipa": "/lɑːf/", "example": "The funny video made everyone laugh out loud."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "enjoy", "explanation": "to have fun or feel happy when doing something", "ipa": "/ɪnˈdʒɔɪ/", "example": "I really enjoy reading books on rainy days."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "grandchild", "explanation": "a child of your son or daughter", "ipa": "/ˈɡræntʃaɪld/", "example": "She is the youngest grandchild in the family."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "lazy", "explanation": "unwilling to work or be active; doing as little as possible", "ipa": "/ˈleɪzi/", "example": "He was too lazy to clean his room all week."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "only child", "explanation": "a child who has no brothers or sisters", "ipa": "/ˈəʊnli tʃaɪld/", "example": "As an only child, she never had to share her toys."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "nephew", "explanation": "the son of your brother or sister", "ipa": "/ˈnefjuː/", "example": "My nephew is six years old and loves dinosaurs."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "niece", "explanation": "the daughter of your brother or sister", "ipa": "/niːs/", "example": "I bought a birthday present for my niece."}, {"unit": "Unit 1", "lesson": "Lesson 1", "word": "waste", "explanation": "to use too much of something or use something badly when there is a limited amount of it", "ipa": "/weɪst/", "example": "Don't waste water — turn off the tap when you brush your teeth."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "population", "explanation": "a particular group of people or animals living in a particular area", "ipa": "/ˌpɒpjuˈleɪʃn/", "example": "The population of our city has grown a lot in recent years."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "hunt", "explanation": "to go after wild animals in order to catch or kill them for food, sport or to make money", "ipa": "/hʌnt/", "example": "Lions hunt at night when it is cooler."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "hurt", "explanation": "to cause physical pain to somebody/yourself; to injure somebody/yourself", "ipa": "/hɜːrt/", "example": "She hurt her knee when she fell off her bike."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "protect", "explanation": "to make sure that somebody/something is not harmed, injured, damaged, etc.", "ipa": "/prəˈtekt/", "example": "We should protect wild animals from hunters."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "danger", "explanation": "the possibility of something happening that will injure, harm or kill somebody, or damage or destroy something", "ipa": "/ˈdeɪndʒər/", "example": "The hikers were in danger when the storm suddenly started."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "kill", "explanation": "to make somebody/something die", "ipa": "/kɪl/", "example": "Pollution can kill fish and other sea creatures."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "care for", "explanation": "to look after somebody who is sick, very old, very young, etc.", "ipa": "/keər fɔːr/", "example": "She stays home to care for her elderly grandmother."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "frightened of", "explanation": "feeling scared or afraid about something specific", "ipa": "/ˈfraɪtnd ɒv/", "example": "My little brother is frightened of spiders."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "in fact", "explanation": "used to give extra details about something that has just been mentioned", "ipa": "/ɪn fækt/", "example": "I thought the test was easy. In fact, I got full marks."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "look after", "explanation": "to be responsible for or to take care of somebody/something/yourself", "ipa": "/lʊk ˈɑːftər/", "example": "Can you look after my dog while I'm on holiday?"}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "reach", "explanation": "to come to somebody's attention", "ipa": "/riːtʃ/", "example": "The news about the earthquake quickly reached people all over the world."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "livestock", "explanation": "the animals kept on a farm, for example cows or sheep", "ipa": "/ˈlaɪvstɒk/", "example": "The farmer keeps livestock including cows, sheep and chickens."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "roar", "explanation": "a loud deep sound made by an animal, especially a lion, or by somebody's voice", "ipa": "/rɔːr/", "example": "We could hear the lion's roar from far away."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "big cat", "explanation": "Any large wild animal of the cat family. Lions, tigers and leopards are all big cats.", "ipa": "/bɪɡ kæt/", "example": "The leopard is a big cat that can climb trees very well."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "conservationist", "explanation": "a person who takes an active part in the protection of the environment", "ipa": "/ˌkɒnsəˈveɪʃənɪst/", "example": "The conservationist worked hard to save the tigers."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "frightening", "explanation": "making you feel afraid", "ipa": "/ˈfraɪtnɪŋ/", "example": "The thunderstorm last night was very frightening."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "initiative", "explanation": "a new plan for dealing with a particular problem or for achieving a particular purpose", "ipa": "/ɪˈnɪʃətɪv/", "example": "The school started an initiative to reduce plastic waste."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "million", "explanation": "1,000,000", "ipa": "/ˈmɪljən/", "example": "Over a million people visited the museum last year."}, {"unit": "Unit 1", "lesson": "Lesson 2", "word": "affect", "explanation": "to produce a change in somebody/something", "ipa": "/əˈfekt/", "example": "Air pollution affects the health of everyone in the city."}, {"unit": "Unit 1", "lesson": "Lesson 3", "word": "diver", "explanation": "a person who swims underwater using special equipment, usually for their job", "ipa": "/ˈdaɪvər/", "example": "The diver went deep underwater to explore the coral reef."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "pay", "explanation": "to give somebody money for work, goods, services, etc.", "ipa": "/peɪ/", "example": "I'll pay for the movie tickets this time."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "save (money)", "explanation": "to keep money instead of spending it, especially in order to buy a particular thing", "ipa": "/seɪv ˈmʌni/", "example": "She saves money every month to buy a new laptop."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "awful", "explanation": "very bad or unpleasant", "ipa": "/ˈɔːfl/", "example": "The weather was awful — it rained all day."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "careful", "explanation": "giving attention or thought to what you are doing so that you avoid hurting yourself, damaging something or doing something wrong", "ipa": "/ˈkeərfl/", "example": "Be careful when you cross the road."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "hate", "explanation": "to dislike somebody/something very much", "ipa": "/heɪt/", "example": "I hate getting up early on cold mornings."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "rich", "explanation": "having a lot of money or property", "ipa": "/rɪtʃ/", "example": "He became rich after starting his own business."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "armchair", "explanation": "a comfortable chair with sides on which you can rest your arms", "ipa": "/ˈɑːrmtʃeər/", "example": "Grandpa fell asleep in his armchair after lunch."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "coffee table", "explanation": "a small low table for putting magazines, cups, etc. on, usually in front of a sofa", "ipa": "/ˈkɒfi ˌteɪbl/", "example": "She put the magazines on the coffee table in the living room."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "fridge", "explanation": "a piece of electrical equipment in which food is kept cold so that it stays fresh", "ipa": "/frɪdʒ/", "example": "There's some juice in the fridge if you're thirsty."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "oven", "explanation": "the part of a cooker that is like a box with a door on the front, in which food is cooked or heated", "ipa": "/ˈʌvn/", "example": "Mum put the cake in the oven and set the timer."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "shower", "explanation": "a piece of equipment producing a flow of water that you stand under to wash yourself", "ipa": "/ˈʃaʊər/", "example": "I always have a shower before school."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "sink", "explanation": "a large open container in a kitchen that has taps to supply water and that you use for washing dishes in", "ipa": "/sɪŋk/", "example": "Please wash your hands in the sink before eating."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "sofa", "explanation": "a long comfortable seat with a back and arms, for two or more people to sit on", "ipa": "/ˈsəʊfə/", "example": "We all sat on the sofa and watched a film together."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "toilet", "explanation": "a large bowl attached to a pipe that you sit on or stand over when you get rid of waste matter from your body", "ipa": "/ˈtɔɪlət/", "example": "Could you tell me where the toilet is, please?"}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "wardrobe", "explanation": "a large cupboard for hanging clothes in, which is either a piece of furniture or built into the wall", "ipa": "/ˈwɔːdrəʊb/", "example": "She hung her school uniform in the wardrobe."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "move in", "explanation": "to start to live in your new home", "ipa": "/muːv ɪn/", "example": "We move in to our new house next Saturday."}, {"unit": "Unit 2", "lesson": "Lesson 1", "word": "move out", "explanation": "to leave your old home", "ipa": "/muːv aʊt/", "example": "They had to move out before the end of the month."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "furniture", "explanation": "objects that can be moved, such as tables, chairs and beds, that are put into a house or an office to make it suitable for living or working in", "ipa": "/ˈfɜːrnɪtʃər/", "example": "They bought some new furniture for the bedroom."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "glass", "explanation": "a hard, usually clear, substance used, for example, for making windows and bottles", "ipa": "/ɡlɑːs/", "example": "Be careful — there's broken glass on the floor."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "modern", "explanation": "using the latest technology, designs, materials, ideas, etc.", "ipa": "/ˈmɒdərn/", "example": "The school has a very modern computer lab."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "plastic", "explanation": "made of plastic (=a light strong material that is produced by chemical processes and can be formed into shapes when heated)", "ipa": "/ˈplæstɪk/", "example": "This bottle is made of plastic and can be recycled."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "reuse", "explanation": "to use something again", "ipa": "/ˌriːˈjuːz/", "example": "We reuse shopping bags to help the environment."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "rubbish", "explanation": "things that you throw away because you no longer want or need them", "ipa": "/ˈrʌbɪʃ/", "example": "Please put your rubbish in the bin, not on the floor."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "earthquake", "explanation": "a sudden, violent shaking of the earth's surface", "ipa": "/ˈɜːrθkweɪk/", "example": "The earthquake destroyed many buildings in the town."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "balcony", "explanation": "a platform that is built on the upstairs outside wall of a building, with a wall or rail around it", "ipa": "/ˈbælkəni/", "example": "She sat on the balcony and enjoyed the view of the garden."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "vacuum cleaner", "explanation": "an electrical machine that cleans floors, carpets, etc. by sucking up dirt and dust", "ipa": "/ˈvækjuəm ˌkliːnər/", "example": "He used the vacuum cleaner to clean the carpet."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "bookcase", "explanation": "a piece of furniture with shelves for keeping books on", "ipa": "/ˈbʊkkeɪs/", "example": "The bookcase in my room is full of adventure stories."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "washing machine", "explanation": "an electric machine for washing clothes", "ipa": "/ˈwɒʃɪŋ məˌʃiːn/", "example": "Mum put the dirty clothes into the washing machine."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "floor", "explanation": "the surface of a room that you walk on", "ipa": "/flɔːr/", "example": "The floor was wet, so we had to be careful not to slip."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "microwave oven", "explanation": "a type of oven that cooks or heats food very quickly using electromagnetic waves rather than heat", "ipa": "/ˈmaɪkrəweɪv ˌʌvn/", "example": "I heated my lunch in the microwave oven."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "roof", "explanation": "the structure that covers or forms the top of a building or vehicle", "ipa": "/ruːf/", "example": "Snow covered the roof of every house on our street."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "rug", "explanation": "a piece of thick material like a small carpet that is used for covering or decorating part of a floor", "ipa": "/rʌɡ/", "example": "There is a colourful rug in the middle of the sitting room."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "recycle", "explanation": "to treat things that have already been used so that they can be used again", "ipa": "/ˌriːˈsaɪkl/", "example": "Our school recycles paper, glass and plastic."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "ecological", "explanation": "connected with the relation of plants and living creatures to each other and to their environment", "ipa": "/ˌiːkəˈlɒdʒɪkl/", "example": "The scientists studied the ecological effects of the oil spill."}, {"unit": "Unit 2", "lesson": "Lesson 2", "word": "type", "explanation": "a kind or sort", "ipa": "/taɪp/", "example": "What type of music do you like best?"}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "sitting room", "explanation": "a room in a house where people sit together, watch television, etc.", "ipa": "/ˈsɪtɪŋ ruːm/", "example": "The whole family gathered in the sitting room to watch TV."}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "appliance", "explanation": "a machine that is designed to do a particular thing in the home, such as preparing food, heating or cleaning", "ipa": "/əˈplaɪəns/", "example": "The kitchen is full of useful appliances like a blender and a toaster."}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "throw away", "explanation": "to get rid of something that you no longer want", "ipa": "/θrəʊ əˈweɪ/", "example": "Don't throw away your old phone — you can donate it."}, {"unit": "Unit 2", "lesson": "Lesson 3", "word": "late", "explanation": "arriving, happening or done after the expected, arranged or usual time", "ipa": "/leɪt/", "example": "The bus was late, so I missed the start of the lesson."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "deep", "explanation": "having a large distance from the top or surface to the bottom", "ipa": "/diːp/", "example": "The lake is very deep — you can't see the bottom."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "wrong", "explanation": "causing problems or difficulties; not as it should be", "ipa": "/rɒŋ/", "example": "Something is wrong with my computer; it keeps shutting down."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "dive", "explanation": "to jump into water with your head and arms going in first", "ipa": "/daɪv/", "example": "He learned to dive into the pool without splashing."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "equipment", "explanation": "the things that are needed for a particular purpose or activity", "ipa": "/ɪˈkwɪpmənt/", "example": "The PE teacher checked all the sports equipment before class."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "explore", "explanation": "to travel to or around an area or a country in order to learn about it", "ipa": "/ɪkˈsplɔːr/", "example": "We went to explore the old castle near our town."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "hobby", "explanation": "an activity that you do for pleasure when you are not working", "ipa": "/ˈhɒbi/", "example": "My favourite hobby is painting landscapes."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "sure", "explanation": "confident that you know something or that you are right", "ipa": "/ʃʊər/", "example": "Are you sure you locked the door before we left?"}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "end up", "explanation": "to find yourself in a place or situation at the end of a process or period of time", "ipa": "/end ʌp/", "example": "If you don't study, you might end up failing the exam."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "give up", "explanation": "to stop trying to do something", "ipa": "/ɡɪv ʌp/", "example": "Don't give up — keep practising and you'll improve."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "take up", "explanation": "to learn or start to do something, especially for pleasure", "ipa": "/teɪk ʌp/", "example": "She decided to take up swimming this summer."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "try out", "explanation": "to test or use somebody/something in order to see how good or effective they are", "ipa": "/traɪ aʊt/", "example": "I want to try out the new pizza restaurant in town."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "turn on", "explanation": "to start the flow of electricity, gas, water, etc. by moving a switch, button, etc.", "ipa": "/tɜːrn ɒn/", "example": "Could you turn on the light? It's getting dark."}, {"unit": "Unit 3", "lesson": "Lesson 1", "word": "scuba diving", "explanation": "a sport or activity in which you swim underwater using an air tank and a special breathing machine that you strap on your body", "ipa": "/ˈskuːbə ˌdaɪvɪŋ/", "example": "He went scuba diving in the Red Sea and saw colourful fish."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "trick", "explanation": "a clever action that somebody/something performs as a way of entertaining people", "ipa": "/trɪk/", "example": "The magician performed an amazing trick with a disappearing coin."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "show off", "explanation": "to try to impress others by talking about your abilities, possessions, etc.", "ipa": "/ʃəʊ ɒf/", "example": "He always shows off his new trainers to everyone."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "hill", "explanation": "an area of land that is higher than the land around it, but not as high as a mountain", "ipa": "/hɪl/", "example": "We climbed to the top of the hill and looked at the view."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "pull", "explanation": "to take hold of something and use force in order to move it or try to move it towards yourself", "ipa": "/pʊl/", "example": "She had to pull hard to open the heavy door."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "rope", "explanation": "very strong thick string made by twisting thinner strings, wires, etc. together", "ipa": "/rəʊp/", "example": "They used a rope to tie the boat to the dock."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "slide", "explanation": "to move easily over a smooth or wet surface; to make something move in this way", "ipa": "/slaɪd/", "example": "The children slid down the slide in the playground."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "bored", "explanation": "feeling tired and impatient because you have lost interest in somebody/something or because you have nothing to do", "ipa": "/bɔːrd/", "example": "I was so bored on the long car journey."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "boring", "explanation": "not interesting; making you feel tired and impatient", "ipa": "/ˈbɔːrɪŋ/", "example": "The film was so boring that I fell asleep."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "excited", "explanation": "feeling or showing happiness and enthusiasm", "ipa": "/ɪkˈsaɪtɪd/", "example": "The children were very excited about the school trip."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "exciting", "explanation": "causing great interest or excitement", "ipa": "/ɪkˈsaɪtɪŋ/", "example": "Learning to ride a horse was the most exciting thing I've ever done."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "interested", "explanation": "giving your attention to something because you enjoy finding out about it or doing it; showing interest in something and finding it exciting", "ipa": "/ˈɪntrəstɪd/", "example": "She is interested in learning more about space."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "interesting", "explanation": "attracting your attention because it is/they are special, exciting or unusual", "ipa": "/ˈɪntrəstɪŋ/", "example": "The documentary about sharks was very interesting."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "relaxed", "explanation": "(of a person) calm and not anxious or worried", "ipa": "/rɪˈlækst/", "example": "After the holiday, I felt completely relaxed."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "relaxing", "explanation": "helping you to rest and become less anxious", "ipa": "/rɪˈlæksɪŋ/", "example": "A hot bath at the end of the day is very relaxing."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "tired", "explanation": "feeling that you would like to sleep or rest; needing rest", "ipa": "/ˈtaɪərd/", "example": "I was so tired after the football match that I fell asleep straight away."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "tiring", "explanation": "making you feel the need to sleep or rest", "ipa": "/ˈtaɪərɪŋ/", "example": "Moving all the boxes to the new house was really tiring."}, {"unit": "Unit 3", "lesson": "Lesson 2", "word": "use up", "explanation": "to use all of something so that there is none left", "ipa": "/juːz ʌp/", "example": "We've used up all the milk — someone needs to buy more."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "pastime", "explanation": "something that you enjoy doing when you are not working", "ipa": "/ˈpɑːstaɪm/", "example": "Reading is my favourite pastime on weekends."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "blog", "explanation": "a website on which someone writes about personal opinions, activities, and experiences", "ipa": "/blɒɡ/", "example": "She writes a blog about her travels around the world."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "blog (verb)", "explanation": "to write something in a blog", "ipa": "/blɒɡ/", "example": "He blogs about technology and gadgets every week."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "code", "explanation": "to change (information) into a set of letters, numbers, or symbols that can be read by a computer", "ipa": "/kəʊd/", "example": "She used code to build her first website."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "post", "explanation": "to put information or pictures on a website", "ipa": "/pəʊst/", "example": "I'll post the photos from our trip on the class website."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "link", "explanation": "a connection between documents on the internet", "ipa": "/lɪŋk/", "example": "He sent me a link to a great video about space."}, {"unit": "Unit 3", "lesson": "Lesson 3", "word": "comment", "explanation": "something that you say or write that gives an opinion on or explains somebody/something", "ipa": "/ˈkɒment/", "example": "She left a kind comment on my drawing."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "Hang on!", "explanation": "used to ask someone to wait for a short time or to stop what they are doing", "ipa": "/hæŋ ɒn/", "example": "Hang on! I think I left my bag on the bus."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "have got no idea", "explanation": "you really don't know something at all", "ipa": "/hæv ɡɒt nəʊ aɪˈdɪə/", "example": "I have got no idea where I put my keys."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "I don't believe it.", "explanation": "what you say when you're very surprised or shocked", "ipa": "/aɪ dəʊnt bɪˈliːv ɪt/", "example": "I don't believe it. We actually won the championship!"}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "have a snack", "explanation": "to eat a small amount of food between meals", "ipa": "/hæv ə snæk/", "example": "We stopped to have a snack before continuing the hike."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "Hurry up!", "explanation": "to do something more quickly because there is not much time", "ipa": "/ˈhʌri ʌp/", "example": "Hurry up! The show is about to start."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "disgusting", "explanation": "extremely unpleasant", "ipa": "/dɪsˈɡʌstɪŋ/", "example": "The smell from the dustbin was absolutely disgusting."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "delicious", "explanation": "having a very pleasant taste or smell", "ipa": "/dɪˈlɪʃəs/", "example": "The chocolate cake Grandma made was absolutely delicious."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "full", "explanation": "having had enough to eat", "ipa": "/fʊl/", "example": "I'm too full to eat any more — that was a huge dinner."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "thirsty", "explanation": "needing or wanting to drink", "ipa": "/ˈθɜːrsti/", "example": "After the long run, I was very thirsty."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "altogether", "explanation": "used to give a total number or amount", "ipa": "/ˌɔːltəˈɡeðər/", "example": "There were fifteen students altogether in the after-school club."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "buffet", "explanation": "a meal at which people serve themselves from a table and then stand or sit somewhere else to eat", "ipa": "/ˈbʊfeɪ/", "example": "At the party, there was a buffet with lots of different dishes."}, {"unit": "Unit 4", "lesson": "Lesson 1", "word": "lobby", "explanation": "a large area inside the entrance of a public building where people can meet and wait", "ipa": "/ˈlɒbi/", "example": "We waited in the hotel lobby until our room was ready."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "meat", "explanation": "the soft part of an animal or a bird that can be eaten as food; a particular type of this", "ipa": "/miːt/", "example": "He doesn't eat meat because he is a vegetarian."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "healthy", "explanation": "good for your health", "ipa": "/ˈhelθi/", "example": "Eating fruit and vegetables every day is very healthy."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "pot", "explanation": "a deep round container used for cooking things in", "ipa": "/pɒt/", "example": "Mum stirred the soup in the big pot on the cooker."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "raw", "explanation": "not cooked", "ipa": "/rɔː/", "example": "The recipe says to add raw carrots to the salad."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "sauce", "explanation": "a thick liquid that is eaten with food to add taste to it", "ipa": "/sɔːs/", "example": "The pasta was served with a rich tomato sauce."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "seafood", "explanation": "fish and sea creatures that can be eaten, especially shellfish", "ipa": "/ˈsiːfuːd/", "example": "The restaurant is famous for its fresh seafood."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "soup", "explanation": "a liquid food made by boiling meat, vegetables, etc. in water, often eaten as the first course of a meal", "ipa": "/suːp/", "example": "On cold days, I love having a bowl of hot soup for lunch."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "add", "explanation": "to put something together with something else so as to increase the size, number, amount, etc.", "ipa": "/æd/", "example": "Add a pinch of salt to the water before boiling the pasta."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "boil", "explanation": "when a liquid boils or when you boil it, it is heated to the point where it forms bubbles and turns to steam or vapour", "ipa": "/bɔɪl/", "example": "Boil the eggs for six minutes for a soft yolk."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "chop", "explanation": "to cut something into pieces with a sharp tool such as a knife", "ipa": "/tʃɒp/", "example": "Chop the onion into small pieces before frying it."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "fry", "explanation": "to cook something in hot fat or oil; to be cooked in hot fat or oil", "ipa": "/fraɪ/", "example": "Fry the chicken in a little oil until it is golden brown."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "mix", "explanation": "to combine two or more substances or things, usually in a way that means they cannot easily be separated", "ipa": "/mɪks/", "example": "Mix the flour, eggs and milk together to make a batter."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "slice", "explanation": "to cut something into slices (= thin flat pieces of bread, meat, cheese, etc. that has been cut off a larger piece)", "ipa": "/slaɪs/", "example": "She sliced the bread into thick pieces."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "dip", "explanation": "to put something quickly into a liquid and take it out again", "ipa": "/dɪp/", "example": "He dipped the bread into the soup and ate it quickly."}, {"unit": "Unit 4", "lesson": "Lesson 2", "word": "dish", "explanation": "the food served in a dish", "ipa": "/dɪʃ/", "example": "This noodle dish is my favourite meal of all."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "chilli pepper (AmE Chili pepper)", "explanation": "the small green or red fruit of a type of pepper plant that is used in cooking to give a hot taste to food, often dried or made into powder", "ipa": "/ˈtʃɪli ˌpepər/", "example": "She added a red chilli pepper to the stir-fry to make it spicy."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "pan", "explanation": "a container, usually made of metal, with a handle or handles, used for cooking food in", "ipa": "/pæn/", "example": "Heat the oil in the pan before adding the vegetables."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "gently", "explanation": "in a way that is soft and light, not strong, extreme or violent", "ipa": "/ˈdʒentli/", "example": "Stir the mixture gently so that it doesn't break apart."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "recipe", "explanation": "a set of instructions for making food", "ipa": "/ˈresəpi/", "example": "I followed Grandma's recipe to make the dumplings."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "remove", "explanation": "to take somebody/something away from a place", "ipa": "/rɪˈmuːv/", "example": "Remove the fish from the oven when it is cooked through."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "pour", "explanation": "to cause (something) to flow in a steady stream from or into a container or place", "ipa": "/pɔːr/", "example": "Pour the sauce over the noodles and serve immediately."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "serving", "explanation": "an amount of food for one person", "ipa": "/ˈsɜːrvɪŋ/", "example": "This recipe makes four servings."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "tablespoon", "explanation": "a large spoon, used especially for serving food", "ipa": "/ˈteɪblspuːn/", "example": "Add two tablespoons of soy sauce to the stir-fry."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "consume", "explanation": "to eat or drink something", "ipa": "/kənˈsjuːm/", "example": "Try not to consume too much sugar every day."}, {"unit": "Unit 4", "lesson": "Lesson 3", "word": "reject", "explanation": "to refuse to accept or consider something", "ipa": "/rɪˈdʒekt/", "example": "The judges rejected his idea because it was too expensive."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "bell", "explanation": "a hollow, metal object, shaped like a cup, with a metal part inside that hits the side of the cup and makes a ringing sound", "ipa": "/bel/", "example": "The bell rang and all the students went into class."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "canteen", "explanation": "a place where food and drink are served in a factory, a school, etc.", "ipa": "/kænˈtiːn/", "example": "We had lunch together in the school canteen."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "magazine", "explanation": "a thin book published every week or month, that has shiny, colourful pages with articles and pictures", "ipa": "/ˌmæɡəˈziːn/", "example": "She reads a science magazine every month."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "sweatshirt", "explanation": "a piece of clothing for the upper part of the body, with long sleeves, usually made of thick cotton and often worn for sports", "ipa": "/ˈswetʃɜːrt/", "example": "He wore a warm sweatshirt to the football training session."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "break", "explanation": "a short period of time when you stop what you are doing and rest, eat, etc.", "ipa": "/breɪk/", "example": "We played outside during the morning break."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "term", "explanation": "(especially in the UK) one of the three periods in the year during which classes are held in schools, universities, etc.", "ipa": "/tɜːrm/", "example": "We have three terms in the school year."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "cheat", "explanation": "to behave in a way that is not honest or fair in order to win something or to get something", "ipa": "/tʃiːt/", "example": "He was caught cheating on the exam and had to redo it."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "fair", "explanation": "acceptable and appropriate in a particular situation", "ipa": "/feər/", "example": "It's not fair that only some students get extra time."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "head teacher", "explanation": "a teacher who is in charge of a school", "ipa": "/hed ˈtiːtʃər/", "example": "The head teacher gave a speech at the end of year ceremony."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "strict", "explanation": "A strict person makes sure that children or people working for them behave well and does not allow them to break any rules", "ipa": "/strɪkt/", "example": "Our maths teacher is strict but explains things very clearly."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "test", "explanation": "a set of questions to measure someone's knowledge or ability", "ipa": "/test/", "example": "We have a spelling test every Friday morning."}, {"unit": "Unit 5", "lesson": "Lesson 1", "word": "fencing", "explanation": "the sport of fighting with long thin swords", "ipa": "/ˈfensɪŋ/", "example": "She took up fencing and won her first competition."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "exam", "explanation": "an official test of how much you know about something, or how well you can do something", "ipa": "/ɪɡˈzæm/", "example": "He stayed up late revising for his science exam."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "nature reserve", "explanation": "an area of land where the animals and plants are protected", "ipa": "/ˈneɪtʃər rɪˌzɜːrv/", "example": "We visited a nature reserve and saw wild deer."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "discuss", "explanation": "to talk about something with somebody, especially in order to decide something", "ipa": "/dɪˈskʌs/", "example": "Let's discuss our ideas before writing the report."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "friendship", "explanation": "a relationship between friends", "ipa": "/ˈfrendʃɪp/", "example": "Their friendship started on the first day of school."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "in the wild", "explanation": "in nature", "ipa": "/ɪn ðə waɪld/", "example": "It is rare to see a wolf in the wild today."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "understanding", "explanation": "knowledge about a subject, situation, etc. or about how something works", "ipa": "/ˌʌndəˈstændɪŋ/", "example": "A good teacher helps students build a real understanding of the subject."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "boarding school", "explanation": "a school where children can live during the school year", "ipa": "/ˈbɔːrdɪŋ skuːl/", "example": "She goes to a boarding school and comes home every holidays."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "education", "explanation": "the process of teaching and learning in a school or college, or the knowledge that you get from this", "ipa": "/ˌedʒuˈkeɪʃn/", "example": "A good education opens many doors for young people."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "marks", "explanation": "numbers or letters that are written on a piece of work, showing how good the work is", "ipa": "/mɑːrks/", "example": "He got the highest marks in the class for his history essay."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "report", "explanation": "something teachers write about a child's progress at school for their parents", "ipa": "/rɪˈpɔːrt/", "example": "My report said I was excellent at science but needed to read more."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "time off", "explanation": "time when you are not working or studying", "ipa": "/taɪm ɒf/", "example": "The teacher gave us time off after the exams were finished."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "natural", "explanation": "existing in nature", "ipa": "/ˈnætʃrəl/", "example": "Honey is a natural sweetener that bees make."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "solve", "explanation": "to find a way to deal with and end (a problem)", "ipa": "/sɒlv/", "example": "It took us half an hour to solve the maths puzzle."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "path", "explanation": "a track that is made by people or animals walking over the ground", "ipa": "/pɑːθ/", "example": "We followed the path through the forest to the lake."}, {"unit": "Unit 5", "lesson": "Lesson 2", "word": "imagine", "explanation": "to form a picture in your mind of what something might be like", "ipa": "/ɪˈmædʒɪn/", "example": "Imagine what it would be like to live on the moon."}, {"unit": "Unit 5", "lesson": "Lesson 3", "word": "interview", "explanation": "to question or talk with (someone) in order to get information or learn about that person", "ipa": "/ˈɪntəvjuː/", "example": "She was nervous before her interview for the school council."}, {"unit": "Unit 5", "lesson": "Lesson 3", "word": "project", "explanation": "a task or problem in school that requires careful work over a long period of time", "ipa": "/ˈprɒdʒekt/", "example": "We worked on a group project about climate change."}, {"unit": "Unit 5", "lesson": "Lesson 3", "word": "brilliant", "explanation": "very good", "ipa": "/ˈbrɪliənt/", "example": "That was a brilliant idea — let's do it!"}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "(catch a) cold", "explanation": "to become ill with a cold", "ipa": "/kætʃ ə kəʊld/", "example": "I caught a cold after getting wet in the rain."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "earache", "explanation": "pain inside the ear", "ipa": "/ˈɪəreɪk/", "example": "He had a bad earache after swimming in the cold water."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "cough", "explanation": "to force air through your throat with a short, loud noise often because you are sick", "ipa": "/kɒf/", "example": "She kept coughing because of the dust in the old room."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "headache", "explanation": "a continuous pain in the head", "ipa": "/ˈhedeɪk/", "example": "I had a headache all afternoon because of the loud noise."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "sneeze", "explanation": "to suddenly force air out through your nose and mouth in a way that you cannot control, for example because you have a cold", "ipa": "/sniːz/", "example": "He sneezed three times and reached for a tissue."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "stomach ache (also stomachache)", "explanation": "pain in or near your stomach", "ipa": "/ˈstʌmək eɪk/", "example": "She had a stomach ache after eating too much candy."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "ache", "explanation": "a continuous feeling of pain in a part of the body", "ipa": "/eɪk/", "example": "After the long hike, every part of my body ached."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "toothache", "explanation": "a pain in your teeth or in one tooth", "ipa": "/ˈtuːθeɪk/", "example": "The toothache was so bad that he went to the dentist straight away."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "thermometer", "explanation": "an instrument used for measuring temperature", "ipa": "/θəˈmɒmɪtər/", "example": "Mum used a thermometer to check if I had a fever."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "temperature", "explanation": "the measurement in degrees of how hot or cold a thing or place is", "ipa": "/ˈtemprətʃər/", "example": "The temperature outside dropped below zero last night."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "ankle", "explanation": "the joint where the foot joins the leg", "ipa": "/ˈæŋkl/", "example": "She twisted her ankle while playing basketball."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "chest", "explanation": "the front part of the body between the neck and the stomach", "ipa": "/tʃest/", "example": "He felt a pain in his chest and went to see the doctor."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "elbow", "explanation": "the joint where your arm bends", "ipa": "/ˈelbəʊ/", "example": "I hit my elbow on the desk and it really hurt."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "knee", "explanation": "the joint that bends at the middle of your leg", "ipa": "/niː/", "example": "He fell and cut his knee on the playground."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "shoulder", "explanation": "the part of your body where your arm is connected", "ipa": "/ˈʃəʊldər/", "example": "She hurt her shoulder during volleyball practice."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "stomach", "explanation": "the organ inside the body where food goes when you eat it", "ipa": "/ˈstʌmək/", "example": "The doctor pressed gently on his stomach to check for pain."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "tail", "explanation": "the part of an animal's body that extends from the animal's back end", "ipa": "/teɪl/", "example": "The dog wagged its tail happily when we came home."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "back flip (also backflip)", "explanation": "a type of somersault (= movement in which you turn over completely) which involves turning backwards and landing on your feet", "ipa": "/bæk flɪp/", "example": "The gymnast did a perfect back flip on the mat."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "stump", "explanation": "the bottom part of a tree left in the ground after the rest has fallen or been cut down", "ipa": "/stʌmp/", "example": "We sat on the old tree stump and had our picnic."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "common", "explanation": "happening often", "ipa": "/ˈkɒmən/", "example": "Colds are very common in winter."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "virus", "explanation": "a living thing, too small to be seen without a microscope, that causes disease in people, animals and plants", "ipa": "/ˈvaɪrəs/", "example": "The doctor said the illness was caused by a virus."}, {"unit": "Unit 6", "lesson": "Lesson 1", "word": "throat", "explanation": "the front part of the neck", "ipa": "/θrəʊt/", "example": "Her throat was so sore that it hurt to swallow."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "bleed", "explanation": "to lose blood, especially from a wound or an injury", "ipa": "/bliːd/", "example": "His knee started to bleed when he fell off his bike."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "injure", "explanation": "to hurt or cause physical harm to a person or animal", "ipa": "/ˈɪndʒər/", "example": "Two players were injured during the football match."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "lungs", "explanation": "the two organs in the chest that you use for breathing", "ipa": "/lʌŋz/", "example": "Smoking causes serious damage to your lungs."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "mummy", "explanation": "a dead body of a person or animal prepared for burial in the manner of the ancient Egyptians", "ipa": "/ˈmʌmi/", "example": "The museum has an ancient Egyptian mummy on display."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "ill", "explanation": "suffering from an illness or disease; not feeling well", "ipa": "/ɪl/", "example": "She was too ill to come to school all week."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "weak", "explanation": "not physically strong", "ipa": "/wiːk/", "example": "After the flu, he felt weak and tired for several days."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "skin", "explanation": "the layer of tissue that covers the body", "ipa": "/skɪn/", "example": "Use sunscreen to protect your skin from sunburn."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "sore", "explanation": "feeling or affected by pain", "ipa": "/sɔːr/", "example": "My legs were sore after the ten-kilometre run."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "tattoo", "explanation": "a picture or word that is drawn on a person's skin by using a needle and ink", "ipa": "/təˈtuː/", "example": "The sailor had a small anchor tattoo on his arm."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "ancient", "explanation": "belonging to a period of history that is thousands of years in the past", "ipa": "/ˈeɪnʃənt/", "example": "We studied the ancient Egyptians in history class."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "mystery", "explanation": "something that is difficult to understand or to explain", "ipa": "/ˈmɪstəri/", "example": "How the pyramids were built is still a mystery."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "discovery", "explanation": "the act of finding or learning something for the first time", "ipa": "/dɪˈskʌvəri/", "example": "The discovery of penicillin saved millions of lives."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "arrowhead", "explanation": "the sharp pointed end of an arrow", "ipa": "/ˈærəʊhed/", "example": "The archaeologist found a stone arrowhead in the field."}, {"unit": "Unit 6", "lesson": "Lesson 2", "word": "perhaps", "explanation": "maybe", "ipa": "/pərˈhæps/", "example": "It's cloudy today — perhaps it will rain later."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "living", "explanation": "a way or style of life", "ipa": "/ˈlɪvɪŋ/", "example": "She moved to the countryside for a quieter way of living."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "pollinate", "explanation": "to put pollen into a flower or plant so that it produces seeds", "ipa": "/ˈpɒlɪneɪt/", "example": "Bees pollinate flowers as they collect nectar."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "active", "explanation": "always busy doing things, especially physical activities", "ipa": "/ˈæktɪv/", "example": "He is very active and plays three different sports."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "honeycomb", "explanation": "a group of wax cells with six sides that are built by honeybees in their hive and that contain young bees or honey", "ipa": "/ˈhʌnikəʊm/", "example": "The beekeeper carefully removed the honeycomb from the hive."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "screen", "explanation": "the flat surface at the front of a television, computer, or other electronic device, on which you see pictures or information", "ipa": "/skriːn/", "example": "Looking at a screen for too long can make your eyes tired."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "beehive", "explanation": "a structure made for bees to live in", "ipa": "/ˈbiːhaɪv/", "example": "There is a beehive in the garden and we can hear the bees buzzing."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "hydrated", "explanation": "having absorbed enough water or other liquid", "ipa": "/haɪˈdreɪtɪd/", "example": "Drink plenty of water to stay hydrated during exercise."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "especially", "explanation": "used to indicate something that deserves special mention", "ipa": "/ɪˈspeʃəli/", "example": "I love all fruit, especially strawberries and mangoes."}, {"unit": "Unit 6", "lesson": "Lesson 3", "word": "stretch", "explanation": "to put your arms or legs out straight and contract your muscles", "ipa": "/stretʃ/", "example": "Remember to stretch before and after exercise to avoid injury."}];
 // ============================================================
 //  PHONICS ENGINE
 // ============================================================
@@ -774,6 +972,278 @@ function showResults(){
 }
 function retryPractice(){showSetup();}
 
+
+// ============================================================
+//  IMMERSIVE MODE
+// ============================================================
+let immMode = null;     // 'vocab' | 'practice'
+let immWords = [];      // filtered word list
+let immIdx = 0;         // current index (vocab)
+let immQs = [];         // quiz questions (practice)
+let immCurQ = 0;
+let immScore = 0;
+let immAnswered = false;
+
+function getCurrentModule(){
+  // Which tab is active?
+  const tabs = document.querySelectorAll('.nav-tab');
+  for(let i=0;i<tabs.length;i++) if(tabs[i].classList.contains('active')) return i===0?'vocab':'practice';
+  return 'vocab';
+}
+
+function enterImmersive(){
+  const words = getFiltered();
+  if(!words.length){ alert('请先筛选单词！'); return; }
+
+  immWords = words;
+  immMode = getCurrentModule();
+
+  const overlay = document.getElementById('imm-overlay');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  document.getElementById('imm-vocab-body').style.display = 'none';
+  document.getElementById('imm-quiz-body').style.display  = 'none';
+  document.getElementById('imm-nav').style.display        = 'none';
+
+  if(immMode === 'vocab'){
+    document.getElementById('imm-mode-label').textContent = '⚡ 沉浸模式 · 背单词';
+    document.getElementById('imm-vocab-body').style.display = 'flex';
+    document.getElementById('imm-nav').style.display        = 'flex';
+    immIdx = 0;
+    immRenderVocab();
+  } else {
+    document.getElementById('imm-mode-label').textContent = '⚡ 沉浸模式 · 单词练习';
+    document.getElementById('imm-quiz-body').style.display  = 'flex';
+    immStartQuiz();
+  }
+}
+
+function exitImmersive(){
+  document.getElementById('imm-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ── VOCAB ──────────────────────────────────────────────────
+function immRenderVocab(){
+  const v = immWords[immIdx];
+  const total = immWords.length;
+
+  // progress
+  document.getElementById('imm-progress-text').textContent = `${immIdx+1} / ${total}`;
+  document.getElementById('imm-prog-bar').style.width = ((immIdx+1)/total*100)+'%';
+  document.getElementById('imm-counter').textContent = `${immIdx+1} / ${total}`;
+
+  // tags
+  document.getElementById('imm-tags').innerHTML =
+    `<span class="imm-tag imm-tag-unit">${v.unit}</span>
+     <span class="imm-tag imm-tag-lesson">${v.lesson}</span>`;
+
+  // phonics word
+  const parts = v.word.trim().split(/\s+/);
+  const len = v.word.length;
+  let sz = '';
+  if(parts.length>3||len>20) sz='is-long';
+  else if(parts.length>1||len>10) sz='is-phrase';
+  const wEl = document.getElementById('imm-word');
+  wEl.className = 'imm-word ' + sz + ' imm-animate';
+  wEl.innerHTML = buildPhonics(v.word);
+
+  // ipa
+  const ipaEl = document.getElementById('imm-ipa');
+  ipaEl.textContent = v.ipa || '';
+  ipaEl.style.display = v.ipa ? '' : 'none';
+
+  // explanation with highlights
+  const exEl = document.getElementById('imm-expl');
+  exEl.className = 'imm-expl imm-animate';
+  exEl.innerHTML = hilite(v.explanation, v.word);
+
+  // example sentence — bold the target word
+  const exampleWrap = document.getElementById('imm-example-wrap');
+  const exampleEl   = document.getElementById('imm-example');
+  if(v.example){
+    exampleWrap.style.display = '';
+    // Highlight the word in the example sentence
+    const wordEsc = v.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const wordVariants = [
+      v.word,
+      // also try first word of phrase for phrasal verbs
+      v.word.split(' ')[0]
+    ].filter((x,i,a)=>a.indexOf(x)===i);
+    let ex = escHtml(v.example);
+    for(const w of wordVariants){
+      const wEsc = escHtml(w);
+      const re = new RegExp('(?<![a-zA-Z])' + wEsc.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '(?![a-zA-Z])','gi');
+      ex = ex.replace(re, m=>`<strong>${m}</strong>`);
+      if(ex.includes('<strong>')) break;
+    }
+    exampleEl.innerHTML = ex;
+  } else {
+    exampleWrap.style.display = 'none';
+  }
+
+  // nav buttons
+  document.getElementById('imm-prev-btn').disabled = immIdx === 0;
+  document.getElementById('imm-next-btn').textContent = immIdx === total-1 ? '完成 ✓' : '下一个 →';
+
+  // re-trigger animation
+  void wEl.offsetWidth;
+  void exEl.offsetWidth;
+}
+
+function immPrev(){
+  if(immIdx > 0){ immIdx--; immRenderVocab(); }
+}
+function immNext(){
+  if(immIdx < immWords.length-1){ immIdx++; immRenderVocab(); }
+  else { exitImmersive(); }
+}
+
+// ── PRACTICE ───────────────────────────────────────────────
+function immStartQuiz(){
+  const types = getTypes();
+  if(!types.length){ alert('请至少选一种题型！'); exitImmersive(); return; }
+
+  document.getElementById('imm-results').style.display = 'none';
+  document.getElementById('imm-quiz-card').style.display = 'flex';
+
+  const seed = Date.now();
+  const shuffled = shuffle(immWords, seed);
+  immQs = shuffled.map((w,i)=>({word:w, type:types[i%types.length]}));
+  immQs = shuffle(immQs, seed+1);
+  immCurQ = 0; immScore = 0; immAnswered = false;
+  immRenderQ();
+}
+
+function immRetry(){
+  document.getElementById('imm-results').style.display = 'none';
+  document.getElementById('imm-quiz-card').style.display = 'flex';
+  immStartQuiz();
+}
+
+function immRenderQ(){
+  if(immCurQ >= immQs.length){ immShowResults(); return; }
+  immAnswered = false;
+
+  const q = immQs[immCurQ];
+  const total = immQs.length;
+
+  document.getElementById('imm-progress-text').textContent = `${immCurQ+1} / ${total}`;
+  document.getElementById('imm-prog-bar').style.width = ((immCurQ+1)/total*100)+'%';
+  document.getElementById('imm-quiz-score').textContent = '✓ ' + immScore;
+
+  // hide next
+  document.getElementById('imm-quiz-next').style.display = 'none';
+  document.getElementById('imm-opts').style.display = 'none';
+  document.getElementById('imm-spell-wrap').style.display = 'none';
+  document.getElementById('imm-spell-fb').style.display = 'none';
+
+  const pool = getFiltered();
+  let dPool = pool.filter(v=>v.lesson===q.word.lesson && v.word!==q.word.word);
+  if(dPool.length<3) dPool = pool.filter(v=>v.word!==q.word.word);
+
+  const badge = document.getElementById('imm-q-badge');
+  const qq    = document.getElementById('imm-quiz-q');
+  const sub   = document.getElementById('imm-quiz-sub');
+
+  // animate
+  const card = document.getElementById('imm-quiz-card');
+  card.classList.remove('imm-animate');
+  void card.offsetWidth;
+  card.classList.add('imm-animate');
+
+  if(q.type==='A'){
+    badge.textContent='题型 A：看释义 → 选单词';
+    badge.className='imm-q-badge qa';
+    qq.textContent = q.word.explanation;
+    sub.textContent = '请选出对应的英文单词或短语：';
+    const opts = shuffle([q.word,...shuffle(dPool,Date.now()+immCurQ).slice(0,3)],Date.now()+immCurQ+10);
+    const g = document.getElementById('imm-opts');
+    g.style.display='grid';
+    g.innerHTML = opts.map(o=>`<button class="imm-opt" data-word="${escHtml(o.word)}" data-correct="${escHtml(q.word.word)}">${escHtml(o.word)}</button>`).join('');
+    g.querySelectorAll('.imm-opt').forEach(b=>b.addEventListener('click',()=>immCheckMC(b)));
+  } else if(q.type==='B'){
+    badge.textContent='题型 B：看单词 → 选释义';
+    badge.className='imm-q-badge qb';
+    qq.innerHTML = buildPhonics(q.word.word) +
+      (q.word.ipa ? `<div style="font-size:.9rem;color:var(--accent2);font-style:italic;font-weight:600;margin-top:6px">${escHtml(q.word.ipa)}</div>` : '');
+    sub.textContent = '请选出正确的释义：';
+    const opts = shuffle([q.word,...shuffle(dPool,Date.now()+immCurQ).slice(0,3)],Date.now()+immCurQ+10);
+    const g = document.getElementById('imm-opts');
+    g.style.display='grid';
+    g.innerHTML = opts.map(o=>`<button class="imm-opt" data-word="${escHtml(o.word)}" data-correct="${escHtml(q.word.word)}">${escHtml(o.explanation)}</button>`).join('');
+    g.querySelectorAll('.imm-opt').forEach(b=>b.addEventListener('click',()=>immCheckMC(b)));
+  } else {
+    badge.textContent='题型 C：看释义 → 默写单词';
+    badge.className='imm-q-badge qc';
+    qq.textContent = q.word.explanation;
+    sub.textContent = '请拼写出对应的英文单词或短语：';
+    const sw = document.getElementById('imm-spell-wrap');
+    sw.style.display='flex';
+    const si = document.getElementById('imm-spell-input');
+    si.value=''; si.className='imm-spell-input';
+    document.getElementById('imm-submit-btn').style.display='block';
+    si.onkeydown = e=>{ if(e.key==='Enter'&&!immAnswered) immCheckSpell(); };
+    setTimeout(()=>si.focus(), 80);
+  }
+}
+
+function immCheckMC(btn){
+  if(immAnswered) return;
+  immAnswered = true;
+  const chosen  = btn.dataset.word;
+  const correct = btn.dataset.correct;
+  document.querySelectorAll('.imm-opt').forEach(b=>b.disabled=true);
+  if(chosen===correct){
+    btn.classList.add('correct'); immScore++;
+    document.getElementById('imm-quiz-score').textContent='✓ '+immScore;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.imm-opt').forEach(b=>{ if(b.dataset.word===correct) b.classList.add('correct'); });
+  }
+  document.getElementById('imm-quiz-next').style.display='block';
+}
+
+function immCheckSpell(){
+  if(immAnswered) return;
+  immAnswered = true;
+  const si = document.getElementById('imm-spell-input');
+  const ans = si.value.trim().toLowerCase();
+  const correct = immQs[immCurQ].word.word.toLowerCase();
+  const fb = document.getElementById('imm-spell-fb');
+  document.getElementById('imm-submit-btn').style.display='none';
+  if(ans===correct){
+    si.classList.add('correct'); immScore++;
+    document.getElementById('imm-quiz-score').textContent='✓ '+immScore;
+    fb.textContent='✓ 正确！🎉'; fb.className='imm-feedback imm-fb-ok';
+  } else {
+    si.classList.add('wrong');
+    fb.innerHTML=`✗ 错误，正确答案：<strong>${escHtml(immQs[immCurQ].word.word)}</strong>`;
+    fb.className='imm-feedback imm-fb-err';
+  }
+  fb.style.display='block';
+  document.getElementById('imm-quiz-next').style.display='block';
+}
+
+function immNextQ(){
+  immCurQ++;
+  immRenderQ();
+}
+
+function immShowResults(){
+  document.getElementById('imm-quiz-card').style.display='none';
+  document.getElementById('imm-results').style.display='block';
+  const total=immQs.length, pct=Math.round(immScore/total*100);
+  const emoji=pct>=90?'🏆':pct>=70?'🎉':pct>=50?'💪':'😅';
+  const msg=pct>=90?'太棒了，几乎满分！':pct>=70?'不错哦，继续加油！':pct>=50?'有进步，再练练吧！':'继续努力，你可以的！';
+  document.getElementById('imm-res-emoji').textContent=emoji;
+  document.getElementById('imm-res-score').textContent=`${immScore} / ${total}`;
+  document.getElementById('imm-res-text').innerHTML=`正确率 <strong>${pct}%</strong><br>${msg}`;
+  document.getElementById('imm-progress-text').textContent=`完成`;
+  document.getElementById('imm-prog-bar').style.width='100%';
+}
+
 // ============================================================
 //  INIT
 // ============================================================
@@ -788,5 +1258,69 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<!-- ===== IMMERSIVE MODE OVERLAY ===== -->
+<div id="imm-overlay">
+  <!-- Header -->
+  <div class="imm-header">
+    <div class="imm-title" id="imm-mode-label">⚡ 沉浸模式 · 背单词</div>
+    <div class="imm-progress" id="imm-progress-text">1 / 1</div>
+    <button class="imm-close" onclick="exitImmersive()">✕ 退出</button>
+  </div>
+  <div class="imm-prog-bar-wrap"><div class="imm-prog-bar" id="imm-prog-bar" style="width:0%"></div></div>
+
+  <!-- VOCAB BODY -->
+  <div id="imm-vocab-body" style="display:none">
+    <div class="imm-left">
+      <div class="imm-word-wrap">
+        <div class="imm-tags" id="imm-tags"></div>
+        <div class="imm-word" id="imm-word"></div>
+        <div class="imm-ipa" id="imm-ipa"></div>
+      </div>
+    </div>
+    <div class="imm-right">
+      <div class="imm-expl-label">释义</div>
+      <div class="imm-expl" id="imm-expl"></div>
+      <div class="imm-example-wrap" id="imm-example-wrap">
+        <div class="imm-example-label">📝 例句</div>
+        <div class="imm-example" id="imm-example"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRACTICE BODY -->
+  <div id="imm-quiz-body" style="display:none">
+    <div class="imm-quiz-card" id="imm-quiz-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div class="imm-q-badge" id="imm-q-badge"></div>
+        <div class="imm-quiz-score" id="imm-quiz-score">✓ 0</div>
+      </div>
+      <div class="imm-quiz-q" id="imm-quiz-q"></div>
+      <div class="imm-quiz-sub" id="imm-quiz-sub"></div>
+      <div id="imm-opts" class="imm-opts"></div>
+      <div id="imm-spell-wrap" class="imm-spell-wrap" style="display:none">
+        <input class="imm-spell-input" id="imm-spell-input" type="text"
+          placeholder="请输入单词或短语…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="imm-submit" id="imm-submit-btn" onclick="immCheckSpell()">✓ 确认</button>
+        <div class="imm-feedback" id="imm-spell-fb" style="display:none"></div>
+      </div>
+      <button class="imm-quiz-next" id="imm-quiz-next" onclick="immNextQ()">下一题 →</button>
+    </div>
+    <div class="imm-results" id="imm-results" style="display:none">
+      <div class="imm-res-emoji" id="imm-res-emoji">🎉</div>
+      <div class="imm-res-score" id="imm-res-score">0/0</div>
+      <div class="imm-res-text" id="imm-res-text"></div>
+      <button class="imm-retry" onclick="immRetry()">🔄 再练一次</button>
+      <button class="imm-exit" onclick="exitImmersive()">退出沉浸模式</button>
+    </div>
+  </div>
+
+  <!-- Footer nav (vocab mode only) -->
+  <div class="imm-nav" id="imm-nav">
+    <button class="imm-prev-btn" id="imm-prev-btn" onclick="immPrev()">← 上一个</button>
+    <div class="imm-counter" id="imm-counter">1 / 1</div>
+    <button class="imm-next-btn" id="imm-next-btn" onclick="immNext()">下一个 →</button>
+  </div>
+</div>
 </body>
 </html>
