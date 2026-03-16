@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>归一法 · 份数条形 + 倍比图推理</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f5f7fb;
+      color: #111827;
+    }
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(15, 35, 95, 0.08);
+      padding: 24px 28px;
+      display: flex;
+      gap: 24px;
+    }
+    .left, .right { flex: 1; }
+
+    h1 {
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+    h2 {
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+    .story {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      color: #4b5563;
+    }
+
+    /* 左侧：份数分组条形图 */
+    .diagram {
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 16px 18px;
+      border: 1px solid #e0e4ff;
+    }
+    .layer {
+      margin-bottom: 12px;
+    }
+    .layer-label {
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #666;
+    }
+    .blocks-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .groups-container {
+      display: flex;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 999px;
+      background: #e5e7ff;
+      min-height: 32px;
+      min-width: 120px;
+      align-items: center;
+    }
+    .group {
+      display: flex;
+      gap: 3px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      border: 1px dashed rgba(31,41,55,0.35);
+      background: rgba(255,255,255,0.7);
+      position: relative;
+    }
+    .group-label {
+      position: absolute;
+      top: -12px;
+      left: 4px;
+      font-size: 10px;
+      color: #4b5563;
+      background: #f8fafc;
+      border-radius: 999px;
+      padding: 0 4px;
+    }
+    .block {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      background: #4f46e5;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+      transition: transform 200ms ease, opacity 200ms ease;
+    }
+    .block.result {
+      background: #f97316;
+    }
+    .block.hidden {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    .value-tag {
+      min-width: 110px;
+      text-align: right;
+      font-size: 12px;
+      color: #444;
+    }
+
+    .translator {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #555;
+    }
+    .translator-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 2px solid #a78bfa;
+      background: #f3e8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #6b21a8;
+      transition: transform 300ms ease, box-shadow 300ms ease;
+    }
+    .translator.active .translator-circle {
+      transform: scale(1.08);
+      box-shadow: 0 0 0 4px rgba(167,139,250,0.25);
+    }
+
+    .bridge-hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .controls-left {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #4f46e5;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(79,70,229,0.25);
+      transition: background 160ms ease, transform 100ms ease, box-shadow 160ms ease;
+    }
+    button.secondary {
+      background: #e5e7eb;
+      color: #374151;
+      box-shadow: none;
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 8px rgba(79,70,229,0.2);
+    }
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .answer-block {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px dashed #d1d5db;
+      margin-top: 12px;
+    }
+    .answer-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    input[type="number"] {
+      width: 80px;
+      padding: 4px 6px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+    }
+    .feedback {
+      margin-top: 8px;
+      font-size: 13px;
+      min-height: 1.2em;
+    }
+    .feedback.ok { color: #16a34a; }
+    .feedback.no { color: #dc2626; }
+
+    .tip {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    /* 右侧：SVG 倍比图推理区 */
+    .ratio-wrapper {
+      position: relative;
+      margin-bottom: 8px;
+      padding: 12px 8px 8px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+    .ratio-svg {
+      width: 100%;
+      height: 240px;
+      display: block;
+    }
+
+    /* 时间/只数两列容器，圆圈相对它们绝对定位 */
+    .ratio-cols {
+      position: absolute;
+      inset: 12px 8px 8px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      pointer-events: none;
+    }
+    .ratio-col {
+      position: relative;
+      width: 45%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 1fr 1fr 1fr;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .time-box {
+      min-width: 90px;
+      min-height: 34px;
+      border-radius: 10px;
+      background: #dbeafe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #1d4ed8;
+      padding: 2px 6px;
+    }
+    .count-box {
+      min-width: 100px;
+      min-height: 34px;
+      border-radius: 10px;
+      background: #ffedd5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #c2410c;
+      padding: 2px 6px;
+      gap: 4px;
+    }
+
+    .ratio-circle {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 2px solid #c4b5fd;
+      background: #f5f3ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+    }
+    .ratio-circle.deep {
+      border-color: #7c3aed;
+      background: #ede9fe;
+    }
+
+    .r-input {
+      width: 40px;
+      border: none;
+      border-bottom: 1.5px solid #9ca3af;
+      background: transparent;
+      text-align: center;
+      font-size: 13px;
+      outline: none;
+      padding: 0 2px 2px;
+      pointer-events: auto;
+    }
+    .r-input::placeholder {
+      color: #d1d5db;
+    }
+    .r-input.correct {
+      border-bottom-color: #22c55e;
+      box-shadow: 0 2px 0 #bbf7d0;
+    }
+    .r-input.incorrect {
+      border-bottom-color: #f97373;
+      box-shadow: 0 2px 0 #fecaca;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- 左侧：份数分组互动 -->
+    <div class="left">
+      <h1>归一法 · 按份数看纸鹤</h1>
+      <div class="story">
+        题目：苗苗在折纸鹤。她在 <strong>2 分钟</strong> 内折了 <strong>6 只纸鹤</strong>。<br>
+        照这样计算：<br>
+        （1）<strong>1 分钟</strong>能折多少只纸鹤？<br>
+        （2）<strong>5 分钟</strong>能折多少只纸鹤？
+      </div>
+
+      <div class="diagram">
+        <!-- 时间份数 -->
+        <div class="layer">
+          <div class="layer-label">时间：每 1 分钟是一份时间块</div>
+          <div class="blocks-row">
+            <div id="timeGroups" class="groups-container"></div>
+            <div id="timeLabel" class="value-tag"></div>
+          </div>
+        </div>
+
+        <!-- 纸鹤份数 -->
+        <div class="layer">
+          <div class="layer-label">纸鹤：每一份里有几只纸鹤？</div>
+          <div class="blocks-row">
+            <div id="birdGroups" class="groups-container"></div>
+            <div id="birdLabel" class="value-tag"></div>
+          </div>
+        </div>
+
+        <div class="translator" id="translator">
+          <div class="translator-circle">1</div>
+          <span>小翻译官：<strong>1 份时间</strong> ↔ <strong>1 份纸鹤</strong></span>
+        </div>
+
+        <div class="bridge-hint" id="bridgeHint">
+          口令：<strong>“2 份 → 1 份 → 5 份，每一份里面长得一样多。”</strong>
+        </div>
+
+        <div class="controls-left">
+          <button id="btnToUnit">① 先变成 1 份</button>
+          <button id="btnToTarget" disabled>② 再变成 5 份</button>
+          <button id="btnReset" class="secondary">重来一次</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：倍比图推理 + 最终答案检查 -->
+    <div class="right">
+      <h2>倍比图推理区</h2>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:8px;">
+        左边蓝色方块是<strong>时间</strong>（分钟），右边橙色方块是<strong>纸鹤只数</strong>。<br>
+        中间的小圈圈填“×几”或“÷几”，再在橙色方块里填出 1 分钟和 5 分钟的纸鹤数量。
+      </div>
+
+      <div class="ratio-wrapper">
+        <!-- 背景 SVG：直线 + 箭头 （竖线稍微拉长）-->
+        <svg class="ratio-svg" viewBox="0 0 360 240">
+          <!-- 水平线：时间 ↔ 只数 -->
+          <line x1="100" y1="40" x2="260" y2="40" stroke="#111827" stroke-width="2" />
+          <line x1="100" y1="120" x2="260" y2="120" stroke="#111827" stroke-width="2" />
+          <line x1="100" y1="200" x2="260" y2="200" stroke="#111827" stroke-width="2" />
+
+          <!-- 左竖线：2 分钟 → 1 分钟 → 5 分钟 -->
+          <line x1="90" y1="30" x2="90" y2="210" stroke="#111827" stroke-width="2"
+                marker-end="url(#arrowDown)" />
+
+          <!-- 右竖线：6 只 → ? → ? -->
+          <line x1="270" y1="30" x2="270" y2="210" stroke="#111827" stroke-width="2"
+                marker-end="url(#arrowDown)" />
+
+          <defs>
+            <marker id="arrowDown" viewBox="0 0 10 10" refX="5" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 2 2 L 5 8 L 8 2" fill="#111827" />
+            </marker>
+          </defs>
+        </svg>
+
+        <!-- 前景：两列方块 + 圈圈（圈圈相对列容器绝对定位） -->
+        <div class="ratio-cols">
+          <!-- 左列：时间 -->
+          <div class="ratio-col">
+            <div class="time-box">2 分钟</div>
+            <div class="time-box">1 分钟</div>
+            <div class="time-box">5 分钟</div>
+
+            <!-- 2 分钟 → 1 分钟 的倍数圈：位于两行中间偏左，距右侧竖线约 8px -->
+            <div class="ratio-circle"
+                 style="top: calc(33.33% - 20px); left: 10px;">
+              <input id="opTimeTop" class="r-input" type="text" placeholder="" />
+            </div>
+            <!-- 1 分钟 → 5 分钟 -->
+            <div class="ratio-circle deep"
+                 style="top: calc(66.66% + 5px); left: 10px;">
+              <input id="opTimeBottom" class="r-input" type="text" placeholder="" />
+            </div>
+          </div>
+
+          <!-- 右列：只数 -->
+          <div class="ratio-col">
+            <div class="count-box">6 只</div>
+            <div class="count-box">
+              <input id="ratioOneMinute" class="r-input" type="number" placeholder="____" />
+              <span>只</span>
+            </div>
+            <div class="count-box">
+              <input id="ratioFiveMinute" class="r-input" type="number" placeholder="____" />
+              <span>只</span>
+            </div>
+
+            <!-- 6 只 → 1 分钟对应只数 -->
+            <div class="ratio-circle"
+                 style="top: calc(33.33% - 20px); right: 10px;">
+              <input id="opCountTop" class="r-input" type="text" placeholder="" />
+            </div>
+            <!-- 1 分钟只数 → 5 分钟只数 -->
+            <div class="ratio-circle deep"
+                 style="top: calc(66.66% + 5px); right: 10px;">
+              <input id="opCountBottom" class="r-input" type="text" placeholder="" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ratioFeedback" class="feedback"></div>
+
+      <div class="answer-block">
+        <div>最后，根据你的倍比图和左边的“小包包”，回答：</div>
+        <div class="answer-row">
+          <span>5 分钟一共能折</span>
+          <input id="inputAnswer" type="number" placeholder="?" />
+          <span>只纸鹤。</span>
+          <button id="btnCheck" class="secondary">检查最终答案</button>
+        </div>
+        <div id="feedback" class="feedback"></div>
+      </div>
+
+      <div class="tip">
+        教学顺序建议：<br>
+        1）先在倍比图里完成“2 分钟 6 只 → 1 分钟 3 只 → 5 分钟 15 只”；<br>
+        2）再回到左侧，用“5 份纸鹤小包”数一数，是不是也是 15 只。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 左侧：份数分组逻辑 =====
+    const scene = {
+      timeInitialParts: 2,   // 初始 2 份时间（2 分钟）
+      birdsPerPart: 3,       // 1 份时间里 3 只纸鹤
+      timeUnitParts: 1,      // 归一：1 份
+      timeTargetParts: 5,    // 目标：5 份
+      birdsTarget: 15        // 5 份 × 3 = 15
+    };
+
+    const timeGroupsEl   = document.getElementById('timeGroups');
+    const birdGroupsEl   = document.getElementById('birdGroups');
+    const timeLabel      = document.getElementById('timeLabel');
+    const birdLabel      = document.getElementById('birdLabel');
+    const translatorEl   = document.getElementById('translator');
+    const bridgeHint     = document.getElementById('bridgeHint');
+
+    const btnToUnit      = document.getElementById('btnToUnit');
+    const btnToTarget    = document.getElementById('btnToTarget');
+    const btnReset       = document.getElementById('btnReset');
+
+    const inputAnswer    = document.getElementById('inputAnswer');
+    const btnCheck       = document.getElementById('btnCheck');
+    const feedback       = document.getElementById('feedback');
+
+    let stage = 'initial'; // 'initial' | 'unit' | 'target'
+
+    function createGroup(partsIndex, blockCount, isResult) {
+      const group = document.createElement('div');
+      group.className = 'group';
+      const label = document.createElement('div');
+      label.className = 'group-label';
+      label.textContent = `${partsIndex + 1} 份`;
+      group.appendChild(label);
+
+      for (let i = 0; i < blockCount; i++) {
+        const b = document.createElement('div');
+        b.className = 'block' + (isResult ? ' result' : '');
+        group.appendChild(b);
+      }
+      return group;
+    }
+
+    function renderTimeParts(parts) {
+      timeGroupsEl.innerHTML = '';
+      for (let i = 0; i < parts; i++) {
+        const g = createGroup(i, 1, false);
+        timeGroupsEl.appendChild(g);
+      }
+      timeLabel.textContent = `${parts} 份时间（${parts} 分钟）`;
+    }
+
+    function renderBirdParts(parts) {
+      birdGroupsEl.innerHTML = '';
+      for (let i = 0; i < parts; i++) {
+        const g = createGroup(i, scene.birdsPerPart, true);
+        birdGroupsEl.appendChild(g);
+      }
+      const totalBirds = parts * scene.birdsPerPart;
+      birdLabel.textContent = `${parts} 份纸鹤（共 ${totalBirds} 只）`;
+    }
+
+    function resetLeft() {
+      stage = 'initial';
+      renderTimeParts(scene.timeInitialParts);
+      renderBirdParts(scene.timeInitialParts);
+      translatorEl.classList.remove('active');
+      bridgeHint.textContent = '口令：“2 份 → 1 份 → 5 份，每一份里面长得一样多。”';
+      btnToUnit.disabled = false;
+      btnToTarget.disabled = true;
+      inputAnswer.value = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+    }
+
+    btnToUnit.addEventListener('click', () => {
+      if (stage !== 'initial') return;
+      stage = 'unit';
+      renderTimeParts(scene.timeUnitParts);
+      renderBirdParts(scene.timeUnitParts);
+      translatorEl.classList.add('active');
+      bridgeHint.textContent = '现在是 1 份时间：看看这一份里有几只纸鹤？以后每一份都跟它一样。';
+      btnToUnit.disabled = true;
+      btnToTarget.disabled = false;
+    });
+
+    btnToTarget.addEventListener('click', () => {
+      if (stage !== 'unit') return;
+      stage = 'target';
+      renderTimeParts(scene.timeTargetParts);
+      renderBirdParts(scene.timeTargetParts);
+      translatorEl.classList.remove('active');
+      bridgeHint.textContent = '现在有 5 份时间，所以也有 5 份一样的纸鹤小包。数一数一共多少只？';
+      btnToTarget.disabled = true;
+    });
+
+    // ===== 右侧：倍比图自动判定逻辑 =====
+    const ratioOne = document.getElementById('ratioOneMinute');
+    const ratioFive = document.getElementById('ratioFiveMinute');
+    const opTimeTop = document.getElementById('opTimeTop');
+    const opTimeBottom = document.getElementById('opTimeBottom');
+    const opCountTop = document.getElementById('opCountTop');
+    const opCountBottom = document.getElementById('opCountBottom');
+    const ratioFeedback = document.getElementById('ratioFeedback');
+
+    const correctOne = 3;    // 1 分钟 3 只
+    const correctFive = 15;  // 5 分钟 15 只
+
+    // 倍数填空的推荐答案
+    const correctOpTimeTop = "÷2";     // 2 分钟 → 1 分钟
+    const correctOpCountTop = "÷2";    // 6 只 → 3 只
+    const correctOpTimeBottom = "×5";  // 1 分钟 → 5 分钟
+    const correctOpCountBottom = "×5"; // 3 只 → 15 只
+
+    function clearRatioInputs() {
+      [ratioOne, ratioFive, opTimeTop, opTimeBottom, opCountTop, opCountBottom].forEach(el => {
+        el.classList.remove('correct', 'incorrect');
+      });
+      ratioFeedback.textContent = '';
+      ratioFeedback.className = 'feedback';
+    }
+
+    function checkRatio() {
+      clearRatioInputs();
+
+      const v1 = Number(ratioOne.value);
+      const v2 = Number(ratioFive.value);
+      const ok1 = v1 === correctOne;
+      const ok2 = v2 === correctFive;
+
+      const t1 = opTimeTop.value.trim();
+      const t2 = opTimeBottom.value.trim();
+      const c1 = opCountTop.value.trim();
+      const c2 = opCountBottom.value.trim();
+
+      const okT1 = t1 === "" ? null : (t1 === correctOpTimeTop);
+      const okC1 = c1 === "" ? null : (c1 === correctOpCountTop);
+      const okT2 = t2 === "" ? null : (t2 === correctOpTimeBottom);
+      const okC2 = c2 === "" ? null : (c2 === correctOpCountBottom);
+
+      if (ratioOne.value !== "") ratioOne.classList.add(ok1 ? "correct" : "incorrect");
+      if (ratioFive.value !== "") ratioFive.classList.add(ok2 ? "correct" : "incorrect");
+
+      if (okT1 !== null) opTimeTop.classList.add(okT1 ? "correct" : "incorrect");
+      if (okC1 !== null) opCountTop.classList.add(okC1 ? "correct" : "incorrect");
+      if (okT2 !== null) opTimeBottom.classList.add(okT2 ? "correct" : "incorrect");
+      if (okC2 !== null) opCountBottom.classList.add(okC2 ? "correct" : "incorrect");
+
+      if (ok1 && ok2 && okT1 && okC1 && okT2 && okC2) {
+        ratioFeedback.textContent = '很好！你已经走通了：“2 分钟 6 只 → 1 分钟 3 只 → 5 分钟 15 只”。';
+        ratioFeedback.classList.add("ok");
+      } else if (ratioOne.value !== "" || ratioFive.value !== "" || t1 || t2 || c1 || c2) {
+        ratioFeedback.textContent = '可以先想：左边分钟是如何变的，再让右边只数跟着变同样的倍数。';
+        ratioFeedback.classList.add("no");
+      }
+    }
+
+    ratioOne.addEventListener("input", checkRatio);
+    ratioFive.addEventListener("input", checkRatio);
+    opTimeTop.addEventListener("input", checkRatio);
+    opTimeBottom.addEventListener("input", checkRatio);
+    opCountTop.addEventListener("input", checkRatio);
+    opCountBottom.addEventListener("input", checkRatio);
+
+    btnReset.addEventListener('click', () => {
+      resetLeft();
+      ratioOne.value = '';
+      ratioFive.value = '';
+      opTimeTop.value = '';
+      opTimeBottom.value = '';
+      opCountTop.value = '';
+      opCountBottom.value = '';
+      clearRatioInputs();
+    });
+
+    btnCheck.addEventListener('click', () => {
+      const value = Number(inputAnswer.value);
+      if (!value && value !== 0) return;
+      if (value === scene.birdsTarget) {
+        feedback.textContent = '太好了！你数出了 5 分钟一共 15 只纸鹤。';
+        feedback.className = 'feedback ok';
+      } else {
+        feedback.textContent = '可以用“5 份 × 每份 3 只”再想一想，或回到上面的倍比图检查。';
+        feedback.className = 'feedback no';
+      }
+    });
+
+    // 初始化
+    resetLeft();
+  </script>
+</body>
+</html>
