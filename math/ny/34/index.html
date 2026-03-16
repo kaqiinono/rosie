@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>买苹果学乘法 · 乘法分配律</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow-x:hidden}
+    body{
+      font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+      background:linear-gradient(170deg,#e0f2fe 0%,#fef9c3 35%,#fce7f3 70%,#e0f2fe 100%);
+      background-size:400% 400%;
+      animation:bgShift 20s ease infinite;
+      color:#1e293b;
+    }
+    @keyframes bgShift{
+      0%,100%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+    }
+
+    .app{
+      max-width:960px;margin:0 auto;padding:16px 14px 40px;
+      min-height:100vh;display:flex;flex-direction:column;gap:14px;
+    }
+
+    /* ── 标题 ── */
+    .hero{
+      text-align:center;padding:14px 12px 10px;
+      background:rgba(255,255,255,.85);border-radius:20px;
+      box-shadow:0 8px 32px rgba(0,0,0,.08);
+      border:2px solid rgba(255,255,255,.6);
+    }
+    .hero h1{font-size:24px;color:#dc2626;margin-bottom:4px}
+    .hero p{font-size:13px;color:#64748b}
+
+    /* ── 模式切换 ── */
+    .mode-bar{
+      display:flex;justify-content:center;gap:8px;
+    }
+    .mode-btn{
+      border:none;cursor:pointer;border-radius:14px;
+      padding:10px 22px;font-size:15px;font-weight:700;
+      transition:all .25s ease;
+      box-shadow:0 3px 10px rgba(0,0,0,.08);
+    }
+    .mode-btn.active-merge{
+      background:linear-gradient(135deg,#f97316,#ef4444);color:#fff;
+      box-shadow:0 4px 16px rgba(239,68,68,.3);
+    }
+    .mode-btn.active-split{
+      background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;
+      box-shadow:0 4px 16px rgba(99,102,241,.3);
+    }
+    .mode-btn.inactive{
+      background:#fff;color:#64748b;border:2px solid #e2e8f0;
+    }
+    .mode-btn.inactive:hover{border-color:#94a3b8;color:#334155}
+
+    /* ── 故事对话框 ── */
+    .story-box{
+      background:rgba(255,255,255,.92);border-radius:16px;
+      padding:14px 18px;box-shadow:0 4px 20px rgba(0,0,0,.06);
+      border:2px solid #fbbf24;
+      min-height:60px;display:flex;align-items:center;gap:12px;
+    }
+    .story-avatar{
+      width:48px;height:48px;border-radius:50%;
+      background:linear-gradient(135deg,#fbbf24,#f97316);
+      display:flex;align-items:center;justify-content:center;
+      font-size:26px;flex-shrink:0;
+      box-shadow:0 4px 12px rgba(251,191,36,.4);
+    }
+    .story-text{font-size:16px;line-height:1.65;flex:1}
+    .story-text strong{color:#dc2626}
+    .story-text .price{
+      display:inline-block;background:#fef3c7;border:1px solid #fbbf24;
+      border-radius:8px;padding:1px 7px;font-weight:700;color:#92400e;
+    }
+
+    /* ── 舞台 ── */
+    .stage{
+      background:rgba(255,255,255,.88);border-radius:20px;
+      padding:16px;box-shadow:0 6px 28px rgba(0,0,0,.07);
+      border:2px solid rgba(255,255,255,.5);
+      position:relative;
+    }
+    .stage-label{
+      font-size:12px;color:#94a3b8;text-align:center;margin-bottom:6px;
+      font-weight:600;letter-spacing:1px;
+    }
+
+    /* 对比区：上下两层 */
+    .compare-wrapper{
+      display:flex;flex-direction:column;gap:12px;
+    }
+
+    /* 分开区 */
+    .split-zone{
+      display:flex;justify-content:center;gap:24px;
+      flex-wrap:wrap;padding:10px 8px;
+      border-radius:16px;
+      background:rgba(219,234,254,.3);
+      border:2px solid rgba(147,197,253,.4);
+      transition:all .6s ease;
+      position:relative;
+    }
+    .split-zone.dimmed{opacity:.55;transform:scale(.92)}
+    .split-zone.highlighted{opacity:1;transform:scale(1);border-color:#3b82f6;background:rgba(219,234,254,.5)}
+    .split-zone-tag{
+      position:absolute;top:-10px;left:16px;
+      font-size:11px;font-weight:700;color:#3b82f6;
+      background:#dbeafe;border-radius:8px;padding:1px 10px;
+      border:1px solid #93c5fd;
+    }
+
+    .shelf-group{
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+      transition:all .6s ease;
+    }
+    .shelf-group.hide{opacity:0;transform:scale(.5);pointer-events:none;max-height:0;overflow:hidden}
+    .shelf-group.show{opacity:1;transform:scale(1);max-height:300px}
+    .shelf-title{
+      font-size:14px;font-weight:700;color:#475569;
+      background:#f1f5f9;border-radius:10px;padding:2px 10px;
+    }
+    .shelf-title .hl{color:#dc2626}
+
+    .bags-row{
+      display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+      max-width:280px;
+    }
+
+    /* 合并区 */
+    .merge-zone{
+      display:flex;flex-direction:column;align-items:center;gap:8px;
+      padding:10px 8px;border-radius:16px;
+      background:rgba(254,243,199,.3);
+      border:2px solid rgba(251,191,36,.4);
+      transition:all .6s ease;position:relative;
+    }
+    .merge-zone.dimmed{opacity:.55;transform:scale(.92)}
+    .merge-zone.highlighted{opacity:1;transform:scale(1);border-color:#f59e0b;background:rgba(254,243,199,.5)}
+    .merge-zone.collapsed{max-height:0;padding:0;margin:0;opacity:0;border:none;overflow:hidden}
+    .merge-zone-tag{
+      position:absolute;top:-10px;left:16px;
+      font-size:11px;font-weight:700;color:#92400e;
+      background:#fef3c7;border-radius:8px;padding:1px 10px;
+      border:1px solid #fbbf24;
+    }
+    .merged-label{
+      font-size:15px;font-weight:700;color:#92400e;
+      background:#fef3c7;border-radius:12px;padding:3px 14px;
+      border:2px solid #fbbf24;
+    }
+    .merged-shelf{
+      display:flex;gap:5px;flex-wrap:wrap;justify-content:center;
+      max-width:540px;
+    }
+
+    /* 连接箭头 */
+    .arrow-row{
+      display:flex;justify-content:center;align-items:center;gap:8px;
+      color:#94a3b8;font-size:20px;font-weight:700;
+      transition:all .4s ease;
+    }
+    .arrow-row.hide{opacity:0;height:0;overflow:hidden}
+    .arrow-row .arrow-text{font-size:12px;color:#64748b;font-weight:600}
+
+    /* 苹果袋 */
+    .apple-bag{
+      width:46px;display:flex;flex-direction:column;align-items:center;
+      gap:1px;cursor:default;position:relative;
+      transition:all .6s cubic-bezier(.34,1.56,.64,1);
+    }
+    .apple-bag:hover{transform:scale(1.1) rotate(-2deg)}
+    .bag-icon{
+      width:42px;height:46px;
+      background:linear-gradient(160deg,#fde68a,#f59e0b);
+      border-radius:7px 7px 12px 12px;
+      border:2.5px solid #d97706;
+      position:relative;display:flex;align-items:center;justify-content:center;
+      box-shadow:0 3px 8px rgba(217,119,6,.2);
+    }
+    .bag-icon::before{
+      content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+      width:24px;height:10px;background:#f59e0b;
+      border-radius:5px 5px 0 0;border:2.5px solid #d97706;border-bottom:none;
+    }
+    .bag-icon::after{content:"🍎";font-size:18px}
+    .bag-price{
+      font-size:10px;font-weight:700;color:#92400e;
+      background:#fef3c7;border:1px solid #fbbf24;
+      border-radius:5px;padding:0 4px;white-space:nowrap;
+    }
+    .bag-icon.blue{
+      background:linear-gradient(160deg,#bfdbfe,#3b82f6);
+      border-color:#1d4ed8;
+    }
+    .bag-icon.blue::before{background:#3b82f6;border-color:#1d4ed8}
+    .bag-icon.pink{
+      background:linear-gradient(160deg,#fce7f3,#ec4899);
+      border-color:#be185d;
+    }
+    .bag-icon.pink::before{background:#ec4899;border-color:#be185d}
+
+    /* 飞入 */
+    .apple-bag.fly-in{animation:flyIn .45s cubic-bezier(.34,1.56,.64,1) both}
+    @keyframes flyIn{
+      from{opacity:0;transform:scale(0) translateY(-30px) rotate(15deg)}
+      to{opacity:1;transform:scale(1) translateY(0) rotate(0)}
+    }
+    /* 向下合并 */
+    .apple-bag.merge-down{animation:mergeDown .7s ease forwards}
+    @keyframes mergeDown{
+      to{transform:translateY(40px) scale(.5);opacity:0}
+    }
+    /* 向上拆分 */
+    .apple-bag.split-up{animation:splitUp .7s ease forwards}
+    @keyframes splitUp{
+      to{transform:translateY(-40px) scale(.5);opacity:0}
+    }
+
+    /* ── 数学公式 ── */
+    .math-area{
+      background:rgba(255,255,255,.92);border-radius:16px;
+      padding:14px 16px;box-shadow:0 4px 20px rgba(0,0,0,.06);
+      border:2px solid #c4b5fd;text-align:center;
+    }
+    .math-row{
+      display:flex;align-items:center;justify-content:center;
+      flex-wrap:wrap;gap:5px;margin:4px 0;font-size:18px;font-weight:700;
+      transition:all .5s ease;
+    }
+    .math-row.hide{opacity:0;transform:translateY(8px);height:0;margin:0;overflow:hidden}
+    .math-row.show{opacity:1;transform:translateY(0);height:auto}
+    .m-chip{
+      display:inline-flex;align-items:center;gap:3px;
+      padding:3px 10px;border-radius:10px;transition:all .4s ease;
+    }
+    .m-left{background:#dbeafe;color:#1e40af;border:2px solid #93c5fd}
+    .m-right{background:#fce7f3;color:#9d174d;border:2px solid #f9a8d4}
+    .m-op{color:#64748b;font-size:20px;background:none;padding:0 2px}
+    .m-eq{color:#059669;font-size:22px;background:none;padding:0 3px}
+    .m-merged{background:#d1fae5;color:#065f46;border:2px solid #6ee7b7}
+    .m-result{
+      background:linear-gradient(135deg,#fbbf24,#f97316);
+      color:#fff;border:none;
+      box-shadow:0 3px 12px rgba(249,115,22,.3);
+    }
+    .m-chip.pulse{animation:chipPulse .5s ease}
+    @keyframes chipPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+    .calc-detail{
+      display:flex;align-items:center;justify-content:center;
+      gap:6px;flex-wrap:wrap;margin:3px 0;font-size:14px;color:#64748b;
+      transition:all .5s ease;
+    }
+    .calc-detail.hide{opacity:0;height:0;margin:0;overflow:hidden}
+    .calc-detail.show{opacity:1;height:auto}
+    .calc-detail strong{color:#1e293b}
+
+    /* ── 控制栏 ── */
+    .controls{
+      display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    .btn{
+      border:none;cursor:pointer;border-radius:14px;
+      padding:10px 20px;font-size:15px;font-weight:700;
+      display:inline-flex;align-items:center;gap:6px;
+      transition:all .2s ease;box-shadow:0 4px 14px rgba(0,0,0,.1);
+    }
+    .btn:active{transform:scale(.96);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+    .btn-next{
+      background:linear-gradient(135deg,#f97316,#ef4444);color:#fff;
+      font-size:17px;padding:12px 28px;
+    }
+    .btn-next.split-mode{background:linear-gradient(135deg,#8b5cf6,#6366f1)}
+    .btn-next:hover{filter:brightness(1.05)}
+    .btn-next[disabled]{opacity:.4;cursor:default;transform:none;filter:none}
+    .btn-secondary{background:#fff;color:#64748b;border:2px solid #e2e8f0}
+    .btn-secondary:hover{border-color:#94a3b8;color:#334155}
+    .btn-random{
+      background:linear-gradient(135deg,#10b981,#059669);color:#fff;
+    }
+    .btn-random:hover{filter:brightness(1.05)}
+    .step-dots{display:flex;gap:5px;align-items:center}
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:#e2e8f0;transition:all .3s ease;
+    }
+    .dot.active{background:#f97316;transform:scale(1.2)}
+    .dot.done{background:#10b981}
+    .dot.active.split-mode{background:#8b5cf6}
+
+    /* ── 总结卡片 ── */
+    .summary-card{
+      background:linear-gradient(135deg,#fef3c7,#fce7f3,#dbeafe);
+      border-radius:16px;padding:16px;text-align:center;
+      border:2px solid #fbbf24;
+      box-shadow:0 8px 32px rgba(251,191,36,.2);
+      transition:all .6s ease;
+    }
+    .summary-card.hide{opacity:0;transform:translateY(15px);max-height:0;padding:0;margin:0;overflow:hidden;border:none}
+    .summary-card.show{opacity:1;transform:translateY(0);max-height:400px}
+    .summary-card h3{font-size:18px;color:#dc2626;margin-bottom:6px}
+    .summary-card .formula{
+      font-size:20px;font-weight:700;color:#1e293b;
+      background:rgba(255,255,255,.7);border-radius:12px;
+      padding:8px 14px;margin:6px auto;display:inline-block;
+    }
+    .summary-card .insight{font-size:14px;color:#475569;margin-top:6px;line-height:1.6}
+
+    /* ── 庆祝 ── */
+    .confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+    .confetti{
+      position:absolute;width:10px;height:10px;border-radius:2px;
+      animation:confettiFall 3s ease-out forwards;
+    }
+    @keyframes confettiFall{
+      0%{transform:translateY(-10vh) rotate(0deg);opacity:1}
+      100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+    }
+
+    /* ── 等号连接线 ── */
+    .eq-bridge{
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      padding:2px 0;transition:all .5s ease;
+    }
+    .eq-bridge.hide{opacity:0;height:0;overflow:hidden}
+    .eq-bridge .eq-sym{
+      font-size:20px;font-weight:900;color:#059669;
+      background:#d1fae5;border-radius:50%;width:30px;height:30px;
+      display:flex;align-items:center;justify-content:center;
+      border:2px solid #6ee7b7;
+    }
+    .eq-bridge .eq-label{font-size:12px;color:#059669;font-weight:600}
+
+    @media(max-width:600px){
+      .hero h1{font-size:20px}
+      .apple-bag{width:38px}
+      .bag-icon{width:34px;height:38px}
+      .bag-icon::after{font-size:15px}
+      .bag-price{font-size:9px}
+      .shelf-group{gap:4px}
+      .bags-row{gap:4px;max-width:220px}
+      .math-row{font-size:15px}
+      .m-chip{padding:2px 7px;font-size:13px!important}
+      .split-zone{gap:14px;padding:8px 4px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <h1>买苹果学数学</h1>
+    <p>合在一起算 和 分开算，结果一样多！</p>
+  </div>
+
+  <div class="mode-bar">
+    <button class="mode-btn active-merge" id="btnModeMerge" onclick="switchMode('merge')">
+      合并：两袋 → 一袋
+    </button>
+    <button class="mode-btn inactive" id="btnModeSplit" onclick="switchMode('split')">
+      拆分：一袋 → 两袋
+    </button>
+  </div>
+
+  <div class="story-box">
+    <div class="story-avatar" id="avatar">🧒</div>
+    <div class="story-text" id="storyText">准备好了吗？</div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-label" id="stageLabel">水果店</div>
+    <div class="compare-wrapper">
+      <div class="split-zone highlighted" id="splitZone">
+        <div class="split-zone-tag" id="splitZoneTag">分开看</div>
+        <div class="shelf-group show" id="groupLeft">
+          <div class="shelf-title" id="titleLeft">妈妈买的：<span class="hl" id="leftCountText">4</span> 袋</div>
+          <div class="bags-row" id="bagsLeft"></div>
+        </div>
+        <div class="shelf-group hide" id="groupRight">
+          <div class="shelf-title" id="titleRight">爸爸买的：<span class="hl" id="rightCountText">9</span> 袋</div>
+          <div class="bags-row" id="bagsRight"></div>
+        </div>
+      </div>
+
+      <div class="arrow-row hide" id="arrowRow">
+        <span id="arrowIcon">⬇️</span>
+        <span class="arrow-text" id="arrowText">合在一起</span>
+        <span id="arrowIcon2">⬇️</span>
+      </div>
+
+      <div class="merge-zone collapsed" id="mergeZone">
+        <div class="merge-zone-tag" id="mergeZoneTag">合在一起看</div>
+        <div class="merged-label" id="mergedLabel">全部放一起：<span id="mergedCountText">13</span> 袋</div>
+        <div class="merged-shelf" id="mergedShelf"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="math-area" id="mathArea">
+    <div class="math-row hide" id="mathRow1"></div>
+    <div class="calc-detail hide" id="calcDetail1"></div>
+    <div class="eq-bridge hide" id="eqBridge">
+      <span class="eq-sym">=</span>
+      <span class="eq-label">钱一样多！</span>
+      <span class="eq-sym">=</span>
+    </div>
+    <div class="math-row hide" id="mathRow2"></div>
+    <div class="calc-detail hide" id="calcDetail2"></div>
+  </div>
+
+  <div class="summary-card hide" id="summaryCard">
+    <h3 id="summaryTitle">我发现了一个秘密！</h3>
+    <div class="formula" id="summaryFormula"></div>
+    <div class="insight" id="summaryInsight"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-secondary" id="btnReset" onclick="resetAll()">↺ 重来</button>
+    <button class="btn btn-random" id="btnRandom" onclick="randomProblem()">🎲 换一题</button>
+    <div class="step-dots" id="stepDots"></div>
+    <button class="btn btn-next" id="btnNext">开始吧 ▶</button>
+  </div>
+</div>
+
+<div class="confetti-container" id="confettiBox"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  let mode = 'merge';
+  let step = 0;
+  let A = 4, B = 9, P = 25;
+
+  const FRUIT_ITEMS = [
+    { emoji: '🍎', name: '苹果' },
+    { emoji: '🍊', name: '橘子' },
+    { emoji: '🍇', name: '葡萄' },
+    { emoji: '🍓', name: '草莓' },
+    { emoji: '🍑', name: '桃子' },
+    { emoji: '🥝', name: '猕猴桃' },
+  ];
+  let fruit = FRUIT_ITEMS[0];
+
+  function createBag(parent, delay, colorClass, price) {
+    const bag = document.createElement('div');
+    bag.className = 'apple-bag fly-in';
+    bag.style.animationDelay = delay + 'ms';
+    const icon = document.createElement('div');
+    icon.className = 'bag-icon' + (colorClass ? ' ' + colorClass : '');
+    icon.style.setProperty('--fruit', `"${fruit.emoji}"`);
+    const pr = document.createElement('div');
+    pr.className = 'bag-price';
+    pr.textContent = price + '元';
+    bag.appendChild(icon);
+    bag.appendChild(pr);
+    parent.appendChild(bag);
+    return bag;
+  }
+
+  function showEl(id) { const e = $(id); e.classList.remove('hide','collapsed'); e.classList.add('show'); }
+  function hideEl(id) { const e = $(id); e.classList.add('hide'); e.classList.remove('show'); }
+  function collapseEl(id) { const e = $(id); e.classList.add('collapsed'); e.classList.remove('show','highlighted','dimmed'); }
+
+  function showMath(id) {
+    const el = $(id); el.classList.remove('hide'); el.classList.add('show');
+    el.querySelectorAll('.m-chip').forEach((c, i) => {
+      setTimeout(() => c.classList.add('pulse'), i * 180);
+      setTimeout(() => c.classList.remove('pulse'), i * 180 + 500);
+    });
+  }
+  function hideMath(id) { $(id).classList.add('hide'); $(id).classList.remove('show'); }
+
+  function initDots(count) {
+    const dots = $('stepDots');
+    dots.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      dots.appendChild(d);
+    }
+  }
+  function updateDots(current, total) {
+    const dots = $('stepDots').querySelectorAll('.dot');
+    dots.forEach((d, i) => {
+      d.className = 'dot';
+      if (mode === 'split') d.classList.add('split-mode');
+      if (i < current) d.classList.add('done');
+      else if (i === current) d.classList.add('active');
+    });
+  }
+
+  function setStory(html) { $('storyText').innerHTML = html; }
+  function setBtn(text, disabled) {
+    const b = $('btnNext');
+    b.textContent = text;
+    b.disabled = !!disabled;
+    b.classList.toggle('split-mode', mode === 'split');
+  }
+
+  function launchConfetti() {
+    const colors = ['#f97316','#ef4444','#eab308','#22c55e','#3b82f6','#a855f7','#ec4899'];
+    const box = $('confettiBox');
+    for (let i = 0; i < 50; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 1.5 + 's';
+      c.style.animationDuration = (2 + Math.random() * 2) + 's';
+      const sz = 6 + Math.random() * 8;
+      c.style.width = sz + 'px'; c.style.height = sz + 'px';
+      box.appendChild(c);
+    }
+    setTimeout(() => box.innerHTML = '', 5000);
+  }
+
+  function updateFruitEmoji() {
+    const style = document.querySelector('style');
+    const bags = document.querySelectorAll('.bag-icon');
+    bags.forEach(b => { b.style.setProperty('--fruit', `"${fruit.emoji}"`); });
+  }
+
+  /* ═══════════════════════════════════════════
+     MERGE MODE: a×p + b×p → (a+b)×p
+     ═══════════════════════════════════════════ */
+  const MERGE_STEPS = () => [
+    {
+      story: `去${fruit.name}店啦！${fruit.emoji} 一袋 <span class="price">${P} 元</span>，我们去看看吧！`,
+      btn: '开始 ▶',
+      action() {
+        $('bagsLeft').innerHTML = '';
+        $('bagsRight').innerHTML = '';
+        $('mergedShelf').innerHTML = '';
+        showEl('groupLeft'); hideEl('groupRight');
+        collapseEl('mergeZone'); hideEl('arrowRow');
+        $('splitZone').classList.add('highlighted');
+        $('splitZone').classList.remove('dimmed');
+        hideMath('mathRow1'); hideMath('calcDetail1');
+        hideMath('eqBridge'); hideMath('mathRow2'); hideMath('calcDetail2');
+        $('summaryCard').classList.add('hide'); $('summaryCard').classList.remove('show');
+        $('stageLabel').textContent = `${fruit.emoji} ${fruit.name}店`;
+        $('leftCountText').textContent = A;
+        $('rightCountText').textContent = B;
+        $('titleLeft').innerHTML = `妈妈买的：<span class="hl">${A}</span> 袋`;
+        $('titleRight').innerHTML = `爸爸买的：<span class="hl">${B}</span> 袋`;
+      }
+    },
+    {
+      story: `妈妈先来了，她买了 <strong>${A} 袋</strong>${fruit.name}！每袋 <span class="price">${P} 元</span>。`,
+      btn: '下一步 ▶',
+      action() {
+        $('bagsLeft').innerHTML = '';
+        for (let i = 0; i < A; i++) createBag($('bagsLeft'), i * 130, 'blue', P);
+        showEl('groupLeft');
+        $('stageLabel').textContent = '妈妈来买啦！';
+      }
+    },
+    {
+      story: `爸爸也来了！他买了 <strong>${B} 袋</strong>${fruit.name}！<br>现在妈妈 ${A} 袋，爸爸 ${B} 袋，<strong>分开放着</strong>。`,
+      btn: '下一步 ▶',
+      action() {
+        $('bagsRight').innerHTML = '';
+        for (let i = 0; i < B; i++) createBag($('bagsRight'), i * 100, 'pink', P);
+        showEl('groupRight');
+        $('stageLabel').textContent = '爸爸也来买啦！';
+      }
+    },
+    {
+      story: `<strong>分开算</strong>要多少钱？<br>妈妈：<strong>${A} × ${P} = ${A*P} 元</strong><br>爸爸：<strong>${B} × ${P} = ${B*P} 元</strong><br>一共：<strong>${A*P} + ${B*P} = ${(A+B)*P} 元</strong>`,
+      btn: '下一步 ▶',
+      action() {
+        $('mathRow1').innerHTML = `
+        <span class="m-chip m-left">${A} × ${P}</span>
+        <span class="m-chip m-op">+</span>
+        <span class="m-chip m-right">${B} × ${P}</span>`;
+        $('calcDetail1').innerHTML = `
+        <span>= <strong>${A*P}元</strong></span><span>+</span>
+        <span><strong>${B*P}元</strong></span><span>=</span>
+        <span><strong>${(A+B)*P}元</strong></span>`;
+        showMath('mathRow1');
+        setTimeout(() => showMath('calcDetail1'), 600);
+        $('stageLabel').textContent = '分开算钱';
+        $('splitZone').classList.add('highlighted');
+      }
+    },
+    {
+      story: `反正每袋价钱一样，把<strong>所有袋子合到一起</strong>数一数，行不行呢？`,
+      btn: '合在一起！ ▶',
+      action() {
+        $('stageLabel').textContent = '想一想……';
+      }
+    },
+    {
+      story: `看！妈妈的 <strong>${A} 袋</strong> 和爸爸的 <strong>${B} 袋</strong> 放到一起了！<br>数一数：<strong>${A} + ${B} = ${A+B} 袋</strong>！<br><br>上面还保留着分开的样子，可以对比看哦！`,
+      btn: '下一步 ▶',
+      action() {
+        $('stageLabel').textContent = '合在一起！对比看！';
+        $('splitZone').classList.remove('highlighted');
+        $('splitZone').classList.add('dimmed');
+
+        showEl('arrowRow');
+        $('arrowIcon').textContent = '⬇️';
+        $('arrowIcon2').textContent = '⬇️';
+        $('arrowText').textContent = '合在一起';
+
+        $('mergeZone').classList.remove('collapsed');
+        $('mergeZone').classList.add('highlighted');
+        $('mergedLabel').innerHTML = `全部放一起：<span style="color:#dc2626;font-size:18px">${A+B}</span> 袋`;
+        $('mergedShelf').innerHTML = '';
+        for (let i = 0; i < A + B; i++) {
+          const cls = i < A ? 'blue' : 'pink';
+          createBag($('mergedShelf'), i * 70, cls, P);
+        }
+
+        $('mathRow2').innerHTML = `
+        <span class="m-chip m-merged">( ${A} + ${B} )</span>
+        <span class="m-chip m-op">×</span>
+        <span class="m-chip m-merged">${P}</span>`;
+        showMath('eqBridge');
+        setTimeout(() => showMath('mathRow2'), 500);
+      }
+    },
+    {
+      story: `<strong>${A+B} 袋</strong>${fruit.name}，每袋 <span class="price">${P} 元</span>：<br><strong>${A+B} × ${P} = ${(A+B)*P} 元</strong><br><br>和分开算的 <strong>${(A+B)*P} 元</strong> 一模一样！`,
+      btn: '看总结 ▶',
+      action() {
+        $('stageLabel').textContent = '合起来算钱！';
+        $('mergeZone').classList.add('highlighted');
+        $('calcDetail2').innerHTML = `<span>= <strong>${A+B} × ${P}</strong></span><span>=</span><span><strong>${(A+B)*P}元</strong></span>`;
+        showMath('calcDetail2');
+      }
+    },
+    {
+      story: `太棒了！你发现了 <strong>"乘法分配律"</strong>！<br><strong>分开算再加</strong> 和 <strong>合起来一起算</strong>，结果一样！`,
+      btn: '🎉 完成！',
+      action() {
+        const card = $('summaryCard');
+        $('summaryTitle').textContent = `${fruit.emoji} 我发现了一个秘密！`;
+        $('summaryFormula').textContent = `${A}×${P} + ${B}×${P} = (${A}+${B})×${P} = ${A+B}×${P} = ${(A+B)*P}`;
+        $('summaryInsight').innerHTML = `不管是<strong>分开算</strong>还是<strong>合起来算</strong>，花的钱都是 <strong>${(A+B)*P} 元</strong>！<br>因为每袋价钱相同，把袋数加起来再乘价钱，和分开各算再加起来，结果相同！`;
+        card.classList.remove('hide'); card.classList.add('show');
+        $('stageLabel').textContent = '🎉 恭喜你发现了秘密！';
+        setBtn('🎉 完成！', true);
+        launchConfetti();
+      }
+    }
+  ];
+
+  /* ═══════════════════════════════════════════
+     SPLIT MODE: (a+b)×p → a×p + b×p
+     ═══════════════════════════════════════════ */
+  const SPLIT_STEPS = () => [
+    {
+      story: `这次反过来！我们有 <strong>${A+B} 袋</strong>${fruit.name}，每袋 <span class="price">${P} 元</span>。试试拆成两份来算？`,
+      btn: '开始 ▶',
+      action() {
+        $('bagsLeft').innerHTML = '';
+        $('bagsRight').innerHTML = '';
+        $('mergedShelf').innerHTML = '';
+        hideEl('groupLeft'); hideEl('groupRight');
+        collapseEl('splitZone');
+        $('mergeZone').classList.remove('collapsed');
+        $('mergeZone').classList.add('highlighted');
+        hideEl('arrowRow');
+        hideMath('mathRow1'); hideMath('calcDetail1');
+        hideMath('eqBridge'); hideMath('mathRow2'); hideMath('calcDetail2');
+        $('summaryCard').classList.add('hide'); $('summaryCard').classList.remove('show');
+        $('stageLabel').textContent = `${fruit.emoji} 一大堆${fruit.name}`;
+        $('mergedLabel').innerHTML = `一共有：<span style="color:#dc2626;font-size:18px">${A+B}</span> 袋`;
+        $('mergeZoneTag').textContent = '合在一起';
+        $('splitZoneTag').textContent = '拆成两份';
+        $('leftCountText').textContent = A;
+        $('rightCountText').textContent = B;
+      }
+    },
+    {
+      story: `看！这里有 <strong>${A+B} 袋</strong>${fruit.name}，每袋 <span class="price">${P} 元</span>。先算总价吧！`,
+      btn: '下一步 ▶',
+      action() {
+        $('mergedShelf').innerHTML = '';
+        for (let i = 0; i < A + B; i++) createBag($('mergedShelf'), i * 70, '', P);
+        $('stageLabel').textContent = `${A+B} 袋${fruit.name}`;
+      }
+    },
+    {
+      story: `合在一起算：<strong>${A+B} × ${P} = ${(A+B)*P} 元</strong>`,
+      btn: '下一步 ▶',
+      action() {
+        $('mathRow2').innerHTML = `
+        <span class="m-chip m-merged">( ${A} + ${B} )</span>
+        <span class="m-chip m-op">×</span>
+        <span class="m-chip m-merged">${P}</span>`;
+        $('calcDetail2').innerHTML = `<span>= <strong>${A+B} × ${P}</strong></span><span>=</span><span><strong>${(A+B)*P}元</strong></span>`;
+        showMath('mathRow2');
+        setTimeout(() => showMath('calcDetail2'), 500);
+        $('stageLabel').textContent = '先算总价';
+      }
+    },
+    {
+      story: `如果我把它拆成两份呢？<br>拿出 <strong>${A} 袋</strong>给妈妈，剩下 <strong>${B} 袋</strong>给爸爸。`,
+      btn: `拆开！ ▶`,
+      action() {
+        $('stageLabel').textContent = '想一想……拆成两份？';
+      }
+    },
+    {
+      story: `拆好了！妈妈拿到 <strong>${A} 袋</strong>，爸爸拿到 <strong>${B} 袋</strong>。<br>下面还保留着合在一起的样子，可以对比看！`,
+      btn: '下一步 ▶',
+      action() {
+        $('stageLabel').textContent = '拆成两份！对比看！';
+
+        showEl('arrowRow');
+        $('arrowIcon').textContent = '⬆️';
+        $('arrowIcon2').textContent = '⬆️';
+        $('arrowText').textContent = '拆成两份';
+
+        $('splitZone').classList.remove('collapsed');
+        $('splitZone').classList.add('highlighted');
+
+        $('titleLeft').innerHTML = `妈妈的：<span class="hl">${A}</span> 袋`;
+        $('titleRight').innerHTML = `爸爸的：<span class="hl">${B}</span> 袋`;
+
+        setTimeout(() => {
+          $('bagsLeft').innerHTML = '';
+          $('bagsRight').innerHTML = '';
+          for (let i = 0; i < A; i++) createBag($('bagsLeft'), i * 100, 'blue', P);
+          for (let i = 0; i < B; i++) createBag($('bagsRight'), i * 100, 'pink', P);
+          showEl('groupLeft'); showEl('groupRight');
+        }, 300);
+
+        setTimeout(() => {
+          $('mergeZone').classList.remove('highlighted');
+          $('mergeZone').classList.add('dimmed');
+          $('mergedShelf').innerHTML = '';
+          for (let i = 0; i < A + B; i++) {
+            const cls = i < A ? 'blue' : 'pink';
+            const bag = document.createElement('div');
+            bag.className = 'apple-bag';
+            bag.innerHTML = `<div class="bag-icon ${cls}"></div><div class="bag-price">${P}元</div>`;
+            $('mergedShelf').appendChild(bag);
+          }
+        }, 100);
+
+        $('mathRow1').innerHTML = `
+        <span class="m-chip m-left">${A} × ${P}</span>
+        <span class="m-chip m-op">+</span>
+        <span class="m-chip m-right">${B} × ${P}</span>`;
+        showMath('eqBridge');
+        setTimeout(() => showMath('mathRow1'), 800);
+      }
+    },
+    {
+      story: `分开算一算：<br>妈妈：<strong>${A} × ${P} = ${A*P} 元</strong><br>爸爸：<strong>${B} × ${P} = ${B*P} 元</strong><br>一共：<strong>${A*P} + ${B*P} = ${(A+B)*P} 元</strong><br><br>和合起来算的<strong>一模一样</strong>！`,
+      btn: '看总结 ▶',
+      action() {
+        $('stageLabel').textContent = '分开算钱';
+        $('splitZone').classList.add('highlighted');
+        $('calcDetail1').innerHTML = `
+        <span>= <strong>${A*P}元</strong></span><span>+</span>
+        <span><strong>${B*P}元</strong></span><span>=</span>
+        <span><strong>${(A+B)*P}元</strong></span>`;
+        showMath('calcDetail1');
+      }
+    },
+    {
+      story: `太棒了！不管是<strong>合起来算</strong>还是<strong>拆开来算</strong>，结果都是 <strong>${(A+B)*P} 元</strong>！<br>这就是 <strong>"乘法分配律"</strong> 的反向应用！`,
+      btn: '🎉 完成！',
+      action() {
+        const card = $('summaryCard');
+        $('summaryTitle').textContent = `${fruit.emoji} 拆开也能算！`;
+        $('summaryFormula').textContent = `(${A}+${B})×${P} = ${A}×${P} + ${B}×${P} = ${A*P} + ${B*P} = ${(A+B)*P}`;
+        $('summaryInsight').innerHTML = `一大袋拆成两小份，<strong>分开算再加起来</strong>也一样！<br>合着算 = 拆开算 = <strong>${(A+B)*P} 元</strong>`;
+        card.classList.remove('hide'); card.classList.add('show');
+        $('stageLabel').textContent = '🎉 又发现了秘密！';
+        setBtn('🎉 完成！', true);
+        launchConfetti();
+      }
+    }
+  ];
+
+  function getSteps() { return mode === 'merge' ? MERGE_STEPS() : SPLIT_STEPS(); }
+
+  function goToStep(s) {
+    step = s;
+    const steps = getSteps();
+    const cur = steps[s];
+    setStory(cur.story);
+    setBtn(cur.btn, s >= steps.length - 1 && false);
+    updateDots(s, steps.length);
+    cur.action();
+    if (s >= steps.length - 1) {
+      /* final step handled in action */
+    }
+  }
+
+  function switchMode(m) {
+    mode = m;
+    $('btnModeMerge').className = 'mode-btn ' + (m === 'merge' ? 'active-merge' : 'inactive');
+    $('btnModeSplit').className = 'mode-btn ' + (m === 'split' ? 'active-split' : 'inactive');
+    $('avatar').textContent = m === 'merge' ? '🧒' : '🤔';
+
+    if (m === 'merge') {
+      $('splitZoneTag').textContent = '分开看';
+      $('mergeZoneTag').textContent = '合在一起看';
+    } else {
+      $('splitZoneTag').textContent = '拆成两份';
+      $('mergeZoneTag').textContent = '合在一起';
+    }
+
+    initDots(getSteps().length);
+    goToStep(0);
+  }
+
+  function resetAll() {
+    initDots(getSteps().length);
+    goToStep(0);
+  }
+
+  $('btnNext').addEventListener('click', () => {
+    const steps = getSteps();
+    if (step < steps.length - 1) goToStep(step + 1);
+  });
+
+  function injectFruitStyle() {
+    const s = document.createElement('style');
+    s.id = 'fruit-style';
+    s.textContent = `.bag-icon::after{content:"${fruit.emoji}" !important}`;
+    document.head.appendChild(s);
+  }
+  function updateFruitStyle() {
+    let s = document.getElementById('fruit-style');
+    if (s) s.textContent = `.bag-icon::after{content:"${fruit.emoji}" !important}`;
+  }
+
+  function pickDifferent(arr, exclude) {
+    const choices = arr.filter(v => v !== exclude);
+    return choices[Math.floor(Math.random() * choices.length)];
+  }
+
+  function randomProblem() {
+    const prices = [5, 8, 10, 12, 15, 20, 25, 30, 50];
+    const smalls = [2, 3, 4, 5, 6, 7, 8, 9];
+    const oldA = A, oldB = B, oldP = P, oldFruit = fruit;
+    A = pickDifferent(smalls, oldA);
+    B = pickDifferent(smalls.filter(v => v !== A), oldB);
+    P = pickDifferent(prices, oldP);
+    fruit = pickDifferent(FRUIT_ITEMS, oldFruit);
+    updateFruitStyle();
+    initDots(getSteps().length);
+    goToStep(0);
+  }
+
+  injectFruitStyle();
+  initDots(getSteps().length);
+  goToStep(0);
+</script>
+</body>
+</html>
