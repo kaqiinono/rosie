@@ -1,13 +1,19 @@
 import type { Problem, ProblemSet, BlockScene, DualSceneConfig } from './type'
 
 function numOf(s: string | object): number {
-  if (typeof s !== 'string') return 1
+  if (typeof s !== 'string') {
+    if (s && typeof s === 'object' && 'ans' in s) return (s as { ans: number }).ans
+    return 1
+  }
   const m = s.match(/\d+/)
   return m ? parseInt(m[0]) : 1
 }
 
 function unitOf(s: string | object): string {
-  if (typeof s !== 'string') return ''
+  if (typeof s !== 'string') {
+    if (s && typeof s === 'object' && 'unit' in s) return (s as { unit: string }).unit
+    return ''
+  }
   return s.replace(/\d+/g, '').trim() || '份'
 }
 
@@ -45,7 +51,7 @@ function ensureBlockScene(prob: Problem): void {
   }
 
   if (prob.blockScene) return
-  const safeN = (s: string, fb: number) => {
+  const safeN = (s: string | object, fb: number) => {
     const n = numOf(s)
     return n && n > 0 ? n : fb
   }
@@ -83,9 +89,9 @@ const RAW_PROBLEMS: ProblemSet = {
         '⚠️ 当份数成整数倍关系时，不需要归一，直接×倍数即可！',
       ],
       type: 'ratio3',
-      rows: ['30分钟', '—', '60分钟'],
-      rcols: ['1800字', { id: 'r1', ans: 1800 }, { id: 'r2', ans: 3600 }],
-      ops: [{ id: 'ot1', ans: '×1' }, { id: 'ob1', ans: '×2' }, { id: 'oc1', ans: '×1' }, { id: 'oc2', ans: '×2' }],
+      rows: ['30分钟', '60分钟'],
+      rcols: ['1800字', { id: 'r2', ans: 3600 }],
+      ops: [{ id: 'ob1', ans: '×2' }, { id: 'oc2', ans: '×2' }],
       hasBlocks: true,
       blockScene: {
         init: 1, perPart: 1800, unit: 1, target: 2, answer: 3600, total: 1800,
@@ -98,11 +104,11 @@ const RAW_PROBLEMS: ProblemSet = {
       finalQ: '1小时能打', finalUnit: '个字', finalAns: 3600,
     },
     {
-      id: 'P2', title: '测2 · 圆珠笔', tag: 'type2', tagLabel: '直接倍比',
+      id: 'P2', title: '测2 · 圆珠笔', tag: 'type1', tagLabel: '求中间量',
       text: '买<strong>9支</strong>相同的圆珠笔需要<strong>30元</strong>，照这样计算，买<strong>12支</strong>相同的圆珠笔需要多少元？',
       analysis: ['题型：归一 → 先求1支的价格', '步骤：30÷9≈ 不整除，先归一：30÷3=10（3支）→ 10÷3≈ 实际用：30÷9→12支', '更好的方法：30÷9×12=40元', '⚠️ 也可以找公约数3：30÷3=10（3支）→ 10×4=40（12支）'],
       type: 'ratio3',
-      rows: ['9支', '3支', '12支'],
+      rows: ['9支', { id: 'rA1', ans: 3, unit: '支' }, '12支'],
       rcols: ['30元', { id: 'r1', ans: 10 }, { id: 'r2', ans: 40 }],
       ops: [{ id: 'ot1', ans: '÷3' }, { id: 'ob1', ans: '×4' }, { id: 'oc1', ans: '÷3' }, { id: 'oc2', ans: '×4' }],
       hasBlocks: false, finalQ: '买12支需要', finalUnit: '元', finalAns: 40,
@@ -112,8 +118,8 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '已知<strong>5个人2小时</strong>可以种<strong>100棵</strong>树，照此计算，<strong>6个人3小时</strong>可以种多少棵树？',
       analysis: ['题型：双归一 → 先归一到1人1时', '步骤：100÷5÷2=10（1人1时）→ 10×6×3=180棵', '⚠️ 两个变量（人数+时间）都要归到1！'],
       type: 'ratio3b',
-      rows: ['5人', '1人', '6人'],
-      rows2: ['2时', '1时', '3时'],
+      rows: ['5人', { id: 'rA1', ans: 1, unit: '人' }, '6人'],
+      rows2: ['2时', { id: 'rB1', ans: 1, unit: '时' }, '3时'],
       rcols: ['100棵', { id: 'r1', ans: 10 }, { id: 'r2', ans: 180 }],
       ops: [
         { id: 'oA1', ans: '÷5' }, { id: 'oA2', ans: '×6' },
@@ -127,8 +133,8 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '9个人6天可以加工<strong>126个</strong>零件，照这样的速度，<strong>6个人4天</strong>可以加工多少个零件？',
       analysis: ['题型：双归一', '步骤：126÷9÷6→126÷9=14（1人6天）→14÷6≈ 实际用公约数', '更好：126÷9÷6=126÷54=7/3≈ 用整体：126×6×4÷9÷6=56', '步骤：1人1天=126÷9÷6=14/6=7/3，6人4天=7/3×6×4=56', '⚠️ 先求1人1天的量，得分数也没关系，最后×会变整数'],
       type: 'ratio3b',
-      rows: ['9人', '1人', '6人'],
-      rows2: ['6天', '1天', '4天'],
+      rows: ['9人', { id: 'rA1', ans: 1, unit: '人' }, '6人'],
+      rows2: ['6天', { id: 'rB1', ans: 1, unit: '天' }, '4天'],
       rcols: ['126个', { id: 'r1', ans: 14 }, { id: 'r2', ans: 56 }],
       ops: [
         { id: 'oA1', ans: '÷9' }, { id: 'oA2', ans: '×6' },
@@ -149,7 +155,7 @@ const RAW_PROBLEMS: ProblemSet = {
       ],
       type: 'ratio3b',
       rows: ['全部', '全部', '一半'],
-      rows2: ['6时', '1时', { id: 'rB2', ans: 16 }],
+      rows2: ['6时', { id: 'rB1', ans: 1, unit: '时' }, { id: 'rB2', ans: 16 }],
       rcols: ['60千瓦', { id: 'r1', ans: 10 }, { id: 'r2', ans: 80 }],
       ops: [
         { id: 'oA1', ans: '×1' }, { id: 'oA2', ans: '÷2' },
@@ -180,11 +186,11 @@ const RAW_PROBLEMS: ProblemSet = {
       finalQ: '5分钟一共能折', finalUnit: '只纸鹤', finalAns: 15,
     },
     {
-      id: 'L2', title: '例题1b · 装订书', tag: 'type2', tagLabel: '归一求时间',
+      id: 'L2', title: '例题1b · 装订书', tag: 'type1', tagLabel: '求中间量',
       text: '装订小组3小时装订书<strong>120本</strong>，照这样的速度，<strong>7小时</strong>可以装订多少本？装订<strong>200本</strong>需要几个小时？',
       analysis: ['题型：归一 → 求多份 / 求份数（双问）', '关键词："照这样的速度"速度不变', '步骤①：120÷3=40（1小时）→ 40×7=280（7小时）', '步骤②：200÷40=5（需要5小时）', '⚠️ 第二问是反向求份数，用除法！'],
       type: 'ratio3',
-      rows: ['3小时', '1小时', '7小时'],
+      rows: ['3小时', { id: 'rA1', ans: 1, unit: '小时' }, '7小时'],
       rcols: ['120本', { id: 'r1', ans: 40 }, { id: 'r2', ans: 280 }],
       ops: [{ id: 'ot1', ans: '÷3' }, { id: 'ob1', ans: '×7' }, { id: 'oc1', ans: '÷3' }, { id: 'oc2', ans: '×7' }],
       hasBlocks: false, finalQ: '装订200本书需要', finalUnit: '小时', finalAns: 5,
@@ -194,7 +200,7 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '奇奇挖土豆，9分钟挖了<strong>21个</strong>土豆，照此速度，他<strong>30分钟</strong>可以挖多少个土豆？',
       analysis: ['题型：归一 → 中间用÷3过渡到3分钟', '关键词："照此速度"速度不变', '步骤：21÷3=7（3分钟）→ 7×10=70（30分钟）', '⚠️ 9÷3=3，先归到3分钟再×10，比直接归到1分钟更简便！'],
       type: 'ratio3',
-      rows: ['9分钟', '3分钟', '30分钟'],
+      rows: ['9分钟', { id: 'rA1', ans: 3, unit: '分钟' }, '30分钟'],
       rcols: ['21个', { id: 'r1', ans: 7 }, { id: 'r2', ans: 70 }],
       ops: [{ id: 'ot1', ans: '÷3' }, { id: 'ob1', ans: '×10' }, { id: 'oc1', ans: '÷3' }, { id: 'oc2', ans: '×10' }],
       hasBlocks: false, finalQ: '30分钟可以挖', finalUnit: '个土豆', finalAns: 70,
@@ -225,8 +231,8 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '5辆汽车4次可以运送<strong>100吨</strong>钢材，如果用<strong>7辆汽车</strong>运送<strong>105吨</strong>钢材，需要运几次？',
       analysis: ['题型：反向双归一 → 已知总量反推份数', '步骤①：100÷5÷4=5（1车1次运多少）', '步骤②：7辆×?次×5=105 → ?=3次', '⚠️ 先求1车1次运多少，再用目标量反推次数'],
       type: 'ratio3b',
-      rows: ['5车', '1车', '7车'],
-      rows2: ['4次', '1次', { id: 'rB2', ans: 3 }],
+      rows: ['5车', { id: 'rA1', ans: 1, unit: '车' }, '7车'],
+      rows2: ['4次', { id: 'rB1', ans: 1, unit: '次' }, { id: 'rB2', ans: 3 }],
       rcols: ['100吨', { id: 'r1', ans: 5 }, '105吨'],
       ops: [
         { id: 'oA1', ans: '÷5' }, { id: 'oA2', ans: '×7' },
@@ -256,8 +262,8 @@ const RAW_PROBLEMS: ProblemSet = {
       ],
       type: 'ratio3b',
       rows: ['全部', '全部', '一半'],
-      rows2: ['4时', '1时', { id: 'rB2', ans: 12 }],
-      rcols: ['32吨', { id: 'r1', ans: 8 }, { id: 'r2', ans: 48 }],
+      rows2: ['4时', { id: 'rB1', ans: 1, unit: '时' }, { id: 'rB2', ans: 12 }],
+      rcols: ['32吨', { id: 'r1', ans: 8 }, '48吨'],
       ops: [
         { id: 'oA1', ans: '×1' }, { id: 'oA2', ans: '÷2' },
         { id: 'oB1', ans: '÷4' }, { id: 'oB2', ans: '×12' },
@@ -290,7 +296,7 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '纳纳6分钟可以背<strong>22个</strong>单词，照这样的速度，他<strong>15分钟</strong>可以背多少个单词？',
       analysis: ['题型：归一 → 中间过渡到3分钟', '步骤：22÷2=11（3分钟）→ 11×5=55（15分钟）', '⚠️ 6和15的公约数是3，先归到3分钟'],
       type: 'ratio3',
-      rows: ['6分钟', '3分钟', '15分钟'],
+      rows: ['6分钟', { id: 'rA1', ans: 3, unit: '分钟' }, '15分钟'],
       rcols: ['22个', { id: 'r1', ans: 11 }, { id: 'r2', ans: 55 }],
       ops: [{ id: 'ot1', ans: '÷2' }, { id: 'ob1', ans: '×5' }, { id: 'oc1', ans: '÷2' }, { id: 'oc2', ans: '×5' }],
       hasBlocks: false, finalQ: '15分钟能背', finalUnit: '个单词', finalAns: 55,
@@ -300,7 +306,7 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '汽车厂8名工人每天生产汽车零件<strong>48个</strong>，按照这样的速度，<strong>10名工人3天</strong>能生产多少个零件？',
       analysis: ['题型：双归一 → 先归到1人1天', '步骤：48÷8=6（1人1天）→ 6×10×3=180', '⚠️ 先求1人每天的量，再×人数×天数'],
       type: 'ratio3b',
-      rows: ['8人', '1人', '10人'],
+      rows: ['8人', { id: 'rA1', ans: 1, unit: '人' }, '10人'],
       rows2: ['1天', '1天', '3天'],
       rcols: ['48个', { id: 'r1', ans: 6 }, { id: 'r2', ans: 180 }],
       ops: [
@@ -315,8 +321,8 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '20辆卡车12趟可以运走沙石<strong>16吨</strong>，那么同样的<strong>15辆卡车9趟</strong>可以运走沙石多少吨？',
       analysis: ['题型：双归一', '步骤：16÷20÷12→用公约数4简化：16÷4÷4×3×3=9吨', '⚠️ 先找公约数简化，再计算'],
       type: 'ratio3b',
-      rows: ['20车', '1车', '15车'],
-      rows2: ['12趟', '1趟', '9趟'],
+      rows: ['20车', { id: 'rA1', ans: 1, unit: '车' }, '15车'],
+      rows2: ['12趟', { id: 'rB1', ans: 1, unit: '趟' }, '9趟'],
       rcols: ['16吨', { id: 'r1', ans: 1 }, { id: 'r2', ans: 9 }],
       ops: [
         { id: 'oA1', ans: '÷20' }, { id: 'oA2', ans: '×15' },
@@ -330,12 +336,12 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '3位缝纫师3天制作了<strong>54件</strong>衣服，照这样的速度，<strong>7位缝纫师制作84件</strong>衣服需要多少天？',
       analysis: ['题型：反向双归一 → 求天数', '步骤：54÷3÷3=6（1人1天）→ 84÷7=12（7人1天）→ 12÷6=2天', '⚠️ 先求1人1天的量，再反推天数'],
       type: 'ratio3b',
-      rows: ['3人', '1人', '7人'],
-      rows2: ['3天', '1天', '?天'],
-      rcols: ['54件', { id: 'r1', ans: 6 }, { id: 'r2', ans: 84 }],
+      rows: ['3人', { id: 'rA1', ans: 1, unit: '人' }, '7人'],
+      rows2: ['3天', { id: 'rB1', ans: 1, unit: '天' }, { id: 'rB2', ans: 2, unit: '天' }],
+      rcols: ['54件', { id: 'r1', ans: 6 }, '84件'],
       ops: [
         { id: 'oA1', ans: '÷3' }, { id: 'oA2', ans: '×7' },
-        { id: 'oB1', ans: '÷3' }, { id: 'oB2', ans: '×?' },
+        { id: 'oB1', ans: '÷3' }, { id: 'oB2', ans: '×2' },
         { id: 'oC1', ans: '÷9' }, { id: 'oC2', ans: '×14' },
       ],
       hasBlocks: false, finalQ: '7位缝纫师需要', finalUnit: '天', finalAns: 2,
@@ -352,8 +358,8 @@ const RAW_PROBLEMS: ProblemSet = {
       ],
       type: 'ratio3b',
       rows: ['全部', '全部', '一半'],
-      rows2: ['5时', '1时', { id: 'rB2', ans: 30 }],
-      rcols: ['40度', { id: 'r1', ans: 8 }, { id: 'r2', ans: 120 }],
+      rows2: ['5时', { id: 'rB1', ans: 1, unit: '时' }, { id: 'rB2', ans: 30 }],
+      rcols: ['40度', { id: 'r1', ans: 8 }, '120度'],
       ops: [
         { id: 'oA1', ans: '×1' }, { id: 'oA2', ans: '÷2' },
         { id: 'oB1', ans: '÷5' }, { id: 'oB2', ans: '×30' },
@@ -376,29 +382,29 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '磨面工人3小时磨了<strong>75千克</strong>面粉，照这样的速度，他再磨<strong>4小时</strong>，共磨面粉多少千克？',
       analysis: ['题型：归一 + 加法综合', '步骤：75÷3=25（1小时）→ 25×4=100（再磨4小时）→ 100+75=175千克', '⚠️ "共磨"要把之前的75也加上！'],
       type: 'ratio3',
-      rows: ['3小时', '1小时', '4小时'],
+      rows: ['3小时', { id: 'rA1', ans: 1, unit: '小时' }, '4小时'],
       rcols: ['75千克', { id: 'r1', ans: 25 }, { id: 'r2', ans: 100 }],
       ops: [{ id: 'ot1', ans: '÷3' }, { id: 'ob1', ans: '×4' }, { id: 'oc1', ans: '÷3' }, { id: 'oc2', ans: '×4' }],
       hasBlocks: false, finalQ: '共磨面粉', finalUnit: '千克', finalAns: 175,
     },
     {
-      id: 'W2', title: '闯关2 · 做练习题', tag: 'type1', tagLabel: '基础归一',
+      id: 'W2', title: '闯关2 · 做练习题', tag: 'type1', tagLabel: '直接倍比',
       text: '立立做练习题，5分钟做了<strong>13道</strong>题，照这样的速度计算，他<strong>20分钟</strong>可以做多少道题？',
-      analysis: ['题型：基础归一', '步骤：5×4=20，所以×4', '13×4=52道题', '⚠️ 找倍数关系更快：20÷5=4，直接13×4'],
+      analysis: ['题型：直接倍比（初始量与目标量呈倍数关系）', '步骤：20÷5=4，所以×4', '13×4=52道题', '⚠️ 不需要归一，直接找倍数关系'],
       type: 'ratio3',
-      rows: ['5分钟', '—', '20分钟'],
-      rcols: ['13道', { id: 'r1', ans: 13 }, { id: 'r2', ans: 52 }],
-      ops: [{ id: 'ot1', ans: '×1' }, { id: 'ob1', ans: '×4' }, { id: 'oc1', ans: '×1' }, { id: 'oc2', ans: '×4' }],
+      rows: ['5分钟', '20分钟'],
+      rcols: ['13道', { id: 'r2', ans: 52 }],
+      ops: [{ id: 'ob1', ans: '×4' }, { id: 'oc2', ans: '×4' }],
       hasBlocks: false, finalQ: '20分钟能做', finalUnit: '道题', finalAns: 52,
     },
     {
-      id: 'W3', title: '闯关3 · 蜂箱', tag: 'type1', tagLabel: '归一+增加',
+      id: 'W3', title: '闯关3 · 蜂箱', tag: 'type2', tagLabel: '直接倍比+增加',
       text: '4箱蜜蜂可以酿蜂蜜<strong>60千克</strong>，照这样计算，如果要酿<strong>300千克</strong>蜂蜜，需要<strong>增加</strong>多少箱同样的蜜蜂？',
-      analysis: ['题型：归一 + 求增加量', '步骤：60÷4=15（1箱）→ 300÷15=20（箱）→ 20-4=16（增加）', '⚠️ "增加多少"要用总数减原有数！'],
+      analysis: ['题型：直接倍比 + 求增加量', '步骤：300÷60=5，所以×5', '4×5=20（箱）→ 20-4=16（增加）', '⚠️ "增加多少"要用总数减原有数！'],
       type: 'ratio3',
-      rows: ['4箱', '—', '?箱'],
-      rcols: ['60千克', { id: 'r1', ans: 15 }, { id: 'r2', ans: 300 }],
-      ops: [{ id: 'ot1', ans: '÷4' }, { id: 'ob1', ans: '×?' }, { id: 'oc1', ans: '÷4' }, { id: 'oc2', ans: '×20' }],
+      rows: ['4箱', { id: 'rA1', ans: 20, unit: '箱' }],
+      rcols: ['60千克', '300千克'],
+      ops: [{ id: 'ob1', ans: '×5' }, { id: 'oc2', ans: '×5' }],
       hasBlocks: false, finalQ: '需要增加', finalUnit: '箱蜜蜂', finalAns: 16,
     },
     {
@@ -406,9 +412,9 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '3名工人5小时加工零件<strong>90个</strong>，照这样计算，<strong>10名工人10小时</strong>可以加工零件多少个？如果10小时要加工<strong>360个</strong>零件，需要工人多少名？',
       analysis: ['题型：双归一 + 反向求人数', '步骤①：90÷3÷5=6（1人1时）→ 6×10×10=600个', '步骤②：360÷10÷6=6名工人', '⚠️ 第二问反向除，先÷时间再÷每人每时'],
       type: 'ratio3b',
-      rows: ['3人', '1人', '10人'],
-      rows2: ['5时', '1时', '10时'],
-      rcols: ['90个', { id: 'r1', ans: 6 }, { id: 'r2', ans: 600 }],
+      rows: ['3人', { id: 'rA1', ans: 1, unit: '人' }, '10人', { id: 'rA3', ans: 6, unit: '人' }],
+      rows2: ['5时', { id: 'rB1', ans: 1, unit: '时' }, '10时', '10时'],
+      rcols: ['90个', { id: 'r1', ans: 6 }, { id: 'r2', ans: 600 }, '360个'],
       ops: [
         { id: 'oA1', ans: '÷3' }, { id: 'oA2', ans: '×10' },
         { id: 'oB1', ans: '÷5' }, { id: 'oB2', ans: '×10' },
@@ -421,9 +427,9 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '美猴王组织小猴摘桃子。16只小猴每小时摘<strong>64个</strong>桃子，照这样计算，想要每小时摘桃子<strong>96个</strong>，需要<strong>增加</strong>多少只小猴？',
       analysis: ['题型：归一 + 求增加量', '步骤：64÷16=4（每只猴每时）→ 96÷4=24（需要猴）→ 24-16=8（增加）', '⚠️ "增加多少"= 总需 - 已有'],
       type: 'ratio3',
-      rows: ['16只猴', '1只猴', '?只猴'],
-      rcols: ['64个/时', { id: 'r1', ans: 4 }, { id: 'r2', ans: 96 }],
-      ops: [{ id: 'ot1', ans: '÷16' }, { id: 'ob1', ans: '×?' }, { id: 'oc1', ans: '÷16' }, { id: 'oc2', ans: '×24' }],
+      rows: ['16只猴', { id: 'rA1', ans: 1, unit: '只猴' }, { id: 'rA2', ans: 24, unit: '只猴' }],
+      rcols: ['64个/时', { id: 'r1', ans: 4 }, '96个/时'],
+      ops: [{ id: 'ot1', ans: '÷16' }, { id: 'ob1', ans: '×24' }, { id: 'oc1', ans: '÷16' }, { id: 'oc2', ans: '×24' }],
       hasBlocks: false, finalQ: '需要增加', finalUnit: '只小猴', finalAns: 8,
     },
     {
@@ -431,8 +437,8 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '罗奶奶养了6头奶牛，<strong>两周（14天）</strong>可以产奶<strong>720千克</strong>，照这样计算，同样的<strong>9头奶牛21天</strong>可以产多少千克牛奶？',
       analysis: ['题型：双归一', '步骤：720÷6÷14=... 先÷6÷14再×9×21', '720÷6÷14×9×21=1620', '⚠️ 找最大公约数化简计算'],
       type: 'ratio3b',
-      rows: ['6头', '1头', '9头'],
-      rows2: ['14天', '1天', '21天'],
+      rows: ['6头', { id: 'rA1', ans: 1, unit: '头' }, '9头'],
+      rows2: ['14天', { id: 'rB1', ans: 1, unit: '天' }, '21天'],
       rcols: ['720千克', { id: 'r1', ans: 120 }, { id: 'r2', ans: 1620 }],
       ops: [
         { id: 'oA1', ans: '÷6' }, { id: 'oA2', ans: '×9' },
@@ -446,12 +452,12 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '8个人10天修路<strong>800米</strong>，照这样计算，<strong>20人修6000米</strong>，需要多少天？',
       analysis: ['题型：反向双归一 → 求天数', '步骤：800÷8÷10=10（1人1天）→ 6000÷20=300（20人1天）→ 300÷10=30天', '⚠️ 先求1人1天，再算20人1天，最后反推天数'],
       type: 'ratio3b',
-      rows: ['8人', '1人', '20人'],
-      rows2: ['10天', '1天', '?天'],
-      rcols: ['800米', { id: 'r1', ans: 10 }, { id: 'r2', ans: 6000 }],
+      rows: ['8人', { id: 'rA1', ans: 1, unit: '人' }, '20人'],
+      rows2: ['10天', { id: 'rB1', ans: 1, unit: '天' }, { id: 'rB2', ans: 30, unit: '天' }],
+      rcols: ['800米', { id: 'r1', ans: 10 }, '6000米'],
       ops: [
         { id: 'oA1', ans: '÷8' }, { id: 'oA2', ans: '×20' },
-        { id: 'oB1', ans: '÷10' }, { id: 'oB2', ans: '×?' },
+        { id: 'oB1', ans: '÷10' }, { id: 'oB2', ans: '×30' },
         { id: 'oC1', ans: '÷80' }, { id: 'oC2', ans: '×600' },
       ],
       hasBlocks: false, finalQ: '20人修6000米需要', finalUnit: '天', finalAns: 30,
@@ -461,8 +467,8 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '某工厂原计划20人4天做<strong>1600个</strong>零件，刚要开始生产，又增加了新任务，在工作效率相同的情况下，需要<strong>15人7天</strong>才能全部完成，请问增加了多少个零件？',
       analysis: ['题型：双归一 + 求增加量', '步骤：1600÷20÷4=20（1人1天）→ 20×15×7=2100（新总量）→ 2100-1600=500', '⚠️ "增加了多少"= 新总量 - 原总量'],
       type: 'ratio3b',
-      rows: ['20人', '1人', '15人'],
-      rows2: ['4天', '1天', '7天'],
+      rows: ['20人', { id: 'rA1', ans: 1, unit: '人' }, '15人'],
+      rows2: ['4天', { id: 'rB1', ans: 1, unit: '天' }, '7天'],
       rcols: ['1600个', { id: 'r1', ans: 20 }, { id: 'r2', ans: 2100 }],
       ops: [
         { id: 'oA1', ans: '÷20' }, { id: 'oA2', ans: '×15' },
@@ -476,13 +482,13 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '4辆大卡车7趟共运走沙土<strong>96吨</strong>，现有沙土<strong>480吨</strong>，增加了1辆相同的卡车，多少趟可以运完？',
       analysis: ['题型：反向双归一', '步骤：96÷4÷7=... 先简化，1车1趟=96÷28', '5车×趟=(480÷(96÷28))→ 趟=480×28÷96÷5=28趟', '⚠️ 增加了1辆=5辆，用新辆数反推趟数'],
       type: 'ratio3b',
-      rows: ['4车', '1车', '5车'],
-      rows2: ['7趟', '1趟', '?趟'],
-      rcols: ['96吨', { id: 'r1', ans: 24 }, { id: 'r2', ans: 480 }],
+      rows: ['4车', { id: 'rA1', ans: 1, unit: '车' }, '5车'],
+      rows2: ['7趟', { id: 'rB1', ans: 1, unit: '趟' }, { id: 'rB2', ans: 28, unit: '趟' }],
+      rcols: ['96吨', { id: 'r1', ans: 24 }, '480吨'],
       ops: [
         { id: 'oA1', ans: '÷4' }, { id: 'oA2', ans: '×5' },
-        { id: 'oB1', ans: '÷7' }, { id: 'oB2', ans: '×?' },
-        { id: 'oC1', ans: '÷28' }, { id: 'oC2', ans: '×?' },
+        { id: 'oB1', ans: '÷7' }, { id: 'oB2', ans: '×28' },
+        { id: 'oC1', ans: '÷28' }, { id: 'oC2', ans: '×140' },
       ],
       hasBlocks: false, finalQ: '5辆车需要', finalUnit: '趟', finalAns: 28,
     },
@@ -497,8 +503,8 @@ const RAW_PROBLEMS: ProblemSet = {
         '⚠️ "增加了5小时"= 原3时+5=8时，不是×5！',
       ],
       type: 'ratio3b',
-      rows: ['8人', '1人', '4人'],
-      rows2: ['3时', '1时', '8时'],
+      rows: ['8人', { id: 'rA1', ans: 1, unit: '人' }, { id: 'rA2', ans: 4, unit: '人' }],
+      rows2: ['3时', { id: 'rB1', ans: 1, unit: '时' }, { id: 'rB2', ans: 8, unit: '时' }],
       rcols: ['360个', { id: 'r1', ans: 15 }, { id: 'r2', ans: 480 }],
       ops: [
         { id: 'oA1', ans: '÷8' }, { id: 'oA2', ans: '×4' },
@@ -524,8 +530,8 @@ const RAW_PROBLEMS: ProblemSet = {
         '⚠️ "增加了1倍"= 原×2=8人；"增加了5小时"= 原+5=11时',
       ],
       type: 'ratio3b',
-      rows: ['4人', '1人', '8人'],
-      rows2: ['6时', '1时', '11时'],
+      rows: ['4人', { id: 'rA1', ans: 1, unit: '人' }, { id: 'rA2', ans: 8, unit: '人' }],
+      rows2: ['6时', { id: 'rB1', ans: 1, unit: '时' }, { id: 'rB2', ans: 11, unit: '时' }],
       rcols: ['240个', { id: 'r1', ans: 10 }, { id: 'r2', ans: 880 }],
       ops: [
         { id: 'oA1', ans: '÷4' }, { id: 'oA2', ans: '×8' },
@@ -545,12 +551,12 @@ const RAW_PROBLEMS: ProblemSet = {
       text: '学校买来一批粉笔，原计划<strong>18个班</strong>可用<strong>30天</strong>，实际用了<strong>20天</strong>后，有<strong>8个班</strong>外出了，剩下的粉笔够用多少天？',
       analysis: ['题型：综合归一 → 已用+剩余分段计算', '步骤①：总份=18×30=540份；20天用了18×20=360份；剩余=180份', '步骤②：剩余班数=18-8=10班；180÷10=18天', '⚠️ 分三步：求总→求已用→求剩余时间'],
       type: 'ratio3b',
-      rows: ['18班', '1班', '10班'],
-      rows2: ['30天', '1天', '?天'],
+      rows: ['18班', { id: 'rA1', ans: 1, unit: '班' }, { id: 'rA2', ans: 10, unit: '班' }],
+      rows2: ['30天', { id: 'rB1', ans: 1, unit: '天' }, { id: 'rB2', ans: 18, unit: '天' }],
       rcols: ['全部粉笔', { id: 'r1', ans: 1 }, { id: 'r2', ans: 180 }],
       ops: [
         { id: 'oA1', ans: '÷18' }, { id: 'oA2', ans: '×10' },
-        { id: 'oB1', ans: '÷30' }, { id: 'oB2', ans: '×?' },
+        { id: 'oB1', ans: '÷30' }, { id: 'oB2', ans: '×18' },
         { id: 'oC1', ans: '÷总' }, { id: 'oC2', ans: '×180' },
       ],
       hasBlocks: false, finalQ: '剩下粉笔够用', finalUnit: '天', finalAns: 18,
