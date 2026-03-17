@@ -1,7 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import type { Problem, ProblemSet } from '@/utils/type'
 import { SOURCE_LABELS } from '@/utils/constant'
+
+const BASE = '/math/ny/35'
 
 interface Filters {
   source: Set<string>
@@ -13,7 +16,6 @@ interface FilterPanelProps {
   solved: Record<string, boolean>
   filters: Filters
   onToggleFilter: (axis: 'source' | 'type', value: string) => void
-  onOpenProblem: (set: string, id: string) => void
 }
 
 const SOURCE_BTNS = [
@@ -39,7 +41,11 @@ const TAG_COLORS: Record<string, string> = {
   type5: 'bg-app-red-light text-app-red',
 }
 
-export default function FilterPanel({ problems, solved, filters, onToggleFilter, onOpenProblem }: FilterPanelProps) {
+function getProblemHref(setName: string, indexInSet: number): string {
+  return `${BASE}/${setName}/${indexInSet + 1}`
+}
+
+export default function FilterPanel({ problems, solved, filters, onToggleFilter }: FilterPanelProps) {
   const all: { p: Problem; setName: string; idx: number }[] = []
   ;(Object.entries(problems) as [string, Problem[]][]).forEach(([setName, list]) => {
     list.forEach((p, i) => all.push({ p, setName, idx: i }))
@@ -116,10 +122,10 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
           const d = solved[p.id]
           const srcLabel = SOURCE_LABELS[setName] || setName
           return (
-            <div
+            <Link
               key={p.id}
-              onClick={() => onOpenProblem(setName, p.id)}
-              className={`flex cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
+              href={getProblemHref(setName, idx)}
+              className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
                 d ? 'border-app-green' : 'border-transparent hover:border-border-light'
               }`}
             >
@@ -131,7 +137,7 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
                 {idx + 1}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-[13px] font-semibold">{p.title}</div>
+                <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
                 <div className="mt-0.5 flex flex-wrap gap-1">
                   <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}>
                     {p.tagLabel}
@@ -146,7 +152,7 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
               ) : (
                 <div className="shrink-0 text-xl text-text-muted">›</div>
               )}
-            </div>
+            </Link>
           )
         })}
         {filtered.length === 0 && (

@@ -1,36 +1,30 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson35-data'
 
 interface ProblemListProps {
   problems: Problem[]
   solved: Record<string, boolean>
-  setName: string
-  onOpen: (setName: string, id: string) => void
-  onFilterByTag?: (tag: string) => void
+  basePath: string
   showSource?: boolean
   sourceLabel?: string
 }
 
-export default function ProblemList({
-                                      problems,
-                                      solved,
-                                      setName,
-                                      onOpen,
-                                      onFilterByTag,
-                                      showSource,
-                                      sourceLabel,
-                                    }: ProblemListProps) {
+export default function ProblemList({ problems, solved, basePath, showSource, sourceLabel }: ProblemListProps) {
+  const router = useRouter()
+
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {problems.map((p, i) => {
         const done = solved[p.id]
         return (
-          <div
+          <Link
             key={p.id}
-            onClick={() => onOpen(setName, p.id)}
-            className={`flex cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
+            href={`${basePath}/${i + 1}`}
+            className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
               done ? 'border-app-green' : 'border-transparent hover:border-border-light'
             }`}
           >
@@ -42,17 +36,18 @@ export default function ProblemList({
               {i + 1}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-[13px] font-semibold">{p.title}</div>
+              <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
               <div className="mt-0.5 flex flex-wrap gap-1">
                 <span
                   onClick={e => {
+                    e.preventDefault()
                     e.stopPropagation()
-                    onFilterByTag?.(p.tag)
+                    router.push(`/math/ny/35/alltest?type=${p.tag}`)
                   }}
                   className={`inline-flex cursor-pointer items-center rounded-full px-2 py-px text-[10px] font-semibold ${TAG_STYLE[p.tag] || 'bg-gray-100 text-gray-600'}`}
                   title={`查看所有${p.tagLabel}题目`}
                 >
-                  {p.tagLabel} {onFilterByTag ? '🔍' : ''}
+                  {p.tagLabel} 🔍
                 </span>
                 {showSource && sourceLabel && (
                   <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
@@ -66,7 +61,7 @@ export default function ProblemList({
             ) : (
               <div className="shrink-0 text-xl text-text-muted">›</div>
             )}
-          </div>
+          </Link>
         )
       })}
       {problems.length === 0 && (

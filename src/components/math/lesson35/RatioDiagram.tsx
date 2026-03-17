@@ -271,7 +271,6 @@ function Ratio3ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
             <foreignObject x="177" y={ly[i] + 2} width="106" height="40">
               <div className="flex h-full items-center justify-center gap-0.5">
                 <input
-                  type="number"
                   placeholder="?"
                   className="w-[58px] border-none bg-transparent text-center text-[13px] font-bold text-[#4338ca] outline-none"
                   value={values[(r as RatioInput).id] || ''}
@@ -294,7 +293,6 @@ function Ratio3ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
             <foreignObject x="337" y={ly[i] + 2} width="106" height="40">
               <div className="flex h-full items-center justify-center gap-0.5">
                 <input
-                  type="number"
                   placeholder="?"
                   className="w-[58px] border-none bg-transparent text-center text-[13px] font-bold text-[#15803d] outline-none"
                   value={values[(r as RatioInput).id] || ''}

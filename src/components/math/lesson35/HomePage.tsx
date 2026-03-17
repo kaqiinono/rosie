@@ -1,16 +1,19 @@
 'use client'
 
-import type { PageName, ProblemSet } from '@/utils/type'
+import Link from 'next/link'
+import type { ProblemSet } from '@/utils/type'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson35-data'
+
+const BASE = '/math/ny/35'
 
 interface HomePageProps {
   problems: ProblemSet
   solved: Record<string, boolean>
-  onNavigate: (page: PageName, filterType?: string) => void
 }
 
 interface ModuleItem {
   key: string
+  path: string
   icon: string
   bg: string
   title: string
@@ -22,13 +25,13 @@ interface ModuleItem {
 }
 
 const MODULES: ModuleItem[] = [
-  { key: 'lesson', icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-6 · 归一+双归一+变化' },
-  { key: 'homework', icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '巩固1-6 · 强化练习' },
-  { key: 'workbook', icon: '📚', bg: 'bg-app-purple-light', title: '练习册闯关', desc: '闯关1-12 · 综合挑战' },
-  { key: 'pretest', icon: '📝', bg: 'bg-yellow-light', title: '课前测', desc: '5道摸底题 · 检验起始水平', titleColor: 'text-[#92400e]', borderColor: 'border-[#fde68a]', arrowColor: 'text-yellow', progColor: 'bg-yellow' },
+  { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-6 · 归一+双归一+变化' },
+  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '巩固1-6 · 强化练习' },
+  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '练习册闯关', desc: '闯关1-12 · 综合挑战' },
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-yellow-light', title: '课前测', desc: '5道摸底题 · 检验起始水平', titleColor: 'text-[#92400e]', borderColor: 'border-[#fde68a]', arrowColor: 'text-yellow', progColor: 'bg-yellow' },
 ]
 
-export default function HomePage({ problems, solved, onNavigate }: HomePageProps) {
+export default function HomePage({ problems, solved }: HomePageProps) {
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
   const doneAll = Object.keys(solved).length
 
@@ -65,10 +68,10 @@ export default function HomePage({ problems, solved, onNavigate }: HomePageProps
           {PROBLEM_TYPES.map(t => {
             const style = TYPE_STYLE[t.tag]
             return (
-              <div
+              <Link
                 key={t.tag}
-                onClick={() => onNavigate('alltest', t.tag)}
-                className={`cursor-pointer rounded-r-lg border-l-3 p-3 ${style.bg} ${style.border} transition-all hover:shadow-md`}
+                href={`${BASE}/alltest?type=${t.tag}`}
+                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} transition-all hover:shadow-md`}
               >
                 <div className={`mb-1 flex items-center justify-between text-xs font-bold ${style.titleColor}`}>
                   {t.label}
@@ -78,7 +81,7 @@ export default function HomePage({ problems, solved, onNavigate }: HomePageProps
                   {t.desc}
                   <em className="mt-0.5 block opacity-80">{t.example}</em>
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>
@@ -97,10 +100,10 @@ export default function HomePage({ problems, solved, onNavigate }: HomePageProps
           const prog = getProgress(m.key)
           const pct = prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0
           return (
-            <div
+            <Link
               key={m.key}
-              onClick={() => onNavigate(m.key as PageName)}
-              className={`flex cursor-pointer items-center gap-3 rounded-[14px] border-2 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98] ${
+              href={m.path}
+              className={`flex items-center gap-3 rounded-[14px] border-2 bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98] ${
                 m.borderColor || 'border-transparent'
               }`}
             >
@@ -108,7 +111,7 @@ export default function HomePage({ problems, solved, onNavigate }: HomePageProps
                 {m.icon}
               </div>
               <div className="min-w-0 flex-1">
-                <div className={`text-sm font-bold ${m.titleColor || ''}`}>{m.title}</div>
+                <div className={`text-sm font-bold ${m.titleColor || 'text-text-primary'}`}>{m.title}</div>
                 <div className="mb-1 text-xs text-text-muted">{m.desc}</div>
                 <div className="flex items-center gap-1.5">
                   <div className="h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
@@ -123,13 +126,13 @@ export default function HomePage({ problems, solved, onNavigate }: HomePageProps
                 </div>
               </div>
               <div className={`shrink-0 text-xl ${m.arrowColor || 'text-text-muted'}`}>›</div>
-            </div>
+            </Link>
           )
         })}
         {/* All-test wide card */}
-        <div
-          onClick={() => onNavigate('alltest')}
-          className="flex cursor-pointer items-center gap-3 rounded-[14px] border-2 border-[#e879f9] bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98] sm:col-span-2 xl:col-span-3"
+        <Link
+          href={`${BASE}/alltest`}
+          className="flex items-center gap-3 rounded-[14px] border-2 border-[#e879f9] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98] sm:col-span-2 xl:col-span-3"
         >
           <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-[#fdf4ff] text-[22px]">
             🎯
@@ -150,7 +153,7 @@ export default function HomePage({ problems, solved, onNavigate }: HomePageProps
             </div>
           </div>
           <div className="shrink-0 text-xl text-[#a855f7]">›</div>
-        </div>
+        </Link>
       </div>
     </div>
   )

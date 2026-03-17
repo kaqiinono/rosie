@@ -72,14 +72,28 @@ function ensureBlockScene(prob: Problem): void {
 const RAW_PROBLEMS: ProblemSet = {
   pretest: [
     {
-      id: 'P1', title: '测1 · 打字员', tag: 'type1', tagLabel: '基础归一',
+      id: 'P1', title: '测1 · 打字员', tag: 'type2', tagLabel: '直接倍比',
       text: '一个打字员30分钟打了<strong>1800个字</strong>，照这样的速度，<strong>1小时</strong>能打多少字？',
-      analysis: ['题型：基础归一 → 注意单位换算！', '关键：1小时=60分钟，不是30分钟的目标', '步骤：1800÷30=60（1分钟）→ 60×60=3600（1小时）', '⚠️ 先把1小时换成60分钟再计算！'],
+      analysis: [
+        '题型：直接倍比 → 30能被60整除，可直接计算',
+        '关键：1小时=60分钟，60÷30=2，存在整数倍关系',
+        '步骤：1800×2=3600（60分钟是30分钟的2倍）',
+        '⚠️ 当份数成整数倍关系时，不需要归一，直接×倍数即可！',
+      ],
       type: 'ratio3',
-      rows: ['30分钟', '1分钟', '60分钟'],
-      rcols: ['1800字', { id: 'r1', ans: 60 }, { id: 'r2', ans: 3600 }],
-      ops: [{ id: 'ot1', ans: '÷30' }, { id: 'ob1', ans: '×60' }, { id: 'oc1', ans: '÷30' }, { id: 'oc2', ans: '×60' }],
-      hasBlocks: false, finalQ: '1小时能打', finalUnit: '个字', finalAns: 3600,
+      rows: ['30分钟', '—', '60分钟'],
+      rcols: ['1800字', { id: 'r1', ans: 1800 }, { id: 'r2', ans: 3600 }],
+      ops: [{ id: 'ot1', ans: '×1' }, { id: 'ob1', ans: '×2' }, { id: 'oc1', ans: '×1' }, { id: 'oc2', ans: '×2' }],
+      hasBlocks: true,
+      blockScene: {
+        init: 1, perPart: 1800, unit: 1, target: 2, answer: 3600,
+        rightUnit: '字',
+        leftLabel: '份数（每份30分钟）',
+        rightLabel: '结果（每份1800字）',
+        hint: '30分钟为1份，60分钟=2份 → 直接×2',
+        expandUnit: '30分钟',
+      },
+      finalQ: '1小时能打', finalUnit: '个字', finalAns: 3600,
     },
     {
       id: 'P2', title: '测2 · 圆珠笔', tag: 'type2', tagLabel: '直接倍比',

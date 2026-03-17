@@ -68,6 +68,7 @@ export interface BlockScene {
   leftLabel?: string
   rightLabel?: string
   hint?: string
+  expandUnit?: string
 }
 
 export interface Problem {
