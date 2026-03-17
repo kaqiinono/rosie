@@ -29,6 +29,7 @@ export type Lesson34Mode = 'merge' | 'split'
 export interface RatioInput {
   id: string
   ans: number
+  unit?: string
 }
 
 export interface OpInput {
@@ -63,11 +64,14 @@ export interface BlockScene {
   perPart: number
   unit: number
   target: number
+  total: number
   answer?: number
   rightUnit?: string
+  leftUnit?: string
   leftLabel?: string
   rightLabel?: string
   hint?: string
+  expandUnit?: string
 }
 
 export interface Problem {
@@ -78,7 +82,7 @@ export interface Problem {
   text: string
   analysis: string[]
   type: 'ratio3' | 'ratio3b'
-  rows: string[]
+  rows: (string | RatioInput)[]
   rows2?: (string | RatioInput)[]
   rcols: RatioColValue[]
   ops: OpInput[]

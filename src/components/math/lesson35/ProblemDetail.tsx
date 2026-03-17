@@ -1,21 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson35-data'
+import { useLesson35 } from './Lesson35Provider'
 import RatioDiagram from './RatioDiagram'
 import BlockDiagram from './BlockDiagram'
 import DualBlockDiagram from './DualBlockDiagram'
 
 interface ProblemDetailProps {
   problem: Problem
-  isSolved: boolean
-  onSolve: (id: string) => void
-  onBack: () => void
-  onToast: (msg: string) => void
 }
 
-export default function ProblemDetail({ problem, isSolved, onSolve, onBack, onToast }: ProblemDetailProps) {
+export default function ProblemDetail({ problem }: ProblemDetailProps) {
+  const router = useRouter()
+  const { solved, handleSolve, setToast } = useLesson35()
+  const isSolved = !!solved[problem.id]
+
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
 
@@ -30,9 +32,9 @@ export default function ProblemDetail({ problem, isSolved, onSolve, onBack, onTo
     if (v === problem.finalAns) {
       setFeedback({ text: '🎉 完全正确！你真棒！', ok: true })
       if (!isSolved) {
-        onSolve(problem.id)
+        handleSolve(problem.id)
       } else {
-        onToast('已经答对过了！继续保持 💪')
+        setToast('已经答对过了！继续保持 💪')
       }
     } else {
       setFeedback({ text: `❌ 不对哦，再想想？提示：答案是${problem.finalAns}以内的数。`, ok: false })
@@ -44,7 +46,7 @@ export default function ProblemDetail({ problem, isSolved, onSolve, onBack, onTo
       {/* Header */}
       <div className="mb-4 flex items-center gap-2.5 border-b border-border-light pb-3.5">
         <button
-          onClick={onBack}
+          onClick={() => router.back()}
           className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-gray-100 text-lg transition-colors hover:bg-gray-200"
         >
           ‹
@@ -85,7 +87,7 @@ export default function ProblemDetail({ problem, isSolved, onSolve, onBack, onTo
           {/* Block diagram section */}
           <div className="mb-3 flex items-center gap-2">
             <div className="h-px flex-1 bg-border-light" />
-            <div className="whitespace-nowrap text-xs font-semibold text-text-muted">🧱 份数图（直观理解）</div>
+            <div className="whitespace-nowrap text-xs font-semibold text-text-muted">🧱 拆解图（直观理解）</div>
             <div className="h-px flex-1 bg-border-light" />
           </div>
 
@@ -94,14 +96,14 @@ export default function ProblemDetail({ problem, isSolved, onSolve, onBack, onTo
               <DualBlockDiagram config={problem.dualSc} probId={problem.id} />
             ) : (
               <div className="mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs text-text-muted">
-                份数图暂不支持此题型
+                拆解图暂不支持此题型
               </div>
             )
           ) : problem.blockScene ? (
             <BlockDiagram scene={problem.blockScene} probId={problem.id} />
           ) : (
             <div className="mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs text-text-muted">
-              份数图暂不支持此题型
+              拆解图暂不支持此题型
             </div>
           )}
         </div>

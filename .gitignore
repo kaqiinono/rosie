@@ -32,3 +32,4 @@ sw.js.map
 
 # old html files (backed up)
 old-html/
+*/.DS_Store
