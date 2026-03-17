@@ -159,14 +159,15 @@ export default function EnglishWordsPage() {
   }, [setVocab, resetCards])
 
   const handleExport = useCallback(async () => {
-    const XLSX = (await import('xlsx')).default
-    const wb = XLSX.utils.book_new()
+    const xlsx = await import('xlsx')
+    const { utils, writeFile } = xlsx.default || xlsx
+    const wb = utils.book_new()
     const headers = ['Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
     const rows = [headers, ...vocab.map(v => [v.unit, v.lesson, v.word, v.explanation, v.ipa || '', v.example || ''])]
-    const ws = XLSX.utils.aoa_to_sheet(rows)
+    const ws = utils.aoa_to_sheet(rows)
     ws['!cols'] = [{ wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
-    XLSX.utils.book_append_sheet(wb, ws, '单词数据')
-    XLSX.writeFile(wb, 'WordMaster_词库.xlsx')
+    utils.book_append_sheet(wb, ws, '单词数据')
+    writeFile(wb, 'WordMaster_词库.xlsx')
   }, [vocab])
 
   const enterImmersive = useCallback(() => {

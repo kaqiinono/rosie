@@ -27,11 +27,12 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
     setStatus({ type: 'info', text: '⏳ 正在解析文件…' })
 
     try {
-      const XLSX = (await import('xlsx')).default
+      const xlsx = await import('xlsx')
+      const { read, utils } = xlsx.default || xlsx
       const data = await file.arrayBuffer()
-      const wb = XLSX.read(data, { type: 'array' })
+      const wb = read(data, { type: 'array' })
       const ws = wb.Sheets[wb.SheetNames[0]]
-      const rows: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
+      const rows: unknown[][] = utils.sheet_to_json(ws, { header: 1, defval: '' })
 
       const vocab: WordEntry[] = []
       for (let i = 1; i < rows.length; i++) {
