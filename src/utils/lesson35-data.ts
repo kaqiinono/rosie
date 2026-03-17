@@ -49,23 +49,25 @@ function ensureBlockScene(prob: Problem): void {
     const n = numOf(s)
     return n && n > 0 ? n : fb
   }
-  const init = Math.min(safeN(rows[0], 2), 8)
-  const target = Math.min(safeN(rows[2], 5), 8)
+  const init = safeN(rows[0], 2)
+  const target = safeN(rows[2], 5)
   const unitAns = typeof rcols[1] === 'object' ? (rcols[1] as { ans: number }).ans : null
-  const perPart = Math.min(
-    Math.max(1, unitAns || Math.round((prob.finalAns || 6) / (target || 5)) || 1),
-    8,
-  )
+  const perPart = Math.max(1, unitAns || Math.round((prob.finalAns || 6) / (target || 5)) || 1)
   const rightUnit = prob.finalUnit || '个'
+  const leftUnit = unitOf(rows[0]) || '份'
+  const rawTotal = typeof rcols[0] === 'string' ? numOf(rcols[0]) : 0
+  const total = rawTotal > 1 ? rawTotal : (init * perPart) || prob.finalAns || 1
   prob.blockScene = {
     init,
     unit: 1,
     target,
     perPart,
+    total,
     rightUnit,
-    leftLabel: `份数（初始${init}份）`,
-    rightLabel: `结果（每份${perPart}${rightUnit}）`,
-    hint: `${init}份 → 1份 → ${target}份，每份结果相同`,
+    leftUnit,
+    leftLabel: `份数（初始${init}${leftUnit}）`,
+    rightLabel: `结果（共${total}${rightUnit}）`,
+    hint: `${init}${leftUnit}/${total}${rightUnit} → 归一 → 扩展到${target}${leftUnit}`,
   }
 }
 
@@ -86,8 +88,8 @@ const RAW_PROBLEMS: ProblemSet = {
       ops: [{ id: 'ot1', ans: '×1' }, { id: 'ob1', ans: '×2' }, { id: 'oc1', ans: '×1' }, { id: 'oc2', ans: '×2' }],
       hasBlocks: true,
       blockScene: {
-        init: 1, perPart: 1800, unit: 1, target: 2, answer: 3600,
-        rightUnit: '字',
+        init: 1, perPart: 1800, unit: 1, target: 2, answer: 3600, total: 1800,
+        rightUnit: '字', leftUnit: '份',
         leftLabel: '份数（每份30分钟）',
         rightLabel: '结果（每份1800字）',
         hint: '30分钟为1份，60分钟=2份 → 直接×2',
@@ -174,7 +176,7 @@ const RAW_PROBLEMS: ProblemSet = {
       rows: ['2分钟', '1分钟', '5分钟'],
       rcols: ['6只', { id: 'r1', ans: 3 }, { id: 'r2', ans: 15 }],
       ops: [{ id: 'ot1', ans: '÷2' }, { id: 'ob1', ans: '×5' }, { id: 'oc1', ans: '÷2' }, { id: 'oc2', ans: '×5' }],
-      hasBlocks: true, blockScene: { init: 2, perPart: 3, unit: 1, target: 5, answer: 15 },
+      hasBlocks: true, blockScene: { init: 2, perPart: 3, unit: 1, target: 5, answer: 15, total: 6, leftUnit: '分钟' },
       finalQ: '5分钟一共能折', finalUnit: '只纸鹤', finalAns: 15,
     },
     {

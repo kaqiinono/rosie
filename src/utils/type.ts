@@ -63,8 +63,10 @@ export interface BlockScene {
   perPart: number
   unit: number
   target: number
+  total: number
   answer?: number
   rightUnit?: string
+  leftUnit?: string
   leftLabel?: string
   rightLabel?: string
   hint?: string
