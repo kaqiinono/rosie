@@ -2,12 +2,6 @@
 
 import type { Problem, ProblemSet } from '@/utils/type'
 import { SOURCE_LABELS } from '@/utils/constant'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { cn } from '@/lib/utils'
-import { Check, ChevronRight } from 'lucide-react'
 
 interface Filters {
   source: Set<string>
@@ -61,7 +55,7 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
   return (
     <div>
       {/* Filter header */}
-      <Card className="mb-3 border border-[#e879f9] bg-gradient-to-br from-[#fdf4ff] to-[#f3e8ff] p-4">
+      <div className="mb-3 rounded-[14px] border border-[#e879f9] bg-gradient-to-br from-[#fdf4ff] to-[#f3e8ff] p-4">
         <div className="mb-1.5 text-[15px] font-extrabold text-[#7e22ce]">🎯 综合测试题库</div>
         <div className="mb-2.5 text-xs text-[#6b21a8]">全部29道题 · 多选筛选 · 按题型/来源练习</div>
 
@@ -69,20 +63,17 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
           <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">📂 来源筛选（可多选）</div>
           <div className="flex flex-wrap gap-1.5">
             {SOURCE_BTNS.map(b => (
-              <Button
+              <button
                 key={b.key}
-                variant={filters.source.has(b.key) ? 'default' : 'outline'}
-                size="sm"
                 onClick={() => onToggleFilter('source', b.key)}
-                className={cn(
-                  'rounded-full text-[11px] font-semibold',
+                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
                   filters.source.has(b.key)
-                    ? 'border-[#a855f7] bg-[#a855f7] text-white hover:bg-[#9333ea]'
-                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce] hover:bg-[#f3e8ff]'
-                )}
+                    ? 'border-[#a855f7] bg-[#a855f7] text-white'
+                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+                }`}
               >
                 {b.label}
-              </Button>
+              </button>
             ))}
           </div>
         </div>
@@ -91,36 +82,33 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
           <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🏷️ 题型筛选（可多选）</div>
           <div className="flex flex-wrap gap-1.5">
             {TYPE_BTNS.map(b => (
-              <Button
+              <button
                 key={b.key}
-                variant={filters.type.has(b.key) ? 'default' : 'outline'}
-                size="sm"
                 onClick={() => onToggleFilter('type', b.key)}
-                className={cn(
-                  'rounded-full text-[11px] font-semibold',
+                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
                   filters.type.has(b.key)
-                    ? 'border-[#a855f7] bg-[#a855f7] text-white hover:bg-[#9333ea]'
-                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce] hover:bg-[#f3e8ff]'
-                )}
+                    ? 'border-[#a855f7] bg-[#a855f7] text-white'
+                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+                }`}
               >
                 {b.label}
-              </Button>
+              </button>
             ))}
           </div>
         </div>
 
         <div className="mt-2 flex items-center gap-2">
-          <Progress
-            value={done}
-            max={total}
-            className="h-[5px] flex-1 bg-[#e9d5ff]"
-            indicatorClassName="bg-[#a855f7]"
-          />
+          <div className="h-[5px] flex-1 overflow-hidden rounded-sm bg-[#e9d5ff]">
+            <div
+              className="h-full rounded-sm bg-[#a855f7] transition-[width] duration-400"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
           <div className="text-[11px] font-bold text-[#6b21a8]">
             显示 {total} 题，已完成 {done} 题
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Filtered problem list with source labels */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -128,39 +116,37 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter,
           const d = solved[p.id]
           const srcLabel = SOURCE_LABELS[setName] || setName
           return (
-            <Card
+            <div
               key={p.id}
               onClick={() => onOpenProblem(setName, p.id)}
-              className={cn(
-                'flex cursor-pointer items-center gap-2.5 border-[1.5px] p-3 transition-all hover:shadow-lg',
+              className={`flex cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
                 d ? 'border-app-green' : 'border-transparent hover:border-border-light'
-              )}
+              }`}
             >
               <div
-                className={cn(
-                  'flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold',
+                className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                   d ? 'bg-app-green-light text-app-green-dark' : 'bg-app-blue-light text-app-blue-dark'
-                )}
+                }`}
               >
                 {idx + 1}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[13px] font-semibold">{p.title}</div>
                 <div className="mt-0.5 flex flex-wrap gap-1">
-                  <Badge className={cn('px-2 py-px text-[10px] font-semibold', TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600')}>
+                  <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}>
                     {p.tagLabel}
-                  </Badge>
-                  <Badge variant="violet" className="px-2 py-px text-[10px] font-semibold">
+                  </span>
+                  <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
                     {srcLabel}
-                  </Badge>
+                  </span>
                 </div>
               </div>
               {d ? (
-                <Check className="h-5 w-5 shrink-0 text-app-green" />
+                <div className="shrink-0 text-lg text-app-green">✅</div>
               ) : (
-                <ChevronRight className="h-5 w-5 shrink-0 text-text-muted" />
+                <div className="shrink-0 text-xl text-text-muted">›</div>
               )}
-            </Card>
+            </div>
           )
         })}
         {filtered.length === 0 && (

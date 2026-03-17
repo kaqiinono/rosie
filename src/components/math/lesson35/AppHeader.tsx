@@ -2,9 +2,6 @@
 
 import type { PageName, ProblemSet } from '@/utils/type'
 import { NAV_PAGES } from '@/utils/constant'
-import { Progress } from '@/components/ui/progress'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 interface AppHeaderProps {
   currentPage: PageName
@@ -27,32 +24,30 @@ export default function AppHeader({ currentPage, solved, problems, onNavigate }:
           🐦 <span className="text-yellow-dark">归一</span>问题探险
         </div>
 
-        <Progress
-          value={done}
-          max={total}
-          className="h-1.5 min-w-[60px] max-w-[240px] flex-1 bg-gray-100"
-          indicatorClassName="bg-gradient-to-r from-yellow to-app-orange"
-        />
+        <div className="h-1.5 min-w-[60px] max-w-[240px] flex-1 overflow-hidden rounded-sm bg-gray-100">
+          <div
+            className="h-full rounded-sm bg-gradient-to-r from-yellow to-app-orange transition-[width] duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
 
         {/* Desktop header tabs (1024px–1279px) */}
         <div className="hidden gap-0 overflow-x-auto scrollbar-none lg:flex xl:hidden">
           {NAV_PAGES.map(p => {
             const active = currentPage === p.key
             return (
-              <Button
+              <button
                 key={p.key}
-                variant="ghost"
-                size="sm"
                 onClick={() => onNavigate(p.key as PageName)}
-                className={cn(
-                  'h-14 rounded-none border-b-2 px-3.5 text-[13px] font-medium',
+                className={`flex h-14 cursor-pointer items-center whitespace-nowrap border-b-2 border-none bg-transparent px-3.5 text-[13px] font-medium transition-all ${
                   active
                     ? 'border-b-yellow text-yellow-dark'
                     : 'border-b-transparent text-text-muted hover:text-text-secondary'
-                )}
+                }`}
+                style={{ borderBottomStyle: 'solid', borderBottomWidth: 2, borderBottomColor: active ? '#f59e0b' : 'transparent' }}
               >
                 {p.icon} {p.label}
-              </Button>
+              </button>
             )
           })}
         </div>

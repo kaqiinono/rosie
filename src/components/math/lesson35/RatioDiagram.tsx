@@ -177,7 +177,6 @@ function Ratio2ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
             <foreignObject x="202" y={ly[i] + 2} width="106" height="40">
               <div className="flex h-full items-center justify-center gap-1">
                 <input
-                  type="number"
                   placeholder="?"
                   className={`r-input w-[58px] border-none border-b-[1.5px] border-b-[#9ca3af] bg-transparent text-center text-sm font-bold text-[#15803d] outline-none ${inputClass(r.id, true)}`}
                   value={values[r.id] || ''}

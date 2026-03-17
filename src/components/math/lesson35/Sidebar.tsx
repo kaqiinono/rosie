@@ -1,8 +1,6 @@
 'use client'
 
 import type { PageName, ProblemSet } from '@/utils/type'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 interface SidebarProps {
   currentPage: PageName
@@ -36,19 +34,17 @@ export default function Sidebar({ currentPage, solved, problems, onNavigate }: S
       <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
         导航
       </div>
-      <Button
-        variant="ghost"
+      <button
         onClick={() => onNavigate('home')}
-        className={cn(
-          'mb-1 flex w-full justify-start gap-2.5 px-3 py-2.5 text-[13px] font-medium',
+        className={`mb-1 flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-none px-3 py-2.5 text-[13px] font-medium transition-all ${
           currentPage === 'home'
             ? 'bg-yellow-light font-bold text-yellow-dark'
-            : 'text-text-secondary hover:bg-gray-50'
-        )}
+            : 'bg-transparent text-text-secondary hover:bg-gray-50'
+        }`}
       >
         <span className="w-5 shrink-0 text-center text-base">🏠</span>
         首页
-      </Button>
+      </button>
 
       <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
         学习模块
@@ -56,21 +52,19 @@ export default function Sidebar({ currentPage, solved, problems, onNavigate }: S
       {SECTIONS.map(s => {
         const active = currentPage === s.key
         return (
-          <Button
+          <button
             key={s.key}
-            variant="ghost"
             onClick={() => onNavigate(s.key as PageName)}
-            className={cn(
-              'mb-1 flex w-full justify-start gap-2.5 px-3 py-2.5 text-[13px] font-medium',
+            className={`mb-1 flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-none px-3 py-2.5 text-[13px] font-medium transition-all ${
               active
                 ? 'bg-yellow-light font-bold text-yellow-dark'
-                : 'text-text-secondary hover:bg-gray-50'
-            )}
+                : 'bg-transparent text-text-secondary hover:bg-gray-50'
+            }`}
           >
             <span className="w-5 shrink-0 text-center text-base">{s.icon}</span>
             {s.label}
             <span className="ml-auto text-[10px] text-text-muted">{getProgress(s.key)}</span>
-          </Button>
+          </button>
         )
       })}
     </div>

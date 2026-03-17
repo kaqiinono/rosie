@@ -1,7 +1,6 @@
 'use client'
 
 import type { WordEntry } from '@/utils/type'
-import { Search } from 'lucide-react'
 import FlashCard from './FlashCard'
 
 interface CardsGridProps {
@@ -14,7 +13,7 @@ export default function CardsGrid({ words, flippedSet, onFlip }: CardsGridProps)
   if (!words.length) {
     return (
       <div className="text-center py-12 text-[var(--wm-text-dim)] col-span-full">
-        <Search className="h-10 w-10 mx-auto mb-2.5 opacity-40" />
+        <div className="text-[2.5rem] mb-2.5">🔍</div>
         <div>
           没有找到匹配的单词
           <br />

@@ -2,10 +2,6 @@
 
 import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson35-data'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { Check, ChevronRight } from 'lucide-react'
 
 interface ProblemListProps {
   problems: Problem[]
@@ -18,64 +14,59 @@ interface ProblemListProps {
 }
 
 export default function ProblemList({
-  problems,
-  solved,
-  setName,
-  onOpen,
-  onFilterByTag,
-  showSource,
-  sourceLabel,
-}: ProblemListProps) {
+                                      problems,
+                                      solved,
+                                      setName,
+                                      onOpen,
+                                      onFilterByTag,
+                                      showSource,
+                                      sourceLabel,
+                                    }: ProblemListProps) {
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {problems.map((p, i) => {
         const done = solved[p.id]
         return (
-          <Card
+          <div
             key={p.id}
             onClick={() => onOpen(setName, p.id)}
-            className={cn(
-              'flex cursor-pointer items-center gap-2.5 border-[1.5px] p-3 transition-all hover:shadow-lg',
+            className={`flex cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
               done ? 'border-app-green' : 'border-transparent hover:border-border-light'
-            )}
+            }`}
           >
             <div
-              className={cn(
-                'flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold',
+              className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                 done ? 'bg-app-green-light text-app-green-dark' : 'bg-app-blue-light text-app-blue-dark'
-              )}
+              }`}
             >
               {i + 1}
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[13px] font-semibold">{p.title}</div>
               <div className="mt-0.5 flex flex-wrap gap-1">
-                <Badge
+                <span
                   onClick={e => {
                     e.stopPropagation()
                     onFilterByTag?.(p.tag)
                   }}
-                  className={cn(
-                    'cursor-pointer px-2 py-px text-[10px] font-semibold',
-                    TAG_STYLE[p.tag] || 'bg-gray-100 text-gray-600'
-                  )}
+                  className={`inline-flex cursor-pointer items-center rounded-full px-2 py-px text-[10px] font-semibold ${TAG_STYLE[p.tag] || 'bg-gray-100 text-gray-600'}`}
                   title={`查看所有${p.tagLabel}题目`}
                 >
                   {p.tagLabel} {onFilterByTag ? '🔍' : ''}
-                </Badge>
+                </span>
                 {showSource && sourceLabel && (
-                  <Badge variant="violet" className="px-2 py-px text-[10px] font-semibold">
+                  <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
                     {sourceLabel}
-                  </Badge>
+                  </span>
                 )}
               </div>
             </div>
             {done ? (
-              <Check className="h-5 w-5 shrink-0 text-app-green" />
+              <div className="shrink-0 text-lg text-app-green">✅</div>
             ) : (
-              <ChevronRight className="h-5 w-5 shrink-0 text-text-muted" />
+              <div className="shrink-0 text-xl text-text-muted">›</div>
             )}
-          </Card>
+          </div>
         )
       })}
       {problems.length === 0 && (

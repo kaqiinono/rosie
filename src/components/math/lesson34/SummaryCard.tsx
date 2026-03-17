@@ -1,8 +1,5 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-
 interface SummaryCardProps {
   visible: boolean
   emoji: string
@@ -26,24 +23,21 @@ export default function SummaryCard({ visible, emoji, A, B, P, mode }: SummaryCa
     : `一大袋拆成两小份，<strong>分开算再加起来</strong>也一样！<br>合着算 = 拆开算 = <strong>${(A + B) * P} 元</strong>`
 
   return (
-    <Card
-      className={cn(
-        'border-2 border-amber-400 bg-gradient-to-br from-amber-50 via-pink-100 to-blue-100 text-center shadow-[0_8px_32px_rgba(251,191,36,.2)] transition-all duration-600',
+    <div
+      className={`rounded-2xl border-2 border-amber-400 bg-gradient-to-br from-amber-50 via-pink-100 to-blue-100 p-4 text-center shadow-[0_8px_32px_rgba(251,191,36,.2)] transition-all duration-600 ${
         visible
           ? 'max-h-[400px] translate-y-0 opacity-100'
           : 'max-h-0 translate-y-4 overflow-hidden border-none p-0 opacity-0'
-      )}
+      }`}
     >
-      <CardContent className={cn(visible ? 'p-4' : 'p-0')}>
-        <h3 className="mb-1.5 text-lg font-bold text-red-600">{title}</h3>
-        <div className="mx-auto my-1.5 inline-block rounded-xl bg-white/70 px-3.5 py-2 text-xl font-bold text-slate-800">
-          {formula}
-        </div>
-        <div
-          className="mt-1.5 text-sm leading-relaxed text-slate-600"
-          dangerouslySetInnerHTML={{ __html: insightHtml }}
-        />
-      </CardContent>
-    </Card>
+      <h3 className="mb-1.5 text-lg font-bold text-red-600">{title}</h3>
+      <div className="mx-auto my-1.5 inline-block rounded-xl bg-white/70 px-3.5 py-2 text-xl font-bold text-slate-800">
+        {formula}
+      </div>
+      <div
+        className="mt-1.5 text-sm leading-relaxed text-slate-600"
+        dangerouslySetInnerHTML={{ __html: insightHtml }}
+      />
+    </div>
   )
 }
