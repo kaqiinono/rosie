@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+  }
+}
+
+@theme {
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-nunito: "Nunito", sans-serif;
+  --font-fredoka: "Fredoka One", cursive;
+
+  --color-math-from: #3b82f6;
+  --color-math-to: #6366f1;
+  --color-eng-from: #10b981;
+  --color-eng-to: #06b6d4;
+
+  --color-yellow: #f59e0b;
+  --color-yellow-light: #fef3c7;
+  --color-yellow-dark: #d97706;
+  --color-app-blue: #3b82f6;
+  --color-app-blue-light: #dbeafe;
+  --color-app-blue-dark: #1d4ed8;
+  --color-app-green: #10b981;
+  --color-app-green-light: #d1fae5;
+  --color-app-green-dark: #065f46;
+  --color-app-purple: #8b5cf6;
+  --color-app-purple-light: #ede9fe;
+  --color-app-purple-dark: #5b21b6;
+  --color-app-red: #ef4444;
+  --color-app-red-light: #fee2e2;
+  --color-app-orange: #f97316;
+  --color-app-orange-light: #ffedd5;
+
+  --color-surface: #ffffff;
+  --color-surface-dim: #f8fafc;
+  --color-border-light: #e5e7eb;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+
+  --animate-wave: wave 2.5s ease-in-out infinite;
+  --animate-bounce-slow: bounce-slow 2s ease-in-out infinite;
+  --animate-orb-float: orb-float 18s ease-in-out infinite alternate;
+  --animate-fly-in: fly-in 0.45s cubic-bezier(.34,1.56,.64,1) both;
+  --animate-pop-in: pop-in 0.3s cubic-bezier(.34,1.56,.64,1);
+  --animate-fade-up: fade-up 0.28s ease backwards;
+  --animate-bg-shift: bg-shift 20s ease infinite;
+  --animate-confetti-fall: confetti-fall 3s ease-out forwards;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg) }
+  10% { transform: rotate(14deg) }
+  20% { transform: rotate(-8deg) }
+  30% { transform: rotate(14deg) }
+  40% { transform: rotate(-4deg) }
+  50%, 100% { transform: rotate(0deg) }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-8px) }
+}
+
+@keyframes orb-float {
+  0% { transform: translate(0, 0) scale(1) }
+  33% { transform: translate(30px, -20px) scale(1.05) }
+  66% { transform: translate(-20px, 15px) scale(0.95) }
+  100% { transform: translate(10px, -10px) scale(1.02) }
+}
+
+@keyframes fly-in {
+  from { opacity: 0; transform: scale(0) translateY(-30px) rotate(15deg) }
+  to { opacity: 1; transform: scale(1) translateY(0) rotate(0) }
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.5); opacity: 0 }
+  to { transform: scale(1); opacity: 1 }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes bg-shift {
+  0%, 100% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1 }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0 }
+}
+
+@keyframes chip-pulse {
+  0%, 100% { transform: scale(1) }
+  50% { transform: scale(1.12) }
+}
+
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0 }
+}
+
+@layer base {
+  * { -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --wm-bg: #0f0f1a;
+    --wm-surface: #1a1a2e;
+    --wm-surface2: #16213e;
+    --wm-surface3: #0f3460;
+    --wm-accent: #e94560;
+    --wm-accent2: #f5a623;
+    --wm-accent3: #4ade80;
+    --wm-accent4: #60a5fa;
+    --wm-text: #f0f0ff;
+    --wm-text-dim: #9090b0;
+    --wm-border: rgba(255, 255, 255, .08);
+    --wm-radius: 16px;
+    --ph-vowel: #ff6b6b;
+    --ph-long: #f1948a;
+    --ph-digraph: #45b7d1;
+    --ph-cluster: #4ecdc4;
+    --ph-blend: #f0b27a;
+    --ph-r: #bb8fce;
+    --ph-magic: #f7dc6f;
+    --ph-suffix: #82e0aa;
+    --ph-silent: #888;
+    --ph-plain: #f0f0ff;
+  }
+
+  .ph-vowel { color: var(--ph-vowel); font-weight: 900; }
+  .ph-long { color: var(--ph-long); font-weight: 900; }
+  .ph-digraph { color: var(--ph-digraph); font-weight: 900; }
+  .ph-cluster { color: var(--ph-cluster); font-weight: 900; }
+  .ph-blend { color: var(--ph-blend); font-weight: 900; }
+  .ph-r { color: var(--ph-r); font-weight: 900; }
+  .ph-magic { color: var(--ph-magic); font-weight: 900; }
+  .ph-suffix { color: var(--ph-suffix); font-weight: 900; }
+  .ph-silent { color: var(--ph-silent); font-weight: 900; opacity: .65; }
+  .ph-plain { color: var(--ph-plain); }
+
+  .kw-red { color: #ff6b8a; font-weight: 900; letter-spacing: .01em; }
+  .kw-gold { color: #ffd166; font-weight: 900; letter-spacing: .01em; }
+  .kw-blue { color: #74c2f7; font-weight: 900; letter-spacing: .01em; }
+}
+
+@keyframes card-flip-fade-up {
+  from { opacity: 0; transform: translateY(14px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes imm-fade-in {
+  from { opacity: 0; transform: translateY(14px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-6px) }
+  to { opacity: 1; transform: translateY(0) }
+}
