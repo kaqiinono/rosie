@@ -42,8 +42,8 @@ export default function EnglishWordsPage() {
   const [immersiveMode, setImmersiveMode] = useState<'vocab' | 'practice'>('vocab')
 
   const filteredWords = useMemo(
-    () => getFilteredWords(vocab, selUnits, selLessons, selWords),
-    [vocab, selUnits, selLessons, selWords]
+      () => getFilteredWords(vocab, selUnits, selLessons, selWords),
+      [vocab, selUnits, selLessons, selWords]
   )
 
   const scopeLabel = useMemo(() => {
@@ -179,92 +179,92 @@ export default function EnglishWordsPage() {
   }, [filteredWords, activeTab])
 
   return (
-    <div className="min-h-screen font-nunito" style={{ background: 'var(--wm-bg)', color: 'var(--wm-text)' }}>
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)'
-      }} />
+      <div className="min-h-screen font-nunito" style={{ background: 'var(--wm-bg)', color: 'var(--wm-text)' }}>
+        <div className="fixed inset-0 pointer-events-none z-0" style={{
+          background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)'
+        }} />
 
-      <AppHeader
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onImport={() => setImportOpen(true)}
-        onExport={handleExport}
-        onImmersive={enterImmersive}
-      />
+        <AppHeader
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            onImport={() => setImportOpen(true)}
+            onExport={handleExport}
+            onImmersive={enterImmersive}
+        />
 
-      {activeTab === 'cards' && (
-        <>
-          <FilterBar
-            vocab={vocab}
-            selUnits={selUnits}
-            selLessons={selLessons}
-            selWords={selWords}
-            filteredCount={filteredWords.length}
-            allFlipped={allFlipped}
-            onToggleUnit={toggleUnit}
-            onToggleLesson={toggleLesson}
-            onToggleWord={toggleWord}
-            onClearWords={clearWords}
-            onFlipAll={flipAll}
-          />
-          <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
-            <PhonicsLegend />
-            <CardsGrid
-              words={filteredWords}
-              flippedSet={flippedSet}
-              onFlip={flipCard}
-            />
-          </div>
-        </>
-      )}
+        {activeTab === 'cards' && (
+            <>
+              <FilterBar
+                  vocab={vocab}
+                  selUnits={selUnits}
+                  selLessons={selLessons}
+                  selWords={selWords}
+                  filteredCount={filteredWords.length}
+                  allFlipped={allFlipped}
+                  onToggleUnit={toggleUnit}
+                  onToggleLesson={toggleLesson}
+                  onToggleWord={toggleWord}
+                  onClearWords={clearWords}
+                  onFlipAll={flipAll}
+              />
+              <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
+                <PhonicsLegend />
+                <CardsGrid
+                    words={filteredWords}
+                    flippedSet={flippedSet}
+                    onFlip={flipCard}
+                />
+              </div>
+            </>
+        )}
 
-      {activeTab === 'practice' && (
-        <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
-          {quizPhase === 'setup' && (
-            <PracticeSetup
-              scopeLabel={scopeLabel}
-              onStart={startPractice}
-            />
-          )}
-          {quizPhase === 'active' && quizQuestions[quizIndex] && (
-            <QuizCard
-              question={quizQuestions[quizIndex]}
-              options={quizOptions}
-              currentIndex={quizIndex}
-              totalCount={quizQuestions.length}
-              score={quizScore}
-              onAnswer={handleQuizAnswer}
-              onNext={handleQuizNext}
-            />
-          )}
-          {quizPhase === 'results' && (
-            <QuizResults
-              score={quizScore}
-              total={quizQuestions.length}
-              onRetry={() => setQuizPhase('setup')}
-            />
-          )}
-        </div>
-      )}
+        {activeTab === 'practice' && (
+            <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
+              {quizPhase === 'setup' && (
+                  <PracticeSetup
+                      scopeLabel={scopeLabel}
+                      onStart={startPractice}
+                  />
+              )}
+              {quizPhase === 'active' && quizQuestions[quizIndex] && (
+                  <QuizCard
+                      question={quizQuestions[quizIndex]}
+                      options={quizOptions}
+                      currentIndex={quizIndex}
+                      totalCount={quizQuestions.length}
+                      score={quizScore}
+                      onAnswer={handleQuizAnswer}
+                      onNext={handleQuizNext}
+                  />
+              )}
+              {quizPhase === 'results' && (
+                  <QuizResults
+                      score={quizScore}
+                      total={quizQuestions.length}
+                      onRetry={() => setQuizPhase('setup')}
+                  />
+              )}
+            </div>
+        )}
 
-      {activeTab === 'daily' && (
-        <DailyPractice vocab={vocab} />
-      )}
+        {activeTab === 'daily' && (
+            <DailyPractice vocab={vocab} />
+        )}
 
-      <ImportModal
-        open={importOpen}
-        onClose={() => setImportOpen(false)}
-        onImport={handleImport}
-      />
+        <ImportModal
+            open={importOpen}
+            onClose={() => setImportOpen(false)}
+            onImport={handleImport}
+        />
 
-      <ImmersiveMode
-        open={immersiveOpen}
-        words={filteredWords}
-        allWords={vocab}
-        mode={immersiveMode}
-        practiceTypes={practiceTypes}
-        onClose={() => setImmersiveOpen(false)}
-      />
-    </div>
+        <ImmersiveMode
+            open={immersiveOpen}
+            words={filteredWords}
+            allWords={vocab}
+            mode={immersiveMode}
+            practiceTypes={practiceTypes}
+            onClose={() => setImmersiveOpen(false)}
+        />
+      </div>
   )
 }
