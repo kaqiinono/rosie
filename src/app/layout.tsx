@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import ServiceWorkerRegistrar from '@/components/shared/ServiceWorkerRegistrar'
+import { AuthProvider } from '@/contexts/AuthContext'
+import AccountBar from '@/components/shared/AccountBar'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -28,8 +30,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className="min-h-screen font-sans text-text-primary antialiased">
-        <ServiceWorkerRegistrar />
-        {children}
+        <AuthProvider>
+          <ServiceWorkerRegistrar />
+          <AccountBar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

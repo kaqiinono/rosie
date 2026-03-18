@@ -132,10 +132,14 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
 
   const v = words[idx]
   const total = words.length
-  const sz = v ? getWordSizeClass(v.word) : ''
-  const wordSizeClass = sz === 'is-long' ? 'text-[clamp(1.6rem,3.2vw,2.8rem)]'
-    : sz === 'is-phrase' ? 'text-[clamp(2.2rem,4.5vw,3.8rem)]'
-    : 'text-[clamp(3rem,6vw,5.5rem)]'
+  const sz = v ? getWordSizeClass(v.word) : 'lg'
+  const wordSizeClass = {
+    xl: 'text-[clamp(3rem,6vw,5.5rem)]',
+    lg: 'text-[clamp(2.5rem,5vw,4.5rem)]',
+    md: 'text-[clamp(2rem,4vw,3.5rem)]',
+    sm: 'text-[clamp(1.6rem,3.2vw,2.8rem)]',
+    xs: 'text-[clamp(1.3rem,2.6vw,2.2rem)]',
+  }[sz]
 
   const leftCls = bodyMode === 'normal'
     ? 'left-0 w-1/2 opacity-100'

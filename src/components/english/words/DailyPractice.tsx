@@ -4,8 +4,8 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import type { WordEntry } from '@/utils/type'
 import { buildDailyPlan, hilite, highlightExample, shuffle, type DayPlan } from '@/utils/english-helpers'
 import PhonicsWord from './PhonicsWord'
-
-const DP_STORAGE_KEY = 'wm_daily_progress'
+import { useAuth } from '@/contexts/AuthContext'
+import { loadProgress, saveProgress, useDailyProgress, type DailyProgressRecord } from '@/hooks/useDailyProgress'
 
 interface DailyPracticeProps {
   vocab: WordEntry[]
@@ -14,15 +14,9 @@ interface DailyPracticeProps {
 type Phase = 'selector' | 'study' | 'quiz' | 'done'
 interface DpQuizQ { word: WordEntry; type: 'A' | 'B' | 'C'; isReview: boolean }
 
-function loadProgress(): Record<string, { quizDone?: boolean; lastScore?: number; lastDate?: string }> {
-  try { return JSON.parse(localStorage.getItem(DP_STORAGE_KEY) || '{}') }
-  catch { return {} }
-}
-function saveProgress(p: Record<string, unknown>) {
-  localStorage.setItem(DP_STORAGE_KEY, JSON.stringify(p))
-}
-
 export default function DailyPractice({ vocab }: DailyPracticeProps) {
+  const { user } = useAuth()
+  const { syncProgressToCloud, loadProgressFromCloud } = useDailyProgress(user)
   const plan = useMemo(() => buildDailyPlan(vocab.length), [vocab.length])
   const [selDays, setSelDays] = useState<Set<number>>(new Set())
   const [phase, setPhase] = useState<Phase>('selector')
@@ -43,8 +37,18 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
   const [spellOk, setSpellOk] = useState<boolean | null>(null)
   const spellRef = useRef<HTMLInputElement>(null)
 
-  const [prog] = useState(() => loadProgress())
+  const [prog, setProg] = useState<DailyProgressRecord>(() => loadProgress())
   const doneDays = useMemo(() => Object.keys(prog).filter(k => prog[k]?.quizDone).map(Number), [prog])
+
+  // Load cloud progress when user logs in
+  useEffect(() => {
+    loadProgressFromCloud().then(cloudProg => {
+      if (cloudProg) {
+        saveProgress(cloudProg)
+        setProg(cloudProg)
+      }
+    })
+  }, [loadProgressFromCloud])
 
   const toggleDay = useCallback((d: number) => {
     setSelDays(prev => {
@@ -136,6 +140,8 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
         ;(p[d] as Record<string, unknown>).lastDate = new Date().toLocaleDateString('zh-CN')
       })
       saveProgress(p)
+      setProg({ ...p })
+      void syncProgressToCloud(p)
       setPhase('done')
     } else {
       setCurQ(next)
@@ -150,9 +156,11 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
   const resetProgress = useCallback(() => {
     if (confirm('确认重置所有学习进度？')) {
       saveProgress({})
+      setProg({})
+      void syncProgressToCloud({})
       setSelDays(new Set())
     }
-  }, [])
+  }, [syncProgressToCloud])
 
   // SELECTOR
   if (phase === 'selector') {

@@ -141,12 +141,14 @@ export function buildPhonicsSegments(text: string): PhonicsSegment[][] {
   })
 }
 
-export function getWordSizeClass(word: string): string {
-  const parts = word.trim().split(/\s+/)
-  const len = word.length
-  if (parts.length > 3 || len > 20) return 'is-long'
-  if (parts.length > 1 || len > 10) return 'is-phrase'
-  return ''
+export function getWordSizeClass(word: string): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {
+  // Use non-space character count for consistent visual weight across cards
+  const chars = word.replace(/\s+/g, '').length
+  if (chars <= 4)  return 'xl'   // lazy, only, home
+  if (chars <= 6)  return 'lg'   // enjoy, happy
+  if (chars <= 9)  return 'md'   // helpful, picture
+  if (chars <= 13) return 'sm'   // grandchild, only child
+  return 'xs'                    // uncomfortable, grandmother
 }
 
 export const PHONICS_LEGEND = [

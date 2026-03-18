@@ -1,8 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import OrbBackground from '@/components/shared/OrbBackground'
 import ModuleCard from '@/components/shared/ModuleCard'
 import { useGreeting } from '@/hooks/useGreeting'
+import { useAuth } from '@/contexts/AuthContext'
 import type { ModuleCardData } from '@/utils/type'
 
 const modules: ModuleCardData[] = [
@@ -30,6 +32,8 @@ const modules: ModuleCardData[] = [
 
 export default function HomePage() {
   const greeting = useGreeting()
+  const { user, loading } = useAuth()
+  const username = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
 
   return (
     <>
@@ -49,6 +53,28 @@ export default function HomePage() {
           <p className="mt-2 text-[15px] leading-relaxed text-text-secondary">
             选一个模块开始今天的学习吧
           </p>
+
+          {/* Login status */}
+          {!loading && (
+            <div className="mt-4 flex items-center justify-center">
+              {user ? (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[0.8rem] text-green-700"
+                  style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" />
+                  已登录：{username} · 进度云端同步中
+                </div>
+              ) : (
+                <Link href="/auth"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[0.8rem] transition-all hover:scale-105"
+                  style={{ background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.22)', color: '#6366f1' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  未登录 · 点击登录同步进度
+                </Link>
+              )}
+            </div>
+          )}
         </section>
 
         <section className="grid w-full max-w-[760px] grid-cols-1 gap-5 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">

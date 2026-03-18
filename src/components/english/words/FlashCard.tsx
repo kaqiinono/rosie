@@ -14,9 +14,13 @@ interface FlashCardProps {
 
 export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardProps) {
   const sz = getWordSizeClass(entry.word)
-  const wordFontSize = sz === 'is-long' ? 'text-[1.05rem] max-sm:text-[.9rem]'
-    : sz === 'is-phrase' ? 'text-[1.3rem] max-sm:text-[1.1rem]'
-      : 'text-[1.85rem] max-sm:text-[1.6rem]'
+  const wordFontSize = {
+    xl: 'text-[2rem] max-sm:text-[1.75rem]',
+    lg: 'text-[1.75rem] max-sm:text-[1.5rem]',
+    md: 'text-[1.4rem] max-sm:text-[1.25rem]',
+    sm: 'text-[1.15rem] max-sm:text-[1rem]',
+    xs: 'text-[0.95rem] max-sm:text-[0.85rem]',
+  }[sz]
 
   const delay = Math.min(index * 0.03, 0.25)
   const explHtml = hilite(entry.explanation, entry.word)
@@ -53,7 +57,7 @@ export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardPr
               <PhonicsWord text={entry.word} />
             </div>
             {entry.ipa && (
-              <div className="text-[.85rem] text-[var(--wm-accent2)] italic font-semibold text-center tracking-wide opacity-90">
+              <div className={`${sz === 'xs' || sz === 'sm' ? 'text-[.75rem]' : 'text-[.85rem]'} text-[var(--wm-accent2)] italic font-semibold text-center tracking-wide opacity-90`}>
                 {entry.ipa}
               </div>
             )}

@@ -2,9 +2,8 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import type { WordEntry } from '@/utils/type'
-import { STORAGE_KEYS } from '@/utils/constant'
-import { SAMPLE_WORDS } from '@/utils/english-data'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useAuth } from '@/contexts/AuthContext'
+import { useWordData } from '@/hooks/useWordData'
 import { getFilteredWords, getAllUnits, getAllLessons, shuffle, buildQuizQuestions } from '@/utils/english-helpers'
 import AppHeader from '@/components/english/words/AppHeader'
 import FilterBar from '@/components/english/words/FilterBar'
@@ -21,7 +20,8 @@ type TabId = 'cards' | 'practice' | 'daily'
 type QuizPhase = 'setup' | 'active' | 'results'
 
 export default function EnglishWordsPage() {
-  const [vocab, setVocab] = useLocalStorage<WordEntry[]>(STORAGE_KEYS.WORD_DATA, SAMPLE_WORDS)
+  const { user } = useAuth()
+  const { vocab, setVocab } = useWordData(user)
   const [activeTab, setActiveTab] = useState<TabId>('cards')
 
   const [selUnits, setSelUnits] = useState<Set<string>>(new Set(['Unit 1']))
@@ -151,7 +151,7 @@ export default function EnglishWordsPage() {
   }, [quizQuestions, quizIndex, filteredWords])
 
   const handleImport = useCallback((words: WordEntry[]) => {
-    setVocab(words)
+    void setVocab(words)
     setSelUnits(new Set())
     setSelLessons(new Set())
     setSelWords(new Set())
