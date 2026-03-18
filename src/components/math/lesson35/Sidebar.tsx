@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { STORAGE_KEYS } from '@/utils/constant'
 import type { ProblemSet } from '@/utils/type'
 
 const BASE = '/math/ny/35'
@@ -21,6 +23,7 @@ interface SidebarProps {
 
 export default function Sidebar({ solved, problems }: SidebarProps) {
   const pathname = usePathname()
+  const [collapsed, setCollapsed] = useLocalStorage<boolean>(STORAGE_KEYS.GUIYI_SIDEBAR_COLLAPSED, false)
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
   const doneAll = Object.keys(solved).length
 
@@ -38,40 +41,87 @@ export default function Sidebar({ solved, problems }: SidebarProps) {
   }
 
   return (
-    <div className="sticky top-14 hidden h-[calc(100vh-56px)] w-[240px] shrink-0 overflow-y-auto border-r border-border-light bg-white px-3 py-4 md:block lg:hidden xl:block">
-      <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
-        导航
-      </div>
-      <Link
-        href={BASE}
-        className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
-          isActive('home')
-            ? 'bg-yellow-light font-bold text-yellow-dark'
-            : 'text-text-secondary hover:bg-gray-50'
-        }`}
-      >
-        <span className="w-5 shrink-0 text-center text-base">🏠</span>
-        首页
-      </Link>
-
-      <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
-        学习模块
-      </div>
-      {SECTIONS.map(s => (
-        <Link
-          key={s.key}
-          href={s.path}
-          className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
-            isActive(s.key)
-              ? 'bg-yellow-light font-bold text-yellow-dark'
-              : 'text-text-secondary hover:bg-gray-50'
-          }`}
+    <div
+      className={`sticky top-14 hidden h-[calc(100vh-56px)] shrink-0 overflow-hidden border-r border-border-light bg-white transition-[width] duration-200 md:block lg:hidden xl:block ${
+        collapsed ? 'w-[48px]' : 'w-[240px]'
+      }`}
+    >
+      <div className="flex h-full flex-col">
+        {/* 收起/展开按钮 */}
+        <button
+          type="button"
+          onClick={() => setCollapsed(c => !c)}
+          className="flex shrink-0 items-center justify-center border-b border-border-light py-3 text-text-muted transition-colors hover:bg-gray-50 hover:text-text-primary"
+          aria-label={collapsed ? '展开侧边栏' : '收起侧边栏'}
         >
-          <span className="w-5 shrink-0 text-center text-base">{s.icon}</span>
-          {s.label}
-          <span className="ml-auto text-[10px] text-text-muted">{getProgress(s.key)}</span>
-        </Link>
-      ))}
+          {collapsed ? (
+            <span className="text-lg">☰</span>
+          ) : (
+            <span className="text-sm">{`<<`} </span>
+          )}
+        </button>
+
+        {!collapsed && (
+          <div className="flex-1 overflow-y-auto px-3 py-4">
+            <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
+              导航
+            </div>
+            <Link
+              href={BASE}
+              className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
+                isActive('home')
+                  ? 'bg-yellow-light font-bold text-yellow-dark'
+                  : 'text-text-secondary hover:bg-gray-50'
+              }`}
+            >
+              <span className="w-5 shrink-0 text-center text-base">🏠</span>
+              首页
+            </Link>
+
+            <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
+              学习模块
+            </div>
+            {SECTIONS.map(s => (
+              <Link
+                key={s.key}
+                href={s.path}
+                className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
+                  isActive(s.key)
+                    ? 'bg-yellow-light font-bold text-yellow-dark'
+                    : 'text-text-secondary hover:bg-gray-50'
+                }`}
+              >
+                <span className="w-5 shrink-0 text-center text-base">{s.icon}</span>
+                {s.label}
+                <span className="ml-auto text-[10px] text-text-muted">{getProgress(s.key)}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* 收起状态下显示快捷图标 */}
+        {collapsed && (
+          <div className="flex flex-1 flex-col items-center gap-1 py-2">
+            <Link
+              href={BASE}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-base transition-colors hover:bg-gray-100"
+              title="首页"
+            >
+              🏠
+            </Link>
+            {SECTIONS.map(s => (
+              <Link
+                key={s.key}
+                href={s.path}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-base transition-colors hover:bg-gray-100"
+                title={s.label}
+              >
+                {s.icon}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

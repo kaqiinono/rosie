@@ -21,6 +21,7 @@ export const CONGRATS_MESSAGES = [
 
 export const STORAGE_KEYS = {
   GUIYI_SOLVED: 'guiyi-solved',
+  GUIYI_SIDEBAR_COLLAPSED: 'guiyi-sidebar-collapsed',
   WORD_DATA: 'rosie-words',
   DAILY_DATA: 'rosie-daily',
 } as const
