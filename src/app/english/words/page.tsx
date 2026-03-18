@@ -167,7 +167,7 @@ export default function EnglishWordsPage() {
     const ws = utils.aoa_to_sheet(rows)
     ws['!cols'] = [{ wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
     utils.book_append_sheet(wb, ws, '单词数据')
-    writeFile(wb, 'WordMaster_词库.xlsx')
+    writeFile(wb, 'RosieFun_词库.xlsx')
   }, [vocab])
 
   const enterImmersive = useCallback(() => {

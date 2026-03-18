@@ -34,7 +34,7 @@ export default function AppHeader({ activeTab, onTabChange, onImport, onExport, 
     <header className="sticky top-0 z-50 bg-[var(--wm-bg)]/95 backdrop-blur-xl border-b border-[var(--wm-border)] px-4 py-2.5">
       <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-2.5 flex-wrap">
         <div className="font-fredoka text-2xl bg-gradient-to-br from-[var(--wm-accent)] to-[var(--wm-accent2)] bg-clip-text text-transparent whitespace-nowrap">
-          📚 WordMaster Pro
+          📚 Rosie Fun
         </div>
 
         <nav className="flex gap-1 bg-[var(--wm-surface)] p-1 rounded-xl border border-[var(--wm-border)]">
