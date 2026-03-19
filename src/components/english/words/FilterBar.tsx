@@ -1,6 +1,8 @@
 'use client'
 
-import type {WordEntry} from '@/utils/type'
+import type {WordEntry, WordMasteryMap} from '@/utils/type'
+import type {MasteryLevel} from '@/utils/masteryUtils'
+import {MASTERY_ICON} from '@/utils/masteryUtils'
 import {getAllUnits, getAllLessons} from '@/utils/english-helpers'
 
 interface FilterBarProps {
@@ -15,11 +17,15 @@ interface FilterBarProps {
   onToggleWord: (word: string) => void
   onClearWords: () => void
   onFlipAll: () => void
+  masteryFilter?: MasteryLevel | null
+  onMasteryFilter?: (level: MasteryLevel | null) => void
+  masteryMap?: WordMasteryMap
 }
 
 export default function FilterBar({
                                     vocab, selUnits, selLessons, selWords, filteredCount,
                                     allFlipped, onToggleUnit, onToggleLesson, onToggleWord, onClearWords, onFlipAll,
+                                    masteryFilter, onMasteryFilter,
                                   }: FilterBarProps) {
   const units = getAllUnits(vocab)
   const lessons = getAllLessons(vocab, selUnits)
@@ -97,6 +103,33 @@ export default function FilterBar({
             ))}
           </div>
         </div>
+
+        {onMasteryFilter && (
+          <div className="flex flex-wrap items-start gap-2">
+            <span className="text-[.7rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-wider pt-1.5 min-w-[62px]">
+              掌握度
+            </span>
+            <div className="flex flex-wrap gap-1.5 flex-1">
+              {([null, 1, 2, 3] as (MasteryLevel | null)[]).map(lvl => {
+                const active = masteryFilter === lvl
+                const label = lvl === null ? '全部' : `${MASTERY_ICON[lvl]} ${['', '练习中', '加深中', '已掌握'][lvl]}`
+                return (
+                  <button
+                    key={lvl ?? 'all'}
+                    onClick={() => onMasteryFilter(lvl)}
+                    className={`px-3 py-1.5 rounded-full border-[1.5px] font-nunito text-[.78rem] font-bold cursor-pointer transition-all select-none whitespace-nowrap ${
+                      active
+                        ? 'bg-gradient-to-br from-[#4ade80] to-[#22c55e] border-[#4ade80] text-white shadow-[0_2px_8px_rgba(74,222,128,.3)]'
+                        : 'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent4)] hover:text-[var(--wm-text)]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
           <span

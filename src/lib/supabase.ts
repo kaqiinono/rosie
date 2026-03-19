@@ -56,6 +56,25 @@ export type Database = {
           last_date?: string | null
         }
       }
+      word_mastery: {
+        Row: {
+          id: string
+          user_id: string
+          word_key: string
+          correct: number
+          incorrect: number
+          last_seen: string | null
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          word_key: string
+          correct?: number
+          incorrect?: number
+          last_seen?: string | null
+          updated_at?: string
+        }
+      }
     }
   }
 }

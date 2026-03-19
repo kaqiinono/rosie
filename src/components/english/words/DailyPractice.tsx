@@ -2,10 +2,12 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import type { WordEntry } from '@/utils/type'
-import { buildDailyPlan, hilite, highlightExample, shuffle, type DayPlan } from '@/utils/english-helpers'
+import { buildDailyPlan, hilite, highlightExample, shuffle, prioritizeReviews, getStuckWords, type DayPlan } from '@/utils/english-helpers'
+import { getMasteryLevel, MASTERY_ICON } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import { useAuth } from '@/contexts/AuthContext'
 import { loadProgress, saveProgress, useDailyProgress, type DailyProgressRecord } from '@/hooks/useDailyProgress'
+import { useWordMastery } from '@/hooks/useWordMastery'
 
 interface DailyPracticeProps {
   vocab: WordEntry[]
@@ -17,6 +19,8 @@ interface DpQuizQ { word: WordEntry; type: 'A' | 'B' | 'C'; isReview: boolean }
 export default function DailyPractice({ vocab }: DailyPracticeProps) {
   const { user } = useAuth()
   const { syncProgressToCloud, loadProgressFromCloud } = useDailyProgress(user)
+  const { masteryMap, recordBatch } = useWordMastery(user)
+  const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
   const plan = useMemo(() => buildDailyPlan(vocab.length), [vocab.length])
   const [selDays, setSelDays] = useState<Set<number>>(new Set())
   const [phase, setPhase] = useState<Phase>('selector')
@@ -40,6 +44,26 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
   const [prog, setProg] = useState<DailyProgressRecord>(() => loadProgress())
   const doneDays = useMemo(() => Object.keys(prog).filter(k => prog[k]?.quizDone).map(Number), [prog])
 
+  const weeks = useMemo(() => {
+    const result: DayPlan[][] = []
+    for (let i = 0; i < plan.length; i += 7) result.push(plan.slice(i, i + 7))
+    return result
+  }, [plan])
+
+  const nextUnfinishedDay = useMemo(() => {
+    for (const p of plan) { if (!doneDays.includes(p.day)) return p.day }
+    return null
+  }, [plan, doneDays])
+
+  const toggleWeek = useCallback((weekDays: number[]) => {
+    setSelDays(prev => {
+      const next = new Set(prev)
+      const allSel = weekDays.every(d => next.has(d))
+      allSel ? weekDays.forEach(d => next.delete(d)) : weekDays.forEach(d => next.add(d))
+      return next
+    })
+  }, [])
+
   // Load cloud progress when user logs in
   useEffect(() => {
     loadProgressFromCloud().then(cloudProg => {
@@ -59,12 +83,26 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
   }, [])
 
   const sessionWords = useMemo(() => {
-    const wordSet = new Set<number>()
+    const newWordSet = new Set<number>()
+    const rawReviews: number[] = []
     const sorted = [...selDays].sort((a, b) => a - b)
-    sorted.forEach(d => { plan.find(x => x.day === d)?.newWords.forEach(i => wordSet.add(i)) })
-    sorted.forEach(d => { plan.find(x => x.day === d)?.reviewWords.forEach(i => wordSet.add(i)) })
-    return [...wordSet]
-  }, [selDays, plan])
+    sorted.forEach(d => { plan.find(x => x.day === d)?.newWords.forEach(i => newWordSet.add(i)) })
+    sorted.forEach(d => {
+      plan.find(x => x.day === d)?.reviewWords.forEach(i => {
+        if (!newWordSet.has(i) && !rawReviews.includes(i)) rawReviews.push(i)
+      })
+    })
+
+    const maxReviewSlots = Math.max(0, 20 - newWordSet.size)
+    const prioritized = prioritizeReviews(rawReviews, vocab, masteryMap, maxReviewSlots)
+    const alreadyIncluded = new Set([...newWordSet, ...prioritized])
+    const stuck = getStuckWords(vocab, masteryMap, alreadyIncluded)
+    const stuckSlots = Math.max(0, maxReviewSlots - prioritized.length)
+    const stuckToAdd = stuck.slice(0, stuckSlots)
+
+    const result: number[] = [...newWordSet, ...prioritized, ...stuckToAdd]
+    return result
+  }, [selDays, plan, vocab, masteryMap])
 
   const isReviewIdx = useCallback((idx: number) => {
     for (const d of selDays) {
@@ -102,6 +140,7 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
       const j = Math.floor(Math.random() * (i + 1));
       [qs[i], qs[j]] = [qs[j], qs[i]]
     }
+    quizResultBuffer.current = []
     setQuizQs(qs)
     setCurQ(0)
     setScore(0)
@@ -116,8 +155,10 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
     if (answered) return
     setAnswered(true)
     setSelected(chosen)
-    if (chosen === correct) setScore(s => s + 1)
-  }, [answered])
+    const isCorrect = chosen === correct
+    if (isCorrect) setScore(s => s + 1)
+    if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
+  }, [answered, quizQs, curQ])
 
   const handleSpell = useCallback(() => {
     if (answered) return
@@ -125,6 +166,7 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
     const ok = spellVal.trim().toLowerCase() === quizQs[curQ]?.word.word.toLowerCase()
     setSpellOk(ok)
     if (ok) setScore(s => s + 1)
+    if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: ok })
   }, [answered, spellVal, quizQs, curQ])
 
   const nextQ = useCallback(() => {
@@ -142,6 +184,10 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
       saveProgress(p)
       setProg({ ...p })
       void syncProgressToCloud(p)
+
+      recordBatch(quizResultBuffer.current)
+      quizResultBuffer.current = []
+
       setPhase('done')
     } else {
       setCurQ(next)
@@ -188,27 +234,83 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
             </div>
           </div>
 
-          <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-2.5">选择练习的天</div>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {plan.map(p => {
-              const isDone = doneDays.includes(p.day)
-              const hasRev = p.reviewWords.length > 0
-              const tc = isDone ? 'border-[rgba(74,222,128,.4)] text-[#4ade80]' : hasRev ? 'border-[rgba(96,165,250,.4)] text-[#60a5fa]' : 'border-[rgba(249,115,22,.4)] text-[#fb923c]'
-              const dotBg = isDone ? '#4ade80' : hasRev ? '#60a5fa' : '#f97316'
-              const lbl = isDone ? '✓' : hasRev ? '复+新' : '新词'
-              const isActive = selDays.has(p.day)
-              const activeCls = isActive ? (isDone ? 'bg-[rgba(74,222,128,.15)] border-[#4ade80] shadow-[0_3px_12px_rgba(74,222,128,.25)]' : hasRev ? 'bg-[rgba(96,165,250,.15)] border-[#60a5fa] shadow-[0_3px_12px_rgba(96,165,250,.25)]' : 'bg-[rgba(249,115,22,.15)] border-[#f97316] shadow-[0_3px_12px_rgba(249,115,22,.25)]') : ''
-
-              return (
+          {/* Day selector header */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest">选择练习的天</div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-[.6rem] text-[var(--wm-text-dim)]">
+                <span className="w-2 h-2 rounded-full bg-[#4ade80] inline-block" />已完成
+                <span className="w-2 h-2 rounded-full bg-[#60a5fa] inline-block ml-1" />复+新
+                <span className="w-2 h-2 rounded-full bg-[#fb923c] inline-block ml-1" />新词
+              </div>
+              {nextUnfinishedDay && (
                 <button
-                  key={p.day}
-                  onClick={() => toggleDay(p.day)}
-                  className={`px-3.5 py-2 rounded-[10px] border-[1.5px] bg-[var(--wm-surface2)] font-nunito text-[.78rem] font-extrabold cursor-pointer transition-all select-none flex items-center gap-1.5 ${tc} ${activeCls} ${isActive ? '-translate-y-px' : ''}`}
+                  onClick={() => setSelDays(new Set([nextUnfinishedDay]))}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[.65rem] font-extrabold bg-[rgba(245,158,11,.12)] border border-[rgba(245,158,11,.3)] text-[#fbbf24] cursor-pointer hover:bg-[rgba(245,158,11,.2)] transition-all"
                 >
-                  <div className="w-[7px] h-[7px] rounded-full shrink-0" style={{ background: dotBg }} />
-                  Day {p.day}
-                  <span className="text-[.65rem] opacity-70">{lbl} {p.totalCount}词</span>
+                  ⚡ 推荐 Day {nextUnfinishedDay}
                 </button>
+              )}
+            </div>
+          </div>
+
+          {/* Week grid */}
+          <div className="flex flex-col gap-1 mb-4">
+            {weeks.map((week, wi) => {
+              const weekDayNums = week.map(p => p.day)
+              const allSel = weekDayNums.every(d => selDays.has(d))
+              const someSel = weekDayNums.some(d => selDays.has(d))
+              return (
+                <div key={wi} className="flex items-center gap-2">
+                  {/* Week label / click to select whole week */}
+                  <button
+                    onClick={() => toggleWeek(weekDayNums)}
+                    title={`${allSel ? '取消' : '选中'}第 ${wi + 1} 周全部`}
+                    className={`w-9 h-8 rounded-md text-[.58rem] font-extrabold shrink-0 cursor-pointer transition-all select-none border ${
+                      allSel
+                        ? 'bg-[rgba(245,158,11,.18)] border-[rgba(245,158,11,.45)] text-[#f59e0b]'
+                        : someSel
+                        ? 'bg-white/[.04] border-white/10 text-white/35'
+                        : 'bg-transparent border-white/[.06] text-white/20'
+                    }`}
+                  >
+                    W{wi + 1}
+                  </button>
+
+                  {/* Day cells */}
+                  <div className="flex gap-1 flex-wrap">
+                    {week.map(p => {
+                      const isDone = doneDays.includes(p.day)
+                      const hasRev = p.reviewWords.length > 0
+                      const isActive = selDays.has(p.day)
+                      const color = isDone
+                        ? { text: '#4ade80', activeBg: 'rgba(74,222,128,.2)', border: '#4ade80', dot: '#4ade80' }
+                        : hasRev
+                        ? { text: '#60a5fa', activeBg: 'rgba(96,165,250,.2)', border: '#60a5fa', dot: '#60a5fa' }
+                        : { text: '#fb923c', activeBg: 'rgba(249,115,22,.18)', border: '#f97316', dot: '#f97316' }
+                      return (
+                        <button
+                          key={p.day}
+                          onClick={() => toggleDay(p.day)}
+                          title={`Day ${p.day}：${p.newWords.length} 新词${p.reviewWords.length > 0 ? ` + ${p.reviewWords.length} 复习` : ''}，共 ${p.totalCount} 词`}
+                          className="relative w-9 h-8 rounded-[7px] flex items-center justify-center text-[.7rem] font-extrabold cursor-pointer select-none transition-all"
+                          style={{
+                            color: color.text,
+                            background: isActive ? color.activeBg : 'rgba(255,255,255,.04)',
+                            border: `1.5px solid ${isActive ? color.border : 'rgba(255,255,255,.07)'}`,
+                            transform: isActive ? 'translateY(-1px)' : undefined,
+                            boxShadow: isActive ? `0 3px 10px ${color.activeBg}` : undefined,
+                          }}
+                        >
+                          {isDone && (
+                            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#4ade80] border border-[#0a0a1a]" />
+                          )}
+                          {p.day}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
               )
             })}
           </div>
@@ -271,18 +373,21 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
 
               <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-2.5 mt-5">本次练习单词</div>
               <div className="flex flex-wrap gap-1.5 py-3">
-                {sessionEntries.map(e => (
-                  <span
-                    key={e.entry.word}
-                    className={`px-3 py-1.5 rounded-full border-[1.5px] text-[.78rem] font-bold cursor-default ${
-                      e.isReview
-                        ? 'border-[rgba(96,165,250,.35)] text-[#93c5fd] bg-[rgba(96,165,250,.08)]'
-                        : 'border-[rgba(249,115,22,.4)] text-[#fb923c] bg-[rgba(249,115,22,.08)]'
-                    }`}
-                  >
-                    {e.entry.word}
-                  </span>
-                ))}
+                {sessionEntries.map(e => {
+                  const level = getMasteryLevel(masteryMap[`${e.entry.unit}::${e.entry.lesson}::${e.entry.word}`]?.correct ?? 0)
+                  return (
+                    <span
+                      key={e.entry.word}
+                      className={`px-3 py-1.5 rounded-full border-[1.5px] text-[.78rem] font-bold cursor-default ${
+                        e.isReview
+                          ? 'border-[rgba(96,165,250,.35)] text-[#93c5fd] bg-[rgba(96,165,250,.08)]'
+                          : 'border-[rgba(249,115,22,.4)] text-[#fb923c] bg-[rgba(249,115,22,.08)]'
+                      }`}
+                    >
+                      {level > 0 && <span className="mr-1">{MASTERY_ICON[level]}</span>}{e.entry.word}
+                    </span>
+                  )
+                })}
               </div>
             </>
           )}
@@ -511,6 +616,7 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
     const pct = total ? Math.round(score / total * 100) : 0
     const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪'
     const msg = pct >= 90 ? '完美！' : pct >= 70 ? '太棒了！' : pct >= 50 ? '不错哦！' : '继续加油！'
+    const masteredCount = words.filter(w => getMasteryLevel((masteryMap[`${w.entry.unit}::${w.entry.lesson}::${w.entry.word}`]?.correct ?? 0)) === 3).length
 
     return (
       <div className="max-w-[500px] mx-auto py-10 px-5 text-center">
@@ -519,8 +625,11 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
           {score} / {total}
         </div>
         <div className="text-[var(--wm-text-dim)] text-[.9rem] font-bold mb-2.5">{msg}</div>
-        <div className="text-[.78rem] text-[var(--wm-text-dim)] leading-loose mb-5">
+        <div className="text-[.78rem] text-[var(--wm-text-dim)] leading-loose mb-2">
           正确率 {pct}% · {words.length} 个单词 · {[...selDays].sort((a, b) => a - b).map(d => 'Day ' + d).join(', ')}
+        </div>
+        <div className="text-[.82rem] font-bold text-[#4ade80] mb-5">
+          本次练习：{masteredCount}/{words.length} 个单词已掌握 🦋
         </div>
         <div className="flex gap-2.5 justify-center flex-wrap">
           <button onClick={() => startQuiz()} className="px-6 py-2.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer shadow-[0_3px_12px_rgba(245,158,11,.35)]">

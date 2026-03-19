@@ -1,15 +1,17 @@
 'use client'
 
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import { wordKey } from '@/utils/english-helpers'
 import FlashCard from './FlashCard'
 
 interface CardsGridProps {
   words: WordEntry[]
   flippedSet: Set<number>
   onFlip: (index: number) => void
+  masteryMap?: WordMasteryMap
 }
 
-export default function CardsGrid({ words, flippedSet, onFlip }: CardsGridProps) {
+export default function CardsGrid({ words, flippedSet, onFlip, masteryMap }: CardsGridProps) {
   if (!words.length) {
     return (
       <div className="text-center py-12 text-[var(--wm-text-dim)] col-span-full">
@@ -32,6 +34,7 @@ export default function CardsGrid({ words, flippedSet, onFlip }: CardsGridProps)
           flipped={flippedSet.has(i)}
           onFlip={() => onFlip(i)}
           index={i}
+          masteryInfo={masteryMap?.[wordKey(v)]}
         />
       ))}
     </div>

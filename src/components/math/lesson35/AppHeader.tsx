@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import type { ProblemSet } from '@/utils/type'
+import type { ProblemSet, Problem } from '@/utils/type'
 import { NAV_PAGES } from '@/utils/constant'
 import { useLesson35 } from './Lesson35Provider'
 
@@ -25,7 +25,7 @@ export default function AppHeader({ problems }: AppHeaderProps) {
   const pathname = usePathname()
   const { solveCount } = useLesson35()
 
-  const allIds = new Set(Object.values(problems).flatMap(l => l.map(p => p.id)))
+  const allIds = new Set((Object.values(problems) as Problem[][]).flatMap(l => l.map(p => p.id)))
   const total = allIds.size
   const mastered = [...allIds].filter(id => (solveCount[id] ?? 0) >= 3).length
 

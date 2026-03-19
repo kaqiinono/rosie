@@ -1,4 +1,5 @@
-import type { WordEntry } from './type'
+import type { WordEntry, WordMasteryMap } from './type'
+import { getMasteryLevel } from './masteryUtils'
 import { KW_MAP } from './english-data'
 
 export function escHtml(s: string): string {
@@ -168,4 +169,48 @@ export function getResultMessage(pct: number): string {
   if (pct >= 70) return '不错哦，继续加油！'
   if (pct >= 50) return '有进步，再练练吧！'
   return '继续努力，你可以的！'
+}
+
+export function wordKey(e: WordEntry): string {
+  return `${e.unit}::${e.lesson}::${e.word}`
+}
+
+export function prioritizeReviews(
+  reviewIndices: number[],
+  vocab: WordEntry[],
+  masteryMap: WordMasteryMap,
+  maxSlots: number,
+): number[] {
+  const sorted = [...reviewIndices].sort((a, b) => {
+    const ma = masteryMap[wordKey(vocab[a])] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+    const mb = masteryMap[wordKey(vocab[b])] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+    const la = getMasteryLevel(ma.correct)
+    const lb = getMasteryLevel(mb.correct)
+    // mastered words go last
+    if (la === 3 && lb !== 3) return 1
+    if (lb === 3 && la !== 3) return -1
+    // otherwise sort by correct/total ratio ascending (weaker first)
+    const totalA = ma.correct + ma.incorrect
+    const totalB = mb.correct + mb.incorrect
+    const ratioA = totalA === 0 ? 0 : ma.correct / totalA
+    const ratioB = totalB === 0 ? 0 : mb.correct / totalB
+    return ratioA - ratioB
+  })
+  return sorted.slice(0, maxSlots)
+}
+
+export function getStuckWords(
+  vocab: WordEntry[],
+  masteryMap: WordMasteryMap,
+  alreadyIncluded: Set<number>,
+): number[] {
+  const stuck: { idx: number; incorrect: number }[] = []
+  vocab.forEach((entry, idx) => {
+    if (alreadyIncluded.has(idx)) return
+    const m = masteryMap[wordKey(entry)]
+    if (m && m.incorrect >= 2 && m.correct === 0) {
+      stuck.push({ idx, incorrect: m.incorrect })
+    }
+  })
+  return stuck.sort((a, b) => b.incorrect - a.incorrect).map(s => s.idx)
 }

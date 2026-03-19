@@ -25,6 +25,7 @@ export const STORAGE_KEYS = {
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
   WORD_DATA: 'rosie-words',
   DAILY_DATA: 'rosie-daily',
+  WORD_MASTERY: 'rosie-word-mastery',
 } as const
 
 export const NAV_PAGES = [

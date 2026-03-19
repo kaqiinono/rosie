@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import type { ProblemSet } from '@/utils/type'
+import type { ProblemSet, Problem } from '@/utils/type'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson36-data'
 
 const BASE = '/math/ny/36'
@@ -19,7 +19,7 @@ const MODULES = [
 
 export default function HomePage({ problems, solveCount }: HomePageProps) {
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
-  const allProblemIds = new Set(Object.values(problems).flatMap(list => list.map(p => p.id)))
+  const allProblemIds = new Set((Object.values(problems) as Problem[][]).flatMap(list => list.map(p => p.id)))
   const masteredAll = Object.entries(solveCount).filter(([id, c]) => allProblemIds.has(id) && c >= 3).length
   const attemptedAll = Object.entries(solveCount).filter(([id, c]) => allProblemIds.has(id) && c >= 1).length
 

@@ -1,8 +1,9 @@
 'use client'
 
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry, WordMasteryInfo } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
+import { getMasteryLevel, MASTERY_ICON, MASTERY_BORDER, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 
 interface FlashCardProps {
@@ -10,10 +11,12 @@ interface FlashCardProps {
   flipped: boolean
   onFlip: () => void
   index: number
+  masteryInfo?: WordMasteryInfo
 }
 
-export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardProps) {
+export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }: FlashCardProps) {
   const sz = getWordSizeClass(entry.word)
+  const level = getMasteryLevel(masteryInfo?.correct ?? 0)
   const wordFontSize = {
     xl: 'text-[2.1rem]',
     lg: 'text-[1.85rem]',
@@ -40,12 +43,11 @@ export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardPr
       >
         {/* ── Front ── */}
         <div
-          className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col"
+          className={`absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col border-2 ${MASTERY_BORDER[level]}`}
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             background: 'linear-gradient(145deg, #1c1c3a 0%, #111126 100%)',
-            border: '1px solid rgba(255,255,255,.07)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,.05), 0 4px 24px rgba(0,0,0,.35)',
           }}
         >
@@ -62,14 +64,21 @@ export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardPr
             {entry.word.charAt(0).toUpperCase()}
           </div>
 
-          {/* Header: unit / lesson badges */}
-          <div className="flex gap-1.5 flex-wrap shrink-0 relative z-[1]">
-            <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(233,69,96,.14)] text-[#f87171] border border-[rgba(233,69,96,.22)]">
-              {entry.unit}
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(96,165,250,.14)] text-[#93c5fd] border border-[rgba(96,165,250,.22)]">
-              {entry.lesson}
-            </span>
+          {/* Header: unit / lesson badges + mastery badge */}
+          <div className="flex gap-1.5 flex-wrap shrink-0 relative z-[1] justify-between">
+            <div className="flex gap-1.5 flex-wrap">
+              <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(233,69,96,.14)] text-[#f87171] border border-[rgba(233,69,96,.22)]">
+                {entry.unit}
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(96,165,250,.14)] text-[#93c5fd] border border-[rgba(96,165,250,.22)]">
+                {entry.lesson}
+              </span>
+            </div>
+            {level > 0 && (
+              <span className={`px-2 py-0.5 rounded-full text-[.65rem] font-extrabold ${MASTERY_BADGE_BG[level]}`}>
+                {MASTERY_ICON[level]}
+              </span>
+            )}
           </div>
 
           {/* Center: word + ipa */}

@@ -1,24 +1,25 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-
-type TabId = 'cards' | 'practice' | 'daily'
+import { useRouter, usePathname } from 'next/navigation'
 
 interface AppHeaderProps {
-  activeTab: TabId
-  onTabChange: (tab: TabId) => void
   onImport: () => void
   onExport: () => void
   onImmersive: () => void
 }
 
-const TABS: { id: TabId; icon: string; label: string }[] = [
-  { id: 'cards', icon: '🃏', label: '背单词' },
-  { id: 'practice', icon: '✏️', label: '单词练习' },
-  { id: 'daily', icon: '📅', label: '每日一练' },
+const BASE = '/english/words'
+
+const TABS = [
+  { id: 'cards', path: `${BASE}/cards`, icon: '🃏', label: '背单词' },
+  { id: 'practice', path: `${BASE}/practice`, icon: '✏️', label: '单词练习' },
+  { id: 'daily', path: `${BASE}/daily`, icon: '📅', label: '每日一练' },
 ]
 
-export default function AppHeader({ activeTab, onTabChange, onImport, onExport, onImmersive }: AppHeaderProps) {
+export default function AppHeader({ onImport, onExport, onImmersive }: AppHeaderProps) {
+  const router = useRouter()
+  const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const ddRef = useRef<HTMLDivElement>(null)
 
@@ -38,19 +39,22 @@ export default function AppHeader({ activeTab, onTabChange, onImport, onExport, 
         </div>
 
         <nav className="flex gap-1 bg-[var(--wm-surface)] p-1 rounded-xl border border-[var(--wm-border)]">
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => onTabChange(t.id)}
-              className={`px-3.5 py-1.5 rounded-[9px] font-nunito font-bold text-[.82rem] transition-all cursor-pointer ${
-                activeTab === t.id
-                  ? 'bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] text-white shadow-[0_3px_10px_rgba(233,69,96,.35)]'
-                  : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
-              }`}
-            >
-              {t.icon} {t.label}
-            </button>
-          ))}
+          {TABS.map(t => {
+            const active = pathname.startsWith(t.path)
+            return (
+              <button
+                key={t.id}
+                onClick={() => router.push(t.path)}
+                className={`px-3.5 py-1.5 rounded-[9px] font-nunito font-bold text-[.82rem] transition-all cursor-pointer ${
+                  active
+                    ? 'bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] text-white shadow-[0_3px_10px_rgba(233,69,96,.35)]'
+                    : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
+                }`}
+              >
+                {t.icon} {t.label}
+              </button>
+            )
+          })}
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">

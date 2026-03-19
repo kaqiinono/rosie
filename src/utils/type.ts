@@ -121,3 +121,11 @@ export interface DailyRecord {
   reviews: string[]
   scores: Record<string, number>
 }
+
+export interface WordMasteryInfo {
+  correct: number
+  incorrect: number
+  lastSeen: string
+}
+
+export type WordMasteryMap = Record<string, WordMasteryInfo>
