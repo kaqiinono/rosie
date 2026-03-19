@@ -2,7 +2,7 @@
 
 import type { WordEntry } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
-import { hilite, escHtml } from '@/utils/english-helpers'
+import { hilite } from '@/utils/english-helpers'
 import PhonicsWord from './PhonicsWord'
 
 interface FlashCardProps {
@@ -15,11 +15,11 @@ interface FlashCardProps {
 export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardProps) {
   const sz = getWordSizeClass(entry.word)
   const wordFontSize = {
-    xl: 'text-[2rem] max-sm:text-[1.75rem]',
-    lg: 'text-[1.75rem] max-sm:text-[1.5rem]',
-    md: 'text-[1.4rem] max-sm:text-[1.25rem]',
-    sm: 'text-[1.15rem] max-sm:text-[1rem]',
-    xs: 'text-[0.95rem] max-sm:text-[0.85rem]',
+    xl: 'text-[2.1rem]',
+    lg: 'text-[1.85rem]',
+    md: 'text-[1.5rem]',
+    sm: 'text-[1.25rem]',
+    xs: 'text-[1.05rem]',
   }[sz]
 
   const delay = Math.min(index * 0.03, 0.25)
@@ -27,68 +27,94 @@ export default function FlashCard({ entry, flipped, onFlip, index }: FlashCardPr
 
   return (
     <div
-      className="min-h-[240px]"
-      style={{ perspective: '1000px', animation: `card-flip-fade-up .28s ease ${delay}s backwards` }}
+      className="min-h-[256px]"
+      style={{ perspective: '1200px', animation: `card-flip-fade-up .3s ease ${delay}s backwards` }}
     >
       <div
         onClick={onFlip}
-        className="w-full min-h-[240px] relative cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
+        className="w-full min-h-[256px] relative cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
         style={{
           transformStyle: 'preserve-3d',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0)',
         }}
       >
-        {/* Front */}
+        {/* ── Front ── */}
         <div
-          className="absolute inset-0 rounded-[var(--wm-radius)] border border-[var(--wm-border)] overflow-hidden bg-gradient-to-br from-[#1e1e35] to-[#161628] p-4 flex flex-col gap-1.5"
-          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+          className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            background: 'linear-gradient(145deg, #1c1c3a 0%, #111126 100%)',
+            border: '1px solid rgba(255,255,255,.07)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,.05), 0 4px 24px rgba(0,0,0,.35)',
+          }}
         >
-          <div className="absolute top-0 right-0 w-[90px] h-[90px] bg-[radial-gradient(circle_at_top_right,rgba(233,69,96,.1),transparent_70%)] rounded-bl-full" />
-          <div className="flex gap-1 flex-wrap">
-            <span className="px-2 py-0.5 rounded-full text-[.6rem] font-extrabold uppercase tracking-wider bg-[rgba(233,69,96,.2)] text-[var(--wm-accent)] border border-[rgba(233,69,96,.3)]">
+          {/* Decorative top-right glow */}
+          <div
+            className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
+            style={{ background: 'radial-gradient(circle at top right, rgba(233,69,96,.12), transparent 70%)' }}
+          />
+          {/* Decorative background initial */}
+          <div
+            className="absolute -bottom-3 -right-1 font-fredoka font-black leading-none pointer-events-none select-none"
+            style={{ fontSize: 'clamp(72px,14vw,108px)', color: 'rgba(109,40,217,.07)', zIndex: 0 }}
+          >
+            {entry.word.charAt(0).toUpperCase()}
+          </div>
+
+          {/* Header: unit / lesson badges */}
+          <div className="flex gap-1.5 flex-wrap shrink-0 relative z-[1]">
+            <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(233,69,96,.14)] text-[#f87171] border border-[rgba(233,69,96,.22)]">
               {entry.unit}
             </span>
-            <span className="px-2 py-0.5 rounded-full text-[.6rem] font-extrabold uppercase tracking-wider bg-[rgba(96,165,250,.2)] text-[var(--wm-accent4)] border border-[rgba(96,165,250,.3)]">
+            <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(96,165,250,.14)] text-[#93c5fd] border border-[rgba(96,165,250,.22)]">
               {entry.lesson}
             </span>
           </div>
-          <div className="flex-1 flex flex-col items-center justify-center gap-1 py-1">
+
+          {/* Center: word + ipa */}
+          <div className="flex-1 flex flex-col items-center justify-center gap-1.5 relative z-[1] py-1">
             <div className={`font-nunito ${wordFontSize} font-black leading-tight text-center break-words`}>
               <PhonicsWord text={entry.word} />
             </div>
             {entry.ipa && (
-              <div className={`${sz === 'xs' || sz === 'sm' ? 'text-[.75rem]' : 'text-[.85rem]'} text-[var(--wm-accent2)] italic font-semibold text-center tracking-wide opacity-90`}>
+              <div className="text-[.8rem] text-[#e879f9] italic font-medium opacity-80 tracking-wide text-center">
                 {entry.ipa}
               </div>
             )}
           </div>
-          <div className="text-[.72rem] text-[var(--wm-text-dim)] leading-relaxed border-t border-[var(--wm-border)] pt-1.5 line-clamp-2">
-            {entry.explanation}
+
+          {/* Bottom: definition preview */}
+          <div className="relative z-[1] border-t border-white/[.06] pt-2 mt-0.5">
+            <p className="text-[.69rem] text-white/[.28] leading-relaxed line-clamp-2">
+              {entry.explanation}
+            </p>
           </div>
-          <span className="absolute bottom-1.5 right-2.5 text-[.58rem] text-white/[.18] font-bold">点击翻面</span>
+
+          {/* Flip hint */}
+          <span className="absolute bottom-2 right-2.5 text-white/[.14] text-[.62rem] font-bold select-none">↻</span>
         </div>
 
-        {/* Back */}
+        {/* ── Back ── */}
         <div
-          className="absolute inset-0 rounded-[var(--wm-radius)] border border-[var(--wm-border)] overflow-hidden bg-gradient-to-br from-[#0f3460] to-[#1a1a2e] p-5 flex flex-col items-center justify-center gap-2.5 min-h-[240px]"
-          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+          className="absolute inset-0 rounded-2xl overflow-hidden p-5 flex items-center justify-center min-h-[256px]"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            background: 'linear-gradient(145deg, #0b1a36 0%, #0e2244 100%)',
+            border: '1px solid rgba(96,165,250,.1)',
+            boxShadow: 'inset 0 1px 0 rgba(96,165,250,.07), 0 4px 24px rgba(0,0,0,.35)',
+          }}
         >
-          <span className="text-[.6rem] font-extrabold uppercase tracking-widest text-[var(--wm-accent4)] opacity-70 self-start">
-            释义
-          </span>
+          {/* Definition — centered */}
           <div
-            className="text-[1.05rem] font-bold text-center leading-relaxed text-[var(--wm-text)]"
+            className="text-[1.15rem] font-bold leading-relaxed text-[#dde8ff] text-center [&_strong]:text-[#60a5fa] [&_strong]:font-extrabold"
             dangerouslySetInnerHTML={{ __html: explHtml }}
           />
-          <div className="font-nunito text-[.9rem] font-black text-white/30 text-center mt-1">
-            {entry.word}
-          </div>
-          {entry.ipa && (
-            <div className="text-[.8rem] text-[var(--wm-accent2)] italic opacity-70">
-              {entry.ipa}
-            </div>
-          )}
-          <span className="absolute bottom-1.5 right-2.5 text-[.58rem] text-white/[.18] font-bold">点击翻回</span>
+
+          {/* Flip back hint */}
+          <span className="absolute bottom-2 right-2.5 text-white/[.14] text-[.62rem] font-bold select-none">↩</span>
         </div>
       </div>
     </div>

@@ -27,6 +27,15 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const [defOnly, setDefOnly] = useState(false)
   const [wordShown, setWordShown] = useState(true)
   const [bodyMode, setBodyMode] = useState<'normal' | 'word-visible' | 'def-only'>('normal')
+  const [isWide, setIsWide] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    setIsWide(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsWide(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const [quizQs, setQuizQs] = useState<ImmQuizQ[]>([])
   const [curQ, setCurQ] = useState(0)
@@ -141,17 +150,7 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
     xs: 'text-[clamp(1.3rem,2.6vw,2.2rem)]',
   }[sz]
 
-  const leftCls = bodyMode === 'normal'
-    ? 'left-0 w-1/2 opacity-100'
-    : bodyMode === 'word-visible'
-    ? 'left-0 w-1/2 opacity-100'
-    : '-left-1/2 w-1/2 opacity-0'
-
-  const rightCls = bodyMode === 'normal'
-    ? 'w-1/2 cursor-default'
-    : bodyMode === 'word-visible'
-    ? 'w-1/2 border-l border-white/[.07] cursor-pointer'
-    : 'w-full cursor-pointer'
+  const topVisible = bodyMode !== 'def-only'
 
   const qTotal = quizQs.length
   const q = quizQs[curQ]
@@ -210,19 +209,46 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
       {/* Vocab body */}
       {mode === 'vocab' && v && (
         <>
-          <div className="flex-1 flex overflow-hidden min-h-0 relative">
-            {/* Left panel */}
+          <div className="flex-1 overflow-hidden min-h-0 relative" style={{ display: 'flex', flexDirection: isWide ? 'row' : 'column' }}>
+
+            {/* Word panel — left on wide, top on narrow */}
             <div
-              className={`absolute top-0 bottom-0 flex flex-col items-center justify-center px-11 py-10 gap-3.5 overflow-y-auto z-[1] transition-all duration-[450ms] ease-[cubic-bezier(.4,0,.2,1)] max-sm:w-full max-sm:relative max-sm:left-0 max-sm:opacity-100 ${leftCls}`}
+              className="flex flex-col items-center justify-center gap-3.5 relative overflow-hidden"
               style={{
                 background: 'radial-gradient(ellipse at 40% 45%, rgba(109,40,217,.13) 0, transparent 62%), #0e0e22',
+                ...(isWide ? {
+                  // Wide: absolute left panel, slides out left when def-only
+                  position: 'absolute',
+                  top: 0, bottom: 0,
+                  left: topVisible ? 0 : '-50%',
+                  width: '50%',
+                  opacity: topVisible ? 1 : 0,
+                  padding: '2.5rem 2.5rem',
+                  overflowY: 'auto' as const,
+                  transition: 'left 450ms cubic-bezier(.4,0,.2,1), opacity 320ms ease',
+                } : {
+                  // Narrow: collapses vertically
+                  flexShrink: 0,
+                  maxHeight: topVisible ? '60vh' : '0px',
+                  opacity: topVisible ? 1 : 0,
+                  padding: topVisible ? '2rem 2rem' : '0 2rem',
+                  overflow: 'hidden',
+                  transition: 'max-height 450ms cubic-bezier(.4,0,.2,1), opacity 320ms ease, padding 380ms ease',
+                }),
               }}
-              data-letter={v.word.charAt(0).toUpperCase()}
             >
-              <div className="absolute bottom-[-6%] right-[-2%] font-fredoka text-[clamp(120px,20vw,240px)] font-black text-[rgba(124,58,237,.05)] leading-none pointer-events-none select-none z-0">
+              <div
+                className="absolute font-fredoka font-black leading-none pointer-events-none select-none"
+                style={{
+                  fontSize: 'clamp(90px,16vw,190px)',
+                  color: 'rgba(124,58,237,.05)',
+                  bottom: '-6%', right: '-2%',
+                  zIndex: 0,
+                }}
+              >
                 {v.word.charAt(0).toUpperCase()}
               </div>
-              <div className="relative z-[1] flex flex-col items-center gap-3.5">
+              <div className="relative z-[1] flex flex-col items-center gap-3 w-full max-w-[600px]">
                 <div className="flex gap-1.5 justify-center flex-wrap">
                   <span className="px-2.5 py-1 rounded-full text-[.6rem] font-extrabold uppercase tracking-wider bg-[rgba(233,69,96,.12)] text-[#f87171] border border-[rgba(233,69,96,.2)]">
                     {v.unit}
@@ -231,21 +257,21 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
                     {v.lesson}
                   </span>
                 </div>
-                <div className={`font-nunito ${wordSizeClass} font-black leading-tight text-center break-words max-sm:text-[clamp(2.8rem,11vw,4rem)]`}>
+                <div className={`font-nunito ${wordSizeClass} font-black leading-tight text-center break-words`}>
                   <PhonicsWord text={v.word} />
                 </div>
                 {v.ipa && (
-                  <div className="text-[clamp(1.1rem,2.2vw,1.5rem)] text-[#f0abfc] italic font-semibold text-center opacity-80">
+                  <div className="text-[clamp(1rem,2vw,1.4rem)] text-[#f0abfc] italic font-semibold text-center opacity-80">
                     {v.ipa}
                   </div>
                 )}
                 {v.example && (
                   <>
-                    <div className="w-12 h-px bg-gradient-to-r from-transparent via-[rgba(124,58,237,.5)] to-transparent shrink-0" />
-                    <div className="text-center max-w-[380px] w-full">
-                      <div className="text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[rgba(74,222,128,.55)] mb-2.5">例句</div>
+                    <div className="w-10 h-px bg-gradient-to-r from-transparent via-[rgba(124,58,237,.5)] to-transparent shrink-0" />
+                    <div className="text-center max-w-[520px] w-full">
+                      <div className="text-[.68rem] font-extrabold uppercase tracking-[.12em] text-[rgba(74,222,128,.55)] mb-2">例句</div>
                       <div
-                        className="text-[clamp(1rem,1.8vw,1.25rem)] font-semibold leading-loose text-[rgba(220,220,255,.42)] italic [&_strong]:text-[#4ade80] [&_strong]:not-italic [&_strong]:font-extrabold [&_strong]:bg-[rgba(74,222,128,.07)] [&_strong]:px-1 [&_strong]:rounded-sm"
+                        className="text-[clamp(.85rem,1.5vw,1.05rem)] font-semibold leading-loose text-[rgba(220,220,255,.4)] italic [&_strong]:text-[#4ade80] [&_strong]:not-italic [&_strong]:font-extrabold [&_strong]:bg-[rgba(74,222,128,.07)] [&_strong]:px-1 [&_strong]:rounded-sm"
                         dangerouslySetInnerHTML={{ __html: highlightExample(v.example, v.word) }}
                       />
                     </div>
@@ -254,23 +280,43 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
               </div>
             </div>
 
-            {/* Right panel */}
+            {/* Narrow-only horizontal divider */}
+            {!isWide && (
+              <div
+                className="h-px bg-white/[.07] shrink-0"
+                style={{ opacity: topVisible ? 1 : 0, transition: 'opacity 320ms ease' }}
+              />
+            )}
+
+            {/* Definition panel — right on wide, bottom on narrow */}
             <div
               onClick={handleRightClick}
-              className={`absolute top-0 bottom-0 right-0 flex flex-col items-center justify-center px-12 py-10 overflow-y-auto z-[2] transition-all duration-[450ms] ease-[cubic-bezier(.4,0,.2,1)] max-sm:w-full max-sm:relative ${rightCls}`}
+              className="flex flex-col items-center justify-center px-10 py-8 overflow-y-auto relative"
               style={{
                 background: 'radial-gradient(ellipse at 60% 55%, rgba(96,165,250,.07) 0, transparent 60%), #0c0c1a',
+                cursor: defOnly ? 'pointer' : 'default',
+                ...(isWide ? {
+                  // Wide: absolute right panel, expands to full width when def-only
+                  position: 'absolute',
+                  top: 0, bottom: 0, right: 0,
+                  width: topVisible ? '50%' : '100%',
+                  borderLeft: topVisible ? '1px solid rgba(255,255,255,.06)' : 'none',
+                  transition: 'width 450ms cubic-bezier(.4,0,.2,1)',
+                } : {
+                  // Narrow: takes remaining space
+                  flex: 1,
+                }),
               }}
             >
-              <div className="flex flex-col items-center gap-3.5 max-w-[500px] w-full text-center">
-                <div className="text-[.78rem] font-extrabold uppercase tracking-[.12em] text-[rgba(167,139,250,.55)]">
+              <div className="flex flex-col items-center gap-3.5 max-w-[640px] w-full text-center">
+                <div className="text-[.75rem] font-extrabold uppercase tracking-[.14em] text-[rgba(167,139,250,.5)]">
                   释义
                 </div>
                 <div
                   className={`font-bold leading-loose text-[var(--wm-text)] transition-[font-size] duration-350 ease-out ${
-                    bodyMode === 'normal' || bodyMode === 'word-visible'
+                    topVisible
                       ? 'text-[clamp(1.3rem,2.6vw,1.9rem)]'
-                      : 'text-[clamp(1.5rem,3.2vw,2.2rem)]'
+                      : 'text-[clamp(1.6rem,3.5vw,2.4rem)]'
                   }`}
                   dangerouslySetInnerHTML={{ __html: hilite(v.explanation, v.word) }}
                 />
@@ -278,7 +324,10 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
               {defOnly && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[.65rem] font-bold text-white/20 flex items-center gap-1.5 pointer-events-none whitespace-nowrap">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 opacity-60">
-                    <path d="M15 18l-6-6 6-6" />
+                    {isWide
+                      ? <path d={wordShown ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6'} />
+                      : <path d={wordShown ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6'} />
+                    }
                   </svg>
                   {wordShown ? '点击隐藏单词' : '点击查看单词'}
                 </div>

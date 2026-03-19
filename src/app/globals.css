@@ -28,7 +28,7 @@
 @theme {
   --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --font-nunito: "Nunito", sans-serif;
-  --font-fredoka: "Fredoka One", cursive;
+  --font-fredoka: "Nunito", sans-serif;
 
   --color-math-from: #3b82f6;
   --color-math-to: #6366f1;
