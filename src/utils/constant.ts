@@ -21,6 +21,7 @@ export const CONGRATS_MESSAGES = [
 
 export const STORAGE_KEYS = {
   GUIYI_SOLVED: 'guiyi-solved',
+  GUIYI_WRONG: 'guiyi-wrong',
   GUIYI_SIDEBAR_COLLAPSED: 'guiyi-sidebar-collapsed',
   WORD_DATA: 'rosie-words',
   DAILY_DATA: 'rosie-daily',
@@ -33,6 +34,7 @@ export const NAV_PAGES = [
   { key: 'workbook', icon: '📚', label: '练习册' },
   { key: 'alltest', icon: '🎯', label: '题库' },
   { key: 'pretest', icon: '📝', label: '课前测' },
+  { key: 'mistakes', icon: '📕', label: '错题本' },
 ] as const
 
 export const SOURCE_LABELS: Record<string, string> = {

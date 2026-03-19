@@ -9,8 +9,12 @@ export type Database = {
   public: {
     Tables: {
       math_solved: {
-        Row: { id: string; user_id: string; problem_id: string; solved_at: string }
-        Insert: { user_id: string; problem_id: string; solved_at?: string }
+        Row: { id: string; user_id: string; problem_id: string; solved_at: string; solve_count: number }
+        Insert: { user_id: string; problem_id: string; solved_at?: string; solve_count?: number }
+      }
+      math_wrong: {
+        Row: { user_id: string; problem_id: string; added_at: string }
+        Insert: { user_id: string; problem_id: string; added_at?: string }
       }
       word_entries: {
         Row: {

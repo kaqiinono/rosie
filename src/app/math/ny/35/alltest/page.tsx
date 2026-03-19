@@ -6,14 +6,17 @@ import { PROBLEMS } from '@/utils/lesson35-data'
 import { useLesson35 } from '@/components/math/lesson35/Lesson35Provider'
 import FilterPanel from '@/components/math/lesson35/FilterPanel'
 
+type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+
 function AlltestContent() {
-  const { solved } = useLesson35()
+  const { solveCount } = useLesson35()
   const searchParams = useSearchParams()
   const typeParam = searchParams.get('type')
 
   const [filters, setFilters] = useState({
     source: new Set(['lesson', 'homework', 'workbook', 'pretest']),
     type: new Set(['type1', 'type2', 'type3', 'type4', 'type5']),
+    mastery: 'all' as MasteryFilter,
   })
 
   useEffect(() => {
@@ -31,7 +34,19 @@ function AlltestContent() {
     })
   }
 
-  return <FilterPanel problems={PROBLEMS} solved={solved} filters={filters} onToggleFilter={toggleFilter} />
+  const setMastery = (value: MasteryFilter) => {
+    setFilters(f => ({ ...f, mastery: value }))
+  }
+
+  return (
+    <FilterPanel
+      problems={PROBLEMS}
+      solveCount={solveCount}
+      filters={filters}
+      onToggleFilter={toggleFilter}
+      onSetMastery={setMastery}
+    />
+  )
 }
 
 export default function AlltestPage() {

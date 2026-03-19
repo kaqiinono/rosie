@@ -5,8 +5,8 @@ import { useLesson35 } from '@/components/math/lesson35/Lesson35Provider'
 import ProblemList from '@/components/math/lesson35/ProblemList'
 
 export default function PretestPage() {
-  const { solved } = useLesson35()
-  const pretestDone = PROBLEMS.pretest.filter(p => solved[p.id]).length
+  const { solveCount } = useLesson35()
+  const pretestMastered = PROBLEMS.pretest.filter(p => (solveCount[p.id] ?? 0) >= 3).length
 
   return (
     <div>
@@ -17,13 +17,13 @@ export default function PretestPage() {
           <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-[#fde68a]">
             <div
               className="h-full rounded-sm bg-yellow transition-[width] duration-400"
-              style={{ width: `${Math.round((pretestDone / 5) * 100)}%` }}
+              style={{ width: `${Math.round((pretestMastered / 5) * 100)}%` }}
             />
           </div>
-          <div className="text-xs font-bold text-[#92400e]">{pretestDone}/5</div>
+          <div className="text-xs font-bold text-[#92400e]">✅ {pretestMastered}/5</div>
         </div>
       </div>
-      <ProblemList problems={PROBLEMS.pretest} solved={solved} basePath="/math/ny/35/pretest" />
+      <ProblemList problems={PROBLEMS.pretest} solveCount={solveCount} basePath="/math/ny/35/pretest" />
     </div>
   )
 }

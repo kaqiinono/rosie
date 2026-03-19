@@ -4,20 +4,25 @@ import { memo, useCallback, useState } from 'react'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@/utils/type'
 import { SOURCE_LABELS } from '@/utils/constant'
+import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
 import ProblemDetail from './ProblemDetail'
 
 const BASE = '/math/ny/35'
 
+type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+
 interface Filters {
   source: Set<string>
   type: Set<string>
+  mastery: MasteryFilter
 }
 
 interface FilterPanelProps {
   problems: ProblemSet
-  solved: Record<string, boolean>
+  solveCount: Record<string, number>
   filters: Filters
   onToggleFilter: (axis: 'source' | 'type', value: string) => void
+  onSetMastery: (value: MasteryFilter) => void
 }
 
 const SOURCE_BTNS = [
@@ -35,6 +40,13 @@ const TYPE_BTNS = [
   { key: 'type5', label: '变化归一' },
 ]
 
+const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
+  { key: 'all', label: '全部' },
+  { key: 'unstarted', label: '📚 未做' },
+  { key: 'reinforce', label: '🌱 需巩固' },
+  { key: 'mastered', label: '✅ 已掌握' },
+]
+
 const TAG_COLORS: Record<string, string> = {
   type1: 'bg-app-blue-light text-app-blue-dark',
   type2: 'bg-app-green-light text-app-green-dark',
@@ -47,12 +59,20 @@ function getProblemHref(setName: string, indexInSet: number): string {
   return `${BASE}/${setName}/${indexInSet + 1}`
 }
 
+function matchesMastery(count: number, mastery: MasteryFilter): boolean {
+  if (mastery === 'all') return true
+  if (mastery === 'unstarted') return count === 0
+  if (mastery === 'reinforce') return count >= 1 && count < 3
+  if (mastery === 'mastered') return count >= 3
+  return true
+}
+
 /* ── Memoized expanded card ── */
 const ExpandedCard = memo(function ExpandedCard({
   p,
   setName,
   idx,
-  solved,
+  solveCount,
   isOpen,
   cardId,
   onToggle,
@@ -60,18 +80,17 @@ const ExpandedCard = memo(function ExpandedCard({
   p: Problem
   setName: string
   idx: number
-  solved: Record<string, boolean>
+  solveCount: Record<string, number>
   isOpen: boolean
   cardId: string
   onToggle: (id: string) => void
 }) {
-  const d = solved[p.id]
+  const count = solveCount[p.id] ?? 0
+  const level = getMasteryLevel(count)
   const srcLabel = SOURCE_LABELS[setName] || setName
   return (
     <div
-      className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow ${
-        d ? 'border-app-green' : 'border-border-light'
-      }`}
+      className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow ${MASTERY_BORDER[level]}`}
     >
       {/* Header row — tap to toggle */}
       <button
@@ -79,9 +98,7 @@ const ExpandedCard = memo(function ExpandedCard({
         className="flex w-full cursor-pointer items-center gap-2.5 rounded-[12px] p-3 text-left"
       >
         <div
-          className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-            d ? 'bg-app-green-light text-app-green-dark' : 'bg-app-blue-light text-app-blue-dark'
-          }`}
+          className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}
         >
           {idx + 1}
         </div>
@@ -98,7 +115,7 @@ const ExpandedCard = memo(function ExpandedCard({
             </span>
           </div>
         </div>
-        {d && <span className="shrink-0 text-lg">✅</span>}
+        <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
         <span
           className={`shrink-0 text-[13px] font-bold text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         >
@@ -116,7 +133,7 @@ const ExpandedCard = memo(function ExpandedCard({
   )
 })
 
-export default function FilterPanel({ problems, solved, filters, onToggleFilter }: FilterPanelProps) {
+export default function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
   const [showDetail, setShowDetail] = useState(false)
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
 
@@ -126,11 +143,15 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter 
   })
 
   const filtered = all.filter(
-    ({ p, setName }) => filters.source.has(setName) && filters.type.has(p.tag),
+    ({ p, setName }) =>
+      filters.source.has(setName) &&
+      filters.type.has(p.tag) &&
+      matchesMastery(solveCount[p.id] ?? 0, filters.mastery),
   )
   const total = filtered.length
-  const done = filtered.filter(({ p }) => solved[p.id]).length
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0
+  const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
+  const attempted = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 1).length
+  const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
 
   const toggleDetailMode = useCallback(() => {
     setShowDetail(v => !v)
@@ -191,26 +212,55 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter 
           </div>
         </div>
 
-        <div className="mt-2 flex items-center gap-2">
-          <div className="h-[5px] flex-1 overflow-hidden rounded-sm bg-[#e9d5ff]">
-            <div
-              className="h-full rounded-sm bg-[#a855f7] transition-[width] duration-400"
-              style={{ width: `${pct}%` }}
-            />
+        <div className="mb-2">
+          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🎯 掌握度筛选</div>
+          <div className="flex flex-wrap gap-1.5">
+            {MASTERY_BTNS.map(b => (
+              <button
+                key={b.key}
+                onClick={() => onSetMastery(b.key)}
+                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
+                  filters.mastery === b.key
+                    ? 'border-[#a855f7] bg-[#a855f7] text-white'
+                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+                }`}
+              >
+                {b.label}
+              </button>
+            ))}
           </div>
-          <div className="shrink-0 text-[11px] font-bold text-[#6b21a8]">
-            {total} 题 · 完成 {done}
+        </div>
+
+        <div className="mt-2 space-y-1.5">
+          <div className="flex items-center gap-1.5 text-[11px] text-[#6b21a8]">
+            <span>练过 <strong className="text-[#7e22ce]">{attempted}</strong> 道</span>
+            <span className="text-[#c4b5fd]">·</span>
+            <span>🦋 掌握 <strong className="text-[#7e22ce]">{mastered}</strong> 道</span>
+            <span className="text-[#c4b5fd]">·</span>
+            <span>共 {total} 题</span>
           </div>
-          <button
-            onClick={toggleDetailMode}
-            className={`shrink-0 cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
-              showDetail
-                ? 'border-[#a855f7] bg-[#a855f7] text-white'
-                : 'border-[#d8b4fe] bg-white text-[#7e22ce]'
-            }`}
-          >
-            {showDetail ? '收起 ↑' : '展开 ↓'}
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-[#e9d5ff]">
+              <div
+                className="absolute inset-y-0 left-0 rounded-full bg-[#c4b5fd] transition-[width] duration-400"
+                style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }}
+              />
+              <div
+                className="absolute inset-y-0 left-0 rounded-full bg-[#a855f7] transition-[width] duration-400"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <button
+              onClick={toggleDetailMode}
+              className={`shrink-0 cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
+                showDetail
+                  ? 'border-[#a855f7] bg-[#a855f7] text-white'
+                  : 'border-[#d8b4fe] bg-white text-[#7e22ce]'
+              }`}
+            >
+              {showDetail ? '收起 ↑' : '展开 ↓'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -223,7 +273,7 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter 
               p={p}
               setName={setName}
               idx={idx}
-              solved={solved}
+              solveCount={solveCount}
               isOpen={!collapsedIds.has(p.id)}
               cardId={p.id}
               onToggle={toggleCard}
@@ -238,20 +288,17 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter 
       ) : (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(({ p, setName, idx }) => {
-            const d = solved[p.id]
+            const count = solveCount[p.id] ?? 0
+            const level = getMasteryLevel(count)
             const srcLabel = SOURCE_LABELS[setName] || setName
             return (
               <Link
                 key={p.id}
                 href={getProblemHref(setName, idx)}
-                className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
-                  d ? 'border-app-green' : 'border-transparent hover:border-border-light'
-                }`}
+                className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${MASTERY_BORDER[level]} hover:border-border-light`}
               >
                 <div
-                  className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                    d ? 'bg-app-green-light text-app-green-dark' : 'bg-app-blue-light text-app-blue-dark'
-                  }`}
+                  className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}
                 >
                   {idx + 1}
                 </div>
@@ -268,11 +315,9 @@ export default function FilterPanel({ problems, solved, filters, onToggleFilter 
                     </span>
                   </div>
                 </div>
-                {d ? (
-                  <div className="shrink-0 text-lg text-app-green">✅</div>
-                ) : (
-                  <div className="shrink-0 text-xl text-text-muted">›</div>
-                )}
+                <div className="shrink-0 text-base">
+                  {MASTERY_ICON[level]}
+                </div>
               </Link>
             )
           })}

@@ -8,7 +8,7 @@ const BASE = '/math/ny/35'
 
 interface HomePageProps {
   problems: ProblemSet
-  solved: Record<string, boolean>
+  solveCount: Record<string, number>
 }
 
 interface ModuleItem {
@@ -22,26 +22,32 @@ interface ModuleItem {
   borderColor?: string
   arrowColor?: string
   progColor?: string
+  progMasteredColor?: string
 }
 
 const MODULES: ModuleItem[] = [
   { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-6 · 归一+双归一+变化' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '巩固1-6 · 强化练习' },
   { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '练习册闯关', desc: '闯关1-12 · 综合挑战' },
-  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-yellow-light', title: '课前测', desc: '5道摸底题 · 检验起始水平', titleColor: 'text-[#92400e]', borderColor: 'border-[#fde68a]', arrowColor: 'text-yellow', progColor: 'bg-yellow' },
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-yellow-light', title: '课前测', desc: '5道摸底题 · 检验起始水平', titleColor: 'text-[#92400e]', borderColor: 'border-[#fde68a]', arrowColor: 'text-yellow', progColor: 'bg-yellow-200', progMasteredColor: 'bg-yellow' },
 ]
 
-export default function HomePage({ problems, solved }: HomePageProps) {
+export default function HomePage({ problems, solveCount }: HomePageProps) {
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
-  const doneAll = Object.keys(solved).length
+  const masteredAll = Object.values(solveCount).filter(c => c >= 3).length
+  const attemptedAll = Object.values(solveCount).filter(c => c >= 1).length
 
   function getProgress(key: string) {
     if (key === 'alltest') {
-      return { done: doneAll, total: totalAll }
+      return { mastered: masteredAll, attempted: attemptedAll, total: totalAll }
     }
     const list = problems[key as keyof ProblemSet]
-    if (!list) return { done: 0, total: 0 }
-    return { done: list.filter(p => solved[p.id]).length, total: list.length }
+    if (!list) return { mastered: 0, attempted: 0, total: 0 }
+    return {
+      mastered: list.filter(p => (solveCount[p.id] ?? 0) >= 3).length,
+      attempted: list.filter(p => (solveCount[p.id] ?? 0) >= 1).length,
+      total: list.length,
+    }
   }
 
   return (
@@ -98,7 +104,8 @@ export default function HomePage({ problems, solved }: HomePageProps) {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {MODULES.map(m => {
           const prog = getProgress(m.key)
-          const pct = prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0
+          const masteredPct = prog.total > 0 ? Math.round((prog.mastered / prog.total) * 100) : 0
+          const attemptedPct = prog.total > 0 ? Math.round((prog.attempted / prog.total) * 100) : 0
           return (
             <Link
               key={m.key}
@@ -114,14 +121,18 @@ export default function HomePage({ problems, solved }: HomePageProps) {
                 <div className={`text-sm font-bold ${m.titleColor || 'text-text-primary'}`}>{m.title}</div>
                 <div className="mb-1 text-xs text-text-muted">{m.desc}</div>
                 <div className="flex items-center gap-1.5">
-                  <div className="h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+                  <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
                     <div
-                      className={`h-full rounded-sm transition-[width] duration-500 ${m.progColor || 'bg-app-green'}`}
-                      style={{ width: `${pct}%` }}
+                      className={`absolute inset-y-0 left-0 rounded-sm transition-[width] duration-500 ${m.progColor || 'bg-gray-300'}`}
+                      style={{ width: `${attemptedPct}%` }}
+                    />
+                    <div
+                      className={`absolute inset-y-0 left-0 rounded-sm transition-[width] duration-500 ${m.progMasteredColor || 'bg-app-green'}`}
+                      style={{ width: `${masteredPct}%` }}
                     />
                   </div>
                   <div className="whitespace-nowrap text-[11px] text-text-muted">
-                    {prog.done}/{prog.total}
+                    ✅ {prog.mastered}/{prog.total}
                   </div>
                 </div>
               </div>
@@ -141,14 +152,18 @@ export default function HomePage({ problems, solved }: HomePageProps) {
             <div className="text-sm font-bold text-[#7e22ce]">综合测试题库</div>
             <div className="mb-1 text-xs text-text-muted">全部题目 · 按题型/来源筛选 · 综合训练</div>
             <div className="flex items-center gap-1.5">
-              <div className="h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+              <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
                 <div
-                  className="h-full rounded-sm bg-[#a855f7] transition-[width] duration-500"
-                  style={{ width: `${totalAll > 0 ? Math.round((doneAll / totalAll) * 100) : 0}%` }}
+                  className="absolute inset-y-0 left-0 rounded-sm bg-[#c4b5fd] transition-[width] duration-500"
+                  style={{ width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%` }}
+                />
+                <div
+                  className="absolute inset-y-0 left-0 rounded-sm bg-[#a855f7] transition-[width] duration-500"
+                  style={{ width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%` }}
                 />
               </div>
               <div className="whitespace-nowrap text-[11px] text-text-muted">
-                {doneAll}/{totalAll}
+                ✅ {masteredAll}/{totalAll}
               </div>
             </div>
           </div>

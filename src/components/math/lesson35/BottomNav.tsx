@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { NAV_PAGES } from '@/utils/constant'
+import { useLesson35 } from './Lesson35Provider'
 
 const BASE = '/math/ny/35'
 const PATH_MAP: Record<string, string> = {
@@ -12,11 +13,16 @@ const PATH_MAP: Record<string, string> = {
   workbook: `${BASE}/workbook`,
   alltest: `${BASE}/alltest`,
   pretest: `${BASE}/pretest`,
+  mistakes: `${BASE}/mistakes`,
 }
+
+// Show in bottom nav: home, lesson, homework, alltest, mistakes (skip pretest, workbook to save space)
+const BOTTOM_KEYS = new Set(['home', 'lesson', 'homework', 'alltest', 'mistakes'])
 
 export default function BottomNav() {
   const pathname = usePathname()
-  const visiblePages = NAV_PAGES.filter(p => p.key !== 'pretest')
+  const { wrongIds } = useLesson35()
+  const visiblePages = NAV_PAGES.filter(p => BOTTOM_KEYS.has(p.key))
 
   function isActive(key: string) {
     if (key === 'home') return pathname === BASE
@@ -31,12 +37,17 @@ export default function BottomNav() {
           <Link
             key={p.key}
             href={PATH_MAP[p.key] || BASE}
-            className={`flex flex-1 flex-col items-center justify-center gap-0.5 px-0.5 py-1.5 text-[9px] font-medium no-underline transition-colors ${
+            className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 px-0.5 py-1.5 text-[9px] font-medium no-underline transition-colors ${
               active ? 'text-yellow-dark' : 'text-text-muted'
             }`}
           >
             <span className="text-lg leading-none">{p.icon}</span>
             {p.label}
+            {p.key === 'mistakes' && wrongIds.size > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#ef4444] text-[9px] font-bold text-white">
+                {wrongIds.size > 9 ? '9+' : wrongIds.size}
+              </span>
+            )}
           </Link>
         )
       })}

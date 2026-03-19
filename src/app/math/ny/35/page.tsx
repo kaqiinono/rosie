@@ -5,6 +5,6 @@ import { useLesson35 } from '@/components/math/lesson35/Lesson35Provider'
 import HomePage from '@/components/math/lesson35/HomePage'
 
 export default function Lesson35Home() {
-  const { solved } = useLesson35()
-  return <HomePage problems={PROBLEMS} solved={solved} />
+  const { solveCount } = useLesson35()
+  return <HomePage problems={PROBLEMS} solveCount={solveCount} />
 }

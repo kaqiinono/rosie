@@ -4,34 +4,32 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson35-data'
+import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
 
 interface ProblemListProps {
   problems: Problem[]
-  solved: Record<string, boolean>
+  solveCount: Record<string, number>
   basePath: string
   showSource?: boolean
   sourceLabel?: string
 }
 
-export default function ProblemList({ problems, solved, basePath, showSource, sourceLabel }: ProblemListProps) {
+export default function ProblemList({ problems, solveCount, basePath, showSource, sourceLabel }: ProblemListProps) {
   const router = useRouter()
 
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {problems.map((p, i) => {
-        const done = solved[p.id]
+        const count = solveCount[p.id] ?? 0
+        const level = getMasteryLevel(count)
         return (
           <Link
             key={p.id}
             href={`${basePath}/${i + 1}`}
-            className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
-              done ? 'border-app-green' : 'border-transparent hover:border-border-light'
-            }`}
+            className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${MASTERY_BORDER[level]} hover:border-border-light`}
           >
             <div
-              className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                done ? 'bg-app-green-light text-app-green-dark' : 'bg-app-blue-light text-app-blue-dark'
-              }`}
+              className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}
             >
               {i + 1}
             </div>
@@ -56,11 +54,9 @@ export default function ProblemList({ problems, solved, basePath, showSource, so
                 )}
               </div>
             </div>
-            {done ? (
-              <div className="shrink-0 text-lg text-app-green">✅</div>
-            ) : (
-              <div className="shrink-0 text-xl text-text-muted">›</div>
-            )}
+            <div className={`shrink-0 text-xl ${level === 0 ? 'text-text-muted' : ''}`}>
+              {MASTERY_ICON[level]}
+            </div>
           </Link>
         )
       })}

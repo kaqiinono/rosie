@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { STORAGE_KEYS } from '@/utils/constant'
 import type { ProblemSet } from '@/utils/type'
+import { useLesson35 } from './Lesson35Provider'
 
 const BASE = '/math/ny/35'
 
@@ -14,25 +15,27 @@ const SECTIONS = [
   { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', label: '练习册' },
   { key: 'alltest', path: `${BASE}/alltest`, icon: '🎯', label: '综合题库' },
   { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', label: '课前测' },
+  { key: 'mistakes', path: `${BASE}/mistakes`, icon: '📕', label: '错题本' },
 ] as const
 
 interface SidebarProps {
-  solved: Record<string, boolean>
   problems: ProblemSet
 }
 
-export default function Sidebar({ solved, problems }: SidebarProps) {
+export default function Sidebar({ problems }: SidebarProps) {
   const pathname = usePathname()
+  const { solveCount, wrongIds } = useLesson35()
   const [collapsed, setCollapsed] = useLocalStorage<boolean>(STORAGE_KEYS.GUIYI_SIDEBAR_COLLAPSED, false)
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
-  const doneAll = Object.keys(solved).length
+  const masteredAll = Object.values(solveCount).filter(c => c >= 3).length
 
   function getProgress(key: string): string {
-    if (key === 'alltest') return `${doneAll}/${totalAll}`
+    if (key === 'alltest') return `${masteredAll}/${totalAll}`
+    if (key === 'mistakes') return `${wrongIds.size} 题`
     const list = problems[key as keyof ProblemSet]
     if (!list) return '0/0'
-    const d = list.filter(p => solved[p.id]).length
-    return `${d}/${list.length}`
+    const mastered = list.filter(p => (solveCount[p.id] ?? 0) >= 3).length
+    return `${mastered}/${list.length}`
   }
 
   function isActive(key: string) {

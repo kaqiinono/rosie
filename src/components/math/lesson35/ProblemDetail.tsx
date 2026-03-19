@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson35-data'
 import { useLesson35 } from './Lesson35Provider'
+import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
 import RatioDiagram from './RatioDiagram'
 import BlockDiagram from './BlockDiagram'
 import DualBlockDiagram from './DualBlockDiagram'
@@ -16,8 +17,9 @@ interface ProblemDetailProps {
 
 export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailProps) {
   const router = useRouter()
-  const { solved, handleSolve, setToast } = useLesson35()
-  const isSolved = !!solved[problem.id]
+  const { solveCount, handleSolve, addWrong } = useLesson35()
+  const count = solveCount[problem.id] ?? 0
+  const level = getMasteryLevel(count)
 
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
@@ -32,13 +34,10 @@ export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailP
     const v = Number(answer)
     if (v === problem.finalAns) {
       setFeedback({ text: '🎉 完全正确！你真棒！', ok: true })
-      if (!isSolved) {
-        handleSolve(problem.id)
-      } else {
-        setToast('已经答对过了！继续保持 💪')
-      }
+      handleSolve(problem.id)
     } else {
       setFeedback({ text: `❌ 不对哦，再想想？提示：答案是${problem.finalAns}以内的数。`, ok: false })
+      addWrong(problem.id)
     }
   }
 
@@ -54,7 +53,9 @@ export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailP
             ‹
           </button>
           <div className="flex-1 text-[17px] font-bold">{problem.title}</div>
-          <div className="text-[22px]">{isSolved ? '✅' : ''}</div>
+          <div className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[level]}`}>
+            {MASTERY_ICON[level]}
+          </div>
         </div>
       )}
 
