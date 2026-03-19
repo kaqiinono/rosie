@@ -156,11 +156,11 @@ const RAW_PROBLEMS: ProblemSet = {
       type: 'ratio3b',
       rows: ['全部', '全部', '一半'],
       rows2: ['6时', { id: 'rB1', ans: 1, unit: '时' }, { id: 'rB2', ans: 16 }],
-      rcols: ['60千瓦', { id: 'r1', ans: 10 }, { id: 'r2', ans: 80 }],
+      rcols: ['60千瓦', { id: 'r1', ans: 10 }, '80千瓦'],
       ops: [
         { id: 'oA1', ans: '×1' }, { id: 'oA2', ans: '÷2' },
         { id: 'oB1', ans: '÷6' }, { id: 'oB2', ans: '×16' },
-        { id: 'oC1', ans: '÷6' }, { id: 'oC2', ans: '×?' },
+        { id: 'oC1', ans: '÷6' }, { id: 'oC2', ans: '×8' },
       ],
       dualSc: {
         initA: 2, unitA: '份路灯', targetA: 1,

@@ -11,9 +11,10 @@ import DualBlockDiagram from './DualBlockDiagram'
 
 interface ProblemDetailProps {
   problem: Problem
+  mode?: 'full' | 'inline'
 }
 
-export default function ProblemDetail({ problem }: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailProps) {
   const router = useRouter()
   const { solved, handleSolve, setToast } = useLesson35()
   const isSolved = !!solved[problem.id]
@@ -43,17 +44,19 @@ export default function ProblemDetail({ problem }: ProblemDetailProps) {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-4 flex items-center gap-2.5 border-b border-border-light pb-3.5">
-        <button
-          onClick={() => router.back()}
-          className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-gray-100 text-lg transition-colors hover:bg-gray-200"
-        >
-          ‹
-        </button>
-        <div className="flex-1 text-[17px] font-bold">{problem.title}</div>
-        <div className="text-[22px]">{isSolved ? '✅' : ''}</div>
-      </div>
+      {/* Header - full mode only */}
+      {mode === 'full' && (
+        <div className="mb-4 flex items-center gap-2.5 border-b border-border-light pb-3.5">
+          <button
+            onClick={() => router.back()}
+            className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-gray-100 text-lg transition-colors hover:bg-gray-200"
+          >
+            ‹
+          </button>
+          <div className="flex-1 text-[17px] font-bold">{problem.title}</div>
+          <div className="text-[22px]">{isSolved ? '✅' : ''}</div>
+        </div>
+      )}
 
       {/* Two-column layout on desktop */}
       <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
