@@ -75,6 +75,27 @@ export type Database = {
           updated_at?: string
         }
       }
+      weekly_plans: {
+        Row: {
+          id: string
+          user_id: string
+          week_start: string
+          unit: string
+          lesson: string
+          plan_data: unknown
+          progress_data: unknown
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          week_start: string
+          unit: string
+          lesson: string
+          plan_data: unknown
+          progress_data?: unknown
+          updated_at?: string
+        }
+      }
     }
   }
 }

@@ -1,9 +1,9 @@
 'use client'
 
 import { useWordsContext } from '@/contexts/WordsContext'
-import DailyPractice from '@/components/english/words/DailyPractice'
+import WeeklyPractice from '@/components/english/words/WeeklyPractice'
 
 export default function DailyPage() {
   const { vocab } = useWordsContext()
-  return <DailyPractice vocab={vocab} />
+  return <WeeklyPractice vocab={vocab} />
 }

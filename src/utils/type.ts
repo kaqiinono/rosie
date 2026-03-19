@@ -129,3 +129,22 @@ export interface WordMasteryInfo {
 }
 
 export type WordMasteryMap = Record<string, WordMasteryInfo>
+
+export interface WeeklyPlanDay {
+  date: string           // ISO date e.g. "2026-03-20"
+  newWordKeys: string[]  // word keys for new words from active lesson
+}
+
+export interface WeekDayProgress {
+  quizDone: boolean
+  lastScore?: number     // percentage 0–100
+  completedAt?: string   // ISO date
+}
+
+export interface WeeklyPlan {
+  weekStart: string      // ISO date of the Thursday starting this week
+  unit: string
+  lesson: string
+  days: WeeklyPlanDay[]  // 7 entries index 0=Thu … 6=Wed
+  progress: Record<string, WeekDayProgress>  // keyed by date string
+}

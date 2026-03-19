@@ -1,4 +1,4 @@
-import type { WordEntry, WordMasteryMap } from './type'
+import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan } from './type'
 import { getMasteryLevel } from './masteryUtils'
 import { KW_MAP } from './english-data'
 
@@ -197,6 +197,104 @@ export function prioritizeReviews(
     return ratioA - ratioB
   })
   return sorted.slice(0, maxSlots)
+}
+
+function toLocalDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+export function getWeekStart(date?: Date, startDay = 4): string {
+  const d = date ? new Date(date) : new Date()
+  const daysBack = (d.getDay() - startDay + 7) % 7
+  d.setDate(d.getDate() - daysBack)
+  return toLocalDateStr(d)
+}
+
+export function buildWeeklyPlan(
+  lessonWords: WordEntry[],
+  weekStart: string,
+  newPerDay = 3,
+): WeeklyPlanDay[] {
+  const [year, month, day] = weekStart.split('-').map(Number)
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(year, month - 1, day + i)
+    const start = i * newPerDay
+    return {
+      date: toLocalDateStr(d),
+      newWordKeys: lessonWords.slice(start, start + newPerDay).map(w => wordKey(w)),
+    }
+  })
+}
+
+/**
+ * Returns review words for a given day, split into two groups:
+ * - weekReview: this week's previously introduced new words (not yet mastered), max 9
+ * - oldReview:  words from other lessons (not yet mastered), max 3
+ *
+ * Both sorted: lower mastery first, then older lastSeen first.
+ */
+export function getReviewWordsForDay(
+  vocab: WordEntry[],
+  masteryMap: WordMasteryMap,
+  weeklyPlan: WeeklyPlan,
+  dayIndex: number,
+): { weekReview: WordEntry[]; oldReview: WordEntry[] } {
+  const byMasteryThenDate = (a: WordEntry, b: WordEntry) => {
+    const ma = masteryMap[wordKey(a)] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+    const mb = masteryMap[wordKey(b)] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+    const la = getMasteryLevel(ma.correct)
+    const lb = getMasteryLevel(mb.correct)
+    if (la !== lb) return la - lb
+    return (ma.lastSeen || '').localeCompare(mb.lastSeen || '')
+  }
+
+  // Keys introduced in previous days of this week
+  const prevKeys = new Set<string>()
+  for (let i = 0; i < dayIndex; i++) {
+    weeklyPlan.days[i]?.newWordKeys.forEach(k => prevKeys.add(k))
+  }
+
+  const weekReview = vocab
+    .filter(w => prevKeys.has(wordKey(w)))
+    .filter(w => getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) < 3)
+    .sort(byMasteryThenDate)
+    .slice(0, 9)
+
+  const weekReviewKeys = new Set(weekReview.map(w => wordKey(w)))
+
+  const oldReview = vocab
+    .filter(w => !(w.unit === weeklyPlan.unit && w.lesson === weeklyPlan.lesson))
+    .filter(w => !prevKeys.has(wordKey(w)))
+    .filter(w => !weekReviewKeys.has(wordKey(w)))
+    .filter(w => getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) < 3)
+    .sort(byMasteryThenDate)
+    .slice(0, 3)
+
+  return { weekReview, oldReview }
+}
+
+export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: string }[] {
+  const seen = new Set<string>()
+  const result: { unit: string; lesson: string }[] = []
+  for (const w of vocab) {
+    const key = `${w.unit}::${w.lesson}`
+    if (!seen.has(key)) {
+      seen.add(key)
+      result.push({ unit: w.unit, lesson: w.lesson })
+    }
+  }
+  return result
+}
+
+export function suggestNextLesson(
+  vocab: WordEntry[],
+  lastUnit: string,
+  lastLesson: string,
+): { unit: string; lesson: string } | null {
+  const ordered = getOrderedLessons(vocab)
+  const idx = ordered.findIndex(l => l.unit === lastUnit && l.lesson === lastLesson)
+  if (idx === -1 || idx >= ordered.length - 1) return null
+  return ordered[idx + 1]
 }
 
 export function getStuckWords(

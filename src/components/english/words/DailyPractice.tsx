@@ -549,7 +549,6 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
               {q.type === 'B' ? <PhonicsWord text={q.word.word} /> : q.word.explanation}
             </div>
             {q.type === 'B' && q.word.ipa && <div className="text-[.78rem] text-white/[.38] font-semibold">{q.word.ipa}</div>}
-            {q.type !== 'B' && q.word.ipa && <div className="text-[.78rem] text-white/[.38] font-semibold">音标：{q.word.ipa}</div>}
 
             {q.type !== 'C' && (
               <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-2">

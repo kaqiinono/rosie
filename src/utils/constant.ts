@@ -26,6 +26,9 @@ export const STORAGE_KEYS = {
   WORD_DATA: 'rosie-words',
   DAILY_DATA: 'rosie-daily',
   WORD_MASTERY: 'rosie-word-mastery',
+  WEEKLY_PLAN: 'rosie-weekly-plan',
+  WEEK_START_DAY: 'rosie-week-start-day',
+  WEEKLY_NEW_PER_DAY: 'rosie-weekly-new-per-day',
 } as const
 
 export const NAV_PAGES = [
