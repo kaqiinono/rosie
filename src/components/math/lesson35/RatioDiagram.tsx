@@ -32,12 +32,12 @@ export default function RatioDiagram({ problem }: RatioDiagramProps) {
 
   const allInputs = useCallback((): InputEntry[] => {
     const entries: InputEntry[] = []
-    problem.rows.forEach(r => {
+    ;(problem.rows || []).forEach(r => {
       if (typeof r === 'object' && r !== null && 'id' in r) {
         entries.push({ key: (r as RatioInput).id, ans: (r as RatioInput).ans, isNum: true })
       }
     })
-    problem.rcols.forEach(r => {
+    ;(problem.rcols || []).forEach(r => {
       if (isRatioInput(r)) entries.push({ key: r.id, ans: r.ans, isNum: true })
     })
     ;(problem.rows2 || []).forEach(r => {
@@ -206,7 +206,7 @@ function OpCircle({ cx, cy, o, deep, values, onChange, inputClass }: {
 function Ratio2ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
   const id = problem.id
   const ops = problem.ops || []
-  const nRows = problem.rows.length
+  const nRows = (problem.rows || []).length
   const compact = nRows <= 2
 
   if (compact) {
@@ -223,13 +223,13 @@ function Ratio2ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
         ))}
         <line x1="85" y1="80" x2="85" y2="139" className="stroke-[#9ca3af] stroke-[1.8]" markerEnd={`url(#arr-${id})`} />
         <line x1="255" y1="80" x2="255" y2="139" className="stroke-[#9ca3af] stroke-[1.8]" markerEnd={`url(#arr-${id})`} />
-        {problem.rows.map((r, i) => (
+        {(problem.rows || []).map((r, i) => (
           <g key={`row-${i}`}>
             <rect x="30" y={ly[i]} width="110" height="44" rx="10" fill="#dbeafe" />
             <RowCell r={r} x={30} y={ly[i]} w={110} color="#1d4ed8" values={values} onChange={onChange} inputClass={inputClass} />
           </g>
         ))}
-        {problem.rcols.map((r, i) => (
+        {(problem.rcols || []).map((r, i) => (
           <g key={`rcol-${i}`}>
             <rect x="200" y={ly[i]} width="110" height="44" rx="10" fill="#dcfce7" />
             <RcolCell r={r} x={200} y={ly[i]} w={110} values={values} onChange={onChange} inputClass={inputClass} />
@@ -271,7 +271,7 @@ function Ratio2ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
       <line x1="255" y1="192" x2="255" y2="249" className="stroke-[#9ca3af] stroke-[1.8]" markerEnd={`url(#arr-${id})`} />
 
       {/* Left boxes (rows) */}
-      {problem.rows.map((r, i) => (
+      {(problem.rows || []).map((r, i) => (
         <g key={`row-${i}`}>
           <rect x="30" y={ly[i]} width="110" height="44" rx="10" fill="#dbeafe" />
           <RowCell r={r} x={30} y={ly[i]} w={110} color="#1d4ed8" values={values} onChange={onChange} inputClass={inputClass} />
@@ -279,7 +279,7 @@ function Ratio2ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
       ))}
 
       {/* Right boxes (rcols) */}
-      {problem.rcols.map((r, i) => (
+      {(problem.rcols || []).map((r, i) => (
         <g key={`rcol-${i}`}>
           <rect x="200" y={ly[i]} width="110" height="44" rx="10" fill="#dcfce7" />
           <RcolCell r={r} x={200} y={ly[i]} w={110} values={values} onChange={onChange} inputClass={inputClass} />
@@ -322,7 +322,7 @@ function Ratio3ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
   const id = problem.id
   const ops = problem.ops || []
   const rows2 = problem.rows2 || []
-  const nRows = Math.max(problem.rows.length, rows2.length, problem.rcols.length)
+  const nRows = Math.max((problem.rows || []).length, rows2.length, (problem.rcols || []).length)
   const hasRow4 = nRows >= 4
   const cA = 70, cB = 230, cC = 390
 
@@ -381,7 +381,7 @@ function Ratio3ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
       )}
 
       {/* Col A boxes: rows (blue) */}
-      {problem.rows.map((r, i) => ly[i] != null && (
+      {(problem.rows || []).map((r, i) => ly[i] != null && (
         <g key={`rA-${i}`}>
           <rect x="15" y={ly[i]} width="110" height="44" rx="10" fill="#dbeafe" />
           <Col3Cell r={r} x={15} y={ly[i]} w={110} color="#1d4ed8" values={values} onChange={onChange} inputClass={inputClass} />
@@ -397,7 +397,7 @@ function Ratio3ColSVG({ problem, values, onChange, inputClass }: SvgProps) {
       ))}
 
       {/* Col C boxes: rcols (green) */}
-      {problem.rcols.map((r, i) => ly[i] != null && (
+      {(problem.rcols || []).map((r, i) => ly[i] != null && (
         <g key={`rC-${i}`}>
           <rect x="335" y={ly[i]} width="110" height="44" rx="10" fill="#dcfce7" />
           <Col3Cell r={r as string | RatioInput} x={335} y={ly[i]} w={110} color="#15803d" values={values} onChange={onChange} inputClass={inputClass} />

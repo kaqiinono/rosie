@@ -20,9 +20,9 @@ export const CONGRATS_MESSAGES = [
 ]
 
 export const STORAGE_KEYS = {
-  GUIYI_SOLVED: 'guiyi-solved',
-  GUIYI_WRONG: 'guiyi-wrong',
-  GUIYI_SIDEBAR_COLLAPSED: 'guiyi-sidebar-collapsed',
+  MATH_SOLVED: 'math-solved',
+  MATH_WRONG: 'math-wrong',
+  MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
   WORD_DATA: 'rosie-words',
   DAILY_DATA: 'rosie-daily',
 } as const

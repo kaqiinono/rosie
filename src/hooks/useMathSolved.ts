@@ -7,7 +7,7 @@ import { STORAGE_KEYS } from '@/utils/constant'
 
 function loadLocal(): Record<string, number> {
   try {
-    const item = window.localStorage.getItem(STORAGE_KEYS.GUIYI_SOLVED)
+    const item = window.localStorage.getItem(STORAGE_KEYS.MATH_SOLVED)
     if (!item) return {}
     const parsed = JSON.parse(item)
     // Migrate old format: { "P1": true } → { "P1": 1 }
@@ -27,7 +27,7 @@ function loadLocal(): Record<string, number> {
 
 function saveLocal(data: Record<string, number>) {
   try {
-    window.localStorage.setItem(STORAGE_KEYS.GUIYI_SOLVED, JSON.stringify(data))
+    window.localStorage.setItem(STORAGE_KEYS.MATH_SOLVED, JSON.stringify(data))
   } catch { /* ignore */ }
 }
 

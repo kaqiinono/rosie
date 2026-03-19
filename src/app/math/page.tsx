@@ -7,6 +7,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/36',
+    title: '星期几问题探险',
+    description: '掌握 3 大题型推算任意日期的星期几：同月/跨月天数余数法、跨年平年+1/闰年+2 累计偏移、确定星期几的分布分析。',
+    icon: '📅',
+    lectureNum: '第 36 讲',
+    tags: ['星期几问题', '余数推算', '25 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/35',
     title: '归一问题探险',
     description: '学会用倍比图解决归一问题，覆盖 5 大题型：基础归一、直接倍比、双归一、反向归一、变化归一。',

@@ -6,7 +6,7 @@ import { useMathSolved } from '@/hooks/useMathSolved'
 import { supabase } from '@/lib/supabase'
 import { STORAGE_KEYS } from '@/utils/constant'
 
-interface Lesson35ContextType {
+interface Lesson36ContextType {
   solveCount: Record<string, number>
   solved: Record<string, boolean>
   handleSolve: (id: string) => void
@@ -19,11 +19,11 @@ interface Lesson35ContextType {
   setShowCongrats: (v: boolean) => void
 }
 
-const Lesson35Context = createContext<Lesson35ContextType | null>(null)
+const Lesson36Context = createContext<Lesson36ContextType | null>(null)
 
-export function useLesson35() {
-  const ctx = useContext(Lesson35Context)
-  if (!ctx) throw new Error('useLesson35 must be used within Lesson35Provider')
+export function useLesson36() {
+  const ctx = useContext(Lesson36Context)
+  if (!ctx) throw new Error('useLesson36 must be used within Lesson36Provider')
   return ctx
 }
 
@@ -42,14 +42,13 @@ function saveWrongLocal(ids: Set<string>) {
   } catch { /* ignore */ }
 }
 
-export default function Lesson35Provider({ children }: { children: ReactNode }) {
+export default function Lesson36Provider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const { solveCount, handleSolve: solveAndSync } = useMathSolved(user)
   const [toast, setToast] = useState<string | null>(null)
   const [showCongrats, setShowCongrats] = useState(false)
   const [wrongIds, setWrongIds] = useState<Set<string>>(new Set())
 
-  // Load wrong IDs — from Supabase (logged in) or localStorage (guest)
   useEffect(() => {
     if (!user) {
       setWrongIds(loadWrongLocal())
@@ -68,7 +67,6 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
       })
   }, [user])
 
-  // Derived boolean map for backward compatibility
   const solved: Record<string, boolean> = {}
   for (const [k, v] of Object.entries(solveCount)) {
     if (v >= 1) solved[k] = true
@@ -77,7 +75,6 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
   const handleSolve = async (id: string) => {
     const newCount = await solveAndSync(id)
 
-    // Remove from wrong list on any correct answer
     setWrongIds(prev => {
       if (!prev.has(id)) return prev
       const next = new Set(prev)
@@ -129,12 +126,12 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
   }, [user])
 
   return (
-    <Lesson35Context.Provider value={{
+    <Lesson36Context.Provider value={{
       solveCount, solved, handleSolve,
       wrongIds, addWrong, removeWrong,
       toast, setToast, showCongrats, setShowCongrats,
     }}>
       {children}
-    </Lesson35Context.Provider>
+    </Lesson36Context.Provider>
   )
 }

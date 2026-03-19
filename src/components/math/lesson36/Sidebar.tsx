@@ -5,14 +5,14 @@ import { usePathname } from 'next/navigation'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { STORAGE_KEYS } from '@/utils/constant'
 import type { ProblemSet } from '@/utils/type'
-import { useLesson35 } from './Lesson35Provider'
+import { useLesson36 } from './Lesson36Provider'
 
-const BASE = '/math/ny/35'
+const BASE = '/math/ny/36'
 
 const SECTIONS = [
   { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', label: '课堂讲解' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', label: '课后巩固' },
-  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', label: '练习册' },
+  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', label: '拓展练习' },
   { key: 'alltest', path: `${BASE}/alltest`, icon: '🎯', label: '综合题库' },
   { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', label: '课前测' },
   { key: 'mistakes', path: `${BASE}/mistakes`, icon: '📕', label: '错题本' },
@@ -24,7 +24,7 @@ interface SidebarProps {
 
 export default function Sidebar({ problems }: SidebarProps) {
   const pathname = usePathname()
-  const { solveCount, wrongIds } = useLesson35()
+  const { solveCount, wrongIds } = useLesson36()
   const [collapsed, setCollapsed] = useLocalStorage<boolean>(STORAGE_KEYS.MATH_SIDEBAR_COLLAPSED, false)
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
   const masteredAll = Object.values(solveCount).filter(c => c >= 3).length
@@ -50,7 +50,6 @@ export default function Sidebar({ problems }: SidebarProps) {
       }`}
     >
       <div className="flex h-full flex-col">
-        {/* 收起/展开按钮 */}
         <button
           type="button"
           onClick={() => setCollapsed(c => !c)}
@@ -73,7 +72,7 @@ export default function Sidebar({ problems }: SidebarProps) {
               href={BASE}
               className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
                 isActive('home')
-                  ? 'bg-yellow-light font-bold text-yellow-dark'
+                  ? 'bg-blue-50 font-bold text-app-blue-dark'
                   : 'text-text-secondary hover:bg-gray-50'
               }`}
             >
@@ -90,7 +89,7 @@ export default function Sidebar({ problems }: SidebarProps) {
                 href={s.path}
                 className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
                   isActive(s.key)
-                    ? 'bg-yellow-light font-bold text-yellow-dark'
+                    ? 'bg-blue-50 font-bold text-app-blue-dark'
                     : 'text-text-secondary hover:bg-gray-50'
                 }`}
               >
@@ -102,7 +101,6 @@ export default function Sidebar({ problems }: SidebarProps) {
           </div>
         )}
 
-        {/* 收起状态下显示快捷图标 */}
         {collapsed && (
           <div className="flex flex-1 flex-col items-center gap-1 py-2">
             <Link

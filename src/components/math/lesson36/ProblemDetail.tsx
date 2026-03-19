@@ -3,26 +3,21 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
-import { TAG_STYLE } from '@/utils/lesson35-data'
-import { useLesson35 } from './Lesson35Provider'
+import { TAG_STYLE } from '@/utils/lesson36-data'
+import { useLesson36 } from './Lesson36Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
-import RatioDiagram from './RatioDiagram'
-import BlockDiagram from './BlockDiagram'
-import DualBlockDiagram from './DualBlockDiagram'
 
 interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
   tip?: string
-  /** Custom left-column diagram — replaces 拆解图 when provided */
   leftDiagram?: React.ReactNode
-  /** Custom right-column diagram — replaces 倍比图 when provided */
   rightDiagram?: React.ReactNode
 }
 
 export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram, rightDiagram }: ProblemDetailProps) {
   const router = useRouter()
-  const { solveCount, handleSolve, addWrong } = useLesson35()
+  const { solveCount, handleSolve, addWrong } = useLesson36()
   const count = solveCount[problem.id] ?? 0
   const level = getMasteryLevel(count)
 
@@ -64,9 +59,8 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
         </div>
       )}
 
-      {/* Two-column layout on desktop */}
       <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
-        {/* Left column: text + analysis + blocks */}
+        {/* Left column */}
         <div className="min-w-0 flex-1">
           <span className={`mb-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] || 'bg-gray-100 text-gray-600'}`}>
             {problem.tagLabel}
@@ -93,47 +87,14 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
             </ul>
           </div>
 
-          {/* Left-column diagram — custom prop takes priority; falls back to built-in 拆解图 */}
-          {leftDiagram !== undefined ? leftDiagram : problem.type !== 'none' && (
-            <>
-              <div className="mb-3 flex items-center gap-2">
-                <div className="h-px flex-1 bg-border-light" />
-                <div className="whitespace-nowrap text-xs font-semibold text-text-muted">🧱 拆解图（直观理解）</div>
-                <div className="h-px flex-1 bg-border-light" />
-              </div>
-
-              {problem.type === 'ratio3b' ? (
-                problem.dualSc ? (
-                  <DualBlockDiagram config={problem.dualSc} probId={problem.id} />
-                ) : (
-                  <div className="mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs text-text-muted">
-                    拆解图暂不支持此题型
-                  </div>
-                )
-              ) : problem.blockScene ? (
-                <BlockDiagram scene={problem.blockScene} probId={problem.id} />
-              ) : (
-                <div className="mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs text-text-muted">
-                  拆解图暂不支持此题型
-                </div>
-              )}
-            </>
-          )}
+          {/* Custom left diagram */}
+          {leftDiagram}
         </div>
 
-        {/* Right column: ratio diagram + answer */}
+        {/* Right column */}
         <div className="min-w-0 flex-1">
-          {/* Right-column diagram — custom prop takes priority; falls back to built-in 倍比图 */}
-          {rightDiagram !== undefined ? rightDiagram : problem.type !== 'none' && (
-            <>
-              <div className="mb-3 flex items-center gap-2">
-                <div className="h-px flex-1 bg-border-light" />
-                <div className="whitespace-nowrap text-xs font-semibold text-text-muted">📊 倍比图</div>
-                <div className="h-px flex-1 bg-border-light" />
-              </div>
-              <RatioDiagram problem={problem} />
-            </>
-          )}
+          {/* Custom right diagram */}
+          {rightDiagram}
 
           {/* Answer section */}
           <div className="mb-3 flex items-center gap-2">

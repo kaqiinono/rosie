@@ -611,3 +611,5 @@ export const TAG_STYLE: Record<string, string> = {
   type4: 'bg-app-orange-light text-app-orange',
   type5: 'bg-app-red-light text-app-red',
 }
+
+export const LESSON_TIP = '先归一（÷份数）→ 找每份量 → 再求多（×份数）。倍比图左右对应，上下同步！'

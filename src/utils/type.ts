@@ -81,12 +81,12 @@ export interface Problem {
   tagLabel: string
   text: string
   analysis: string[]
-  type: 'ratio3' | 'ratio3b'
-  rows: (string | RatioInput)[]
+  type: 'ratio3' | 'ratio3b' | 'none'
+  rows?: (string | RatioInput)[]
   rows2?: (string | RatioInput)[]
-  rcols: RatioColValue[]
-  ops: OpInput[]
-  hasBlocks: boolean
+  rcols?: RatioColValue[]
+  ops?: OpInput[]
+  hasBlocks?: boolean
   blockScene?: BlockScene
   dualSc?: DualSceneConfig
   finalQ: string

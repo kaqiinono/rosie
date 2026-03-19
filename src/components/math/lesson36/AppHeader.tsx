@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ProblemSet } from '@/utils/type'
 import { NAV_PAGES } from '@/utils/constant'
-import { useLesson35 } from './Lesson35Provider'
+import { useLesson36 } from './Lesson36Provider'
 
-const BASE = '/math/ny/35'
+const BASE = '/math/ny/36'
 const PATH_MAP: Record<string, string> = {
   home: BASE,
   lesson: `${BASE}/lesson`,
@@ -23,7 +23,7 @@ interface AppHeaderProps {
 
 export default function AppHeader({ problems }: AppHeaderProps) {
   const pathname = usePathname()
-  const { solveCount } = useLesson35()
+  const { solveCount } = useLesson36()
 
   const allIds = new Set(Object.values(problems).flatMap(l => l.map(p => p.id)))
   const total = allIds.size
@@ -53,8 +53,8 @@ export default function AppHeader({ problems }: AppHeaderProps) {
         {/* Logo — short on mobile, full on sm+ */}
         <Link href={BASE} className="shrink-0 no-underline">
           <span className="text-[15px] font-bold text-text-primary sm:text-[17px]">
-            🐦{' '}
-            <span className="text-yellow-dark">归一</span>
+            📅{' '}
+            <span className="text-app-blue-dark">星期几</span>
             <span className="hidden min-[480px]:inline">问题探险</span>
           </span>
         </Link>
@@ -75,9 +75,9 @@ export default function AppHeader({ problems }: AppHeaderProps) {
                 key={p.key}
                 href={PATH_MAP[p.key] || BASE}
                 className={`flex h-12 items-center whitespace-nowrap px-3 text-[13px] font-medium no-underline transition-all sm:h-14 ${
-                  active ? 'text-yellow-dark' : 'text-text-muted hover:text-text-secondary'
+                  active ? 'text-app-blue-dark' : 'text-text-muted hover:text-text-secondary'
                 }`}
-                style={{ borderBottom: `2px solid ${active ? '#f59e0b' : 'transparent'}` }}
+                style={{ borderBottom: `2px solid ${active ? '#3b82f6' : 'transparent'}` }}
               >
                 {p.icon} {p.label}
               </Link>
