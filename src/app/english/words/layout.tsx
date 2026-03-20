@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { WordsProvider, useWordsContext } from '@/contexts/WordsContext'
 import AppHeader from '@/components/english/words/AppHeader'
@@ -15,6 +15,23 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const [importOpen, setImportOpen] = useState(false)
   const [immersiveOpen, setImmersiveOpen] = useState(false)
   const [immersiveMode, setImmersiveMode] = useState<'vocab' | 'practice'>('vocab')
+  const [isImmersive, setIsImmersive] = useState(false)
+
+  useEffect(() => {
+    if (!pathname.includes('/daily')) setIsImmersive(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (isImmersive) document.body.classList.add('words-immersive')
+    else document.body.classList.remove('words-immersive')
+    return () => document.body.classList.remove('words-immersive')
+  }, [isImmersive])
+
+  useEffect(() => {
+    const handle = () => setIsImmersive(false)
+    window.addEventListener('exit-words-immersive', handle)
+    return () => window.removeEventListener('exit-words-immersive', handle)
+  }, [])
 
   const handleImport = useCallback((words: WordEntry[]) => {
     void setVocab(words)
@@ -36,6 +53,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [vocab])
 
   const enterImmersive = useCallback(() => {
+    if (pathname.includes('/daily')) {
+      setIsImmersive(true)
+      return
+    }
     if (!filteredWords.length) {
       alert('请先筛选单词！')
       return
@@ -50,11 +71,13 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         className="fixed inset-0 pointer-events-none z-0"
         style={{ background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)' }}
       />
-      <AppHeader
-        onImport={() => setImportOpen(true)}
-        onExport={handleExport}
-        onImmersive={enterImmersive}
-      />
+      {!isImmersive && (
+        <AppHeader
+          onImport={() => setImportOpen(true)}
+          onExport={handleExport}
+          onImmersive={enterImmersive}
+        />
+      )}
       {children}
       <ImportModal
         open={importOpen}

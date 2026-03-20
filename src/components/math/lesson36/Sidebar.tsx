@@ -41,6 +41,7 @@ export default function Sidebar({problems}: SidebarProps) {
 
   function isActive(key: string) {
     if (key === 'home') return pathname === BASE
+    if (key === 'magic') return pathname === MAGIC
     return pathname.startsWith(`${BASE}/${key}`)
   }
 
@@ -84,7 +85,7 @@ export default function Sidebar({problems}: SidebarProps) {
             <Link
               href={MAGIC}
               className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
-                isActive('home')
+                isActive('magic')
                   ? 'bg-blue-50 font-bold text-app-blue-dark'
                   : 'text-text-secondary hover:bg-gray-50'
               }`}
@@ -96,7 +97,7 @@ export default function Sidebar({problems}: SidebarProps) {
             <div className="px-3 pb-1 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
               学习模块
             </div>
-            {SECTIONS.map((s:any) => (
+            {SECTIONS.map((s: any) => (
               <Link
                 key={s.key}
                 href={s.path}
@@ -130,7 +131,7 @@ export default function Sidebar({problems}: SidebarProps) {
             >
               🌈
             </Link>
-            {SECTIONS.map((s:any) => (
+            {SECTIONS.map((s: any) => (
               <Link
                 key={s.key}
                 href={s.path}

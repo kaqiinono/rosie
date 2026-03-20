@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef } from 'react'
+import {useState, useMemo, useCallback, useRef, useEffect} from 'react'
 import type { WordEntry } from '@/utils/type'
 import {
   buildWeeklyPlan,
@@ -65,11 +65,25 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const { masteryMap, recordBatch } = useWordMastery(user)
   const { weeklyPlan, previousPlan, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading } = useWeeklyPlan(user)
 
+  const [isImmersive, setIsImmersive] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsImmersive(document.body.classList.contains('words-immersive'))
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.body, {attributes: true, attributeFilter: ['class']})
+    return () => obs.disconnect()
+  }, []);
+
+  const exitImmersive = useCallback(() => {
+    window.dispatchEvent(new Event('exit-words-immersive'))
+  }, [])
+
   const [phase, setPhase] = useState<Phase>('setup')
   const [showSetup, setShowSetup] = useState(false)   // force setup screen even when plan exists
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [showLessonPicker, setShowLessonPicker] = useState(false)
-  const [pendingLesson, setPendingLesson] = useState<{ unit: string; lesson: string } | null>(null)
+  const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B']))
   const [newPerDay, setNewPerDay] = useState<number>(() => {
     try { const v = localStorage.getItem(STORAGE_KEYS.WEEKLY_NEW_PER_DAY); return v ? Number(v) : 3 } catch { return 3 }
@@ -95,13 +109,16 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     return orderedLessons[0] ?? null
   }, [previousPlan, vocab, orderedLessons])
 
-  const activeLesson = pendingLesson ?? suggestedLesson
+  const activeLessons = useMemo(() => {
+    return pendingLessons.length > 0 ? pendingLessons : (suggestedLesson ? [suggestedLesson] : [])
+  }, [pendingLessons, suggestedLesson])
+  const activeLesson = activeLessons[0] ?? null
 
-  // Words for the active lesson (for setup)
+  // Words for the active lessons (for setup)
   const lessonWords = useMemo(() => {
-    if (!activeLesson) return []
-    return vocab.filter(w => w.unit === activeLesson.unit && w.lesson === activeLesson.lesson)
-  }, [vocab, activeLesson])
+    if (!activeLessons.length) return []
+    return vocab.filter(w => activeLessons.some(l => l.unit === w.unit && l.lesson === w.lesson))
+  }, [vocab, activeLessons])
 
   // Transition: if plan loaded and phase is still 'setup', jump to week-view
   // unless showSetup is explicitly true (e.g. user clicked 换课)
@@ -115,14 +132,14 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     const plan = {
       weekStart: currentWeekStart,
       unit: activeLesson.unit,
-      lesson: activeLesson.lesson,
+      lesson: activeLessons.map(l => l.lesson).join(', '),
       days: buildWeeklyPlan(lessonWords, currentWeekStart, newPerDay),
       progress: {},
     }
     await savePlan(plan)
     setShowSetup(false)
     setPhase('week-view')
-  }, [activeLesson, currentWeekStart, lessonWords, newPerDay, savePlan])
+  }, [activeLesson, activeLessons, currentWeekStart, lessonWords, newPerDay, savePlan])
 
   // Build session words for a given day
   const buildSessionWords = useCallback((dateStr: string) => {
@@ -210,7 +227,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               <div className="bg-[var(--wm-surface2)] border border-[var(--wm-border)] rounded-xl px-5 py-4 mb-4">
                 <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-1.5">建议学习</div>
                 <div className="font-bold text-[1.1rem] text-[var(--wm-text)]">
-                  {activeLesson.unit} · {activeLesson.lesson}
+                  {activeLesson.unit} · {activeLessons.map(l => l.lesson).join(', ')}
                 </div>
                 {previousPlan && (
                   <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-1">上周完成了 {previousPlan.lesson}</div>
@@ -225,32 +242,47 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   onClick={handleConfirmLesson}
                   className="px-6 py-2.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer shadow-[0_3px_12px_rgba(245,158,11,.35)] hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] transition-all"
                 >
-                  开始 {activeLesson.lesson}
+                  开始 {activeLessons.length > 1 ? `${activeLessons.length} 课 · ${lessonWords.length} 词` : activeLesson.lesson}
                 </button>
                 <button
-                  onClick={() => setShowLessonPicker(v => !v)}
+                  onClick={() => {
+                    if (!showLessonPicker && pendingLessons.length === 0 && suggestedLesson) {
+                      setPendingLessons([suggestedLesson])
+                    }
+                    setShowLessonPicker(v => !v)
+                  }}
                   className="px-5 py-2.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text-dim)] font-nunito font-bold text-[.82rem] cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
                 >
-                  选择其他课程 {showLessonPicker ? '▴' : '▾'}
+                  选择课程{pendingLessons.length > 0 ? ` (${pendingLessons.length})` : ''} {showLessonPicker ? '▴' : '▾'}
                 </button>
               </div>
 
               {showLessonPicker && (
                 <div className="border border-[var(--wm-border)] rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
                   {orderedLessons.map(l => {
-                    const isActive = l.unit === activeLesson.unit && l.lesson === activeLesson.lesson
+                    const isActive = activeLessons.some(al => al.unit === l.unit && al.lesson === l.lesson)
                     return (
                       <button
                         key={`${l.unit}::${l.lesson}`}
-                        onClick={() => { setPendingLesson(l); setShowLessonPicker(false) }}
-                        className={`w-full text-left px-4 py-2.5 text-[.82rem] font-bold border-b border-[var(--wm-border)] last:border-0 transition-all cursor-pointer ${
+                        onClick={() => {
+                          setPendingLessons(prev => {
+                            const exists = prev.some(p => p.unit === l.unit && p.lesson === l.lesson)
+                            if (exists) return prev.filter(p => !(p.unit === l.unit && p.lesson === l.lesson))
+                            return [...prev, l]
+                          })
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-[.82rem] font-bold border-b border-[var(--wm-border)] last:border-0 transition-all cursor-pointer flex items-center gap-2.5 ${
                           isActive
                             ? 'bg-[rgba(245,158,11,.12)] text-[#fbbf24]'
                             : 'bg-[var(--wm-surface2)] text-[var(--wm-text)] hover:bg-[var(--wm-surface)]'
                         }`}
                       >
+                        <span className={`inline-flex items-center justify-center w-[16px] h-[16px] rounded-[4px] border shrink-0 text-[.6rem] font-black transition-all ${
+                          isActive ? 'border-[#f59e0b] bg-[rgba(245,158,11,.3)] text-[#fbbf24]' : 'border-[var(--wm-border)] bg-transparent'
+                        }`}>
+                          {isActive && '✓'}
+                        </span>
                         {l.unit} · {l.lesson}
-                        {isActive && ' ✓'}
                       </button>
                     )
                   })}
@@ -317,16 +349,26 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 {fmtWeekRange(currentWeekStart, weekStartDay)}
               </div>
             </div>
-            <button
-              onClick={() => { setPendingLesson(null); setShowSetup(true); setPhase('setup') }}
-              className="px-4 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-full text-[var(--wm-text-dim)] font-nunito text-[.75rem] font-bold cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
-            >
-              换课
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setPendingLessons([]); setShowSetup(true); setPhase('setup') }}
+                className="px-4 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-full text-[var(--wm-text-dim)] font-nunito text-[.75rem] font-bold cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
+              >
+                换课
+              </button>
+              {isImmersive && (
+                <button
+                  onClick={exitImmersive}
+                  className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/55 text-[.72rem] font-bold hover:bg-white/20 hover:text-white/80 transition-all cursor-pointer"
+                >
+                  ✕ 退出沉浸
+                </button>
+              )}
+            </div>
           </div>
 
           {/* 7-day grid */}
-          <div className="grid grid-cols-7 gap-2 mb-5">
+          <div className="flex gap-2 mb-5 overflow-x-auto pb-1 sm:grid sm:grid-cols-7 sm:overflow-visible sm:pb-0 scrollbar-none">
             {weeklyPlan.days.map((day, i) => {
               const isDone = weeklyPlan.progress[day.date]?.quizDone === true
               const isToday = day.date === today
@@ -348,13 +390,13 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 <button
                   key={day.date}
                   onClick={() => setSelectedDate(isSelected ? null : day.date)}
-                  className="flex flex-col items-center gap-1 py-3 px-1 rounded-[12px] border-[1.5px] cursor-pointer transition-all select-none"
+                  className="flex flex-col items-center gap-1 py-3 px-2 rounded-[12px] border-[1.5px] cursor-pointer transition-all select-none shrink-0 min-w-[3.6rem] sm:min-w-0 sm:px-1"
                   style={{ borderColor, background: bgColor, color: textColor, transform: isSelected ? 'translateY(-2px)' : undefined }}
                 >
                   <div className="text-[.6rem] font-extrabold opacity-70">{cnDays[i]}</div>
-                  <div className="font-fredoka text-[1.1rem] leading-none">{fmtDate(day.date)}</div>
-                  <div className="text-[.58rem] font-bold opacity-60">
-                    {isDone ? '✓ 完成' : isToday ? '→ 今天' : `${newCount}+${reviewCount}`}
+                  <div className="font-fredoka text-[1.05rem] leading-none">{fmtDate(day.date)}</div>
+                  <div className="text-[.58rem] font-bold opacity-60 text-center leading-tight">
+                    {isDone ? '✓ 完成' : isToday ? '今天' : `${newCount}+${reviewCount}`}
                   </div>
                 </button>
               )
@@ -497,20 +539,23 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     const w = words[studyIdx]
     const total = words.length
     return (
-      <div className="max-w-[1280px] mx-auto px-4 py-5">
-        <div className="flex items-center gap-3 flex-wrap mb-0 py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <button onClick={() => setPhase('week-view')} className="px-3.5 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-full text-[var(--wm-text-dim)] font-nunito text-[.78rem] font-bold cursor-pointer transition-all shrink-0 hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]">
+      <div
+        className="max-w-[1280px] mx-auto px-4 max-sm:px-3 flex flex-col overflow-hidden"
+        style={{ height: isImmersive ? '100dvh' : 'calc(100dvh - 56px)' }}
+      >
+        <div className="flex items-center gap-2 flex-wrap mb-0 py-2.5 shrink-0">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <button onClick={() => setPhase('week-view')} className="px-3 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-full text-[var(--wm-text-dim)] font-nunito text-[.75rem] font-bold cursor-pointer transition-all shrink-0 hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]">
               ← 返回
             </button>
-            <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">📖 记忆单词</div>
+            <div className="font-fredoka text-[1rem] text-[var(--wm-text)] truncate">📖 记忆单词</div>
           </div>
-          <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)] bg-[var(--wm-surface)] border border-[var(--wm-border)] px-2.5 py-1 rounded-full whitespace-nowrap">
+          <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)] bg-[var(--wm-surface)] border border-[var(--wm-border)] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
             {studyIdx + 1} / {total}
           </div>
           <button
             onClick={() => { setStudyDefOnly(!studyDefOnly); setStudyWordVisible(false) }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border-[1.5px] cursor-pointer text-[.75rem] font-extrabold transition-all select-none whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border-[1.5px] cursor-pointer text-[.72rem] font-extrabold transition-all select-none whitespace-nowrap shrink-0 ${
               studyDefOnly ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]' : 'border-white/10 bg-white/5 text-white/50'
             }`}
           >
@@ -519,15 +564,23 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full transition-all ${studyDefOnly ? 'translate-x-3.5 bg-[#f59e0b]' : 'bg-white/40'}`} />
             </div>
           </button>
+          {isImmersive && (
+            <button
+              onClick={exitImmersive}
+              className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/55 text-[.72rem] font-bold hover:bg-white/20 hover:text-white/80 transition-all cursor-pointer shrink-0"
+            >
+              ✕ 退出沉浸
+            </button>
+          )}
         </div>
-        <div className="h-[3px] bg-white/[.04] rounded-sm mb-5">
+        <div className="h-[3px] bg-white/[.04] rounded-sm mb-2 shrink-0">
           <div className="h-full bg-gradient-to-r from-[#d97706] via-[#f59e0b] to-[#fbbf24] rounded-sm transition-[width] duration-400" style={{ width: `${((studyIdx + 1) / total) * 100}%` }} />
         </div>
 
-        <div className="flex relative rounded-[16px] overflow-hidden border border-[var(--wm-border)] mb-0 min-h-[380px]" style={{ height: 'calc(100vh - 220px)' }}>
+        <div className="flex max-sm:flex-col relative rounded-[16px] overflow-hidden border border-[var(--wm-border)] flex-1 min-h-0">
           {/* Left */}
-          <div className={`flex flex-col items-center justify-center px-7 py-8 gap-3 relative overflow-hidden transition-all duration-400 max-sm:w-full max-sm:min-h-[220px] ${
-            studyDefOnly && !studyWordVisible ? 'w-0 opacity-0 overflow-hidden p-0 max-sm:h-0 max-sm:min-h-0' : 'w-1/2 opacity-100'
+          <div className={`flex flex-col items-center justify-center px-7 max-sm:px-5 py-6 gap-3 relative overflow-hidden transition-all duration-400 ${
+            studyDefOnly && !studyWordVisible ? 'w-0 max-sm:w-full max-sm:h-0 opacity-0 overflow-hidden p-0' : 'w-1/2 max-sm:w-full max-sm:h-[45%] opacity-100'
           }`} style={{ background: 'linear-gradient(135deg, #1a1a30 0%, #12122a 100%)' }}>
             <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 font-fredoka text-[min(35vw,240px)] text-white/[.022] leading-none pointer-events-none select-none">
               {w.entry.word.charAt(0).toUpperCase()}
@@ -555,8 +608,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
           {/* Right */}
           <div
             onClick={() => { if (studyDefOnly) setStudyWordVisible(!studyWordVisible) }}
-            className={`flex flex-col items-center justify-center px-7 py-8 relative transition-all duration-400 max-sm:w-full max-sm:min-h-[220px] ${
-              studyDefOnly && !studyWordVisible ? 'w-full cursor-pointer' : studyDefOnly ? 'w-1/2 cursor-pointer' : 'w-1/2 cursor-default'
+            className={`flex flex-col items-center justify-center px-7 max-sm:px-5 py-6 relative transition-all duration-400 max-sm:w-full ${
+              studyDefOnly && !studyWordVisible ? 'w-full max-sm:flex-1 cursor-pointer' : studyDefOnly ? 'w-1/2 max-sm:flex-1 cursor-pointer' : 'w-1/2 max-sm:flex-1 cursor-default'
             }`}
             style={{ background: 'linear-gradient(135deg, #0e2a50 0%, #1a1a2e 100%)' }}
           >
@@ -574,7 +627,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-3.5 py-2">
+        <div className="flex items-center justify-center gap-3.5 py-2 shrink-0">
           <button
             onClick={() => { if (studyIdx > 0) { setStudyIdx(studyIdx - 1); setStudyWordVisible(false) } }}
             disabled={studyIdx === 0}
