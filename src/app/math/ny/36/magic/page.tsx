@@ -1,8 +1,8 @@
-import WeekdayMagic from './WeekdayMagic'
+import WeekdayMagic from '@/components/math/lesson36/WeekdayMagic'
 
 export const metadata = {
   title: '星期魔法书 🌈',
-  description: '帮小朋友学会推算星期几的互动动画',
+  description: '6种魔法招式，帮小朋友学会推算任意日期是星期几',
 }
 
 export default function WeekdayMagicPage() {

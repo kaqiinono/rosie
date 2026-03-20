@@ -51,11 +51,11 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
 
       {/* Problem Types */}
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
-        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 星期几问题 · 3大题型</div>
+        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 星期几问题 · 6大题型</div>
         <div className="mb-3 text-[13px] leading-relaxed text-text-secondary">
           <strong className="text-text-primary">核心本质：</strong>利用
           <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">天数差 ÷ 7</code>
-          的余数推算星期几，余0不变，余几往后推几天。
+          的余数推算星期几。星期是一个周期为7的循环系统。走完7天必然回到同一个星期，所以只有"多出来的那几天"（余数）才会改变星期几，余0不变，余几往后推几天。
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {PROBLEM_TYPES.map(t => {

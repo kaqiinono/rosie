@@ -1,3 +1,70 @@
+import type { WordMasteryInfo } from './type'
+
+// --- Ebbinghaus spaced repetition intervals ---
+
+export const NORMAL_INTERVALS = [1, 3, 7, 14, 30, 60, 90] // stage 0-6; stage 7 = graduated
+export const HARD_INTERVALS = [1, 2, 4, 7, 14, 30, 60, 90] // stage 0-7; stage 8 = graduated
+
+export const GRADUATED_STAGE_NORMAL = 7
+export const GRADUATED_STAGE_HARD = 8
+
+function addDays(dateStr: string, days: number): string {
+  const d = new Date(dateStr)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
+export function ensureStageInit(info: WordMasteryInfo, today: string): WordMasteryInfo {
+  if (info.stage !== undefined) return info
+  const correct = info.correct ?? 0
+  const incorrect = info.incorrect ?? 0
+  const stage = correct >= 5 ? 3 : correct >= 3 ? 2 : correct >= 1 ? 1 : 0
+  const isHard = incorrect >= 2 || incorrect > correct
+  const intervals = isHard ? HARD_INTERVALS : NORMAL_INTERVALS
+  const baseDate = info.lastSeen || today
+  return {
+    ...info,
+    stage,
+    isHard,
+    nextReviewDate: addDays(baseDate, intervals[stage] ?? 1),
+  }
+}
+
+export function advanceStage(info: WordMasteryInfo, today: string): WordMasteryInfo {
+  const initialized = ensureStageInit(info, today)
+  const intervals = initialized.isHard ? HARD_INTERVALS : NORMAL_INTERVALS
+  const maxStage = initialized.isHard ? GRADUATED_STAGE_HARD : GRADUATED_STAGE_NORMAL
+  const newStage = Math.min((initialized.stage ?? 0) + 1, maxStage)
+  return {
+    ...initialized,
+    stage: newStage,
+    nextReviewDate: newStage >= maxStage ? undefined : addDays(today, intervals[newStage] ?? 90),
+  }
+}
+
+export function regressStage(info: WordMasteryInfo, today: string): WordMasteryInfo {
+  const initialized = ensureStageInit(info, today)
+  const stage = initialized.stage ?? 0
+  let newStage: number
+  if (stage <= 1) newStage = 0
+  else if (stage <= 4) newStage = 1
+  else newStage = 3
+  return {
+    ...initialized,
+    stage: newStage,
+    isHard: true,
+    nextReviewDate: addDays(today, newStage <= 1 ? 1 : HARD_INTERVALS[newStage]),
+  }
+}
+
+export function isGraduated(info: WordMasteryInfo): boolean {
+  if (info.stage === undefined) return false
+  const maxStage = info.isHard ? GRADUATED_STAGE_HARD : GRADUATED_STAGE_NORMAL
+  return info.stage >= maxStage
+}
+
+// --- Existing mastery UI utilities ---
+
 export const MASTERY_THRESHOLD = 3
 
 export type MasteryLevel = 0 | 1 | 2 | 3

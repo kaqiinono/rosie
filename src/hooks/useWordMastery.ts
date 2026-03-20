@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { STORAGE_KEYS } from '@/utils/constant'
-import { getMasteryLevel } from '@/utils/masteryUtils'
+import { getMasteryLevel, advanceStage, regressStage } from '@/utils/masteryUtils'
 import { wordKey } from '@/utils/english-helpers'
 import type { WordEntry, WordMasteryMap, WordMasteryInfo } from '@/utils/type'
 
@@ -36,7 +36,7 @@ export function useWordMastery(user: User | null) {
       try {
         const { data, error } = await supabase
           .from('word_mastery')
-          .select('word_key, correct, incorrect, last_seen')
+          .select('word_key, correct, incorrect, last_seen, stage, next_review_date, is_hard')
           .eq('user_id', user.id)
         if (error || !data) {
           setMasteryMap(loadLocal())
@@ -48,6 +48,9 @@ export function useWordMastery(user: User | null) {
             correct: row.correct ?? 0,
             incorrect: row.incorrect ?? 0,
             lastSeen: row.last_seen ?? '',
+            stage: row.stage ?? undefined,
+            nextReviewDate: row.next_review_date ?? undefined,
+            isHard: row.is_hard ?? undefined,
           }
         })
         setMasteryMap(record)
@@ -63,12 +66,14 @@ export function useWordMastery(user: User | null) {
     const today = new Date().toISOString().slice(0, 10)
     setMasteryMap(prev => {
       const next = { ...prev }
-      for (const { entry, correct } of results) {
+      for (const { entry, correct: isCorrect } of results) {
         const key = wordKey(entry)
         const cur = next[key] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+        const updated = isCorrect ? advanceStage(cur, today) : regressStage(cur, today)
         next[key] = {
-          correct: correct ? cur.correct + 1 : cur.correct,
-          incorrect: correct ? cur.incorrect : cur.incorrect + 1,
+          ...updated,
+          correct: isCorrect ? cur.correct + 1 : cur.correct,
+          incorrect: isCorrect ? cur.incorrect : cur.incorrect + 1,
           lastSeen: today,
         }
       }
@@ -84,6 +89,9 @@ export function useWordMastery(user: User | null) {
             correct: updated.correct,
             incorrect: updated.incorrect,
             last_seen: today,
+            stage: updated.stage,
+            next_review_date: updated.nextReviewDate ?? null,
+            is_hard: updated.isHard ?? false,
             updated_at: new Date().toISOString(),
           }
         })

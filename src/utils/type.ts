@@ -126,6 +126,9 @@ export interface WordMasteryInfo {
   correct: number
   incorrect: number
   lastSeen: string
+  stage?: number          // 0-7 (normal) or 0-8 (hard); undefined = not yet initialized
+  nextReviewDate?: string // "YYYY-MM-DD"
+  isHard?: boolean        // true after regressing from stage >= 2
 }
 
 export type WordMasteryMap = Record<string, WordMasteryInfo>

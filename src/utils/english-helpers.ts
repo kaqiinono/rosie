@@ -1,5 +1,5 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan } from './type'
-import { getMasteryLevel } from './masteryUtils'
+import { getMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD } from './masteryUtils'
 import { KW_MAP } from './english-data'
 
 export function escHtml(s: string): string {
@@ -227,11 +227,11 @@ export function buildWeeklyPlan(
 }
 
 /**
- * Returns review words for a given day, split into two groups:
- * - weekReview: this week's previously introduced new words (not yet mastered), max 9
- * - oldReview:  words from other lessons (not yet mastered), max 3
+ * Returns review words for a given day using Ebbinghaus spaced repetition:
+ * - weekReview: this week's previously introduced words (not yet graduated, mastery < threshold), max 9
+ * - oldReview:  words from prior weeks that are due today (nextReviewDate <= today), prioritized by overdue days, max 10
  *
- * Both sorted: lower mastery first, then older lastSeen first.
+ * Total words (newWords + weekReview + oldReview) never exceeds 20.
  */
 export function getReviewWordsForDay(
   vocab: WordEntry[],
@@ -239,36 +239,61 @@ export function getReviewWordsForDay(
   weeklyPlan: WeeklyPlan,
   dayIndex: number,
 ): { weekReview: WordEntry[]; oldReview: WordEntry[] } {
-  const byMasteryThenDate = (a: WordEntry, b: WordEntry) => {
-    const ma = masteryMap[wordKey(a)] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-    const mb = masteryMap[wordKey(b)] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-    const la = getMasteryLevel(ma.correct)
-    const lb = getMasteryLevel(mb.correct)
-    if (la !== lb) return la - lb
-    return (ma.lastSeen || '').localeCompare(mb.lastSeen || '')
-  }
+  const today = new Date().toISOString().slice(0, 10)
 
   // Keys introduced in previous days of this week
-  const prevKeys = new Set<string>()
+  const thisWeekKeys = new Set<string>()
   for (let i = 0; i < dayIndex; i++) {
-    weeklyPlan.days[i]?.newWordKeys.forEach(k => prevKeys.add(k))
+    weeklyPlan.days[i]?.newWordKeys.forEach(k => thisWeekKeys.add(k))
   }
 
+  // weekReview: this week's prior words not yet graduated and below mastery threshold
   const weekReview = vocab
-    .filter(w => prevKeys.has(wordKey(w)))
-    .filter(w => getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) < 3)
-    .sort(byMasteryThenDate)
+    .filter(w => {
+      const k = wordKey(w)
+      if (!thisWeekKeys.has(k)) return false
+      const m = masteryMap[k]
+      return !m || (!isGraduated(m) && getMasteryLevel(m.correct ?? 0) < MASTERY_THRESHOLD)
+    })
+    .sort((a, b) => {
+      const ma = masteryMap[wordKey(a)]?.correct ?? 0
+      const mb = masteryMap[wordKey(b)]?.correct ?? 0
+      return ma - mb
+    })
     .slice(0, 9)
 
-  const weekReviewKeys = new Set(weekReview.map(w => wordKey(w)))
+  // Budget for old words: total 20 - today's new words - week review count
+  const todayNewCount = weeklyPlan.days[dayIndex]?.newWordKeys.length ?? 0
+  const oldBudget = Math.min(10, Math.max(0, 20 - todayNewCount - weekReview.length))
 
+  if (oldBudget === 0) return { weekReview, oldReview: [] }
+
+  // All this-week keys (including today) to exclude from oldReview
+  const allThisWeekKeys = new Set<string>()
+  weeklyPlan.days.forEach(d => d.newWordKeys.forEach(k => allThisWeekKeys.add(k)))
+
+  // oldReview: prior-week words that are due today, sorted by overdue days desc then stage asc
   const oldReview = vocab
-    .filter(w => !(w.unit === weeklyPlan.unit && w.lesson === weeklyPlan.lesson))
-    .filter(w => !prevKeys.has(wordKey(w)))
-    .filter(w => !weekReviewKeys.has(wordKey(w)))
-    .filter(w => getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) < 3)
-    .sort(byMasteryThenDate)
-    .slice(0, 3)
+    .filter(w => {
+      const k = wordKey(w)
+      if (allThisWeekKeys.has(k)) return false
+      const m = masteryMap[k]
+      if (!m || isGraduated(m)) return false
+      const initialized = ensureStageInit(m, today)
+      const due = initialized.nextReviewDate ?? today
+      return due <= today
+    })
+    .map(w => {
+      const k = wordKey(w)
+      const m = ensureStageInit(masteryMap[k]!, today)
+      const overdueDays = Math.max(0,
+        Math.floor((Date.parse(today) - Date.parse(m.nextReviewDate ?? today)) / 86400000)
+      )
+      return { w, overdueDays, stage: m.stage ?? 0 }
+    })
+    .sort((a, b) => b.overdueDays - a.overdueDays || a.stage - b.stage)
+    .slice(0, oldBudget)
+    .map(({ w }) => w)
 
   return { weekReview, oldReview }
 }

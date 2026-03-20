@@ -310,26 +310,44 @@ export const PROBLEMS: ProblemSet = {
 
 export const PROBLEM_TYPES = [
   {
-    tag: 'type1', color: 'blue', label: '题型1 · 同月及跨月',
-    desc: '同一年内，已知某日是星期几，推算其他日期。',
-    example: '例：4月4日是周六，6月23日是？',
+    tag: 'type1', color: 'blue', label: '招式1 · 同月推算',
+    desc: '在同一个月里，知道某天是星期几，推算同月另一天是星期几。用大日期 − 小日期得差值，÷7取余数，再从已知星期往后数。',
+    example: '例：2月3日是周二，2月25日是？（25−3=22，22÷7余1，周二+1=周三）',
   },
   {
-    tag: 'type2', color: 'green', label: '题型2 · 跨年推算',
-    desc: '跨越多年推算目标日期的星期几。平年+1，闰年+2。',
-    example: '例：2023年1月1日是周日，2026年1月1日是？',
+    tag: 'type2', color: 'pink', label: '招式2 · 跨月推算',
+    desc: '同一年内跨越不同月份推算星期几。天数分三段：①起始月剩余天数，②中间各月总天数，③结束月目标日数字，三段相加÷7取余。',
+    example: '例：4月4日是周六，6月23日是？（26+31+23=80天，80÷7余3，周六+3=周二）',
   },
   {
-    tag: 'type3', color: 'amber', label: '题型3 · 确定星期几',
-    desc: '根据星期分布（多/少）或日期总和，确定特定日期的星期。',
-    example: '例：某月有4个周二和5个周三，31日是？',
+    tag: 'type3', color: 'green', label: '招式3 · 跨年推算（同月同日）',
+    desc: '从某年某日推算若干年后同月同日是星期几。平年365天÷7余1，星期+1；闰年366天÷7余2，星期+2。逐年累加偏移量÷7取余。',
+    example: '例：2023年1月1日是周日，2026年1月1日是？（+1+2+1=4，周日+4=周四）',
+  },
+  {
+    tag: 'type4', color: 'amber', label: '招式4 · 跨年跨月（终极两步走）',
+    desc: '目标年份和月日都不同时，分两步：先用招式3推算到目标年的同月同日，再用招式2从同月同日推算到目标日期。口诀：先过年，再过月。',
+    example: '例：2021年3月18日周六，2026年9月5日是？（先跨年到2026年3月18日=周五，再跨月171天÷7余3=周一）',
+  },
+  {
+    tag: 'type5', color: 'purple', label: '招式5 · 确定星期几',
+    desc: '已知某月某星期出现次数，反推1号是星期几再算目标日。月天数÷7的余数就是"出现5次的星期个数"，这几个星期从1号起连续排列。',
+    example: '例：某31天月有5个周三、周四、周五，则1号是周三，31日是(31−1)÷7余2，周三+2=周五。',
+  },
+  {
+    tag: 'type6', color: 'orange', label: '招式6 · 日期总和反推',
+    desc: '已知某月所有星期X的日期之和，反推出是哪几号。分4次和5次两种情况：用给定总和减去最小总和（46或75），差值能被次数整除则找到答案。',
+    example: '例：某月所有星期X日期之和为80，31天月：80−75=5，5÷5=1，第一个是2号（2、9、16、23、30）。',
   },
 ]
 
 export const TYPE_STYLE: Record<string, { bg: string; border: string; titleColor: string; textColor: string }> = {
-  type1: { bg: 'bg-blue-50', border: 'border-l-blue-500', titleColor: 'text-blue-800', textColor: 'text-blue-900' },
-  type2: { bg: 'bg-green-50', border: 'border-l-green-500', titleColor: 'text-green-800', textColor: 'text-green-900' },
-  type3: { bg: 'bg-amber-50', border: 'border-l-amber-500', titleColor: 'text-amber-700', textColor: 'text-amber-800' },
+  type1: { bg: 'bg-blue-50',   border: 'border-l-blue-500',   titleColor: 'text-blue-800',   textColor: 'text-blue-900'   },
+  type2: { bg: 'bg-pink-50',   border: 'border-l-pink-500',   titleColor: 'text-pink-800',   textColor: 'text-pink-900'   },
+  type3: { bg: 'bg-green-50',  border: 'border-l-green-500',  titleColor: 'text-green-800',  textColor: 'text-green-900'  },
+  type4: { bg: 'bg-amber-50',  border: 'border-l-amber-500',  titleColor: 'text-amber-700',  textColor: 'text-amber-800'  },
+  type5: { bg: 'bg-purple-50', border: 'border-l-purple-500', titleColor: 'text-purple-800', textColor: 'text-purple-900' },
+  type6: { bg: 'bg-orange-50', border: 'border-l-orange-500', titleColor: 'text-orange-700', textColor: 'text-orange-800' },
 }
 
 export const TAG_STYLE: Record<string, string> = {

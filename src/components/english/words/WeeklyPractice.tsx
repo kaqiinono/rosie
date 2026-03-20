@@ -14,6 +14,7 @@ import {
 import { getMasteryLevel, MASTERY_ICON } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
+import MasteryStatusPanel from './MasteryStatusPanel'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWordMastery } from '@/hooks/useWordMastery'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
@@ -337,6 +338,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   if (effectivePhase === 'week-view' && weeklyPlan) {
     const today = todayStr()
     return (
+      <>
       <div className="max-w-[1280px] mx-auto px-4 py-5">
         <div className="bg-[var(--wm-surface)] border border-[var(--wm-border)] rounded-[20px] p-7 mb-5">
           {/* Header */}
@@ -531,6 +533,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
           })()}
         </div>
       </div>
+      <MasteryStatusPanel vocab={vocab} masteryMap={masteryMap} />
+      </>
     )
   }
 
@@ -689,6 +693,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     const masteredCount = words.filter(w => getMasteryLevel((masteryMap[`${w.entry.unit}::${w.entry.lesson}::${w.entry.word}`]?.correct ?? 0)) === 3).length
 
     return (
+      <>
       <div className="max-w-[500px] mx-auto py-10 px-5 text-center">
         <div className="text-[3.5rem] mb-3.5">{emoji}</div>
         <div className="font-fredoka text-[3rem] bg-gradient-to-br from-[#d97706] to-[#f59e0b] bg-clip-text text-transparent mb-1.5">
@@ -711,6 +716,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
           </button>
         </div>
       </div>
+      <MasteryStatusPanel vocab={vocab} masteryMap={masteryMap} />
+      </>
     )
   }
 
