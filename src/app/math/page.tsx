@@ -3,6 +3,7 @@
 import OrbBackground from '@/components/shared/OrbBackground'
 import BackLink from '@/components/shared/BackLink'
 import CourseCard from '@/components/math/CourseCard'
+import MathDailyCard from '@/components/math/MathDailyCard'
 import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
@@ -53,6 +54,7 @@ export default function MathPage() {
         </section>
 
         <section className="flex w-full max-w-[680px] flex-col gap-4">
+          <MathDailyCard />
           {courses.map((course) => (
             <CourseCard key={course.href} data={course} />
           ))}

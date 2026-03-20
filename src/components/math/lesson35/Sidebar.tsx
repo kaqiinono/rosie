@@ -18,6 +18,7 @@ const SECTIONS = [
   { key: 'mistakes', path: `${BASE}/mistakes`, icon: '📕', label: '错题本' },
 ] as const
 
+
 interface SidebarProps {
   problems: ProblemSet
 }

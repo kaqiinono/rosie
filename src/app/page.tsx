@@ -30,6 +30,14 @@ const modules: ModuleCardData[] = [
   },
 ]
 
+const todayCard = {
+  href: '/today',
+  title: '今日计划',
+  description: '一键查看今天的数学题目和英语单词，高效完成每日任务。',
+  stats: ['数学每日一练', '英语每日一练', '进度追踪'],
+  icon: '🗓️',
+}
+
 export default function HomePage() {
   const greeting = useGreeting()
   const { user, loading } = useAuth()
@@ -82,6 +90,34 @@ export default function HomePage() {
             <ModuleCard key={mod.href} data={mod} />
           ))}
         </section>
+
+        {/* Today card */}
+        <Link
+          href={todayCard.href}
+          className="no-underline w-full max-w-[760px]"
+        >
+          <div
+            className="flex items-center gap-4 rounded-2xl px-5 py-4 transition-all hover:scale-[1.01]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(251,191,36,0.12) 0%, rgba(249,115,22,0.10) 100%)',
+              border: '1.5px solid rgba(251,191,36,0.35)',
+            }}
+          >
+            <div className="text-3xl shrink-0">{todayCard.icon}</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[15px] font-bold text-amber-800">{todayCard.title}</div>
+              <div className="text-[12px] text-amber-700 mt-0.5 line-clamp-1">{todayCard.description}</div>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {todayCard.stats.map(s => (
+                  <span key={s} className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <span className="text-amber-500 text-lg shrink-0">→</span>
+          </div>
+        </Link>
 
         <div className="text-xs text-text-muted">
           Made with <em className="not-italic text-rose-500">♥</em> for Rosie

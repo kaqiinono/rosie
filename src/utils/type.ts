@@ -151,3 +151,34 @@ export interface WeeklyPlan {
   days: WeeklyPlanDay[]  // 7 entries index 0=Thu … 6=Wed
   progress: Record<string, WeekDayProgress>  // keyed by date string
 }
+
+// Math weekly plan types
+
+export interface MathPlanProblem {
+  key: string       // globally unique key e.g. "35::L1"
+  lessonId: string  // "35" | "36"
+  section: string   // "lesson" | "homework" | "workbook" | "pretest"
+  index: number     // 1-based, used to construct URL e.g. /math/ny/35/lesson/1
+  title: string     // problem title
+  problemId: string // original Problem.id e.g. "36-L1"
+}
+
+export interface MathWeeklyPlanDay {
+  date: string                        // "YYYY-MM-DD"
+  problems: MathPlanProblem[]         // required problems (ordered)
+  optionalProblems: MathPlanProblem[] // optional problems (W7-12)
+}
+
+export interface MathDayProgress {
+  doneKeys: string[]    // completed problem key list
+  completedAt?: string  // time when all required problems were completed
+}
+
+export interface MathWeeklyPlan {
+  weekStart: string                           // ISO date (same Thursday start as English)
+  lessonId: string                            // "35" | "36"
+  days: MathWeeklyPlanDay[]                   // 7 days
+  progress: Record<string, MathDayProgress>   // key = date string
+}
+
+export type ProblemMasteryMap = Record<string, WordMasteryInfo>
