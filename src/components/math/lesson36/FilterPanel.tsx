@@ -33,9 +33,12 @@ const SOURCE_BTNS = [
 ]
 
 const TYPE_BTNS = [
-  { key: 'type1', label: '同月及跨月' },
-  { key: 'type2', label: '跨年推算' },
-  { key: 'type3', label: '确定星期几' },
+  { key: 'type1', label: '招式1·同月推算' },
+  { key: 'type2', label: '招式2·跨月推算' },
+  { key: 'type3', label: '招式3·跨年同月同日' },
+  { key: 'type4', label: '招式4·跨年跨月' },
+  { key: 'type5', label: '招式5·确定星期几' },
+  { key: 'type6', label: '招式6·日期总和反推' },
 ]
 
 const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
@@ -46,9 +49,12 @@ const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
 ]
 
 const TAG_COLORS: Record<string, string> = {
-  type1: 'bg-app-blue-light text-app-blue-dark',
-  type2: 'bg-app-green-light text-app-green-dark',
-  type3: 'bg-yellow-light text-yellow-dark',
+  type1: 'bg-blue-100 text-blue-800',
+  type2: 'bg-pink-100 text-pink-800',
+  type3: 'bg-green-100 text-green-800',
+  type4: 'bg-amber-100 text-amber-700',
+  type5: 'bg-purple-100 text-purple-800',
+  type6: 'bg-orange-100 text-orange-700',
 }
 
 function getProblemHref(setName: string, indexInSet: number): string {

@@ -182,3 +182,29 @@ export interface MathWeeklyPlan {
 }
 
 export type ProblemMasteryMap = Record<string, WordMasteryInfo>
+
+export type KpRotationPhase = 'knowledge_points' | 'error_bank'
+
+// Per-lesson rotation state (problem-level cycling within one lesson)
+export interface PerLessonRotationState {
+  nextKpIndex: number
+  completedKpIndexes: number[]
+  phase: KpRotationPhase
+}
+
+export interface MathRotatingReviewState {
+  planLessonId: string                              // ties state to current plan, e.g. "36"
+  lessonOrder: string[]                             // ordered prior lesson IDs to cycle, e.g. ["32","33","35"]
+  nextLessonIndex: number                           // index into lessonOrder for next day's assignment
+  perLesson: Record<string, PerLessonRotationState> // per-lesson problem-level state
+  dailyAssignments: Record<string, string[]>        // date → assigned problem keys
+  dailyDoneKeys: Record<string, string[]>           // date → completed problem keys
+}
+
+export interface MathWeeklyLessonReviewState {
+  planLessonId: string                    // bound to current lesson plan; reset when lesson changes
+  reviewCounts: Record<string, number>    // problemKey → times selected and completed
+  dailyAssignments: Record<string, string>  // date → assigned problemKey (one per day)
+  dailyDoneKeys: Record<string, string[]>   // date → completed keys
+  dailySkipped: Record<string, true>        // date → skipped flag
+}

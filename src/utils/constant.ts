@@ -33,6 +33,8 @@ export const STORAGE_KEYS = {
   PROBLEM_MASTERY: 'rosie-problem-mastery',
   MATH_WEEK_START_DAY: 'rosie-math-week-start-day',
   MATH_WEEKLY_PROBLEMS_PER_DAY: 'rosie-math-weekly-problems-per-day',
+  MATH_ROTATING_REVIEW: 'rosie-math-rotating-review',
+  MATH_WEEKLY_LESSON_REVIEW: 'rosie-math-weekly-lesson-review',
 } as const
 
 export const NAV_PAGES = [

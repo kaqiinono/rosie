@@ -6,7 +6,9 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useProblemMastery } from '@/hooks/useProblemMastery'
 import { useMathSolved } from '@/hooks/useMathSolved'
-import { buildMathWeeklyPlan, getMathReviewProblemsForDay } from '@/utils/math-helpers'
+import { buildMathWeeklyPlan, getMathReviewProblemsForDay, makeProblem } from '@/utils/math-helpers'
+import { useMathRotatingReview } from '@/hooks/useMathRotatingReview'
+import { useMathWeeklyLessonReview } from '@/hooks/useMathWeeklyLessonReview'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@/utils/type'
 
@@ -172,6 +174,78 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     }
     return map
   }, [weeklyPlan, priorProblemMap])
+
+  // All prior lesson problems (lessonId < current), skipping lessons with no problems (e.g. pure animation)
+  const priorLessonProbs = useMemo(() => {
+    if (!weeklyPlan) return {} as Record<string, MathPlanProblem[]>
+    const currentId = Number(weeklyPlan.lessonId)
+    const result: Record<string, MathPlanProblem[]> = {}
+    for (const [id, ps] of Object.entries(problemSets)) {
+      if (Number(id) >= currentId) continue
+      const probs = [
+        ...ps.lesson.map((p, i) => makeProblem(id, 'lesson', p, i + 1)),
+        ...ps.homework.map((p, i) => makeProblem(id, 'homework', p, i + 1)),
+        ...ps.pretest.map((p, i) => makeProblem(id, 'pretest', p, i + 1)),
+      ]
+      if (probs.length > 0) result[id] = probs
+    }
+    return result
+  }, [problemSets, weeklyPlan?.lessonId])
+
+  const dailyRequiredCounts = useMemo(() => {
+    if (!weeklyPlan) return {} as Record<string, number>
+    return Object.fromEntries(weeklyPlan.days.map(d => [d.date, d.problems.length]))
+  }, [weeklyPlan])
+
+  const { reviewProblems: rotatingReviews, markReviewDone, isCompletedToday } =
+    useMathRotatingReview(
+      user,
+      weeklyPlan?.lessonId ?? '',
+      selectedDate,
+      priorLessonProbs,
+      masteryMap,
+      dailyRequiredCounts,
+      problemsPerDay,
+    )
+
+  // Detect rotating review completions
+  useEffect(() => {
+    if (weeklyPlan?.lessonId !== '36') return
+    for (const prob of rotatingReviews) {
+      if ((solveCount[prob.problemId] ?? 0) > 0 && !isCompletedToday(prob.key)) {
+        markReviewDone(prob.key)
+      }
+    }
+  }, [solveCount, rotatingReviews, weeklyPlan?.lessonId, isCompletedToday, markReviewDone])
+
+  const rotatingReviewKeys = useMemo(
+    () => new Set(rotatingReviews.map(p => p.key)),
+    [rotatingReviews],
+  )
+
+  const {
+    todayProblem: weeklyLessonProblem,
+    todayLessonId: weeklyLessonId,
+    reviewCounts: weeklyLessonReviewCounts,
+    isDone: weeklyLessonIsDone,
+    isSkipped: weeklyLessonIsSkipped,
+    markDone: markWeeklyLessonDone,
+    markSkipped: markWeeklyLessonSkipped,
+  } = useMathWeeklyLessonReview(
+    user,
+    weeklyPlan?.lessonId ?? '',
+    selectedDate,
+    priorLessonProbs,
+    rotatingReviewKeys,
+  )
+
+  // Detect weekly lesson review completions
+  useEffect(() => {
+    if (!weeklyLessonProblem || weeklyLessonIsDone) return
+    if ((solveCount[weeklyLessonProblem.problemId] ?? 0) > 0) {
+      markWeeklyLessonDone(weeklyLessonProblem.key)
+    }
+  }, [solveCount, weeklyLessonProblem, weeklyLessonIsDone, markWeeklyLessonDone])
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {
@@ -543,24 +617,58 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
             </div>
 
             {/* Review problems */}
-            {(reviewKeys[selectedDate!]?.length ?? 0) > 0 && (
-              <div>
-                <SectionHeader icon="🔄" label="旧讲复习" count={reviewKeys[selectedDate!].length} accent="#f59e0b" />
-                <div className="space-y-2.5">
-                  {reviewKeys[selectedDate!].map(key => {
-                    const found = allProblemMap[key]
-                    if (!found) return null
-                    return (
-                      <ProblemCard
-                        key={key}
-                        prob={found}
-                        done={doneKeys.has(key)}
-                        isReview
-                      />
-                    )
-                  })}
-                </div>
-              </div>
+            {weeklyPlan?.lessonId === '36'
+              ? rotatingReviews.length > 0 && (
+                  <div>
+                    <SectionHeader icon="🔄" label="知识点复习" count={rotatingReviews.length} accent="#f59e0b" />
+                    <div className="space-y-2.5">
+                      {rotatingReviews.map(prob => (
+                        <ProblemCard
+                          key={prob.key}
+                          prob={prob}
+                          done={isCompletedToday(prob.key)}
+                          isReview
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )
+              : (reviewKeys[selectedDate!]?.length ?? 0) > 0 && (
+                  <div>
+                    <SectionHeader icon="🔄" label="旧讲复习" count={reviewKeys[selectedDate!].length} accent="#f59e0b" />
+                    <div className="space-y-2.5">
+                      {reviewKeys[selectedDate!].map(key => {
+                        const found = allProblemMap[key]
+                        if (!found) return null
+                        return (
+                          <ProblemCard
+                            key={key}
+                            prob={found}
+                            done={doneKeys.has(key)}
+                            isReview
+                          />
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+            }
+
+            {/* Weekly lesson review */}
+            {weeklyLessonProblem && !weeklyLessonIsSkipped && (
+              <WeeklyLessonSection
+                problem={weeklyLessonProblem}
+                lessonId={weeklyLessonId!}
+                reviewCount={weeklyLessonReviewCounts[weeklyLessonProblem.key] ?? 0}
+                coveredCount={
+                  (priorLessonProbs[weeklyLessonId!] ?? []).filter(
+                    p => (weeklyLessonReviewCounts[p.key] ?? 0) > 0,
+                  ).length
+                }
+                totalCount={(priorLessonProbs[weeklyLessonId!] ?? []).length}
+                isDone={weeklyLessonIsDone}
+                onSkip={markWeeklyLessonSkipped}
+              />
             )}
 
             {/* Optional problems */}
@@ -685,6 +793,117 @@ function ProblemCard({
       {done && (
         <span className="text-[20px] animate-star-pop inline-block shrink-0">⭐</span>
       )}
+    </div>
+  )
+}
+
+function WeeklyLessonSection({
+  problem, lessonId, reviewCount, coveredCount, totalCount, isDone, onSkip,
+}: {
+  problem: MathPlanProblem
+  lessonId: string
+  reviewCount: number
+  coveredCount: number
+  totalCount: number
+  isDone: boolean
+  onSkip: () => void
+}) {
+  const sc = SECTION_COLOR[problem.section] ?? SECTION_COLOR.lesson
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-base">📅</span>
+        <span className="text-[12px] font-extrabold uppercase tracking-wider" style={{ color: '#7c3aed' }}>
+          本周旧讲
+        </span>
+        <span className="text-[11px] font-bold text-purple-500">第{lessonId}讲</span>
+        <span
+          className="rounded-full px-2 py-0.5 text-[10px] font-extrabold"
+          style={{ background: 'rgba(124,58,237,.1)', color: '#7c3aed' }}
+        >
+          已覆盖 {coveredCount}/{totalCount} 题
+        </span>
+        <div className="flex-1 h-px" style={{ background: 'rgba(124,58,237,.15)' }} />
+      </div>
+
+      <div
+        className="flex items-center gap-3 rounded-[14px] px-4 py-3 transition-all duration-300"
+        style={{
+          background: isDone ? 'rgba(220,252,231,.6)' : 'rgba(255,255,255,.85)',
+          border: `1.5px solid ${isDone ? '#86efac' : 'rgba(124,58,237,.2)'}`,
+          boxShadow: isDone ? 'none' : '0 2px 10px rgba(124,58,237,.06)',
+        }}
+      >
+        {/* Done indicator */}
+        <div
+          className="shrink-0 flex h-8 w-8 items-center justify-center rounded-full"
+          style={{
+            background: isDone ? 'linear-gradient(135deg, #22c55e, #4ade80)' : 'rgba(0,0,0,.05)',
+            border: isDone ? 'none' : '2px solid rgba(0,0,0,.1)',
+            boxShadow: isDone ? '0 2px 8px rgba(34,197,94,.4)' : 'none',
+          }}
+        >
+          {isDone && <span className="text-white text-[14px] font-extrabold">✓</span>}
+        </div>
+
+        {/* Section badge */}
+        <div
+          className="shrink-0 flex items-center justify-center h-7 w-7 rounded-[8px] text-[14px]"
+          style={{ background: sc.bg, border: `1px solid ${sc.border}` }}
+        >
+          {SECTION_EMOJI[problem.section] ?? '📋'}
+        </div>
+
+        {/* Title */}
+        <div className="flex-1 min-w-0">
+          <div className={`text-[13px] font-bold leading-snug ${isDone ? 'text-green-600 line-through opacity-70' : 'text-gray-800'}`}>
+            {problem.title}
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[10px] font-medium" style={{ color: sc.text }}>
+              第{problem.lessonId}讲
+            </span>
+            <span
+              className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+              style={{ background: 'rgba(124,58,237,.1)', color: '#7c3aed' }}
+            >
+              旧讲
+            </span>
+            {reviewCount > 0 && (
+              <span
+                className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+                style={{ background: 'rgba(0,0,0,.06)', color: '#9ca3af' }}
+              >
+                ×{reviewCount}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        {isDone ? (
+          <span className="text-[20px] animate-star-pop inline-block shrink-0">⭐</span>
+        ) : (
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href={`/math/ny/${problem.lessonId}/${problem.section}/${problem.index}`}
+              className="flex items-center gap-1 rounded-[10px] px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
+              style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
+            >
+              做题 ✨
+            </Link>
+            <button
+              type="button"
+              onClick={onSkip}
+              className="rounded-[10px] px-2.5 py-2 text-[11px] font-bold text-gray-400 transition-all cursor-pointer hover:text-gray-600 hover:scale-105"
+              style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.08)' }}
+            >
+              跳过
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

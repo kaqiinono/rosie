@@ -85,7 +85,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [showLessonPicker, setShowLessonPicker] = useState(false)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
-  const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B']))
+  const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B','C']))
   const [newPerDay, setNewPerDay] = useState<number>(() => {
     try { const v = localStorage.getItem(STORAGE_KEYS.WEEKLY_NEW_PER_DAY); return v ? Number(v) : 3 } catch { return 3 }
   })

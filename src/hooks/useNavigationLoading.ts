@@ -1,16 +1,14 @@
 'use client'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useCallback, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 
 export function useNavigationLoading() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const navigateTo = useCallback(
     (href: string) => {
-      setIsLoading(true)
       startTransition(() => {
         router.push(href)
       })
@@ -18,5 +16,5 @@ export function useNavigationLoading() {
     [router, startTransition]
   )
 
-  return { isLoading, navigateTo, setIsLoading }
+  return { isLoading: isPending, navigateTo }
 }
