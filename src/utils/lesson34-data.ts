@@ -240,8 +240,7 @@ const WORKBOOK: Problem[] = [
   },
 ]
 
-function makeSupp(n: number, text: string, factorN: number, inner: number, ans: number, isSubtract = false): Problem {
-  const op = isSubtract ? '−' : '+'
+function makeSupp(n: number, text: string, factorN: number, inner: string, ans: number, _isSubtract = false): Problem {
   const coeff = ans / factorN
   const label = coeff === 100 ? '100' : coeff === 1000 ? '1000' : `${coeff}`
   return {
