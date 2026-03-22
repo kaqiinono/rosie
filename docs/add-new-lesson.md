@@ -87,6 +87,114 @@ return (
 
 > **重要：** 为避免不同讲次的题目 ID 碰撞，新讲次的所有题目 ID 必须加讲次前缀。
 > 例如第36讲使用 `36-L1`、`36-H1`、`36-W1`、`36-P1`，第35讲保持原有 `L1`、`H1` 不变。
+> 补充题使用 `N-S1`、`N-S2` 等（S = Supplement）。
+
+---
+
+## 关于补充题模块（supplement）
+
+**补充题是可选模块**，用于提供额外的专项训练题目（如速算 100 题）。**默认讲次不包含补充题，只在有大量练习需求时添加。**
+
+### 什么时候添加补充题
+
+- 某道核心技巧需要大量重复练习（如分配律速算）
+- PDF 中提供了额外的专项题目（通常是 50-100 道同类型题）
+- 新讲次的题目总数明显不足，需要补充练习量
+
+### 补充题数据结构
+
+`ProblemSet` 中 `supplement` 字段是可选的（`supplement?: Problem[]`），不提供时不显示该模块：
+
+```typescript
+export const PROBLEMS: ProblemSet = {
+  pretest: [...],
+  lesson: [...],
+  homework: [...],
+  workbook: [...],
+  supplement: [...],  // 可选，不写则不显示补充题入口
+}
+```
+
+### 补充题 ID 命名规范
+
+补充题 ID 使用 `N-S1` ... `N-S100` 格式（S = Supplement）：
+
+```typescript
+{ id: '34-S1', title: '补充题1', tag: 'type2', tagLabel: '分配律', ... }
+```
+
+### 批量生成补充题的 makeSupp 辅助函数
+
+对于同类型的大量题目（如 100 道分配律速算），可用辅助函数批量生成：
+
+```typescript
+function makeSupp(n: number, text: string, factorN: number, inner: number, ans: number, isSubtract = false): Problem {
+  const op = isSubtract ? '−' : '+'
+  const coeff = ans / factorN
+  const label = coeff === 100 ? '100' : coeff === 1000 ? '1000' : `${coeff}`
+  return {
+    id: `34-S${n}`, title: `补充题${n}`, tag: 'type2', tagLabel: '分配律', text,
+    analysis: [`提取公因数${factorN}`, `= ${factorN}×(${inner})`, `= ${factorN}×${label}`, `= ${ans}`],
+    type: 'none', finalQ: '计算结果是多少？', finalUnit: '', finalAns: ans,
+  }
+}
+
+const S1 = makeSupp(1, '3×45 + 3×55 = ？', 3, '45+55', 300)
+const S2 = makeSupp(2, '7×38 − 7×28 = ？', 7, '38−28', 70, true)
+```
+
+### 补充题模块需要的额外改动
+
+相比标准讲次，添加补充题模块需要额外：
+
+**1. Sidebar.tsx** 增加 supplement 条目：
+```typescript
+const SECTIONS = [
+  { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', label: '课堂讲解' },
+  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', label: '课后巩固' },
+  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', label: '拓展练习' },
+  { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', label: '补充题' },  // 新增
+  { key: 'alltest', path: `${BASE}/alltest`, icon: '🎯', label: '综合题库' },
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', label: '课前测' },
+  { key: 'mistakes', path: `${BASE}/mistakes`, icon: '📕', label: '错题本' },
+]
+```
+
+**2. layout.tsx** 的 `SECTION_COUNTS` 增加 supplement：
+```typescript
+const SECTION_COUNTS: Record<string, number> = {
+  lesson: PROBLEMS.lesson.length,
+  homework: PROBLEMS.homework.length,
+  workbook: PROBLEMS.workbook.length,
+  pretest: PROBLEMS.pretest.length,
+  supplement: PROBLEMS.supplement?.length ?? 0,  // 新增
+}
+```
+
+**3. FilterPanel.tsx** 的 `SOURCE_BTNS` 增加 supplement：
+```typescript
+const SOURCE_BTNS = [
+  { key: 'lesson', label: '📖 课堂' },
+  { key: 'homework', label: '✏️ 课后' },
+  { key: 'workbook', label: '📚 拓展' },
+  { key: 'supplement', label: '📒 补充题' },  // 新增
+  { key: 'pretest', label: '📝 课前测' },
+]
+```
+
+**4. alltest/page.tsx** 的 source 初始 Set 增加 supplement：
+```typescript
+source: new Set(['lesson', 'homework', 'workbook', 'supplement', 'pretest']),
+```
+
+**5. HomePage.tsx** 的 `MODULES` 数组增加 supplement 模块卡片：
+```typescript
+{ key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '补充题', desc: 'N道速算 · [主题描述]' },
+```
+
+**6. 新增路由页面**：
+- `src/app/math/ny/N/supplement/page.tsx`（列表页，同 homework/page.tsx 结构）
+- `src/app/math/ny/N/supplement/[id]/page.tsx`（详情页，同 homework/[id]/page.tsx 结构）
 
 ---
 
@@ -109,6 +217,7 @@ export const PROBLEMS: ProblemSet = {
   lesson: [...],    // 课堂讲解题目
   homework: [...],  // 课后巩固题目
   workbook: [...],  // 练习册题目
+  // supplement: [...],  // 可选：补充题（有大量专项练习时添加）
 }
 export const PROBLEM_TYPES = [...]
 export const TYPE_STYLE = {...}
@@ -119,7 +228,7 @@ export const TAG_STYLE = {...}
 
 ```typescript
 {
-  id: '36-L1',         // ⚠️ 必须加讲次前缀：36-L1 / 36-H1 / 36-W1 / 36-P1
+  id: '36-L1',         // ⚠️ 必须加讲次前缀：36-L1 / 36-H1 / 36-W1 / 36-P1 / 36-S1
   title: '课1 · 标题',
   tag: 'type1',        // 题型分类 tag（对应 PROBLEM_TYPES 中的 tag）
   tagLabel: '标签文字',
@@ -129,7 +238,7 @@ export const TAG_STYLE = {...}
     '第二步：说明',
     '⚠️ 注意事项',
   ],
-  type: 'ratio3',      // 单变量用 'ratio3'，双变量用 'ratio3b'
+  type: 'ratio3',      // 单变量用 'ratio3'，双变量用 'ratio3b'，无图表用 'none'
   rows: [              // 比例图左列（字符串=标签，对象=输入框）
     '已知条件',
     { id: 'rA1', ans: 3, unit: '分钟' },
@@ -215,6 +324,7 @@ export const TAG_STYLE = {...}
 | 课后巩固 | ✅ 需填写 | `巩固1-N · 强化练习` |
 | 练习册 | ✅ 需填写 | `闯关1-N · 综合挑战` |
 | 课前测 | ✅ 需填写 | `N道摸底题 · 检验起始水平` |
+| 补充题 | ✅ 有则填写 | `N道速算 · [主题描述]`（无补充题则不添加此模块卡片） |
 | 综合题库 | ✅ 无需填写 | 首页有独立宽卡片，文案固定为"全部题目 · 按题型/来源筛选 · 综合训练"，总题数自动从 PROBLEMS 汇总，无需手动指定 |
 | 错题本 | ❌ 不在首页 | 仅出现在侧边栏和底部导航，错题数量由用户行为动态生成，无需在首页配置 |
 | 首页 | — | 即 `page.tsx` 本身，其内容即 Hero + 题型总结 + 上述模块卡片 |
@@ -279,6 +389,7 @@ export const TAG_STYLE: Record<string, string> = {
 { key: 'homework', ..., desc: '巩固1-N · 强化练习' },
 { key: 'workbook', ..., desc: '闯关1-N · 综合挑战' },
 { key: 'pretest', ..., desc: 'N道摸底题 · 检验起始水平' },
+// { key: 'supplement', ..., desc: 'N道速算 · [描述]' },  // 可选
 ```
 
 ---
@@ -291,10 +402,10 @@ export const TAG_STYLE: Record<string, string> = {
 |--------|----------|----------|
 | `lesson35/Lesson35Provider.tsx` | `lesson36/Lesson36Provider.tsx` | 全局替换 `Lesson35` → `Lesson36`（storage key 无需改，已通用） |
 | `lesson35/AppHeader.tsx` | `lesson36/AppHeader.tsx` | `BASE = '/math/ny/36'`；import `useLesson36`；Logo 文字改为第36讲内容（注意：用户登录区域由全局 `AccountBar` 统一管理，AppHeader 不包含登录/退出 UI） |
-| `lesson35/Sidebar.tsx` | `lesson36/Sidebar.tsx` | `BASE = '/math/ny/36'`；import `useLesson36` |
+| `lesson35/Sidebar.tsx` | `lesson36/Sidebar.tsx` | `BASE = '/math/ny/36'`；import `useLesson36`；有补充题时在 SECTIONS 增加 supplement 条目 |
 | `lesson35/BottomNav.tsx` | `lesson36/BottomNav.tsx` | `BASE = '/math/ny/36'`；import `useLesson36` |
-| `lesson35/HomePage.tsx` | `lesson36/HomePage.tsx` | `BASE = '/math/ny/36'`；import 改为 `lesson36-data`；Hero 区域改为第36讲标题和描述 |
-| `lesson35/FilterPanel.tsx` | `lesson36/FilterPanel.tsx` | `BASE = '/math/ny/36'` |
+| `lesson35/HomePage.tsx` | `lesson36/HomePage.tsx` | `BASE = '/math/ny/36'`；import 改为 `lesson36-data`；Hero 区域改为第36讲标题和描述；有补充题时在 MODULES 增加 supplement 卡片 |
+| `lesson35/FilterPanel.tsx` | `lesson36/FilterPanel.tsx` | `BASE = '/math/ny/36'`；有补充题时在 SOURCE_BTNS 增加 supplement 按钮 |
 
 ### 可直接复用的组件（从 lesson35 import，无需复制）
 
@@ -310,7 +421,7 @@ export const TAG_STYLE: Record<string, string> = {
 
 ---
 
-## 第三步：新建路由目录（12 个页面文件）
+## 第三步：新建路由目录（12-14 个页面文件）
 
 新建目录：`src/app/math/ny/36/`
 
@@ -320,6 +431,7 @@ export const TAG_STYLE: Record<string, string> = {
 - `lesson35-data` → `lesson36-data`
 - `Lesson35Provider` / `useLesson35` → `Lesson36Provider` / `useLesson36`
 - `lesson35/` (import 路径) → `lesson36/`
+- 有补充题时，在 `SECTION_COUNTS` 增加：`supplement: PROBLEMS.supplement?.length ?? 0`
 
 ### `page.tsx`
 
@@ -341,6 +453,37 @@ export const TAG_STYLE: Record<string, string> = {
 - `lesson35/ProblemDetail` → `lesson35/ProblemDetail`（可直接复用，路径不变）
 - `<ProblemDetail problem={problem} tip={LESSON_TIP} />` → 如无口诀改为 `<ProblemDetail problem={problem} />`
 
+### `supplement/page.tsx`（有补充题时新增）
+
+参考 `homework/page.tsx` 结构，主要区别：
+- `const list = PROBLEMS.supplement ?? []`
+- 页面头部用 amber 色系，强调训练主题
+- basePath 为 `/math/ny/N/supplement`
+
+```tsx
+export default function SupplementPage() {
+  const { solveCount } = useLesson34()
+  const list = PROBLEMS.supplement ?? []
+  // ...同 homework/page.tsx，替换标题文案
+  return (
+    <div>
+      <div className="mb-3.5 rounded-[14px] border border-amber-200 bg-gradient-to-br from-amber-50 to-[#fef3c7] p-4">
+        <div className="mb-1 text-sm font-extrabold text-amber-900">📒 补充题 · 第N讲</div>
+        <div className="mb-2 text-xs text-amber-700">N道速算训练 · [主题描述]</div>
+        {/* 进度条 */}
+      </div>
+      <ProblemList problems={list} solveCount={solveCount} basePath="/math/ny/N/supplement" />
+    </div>
+  )
+}
+```
+
+### `supplement/[id]/page.tsx`（有补充题时新增）
+
+参考 `homework/[id]/page.tsx`，主要区别：
+- `const list = PROBLEMS.supplement ?? []`
+- `const problem = list[index]`
+
 ### `alltest/page.tsx`
 
 复制，替换：
@@ -348,6 +491,7 @@ export const TAG_STYLE: Record<string, string> = {
 - `useLesson35` → `useLesson36`
 - `lesson35/FilterPanel` → `lesson36/FilterPanel`
 - `type` 的 `Set` 初始值按新讲次的题型 tag 修改
+- 有补充题时，source 的 `Set` 初始值增加 `'supplement'`
 
 ### `mistakes/page.tsx`
 
@@ -409,7 +553,9 @@ src/app/math/ny/N/
   [ ] workbook/page.tsx
   [ ] workbook/[id]/page.tsx
   [ ] pretest/page.tsx
-  [ ] pretest/[id]/page.tsx
+  [ ] pretest/[id]/page.tsx              — 若无课前测题目，页面可显示空提示
+  [ ] supplement/page.tsx                — 仅有补充题时需要
+  [ ] supplement/[id]/page.tsx           — 仅有补充题时需要
   [ ] alltest/page.tsx
   [ ] mistakes/page.tsx
 ```

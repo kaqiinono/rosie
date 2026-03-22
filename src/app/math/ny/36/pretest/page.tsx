@@ -1,19 +1,29 @@
 'use client'
 
-import Link from 'next/link'
+import { PROBLEMS } from '@/utils/lesson36-data'
+import { useLesson36 } from '@/components/math/lesson36/Lesson36Provider'
+import ProblemList from '@/components/math/lesson36/ProblemList'
 
 export default function PretestPage() {
+  const { solveCount } = useLesson36()
+  const pretestMastered = PROBLEMS.pretest.filter(p => (solveCount[p.id] ?? 0) >= 3).length
+
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-      <div className="text-5xl">📝</div>
-      <div className="text-[15px] font-bold text-text-primary">课前测暂未开放</div>
-      <div className="text-[13px] text-text-muted">第36讲课前测题目即将上线，敬请期待</div>
-      <Link
-        href="/math/ny/36"
-        className="mt-2 rounded-full bg-app-blue px-5 py-2 text-[13px] font-semibold text-white no-underline shadow-[0_3px_10px_rgba(59,130,246,0.3)]"
-      >
-        返回首页 →
-      </Link>
+    <div>
+      <div className="mb-3.5 rounded-[14px] border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] to-yellow-light p-4">
+        <div className="mb-1 text-sm font-extrabold text-[#92400e]">📝 课前测 · 第36讲</div>
+        <div className="mb-2 text-xs text-[#a16207]">一年级目标班 · 春季 · 做完5道题看看你的起点！</div>
+        <div className="flex items-center gap-2">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-[#fde68a]">
+            <div
+              className="h-full rounded-sm bg-yellow transition-[width] duration-400"
+              style={{ width: `${Math.round((pretestMastered / 5) * 100)}%` }}
+            />
+          </div>
+          <div className="text-xs font-bold text-[#92400e]">✅ {pretestMastered}/5</div>
+        </div>
+      </div>
+      <ProblemList problems={PROBLEMS.pretest} solveCount={solveCount} basePath="/math/ny/36/pretest" />
     </div>
   )
 }

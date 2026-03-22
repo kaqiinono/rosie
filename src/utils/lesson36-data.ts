@@ -301,8 +301,70 @@ const WORKBOOK: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  {
+    id: '36-P1', title: '课前测1：9月→11月跨月推算', tag: 'type2', tagLabel: '跨月推算',
+    text: '2024年<strong>9月5日</strong>是星期四，那么2024年的<strong>11月14日</strong>是星期几？',
+    analysis: [
+      '9月5日→11月14日天数：(30−5)+31+14=25+31+14=70天',
+      '70÷7=10余0，余数为0说明星期不变',
+      '星期四+0=星期四',
+    ],
+    type: 'none',
+    finalQ: '11月14日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
+  },
+  {
+    id: '36-P2', title: '课前测2：2022→2021年逆推', tag: 'type4', tagLabel: '跨年跨月',
+    text: '2022年<strong>3月22日</strong>是星期二，请问2021年<strong>3月31日</strong>是星期几？',
+    analysis: [
+      '从2021年3月31日到2022年3月22日（向后数）：',
+      '4月30+5月31+6月30+7月31+8月31+9月30+10月31+11月30+12月31+1月31+2月28+3月1-22=356天',
+      '356÷7=50余6',
+      '2022年3月22日是星期二，往前推6天：二→一→日→六→五→四→三=星期三',
+    ],
+    type: 'none',
+    finalQ: '2021年3月31日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 3,
+  },
+  {
+    id: '36-P3', title: '课前测3：2022→2025年4月1日', tag: 'type3', tagLabel: '跨年推算（同月同日）',
+    text: '2022年<strong>4月1日</strong>是星期五，那么2025年<strong>4月1日</strong>是星期几？',
+    analysis: [
+      '2022年（平年）+1 → 2023年4月1日=星期六',
+      '2023年（平年）+1 → 2024年4月1日=星期日',
+      '2024年（闰年）+2 → 2025年4月1日=星期二',
+    ],
+    type: 'none',
+    finalQ: '2025年4月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 2,
+  },
+  {
+    id: '36-P4', title: '课前测4：84集连续剧最后一集', tag: 'type5', tagLabel: '确定星期几',
+    text: '某部<strong>84集</strong>电视连续剧在某<strong>周日开播</strong>，从星期一到星期日每天都播1集，<strong>星期六停播</strong>。请问：最后一集在星期几播出？',
+    analysis: [
+      '每周播出：周日、一、二、三、四、五共6天（周六停播）',
+      '84÷6=14，恰好14个完整周期',
+      '每个周期从周日开始，第6集落在周五',
+      '第14周期：第79集=周日，第80=一，81=二，82=三，83=四，84=五',
+    ],
+    type: 'none',
+    finalQ: '最后一集（第84集）在星期几播出？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
+  },
+  {
+    id: '36-P5', title: '课前测5：5个周四和周六，16日是星期几', tag: 'type5', tagLabel: '确定星期几',
+    text: '某月有<strong>31天</strong>，有<strong>5个星期四</strong>和<strong>5个星期六</strong>，那么这个月的<strong>16日</strong>是星期几？',
+    analysis: [
+      '31=4×7+3，最后3天（29、30、31日）各出现5次',
+      '5个星期四且5个星期六：四和六都在多出的3天里',
+      '连续3天含四(Thu)和六(Sat)，只有{四、五、六}满足',
+      '29=四，30=五，31=六，推算1日=四（星期四，因29−28=1，相差4周）',
+      '16日=1日+15天，15÷7=2余1，星期四+1=星期五',
+    ],
+    type: 'none',
+    finalQ: '这个月的16日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
+  },
+]
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: WORKBOOK,

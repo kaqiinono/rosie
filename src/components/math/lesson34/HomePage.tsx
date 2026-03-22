@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@/utils/type'
-import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson36-data'
+import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson34-data'
 
-const BASE = '/math/ny/36'
+const BASE = '/math/ny/34'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -12,10 +12,11 @@ interface HomePageProps {
 }
 
 const MODULES = [
-  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-[#fef9c3]', title: '课前测', desc: '5道摸底题 · 检验起始水平' },
-  { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-7 · 同月跨月+跨年+确定星期几' },
-  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '巩固1-6 · 强化练习' },
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-[#fef9c3]', title: '课前测', desc: '摸底题 · 检验起始水平' },
+  { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-6 · 凑整法+分配律' },
+  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '巩固1-11 · 强化练习' },
   { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '闯关1-12 · 综合挑战' },
+  { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '补充题', desc: '100道速算 · 分配律大训练' },
 ]
 
 export default function HomePage({ problems, solveCount }: HomePageProps) {
@@ -40,25 +41,26 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
   return (
     <div>
       {/* Hero */}
-      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-blue-50 via-[#dbeafe] to-[#93c5fd] p-6">
+      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-amber-50 via-[#fef3c7] to-[#fcd34d] p-6">
         <div className="pointer-events-none absolute -right-2.5 -top-2.5 text-[90px] opacity-[0.12] rotate-[15deg]">
-          📅
+          🧮
         </div>
-        <h1 className="mb-1.5 text-2xl font-extrabold text-[#1e3a5f]">星期几问题 📅</h1>
-        <p className="text-[13px] leading-relaxed text-[#1e40af]">
-          第36讲 · 一年级目标班<br />掌握3大题型，轻松推算任意日期的星期！
+        <h1 className="mb-1.5 text-2xl font-extrabold text-amber-900">乘除法巧算 🧮</h1>
+        <p className="text-[13px] leading-relaxed text-amber-800">
+          第34讲 · 一年级目标班<br />掌握2大招式，轻松驾驭乘除法速算！
         </p>
       </div>
 
       {/* Problem Types */}
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
-        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 星期几问题 · 6大题型</div>
+        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 乘除法巧算 · 2大招式</div>
         <div className="mb-3 text-[13px] leading-relaxed text-text-secondary">
           <strong className="text-text-primary">核心本质：</strong>利用
-          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">天数差 ÷ 7</code>
-          的余数推算星期几。星期是一个周期为7的循环系统。走完7天必然回到同一个星期，所以只有"多出来的那几天"（余数）才会改变星期几，余0不变，余几往后推几天。
+          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">凑整</code>和
+          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">分配律</code>
+          简化计算。凑整把因数组合成整百整千；分配律把公因数提取或分配，变难为易。
         </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {PROBLEM_TYPES.map(t => {
             const style = TYPE_STYLE[t.tag]
             return (
@@ -79,10 +81,10 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
             )
           })}
         </div>
-        <div className="mt-3 flex items-start gap-2 rounded-lg bg-app-blue-light p-3">
+        <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-3">
           <span className="shrink-0 text-base">⭐</span>
-          <span className="text-xs leading-relaxed text-app-blue-dark">
-            万能口诀：<strong>天数差÷7，余数定星期！余0同一天，余几往后推几天。平年+1，闰年+2。</strong>
+          <span className="text-xs leading-relaxed text-amber-800">
+            万能口诀：<strong>2×5=10，4×25=100，8×125=1000；A×N±B×N = N×(A±B)。</strong>
           </span>
         </div>
       </div>
@@ -129,22 +131,22 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         {/* All-test wide card */}
         <Link
           href={`${BASE}/alltest`}
-          className="flex items-center gap-3 rounded-[14px] border-2 border-[#e879f9] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
+          className="flex items-center gap-3 rounded-[14px] border-2 border-[#fcd34d] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
         >
-          <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-[#fdf4ff] text-[22px]">
+          <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-amber-50 text-[22px]">
             🎯
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-[#7e22ce]">综合测试题库</div>
+            <div className="text-sm font-bold text-amber-800">综合测试题库</div>
             <div className="mb-1 text-xs text-text-muted">全部题目 · 按题型/来源筛选 · 综合训练</div>
             <div className="flex items-center gap-1.5">
               <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
                 <div
-                  className="absolute inset-y-0 left-0 rounded-sm bg-[#c4b5fd] transition-[width] duration-500"
+                  className="absolute inset-y-0 left-0 rounded-sm bg-amber-200 transition-[width] duration-500"
                   style={{ width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%` }}
                 />
                 <div
-                  className="absolute inset-y-0 left-0 rounded-sm bg-[#a855f7] transition-[width] duration-500"
+                  className="absolute inset-y-0 left-0 rounded-sm bg-amber-500 transition-[width] duration-500"
                   style={{ width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%` }}
                 />
               </div>
@@ -153,7 +155,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
               </div>
             </div>
           </div>
-          <div className="shrink-0 text-xl text-[#a855f7]">›</div>
+          <div className="shrink-0 text-xl text-amber-500">›</div>
         </Link>
       </div>
     </div>

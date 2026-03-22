@@ -99,6 +99,7 @@ export interface ProblemSet {
   lesson: Problem[]
   homework: Problem[]
   workbook: Problem[]
+  supplement?: Problem[]
 }
 
 export type PageName = 'home' | 'lesson' | 'homework' | 'workbook' | 'alltest' | 'pretest' | 'detail'

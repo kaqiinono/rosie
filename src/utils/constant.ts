@@ -52,6 +52,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   homework: '✏️ 课后',
   workbook: '📚 练习册',
   pretest: '📝 课前测',
+  supplement: '📒 补充题',
 }
 
 export const PRICES = [5, 8, 10, 12, 15, 20, 25, 30, 50]
