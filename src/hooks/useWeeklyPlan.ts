@@ -81,6 +81,7 @@ export function useWeeklyPlan(user: User | null) {
   // Use a far-future date so we include all existing plans (including the current week's if any)
   useEffect(() => {
     if (!user) { setIsLoading(false); return }
+    setDefaultParams(null) // reset while new user's params load
     const farFuture = '9999-12-31'
     void loadMostRecentPlan(user.id, farFuture).then(params => {
       setDefaultParams(params ?? SYSTEM_DEFAULTS)
