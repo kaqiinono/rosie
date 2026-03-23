@@ -1,7 +1,7 @@
 'use client'
 
 import {useState, useMemo, useCallback, useRef, useEffect} from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry, WeeklyPlan } from '@/utils/type'
 import {
   buildWeeklyPlan,
   getReviewWordsForDay,
@@ -18,7 +18,6 @@ import MasteryStatusPanel from './MasteryStatusPanel'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWordMastery } from '@/hooks/useWordMastery'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { STORAGE_KEYS } from '@/utils/constant'
 
 interface WeeklyPracticeProps {
   vocab: WordEntry[]
@@ -64,7 +63,7 @@ function fmtWeekRange(weekStart: string, startDay: number): string {
 export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const { user } = useAuth()
   const { masteryMap, recordBatch } = useWordMastery(user)
-  const { weeklyPlan, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading } = useWeeklyPlan(user)
+  const { weeklyPlan, currentWeekStart, defaultParams, savePlan, updateDayProgress, isLoading } = useWeeklyPlan(user)
 
   const [isImmersive, setIsImmersive] = useState(false);
 
@@ -81,14 +80,13 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   }, [])
 
   const [phase, setPhase] = useState<Phase>('setup')
-  const [showSetup, setShowSetup] = useState(false)   // force setup screen even when plan exists
+  const [showParamsDialog, setShowParamsDialog] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [showLessonPicker, setShowLessonPicker] = useState(false)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B']))
-  const [newPerDay, setNewPerDay] = useState<number>(() => {
-    try { const v = localStorage.getItem(STORAGE_KEYS.WEEKLY_NEW_PER_DAY); return v ? Number(v) : 3 } catch { return 3 }
-  })
+  const [newPerDay, setNewPerDay] = useState<number>(3)
+  const [weekStartDay, setWeekStartDay] = useState<number>(4)
 
   // Study/quiz state
   const [words, setWords] = useState<{ entry: WordEntry; isReview: boolean }[]>([])
@@ -102,6 +100,19 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
   const cnDays = useMemo(() => getWeekDayLabels(weekStartDay), [weekStartDay])
+
+  // Sync local state from defaultParams once loaded
+  useEffect(() => {
+    if (defaultParams) {
+      setNewPerDay(defaultParams.newWordsPerDay)
+      setWeekStartDay(defaultParams.weekStartDay)
+    }
+  }, [defaultParams])
+
+  // Auto-open dialog when no plan exists and params are loaded
+  useEffect(() => {
+    if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
+  }, [isLoading, weeklyPlan, defaultParams])
 
   const suggestedLesson = useMemo(() => {
     return orderedLessons[0] ?? null
@@ -119,25 +130,27 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   }, [vocab, activeLessons])
 
   // Transition: if plan loaded and phase is still 'setup', jump to week-view
-  // unless showSetup is explicitly true (e.g. user clicked 换课)
+  // unless showParamsDialog is explicitly true (e.g. user clicked 换课)
   const effectivePhase = useMemo(() => {
-    if (!showSetup && phase === 'setup' && weeklyPlan && !isLoading) return 'week-view'
+    if (!showParamsDialog && phase === 'setup' && weeklyPlan && !isLoading) return 'week-view'
     return phase
-  }, [phase, weeklyPlan, isLoading, showSetup])
+  }, [phase, weeklyPlan, isLoading, showParamsDialog])
 
   const handleConfirmLesson = useCallback(async () => {
-    if (!activeLesson) return
-    const plan = {
+    if (!activeLesson || !currentWeekStart) return
+    const plan: WeeklyPlan = {
       weekStart: currentWeekStart,
       unit: activeLesson.unit,
       lesson: activeLessons.map(l => l.lesson).join(', '),
+      weekStartDay,
+      newWordsPerDay: newPerDay,
       days: buildWeeklyPlan(lessonWords, currentWeekStart, newPerDay),
       progress: {},
     }
     await savePlan(plan)
-    setShowSetup(false)
+    setShowParamsDialog(false)
     setPhase('week-view')
-  }, [activeLesson, activeLessons, currentWeekStart, lessonWords, newPerDay, savePlan])
+  }, [activeLesson, activeLessons, currentWeekStart, lessonWords, newPerDay, weekStartDay, savePlan])
 
   // Build session words for a given day
   const buildSessionWords = useCallback((dateStr: string) => {
@@ -208,122 +221,135 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     return <div className="flex items-center justify-center py-20 text-[var(--wm-text-dim)] text-sm">加载中…</div>
   }
 
-  // ── SETUP ────────────────────────────────────────────────────────────────
-  if (effectivePhase === 'setup') {
+  // ── PARAMS DIALOG ────────────────────────────────────────────────────────
+  if (showParamsDialog) {
     return (
-      <div className="max-w-[560px] mx-auto px-4 py-10">
-        <div className="bg-[var(--wm-surface)] border border-[var(--wm-border)] rounded-[20px] p-7">
-          <div className="font-fredoka text-2xl bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-transparent mb-1">
-            本周计划
-          </div>
-          <div className="text-[.75rem] text-[var(--wm-text-dim)] font-bold mb-5">
-            {fmtWeekRange(currentWeekStart, weekStartDay)}
-          </div>
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto"
+        style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      >
+        <div className="max-w-[560px] mx-auto px-4 py-10">
+          <div className="bg-[var(--wm-surface)] border border-[var(--wm-border)] rounded-[20px] p-7">
+            <div className="font-fredoka text-2xl bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-transparent mb-1">
+              本周计划
+            </div>
+            <div className="text-[.75rem] text-[var(--wm-text-dim)] font-bold mb-5">
+              {currentWeekStart && fmtWeekRange(currentWeekStart, weekStartDay)}
+            </div>
 
-          {activeLesson ? (
-            <>
-              <div className="bg-[var(--wm-surface2)] border border-[var(--wm-border)] rounded-xl px-5 py-4 mb-4">
-                <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-1.5">建议学习</div>
-                <div className="font-bold text-[1.1rem] text-[var(--wm-text)]">
-                  {activeLesson.unit} · {activeLessons.map(l => l.lesson).join(', ')}
+            {activeLesson ? (
+              <>
+                <div className="bg-[var(--wm-surface2)] border border-[var(--wm-border)] rounded-xl px-5 py-4 mb-4">
+                  <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-1.5">建议学习</div>
+                  <div className="font-bold text-[1.1rem] text-[var(--wm-text)]">
+                    {activeLesson.unit} · {activeLessons.map(l => l.lesson).join(', ')}
+                  </div>
+
+                  <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-0.5">
+                    共 {lessonWords.length} 个单词 · 每天 3 个新词
+                  </div>
                 </div>
 
-                <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-0.5">
-                  共 {lessonWords.length} 个单词 · 每天 3 个新词
+                <div className="flex gap-2.5 flex-wrap mb-4">
+                  <button
+                    onClick={handleConfirmLesson}
+                    className="px-6 py-2.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer shadow-[0_3px_12px_rgba(245,158,11,.35)] hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] transition-all"
+                  >
+                    开始 {activeLessons.length > 1 ? `${activeLessons.length} 课 · ${lessonWords.length} 词` : activeLesson.lesson}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (!showLessonPicker && pendingLessons.length === 0 && suggestedLesson) {
+                        setPendingLessons([suggestedLesson])
+                      }
+                      setShowLessonPicker(v => !v)
+                    }}
+                    className="px-5 py-2.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text-dim)] font-nunito font-bold text-[.82rem] cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
+                  >
+                    选择课程{pendingLessons.length > 0 ? ` (${pendingLessons.length})` : ''} {showLessonPicker ? '▴' : '▾'}
+                  </button>
                 </div>
-              </div>
 
-              <div className="flex gap-2.5 flex-wrap mb-4">
-                <button
-                  onClick={handleConfirmLesson}
-                  className="px-6 py-2.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer shadow-[0_3px_12px_rgba(245,158,11,.35)] hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] transition-all"
-                >
-                  开始 {activeLessons.length > 1 ? `${activeLessons.length} 课 · ${lessonWords.length} 词` : activeLesson.lesson}
-                </button>
-                <button
-                  onClick={() => {
-                    if (!showLessonPicker && pendingLessons.length === 0 && suggestedLesson) {
-                      setPendingLessons([suggestedLesson])
-                    }
-                    setShowLessonPicker(v => !v)
-                  }}
-                  className="px-5 py-2.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text-dim)] font-nunito font-bold text-[.82rem] cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
-                >
-                  选择课程{pendingLessons.length > 0 ? ` (${pendingLessons.length})` : ''} {showLessonPicker ? '▴' : '▾'}
-                </button>
-              </div>
+                {showLessonPicker && (
+                  <div className="border border-[var(--wm-border)] rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
+                    {orderedLessons.map(l => {
+                      const isActive = activeLessons.some(al => al.unit === l.unit && al.lesson === l.lesson)
+                      return (
+                        <button
+                          key={`${l.unit}::${l.lesson}`}
+                          onClick={() => {
+                            setPendingLessons(prev => {
+                              const exists = prev.some(p => p.unit === l.unit && p.lesson === l.lesson)
+                              if (exists) return prev.filter(p => !(p.unit === l.unit && p.lesson === l.lesson))
+                              return [...prev, l]
+                            })
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-[.82rem] font-bold border-b border-[var(--wm-border)] last:border-0 transition-all cursor-pointer flex items-center gap-2.5 ${
+                            isActive
+                              ? 'bg-[rgba(245,158,11,.12)] text-[#fbbf24]'
+                              : 'bg-[var(--wm-surface2)] text-[var(--wm-text)] hover:bg-[var(--wm-surface)]'
+                          }`}
+                        >
+                          <span className={`inline-flex items-center justify-center w-[16px] h-[16px] rounded-[4px] border shrink-0 text-[.6rem] font-black transition-all ${
+                            isActive ? 'border-[#f59e0b] bg-[rgba(245,158,11,.3)] text-[#fbbf24]' : 'border-[var(--wm-border)] bg-transparent'
+                          }`}>
+                            {isActive && '✓'}
+                          </span>
+                          {l.unit} · {l.lesson}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
 
-              {showLessonPicker && (
-                <div className="border border-[var(--wm-border)] rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
-                  {orderedLessons.map(l => {
-                    const isActive = activeLessons.some(al => al.unit === l.unit && al.lesson === l.lesson)
-                    return (
+                {/* New words per day selector */}
+                <div className="mt-5 pt-4 border-t border-[var(--wm-border)]">
+                  <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-2.5">每天新词数量</div>
+                  <div className="flex gap-1.5 mb-5">
+                    {[1, 2, 3, 4, 5, 6].map(n => (
                       <button
-                        key={`${l.unit}::${l.lesson}`}
-                        onClick={() => {
-                          setPendingLessons(prev => {
-                            const exists = prev.some(p => p.unit === l.unit && p.lesson === l.lesson)
-                            if (exists) return prev.filter(p => !(p.unit === l.unit && p.lesson === l.lesson))
-                            return [...prev, l]
-                          })
-                        }}
-                        className={`w-full text-left px-4 py-2.5 text-[.82rem] font-bold border-b border-[var(--wm-border)] last:border-0 transition-all cursor-pointer flex items-center gap-2.5 ${
-                          isActive
-                            ? 'bg-[rgba(245,158,11,.12)] text-[#fbbf24]'
-                            : 'bg-[var(--wm-surface2)] text-[var(--wm-text)] hover:bg-[var(--wm-surface)]'
+                        key={n}
+                        onClick={() => setNewPerDay(n)}
+                        className={`w-9 h-9 rounded-full border-[1.5px] text-[.82rem] font-extrabold cursor-pointer transition-all ${
+                          newPerDay === n
+                            ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+                            : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
                         }`}
                       >
-                        <span className={`inline-flex items-center justify-center w-[16px] h-[16px] rounded-[4px] border shrink-0 text-[.6rem] font-black transition-all ${
-                          isActive ? 'border-[#f59e0b] bg-[rgba(245,158,11,.3)] text-[#fbbf24]' : 'border-[var(--wm-border)] bg-transparent'
-                        }`}>
-                          {isActive && '✓'}
-                        </span>
-                        {l.unit} · {l.lesson}
+                        {n}
                       </button>
-                    )
-                  })}
+                    ))}
+                  </div>
+                  <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-2.5">每周开始于</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {ALL_DAY_OPTIONS.map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setWeekStartDay(opt.value)}
+                        className={`px-3 py-1.5 rounded-full border-[1.5px] text-[.78rem] font-bold cursor-pointer transition-all ${
+                          weekStartDay === opt.value
+                            ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+                            : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
-
-              {/* New words per day selector */}
-              <div className="mt-5 pt-4 border-t border-[var(--wm-border)]">
-                <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-2.5">每天新词数量</div>
-                <div className="flex gap-1.5 mb-5">
-                  {[1, 2, 3, 4, 5, 6].map(n => (
-                    <button
-                      key={n}
-                      onClick={() => { setNewPerDay(n); try { localStorage.setItem(STORAGE_KEYS.WEEKLY_NEW_PER_DAY, String(n)) } catch { /**/ } }}
-                      className={`w-9 h-9 rounded-full border-[1.5px] text-[.82rem] font-extrabold cursor-pointer transition-all ${
-                        newPerDay === n
-                          ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                          : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-                <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-2.5">每周开始于</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {ALL_DAY_OPTIONS.map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => saveWeekStartDay(opt.value)}
-                      className={`px-3 py-1.5 rounded-full border-[1.5px] text-[.78rem] font-bold cursor-pointer transition-all ${
-                        weekStartDay === opt.value
-                          ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                          : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="text-[var(--wm-text-dim)] text-sm">没有找到课程数据，请先导入单词。</div>
-          )}
+              </>
+            ) : (
+              <div className="text-[var(--wm-text-dim)] text-sm">没有找到课程数据，请先导入单词。</div>
+            )}
+            {weeklyPlan && (
+              <button
+                onClick={() => setShowParamsDialog(false)}
+                className="mt-3 w-full text-center text-[.78rem] text-[var(--wm-text-dim)] hover:text-[var(--wm-text)] cursor-pointer py-2"
+              >
+                取消
+              </button>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -343,12 +369,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 {weeklyPlan.unit} · {weeklyPlan.lesson}
               </div>
               <div className="text-[.75rem] text-[var(--wm-text-dim)] font-bold mt-1">
-                {fmtWeekRange(currentWeekStart, weekStartDay)}
+                {fmtWeekRange(weeklyPlan.weekStart, weeklyPlan.weekStartDay)}
               </div>
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => { setPendingLessons([]); setShowSetup(true); setPhase('setup') }}
+                onClick={() => { setPendingLessons([]); setShowParamsDialog(true) }}
                 className="px-4 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-full text-[var(--wm-text-dim)] font-nunito text-[.75rem] font-bold cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
               >
                 换课
