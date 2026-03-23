@@ -70,29 +70,44 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   const { user } = useAuth()
   const {
     weeklyPlan, allPriorKeys, priorProblemMap, currentWeekStart,
-    weekStartDay, problemsPerDay,
-    savePlan, addDoneKey, saveWeekStartDay, saveProblemsPerDay,
+    defaultParams,
+    savePlan, addDoneKey,
     isLoading,
   } = useMathWeeklyPlan(user)
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
   const { solveCount } = useMathSolved(user)
 
   const [phase, setPhase] = useState<Phase>('setup')
-  const [showSetup, setShowSetup] = useState(false)
+  const [weekStartDay, setWeekStartDay] = useState<number>(4)
+  const [problemsPerDay, setProblemsPerDay] = useState<number>(3)
+  const [showParamsDialog, setShowParamsDialog] = useState(false)
   const [selectedLesson, setSelectedLesson] = useState('36')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [reviewKeys, setReviewKeys] = useState<Record<string, string[]>>({})
   const [justCompleted, setJustCompleted] = useState(false)
   const today = todayStr()
 
+  // Sync local params from defaultParams once loaded
+  useEffect(() => {
+    if (defaultParams) {
+      setWeekStartDay(defaultParams.weekStartDay)
+      setProblemsPerDay(defaultParams.problemsPerDay)
+    }
+  }, [defaultParams])
+
+  // Auto-open params dialog when no plan exists
+  useEffect(() => {
+    if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
+  }, [isLoading, weeklyPlan, defaultParams])
+
   // Auto-switch to week-view if plan exists for current week
   useEffect(() => {
-    if (!isLoading && weeklyPlan && weeklyPlan.weekStart === currentWeekStart && !showSetup) {
+    if (!isLoading && weeklyPlan && currentWeekStart && weeklyPlan.weekStart === currentWeekStart && !showParamsDialog) {
       setPhase('week-view')
       const todayDay = weeklyPlan.days.find(d => d.date === today)
       setSelectedDate(todayDay ? today : (weeklyPlan.days[0]?.date ?? null))
     }
-  }, [isLoading, weeklyPlan, currentWeekStart, today, showSetup])
+  }, [isLoading, weeklyPlan, currentWeekStart, today, showParamsDialog])
 
   // Build review keys per day
   useEffect(() => {
@@ -139,19 +154,22 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   }, [weeklyPlan, selectedDate])
 
   const handleCreatePlan = useCallback(async () => {
+    if (!currentWeekStart) return
     const ps = problemSets[selectedLesson]
     if (!ps) return
     const plan: MathWeeklyPlan = {
       weekStart: currentWeekStart,
       lessonId: selectedLesson,
+      weekStartDay,
+      problemsPerDay,
       days: buildMathWeeklyPlan(selectedLesson, ps, currentWeekStart, problemsPerDay),
       progress: {},
     }
     await savePlan(plan)
-    setShowSetup(false)
+    setShowParamsDialog(false)
     setPhase('week-view')
     setSelectedDate(today)
-  }, [problemSets, selectedLesson, currentWeekStart, problemsPerDay, savePlan, today])
+  }, [problemSets, selectedLesson, currentWeekStart, problemsPerDay, weekStartDay, savePlan, today])
 
   const allPlanProblems: MathPlanProblem[] = useMemo(() => {
     const cur = weeklyPlan ? weeklyPlan.days.flatMap(d => [...d.problems, ...d.optionalProblems]) : []
@@ -187,7 +205,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   }
 
   // ── Setup ───────────────────────────────────────────────────────────────────
-  if (phase === 'setup' || showSetup) {
+  if (showParamsDialog) {
     const sel = LESSONS.find(l => l.id === selectedLesson)!
     const totalRequired = [
       ...(problemSets[selectedLesson]?.lesson ?? []),
@@ -198,7 +216,10 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     const days = Math.ceil(totalRequired / problemsPerDay)
 
     return (
-      <>
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto"
+        style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      >
         <div className="mx-auto max-w-[520px] px-4 py-8">
           {/* Fun header */}
           <div className="mb-7 text-center">
@@ -206,7 +227,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
               <span className="text-4xl animate-wiggle inline-block">🚀</span>
               <div>
                 <div className="text-[22px] font-extrabold text-orange-800 leading-tight">本周冒险计划</div>
-                <div className="text-[12px] text-orange-500 font-medium">{fmtWeekRange(currentWeekStart, weekStartDay)}</div>
+                <div className="text-[12px] text-orange-500 font-medium">{currentWeekStart && fmtWeekRange(currentWeekStart, weekStartDay)}</div>
               </div>
             </div>
           </div>
@@ -289,7 +310,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                   <button
                     key={n}
                     type="button"
-                    onClick={() => saveProblemsPerDay(n)}
+                    onClick={() => setProblemsPerDay(n)}
                     className="flex h-10 w-10 items-center justify-center rounded-full text-[15px] font-extrabold transition-all cursor-pointer hover:scale-105"
                     style={{
                       background: problemsPerDay === n ? 'linear-gradient(135deg, #f97316, #fbbf24)' : 'rgba(0,0,0,.05)',
@@ -310,7 +331,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => saveWeekStartDay(opt.value)}
+                    onClick={() => setWeekStartDay(opt.value)}
                     className="rounded-full px-3 py-1.5 text-[12px] font-bold transition-all cursor-pointer hover:scale-105"
                     style={{
                       background: weekStartDay === opt.value ? 'linear-gradient(135deg, #f97316, #fbbf24)' : 'rgba(0,0,0,.05)',
@@ -343,7 +364,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
             {weeklyPlan && (
               <button
                 type="button"
-                onClick={() => { setShowSetup(false); setPhase('week-view') }}
+                onClick={() => setShowParamsDialog(false)}
                 className="rounded-[16px] px-5 text-[14px] font-bold text-gray-400 transition-all cursor-pointer hover:text-gray-600"
                 style={{ background: 'rgba(0,0,0,.05)', border: '1.5px solid rgba(0,0,0,.06)' }}
               >
@@ -356,7 +377,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
         {allPlanProblems.length > 0 && (
           <ProblemMasteryPanel problems={allPlanProblems} masteryMap={masteryMap} />
         )}
-      </>
+      </div>
     )
   }
 
@@ -390,13 +411,13 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
               <div>
                 <div className="text-[16px] font-extrabold text-gray-800">{lessonInfo.short}</div>
                 <div className="text-[11px] text-gray-500 font-medium mt-0.5">
-                  {fmtWeekRange(weeklyPlan.weekStart, weekStartDay)}
+                  {fmtWeekRange(weeklyPlan.weekStart, weeklyPlan.weekStartDay)}
                 </div>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => { setShowSetup(true); setPhase('setup') }}
+              onClick={() => setShowParamsDialog(true)}
               className="rounded-full px-3.5 py-1.5 text-[12px] font-bold text-gray-400 transition-all cursor-pointer hover:text-gray-600 hover:scale-105"
               style={{ background: 'rgba(255,255,255,.7)', border: '1.5px solid rgba(0,0,0,.08)' }}
             >
