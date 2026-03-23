@@ -4,7 +4,6 @@ import { createContext, useContext, useState, useCallback, useEffect, type React
 import { useAuth } from '@/contexts/AuthContext'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { supabase } from '@/lib/supabase'
-import { STORAGE_KEYS } from '@/utils/constant'
 
 interface Lesson35ContextType {
   solveCount: Record<string, number>
@@ -27,21 +26,6 @@ export function useLesson35() {
   return ctx
 }
 
-function loadWrongLocal(): Set<string> {
-  try {
-    const item = window.localStorage.getItem(STORAGE_KEYS.MATH_WRONG)
-    return item ? new Set(JSON.parse(item)) : new Set()
-  } catch {
-    return new Set()
-  }
-}
-
-function saveWrongLocal(ids: Set<string>) {
-  try {
-    window.localStorage.setItem(STORAGE_KEYS.MATH_WRONG, JSON.stringify([...ids]))
-  } catch { /* ignore */ }
-}
-
 export default function Lesson35Provider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const { solveCount, handleSolve: solveAndSync } = useMathSolved(user)
@@ -49,26 +33,17 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
   const [showCongrats, setShowCongrats] = useState(false)
   const [wrongIds, setWrongIds] = useState<Set<string>>(new Set())
 
-  // Load wrong IDs — from Supabase (logged in) or localStorage (guest)
   useEffect(() => {
-    if (!user) {
-      setWrongIds(loadWrongLocal())
-      return
-    }
+    if (!user) return
     supabase
       .from('math_wrong')
       .select('problem_id')
       .eq('user_id', user.id)
       .then(({ data }) => {
-        if (data) {
-          const ids = new Set(data.map(r => r.problem_id))
-          setWrongIds(ids)
-          saveWrongLocal(ids)
-        }
+        if (data) setWrongIds(new Set(data.map(r => r.problem_id)))
       })
   }, [user])
 
-  // Derived boolean map for backward compatibility
   const solved: Record<string, boolean> = {}
   for (const [k, v] of Object.entries(solveCount)) {
     if (v >= 1) solved[k] = true
@@ -77,12 +52,10 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
   const handleSolve = async (id: string) => {
     const newCount = await solveAndSync(id)
 
-    // Remove from wrong list on any correct answer
     setWrongIds(prev => {
       if (!prev.has(id)) return prev
       const next = new Set(prev)
       next.delete(id)
-      saveWrongLocal(next)
       if (user) {
         supabase.from('math_wrong').delete().eq('user_id', user.id).eq('problem_id', id)
       }
@@ -105,7 +78,6 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
       if (prev.has(id)) return prev
       const next = new Set(prev)
       next.add(id)
-      saveWrongLocal(next)
       if (user) {
         supabase.from('math_wrong').upsert(
           { user_id: user.id, problem_id: id },
@@ -120,7 +92,6 @@ export default function Lesson35Provider({ children }: { children: ReactNode }) 
     setWrongIds(prev => {
       const next = new Set(prev)
       next.delete(id)
-      saveWrongLocal(next)
       if (user) {
         supabase.from('math_wrong').delete().eq('user_id', user.id).eq('problem_id', id)
       }
