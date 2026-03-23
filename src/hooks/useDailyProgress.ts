@@ -4,18 +4,7 @@ import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
-const DP_STORAGE_KEY = 'wm_daily_progress'
-
 export type DailyProgressRecord = Record<string, { quizDone?: boolean; lastScore?: number; lastDate?: string }>
-
-export function loadProgress(): DailyProgressRecord {
-  try { return JSON.parse(localStorage.getItem(DP_STORAGE_KEY) || '{}') }
-  catch { return {} }
-}
-
-export function saveProgress(p: DailyProgressRecord) {
-  localStorage.setItem(DP_STORAGE_KEY, JSON.stringify(p))
-}
 
 export function useDailyProgress(user: User | null) {
   const syncProgressToCloud = useCallback(async (p: DailyProgressRecord) => {

@@ -149,6 +149,8 @@ export interface WeeklyPlan {
   weekStart: string      // ISO date of the Thursday starting this week
   unit: string
   lesson: string
+  weekStartDay: number   // 0–6, 4 = Thursday
+  newWordsPerDay: number // default 3
   days: WeeklyPlanDay[]  // 7 entries index 0=Thu … 6=Wed
   progress: Record<string, WeekDayProgress>  // keyed by date string
 }
@@ -178,6 +180,8 @@ export interface MathDayProgress {
 export interface MathWeeklyPlan {
   weekStart: string                           // ISO date (same Thursday start as English)
   lessonId: string                            // "35" | "36"
+  weekStartDay: number                        // 0–6, 4 = Thursday
+  problemsPerDay: number                      // default 3
   days: MathWeeklyPlanDay[]                   // 7 days
   progress: Record<string, MathDayProgress>   // key = date string
 }

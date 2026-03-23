@@ -3,31 +3,36 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { STORAGE_KEYS } from '@/utils/constant'
 import { getWeekStart } from '@/utils/english-helpers'
 import type { WeeklyPlan, WeekDayProgress } from '@/utils/type'
 
-function loadLocal(): WeeklyPlan | null {
+const SYSTEM_DEFAULTS = { weekStartDay: 4, newWordsPerDay: 3 }
+
+async function loadMostRecentPlan(userId: string, beforeWeekStart: string): Promise<{ weekStartDay: number; newWordsPerDay: number } | null> {
   try {
-    const item = window.localStorage.getItem(STORAGE_KEYS.WEEKLY_PLAN)
-    if (!item) return null
-    return JSON.parse(item) as WeeklyPlan
+    const { data } = await supabase
+      .from('weekly_plans')
+      .select('week_start_day, new_words_per_day')
+      .eq('user_id', userId)
+      .lt('week_start', beforeWeekStart)
+      .order('week_start', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (!data) return null
+    return {
+      weekStartDay: data.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+      newWordsPerDay: data.new_words_per_day ?? SYSTEM_DEFAULTS.newWordsPerDay,
+    }
   } catch {
     return null
   }
-}
-
-function saveLocal(plan: WeeklyPlan) {
-  try {
-    window.localStorage.setItem(STORAGE_KEYS.WEEKLY_PLAN, JSON.stringify(plan))
-  } catch { /* ignore */ }
 }
 
 async function loadFromCloud(userId: string, weekStart: string): Promise<WeeklyPlan | null> {
   try {
     const { data, error } = await supabase
       .from('weekly_plans')
-      .select('unit, lesson, plan_data, progress_data')
+      .select('unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data')
       .eq('user_id', userId)
       .eq('week_start', weekStart)
       .single()
@@ -36,6 +41,8 @@ async function loadFromCloud(userId: string, weekStart: string): Promise<WeeklyP
       weekStart,
       unit: data.unit,
       lesson: data.lesson,
+      weekStartDay: data.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+      newWordsPerDay: data.new_words_per_day ?? SYSTEM_DEFAULTS.newWordsPerDay,
       days: data.plan_data as WeeklyPlan['days'],
       progress: (data.progress_data as WeeklyPlan['progress']) ?? {},
     }
@@ -54,6 +61,8 @@ async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
           week_start: plan.weekStart,
           unit: plan.unit,
           lesson: plan.lesson,
+          week_start_day: plan.weekStartDay,
+          new_words_per_day: plan.newWordsPerDay,
           plan_data: plan.days,
           progress_data: plan.progress,
           updated_at: new Date().toISOString(),
@@ -63,59 +72,41 @@ async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
   } catch { /* ignore */ }
 }
 
-function loadWeekStartDay(): number {
-  try {
-    const v = window.localStorage.getItem(STORAGE_KEYS.WEEK_START_DAY)
-    return v !== null ? Number(v) : 4
-  } catch {
-    return 4
-  }
-}
-
 export function useWeeklyPlan(user: User | null) {
-  const [weekStartDay, setWeekStartDay] = useState<number>(4)
-  const currentWeekStart = useMemo(() => getWeekStart(undefined, weekStartDay), [weekStartDay])
+  const [defaultParams, setDefaultParams] = useState<{ weekStartDay: number; newWordsPerDay: number } | null>(null)
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(null)
-  const [previousPlan, setPreviousPlan] = useState<WeeklyPlan | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load weekStartDay from localStorage on mount
+  // Step 1: load defaultParams (most recent prior plan's params, or system defaults)
+  // Use a far-future date so we include all existing plans (including the current week's if any)
   useEffect(() => {
-    setWeekStartDay(loadWeekStartDay())
-  }, [])
+    if (!user) { setIsLoading(false); return }
+    setDefaultParams(null) // reset while new user's params load
+    const farFuture = '9999-12-31'
+    void loadMostRecentPlan(user.id, farFuture).then(params => {
+      setDefaultParams(params ?? SYSTEM_DEFAULTS)
+    })
+  }, [user])
 
+  // Step 2: currentWeekStart derives from defaultParams.weekStartDay (null until defaultParams loads)
+  const currentWeekStart = useMemo(() => {
+    if (!defaultParams) return null
+    return getWeekStart(undefined, defaultParams.weekStartDay)
+  }, [defaultParams])
+
+  // Step 3: load current plan once currentWeekStart is known
   useEffect(() => {
-    const init = async () => {
+    if (!user || !currentWeekStart) return
+    void (async () => {
       setIsLoading(true)
-      const stored = loadLocal()
-      if (stored && stored.weekStart === currentWeekStart) {
-        setWeeklyPlan(stored)
-      } else {
-        setWeeklyPlan(null)
-        setPreviousPlan(stored ?? null)
-      }
-
-      if (user) {
-        const cloud = await loadFromCloud(user.id, currentWeekStart)
-        if (cloud) {
-          setWeeklyPlan(cloud)
-          saveLocal(cloud)
-        }
-      }
-
+      const cloud = await loadFromCloud(user.id, currentWeekStart)
+      setWeeklyPlan(cloud)
       setIsLoading(false)
-    }
-    void init()
+    })()
   }, [user, currentWeekStart])
-
-  const saveWeekStartDay = useCallback((day: number) => {
-    setWeekStartDay(day)
-    try { window.localStorage.setItem(STORAGE_KEYS.WEEK_START_DAY, String(day)) } catch { /* ignore */ }
-  }, [])
 
   const savePlan = useCallback(async (plan: WeeklyPlan) => {
     setWeeklyPlan(plan)
-    saveLocal(plan)
     if (user) await saveToCloud(user.id, plan)
   }, [user])
 
@@ -126,11 +117,18 @@ export function useWeeklyPlan(user: User | null) {
         ...prev,
         progress: { ...prev.progress, [date]: progress },
       }
-      saveLocal(updated)
       if (user) void saveToCloud(user.id, updated)
       return updated
     })
   }, [user])
 
-  return { weeklyPlan, previousPlan, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading }
+  return {
+    weeklyPlan,
+    previousPlan: null,
+    currentWeekStart,
+    defaultParams,
+    savePlan,
+    updateDayProgress,
+    isLoading,
+  }
 }

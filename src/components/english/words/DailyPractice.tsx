@@ -6,7 +6,7 @@ import { buildDailyPlan, hilite, highlightExample, shuffle, prioritizeReviews, g
 import { getMasteryLevel, MASTERY_ICON } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import { useAuth } from '@/contexts/AuthContext'
-import { loadProgress, saveProgress, useDailyProgress, type DailyProgressRecord } from '@/hooks/useDailyProgress'
+import { useDailyProgress, type DailyProgressRecord } from '@/hooks/useDailyProgress'
 import { useWordMastery } from '@/hooks/useWordMastery'
 
 interface DailyPracticeProps {
@@ -41,7 +41,7 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
   const [spellOk, setSpellOk] = useState<boolean | null>(null)
   const spellRef = useRef<HTMLInputElement>(null)
 
-  const [prog, setProg] = useState<DailyProgressRecord>(() => loadProgress())
+  const [prog, setProg] = useState<DailyProgressRecord>({})
   const doneDays = useMemo(() => Object.keys(prog).filter(k => prog[k]?.quizDone).map(Number), [prog])
 
   const weeks = useMemo(() => {
@@ -67,10 +67,7 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
   // Load cloud progress when user logs in
   useEffect(() => {
     loadProgressFromCloud().then(cloudProg => {
-      if (cloudProg) {
-        saveProgress(cloudProg)
-        setProg(cloudProg)
-      }
+      if (cloudProg) setProg(cloudProg)
     })
   }, [loadProgressFromCloud])
 
@@ -174,14 +171,13 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
     if (next >= quizQs.length) {
       const total = quizQs.length
       const pct = Math.round(score / total * 100)
-      const p = loadProgress()
+      const p = { ...prog }
       selDays.forEach(d => {
         if (!p[d]) p[d] = {}
         ;(p[d] as Record<string, unknown>).quizDone = true
         ;(p[d] as Record<string, unknown>).lastScore = pct
         ;(p[d] as Record<string, unknown>).lastDate = new Date().toLocaleDateString('zh-CN')
       })
-      saveProgress(p)
       setProg({ ...p })
       void syncProgressToCloud(p)
 
@@ -201,7 +197,6 @@ export default function DailyPractice({ vocab }: DailyPracticeProps) {
 
   const resetProgress = useCallback(() => {
     if (confirm('确认重置所有学习进度？')) {
-      saveProgress({})
       setProg({})
       void syncProgressToCloud({})
       setSelDays(new Set())
