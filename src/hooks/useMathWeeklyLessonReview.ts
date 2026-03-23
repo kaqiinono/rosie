@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { MathPlanProblem, MathWeeklyLessonReviewState } from '@/utils/type'
-import { STORAGE_KEYS } from '@/utils/constant'
 import { pickWeeklyLessonProblem } from '@/utils/math-helpers'
 
 function initialState(planLessonId: string): MathWeeklyLessonReviewState {
@@ -15,31 +14,6 @@ function initialState(planLessonId: string): MathWeeklyLessonReviewState {
     dailyDoneKeys: {},
     dailySkipped: {},
   }
-}
-
-function loadLocal(planLessonId: string): MathWeeklyLessonReviewState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.MATH_WEEKLY_LESSON_REVIEW)
-    if (!raw) return initialState(planLessonId)
-    const parsed = JSON.parse(raw) as MathWeeklyLessonReviewState
-    if (parsed.planLessonId !== planLessonId) return initialState(planLessonId)
-    return {
-      ...initialState(planLessonId),
-      ...parsed,
-      reviewCounts: parsed.reviewCounts ?? {},
-      dailyAssignments: parsed.dailyAssignments ?? {},
-      dailyDoneKeys: parsed.dailyDoneKeys ?? {},
-      dailySkipped: parsed.dailySkipped ?? {},
-    }
-  } catch {
-    return initialState(planLessonId)
-  }
-}
-
-function saveLocal(state: MathWeeklyLessonReviewState): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.MATH_WEEKLY_LESSON_REVIEW, JSON.stringify(state))
-  } catch { /* ignore */ }
 }
 
 async function loadFromCloud(userId: string, planLessonId: string): Promise<MathWeeklyLessonReviewState | null> {
@@ -92,24 +66,16 @@ export function useMathWeeklyLessonReview(
   markSkipped: () => void
 } {
   const [state, setState] = useState<MathWeeklyLessonReviewState>(() =>
-    loadLocal(activeLessonId),
+    initialState(activeLessonId),
   )
   const stateRef = useRef(state)
   useEffect(() => { stateRef.current = state }, [state])
 
   // Load from cloud on mount / user change
   useEffect(() => {
-    if (!user) {
-      setState(loadLocal(activeLessonId))
-      return
-    }
+    if (!user) return
     void loadFromCloud(user.id, activeLessonId).then(cloud => {
-      if (cloud) {
-        setState(cloud)
-        saveLocal(cloud)
-      } else {
-        setState(loadLocal(activeLessonId))
-      }
+      if (cloud) setState(cloud)
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, activeLessonId])
@@ -119,7 +85,6 @@ export function useMathWeeklyLessonReview(
     if (stateRef.current.planLessonId !== activeLessonId) {
       const fresh = initialState(activeLessonId)
       setState(fresh)
-      saveLocal(fresh)
       if (user) void saveToCloud(user.id, fresh)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -145,7 +110,6 @@ export function useMathWeeklyLessonReview(
       dailyAssignments: { ...stateRef.current.dailyAssignments, [selectedDate]: result.problem.key },
     }
     setState(newState)
-    saveLocal(newState)
     if (user) void saveToCloud(user.id, newState)
   }, [activeLessonId, selectedDate, priorLessonProbs, excludeKeys, user])
 
@@ -168,7 +132,6 @@ export function useMathWeeklyLessonReview(
           reviewCounts: { ...prev.reviewCounts, [key]: (prev.reviewCounts[key] ?? 0) + 1 },
           dailyDoneKeys: { ...prev.dailyDoneKeys, [selectedDate]: [...existing, key] },
         }
-        saveLocal(next)
         if (user) void saveToCloud(user.id, next)
         return next
       })
@@ -184,7 +147,6 @@ export function useMathWeeklyLessonReview(
         ...prev,
         dailySkipped: { ...prev.dailySkipped, [selectedDate]: true },
       }
-      saveLocal(next)
       if (user) void saveToCloud(user.id, next)
       return next
     })

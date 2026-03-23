@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { MathPlanProblem, ProblemMasteryMap, MathRotatingReviewState } from '@/utils/type'
-import { STORAGE_KEYS } from '@/utils/constant'
 import { assignRotatingReviewForDay } from '@/utils/math-helpers'
 
 function computeLessonOrder(priorLessonProbs: Record<string, MathPlanProblem[]>): string[] {
@@ -23,30 +22,6 @@ function initialState(planLessonId: string, priorLessonProbs: Record<string, Mat
     dailyAssignments: {},
     dailyDoneKeys: {},
   }
-}
-
-function loadLocal(planLessonId: string, priorLessonProbs: Record<string, MathPlanProblem[]>): MathRotatingReviewState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.MATH_ROTATING_REVIEW)
-    if (!raw) return initialState(planLessonId, priorLessonProbs)
-    const parsed = JSON.parse(raw) as MathRotatingReviewState
-    if (parsed.planLessonId !== planLessonId) return initialState(planLessonId, priorLessonProbs)
-    return {
-      ...initialState(planLessonId, priorLessonProbs),
-      ...parsed,
-      dailyAssignments: parsed.dailyAssignments ?? {},
-      dailyDoneKeys: parsed.dailyDoneKeys ?? {},
-      perLesson: parsed.perLesson ?? {},
-    }
-  } catch {
-    return initialState(planLessonId, priorLessonProbs)
-  }
-}
-
-function saveLocal(state: MathRotatingReviewState): void {
-  try {
-    localStorage.setItem(STORAGE_KEYS.MATH_ROTATING_REVIEW, JSON.stringify(state))
-  } catch { /* ignore */ }
 }
 
 async function loadFromCloud(userId: string, planLessonId: string, priorLessonProbs: Record<string, MathPlanProblem[]>): Promise<MathRotatingReviewState | null> {
@@ -96,24 +71,16 @@ export function useMathRotatingReview(
   isCompletedToday: (key: string) => boolean
 } {
   const [state, setState] = useState<MathRotatingReviewState>(() =>
-    loadLocal(activeLessonId, priorLessonProbs),
+    initialState(activeLessonId, priorLessonProbs),
   )
   const stateRef = useRef(state)
   useEffect(() => { stateRef.current = state }, [state])
 
   // Load from cloud on mount / user change
   useEffect(() => {
-    if (!user) {
-      setState(loadLocal(activeLessonId, priorLessonProbs))
-      return
-    }
+    if (!user) return
     void loadFromCloud(user.id, activeLessonId, priorLessonProbs).then(cloud => {
-      if (cloud) {
-        setState(cloud)
-        saveLocal(cloud)
-      } else {
-        setState(loadLocal(activeLessonId, priorLessonProbs))
-      }
+      if (cloud) setState(cloud)
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, activeLessonId])
@@ -123,7 +90,6 @@ export function useMathRotatingReview(
     if (stateRef.current.planLessonId !== activeLessonId) {
       const fresh = initialState(activeLessonId, priorLessonProbs)
       setState(fresh)
-      saveLocal(fresh)
       if (user) void saveToCloud(user.id, fresh)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,7 +119,6 @@ export function useMathRotatingReview(
       problemsPerDay,
     )
     setState(newState)
-    saveLocal(newState)
     if (user) void saveToCloud(user.id, newState)
   }, [activeLessonId, selectedDate, priorLessonProbs, masteryMap, dailyRequiredCounts, problemsPerDay, user])
 
@@ -173,7 +138,6 @@ export function useMathRotatingReview(
           ...prev,
           dailyDoneKeys: { ...prev.dailyDoneKeys, [selectedDate]: [...existing, key] },
         }
-        saveLocal(next)
         if (user) void saveToCloud(user.id, next)
         return next
       })
