@@ -6,7 +6,7 @@ import {
   buildWeeklyPlan,
   getReviewWordsForDay,
   getOrderedLessons,
-  suggestNextLesson,
+
   hilite,
   highlightExample,
   wordKey,
@@ -64,7 +64,7 @@ function fmtWeekRange(weekStart: string, startDay: number): string {
 export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const { user } = useAuth()
   const { masteryMap, recordBatch } = useWordMastery(user)
-  const { weeklyPlan, previousPlan, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading } = useWeeklyPlan(user)
+  const { weeklyPlan, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading } = useWeeklyPlan(user)
 
   const [isImmersive, setIsImmersive] = useState(false);
 
@@ -104,11 +104,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const cnDays = useMemo(() => getWeekDayLabels(weekStartDay), [weekStartDay])
 
   const suggestedLesson = useMemo(() => {
-    if (previousPlan) {
-      return suggestNextLesson(vocab, previousPlan.unit, previousPlan.lesson) ?? orderedLessons[0] ?? null
-    }
     return orderedLessons[0] ?? null
-  }, [previousPlan, vocab, orderedLessons])
+  }, [orderedLessons])
 
   const activeLessons = useMemo(() => {
     return pendingLessons.length > 0 ? pendingLessons : (suggestedLesson ? [suggestedLesson] : [])
@@ -230,9 +227,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 <div className="font-bold text-[1.1rem] text-[var(--wm-text)]">
                   {activeLesson.unit} · {activeLessons.map(l => l.lesson).join(', ')}
                 </div>
-                {previousPlan && (
-                  <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-1">上周完成了 {previousPlan.lesson}</div>
-                )}
+
                 <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-0.5">
                   共 {lessonWords.length} 个单词 · 每天 3 个新词
                 </div>

@@ -7,22 +7,6 @@ import { STORAGE_KEYS } from '@/utils/constant'
 import { getWeekStart } from '@/utils/english-helpers'
 import type { WeeklyPlan, WeekDayProgress } from '@/utils/type'
 
-function loadLocal(): WeeklyPlan | null {
-  try {
-    const item = window.localStorage.getItem(STORAGE_KEYS.WEEKLY_PLAN)
-    if (!item) return null
-    return JSON.parse(item) as WeeklyPlan
-  } catch {
-    return null
-  }
-}
-
-function saveLocal(plan: WeeklyPlan) {
-  try {
-    window.localStorage.setItem(STORAGE_KEYS.WEEKLY_PLAN, JSON.stringify(plan))
-  } catch { /* ignore */ }
-}
-
 async function loadFromCloud(userId: string, weekStart: string): Promise<WeeklyPlan | null> {
   try {
     const { data, error } = await supabase
@@ -76,33 +60,18 @@ export function useWeeklyPlan(user: User | null) {
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
   const currentWeekStart = useMemo(() => getWeekStart(undefined, weekStartDay), [weekStartDay])
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(null)
-  const [previousPlan, setPreviousPlan] = useState<WeeklyPlan | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load weekStartDay from localStorage on mount
   useEffect(() => {
     setWeekStartDay(loadWeekStartDay())
   }, [])
 
   useEffect(() => {
+    if (!user) return
     const init = async () => {
       setIsLoading(true)
-      const stored = loadLocal()
-      if (stored && stored.weekStart === currentWeekStart) {
-        setWeeklyPlan(stored)
-      } else {
-        setWeeklyPlan(null)
-        setPreviousPlan(stored ?? null)
-      }
-
-      if (user) {
-        const cloud = await loadFromCloud(user.id, currentWeekStart)
-        if (cloud) {
-          setWeeklyPlan(cloud)
-          saveLocal(cloud)
-        }
-      }
-
+      const cloud = await loadFromCloud(user.id, currentWeekStart)
+      setWeeklyPlan(cloud)
       setIsLoading(false)
     }
     void init()
@@ -115,7 +84,6 @@ export function useWeeklyPlan(user: User | null) {
 
   const savePlan = useCallback(async (plan: WeeklyPlan) => {
     setWeeklyPlan(plan)
-    saveLocal(plan)
     if (user) await saveToCloud(user.id, plan)
   }, [user])
 
@@ -126,11 +94,10 @@ export function useWeeklyPlan(user: User | null) {
         ...prev,
         progress: { ...prev.progress, [date]: progress },
       }
-      saveLocal(updated)
       if (user) void saveToCloud(user.id, updated)
       return updated
     })
   }, [user])
 
-  return { weeklyPlan, previousPlan, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading }
+  return { weeklyPlan, previousPlan: null, currentWeekStart, weekStartDay, saveWeekStartDay, savePlan, updateDayProgress, isLoading }
 }
