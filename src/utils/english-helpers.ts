@@ -157,6 +157,21 @@ export function buildQuizQuestions(
   return qs
 }
 
+/**
+ * Build 4 multiple-choice options for a quiz question.
+ * Prefers distractors from the same lesson; falls back to the full pool.
+ * Uses a deterministic seed so options stay stable across re-renders.
+ */
+export function buildQuizOptions(
+  correctWord: WordEntry,
+  pool: WordEntry[],
+  seed: number,
+): WordEntry[] {
+  let candidates = pool.filter(w => w.lesson === correctWord.lesson && w.word !== correctWord.word)
+  if (candidates.length < 3) candidates = pool.filter(w => w.word !== correctWord.word)
+  return shuffle([correctWord, ...shuffle(candidates, seed).slice(0, 3)], seed + 10)
+}
+
 export function getResultEmoji(pct: number): string {
   if (pct >= 90) return '🏆'
   if (pct >= 70) return '🎉'

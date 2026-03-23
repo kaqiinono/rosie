@@ -155,9 +155,16 @@ function AuthContent() {
           )}
         </div>
 
-        <button onClick={() => router.replace('/')}
-          className="w-full mt-4 py-2.5 text-white/25 text-[0.8rem] hover:text-white/45 transition-colors cursor-pointer">
-          暂不登录，继续使用本地模式
+        <button onClick={async () => {
+            setLoading(true)
+            const { error } = await signIn(toEmail('anonymous'), 'anonymous')
+            if (error) setError('匿名登录失败，请重试')
+            else router.replace('/')
+            setLoading(false)
+          }}
+          disabled={loading}
+          className="w-full mt-4 py-2.5 text-white/25 text-[0.8rem] hover:text-white/45 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-default">
+          {loading ? '请稍候…' : '使用匿名账户登录'}
         </button>
       </div>
     </div>

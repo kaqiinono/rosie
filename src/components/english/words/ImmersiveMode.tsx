@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { WordEntry } from '@/utils/type'
-import { hilite, highlightExample, shuffle, escHtml } from '@/utils/english-helpers'
+import { hilite, highlightExample, shuffle, buildQuizOptions } from '@/utils/english-helpers'
 import { getWordSizeClass } from '@/utils/phonics'
 import PhonicsWord from './PhonicsWord'
+import SpellTiles from './SpellTiles'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -15,6 +16,7 @@ interface ImmersiveModeProps {
   mode: ImmMode
   practiceTypes: ('A' | 'B' | 'C')[]
   onClose: () => void
+  onQuizComplete?: (results: { entry: WordEntry; correct: boolean }[]) => void
 }
 
 interface ImmQuizQ {
@@ -22,7 +24,7 @@ interface ImmQuizQ {
   type: 'A' | 'B' | 'C'
 }
 
-export default function ImmersiveMode({ open, words, allWords, mode, practiceTypes, onClose }: ImmersiveModeProps) {
+export default function ImmersiveMode({ open, words, allWords, mode, practiceTypes, onClose, onQuizComplete }: ImmersiveModeProps) {
   const [idx, setIdx] = useState(0)
   const [defOnly, setDefOnly] = useState(false)
   const [wordShown, setWordShown] = useState(true)
@@ -42,10 +44,9 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const [qScore, setQScore] = useState(0)
   const [qAnswered, setQAnswered] = useState(false)
   const [qSelected, setQSelected] = useState<string | null>(null)
-  const [spellVal, setSpellVal] = useState('')
   const [spellOk, setSpellOk] = useState<boolean | null>(null)
   const [showResults, setShowResults] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   useEffect(() => {
     if (!open) return
@@ -68,9 +69,9 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
     setQScore(0)
     setQAnswered(false)
     setQSelected(null)
-    setSpellVal('')
     setSpellOk(null)
     setShowResults(false)
+    quizResultBuffer.current = []
   }, [words, practiceTypes])
 
   const toggleDefOnly = useCallback(() => {
@@ -112,30 +113,33 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
     if (qAnswered) return
     setQAnswered(true)
     setQSelected(chosen)
-    if (chosen === correct) setQScore(s => s + 1)
-  }, [qAnswered])
+    const isCorrect = chosen === correct
+    if (isCorrect) setQScore(s => s + 1)
+    if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
+  }, [qAnswered, quizQs, curQ])
 
-  const handleSpellSubmit = useCallback(() => {
+  const handleSpellSubmit = useCallback((val: string) => {
     if (qAnswered) return
     setQAnswered(true)
-    const ok = spellVal.trim().toLowerCase() === quizQs[curQ]?.word.word.toLowerCase()
+    const ok = val.trim().toLowerCase() === quizQs[curQ]?.word.word.toLowerCase()
     setSpellOk(ok)
     if (ok) setQScore(s => s + 1)
-  }, [qAnswered, spellVal, quizQs, curQ])
+    if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: ok })
+  }, [qAnswered, quizQs, curQ])
 
   const nextQuizQ = useCallback(() => {
     const next = curQ + 1
     if (next >= quizQs.length) {
+      onQuizComplete?.(quizResultBuffer.current)
+      quizResultBuffer.current = []
       setShowResults(true)
     } else {
       setCurQ(next)
       setQAnswered(false)
       setQSelected(null)
-      setSpellVal('')
       setSpellOk(null)
-      if (quizQs[next]?.type === 'C') setTimeout(() => inputRef.current?.focus(), 80)
     }
-  }, [curQ, quizQs])
+  }, [curQ, quizQs, onQuizComplete])
 
   if (!open || !words.length) return null
 
@@ -157,12 +161,11 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const qPct = qTotal ? Math.round(qScore / qTotal * 100) : 0
   const qEmoji = qPct >= 90 ? '🏆' : qPct >= 70 ? '🎉' : qPct >= 50 ? '💪' : '😅'
 
-  const getQOptions = () => {
+  const qOptions = useMemo(() => {
     if (!q) return []
-    let pool = allWords.filter(w => w.lesson === q.word.lesson && w.word !== q.word.word)
-    if (pool.length < 3) pool = allWords.filter(w => w.word !== q.word.word)
-    return shuffle([q.word, ...shuffle(pool, Date.now() + curQ).slice(0, 3)], Date.now() + curQ + 10)
-  }
+    const seed = curQ * 997 + quizQs.length
+    return buildQuizOptions(q.word, allWords, seed)
+  }, [q, curQ, quizQs.length, allWords])
 
   return (
     <div className="fixed inset-0 z-[200] bg-[#090914] flex flex-col overflow-hidden">
@@ -363,7 +366,7 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
           style={{ background: 'radial-gradient(ellipse at 20% 30%, rgba(109,40,217,.09) 0, transparent 55%), #0c0c1d' }}
         >
           {!showResults && q && (() => {
-            const opts = getQOptions()
+            const opts = qOptions
             const isA = q.type === 'A'
             const isC = q.type === 'C'
             const badgeStyle = isA ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
@@ -416,37 +419,13 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
                 )}
 
                 {isC && (
-                  <div className="flex flex-col gap-2.5">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={spellVal}
-                      onChange={e => setSpellVal(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter' && !qAnswered) handleSpellSubmit() }}
-                      placeholder="请输入单词或短语…"
-                      autoComplete="off"
-                      className={`w-full p-3.5 bg-white/[.04] border-2 rounded-xl text-[#f0f0ff] font-nunito text-[1.3rem] font-bold text-center tracking-wider outline-none transition-colors focus:border-[#a78bfa] ${
-                        spellOk === true ? 'border-[#4ade80] bg-[rgba(74,222,128,.08)]' :
-                        spellOk === false ? 'border-[#f87171] bg-[rgba(248,113,113,.08)]' :
-                        'border-white/[.09]'
-                      }`}
-                    />
-                    {!qAnswered && (
-                      <button
-                        onClick={handleSpellSubmit}
-                        className="p-3 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] border-0 rounded-xl text-white font-nunito font-extrabold text-[.88rem] cursor-pointer hover:-translate-y-px"
-                      >
-                        ✓ 确认
-                      </button>
-                    )}
-                    {qAnswered && spellOk !== null && (
-                      <div className={`text-center text-[.86rem] font-bold p-2.5 rounded-[10px] ${
-                        spellOk ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]' : 'bg-[rgba(248,113,113,.12)] text-[#f87171]'
-                      }`}>
-                        {spellOk ? '✓ 正确！🎉' : <span>✗ 错误，正确答案：<strong>{q.word.word}</strong></span>}
-                      </div>
-                    )}
-                  </div>
+                  <SpellTiles
+                    key={curQ}
+                    word={q.word.word}
+                    onSubmit={handleSpellSubmit}
+                    answered={qAnswered}
+                    isCorrect={spellOk}
+                  />
                 )}
 
                 {qAnswered && (

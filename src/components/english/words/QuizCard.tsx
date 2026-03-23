@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { WordEntry } from '@/utils/type'
-import { escHtml } from '@/utils/english-helpers'
 import PhonicsWord from './PhonicsWord'
+import SpellTiles from './SpellTiles'
 
 interface QuizCardProps {
   question: { word: WordEntry; type: 'A' | 'B' | 'C' }
@@ -18,19 +18,13 @@ interface QuizCardProps {
 export default function QuizCard({ question, options, currentIndex, totalCount, score, onAnswer, onNext }: QuizCardProps) {
   const [answered, setAnswered] = useState(false)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
-  const [spellValue, setSpellValue] = useState('')
   const [spellCorrect, setSpellCorrect] = useState<boolean | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setAnswered(false)
     setSelectedWord(null)
-    setSpellValue('')
     setSpellCorrect(null)
-    if (question.type === 'C') {
-      setTimeout(() => inputRef.current?.focus(), 80)
-    }
-  }, [currentIndex, question.type])
+  }, [currentIndex])
 
   const handleMC = useCallback((chosen: string) => {
     if (answered) return
@@ -39,13 +33,13 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
     onAnswer(chosen === question.word.word)
   }, [answered, onAnswer, question.word.word])
 
-  const handleSpell = useCallback(() => {
+  const handleSpell = useCallback((val: string) => {
     if (answered) return
     setAnswered(true)
-    const correct = spellValue.trim().toLowerCase() === question.word.word.toLowerCase()
+    const correct = val.trim().toLowerCase() === question.word.word.toLowerCase()
     setSpellCorrect(correct)
     onAnswer(correct)
-  }, [answered, onAnswer, question.word.word, spellValue])
+  }, [answered, onAnswer, question.word.word])
 
   const badgeConfig = {
     A: { text: '题型 A：看释义 → 选单词', cls: 'bg-[rgba(233,69,96,.2)] text-[var(--wm-accent)] border border-[rgba(233,69,96,.3)]' },
@@ -146,41 +140,13 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
           <>
             <div className="text-[1.2rem] font-black leading-snug mb-1">{question.word.explanation}</div>
             <div className="text-[.8rem] text-[var(--wm-text-dim)] mb-3.5">请拼写出对应的英文单词或短语：</div>
-            <div className="flex flex-col gap-2.5">
-              <input
-                ref={inputRef}
-                type="text"
-                value={spellValue}
-                onChange={e => setSpellValue(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !answered) handleSpell() }}
-                placeholder="请输入单词或短语…"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                className={`w-full p-3.5 bg-[var(--wm-surface2)] border-2 rounded-[10px] text-[var(--wm-text)] font-nunito text-[1.25rem] font-bold text-center tracking-wider outline-none transition-colors focus:border-[var(--wm-accent2)] ${
-                  spellCorrect === true ? 'border-[var(--wm-accent3)] bg-[rgba(74,222,128,.1)]' :
-                    spellCorrect === false ? 'border-[var(--wm-accent)] bg-[rgba(233,69,96,.1)]' :
-                      'border-[var(--wm-border)]'
-                }`}
-              />
-              {!answered && (
-                <button
-                  onClick={handleSpell}
-                  className="p-3 bg-gradient-to-br from-[var(--wm-accent2)] to-[#e67e22] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer transition-all hover:-translate-y-px"
-                >
-                  ✓ 确认
-                </button>
-              )}
-              {answered && spellCorrect !== null && (
-                <div className={`text-center text-[.85rem] font-bold p-2 rounded-lg ${
-                  spellCorrect ? 'bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)]' : 'bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
-                }`}>
-                  {spellCorrect ? '✓ 正确！🎉' : (
-                    <span>✗ 错误，正确答案：<strong>{question.word.word}</strong></span>
-                  )}
-                </div>
-              )}
-            </div>
+            <SpellTiles
+              key={currentIndex}
+              word={question.word.word}
+              onSubmit={handleSpell}
+              answered={answered}
+              isCorrect={spellCorrect}
+            />
           </>
         )}
       </div>

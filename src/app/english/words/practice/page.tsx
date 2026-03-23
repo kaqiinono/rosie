@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { useWordsContext } from '@/contexts/WordsContext'
-import { shuffle, buildQuizQuestions, getAllLessons } from '@/utils/english-helpers'
+import { buildQuizQuestions, buildQuizOptions, getAllLessons } from '@/utils/english-helpers'
 import type { WordEntry } from '@/utils/type'
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'
@@ -19,6 +19,7 @@ export default function PracticePage() {
     selWords, setSelWords,
     masteryFilter, setMasteryFilter,
     masteryMap,
+    recordBatch,
     setPracticeTypes,
   } = useWordsContext()
 
@@ -26,6 +27,7 @@ export default function PracticePage() {
   const [quizQuestions, setQuizQuestions] = useState<{ word: WordEntry; type: 'A' | 'B' | 'C' }[]>([])
   const [quizIndex, setQuizIndex] = useState(0)
   const [quizScore, setQuizScore] = useState(0)
+  const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   const scopeLabel = useMemo(() => {
     const units = selUnits.size ? [...selUnits].join(', ') : '全部Unit'
@@ -43,28 +45,32 @@ export default function PracticePage() {
     setQuizQuestions(qs)
     setQuizIndex(0)
     setQuizScore(0)
+    quizResultBuffer.current = []
     setQuizPhase('active')
   }, [filteredWords, setPracticeTypes])
 
   const handleQuizAnswer = useCallback((correct: boolean) => {
     if (correct) setQuizScore(s => s + 1)
-  }, [])
+    if (quizQuestions[quizIndex]) {
+      quizResultBuffer.current.push({ entry: quizQuestions[quizIndex].word, correct })
+    }
+  }, [quizQuestions, quizIndex])
 
   const handleQuizNext = useCallback(() => {
     const next = quizIndex + 1
     if (next >= quizQuestions.length) {
+      recordBatch(quizResultBuffer.current)
+      quizResultBuffer.current = []
       setQuizPhase('results')
     } else {
       setQuizIndex(next)
     }
-  }, [quizIndex, quizQuestions.length])
+  }, [quizIndex, quizQuestions.length, recordBatch])
 
   const quizOptions = useMemo(() => {
     if (!quizQuestions[quizIndex]) return []
-    const q = quizQuestions[quizIndex]
-    let pool = filteredWords.filter(v => v.lesson === q.word.lesson && v.word !== q.word.word)
-    if (pool.length < 3) pool = filteredWords.filter(v => v.word !== q.word.word)
-    return shuffle([q.word, ...shuffle(pool, Date.now() + quizIndex).slice(0, 3)], Date.now() + quizIndex + 10)
+    const seed = quizIndex * 997 + quizQuestions.length
+    return buildQuizOptions(quizQuestions[quizIndex].word, filteredWords, seed)
   }, [quizQuestions, quizIndex, filteredWords])
 
   const toggleUnit = useCallback((unit: string) => {

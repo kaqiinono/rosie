@@ -10,7 +10,7 @@ import type { WordEntry } from '@/utils/type'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, setVocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes } = useWordsContext()
+  const { vocab, setVocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch } = useWordsContext()
 
   const [importOpen, setImportOpen] = useState(false)
   const [immersiveOpen, setImmersiveOpen] = useState(false)
@@ -91,6 +91,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         mode={immersiveMode}
         practiceTypes={practiceTypes}
         onClose={() => setImmersiveOpen(false)}
+        onQuizComplete={recordBatch}
       />
     </div>
   )

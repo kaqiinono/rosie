@@ -65,7 +65,8 @@ export function useWordMastery(user: User | null) {
           updated_at: new Date().toISOString(),
         }
       })
-      void supabase.from('word_mastery').upsert(rows, { onConflict: 'user_id,word_key' })
+      supabase.from('word_mastery').upsert(rows, { onConflict: 'user_id,word_key' })
+        .then(({ error }) => { if (error) console.error('[word_mastery] upsert failed', error) })
 
       return next
     })
