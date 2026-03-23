@@ -21,6 +21,7 @@ export const CONGRATS_MESSAGES = [
 
 export const STORAGE_KEYS = {
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
+  MATH_WRONG: 'math-wrong',
   WORD_DATA: 'rosie-words',
   DAILY_DATA: 'rosie-daily',
   WORD_MASTERY: 'rosie-word-mastery',
