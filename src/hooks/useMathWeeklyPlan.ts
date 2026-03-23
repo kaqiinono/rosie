@@ -3,15 +3,16 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { STORAGE_KEYS } from '@/utils/constant'
 import { getWeekStart } from '@/utils/english-helpers'
 import type { MathWeeklyPlan, MathDayProgress } from '@/utils/type'
+
+const SYSTEM_DEFAULTS = { weekStartDay: 4, problemsPerDay: 3 }
 
 async function loadFromCloud(userId: string, weekStart: string): Promise<MathWeeklyPlan | null> {
   try {
     const { data, error } = await supabase
       .from('math_weekly_plans')
-      .select('lesson_id, plan_data, progress_data')
+      .select('lesson_id, week_start_day, problems_per_day, plan_data, progress_data')
       .eq('user_id', userId)
       .eq('week_start', weekStart)
       .single()
@@ -19,6 +20,8 @@ async function loadFromCloud(userId: string, weekStart: string): Promise<MathWee
     return {
       weekStart,
       lessonId: data.lesson_id,
+      weekStartDay: data.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+      problemsPerDay: data.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
       days: data.plan_data as MathWeeklyPlan['days'],
       progress: (data.progress_data as MathWeeklyPlan['progress']) ?? {},
     }
@@ -36,6 +39,8 @@ async function saveToCloud(userId: string, plan: MathWeeklyPlan): Promise<void> 
           user_id: userId,
           week_start: plan.weekStart,
           lesson_id: plan.lessonId,
+          week_start_day: plan.weekStartDay,
+          problems_per_day: plan.problemsPerDay,
           plan_data: plan.days,
           progress_data: plan.progress,
           updated_at: new Date().toISOString(),
@@ -49,13 +54,15 @@ async function loadAllPriorPlans(userId: string, currentWeekStart: string): Prom
   try {
     const { data } = await supabase
       .from('math_weekly_plans')
-      .select('lesson_id, plan_data, progress_data, week_start')
+      .select('lesson_id, week_start_day, problems_per_day, plan_data, progress_data, week_start')
       .eq('user_id', userId)
       .neq('week_start', currentWeekStart)
     if (data) {
       return data.map(row => ({
         weekStart: row.week_start,
         lessonId: row.lesson_id,
+        weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+        problemsPerDay: row.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
         days: row.plan_data as MathWeeklyPlan['days'],
         progress: (row.progress_data as MathWeeklyPlan['progress']) ?? {},
       }))
@@ -64,32 +71,35 @@ async function loadAllPriorPlans(userId: string, currentWeekStart: string): Prom
   return []
 }
 
-function loadWeekStartDay(): number {
-  try {
-    const v = window.localStorage.getItem(STORAGE_KEYS.MATH_WEEK_START_DAY)
-    return v !== null ? Number(v) : 4
-  } catch { return 4 }
-}
-
-function loadProblemsPerDay(): number {
-  try {
-    const v = window.localStorage.getItem(STORAGE_KEYS.MATH_WEEKLY_PROBLEMS_PER_DAY)
-    return v !== null ? Number(v) : 3
-  } catch { return 3 }
-}
-
 export function useMathWeeklyPlan(user: User | null) {
-  const [weekStartDay, setWeekStartDay] = useState<number>(4)
-  const [problemsPerDay, setProblemsPerDayState] = useState<number>(3)
-  const currentWeekStart = useMemo(() => getWeekStart(undefined, weekStartDay), [weekStartDay])
   const [weeklyPlan, setWeeklyPlan] = useState<MathWeeklyPlan | null>(null)
   const [priorPlans, setPriorPlans] = useState<MathWeeklyPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    setWeekStartDay(loadWeekStartDay())
-    setProblemsPerDayState(loadProblemsPerDay())
-  }, [])
+  // defaultParams derived from most recent prior plan (sorted by weekStart desc)
+  const defaultParams = useMemo((): { weekStartDay: number; problemsPerDay: number } => {
+    if (priorPlans.length === 0) return SYSTEM_DEFAULTS
+    const sorted = [...priorPlans].sort((a, b) => b.weekStart.localeCompare(a.weekStart))
+    const recent = sorted[0]
+    return {
+      weekStartDay: recent.weekStartDay,
+      problemsPerDay: recent.problemsPerDay,
+    }
+  }, [priorPlans])
+
+  // Bootstrap currentWeekStart from a localStorage pref (UI-only, not plan data).
+  // This key is cleaned up in Task 7; we use the literal string here since STORAGE_KEYS
+  // will no longer contain it after Task 7.
+  const [bootstrapWeekStartDay] = useState(() => {
+    try {
+      const v = window.localStorage.getItem('rosie-math-week-start-day')
+      return v !== null ? Number(v) : 4
+    } catch { return 4 }
+  })
+
+  const currentWeekStart = useMemo(() => {
+    return getWeekStart(undefined, bootstrapWeekStartDay)
+  }, [bootstrapWeekStartDay])
 
   useEffect(() => {
     if (!user) return
@@ -160,21 +170,10 @@ export function useMathWeeklyPlan(user: User | null) {
     )
   ), [priorPlans])
 
-  const saveWeekStartDay = useCallback((day: number) => {
-    setWeekStartDay(day)
-    try { window.localStorage.setItem(STORAGE_KEYS.MATH_WEEK_START_DAY, String(day)) } catch { /* ignore */ }
-  }, [])
-
-  const saveProblemsPerDay = useCallback((n: number) => {
-    setProblemsPerDayState(n)
-    try { window.localStorage.setItem(STORAGE_KEYS.MATH_WEEKLY_PROBLEMS_PER_DAY, String(n)) } catch { /* ignore */ }
-  }, [])
-
   return {
     weeklyPlan, priorPlans, allPriorKeys, priorProblemMap,
-    currentWeekStart, weekStartDay, problemsPerDay,
+    currentWeekStart, defaultParams,
     savePlan, addDoneKey, updateDayProgress,
-    saveWeekStartDay, saveProblemsPerDay,
     isLoading,
   }
 }
