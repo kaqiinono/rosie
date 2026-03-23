@@ -64,8 +64,6 @@ interface Props {
   problemSets: Record<string, ProblemSet>
 }
 
-type Phase = 'setup' | 'week-view'
-
 export default function MathWeeklyPractice({ problemSets }: Props) {
   const { user } = useAuth()
   const {
@@ -77,7 +75,6 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
   const { solveCount } = useMathSolved(user)
 
-  const [phase, setPhase] = useState<Phase>('setup')
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
   const [problemsPerDay, setProblemsPerDay] = useState<number>(3)
   const [showParamsDialog, setShowParamsDialog] = useState(false)
@@ -103,7 +100,6 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   // Auto-switch to week-view if plan exists for current week
   useEffect(() => {
     if (!isLoading && weeklyPlan && currentWeekStart && weeklyPlan.weekStart === currentWeekStart && !showParamsDialog) {
-      setPhase('week-view')
       const todayDay = weeklyPlan.days.find(d => d.date === today)
       setSelectedDate(todayDay ? today : (weeklyPlan.days[0]?.date ?? null))
     }
@@ -167,7 +163,6 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     }
     await savePlan(plan)
     setShowParamsDialog(false)
-    setPhase('week-view')
     setSelectedDate(today)
   }, [problemSets, selectedLesson, currentWeekStart, problemsPerDay, weekStartDay, savePlan, today])
 
