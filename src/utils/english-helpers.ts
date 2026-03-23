@@ -89,7 +89,7 @@ export function getFilteredWords(
 ): WordEntry[] {
   return vocab.filter(v => {
     if (selUnits.size && !selUnits.has(v.unit)) return false
-    if (selLessons.size && !selLessons.has(v.lesson)) return false
+    if (selLessons.size && !selLessons.has(`${v.unit}::${v.lesson}`)) return false
     if (selWords.size && !selWords.has(v.word)) return false
     return true
   })

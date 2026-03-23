@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef } from 'react'
 import { useWordsContext } from '@/contexts/WordsContext'
-import { buildQuizQuestions, buildQuizOptions, getAllLessons } from '@/utils/english-helpers'
+import { buildQuizQuestions, buildQuizOptions } from '@/utils/english-helpers'
 import type { WordEntry } from '@/utils/type'
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'
@@ -31,7 +31,9 @@ export default function PracticePage() {
 
   const scopeLabel = useMemo(() => {
     const units = selUnits.size ? [...selUnits].join(', ') : '全部Unit'
-    const lessons = selLessons.size ? [...selLessons].join(', ') : '全部Lesson'
+    const lessons = selLessons.size
+      ? [...new Set([...selLessons].map(k => k.split('::')[1]))].join(', ')
+      : '全部Lesson'
     return `${units} / ${lessons}（${filteredWords.length}词）`
   }, [selUnits, selLessons, filteredWords.length])
 
@@ -76,14 +78,17 @@ export default function PracticePage() {
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
       const next = new Set(prev)
-      next.has(unit) ? next.delete(unit) : next.add(unit)
-      const validLessons = new Set(getAllLessons(vocab, next))
-      setSelLessons(old => new Set([...old].filter(l => validLessons.has(l))))
+      if (next.has(unit)) {
+        next.delete(unit)
+        setSelLessons(old => new Set([...old].filter(k => !k.startsWith(`${unit}::`))))
+      } else {
+        next.add(unit)
+      }
       setSelWords(new Set())
       return next
     })
     setQuizPhase('setup')
-  }, [vocab, setSelUnits, setSelLessons, setSelWords])
+  }, [setSelUnits, setSelLessons, setSelWords])
 
   const toggleLesson = useCallback((lesson: string) => {
     setSelLessons(prev => {

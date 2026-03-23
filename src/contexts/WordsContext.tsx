@@ -1,12 +1,13 @@
 'use client'
 
-import React, { createContext, useContext, useState, useMemo } from 'react'
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import type { MasteryLevel } from '@/utils/masteryUtils'
 import { getMasteryLevel } from '@/utils/masteryUtils'
 import { useAuth } from '@/contexts/AuthContext'
+import { STORAGE_KEYS } from '@/utils/constant'
 import { useWordData } from '@/hooks/useWordData'
 import { useWordMastery } from '@/hooks/useWordMastery'
 import { getFilteredWords, wordKey } from '@/utils/english-helpers'
@@ -39,11 +40,31 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   const { vocab, setVocab } = useWordData(user)
   const { masteryMap, recordBatch } = useWordMastery(user)
 
-  const [selUnits, setSelUnits] = useState<Set<string>>(new Set(['Unit 1']))
-  const [selLessons, setSelLessons] = useState<Set<string>>(new Set(['Lesson 1']))
+  const [selUnits, setSelUnits] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ENGLISH_SEL_UNITS)
+      if (saved) return new Set(JSON.parse(saved) as string[])
+    } catch { /* ignore */ }
+    return new Set(['Unit 1'])
+  })
+  const [selLessons, setSelLessons] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ENGLISH_SEL_LESSONS)
+      if (saved) return new Set(JSON.parse(saved) as string[])
+    } catch { /* ignore */ }
+    return new Set(['Unit 1::Lesson 1'])
+  })
   const [selWords, setSelWords] = useState<Set<string>>(new Set())
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
   const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C')[]>(['A', 'B'])
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_UNITS, JSON.stringify([...selUnits]))
+  }, [selUnits])
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_LESSONS, JSON.stringify([...selLessons]))
+  }, [selLessons])
 
   const filteredWords = useMemo(() => {
     const base = getFilteredWords(vocab, selUnits, selLessons, selWords)

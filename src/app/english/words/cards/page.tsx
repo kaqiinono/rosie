@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useWordsContext } from '@/contexts/WordsContext'
-import { getAllLessons } from '@/utils/english-helpers'
+
 import FilterBar from '@/components/english/words/FilterBar'
 import PhonicsLegend from '@/components/english/words/PhonicsLegend'
 import CardsGrid from '@/components/english/words/CardsGrid'
@@ -27,14 +27,17 @@ export default function CardsPage() {
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
       const next = new Set(prev)
-      next.has(unit) ? next.delete(unit) : next.add(unit)
-      const validLessons = new Set(getAllLessons(vocab, next))
-      setSelLessons(old => new Set([...old].filter(l => validLessons.has(l))))
+      if (next.has(unit)) {
+        next.delete(unit)
+        setSelLessons(old => new Set([...old].filter(k => !k.startsWith(`${unit}::`))))
+      } else {
+        next.add(unit)
+      }
       setSelWords(new Set())
       return next
     })
     resetCards()
-  }, [vocab, setSelUnits, setSelLessons, setSelWords, resetCards])
+  }, [setSelUnits, setSelLessons, setSelWords, resetCards])
 
   const toggleLesson = useCallback((lesson: string) => {
     setSelLessons(prev => {

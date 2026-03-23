@@ -3,7 +3,7 @@
 import type {WordEntry, WordMasteryMap} from '@/utils/type'
 import type {MasteryLevel} from '@/utils/masteryUtils'
 import {MASTERY_ICON} from '@/utils/masteryUtils'
-import {getAllUnits, getAllLessons} from '@/utils/english-helpers'
+import {getAllUnits} from '@/utils/english-helpers'
 
 interface FilterBarProps {
   vocab: WordEntry[]
@@ -28,10 +28,13 @@ export default function FilterBar({
                                     masteryFilter, onMasteryFilter,
                                   }: FilterBarProps) {
   const units = getAllUnits(vocab)
-  const lessons = getAllLessons(vocab, selUnits)
+  const lessonsByUnit = [...selUnits].sort().map(unit => ({
+    unit,
+    lessons: [...new Set(vocab.filter(v => v.unit === unit).map(v => v.lesson))].sort(),
+  }))
   const baseWords = vocab.filter(v => {
     if (selUnits.size && !selUnits.has(v.unit)) return false
-    if (selLessons.size && !selLessons.has(v.lesson)) return false
+    if (selLessons.size && !selLessons.has(`${v.unit}::${v.lesson}`)) return false
     return true
   })
 
@@ -65,19 +68,29 @@ export default function FilterBar({
             className="text-[.7rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-wider pt-1.5 min-w-[62px]">
             Lesson
           </span>
-          <div className="flex flex-wrap gap-1.5 flex-1">
-            {lessons.map(l => (
-              <button
-                key={l}
-                onClick={() => onToggleLesson(l)}
-                className={`px-3 py-1.5 rounded-full border-[1.5px] font-nunito text-[.78rem] font-bold cursor-pointer transition-all select-none whitespace-nowrap ${
-                  selLessons.has(l)
-                    ? 'bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] border-[var(--wm-accent4)] text-white shadow-[0_2px_8px_rgba(96,165,250,.3)]'
-                    : 'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent4)] hover:text-[var(--wm-text)]'
-                }`}
-              >
-                {l}
-              </button>
+          <div className="flex flex-col gap-1.5 flex-1">
+            {lessonsByUnit.map(({unit, lessons}) => (
+              <div key={unit} className="flex flex-wrap gap-1.5 items-center">
+                {selUnits.size > 1 && (
+                  <span className="text-[.65rem] text-[var(--wm-text-dim)] font-bold min-w-[52px]">{unit}</span>
+                )}
+                {lessons.map(l => {
+                  const compositeKey = `${unit}::${l}`
+                  return (
+                    <button
+                      key={compositeKey}
+                      onClick={() => onToggleLesson(compositeKey)}
+                      className={`px-3 py-1.5 rounded-full border-[1.5px] font-nunito text-[.78rem] font-bold cursor-pointer transition-all select-none whitespace-nowrap ${
+                        selLessons.has(compositeKey)
+                          ? 'bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] border-[var(--wm-accent4)] text-white shadow-[0_2px_8px_rgba(96,165,250,.3)]'
+                          : 'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent4)] hover:text-[var(--wm-text)]'
+                      }`}
+                    >
+                      {l}
+                    </button>
+                  )
+                })}
+              </div>
             ))}
           </div>
         </div>
