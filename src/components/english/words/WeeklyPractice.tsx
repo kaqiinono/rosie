@@ -246,7 +246,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   </div>
 
                   <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-0.5">
-                    共 {lessonWords.length} 个单词 · 每天 3 个新词
+                    共 {lessonWords.length} 个单词 · 每天 {newPerDay} 个新词
                   </div>
                 </div>
 
