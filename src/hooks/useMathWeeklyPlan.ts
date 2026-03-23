@@ -87,19 +87,9 @@ export function useMathWeeklyPlan(user: User | null) {
     }
   }, [priorPlans])
 
-  // Bootstrap currentWeekStart from a localStorage pref (UI-only, not plan data).
-  // This key is cleaned up in Task 7; we use the literal string here since STORAGE_KEYS
-  // will no longer contain it after Task 7.
-  const [bootstrapWeekStartDay] = useState(() => {
-    try {
-      const v = window.localStorage.getItem('rosie-math-week-start-day')
-      return v !== null ? Number(v) : 4
-    } catch { return 4 }
-  })
-
   const currentWeekStart = useMemo(() => {
-    return getWeekStart(undefined, bootstrapWeekStartDay)
-  }, [bootstrapWeekStartDay])
+    return getWeekStart(undefined, 4)
+  }, [])
 
   useEffect(() => {
     if (!user) return
