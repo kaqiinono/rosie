@@ -224,6 +224,13 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
     }
   }, [curQ, quizQs, selectedDate, updateDayProgress, recordBatch])
 
+  const quizOptions = useMemo(() => {
+    const q = quizQs[curQ]
+    if (!q) return []
+    const seed = curQ * 997 + quizQs.length
+    return buildQuizOptions(q.word, vocab, seed)
+  }, [quizQs, curQ, vocab])
+
   // ── LOADING ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return <div className="flex items-center justify-center py-20 text-[var(--wm-text-dim)] text-sm">加载中…</div>
@@ -760,13 +767,6 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   }
 
   // ── QUIZ ─────────────────────────────────────────────────────────────────
-  const quizOptions = useMemo(() => {
-    const q = quizQs[curQ]
-    if (!q) return []
-    const seed = curQ * 997 + quizQs.length
-    return buildQuizOptions(q.word, vocab, seed)
-  }, [quizQs, curQ, vocab])
-
   if (effectivePhase === 'quiz' && quizQs[curQ]) {
     const q = quizQs[curQ]
     const options = quizOptions

@@ -151,7 +151,8 @@ export default function FilterBar({
           </span>
           <button
             onClick={onClearWords}
-            className="px-3 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-lg text-[var(--wm-text-dim)] font-nunito text-[.75rem] font-bold cursor-pointer transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
+            disabled={selWords.size === 0}
+            className="px-3 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-lg text-[var(--wm-text-dim)] font-nunito text-[.75rem] font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] disabled:hover:border-[var(--wm-border)] disabled:hover:text-[var(--wm-text-dim)]"
           >
             清除单词筛选
           </button>

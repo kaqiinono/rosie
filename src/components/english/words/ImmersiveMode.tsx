@@ -141,6 +141,17 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
     }
   }, [curQ, quizQs, onQuizComplete])
 
+  const qTotal = quizQs.length
+  const q = quizQs[curQ]
+  const qPct = qTotal ? Math.round(qScore / qTotal * 100) : 0
+  const qEmoji = qPct >= 90 ? '🏆' : qPct >= 70 ? '🎉' : qPct >= 50 ? '💪' : '😅'
+
+  const qOptions = useMemo(() => {
+    if (!q) return []
+    const seed = curQ * 997 + quizQs.length
+    return buildQuizOptions(q.word, allWords, seed)
+  }, [q, curQ, quizQs.length, allWords])
+
   if (!open || !words.length) return null
 
   const v = words[idx]
@@ -155,17 +166,6 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   }[sz]
 
   const topVisible = bodyMode !== 'def-only'
-
-  const qTotal = quizQs.length
-  const q = quizQs[curQ]
-  const qPct = qTotal ? Math.round(qScore / qTotal * 100) : 0
-  const qEmoji = qPct >= 90 ? '🏆' : qPct >= 70 ? '🎉' : qPct >= 50 ? '💪' : '😅'
-
-  const qOptions = useMemo(() => {
-    if (!q) return []
-    const seed = curQ * 997 + quizQs.length
-    return buildQuizOptions(q.word, allWords, seed)
-  }, [q, curQ, quizQs.length, allWords])
 
   return (
     <div className="fixed inset-0 z-[200] bg-[#090914] flex flex-col overflow-hidden">

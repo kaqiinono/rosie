@@ -7,7 +7,6 @@ const { ExpirationPlugin } = workbox.expiration
 const { CacheableResponsePlugin } = workbox.cacheableResponse
 
 precacheAndRoute([
-  { url: '/', revision: null },
   { url: '/manifest.json', revision: null },
   { url: '/favicon.svg', revision: null },
   { url: '/icons/icon.svg', revision: null },
@@ -58,14 +57,6 @@ registerRoute(
   })
 )
 
-const offlineFallback = new NavigationRoute(
-  new NetworkFirst({
-    cacheName: 'pages',
-    plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
-  }),
-  {}
-)
-registerRoute(offlineFallback)
 
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', (event) => {
