@@ -20,17 +20,9 @@ export const CONGRATS_MESSAGES = [
 ]
 
 export const STORAGE_KEYS = {
-  MATH_SOLVED: 'math-solved',
-  MATH_WRONG: 'math-wrong',
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
-  WORD_DATA: 'rosie-words',
-  DAILY_DATA: 'rosie-daily',
-  WORD_MASTERY: 'rosie-word-mastery',
-  WEEKLY_PLAN: 'rosie-weekly-plan',
   WEEK_START_DAY: 'rosie-week-start-day',
   WEEKLY_NEW_PER_DAY: 'rosie-weekly-new-per-day',
-  MATH_WEEKLY_PLAN: 'rosie-math-weekly-plan',
-  PROBLEM_MASTERY: 'rosie-problem-mastery',
   MATH_WEEK_START_DAY: 'rosie-math-week-start-day',
   MATH_WEEKLY_PROBLEMS_PER_DAY: 'rosie-math-weekly-problems-per-day',
 } as const
