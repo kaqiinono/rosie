@@ -21,10 +21,6 @@ export const CONGRATS_MESSAGES = [
 
 export const STORAGE_KEYS = {
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
-  WEEK_START_DAY: 'rosie-week-start-day',
-  WEEKLY_NEW_PER_DAY: 'rosie-weekly-new-per-day',
-  MATH_WEEK_START_DAY: 'rosie-math-week-start-day',
-  MATH_WEEKLY_PROBLEMS_PER_DAY: 'rosie-math-weekly-problems-per-day',
 } as const
 
 export const NAV_PAGES = [
