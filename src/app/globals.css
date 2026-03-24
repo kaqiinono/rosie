@@ -72,6 +72,10 @@
   --animate-float-up: float-up 0.6s ease-out forwards;
   --animate-shimmer: shimmer 2s linear infinite;
   --animate-jelly: jelly 0.6s cubic-bezier(.36,.07,.19,.97);
+  --animate-butterfly-float: butterfly-float 3s ease-in-out infinite;
+  --animate-caterpillar-crawl: caterpillar-crawl 2.4s ease-in-out infinite alternate;
+  --animate-egg-wobble: egg-wobble 2s ease-in-out infinite;
+  --animate-bottle-appear: bottle-appear 0.22s cubic-bezier(.34,1.56,.64,1) both;
 }
 
 @keyframes wave {
@@ -223,4 +227,30 @@
   25% { transform: scale(0.95, 1.05) }
   50% { transform: scale(1.05, 0.95) }
   75% { transform: scale(0.98, 1.02) }
+}
+
+@keyframes butterfly-float {
+  0%   { transform: translateY(0px)   translateX(0px)  rotate(-8deg); }
+  25%  { transform: translateY(-10px) translateX(6px)  rotate(4deg);  }
+  50%  { transform: translateY(-4px)  translateX(12px) rotate(-6deg); }
+  75%  { transform: translateY(-14px) translateX(6px)  rotate(6deg);  }
+  100% { transform: translateY(0px)   translateX(0px)  rotate(-8deg); }
+}
+
+@keyframes caterpillar-crawl {
+  0%   { transform: translateX(0px)  scaleX(1);  }
+  100% { transform: translateX(16px) scaleX(-1); }
+}
+
+@keyframes egg-wobble {
+  0%, 100% { transform: rotate(0deg);  }
+  20%       { transform: rotate(-6deg); }
+  40%       { transform: rotate(6deg);  }
+  60%       { transform: rotate(-4deg); }
+  80%       { transform: rotate(3deg);  }
+}
+
+@keyframes bottle-appear {
+  from { transform: scale(0.6) translateY(8px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);   opacity: 1; }
 }
