@@ -71,9 +71,9 @@ export type MasteryLevel = 0 | 1 | 2 | 3
 
 export function getMasteryLevel(count: number): MasteryLevel {
   if (count <= 0) return 0
-  if (count === 1) return 1
-  if (count === 2) return 2
-  return 3
+  if (count <= 10) return 1  // egg stage
+  if (count <= 20) return 2  // caterpillar stage
+  return 3                   // butterfly stage = mastered
 }
 
 export const MASTERY_BORDER: Record<MasteryLevel, string> = {
@@ -95,4 +95,21 @@ export const MASTERY_ICON: Record<MasteryLevel, string> = {
   1: '🥚',
   2: '🐛',
   3: '🦋',
+}
+
+// 30-level icon system — based on cumulative correct-answer count
+export function getMasteryIconLevel(count: number): number {
+  if (count <= 0) return 0
+  return Math.min(count, 30)
+}
+
+export function getCreatureCounts(level: number): {
+  eggs: number
+  caterpillars: number
+  butterflies: number
+} {
+  if (level <= 0)  return { eggs: 0,             caterpillars: 0,            butterflies: 0        }
+  if (level <= 10) return { eggs: level,          caterpillars: 0,            butterflies: 0        }
+  if (level <= 20) return { eggs: 10-(level-10),  caterpillars: level-10,     butterflies: 0        }
+  return                   { eggs: 0,             caterpillars: 10-(level-20), butterflies: level-20 }
 }
