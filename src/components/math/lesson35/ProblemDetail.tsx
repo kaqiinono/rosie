@@ -28,6 +28,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
 
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
+  const [analysisOpen, setAnalysisOpen] = useState(false)
 
   useEffect(() => {
     setAnswer('')
@@ -80,17 +81,23 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
 
           {/* Analysis box */}
           <div className="mb-3.5 rounded-lg border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] to-yellow-light p-3.5">
-            <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-yellow-dark">
+            <button
+              onClick={() => setAnalysisOpen(o => !o)}
+              className="flex w-full cursor-pointer items-center gap-1 border-none bg-transparent p-0 text-xs font-bold text-yellow-dark"
+            >
               🔍 题型分析
-            </div>
-            <ul className="flex flex-col gap-1.5">
-              {problem.analysis.map((a, i) => (
-                <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]">
-                  <span className="shrink-0">💡</span>
-                  {a}
-                </li>
-              ))}
-            </ul>
+              <span className="ml-auto text-[10px] text-yellow-dark">{analysisOpen ? '▲' : '▼'}</span>
+            </button>
+            {analysisOpen && (
+              <ul className="mt-1.5 flex flex-col gap-1.5">
+                {problem.analysis.map((a, i) => (
+                  <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]">
+                    <span className="shrink-0">💡</span>
+                    {a}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Left-column diagram — custom prop takes priority; falls back to built-in 拆解图 */}

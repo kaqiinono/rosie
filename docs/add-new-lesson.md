@@ -238,6 +238,7 @@ export const TAG_STYLE = {...}
     '第二步：说明',
     '⚠️ 注意事项',
   ],
+  // ↑ analysis 内容在页面上默认折叠，用户点击「🔍 题型分析」标题才展开，避免干扰做题。
   type: 'ratio3',      // 单变量用 'ratio3'，双变量用 'ratio3b'，无图表用 'none'
   rows: [              // 比例图左列（字符串=标签，对象=输入框）
     '已知条件',
@@ -416,6 +417,8 @@ export const TAG_STYLE: Record<string, string> = {
 - `CongratsModal`
 - `Toast`
 - `LoginModal`
+
+> **题型分析默认收起：** `ProblemDetail` 内部的「🔍 题型分析」框默认为折叠状态（`analysisOpen` 初始值为 `false`），点击标题行展开。**若新讲次需要复制 `ProblemDetail.tsx`，必须保留此模式**——在 state 声明区加 `const [analysisOpen, setAnalysisOpen] = useState(false)`，并将分析框 header 改为可点击的 `<button>` 触发 toggle，`<ul>` 内容用 `{analysisOpen && (...)}` 包裹。
 
 > **注意：** `ProblemList` 内部 import 了 `TAG_STYLE from '@/utils/lesson35-data'`。如果新讲次的题型 tag 颜色不同，需在 `lesson36/` 目录也复制一份 `ProblemList.tsx`，只改这一行 import 为 `lesson36-data`。
 
