@@ -10,7 +10,7 @@ interface PracticeSetupProps {
 export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProps) {
   const [typeA, setTypeA] = useState(true)
   const [typeB, setTypeB] = useState(true)
-  const [typeC, setTypeC] = useState(false)
+  const [typeC, setTypeC] = useState(true)
 
   const handleStart = () => {
     const types: ('A' | 'B' | 'C')[] = []

@@ -75,7 +75,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
               </span>
             </div>
             {level > 0 && (
-              <span className={`px-2 py-0.5 rounded-full text-[.65rem] font-extrabold ${MASTERY_BADGE_BG[level]}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[.65rem] font-extrabold`}>
                 {MASTERY_ICON[level]}
               </span>
             )}
