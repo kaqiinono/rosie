@@ -3,7 +3,8 @@
 import type { WordEntry, WordMasteryInfo } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
-import { getMasteryLevel, MASTERY_ICON, MASTERY_BORDER, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import MasteryIcon from '@/components/shared/MasteryIcon'
 import PhonicsWord from './PhonicsWord'
 
 interface FlashCardProps {
@@ -76,7 +77,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
             </div>
             {level > 0 && (
               <span className={`px-2 py-0.5 rounded-full text-[.65rem] font-extrabold ${MASTERY_BADGE_BG[level]}`}>
-                {MASTERY_ICON[level]}
+                <MasteryIcon count={masteryInfo?.correct ?? 0} noBottle />
               </span>
             )}
           </div>

@@ -11,7 +11,8 @@ import {
   highlightExample,
   wordKey,
 } from '@/utils/english-helpers'
-import {getMasteryLevel, MASTERY_ICON} from '@/utils/masteryUtils'
+import {getMasteryLevel} from '@/utils/masteryUtils'
+import MasteryIcon from '@/components/shared/MasteryIcon'
 import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
@@ -145,7 +146,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
     if (!activeLesson || !currentWeekStart) return
     const plan: WeeklyPlan = {
       weekStart: currentWeekStart,
-      unit: activeLesson.unit,
+      unit: activeLessons.map(l => l.unit).join(', '),
       lesson: activeLessons.map(l => l.lesson).join(', '),
       weekStartDay,
       newWordsPerDay: newPerDay,
@@ -260,7 +261,10 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                     className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)] uppercase tracking-widest mb-1.5">建议学习
                   </div>
                   <div className="font-bold text-[1.1rem] text-[var(--wm-text)]">
-                    {activeLesson.unit} · {activeLessons.map(l => l.lesson).join(', ')}
+                    {activeLessons.every(l => l.unit === activeLessons[0].unit)
+                      ? `${activeLessons[0].unit} · ${activeLessons.map(l => l.lesson).join(', ')}`
+                      : activeLessons.map(l => `${l.unit} · ${l.lesson}`).join(', ')
+                    }
                   </div>
 
                   <div className="text-[.72rem] text-[var(--wm-text-dim)] mt-0.5">
@@ -268,13 +272,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                   </div>
                 </div>
 
-                <div className="flex gap-2.5 flex-wrap mb-4">
-                  <button
-                    onClick={handleConfirmLesson}
-                    className="px-6 py-2.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer shadow-[0_3px_12px_rgba(245,158,11,.35)] hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] transition-all"
-                  >
-                    开始 {activeLessons.length > 1 ? `${activeLessons.length} 课 · ${lessonWords.length} 词` : activeLesson.lesson}
-                  </button>
+                <div className="mb-4">
                   <button
                     onClick={() => {
                       if (!showLessonPicker && pendingLessons.length === 0 && suggestedLesson) {
@@ -282,7 +280,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       }
                       setShowLessonPicker(v => !v)
                     }}
-                    className="px-5 py-2.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text-dim)] font-nunito font-bold text-[.82rem] cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
+                    className="px-4 py-1.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-full text-[var(--wm-text-dim)] font-nunito font-bold text-[.78rem] cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
                   >
                     选择课程{pendingLessons.length > 0 ? ` (${pendingLessons.length})` : ''} {showLessonPicker ? '▴' : '▾'}
                   </button>
@@ -365,13 +363,23 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
             ) : (
               <div className="text-[var(--wm-text-dim)] text-sm">没有找到课程数据，请先导入单词。</div>
             )}
-            {weeklyPlan && (
-              <button
-                onClick={() => setShowParamsDialog(false)}
-                className="mt-3 w-full text-center text-[.78rem] text-[var(--wm-text-dim)] hover:text-[var(--wm-text)] cursor-pointer py-2"
-              >
-                取消
-              </button>
+            {activeLesson && (
+              <div className="flex gap-2.5 mt-6 pt-5 border-t border-[var(--wm-border)]">
+                {weeklyPlan && (
+                  <button
+                    onClick={() => setShowParamsDialog(false)}
+                    className="flex-1 py-2.5 bg-transparent border-[1.5px] border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text-dim)] font-nunito font-bold text-[.85rem] cursor-pointer hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] transition-all"
+                  >
+                    取消
+                  </button>
+                )}
+                <button
+                  onClick={handleConfirmLesson}
+                  className="flex-[2] py-2.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.88rem] cursor-pointer shadow-[0_3px_12px_rgba(245,158,11,.35)] hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] transition-all"
+                >
+                  开始 {activeLessons.length > 1 ? `${activeLessons.length} 课 · ${lessonWords.length} 词` : activeLesson.lesson}
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -391,7 +399,14 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
               <div>
                 <div
                   className="font-fredoka text-2xl bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-transparent">
-                  {weeklyPlan.unit} · {weeklyPlan.lesson}
+                  {(() => {
+                    const units = weeklyPlan.unit.split(', ')
+                    const lessons = weeklyPlan.lesson.split(', ')
+                    const allSameUnit = units.every(u => u === units[0])
+                    return allSameUnit
+                      ? `${units[0]} · ${lessons.join(', ')}`
+                      : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
+                  })()}
                 </div>
                 <div className="text-[.75rem] text-[var(--wm-text-dim)] font-bold mt-1">
                   {fmtWeekRange(weeklyPlan.weekStart, weeklyPlan.weekStartDay)}
@@ -513,7 +528,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] text-[#fb923c] text-[.78rem] font-bold">
-                            {level > 0 && <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>}{w.word}
+                            {level > 0 && <span className="mr-1 text-[.65rem]"><MasteryIcon count={masteryMap[wordKey(w)]?.correct ?? 0} /></span>}{w.word}
                           </span>
                           )
                         })}
@@ -533,7 +548,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] text-[#93c5fd] text-[.78rem] font-bold">
-                            {level > 0 && <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>}{w.word}
+                            {level > 0 && <span className="mr-1 text-[.65rem]"><MasteryIcon count={masteryMap[wordKey(w)]?.correct ?? 0} /></span>}{w.word}
                           </span>
                           )
                         })}
@@ -553,7 +568,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(167,139,250,.35)] bg-[rgba(167,139,250,.08)] text-[#c4b5fd] text-[.78rem] font-bold">
-                            {level > 0 && <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>}{w.word}
+                            {level > 0 && <span className="mr-1 text-[.65rem]"><MasteryIcon count={masteryMap[wordKey(w)]?.correct ?? 0} /></span>}{w.word}
                           </span>
                           )
                         })}

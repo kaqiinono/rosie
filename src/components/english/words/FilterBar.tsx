@@ -125,7 +125,7 @@ export default function FilterBar({
             <div className="flex flex-wrap gap-1.5 flex-1">
               {([null, 1, 2, 3] as (MasteryLevel | null)[]).map(lvl => {
                 const active = masteryFilter === lvl
-                const label = lvl === null ? '全部' : `${MASTERY_ICON[lvl]} ${['', '练习中', '加深中', '已掌握'][lvl]}`
+                const label = lvl === null ? '全部' : `${MASTERY_ICON[lvl]} ${['', '初级', '中级', '高级'][lvl]}`
                 return (
                   <button
                     key={lvl ?? 'all'}

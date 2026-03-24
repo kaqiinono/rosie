@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import { wordKey } from '@/utils/english-helpers'
-import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@/utils/masteryUtils'
+import { ensureStageInit, isGraduated, getMasteryLevel } from '@/utils/masteryUtils'
+import MasteryIcon from '@/components/shared/MasteryIcon'
 
 interface MasteryStatusPanelProps {
   vocab: WordEntry[]
@@ -113,7 +114,7 @@ export default function MasteryStatusPanel({ vocab, masteryMap }: MasteryStatusP
                         {w.unit.replace(/\D+(\d+)/, 'U$1')} {w.lesson.replace(/\D+(\d+)/, 'L$1')}
                       </td>
                       <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">
-                        {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
+                        <MasteryIcon count={graduated ? 30 : (m.correct ?? 0)} /> {m.stage ?? 0}
                       </td>
                       <td className="px-3 py-2 text-center">
                         {due.urgent === 'today' && (
