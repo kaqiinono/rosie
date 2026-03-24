@@ -71,9 +71,9 @@ export type MasteryLevel = 0 | 1 | 2 | 3
 
 export function getMasteryLevel(count: number): MasteryLevel {
   if (count <= 0) return 0
-  if (count <= 10) return 1  // egg stage
-  if (count <= 20) return 2  // caterpillar stage
-  return 3                   // butterfly stage = mastered
+  if (count === 1) return 1
+  if (count === 2) return 2
+  return 3
 }
 
 export const MASTERY_BORDER: Record<MasteryLevel, string> = {
