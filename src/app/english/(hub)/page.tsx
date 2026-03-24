@@ -97,7 +97,21 @@ function StatSkeleton() {
   )
 }
 
-const NAV_CARDS = [
+function StatsGrid({ masteryMap }: { masteryMap: WordMasteryMap }) {
+  const stats = computeStats(masteryMap)
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <StatCard icon="📚" label="已接触单词" value={stats.totalWords} />
+      <StatCard icon="✏️" label="总打卡次数" value={stats.totalPractice} />
+      <StatCard icon="🎯" label="正确率"     value={stats.accuracy} />
+      <StatCard icon="🕐" label="最近打卡"   value={formatLastSeen(stats.lastSeen)} />
+      <StatCard icon="🔔" label="今日待复习" value={stats.dueToday} highlight={stats.dueToday > 0} />
+      <StatCard icon="🦋" label="已毕业单词" value={stats.graduated} />
+    </div>
+  )
+}
+
+const NAV_CARDS: { href: string; icon: string; title: string; desc: string }[] = [
   { href: '/english/words/cards',    icon: '🃏', title: '单词卡片',  desc: '浏览和翻转单词卡' },
   { href: '/english/words/daily',    icon: '📅', title: '每日打卡',  desc: '完成今日单词计划' },
   { href: '/english/words/practice', icon: '🏋️', title: '练习模式',  desc: '拼写和词义练习' },
@@ -109,7 +123,6 @@ export default function EnglishHubPage() {
   const { user, loading } = useAuth()
   const { masteryMap } = useWordMastery(user)
 
-  const stats = computeStats(masteryMap)
   const isEmpty = !loading && user !== null && Object.keys(masteryMap).length === 0
 
   return (
@@ -130,14 +143,7 @@ export default function EnglishHubPage() {
         ) : isEmpty ? (
           <p className="text-text-secondary text-sm py-4">还没有打卡记录，快去打卡吧！</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <StatCard icon="📚" label="已接触单词" value={stats.totalWords} />
-            <StatCard icon="✏️" label="总打卡次数" value={stats.totalPractice} />
-            <StatCard icon="🎯" label="正确率"     value={stats.accuracy} />
-            <StatCard icon="🕐" label="最近打卡"   value={formatLastSeen(stats.lastSeen)} />
-            <StatCard icon="🔔" label="今日待复习" value={stats.dueToday} highlight={stats.dueToday > 0} />
-            <StatCard icon="🦋" label="已毕业单词" value={stats.graduated} />
-          </div>
+          <StatsGrid masteryMap={masteryMap} />
         )}
       </section>
 
