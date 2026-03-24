@@ -19,7 +19,7 @@ const modules: ModuleCardData[] = [
     icon: '🔢',
   },
   {
-    href: '/english/words',
+    href: '/english',
     title: '英语天地',
     description: '背单词、拼写练习、沉浸模式，轻松记住每个单词。',
     tag: 'ENGLISH',
