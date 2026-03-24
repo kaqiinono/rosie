@@ -1,6 +1,7 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 
-export default function EnglishHubLayout({ children }: { children: React.ReactNode }) {
+export default function EnglishHubLayout({ children }: { children: ReactNode }) {
   return (
     <div className="bg-surface-dim min-h-screen font-nunito">
       <header className="sticky top-0 z-10 bg-surface-dim border-b border-border-light">
