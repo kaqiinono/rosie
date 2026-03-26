@@ -6,7 +6,10 @@ import React, {useState, useCallback, useMemo, memo} from 'react'
 export interface MonthlyWeekdayFlowChartProps {
   startDate: string
   endDate: string
-  startWeekday: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  /** Forward mode: know start weekday, fill toward end */
+  startWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  /** Backward mode: know end weekday, fill toward start */
+  endWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -223,15 +226,17 @@ SegCol.displayName = 'SegCol'
 // Positioned between SegCol-j and SegCol-(j+1) (or EndCol)
 // The arrow is centered at WD_MID_Y to align with weekday pills in SegCols
 const GapConnector = memo(({
-  answer, onAnswer,
+  answer, onAnswer, direction = 'forward',
 }: {
   answer: SegAnswer
   onAnswer: (p: Partial<SegAnswer>) => void
+  direction?: 'forward' | 'backward'
 }) => {
   const roseNum = 'bg-rose-50 text-rose-500 placeholder:text-rose-200'
+  const sign = direction === 'forward' ? '+' : '−'
   return (
     <div className="relative shrink-0" style={{width: GAP_W, height: CELL_H}}>
-      {/* "+r" — between days pill row and weekday row */}
+      {/* "±r" — between days pill row and weekday row */}
       <div
         className="absolute inset-x-0 flex justify-center items-center gap-0.5"
         style={{
@@ -239,17 +244,29 @@ const GapConnector = memo(({
           color: '#f43f5e', fontSize: 12, fontWeight: 700, fontFamily: FONT,
         }}
       >
-        <span>+</span>
+        <span>{sign}</span>
         <Num value={answer.r} onChange={v => onAnswer({r: v})} width={26} cls={roseNum}/>
       </div>
 
-      {/* Arrow line — at WD_MID_Y, same height as weekday pill centers */}
+      {/* Arrow line — at WD_MID_Y, pointing right (forward) or left (backward) */}
       <div className="absolute inset-x-0 flex items-center" style={{top: WD_MID_Y - 1, height: 2}}>
-        <div className="flex-1 bg-slate-300" style={{height: 2}}/>
-        <svg width="9" height="9" viewBox="0 0 9 9" className="shrink-0 -ml-px">
-          <path d="M1 1.5L7.5 4.5L1 7.5" fill="none" stroke="#94a3b8"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        {direction === 'forward' ? (
+          <>
+            <div className="flex-1 bg-slate-300" style={{height: 2}}/>
+            <svg width="9" height="9" viewBox="0 0 9 9" className="shrink-0 -ml-px">
+              <path d="M1 1.5L7.5 4.5L1 7.5" fill="none" stroke="#94a3b8"
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </>
+        ) : (
+          <>
+            <svg width="9" height="9" viewBox="0 0 9 9" className="shrink-0 -mr-px">
+              <path d="M8 1.5L1.5 4.5L8 7.5" fill="none" stroke="#94a3b8"
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div className="flex-1 bg-slate-300" style={{height: 2}}/>
+          </>
+        )}
       </div>
 
       {/* "q周……r天" — just below weekday pill */}
@@ -272,26 +289,29 @@ GapConnector.displayName = 'GapConnector'
 
 // ── EndCol: final weekday pill only ───────────────────────────────────────
 const EndCol = memo(({
-  value, onChange, correct, wrong,
+  value, onChange, correct, wrong, fixedLabel,
 }: {
-  value: string; onChange: (v: string) => void; correct: boolean; wrong: boolean
+  value?: string; onChange?: (v: string) => void; correct?: boolean; wrong?: boolean
+  fixedLabel?: string
 }) => (
   <div className="relative shrink-0" style={{width: END_W, height: CELL_H}}>
     <div className="absolute flex justify-center" style={{top: WD_Y, left: 0, right: 0}}>
-      <WdPill role="end" value={value} onChange={onChange} correct={correct} wrong={wrong}/>
+      <WdPill role="end" fixedLabel={fixedLabel} value={value} onChange={onChange} correct={correct} wrong={wrong}/>
     </div>
   </div>
 ))
 EndCol.displayName = 'EndCol'
 
 // ── Main component ─────────────────────────────────────────────────────────
-const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, startWeekday}) => {
+const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, startWeekday, endWeekday}) => {
+  const mode: 'forward' | 'backward' = startWeekday ? 'forward' : 'backward'
   const segs = useMemo(() => buildSegments(startDate, endDate), [startDate, endDate])
   const n = segs.length
 
   // answers[j]: days/q/r for segment j and the arrow crossing it
   const [answers, setAnswers] = useState<SegAnswer[]>(() => segs.map(() => ({days: '', q: '', r: ''})))
-  // wdInputs[i]: weekday at node i+1 (i = 0..n-1), displayed in SegCol-(i+1) or EndCol
+  // forward:  wdInputs[i] = weekday at node i+1 (after seg i), filled by user
+  // backward: wdInputs[i] = weekday at node i   (before seg i), filled by user
   const [wdInputs, setWdInputs] = useState<string[]>(() => Array(n).fill(''))
 
   const patchAnswer = useCallback((i: number, p: Partial<SegAnswer>) =>
@@ -305,12 +325,18 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
     setWdInputs(Array(n).fill(''))
   }, [segs, n])
 
-  // correctWds[i]: correct weekday at node i (0 = start, 1..n = after each seg)
+  // correctWds[i]: correct weekday at node i (0 = startDate node, n = endDate node)
   const correctWds = useMemo(() => {
-    const c: number[] = [startWeekday]
-    for (let i = 0; i < n; i++) c.push(((c[i] - 1 + segs[i].correctDays) % 7) + 1)
+    const c: number[] = new Array(n + 1)
+    if (mode === 'forward') {
+      c[0] = startWeekday!
+      for (let i = 0; i < n; i++) c[i + 1] = ((c[i] - 1 + segs[i].correctDays) % 7) + 1
+    } else {
+      c[n] = endWeekday!
+      for (let i = n - 1; i >= 0; i--) c[i] = ((c[i + 1] - 1 - segs[i].correctDays % 7 + 700) % 7) + 1
+    }
     return c
-  }, [startWeekday, segs, n])
+  }, [mode, startWeekday, endWeekday, segs, n])
 
   const segValid = useMemo(() => segs.map((seg, i) => {
     const a = answers[i]
@@ -321,8 +347,11 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
   }), [segs, answers])
 
   const wdValid = useMemo(() =>
-    wdInputs.map((v, i) => v !== '' && +v >= 1 && +v <= 7 && +v === correctWds[i + 1]),
-  [wdInputs, correctWds])
+    wdInputs.map((v, i) => {
+      const target = mode === 'forward' ? correctWds[i + 1] : correctWds[i]
+      return v !== '' && +v >= 1 && +v <= 7 && +v === target
+    }),
+  [wdInputs, correctWds, mode])
 
   const allOk = n > 0 && segValid.every(s => s.allOk) && wdValid.every(Boolean)
 
@@ -336,11 +365,12 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
         h.push(`第 ${i + 1} 段÷7结果不正确`)
     })
     wdInputs.forEach((v, i) => {
+      const target = mode === 'forward' ? correctWds[i + 1] : correctWds[i]
       if (v !== '' && !wdValid[i])
-        h.push(`节点 ${i + 1} 星期应为 ${WD[correctWds[i + 1]]}`)
+        h.push(`节点 ${mode === 'forward' ? i + 1 : i} 星期应为 ${WD[target]}`)
     })
     return h
-  }, [segs, answers, segValid, wdInputs, wdValid, correctWds])
+  }, [segs, answers, segValid, wdInputs, wdValid, correctWds, mode])
 
   if (n === 0) return (
     <div className="text-slate-400 text-sm text-center py-8" style={{fontFamily: FONT}}>
@@ -349,14 +379,28 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
   )
 
   // helpers shared by both layouts
-  const wdProps = (j: number) => ({
-    role: (j === 0 ? 'start' : j < n ? 'middle' : 'end') as WdRole,
-    fixedLabel: j === 0 ? WD[startWeekday] : undefined,
-    value: j === 0 ? undefined : wdInputs[j - 1],
-    onChange: j === 0 ? undefined : (v: string) => patchWd(j - 1, v),
-    correct: j === 0 ? true : (wdValid[j - 1] && wdInputs[j - 1] !== ''),
-    wrong: j > 0 && wdInputs[j - 1] !== '' && !wdValid[j - 1],
-  })
+  // j = SegCol index (0..n-1); node j is the weekday pill shown in that column
+  const wdProps = (j: number) => {
+    if (mode === 'forward') {
+      return {
+        role: (j === 0 ? 'start' : 'middle') as WdRole,
+        fixedLabel: j === 0 ? WD[startWeekday!] : undefined,
+        value: j === 0 ? undefined : wdInputs[j - 1],
+        onChange: j === 0 ? undefined : (v: string) => patchWd(j - 1, v),
+        correct: j === 0 ? true : (wdValid[j - 1] && wdInputs[j - 1] !== ''),
+        wrong: j > 0 && wdInputs[j - 1] !== '' && !wdValid[j - 1],
+      }
+    } else {
+      return {
+        role: (j === 0 ? 'start' : 'middle') as WdRole,
+        fixedLabel: undefined,
+        value: wdInputs[j],
+        onChange: (v: string) => patchWd(j, v),
+        correct: wdValid[j] && wdInputs[j] !== '',
+        wrong: wdInputs[j] !== '' && !wdValid[j],
+      }
+    }
+  }
 
   const roseNum = 'bg-rose-50 text-rose-500 placeholder:text-rose-200'
 
@@ -382,16 +426,20 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
                   wdCorrect={wp.correct}
                   wdWrong={wp.wrong}
                 />
-                <GapConnector answer={answers[j]} onAnswer={p => patchAnswer(j, p)}/>
+                <GapConnector answer={answers[j]} onAnswer={p => patchAnswer(j, p)} direction={mode}/>
               </React.Fragment>
             )
           })}
-          <EndCol
-            value={wdInputs[n - 1]}
-            onChange={v => patchWd(n - 1, v)}
-            correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
-            wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
-          />
+          {mode === 'forward' ? (
+            <EndCol
+              value={wdInputs[n - 1]}
+              onChange={v => patchWd(n - 1, v)}
+              correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
+              wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
+            />
+          ) : (
+            <EndCol fixedLabel={WD[endWeekday!]}/>
+          )}
         </div>
       </div>
 
@@ -431,19 +479,27 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
                 <div/>
                 <div className="flex items-center justify-center" style={{minHeight: 44}}>
                   <div className="flex items-center gap-2">
-                    {/* +r on left of arrow */}
+                    {/* ±r on left of arrow */}
                     <div className="flex items-center gap-0.5"
                       style={{color: '#f43f5e', fontSize: 12, fontWeight: 700, fontFamily: FONT}}>
-                      <span>+</span>
+                      <span>{mode === 'forward' ? '+' : '−'}</span>
                       <Num value={answers[j].r} onChange={v => patchAnswer(j, {r: v})} width={24} cls={roseNum}/>
                     </div>
-                    {/* Vertical arrow */}
+                    {/* Vertical arrow — down (forward) or up (backward) */}
                     <div className="flex flex-col items-center" style={{height: 36}}>
+                      {mode === 'backward' && (
+                        <svg width="9" height="9" viewBox="0 0 9 9">
+                          <path d="M1.5 8L4.5 1.5L7.5 8" fill="none" stroke="#94a3b8"
+                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
                       <div className="flex-1 bg-slate-300" style={{width: 2}}/>
-                      <svg width="9" height="9" viewBox="0 0 9 9">
-                        <path d="M1.5 1L4.5 7.5L7.5 1" fill="none" stroke="#94a3b8"
-                          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
+                      {mode === 'forward' && (
+                        <svg width="9" height="9" viewBox="0 0 9 9">
+                          <path d="M1.5 1L4.5 7.5L7.5 1" fill="none" stroke="#94a3b8"
+                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
                     </div>
                     {/* ÷7 on right of arrow */}
                     <div className="flex items-center gap-0.5"
@@ -463,13 +519,17 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
           {/* Final weekday row */}
           <div className="py-2"/><div className="py-2"/>
           <div className="flex items-center justify-center pl-2 py-2">
-            <WdPill
-              role="end"
-              value={wdInputs[n - 1]}
-              onChange={v => patchWd(n - 1, v)}
-              correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
-              wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
-            />
+            {mode === 'forward' ? (
+              <WdPill
+                role="end"
+                value={wdInputs[n - 1]}
+                onChange={v => patchWd(n - 1, v)}
+                correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
+                wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
+              />
+            ) : (
+              <WdPill role="end" fixedLabel={WD[endWeekday!]}/>
+            )}
           </div>
         </div>
       </div>
@@ -487,10 +547,14 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
         style={{fontFamily: FONT}}
       >
         {allOk
-          ? `全部正确！结束日期是 ${WD[correctWds[n]]}`
+          ? mode === 'forward'
+            ? `全部正确！结束日期是 ${WD[correctWds[n]]}`
+            : `全部正确！开始日期是 ${WD[correctWds[0]]}`
           : hints.length
             ? `✗ ${hints.slice(0, 2).join('；')}`
-            : '填入红色胶囊（天数）、箭头上方（余数）、箭头下方（商和余数），以及各节点星期（1–7）'}
+            : mode === 'forward'
+              ? '填入红色胶囊（天数）、箭头上方（余数）、箭头下方（商和余数），以及各节点星期（1–7）'
+              : '已知结束日期星期，从右向左倒推：填入天数、减去余数、各节点星期（1–7）'}
       </div>
 
       {/* Reset */}

@@ -25,60 +25,99 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
 
   const totalLetters = useMemo(() => word.replace(/ /g, '').length, [word])
 
-  // Shuffled pool of tiles, stable for the lifetime of this component instance
-  const [pool] = useState<{ letter: string; id: number }[]>(() => {
+  // Shuffled pool of unique letters, stable for the lifetime of this component instance
+  const [pool] = useState<string[]>(() => {
     const letters = word.replace(/ /g, '').split('')
-    const arr = letters.map((letter, id) => ({ letter, id }))
+    const uniqueLetters = [...new Set(letters)].sort()
+    const wordLetterSet = new Set(uniqueLetters)
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
-    // Generate distractors: proportional count, capped so total <= 10
-    const distractorCount =
-      letters.length >= 10
-        ? 0
-        : Math.min(Math.ceil(letters.length * 0.5), 10 - letters.length)
+    // Consecutive forward pairs in the word (e.g. "hunt" → {hu, un, nt})
+    const consecutivePairs = new Set<string>()
+    for (let i = 0; i < letters.length - 1; i++) {
+      consecutivePairs.add(letters[i] + letters[i + 1])
+    }
 
-    if (distractorCount > 0) {
-      const wordLetterSet = new Set(letters)
-      const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
-      // Shuffle alphabet to get random order
-      for (let i = alphabet.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[alphabet[i], alphabet[j]] = [alphabet[j], alphabet[i]]
-      }
-      let added = 0
-      for (const ch of alphabet) {
-        if (added >= distractorCount) break
-        if (!wordLetterSet.has(ch)) {
-          arr.push({ letter: ch, id: letters.length + added })
-          added++
+    const chosen = new Set<string>()
+
+    // For each bad adjacent pair in sorted word letters, pick a distractor
+    // that falls alphabetically between them — it will naturally slot in when sorted
+    for (let i = 0; i < uniqueLetters.length - 1; i++) {
+      const a = uniqueLetters[i], b = uniqueLetters[i + 1]
+      if (consecutivePairs.has(a + b)) {
+        const ai = alphabet.indexOf(a), bi = alphabet.indexOf(b)
+        for (let j = ai + 1; j < bi; j++) {
+          const ch = alphabet[j]
+          if (!wordLetterSet.has(ch) && !chosen.has(ch)) {
+            chosen.add(ch)
+            break
+          }
         }
       }
     }
 
-    // Fisher-Yates shuffle of full pool (real + distractors)
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    // Fill remaining distractor slots (for difficulty) with random non-word letters
+    const target = letters.length >= 10
+      ? 0
+      : Math.min(Math.ceil(letters.length * 0.5), 10 - uniqueLetters.length)
+
+    if (chosen.size < target) {
+      const candidates = alphabet.split('').filter(c => !wordLetterSet.has(c) && !chosen.has(c))
+      for (let i = candidates.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[candidates[i], candidates[j]] = [candidates[j], candidates[i]]
+      }
+      for (const ch of candidates) {
+        if (chosen.size >= target) break
+        chosen.add(ch)
+      }
+    }
+
+    const hasDangerousPair = (arr: string[]) => {
+      for (let i = 0; i < arr.length - 1; i++) {
+        if (consecutivePairs.has(arr[i] + arr[i + 1])) return true
+      }
+      return false
+    }
+
+    // Try alphabetical order first
+    const sorted = [...uniqueLetters, ...chosen].sort()
+    if (!hasDangerousPair(sorted)) return sorted
+
+    // Alphabetical still has dangerous pairs (insufficient distractors) — shuffle until clean
+    const arr = [...sorted]
+    for (let attempt = 0; attempt < 20; attempt++) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      }
+      if (!hasDangerousPair(arr)) return arr
     }
     return arr
   })
 
-  // placed[slotIdx] = pool tile id, or null
-  const [placed, setPlaced] = useState<(number | null)[]>(() => Array(totalLetters).fill(null))
-
-  const placedIdSet = useMemo(
-    () => new Set(placed.filter((x): x is number => x !== null)),
-    [placed]
-  )
+  // placed[slotIdx] = letter string, or null
+  const [placed, setPlaced] = useState<(string | null)[]>(() => Array(totalLetters).fill(null))
 
   const allFilled = placed.every(p => p !== null)
 
-  const handlePoolTap = (tileId: number) => {
-    if (answered || placedIdSet.has(tileId)) return
+  // Responsive sizing based on word length
+  const tileSize =
+    totalLetters <= 8
+      ? 'w-10 h-10 text-[1.1rem]'
+      : totalLetters <= 12
+        ? 'w-8 h-8 text-[.95rem]'
+        : 'w-7 h-7 text-[.82rem]'
+  const tileGap = totalLetters <= 8 ? 'gap-1.5' : 'gap-1'
+  const placeholderSize = totalLetters <= 12 ? 'text-[.7rem]' : 'text-[.6rem]'
+
+  const handlePoolTap = (letter: string) => {
+    if (answered) return
     const firstEmpty = placed.indexOf(null)
     if (firstEmpty === -1) return
     setPlaced(prev => {
       const next = [...prev]
-      next[firstEmpty] = tileId
+      next[firstEmpty] = letter
       return next
     })
   }
@@ -98,23 +137,21 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
       if (si > 0) answer += ' '
       const { start } = segmentSlots[si]
       for (let i = 0; i < seg.length; i++) {
-        const tileId = placed[start + i]
-        answer += tileId !== null ? (pool.find(t => t.id === tileId)?.letter ?? '') : ''
+        answer += placed[start + i] ?? ''
       }
     })
     onSubmit(answer)
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 w-full">
       {/* Answer slots grouped by word segment */}
-      <div className="flex items-center justify-center gap-3 flex-wrap">
+      <div className="flex items-center justify-center gap-2 flex-wrap w-full">
         {segments.map((seg, si) => (
-          <div key={si} className="flex items-center gap-1.5">
+          <div key={si} className={`flex items-center flex-wrap justify-center ${tileGap}`}>
             {Array.from({ length: seg.length }).map((_, ci) => {
               const slotIdx = segmentSlots[si].start + ci
-              const tileId = placed[slotIdx]
-              const letter = tileId !== null ? pool.find(t => t.id === tileId)?.letter : null
+              const letter = placed[slotIdx]
 
               let cls = 'border-white/[.25] bg-white/[.04]'
               if (answered) {
@@ -129,9 +166,9 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
                 <div
                   key={ci}
                   onClick={() => { if (letter && !answered) handlePlacedTap(slotIdx) }}
-                  className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center font-nunito font-black text-[1.1rem] text-[#f0f0ff] transition-all select-none ${cls}`}
+                  className={`${tileSize} rounded-lg border-2 flex items-center justify-center font-nunito font-black text-[#f0f0ff] transition-all select-none ${cls}`}
                 >
-                  {letter ?? <span className="text-white/20 text-[.7rem]">_</span>}
+                  {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
                 </div>
               )
             })}
@@ -141,24 +178,16 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
 
       {/* Pool tiles */}
       {!answered && (
-        <div className="flex items-center justify-center gap-2 flex-wrap mt-1">
-          {pool.map(tile => {
-            const isPlaced = placedIdSet.has(tile.id)
-            return (
-              <button
-                key={tile.id}
-                onClick={() => handlePoolTap(tile.id)}
-                disabled={isPlaced}
-                className={`w-10 h-10 rounded-lg border-2 font-nunito font-black text-[1.1rem] transition-all ${
-                  isPlaced
-                    ? 'opacity-0 pointer-events-none'
-                    : 'border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd] cursor-pointer hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)] hover:-translate-y-0.5'
-                }`}
-              >
-                {tile.letter}
-              </button>
-            )
-          })}
+        <div className="flex items-center justify-center gap-2 flex-wrap mt-1 w-full">
+          {pool.map((letter, i) => (
+            <button
+              key={i}
+              onClick={() => handlePoolTap(letter)}
+              className={`${tileSize} rounded-lg border-2 font-nunito font-black transition-all border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd] cursor-pointer hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)] hover:-translate-y-0.5`}
+            >
+              {letter}
+            </button>
+          ))}
         </div>
       )}
 

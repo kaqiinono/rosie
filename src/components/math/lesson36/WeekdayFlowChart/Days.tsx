@@ -7,10 +7,15 @@ export interface WeekdayFlowChartProps {
   /** 结束日期，格式 'YYYY-MM-DD' */
   endDate: string
   /**
-   * 开始日期对应的星期数（蓝色方框内容）
-   * 1=周一 2=周二 3=周三 4=周四 5=周五 6=周六 7=周日
+   * 正向模式：已知开始日期的星期（蓝色，固定），求结束日期星期
+   * 1=周一 … 7=周日
    */
-  startWeekday: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  startWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  /**
+   * 逆向模式：已知结束日期的星期（蓝色，固定），求开始日期星期
+   * 1=周一 … 7=周日
+   */
+  endWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -50,9 +55,6 @@ function fmtDate(d: string): string {
   return `${y}年${m}月${day}日`
 }
 
-function svgPct(px: number, dim: 'x' | 'y'): string {
-  return ((px / (dim === 'x' ? V.W : V.H)) * 100).toFixed(3) + '%'
-}
 
 // ── Sub-components (SVG helpers) ───────────────────────────────────────────
 const FONT = "'PingFang SC','Microsoft YaHei',sans-serif"
@@ -95,47 +97,97 @@ const KnownBox: React.FC<KnownBoxProps> = ({ x, y, w, h, line1, line2 }) => (
   </g>
 )
 
+// ── SvgInput (foreignObject — scales with SVG viewBox) ────────────────────
+interface SvgInputProps {
+  cx: number
+  cy: number
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+  variant: 'red' | 'yellow'
+}
+
+const svgInputStyles: Record<SvgInputProps['variant'], React.CSSProperties> = {
+  red:    { background: '#fff1f2', color: '#7c1a1a' },
+  yellow: { background: '#fefce8', color: '#713f12' },
+}
+
+const SvgInput: React.FC<SvgInputProps> = ({ cx, cy, value, onChange, placeholder, variant }) => {
+  const w = 56, h = 36
+  return (
+    <foreignObject x={cx - w / 2} y={cy - h / 2} width={w} height={h}>
+      <input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          width: '100%',
+          height: '100%',
+          textAlign: 'center',
+          fontWeight: 700,
+          fontSize: 16,
+          borderRadius: 8,
+          border: 'none',
+          outline: 'none',
+          boxSizing: 'border-box',
+          ...svgInputStyles[variant],
+        }}
+      />
+    </foreignObject>
+  )
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────
 const Days: React.FC<WeekdayFlowChartProps> = ({
   startDate,
   endDate,
   startWeekday,
+  endWeekday,
 }) => {
   const uid = useId().replace(/:/g, '')
+  const mode: 'forward' | 'backward' = startWeekday ? 'forward' : 'backward'
+  const knownWd = (mode === 'forward' ? startWeekday : endWeekday)!
 
   // User input state
   const [total, setTotal] = useState('')
   const [q, setQ]         = useState('')
   const [r, setR]         = useState('')
-  const [ew, setEw]       = useState('')
+  const [unkWd, setUnkWd] = useState('') // the unknown weekday (end in forward, start in backward)
 
   // Derived values
-  const autoTotal = calcDays(startDate, endDate)
-  const swLabel   = WD[startWeekday]
-  const ewLabel   = ew && +ew >= 1 && +ew <= 7 ? WD[+ew as 1|2|3|4|5|6|7] : '周?'
+  const autoTotal   = calcDays(startDate, endDate)
+  const knownLabel  = WD[knownWd]
+  const unkWdLabel  = unkWd && +unkWd >= 1 && +unkWd <= 7 ? WD[+unkWd as 1|2|3|4|5|6|7] : '周?'
 
   // Validation
-  const totalOk = total !== '' && autoTotal !== null && +total === autoTotal
-  const divOk   = total !== '' && q !== '' && r !== '' && +q * 7 + +r === +total
-  const compEW  = startWeekday && r !== '' ? ((startWeekday - 1 + +r) % 7) + 1 : null
-  const ewOk    = compEW !== null && ew !== '' && +ew === compEW
-  const allOk   = totalOk && divOk && ewOk
+  const totalOk  = total !== '' && autoTotal !== null && +total === autoTotal
+  const divOk    = total !== '' && q !== '' && r !== '' && +q * 7 + +r === +total
+  const compUnkWd = r !== ''
+    ? mode === 'forward'
+      ? ((knownWd - 1 + +r) % 7) + 1
+      : ((knownWd - 1 - +r % 7 + 700) % 7) + 1
+    : null
+  const unkWdOk  = compUnkWd !== null && unkWd !== '' && +unkWd === compUnkWd
+  const allOk    = totalOk && divOk && unkWdOk
 
   const handleReset = useCallback(() => {
-    setTotal(''); setQ(''); setR(''); setEw('')
+    setTotal(''); setQ(''); setR(''); setUnkWd('')
   }, [])
 
   // Status bar content
   let statusMsg = '请依次填入红色和黄色框中的数值…'
   let statusClass = 'bg-slate-100 text-slate-500 border border-slate-200'
   if (allOk) {
-    statusMsg = `🎉 完全正确！结束日期是 ${WD[compEW as number]}`
+    statusMsg = mode === 'forward'
+      ? `🎉 完全正确！结束日期是 ${WD[compUnkWd as number]}`
+      : `🎉 完全正确！开始日期是 ${WD[compUnkWd as number]}`
     statusClass = 'bg-green-50 text-green-800 border border-green-300'
   } else {
     const hints: string[] = []
     if (total !== '' && !totalOk && autoTotal !== null) hints.push(`经过天数应为 ${autoTotal}`)
     if (total !== '' && q !== '' && r !== '' && !divOk) hints.push(`${total}÷7 不正确`)
-    if (compEW && ew !== '' && !ewOk) hints.push(`结束星期应为 ${WD[compEW]}`)
+    if (compUnkWd && unkWd !== '' && !unkWdOk)
+      hints.push(`${mode === 'forward' ? '结束' : '开始'}星期应为 ${WD[compUnkWd]}`)
     if (hints.length) statusMsg = '✗ ' + hints.join('；')
   }
 
@@ -149,10 +201,7 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
     <div className="flex flex-col items-center gap-4 w-full">
       {/* ── Chart Card ── */}
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md px-6 py-8">
-        {/* SVG + overlay wrapper */}
-        <div className="relative w-full">
-          {/* ── SVG ── */}
-          <svg
+        <svg
             width="100%"
             viewBox={`0 0 ${V.W} ${V.H}`}
             xmlns="http://www.w3.org/2000/svg"
@@ -241,18 +290,28 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
             </text>
 
             {/* ── Pill row ── */}
-            {/* Start weekday pill (blue, known) */}
-            <Pill cx={V.spCX} cy={125} label={swLabel} color="blue" />
+            {/* Start weekday pill: blue+fixed (forward) or red+unknown (backward) */}
+            <Pill cx={V.spCX} cy={125}
+              label={mode === 'forward' ? knownLabel : unkWdLabel}
+              color={mode === 'forward' ? 'blue' : 'red'} />
 
-            {/* Quotient weekday pill (blue, same as start) */}
-            <Pill cx={V.qpCX} cy={224} label={swLabel} color="blue" />
+            {/* Quotient weekday pill: always shows known weekday */}
+            <Pill cx={V.qpCX} cy={224} label={knownLabel} color="blue" />
 
-            {/* End weekday pill (red, unknown) */}
-            <Pill cx={V.rpCX} cy={224} label={ewLabel} color="red" />
+            {/* Remainder weekday pill: always shows unknown weekday */}
+            <Pill cx={V.rpCX} cy={224} label={unkWdLabel} color="red" />
+
+            {/* End weekday pill: red+unknown (forward) or blue+fixed (backward) */}
+            {mode === 'backward' && (
+              <Pill cx={V.epCX} cy={125} label={knownLabel} color="blue" />
+            )}
 
             {/* ── Dashed arrows ── */}
-            {/* Blue: start pill → quotient pill */}
-            <path d="M 70 142 C 75 278, 365 308, 365 240"
+            {/* Blue: known pill → quotient pill */}
+            <path
+              d={mode === 'forward'
+                ? "M 70 142 C 75 278, 365 308, 365 240"
+                : "M 706 142 C 700 278, 365 308, 365 240"}
               fill="none" stroke="#6b9fd4" strokeWidth={2}
               strokeDasharray="7 5" markerEnd={`url(#${mAB})`} />
 
@@ -261,10 +320,33 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
               fill="none" stroke="#e88a8a" strokeWidth={2}
               strokeDasharray="7 5" markerEnd={`url(#${mAR})`} />
 
-            {/* Red: remainder pill → end block */}
-            <path d="M 495 242 C 495 308, 705 308, 705 144"
+            {/* Red: remainder pill → unknown block */}
+            <path
+              d={mode === 'forward'
+                ? "M 495 242 C 495 308, 705 308, 705 144"
+                : "M 495 242 C 495 308, 75 308, 75 144"}
               fill="none" stroke="#e88a8a" strokeWidth={2}
               strokeDasharray="7 5" markerEnd={`url(#${mAR2})`} />
+
+            {/* ── Input overlays (foreignObject scales with SVG) ── */}
+            {/* Total days (red) — on timeline center */}
+            <SvgInput cx={V.tdCX} cy={V.tdY} value={total} onChange={setTotal} placeholder="?" variant="red" />
+
+            {/* Quotient (yellow) */}
+            <SvgInput cx={V.qCX} cy={V.dY} value={q} onChange={setQ} placeholder="?" variant="yellow" />
+
+            {/* Remainder (yellow) */}
+            <SvgInput cx={V.rCX} cy={V.dY} value={r} onChange={setR} placeholder="?" variant="yellow" />
+
+            {/* Unknown weekday input — at end (forward) or start (backward) */}
+            <SvgInput
+              cx={mode === 'forward' ? V.epCX : V.spCX}
+              cy={125}
+              value={unkWd}
+              onChange={setUnkWd}
+              placeholder="?"
+              variant="red"
+            />
 
             {/* ── "经过" label on timeline ── */}
             <text x={334} y={63} textAnchor="middle" dominantBaseline="auto"
@@ -275,50 +357,7 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
               fontSize={14} fill="#555" fontFamily={FONT}>
               天
             </text>
-          </svg>
-
-          {/* ── Absolute-positioned input overlays ── */}
-
-          {/* Total days (red) — on timeline center */}
-          <InputOverlay
-            left={svgPct(V.tdCX, 'x')}
-            top={svgPct(V.tdY, 'y')}
-            value={total}
-            onChange={setTotal}
-            placeholder="?"
-            variant="red"
-          />
-
-          {/* Quotient (yellow) */}
-          <InputOverlay
-            left={svgPct(V.qCX, 'x')}
-            top={svgPct(V.dY, 'y')}
-            value={q}
-            onChange={setQ}
-            placeholder="?"
-            variant="yellow"
-          />
-
-          {/* Remainder (yellow) */}
-          <InputOverlay
-            left={svgPct(V.rCX, 'x')}
-            top={svgPct(V.dY, 'y')}
-            value={r}
-            onChange={setR}
-            placeholder="?"
-            variant="yellow"
-          />
-
-          {/* End weekday (red) — below end box */}
-          <InputOverlay
-            left={svgPct(V.epCX, 'x')}
-            top={svgPct(125, 'y')}
-            value={ew}
-            onChange={setEw}
-            placeholder="?"
-            variant="red"
-          />
-        </div>
+        </svg>
       </div>
 
       {/* ── Status bar ── */}
@@ -336,40 +375,5 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
     </div>
   )
 }
-
-// ── InputOverlay ───────────────────────────────────────────────────────────
-interface InputOverlayProps {
-  left: string
-  top: string
-  value: string
-  onChange: (v: string) => void
-  placeholder: string
-  variant: 'red' | 'yellow'
-}
-
-const variantStyles: Record<InputOverlayProps['variant'], string> = {
-  red:    'bg-red-50 text-red-900 placeholder:text-red-300 focus:ring-red-200',
-  yellow: 'bg-yellow-50 text-yellow-900 placeholder:text-yellow-300 focus:ring-yellow-200',
-}
-
-const InputOverlay: React.FC<InputOverlayProps> = ({
-  left, top, value, onChange, placeholder, variant,
-}) => (
-  <div
-    className="absolute pointer-events-auto"
-    style={{ left, top, transform: 'translate(-50%, -50%)' }}
-  >
-    <input
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      placeholder={placeholder}
-      className={[
-        'w-14 h-9 text-center font-bold text-[15px] rounded-lg border-none outline-none',
-        'ring-0 focus:ring-[3px] transition-shadow',
-        variantStyles[variant],
-      ].join(' ')}
-    />
-  </div>
-)
 
 export default Days

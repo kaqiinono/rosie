@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useMemo, memo } from 'react'
+import Month from "@/components/math/lesson36/WeekdayFlowChart/Month";
 
 // ── Re-export Month component inline (跨月部分) ────────────────────────────
 // (Paste the MonthlyWeekdayFlowChartProps / Month component here if co-locating;
@@ -12,8 +13,10 @@ export interface YearlyWeekdayFlowChartProps {
   startDate: string
   /** End date    e.g. "2026-01-01" */
   endDate: string
-  /** Weekday of startDate: 1=Mon … 7=Sun */
-  startWeekday: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  /** Forward mode: weekday of startDate, 1=Mon … 7=Sun */
+  startWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  /** Backward mode: weekday of the last year node (yearEndDate), 1=Mon … 7=Sun */
+  endWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -44,9 +47,9 @@ function parseDate(d: string) {
   return { year: y, month: m, day: day }
 }
 
-/** Format "YYYYMMDD" from year number, month=1, day=1 */
-function formatYearDate(y: number) {
-  return `${y}0101`
+/** Format "YYYYMMDD" from year number and optional month/day (defaults to Jan 1) */
+function formatYearDate(y: number, month = 1, day = 1) {
+  return `${y}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`
 }
 
 // ── Segment model ──────────────────────────────────────────────────────────
@@ -190,6 +193,7 @@ const ArrowSection = memo(({
   onPlusChange,
   correctDays,
   correctPlus,
+  direction = 'forward',
 }: {
   daysValue: string
   onDaysChange: (v: string) => void
@@ -197,26 +201,34 @@ const ArrowSection = memo(({
   onPlusChange: (v: string) => void
   correctDays: number
   correctPlus: number
+  direction?: 'forward' | 'backward'
 }) => {
   const daysOk  = daysValue  !== '' && +daysValue  === correctDays
   const daysErr = daysValue  !== '' && +daysValue  !== correctDays
   const plusOk  = plusValue  !== '' && +plusValue  === correctPlus
   const plusErr = plusValue  !== '' && +plusValue  !== correctPlus
+  const sign = direction === 'forward' ? '+' : '−'
 
-  const arrowSvg = (
+  const arrowSvg = direction === 'forward' ? (
     <svg width="10" height="14" viewBox="0 0 10 14" fill="none" style={{ marginTop: 1 }}>
       <line x1="5" y1="0" x2="5" y2="10" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/>
       <path d="M1.5 7.5L5 11.5L8.5 7.5" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
+  ) : (
+    <svg width="10" height="14" viewBox="0 0 10 14" fill="none" style={{ marginBottom: 1 }}>
+      <path d="M1.5 6.5L5 2.5L8.5 6.5" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="5" y1="4" x2="5" y2="14" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
   )
 
   return (
-    <div className="flex" style={{ height: ARROW_H }}>
-      {/* Left arrow — days */}
+    <div className={`flex ${direction === 'backward' ? 'flex-col-reverse' : 'flex-col'}`} style={{ height: ARROW_H }}>
+      {/* Days column */}
       <div
         className="flex flex-col items-center justify-center gap-0.5"
-        style={{ width: DATE_W }}
+        style={{ width: DATE_W, flex: 1 }}
       >
+        {direction === 'backward' && arrowSvg}
         <div
           className={`flex items-center gap-0.5 px-2.5 rounded-lg text-xs font-bold
             ${daysOk ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-300'
@@ -235,14 +247,15 @@ const ArrowSection = memo(({
           />
           <span>天</span>
         </div>
-        {arrowSvg}
+        {direction === 'forward' && arrowSvg}
       </div>
 
-      {/* Right arrow — plus remainder */}
+      {/* Plus/minus remainder column */}
       <div
         className="flex flex-col items-center justify-center gap-0.5"
-        style={{ width: COL_GAP + WD_W, paddingLeft: COL_GAP }}
+        style={{ width: COL_GAP + WD_W, paddingLeft: COL_GAP, flex: 1 }}
       >
+        {direction === 'backward' && arrowSvg}
         <div
           className={`flex items-center gap-0.5 px-2 rounded-lg text-xs font-bold
             ${plusOk ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-300'
@@ -250,7 +263,7 @@ const ArrowSection = memo(({
               : 'bg-rose-50 text-rose-400'}`}
           style={{ height: 22, fontFamily: FONT }}
         >
-          <span>+</span>
+          <span>{sign}</span>
           <NumInput
             value={plusValue}
             onChange={onPlusChange}
@@ -261,7 +274,7 @@ const ArrowSection = memo(({
                 : 'text-rose-400 placeholder:text-rose-200'}`}
           />
         </div>
-        {arrowSvg}
+        {direction === 'forward' && arrowSvg}
       </div>
     </div>
   )
@@ -269,7 +282,7 @@ const ArrowSection = memo(({
 ArrowSection.displayName = 'ArrowSection'
 
 // ── Month component (inline minimal version for cross-month tail) ──────────
-// Full implementation matches Month2.tsx but embedded here for self-containment
+// Full implementation matches Month.tsx but embedded here for self-containment
 // If Month2 is already in scope, replace this with: import Month from './Month2'
 
 const MONTH_WD   = ['', '周一', '周二', '周三', '周四', '周五', '周六', '周日'] as const
@@ -486,21 +499,7 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
       </div>
       <div className="w-full bg-white rounded-2xl shadow border border-slate-100 overflow-x-auto">
         <div className="flex items-stretch py-5 px-4" style={{ width: 'max-content', margin: '0 auto' }}>
-          {segs.map((seg, j) => (
-            <React.Fragment key={j}>
-              <MSegCol seg={seg} answer={answers[j]} onAnswer={p => patchAnswer(j, p)} daysOk={segValid[j].daysOk}
-                wdRole={j === 0 ? 'start' : 'middle'}
-                wdFixed={j === 0 ? MONTH_WD[startWeekday] : undefined}
-                wdValue={j === 0 ? undefined : wdInputs[j - 1]}
-                wdOnChange={j === 0 ? undefined : v => patchWd(j - 1, v)}
-                wdCorrect={j === 0 ? true : (wdValid[j - 1] && wdInputs[j - 1] !== '')}
-                wdWrong={j > 0 && wdInputs[j - 1] !== '' && !wdValid[j - 1]} />
-              <MGapConnector answer={answers[j]} onAnswer={p => patchAnswer(j, p)} />
-            </React.Fragment>
-          ))}
-          <MEndCol value={wdInputs[n - 1]} onChange={v => patchWd(n - 1, v)}
-            correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
-            wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]} />
+          <Month startDate={startDate} endDate={endDate} startWeekday={startWeekday}  />
         </div>
       </div>
       <div className={['w-full text-center py-2.5 px-6 rounded-xl text-sm font-semibold transition-all duration-300',
@@ -524,13 +523,15 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
 // ── Main component ─────────────────────────────────────────────────────────
 interface YearRowAnswer { days: string; plus: string }
 
-const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, startWeekday }) => {
+const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, startWeekday, endWeekday }) => {
+  const mode: 'forward' | 'backward' = startWeekday ? 'forward' : 'backward'
   const segs = useMemo(() => buildYearSegments(startDate, endDate), [startDate, endDate])
   const n = segs.length
 
-  // Per-row inputs: days and +N
+  // Per-row inputs: days and ±N
   const [answers, setAnswers] = useState<YearRowAnswer[]>(() => segs.map(() => ({ days: '', plus: '' })))
-  // Weekday inputs at intermediate nodes (index i = weekday AFTER row i)
+  // forward:  wdInputs[i] = weekday at node i+1 (after row i)
+  // backward: wdInputs[i] = weekday at node i   (before row i)
   const [wdInputs, setWdInputs] = useState<string[]>(() => Array(n).fill(''))
 
   const patchAnswer = useCallback((i: number, p: Partial<YearRowAnswer>) =>
@@ -542,14 +543,20 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
     setWdInputs(Array(n).fill(''))
   }, [segs, n])
 
-  // Correct weekdays at each node (0 = start, 1..n = after each year row)
+  // Correct weekdays at each node (0 = startDate node, n = yearEndDate node)
   const correctWds = useMemo(() => {
-    const c: number[] = [startWeekday]
-    for (let i = 0; i < n; i++) c.push(advanceWeekday(c[i], segs[i].days))
+    const c: number[] = new Array(n + 1)
+    if (mode === 'forward') {
+      c[0] = startWeekday!
+      for (let i = 0; i < n; i++) c[i + 1] = advanceWeekday(c[i], segs[i].days)
+    } else {
+      c[n] = endWeekday!
+      for (let i = n - 1; i >= 0; i--) c[i] = ((c[i + 1] - 1 - segs[i].days % 7 + 700) % 7) + 1
+    }
     return c
-  }, [startWeekday, segs, n])
+  }, [mode, startWeekday, endWeekday, segs, n])
 
-  // Correct +N (days % 7) for each row
+  // Correct ±N (days % 7) for each row
   const correctPlus = useMemo(() => segs.map(s => s.days % 7), [segs])
 
   // Validation per row
@@ -561,12 +568,15 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
   }), [segs, answers, correctPlus])
 
   const wdValid = useMemo(() =>
-    wdInputs.map((v, i) => v !== '' && +v >= 1 && +v <= 7 && +v === correctWds[i + 1]),
-  [wdInputs, correctWds])
+    wdInputs.map((v, i) => {
+      const target = mode === 'forward' ? correctWds[i + 1] : correctWds[i]
+      return v !== '' && +v >= 1 && +v <= 7 && +v === target
+    }),
+  [wdInputs, correctWds, mode])
 
   // Check if we need cross-month tail
   const needsMonthTail = !isPureYearCrossing(startDate, endDate)
-  // The final year node weekday is the start of any remaining cross-month calculation
+  // The last year node weekday (yearEndDate) — used as startWeekday for cross-month tail
   const finalYearWd = correctWds[n] as 1|2|3|4|5|6|7
 
   // Build the year-end date and end date for cross-month tail
@@ -585,10 +595,14 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
         h.push(`第 ${i+1} 行余数应为 ${correctPlus[i]}`)
     })
     wdInputs.forEach((v, i) => {
-      if (v !== '' && !wdValid[i]) h.push(`${segs[i]?.fromYear + 1}年1月1日应为 ${WD[correctWds[i + 1]]}`)
+      const target = mode === 'forward' ? correctWds[i + 1] : correctWds[i]
+      const yearLabel = mode === 'forward'
+        ? `${segs[i]?.fromYear + 1}年${String(startD.month).padStart(2,'0')}月${String(startD.day).padStart(2,'0')}日`
+        : `${segs[i]?.fromYear}年${String(startD.month).padStart(2,'0')}月${String(startD.day).padStart(2,'0')}日`
+      if (v !== '' && !wdValid[i]) h.push(`${yearLabel}应为 ${WD[target]}`)
     })
     return h
-  }, [segs, answers, correctPlus, wdInputs, wdValid, correctWds])
+  }, [segs, answers, correctPlus, wdInputs, wdValid, correctWds, mode, startD])
 
   if (n === 0) return (
     <div className="text-slate-400 text-sm text-center py-8" style={{ fontFamily: FONT }}>
@@ -601,18 +615,27 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
   const rows: React.ReactNode[] = []
 
   for (let i = 0; i < n; i++) {
-    const yearLabel = formatYearDate(segs[i].fromYear)
+    const yearLabel = formatYearDate(segs[i].fromYear, startD.month, startD.day)
     // Date + weekday row
     rows.push(
       <div key={`date-${i}`} className="flex items-center" style={{ gap: COL_GAP }}>
         <DateBox label={yearLabel} isFixed={i === 0} />
-        <WeekdayPill
-          fixedLabel={i === 0 ? WD[startWeekday] : undefined}
-          value={i === 0 ? undefined : wdInputs[i - 1]}
-          onChange={i === 0 ? undefined : v => patchWd(i - 1, v)}
-          correct={i === 0 ? true : (wdValid[i - 1] && wdInputs[i - 1] !== '')}
-          wrong={i > 0 && wdInputs[i - 1] !== '' && !wdValid[i - 1]}
-        />
+        {mode === 'forward' ? (
+          <WeekdayPill
+            fixedLabel={i === 0 ? WD[startWeekday!] : undefined}
+            value={i === 0 ? undefined : wdInputs[i - 1]}
+            onChange={i === 0 ? undefined : v => patchWd(i - 1, v)}
+            correct={i === 0 ? true : (wdValid[i - 1] && wdInputs[i - 1] !== '')}
+            wrong={i > 0 && wdInputs[i - 1] !== '' && !wdValid[i - 1]}
+          />
+        ) : (
+          <WeekdayPill
+            value={wdInputs[i]}
+            onChange={v => patchWd(i, v)}
+            correct={wdValid[i] && wdInputs[i] !== ''}
+            wrong={wdInputs[i] !== '' && !wdValid[i]}
+          />
+        )}
       </div>
     )
     // Arrow row
@@ -625,21 +648,26 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
         onPlusChange={v => patchAnswer(i, { plus: v })}
         correctDays={segs[i].days}
         correctPlus={correctPlus[i]}
+        direction={mode}
       />
     )
   }
 
-  // Final row: last date + weekday (auto-filled date, input weekday)
-  const finalYearLabel = formatYearDate(parseDate(endDate).year)
+  // Final row: last date + weekday
+  const finalYearLabel = formatYearDate(parseDate(endDate).year, startD.month, startD.day)
   rows.push(
     <div key="date-final" className="flex items-center" style={{ gap: COL_GAP }}>
       <DateBox label={finalYearLabel} isFixed={true} />
-      <WeekdayPill
-        value={wdInputs[n - 1]}
-        onChange={v => patchWd(n - 1, v)}
-        correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
-        wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
-      />
+      {mode === 'forward' ? (
+        <WeekdayPill
+          value={wdInputs[n - 1]}
+          onChange={v => patchWd(n - 1, v)}
+          correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
+          wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
+        />
+      ) : (
+        <WeekdayPill fixedLabel={WD[endWeekday!]} />
+      )}
     </div>
   )
 
@@ -665,12 +693,16 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
         style={{ fontFamily: FONT }}
       >
         {allYearOk && !needsMonthTail
-          ? `✓ 全部正确！${endDate.replace(/-/g, '')} 是 ${WD[correctWds[n]]}`
+          ? mode === 'forward'
+            ? `✓ 全部正确！${endDate.replace(/-/g, '')} 是 ${WD[correctWds[n]]}`
+            : `✓ 全部正确！${startDate.replace(/-/g, '')} 是 ${WD[correctWds[0]]}`
           : allYearOk && needsMonthTail
           ? `✓ 跨年部分正确，${yearEndDate.replace(/-/g, '')} 是 ${WD[finalYearWd]}，继续完成跨月计算 ↓`
           : hints.length
           ? `✗ ${hints.slice(0, 2).join('；')}`
-          : '填入每行天数（365/366）、余数（+N）、各节点星期（1–7）'}
+          : mode === 'forward'
+            ? '填入每行天数（365/366）、余数（+N）、各节点星期（1–7）'
+            : '已知终点星期，从下往上倒推：填入天数、余数（−N）、各节点星期（1–7）'}
       </div>
 
       {/* Reset */}
@@ -688,7 +720,13 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
           <MonthTail
             startDate={yearEndDate}
             endDate={endDate}
-            startWeekday={finalYearWd}
+            startWeekday={
+              mode === 'backward'
+                ? finalYearWd  // backward: yearEndDate weekday is the fixed endWeekday prop
+                : (wdInputs[n - 1] !== '' && +wdInputs[n - 1] >= 1 && +wdInputs[n - 1] <= 7
+                    ? (+wdInputs[n - 1] as 1|2|3|4|5|6|7)
+                    : finalYearWd)
+            }
           />
         </div>
       )}
