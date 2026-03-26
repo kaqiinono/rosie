@@ -89,6 +89,11 @@ export interface Problem {
   hasBlocks?: boolean
   blockScene?: BlockScene
   dualSc?: DualSceneConfig
+  startDate?: string
+  endDate?: string
+  startWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  endWeekday?: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  totalDays?: 28 | 29 | 30 | 31
   finalQ: string
   finalUnit: string
   finalAns: number

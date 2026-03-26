@@ -6,6 +6,11 @@ import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson36-data'
 import { useLesson36 } from './Lesson36Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import Days from './WeekdayFlowChart/Days'
+import Month from './WeekdayFlowChart/Month'
+import Year from './WeekdayFlowChart/Year'
+import MonthCalendarPuzzle from './WeekdayFlowChart/MonthCalendarPuzzle'
+import MonthCalendarPuzzleSum from './WeekdayFlowChart/MonthCalendarPuzzleSum'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -13,6 +18,57 @@ interface ProblemDetailProps {
   tip?: string
   leftDiagram?: React.ReactNode
   rightDiagram?: React.ReactNode
+}
+
+const VALID_TOTAL_DAYS = new Set([28, 29, 30, 31])
+
+function buildFlowChart(
+  problem: Problem,
+  manualTotalDays: string,
+  setManualTotalDays: (v: string) => void,
+): React.ReactNode {
+  const { tag, startDate, endDate, startWeekday, endWeekday } = problem
+
+  if (tag === 'type5' || tag === 'type6') {
+    const CalendarComp = tag === 'type6' ? MonthCalendarPuzzleSum : MonthCalendarPuzzle
+    const fixed = problem.totalDays
+    if (fixed) {
+      return <CalendarComp totalDays={fixed} />
+    }
+    // totalDays must be derived by the student
+    const parsed = parseInt(manualTotalDays, 10)
+    const resolved = VALID_TOTAL_DAYS.has(parsed) ? (parsed as 28 | 29 | 30 | 31) : undefined
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2 rounded-lg border border-border-light bg-[#f9fafb] px-3.5 py-2.5">
+          <span className="text-sm text-text-secondary">这个月有几天？</span>
+          <input
+            type="number"
+            min={28}
+            max={31}
+            className="w-16 rounded-lg border border-border-light px-2 py-1.5 text-center text-sm"
+            placeholder="28~31"
+            value={manualTotalDays}
+            onChange={e => setManualTotalDays(e.target.value)}
+          />
+          <span className="text-sm text-text-secondary">天</span>
+        </div>
+        {resolved && <CalendarComp totalDays={resolved} />}
+      </div>
+    )
+  }
+
+  if (!startDate || !endDate || (!startWeekday && !endWeekday)) return null
+  if (tag === 'type1') {
+    return <Days startDate={startDate} endDate={endDate} startWeekday={startWeekday} endWeekday={endWeekday} />
+  }
+  if (tag === 'type2') {
+    return <Month startDate={startDate} endDate={endDate} startWeekday={startWeekday} endWeekday={endWeekday} />
+  }
+  if (tag === 'type3' || tag === 'type4') {
+    return <Year startDate={startDate} endDate={endDate} startWeekday={startWeekday} endWeekday={endWeekday} />
+  }
+  return null
 }
 
 export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram, rightDiagram }: ProblemDetailProps) {
@@ -23,10 +79,12 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
 
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
+  const [manualTotalDays, setManualTotalDays] = useState('')
 
   useEffect(() => {
     setAnswer('')
     setFeedback(null)
+    setManualTotalDays('')
   }, [problem.id])
 
   function checkAnswer() {
@@ -40,6 +98,10 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
       addWrong(problem.id)
     }
   }
+
+  const autoLeftDiagram = mode === 'full'
+    ? buildFlowChart(problem, manualTotalDays, setManualTotalDays)
+    : null
 
   return (
     <div>
@@ -87,8 +149,8 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
             </ul>
           </div>
 
-          {/* Custom left diagram */}
-          {leftDiagram}
+          {/* Flow chart diagram */}
+          {leftDiagram ?? autoLeftDiagram}
         </div>
 
         {/* Right column */}

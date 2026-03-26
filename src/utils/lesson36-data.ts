@@ -23,6 +23,7 @@ const LESSON: Problem[] = [
       '星期二→星期三',
     ],
     type: 'none',
+    startDate: '2026-02-03', endDate: '2026-02-25', startWeekday: 2,
     finalQ: '2月25日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 3,
   },
   {
@@ -35,6 +36,7 @@ const LESSON: Problem[] = [
       '80÷7=11余3，星期六往后推3天=星期二',
     ],
     type: 'none',
+    startDate: '2026-04-04', endDate: '2026-06-23', startWeekday: 6,
     finalQ: '6月23日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 2,
   },
   {
@@ -47,6 +49,7 @@ const LESSON: Problem[] = [
       '2025年（平年）+1 → 2026元旦=周四',
     ],
     type: 'none',
+    startDate: '2023-01-01', endDate: '2026-01-01', startWeekday: 7,
     finalQ: '2026年1月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -59,6 +62,7 @@ const LESSON: Problem[] = [
       '星期六往后推2天：星期六→日→一=星期一',
     ],
     type: 'none',
+    startDate: '2021-12-18', endDate: '2026-01-05', startWeekday: 6,
     finalQ: '2026年1月5日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 1,
   },
   {
@@ -72,6 +76,7 @@ const LESSON: Problem[] = [
       '29=三，30=四，31=五，即31日是星期五',
     ],
     type: 'none',
+    totalDays: 31,
     finalQ: '这个月的31日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
   },
   {
@@ -99,6 +104,7 @@ const HOMEWORK: Problem[] = [
       '星期三往后推6天：三→四→五→六→日→一→二=星期二',
     ],
     type: 'none',
+    startDate: '2025-01-01', endDate: '2025-04-01', startWeekday: 3,
     finalQ: '该年4月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 2,
   },
   {
@@ -110,6 +116,7 @@ const HOMEWORK: Problem[] = [
       '星期一往后推4天：一→二→三→四→五=星期五',
     ],
     type: 'none',
+    startDate: '2008-03-03', endDate: '2008-08-08', startWeekday: 1,
     finalQ: '8月8日奥运会是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
   },
   {
@@ -122,6 +129,7 @@ const HOMEWORK: Problem[] = [
       '2025年（平年）+1 → 2026元旦=周四',
     ],
     type: 'none',
+    startDate: '2022-01-01', endDate: '2026-01-01', startWeekday: 6,
     finalQ: '2026年元旦是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -134,6 +142,7 @@ const HOMEWORK: Problem[] = [
       '星期五往后推6天：五→六→日→一→二→三→四=星期四',
     ],
     type: 'none',
+    startDate: '2025-08-08', endDate: '2026-10-01', startWeekday: 5,
     finalQ: '2026年10月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -159,6 +168,7 @@ const HOMEWORK: Problem[] = [
       '20日=1日+19天，19÷7=2余5，六往后推5天=星期四',
     ],
     type: 'none',
+    totalDays: 31,
     finalQ: '该月20日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
 ]
@@ -169,6 +179,7 @@ const WORKBOOK: Problem[] = [
     text: '纳纳的生日是<strong>6月27日</strong>，这一年的<strong>6月1日是星期六</strong>，纳纳的生日是星期几呢？',
     analysis: ['27-1=26天后', '26÷7=3余5', '星期六往后推5天：六→日→一→二→三→四=星期四'],
     type: 'none',
+    startDate: '2026-06-01', endDate: '2026-06-27', startWeekday: 6,
     finalQ: '6月27日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -176,6 +187,7 @@ const WORKBOOK: Problem[] = [
     text: '2026年<strong>6月19日</strong>是星期五，则2026年9月19日是星期几？',
     analysis: ['6月19日→9月19日：(30-19)+31+31+19=92天', '92÷7=13余1', '星期五往后推1天=星期六'],
     type: 'none',
+    startDate: '2026-06-19', endDate: '2026-09-19', startWeekday: 5,
     finalQ: '9月19日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 6,
   },
   {
@@ -188,6 +200,7 @@ const WORKBOOK: Problem[] = [
       '669÷7=95余4，星期日往后推4天：日→一→二→三→四=星期四',
     ],
     type: 'none',
+    startDate: '2024-12-01', endDate: '2026-10-01', startWeekday: 7,
     finalQ: '2026年10月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -199,6 +212,7 @@ const WORKBOOK: Problem[] = [
       '2020年（闰年）+2 → 2021元旦=周五',
     ],
     type: 'none',
+    startDate: '2018-01-01', endDate: '2021-01-01', startWeekday: 1,
     finalQ: '2021年元旦是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
   },
   {
@@ -210,6 +224,7 @@ const WORKBOOK: Problem[] = [
       '星期四+0=星期四',
     ],
     type: 'none',
+    startDate: '2022-12-08', endDate: '2023-06-01', startWeekday: 4,
     finalQ: '2023年6月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -221,6 +236,7 @@ const WORKBOOK: Problem[] = [
       '767÷7=109余4，星期四往后推4天=星期一',
     ],
     type: 'none',
+    startDate: '2015-01-01', endDate: '2017-02-05', startWeekday: 4,
     finalQ: '2017年2月5日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 1,
   },
   {
@@ -234,6 +250,7 @@ const WORKBOOK: Problem[] = [
       '4月1日=星期六',
     ],
     type: 'none',
+    totalDays: 30,
     finalQ: '4月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 6,
   },
   {
@@ -260,6 +277,7 @@ const WORKBOOK: Problem[] = [
       '15日=1日+14天=四（14=2×7，星期不变）=星期四',
     ],
     type: 'none',
+    totalDays: 31,
     finalQ: '该月15日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -311,6 +329,7 @@ const PRETEST: Problem[] = [
       '星期四+0=星期四',
     ],
     type: 'none',
+    startDate: '2024-09-05', endDate: '2024-11-14', startWeekday: 4,
     finalQ: '11月14日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
@@ -323,6 +342,7 @@ const PRETEST: Problem[] = [
       '2022年3月22日是星期二，往前推6天：二→一→日→六→五→四→三=星期三',
     ],
     type: 'none',
+    startDate: '2021-03-31', endDate: '2022-03-22', endWeekday: 2,
     finalQ: '2021年3月31日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 3,
   },
   {
@@ -334,6 +354,7 @@ const PRETEST: Problem[] = [
       '2024年（闰年）+2 → 2025年4月1日=星期二',
     ],
     type: 'none',
+    startDate: '2022-04-01', endDate: '2025-04-01', startWeekday: 5,
     finalQ: '2025年4月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 2,
   },
   {
@@ -359,6 +380,7 @@ const PRETEST: Problem[] = [
       '16日=1日+15天，15÷7=2余1，星期四+1=星期五',
     ],
     type: 'none',
+    totalDays: 31,
     finalQ: '这个月的16日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
   },
 ]
