@@ -8,6 +8,7 @@ const LeftDiagram=()=>{
   return <>
     <Days startWeekday={1} startDate={'2021-04-21'} endDate={'2021-04-30'} />
     <Month startWeekday={1} startDate={'2021-04-21'} endDate={'2021-08-30'} />
+    <Month endWeekday={1} startDate={'2021-04-21'} endDate={'2021-08-30'} />
     <Year startWeekday={1} startDate={'2021-04-21'} endDate={'2028-08-30'} />
   </>
 }
