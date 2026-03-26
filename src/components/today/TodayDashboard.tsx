@@ -243,22 +243,15 @@ export default function TodayDashboard() {
       {/* English section */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h2
-            className="text-[15px] font-extrabold flex items-center gap-2"
-            style={{ color: '#0f172a' }}
-          >
-            <span
-              className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm"
-              style={{ background: 'linear-gradient(135deg, #0d9488, #10b981)', boxShadow: '0 3px 10px rgba(13,148,136,.3)' }}
-            >
+          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-teal-600 to-emerald-500 shadow-[0_3px_10px_rgba(13,148,136,.3)]">
               📖
             </span>
             英语单词预习
           </h2>
           <Link
             href="/english/words/daily"
-            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70"
-            style={{ color: '#0d9488' }}
+            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
           >
             前往练习 →
           </Link>
@@ -307,22 +300,15 @@ export default function TodayDashboard() {
       {/* Math section */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2
-            className="text-[15px] font-extrabold flex items-center gap-2"
-            style={{ color: '#0f172a' }}
-          >
-            <span
-              className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm"
-              style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)', boxShadow: '0 3px 10px rgba(249,115,22,.3)' }}
-            >
+          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-orange-500 to-amber-400 shadow-[0_3px_10px_rgba(249,115,22,.3)]">
               📐
             </span>
             今日数学题目
           </h2>
           <Link
             href="/math/ny/daily"
-            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70"
-            style={{ color: '#ea580c' }}
+            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
           >
             前往做题 →
           </Link>

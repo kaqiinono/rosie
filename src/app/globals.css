@@ -59,6 +59,17 @@
   --color-text-secondary: #64748b;
   --color-text-muted: #94a3b8;
 
+  /* Border-radius scale — use these when creating new components */
+  --radius-sm: 8px;    /* pill badges, small chips */
+  --radius-md: 10px;   /* inline cards, small panels */
+  --radius-lg: 12px;   /* problem cards, list items */
+  --radius-xl: 16px;   /* section cards, modals */
+  --radius-2xl: 20px;  /* module/course cards (primary card size) */
+
+  /* Standard easing */
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-out: cubic-bezier(.4, 0, .2, 1);
+
   --animate-wave: wave 2.5s ease-in-out infinite;
   --animate-bounce-slow: bounce-slow 2s ease-in-out infinite;
   --animate-orb-float: orb-float 18s ease-in-out infinite alternate;

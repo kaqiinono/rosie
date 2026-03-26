@@ -46,7 +46,7 @@ export default function AppHeader({ problems }: AppHeaderProps) {
             h-8 w-8
             sm:h-auto sm:w-auto sm:gap-1 sm:px-3 sm:py-1.5"
         >
-          <span className="text-[13px] font-semibold leading-none">←</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
           <span className="hidden sm:inline text-[12px] font-medium">课程列表</span>
         </Link>
 

@@ -110,17 +110,18 @@ const ExpandedCard = memo(function ExpandedCard({
             >
               {p.tagLabel}
             </span>
-            <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
+            <span className="rounded-full bg-purple-100 px-2 py-px text-[10px] font-semibold text-purple-800">
               {srcLabel}
             </span>
           </div>
         </div>
         <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
-        <span
-          className={`shrink-0 text-[13px] font-bold text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        <svg
+          className={`shrink-0 w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
         >
-          ▼
-        </span>
+          <path d="m6 9 6 6 6-6" />
+        </svg>
       </button>
 
       {/* Detail body — only mounted when open */}
@@ -170,12 +171,12 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
   return (
     <div>
       {/* Filter header */}
-      <div className="mb-3 rounded-[14px] border border-[#e879f9] bg-gradient-to-br from-[#fdf4ff] to-[#f3e8ff] p-4">
-        <div className="mb-1.5 text-[15px] font-extrabold text-[#7e22ce]">🎯 综合测试题库</div>
-        <div className="mb-2.5 text-xs text-[#6b21a8]">全部29道题 · 多选筛选 · 按题型/来源练习</div>
+      <div className="mb-3 rounded-[14px] border border-fuchsia-400 bg-gradient-to-br from-purple-50 to-purple-100 p-4">
+        <div className="mb-1.5 text-[15px] font-extrabold text-purple-800">🎯 综合测试题库</div>
+        <div className="mb-2.5 text-xs text-purple-900">全部29道题 · 多选筛选 · 按题型/来源练习</div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">📂 来源筛选（可多选）</div>
+          <div className="mb-1.5 text-[11px] font-bold text-purple-900">📂 来源筛选（可多选）</div>
           <div className="flex flex-wrap gap-1.5">
             {SOURCE_BTNS.map(b => (
               <button
@@ -183,8 +184,8 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
                 onClick={() => onToggleFilter('source', b.key)}
                 className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
                   filters.source.has(b.key)
-                    ? 'border-[#a855f7] bg-[#a855f7] text-white'
-                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+                    ? 'border-purple-500 bg-purple-500 text-white'
+                    : 'border-purple-300 bg-purple-50 text-purple-800'
                 }`}
               >
                 {b.label}
@@ -194,7 +195,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🏷️ 题型筛选（可多选）</div>
+          <div className="mb-1.5 text-[11px] font-bold text-purple-900">🏷️ 题型筛选（可多选）</div>
           <div className="flex flex-wrap gap-1.5">
             {TYPE_BTNS.map(b => (
               <button
@@ -202,8 +203,8 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
                 onClick={() => onToggleFilter('type', b.key)}
                 className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
                   filters.type.has(b.key)
-                    ? 'border-[#a855f7] bg-[#a855f7] text-white'
-                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+                    ? 'border-purple-500 bg-purple-500 text-white'
+                    : 'border-purple-300 bg-purple-50 text-purple-800'
                 }`}
               >
                 {b.label}
@@ -213,7 +214,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🎯 掌握度筛选</div>
+          <div className="mb-1.5 text-[11px] font-bold text-purple-900">🎯 掌握度筛选</div>
           <div className="flex flex-wrap gap-1.5">
             {MASTERY_BTNS.map(b => (
               <button
@@ -221,8 +222,8 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
                 onClick={() => onSetMastery(b.key)}
                 className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
                   filters.mastery === b.key
-                    ? 'border-[#a855f7] bg-[#a855f7] text-white'
-                    : 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+                    ? 'border-purple-500 bg-purple-500 text-white'
+                    : 'border-purple-300 bg-purple-50 text-purple-800'
                 }`}
               >
                 {b.label}
@@ -232,21 +233,21 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mt-2 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] text-[#6b21a8]">
-            <span>练过 <strong className="text-[#7e22ce]">{attempted}</strong> 道</span>
-            <span className="text-[#c4b5fd]">·</span>
-            <span>🦋 掌握 <strong className="text-[#7e22ce]">{mastered}</strong> 道</span>
-            <span className="text-[#c4b5fd]">·</span>
+          <div className="flex items-center gap-1.5 text-[11px] text-purple-900">
+            <span>练过 <strong className="text-purple-800">{attempted}</strong> 道</span>
+            <span className="text-purple-300">·</span>
+            <span>🦋 掌握 <strong className="text-purple-800">{mastered}</strong> 道</span>
+            <span className="text-purple-300">·</span>
             <span>共 {total} 题</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-[#e9d5ff]">
+            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-purple-200">
               <div
-                className="absolute inset-y-0 left-0 rounded-full bg-[#c4b5fd] transition-[width] duration-400"
+                className="absolute inset-y-0 left-0 rounded-full bg-purple-300 transition-[width] duration-400"
                 style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }}
               />
               <div
-                className="absolute inset-y-0 left-0 rounded-full bg-[#a855f7] transition-[width] duration-400"
+                className="absolute inset-y-0 left-0 rounded-full bg-purple-500 transition-[width] duration-400"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -254,8 +255,8 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
               onClick={toggleDetailMode}
               className={`shrink-0 cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
                 showDetail
-                  ? 'border-[#a855f7] bg-[#a855f7] text-white'
-                  : 'border-[#d8b4fe] bg-white text-[#7e22ce]'
+                  ? 'border-purple-500 bg-purple-500 text-white'
+                  : 'border-purple-300 bg-white text-purple-800'
               }`}
             >
               {showDetail ? '收起 ↑' : '展开 ↓'}
@@ -310,7 +311,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
                     >
                       {p.tagLabel}
                     </span>
-                    <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
+                    <span className="rounded-full bg-purple-100 px-2 py-px text-[10px] font-semibold text-purple-800">
                       {srcLabel}
                     </span>
                   </div>
