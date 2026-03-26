@@ -222,7 +222,7 @@ const ArrowSection = memo(({
   )
 
   return (
-    <div className={`flex ${direction === 'backward' ? 'flex-col-reverse' : 'flex-col'}`} style={{ height: ARROW_H }}>
+    <div className="flex" style={{ height: ARROW_H }}>
       {/* Days column */}
       <div
         className="flex flex-col items-center justify-center gap-0.5"
