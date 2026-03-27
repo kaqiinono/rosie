@@ -211,13 +211,20 @@ export default function MonthCalendarPuzzle({ totalDays = 31 }: Props) {
 
       {/* ══ 日历卡片：星期胶囊 + 格子，是一个整体 ══ */}
       <div
-        className="rounded-3xl bg-white/70 backdrop-blur-sm flex flex-col"
+        className="relative rounded-3xl bg-white/70 backdrop-blur-sm flex flex-col"
         style={{
           padding: "16px",
           gap: "0",
           boxShadow: "0 4px 24px 0 rgba(0,0,0,0.10), 0 1px 4px 0 rgba(0,0,0,0.06)",
         }}
       >
+        <button
+          onClick={handleReset}
+          className="absolute top-2.5 right-2.5 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-gray-100/80 text-sm text-gray-400 transition-all hover:bg-red-50 hover:text-red-400 active:scale-95"
+          title="清空"
+        >
+          ↺
+        </button>
         {/* 星期标题行 */}
         <div className="flex gap-2">
           {Array.from({ length: 7 }, (_, col) => (
@@ -280,16 +287,6 @@ export default function MonthCalendarPuzzle({ totalDays = 31 }: Props) {
           <SumCell key={col} col={col} sum={colSums[col]} />
         ))}
       </div>
-
-      {/* ── 重置按钮 ── */}
-      <button
-        onClick={handleReset}
-        className="mt-1 px-4 py-1.5 rounded-full text-xs font-semibold
-          bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-400
-          transition-colors border border-gray-200"
-      >
-        清空
-      </button>
 
       {/* ── 提示 ── */}
       {values[0] === "" && (

@@ -55,11 +55,11 @@ The `AuthContext` (`src/contexts/AuthContext.tsx`) wraps the entire app and expo
 
 - `AuthContext` — Supabase auth session, sign in/up/out
 - `WordsContext` — aggregates vocab (`useWordData`), mastery (`useWordMastery`), and filter state for the English module. All English sub-pages consume this context via `useWords()`.
-- `Lesson35Provider` / `Lesson36Provider` — per-lesson context for math problem solving state (solved set, wrong-answer set, toast, congrats modal)
+- `Lesson34Provider` / `Lesson35Provider` / `Lesson36Provider` — per-lesson context for math problem solving state (solved set, wrong-answer set, toast, congrats modal). All three are created via `createLessonProvider` factory in `src/components/math/shared/createLessonProvider.tsx`
 
 ### Math Module
 
-Each lesson (`35`, `36`) follows the same structure:
+Each lesson (`34`, `35`, `36`) follows the same structure:
 
 ```
 /math/ny/{lessonId}/                     # lesson hub (HomePage component)
@@ -73,11 +73,18 @@ Each lesson (`35`, `36`) follows the same structure:
 /math/ny/{lessonId}/magic/               # weekday drill (lesson 36 only)
 ```
 
-Problem data lives in `src/utils/lesson35-data.ts` and `src/utils/lesson36-data.ts` as `ProblemSet` objects (`pretest`, `lesson`, `homework`, `workbook` arrays of `Problem`).
+Problem data lives in `src/utils/lesson34-data.ts`, `src/utils/lesson35-data.ts`, and `src/utils/lesson36-data.ts` as `ProblemSet` objects (`pretest`, `lesson`, `homework`, `workbook` arrays of `Problem`).
 
-The `Problem` type (`src/utils/type.ts`) supports interactive diagrams via `type: 'ratio3' | 'ratio3b' | 'none'`, `blockScene`, and `dualSc` fields — these drive `RatioDiagram`, `BlockDiagram`, and `DualBlockDiagram` components.
+The `Problem` type (`src/utils/type.ts`) supports interactive diagrams via `type: 'ratio3' | 'ratio3b' | 'none'`, `blockScene`, and `dualSc` fields — these drive `RatioDiagram`, `BlockDiagram`, and `DualBlockDiagram` components (lesson 35 only).
 
-Lesson 34 (`/math/ny/34`) is a standalone interactive demo (distributive law), not part of the lesson35/36 system.
+**Shared math components** (`src/components/math/shared/`) eliminate duplication across lessons:
+- `createLessonProvider.tsx` — factory that creates context + provider + hook for each lesson
+- `LessonAppHeader.tsx` — configurable header with back button, logo, progress chip, nav links
+- `LessonBottomNav.tsx` — configurable mobile bottom navigation
+- `LessonSidebar.tsx` — configurable sidebar with sections, collapse state, and optional extra links
+- `LessonProblemList.tsx` — configurable problem list grid with mastery indicators and tag filtering
+
+Each lesson directory (`lesson34/`, `lesson35/`, `lesson36/`) re-exports thin wrappers around these shared components, passing lesson-specific config (colors, labels, paths). Only `ProblemDetail` and `HomePage` remain per-lesson since they have significantly different visual content.
 
 ### English Module
 
@@ -146,4 +153,4 @@ Both math and English have a weekly plan system with the same Thursday-start wee
 
 - Components: `PascalCase.tsx` (e.g. `FlashCard.tsx`)
 - Hooks and utilities: `camelCase.ts` (e.g. `useWordMastery.ts`, `english-helpers.ts`)
-- All shared constants (including `STORAGE_KEYS`) live in `src/utils/constant.ts`
+- All shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `src/utils/constant.ts`

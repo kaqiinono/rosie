@@ -3,11 +3,7 @@
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
-
-function todayStr() {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
+import { todayStr } from '@/utils/constant'
 
 const LESSON_INFO: Record<string, { emoji: string; short: string }> = {
   '35': { emoji: '🐦', short: '归一问题' },
@@ -57,7 +53,11 @@ export default function MathDailyCard() {
             )}
           </div>
           <div className="flex items-center gap-1 text-[12px] font-bold text-orange-500 transition-transform group-hover:translate-x-0.5">
-            {isLoading ? '…' : weeklyPlan ? (allDone ? '✅ 完成！' : `去做题`) : '新建计划'}
+            {(() => {
+              if (isLoading) return '…'
+              if (!weeklyPlan) return '新建计划'
+              return allDone ? '✅ 完成！' : '去做题'
+            })()}
             <span className="text-[14px]">→</span>
           </div>
         </div>

@@ -16,22 +16,11 @@ export interface MonthlyWeekdayFlowChartProps {
 const WD = ['', '周一', '周二', '周三', '周四', '周五', '周六', '周日'] as const
 const FONT = "'PingFang SC','Microsoft YaHei',sans-serif"
 
-// Vertical layout (px) — three rows: date label, days pill, weekday pill
-const LBL_H  = 30   // date label row
-const GAP1   = 10   // label → days pill
-const PILL_H = 38   // days pill row
-const GAP2   = 26   // days pill → weekday pill (gap column puts +r here)
-const WD_H   = 36   // weekday pill row
-const BELOW_H = 22  // below weekday pill for ÷7 label
-
-const WD_Y     = LBL_H + GAP1 + PILL_H + GAP2  // top of weekday row = 104
-const WD_MID_Y = WD_Y + WD_H / 2               // arrow center = 122
-const CELL_H   = WD_Y + WD_H + BELOW_H         // total cell height = 162
-
-// Horizontal widths
-const COL_W = 90   // segment column (date + days + weekday)
-const GAP_W = 80   // gap connector (arrow + labels)
-const END_W = 64   // end column (final weekday only)
+// Layout constants
+const LBL_H  = 30   // date label row height
+const PILL_H = 38   // days pill height
+const WD_H   = 36   // weekday pill height
+const COL_W  = 90   // weekday pill width = COL_W - 10
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function daysInMonth(year: number, month: number) {
@@ -182,126 +171,6 @@ const WdPill = memo(({
 })
 WdPill.displayName = 'WdPill'
 
-// ── SegCol: one column with date label, days pill, weekday pill ────────────
-// Layout: col-j aligns with node-j (weekday at start of segment j)
-// After crossing seg-j's days via the gap, we arrive at node-j+1
-const SegCol = memo(({
-  seg, answer, onAnswer, daysOk,
-  wdRole, wdFixed, wdValue, wdOnChange, wdCorrect, wdWrong,
-}: {
-  seg: Segment; answer: SegAnswer
-  onAnswer: (p: Partial<SegAnswer>) => void
-  daysOk: boolean
-  wdRole: WdRole; wdFixed?: string; wdValue?: string
-  wdOnChange?: (v: string) => void; wdCorrect?: boolean; wdWrong?: boolean
-}) => (
-  <div className="relative shrink-0" style={{width: COL_W, height: CELL_H}}>
-    {/* Row 1: Date label */}
-    <div className="absolute inset-x-0 flex justify-center items-center" style={{top: 0, height: LBL_H}}>
-      <DateLabel label={seg.label} isEndpoint={seg.isEndpoint}/>
-    </div>
-
-    {/* Row 2: Days pill */}
-    <div className="absolute inset-x-0 flex justify-center items-center" style={{top: LBL_H + GAP1, height: PILL_H}}>
-      <DaysPill
-        value={answer.days} onChange={v => onAnswer({days: v})}
-        isEndpoint={seg.isEndpoint}
-        correct={daysOk && answer.days !== ''}
-        wrong={answer.days !== '' && !daysOk}
-      />
-    </div>
-
-    {/* Row 3: Weekday pill */}
-    <div className="absolute inset-x-0 flex justify-center items-center" style={{top: WD_Y, height: WD_H}}>
-      <WdPill
-        role={wdRole} fixedLabel={wdFixed} value={wdValue}
-        onChange={wdOnChange} correct={wdCorrect} wrong={wdWrong}
-      />
-    </div>
-  </div>
-))
-SegCol.displayName = 'SegCol'
-
-// ── GapConnector: arrow between two weekday pills + +r and ÷7 labels ──────
-// Positioned between SegCol-j and SegCol-(j+1) (or EndCol)
-// The arrow is centered at WD_MID_Y to align with weekday pills in SegCols
-const GapConnector = memo(({
-  answer, onAnswer, direction = 'forward',
-}: {
-  answer: SegAnswer
-  onAnswer: (p: Partial<SegAnswer>) => void
-  direction?: 'forward' | 'backward'
-}) => {
-  const roseNum = 'bg-rose-50 text-rose-500 placeholder:text-rose-200'
-  const sign = direction === 'forward' ? '+' : '−'
-  return (
-    <div className="relative shrink-0" style={{width: GAP_W, height: CELL_H}}>
-      {/* "±r" — between days pill row and weekday row */}
-      <div
-        className="absolute inset-x-0 flex justify-center items-center gap-0.5"
-        style={{
-          top: WD_Y - 12, height: 20,
-          color: '#f43f5e', fontSize: 12, fontWeight: 700, fontFamily: FONT,
-        }}
-      >
-        <span>{sign}</span>
-        <Num value={answer.r} onChange={v => onAnswer({r: v})} width={26} cls={roseNum}/>
-      </div>
-
-      {/* Arrow line — at WD_MID_Y, pointing right (forward) or left (backward) */}
-      <div className="absolute inset-x-0 flex items-center" style={{top: WD_MID_Y - 1, height: 2}}>
-        {direction === 'forward' ? (
-          <>
-            <div className="flex-1 bg-slate-300" style={{height: 2}}/>
-            <svg width="9" height="9" viewBox="0 0 9 9" className="shrink-0 -ml-px">
-              <path d="M1 1.5L7.5 4.5L1 7.5" fill="none" stroke="#94a3b8"
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </>
-        ) : (
-          <>
-            <svg width="9" height="9" viewBox="0 0 9 9" className="shrink-0 -mr-px">
-              <path d="M8 1.5L1.5 4.5L8 7.5" fill="none" stroke="#94a3b8"
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <div className="flex-1 bg-slate-300" style={{height: 2}}/>
-          </>
-        )}
-      </div>
-
-      {/* "q周……r天" — just below weekday pill */}
-      <div
-        className="absolute inset-x-0 flex justify-center items-center gap-0.5"
-        style={{
-          top: WD_Y + WD_H - 10, height: BELOW_H,
-          color: '#fb7185', fontSize: 11, fontWeight: 700, fontFamily: FONT,
-        }}
-      >
-        <Num value={answer.q} onChange={v => onAnswer({q: v})} width={24} cls={roseNum}/>
-        <span>周</span>
-        <Num value={answer.r} onChange={v => onAnswer({r: v})} width={24} cls={roseNum}/>
-        <span>天</span>
-      </div>
-    </div>
-  )
-})
-GapConnector.displayName = 'GapConnector'
-
-// ── EndCol: final weekday pill only ───────────────────────────────────────
-const EndCol = memo(({
-  value, onChange, correct, wrong, fixedLabel,
-}: {
-  value?: string; onChange?: (v: string) => void; correct?: boolean; wrong?: boolean
-  fixedLabel?: string
-}) => (
-  <div className="relative shrink-0" style={{width: END_W, height: CELL_H}}>
-    <div className="absolute flex justify-center" style={{top: WD_Y, left: 0, right: 0}}>
-      <WdPill role="end" fixedLabel={fixedLabel} value={value} onChange={onChange} correct={correct} wrong={wrong}/>
-    </div>
-  </div>
-))
-EndCol.displayName = 'EndCol'
-
 // ── Main component ─────────────────────────────────────────────────────────
 const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, startWeekday, endWeekday}) => {
   const mode: 'forward' | 'backward' = startWeekday ? 'forward' : 'backward'
@@ -378,8 +247,7 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
     </div>
   )
 
-  // helpers shared by both layouts
-  // j = SegCol index (0..n-1); node j is the weekday pill shown in that column
+  // j = segment index (0..n-1); node j is the weekday pill shown in that row
   const wdProps = (j: number) => {
     if (mode === 'forward') {
       return {
@@ -407,50 +275,11 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
   return (
     <div className="flex flex-col items-center gap-4 w-full">
 
-      {/* ── Horizontal layout (md and above) ──────────────────────────────── */}
-      <div className="hidden md:block w-full bg-white rounded-2xl shadow-lg border border-slate-100 overflow-x-auto">
-        <div className="flex items-stretch py-5 px-4" style={{width: 'max-content', margin: '0 auto'}}>
-          {segs.map((seg, j) => {
-            const wp = wdProps(j)
-            return (
-              <React.Fragment key={j}>
-                <SegCol
-                  seg={seg}
-                  answer={answers[j]}
-                  onAnswer={p => patchAnswer(j, p)}
-                  daysOk={segValid[j].daysOk}
-                  wdRole={wp.role}
-                  wdFixed={wp.fixedLabel}
-                  wdValue={wp.value}
-                  wdOnChange={wp.onChange}
-                  wdCorrect={wp.correct}
-                  wdWrong={wp.wrong}
-                />
-                <GapConnector answer={answers[j]} onAnswer={p => patchAnswer(j, p)} direction={mode}/>
-              </React.Fragment>
-            )
-          })}
-          {mode === 'forward' ? (
-            <EndCol
-              value={wdInputs[n - 1]}
-              onChange={v => patchWd(n - 1, v)}
-              correct={wdValid[n - 1] && wdInputs[n - 1] !== ''}
-              wrong={wdInputs[n - 1] !== '' && !wdValid[n - 1]}
-            />
-          ) : (
-            <EndCol fixedLabel={WD[endWeekday!]}/>
-          )}
-        </div>
-      </div>
-
-      {/* ── Vertical layout (below md) ─────────────────────────────────────
-          3 columns: [date label] [days pill] [weekday pill + vertical arrows]
-          Arrow in col-3 gap rows: +r on left, ÷7 formula on right
-      ── */}
-      <div className="md:hidden w-full bg-white rounded-2xl shadow-lg border border-slate-100 overflow-x-auto">
+      {/* ── Layout: 3 columns [date label | days pill | weekday pill + arrows] ── */}
+      <div className="w-full bg-white rounded-2xl shadow-lg border border-slate-100">
         <div
-          className="grid p-4 gap-x-3"
-          style={{gridTemplateColumns: 'auto auto auto', width: 'max-content', margin: '0 auto'}}
+          className="grid p-4 gap-x-3 w-full"
+          style={{gridTemplateColumns: 'auto auto auto'}}
         >
           {segs.map((seg, j) => {
             const wp = wdProps(j)
@@ -534,10 +363,10 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
         </div>
       </div>
 
-      {/* Status bar */}
+      {/* Status bar + reset */}
       <div
         className={[
-          'w-full text-center py-3 px-6 rounded-xl text-sm font-semibold transition-all duration-300',
+          'w-full flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-300',
           allOk
             ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
             : hints.length
@@ -546,25 +375,25 @@ const Month: React.FC<MonthlyWeekdayFlowChartProps> = ({startDate, endDate, star
         ].join(' ')}
         style={{fontFamily: FONT}}
       >
-        {allOk
-          ? mode === 'forward'
-            ? `全部正确！结束日期是 ${WD[correctWds[n]]}`
-            : `全部正确！开始日期是 ${WD[correctWds[0]]}`
-          : hints.length
-            ? `✗ ${hints.slice(0, 2).join('；')}`
-            : mode === 'forward'
-              ? '填入红色胶囊（天数）、箭头上方（余数）、箭头下方（商和余数），以及各节点星期（1–7）'
-              : '已知结束日期星期，从右向左倒推：填入天数、减去余数、各节点星期（1–7）'}
+        <span className="flex-1">
+          {allOk
+            ? mode === 'forward'
+              ? `全部正确！结束日期是 ${WD[correctWds[n]]}`
+              : `全部正确！开始日期是 ${WD[correctWds[0]]}`
+            : hints.length
+              ? `✗ ${hints.slice(0, 2).join('；')}`
+              : mode === 'forward'
+                ? '填入红色胶囊（天数）、箭头上方（余数）、箭头下方（商和余数），以及各节点星期（1–7）'
+                : '已知结束日期星期，从右向左倒推：填入天数、减去余数、各节点星期（1–7）'}
+        </span>
+        <button
+          onClick={reset}
+          className="shrink-0 cursor-pointer rounded-full bg-white/50 px-2.5 py-0.5 text-[11px] font-medium hover:bg-white/80 transition-all active:scale-95"
+          style={{ border: '1px solid rgba(0,0,0,0.12)', fontFamily: FONT }}
+        >
+          ↺ 重置
+        </button>
       </div>
-
-      {/* Reset */}
-      <button
-        onClick={reset}
-        className="bg-slate-100 border border-slate-300 text-slate-600 rounded-lg px-7 py-2 text-sm font-medium hover:bg-slate-200 active:scale-95 transition-all"
-        style={{fontFamily: FONT}}
-      >
-        重置答案
-      </button>
     </div>
   )
 }

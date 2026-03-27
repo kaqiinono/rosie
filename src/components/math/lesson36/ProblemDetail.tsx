@@ -109,6 +109,7 @@ export default function ProblemDetail({
   const [manualTotalDays, setManualTotalDays] = useState('')
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswer('')
     setFeedback(null)
     setManualTotalDays('')
@@ -129,8 +130,7 @@ export default function ProblemDetail({
     }
   }
 
-  const autoLeftDiagram =
-    mode === 'full' ? buildFlowChart(problem, manualTotalDays, setManualTotalDays) : null
+  const autoLeftDiagram = buildFlowChart(problem, manualTotalDays, setManualTotalDays)
 
   return (
     <div>

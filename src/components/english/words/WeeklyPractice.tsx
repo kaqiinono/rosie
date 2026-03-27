@@ -18,6 +18,7 @@ import MasteryStatusPanel from './MasteryStatusPanel'
 import {useAuth} from '@/contexts/AuthContext'
 import {useWordMastery} from '@/hooks/useWordMastery'
 import {useWeeklyPlan} from '@/hooks/useWeeklyPlan'
+import {todayStr} from '@/utils/constant'
 
 interface WeeklyPracticeProps {
   vocab: WordEntry[]
@@ -49,11 +50,6 @@ function getWeekDayLabels(startDay: number): string[] {
 function fmtDate(dateStr: string): string {
   const [, m, d] = dateStr.split('-')
   return `${Number(m)}/${Number(d)}`
-}
-
-function todayStr(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 function fmtWeekRange(weekStart: string, startDay: number): string {

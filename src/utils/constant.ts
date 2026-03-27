@@ -43,5 +43,11 @@ export const SOURCE_LABELS: Record<string, string> = {
   supplement: '📒 补充题',
 }
 
+/** Returns today's date as YYYY-MM-DD. Used across math/english weekly planners. */
+export function todayStr(): string {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 export const PRICES = [5, 8, 10, 12, 15, 20, 25, 30, 50]
 export const SMALL_NUMS = [2, 3, 4, 5, 6, 7, 8, 9]

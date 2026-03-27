@@ -26,6 +26,17 @@ function formatDue(nextReviewDate: string | undefined, today: string) {
   return { label: `${diff}天后 (${dateStr})`, urgent: 'future' as const }
 }
 
+const DUE_STYLES: Record<string, string> = {
+  today: 'bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full',
+  tomorrow: 'bg-orange-50 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-full',
+  future: 'text-text-muted text-[10px] font-bold',
+  none: 'text-green-600 text-[10px] font-bold',
+}
+
+function DueLabel({ due }: { due: { label: string; urgent: string } }) {
+  return <span className={DUE_STYLES[due.urgent] ?? ''}>{due.label}</span>
+}
+
 export default function ProblemMasteryPanel({ problems, masteryMap }: Props) {
   const [open, setOpen] = useState(false)
   const today = new Date().toISOString().slice(0, 10)
@@ -120,18 +131,7 @@ export default function ProblemMasteryPanel({ problems, masteryMap }: Props) {
                         {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
                       </td>
                       <td className="px-3 py-2 text-center">
-                        {due.urgent === 'today' && (
-                          <span className="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
-                        )}
-                        {due.urgent === 'tomorrow' && (
-                          <span className="bg-orange-50 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
-                        )}
-                        {due.urgent === 'future' && (
-                          <span className="text-text-muted text-[10px] font-bold">{due.label}</span>
-                        )}
-                        {due.urgent === 'none' && (
-                          <span className="text-green-600 text-[10px] font-bold">{due.label}</span>
-                        )}
+                        <DueLabel due={due} />
                       </td>
                       <td className="px-4 py-2 text-center">
                         {graduated ? (

@@ -502,20 +502,24 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
           <Month startDate={startDate} endDate={endDate} startWeekday={startWeekday}  />
         </div>
       </div>
-      <div className={['w-full text-center py-2.5 px-6 rounded-xl text-sm font-semibold transition-all duration-300',
+      <div className={['w-full flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-300',
         allOk ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
           : hints.length ? 'bg-red-50 text-red-700 border border-red-200'
           : 'bg-slate-100 text-slate-500 border border-slate-200'].join(' ')}
         style={{ fontFamily: FONT }}>
-        {allOk ? `✓ 跨月计算正确！结束日期是 ${MONTH_WD[correctWds[n]]}`
-          : hints.length ? `✗ ${hints.slice(0, 2).join('；')}`
-          : '填入跨月各段天数、÷7商余、节点星期'}
+        <span className="flex-1">
+          {allOk ? `✓ 跨月计算正确！结束日期是 ${MONTH_WD[correctWds[n]]}`
+            : hints.length ? `✗ ${hints.slice(0, 2).join('；')}`
+            : '填入跨月各段天数、÷7商余、节点星期'}
+        </span>
+        <button
+          onClick={reset}
+          className="shrink-0 cursor-pointer rounded-full bg-white/50 px-2.5 py-0.5 text-[11px] font-medium hover:bg-white/80 transition-all active:scale-95"
+          style={{ border: '1px solid rgba(0,0,0,0.12)', fontFamily: FONT }}
+        >
+          ↺ 重置
+        </button>
       </div>
-      <button onClick={reset}
-        className="bg-slate-100 border border-slate-300 text-slate-600 rounded-lg px-6 py-1.5 text-sm font-medium hover:bg-slate-200 transition-all"
-        style={{ fontFamily: FONT }}>
-        重置跨月
-      </button>
     </div>
   )
 }
@@ -680,9 +684,9 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
         </div>
       </div>
 
-      {/* Status bar */}
+      {/* Status bar + reset */}
       <div
-        className={['w-full text-center py-3 px-6 rounded-xl text-sm font-semibold transition-all duration-300',
+        className={['w-full flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-300',
           allYearOk && !needsMonthTail
             ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
             : allYearOk && needsMonthTail
@@ -692,27 +696,27 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({ startDate, endDate, start
             : 'bg-slate-100 text-slate-500 border border-slate-200'].join(' ')}
         style={{ fontFamily: FONT }}
       >
-        {allYearOk && !needsMonthTail
-          ? mode === 'forward'
-            ? `✓ 全部正确！${endDate.replace(/-/g, '')} 是 ${WD[correctWds[n]]}`
-            : `✓ 全部正确！${startDate.replace(/-/g, '')} 是 ${WD[correctWds[0]]}`
-          : allYearOk && needsMonthTail
-          ? `✓ 跨年部分正确，${yearEndDate.replace(/-/g, '')} 是 ${WD[finalYearWd]}，继续完成跨月计算 ↓`
-          : hints.length
-          ? `✗ ${hints.slice(0, 2).join('；')}`
-          : mode === 'forward'
-            ? '填入每行天数（365/366）、余数（+N）、各节点星期（1–7）'
-            : '已知终点星期，从下往上倒推：填入天数、余数（−N）、各节点星期（1–7）'}
+        <span className="flex-1">
+          {allYearOk && !needsMonthTail
+            ? mode === 'forward'
+              ? `✓ 全部正确！${endDate.replace(/-/g, '')} 是 ${WD[correctWds[n]]}`
+              : `✓ 全部正确！${startDate.replace(/-/g, '')} 是 ${WD[correctWds[0]]}`
+            : allYearOk && needsMonthTail
+            ? `✓ 跨年部分正确，${yearEndDate.replace(/-/g, '')} 是 ${WD[finalYearWd]}，继续完成跨月计算 ↓`
+            : hints.length
+            ? `✗ ${hints.slice(0, 2).join('；')}`
+            : mode === 'forward'
+              ? '填入每行天数（365/366）、余数（+N）、各节点星期（1–7）'
+              : '已知终点星期，从下往上倒推：填入天数、余数（−N）、各节点星期（1–7）'}
+        </span>
+        <button
+          onClick={reset}
+          className="shrink-0 cursor-pointer rounded-full bg-white/50 px-2.5 py-0.5 text-[11px] font-medium hover:bg-white/80 transition-all active:scale-95"
+          style={{ border: '1px solid rgba(0,0,0,0.12)', fontFamily: FONT }}
+        >
+          ↺ 重置
+        </button>
       </div>
-
-      {/* Reset */}
-      <button
-        onClick={reset}
-        className="bg-slate-100 border border-slate-300 text-slate-600 rounded-lg px-7 py-2 text-sm font-medium hover:bg-slate-200 active:scale-95 transition-all"
-        style={{ fontFamily: FONT }}
-      >
-        重置答案
-      </button>
 
       {/* Cross-month tail — only when end date is NOT same month/day as start */}
       {needsMonthTail && (

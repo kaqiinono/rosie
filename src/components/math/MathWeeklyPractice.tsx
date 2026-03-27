@@ -10,6 +10,7 @@ import { buildMathWeeklyPlan, getMathReviewProblemsForDay, makeProblem } from '@
 import { useMathRotatingReview } from '@/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@/hooks/useMathWeeklyLessonReview'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
+import { todayStr } from '@/utils/constant'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@/utils/type'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -38,11 +39,6 @@ const SECTION_COLOR: Record<string, { bg: string; text: string; border: string }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function todayStr(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
 
 function fmtDate(dateStr: string): string {
   const [, m, d] = dateStr.split('-')

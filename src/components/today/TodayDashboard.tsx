@@ -5,12 +5,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useWordData } from '@/hooks/useWordData'
+import { todayStr } from '@/utils/constant'
 import type { WordEntry } from '@/utils/type'
-
-function todayStr(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
 
 function wordKeyStr(e: WordEntry): string {
   return `${e.unit}::${e.lesson}::${e.word}`
