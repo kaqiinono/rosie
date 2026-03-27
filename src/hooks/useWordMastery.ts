@@ -5,7 +5,7 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { getMasteryLevel, advanceStage, regressStage } from '@/utils/masteryUtils'
 import { wordKey } from '@/utils/english-helpers'
-import type { WordEntry, WordMasteryMap, WordMasteryInfo } from '@/utils/type'
+import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord } from '@/utils/type'
 
 export function useWordMastery(user: User | null) {
   const [masteryMap, setMasteryMap] = useState<WordMasteryMap>({})
@@ -15,7 +15,7 @@ export function useWordMastery(user: User | null) {
     void (async () => {
       const { data } = await supabase
         .from('word_mastery')
-        .select('word_key, correct, incorrect, last_seen, stage, next_review_date, is_hard')
+        .select('word_key, correct, incorrect, last_seen, stage, next_review_date, is_hard, review_history')
         .eq('user_id', user.id)
       if (!data) return
       const record: WordMasteryMap = {}
@@ -27,6 +27,7 @@ export function useWordMastery(user: User | null) {
           stage: row.stage ?? undefined,
           nextReviewDate: row.next_review_date ?? undefined,
           isHard: row.is_hard ?? undefined,
+          reviewHistory: (row.review_history as ReviewRecord[] | null) ?? [],
         }
       })
       setMasteryMap(record)
@@ -47,6 +48,7 @@ export function useWordMastery(user: User | null) {
           correct: isCorrect ? cur.correct + 1 : cur.correct,
           incorrect: isCorrect ? cur.incorrect : cur.incorrect + 1,
           lastSeen: today,
+          reviewHistory: [...(cur.reviewHistory ?? []), { date: today, correct: isCorrect }],
         }
       }
 
@@ -62,6 +64,7 @@ export function useWordMastery(user: User | null) {
           stage: updated.stage,
           next_review_date: updated.nextReviewDate ?? null,
           is_hard: updated.isHard ?? false,
+          review_history: next[key].reviewHistory ?? [],
           updated_at: new Date().toISOString(),
         }
       })

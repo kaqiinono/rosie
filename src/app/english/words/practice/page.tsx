@@ -72,7 +72,7 @@ export default function PracticePage() {
   const quizOptions = useMemo(() => {
     if (!quizQuestions[quizIndex]) return []
     const seed = quizIndex * 997 + quizQuestions.length
-    return buildQuizOptions(quizQuestions[quizIndex].word, filteredWords, seed)
+    return buildQuizOptions(quizQuestions[quizIndex].word, vocab, seed)
   }, [quizQuestions, quizIndex, filteredWords])
 
   const toggleUnit = useCallback((unit: string) => {

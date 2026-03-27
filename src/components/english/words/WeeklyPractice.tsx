@@ -16,7 +16,7 @@ import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import {useAuth} from '@/contexts/AuthContext'
-import {useWordMastery} from '@/hooks/useWordMastery'
+import {useWordsContext} from '@/contexts/WordsContext'
 import {useWeeklyPlan} from '@/hooks/useWeeklyPlan'
 import {todayStr} from '@/utils/constant'
 
@@ -63,7 +63,7 @@ function fmtWeekRange(weekStart: string, startDay: number): string {
 
 export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const {user} = useAuth()
-  const {masteryMap, recordBatch} = useWordMastery(user)
+  const {masteryMap, recordBatch} = useWordsContext()
   const {weeklyPlan, currentWeekStart, defaultParams, savePlan, updateDayProgress, isLoading} = useWeeklyPlan(user)
 
   const [isImmersive, setIsImmersive] = useState(false);
