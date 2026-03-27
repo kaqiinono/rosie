@@ -91,7 +91,7 @@ export const MASTERY_BADGE_BG: Record<MasteryLevel, string> = {
 }
 
 export const MASTERY_ICON: Record<MasteryLevel, string> = {
-  0: '›',
+  0: '',
   1: '🥚',
   2: '🐛',
   3: '🦋',
