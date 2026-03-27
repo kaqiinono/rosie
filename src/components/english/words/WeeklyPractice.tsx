@@ -11,7 +11,7 @@ import {
   highlightExample,
   wordKey,
 } from '@/utils/english-helpers'
-import {getMasteryLevel, MASTERY_ICON} from '@/utils/masteryUtils'
+import {getWordMasteryLevel, MASTERY_ICON} from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
@@ -519,7 +519,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {newWords.map(w => {
-                          const level = getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] text-[#fb923c] text-[.78rem] font-bold">
@@ -539,7 +539,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {weekReview.map(w => {
-                          const level = getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] text-[#93c5fd] text-[.78rem] font-bold">
@@ -559,7 +559,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {oldReview.map(w => {
-                          const level = getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(167,139,250,.35)] bg-[rgba(167,139,250,.08)] text-[#c4b5fd] text-[.78rem] font-bold">
@@ -815,7 +815,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
     const pct = total ? Math.round(score / total * 100) : 0
     const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪'
     const msg = pct >= 90 ? '完美！' : pct >= 70 ? '太棒了！' : pct >= 50 ? '不错哦！' : '继续加油！'
-    const masteredCount = words.filter(w => getMasteryLevel((masteryMap[`${w.entry.unit}::${w.entry.lesson}::${w.entry.word}`]?.correct ?? 0)) === 3).length
+    const masteredCount = words.filter(w => getWordMasteryLevel((masteryMap[`${w.entry.unit}::${w.entry.lesson}::${w.entry.word}`]?.correct ?? 0)) === 3).length
 
     return (
       <>

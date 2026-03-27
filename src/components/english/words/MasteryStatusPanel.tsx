@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import { wordKey } from '@/utils/english-helpers'
-import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@/utils/masteryUtils'
+import { ensureStageInit, isGraduated, MASTERY_ICON, getWordMasteryLevel } from '@/utils/masteryUtils'
 
 interface MasteryStatusPanelProps {
   vocab: WordEntry[]
@@ -100,7 +100,7 @@ export default function MasteryStatusPanel({ vocab, masteryMap }: MasteryStatusP
               </thead>
               <tbody>
                 {rows.map(({ w, m, graduated, due }) => {
-                  const level = getMasteryLevel(m.correct ?? 0)
+                  const level = getWordMasteryLevel(m.correct ?? 0)
                   return (
                     <tr
                       key={wordKey(w)}

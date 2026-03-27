@@ -76,6 +76,15 @@ export function getMasteryLevel(count: number): MasteryLevel {
   return 3
 }
 
+// English-specific mastery level — thresholds are higher because each practice
+// session records ~9 individual correct answers per word.
+export function getWordMasteryLevel(count: number): MasteryLevel {
+  if (count <= 0) return 0
+  if (count < 4) return 1
+  if (count < 9) return 2
+  return 3
+}
+
 export const MASTERY_BORDER: Record<MasteryLevel, string> = {
   0: 'border-transparent',
   1: 'border-amber-300',

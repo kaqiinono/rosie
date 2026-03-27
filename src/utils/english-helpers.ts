@@ -1,5 +1,5 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan } from './type'
-import { getMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD } from './masteryUtils'
+import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD } from './masteryUtils'
 import { KW_MAP } from './english-data'
 
 export function escHtml(s: string): string {
@@ -199,8 +199,8 @@ export function prioritizeReviews(
   const sorted = [...reviewIndices].sort((a, b) => {
     const ma = masteryMap[wordKey(vocab[a])] ?? { correct: 0, incorrect: 0, lastSeen: '' }
     const mb = masteryMap[wordKey(vocab[b])] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-    const la = getMasteryLevel(ma.correct)
-    const lb = getMasteryLevel(mb.correct)
+    const la = getWordMasteryLevel(ma.correct)
+    const lb = getWordMasteryLevel(mb.correct)
     // mastered words go last
     if (la === 3 && lb !== 3) return 1
     if (lb === 3 && la !== 3) return -1
@@ -268,7 +268,7 @@ export function getReviewWordsForDay(
       const k = wordKey(w)
       if (!thisWeekKeys.has(k)) return false
       const m = masteryMap[k]
-      return !m || (!isGraduated(m) && getMasteryLevel(m.correct ?? 0) < MASTERY_THRESHOLD)
+      return !m || (!isGraduated(m) && getWordMasteryLevel(m.correct ?? 0) < MASTERY_THRESHOLD)
     })
     .sort((a, b) => {
       const ma = masteryMap[wordKey(a)]?.correct ?? 0

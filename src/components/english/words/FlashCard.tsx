@@ -3,7 +3,7 @@
 import type { WordEntry, WordMasteryInfo } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
-import { getMasteryLevel, MASTERY_ICON, MASTERY_BORDER, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 
 interface FlashCardProps {
@@ -16,7 +16,7 @@ interface FlashCardProps {
 
 export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }: FlashCardProps) {
   const sz = getWordSizeClass(entry.word)
-  const level = getMasteryLevel(masteryInfo?.correct ?? 0)
+  const level = getWordMasteryLevel(masteryInfo?.correct ?? 0)
   const wordFontSize = {
     xl: 'text-[2.1rem]',
     lg: 'text-[1.85rem]',

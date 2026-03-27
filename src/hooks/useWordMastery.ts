@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { getMasteryLevel, advanceStage, regressStage } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, advanceStage, regressStage } from '@/utils/masteryUtils'
 import { wordKey } from '@/utils/english-helpers'
 import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord } from '@/utils/type'
 
@@ -80,7 +80,7 @@ export function useWordMastery(user: User | null) {
   }, [masteryMap])
 
   const isMastered = useCallback((entry: WordEntry): boolean => {
-    return getMasteryLevel(getMastery(entry).correct) === 3
+    return getWordMasteryLevel(getMastery(entry).correct) === 3
   }, [getMastery])
 
   return { masteryMap, recordBatch, getMastery, isMastered }
