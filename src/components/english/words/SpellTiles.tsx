@@ -102,14 +102,9 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
   const allFilled = placed.every(p => p !== null)
 
   // Responsive sizing based on word length
-  const tileSize =
-    totalLetters <= 8
-      ? 'w-10 h-10 text-[1.1rem]'
-      : totalLetters <= 12
-        ? 'w-8 h-8 text-[.95rem]'
-        : 'w-7 h-7 text-[.82rem]'
-  const tileGap = totalLetters <= 8 ? 'gap-1.5' : 'gap-1'
-  const placeholderSize = totalLetters <= 12 ? 'text-[.7rem]' : 'text-[.6rem]'
+  const tileSize = 'w-12 h-12 text-[1.1rem] sm:w-14 sm:h-14 sm:text-[1.25rem] md:w-16 md:h-16 md:text-[1.4rem]'
+  const tileGap = 'gap-2 sm:gap-2.5'
+  const placeholderSize = 'text-[.75rem]'
 
   const handlePoolTap = (letter: string) => {
     if (answered) return

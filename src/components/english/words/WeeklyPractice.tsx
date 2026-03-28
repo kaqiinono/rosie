@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useMemo, useCallback, useRef, useEffect} from 'react'
+import {useState, useMemo, useCallback, useRef} from 'react'
 import type {WordEntry, WeeklyPlan} from '@/utils/type'
 import {
   buildWeeklyPlan,
@@ -17,6 +17,7 @@ import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import {useAuth} from '@/contexts/AuthContext'
 import {useWordsContext} from '@/contexts/WordsContext'
+import {useImmersive} from '@/contexts/ImmersiveContext'
 import {useWeeklyPlan} from '@/hooks/useWeeklyPlan'
 import {todayStr} from '@/utils/constant'
 
@@ -66,19 +67,8 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const {masteryMap, recordBatch} = useWordsContext()
   const {weeklyPlan, currentWeekStart, defaultParams, savePlan, updateDayProgress, isLoading} = useWeeklyPlan(user)
 
-  const [isImmersive, setIsImmersive] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsImmersive(document.body.classList.contains('words-immersive'))
-    check()
-    const obs = new MutationObserver(check)
-    obs.observe(document.body, {attributes: true, attributeFilter: ['class']})
-    return () => obs.disconnect()
-  }, []);
-
-  const exitImmersive = useCallback(() => {
-    window.dispatchEvent(new Event('exit-words-immersive'))
-  }, [])
+  const {isImmersive, setIsImmersive} = useImmersive()
+  const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
 
   const [phase, setPhase] = useState<Phase>('setup')
   const [showParamsDialog, setShowParamsDialog] = useState(false)
@@ -184,7 +174,8 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
     setStudyDefOnly(false)
     setSelectedDate(dateStr)
     setPhase('study')
-  }, [enabledTypes, buildSessionWords])
+    setIsImmersive(true)
+  }, [enabledTypes, buildSessionWords, setIsImmersive])
 
   const startQuiz = useCallback(() => {
     const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
@@ -622,7 +613,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
               if (!todayInPlan) return null
               return (
                 <button
-                  onClick={() => setSelectedDate(today)}
+                  onClick={() => startStudy(today)}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[.65rem] font-extrabold bg-[rgba(245,158,11,.12)] border border-[rgba(245,158,11,.3)] text-[#fbbf24] cursor-pointer hover:bg-[rgba(245,158,11,.2)] transition-all"
                 >
                   ⚡ 开始今天的练习
