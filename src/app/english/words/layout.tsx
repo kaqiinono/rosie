@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, createContext, useContext } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { WordsProvider, useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
@@ -9,22 +9,20 @@ import ImportModal from '@/components/english/words/ImportModal'
 import ImmersiveMode from '@/components/english/words/ImmersiveMode'
 import type { WordEntry } from '@/utils/type'
 
-const WordsLayoutContext = createContext<{ openImmersive: () => void }>({ openImmersive: () => {} })
-export const useWordsLayout = () => useContext(WordsLayoutContext)
-
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { vocab, setVocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
   const [importOpen, setImportOpen] = useState(false)
-  const [immersiveOpen, setImmersiveOpen] = useState(false)
-  const [immersiveMode, setImmersiveMode] = useState<'vocab' | 'practice'>('vocab')
 
-  // Reset immersive when navigating away from /daily
+  // Reset immersive when navigating away
   useEffect(() => {
-    if (!pathname.includes('/daily')) setIsImmersive(false)
+    setIsImmersive(false)
   }, [pathname, setIsImmersive])
+
+  const immersiveMode = pathname.includes('/practice') ? 'practice' : 'vocab'
+  const isDaily = pathname.includes('/daily')
 
   const handleImport = useCallback((words: WordEntry[]) => {
     void setVocab(words)
@@ -46,17 +44,12 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [vocab])
 
   const enterImmersive = useCallback(() => {
-    if (pathname.includes('/daily')) {
-      setIsImmersive(true)
-      return
-    }
-    if (!filteredWords.length) {
+    if (!isDaily && !filteredWords.length) {
       alert('请先筛选单词！')
       return
     }
-    setImmersiveMode(pathname.includes('/practice') ? 'practice' : 'vocab')
-    setImmersiveOpen(true)
-  }, [filteredWords, pathname, setIsImmersive])
+    setIsImmersive(true)
+  }, [isDaily, filteredWords.length, setIsImmersive])
 
   return (
     <div className="min-h-screen font-nunito" style={{ background: 'var(--wm-bg)', color: 'var(--wm-text)' }}>
@@ -71,21 +64,20 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
           onImmersive={enterImmersive}
         />
       )}
-      <WordsLayoutContext.Provider value={{ openImmersive: enterImmersive }}>
-        {children}
-      </WordsLayoutContext.Provider>
+      {children}
       <ImportModal
         open={importOpen}
         onClose={() => setImportOpen(false)}
         onImport={handleImport}
       />
+      {/* ImmersiveMode opens when immersive is active on non-daily pages */}
       <ImmersiveMode
-        open={immersiveOpen}
+        open={isImmersive && !isDaily}
         words={filteredWords}
         allWords={vocab}
         mode={immersiveMode}
         practiceTypes={practiceTypes}
-        onClose={() => setImmersiveOpen(false)}
+        onClose={() => setIsImmersive(false)}
         onQuizComplete={recordBatch}
       />
     </div>

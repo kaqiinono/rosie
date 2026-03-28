@@ -2,7 +2,7 @@
 
 import { useMemo, useCallback } from 'react'
 import { useWordsContext } from '@/contexts/WordsContext'
-import { useWordsLayout } from '@/app/english/words/layout'
+import { useImmersive } from '@/contexts/ImmersiveContext'
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'
 
@@ -16,7 +16,7 @@ export default function PracticePage() {
     masteryMap,
     setPracticeTypes,
   } = useWordsContext()
-  const { openImmersive } = useWordsLayout()
+  const { setIsImmersive } = useImmersive()
 
   const scopeLabel = useMemo(() => {
     const units = selUnits.size ? [...selUnits].join(', ') : '全部Unit'
@@ -27,9 +27,13 @@ export default function PracticePage() {
   }, [selUnits, selLessons, filteredWords.length])
 
   const startPractice = useCallback((types: ('A' | 'B' | 'C')[]) => {
+    if (!filteredWords.length) {
+      alert('请先选择单词范围！')
+      return
+    }
     setPracticeTypes(types)
-    openImmersive()
-  }, [setPracticeTypes, openImmersive])
+    setIsImmersive(true)
+  }, [filteredWords.length, setPracticeTypes, setIsImmersive])
 
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
