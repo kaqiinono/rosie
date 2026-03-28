@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PROBLEMS } from '@/utils/lesson34-data'
 import { useLesson34 } from '@/components/math/lesson34/Lesson34Provider'
@@ -13,17 +13,11 @@ function AlltestContent() {
   const searchParams = useSearchParams()
   const typeParam = searchParams.get('type')
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState(() => ({
     source: new Set(['lesson', 'homework', 'workbook', 'supplement', 'pretest']),
-    type: new Set(['type1', 'type2']),
+    type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2']),
     mastery: 'all' as MasteryFilter,
-  })
-
-  useEffect(() => {
-    if (typeParam) {
-      setFilters(f => ({ ...f, type: new Set([typeParam]) }))
-    }
-  }, [typeParam])
+  }))
 
   const toggleFilter = (axis: 'source' | 'type', value: string) => {
     setFilters(f => {

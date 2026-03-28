@@ -88,6 +88,20 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
   const [newPerDay, setNewPerDay] = useState<number>(3)
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
+  const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
+  if (syncedDefaultParams !== defaultParams) {
+    setSyncedDefaultParams(defaultParams)
+    if (defaultParams) {
+      setNewPerDay(defaultParams.newWordsPerDay)
+      setWeekStartDay(defaultParams.weekStartDay)
+    }
+  }
+  const [autoOpenKey, setAutoOpenKey] = useState('')
+  const newOpenKey = `${isLoading}|${!!weeklyPlan}|${!!defaultParams}`
+  if (autoOpenKey !== newOpenKey) {
+    setAutoOpenKey(newOpenKey)
+    if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
+  }
 
   // Study/quiz state
   const [words, setWords] = useState<{ entry: WordEntry; isReview: boolean }[]>([])
@@ -102,18 +116,6 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
   const cnDays = useMemo(() => getWeekDayLabels(weekStartDay), [weekStartDay])
 
-  // Sync local state from defaultParams once loaded
-  useEffect(() => {
-    if (defaultParams) {
-      setNewPerDay(defaultParams.newWordsPerDay)
-      setWeekStartDay(defaultParams.weekStartDay)
-    }
-  }, [defaultParams])
-
-  // Auto-open dialog when no plan exists and params are loaded
-  useEffect(() => {
-    if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
-  }, [isLoading, weeklyPlan, defaultParams])
 
   const suggestedLesson = useMemo(() => {
     return orderedLessons[0] ?? null
@@ -587,7 +589,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                           key={t}
                           onClick={() => setEnabledTypes(prev => {
                             const n = new Set(prev);
-                            n.has(t) ? n.delete(t) : n.add(t);
+                            if (n.has(t)) { n.delete(t) } else { n.add(t) }
                             return n
                           })}
                           className={`flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] border-[1.5px] cursor-pointer text-[.82rem] font-bold transition-all select-none ${

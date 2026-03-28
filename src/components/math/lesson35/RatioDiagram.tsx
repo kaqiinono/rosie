@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import type { Problem, RatioInput, OpInput, RatioColValue } from '@/utils/type'
 
 interface RatioDiagramProps {
@@ -20,15 +20,12 @@ function isRatioInput(v: RatioColValue): v is RatioInput {
 export default function RatioDiagram({ problem }: RatioDiagramProps) {
   const [values, setValues] = useState<Record<string, string>>({})
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
-  const probIdRef = useRef(problem.id)
-
-  useEffect(() => {
-    if (probIdRef.current !== problem.id) {
-      setValues({})
-      setFeedback(null)
-      probIdRef.current = problem.id
-    }
-  }, [problem.id])
+  const [prevProbId, setPrevProbId] = useState(problem.id)
+  if (prevProbId !== problem.id) {
+    setPrevProbId(problem.id)
+    setValues({})
+    setFeedback(null)
+  }
 
   const allInputs = useCallback((): InputEntry[] => {
     const entries: InputEntry[] = []

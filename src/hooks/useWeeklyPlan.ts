@@ -80,16 +80,17 @@ export function useWeeklyPlan(user: User | null) {
     const [defaultParams, setDefaultParams] = useState<{ weekStartDay: number; newWordsPerDay: number } | null>(null)
     const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(null)
     const [isLoading, setIsLoading] = useState(() => user !== null)
+    const [syncedUser, setSyncedUser] = useState(user)
+    if (syncedUser !== user) {
+        setSyncedUser(user)
+        setDefaultParams(null)
+    }
 
     // Step 1: load defaultParams (most recent prior plan's params, or system defaults)
     // Use a far-future date so we include all existing plans (including the current week's if any)
     useEffect(() => {
-        if (!user) {
-            return
-        }
-        setDefaultParams(null)
-        const farFuture = '9999-12-31'
-        void loadMostRecentPlan(user.id, farFuture).then(params => {
+        if (!user) return
+        void loadMostRecentPlan(user.id, '9999-12-31').then(params => {
             setDefaultParams(params ?? SYSTEM_DEFAULTS)
         })
     }, [user])

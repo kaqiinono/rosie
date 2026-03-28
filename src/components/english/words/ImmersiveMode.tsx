@@ -29,11 +29,10 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const [defOnly, setDefOnly] = useState(false)
   const [wordShown, setWordShown] = useState(true)
   const [bodyMode, setBodyMode] = useState<'normal' | 'word-visible' | 'def-only'>('normal')
-  const [isWide, setIsWide] = useState(false)
+  const [isWide, setIsWide] = useState(() => window.matchMedia('(min-width: 768px)').matches)
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
-    setIsWide(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsWide(e.matches)
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
@@ -48,16 +47,6 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const [showResults, setShowResults] = useState(false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
-  useEffect(() => {
-    if (!open) return
-    setIdx(0)
-    setDefOnly(false)
-    setWordShown(true)
-    setBodyMode('normal')
-    setShowResults(false)
-    if (mode === 'practice') startQuiz()
-  }, [open])
-
   const startQuiz = useCallback(() => {
     const types = practiceTypes.length ? practiceTypes : ['A', 'B'] as ('A' | 'B' | 'C')[]
     const seed = Date.now()
@@ -71,8 +60,25 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
     setQSelected(null)
     setSpellOk(null)
     setShowResults(false)
-    quizResultBuffer.current = []
   }, [words, practiceTypes])
+
+  // Clear quiz result buffer when practice opens (ref access must stay in an effect)
+  useEffect(() => {
+    if (open && mode === 'practice') quizResultBuffer.current = []
+  }, [open, mode])
+
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (prevOpen !== open) {
+    setPrevOpen(open)
+    if (open) {
+      setIdx(0)
+      setDefOnly(false)
+      setWordShown(true)
+      setBodyMode('normal')
+      setShowResults(false)
+      if (mode === 'practice') startQuiz()
+    }
+  }
 
   const toggleDefOnly = useCallback(() => {
     const newVal = !defOnly

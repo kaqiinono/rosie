@@ -26,7 +26,7 @@ const FONT = "'PingFang SC','Microsoft YaHei',sans-serif"
 // Vertical layout (px)
 const DATE_H   = 36   // date box height
 const ARROW_H  = 56   // arrow section height (label + line + arrowhead)
-const ROW_H    = DATE_H + ARROW_H  // one "step" height = 92
+const _ROW_H   = DATE_H + ARROW_H  // one "step" height = 92
 
 // Horizontal widths
 const DATE_W   = 140  // blue date box width
@@ -38,7 +38,7 @@ function isLeapYear(y: number) {
   return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0
 }
 
-function daysInYear(y: number) {
+function _daysInYear(y: number) {
   return isLeapYear(y) ? 366 : 365
 }
 
@@ -451,9 +451,9 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
   const [answers, setAnswers] = useState<MSegAnswer[]>(() => segs.map(() => ({ days: '', q: '', r: '' })))
   const [wdInputs, setWdInputs] = useState<string[]>(() => Array(n).fill(''))
 
-  const patchAnswer = useCallback((i: number, p: Partial<MSegAnswer>) =>
+  const _patchAnswer = useCallback((i: number, p: Partial<MSegAnswer>) =>
     setAnswers(prev => { const nx = [...prev]; nx[i] = { ...nx[i], ...p }; return nx }), [])
-  const patchWd = useCallback((i: number, v: string) =>
+  const _patchWd = useCallback((i: number, v: string) =>
     setWdInputs(prev => { const nx = [...prev]; nx[i] = v; return nx }), [])
   const reset = useCallback(() => {
     setAnswers(segs.map(() => ({ days: '', q: '', r: '' })))

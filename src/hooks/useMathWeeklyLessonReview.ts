@@ -77,7 +77,6 @@ export function useMathWeeklyLessonReview(
     void loadFromCloud(user.id, activeLessonId).then(cloud => {
       if (cloud) setState(cloud)
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, activeLessonId])
 
   // Reset state when switching to a different lesson plan

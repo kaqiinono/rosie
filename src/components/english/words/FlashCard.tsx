@@ -3,7 +3,7 @@
 import type { WordEntry, WordMasteryInfo } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
-import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 
 interface FlashCardProps {

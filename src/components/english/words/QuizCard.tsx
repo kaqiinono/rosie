@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import type { WordEntry } from '@/utils/type'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
@@ -19,12 +19,13 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
   const [answered, setAnswered] = useState(false)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
   const [spellCorrect, setSpellCorrect] = useState<boolean | null>(null)
-
-  useEffect(() => {
+  const [prevIndex, setPrevIndex] = useState(currentIndex)
+  if (prevIndex !== currentIndex) {
+    setPrevIndex(currentIndex)
     setAnswered(false)
     setSelectedWord(null)
     setSpellCorrect(null)
-  }, [currentIndex])
+  }
 
   const handleMC = useCallback((chosen: string) => {
     if (answered) return

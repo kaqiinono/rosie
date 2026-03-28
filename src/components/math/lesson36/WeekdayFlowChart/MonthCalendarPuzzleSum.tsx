@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 // ─────────────────────────────────────────────────────────────
 // Constants
@@ -88,10 +88,11 @@ export default function MonthCalendarPuzzle({ totalDays = 31 }: Props) {
 
   // 第一行7个格子的用户输入
   const [firstRowInputs, setFirstRowInputs] = useState<string[]>(() => Array(7).fill(""));
-
-  useEffect(() => {
+  const [prevTotalDays, setPrevTotalDays] = useState(totalDays);
+  if (prevTotalDays !== totalDays) {
+    setPrevTotalDays(totalDays);
     setFirstRowInputs(Array(7).fill(""));
-  }, [totalDays]);
+  }
 
   // 推导网格
   const firstRow = deriveFirstRow(firstRowInputs);

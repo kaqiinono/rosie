@@ -73,7 +73,7 @@ export default function PracticePage() {
     if (!quizQuestions[quizIndex]) return []
     const seed = quizIndex * 997 + quizQuestions.length
     return buildQuizOptions(quizQuestions[quizIndex].word, vocab, seed)
-  }, [quizQuestions, quizIndex, filteredWords])
+  }, [quizQuestions, quizIndex, vocab])
 
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
@@ -93,7 +93,7 @@ export default function PracticePage() {
   const toggleLesson = useCallback((lesson: string) => {
     setSelLessons(prev => {
       const next = new Set(prev)
-      next.has(lesson) ? next.delete(lesson) : next.add(lesson)
+      if (next.has(lesson)) { next.delete(lesson) } else { next.add(lesson) }
       setSelWords(new Set())
       return next
     })
@@ -103,7 +103,7 @@ export default function PracticePage() {
   const toggleWord = useCallback((word: string) => {
     setSelWords(prev => {
       const next = new Set(prev)
-      next.has(word) ? next.delete(word) : next.add(word)
+      if (next.has(word)) { next.delete(word) } else { next.add(word) }
       return next
     })
     setQuizPhase('setup')

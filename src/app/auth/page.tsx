@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -23,14 +23,10 @@ function AuthContent() {
   const [password, setPassword] = useState('')
   const [recoveryEmail, setRecoveryEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(
+    () => searchParams.get('reset') === 'success' ? '密码已重置，请用新密码登录。' : null
+  )
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (searchParams.get('reset') === 'success') {
-      setMessage('密码已重置，请用新密码登录。')
-    }
-  }, [searchParams])
 
   if (user) {
     router.replace('/')
