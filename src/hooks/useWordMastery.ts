@@ -52,7 +52,7 @@ export function useWordMastery(user: User | null) {
         }
       }
 
-      const rows = results.map(({ entry, correct: isCorrect }) => {
+      const rows = results.map(({ entry }) => {
         const key = wordKey(entry)
         const updated = next[key]
         return {
