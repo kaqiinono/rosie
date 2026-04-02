@@ -8,6 +8,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/37',
+    title: '鸡兔同笼探险',
+    description: '掌握假设法4大题型：头和腿和基础、先求头和、双组分配、倒扣分，附加题挑战特殊条件与代数方法。',
+    icon: '🐔',
+    lectureNum: '第 37 讲',
+    tags: ['鸡兔同笼', '假设法', '34 道互动题'],
+    variant: 'violet',
+  },
+  {
     href: '/math/ny/36',
     title: '星期几问题探险',
     description: '掌握 3 大题型推算任意日期的星期几：同月/跨月天数余数法、跨年平年+1/闰年+2 累计偏移、确定星期几的分布分析。',
