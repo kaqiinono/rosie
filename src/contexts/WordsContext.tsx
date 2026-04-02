@@ -5,7 +5,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import type { MasteryLevel } from '@/utils/masteryUtils'
-import { getMasteryLevel } from '@/utils/masteryUtils'
+import { getWordMasteryLevel } from '@/utils/masteryUtils'
 import { useAuth } from '@/contexts/AuthContext'
 import { STORAGE_KEYS } from '@/utils/constant'
 import { useWordData } from '@/hooks/useWordData'
@@ -69,7 +69,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   const filteredWords = useMemo(() => {
     const base = getFilteredWords(vocab, selUnits, selLessons, selWords)
     if (masteryFilter === null) return base
-    return base.filter(v => getMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter)
+    return base.filter(v => getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter)
   }, [vocab, selUnits, selLessons, selWords, masteryFilter, masteryMap])
 
   return (

@@ -291,7 +291,7 @@ function Panel1({ onResult }: { onResult: (d: number) => void }) {
           <StepNum>2</StepNum>
           <div className="text-sm leading-[1.7] text-gray-700">
             把天数<strong className="text-[#6c4eb0]">÷ 7，只看余数</strong>
-            <div className="mt-1 text-xs italic text-gray-400">22 ÷ 7 = 3周……余 1 天 → 关键是那个"1"！</div>
+            <div className="mt-1 text-xs italic text-gray-400">22 ÷ 7 = 3周……余 1 天 → 关键是那个{'"1"'}！</div>
           </div>
         </div>
         <div className="flex items-start gap-3">
@@ -761,7 +761,7 @@ function Panel6({ onResult }: { onResult: (d: number) => void }) {
         {[
           { n: '🤔', b: '先想一想：这个星期出现几次？', body: <>只有两种可能：<strong className="text-[#6c4eb0]">4次</strong> 或者 <strong className="text-[#6c4eb0]">5次</strong>！<div className="text-xs italic text-gray-400 mt-1">（一个月只有28~31天，每7天一轮回，不可能出现6次）</div></> },
           { n: '🎲', b: '先试试 4次 的情况：', body: <>假设1号是星期X，就会是：1号、8号、15号、22号 → 加起来 = <strong>46</strong><br />假设7号是星期X，就会是：7号、14号、21号、28号 → 加起来 = <strong>70</strong><div className="text-xs italic text-gray-400 mt-1">所以4次时，总和必须在 46～70 之间</div></> },
-          { n: '🔧', b: '用"差值平均分"找到第一个：', body: <>把题目给的总和，减去"如果1号是星期X"的总和（46）<br />差值 ÷ 4 = 偏移几天 → 第一个 = 1 + 偏移天数<div className="text-xs italic text-gray-400 mt-1">总和=80：80−46=34，34÷4=8½ → 不整除，说明不是4次！</div></> },
+          { n: '🔧', b: '用"差值平均分"找到第一个：', body: <>把题目给的总和，减去{'"如果1号是星期X"'}的总和（46）<br />差值 ÷ 4 = 偏移几天 → 第一个 = 1 + 偏移天数<div className="text-xs italic text-gray-400 mt-1">总和=80：80−46=34，34÷4=8½ → 不整除，说明不是4次！</div></> },
           { n: '✅', b: '再试试 5次 的情况（方法一样）：', body: <>5次时最小总和：1+8+15+22+29 = <strong>75</strong><br />差值 ÷ 5 能整除 且 结果是整数 → 就找到答案了！<div className="text-xs italic text-gray-400 mt-1">总和=80：80−75=5，5÷5=1 → 第一个是 1+1=2号 ✓</div></> },
         ].map(s => (
           <div key={s.n} className="flex items-start gap-3">
@@ -772,7 +772,7 @@ function Panel6({ onResult }: { onResult: (d: number) => void }) {
       </div>
       <Notice>
         🌟 <strong>超简单口诀：</strong><br />
-        ① 先算"从1号开始"时的最小总和<br />
+        ① 先算{'"从1号开始"'}时的最小总和<br />
         ② 用给定总和减去最小总和 = 差值<br />
         ③ 差值 ÷ 次数 能整除 → 答案 = 1 + 商<br />
         ④ 两种次数（4次/5次）都试一遍，哪个合理选哪个！

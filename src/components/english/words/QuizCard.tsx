@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import type { WordEntry } from '@/utils/type'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
@@ -19,12 +19,13 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
   const [answered, setAnswered] = useState(false)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
   const [spellCorrect, setSpellCorrect] = useState<boolean | null>(null)
-
-  useEffect(() => {
+  const [prevIndex, setPrevIndex] = useState(currentIndex)
+  if (prevIndex !== currentIndex) {
+    setPrevIndex(currentIndex)
     setAnswered(false)
     setSelectedWord(null)
     setSpellCorrect(null)
-  }, [currentIndex])
+  }
 
   const handleMC = useCallback((chosen: string) => {
     if (answered) return
@@ -50,32 +51,32 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
   const pct = (currentIndex / totalCount * 100)
 
   return (
-    <div className="max-w-[680px] mx-auto">
-      <div className="mb-5">
-        <div className="h-1.5 bg-[var(--wm-surface)] rounded-sm overflow-hidden mb-2">
+    <div className="w-full @container">
+      <div className="mb-4">
+        <div className="h-2 bg-[var(--wm-surface)] rounded-sm overflow-hidden mb-2">
           <div
             className="h-full bg-gradient-to-r from-[var(--wm-accent)] to-[var(--wm-accent2)] rounded-sm transition-[width] duration-400 ease-out"
             style={{ width: `${pct}%` }}
           />
         </div>
-        <div className="flex justify-between text-[.78rem] font-bold text-[var(--wm-text-dim)]">
+        <div className="flex justify-between text-[clamp(.72rem,2cqi,.82rem)] font-bold text-[var(--wm-text-dim)]">
           <span>第 {currentIndex + 1} / {totalCount} 题</span>
-          <span className="bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)] border border-[rgba(74,222,128,.3)] px-2.5 py-0.5 rounded-full text-[.78rem] font-extrabold">
+          <span className="bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)] border border-[rgba(74,222,128,.3)] px-2.5 py-0.5 rounded-full font-extrabold">
             ✓ {score}
           </span>
         </div>
       </div>
 
-      <div className="bg-[var(--wm-surface)] border border-[var(--wm-border)] rounded-[var(--wm-radius)] p-6 mb-3">
-        <div className={`inline-block px-2.5 py-1 rounded-full text-[.67rem] font-extrabold uppercase tracking-wide mb-3 ${badgeConfig.cls}`}>
+      <div className="bg-[var(--wm-surface)] border border-[var(--wm-border)] rounded-[var(--wm-radius)] p-[clamp(.9rem,3.5cqi,1.5rem)] mb-3">
+        <div className={`inline-block px-2.5 py-1 rounded-full text-[clamp(.65rem,1.8cqi,.75rem)] font-extrabold uppercase tracking-wide mb-3 ${badgeConfig.cls}`}>
           {badgeConfig.text}
         </div>
 
         {question.type === 'A' && (
           <>
-            <div className="text-[1.2rem] font-black leading-snug mb-1">{question.word.explanation}</div>
-            <div className="text-[.8rem] text-[var(--wm-text-dim)] mb-3.5">请选出对应的英文单词或短语：</div>
-            <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-2">
+            <div className="text-[clamp(1rem,4cqi,1.4rem)] font-black leading-snug mb-1">{question.word.explanation}</div>
+            <div className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)] mb-4">请选出对应的英文单词或短语：</div>
+            <div className="grid grid-cols-1 @lg:grid-cols-2 gap-[clamp(.4rem,1.5cqi,.6rem)]">
               {options.map(o => {
                 const isCorrect = o.word === question.word.word
                 const isSelected = selectedWord === o.word
@@ -89,7 +90,7 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
                     key={o.word}
                     disabled={answered}
                     onClick={() => handleMC(o.word)}
-                    className={`px-3 py-3 border-2 rounded-[10px] font-nunito font-bold text-[.83rem] cursor-pointer transition-all text-left leading-snug break-words disabled:cursor-default ${btnCls} ${
+                    className={`px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] border-2 rounded-[10px] font-nunito font-bold text-[clamp(.88rem,3cqi,1rem)] cursor-pointer transition-all text-left leading-snug break-words disabled:cursor-default ${btnCls} ${
                       !answered ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]' : ''
                     }`}
                   >
@@ -103,14 +104,14 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
 
         {question.type === 'B' && (
           <>
-            <div className="text-[1.2rem] font-black leading-snug mb-1">
+            <div className="text-[clamp(1rem,4cqi,1.4rem)] font-black leading-snug mb-1">
               <PhonicsWord text={question.word.word} />
               {question.word.ipa && (
-                <div className="text-[.85rem] text-[var(--wm-accent2)] italic font-semibold mt-1">{question.word.ipa}</div>
+                <div className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-accent2)] italic font-semibold mt-1">{question.word.ipa}</div>
               )}
             </div>
-            <div className="text-[.8rem] text-[var(--wm-text-dim)] mb-3.5">请选出正确的释义：</div>
-            <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-2">
+            <div className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)] mb-4">请选出正确的释义：</div>
+            <div className="grid grid-cols-1 @lg:grid-cols-2 gap-[clamp(.4rem,1.5cqi,.6rem)]">
               {options.map(o => {
                 const isCorrect = o.word === question.word.word
                 const isSelected = selectedWord === o.word
@@ -124,7 +125,7 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
                     key={o.word}
                     disabled={answered}
                     onClick={() => handleMC(o.word)}
-                    className={`px-3 py-3 border-2 rounded-[10px] font-nunito font-bold text-[.83rem] cursor-pointer transition-all text-left leading-snug break-words disabled:cursor-default ${btnCls} ${
+                    className={`px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] border-2 rounded-[10px] font-nunito font-bold text-[clamp(.88rem,3cqi,1rem)] cursor-pointer transition-all text-left leading-snug break-words disabled:cursor-default ${btnCls} ${
                       !answered ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]' : ''
                     }`}
                   >
@@ -138,8 +139,8 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
 
         {question.type === 'C' && (
           <>
-            <div className="text-[1.2rem] font-black leading-snug mb-1">{question.word.explanation}</div>
-            <div className="text-[.8rem] text-[var(--wm-text-dim)] mb-3.5">请拼写出对应的英文单词或短语：</div>
+            <div className="text-[clamp(1rem,4cqi,1.4rem)] font-black leading-snug mb-1">{question.word.explanation}</div>
+            <div className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)] mb-4">请拼写出对应的英文单词或短语：</div>
             <SpellTiles
               key={currentIndex}
               word={question.word.word}
@@ -154,7 +155,7 @@ export default function QuizCard({ question, options, currentIndex, totalCount, 
       {answered && (
         <button
           onClick={onNext}
-          className="w-full p-3 bg-[var(--wm-surface2)] border-2 border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text)] font-nunito font-bold text-[.85rem] cursor-pointer transition-all flex items-center justify-center gap-1.5 hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
+          className="w-full py-[clamp(.75rem,2.5cqi,1rem)] bg-[var(--wm-surface2)] border-2 border-[var(--wm-border)] rounded-[10px] text-[var(--wm-text)] font-nunito font-bold text-[clamp(.88rem,3cqi,1rem)] cursor-pointer transition-all flex items-center justify-center gap-1.5 hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
         >
           下一题 →
         </button>

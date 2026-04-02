@@ -42,7 +42,7 @@ export default function CardsPage() {
   const toggleLesson = useCallback((lesson: string) => {
     setSelLessons(prev => {
       const next = new Set(prev)
-      next.has(lesson) ? next.delete(lesson) : next.add(lesson)
+      if (next.has(lesson)) { next.delete(lesson) } else { next.add(lesson) }
       setSelWords(new Set())
       return next
     })
@@ -52,7 +52,7 @@ export default function CardsPage() {
   const toggleWord = useCallback((word: string) => {
     setSelWords(prev => {
       const next = new Set(prev)
-      next.has(word) ? next.delete(word) : next.add(word)
+      if (next.has(word)) { next.delete(word) } else { next.add(word) }
       return next
     })
     resetCards()
@@ -66,7 +66,7 @@ export default function CardsPage() {
   const flipCard = useCallback((index: number) => {
     setFlippedSet(prev => {
       const next = new Set(prev)
-      next.has(index) ? next.delete(index) : next.add(index)
+      if (next.has(index)) { next.delete(index) } else { next.add(index) }
       return next
     })
   }, [])

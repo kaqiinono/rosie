@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import { wordKey } from '@/utils/english-helpers'
-import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@/utils/masteryUtils'
+import { ensureStageInit, isGraduated, MASTERY_ICON, getWordMasteryLevel } from '@/utils/masteryUtils'
 
 interface MasteryStatusPanelProps {
   vocab: WordEntry[]
@@ -94,12 +94,13 @@ export default function MasteryStatusPanel({ vocab, masteryMap }: MasteryStatusP
                   <th className="px-3 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">课程</th>
                   <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">阶段</th>
                   <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">下次复习</th>
+                  <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">复习记录</th>
                   <th className="px-4 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">状态</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map(({ w, m, graduated, due }) => {
-                  const level = getMasteryLevel(m.correct ?? 0)
+                  const level = getWordMasteryLevel(m.correct ?? 0)
                   return (
                     <tr
                       key={wordKey(w)}
@@ -128,6 +129,20 @@ export default function MasteryStatusPanel({ vocab, masteryMap }: MasteryStatusP
                         {due.urgent === 'none' && (
                           <span className="text-green-400 text-[10px] font-bold">{due.label}</span>
                         )}
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center justify-center gap-0.5 flex-wrap">
+                          {(m.reviewHistory ?? []).slice(-12).map((r, i) => (
+                            <span
+                              key={i}
+                              title={`${r.date} ${r.correct ? '✓' : '✗'}`}
+                              className={`w-2 h-2 rounded-full ${r.correct ? 'bg-green-400' : 'bg-red-400'}`}
+                            />
+                          ))}
+                          {!m.reviewHistory?.length && (
+                            <span className="text-[var(--wm-text-dim)] text-[10px]">—</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-2 text-center">
                         {graduated ? (

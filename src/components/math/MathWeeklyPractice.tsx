@@ -78,50 +78,61 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   const [showParamsDialog, setShowParamsDialog] = useState(false)
   const [selectedLesson, setSelectedLesson] = useState('36')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [reviewKeys, setReviewKeys] = useState<Record<string, string[]>>({})
-  const [justCompleted, setJustCompleted] = useState(false)
   const today = todayStr()
 
-  // Sync local params from defaultParams once loaded
-  useEffect(() => {
+  // Sync local params from defaultParams once loaded (during-render)
+  const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
+  if (syncedDefaultParams !== defaultParams) {
+    setSyncedDefaultParams(defaultParams)
     if (defaultParams) {
       setWeekStartDay(defaultParams.weekStartDay)
       setProblemsPerDay(defaultParams.problemsPerDay)
     }
-  }, [defaultParams])
-
-  // Auto-open params dialog when no plan exists
-  useEffect(() => {
+  }
+  // Auto-open dialog when no plan exists (during-render)
+  const [autoOpenKey, setAutoOpenKey] = useState('')
+  const newOpenKey = `${isLoading}|${!!weeklyPlan}|${!!defaultParams}`
+  if (autoOpenKey !== newOpenKey) {
+    setAutoOpenKey(newOpenKey)
     if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
-  }, [isLoading, weeklyPlan, defaultParams])
-
-  // Auto-switch to week-view if plan exists for current week
-  useEffect(() => {
+  }
+  // Auto-select date when plan loads (during-render)
+  const [autoSelectKey, setAutoSelectKey] = useState('')
+  const newSelectKey = `${isLoading}|${weeklyPlan?.weekStart ?? ''}|${currentWeekStart ?? ''}|${showParamsDialog}`
+  if (autoSelectKey !== newSelectKey) {
+    setAutoSelectKey(newSelectKey)
     if (!isLoading && weeklyPlan && currentWeekStart && weeklyPlan.weekStart === currentWeekStart && !showParamsDialog) {
       const todayDay = weeklyPlan.days.find(d => d.date === today)
       setSelectedDate(todayDay ? today : (weeklyPlan.days[0]?.date ?? null))
     }
-  }, [isLoading, weeklyPlan, currentWeekStart, today, showParamsDialog])
+  }
 
-  // Build review keys per day
-  useEffect(() => {
-    if (!weeklyPlan) return
-    // All current-week problems as candidates (in addition to prior-week problems)
+  // Derived: review keys per day
+  const reviewKeys = useMemo(() => {
+    if (!weeklyPlan) return {} as Record<string, string[]>
     const currentWeekKeys = weeklyPlan.days.flatMap(d =>
       [...d.problems, ...d.optionalProblems].map(p => p.key)
     )
     const allCandidateKeys = [...allPriorKeys, ...currentWeekKeys]
     const rv: Record<string, string[]> = {}
     for (const day of weeklyPlan.days) {
-      // Only exclude THIS day's own problems, not the whole week
       const thisDayKeys = new Set([
         ...day.problems.map(p => p.key),
         ...day.optionalProblems.map(p => p.key),
       ])
       rv[day.date] = getMathReviewProblemsForDay(day.date, allCandidateKeys, masteryMap, thisDayKeys)
     }
-    setReviewKeys(rv)
+    return rv
   }, [weeklyPlan, allPriorKeys, masteryMap])
+
+  // Derived: all-done celebration flag
+  const justCompleted = useMemo(() => {
+    if (!weeklyPlan || !selectedDate) return false
+    const todayPlan = weeklyPlan.days.find(d => d.date === selectedDate)
+    if (!todayPlan || todayPlan.problems.length === 0) return false
+    const prog = weeklyPlan.progress[selectedDate] ?? { doneKeys: [] }
+    return todayPlan.problems.every(p => prog.doneKeys.includes(p.key))
+  }, [weeklyPlan, selectedDate])
 
   // Reconcile plan progress with actual solve data from Supabase
   useEffect(() => {
@@ -136,16 +147,6 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
       }
     }
   }, [weeklyPlan, solveCount, isLoading, addDoneKey, recordProblemResult])
-
-  // Check all-done for today celebration
-  useEffect(() => {
-    if (!weeklyPlan || !selectedDate) return
-    const todayPlan = weeklyPlan.days.find(d => d.date === selectedDate)
-    if (!todayPlan || todayPlan.problems.length === 0) return
-    const prog = weeklyPlan.progress[selectedDate] ?? { doneKeys: [] }
-    const allDone = todayPlan.problems.every(p => prog.doneKeys.includes(p.key))
-    setJustCompleted(allDone)
-  }, [weeklyPlan, selectedDate])
 
   const handleCreatePlan = useCallback(async () => {
     if (!currentWeekStart) return
@@ -199,7 +200,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
       if (probs.length > 0) result[id] = probs
     }
     return result
-  }, [problemSets, weeklyPlan?.lessonId])
+  }, [problemSets, weeklyPlan])
 
   const dailyRequiredCounts = useMemo(() => {
     if (!weeklyPlan) return {} as Record<string, number>
@@ -271,7 +272,6 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
 
   // ── Setup ───────────────────────────────────────────────────────────────────
   if (showParamsDialog) {
-    const sel = LESSONS.find(l => l.id === selectedLesson)!
     const totalRequired = [
       ...(problemSets[selectedLesson]?.lesson ?? []),
       ...(problemSets[selectedLesson]?.homework ?? []),
@@ -497,7 +497,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
             <span>🗺️</span> 本周地图
           </div>
           <div className="grid grid-cols-7 gap-1.5">
-            {weeklyPlan.days.map((day, idx) => {
+            {weeklyPlan.days.map((day) => {
               const prog = weeklyPlan.progress[day.date] ?? { doneKeys: [] }
               const total = day.problems.length
               const done = prog.doneKeys.filter(k => day.problems.some(p => p.key === k)).length

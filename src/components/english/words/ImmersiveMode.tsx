@@ -29,11 +29,10 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const [defOnly, setDefOnly] = useState(false)
   const [wordShown, setWordShown] = useState(true)
   const [bodyMode, setBodyMode] = useState<'normal' | 'word-visible' | 'def-only'>('normal')
-  const [isWide, setIsWide] = useState(false)
+  const [isWide, setIsWide] = useState(() => window.matchMedia('(min-width: 768px)').matches)
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
-    setIsWide(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsWide(e.matches)
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
@@ -48,16 +47,6 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
   const [showResults, setShowResults] = useState(false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
-  useEffect(() => {
-    if (!open) return
-    setIdx(0)
-    setDefOnly(false)
-    setWordShown(true)
-    setBodyMode('normal')
-    setShowResults(false)
-    if (mode === 'practice') startQuiz()
-  }, [open])
-
   const startQuiz = useCallback(() => {
     const types = practiceTypes.length ? practiceTypes : ['A', 'B'] as ('A' | 'B' | 'C')[]
     const seed = Date.now()
@@ -71,8 +60,25 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
     setQSelected(null)
     setSpellOk(null)
     setShowResults(false)
-    quizResultBuffer.current = []
   }, [words, practiceTypes])
+
+  // Clear quiz result buffer when practice opens (ref access must stay in an effect)
+  useEffect(() => {
+    if (open && mode === 'practice') quizResultBuffer.current = []
+  }, [open, mode])
+
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (prevOpen !== open) {
+    setPrevOpen(open)
+    if (open) {
+      setIdx(0)
+      setDefOnly(false)
+      setWordShown(true)
+      setBodyMode('normal')
+      setShowResults(false)
+      if (mode === 'practice') startQuiz()
+    }
+  }
 
   const toggleDefOnly = useCallback(() => {
     const newVal = !defOnly
@@ -374,26 +380,26 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
               : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
 
             return (
-              <div className="w-full max-w-[680px] bg-white/[.04] border border-white/[.08] rounded-[20px] p-7 flex flex-col gap-4">
+              <div className="w-full max-w-[1000px] @container bg-white/[.04] border border-white/[.08] rounded-[20px] p-[clamp(1rem,3.5cqi,1.75rem)] flex flex-col gap-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className={`inline-block px-3 py-1 rounded-full text-[.65rem] font-extrabold uppercase tracking-wider w-fit ${badgeStyle}`}>
+                  <span className={`inline-block px-3 py-1 rounded-full text-[clamp(.62rem,1.8cqi,.72rem)] font-extrabold uppercase tracking-wider w-fit ${badgeStyle}`}>
                     {isA ? '题型 A · 看释义选单词' : isC ? '题型 C · 看释义默写单词' : '题型 B · 看单词选释义'}
                   </span>
-                  <div className="text-[.75rem] font-bold text-white/[.32]">✓ {qScore}</div>
+                  <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">✓ {qScore}</div>
                 </div>
 
-                <div className="text-[clamp(1rem,2.8vw,1.5rem)] font-black leading-relaxed text-[#f0f0ff]">
+                <div className="text-[clamp(1rem,3.5cqi,1.5rem)] font-black leading-relaxed text-[#f0f0ff]">
                   {isA || isC ? q.word.explanation : <PhonicsWord text={q.word.word} />}
                 </div>
                 {!isA && !isC && q.word.ipa && (
-                  <div className="text-[.85rem] text-[#f0abfc] italic font-semibold">{q.word.ipa}</div>
+                  <div className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[#f0abfc] italic font-semibold">{q.word.ipa}</div>
                 )}
-                <div className="text-[.8rem] text-white/[.38] font-semibold">
+                <div className="text-[clamp(.78rem,2.2cqi,.9rem)] text-white/[.38] font-semibold">
                   {isA ? '请选出对应的英文单词：' : isC ? '请拼写出对应的英文单词或短语：' : '请选出正确的释义：'}
                 </div>
 
                 {!isC && (
-                  <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 @lg:grid-cols-2 gap-[clamp(.4rem,1.5cqi,.6rem)]">
                     {opts.map(o => {
                       const isCorrect = o.word === q.word.word
                       const isSel = qSelected === o.word
@@ -407,7 +413,7 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
                           key={o.word}
                           disabled={qAnswered}
                           onClick={() => handleMCAnswer(o.word, q.word.word)}
-                          className={`px-3.5 py-3 border-2 rounded-xl font-nunito font-bold text-[.86rem] cursor-pointer transition-all text-left leading-snug break-words disabled:cursor-default ${cls} ${
+                          className={`px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] border-2 rounded-xl font-nunito font-bold text-[clamp(.88rem,2.8cqi,1rem)] cursor-pointer transition-all text-left leading-snug break-words disabled:cursor-default ${cls} ${
                             !qAnswered ? 'hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.1)]' : ''
                           }`}
                         >
@@ -431,7 +437,7 @@ export default function ImmersiveMode({ open, words, allWords, mode, practiceTyp
                 {qAnswered && (
                   <button
                     onClick={nextQuizQ}
-                    className="px-7 py-3 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] border-0 rounded-xl text-white font-nunito font-extrabold text-[.88rem] cursor-pointer transition-all self-center shadow-[0_3px_12px_rgba(109,40,217,.35)] hover:-translate-y-0.5"
+                    className="px-7 py-[clamp(.6rem,2cqi,.8rem)] bg-gradient-to-br from-[#6d28d9] to-[#a855f7] border-0 rounded-xl text-white font-nunito font-extrabold text-[clamp(.88rem,2.8cqi,1rem)] cursor-pointer transition-all self-center shadow-[0_3px_12px_rgba(109,40,217,.35)] hover:-translate-y-0.5"
                   >
                     下一题 →
                   </button>

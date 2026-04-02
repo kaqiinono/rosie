@@ -1,22 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
+import { useImmersive } from '@/contexts/ImmersiveContext'
 
 export default function AccountBar() {
   const { user, signOut, loading } = useAuth()
-  const [immersive, setImmersive] = useState(false)
+  const { isImmersive } = useImmersive()
 
-  useEffect(() => {
-    const check = () => setImmersive(document.body.classList.contains('words-immersive'))
-    check()
-    const obs = new MutationObserver(check)
-    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] })
-    return () => obs.disconnect()
-  }, [])
-
-  if (loading || immersive) return null
+  if (loading || isImmersive) return null
 
   if (!user) {
     return (

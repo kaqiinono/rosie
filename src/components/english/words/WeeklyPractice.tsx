@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useMemo, useCallback, useRef, useEffect} from 'react'
+import {useState, useMemo, useCallback, useRef} from 'react'
 import type {WordEntry, WeeklyPlan} from '@/utils/type'
 import {
   buildWeeklyPlan,
@@ -11,12 +11,13 @@ import {
   highlightExample,
   wordKey,
 } from '@/utils/english-helpers'
-import {getMasteryLevel, MASTERY_ICON} from '@/utils/masteryUtils'
+import {getWordMasteryLevel, MASTERY_ICON} from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import {useAuth} from '@/contexts/AuthContext'
-import {useWordMastery} from '@/hooks/useWordMastery'
+import {useWordsContext} from '@/contexts/WordsContext'
+import {useImmersive} from '@/contexts/ImmersiveContext'
 import {useWeeklyPlan} from '@/hooks/useWeeklyPlan'
 import {todayStr} from '@/utils/constant'
 
@@ -63,22 +64,11 @@ function fmtWeekRange(weekStart: string, startDay: number): string {
 
 export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const {user} = useAuth()
-  const {masteryMap, recordBatch} = useWordMastery(user)
+  const {masteryMap, recordBatch} = useWordsContext()
   const {weeklyPlan, currentWeekStart, defaultParams, savePlan, updateDayProgress, isLoading} = useWeeklyPlan(user)
 
-  const [isImmersive, setIsImmersive] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsImmersive(document.body.classList.contains('words-immersive'))
-    check()
-    const obs = new MutationObserver(check)
-    obs.observe(document.body, {attributes: true, attributeFilter: ['class']})
-    return () => obs.disconnect()
-  }, []);
-
-  const exitImmersive = useCallback(() => {
-    window.dispatchEvent(new Event('exit-words-immersive'))
-  }, [])
+  const {isImmersive, setIsImmersive} = useImmersive()
+  const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
 
   const [phase, setPhase] = useState<Phase>('setup')
   const [showParamsDialog, setShowParamsDialog] = useState(false)
@@ -88,6 +78,20 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
   const [newPerDay, setNewPerDay] = useState<number>(3)
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
+  const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
+  if (syncedDefaultParams !== defaultParams) {
+    setSyncedDefaultParams(defaultParams)
+    if (defaultParams) {
+      setNewPerDay(defaultParams.newWordsPerDay)
+      setWeekStartDay(defaultParams.weekStartDay)
+    }
+  }
+  const [autoOpenKey, setAutoOpenKey] = useState('')
+  const newOpenKey = `${isLoading}|${!!weeklyPlan}|${!!defaultParams}`
+  if (autoOpenKey !== newOpenKey) {
+    setAutoOpenKey(newOpenKey)
+    if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
+  }
 
   // Study/quiz state
   const [words, setWords] = useState<{ entry: WordEntry; isReview: boolean }[]>([])
@@ -102,18 +106,6 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
   const cnDays = useMemo(() => getWeekDayLabels(weekStartDay), [weekStartDay])
 
-  // Sync local state from defaultParams once loaded
-  useEffect(() => {
-    if (defaultParams) {
-      setNewPerDay(defaultParams.newWordsPerDay)
-      setWeekStartDay(defaultParams.weekStartDay)
-    }
-  }, [defaultParams])
-
-  // Auto-open dialog when no plan exists and params are loaded
-  useEffect(() => {
-    if (!isLoading && !weeklyPlan && defaultParams) setShowParamsDialog(true)
-  }, [isLoading, weeklyPlan, defaultParams])
 
   const suggestedLesson = useMemo(() => {
     return orderedLessons[0] ?? null
@@ -182,7 +174,8 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
     setStudyDefOnly(false)
     setSelectedDate(dateStr)
     setPhase('study')
-  }, [enabledTypes, buildSessionWords])
+    setIsImmersive(true)
+  }, [enabledTypes, buildSessionWords, setIsImmersive])
 
   const startQuiz = useCallback(() => {
     const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
@@ -519,7 +512,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {newWords.map(w => {
-                          const level = getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] text-[#fb923c] text-[.78rem] font-bold">
@@ -539,7 +532,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {weekReview.map(w => {
-                          const level = getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] text-[#93c5fd] text-[.78rem] font-bold">
@@ -559,7 +552,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {oldReview.map(w => {
-                          const level = getMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span key={wordKey(w)}
                                   className="px-2.5 py-1 rounded-full border-[1.5px] border-[rgba(167,139,250,.35)] bg-[rgba(167,139,250,.08)] text-[#c4b5fd] text-[.78rem] font-bold">
@@ -587,7 +580,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
                           key={t}
                           onClick={() => setEnabledTypes(prev => {
                             const n = new Set(prev);
-                            n.has(t) ? n.delete(t) : n.add(t);
+                            if (n.has(t)) { n.delete(t) } else { n.add(t) }
                             return n
                           })}
                           className={`flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] border-[1.5px] cursor-pointer text-[.82rem] font-bold transition-all select-none ${
@@ -620,7 +613,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
               if (!todayInPlan) return null
               return (
                 <button
-                  onClick={() => setSelectedDate(today)}
+                  onClick={() => startStudy(today)}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[.65rem] font-extrabold bg-[rgba(245,158,11,.12)] border border-[rgba(245,158,11,.3)] text-[#fbbf24] cursor-pointer hover:bg-[rgba(245,158,11,.2)] transition-all"
                 >
                   ⚡ 开始今天的练习
@@ -815,7 +808,7 @@ export default function WeeklyPractice({vocab}: WeeklyPracticeProps) {
     const pct = total ? Math.round(score / total * 100) : 0
     const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪'
     const msg = pct >= 90 ? '完美！' : pct >= 70 ? '太棒了！' : pct >= 50 ? '不错哦！' : '继续加油！'
-    const masteredCount = words.filter(w => getMasteryLevel((masteryMap[`${w.entry.unit}::${w.entry.lesson}::${w.entry.word}`]?.correct ?? 0)) === 3).length
+    const masteredCount = words.filter(w => getWordMasteryLevel((masteryMap[`${w.entry.unit}::${w.entry.lesson}::${w.entry.word}`]?.correct ?? 0)) === 3).length
 
     return (
       <>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
 import { TAG_STYLE } from '@/utils/lesson34-data'
@@ -23,11 +23,12 @@ export default function ProblemDetail({ problem, mode = 'full', tip, leftDiagram
 
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
-
-  useEffect(() => {
+  const [prevProbId, setPrevProbId] = useState(problem.id)
+  if (prevProbId !== problem.id) {
+    setPrevProbId(problem.id)
     setAnswer('')
     setFeedback(null)
-  }, [problem.id])
+  }
 
   function checkAnswer() {
     if (!answer) return

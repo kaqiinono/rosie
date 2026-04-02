@@ -128,6 +128,11 @@ export interface DailyRecord {
   scores: Record<string, number>
 }
 
+export interface ReviewRecord {
+  date: string     // "YYYY-MM-DD"
+  correct: boolean
+}
+
 export interface WordMasteryInfo {
   correct: number
   incorrect: number
@@ -135,6 +140,7 @@ export interface WordMasteryInfo {
   stage?: number          // 0-7 (normal) or 0-8 (hard); undefined = not yet initialized
   nextReviewDate?: string // "YYYY-MM-DD"
   isHard?: boolean        // true after regressing from stage >= 2
+  reviewHistory?: ReviewRecord[]  // chronological review log
 }
 
 export type WordMasteryMap = Record<string, WordMasteryInfo>
