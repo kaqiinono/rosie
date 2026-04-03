@@ -3,12 +3,16 @@
 import MathWeeklyPractice from '@/components/math/MathWeeklyPractice'
 import { PROBLEMS as PROBLEMS35 } from '@/utils/lesson35-data'
 import { PROBLEMS as PROBLEMS36 } from '@/utils/lesson36-data'
+import { PROBLEMS as PROBLEMS37 } from '@/utils/lesson37-data'
+import { PROBLEMS as PROBLEMS34 } from '@/utils/lesson34-data'
 import type { ProblemSet } from '@/utils/type'
 import Link from 'next/link'
 
 const PROBLEM_SETS: Record<string, ProblemSet> = {
+  '34': PROBLEMS34,
   '35': PROBLEMS35,
   '36': PROBLEMS36,
+  '37': PROBLEMS37,
 }
 
 export default function MathDailyPage() {
@@ -22,12 +26,42 @@ export default function MathDailyPage() {
     >
       {/* Floating decorations */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute top-[8%] left-[5%] text-4xl opacity-20 animate-bounce-slow" style={{ animationDelay: '0s' }}>⭐</div>
-        <div className="absolute top-[15%] right-[8%] text-3xl opacity-15 animate-bounce-slow" style={{ animationDelay: '-1.5s' }}>🌟</div>
-        <div className="absolute top-[45%] left-[3%] text-2xl opacity-10 animate-bounce-slow" style={{ animationDelay: '-0.8s' }}>✨</div>
-        <div className="absolute top-[60%] right-[5%] text-3xl opacity-12 animate-bounce-slow" style={{ animationDelay: '-2s' }}>💫</div>
-        <div className="absolute top-[80%] left-[10%] text-2xl opacity-10 animate-bounce-slow" style={{ animationDelay: '-1.2s' }}>🌈</div>
-        <div className="absolute bottom-[10%] right-[12%] text-3xl opacity-15 animate-bounce-slow" style={{ animationDelay: '-3s' }}>🎯</div>
+        <div
+          className="animate-bounce-slow absolute top-[8%] left-[5%] text-4xl opacity-20"
+          style={{ animationDelay: '0s' }}
+        >
+          ⭐
+        </div>
+        <div
+          className="animate-bounce-slow absolute top-[15%] right-[8%] text-3xl opacity-15"
+          style={{ animationDelay: '-1.5s' }}
+        >
+          🌟
+        </div>
+        <div
+          className="animate-bounce-slow absolute top-[45%] left-[3%] text-2xl opacity-10"
+          style={{ animationDelay: '-0.8s' }}
+        >
+          ✨
+        </div>
+        <div
+          className="animate-bounce-slow absolute top-[60%] right-[5%] text-3xl opacity-12"
+          style={{ animationDelay: '-2s' }}
+        >
+          💫
+        </div>
+        <div
+          className="animate-bounce-slow absolute top-[80%] left-[10%] text-2xl opacity-10"
+          style={{ animationDelay: '-1.2s' }}
+        >
+          🌈
+        </div>
+        <div
+          className="animate-bounce-slow absolute right-[12%] bottom-[10%] text-3xl opacity-15"
+          style={{ animationDelay: '-3s' }}
+        >
+          🎯
+        </div>
       </div>
 
       {/* Header */}
@@ -44,17 +78,25 @@ export default function MathDailyPage() {
           <Link
             href="/math"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline transition-all hover:scale-105 sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-2"
-            style={{ background: 'rgba(251,146,60,.12)', border: '1.5px solid rgba(251,146,60,.3)', color: '#c2410c' }}
+            style={{
+              background: 'rgba(251,146,60,.12)',
+              border: '1.5px solid rgba(251,146,60,.3)',
+              color: '#c2410c',
+            }}
           >
-            <span className="text-[14px] font-bold leading-none">←</span>
+            <span className="text-[14px] leading-none font-bold">←</span>
             <span className="hidden text-[12px] font-bold sm:inline">返回</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="text-2xl animate-wiggle inline-block">⭐</span>
+            <span className="animate-wiggle inline-block text-2xl">⭐</span>
             <span
               className="text-[18px] font-extrabold"
-              style={{ background: 'linear-gradient(135deg, #ea580c, #f59e0b, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+              style={{
+                background: 'linear-gradient(135deg, #ea580c, #f59e0b, #f97316)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
             >
               数学每日一练
             </span>
