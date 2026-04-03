@@ -101,7 +101,6 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
   const [placed, setPlaced] = useState<(string | null)[]>(() => Array(word.length).fill(null))
 
   const allFilled = placed.length === word.length && placed.every((p) => p !== null)
-  console.log(placed, answered, allFilled, word)
 
   // Responsive sizing based on word length
   const tileSizeSmall =
