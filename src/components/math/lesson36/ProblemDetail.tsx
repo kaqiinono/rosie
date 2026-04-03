@@ -11,6 +11,7 @@ import Month from './WeekdayFlowChart/Month'
 import Year from './WeekdayFlowChart/Year'
 import MonthCalendarPuzzle from './WeekdayFlowChart/MonthCalendarPuzzle'
 import MonthCalendarPuzzleSum from './WeekdayFlowChart/MonthCalendarPuzzleSum'
+import QuestionLayout from '@/components/math/shared/QuestionLayout'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -92,13 +93,7 @@ function buildFlowChart(
   return null
 }
 
-export default function ProblemDetail({
-  problem,
-  mode = 'full',
-  tip,
-  leftDiagram,
-  rightDiagram,
-}: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDetailProps) {
   const router = useRouter()
   const { solveCount, handleSolve, addWrong } = useLesson36()
   const count = solveCount[problem.id] ?? 0
@@ -132,9 +127,97 @@ export default function ProblemDetail({
 
   const autoLeftDiagram = buildFlowChart(problem, manualTotalDays, setManualTotalDays)
 
+  const solution = (
+    <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
+      <div>
+        {/* Analysis box */}
+        <div className="to-yellow-light mb-3.5 rounded-lg border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] p-3.5">
+          <div className="text-yellow-dark mb-1.5 flex items-center gap-1 text-xs font-bold">
+            🔍 题型分析
+          </div>
+          <ul className="flex flex-col gap-1.5">
+            {problem.analysis.map((a, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]"
+              >
+                <span className="shrink-0">💡</span>
+                {a}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {autoLeftDiagram}
+      </div>
+    </div>
+  )
+
+  const question = (
+    <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
+      <div className="min-w-0 flex-1">
+        <span
+          className={`mb-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] || 'bg-gray-100 text-gray-600'}`}
+        >
+          {problem.tagLabel}
+        </span>
+
+        {/* Problem text */}
+        <div
+          className="border-app-blue text-text-secondary [&>strong]:text-text-primary mb-3.5 rounded-lg border-l-3 bg-[#f8faff] px-3.5 py-3 text-sm leading-relaxed [&>strong]:font-bold"
+          dangerouslySetInnerHTML={{ __html: problem.text }}
+        />
+      </div>
+    </div>
+  )
+
+  const answerDom = (
+    <>
+      {/* Answer section */}
+      <div className="mb-3 flex items-center gap-2">
+        <div className="bg-border-light h-px flex-1" />
+        <div className="text-text-muted text-xs font-semibold whitespace-nowrap">✏️ 写出答案</div>
+        <div className="bg-border-light h-px flex-1" />
+      </div>
+      {/* Tip */}
+      {tip && (
+        <div className="bg-app-green-light text-app-green-dark rounded-lg px-3 py-2.5 text-xs leading-relaxed">
+          💡 <strong>口诀：</strong>
+          {tip}
+        </div>
+      )}
+      <div className="border-border-light mb-3 rounded-lg border border-dashed bg-[#f9fafb] p-3.5">
+        <div className="text-text-secondary text-[13px]">{problem.finalQ}</div>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+          <input
+            type="number"
+            className="border-border-light w-[72px] rounded-lg border px-2 py-1.5 text-center text-sm"
+            placeholder="？"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+          />
+          <span>{problem.finalUnit}</span>
+          <button
+            onClick={checkAnswer}
+            className="bg-app-blue cursor-pointer rounded-full px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(59,130,246,0.3)] transition-all active:translate-y-px"
+          >
+            检查答案
+          </button>
+        </div>
+        {feedback && (
+          <div
+            className={`mt-2 text-[13px] ${feedback.ok ? 'text-app-green-dark' : 'text-app-red'}`}
+          >
+            {feedback.text}
+          </div>
+        )}
+      </div>
+    </>
+  )
+
   return (
     <div>
-      {/* Header - full mode only */}
       {mode === 'full' && (
         <div className="border-border-light mb-4 flex items-center gap-2.5 border-b pb-3.5">
           <button
@@ -151,95 +234,7 @@ export default function ProblemDetail({
           </div>
         </div>
       )}
-
-      <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
-        {/* Left column */}
-        <div className="min-w-0 flex-1">
-          <span
-            className={`mb-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] || 'bg-gray-100 text-gray-600'}`}
-          >
-            {problem.tagLabel}
-          </span>
-
-          {/* Problem text */}
-          <div
-            className="border-app-blue text-text-secondary [&>strong]:text-text-primary mb-3.5 rounded-lg border-l-3 bg-[#f8faff] px-3.5 py-3 text-sm leading-relaxed [&>strong]:font-bold"
-            dangerouslySetInnerHTML={{ __html: problem.text }}
-          />
-
-          {/* Analysis box */}
-          <div className="to-yellow-light mb-3.5 rounded-lg border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] p-3.5">
-            <div className="text-yellow-dark mb-1.5 flex items-center gap-1 text-xs font-bold">
-              🔍 题型分析
-            </div>
-            <ul className="flex flex-col gap-1.5">
-              {problem.analysis.map((a, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]"
-                >
-                  <span className="shrink-0">💡</span>
-                  {a}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Flow chart diagram */}
-          {leftDiagram ?? autoLeftDiagram}
-        </div>
-
-        {/* Right column */}
-        <div className="min-w-0 flex-1">
-          {/* Custom right diagram */}
-          {rightDiagram}
-
-          {/* Answer section */}
-          <div className="mb-3 flex items-center gap-2">
-            <div className="bg-border-light h-px flex-1" />
-            <div className="text-text-muted text-xs font-semibold whitespace-nowrap">
-              ✏️ 写出答案
-            </div>
-            <div className="bg-border-light h-px flex-1" />
-          </div>
-
-          <div className="border-border-light mb-3 rounded-lg border border-dashed bg-[#f9fafb] p-3.5">
-            <div className="text-text-secondary text-[13px]">{problem.finalQ}</div>
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-              <input
-                type="number"
-                className="border-border-light w-[72px] rounded-lg border px-2 py-1.5 text-center text-sm"
-                placeholder="？"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-              />
-              <span>{problem.finalUnit}</span>
-              <button
-                onClick={checkAnswer}
-                className="bg-app-blue cursor-pointer rounded-full px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(59,130,246,0.3)] transition-all active:translate-y-px"
-              >
-                检查答案
-              </button>
-            </div>
-            {feedback && (
-              <div
-                className={`mt-2 text-[13px] ${feedback.ok ? 'text-app-green-dark' : 'text-app-red'}`}
-              >
-                {feedback.text}
-              </div>
-            )}
-          </div>
-
-          {/* Tip */}
-          {tip && (
-            <div className="bg-app-green-light text-app-green-dark rounded-lg px-3 py-2.5 text-xs leading-relaxed">
-              💡 <strong>口诀：</strong>
-              {tip}
-            </div>
-          )}
-        </div>
-      </div>
+      <QuestionLayout question={question} solution={solution} answer={answerDom} />
     </div>
   )
 }
