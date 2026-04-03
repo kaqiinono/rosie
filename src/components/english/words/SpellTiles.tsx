@@ -10,7 +10,7 @@ interface SpellTilesProps {
 }
 
 export default function SpellTiles({ word, onSubmit, answered, isCorrect }: SpellTilesProps) {
-  const segments = useMemo(() => word.split(' '), [word])
+  const segments = useMemo(() => word.split(''), [word])
 
   // Map each slot index to its segment
   const segmentSlots = useMemo(() => {
@@ -22,8 +22,6 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
     }
     return result
   }, [segments])
-
-  const totalLetters = useMemo(() => word.replace(/ /g, '').length, [word])
 
   // Shuffled pool of unique letters, stable for the lifetime of this component instance
   const [pool] = useState<string[]>(() => {
@@ -43,9 +41,11 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
     // For each bad adjacent pair in sorted word letters, pick a distractor
     // that falls alphabetically between them — it will naturally slot in when sorted
     for (let i = 0; i < uniqueLetters.length - 1; i++) {
-      const a = uniqueLetters[i], b = uniqueLetters[i + 1]
+      const a = uniqueLetters[i],
+        b = uniqueLetters[i + 1]
       if (consecutivePairs.has(a + b)) {
-        const ai = alphabet.indexOf(a), bi = alphabet.indexOf(b)
+        const ai = alphabet.indexOf(a),
+          bi = alphabet.indexOf(b)
         for (let j = ai + 1; j < bi; j++) {
           const ch = alphabet[j]
           if (!wordLetterSet.has(ch) && !chosen.has(ch)) {
@@ -57,12 +57,13 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
     }
 
     // Fill remaining distractor slots (for difficulty) with random non-word letters
-    const target = letters.length >= 10
-      ? 0
-      : Math.min(Math.ceil(letters.length * 0.5), 10 - uniqueLetters.length)
+    const target =
+      letters.length >= 10
+        ? 0
+        : Math.min(Math.ceil(letters.length * 0.5), 10 - uniqueLetters.length)
 
     if (chosen.size < target) {
-      const candidates = alphabet.split('').filter(c => !wordLetterSet.has(c) && !chosen.has(c))
+      const candidates = alphabet.split('').filter((c) => !wordLetterSet.has(c) && !chosen.has(c))
       for (let i = candidates.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[candidates[i], candidates[j]] = [candidates[j], candidates[i]]
@@ -97,20 +98,24 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
   })
 
   // placed[slotIdx] = letter string, or null
-  const [placed, setPlaced] = useState<(string | null)[]>(() => Array(totalLetters).fill(null))
+  const [placed, setPlaced] = useState<(string | null)[]>(() => Array(word.length).fill(null))
 
-  const allFilled = placed.every(p => p !== null)
+  const allFilled = placed.length === word.length && placed.every((p) => p !== null)
+  console.log(placed, answered, allFilled, word)
 
   // Responsive sizing based on word length
-  const tileSize = 'w-12 h-12 text-[1.1rem] sm:w-14 sm:h-14 sm:text-[1.25rem] md:w-16 md:h-16 md:text-[1.4rem]'
+  const tileSizeSmall =
+    'w-12 h-12 text-[1.1rem] sm:w-14 sm:h-14 sm:text-[1.25rem] md:w-16 md:h-16 md:text-[1.4rem]'
+  const tileSizeLarge =
+    'w-24 h-12 text-[1.6rem] sm:w-26 sm:h-14 sm:text-[1.75rem] md:w-26 md:h-16 md:text-[1.8rem]'
   const tileGap = 'gap-2 sm:gap-2.5'
   const placeholderSize = 'text-[.75rem]'
 
   const handlePoolTap = (letter: string) => {
-    if (answered) return
+    if (answered || allFilled) return
     const firstEmpty = placed.indexOf(null)
     if (firstEmpty === -1) return
-    setPlaced(prev => {
+    setPlaced((prev) => {
       const next = [...prev]
       next[firstEmpty] = letter
       return next
@@ -119,7 +124,7 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
 
   const handlePlacedTap = (slotIdx: number) => {
     if (answered) return
-    setPlaced(prev => {
+    setPlaced((prev) => {
       const next = [...prev]
       next[slotIdx] = null
       return next
@@ -127,23 +132,15 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
   }
 
   const handleConfirm = () => {
-    let answer = ''
-    segments.forEach((seg, si) => {
-      if (si > 0) answer += ' '
-      const { start } = segmentSlots[si]
-      for (let i = 0; i < seg.length; i++) {
-        answer += placed[start + i] ?? ''
-      }
-    })
-    onSubmit(answer)
+    onSubmit(segments.join(''))
   }
 
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex w-full flex-col gap-3">
       {/* Answer slots grouped by word segment */}
-      <div className="flex items-center justify-center gap-2 flex-wrap w-full">
+      <div className="flex w-full flex-wrap items-center justify-center gap-2">
         {segments.map((seg, si) => (
-          <div key={si} className={`flex items-center flex-wrap justify-center ${tileGap}`}>
+          <div key={si} className={`flex flex-wrap items-center justify-center ${tileGap}`}>
             {Array.from({ length: seg.length }).map((_, ci) => {
               const slotIdx = segmentSlots[si].start + ci
               const letter = placed[slotIdx]
@@ -154,14 +151,17 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
                   ? 'border-[#4ade80] bg-[rgba(74,222,128,.08)]'
                   : 'border-[#f87171] bg-[rgba(248,113,113,.08)]'
               } else if (letter) {
-                cls = 'border-[#a78bfa] bg-[rgba(167,139,250,.1)] cursor-pointer hover:border-[#f87171]'
+                cls =
+                  'border-[#a78bfa] bg-[rgba(167,139,250,.1)] cursor-pointer hover:border-[#f87171]'
               }
 
               return (
                 <div
                   key={ci}
-                  onClick={() => { if (letter && !answered) handlePlacedTap(slotIdx) }}
-                  className={`${tileSize} rounded-lg border-2 flex items-center justify-center font-nunito font-black text-[#f0f0ff] transition-all select-none ${cls}`}
+                  onClick={() => {
+                    if (letter && !answered) handlePlacedTap(slotIdx)
+                  }}
+                  className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] transition-all select-none ${cls}`}
                 >
                   {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
                 </div>
@@ -173,16 +173,21 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
 
       {/* Pool tiles */}
       {!answered && (
-        <div className="flex items-center justify-center gap-2 flex-wrap mt-1 w-full">
+        <div className="mt-1 flex w-full flex-wrap items-center justify-center gap-2">
           {pool.map((letter, i) => (
             <button
               key={i}
               onClick={() => handlePoolTap(letter)}
-              className={`${tileSize} rounded-lg border-2 font-nunito font-black transition-all border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd] cursor-pointer hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)] hover:-translate-y-0.5`}
+              className={`w-24 ${tileSizeLarge} font-nunito cursor-pointer rounded-lg border-2 border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] font-black text-[#c4b5fd] transition-all hover:-translate-y-0.5 hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)]`}
             >
               {letter}
             </button>
           ))}
+          <button
+            key={'null'}
+            onClick={() => handlePoolTap(' ')}
+            className={`w-24 ${tileSizeLarge} font-nunito cursor-pointer rounded-lg border-2 border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] font-black text-[#c4b5fd] transition-all hover:-translate-y-0.5 hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)]`}
+          />
         </div>
       )}
 
@@ -190,7 +195,7 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
       {allFilled && !answered && (
         <button
           onClick={handleConfirm}
-          className="p-3 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] border-0 rounded-xl text-white font-nunito font-extrabold text-[.88rem] cursor-pointer hover:-translate-y-px transition-all"
+          className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] p-3 text-[.88rem] font-extrabold text-white transition-all hover:-translate-y-px"
         >
           ✓ 确认
         </button>
@@ -198,10 +203,20 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
 
       {/* Feedback */}
       {answered && isCorrect !== null && (
-        <div className={`text-center text-[.86rem] font-bold p-2.5 rounded-[10px] ${
-          isCorrect ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]' : 'bg-[rgba(248,113,113,.12)] text-[#f87171]'
-        }`}>
-          {isCorrect ? '✓ 正确！🎉' : <span>✗ 错误，正确答案：<strong>{word}</strong></span>}
+        <div
+          className={`rounded-[10px] p-2.5 text-center text-[.86rem] font-bold ${
+            isCorrect
+              ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
+              : 'bg-[rgba(248,113,113,.12)] text-[#f87171]'
+          }`}
+        >
+          {isCorrect ? (
+            '✓ 正确！🎉'
+          ) : (
+            <span>
+              ✗ 错误，正确答案：<strong>{word}</strong>
+            </span>
+          )}
         </div>
       )}
     </div>
