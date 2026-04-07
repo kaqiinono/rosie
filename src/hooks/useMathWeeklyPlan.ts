@@ -107,9 +107,21 @@ export function useMathWeeklyPlan(user: User | null) {
   }, [user, currentWeekStart])
 
   const savePlan = useCallback(async (plan: MathWeeklyPlan) => {
-    setWeeklyPlan(plan)
+    if (plan.weekStart === currentWeekStart) {
+      setWeeklyPlan(plan)
+    } else {
+      setPriorPlans(prev => {
+        const idx = prev.findIndex(p => p.weekStart === plan.weekStart)
+        if (idx >= 0) {
+          const copy = [...prev]
+          copy[idx] = plan
+          return copy
+        }
+        return [...prev, plan]
+      })
+    }
     if (user) await saveToCloud(user.id, plan)
-  }, [user])
+  }, [user, currentWeekStart])
 
   const addDoneKey = useCallback(async (date: string, key: string) => {
     setWeeklyPlan(prev => {
@@ -148,6 +160,28 @@ export function useMathWeeklyPlan(user: User | null) {
     })
   }, [user])
 
+  const deletePlan = useCallback(async (weekStart: string) => {
+    if (!user) return
+    try {
+      await supabase
+        .from('math_weekly_plans')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('week_start', weekStart)
+    } catch { /* ignore */ }
+    if (weekStart === currentWeekStart) {
+      setWeeklyPlan(null)
+    } else {
+      setPriorPlans(prev => prev.filter(p => p.weekStart !== weekStart))
+    }
+  }, [user, currentWeekStart])
+
+  const allPlans = useMemo(() => {
+    const plans: MathWeeklyPlan[] = [...priorPlans]
+    if (weeklyPlan) plans.push(weeklyPlan)
+    return plans.sort((a, b) => b.weekStart.localeCompare(a.weekStart))
+  }, [priorPlans, weeklyPlan])
+
   const allPriorKeys: string[] = useMemo(() => priorPlans.flatMap(plan =>
     plan.days.flatMap(day => [...day.problems, ...day.optionalProblems].map(p => p.key))
   ), [priorPlans])
@@ -161,9 +195,9 @@ export function useMathWeeklyPlan(user: User | null) {
   ), [priorPlans])
 
   return {
-    weeklyPlan, priorPlans, allPriorKeys, priorProblemMap,
+    weeklyPlan, priorPlans, allPlans, allPriorKeys, priorProblemMap,
     currentWeekStart, defaultParams,
-    savePlan, addDoneKey, updateDayProgress,
+    savePlan, addDoneKey, updateDayProgress, deletePlan,
     isLoading,
   }
 }
