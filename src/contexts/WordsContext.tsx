@@ -31,6 +31,8 @@ interface WordsContextValue {
   // practice types (shared for immersive mode)
   practiceTypes: ('A' | 'B' | 'C')[]
   setPracticeTypes: Dispatch<SetStateAction<('A' | 'B' | 'C')[]>>
+  previewCards: boolean
+  setPreviewCards: Dispatch<SetStateAction<boolean>>
 }
 
 const WordsContext = createContext<WordsContextValue | null>(null)
@@ -57,6 +59,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   const [selWords, setSelWords] = useState<Set<string>>(new Set())
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
   const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C')[]>(['A', 'B'])
+  const [previewCards, setPreviewCards] = useState(false)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_UNITS, JSON.stringify([...selUnits]))
@@ -82,6 +85,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
       masteryFilter, setMasteryFilter,
       filteredWords,
       practiceTypes, setPracticeTypes,
+      previewCards, setPreviewCards,
     }}>
       {children}
     </WordsContext.Provider>

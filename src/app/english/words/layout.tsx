@@ -11,7 +11,7 @@ import type { WordEntry } from '@/utils/type'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, setVocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch } = useWordsContext()
+  const { vocab, setVocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
   const [importOpen, setImportOpen] = useState(false)
@@ -19,10 +19,13 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // Reset immersive when navigating away
   useEffect(() => {
     setIsImmersive(false)
-  }, [pathname, setIsImmersive])
+    setPreviewCards(false)
+  }, [pathname, setIsImmersive, setPreviewCards])
 
-  const immersiveMode = pathname.includes('/practice') ? 'practice' : 'vocab'
+  const isPracticePage = pathname.includes('/practice')
   const isDaily = pathname.includes('/daily')
+  // When previewCards is true on the practice page, show vocab cards first; then switch to quiz
+  const immersiveMode = isPracticePage && !previewCards ? 'practice' : 'vocab'
 
   const handleImport = useCallback((words: WordEntry[]) => {
     void setVocab(words)
@@ -77,7 +80,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         allWords={vocab}
         mode={immersiveMode}
         practiceTypes={practiceTypes}
-        onClose={() => setIsImmersive(false)}
+        onClose={() => {
+          if (isPracticePage && previewCards) {
+            // Preview done — stay immersive but switch to quiz mode
+            setPreviewCards(false)
+          } else {
+            setIsImmersive(false)
+          }
+        }}
         onQuizComplete={recordBatch}
       />
     </div>

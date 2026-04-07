@@ -15,6 +15,7 @@ export default function PracticePage() {
     masteryFilter, setMasteryFilter,
     masteryMap,
     setPracticeTypes,
+    setPreviewCards,
   } = useWordsContext()
   const { setIsImmersive } = useImmersive()
 
@@ -26,14 +27,15 @@ export default function PracticePage() {
     return `${units} / ${lessons}（${filteredWords.length}词）`
   }, [selUnits, selLessons, filteredWords.length])
 
-  const startPractice = useCallback((types: ('A' | 'B' | 'C')[]) => {
+  const startPractice = useCallback((types: ('A' | 'B' | 'C')[], preview: boolean) => {
     if (!filteredWords.length) {
       alert('请先选择单词范围！')
       return
     }
     setPracticeTypes(types)
+    setPreviewCards(preview)
     setIsImmersive(true)
-  }, [filteredWords.length, setPracticeTypes, setIsImmersive])
+  }, [filteredWords.length, setPracticeTypes, setPreviewCards, setIsImmersive])
 
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
@@ -74,12 +76,10 @@ export default function PracticePage() {
         selLessons={selLessons}
         selWords={selWords}
         filteredCount={filteredWords.length}
-        allFlipped={false}
         onToggleUnit={toggleUnit}
         onToggleLesson={toggleLesson}
         onToggleWord={toggleWord}
         onClearWords={() => setSelWords(new Set())}
-        onFlipAll={() => {}}
         masteryFilter={masteryFilter}
         onMasteryFilter={setMasteryFilter}
         masteryMap={masteryMap}

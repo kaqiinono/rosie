@@ -76,6 +76,11 @@ export default function ImmersiveMode({
     if (open && mode === 'practice') quizResultBuffer.current = []
   }, [open, mode])
 
+  // Clear result buffer when switching into practice via preview flow
+  useEffect(() => {
+    if (open && mode === 'practice') quizResultBuffer.current = []
+  }, [mode]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const [prevOpen, setPrevOpen] = useState(open)
   if (prevOpen !== open) {
     setPrevOpen(open)
@@ -87,6 +92,13 @@ export default function ImmersiveMode({
       setShowResults(false)
       if (mode === 'practice') startQuiz()
     }
+  }
+
+  // When mode switches from 'vocab' → 'practice' while already open (preview → quiz flow)
+  const [prevMode, setPrevMode] = useState(mode)
+  if (prevMode !== mode) {
+    setPrevMode(mode)
+    if (open && mode === 'practice') startQuiz()
   }
 
   const toggleDefOnly = useCallback(() => {

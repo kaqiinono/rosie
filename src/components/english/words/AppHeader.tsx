@@ -48,7 +48,7 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
               <button
                 key={t.id}
                 onClick={() => router.push(t.path)}
-                className={`font-nunito cursor-pointer rounded-[9px] px-3.5 py-1.5 text-[1rem] font-bold transition-all ${
+                className={`font-nunito cursor-pointer rounded-[9px] px-2.5 py-1.5 text-[0.875rem] font-bold transition-all ${
                   active
                     ? 'bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] text-white shadow-[0_3px_10px_rgba(233,69,96,.35)]'
                     : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
@@ -64,7 +64,7 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
           <div ref={ddRef} className="relative">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-[10px] border-[1.5px] border-white/10 bg-white/[.06] px-3.5 py-1.5 text-[1rem] font-bold whitespace-nowrap text-white/70 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+              className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-[10px] border-[1.5px] border-white/10 bg-white/[.06] px-3.5 py-1.5 text-[0.875rem] font-bold whitespace-nowrap text-white/70 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               <svg
                 width="15"
@@ -140,7 +140,7 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
           </div>
           <button
             onClick={onImmersive}
-            className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-[10px] border-0 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] px-3.5 py-1.5 text-[1rem] font-bold whitespace-nowrap text-white shadow-[0_2px_10px_rgba(124,58,237,.35)] transition-all hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(124,58,237,.5)]"
+            className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-[10px] border-0 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] px-3.5 py-1.5 text-[0.875rem] font-bold whitespace-nowrap text-white shadow-[0_2px_10px_rgba(124,58,237,.35)] transition-all hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(124,58,237,.5)]"
           >
             <svg
               width="14"

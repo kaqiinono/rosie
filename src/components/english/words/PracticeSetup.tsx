@@ -4,13 +4,14 @@ import { useState } from 'react'
 
 interface PracticeSetupProps {
   scopeLabel: string
-  onStart: (types: ('A' | 'B' | 'C')[]) => void
+  onStart: (types: ('A' | 'B' | 'C')[], preview: boolean) => void
 }
 
 export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProps) {
   const [typeA, setTypeA] = useState(true)
-  const [typeB, setTypeB] = useState(true)
+  const [typeB, setTypeB] = useState(false)
   const [typeC, setTypeC] = useState(true)
+  const [preview, setPreview] = useState(false)
 
   const handleStart = () => {
     const types: ('A' | 'B' | 'C')[] = []
@@ -21,7 +22,7 @@ export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProp
       alert('请至少选一种题型！')
       return
     }
-    onStart(types)
+    onStart(types, preview)
   }
 
   return (
@@ -43,7 +44,7 @@ export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProp
             <button
               key={t.key}
               onClick={() => t.toggle(!t.checked)}
-              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[1.125rem] font-bold transition-all select-none ${
+              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
                 t.checked
                   ? 'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
                   : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
@@ -53,6 +54,29 @@ export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProp
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span className="min-w-[60px] text-[0.875rem] font-bold text-[var(--wm-text-dim)]">
+          预览卡片
+        </span>
+        <button
+          onClick={() => setPreview(!preview)}
+          className={`flex cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+            preview
+              ? 'border-[var(--wm-accent2)] bg-[rgba(100,160,255,.12)] text-[var(--wm-accent2)]'
+              : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+          }`}
+        >
+          <div
+            className={`relative h-3.5 w-7 rounded-[7px] transition-colors ${preview ? 'bg-[rgba(100,160,255,.45)]' : 'bg-[var(--wm-border)]'}`}
+          >
+            <div
+              className={`absolute top-0.5 left-0.5 h-2.5 w-2.5 rounded-full transition-all ${preview ? 'translate-x-3.5 bg-[var(--wm-accent2)]' : 'bg-[var(--wm-text-dim)]'}`}
+            />
+          </div>
+          {preview ? '开' : '关'}
+        </button>
       </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-2">

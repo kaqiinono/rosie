@@ -70,7 +70,8 @@ function getWeekEnd(weekStart: string): string {
 }
 
 function daysUntilExpiry(weekStart: string): number {
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
   const [y, m, d] = weekStart.split('-').map(Number)
   const expiry = new Date(y, m - 1, d + 6)
   return Math.ceil((expiry.getTime() - today.getTime()) / 86400000)
@@ -79,8 +80,16 @@ function daysUntilExpiry(weekStart: string): number {
 export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const { user } = useAuth()
   const { masteryMap, recordBatch } = useWordsContext()
-  const { weeklyPlan, allPlans, selectPlan, deletePlan, defaultParams, savePlan, updateDayProgress, isLoading } =
-    useWeeklyPlan(user)
+  const {
+    weeklyPlan,
+    allPlans,
+    selectPlan,
+    deletePlan,
+    defaultParams,
+    savePlan,
+    updateDayProgress,
+    isLoading,
+  } = useWeeklyPlan(user)
 
   const { isImmersive, setIsImmersive } = useImmersive()
   const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
@@ -89,6 +98,14 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const [showParamsDialog, setShowParamsDialog] = useState(false)
   const [isEditingPlan, setIsEditingPlan] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [syncedWeeklyPlanId, setSyncedWeeklyPlanId] = useState<string | null>(null)
+  if (weeklyPlan && weeklyPlan.weekStart !== syncedWeeklyPlanId) {
+    setSyncedWeeklyPlanId(weeklyPlan.weekStart)
+    const firstUnfinished = weeklyPlan.days.find(
+      (d) => !weeklyPlan.progress[d.date]?.quizDone,
+    )
+    setSelectedDate(firstUnfinished?.date ?? weeklyPlan.days[weeklyPlan.days.length - 1]?.date ?? null)
+  }
   const [showLessonPicker, setShowLessonPicker] = useState(false)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
@@ -135,8 +152,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   }, [vocab, activeLessons])
 
   const incompletePlans = useMemo(() => {
-    return allPlans.filter(plan =>
-      !plan.days.every(day => plan.progress[day.date]?.quizDone === true)
+    return allPlans.filter(
+      (plan) => !plan.days.every((day) => plan.progress[day.date]?.quizDone === true),
     )
   }, [allPlans])
 
@@ -175,15 +192,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     await savePlan(plan)
     setShowParamsDialog(false)
     setPhase('week-view')
-  }, [
-    activeLesson,
-    activeLessons,
-    dialogWeekStart,
-    lessonWords,
-    newPerDay,
-    weekStartDay,
-    savePlan,
-  ])
+  }, [activeLesson, activeLessons, dialogWeekStart, lessonWords, newPerDay, weekStartDay, savePlan])
 
   // Build session words for a given day
   const buildSessionWords = useCallback(
@@ -202,7 +211,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
         dayIndex,
       )
       const includedOldReview = oldReview.filter(
-        (e) => planLessonSet.has(`${e.unit}::${e.lesson}`) || selectedOldReviewKeys.has(wordKey(e))
+        (e) => planLessonSet.has(`${e.unit}::${e.lesson}`) || selectedOldReviewKeys.has(wordKey(e)),
       )
       return [
         ...newWords.map((e) => ({ entry: e, isReview: false })),
@@ -301,39 +310,57 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 周计划
               </div>
               <button
-                onClick={() => { setPendingLessons([]); setPendingDate(todayStr()); setIsEditingPlan(false); setShowParamsDialog(true) }}
+                onClick={() => {
+                  setPendingLessons([])
+                  setPendingDate(todayStr())
+                  setIsEditingPlan(false)
+                  setShowParamsDialog(true)
+                }}
                 className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
               >
                 + 创建周计划
               </button>
             </div>
             {incompletePlans.length === 0 ? (
-              <div className="py-12 text-center text-sm text-[var(--wm-text-dim)]">暂无未完成的周计划</div>
+              <div className="py-12 text-center text-sm text-[var(--wm-text-dim)]">
+                暂无未完成的周计划
+              </div>
             ) : (
               <div className="flex flex-col gap-2">
-                {incompletePlans.map(plan => {
-                  const doneDays = plan.days.filter(d => plan.progress[d.date]?.quizDone === true).length
+                {incompletePlans.map((plan) => {
+                  const doneDays = plan.days.filter(
+                    (d) => plan.progress[d.date]?.quizDone === true,
+                  ).length
                   const remaining = daysUntilExpiry(plan.weekStart)
                   const isExpired = remaining < 0
                   const weekEnd = getWeekEnd(plan.weekStart)
                   const units = plan.unit.split(', ')
                   const lessons = plan.lesson.split(', ')
-                  const allSameUnit = units.every(u => u === units[0])
+                  const allSameUnit = units.every((u) => u === units[0])
                   const lessonLabel = allSameUnit
                     ? `${units[0]} · ${lessons.join(', ')}`
                     : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
                   return (
                     <div key={plan.weekStart} className="flex items-center gap-2">
                       <button
-                        onClick={() => { selectPlan(plan); setPhase('week-view') }}
+                        onClick={() => {
+                          selectPlan(plan)
+                          setPhase('week-view')
+                        }}
                         className="min-w-0 flex-1 cursor-pointer rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-5 py-4 text-left transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)]"
                       >
-                        <div className="mb-1 text-[1rem] font-bold text-[var(--wm-text)]">{lessonLabel}</div>
+                        <div className="mb-1 text-[1rem] font-bold text-[var(--wm-text)]">
+                          {lessonLabel}
+                        </div>
                         <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
-                          <span>{fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}</span>
+                          <span>
+                            {fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}
+                          </span>
                           <span>{doneDays}/7 天完成</span>
                           <span className={isExpired ? 'text-[#f87171]' : 'text-[#fbbf24]'}>
-                            {isExpired ? `已过期 ${Math.abs(remaining)} 天` : `还剩 ${remaining} 天`}
+                            {isExpired
+                              ? `已过期 ${Math.abs(remaining)} 天`
+                              : `还剩 ${remaining} 天`}
                           </span>
                         </div>
                       </button>
@@ -514,7 +541,10 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             {activeLesson && (
               <div className="mt-6 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
                 <button
-                  onClick={() => { setShowParamsDialog(false); setPhase('plans-list') }}
+                  onClick={() => {
+                    setShowParamsDialog(false)
+                    setPhase('plans-list')
+                  }}
                   className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
                 >
                   取消
@@ -569,7 +599,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                     if (weeklyPlan) {
                       const units = weeklyPlan.unit.split(', ')
                       const lessons = weeklyPlan.lesson.split(', ')
-                      setPendingLessons(units.map((u, i) => ({ unit: u, lesson: lessons[i] ?? '' })))
+                      setPendingLessons(
+                        units.map((u, i) => ({ unit: u, lesson: lessons[i] ?? '' })),
+                      )
                       setNewPerDay(weeklyPlan.newWordsPerDay)
                       setWeekStartDay(weeklyPlan.weekStartDay)
                       setPendingDate(weeklyPlan.weekStart)
@@ -627,12 +659,29 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   borderColor = 'rgba(248,113,113,.3)'
                   textColor = 'rgba(248,113,113,.6)'
                 }
+                let boxShadow: string | undefined
                 if (isSelected) {
-                  bgColor = isDone
-                    ? 'rgba(74,222,128,.2)'
-                    : isToday
-                      ? 'rgba(245,158,11,.2)'
-                      : 'rgba(255,255,255,.08)'
+                  if (isDone) {
+                    bgColor = 'rgba(74,222,128,.25)'
+                    borderColor = '#4ade80'
+                    textColor = '#6ee7a0'
+                    boxShadow = '0 0 0 2px rgba(74,222,128,.4), 0 4px 16px rgba(74,222,128,.3)'
+                  } else if (isToday) {
+                    bgColor = 'rgba(245,158,11,.25)'
+                    borderColor = '#f59e0b'
+                    textColor = '#fcd34d'
+                    boxShadow = '0 0 0 2px rgba(245,158,11,.5), 0 4px 16px rgba(245,158,11,.3)'
+                  } else if (isPast) {
+                    bgColor = 'rgba(248,113,113,.18)'
+                    borderColor = 'rgba(248,113,113,.8)'
+                    textColor = 'rgba(248,113,113,1)'
+                    boxShadow = '0 0 0 2px rgba(248,113,113,.35), 0 4px 16px rgba(248,113,113,.2)'
+                  } else {
+                    bgColor = 'rgba(255,255,255,.14)'
+                    borderColor = 'rgba(255,255,255,.7)'
+                    textColor = 'rgba(255,255,255,.9)'
+                    boxShadow = '0 0 0 2px rgba(255,255,255,.25), 0 4px 16px rgba(255,255,255,.1)'
+                  }
                 }
 
                 return (
@@ -644,7 +693,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                       borderColor,
                       background: bgColor,
                       color: textColor,
-                      transform: isSelected ? 'translateY(-2px)' : undefined,
+                      boxShadow,
+                      transform: isSelected ? 'translateY(-2px) scale(1.05)' : undefined,
                     }}
                   >
                     <div className="text-[.6rem] font-extrabold opacity-70">{cnDays[i]}</div>
@@ -663,7 +713,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             {selectedDate &&
               (() => {
                 const dayIndex = weeklyPlan.days.findIndex((d) => d.date === selectedDate)
-                const dayPlan = weeklyPlan.days[dayIndex]!
+                const dayPlan = weeklyPlan.days[dayIndex]
+                if (!dayPlan) return null
                 const isDone = weeklyPlan.progress[selectedDate]?.quizDone === true
                 const newWords = dayPlan.newWordKeys
                   .map((k) => vocab.find((w) => wordKey(w) === k))
@@ -674,10 +725,17 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   weeklyPlan,
                   dayIndex,
                 )
-                const inPlanOldReview = oldReview.filter(w => planLessonSet.has(`${w.unit}::${w.lesson}`))
-                const outOfPlanOldReview = oldReview.filter(w => !planLessonSet.has(`${w.unit}::${w.lesson}`))
-                const selectedOutCount = outOfPlanOldReview.filter(w => selectedOldReviewKeys.has(wordKey(w))).length
-                const total = newWords.length + weekReview.length + inPlanOldReview.length + selectedOutCount
+                const inPlanOldReview = oldReview.filter((w) =>
+                  planLessonSet.has(`${w.unit}::${w.lesson}`),
+                )
+                const outOfPlanOldReview = oldReview.filter(
+                  (w) => !planLessonSet.has(`${w.unit}::${w.lesson}`),
+                )
+                const selectedOutCount = outOfPlanOldReview.filter((w) =>
+                  selectedOldReviewKeys.has(wordKey(w)),
+                ).length
+                const total =
+                  newWords.length + weekReview.length + inPlanOldReview.length + selectedOutCount
                 return (
                   <div className="border-t border-[var(--wm-border)] pt-4">
                     {/* Summary row */}
@@ -843,7 +901,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                                 return n
                               })
                             }
-                            className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3.5 py-2.5 text-[1rem] font-bold transition-all select-none ${
+                            className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3.5 py-2.5 text-[0.875rem] font-bold transition-all select-none ${
                               on
                                 ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
                                 : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
