@@ -50,6 +50,7 @@ export default function ImmersiveMode({
   const [curQ, setCurQ] = useState(0)
   const [qScore, setQScore] = useState(0)
   const [qAnswered, setQAnswered] = useState(false)
+  const [qCorrect, setQCorrect] = useState<boolean | null>(null)
   const [qSelected, setQSelected] = useState<string | null>(null)
   const [spellOk, setSpellOk] = useState<boolean | null>(null)
   const [showResults, setShowResults] = useState(false)
@@ -129,12 +130,28 @@ export default function ImmersiveMode({
     }
   }, [idx, defOnly])
 
+  const nextQuizQ = useCallback(() => {
+    const next = curQ + 1
+    if (next >= quizQs.length) {
+      onQuizComplete?.(quizResultBuffer.current)
+      quizResultBuffer.current = []
+      setShowResults(true)
+    } else {
+      setCurQ(next)
+      setQAnswered(false)
+      setQCorrect(null)
+      setQSelected(null)
+      setSpellOk(null)
+    }
+  }, [curQ, quizQs, onQuizComplete])
+
   const handleMCAnswer = useCallback(
     (chosen: string, correct: string) => {
       if (qAnswered) return
-      setQAnswered(true)
-      setQSelected(chosen)
       const isCorrect = chosen === correct
+      setQAnswered(true)
+      setQCorrect(isCorrect)
+      setQSelected(chosen)
       if (isCorrect) setQScore((s) => s + 1)
       if (quizQs[curQ])
         quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
@@ -145,8 +162,9 @@ export default function ImmersiveMode({
   const handleSpellSubmit = useCallback(
     (val: string) => {
       if (qAnswered) return
-      setQAnswered(true)
       const ok = val.trim().toLowerCase() === quizQs[curQ]?.word.word.toLowerCase()
+      setQAnswered(true)
+      setQCorrect(ok)
       setSpellOk(ok)
       if (ok) setQScore((s) => s + 1)
       if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: ok })
@@ -154,19 +172,12 @@ export default function ImmersiveMode({
     [qAnswered, quizQs, curQ],
   )
 
-  const nextQuizQ = useCallback(() => {
-    const next = curQ + 1
-    if (next >= quizQs.length) {
-      onQuizComplete?.(quizResultBuffer.current)
-      quizResultBuffer.current = []
-      setShowResults(true)
-    } else {
-      setCurQ(next)
-      setQAnswered(false)
-      setQSelected(null)
-      setSpellOk(null)
+  useEffect(() => {
+    if (qAnswered && qCorrect === true) {
+      const t = setTimeout(nextQuizQ, 600)
+      return () => clearTimeout(t)
     }
-  }, [curQ, quizQs, onQuizComplete])
+  }, [qAnswered, qCorrect, nextQuizQ])
 
   const qTotal = quizQs.length
   const q = quizQs[curQ]
@@ -530,7 +541,7 @@ export default function ImmersiveMode({
                     />
                   )}
 
-                  {qAnswered && (
+                  {qAnswered && qCorrect === false && (
                     <button
                       onClick={nextQuizQ}
                       className="font-nunito cursor-pointer self-center rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-7 py-[clamp(.6rem,2cqi,.8rem)] text-[clamp(.88rem,2.8cqi,1rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"

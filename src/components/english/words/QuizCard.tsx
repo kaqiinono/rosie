@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import type { WordEntry } from '@/utils/type'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
@@ -25,32 +25,43 @@ export default function QuizCard({
   onNext,
 }: QuizCardProps) {
   const [answered, setAnswered] = useState(false)
+  const [wasCorrect, setWasCorrect] = useState<boolean | null>(null)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
   const [spellCorrect, setSpellCorrect] = useState<boolean | null>(null)
   const [prevIndex, setPrevIndex] = useState(currentIndex)
   if (prevIndex !== currentIndex) {
     setPrevIndex(currentIndex)
     setAnswered(false)
+    setWasCorrect(null)
     setSelectedWord(null)
     setSpellCorrect(null)
   }
 
+  useEffect(() => {
+    if (answered && wasCorrect === true) {
+      const t = setTimeout(onNext, 600)
+      return () => clearTimeout(t)
+    }
+  }, [answered, wasCorrect, onNext])
+
   const handleMC = useCallback(
     (chosen: string) => {
       if (answered) return
+      const correct = chosen === question.word.word
       setAnswered(true)
+      setWasCorrect(correct)
       setSelectedWord(chosen)
-      onAnswer(chosen === question.word.word)
+      onAnswer(correct)
     },
     [answered, onAnswer, question.word.word],
   )
 
   const handleSpell = useCallback(
     (val: string) => {
-      debugger
       if (answered) return
-      setAnswered(true)
       const correct = val.trim().toLowerCase() === question.word.word.toLowerCase()
+      setAnswered(true)
+      setWasCorrect(correct)
       setSpellCorrect(correct)
       onAnswer(correct)
     },
@@ -206,7 +217,7 @@ export default function QuizCard({
         )}
       </div>
 
-      {answered && (
+      {answered && wasCorrect === false && (
         <button
           onClick={onNext}
           className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.75rem,2.5cqi,1rem)] text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"

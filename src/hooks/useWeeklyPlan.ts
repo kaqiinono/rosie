@@ -76,9 +76,32 @@ async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
     }
 }
 
+async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
+    try {
+        const {data, error} = await supabase
+            .from('weekly_plans')
+            .select('week_start, unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data')
+            .eq('user_id', userId)
+            .order('week_start', {ascending: false})
+        if (error || !data) return []
+        return data.map(row => ({
+            weekStart: row.week_start,
+            unit: row.unit,
+            lesson: row.lesson,
+            weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+            newWordsPerDay: row.new_words_per_day ?? SYSTEM_DEFAULTS.newWordsPerDay,
+            days: row.plan_data as WeeklyPlan['days'],
+            progress: (row.progress_data as WeeklyPlan['progress']) ?? {},
+        }))
+    } catch {
+        return []
+    }
+}
+
 export function useWeeklyPlan(user: User | null) {
     const [defaultParams, setDefaultParams] = useState<{ weekStartDay: number; newWordsPerDay: number } | null>(null)
     const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(null)
+    const [allPlans, setAllPlans] = useState<WeeklyPlan[]>([])
     const [isLoading, setIsLoading] = useState(() => user !== null)
     const [syncedUser, setSyncedUser] = useState(user)
     if (syncedUser !== user) {
@@ -112,25 +135,57 @@ export function useWeeklyPlan(user: User | null) {
         })()
     }, [user, currentWeekStart])
 
+    // Step 4: load all plans for the list view
+    useEffect(() => {
+        if (!user) return
+        void loadAllPlansFromCloud(user.id).then(setAllPlans)
+    }, [user])
+
+    const selectPlan = useCallback((plan: WeeklyPlan) => {
+        setWeeklyPlan(plan)
+    }, [])
+
+    const deletePlan = useCallback(async (weekStart: string) => {
+        setAllPlans(prev => prev.filter(p => p.weekStart !== weekStart))
+        setWeeklyPlan(prev => prev?.weekStart === weekStart ? null : prev)
+        if (user) {
+            try {
+                await supabase
+                    .from('weekly_plans')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('week_start', weekStart)
+            } catch { /* ignore */ }
+        }
+    }, [user])
+
     const savePlan = useCallback(async (plan: WeeklyPlan) => {
         setWeeklyPlan(plan)
+        setAllPlans(prev => {
+            const rest = prev.filter(p => p.weekStart !== plan.weekStart)
+            return [plan, ...rest]
+        })
         if (user) await saveToCloud(user.id, plan)
     }, [user])
 
     const updateDayProgress = useCallback(async (date: string, progress: WeekDayProgress) => {
+        let updated: WeeklyPlan | null = null
         setWeeklyPlan(prev => {
             if (!prev) return prev
-            const updated: WeeklyPlan = {
-                ...prev,
-                progress: {...prev.progress, [date]: progress},
-            }
-            if (user) void saveToCloud(user.id, updated)
+            updated = {...prev, progress: {...prev.progress, [date]: progress}}
             return updated
         })
+        if (updated) {
+            setAllPlans(prev => prev.map(p => p.weekStart === updated!.weekStart ? updated! : p))
+            if (user) void saveToCloud(user.id, updated)
+        }
     }, [user])
 
     return {
         weeklyPlan,
+        allPlans,
+        selectPlan,
+        deletePlan,
         previousPlan: null,
         currentWeekStart,
         defaultParams,

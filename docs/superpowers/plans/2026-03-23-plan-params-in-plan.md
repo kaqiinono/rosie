@@ -645,7 +645,7 @@ if (showParamsDialog) {
           {weeklyPlan && (
             <button
               onClick={() => setShowParamsDialog(false)}
-              className="mt-3 w-full text-center text-[.78rem] text-[var(--wm-text-dim)] hover:text-[var(--wm-text)] cursor-pointer py-2"
+              className="mt-3 w-full text-center text-[0.875rem] text-[var(--wm-text-dim)] hover:text-[var(--wm-text)] cursor-pointer py-2"
             >
               取消
             </button>
