@@ -10,7 +10,9 @@ interface ImportModalProps {
 }
 
 export default function ImportModal({ open, onClose, onImport }: ImportModalProps) {
-  const [status, setStatus] = useState<{ type: 'info' | 'success' | 'error'; text: string } | null>(null)
+  const [status, setStatus] = useState<{ type: 'info' | 'success' | 'error'; text: string } | null>(
+    null,
+  )
   const [importedVocab, setImportedVocab] = useState<WordEntry[] | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [dzHover, setDzHover] = useState(false)
@@ -42,7 +44,9 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
         const word = String(r[2] || '').trim()
         if (!unit || !lesson || !word) continue
         vocab.push({
-          unit, lesson, word,
+          unit,
+          lesson,
+          word,
           explanation: String(r[3] || '').trim(),
           ipa: String(r[4] || '').trim(),
           example: String(r[5] || '').trim(),
@@ -50,24 +54,36 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
       }
 
       if (!vocab.length) {
-        setStatus({ type: 'error', text: '❌ 未找到有效单词，请检查文件格式（需要 Unit/Lesson/单词 三列）' })
+        setStatus({
+          type: 'error',
+          text: '❌ 未找到有效单词，请检查文件格式（需要 Unit/Lesson/单词 三列）',
+        })
         return
       }
 
       setImportedVocab(vocab)
-      const unitCount = new Set(vocab.map(v => v.unit)).size
-      setStatus({ type: 'success', text: `✅ 解析成功！共 ${vocab.length} 个单词，来自 ${unitCount} 个 Unit` })
+      const unitCount = new Set(vocab.map((v) => v.unit)).size
+      setStatus({
+        type: 'success',
+        text: `✅ 解析成功！共 ${vocab.length} 个单词，来自 ${unitCount} 个 Unit`,
+      })
     } catch (err) {
-      setStatus({ type: 'error', text: `❌ 文件解析失败：${err instanceof Error ? err.message : 'Unknown error'}` })
+      setStatus({
+        type: 'error',
+        text: `❌ 文件解析失败：${err instanceof Error ? err.message : 'Unknown error'}`,
+      })
     }
   }, [])
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setDzHover(false)
-    const file = e.dataTransfer.files[0]
-    if (file) processFile(file)
-  }, [processFile])
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      setDzHover(false)
+      const file = e.dataTransfer.files[0]
+      if (file) processFile(file)
+    },
+    [processFile],
+  )
 
   const handleConfirm = useCallback(() => {
     if (importedVocab) {
@@ -91,27 +107,30 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
   }
 
   return (
-    <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-[#1a1a2e] border border-white/[.12] rounded-[20px] p-8 max-w-[520px] w-[90%] relative">
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="relative w-[90%] max-w-[520px] rounded-[20px] border border-white/[.12] bg-[#1a1a2e] p-8">
         <button
           onClick={handleClose}
-          className="absolute top-3.5 right-4 bg-transparent border-0 text-white/40 text-[1.2rem] cursor-pointer"
+          className="absolute top-3.5 right-4 cursor-pointer border-0 bg-transparent text-[1.2rem] text-white/40"
         >
           ✕
         </button>
-        <div className="font-fredoka text-[1.3rem] bg-gradient-to-br from-[#4ade80] to-[#22c55e] bg-clip-text text-transparent mb-1.5">
+        <div className="font-fredoka mb-1.5 bg-gradient-to-br from-[#4ade80] to-[#22c55e] bg-clip-text text-[1.3rem] text-transparent">
           📥 导入单词表
         </div>
-        <div className="text-[.8rem] text-white/40 mb-5">
+        <div className="mb-5 text-[1.125rem] text-white/40">
           支持 .xlsx 格式，列顺序：Unit / Lesson / 单词 / 释义 / 音标 / 例句
         </div>
 
         <div
           onClick={() => document.getElementById('import-file-input')?.click()}
-          onDragOver={e => { e.preventDefault(); setDzHover(true) }}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDzHover(true)
+          }}
           onDragLeave={() => setDzHover(false)}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-[14px] px-5 py-9 text-center cursor-pointer transition-all mb-4 ${
+          className={`mb-4 cursor-pointer rounded-[14px] border-2 border-dashed px-5 py-9 text-center transition-all ${
             dzHover ? 'border-[#4ade80] bg-[rgba(74,222,128,.06)]' : 'border-white/[.15]'
           }`}
         >
@@ -119,8 +138,8 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
             <div className="text-[1.1rem] font-bold text-white/70">📄 {fileName}</div>
           ) : (
             <>
-              <div className="text-[2.2rem] mb-2.5">📂</div>
-              <div className="font-bold text-white/60 mb-1">点击选择文件，或拖拽到这里</div>
+              <div className="mb-2.5 text-[2.2rem]">📂</div>
+              <div className="mb-1 font-bold text-white/60">点击选择文件，或拖拽到这里</div>
               <div className="text-[.75rem] text-white/[.28]">.xlsx 格式</div>
             </>
           )}
@@ -130,29 +149,31 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
           type="file"
           accept=".xlsx"
           className="hidden"
-          onChange={e => {
+          onChange={(e) => {
             const file = e.target.files?.[0]
             if (file) processFile(file)
           }}
         />
 
         {status && (
-          <div className={`p-3 px-4 rounded-[10px] text-[.82rem] font-bold mb-3.5 ${statusColors[status.type]}`}>
+          <div
+            className={`mb-3.5 rounded-[10px] p-3 px-4 text-[1rem] font-bold ${statusColors[status.type]}`}
+          >
             {status.text}
           </div>
         )}
 
-        <div className="flex gap-2.5 justify-end">
+        <div className="flex justify-end gap-2.5">
           <button
             onClick={handleClose}
-            className="px-5 py-2.5 bg-transparent border-[1.5px] border-white/[.15] rounded-[10px] text-white/50 font-nunito font-bold text-[.82rem] cursor-pointer"
+            className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-white/[.15] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-white/50"
           >
             取消
           </button>
           {importedVocab && (
             <button
               onClick={handleConfirm}
-              className="px-6 py-2.5 bg-gradient-to-br from-[#16a34a] to-[#4ade80] border-0 rounded-[10px] text-white font-nunito font-extrabold text-[.82rem] cursor-pointer"
+              className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#16a34a] to-[#4ade80] px-6 py-2.5 text-[1rem] font-extrabold text-white"
             >
               ✓ 确认导入
             </button>

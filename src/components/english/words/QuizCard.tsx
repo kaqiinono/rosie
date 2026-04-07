@@ -143,7 +143,7 @@ export default function QuizCard({
 
         {question.type === 'B' && (
           <>
-            <div className="mb-1 text-[clamp(1rem,4cqi,1.4rem)] leading-snug font-black">
+            <div className="mb-1 text-[clamp(2rem,4cqi,1.4rem)] leading-snug font-black">
               <PhonicsWord text={question.word.word} />
               {question.word.ipa && (
                 <div className="mt-1 text-[clamp(.8rem,2.5cqi,.95rem)] font-semibold text-[var(--wm-accent2)] italic">
@@ -173,7 +173,7 @@ export default function QuizCard({
                     key={o.word}
                     disabled={answered}
                     onClick={() => handleMC(o.word)}
-                    className={`font-nunito cursor-pointer rounded-[10px] border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(.88rem,3cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${btnCls} ${
+                    className={`font-nunito cursor-pointer rounded-[10px] border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(1.1rem,4cqi,2rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${btnCls} ${
                       !answered
                         ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]'
                         : ''
@@ -189,7 +189,7 @@ export default function QuizCard({
 
         {question.type === 'C' && (
           <>
-            <div className="mb-1 text-[clamp(1rem,4cqi,1.4rem)] leading-snug font-black">
+            <div className="mb-1 text-[clamp(1.2rem,4cqi,1.4rem)] leading-snug font-black">
               {question.word.explanation}
             </div>
             <div className="mb-4 text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">

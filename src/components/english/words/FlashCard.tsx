@@ -35,7 +35,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
     >
       <div
         onClick={onFlip}
-        className="w-full min-h-[256px] relative cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
+        className="relative min-h-[256px] w-full cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
         style={{
           transformStyle: 'preserve-3d',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0)',
@@ -43,7 +43,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
       >
         {/* ── Front ── */}
         <div
-          className={`absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col border-2 ${MASTERY_BORDER[level]}`}
+          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-2 p-4 ${MASTERY_BORDER[level]}`}
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
@@ -53,60 +53,67 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
         >
           {/* Decorative top-right glow */}
           <div
-            className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
-            style={{ background: 'radial-gradient(circle at top right, rgba(233,69,96,.12), transparent 70%)' }}
+            className="pointer-events-none absolute top-0 right-0 h-24 w-24"
+            style={{
+              background:
+                'radial-gradient(circle at top right, rgba(233,69,96,.12), transparent 70%)',
+            }}
           />
           {/* Decorative background initial */}
           <div
-            className="absolute -bottom-3 -right-1 font-fredoka font-black leading-none pointer-events-none select-none"
+            className="font-fredoka pointer-events-none absolute -right-1 -bottom-3 leading-none font-black select-none"
             style={{ fontSize: 'clamp(72px,14vw,108px)', color: 'rgba(109,40,217,.07)', zIndex: 0 }}
           >
             {entry.word.charAt(0).toUpperCase()}
           </div>
 
           {/* Header: unit / lesson badges + mastery badge */}
-          <div className="flex gap-1.5 flex-wrap shrink-0 relative z-[1] justify-between">
-            <div className="flex gap-1.5 flex-wrap">
-              <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(233,69,96,.14)] text-[#f87171] border border-[rgba(233,69,96,.22)]">
+          <div className="relative z-[1] flex shrink-0 flex-wrap justify-between gap-1.5">
+            <div className="flex flex-wrap gap-1.5">
+              <span className="rounded-full border border-[rgba(233,69,96,.22)] bg-[rgba(233,69,96,.14)] px-2 py-0.5 text-[.58rem] font-extrabold tracking-wider text-[#f87171] uppercase">
                 {entry.unit}
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[.58rem] font-extrabold uppercase tracking-wider bg-[rgba(96,165,250,.14)] text-[#93c5fd] border border-[rgba(96,165,250,.22)]">
+              <span className="rounded-full border border-[rgba(96,165,250,.22)] bg-[rgba(96,165,250,.14)] px-2 py-0.5 text-[.58rem] font-extrabold tracking-wider text-[#93c5fd] uppercase">
                 {entry.lesson}
               </span>
             </div>
             {level > 0 && (
-              <span className={`px-2 py-0.5 rounded-full text-[.65rem] font-extrabold`}>
+              <span className={`rounded-full px-2 py-0.5 text-[.65rem] font-extrabold`}>
                 {MASTERY_ICON[level]}
               </span>
             )}
           </div>
 
           {/* Center: word + ipa */}
-          <div className="flex-1 flex flex-col items-center justify-center gap-1.5 relative z-[1] py-1">
-            <div className={`font-nunito ${wordFontSize} font-black leading-tight text-center break-words`}>
+          <div className="relative z-[1] flex flex-1 flex-col items-center justify-center gap-1.5 py-1">
+            <div
+              className={`font-nunito ${wordFontSize} text-center leading-tight font-black break-words`}
+            >
               <PhonicsWord text={entry.word} />
             </div>
             {entry.ipa && (
-              <div className="text-[.8rem] text-[#e879f9] italic font-medium opacity-80 tracking-wide text-center">
+              <div className="text-center text-[1.125rem] font-medium tracking-wide text-[#e879f9] italic opacity-80">
                 {entry.ipa}
               </div>
             )}
           </div>
 
           {/* Bottom: definition preview */}
-          <div className="relative z-[1] border-t border-white/[.06] pt-2 mt-0.5">
-            <p className="text-[.69rem] text-white/[.28] leading-relaxed line-clamp-2">
+          <div className="relative z-[1] mt-0.5 border-t border-white/[.06] pt-2">
+            <p className="line-clamp-2 text-[.69rem] leading-relaxed text-white/[.28]">
               {entry.explanation}
             </p>
           </div>
 
           {/* Flip hint */}
-          <span className="absolute bottom-2 right-2.5 text-white/[.14] text-[.62rem] font-bold select-none">↻</span>
+          <span className="absolute right-2.5 bottom-2 text-[.62rem] font-bold text-white/[.14] select-none">
+            ↻
+          </span>
         </div>
 
         {/* ── Back ── */}
         <div
-          className="absolute inset-0 rounded-2xl overflow-hidden p-5 flex items-center justify-center min-h-[256px]"
+          className="absolute inset-0 flex min-h-[256px] items-center justify-center overflow-hidden rounded-2xl p-5"
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
@@ -118,12 +125,14 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
         >
           {/* Definition — centered */}
           <div
-            className="text-[1.15rem] font-bold leading-relaxed text-[#dde8ff] text-center [&_strong]:text-[#60a5fa] [&_strong]:font-extrabold"
+            className="text-center text-[1.15rem] leading-relaxed font-bold text-[#dde8ff] [&_strong]:font-extrabold [&_strong]:text-[#60a5fa]"
             dangerouslySetInnerHTML={{ __html: explHtml }}
           />
 
           {/* Flip back hint */}
-          <span className="absolute bottom-2 right-2.5 text-white/[.14] text-[.62rem] font-bold select-none">↩</span>
+          <span className="absolute right-2.5 bottom-2 text-[.62rem] font-bold text-white/[.14] select-none">
+            ↩
+          </span>
         </div>
       </div>
     </div>

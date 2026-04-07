@@ -14,19 +14,19 @@ interface CardsGridProps {
 export default function CardsGrid({ words, flippedSet, onFlip, masteryMap }: CardsGridProps) {
   if (!words.length) {
     return (
-      <div className="text-center py-12 text-[var(--wm-text-dim)] col-span-full">
-        <div className="text-[2.5rem] mb-2.5">🔍</div>
+      <div className="col-span-full py-12 text-center text-[var(--wm-text-dim)]">
+        <div className="mb-2.5 text-[2.5rem]">🔍</div>
         <div>
           没有找到匹配的单词
           <br />
-          <small className="text-[.8rem] opacity-60">请选择 Unit 或 Lesson</small>
+          <small className="text-[1.125rem] opacity-60">请选择 Unit 或 Lesson</small>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] max-sm:grid-cols-1 gap-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-sm:grid-cols-1">
       {words.map((v, i) => (
         <FlashCard
           key={`${v.word}-${i}`}
