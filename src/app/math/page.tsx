@@ -8,6 +8,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/38',
+    title: '一笔画探险',
+    description: '掌握一笔画的秘密：端点、奇点与偶点，判断能否一笔画，以及如何改造图形让它可以一笔画。',
+    icon: '✏️',
+    lectureNum: '第 38 讲',
+    tags: ['一笔画', '奇点偶点', '5道附加题'],
+    variant: 'violet',
+  },
+  {
     href: '/math/ny/37',
     title: '鸡兔同笼探险',
     description: '掌握假设法4大题型：头和腿和基础、先求头和、双组分配、倒扣分，附加题挑战特殊条件与代数方法。',

@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 export interface ModuleCardData {
   href: string
   title: string
@@ -97,6 +99,7 @@ export interface Problem {
   finalQ: string
   finalUnit: string
   finalAns: number
+  figureNode?: ReactNode
 }
 
 export interface ProblemSet {
@@ -107,7 +110,14 @@ export interface ProblemSet {
   supplement?: Problem[]
 }
 
-export type PageName = 'home' | 'lesson' | 'homework' | 'workbook' | 'alltest' | 'pretest' | 'detail'
+export type PageName =
+  | 'home'
+  | 'lesson'
+  | 'homework'
+  | 'workbook'
+  | 'alltest'
+  | 'pretest'
+  | 'detail'
 
 export interface WordEntry {
   stage?: string
@@ -132,7 +142,7 @@ export interface DailyRecord {
 }
 
 export interface ReviewRecord {
-  date: string     // "YYYY-MM-DD"
+  date: string // "YYYY-MM-DD"
   correct: boolean
 }
 
@@ -140,64 +150,64 @@ export interface WordMasteryInfo {
   correct: number
   incorrect: number
   lastSeen: string
-  stage?: number          // 0-7 (normal) or 0-8 (hard); undefined = not yet initialized
+  stage?: number // 0-7 (normal) or 0-8 (hard); undefined = not yet initialized
   nextReviewDate?: string // "YYYY-MM-DD"
-  isHard?: boolean        // true after regressing from stage >= 2
-  reviewHistory?: ReviewRecord[]  // chronological review log
+  isHard?: boolean // true after regressing from stage >= 2
+  reviewHistory?: ReviewRecord[] // chronological review log
 }
 
 export type WordMasteryMap = Record<string, WordMasteryInfo>
 
 export interface WeeklyPlanDay {
-  date: string           // ISO date e.g. "2026-03-20"
-  newWordKeys: string[]  // word keys for new words from active lesson
+  date: string // ISO date e.g. "2026-03-20"
+  newWordKeys: string[] // word keys for new words from active lesson
 }
 
 export interface WeekDayProgress {
   quizDone: boolean
-  lastScore?: number     // percentage 0–100
-  completedAt?: string   // ISO date
+  lastScore?: number // percentage 0–100
+  completedAt?: string // ISO date
 }
 
 export interface WeeklyPlan {
-  weekStart: string      // ISO date of the Thursday starting this week
+  weekStart: string // ISO date of the Thursday starting this week
   unit: string
   lesson: string
-  weekStartDay: number   // 0–6, 4 = Thursday
+  weekStartDay: number // 0–6, 4 = Thursday
   newWordsPerDay: number // default 3
-  days: WeeklyPlanDay[]  // 7 entries index 0=Thu … 6=Wed
-  progress: Record<string, WeekDayProgress>  // keyed by date string
+  days: WeeklyPlanDay[] // 7 entries index 0=Thu … 6=Wed
+  progress: Record<string, WeekDayProgress> // keyed by date string
 }
 
 // Math weekly plan types
 
 export interface MathPlanProblem {
-  key: string       // globally unique key e.g. "35::L1"
-  lessonId: string  // "35" | "36"
-  section: string   // "lesson" | "homework" | "workbook" | "pretest"
-  index: number     // 1-based, used to construct URL e.g. /math/ny/35/lesson/1
-  title: string     // problem title
+  key: string // globally unique key e.g. "35::L1"
+  lessonId: string // "35" | "36"
+  section: string // "lesson" | "homework" | "workbook" | "pretest"
+  index: number // 1-based, used to construct URL e.g. /math/ny/35/lesson/1
+  title: string // problem title
   problemId: string // original Problem.id e.g. "36-L1"
 }
 
 export interface MathWeeklyPlanDay {
-  date: string                        // "YYYY-MM-DD"
-  problems: MathPlanProblem[]         // required problems (ordered)
+  date: string // "YYYY-MM-DD"
+  problems: MathPlanProblem[] // required problems (ordered)
   optionalProblems: MathPlanProblem[] // optional problems (W7-12)
 }
 
 export interface MathDayProgress {
-  doneKeys: string[]    // completed problem key list
-  completedAt?: string  // time when all required problems were completed
+  doneKeys: string[] // completed problem key list
+  completedAt?: string // time when all required problems were completed
 }
 
 export interface MathWeeklyPlan {
-  weekStart: string                           // ISO date (same Thursday start as English)
-  lessonId: string                            // "35" | "36"
-  weekStartDay: number                        // 0–6, 4 = Thursday
-  problemsPerDay: number                      // default 3
-  days: MathWeeklyPlanDay[]                   // 7 days
-  progress: Record<string, MathDayProgress>   // key = date string
+  weekStart: string // ISO date (same Thursday start as English)
+  lessonId: string // "35" | "36"
+  weekStartDay: number // 0–6, 4 = Thursday
+  problemsPerDay: number // default 3
+  days: MathWeeklyPlanDay[] // 7 days
+  progress: Record<string, MathDayProgress> // key = date string
 }
 
 export type ProblemMasteryMap = Record<string, WordMasteryInfo>
@@ -212,18 +222,18 @@ export interface PerLessonRotationState {
 }
 
 export interface MathRotatingReviewState {
-  planLessonId: string                              // ties state to current plan, e.g. "36"
-  lessonOrder: string[]                             // ordered prior lesson IDs to cycle, e.g. ["32","33","35"]
-  nextLessonIndex: number                           // index into lessonOrder for next day's assignment
+  planLessonId: string // ties state to current plan, e.g. "36"
+  lessonOrder: string[] // ordered prior lesson IDs to cycle, e.g. ["32","33","35"]
+  nextLessonIndex: number // index into lessonOrder for next day's assignment
   perLesson: Record<string, PerLessonRotationState> // per-lesson problem-level state
-  dailyAssignments: Record<string, string[]>        // date → assigned problem keys
-  dailyDoneKeys: Record<string, string[]>           // date → completed problem keys
+  dailyAssignments: Record<string, string[]> // date → assigned problem keys
+  dailyDoneKeys: Record<string, string[]> // date → completed problem keys
 }
 
 export interface MathWeeklyLessonReviewState {
-  planLessonId: string                    // bound to current lesson plan; reset when lesson changes
-  reviewCounts: Record<string, number>    // problemKey → times selected and completed
-  dailyAssignments: Record<string, string>  // date → assigned problemKey (one per day)
-  dailyDoneKeys: Record<string, string[]>   // date → completed keys
-  dailySkipped: Record<string, true>        // date → skipped flag
+  planLessonId: string // bound to current lesson plan; reset when lesson changes
+  reviewCounts: Record<string, number> // problemKey → times selected and completed
+  dailyAssignments: Record<string, string> // date → assigned problemKey (one per day)
+  dailyDoneKeys: Record<string, string[]> // date → completed keys
+  dailySkipped: Record<string, true> // date → skipped flag
 }
