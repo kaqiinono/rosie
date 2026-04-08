@@ -21,6 +21,7 @@ export const CONGRATS_MESSAGES = [
 
 export const STORAGE_KEYS = {
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
+  ENGLISH_SEL_STAGE: 'english-sel-stage',
   ENGLISH_SEL_UNITS: 'english-sel-units',
   ENGLISH_SEL_LESSONS: 'english-sel-lessons',
 } as const

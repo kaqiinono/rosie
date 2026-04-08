@@ -110,6 +110,7 @@ export interface ProblemSet {
 export type PageName = 'home' | 'lesson' | 'homework' | 'workbook' | 'alltest' | 'pretest' | 'detail'
 
 export interface WordEntry {
+  stage?: string
   unit: string
   lesson: string
   word: string

@@ -3,10 +3,12 @@
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import type { MasteryLevel } from '@/utils/masteryUtils'
 import { MASTERY_ICON } from '@/utils/masteryUtils'
-import { getAllUnits } from '@/utils/english-helpers'
+import { getAllUnits, getAllStages } from '@/utils/english-helpers'
 
 interface FilterBarProps {
   vocab: WordEntry[]
+  selStage: string
+  onSetStage: (stage: string) => void
   selUnits: Set<string>
   selLessons: Set<string>
   selWords: Set<string>
@@ -24,6 +26,8 @@ interface FilterBarProps {
 
 export default function FilterBar({
   vocab,
+  selStage,
+  onSetStage,
   selUnits,
   selLessons,
   selWords,
@@ -37,7 +41,8 @@ export default function FilterBar({
   masteryFilter,
   onMasteryFilter,
 }: FilterBarProps) {
-  const units = getAllUnits(vocab)
+  const stages = getAllStages(vocab)
+  const units = getAllUnits(vocab, selStage)
   const lessonsByUnit = [...selUnits].sort().map((unit) => ({
     unit,
     lessons: [...new Set(vocab.filter((v) => v.unit === unit).map((v) => v.lesson))].sort(),
@@ -51,6 +56,28 @@ export default function FilterBar({
   return (
     <div className="border-b border-[var(--wm-border)] bg-[var(--wm-surface)] px-4 py-3">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-2.5">
+        {stages.length > 0 && (
+          <div className="flex flex-wrap items-start gap-2">
+            <span className="min-w-[62px] pt-1.5 text-[.7rem] font-extrabold tracking-wider text-[var(--wm-text-dim)] uppercase">
+              Stage
+            </span>
+            <div className="flex flex-1 flex-wrap gap-1.5">
+              {stages.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => onSetStage(s)}
+                  className={`font-nunito cursor-pointer rounded-lg border-[1.5px] px-3 py-1.5 text-[0.875rem] font-bold whitespace-nowrap transition-all select-none ${
+                    selStage === s
+                      ? 'border-[#a855f7] bg-gradient-to-br from-[#a855f7] to-[#7c3aed] text-white shadow-[0_2px_8px_rgba(168,85,247,.3)]'
+                      : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[#a855f7] hover:text-[var(--wm-text)]'
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="flex flex-wrap items-start gap-2">
           <span className="min-w-[62px] pt-1.5 text-[.7rem] font-extrabold tracking-wider text-[var(--wm-text-dim)] uppercase">
             Unit

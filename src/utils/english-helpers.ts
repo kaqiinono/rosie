@@ -72,8 +72,13 @@ export function shuffle<T>(arr: T[], seed?: number): T[] {
   return a
 }
 
-export function getAllUnits(vocab: WordEntry[]): string[] {
-  return [...new Set(vocab.map(v => v.unit))].sort()
+export function getAllStages(vocab: WordEntry[]): string[] {
+  return [...new Set(vocab.map(v => v.stage).filter((s): s is string => !!s))].sort()
+}
+
+export function getAllUnits(vocab: WordEntry[], selStage?: string): string[] {
+  const src = selStage ? vocab.filter(v => !v.stage || v.stage === selStage) : vocab
+  return [...new Set(src.map(v => v.unit))].sort()
 }
 
 export function getAllLessons(vocab: WordEntry[], selectedUnits: Set<string>): string[] {
@@ -83,11 +88,13 @@ export function getAllLessons(vocab: WordEntry[], selectedUnits: Set<string>): s
 
 export function getFilteredWords(
   vocab: WordEntry[],
+  selStage: string,
   selUnits: Set<string>,
   selLessons: Set<string>,
   selWords: Set<string>,
 ): WordEntry[] {
   return vocab.filter(v => {
+    if (selStage && v.stage && v.stage !== selStage) return false
     if (selUnits.size && !selUnits.has(v.unit)) return false
     if (selLessons.size && !selLessons.has(`${v.unit}::${v.lesson}`)) return false
     if (selWords.size && !selWords.has(v.word)) return false

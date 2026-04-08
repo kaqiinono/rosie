@@ -11,7 +11,7 @@ import type { WordEntry } from '@/utils/type'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, setVocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards } = useWordsContext()
+  const { vocab, setVocab, upsertByStage, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
   const [importOpen, setImportOpen] = useState(false)
@@ -34,14 +34,19 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     setSelWords(new Set())
   }, [setVocab, setSelUnits, setSelLessons, setSelWords])
 
+  const handleAppend = useCallback((words: WordEntry[]) => {
+    void upsertByStage(words)
+    setSelWords(new Set())
+  }, [upsertByStage, setSelWords])
+
   const handleExport = useCallback(async () => {
     const xlsx = await import('xlsx')
     const { utils, writeFile } = xlsx.default || xlsx
     const wb = utils.book_new()
-    const headers = ['Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
-    const rows = [headers, ...vocab.map(v => [v.unit, v.lesson, v.word, v.explanation, v.ipa || '', v.example || ''])]
+    const headers = ['Stage', 'Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
+    const rows = [headers, ...vocab.map(v => [v.stage || '', v.unit, v.lesson, v.word, v.explanation, v.ipa || '', v.example || ''])]
     const ws = utils.aoa_to_sheet(rows)
-    ws['!cols'] = [{ wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
+    ws['!cols'] = [{ wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
     utils.book_append_sheet(wb, ws, '单词数据')
     writeFile(wb, 'RosieFun_词库.xlsx')
   }, [vocab])
@@ -72,6 +77,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         open={importOpen}
         onClose={() => setImportOpen(false)}
         onImport={handleImport}
+        onAppend={handleAppend}
       />
       {/* ImmersiveMode opens when immersive is active on non-daily pages */}
       <ImmersiveMode

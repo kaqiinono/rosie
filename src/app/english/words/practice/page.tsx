@@ -9,6 +9,7 @@ import PracticeSetup from '@/components/english/words/PracticeSetup'
 export default function PracticePage() {
   const {
     vocab, filteredWords,
+    selStage, setSelStage,
     selUnits, setSelUnits,
     selLessons, setSelLessons,
     selWords, setSelWords,
@@ -72,6 +73,8 @@ export default function PracticePage() {
     <>
       <FilterBar
         vocab={vocab}
+        selStage={selStage}
+        onSetStage={setSelStage}
         selUnits={selUnits}
         selLessons={selLessons}
         selWords={selWords}

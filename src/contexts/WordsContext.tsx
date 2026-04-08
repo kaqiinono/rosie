@@ -16,9 +16,12 @@ interface WordsContextValue {
   user: User | null
   vocab: WordEntry[]
   setVocab: (words: WordEntry[]) => Promise<void>
+  upsertByStage: (words: WordEntry[]) => Promise<void>
   masteryMap: WordMasteryMap
   recordBatch: (results: { entry: WordEntry; correct: boolean }[]) => void
   // filter state
+  selStage: string
+  setSelStage: (stage: string) => void
   selUnits: Set<string>
   setSelUnits: Dispatch<SetStateAction<Set<string>>>
   selLessons: Set<string>
@@ -39,27 +42,41 @@ const WordsContext = createContext<WordsContextValue | null>(null)
 
 export function WordsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
-  const { vocab, setVocab } = useWordData(user)
+  const { vocab, setVocab, upsertByStage } = useWordData(user)
   const { masteryMap, recordBatch } = useWordMastery(user)
 
+  const [selStage, setSelStageState] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ENGLISH_SEL_STAGE)
+      if (saved) return saved
+    } catch { /* ignore */ }
+    return '4A'
+  })
   const [selUnits, setSelUnits] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.ENGLISH_SEL_UNITS)
       if (saved) return new Set(JSON.parse(saved) as string[])
     } catch { /* ignore */ }
-    return new Set(['Unit 1'])
+    return new Set()
   })
   const [selLessons, setSelLessons] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.ENGLISH_SEL_LESSONS)
       if (saved) return new Set(JSON.parse(saved) as string[])
     } catch { /* ignore */ }
-    return new Set(['Unit 1::Lesson 1'])
+    return new Set()
   })
   const [selWords, setSelWords] = useState<Set<string>>(new Set())
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
   const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C')[]>(['A', 'B'])
   const [previewCards, setPreviewCards] = useState(false)
+
+  const setSelStage = (stage: string) => {
+    setSelStageState(stage)
+    localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_STAGE, stage)
+    setSelUnits(new Set())
+    setSelLessons(new Set())
+  }
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_UNITS, JSON.stringify([...selUnits]))
@@ -70,15 +87,16 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   }, [selLessons])
 
   const filteredWords = useMemo(() => {
-    const base = getFilteredWords(vocab, selUnits, selLessons, selWords)
+    const base = getFilteredWords(vocab, selStage, selUnits, selLessons, selWords)
     if (masteryFilter === null) return base
     return base.filter(v => getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter)
-  }, [vocab, selUnits, selLessons, selWords, masteryFilter, masteryMap])
+  }, [vocab, selStage, selUnits, selLessons, selWords, masteryFilter, masteryMap])
 
   return (
     <WordsContext.Provider value={{
-      user, vocab, setVocab,
+      user, vocab, setVocab, upsertByStage,
       masteryMap, recordBatch,
+      selStage, setSelStage,
       selUnits, setSelUnits,
       selLessons, setSelLessons,
       selWords, setSelWords,

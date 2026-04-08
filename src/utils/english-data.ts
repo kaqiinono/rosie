@@ -1,6 +1,7 @@
 import type { WordEntry } from './type'
 
 export const SAMPLE_WORDS: WordEntry[] = [{
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "a great time",
@@ -8,6 +9,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ə ɡreɪt taɪm/",
   "example": "We had a great time at the theme park yesterday."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "Look at the time!",
@@ -15,6 +17,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/lʊk æt ðə taɪm/",
   "example": "Look at the time! We're going to be late for school!"
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "on time",
@@ -22,6 +25,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɒn taɪm/",
   "example": "The train arrived on time, so we didn't have to wait."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "waste (one's) time",
@@ -29,6 +33,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/weɪst wʌnz taɪm/",
   "example": "Don't waste your time playing games all day."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "time for",
@@ -36,6 +41,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/taɪm fɔːr/",
   "example": "It's time for dinner — please come to the table."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "laugh",
@@ -43,6 +49,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/lɑːf/",
   "example": "The funny video made everyone laugh out loud."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "enjoy",
@@ -50,6 +57,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪnˈdʒɔɪ/",
   "example": "I really enjoy reading books on rainy days."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "grandchild",
@@ -57,6 +65,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɡræntʃaɪld/",
   "example": "She is the youngest grandchild in the family."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "lazy",
@@ -64,6 +73,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈleɪzi/",
   "example": "He was too lazy to clean his room all week."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "only child",
@@ -71,6 +81,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈəʊnli tʃaɪld/",
   "example": "As an only child, she never had to share her toys."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "nephew",
@@ -78,6 +89,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈnefjuː/",
   "example": "My nephew is six years old and loves dinosaurs."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "niece",
@@ -85,6 +97,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/niːs/",
   "example": "I bought a birthday present for my niece."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
   "word": "waste",
@@ -92,6 +105,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/weɪst/",
   "example": "Don't waste water — turn off the tap when you brush your teeth."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "population",
@@ -99,6 +113,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌpɒpjuˈleɪʃn/",
   "example": "The population of our city has grown a lot in recent years."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "hunt",
@@ -106,6 +121,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hʌnt/",
   "example": "Lions hunt at night when it is cooler."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "hurt",
@@ -113,6 +129,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hɜːrt/",
   "example": "She hurt her knee when she fell off her bike."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "protect",
@@ -120,6 +137,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/prəˈtekt/",
   "example": "We should protect wild animals from hunters."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "danger",
@@ -127,6 +145,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈdeɪndʒər/",
   "example": "The hikers were in danger when the storm suddenly started."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "kill",
@@ -134,6 +153,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/kɪl/",
   "example": "Pollution can kill fish and other sea creatures."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "care for",
@@ -141,6 +161,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/keər fɔːr/",
   "example": "She stays home to care for her elderly grandmother."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "frightened of",
@@ -148,6 +169,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈfraɪtnd ɒv/",
   "example": "My little brother is frightened of spiders."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "in fact",
@@ -155,6 +177,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪn fækt/",
   "example": "I thought the test was easy. In fact, I got full marks."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "look after",
@@ -162,6 +185,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/lʊk ˈɑːftər/",
   "example": "Can you look after my dog while I'm on holiday?"
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "reach",
@@ -169,6 +193,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/riːtʃ/",
   "example": "The news about the earthquake quickly reached people all over the world."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "livestock",
@@ -176,6 +201,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈlaɪvstɒk/",
   "example": "The farmer keeps livestock including cows, sheep and chickens."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "roar",
@@ -183,6 +209,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɔːr/",
   "example": "We could hear the lion's roar from far away."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "big cat",
@@ -190,6 +217,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/bɪɡ kæt/",
   "example": "The leopard is a big cat that can climb trees very well."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "conservationist",
@@ -197,6 +225,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌkɒnsəˈveɪʃənɪst/",
   "example": "The conservationist worked hard to save the tigers."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "frightening",
@@ -204,6 +233,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈfraɪtnɪŋ/",
   "example": "The thunderstorm last night was very frightening."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "initiative",
@@ -211,6 +241,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪˈnɪʃətɪv/",
   "example": "The school started an initiative to reduce plastic waste."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "million",
@@ -218,6 +249,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈmɪljən/",
   "example": "Over a million people visited the museum last year."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 2",
   "word": "affect",
@@ -225,6 +257,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/əˈfekt/",
   "example": "Air pollution affects the health of everyone in the city."
 }, {
+  "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 3",
   "word": "diver",
@@ -232,6 +265,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈdaɪvər/",
   "example": "The diver went deep underwater to explore the coral reef."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "pay",
@@ -239,6 +273,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/peɪ/",
   "example": "I'll pay for the movie tickets this time."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "save (money)",
@@ -246,6 +281,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/seɪv ˈmʌni/",
   "example": "She saves money every month to buy a new laptop."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "awful",
@@ -253,6 +289,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɔːfl/",
   "example": "The weather was awful — it rained all day."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "careful",
@@ -260,6 +297,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈkeərfl/",
   "example": "Be careful when you cross the road."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "hate",
@@ -267,6 +305,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/heɪt/",
   "example": "I hate getting up early on cold mornings."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "rich",
@@ -274,6 +313,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɪtʃ/",
   "example": "He became rich after starting his own business."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "armchair",
@@ -281,6 +321,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɑːrmtʃeər/",
   "example": "Grandpa fell asleep in his armchair after lunch."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "coffee table",
@@ -288,6 +329,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈkɒfi ˌteɪbl/",
   "example": "She put the magazines on the coffee table in the living room."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "fridge",
@@ -295,6 +337,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/frɪdʒ/",
   "example": "There's some juice in the fridge if you're thirsty."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "oven",
@@ -302,6 +345,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈʌvn/",
   "example": "Mum put the cake in the oven and set the timer."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "shower",
@@ -309,6 +353,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈʃaʊər/",
   "example": "I always have a shower before school."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "sink",
@@ -316,6 +361,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/sɪŋk/",
   "example": "Please wash your hands in the sink before eating."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "sofa",
@@ -323,6 +369,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈsəʊfə/",
   "example": "We all sat on the sofa and watched a film together."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "toilet",
@@ -330,6 +377,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈtɔɪlət/",
   "example": "Could you tell me where the toilet is, please?"
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "wardrobe",
@@ -337,6 +385,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈwɔːdrəʊb/",
   "example": "She hung her school uniform in the wardrobe."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "move in",
@@ -344,6 +393,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/muːv ɪn/",
   "example": "We move in to our new house next Saturday."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 1",
   "word": "move out",
@@ -351,6 +401,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/muːv aʊt/",
   "example": "They had to move out before the end of the month."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "furniture",
@@ -358,6 +409,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈfɜːrnɪtʃər/",
   "example": "They bought some new furniture for the bedroom."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "glass",
@@ -365,6 +417,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɡlɑːs/",
   "example": "Be careful — there's broken glass on the floor."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "modern",
@@ -372,6 +425,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈmɒdərn/",
   "example": "The school has a very modern computer lab."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "plastic",
@@ -379,6 +433,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈplæstɪk/",
   "example": "This bottle is made of plastic and can be recycled."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "reuse",
@@ -386,6 +441,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌriːˈjuːz/",
   "example": "We reuse shopping bags to help the environment."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "rubbish",
@@ -393,6 +449,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈrʌbɪʃ/",
   "example": "Please put your rubbish in the bin, not on the floor."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "earthquake",
@@ -400,6 +457,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɜːrθkweɪk/",
   "example": "The earthquake destroyed many buildings in the town."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "balcony",
@@ -407,6 +465,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbælkəni/",
   "example": "She sat on the balcony and enjoyed the view of the garden."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "vacuum cleaner",
@@ -414,6 +473,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈvækjuəm ˌkliːnər/",
   "example": "He used the vacuum cleaner to clean the carpet."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "bookcase",
@@ -421,6 +481,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbʊkkeɪs/",
   "example": "The bookcase in my room is full of adventure stories."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "washing machine",
@@ -428,6 +489,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈwɒʃɪŋ məˌʃiːn/",
   "example": "Mum put the dirty clothes into the washing machine."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "floor",
@@ -435,6 +497,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/flɔːr/",
   "example": "The floor was wet, so we had to be careful not to slip."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "microwave oven",
@@ -442,6 +505,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈmaɪkrəweɪv ˌʌvn/",
   "example": "I heated my lunch in the microwave oven."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "roof",
@@ -449,6 +513,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ruːf/",
   "example": "Snow covered the roof of every house on our street."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "rug",
@@ -456,6 +521,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rʌɡ/",
   "example": "There is a colourful rug in the middle of the sitting room."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "recycle",
@@ -463,6 +529,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌriːˈsaɪkl/",
   "example": "Our school recycles paper, glass and plastic."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "ecological",
@@ -470,6 +537,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌiːkəˈlɒdʒɪkl/",
   "example": "The scientists studied the ecological effects of the oil spill."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 2",
   "word": "type",
@@ -477,6 +545,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/taɪp/",
   "example": "What type of music do you like best?"
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 3",
   "word": "sitting room",
@@ -484,6 +553,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈsɪtɪŋ ruːm/",
   "example": "The whole family gathered in the sitting room to watch TV."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 3",
   "word": "appliance",
@@ -491,6 +561,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/əˈplaɪəns/",
   "example": "The kitchen is full of useful appliances like a blender and a toaster."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 3",
   "word": "throw away",
@@ -498,6 +569,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/θrəʊ əˈweɪ/",
   "example": "Don't throw away your old phone — you can donate it."
 }, {
+  "stage": "4A",
   "unit": "Unit 2",
   "lesson": "Lesson 3",
   "word": "late",
@@ -505,6 +577,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/leɪt/",
   "example": "The bus was late, so I missed the start of the lesson."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "deep",
@@ -512,6 +585,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/diːp/",
   "example": "The lake is very deep — you can't see the bottom."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "wrong",
@@ -519,6 +593,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɒŋ/",
   "example": "Something is wrong with my computer; it keeps shutting down."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "dive",
@@ -526,6 +601,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/daɪv/",
   "example": "He learned to dive into the pool without splashing."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "equipment",
@@ -533,6 +609,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪˈkwɪpmənt/",
   "example": "The PE teacher checked all the sports equipment before class."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "explore",
@@ -540,6 +617,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪkˈsplɔːr/",
   "example": "We went to explore the old castle near our town."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "hobby",
@@ -547,6 +625,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈhɒbi/",
   "example": "My favourite hobby is painting landscapes."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "sure",
@@ -554,6 +633,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ʃʊər/",
   "example": "Are you sure you locked the door before we left?"
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "end up",
@@ -561,6 +641,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/end ʌp/",
   "example": "If you don't study, you might end up failing the exam."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "give up",
@@ -568,6 +649,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɡɪv ʌp/",
   "example": "Don't give up — keep practising and you'll improve."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "take up",
@@ -575,6 +657,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/teɪk ʌp/",
   "example": "She decided to take up swimming this summer."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "try out",
@@ -582,6 +665,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/traɪ aʊt/",
   "example": "I want to try out the new pizza restaurant in town."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "turn on",
@@ -589,6 +673,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/tɜːrn ɒn/",
   "example": "Could you turn on the light? It's getting dark."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 1",
   "word": "scuba diving",
@@ -596,6 +681,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈskuːbə ˌdaɪvɪŋ/",
   "example": "He went scuba diving in the Red Sea and saw colourful fish."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "trick",
@@ -603,6 +689,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/trɪk/",
   "example": "The magician performed an amazing trick with a disappearing coin."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "show off",
@@ -610,6 +697,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ʃəʊ ɒf/",
   "example": "He always shows off his new trainers to everyone."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "hill",
@@ -617,6 +705,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hɪl/",
   "example": "We climbed to the top of the hill and looked at the view."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "pull",
@@ -624,6 +713,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pʊl/",
   "example": "She had to pull hard to open the heavy door."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "rope",
@@ -631,6 +721,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rəʊp/",
   "example": "They used a rope to tie the boat to the dock."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "slide",
@@ -638,6 +729,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/slaɪd/",
   "example": "The children slid down the slide in the playground."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "bored",
@@ -645,6 +737,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/bɔːrd/",
   "example": "I was so bored on the long car journey."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "boring",
@@ -652,6 +745,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbɔːrɪŋ/",
   "example": "The film was so boring that I fell asleep."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "excited",
@@ -659,6 +753,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪkˈsaɪtɪd/",
   "example": "The children were very excited about the school trip."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "exciting",
@@ -666,6 +761,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪkˈsaɪtɪŋ/",
   "example": "Learning to ride a horse was the most exciting thing I've ever done."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "interested",
@@ -673,6 +769,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɪntrəstɪd/",
   "example": "She is interested in learning more about space."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "interesting",
@@ -680,6 +777,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɪntrəstɪŋ/",
   "example": "The documentary about sharks was very interesting."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "relaxed",
@@ -687,6 +785,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɪˈlækst/",
   "example": "After the holiday, I felt completely relaxed."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "relaxing",
@@ -694,6 +793,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɪˈlæksɪŋ/",
   "example": "A hot bath at the end of the day is very relaxing."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "tired",
@@ -701,6 +801,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈtaɪərd/",
   "example": "I was so tired after the football match that I fell asleep straight away."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "tiring",
@@ -708,6 +809,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈtaɪərɪŋ/",
   "example": "Moving all the boxes to the new house was really tiring."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 2",
   "word": "use up",
@@ -715,6 +817,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/juːz ʌp/",
   "example": "We've used up all the milk — someone needs to buy more."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "pastime",
@@ -722,6 +825,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈpɑːstaɪm/",
   "example": "Reading is my favourite pastime on weekends."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "blog",
@@ -729,6 +833,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/blɒɡ/",
   "example": "She writes a blog about her travels around the world."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "blog (verb)",
@@ -736,6 +841,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/blɒɡ/",
   "example": "He blogs about technology and gadgets every week."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "code",
@@ -743,6 +849,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/kəʊd/",
   "example": "She used code to build her first website."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "post",
@@ -750,6 +857,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pəʊst/",
   "example": "I'll post the photos from our trip on the class website."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "link",
@@ -757,6 +865,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/lɪŋk/",
   "example": "He sent me a link to a great video about space."
 }, {
+  "stage": "4A",
   "unit": "Unit 3",
   "lesson": "Lesson 3",
   "word": "comment",
@@ -764,6 +873,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈkɒment/",
   "example": "She left a kind comment on my drawing."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "Hang on!",
@@ -771,6 +881,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hæŋ ɒn/",
   "example": "Hang on! I think I left my bag on the bus."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "have got no idea",
@@ -778,6 +889,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hæv ɡɒt nəʊ aɪˈdɪə/",
   "example": "I have got no idea where I put my keys."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "I don't believe it.",
@@ -785,6 +897,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/aɪ dəʊnt bɪˈliːv ɪt/",
   "example": "I don't believe it. We actually won the championship!"
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "have a snack",
@@ -792,6 +905,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hæv ə snæk/",
   "example": "We stopped to have a snack before continuing the hike."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "Hurry up!",
@@ -799,6 +913,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈhʌri ʌp/",
   "example": "Hurry up! The show is about to start."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "disgusting",
@@ -806,6 +921,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/dɪsˈɡʌstɪŋ/",
   "example": "The smell from the dustbin was absolutely disgusting."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "delicious",
@@ -813,6 +929,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/dɪˈlɪʃəs/",
   "example": "The chocolate cake Grandma made was absolutely delicious."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "full",
@@ -820,6 +937,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/fʊl/",
   "example": "I'm too full to eat any more — that was a huge dinner."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "thirsty",
@@ -827,6 +945,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈθɜːrsti/",
   "example": "After the long run, I was very thirsty."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "altogether",
@@ -834,6 +953,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌɔːltəˈɡeðər/",
   "example": "There were fifteen students altogether in the after-school club."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "buffet",
@@ -841,6 +961,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbʊfeɪ/",
   "example": "At the party, there was a buffet with lots of different dishes."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 1",
   "word": "lobby",
@@ -848,6 +969,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈlɒbi/",
   "example": "We waited in the hotel lobby until our room was ready."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "meat",
@@ -855,6 +977,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/miːt/",
   "example": "He doesn't eat meat because he is a vegetarian."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "healthy",
@@ -862,6 +985,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈhelθi/",
   "example": "Eating fruit and vegetables every day is very healthy."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "pot",
@@ -869,6 +993,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pɒt/",
   "example": "Mum stirred the soup in the big pot on the cooker."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "raw",
@@ -876,6 +1001,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɔː/",
   "example": "The recipe says to add raw carrots to the salad."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "sauce",
@@ -883,6 +1009,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/sɔːs/",
   "example": "The pasta was served with a rich tomato sauce."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "seafood",
@@ -890,6 +1017,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈsiːfuːd/",
   "example": "The restaurant is famous for its fresh seafood."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "soup",
@@ -897,6 +1025,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/suːp/",
   "example": "On cold days, I love having a bowl of hot soup for lunch."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "add",
@@ -904,6 +1033,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/æd/",
   "example": "Add a pinch of salt to the water before boiling the pasta."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "boil",
@@ -911,6 +1041,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/bɔɪl/",
   "example": "Boil the eggs for six minutes for a soft yolk."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "chop",
@@ -918,6 +1049,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/tʃɒp/",
   "example": "Chop the onion into small pieces before frying it."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "fry",
@@ -925,6 +1057,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/fraɪ/",
   "example": "Fry the chicken in a little oil until it is golden brown."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "mix",
@@ -932,6 +1065,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/mɪks/",
   "example": "Mix the flour, eggs and milk together to make a batter."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "slice",
@@ -939,6 +1073,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/slaɪs/",
   "example": "She sliced the bread into thick pieces."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "dip",
@@ -946,6 +1081,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/dɪp/",
   "example": "He dipped the bread into the soup and ate it quickly."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 2",
   "word": "dish",
@@ -953,6 +1089,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/dɪʃ/",
   "example": "This noodle dish is my favourite meal of all."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "chilli pepper (AmE Chili pepper)",
@@ -960,6 +1097,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈtʃɪli ˌpepər/",
   "example": "She added a red chilli pepper to the stir-fry to make it spicy."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "pan",
@@ -967,6 +1105,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pæn/",
   "example": "Heat the oil in the pan before adding the vegetables."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "gently",
@@ -974,6 +1113,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈdʒentli/",
   "example": "Stir the mixture gently so that it doesn't break apart."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "recipe",
@@ -981,6 +1121,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈresəpi/",
   "example": "I followed Grandma's recipe to make the dumplings."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "remove",
@@ -988,6 +1129,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɪˈmuːv/",
   "example": "Remove the fish from the oven when it is cooked through."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "pour",
@@ -995,6 +1137,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pɔːr/",
   "example": "Pour the sauce over the noodles and serve immediately."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "serving",
@@ -1002,6 +1145,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈsɜːrvɪŋ/",
   "example": "This recipe makes four servings."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "tablespoon",
@@ -1009,6 +1153,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈteɪblspuːn/",
   "example": "Add two tablespoons of soy sauce to the stir-fry."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "consume",
@@ -1016,6 +1161,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/kənˈsjuːm/",
   "example": "Try not to consume too much sugar every day."
 }, {
+  "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
   "word": "reject",
@@ -1023,6 +1169,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɪˈdʒekt/",
   "example": "The judges rejected his idea because it was too expensive."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "bell",
@@ -1030,6 +1177,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/bel/",
   "example": "The bell rang and all the students went into class."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "canteen",
@@ -1037,6 +1185,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/kænˈtiːn/",
   "example": "We had lunch together in the school canteen."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "magazine",
@@ -1044,6 +1193,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌmæɡəˈziːn/",
   "example": "She reads a science magazine every month."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "sweatshirt",
@@ -1051,6 +1201,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈswetʃɜːrt/",
   "example": "He wore a warm sweatshirt to the football training session."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "break",
@@ -1058,6 +1209,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/breɪk/",
   "example": "We played outside during the morning break."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "term",
@@ -1065,6 +1217,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/tɜːrm/",
   "example": "We have three terms in the school year."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "cheat",
@@ -1072,6 +1225,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/tʃiːt/",
   "example": "He was caught cheating on the exam and had to redo it."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "fair",
@@ -1079,6 +1233,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/feər/",
   "example": "It's not fair that only some students get extra time."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "head teacher",
@@ -1086,6 +1241,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/hed ˈtiːtʃər/",
   "example": "The head teacher gave a speech at the end of year ceremony."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "strict",
@@ -1093,6 +1249,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/strɪkt/",
   "example": "Our maths teacher is strict but explains things very clearly."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "test",
@@ -1100,6 +1257,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/test/",
   "example": "We have a spelling test every Friday morning."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 1",
   "word": "fencing",
@@ -1107,6 +1265,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈfensɪŋ/",
   "example": "She took up fencing and won her first competition."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "exam",
@@ -1114,6 +1273,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪɡˈzæm/",
   "example": "He stayed up late revising for his science exam."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "nature reserve",
@@ -1121,6 +1281,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈneɪtʃər rɪˌzɜːrv/",
   "example": "We visited a nature reserve and saw wild deer."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "discuss",
@@ -1128,6 +1289,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/dɪˈskʌs/",
   "example": "Let's discuss our ideas before writing the report."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "friendship",
@@ -1135,6 +1297,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈfrendʃɪp/",
   "example": "Their friendship started on the first day of school."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "in the wild",
@@ -1142,6 +1305,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪn ðə waɪld/",
   "example": "It is rare to see a wolf in the wild today."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "understanding",
@@ -1149,6 +1313,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌʌndəˈstændɪŋ/",
   "example": "A good teacher helps students build a real understanding of the subject."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "boarding school",
@@ -1156,6 +1321,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbɔːrdɪŋ skuːl/",
   "example": "She goes to a boarding school and comes home every holidays."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "education",
@@ -1163,6 +1329,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˌedʒuˈkeɪʃn/",
   "example": "A good education opens many doors for young people."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "marks",
@@ -1170,6 +1337,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/mɑːrks/",
   "example": "He got the highest marks in the class for his history essay."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "report",
@@ -1177,6 +1345,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/rɪˈpɔːrt/",
   "example": "My report said I was excellent at science but needed to read more."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "time off",
@@ -1184,6 +1353,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/taɪm ɒf/",
   "example": "The teacher gave us time off after the exams were finished."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "natural",
@@ -1191,6 +1361,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈnætʃrəl/",
   "example": "Honey is a natural sweetener that bees make."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "solve",
@@ -1198,6 +1369,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/sɒlv/",
   "example": "It took us half an hour to solve the maths puzzle."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "path",
@@ -1205,6 +1377,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pɑːθ/",
   "example": "We followed the path through the forest to the lake."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 2",
   "word": "imagine",
@@ -1212,6 +1385,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪˈmædʒɪn/",
   "example": "Imagine what it would be like to live on the moon."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 3",
   "word": "interview",
@@ -1219,6 +1393,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɪntəvjuː/",
   "example": "She was nervous before her interview for the school council."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 3",
   "word": "project",
@@ -1226,6 +1401,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈprɒdʒekt/",
   "example": "We worked on a group project about climate change."
 }, {
+  "stage": "4A",
   "unit": "Unit 5",
   "lesson": "Lesson 3",
   "word": "brilliant",
@@ -1233,6 +1409,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbrɪliənt/",
   "example": "That was a brilliant idea — let's do it!"
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "(catch a) cold",
@@ -1240,6 +1417,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/kætʃ ə kəʊld/",
   "example": "I caught a cold after getting wet in the rain."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "earache",
@@ -1247,6 +1425,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɪəreɪk/",
   "example": "He had a bad earache after swimming in the cold water."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "cough",
@@ -1254,6 +1433,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/kɒf/",
   "example": "She kept coughing because of the dust in the old room."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "headache",
@@ -1261,6 +1441,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈhedeɪk/",
   "example": "I had a headache all afternoon because of the loud noise."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "sneeze",
@@ -1268,6 +1449,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/sniːz/",
   "example": "He sneezed three times and reached for a tissue."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "stomach ache (also stomachache)",
@@ -1275,6 +1457,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈstʌmək eɪk/",
   "example": "She had a stomach ache after eating too much candy."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "ache",
@@ -1282,6 +1465,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/eɪk/",
   "example": "After the long hike, every part of my body ached."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "toothache",
@@ -1289,6 +1473,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈtuːθeɪk/",
   "example": "The toothache was so bad that he went to the dentist straight away."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "thermometer",
@@ -1296,6 +1481,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/θəˈmɒmɪtər/",
   "example": "Mum used a thermometer to check if I had a fever."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "temperature",
@@ -1303,6 +1489,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈtemprətʃər/",
   "example": "The temperature outside dropped below zero last night."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "ankle",
@@ -1310,6 +1497,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈæŋkl/",
   "example": "She twisted her ankle while playing basketball."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "chest",
@@ -1317,6 +1505,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/tʃest/",
   "example": "He felt a pain in his chest and went to see the doctor."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "elbow",
@@ -1324,6 +1513,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈelbəʊ/",
   "example": "I hit my elbow on the desk and it really hurt."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "knee",
@@ -1331,6 +1521,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/niː/",
   "example": "He fell and cut his knee on the playground."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "shoulder",
@@ -1338,6 +1529,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈʃəʊldər/",
   "example": "She hurt her shoulder during volleyball practice."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "stomach",
@@ -1345,6 +1537,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈstʌmək/",
   "example": "The doctor pressed gently on his stomach to check for pain."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "tail",
@@ -1352,6 +1545,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/teɪl/",
   "example": "The dog wagged its tail happily when we came home."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "back flip (also backflip)",
@@ -1359,6 +1553,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/bæk flɪp/",
   "example": "The gymnast did a perfect back flip on the mat."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "stump",
@@ -1366,6 +1561,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/stʌmp/",
   "example": "We sat on the old tree stump and had our picnic."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "common",
@@ -1373,6 +1569,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈkɒmən/",
   "example": "Colds are very common in winter."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "virus",
@@ -1380,6 +1577,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈvaɪrəs/",
   "example": "The doctor said the illness was caused by a virus."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 1",
   "word": "throat",
@@ -1387,6 +1585,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/θrəʊt/",
   "example": "Her throat was so sore that it hurt to swallow."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "bleed",
@@ -1394,6 +1593,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/bliːd/",
   "example": "His knee started to bleed when he fell off his bike."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "injure",
@@ -1401,6 +1601,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈɪndʒər/",
   "example": "Two players were injured during the football match."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "lungs",
@@ -1408,6 +1609,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/lʌŋz/",
   "example": "Smoking causes serious damage to your lungs."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "mummy",
@@ -1415,6 +1617,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈmʌmi/",
   "example": "The museum has an ancient Egyptian mummy on display."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "ill",
@@ -1422,6 +1625,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪl/",
   "example": "She was too ill to come to school all week."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "weak",
@@ -1429,6 +1633,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/wiːk/",
   "example": "After the flu, he felt weak and tired for several days."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "skin",
@@ -1436,6 +1641,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/skɪn/",
   "example": "Use sunscreen to protect your skin from sunburn."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "sore",
@@ -1443,6 +1649,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/sɔːr/",
   "example": "My legs were sore after the ten-kilometre run."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "tattoo",
@@ -1450,6 +1657,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/təˈtuː/",
   "example": "The sailor had a small anchor tattoo on his arm."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "ancient",
@@ -1457,6 +1665,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈeɪnʃənt/",
   "example": "We studied the ancient Egyptians in history class."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "mystery",
@@ -1464,6 +1673,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈmɪstəri/",
   "example": "How the pyramids were built is still a mystery."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "discovery",
@@ -1471,6 +1681,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/dɪˈskʌvəri/",
   "example": "The discovery of penicillin saved millions of lives."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "arrowhead",
@@ -1478,6 +1689,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈærəʊhed/",
   "example": "The archaeologist found a stone arrowhead in the field."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 2",
   "word": "perhaps",
@@ -1485,6 +1697,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/pərˈhæps/",
   "example": "It's cloudy today — perhaps it will rain later."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "living",
@@ -1492,6 +1705,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈlɪvɪŋ/",
   "example": "She moved to the countryside for a quieter way of living."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "pollinate",
@@ -1499,6 +1713,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈpɒlɪneɪt/",
   "example": "Bees pollinate flowers as they collect nectar."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "active",
@@ -1506,6 +1721,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈæktɪv/",
   "example": "He is very active and plays three different sports."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "honeycomb",
@@ -1513,6 +1729,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈhʌnikəʊm/",
   "example": "The beekeeper carefully removed the honeycomb from the hive."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "screen",
@@ -1520,6 +1737,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/skriːn/",
   "example": "Looking at a screen for too long can make your eyes tired."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "beehive",
@@ -1527,6 +1745,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ˈbiːhaɪv/",
   "example": "There is a beehive in the garden and we can hear the bees buzzing."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "hydrated",
@@ -1534,6 +1753,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/haɪˈdreɪtɪd/",
   "example": "Drink plenty of water to stay hydrated during exercise."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "especially",
@@ -1541,6 +1761,7 @@ export const SAMPLE_WORDS: WordEntry[] = [{
   "ipa": "/ɪˈspeʃəli/",
   "example": "I love all fruit, especially strawberries and mangoes."
 }, {
+  "stage": "4A",
   "unit": "Unit 6",
   "lesson": "Lesson 3",
   "word": "stretch",
