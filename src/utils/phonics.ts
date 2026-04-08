@@ -10,11 +10,14 @@ interface PhRule {
 }
 
 const PH_RULES_RAW: PhRule[] = [
+  { p: 'are', c: 'ph-r' }, { p: 'ore', c: 'ph-r' }, { p: 'air', c: 'ph-r' }, { p: 'ear', c: 'ph-r' }, { p: 'eer', c: 'ph-r' },
+  { p: 'our', c: 'ph-r' }, { p: 'ere', c: 'ph-r' }, { p: 'ier', c: 'ph-r' }, { p: 'ure', c: 'ph-r' },
   { p: 'ar', c: 'ph-r' }, { p: 'er', c: 'ph-r' }, { p: 'ir', c: 'ph-r' }, { p: 'or', c: 'ph-r' }, { p: 'ur', c: 'ph-r' },
   { p: 'oo', c: 'ph-digraph' }, { p: 'ee', c: 'ph-digraph' }, { p: 'ea', c: 'ph-digraph' }, { p: 'ai', c: 'ph-digraph' },
   { p: 'ay', c: 'ph-digraph' }, { p: 'oa', c: 'ph-digraph' }, { p: 'oe', c: 'ph-digraph' }, { p: 'ou', c: 'ph-digraph' },
   { p: 'ow', c: 'ph-digraph' }, { p: 'oi', c: 'ph-digraph' }, { p: 'oy', c: 'ph-digraph' }, { p: 'au', c: 'ph-digraph' },
   { p: 'aw', c: 'ph-digraph' }, { p: 'ie', c: 'ph-digraph' }, { p: 'ue', c: 'ph-digraph' }, { p: 'ui', c: 'ph-digraph' },
+  { p: 'ough', c: 'ph-digraph' }, { p: 'aigh', c: 'ph-digraph' }, { p: 'eigh', c: 'ph-digraph' }, { p: 'igh', c: 'ph-digraph' },
   { p: 'ey', c: 'ph-digraph' }, { p: 'ew', c: 'ph-digraph' },
   { p: 'tch', c: 'ph-cluster' }, { p: 'dge', c: 'ph-cluster' }, { p: 'ch', c: 'ph-cluster' }, { p: 'sh', c: 'ph-cluster' },
   { p: 'th', c: 'ph-cluster' }, { p: 'wh', c: 'ph-cluster' }, { p: 'ph', c: 'ph-cluster' }, { p: 'ck', c: 'ph-cluster' },
@@ -95,10 +98,10 @@ export interface PhonicsSegment {
   syllableDotBefore?: boolean
 }
 
-export function colorizeWord(word: string): PhonicsSegment[] {
+export function colorizeWord(word: string, syllables?: string[]): PhonicsSegment[] {
   const chars = tokenize(word)
   const me = hasMagicE(word) ? magicEPos(word) : null
-  const sylls = SYLLABLE_MAP[word.toLowerCase()]
+  const sylls = syllables ?? SYLLABLE_MAP[word.toLowerCase()]
 
   if (me) {
     chars[me.vi].c = 'ph-magic'
@@ -127,11 +130,11 @@ export function colorizeWord(word: string): PhonicsSegment[] {
   return segments
 }
 
-export function buildPhonicsSegments(text: string): PhonicsSegment[][] {
+export function buildPhonicsSegments(text: string, syllables?: string[]): PhonicsSegment[][] {
   const words = text.trim().split(/\s+/)
   if (words.length === 1) {
     const clean = text.replace(/[^a-zA-Z]/g, '')
-    if (clean.length >= 2) return [colorizeWord(clean)]
+    if (clean.length >= 2) return [colorizeWord(clean, syllables)]
     return [[{ text, cls: 'ph-plain' }]]
   }
   return words.map(w => {
@@ -155,7 +158,7 @@ export const PHONICS_LEGEND = [
   { cls: 'ph-vowel', color: '#ff6b6b', label: '短元音' },
   { cls: 'ph-long', color: '#f1948a', label: '长元音' },
   { cls: 'ph-digraph', color: '#45b7d1', label: '元音组合' },
-  { cls: 'ph-cluster', color: '#4ecdc4', label: '辅音组合' },
+  { cls: 'ph-cluster', color: '#ff9f43', label: '辅音组合' },
   { cls: 'ph-blend', color: '#f0b27a', label: '辅音丛' },
   { cls: 'ph-r', color: '#bb8fce', label: 'R控元音' },
   { cls: 'ph-magic', color: '#f7dc6f', label: '魔力E' },

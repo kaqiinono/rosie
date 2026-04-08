@@ -336,7 +336,7 @@ export default function ImmersiveMode({
                 <div
                   className={`font-nunito ${wordSizeClass} text-center leading-tight font-black break-words`}
                 >
-                  <PhonicsWord text={v.word} />
+                  <PhonicsWord text={v.word} syllables={v.syllables} />
                 </div>
                 {v.ipa && (
                   <div className="text-center text-[clamp(1rem,2vw,1.4rem)] font-semibold text-[#f0abfc] italic opacity-80">
@@ -351,7 +351,7 @@ export default function ImmersiveMode({
                         例句
                       </div>
                       <div
-                        className="text-[clamp(.85rem,1.5vw,1.05rem)] leading-loose font-semibold text-[rgba(220,220,255,.4)] italic [&_strong]:rounded-sm [&_strong]:bg-[rgba(74,222,128,.07)] [&_strong]:px-1 [&_strong]:font-extrabold [&_strong]:text-[#4ade80] [&_strong]:not-italic"
+                        className="text-[clamp(1.125rem,1.5vw,1.05rem)] leading-loose font-semibold text-[rgba(220,220,255,.4)] italic [&_strong]:rounded-sm [&_strong]:bg-[rgba(74,222,128,.07)] [&_strong]:px-1 [&_strong]:font-extrabold [&_strong]:text-[#4ade80] [&_strong]:not-italic"
                         dangerouslySetInnerHTML={{ __html: highlightExample(v.example, v.word) }}
                       />
                     </div>
@@ -403,7 +403,7 @@ export default function ImmersiveMode({
                       ? 'text-[clamp(1.3rem,2.6vw,1.9rem)]'
                       : 'text-[clamp(1.6rem,3.5vw,2.4rem)]'
                   }`}
-                  dangerouslySetInnerHTML={{ __html: hilite(v.explanation, v.word) }}
+                  dangerouslySetInnerHTML={{ __html: hilite(v.explanation, v.word, v.keywords) }}
                 />
               </div>
               {defOnly && (
@@ -488,7 +488,11 @@ export default function ImmersiveMode({
                   </div>
 
                   <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">
-                    {isA || isC ? q.word.explanation : <PhonicsWord text={q.word.word} />}
+                    {isA || isC ? (
+                      q.word.explanation
+                    ) : (
+                      <PhonicsWord text={q.word.word} syllables={q.word.syllables} />
+                    )}
                   </div>
                   {!isA && !isC && q.word.ipa && (
                     <div className="text-[clamp(.8rem,2.5cqi,.95rem)] font-semibold text-[#f0abfc] italic">

@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase'
 import type { WordEntry } from '@/utils/type'
 import { SAMPLE_WORDS } from '@/utils/english-data'
 
+const SELECT_COLS = 'stage, unit, lesson, word, explanation, ipa, example, phonics, syllables, keywords'
+
 function toRow(user_id: string, w: WordEntry) {
   return {
     user_id,
@@ -17,6 +19,23 @@ function toRow(user_id: string, w: WordEntry) {
     ipa: w.ipa ?? null,
     example: w.example ?? null,
     phonics: w.phonics ?? null,
+    syllables: w.syllables ?? null,
+    keywords: w.keywords ?? null,
+  }
+}
+
+function fromRow(row: Record<string, unknown>): WordEntry {
+  return {
+    stage: (row.stage as string) ?? undefined,
+    unit: row.unit as string,
+    lesson: row.lesson as string,
+    word: row.word as string,
+    explanation: row.explanation as string,
+    ipa: (row.ipa as string) ?? undefined,
+    example: (row.example as string) ?? undefined,
+    phonics: (row.phonics as string) ?? undefined,
+    syllables: (row.syllables as string[]) ?? undefined,
+    keywords: (row.keywords as [string, string][]) ?? undefined,
   }
 }
 
@@ -27,27 +46,16 @@ export function useWordData(user: User | null) {
     if (!user) return
     supabase
       .from('word_entries')
-      .select('stage, unit, lesson, word, explanation, ipa, example, phonics')
+      .select(SELECT_COLS)
       .eq('user_id', user.id)
       .order('unit')
       .order('lesson')
       .then(async ({ data }) => {
         if (data && data.length > 0) {
-          setVocabState(data.map(row => ({
-            stage: row.stage ?? undefined,
-            unit: row.unit,
-            lesson: row.lesson,
-            word: row.word,
-            explanation: row.explanation,
-            ipa: row.ipa ?? undefined,
-            example: row.example ?? undefined,
-            phonics: row.phonics ?? undefined,
-          })))
+          setVocabState(data.map(fromRow))
         } else {
-          // 首次使用：将 SAMPLE_WORDS 写入数据库
-          await supabase.from('word_entries').insert(
-            SAMPLE_WORDS.map(w => toRow(user.id, w))
-          )
+          // 首次使用：将 SAMPLE_WORDS（含 syllables/keywords）写入数据库
+          await supabase.from('word_entries').insert(SAMPLE_WORDS.map(w => toRow(user.id, w)))
           setVocabState(SAMPLE_WORDS)
         }
       })
@@ -62,7 +70,6 @@ export function useWordData(user: User | null) {
     }
   }, [user])
 
-  // 按 stage 追加：删除相同 stage 的旧数据，插入新数据，其他 stage 不受影响
   const upsertByStage = useCallback(async (words: WordEntry[]) => {
     if (!user || !words.length) return
     const stages = [...new Set(words.map(w => w.stage).filter(Boolean))]
@@ -70,25 +77,13 @@ export function useWordData(user: User | null) {
       await supabase.from('word_entries').delete().eq('user_id', user.id).eq('stage', stage)
     }
     await supabase.from('word_entries').insert(words.map(w => toRow(user.id, w)))
-    // 重新从数据库拉取保持一致
     const { data } = await supabase
       .from('word_entries')
-      .select('stage, unit, lesson, word, explanation, ipa, example, phonics')
+      .select(SELECT_COLS)
       .eq('user_id', user.id)
       .order('unit')
       .order('lesson')
-    if (data) {
-      setVocabState(data.map(row => ({
-        stage: row.stage ?? undefined,
-        unit: row.unit,
-        lesson: row.lesson,
-        word: row.word,
-        explanation: row.explanation,
-        ipa: row.ipa ?? undefined,
-        example: row.example ?? undefined,
-        phonics: row.phonics ?? undefined,
-      })))
-    }
+    if (data) setVocabState(data.map(fromRow))
   }, [user])
 
   return { vocab, setVocab, upsertByStage }

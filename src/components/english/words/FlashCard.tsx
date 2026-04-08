@@ -26,7 +26,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
   }[sz]
 
   const delay = Math.min(index * 0.03, 0.25)
-  const explHtml = hilite(entry.explanation, entry.word)
+  const explHtml = hilite(entry.explanation, entry.word, entry.keywords)
 
   return (
     <div
@@ -89,7 +89,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
             <div
               className={`font-nunito ${wordFontSize} text-center leading-tight font-black break-words`}
             >
-              <PhonicsWord text={entry.word} />
+              <PhonicsWord text={entry.word} syllables={entry.syllables} />
             </div>
             {entry.ipa && (
               <div className="text-center text-[1.125rem] font-medium tracking-wide text-[#e879f9] italic opacity-80">
@@ -100,8 +100,8 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
           {/* Bottom: definition preview */}
           <div className="relative z-[1] mt-0.5 border-t border-white/[.06] pt-2">
-            <p className="line-clamp-2 text-[.69rem] leading-relaxed text-white/[.28]">
-              {entry.explanation}
+            <p className="line-clamp-2 text-[.8rem] leading-relaxed text-white/[.28]">
+              {entry.example}
             </p>
           </div>
 

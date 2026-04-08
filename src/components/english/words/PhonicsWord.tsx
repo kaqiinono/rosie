@@ -4,6 +4,7 @@ import { buildPhonicsSegments, type PhonicsSegment } from '@/utils/phonics'
 
 interface PhonicsWordProps {
   text: string
+  syllables?: string[]
   className?: string
 }
 
@@ -11,7 +12,7 @@ function SimpleSpan({ seg }: { seg: PhonicsSegment }) {
   return (
     <>
       {seg.syllableDotBefore && (
-        <span className="text-white/25 text-[0.42em] align-middle mx-px font-black">·</span>
+        <span className="inline-block w-[0.22em] h-[0.22em] rounded-full bg-white/40 mx-[0.15em] align-middle self-center" />
       )}
       <span className={seg.cls}>{seg.text}</span>
     </>
@@ -64,8 +65,8 @@ function GroupSpan({ group }: { group: PhonicsSegment[] }) {
   )
 }
 
-export default function PhonicsWord({ text, className = '' }: PhonicsWordProps) {
-  const wordGroups = buildPhonicsSegments(text)
+export default function PhonicsWord({ text, syllables, className = '' }: PhonicsWordProps) {
+  const wordGroups = buildPhonicsSegments(text, syllables)
 
   return (
     <span className={className}>

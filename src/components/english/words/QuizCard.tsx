@@ -155,7 +155,7 @@ export default function QuizCard({
         {question.type === 'B' && (
           <>
             <div className="mb-1 text-[clamp(2rem,4cqi,1.4rem)] leading-snug font-black">
-              <PhonicsWord text={question.word.word} />
+              <PhonicsWord text={question.word.word} syllables={question.word.syllables} />
               {question.word.ipa && (
                 <div className="mt-1 text-[clamp(.8rem,2.5cqi,.95rem)] font-semibold text-[var(--wm-accent2)] italic">
                   {question.word.ipa}

@@ -6,8 +6,8 @@ export function escHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }
 
-export function hilite(text: string, word: string): string {
-  const pairs = KW_MAP[word] || []
+export function hilite(text: string, word: string, keywords?: [string, string][]): string {
+  const pairs = keywords ?? KW_MAP[word] ?? []
   if (!pairs.length) return escHtml(text)
 
   const sorted = [...pairs].sort((a, b) => b[0].length - a[0].length)

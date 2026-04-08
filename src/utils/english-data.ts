@@ -1,6 +1,6 @@
 import type { WordEntry } from './type'
 
-export const SAMPLE_WORDS: WordEntry[] = [{
+const _RAW_WORDS: WordEntry[] = [{
   "stage": "4A",
   "unit": "Unit 1",
   "lesson": "Lesson 1",
@@ -2042,3 +2042,8 @@ export const KW_MAP: Record<string, [string, string][]> = {
   "especially": [["deserves special mention", "kw-red"]],
   "stretch": [["arms or legs out straight", "kw-red"], ["contract your muscles", "kw-gold"]]
 };
+export const SAMPLE_WORDS: WordEntry[] = _RAW_WORDS.map(w => ({
+  ...w,
+  syllables: SYLLABLE_MAP[w.word.toLowerCase()] ?? undefined,
+  keywords: KW_MAP[w.word] ?? undefined,
+}))

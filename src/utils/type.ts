@@ -118,6 +118,8 @@ export interface WordEntry {
   ipa?: string
   example?: string
   phonics?: string
+  syllables?: string[]
+  keywords?: [string, string][]
 }
 
 export type QuizType = 'wordToMeaning' | 'meaningToWord' | 'spelling'

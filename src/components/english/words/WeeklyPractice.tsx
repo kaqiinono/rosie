@@ -1043,7 +1043,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               </span>
             </div>
             <div className="font-nunito relative z-[1] text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
-              <PhonicsWord text={w.entry.word} />
+              <PhonicsWord text={w.entry.word} syllables={w.entry.syllables} />
             </div>
             {w.entry.ipa && (
               <div className="relative z-[1] text-[clamp(.85rem,1.8vw,1rem)] font-semibold text-[var(--wm-accent2)] italic opacity-85">
@@ -1085,7 +1085,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               </div>
               <div
                 className="text-[clamp(1rem,2.5vw,1.45rem)] leading-loose font-bold text-[#f0f0ff]"
-                dangerouslySetInnerHTML={{ __html: hilite(w.entry.explanation, w.entry.word) }}
+                dangerouslySetInnerHTML={{ __html: hilite(w.entry.explanation, w.entry.word, w.entry.keywords) }}
               />
             </div>
             {studyDefOnly && (
