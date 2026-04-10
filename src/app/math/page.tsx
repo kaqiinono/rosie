@@ -8,6 +8,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/39',
+    title: '盈亏问题探险',
+    description: '掌握盈亏核心公式：份数 = 总差额 ÷ 每份差额，解决盈盈、亏亏、盈亏、盈恰、亏恰 5 大题型。',
+    icon: '⚖️',
+    lectureNum: '第 39 讲',
+    tags: ['盈亏问题', '差额公式', '4 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/38',
     title: '一笔画探险',
     description: '掌握一笔画的秘密：端点、奇点与偶点，判断能否一笔画，以及如何改造图形让它可以一笔画。',
