@@ -192,8 +192,23 @@ function formatDate(iso: string): string {
   return `${d.getMonth() + 1}/${d.getDate()}`
 }
 
-function pickRandom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]
+// Section weights for random practice (higher = more likely to be picked)
+// supplement is excluded entirely; lesson has highest priority
+const SECTION_WEIGHT: Record<string, number> = {
+  lesson: 4,
+  pretest: 3,
+  homework: 2,
+  workbook: 1,
+}
+
+function pickWeighted(items: SeaProblem[]): SeaProblem {
+  const total = items.reduce((s, sp) => s + (SECTION_WEIGHT[sp.section] ?? 1), 0)
+  let r = Math.random() * total
+  for (const sp of items) {
+    r -= SECTION_WEIGHT[sp.section] ?? 1
+    if (r <= 0) return sp
+  }
+  return items[items.length - 1]
 }
 
 // ── Paginated problem grid ────────────────────────────────────────────────────
@@ -492,8 +507,36 @@ function PracticeOverlay({
 }) {
   const pickNext = useCallback(() => {
     if (pool.length === 0) return null
-    const unstarted = pool.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0)
-    return pickRandom(unstarted.length > 0 ? unstarted : pool)
+    // Supplement is excluded from random practice — user browses it manually
+    const eligible = pool.filter(sp => sp.section !== 'supplement')
+    if (eligible.length === 0) return null
+
+    // Group problems by type key (lessonId::tag)
+    const byType = new Map<string, SeaProblem[]>()
+    for (const sp of eligible) {
+      const key = `${sp.lessonId}::${sp.problem.tag}`
+      const arr = byType.get(key)
+      if (arr) arr.push(sp)
+      else byType.set(key, [sp])
+    }
+
+    // Classify: fresh types (zero practiced) vs partially-practiced types
+    const freshUntried: SeaProblem[] = []
+    const partialUntried: SeaProblem[] = []
+    for (const problems of byType.values()) {
+      const untried = problems.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0)
+      if (untried.length === 0) continue
+      const anyPracticed = problems.some(sp => (solveCount[sp.problem.id] ?? 0) > 0)
+      if (anyPracticed) partialUntried.push(...untried)
+      else freshUntried.push(...untried)
+    }
+
+    // Priority 1: unpracticed from fresh types (section-weighted)
+    if (freshUntried.length > 0) return pickWeighted(freshUntried)
+    // Priority 2: unpracticed from partially-practiced types
+    if (partialUntried.length > 0) return pickWeighted(partialUntried)
+    // Priority 3: all done — any eligible problem, section-weighted
+    return pickWeighted(eligible)
   }, [pool, solveCount])
 
   const [current, setCurrent] = useState<SeaProblem | null>(() => pickNext())
@@ -576,8 +619,8 @@ function PracticeOverlay({
           )}
         </div>
         <span className="ml-auto text-[11px] font-medium" style={{ color: 'rgba(90,142,176,0.7)' }}>
-          优先未做题 ·
-          共 {pool.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0).length} 题待探索
+          未做题型优先 ·{' '}
+          {pool.filter(sp => sp.section !== 'supplement' && (solveCount[sp.problem.id] ?? 0) === 0).length} 题待探索
         </span>
       </div>
 
