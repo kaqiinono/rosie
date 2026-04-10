@@ -10,6 +10,10 @@ import CongratsModal from '@/components/math/lesson35/CongratsModal'
 import Toast from '@/components/math/lesson35/Toast'
 
 const SECTION_COUNTS: Record<string, number> = {
+  pretest: PROBLEMS.pretest.length,
+  lesson: PROBLEMS.lesson.length,
+  homework: PROBLEMS.homework.length,
+  workbook: PROBLEMS.workbook.length,
   supplement: PROBLEMS.supplement?.length ?? 0,
 }
 
