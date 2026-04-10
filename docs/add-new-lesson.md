@@ -972,6 +972,52 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
 
 ---
 
+## 第五步：在题海中注册新讲次
+
+**文件：** `src/utils/sea-data.ts`
+
+`/math/sea` 是跨讲次综合题库页面，所有课程的题目汇总来自 `SEA_LESSONS` 数组。每新增一讲，**必须**在此文件中手动注册，否则该讲次的题目不会出现在题海搜索、筛选和随机练中。
+
+### 5-A 添加 import
+
+在文件顶部已有 import 行之后仿照格式添加：
+
+```typescript
+import { PROBLEMS as PROBLEMSN, PROBLEM_TYPES as PTN, TAG_STYLE as TSN } from './lessonN-data'
+```
+
+### 5-B 在 SEA_LESSONS 数组末尾追加
+
+```typescript
+{
+  id: 'N',
+  title: '第N讲·[主题名称]',
+  shortTitle: 'N·[主题简称]',
+  icon: '[emoji]',                                       // 与首页卡片相同
+  badgeClass: 'bg-[color]-100 text-[color]-700',        // 选一个区分其他讲次的颜色
+  tagStyle: TSN,
+  types: PTN.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+  problems: PROBLEMSN,
+},
+```
+
+### `badgeClass` 颜色参考
+
+| 讲次 | badgeClass |
+|------|------------|
+| 34 | `bg-violet-100 text-violet-700` |
+| 35 | `bg-blue-100 text-blue-700` |
+| 36 | `bg-amber-100 text-amber-700` |
+| 37 | `bg-orange-100 text-orange-700` |
+| 38 | `bg-purple-100 text-purple-700` |
+| 39 | `bg-teal-100 text-teal-700` |
+
+新讲次选一个未使用的颜色，如 `rose`、`green`、`cyan`、`sky` 等。
+
+> **注意：** `SEA_POOL` 由 `buildPool()` 在模块加载时自动构建，无需手动更新。`MathSeaCard` 首页卡片显示的总题数也会自动更新。
+
+---
+
 ## 快速检查清单
 
 添加第 N 讲时，逐项确认：
@@ -979,6 +1025,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
 ```
 src/utils/
   [ ] lessonN-data.ts                    — 数据文件（题目内容，ID 必须加 N- 前缀）
+  [ ] sea-data.ts                        — 在 SEA_LESSONS 末尾注册新讲次（第五步）
 
 src/components/math/lessonN/
   [ ] LessonNProvider.tsx

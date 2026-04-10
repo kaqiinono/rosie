@@ -6,18 +6,24 @@ import { supabase } from '@/lib/supabase'
 
 export function useMathSolved(user: User | null) {
   const [solveCount, setSolveCount] = useState<Record<string, number>>({})
+  const [solvedAt, setSolvedAt] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (!user) return
     supabase
       .from('math_solved')
-      .select('problem_id, solve_count')
+      .select('problem_id, solve_count, solved_at')
       .eq('user_id', user.id)
       .then(({ data }) => {
         if (data) {
-          const record: Record<string, number> = {}
-          data.forEach(row => { record[row.problem_id] = row.solve_count ?? 1 })
-          setSolveCount(record)
+          const counts: Record<string, number> = {}
+          const times: Record<string, string> = {}
+          data.forEach(row => {
+            counts[row.problem_id] = row.solve_count ?? 1
+            if (row.solved_at) times[row.problem_id] = row.solved_at
+          })
+          setSolveCount(counts)
+          setSolvedAt(times)
         }
       })
   }, [user])
@@ -25,6 +31,7 @@ export function useMathSolved(user: User | null) {
   const handleSolve = useCallback(async (id: string): Promise<number> => {
     if (!user) return 0
 
+    const now = new Date().toISOString()
     const { data, error } = await supabase.rpc('increment_math_solved', {
       p_user_id: user.id,
       p_prob_id: id,
@@ -32,14 +39,16 @@ export function useMathSolved(user: User | null) {
 
     if (!error && typeof data === 'number') {
       setSolveCount(prev => ({ ...prev, [id]: data }))
+      setSolvedAt(prev => ({ ...prev, [id]: now }))
       return data
     }
 
     // Optimistic fallback if RPC fails
     const newCount = (solveCount[id] ?? 0) + 1
     setSolveCount(prev => ({ ...prev, [id]: newCount }))
+    setSolvedAt(prev => ({ ...prev, [id]: now }))
     return newCount
   }, [user, solveCount])
 
-  return { solveCount, handleSolve }
+  return { solveCount, solvedAt, handleSolve }
 }
