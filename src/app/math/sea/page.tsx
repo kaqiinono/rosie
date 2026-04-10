@@ -244,7 +244,7 @@ function SeaGrid({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
         {pageItems.map((sp, idx) => {
           const { problem, lessonId, section } = sp
           const lesson = SEA_LESSON_MAP[lessonId]
@@ -507,9 +507,7 @@ function PracticeOverlay({
 }) {
   const pickNext = useCallback(() => {
     if (pool.length === 0) return null
-    // Supplement is excluded from random practice — user browses it manually
-    const eligible = pool.filter(sp => sp.section !== 'supplement')
-    if (eligible.length === 0) return null
+    const eligible = pool
 
     // Group problems by type key (lessonId::tag)
     const byType = new Map<string, SeaProblem[]>()
@@ -620,7 +618,7 @@ function PracticeOverlay({
         </div>
         <span className="ml-auto text-[11px] font-medium" style={{ color: 'rgba(90,142,176,0.7)' }}>
           未做题型优先 ·{' '}
-          {pool.filter(sp => sp.section !== 'supplement' && (solveCount[sp.problem.id] ?? 0) === 0).length} 题待探索
+          {pool.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0).length} 题待探索
         </span>
       </div>
 
@@ -855,7 +853,7 @@ export default function MathSeaPage() {
             boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
           }}
         >
-          <div className="mx-auto flex h-14 max-w-[840px] items-center gap-3 px-4">
+          <div className="mx-auto flex h-14 max-w-350 items-center gap-3 px-4">
             <Link
               href="/math"
               className="flex h-9 items-center gap-1.5 rounded-full px-3 no-underline transition-all hover:scale-105 active:scale-95"
@@ -884,7 +882,7 @@ export default function MathSeaPage() {
         </div>
 
         {/* ── Content ── */}
-        <div className="relative z-10 mx-auto max-w-[840px] px-4 pb-8 pt-4">
+        <div className="relative z-10 mx-auto max-w-350 px-4 pb-8 pt-4">
 
           {/* Search */}
           <div className="relative mb-3">
