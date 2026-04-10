@@ -86,6 +86,13 @@ function CubeFigure({ label }: { label?: string }) {
   )
 }
 
+const Door = ({ x, y, horiz }: { x: number; y: number; horiz: boolean }) =>
+  horiz ? (
+    <line x1={x} y1={y} x2={x + 14} y2={y} stroke="#fff" strokeWidth="3" />
+  ) : (
+    <line x1={x} y1={y} x2={x} y2={y + 14} stroke="#fff" strokeWidth="3" />
+  )
+
 function RectBoxFigure() {
   // A-labeled cuboid, slightly wider
   // front: (70,160) (200,160) (70,70) (200,70)
@@ -137,13 +144,6 @@ function RectBoxFigure() {
     </svg>
   )
 }
-
-const Door = ({ x, y, horiz }: { x: number; y: number; horiz: boolean }) =>
-  horiz ? (
-    <line x1={x} y1={y} x2={x + 14} y2={y} stroke="#fff" strokeWidth="3" />
-  ) : (
-    <line x1={x} y1={y} x2={x} y2={y + 14} stroke="#fff" strokeWidth="3" />
-  )
 
 // Museum floorplan for problem 3
 function MuseumFigure() {
@@ -211,13 +211,6 @@ function MuseumFigure() {
     </svg>
   )
 }
-
-const Door = ({ x, y, horiz }: { x: number; y: number; horiz: boolean }) =>
-  horiz ? (
-    <line x1={x} y1={y} x2={x + 14} y2={y} stroke="#fff" strokeWidth="3" />
-  ) : (
-    <line x1={x} y1={y} x2={x} y2={y + 14} stroke="#fff" strokeWidth="3" />
-  )
 
 // Exhibition hall for problem 4 (5 rooms with entrance/exit)
 function ExhibitFigure() {
