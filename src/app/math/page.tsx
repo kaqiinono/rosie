@@ -13,7 +13,7 @@ const courses: CourseCardData[] = [
     description: '掌握盈亏核心公式：份数 = 总差额 ÷ 每份差额，解决盈盈、亏亏、盈亏、盈恰、亏恰 5 大题型。',
     icon: '⚖️',
     lectureNum: '第 39 讲',
-    tags: ['盈亏问题', '差额公式', '4 道互动题'],
+    tags: ['盈亏问题', '差额公式', '12 道互动题'],
     variant: 'blue',
   },
   {

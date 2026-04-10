@@ -13,7 +13,7 @@ interface HomePageProps {
 
 const MODULES = [
   { key: 'pretest',  path: `${BASE}/pretest`,  icon: '📝', bg: 'bg-[#fef9c3]',       title: '课前测',  desc: '摸底测试 · 检验起始水平' },
-  { key: 'lesson',   path: `${BASE}/lesson`,   icon: '📖', bg: 'bg-app-blue-light',   title: '课堂讲解', desc: '例题+练一练 · 盈盈/亏亏/盈亏问题' },
+  { key: 'lesson',   path: `${BASE}/lesson`,   icon: '📖', bg: 'bg-app-blue-light',   title: '课堂讲解', desc: '12道例题+练一练 · 覆盖全部5大题型' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light',  title: '课后巩固', desc: '课后练习 · 强化练习' },
   { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '闯关题 · 综合挑战' },
 ]

@@ -15,7 +15,7 @@ export default function LessonPage() {
     <div>
       <div className="mb-3.5 rounded-[14px] border border-blue-200 bg-gradient-to-br from-blue-50 to-[#dbeafe] p-4">
         <div className="mb-1 text-sm font-extrabold text-blue-900">📖 课堂讲解 · 第39讲</div>
-        <div className="mb-2 text-xs text-blue-700">{total}道例题 · 盈盈/盈恰/亏恰问题</div>
+        <div className="mb-2 text-xs text-blue-700">{total}道例题 · 覆盖盈盈/亏亏/盈亏/盈恰/亏恰全部题型</div>
         <div className="flex items-center gap-2">
           <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-blue-100">
             <div className="absolute inset-y-0 left-0 rounded-full bg-blue-200 transition-[width] duration-400"
