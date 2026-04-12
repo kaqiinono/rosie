@@ -12,16 +12,17 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
     try {
         const {data, error} = await supabase
             .from('weekly_plans')
-            .select('week_start, unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data')
+            .select('id, week_start, unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data')
             .eq('user_id', userId)
             .order('week_start', {ascending: false})
         if (error || !data) return []
         return data.map(row => ({
+            id: row.id as string,
             weekStart: row.week_start,
             unit: row.unit,
             lesson: row.lesson,
-            weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
-            newWordsPerDay: row.new_words_per_day ?? SYSTEM_DEFAULTS.newWordsPerDay,
+            weekStartDay: (row as Record<string, unknown>).week_start_day as number ?? SYSTEM_DEFAULTS.weekStartDay,
+            newWordsPerDay: (row as Record<string, unknown>).new_words_per_day as number ?? SYSTEM_DEFAULTS.newWordsPerDay,
             days: row.plan_data as WeeklyPlan['days'],
             progress: (row.progress_data as WeeklyPlan['progress']) ?? {},
         }))
@@ -30,9 +31,9 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
     }
 }
 
-async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
+async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<string | null> {
     try {
-        await supabase
+        const {data, error} = await supabase
             .from('weekly_plans')
             .upsert(
                 {
@@ -48,7 +49,12 @@ async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
                 },
                 {onConflict: 'user_id,week_start'},
             )
-    } catch { /* ignore */
+            .select('id')
+            .single()
+        if (error || !data) return null
+        return (data as {id: string}).id
+    } catch {
+        return null
     }
 }
 
@@ -64,7 +70,7 @@ export function useWeeklyPlan(user: User | null) {
         setDefaultParams(null)
     }
 
-    weeklyPlanRef.current = weeklyPlan
+    useEffect(() => { weeklyPlanRef.current = weeklyPlan }, [weeklyPlan])
 
     // 单次查询替代原来3次串行查询：
     // 1. 加载全部计划（原 loadAllPlansFromCloud）
@@ -113,13 +119,23 @@ export function useWeeklyPlan(user: User | null) {
         }
     }, [user])
 
-    const savePlan = useCallback(async (plan: WeeklyPlan) => {
+    const savePlan = useCallback(async (plan: WeeklyPlan): Promise<WeeklyPlan> => {
         setWeeklyPlan(plan)
         setAllPlans(prev => {
             const rest = prev.filter(p => p.weekStart !== plan.weekStart)
             return [plan, ...rest]
         })
-        if (user) await saveToCloud(user.id, plan)
+        if (user) {
+            const savedId = await saveToCloud(user.id, plan)
+            if (savedId) {
+                const withId = {...plan, id: savedId}
+                weeklyPlanRef.current = withId
+                setWeeklyPlan(withId)
+                setAllPlans(prev => prev.map(p => p.weekStart === withId.weekStart ? withId : p))
+                return withId
+            }
+        }
+        return plan
     }, [user])
 
     const updateDayProgress = useCallback(async (date: string, progress: WeekDayProgress) => {
