@@ -225,6 +225,20 @@ function toLocalDateStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+export const ALL_CN_DAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+export function fmtDate(dateStr: string): string {
+  const [, m, d] = dateStr.split('-')
+  return `${Number(m)}/${Number(d)}`
+}
+
+export function fmtWeekRange(weekStart: string, startDay: number): string {
+  const [y, m, day] = weekStart.split('-').map(Number)
+  const end = new Date(y, m - 1, day + 6)
+  const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
+  return `${fmtDate(weekStart)} ${ALL_CN_DAYS[startDay]} – ${fmtDate(endStr)} ${ALL_CN_DAYS[(startDay + 6) % 7]}`
+}
+
 export function getWeekStart(date?: Date, startDay = 4): string {
   const d = date ? new Date(date) : new Date()
   const daysBack = (d.getDay() - startDay + 7) % 7

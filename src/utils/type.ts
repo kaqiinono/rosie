@@ -170,6 +170,7 @@ export interface WeekDayProgress {
 }
 
 export interface WeeklyPlan {
+  id?: string // Supabase UUID primary key; undefined until first save
   weekStart: string // ISO date of the Thursday starting this week
   unit: string
   lesson: string
