@@ -629,7 +629,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             </div>
 
             {/* 7-day grid */}
-            <div className="scrollbar-none mb-5 flex gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-7 sm:overflow-visible sm:pb-0">
+            <div className="-mx-7 mb-5 sm:mx-0">
+            <div className="scrollbar-none flex gap-2 overflow-x-auto px-7 py-2 sm:grid sm:grid-cols-7 sm:overflow-visible sm:px-0 sm:py-0">
               {weeklyPlan.days.map((day, i) => {
                 const isDone = weeklyPlan.progress[day.date]?.quizDone === true
                 const isToday = day.date === today
@@ -707,6 +708,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   </button>
                 )
               })}
+            </div>
             </div>
 
             {/* Selected day info + word lists + quiz type + start */}
