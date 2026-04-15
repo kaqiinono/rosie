@@ -36,8 +36,28 @@ interface DpQuizQ {
   isReview: boolean
 }
 
+interface SessionSnapshot {
+  phase: 'study' | 'quiz'
+  selectedDate: string
+  studyIdx: number
+  words: { key: string; isReview: boolean }[]
+  quizQs: { key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[]
+  curQ: number
+  quizResults: { key: string; correct: boolean }[]
+}
+
 function getWeekDayLabels(startDay: number): string[] {
   return Array.from({ length: 7 }, (_, i) => ALL_CN_DAYS[(startDay + i) % 7])
+}
+
+function loadSessionSnapshot(planId: string | undefined): SessionSnapshot | null {
+  if (!planId || typeof window === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(`weekly_session_${planId}`)
+    if (!raw) return null
+    const snap = JSON.parse(raw) as SessionSnapshot
+    return snap.phase === 'study' || snap.phase === 'quiz' ? snap : null
+  } catch { return null }
 }
 
 async function saveProgressToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
@@ -65,9 +85,16 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     planRef.current = plan
   }, [plan])
 
-  const [phase, setPhase] = useState<Phase>('week-view')
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [syncedPlanId, setSyncedPlanId] = useState<string | undefined>(undefined)
+  // Read sessionStorage exactly once via a lazy-init state (immutable after mount, not a ref)
+  const [snap0] = useState(() => loadSessionSnapshot(initialPlan.id))
+  const hydrationDone = useRef(false)
+
+  const [phase, setPhase] = useState<Phase>(() => snap0?.phase ?? 'week-view')
+  const [selectedDate, setSelectedDate] = useState<string | null>(() => snap0?.selectedDate ?? null)
+  // When restoring a session, skip the "first unfinished day" defaulting by pre-seeding syncedPlanId
+  const [syncedPlanId, setSyncedPlanId] = useState<string | undefined>(() =>
+    snap0 ? initialPlan.id : undefined,
+  )
   if (plan.id !== syncedPlanId) {
     setSyncedPlanId(plan.id)
     const firstUnfinished = plan.days.find((d) => !plan.progress[d.date]?.quizDone)
@@ -83,14 +110,80 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setSelectedOldReviewKeys(new Set())
   }
 
-  const [words, setWords] = useState<{ entry: WordEntry; isReview: boolean }[]>([])
-  const [studyIdx, setStudyIdx] = useState(0)
+  // Words and quiz questions are stored as key arrays; actual WordEntry objects are derived via useMemo
+  // so they hydrate automatically when vocab loads — no setState-in-effect required
+  const [wordKeys, setWordKeys] = useState<{ key: string; isReview: boolean }[]>(() => snap0?.words ?? [])
+  const words = useMemo(
+    () =>
+      wordKeys
+        .map(({ key, isReview }) => {
+          const entry = vocab.find((w) => wordKey(w) === key)
+          return entry ? { entry, isReview } : null
+        })
+        .filter((w): w is { entry: WordEntry; isReview: boolean } => w !== null),
+    [wordKeys, vocab],
+  )
+
+  const [studyIdx, setStudyIdx] = useState(() => snap0?.studyIdx ?? 0)
   const [studyDefOnly, setStudyDefOnly] = useState(false)
   const [studyWordVisible, setStudyWordVisible] = useState(false)
-  const [quizQs, setQuizQs] = useState<DpQuizQ[]>([])
-  const [curQ, setCurQ] = useState(0)
-  const [score, setScore] = useState(0)
+
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[]>(
+    () => snap0?.quizQs ?? [],
+  )
+  const quizQs = useMemo(
+    () =>
+      quizQKeys
+        .map(({ key, type, isReview }) => {
+          const entry = vocab.find((w) => wordKey(w) === key)
+          return entry ? { word: entry, type, isReview } : null
+        })
+        .filter((q): q is DpQuizQ => q !== null),
+    [quizQKeys, vocab],
+  )
+
+  const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
+  const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+
+  // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
+  useEffect(() => {
+    if (hydrationDone.current || !snap0 || !vocab.length) return
+    hydrationDone.current = true
+    quizResultBuffer.current = snap0.quizResults
+      .map(({ key, correct }) => {
+        const entry = vocab.find((w) => wordKey(w) === key)
+        return entry ? { entry, correct } : null
+      })
+      .filter((r): r is { entry: WordEntry; correct: boolean } => r !== null)
+    setIsImmersive(true)
+  }, [snap0, vocab, setIsImmersive])
+
+  // Persist active session to sessionStorage on every relevant state change
+  useEffect(() => {
+    if (!plan.id) return
+    const key = `weekly_session_${plan.id}`
+    if (phase === 'week-view' || phase === 'done') {
+      try { sessionStorage.removeItem(key) } catch { /* noop */ }
+      return
+    }
+    try {
+      sessionStorage.setItem(
+        key,
+        JSON.stringify({
+          phase,
+          selectedDate: selectedDate ?? '',
+          studyIdx,
+          words: wordKeys,
+          quizQs: quizQKeys,
+          curQ,
+          quizResults: quizResultBuffer.current
+            .slice(0, curQ)
+            .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+        } satisfies SessionSnapshot),
+      )
+    } catch { /* noop */ }
+  }, [plan.id, phase, selectedDate, studyIdx, wordKeys, quizQKeys, curQ])
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
@@ -142,7 +235,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         return
       }
       const session = buildSessionWords(dateStr)
-      setWords(session)
+      setWordKeys(session.map(({ entry, isReview }) => ({ key: wordKey(entry), isReview })))
       setStudyIdx(0)
       setStudyWordVisible(false)
       setStudyDefOnly(false)
@@ -155,16 +248,16 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const startQuiz = useCallback(() => {
     const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
-    const qs: DpQuizQ[] = []
+    const qs: { key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[] = []
     words.forEach((w) =>
-      types.forEach((t) => qs.push({ word: w.entry, type: t, isReview: w.isReview })),
+      types.forEach((t) => qs.push({ key: wordKey(w.entry), type: t, isReview: w.isReview })),
     )
     for (let i = qs.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
       ;[qs[i], qs[j]] = [qs[j], qs[i]]
     }
     quizResultBuffer.current = []
-    setQuizQs(qs)
+    setQuizQKeys(qs)
     setCurQ(0)
     setScore(0)
     setPhase('quiz')
