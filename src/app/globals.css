@@ -235,3 +235,13 @@
   50% { transform: scale(1.05, 0.95) }
   75% { transform: scale(0.98, 1.02) }
 }
+
+
+@media print {
+  body > * {
+    display: none !important;
+  }
+  #quiz-print {
+    display: block !important;
+  }
+}

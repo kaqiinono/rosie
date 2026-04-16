@@ -16,6 +16,28 @@ export type Database = {
         Row: { user_id: string; problem_id: string; added_at: string }
         Insert: { user_id: string; problem_id: string; added_at?: string }
       }
+      math_quiz_papers: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          problems: unknown
+          score: number | null
+          total_score: number
+          answers: unknown | null
+          completed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          title: string
+          problems: unknown
+          score?: number | null
+          total_score: number
+          answers?: unknown | null
+          completed_at?: string | null
+        }
+      }
       word_entries: {
         Row: {
           id: string

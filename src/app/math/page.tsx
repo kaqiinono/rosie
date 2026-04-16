@@ -5,6 +5,7 @@ import BackLink from '@/components/shared/BackLink'
 import CourseCard from '@/components/math/CourseCard'
 import MathDailyCard from '@/components/math/MathDailyCard'
 import MathSeaCard from '@/components/math/MathSeaCard'
+import MathQuizCard from '@/components/math/MathQuizCard'
 import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
@@ -82,11 +83,10 @@ export default function MathPage() {
         </section>
 
         <section className="flex w-full max-w-[680px] flex-col gap-4">
-          <div className="grid grid-cols-[1fr_auto] gap-3 items-stretch">
+          <div className="grid grid-cols-[1fr_120px_120px] gap-3 items-stretch">
             <MathDailyCard />
-            <div className="w-[130px] shrink-0">
-              <MathSeaCard />
-            </div>
+            <MathSeaCard />
+            <MathQuizCard />
           </div>
           {courses.map((course) => (
             <CourseCard key={course.href} data={course} />
