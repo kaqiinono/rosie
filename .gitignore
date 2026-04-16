@@ -36,3 +36,4 @@ old-html/
 .superpowers
 /files/
 /tmp/
+.DS_Store
