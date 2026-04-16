@@ -15,12 +15,10 @@ export default function MathDailyCard() {
   const { weeklyPlan, isLoading } = useMathWeeklyPlan(user)
 
   const today = todayStr()
-  const todayPlan = weeklyPlan?.days.find(d => d.date === today)
+  const todayPlan = weeklyPlan?.days.find((d) => d.date === today)
   const progress = weeklyPlan?.progress[today] ?? { doneKeys: [] }
   const total = todayPlan?.problems.length ?? 0
-  const done = progress.doneKeys.filter(k =>
-    todayPlan?.problems.some(p => p.key === k)
-  ).length
+  const done = progress.doneKeys.filter((k) => todayPlan?.problems.some((p) => p.key === k)).length
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
   const allDone = total > 0 && done >= total
   const info = LESSON_INFO[weeklyPlan?.lessonId ?? ''] ?? null
@@ -36,16 +34,18 @@ export default function MathDailyCard() {
       }}
     >
       {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-300/20 blur-2xl" />
+      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-orange-300/20 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-yellow-300/25 blur-xl" />
       <div className="pointer-events-none absolute right-12 bottom-2 h-10 w-10 rounded-full bg-pink-300/20 blur-lg" />
 
       <div className="relative px-5 py-4">
         {/* Header row */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl animate-wiggle inline-block">⭐</span>
-            <span className="text-[14px] font-extrabold text-orange-800 tracking-tight">每日一练</span>
+            <span className="animate-wiggle inline-block text-xl">⭐</span>
+            <span className="text-[14px] font-extrabold tracking-tight text-orange-800">
+              周计划
+            </span>
             {info && (
               <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
                 {info.emoji} {info.short}
@@ -84,14 +84,17 @@ export default function MathDailyCard() {
                     className="absolute inset-y-0 left-0 rounded-full opacity-50"
                     style={{
                       width: `${pct}%`,
-                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,.6) 50%, transparent 100%)',
+                      background:
+                        'linear-gradient(90deg, transparent 0%, rgba(255,255,255,.6) 50%, transparent 100%)',
                       backgroundSize: '200% 100%',
                       animation: 'shimmer 2s linear infinite',
                     }}
                   />
                 )}
               </div>
-              <span className={`shrink-0 text-[12px] font-extrabold ${allDone ? 'text-green-600' : 'text-orange-600'}`}>
+              <span
+                className={`shrink-0 text-[12px] font-extrabold ${allDone ? 'text-green-600' : 'text-orange-600'}`}
+              >
                 {done}/{total}
               </span>
             </div>
@@ -106,7 +109,7 @@ export default function MathDailyCard() {
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all ${
                       isDone
                         ? 'bg-green-100 text-green-700 line-through opacity-70'
-                        : 'bg-white/80 text-orange-700 border border-orange-200'
+                        : 'border border-orange-200 bg-white/80 text-orange-700'
                     }`}
                   >
                     {isDone ? '⭐' : `${i + 1}.`} {p.title.split('·')[0].trim()}
@@ -114,14 +117,14 @@ export default function MathDailyCard() {
                 )
               })}
               {total > 4 && (
-                <span className="rounded-full bg-orange-50 px-2.5 py-0.5 text-[10px] font-bold text-orange-400 border border-orange-100">
+                <span className="rounded-full border border-orange-100 bg-orange-50 px-2.5 py-0.5 text-[10px] font-bold text-orange-400">
                   +{total - 4} 题
                 </span>
               )}
             </div>
           </>
         ) : (
-          <div className="text-[12px] text-orange-700/70 font-medium">
+          <div className="text-[12px] font-medium text-orange-700/70">
             还没有本周计划，点击创建 ✨
           </div>
         )}

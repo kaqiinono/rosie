@@ -23,6 +23,24 @@ const variantStyles = {
     enterHover: 'group-hover:bg-gradient-to-br group-hover:from-eng-from group-hover:to-eng-to group-hover:text-white',
     deco: 'bg-eng-from',
   },
+  reading: {
+    accent: 'bg-gradient-to-r from-orange-400 to-rose-400',
+    iconBg: 'bg-gradient-to-br from-orange-100 to-rose-100 dark:from-orange-500/15 dark:to-rose-500/15',
+    tag: 'text-orange-800 bg-orange-100 dark:bg-orange-500/15 dark:text-orange-300',
+    statDot: 'bg-orange-400',
+    enter: 'bg-gradient-to-br from-orange-50 to-rose-50 text-orange-800 dark:bg-orange-500/10 dark:text-orange-300',
+    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-orange-400 group-hover:to-rose-400 group-hover:text-white',
+    deco: 'bg-orange-400',
+  },
+  today: {
+    accent: 'bg-gradient-to-r from-amber-400 to-orange-400',
+    iconBg: 'bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-500/15 dark:to-orange-500/15',
+    tag: 'text-amber-800 bg-amber-100 dark:bg-amber-500/15 dark:text-amber-300',
+    statDot: 'bg-amber-400',
+    enter: 'bg-gradient-to-br from-amber-50 to-orange-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300',
+    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-amber-400 group-hover:to-orange-400 group-hover:text-white',
+    deco: 'bg-amber-400',
+  },
 }
 
 export default function ModuleCard({ data }: { data: ModuleCardData }) {

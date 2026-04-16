@@ -5,7 +5,7 @@ export interface ModuleCardData {
   title: string
   description: string
   tag: string
-  variant: 'math' | 'english'
+  variant: 'math' | 'english' | 'reading' | 'today'
   stats: string[]
   enterText: string
   icon: string
