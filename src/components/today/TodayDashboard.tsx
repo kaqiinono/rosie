@@ -303,7 +303,7 @@ export default function TodayDashboard() {
             今日数学题目
           </h2>
           <Link
-            href="/math/ny/daily"
+            href="/math/ny/plan"
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
           >
             前往做题 →
@@ -389,7 +389,7 @@ export default function TodayDashboard() {
             <div className="text-3xl mb-2">📐</div>
             <div className="text-[13px] text-text-muted mb-3">还没有本周数学计划</div>
             <Link
-              href="/math/ny/daily"
+              href="/math/ny/plan"
               className="inline-block rounded-xl px-4 py-2 text-[13px] font-bold text-white no-underline transition-opacity hover:opacity-80"
               style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)', boxShadow: '0 4px 12px rgba(249,115,22,.3)' }}
             >
