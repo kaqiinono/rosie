@@ -14,6 +14,7 @@ const SECTION_COUNTS: Record<string, number> = {
   lesson: PROBLEMS.lesson.length,
   homework: PROBLEMS.homework.length,
   workbook: PROBLEMS.workbook.length,
+  supplement: PROBLEMS.supplement?.length ?? 0,
 }
 
 function getNextHref(pathname: string): string | undefined {
