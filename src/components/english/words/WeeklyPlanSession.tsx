@@ -747,6 +747,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
             onClick={() => {
+              // Flush results so far before returning to study phase
+              if (quizResultBuffer.current.length > 0) {
+                recordBatch(quizResultBuffer.current)
+                quizResultBuffer.current = []
+              }
               setStudyIdx(0)
               setStudyWordVisible(false)
               setPhase('study')

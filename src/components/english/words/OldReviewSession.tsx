@@ -31,7 +31,6 @@ interface DpQuizQ {
 export default function OldReviewSession({ words, vocab, onBack }: OldReviewSessionProps) {
   const { masteryMap, recordBatch } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
-  const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
 
   const [phase, setPhase] = useState<Phase>('study')
   const [studyIdx, setStudyIdx] = useState(0)
@@ -44,6 +43,16 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   const [curQ, setCurQ] = useState(0)
   const [score, setScore] = useState(0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+
+  // Flush any accumulated quiz results and exit — called on every exit path
+  const flushAndBack = useCallback(() => {
+    if (quizResultBuffer.current.length > 0) {
+      recordBatch(quizResultBuffer.current)
+      quizResultBuffer.current = []
+    }
+    setIsImmersive(false)
+    onBack()
+  }, [recordBatch, setIsImmersive, onBack])
 
   const startQuiz = useCallback(() => {
     const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
@@ -100,7 +109,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         <div className="mb-0 flex shrink-0 flex-wrap items-center gap-2 py-2.5">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <button
-              onClick={() => { setIsImmersive(false); onBack() }}
+              onClick={flushAndBack}
               className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3 py-1.5 text-[.75rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
             >
               ← 返回
@@ -134,7 +143,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
           </button>
           {isImmersive && (
             <button
-              onClick={exitImmersive}
+              onClick={() => setIsImmersive(false)}
               className="shrink-0 cursor-pointer rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[.72rem] font-bold text-white/55 transition-all hover:bg-white/20 hover:text-white/80"
             >
               ✕ 退出沉浸
@@ -259,6 +268,11 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
             onClick={() => {
+              // Flush results so far before returning to study phase
+              if (quizResultBuffer.current.length > 0) {
+                recordBatch(quizResultBuffer.current)
+                quizResultBuffer.current = []
+              }
               setStudyIdx(0)
               setStudyWordVisible(false)
               setPhase('study')
@@ -317,7 +331,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
               onClick={() => { setIsImmersive(false); onBack() }}
               className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[var(--wm-text-dim)]"
             >
-              返回
+              ← 返回
             </button>
           </div>
         </div>
