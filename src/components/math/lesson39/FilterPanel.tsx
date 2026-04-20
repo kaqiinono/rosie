@@ -26,10 +26,11 @@ interface FilterPanelProps {
 }
 
 const SOURCE_BTNS = [
-  { key: 'pretest',  label: '📝 课前测' },
-  { key: 'lesson',   label: '📖 课堂' },
-  { key: 'homework', label: '✏️ 课后' },
-  { key: 'workbook', label: '📚 拓展' },
+  { key: 'pretest',    label: '📝 课前测' },
+  { key: 'lesson',     label: '📖 课堂' },
+  { key: 'homework',   label: '✏️ 课后' },
+  { key: 'workbook',   label: '📚 拓展' },
+  { key: 'supplement', label: '📒 附加题' },
 ]
 
 const TYPE_BTNS = [

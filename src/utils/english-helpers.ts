@@ -246,20 +246,72 @@ export function getWeekStart(date?: Date, startDay = 4): string {
   return toLocalDateStr(d)
 }
 
+/**
+ * Distributes words across 7 days in parallel across lessons.
+ *
+ * `lessonGroups`  — one array of WordEntry per lesson (in selection order)
+ * `quotasPerDay`  — per-lesson daily word count (same index as lessonGroups)
+ *
+ * Each day gets exactly `quotasPerDay[g]` words from group `g` (or fewer if
+ * the group is exhausted). Words beyond 7 × quota are left unassigned and
+ * returned separately in `unassigned`.
+ */
 export function buildWeeklyPlan(
   lessonWords: WordEntry[],
   weekStart: string,
-  newPerDay = 3,
-): WeeklyPlanDay[] {
+  newPerDay?: number,
+  lessonGroups?: WordEntry[][],
+  quotasPerDay?: number[],
+): { days: WeeklyPlanDay[]; unassigned: string[] } {
   const [year, month, day] = weekStart.split('-').map(Number)
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(year, month - 1, day + i)
-    const start = i * newPerDay
-    return {
-      date: toLocalDateStr(d),
-      newWordKeys: lessonWords.slice(start, start + newPerDay).map(w => wordKey(w)),
+
+  const groups = lessonGroups && lessonGroups.length > 0 ? lessonGroups : [lessonWords]
+  const perDay = newPerDay ?? 3
+
+  // Resolve per-lesson daily quotas
+  let quotas: number[]
+  if (quotasPerDay && quotasPerDay.length === groups.length) {
+    quotas = quotasPerDay
+  } else {
+    // Proportional fallback (legacy single value)
+    const total = groups.reduce((s, g) => s + g.length, 0)
+    if (groups.length === 1 || total === 0) {
+      quotas = groups.map(() => perDay)
+    } else {
+      const exact = groups.map(g => (perDay * g.length) / total)
+      const floors = exact.map(Math.floor)
+      let rem = perDay - floors.reduce((a, b) => a + b, 0)
+      const frac = exact.map((v, i) => ({ i, frac: v - floors[i] })).sort((a, b) => b.frac - a.frac)
+      quotas = [...floors]
+      for (const { i } of frac) {
+        if (rem <= 0) break
+        quotas[i]++
+        rem--
+      }
     }
+  }
+
+  const pointers = groups.map(() => 0)
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(year, month - 1, day + i)
+    const keys: string[] = []
+    for (let g = 0; g < groups.length; g++) {
+      const slice = groups[g].slice(pointers[g], pointers[g] + quotas[g])
+      slice.forEach(w => keys.push(wordKey(w)))
+      pointers[g] += quotas[g]
+    }
+    return { date: toLocalDateStr(d), newWordKeys: keys }
   })
+
+  // Collect words that didn't fit in 7 days
+  const assignedSet = new Set(days.flatMap(d => d.newWordKeys))
+  const unassigned = groups
+    .flatMap(g => g)
+    .map(w => wordKey(w))
+    .filter(k => !assignedSet.has(k))
+
+  return { days, unassigned }
 }
 
 /**
@@ -283,13 +335,14 @@ export function getReviewWordsForDay(
     weeklyPlan.days[i]?.newWordKeys.forEach(k => thisWeekKeys.add(k))
   }
 
-  // weekReview: this week's prior words not yet graduated and below mastery threshold
+  // weekReview: all prior-week words unless fully graduated (mastery level no longer gated —
+  // words introduced earlier this week should always be rehearsed until graduated)
   const weekReview = vocab
     .filter(w => {
       const k = wordKey(w)
       if (!thisWeekKeys.has(k)) return false
       const m = masteryMap[k]
-      return !m || (!isGraduated(m) && getWordMasteryLevel(m.correct ?? 0) < MASTERY_THRESHOLD)
+      return !m || !isGraduated(m)
     })
     .sort((a, b) => {
       const ma = masteryMap[wordKey(a)]?.correct ?? 0
@@ -332,6 +385,35 @@ export function getReviewWordsForDay(
     .map(({ w }) => w)
 
   return { weekReview, oldReview }
+}
+
+/**
+ * Returns all words due for spaced-repetition review today (including overdue),
+ * regardless of any weekly plan. Excludes graduated words.
+ * Sorted by overdue days desc, then stage asc.
+ */
+export function getOldReviewWords(
+  vocab: WordEntry[],
+  masteryMap: WordMasteryMap,
+): WordEntry[] {
+  const today = new Date().toISOString().slice(0, 10)
+  return vocab
+    .filter(w => {
+      const m = masteryMap[wordKey(w)]
+      if (!m || isGraduated(m)) return false
+      const init = ensureStageInit(m, today)
+      const due = init.nextReviewDate ?? today
+      return due <= today
+    })
+    .map(w => {
+      const m = ensureStageInit(masteryMap[wordKey(w)]!, today)
+      const overdueDays = Math.max(0,
+        Math.floor((Date.parse(today) - Date.parse(m.nextReviewDate ?? today)) / 86400000),
+      )
+      return { w, overdueDays, stage: m.stage ?? 0 }
+    })
+    .sort((a, b) => b.overdueDays - a.overdueDays || a.stage - b.stage)
+    .map(({ w }) => w)
 }
 
 export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: string }[] {

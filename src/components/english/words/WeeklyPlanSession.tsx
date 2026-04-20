@@ -103,13 +103,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
 
-  const [selectedOldReviewKeys, setSelectedOldReviewKeys] = useState<Set<string>>(new Set())
-  const [syncedSelectedDate, setSyncedSelectedDate] = useState(selectedDate)
-  if (syncedSelectedDate !== selectedDate) {
-    setSyncedSelectedDate(selectedDate)
-    setSelectedOldReviewKeys(new Set())
-  }
-
   // Words and quiz questions are stored as key arrays; actual WordEntry objects are derived via useMemo
   // so they hydrate automatically when vocab loads — no setState-in-effect required
   const [wordKeys, setWordKeys] = useState<{ key: string; isReview: boolean }[]>(() => snap0?.words ?? [])
@@ -187,12 +180,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
-  const planLessonSet = useMemo(() => {
-    const units = plan.unit.split(', ')
-    const lessons = plan.lesson.split(', ')
-    return new Set(units.map((u, i) => `${u}::${lessons[i] ?? ''}`))
-  }, [plan])
-
   const updateDayProgress = useCallback(
     async (date: string, progress: WeekDayProgress) => {
       const current = planRef.current
@@ -215,17 +202,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       const newWords = dayPlan.newWordKeys
         .map((k) => vocab.find((w) => wordKey(w) === k))
         .filter((w): w is WordEntry => !!w)
-      const { weekReview, oldReview } = getReviewWordsForDay(vocab, masteryMap, plan, dayIndex)
-      const includedOldReview = oldReview.filter(
-        (e) => planLessonSet.has(`${e.unit}::${e.lesson}`) || selectedOldReviewKeys.has(wordKey(e)),
-      )
+      const { weekReview } = getReviewWordsForDay(vocab, masteryMap, plan, dayIndex)
       return [
         ...newWords.map((e) => ({ entry: e, isReview: false })),
         ...weekReview.map((e) => ({ entry: e, isReview: true })),
-        ...includedOldReview.map((e) => ({ entry: e, isReview: true })),
       ]
     },
-    [plan, vocab, masteryMap, planLessonSet, selectedOldReviewKeys],
+    [plan, vocab, masteryMap],
   )
 
   const startStudy = useCallback(
@@ -426,23 +409,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               const newWords = dayPlan.newWordKeys
                 .map((k) => vocab.find((w) => wordKey(w) === k))
                 .filter((w): w is WordEntry => !!w)
-              const { weekReview, oldReview } = getReviewWordsForDay(
+              const { weekReview } = getReviewWordsForDay(
                 vocab,
                 masteryMap,
                 plan,
                 dayIndex,
               )
-              const inPlanOldReview = oldReview.filter((w) =>
-                planLessonSet.has(`${w.unit}::${w.lesson}`),
-              )
-              const outOfPlanOldReview = oldReview.filter(
-                (w) => !planLessonSet.has(`${w.unit}::${w.lesson}`),
-              )
-              const selectedOutCount = outOfPlanOldReview.filter((w) =>
-                selectedOldReviewKeys.has(wordKey(w)),
-              ).length
-              const total =
-                newWords.length + weekReview.length + inPlanOldReview.length + selectedOutCount
+              const total = newWords.length + weekReview.length
               return (
                 <div className="border-t border-[var(--wm-border)] pt-4">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -455,11 +428,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     {weekReview.length > 0 && (
                       <span className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#93c5fd]">
                         本周复习 {weekReview.length}
-                      </span>
-                    )}
-                    {oldReview.length > 0 && (
-                      <span className="rounded-full border border-[rgba(167,139,250,.3)] bg-[rgba(167,139,250,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#c4b5fd]">
-                        旧词 {inPlanOldReview.length + selectedOutCount}/{oldReview.length}
                       </span>
                     )}
                     <span className="text-[.68rem] text-[var(--wm-text-dim)]">共 {total} 词</span>
@@ -518,64 +486,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     </div>
                   )}
 
-                  {oldReview.length > 0 && (
-                    <div className="mb-4">
-                      <div className="mb-1.5 flex items-center gap-2">
-                        <span className="text-[.6rem] font-extrabold tracking-widest text-[#c4b5fd] uppercase">
-                          旧词复习
-                        </span>
-                        {outOfPlanOldReview.length > 0 && (
-                          <span className="text-[.6rem] text-[var(--wm-text-dim)]">
-                            · 课外词可自由选择
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {inPlanOldReview.map((w) => {
-                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
-                          return (
-                            <span
-                              key={wordKey(w)}
-                              className="rounded-full border-[1.5px] border-[rgba(167,139,250,.35)] bg-[rgba(167,139,250,.08)] px-2.5 py-1 text-[0.875rem] font-bold text-[#c4b5fd]"
-                            >
-                              {level > 0 && (
-                                <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
-                              )}
-                              {w.word}
-                            </span>
-                          )
-                        })}
-                        {outOfPlanOldReview.map((w) => {
-                          const key = wordKey(w)
-                          const on = selectedOldReviewKeys.has(key)
-                          const level = getWordMasteryLevel(masteryMap[key]?.correct ?? 0)
-                          return (
-                            <button
-                              key={key}
-                              onClick={() =>
-                                setSelectedOldReviewKeys((prev) => {
-                                  const next = new Set(prev)
-                                  if (next.has(key)) next.delete(key)
-                                  else next.add(key)
-                                  return next
-                                })
-                              }
-                              className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[0.875rem] font-bold transition-all select-none ${
-                                on
-                                  ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.15)] text-[#c4b5fd]'
-                                  : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] opacity-50 hover:opacity-80'
-                              }`}
-                            >
-                              {level > 0 && (
-                                <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
-                              )}
-                              {w.word}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
 
                   {total === 0 && (
                     <div className="mb-4 text-[1.125rem] text-[var(--wm-text-dim)]">
@@ -837,6 +747,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
             onClick={() => {
+              // Flush results so far before returning to study phase
+              if (quizResultBuffer.current.length > 0) {
+                recordBatch(quizResultBuffer.current)
+                quizResultBuffer.current = []
+              }
               setStudyIdx(0)
               setStudyWordVisible(false)
               setPhase('study')

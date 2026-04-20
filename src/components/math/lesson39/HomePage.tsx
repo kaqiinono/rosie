@@ -12,10 +12,11 @@ interface HomePageProps {
 }
 
 const MODULES = [
-  { key: 'pretest',  path: `${BASE}/pretest`,  icon: '📝', bg: 'bg-[#fef9c3]',       title: '课前测',  desc: '摸底测试 · 检验起始水平' },
-  { key: 'lesson',   path: `${BASE}/lesson`,   icon: '📖', bg: 'bg-app-blue-light',   title: '课堂讲解', desc: '12道例题+练一练 · 覆盖全部5大题型' },
-  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light',  title: '课后巩固', desc: '课后练习 · 强化练习' },
-  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '闯关题 · 综合挑战' },
+  { key: 'pretest',    path: `${BASE}/pretest`,    icon: '📝', bg: 'bg-[#fef9c3]',       title: '课前测',  desc: '5道摸底题 · 检验起始水平' },
+  { key: 'lesson',     path: `${BASE}/lesson`,     icon: '📖', bg: 'bg-app-blue-light',   title: '课堂讲解', desc: '例题1-12 · 覆盖全部5大题型' },
+  { key: 'homework',   path: `${BASE}/homework`,   icon: '✏️', bg: 'bg-app-green-light',  title: '课后巩固', desc: '巩固1-6 · 强化练习' },
+  { key: 'workbook',   path: `${BASE}/workbook`,   icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '闯关1-12 · 综合挑战' },
+  { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50',         title: '附加题',  desc: '4道附加题 · 深度提升' },
 ]
 
 export default function HomePage({ problems, solveCount }: HomePageProps) {
