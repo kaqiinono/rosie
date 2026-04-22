@@ -147,7 +147,7 @@ export default function QuizPage() {
   // ── Modal handlers ────────────────────────────────────────────────────────
 
   function openModal() {
-    setModalLessons([])
+    setModalLessons(LESSON_META.filter(l => !existingIds.has(l.id)).map(l => l.id))
     setModalSections([])
     setModalTypes({})
     setModalOpen(true)
@@ -372,6 +372,18 @@ export default function QuizPage() {
                         )}
                       </div>
                     </div>
+                    <button
+                      onClick={e => {
+                        e.stopPropagation()
+                        window.open(`/math/ny/quiz/${paper.id}/print`, '_blank')
+                      }}
+                      className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors"
+                      title="打印"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M3.5 5V2h7v3M3.5 10.5h-1a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1h-1M3.5 8.5h7V12h-7z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
                     <button
                       onClick={e => { e.stopPropagation(); void deletePaper(paper.id) }}
                       className="shrink-0 rounded-full p-1.5 text-slate-300 hover:bg-slate-100 hover:text-slate-500 transition-colors"

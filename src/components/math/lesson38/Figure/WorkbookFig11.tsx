@@ -1,8 +1,8 @@
-export default function WorkbookFig12() {
+export default function WorkbookFig11() {
   return (
     <img
-      src="/img/lesson38/ex12.png"
-      alt="闯关12 图示"
+      src="/img/lesson38/ex11.png"
+      alt="闯关11 图示"
       className="mx-auto h-auto max-h-60 w-auto max-w-full object-contain"
     />
   )

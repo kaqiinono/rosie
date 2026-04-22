@@ -4,7 +4,7 @@ import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMathSolved } from '@/hooks/useMathSolved'
-import { useMathQuiz } from '@/hooks/useMathQuiz'
+import { useMathQuiz, computeQuizPoints } from '@/hooks/useMathQuiz'
 import { supabase } from '@/lib/supabase'
 import { PROBLEMS as P34 } from '@/utils/lesson34-data'
 import { PROBLEMS as P35 } from '@/utils/lesson35-data'
@@ -104,8 +104,8 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
       })
   }, [user, id])
 
-  const pointsPerQ = paper ? Math.floor(100 / paper.problems.length) : 0
-  const totalScore = paper ? paper.problems.length * pointsPerQ : 100
+  const pointsArr = paper ? computeQuizPoints(paper.problems.length) : []
+  const totalScore = paper ? pointsArr.reduce((s, p) => s + p, 0) : 100
 
   async function handleSubmit() {
     if (!paper || !user) return
@@ -142,8 +142,10 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
       }),
     )
 
-    const correctCount = Object.values(newResults).filter(Boolean).length
-    const score = correctCount * pointsPerQ
+    const score = paper.problems.reduce(
+      (sum, item, idx) => sum + (newResults[item.problemId] ? pointsArr[idx] : 0),
+      0,
+    )
 
     await completePaper(paper.id, score, answerRecords)
 
@@ -157,7 +159,12 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   ) ?? false
 
   const correctCount = submitted ? Object.values(results).filter(Boolean).length : 0
-  const finalScore = submitted ? correctCount * pointsPerQ : 0
+  const finalScore = submitted && paper
+    ? paper.problems.reduce(
+        (sum, item, idx) => sum + (results[item.problemId] ? pointsArr[idx] : 0),
+        0,
+      )
+    : 0
 
   if (loading) {
     return (
@@ -196,6 +203,17 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
             返回
           </Link>
           <h1 className="text-sm font-bold text-slate-800 flex-1 min-w-0 truncate">{paper.title}</h1>
+          <Link
+            href={`/math/ny/quiz/${id}/print`}
+            target="_blank"
+            className="shrink-0 flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors no-underline"
+            title="打印试卷"
+          >
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <path d="M3.5 5V2h7v3M3.5 10.5h-1a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1h-1M3.5 8.5h7V12h-7z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="hidden sm:inline">打印</span>
+          </Link>
           {submitted && (
             <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-700">
               {finalScore}/{totalScore}分
@@ -215,7 +233,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                   <span className="text-base font-semibold text-emerald-500 ml-1">/ {totalScore} 分</span>
                 </div>
                 <p className="mt-1.5 text-sm text-emerald-600">
-                  答对 {correctCount} 题 · 答错 {paper.problems.length - correctCount} 题 · 每题 {pointsPerQ} 分
+                  答对 {correctCount} 题 · 答错 {paper.problems.length - correctCount} 题 · 满分 {totalScore} 分
                 </p>
               </div>
               <div className="text-4xl">
@@ -243,6 +261,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
             const { problem, section } = entry
             const ans = answers[item.problemId] ?? ''
             const isCorrect = submitted ? results[item.problemId] : undefined
+            const pts = pointsArr[i] ?? 0
 
             let cardBorder = '1px solid #e2e8f0'
             let cardBg = '#ffffff'
@@ -292,7 +311,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     )}
                   </div>
                   {/* Score chip */}
-                  {submitted && (
+                  {submitted ? (
                     <span
                       className="shrink-0 text-xs font-bold rounded-full px-2.5 py-0.5"
                       style={isCorrect
@@ -300,7 +319,14 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                         : { background: '#fee2e2', color: '#b91c1c' }
                       }
                     >
-                      {isCorrect ? `+${pointsPerQ}分` : '0分'}
+                      {isCorrect ? `+${pts}分` : `0/${pts}分`}
+                    </span>
+                  ) : (
+                    <span
+                      className="shrink-0 text-xs font-semibold rounded-full px-2.5 py-0.5"
+                      style={{ background: '#eef2ff', color: '#4f46e5' }}
+                    >
+                      {pts}分
                     </span>
                   )}
                 </div>

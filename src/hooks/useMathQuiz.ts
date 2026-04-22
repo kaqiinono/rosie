@@ -28,6 +28,18 @@ export type QuizPaper = {
   createdAt: string
 }
 
+/**
+ * Distribute 100 points across `n` problems. Base points = floor(100/n);
+ * the remainder is added to the last `extra` problems so the total is
+ * always exactly 100.
+ */
+export function computeQuizPoints(n: number): number[] {
+  if (n <= 0) return []
+  const base = Math.floor(100 / n)
+  const extra = 100 - base * n
+  return Array.from({ length: n }, (_, i) => (i >= n - extra ? base + 1 : base))
+}
+
 function rowToPaper(row: Record<string, unknown>): QuizPaper {
   return {
     id: row.id as string,
@@ -64,7 +76,7 @@ export function useMathQuiz(user: User | null) {
     title: string,
   ): Promise<string | null> => {
     if (!user) return null
-    const totalScore = problems.length * Math.floor(100 / problems.length)
+    const totalScore = problems.length > 0 ? 100 : 0
     const { data, error } = await supabase
       .from('math_quiz_papers')
       .insert({

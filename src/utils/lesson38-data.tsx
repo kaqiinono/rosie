@@ -10,9 +10,30 @@ import HomeworkFig3 from '@/components/math/lesson38/Figure/HomeworkFig3'
 import HomeworkFig4 from '@/components/math/lesson38/Figure/HomeworkFig4'
 import HomeworkFig5 from '@/components/math/lesson38/Figure/HomeworkFig5'
 import HomeworkFig6 from '@/components/math/lesson38/Figure/HomeworkFig6'
-import LessonFig2 from '@/components/math/lesson38/Figure/LessonFig2'
-import LessonFig6 from '@/components/math/lesson38/Figure/LessonFig6'
+import WorkbookFig1 from '@/components/math/lesson38/Figure/WorkbookFig1'
+import WorkbookFig2 from '@/components/math/lesson38/Figure/WorkbookFig2'
+import WorkbookFig3 from '@/components/math/lesson38/Figure/WorkbookFig3'
+import WorkbookFig4 from '@/components/math/lesson38/Figure/WorkbookFig4'
+import WorkbookFig5 from '@/components/math/lesson38/Figure/WorkbookFig5'
+import WorkbookFig6 from '@/components/math/lesson38/Figure/WorkbookFig6'
+import WorkbookFig7 from '@/components/math/lesson38/Figure/WorkbookFig7'
+import WorkbookFig8 from '@/components/math/lesson38/Figure/WorkbookFig8'
+import WorkbookFig9 from '@/components/math/lesson38/Figure/WorkbookFig9'
+import WorkbookFig10 from '@/components/math/lesson38/Figure/WorkbookFig10'
+import WorkbookFig11 from '@/components/math/lesson38/Figure/WorkbookFig11'
 import WorkbookFig12 from '@/components/math/lesson38/Figure/WorkbookFig12'
+import LessonEx1 from '@/components/math/lesson38/Figure/LessonEx1'
+import LessonEx2 from '@/components/math/lesson38/Figure/LessonEx2'
+import LessonEx3 from '@/components/math/lesson38/Figure/LessonEx3'
+import LessonEx4 from '@/components/math/lesson38/Figure/LessonEx4'
+import LessonEx5 from '@/components/math/lesson38/Figure/LessonEx5'
+import LessonEx6 from '@/components/math/lesson38/Figure/LessonEx6'
+import LessonPr1 from '@/components/math/lesson38/Figure/LessonPr1'
+import LessonPr2 from '@/components/math/lesson38/Figure/LessonPr2'
+import LessonPr3 from '@/components/math/lesson38/Figure/LessonPr3'
+import LessonPr4 from '@/components/math/lesson38/Figure/LessonPr4'
+import LessonPr5 from '@/components/math/lesson38/Figure/LessonPr5'
+import LessonPr6 from '@/components/math/lesson38/Figure/LessonPr6'
 import PretestFig1 from '@/components/math/lesson38/Figure/PretestFig1'
 import PretestFig2 from '@/components/math/lesson38/Figure/PretestFig2'
 import PretestFig3 from '@/components/math/lesson38/Figure/PretestFig3'
@@ -38,6 +59,7 @@ const LESSON: Problem[] = [
     finalQ: '四个图形中，能一笔画的有几个？',
     finalUnit: '个',
     finalAns: 2,
+    figureNode: <LessonEx1 />,
   },
   {
     id: '38-L2',
@@ -57,7 +79,7 @@ const LESSON: Problem[] = [
     finalQ: '哪处的蚂蚁能获胜？（B处=1，E处=2）',
     finalUnit: '',
     finalAns: 2,
-    figureNode: <LessonFig2 />,
+    figureNode: <LessonEx2 />,
   },
   {
     id: '38-L3',
@@ -76,6 +98,7 @@ const LESSON: Problem[] = [
     finalQ: '散步者能否一次不重复走遍七桥？（能=1，不能=0）',
     finalUnit: '',
     finalAns: 0,
+    figureNode: <LessonEx3 />,
   },
   {
     id: '38-L4',
@@ -95,6 +118,7 @@ const LESSON: Problem[] = [
     finalQ: '四个图形最少笔数之和是多少？（2+2+3+4=？）',
     finalUnit: '笔',
     finalAns: 11,
+    figureNode: <LessonEx4 />,
   },
   {
     id: '38-L5',
@@ -113,6 +137,7 @@ const LESSON: Problem[] = [
     finalQ: '左图有几个奇点？',
     finalUnit: '个',
     finalAns: 4,
+    figureNode: <LessonEx5 />,
   },
   {
     id: '38-L6',
@@ -133,7 +158,7 @@ const LESSON: Problem[] = [
     finalQ: '张爷爷最多能走多少千米？',
     finalUnit: 'km',
     finalAns: 19,
-    figureNode: <LessonFig6 />,
+    figureNode: <LessonEx6 />,
   },
   // ── 练一练 ──
   {
@@ -151,6 +176,7 @@ const LESSON: Problem[] = [
     finalQ: '两个图形中，能一笔画的有几个？',
     finalUnit: '个',
     finalAns: 2,
+    figureNode: <LessonPr1 />,
   },
   {
     id: '38-L8',
@@ -170,6 +196,7 @@ const LESSON: Problem[] = [
     finalQ: '谁先到达C？（文文=1，立立=2）',
     finalUnit: '',
     finalAns: 1,
+    figureNode: <LessonPr2 />,
   },
   {
     id: '38-L9',
@@ -188,6 +215,7 @@ const LESSON: Problem[] = [
     finalQ: '散步者能否一次不重复走遍五桥？（能=1，不能=0）',
     finalUnit: '',
     finalAns: 1,
+    figureNode: <LessonPr3 />,
   },
   {
     id: '38-L10',
@@ -204,6 +232,7 @@ const LESSON: Problem[] = [
     finalQ: '两个图形最少笔数之和是多少？（4+4=？）',
     finalUnit: '笔',
     finalAns: 8,
+    figureNode: <LessonPr4 />,
   },
   {
     id: '38-L11',
@@ -223,6 +252,7 @@ const LESSON: Problem[] = [
     finalQ: '需要添加几根铁丝？',
     finalUnit: '根',
     finalAns: 1,
+    figureNode: <LessonPr5 />,
   },
   {
     id: '38-L12',
@@ -242,6 +272,7 @@ const LESSON: Problem[] = [
     finalQ: '立立最多能走多少米？',
     finalUnit: '米',
     finalAns: 2100,
+    figureNode: <LessonPr6 />,
   },
 ]
 
@@ -263,6 +294,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '四个图形中能一笔画出的有几个？',
     finalUnit: '个',
     finalAns: 2,
+    figureNode: <WorkbookFig1 />,
   },
   {
     id: '38-W2',
@@ -281,6 +313,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '四个图形中能一笔画出的有几个？',
     finalUnit: '个',
     finalAns: 1,
+    figureNode: <WorkbookFig2 />,
   },
   {
     id: '38-W3',
@@ -299,6 +332,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '四个图形最少笔数之和是多少？（6+2+1+3=？）',
     finalUnit: '笔',
     finalAns: 12,
+    figureNode: <WorkbookFig3 />,
   },
   {
     id: '38-W4',
@@ -316,6 +350,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '三个图形各需添加线数之和是多少？（0+1+2=？）',
     finalUnit: '条',
     finalAns: 3,
+    figureNode: <WorkbookFig4 />,
   },
   {
     id: '38-W5',
@@ -332,6 +367,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '两个图形各需去掉1条线，两图合计去掉几条线？',
     finalUnit: '条',
     finalAns: 2,
+    figureNode: <WorkbookFig5 />,
   },
   {
     id: '38-W6',
@@ -348,6 +384,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '两图合计需要添加或去掉的线共几条？',
     finalUnit: '条',
     finalAns: 2,
+    figureNode: <WorkbookFig6 />,
   },
   {
     id: '38-W7',
@@ -366,6 +403,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '哪只昆虫能一次不重复爬遍所有小路？（甲=1，乙=2）',
     finalUnit: '',
     finalAns: 1,
+    figureNode: <WorkbookFig7 />,
   },
   {
     id: '38-W8',
@@ -385,6 +423,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '谁先从出口出来？（纳纳=1，约约=2）',
     finalUnit: '',
     finalAns: 1,
+    figureNode: <WorkbookFig8 />,
   },
   {
     id: '38-W9',
@@ -404,6 +443,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '迷宫图中共有几个奇点？',
     finalUnit: '个',
     finalAns: 2,
+    figureNode: <WorkbookFig9 />,
   },
   {
     id: '38-W10',
@@ -422,6 +462,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '左图展览馆能否不重复穿过所有门？（能=1，不能=0）',
     finalUnit: '',
     finalAns: 0,
+    figureNode: <WorkbookFig10 />,
   },
   {
     id: '38-W11',
@@ -440,6 +481,7 @@ const WORKBOOK: Problem[] = [
     finalQ: '邮递员路线图中共有几个奇点？',
     finalUnit: '个',
     finalAns: 2,
+    figureNode: <WorkbookFig11 />,
   },
   {
     id: '38-W12',
@@ -717,7 +759,7 @@ const PRETEST: Problem[] = [
     title: '课前测2 · 判断并标出起终点',
     tag: 'type4',
     tagLabel: '一笔画判断',
-    text: '下面的图形能否一笔画出？能一笔画的图形，起点和终点各在哪里？<br/>图①：2×2方格加对角线（多奇点）；图②：左箭头＋矩形（2个奇点，凹角处）。',
+    text: '下面的图形能否一笔画出？能一笔画的图形，起点和终点各在哪里？',
     analysis: [
       '图①（2×2网格+对角线）：内部产生多处奇点（每条对角线与网格线交叉），奇点数 ≥ 4 → ✗ 不能一笔画',
       '图②（左箭头+矩形）：箭头凹陷处的两个顶角为奇点（度数3），其余顶点均为偶点 → 2个奇点 → ✓ 能一笔画',
