@@ -146,10 +146,22 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     return map
   }, [vocab])
 
-  // All vocab words due for spaced-repetition review today
+  const currentAndNextWeekPlans = useMemo(() => {
+    const today = todayStr()
+    const sorted = [...allPlans].sort((a, b) => a.weekStart.localeCompare(b.weekStart))
+    let currentIdx = -1
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      if (sorted[i].weekStart <= today) { currentIdx = i; break }
+    }
+    const result: typeof allPlans = []
+    if (currentIdx >= 0) result.push(sorted[currentIdx])
+    if (currentIdx + 1 < sorted.length) result.push(sorted[currentIdx + 1])
+    return result
+  }, [allPlans])
+
   const oldReviewWords = useMemo(
-    () => getOldReviewWords(vocab, masteryMap),
-    [vocab, masteryMap],
+    () => getOldReviewWords(vocab, masteryMap, currentAndNextWeekPlans),
+    [vocab, masteryMap, currentAndNextWeekPlans],
   )
 
   const handleGoToArrange = useCallback(() => {
