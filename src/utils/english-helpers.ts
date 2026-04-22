@@ -396,17 +396,25 @@ export function getReviewWordsForDay(
 
 /**
  * Returns all words due for spaced-repetition review today (including overdue),
- * regardless of any weekly plan. Excludes graduated words.
+ * excluding words that appear in any of `excludeWeekPlans` (typically the current
+ * and next week's plans — see spec §3.6). Excludes graduated words.
  * Sorted by overdue days desc, then stage asc.
  */
 export function getOldReviewWords(
   vocab: WordEntry[],
   masteryMap: WordMasteryMap,
+  excludeWeekPlans: WeeklyPlan[] = [],
 ): WordEntry[] {
   const today = new Date().toISOString().slice(0, 10)
+  const excludeKeys = new Set<string>()
+  for (const plan of excludeWeekPlans) {
+    for (const day of plan.days) for (const k of day.newWordKeys) excludeKeys.add(k)
+  }
   return vocab
     .filter(w => {
-      const m = masteryMap[wordKey(w)]
+      const k = wordKey(w)
+      if (excludeKeys.has(k)) return false
+      const m = masteryMap[k]
       if (!m || isGraduated(m)) return false
       const init = ensureStageInit(m, today)
       const due = init.nextReviewDate ?? today
@@ -414,7 +422,8 @@ export function getOldReviewWords(
     })
     .map(w => {
       const m = ensureStageInit(masteryMap[wordKey(w)]!, today)
-      const overdueDays = Math.max(0,
+      const overdueDays = Math.max(
+        0,
         Math.floor((Date.parse(today) - Date.parse(m.nextReviewDate ?? today)) / 86400000),
       )
       return { w, overdueDays, stage: m.stage ?? 0 }
