@@ -290,6 +290,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     return buildQuizOptions(q.word, vocab, seed)
   }, [quizQs, curQ, vocab])
 
+  const planClassification = useMemo(() => classifyPlanWords(plan, vocab), [plan, vocab])
+
   // ── WEEK VIEW ────────────────────────────────────────────────────────────
   if (phase === 'week-view') {
     const today = todayStr()
@@ -338,9 +340,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 const isDone = plan.progress[day.date]?.quizDone === true
                 const isToday = day.date === today
                 const isPast = day.date < today && !isDone
-                const newCount = day.newWordKeys.length
-                const { weekReview, oldReview } = getReviewWordsForDay(vocab, masteryMap, plan, i)
-                const reviewCount = weekReview.length + oldReview.length
+                const introducedUpTo = new Set<string>()
+                for (let j = 0; j <= i; j++) plan.days[j].newWordKeys.forEach(k => introducedUpTo.add(k))
+                let consolidateCount = 0
+                let previewCount = 0
+                for (const k of introducedUpTo) {
+                  const kind = planClassification.get(k)
+                  if (kind === 'preview') previewCount += 1
+                  else consolidateCount += 1
+                }
                 const isSelected = selectedDate === day.date
 
                 let borderColor = 'rgba(255,255,255,.07)'
@@ -401,7 +409,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                       {fmtDate(day.date)}
                     </div>
                     <div className="text-center text-[.58rem] leading-tight font-bold opacity-60">
-                      {isDone ? '✓ 完成' : isToday ? '今天' : `${newCount}+${reviewCount}`}
+                      {isDone ? '✓ 完成' : isToday ? '今天' : `必记 ${consolidateCount} · 预习 ${previewCount}`}
                     </div>
                   </button>
                 )
@@ -415,28 +423,23 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               const dayPlan = plan.days[dayIndex]
               if (!dayPlan) return null
               const isDone = plan.progress[selectedDate]?.quizDone === true
-              const newWords = dayPlan.newWordKeys
-                .map((k) => vocab.find((w) => wordKey(w) === k))
-                .filter((w): w is WordEntry => !!w)
-              const { weekReview } = getReviewWordsForDay(
-                vocab,
-                masteryMap,
-                plan,
-                dayIndex,
-              )
-              const total = newWords.length + weekReview.length
+              const session = getDailySessionWords(plan, vocab, masteryMap, dayIndex)
+              const consolidateList = session.filter(s => s.kind === 'consolidate')
+              const previewList = session.filter(s => s.kind === 'preview')
+              const metCount = consolidateList.filter(s => s.met).length
+              const total = session.length
               return (
                 <div className="border-t border-[var(--wm-border)] pt-4">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
                     <span className="text-[.72rem] font-extrabold text-[var(--wm-text-dim)]">
                       {fmtDate(selectedDate)} {cnDays[dayIndex]}
                     </span>
-                    <span className="rounded-full border border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#fb923c]">
-                      新词 {newWords.length}
+                    <span className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#93c5fd]">
+                      必记 {consolidateList.length}（已达标 {metCount}）
                     </span>
-                    {weekReview.length > 0 && (
-                      <span className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#93c5fd]">
-                        本周复习 {weekReview.length}
+                    {previewList.length > 0 && (
+                      <span className="rounded-full border border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#fb923c]">
+                        预习 {previewList.length}
                       </span>
                     )}
                     <span className="text-[.68rem] text-[var(--wm-text-dim)]">共 {total} 词</span>
@@ -447,100 +450,146 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     )}
                   </div>
 
-                  {newWords.length > 0 && (
+                  {consolidateList.length > 0 && (
                     <div className="mb-3">
-                      <div className="mb-1.5 text-[.6rem] font-extrabold tracking-widest text-[#fb923c] uppercase">
-                        今日新词
+                      <div className="mb-1.5 text-[.6rem] font-extrabold tracking-widest text-[#93c5fd] uppercase">
+                        必记（{consolidateList.length} 个，已达标 {metCount}）
                       </div>
                       <div className="flex flex-wrap gap-1.5">
-                        {newWords.map((w) => {
-                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                        {consolidateList.map((s) => {
+                          const level = getWordMasteryLevel(masteryMap[wordKey(s.entry)]?.correct ?? 0)
                           return (
                             <span
-                              key={wordKey(w)}
+                              key={wordKey(s.entry)}
+                              className={`rounded-full border-[1.5px] px-2.5 py-1 text-[0.875rem] font-bold ${
+                                s.met
+                                  ? 'border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] text-[#86efac]'
+                                  : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] text-[#93c5fd]'
+                              }`}
+                            >
+                              {level > 0 && (
+                                <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
+                              )}
+                              {s.entry.word}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {previewList.length > 0 && (
+                    <div className="mb-3">
+                      <div className="mb-1.5 text-[.6rem] font-extrabold tracking-widest text-[#fb923c] uppercase">
+                        预习（{previewList.length} 个）
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {previewList.map((s) => {
+                          const level = getWordMasteryLevel(masteryMap[wordKey(s.entry)]?.correct ?? 0)
+                          return (
+                            <span
+                              key={wordKey(s.entry)}
                               className="rounded-full border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] px-2.5 py-1 text-[0.875rem] font-bold text-[#fb923c]"
                             >
                               {level > 0 && (
                                 <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
                               )}
-                              {w.word}
+                              {s.entry.word}
                             </span>
                           )
                         })}
                       </div>
                     </div>
                   )}
-
-                  {weekReview.length > 0 && (
-                    <div className="mb-3">
-                      <div className="mb-1.5 text-[.6rem] font-extrabold tracking-widest text-[#93c5fd] uppercase">
-                        本周复习
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {weekReview.map((w) => {
-                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
-                          return (
-                            <span
-                              key={wordKey(w)}
-                              className="rounded-full border-[1.5px] border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-2.5 py-1 text-[0.875rem] font-bold text-[#93c5fd]"
-                            >
-                              {level > 0 && (
-                                <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
-                              )}
-                              {w.word}
-                            </span>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-
 
                   {total === 0 && (
                     <div className="mb-4 text-[1.125rem] text-[var(--wm-text-dim)]">
-                      暂无单词，所有词已掌握！
+                      暂无单词
                     </div>
                   )}
 
                   <div className="mb-2.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
                     题型选择
                   </div>
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {(['A', 'B', 'C'] as const).map((t) => {
-                      const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
-                      const on = consolidateTypes.has(t)
-                      return (
-                        <button
-                          key={t}
-                          onClick={() =>
-                            setConsolidateTypes((prev) => {
-                              const n = new Set(prev)
-                              if (n.has(t)) n.delete(t)
-                              else n.add(t)
-                              return n
-                            })
-                          }
-                          className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3.5 py-2.5 text-[0.875rem] font-bold transition-all select-none ${
-                            on
-                              ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
-                              : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
-                          }`}
-                        >
-                          <span
-                            className={`inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[.6rem] font-black ${
-                              t === 'A'
-                                ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
-                                : t === 'B'
-                                  ? 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
-                                  : 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
+
+                  {/* Two-row type selector */}
+                  <div className="mb-4 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="min-w-[5.5rem] text-[.72rem] font-bold text-[#93c5fd]">必记词题型</span>
+                      {(['A', 'B', 'C'] as const).map((t) => {
+                        const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
+                        const on = consolidateTypes.has(t)
+                        return (
+                          <button
+                            key={`c-${t}`}
+                            onClick={() =>
+                              setConsolidateTypes((prev) => {
+                                const n = new Set(prev)
+                                if (n.has(t)) n.delete(t); else n.add(t)
+                                return n
+                              })
+                            }
+                            className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[.82rem] font-bold transition-all select-none ${
+                              on
+                                ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
+                                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
                             }`}
                           >
-                            {t}
-                          </span>
-                          {labels[t]}
-                        </button>
-                      )
-                    })}
+                            <span
+                              className={`inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[.6rem] font-black ${
+                                t === 'A'
+                                  ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
+                                  : t === 'B'
+                                    ? 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
+                                    : 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
+                              }`}
+                            >
+                              {t}
+                            </span>
+                            {labels[t]}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {previewList.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="min-w-[5.5rem] text-[.72rem] font-bold text-[#fb923c]">预习词题型</span>
+                        {(['A', 'B', 'C'] as const).map((t) => {
+                          const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
+                          const on = previewTypes.has(t)
+                          return (
+                            <button
+                              key={`p-${t}`}
+                              onClick={() =>
+                                setPreviewTypes((prev) => {
+                                  const n = new Set(prev)
+                                  if (n.has(t)) n.delete(t); else n.add(t)
+                                  return n
+                                })
+                              }
+                              className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[.82rem] font-bold transition-all select-none ${
+                                on
+                                  ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
+                                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+                              }`}
+                            >
+                              <span
+                                className={`inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[.6rem] font-black ${
+                                  t === 'A'
+                                    ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
+                                    : t === 'B'
+                                      ? 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
+                                      : 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
+                                }`}
+                              >
+                                {t}
+                              </span>
+                              {labels[t]}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   <button
