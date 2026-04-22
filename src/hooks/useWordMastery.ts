@@ -36,24 +36,56 @@ export function useWordMastery(user: User | null) {
 
   const recordBatch = useCallback((results: { entry: WordEntry; correct: boolean }[]) => {
     if (!user) return
+    if (results.length === 0) return
     const today = new Date().toISOString().slice(0, 10)
+
+    // Aggregate by word key so we do at most one stage change per word per call
+    type Group = { entry: WordEntry; corrects: number; total: number }
+    const byKey = new Map<string, Group>()
+    for (const { entry, correct } of results) {
+      const k = wordKey(entry)
+      const g = byKey.get(k) ?? { entry, corrects: 0, total: 0 }
+      if (correct) g.corrects += 1
+      g.total += 1
+      byKey.set(k, g)
+    }
+
     setMasteryMap(prev => {
       const next = { ...prev }
-      for (const { entry, correct: isCorrect } of results) {
-        const key = wordKey(entry)
-        const cur = next[key] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-        const updated = isCorrect ? advanceStage(cur, today) : regressStage(cur, today)
-        next[key] = {
-          ...updated,
-          correct: isCorrect ? cur.correct + 1 : cur.correct,
-          incorrect: isCorrect ? cur.incorrect : cur.incorrect + 1,
-          lastSeen: today,
-          reviewHistory: [...(cur.reviewHistory ?? []), { date: today, correct: isCorrect }],
+      const touchedKeys: string[] = []
+
+      for (const [key, g] of byKey) {
+        const cur: WordMasteryInfo = next[key] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+        const allCorrect = g.corrects === g.total
+        const majorityCorrect = g.corrects > g.total / 2
+        const sameDay = cur.lastSeen === today
+
+        let stageUpdated: WordMasteryInfo
+        if (allCorrect && !sameDay) {
+          stageUpdated = advanceStage(cur, today, key)
+        } else if (!majorityCorrect && !sameDay) {
+          stageUpdated = regressStage(cur, today)
+        } else {
+          // Same day, or mixed correct/incorrect on a new day: keep stage/nextReviewDate
+          stageUpdated = cur
         }
+
+        // Append each individual answer to reviewHistory for full history
+        const historyAppends = results
+          .filter(r => wordKey(r.entry) === key)
+          .map(r => ({ date: today, correct: r.correct }))
+
+        next[key] = {
+          ...stageUpdated,
+          correct: cur.correct + g.corrects,
+          incorrect: cur.incorrect + (g.total - g.corrects),
+          lastSeen: today,
+          reviewHistory: [...(cur.reviewHistory ?? []), ...historyAppends],
+        }
+        touchedKeys.push(key)
       }
 
-      const rows = results.map(({ entry }) => {
-        const key = wordKey(entry)
+      const rows = touchedKeys.map(key => {
         const updated = next[key]
         return {
           user_id: user.id,
@@ -64,12 +96,16 @@ export function useWordMastery(user: User | null) {
           stage: updated.stage,
           next_review_date: updated.nextReviewDate ?? null,
           is_hard: updated.isHard ?? false,
-          review_history: next[key].reviewHistory ?? [],
+          review_history: updated.reviewHistory ?? [],
           updated_at: new Date().toISOString(),
         }
       })
-      supabase.from('word_mastery').upsert(rows, { onConflict: 'user_id,word_key' })
-        .then(({ error }) => { if (error) console.error('[word_mastery] upsert failed', error) })
+      supabase
+        .from('word_mastery')
+        .upsert(rows, { onConflict: 'user_id,word_key' })
+        .then(({ error }) => {
+          if (error) console.error('[word_mastery] upsert failed', error)
+        })
 
       return next
     })
