@@ -14,6 +14,19 @@ function addDays(dateStr: string, days: number): string {
   return d.toISOString().slice(0, 10)
 }
 
+/**
+ * Stable integer hash in [0, mod). Used to desynchronize SRS nextReviewDate
+ * so a batch of words advanced the same day don't all come due on the same
+ * future day.
+ */
+export function hashOffset(key: string, mod: number = 3): number {
+  let h = 0
+  for (let i = 0; i < key.length; i++) {
+    h = ((h << 5) - h + key.charCodeAt(i)) | 0
+  }
+  return Math.abs(h) % mod
+}
+
 export function ensureStageInit(info: WordMasteryInfo, today: string): WordMasteryInfo {
   if (info.stage !== undefined) return info
   const correct = info.correct ?? 0
@@ -30,15 +43,21 @@ export function ensureStageInit(info: WordMasteryInfo, today: string): WordMaste
   }
 }
 
-export function advanceStage(info: WordMasteryInfo, today: string): WordMasteryInfo {
+export function advanceStage(
+  info: WordMasteryInfo,
+  today: string,
+  wordKey?: string,
+): WordMasteryInfo {
   const initialized = ensureStageInit(info, today)
   const intervals = initialized.isHard ? HARD_INTERVALS : NORMAL_INTERVALS
   const maxStage = initialized.isHard ? GRADUATED_STAGE_HARD : GRADUATED_STAGE_NORMAL
   const newStage = Math.min((initialized.stage ?? 0) + 1, maxStage)
+  const offset = wordKey ? hashOffset(wordKey, 3) : 0
   return {
     ...initialized,
     stage: newStage,
-    nextReviewDate: newStage >= maxStage ? undefined : addDays(today, intervals[newStage] ?? 90),
+    nextReviewDate:
+      newStage >= maxStage ? undefined : addDays(today, (intervals[newStage] ?? 90) + offset),
   }
 }
 
