@@ -429,6 +429,54 @@ export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: s
   return result
 }
 
+/**
+ * Classify every word referenced by a plan as consolidate (must-memorize this week)
+ * or preview (first-touch, next week's consolidate).
+ *
+ * Rule: find the (unit, lesson) pairs covered by the plan, pick the one that appears
+ * latest in `getOrderedLessons(vocab)`, and mark its words as 'preview'. All others
+ * are 'consolidate'. A single-lesson plan has no preview words.
+ */
+export function classifyPlanWords(
+  plan: WeeklyPlan,
+  vocab: WordEntry[],
+): Map<string, 'consolidate' | 'preview'> {
+  const result = new Map<string, 'consolidate' | 'preview'>()
+
+  const planKeys = new Set<string>()
+  for (const day of plan.days) for (const k of day.newWordKeys) planKeys.add(k)
+  if (planKeys.size === 0) return result
+
+  const keyToEntry = new Map<string, WordEntry>()
+  for (const w of vocab) keyToEntry.set(wordKey(w), w)
+
+  const lessonsInPlan = new Set<string>()
+  for (const k of planKeys) {
+    const entry = keyToEntry.get(k)
+    if (entry) lessonsInPlan.add(`${entry.unit}::${entry.lesson}`)
+  }
+
+  const ordered = getOrderedLessons(vocab)
+  let previewLessonKey: string | null = null
+  if (lessonsInPlan.size >= 2) {
+    for (let i = ordered.length - 1; i >= 0; i--) {
+      const key = `${ordered[i].unit}::${ordered[i].lesson}`
+      if (lessonsInPlan.has(key)) {
+        previewLessonKey = key
+        break
+      }
+    }
+  }
+
+  for (const k of planKeys) {
+    const entry = keyToEntry.get(k)
+    if (!entry) continue
+    const lk = `${entry.unit}::${entry.lesson}`
+    result.set(k, lk === previewLessonKey ? 'preview' : 'consolidate')
+  }
+  return result
+}
+
 export function suggestNextLesson(
   vocab: WordEntry[],
   lastUnit: string,
