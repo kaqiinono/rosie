@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@/utils/type'
-import { buildWeeklyPlan, getOrderedLessons, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords } from '@/utils/english-helpers'
+import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords } from '@/utils/english-helpers'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import OldReviewSession from './OldReviewSession'
 import { useAuth } from '@/contexts/AuthContext'
@@ -101,6 +101,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   // arrange-step state
   const [draftDays, setDraftDays] = useState<WeeklyPlanDay[]>([])
   const [unassignedKeys, setUnassignedKeys] = useState<string[]>([])
+  const [carryoverCount, setCarryoverCount] = useState(0)
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set())
 
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
@@ -173,11 +174,34 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       lessonGroups,
       resolvedQuotas,
     )
+
+    // Carryover: previous-week plan's consolidate words with stage < 2 (spec §3.7)
+    const prevWeekStart = (() => {
+      const [y, m, d] = dialogWeekStart.split('-').map(Number)
+      const prev = new Date(y, m - 1, d - 7)
+      return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`
+    })()
+    const prevPlan = allPlans.find(p => p.weekStart === prevWeekStart)
+    const carryover: string[] = []
+    if (prevPlan) {
+      const cls = classifyPlanWords(prevPlan, vocab)
+      const alreadyAssigned = new Set<string>(days.flatMap(d => d.newWordKeys))
+      const alreadyUnassigned = new Set(unassigned)
+      for (const [k, kind] of cls) {
+        if (kind !== 'consolidate') continue
+        if (alreadyAssigned.has(k) || alreadyUnassigned.has(k)) continue
+        const m = masteryMap[k]
+        const stage = m?.stage ?? 0
+        if (stage < 2) carryover.push(k)
+      }
+    }
+
     setDraftDays(days)
-    setUnassignedKeys(unassigned)
+    setUnassignedKeys([...unassigned, ...carryover])
+    setCarryoverCount(carryover.length)
     setSelectedKeys(new Set())
     setStep('arrange')
-  }, [activeLesson, lessonWords, lessonGroups, resolvedQuotas, totalPerDay, dialogWeekStart])
+  }, [activeLesson, lessonWords, lessonGroups, resolvedQuotas, totalPerDay, dialogWeekStart, allPlans, vocab, masteryMap])
 
   // Move selected keys to a day (or to unassigned pool if dayIdx === -1)
   const handleMoveWords = useCallback((keys: Set<string>, targetDayIdx: number) => {
@@ -209,6 +233,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     }
     const saved = await savePlan(plan)
     setStep('list')
+    setCarryoverCount(0)
     if (saved.id) {
       router.push('/english/words/weekly/' + saved.id)
     }
@@ -404,7 +429,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             {activeLesson && (
               <div className="mt-2 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
                 <button
-                  onClick={() => setStep('list')}
+                  onClick={() => { setStep('list'); setCarryoverCount(0) }}
                   className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
                 >
                   取消
@@ -489,6 +514,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 >
                   取消选择
                 </button>
+              </div>
+            )}
+
+            {carryoverCount > 0 && (
+              <div className="mb-3 rounded-[14px] border border-[rgba(245,158,11,.4)] bg-[rgba(245,158,11,.08)] px-4 py-3 text-[.78rem] font-bold text-[#fbbf24]">
+                ↻ 上周有 {carryoverCount} 个必记词未达标，已加入下方待分配池，请安排到合适的日子。
               </div>
             )}
 
