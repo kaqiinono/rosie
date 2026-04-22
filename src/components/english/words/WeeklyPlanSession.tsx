@@ -4,6 +4,8 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import type { WordEntry, WeeklyPlan, WeekDayProgress } from '@/utils/type'
 import {
   buildQuizOptions,
+  classifyPlanWords,
+  getDailySessionWords,
   getReviewWordsForDay,
   hilite,
   highlightExample,
@@ -30,18 +32,21 @@ interface WeeklyPlanSessionProps {
 
 type Phase = 'week-view' | 'study' | 'quiz' | 'done'
 
+type WordKind = 'consolidate' | 'preview'
+
 interface DpQuizQ {
   word: WordEntry
   type: 'A' | 'B' | 'C'
-  isReview: boolean
+  kind: WordKind
 }
 
 interface SessionSnapshot {
+  version: 2
   phase: 'study' | 'quiz'
   selectedDate: string
   studyIdx: number
-  words: { key: string; isReview: boolean }[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[]
+  words: { key: string; kind: WordKind }[]
+  quizQs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
 }
@@ -55,8 +60,10 @@ function loadSessionSnapshot(planId: string | undefined): SessionSnapshot | null
   try {
     const raw = sessionStorage.getItem(`weekly_session_${planId}`)
     if (!raw) return null
-    const snap = JSON.parse(raw) as SessionSnapshot
-    return snap.phase === 'study' || snap.phase === 'quiz' ? snap : null
+    const snap = JSON.parse(raw) as Partial<SessionSnapshot>
+    if (snap.version !== 2) return null
+    if (snap.phase !== 'study' && snap.phase !== 'quiz') return null
+    return snap as SessionSnapshot
   } catch { return null }
 }
 
@@ -101,19 +108,26 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setSelectedDate(firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null)
   }
 
-  const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
+  const [consolidateTypes, setConsolidateTypes] = useState<Set<'A' | 'B' | 'C'>>(
+    new Set(['A', 'C']),
+  )
+  const [previewTypes, setPreviewTypes] = useState<Set<'A' | 'B' | 'C'>>(
+    new Set(['A', 'B']),
+  )
 
   // Words and quiz questions are stored as key arrays; actual WordEntry objects are derived via useMemo
   // so they hydrate automatically when vocab loads — no setState-in-effect required
-  const [wordKeys, setWordKeys] = useState<{ key: string; isReview: boolean }[]>(() => snap0?.words ?? [])
+  const [wordKeys, setWordKeys] = useState<{ key: string; kind: WordKind }[]>(
+    () => snap0?.words ?? [],
+  )
   const words = useMemo(
     () =>
       wordKeys
-        .map(({ key, isReview }) => {
+        .map(({ key, kind }) => {
           const entry = vocab.find((w) => wordKey(w) === key)
-          return entry ? { entry, isReview } : null
+          return entry ? { entry, kind } : null
         })
-        .filter((w): w is { entry: WordEntry; isReview: boolean } => w !== null),
+        .filter((w): w is { entry: WordEntry; kind: WordKind } => w !== null),
     [wordKeys, vocab],
   )
 
@@ -121,15 +135,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [studyDefOnly, setStudyDefOnly] = useState(false)
   const [studyWordVisible, setStudyWordVisible] = useState(false)
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[]>(
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]>(
     () => snap0?.quizQs ?? [],
   )
   const quizQs = useMemo(
     () =>
       quizQKeys
-        .map(({ key, type, isReview }) => {
+        .map(({ key, type, kind }) => {
           const entry = vocab.find((w) => wordKey(w) === key)
-          return entry ? { word: entry, type, isReview } : null
+          return entry ? { word: entry, type, kind } : null
         })
         .filter((q): q is DpQuizQ => q !== null),
     [quizQKeys, vocab],
@@ -164,6 +178,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       sessionStorage.setItem(
         key,
         JSON.stringify({
+          version: 2,
           phase,
           selectedDate: selectedDate ?? '',
           studyIdx,
@@ -198,27 +213,21 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     (dateStr: string) => {
       const dayIndex = plan.days.findIndex((d) => d.date === dateStr)
       if (dayIndex === -1) return []
-      const dayPlan = plan.days[dayIndex]
-      const newWords = dayPlan.newWordKeys
-        .map((k) => vocab.find((w) => wordKey(w) === k))
-        .filter((w): w is WordEntry => !!w)
-      const { weekReview } = getReviewWordsForDay(vocab, masteryMap, plan, dayIndex)
-      return [
-        ...newWords.map((e) => ({ entry: e, isReview: false })),
-        ...weekReview.map((e) => ({ entry: e, isReview: true })),
-      ]
+      return getDailySessionWords(plan, vocab, masteryMap, dayIndex)
     },
     [plan, vocab, masteryMap],
   )
 
   const startStudy = useCallback(
     (dateStr: string) => {
-      if (!enabledTypes.size) {
+      const anyTypeSelected = consolidateTypes.size + previewTypes.size > 0
+      if (!anyTypeSelected) {
         alert('请至少选择一种题型！')
         return
       }
       const session = buildSessionWords(dateStr)
-      setWordKeys(session.map(({ entry, isReview }) => ({ key: wordKey(entry), isReview })))
+      if (session.length === 0) return
+      setWordKeys(session.map(({ entry, kind }) => ({ key: wordKey(entry), kind })))
       setStudyIdx(0)
       setStudyWordVisible(false)
       setStudyDefOnly(false)
@@ -226,15 +235,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       setPhase('study')
       setIsImmersive(true)
     },
-    [enabledTypes, buildSessionWords, setIsImmersive],
+    [consolidateTypes, previewTypes, buildSessionWords, setIsImmersive],
   )
 
   const startQuiz = useCallback(() => {
-    const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
-    const qs: { key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[] = []
-    words.forEach((w) =>
-      types.forEach((t) => qs.push({ key: wordKey(w.entry), type: t, isReview: w.isReview })),
-    )
+    const qs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[] = []
+    words.forEach((w) => {
+      const types = w.kind === 'consolidate' ? [...consolidateTypes] : [...previewTypes]
+      types.forEach((t) => qs.push({ key: wordKey(w.entry), type: t, kind: w.kind }))
+    })
     for (let i = qs.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
       ;[qs[i], qs[j]] = [qs[j], qs[i]]
@@ -244,7 +253,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setCurQ(0)
     setScore(0)
     setPhase('quiz')
-  }, [words, enabledTypes])
+  }, [words, consolidateTypes, previewTypes])
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
@@ -499,12 +508,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                   <div className="mb-4 flex flex-wrap gap-2">
                     {(['A', 'B', 'C'] as const).map((t) => {
                       const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
-                      const on = enabledTypes.has(t)
+                      const on = consolidateTypes.has(t)
                       return (
                         <button
                           key={t}
                           onClick={() =>
-                            setEnabledTypes((prev) => {
+                            setConsolidateTypes((prev) => {
                               const n = new Set(prev)
                               if (n.has(t)) n.delete(t)
                               else n.add(t)
@@ -640,12 +649,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             <div className="relative z-[1] flex flex-wrap justify-center gap-1.5">
               <span
                 className={`rounded-full border px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider uppercase ${
-                  w.isReview
+                  w.kind === 'consolidate'
                     ? 'border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.2)] text-[#93c5fd]'
                     : 'border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.2)] text-[#fb923c]'
                 }`}
               >
-                {w.isReview ? '复习' : '新词'}
+                {w.kind === 'consolidate' ? '必记' : '预习'}
               </span>
               <span className="rounded-full border border-[rgba(233,69,96,.3)] bg-[rgba(233,69,96,.2)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[var(--wm-accent)] uppercase">
                 {w.entry.unit}
