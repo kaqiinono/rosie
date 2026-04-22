@@ -153,6 +153,13 @@ export interface QuizQuestion {
   type: 'A' | 'B' | 'C'
 }
 
+export interface DailySessionWord {
+  entry: WordEntry
+  kind: 'consolidate' | 'preview'
+  /** true iff this is a consolidate word whose mastery stage >= 2 */
+  met: boolean
+}
+
 export function buildQuizQuestions(
   words: WordEntry[],
   types: ('A' | 'B' | 'C')[],
@@ -475,6 +482,77 @@ export function classifyPlanWords(
     result.set(k, lk === previewLessonKey ? 'preview' : 'consolidate')
   }
   return result
+}
+
+/**
+ * Returns every word introduced in plan.days[0..dayIndex] (union), tagged with
+ * consolidate/preview classification and sorted:
+ *   1. consolidate & not yet met (stage < 2): stage asc, correct asc, incorrect desc
+ *   2. consolidate & met (stage >= 2)
+ *   3. preview (plan insertion order)
+ *
+ * No 9-cap, no old-review mixing. See spec §3.2.
+ */
+export function getDailySessionWords(
+  plan: WeeklyPlan,
+  vocab: WordEntry[],
+  masteryMap: WordMasteryMap,
+  dayIndex: number,
+): DailySessionWord[] {
+  if (dayIndex < 0 || dayIndex >= plan.days.length) return []
+  const cls = classifyPlanWords(plan, vocab)
+
+  const seen = new Set<string>()
+  const introducedOrder: string[] = []
+  for (let i = 0; i <= dayIndex; i++) {
+    for (const k of plan.days[i].newWordKeys) {
+      if (!seen.has(k)) {
+        seen.add(k)
+        introducedOrder.push(k)
+      }
+    }
+  }
+
+  const keyToEntry = new Map<string, WordEntry>()
+  for (const w of vocab) keyToEntry.set(wordKey(w), w)
+
+  type Bucket = DailySessionWord & { order: number }
+  const consolidateUnmet: Bucket[] = []
+  const consolidateMet: Bucket[] = []
+  const preview: Bucket[] = []
+
+  introducedOrder.forEach((k, order) => {
+    const entry = keyToEntry.get(k)
+    if (!entry) return
+    const kind = cls.get(k) ?? 'consolidate'
+    const m = masteryMap[k]
+    const stage = m?.stage ?? 0
+    const met = stage >= 2
+    const item: Bucket = { entry, kind, met, order }
+    if (kind === 'preview') preview.push(item)
+    else if (met) consolidateMet.push(item)
+    else consolidateUnmet.push(item)
+  })
+
+  consolidateUnmet.sort((a, b) => {
+    const ma = masteryMap[wordKey(a.entry)]
+    const mb = masteryMap[wordKey(b.entry)]
+    const sa = ma?.stage ?? 0
+    const sb = mb?.stage ?? 0
+    if (sa !== sb) return sa - sb
+    const ca = ma?.correct ?? 0
+    const cb = mb?.correct ?? 0
+    if (ca !== cb) return ca - cb
+    const ia = ma?.incorrect ?? 0
+    const ib = mb?.incorrect ?? 0
+    return ib - ia
+  })
+  consolidateMet.sort((a, b) => a.order - b.order)
+  preview.sort((a, b) => a.order - b.order)
+
+  return [...consolidateUnmet, ...consolidateMet, ...preview].map(({ entry, kind, met }) => ({
+    entry, kind, met,
+  }))
 }
 
 export function suggestNextLesson(
