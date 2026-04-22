@@ -39,9 +39,19 @@ export function useProblemMastery(user: User | null) {
     if (!user) return
     const today = new Date().toISOString().slice(0, 10)
     const cur: WordMasteryInfo = masteryMapRef.current[key] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-    const updated = correct ? advanceStage(cur, today) : regressStage(cur, today)
+    const sameDay = cur.lastSeen === today
+
+    let stageUpdated: WordMasteryInfo
+    if (correct && !sameDay) {
+      stageUpdated = advanceStage(cur, today, key)
+    } else if (!correct && !sameDay) {
+      stageUpdated = regressStage(cur, today)
+    } else {
+      stageUpdated = cur
+    }
+
     const info: WordMasteryInfo = {
-      ...updated,
+      ...stageUpdated,
       correct: correct ? cur.correct + 1 : cur.correct,
       incorrect: correct ? cur.incorrect : cur.incorrect + 1,
       lastSeen: today,
