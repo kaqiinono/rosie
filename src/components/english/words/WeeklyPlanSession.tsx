@@ -292,6 +292,16 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const planClassification = useMemo(() => classifyPlanWords(plan, vocab), [plan, vocab])
 
+  const { consolidateTotal, consolidateMet } = useMemo(() => {
+    const keys: string[] = []
+    for (const [k, kind] of planClassification) if (kind === 'consolidate') keys.push(k)
+    const met = keys.filter(k => (masteryMap[k]?.stage ?? 0) >= 2).length
+    return { consolidateTotal: keys.length, consolidateMet: met }
+  }, [planClassification, masteryMap])
+
+  const isLastDayToday = plan.days[plan.days.length - 1]?.date === todayStr()
+  const showSundayBanner = isLastDayToday && consolidateTotal - consolidateMet > 0
+
   // ── WEEK VIEW ────────────────────────────────────────────────────────────
   if (phase === 'week-view') {
     const today = todayStr()
@@ -333,6 +343,21 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 )}
               </div>
             </div>
+
+            {consolidateTotal > 0 && (
+              <div className="mt-3 rounded-[12px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-2.5">
+                <div className="mb-1.5 flex items-center justify-between text-[.7rem] font-bold">
+                  <span className="text-[#93c5fd]">本周必记达标</span>
+                  <span className="text-[var(--wm-text-dim)]">{consolidateMet} / {consolidateTotal}</span>
+                </div>
+                <div className="h-[6px] w-full rounded-full bg-white/[.06]">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#60a5fa] to-[#a78bfa] transition-[width] duration-400"
+                    style={{ width: `${consolidateTotal === 0 ? 0 : Math.round((consolidateMet / consolidateTotal) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* 7-day grid */}
             <div className="scrollbar-none mt-3 flex gap-2 overflow-x-auto px-7 py-2 sm:grid sm:grid-cols-7 sm:overflow-visible sm:px-0 sm:py-0">
@@ -416,6 +441,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               })}
             </div>
           </div>
+          {showSundayBanner && (
+            <div className="mt-4 rounded-[14px] border border-[rgba(248,113,113,.5)] bg-[rgba(248,113,113,.1)] px-4 py-3 text-[.82rem] font-extrabold text-[#f87171]">
+              ⚠️ 今日兜底：还有 {consolidateTotal - consolidateMet} 个必记词未达标，今天务必攻克。
+            </div>
+          )}
+
           {/* Selected day detail */}
           {selectedDate &&
             (() => {
