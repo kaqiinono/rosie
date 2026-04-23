@@ -164,6 +164,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const router = useRouter()
   const { user } = useAuth()
   const { masteryMap } = useWordsContext()
+
   const { allPlans, deletePlan, defaultParams, savePlan, isLoading } = useWeeklyPlan(user)
 
   // step: 'list' | 'params' | 'arrange'
@@ -930,7 +931,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
               周计划
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               {oldReviewWords.length > 0 && (
                 <button
                   onClick={() => setShowOldReview(true)}

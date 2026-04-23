@@ -198,6 +198,22 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
+  /** Unique plan words in calendar order (Thu→Wed), for mastery panel scope. */
+  const planOrderedVocab = useMemo(() => {
+    const byKey = new Map(vocab.map((w) => [wordKey(w), w]))
+    const out: WordEntry[] = []
+    const seen = new Set<string>()
+    for (const d of plan.days) {
+      for (const k of d.newWordKeys) {
+        if (seen.has(k)) continue
+        seen.add(k)
+        const e = byKey.get(k)
+        if (e) out.push(e)
+      }
+    }
+    return out
+  }, [plan.days, vocab])
+
   const updateDayProgress = useCallback(
     async (date: string, progress: WeekDayProgress) => {
       const current = planRef.current
@@ -651,7 +667,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               )
             })()}
         </div>
-        <MasteryStatusPanel vocab={vocab} masteryMap={masteryMap} />
+        <MasteryStatusPanel
+          vocab={vocab}
+          masteryMap={masteryMap}
+          orderedWordsInScope={planOrderedVocab}
+          panelTitle="本周词汇学习状态"
+        />
       </>
     )
   }
@@ -912,7 +933,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             </button>
           </div>
         </div>
-        <MasteryStatusPanel vocab={vocab} masteryMap={masteryMap} />
+        <MasteryStatusPanel
+          vocab={vocab}
+          masteryMap={masteryMap}
+          orderedWordsInScope={planOrderedVocab}
+          panelTitle="本周词汇学习状态"
+        />
       </>
     )
   }
