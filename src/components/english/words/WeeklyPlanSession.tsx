@@ -6,7 +6,6 @@ import {
   buildQuizOptions,
   classifyPlanWords,
   getDailySessionWords,
-  getReviewWordsForDay,
   hilite,
   highlightExample,
   wordKey,
