@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import type { WordEntry, WeeklyPlan, WeekDayProgress } from '@/utils/type'
+import { encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
   classifyPlanWords,
@@ -71,7 +72,10 @@ async function saveProgressToCloud(userId: string, plan: WeeklyPlan): Promise<vo
   try {
     await supabase
       .from('weekly_plans')
-      .update({ progress_data: plan.progress, updated_at: new Date().toISOString() })
+      .update({
+        progress_data: encodeWeeklyPlanProgress(plan.progress, plan.weekCompletion),
+        updated_at: new Date().toISOString(),
+      })
       .eq('user_id', userId)
       .eq('id', plan.id)
   } catch {
@@ -325,7 +329,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                   {fmtWeekRange(plan.weekStart, plan.weekStartDay)}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   onClick={onBack}
                   className="font-nunito cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-4 py-1.5 text-[.75rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@/utils/type'
 import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords } from '@/utils/english-helpers'
@@ -10,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { todayStr } from '@/utils/constant'
+import { buildEnglishWeeklyReport } from '@/utils/buildEnglishWeeklyReport'
 
 interface WeeklyPracticeProps {
   vocab: WordEntry[]
@@ -36,6 +38,92 @@ const ALL_DAY_OPTIONS = [
   { value: 6, label: '周六' },
   { value: 0, label: '周日' },
 ]
+
+function lessonKey(l: { unit: string; lesson: string }): string {
+  return `${l.unit}::${l.lesson}`
+}
+
+/** Reverse `unit` / `lesson` comma lists saved on `WeeklyPlan`. */
+function parsePlanLessons(plan: WeeklyPlan): { unit: string; lesson: string }[] {
+  const units = plan.unit.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
+  const lessons = plan.lesson.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
+  if (units.length === 0) return []
+  const n = Math.max(units.length, lessons.length)
+  const out: { unit: string; lesson: string }[] = []
+  for (let i = 0; i < n; i++) {
+    out.push({
+      unit: units[i] ?? units[0]!,
+      lesson: lessons[i] ?? lessons[lessons.length - 1]! ?? '',
+    })
+  }
+  return out
+}
+
+function inferLessonQuotasFromAssignments(
+  plan: WeeklyPlan,
+  lessons: { unit: string; lesson: string }[],
+  vocab: WordEntry[],
+): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const l of lessons) {
+    const lk = lessonKey(l)
+    let maxPerDay = 0
+    for (const day of plan.days) {
+      let n = 0
+      for (const k of day.newWordKeys) {
+        const e = vocab.find(w => wordKey(w) === k)
+        if (e && e.unit === l.unit && e.lesson === l.lesson) n += 1
+      }
+      maxPerDay = Math.max(maxPerDay, n)
+    }
+    out[lk] = maxPerDay > 0 ? maxPerDay : 3
+  }
+  return out
+}
+
+function hydrateLessonKindOverridesFromPlan(
+  plan: WeeklyPlan,
+  lessons: { unit: string; lesson: string }[],
+  vocab: WordEntry[],
+): Record<string, 'consolidate' | 'preview'> {
+  const out: Record<string, 'consolidate' | 'preview'> = {}
+  if (plan.previewLessonKeys !== undefined) {
+    const ps = new Set(plan.previewLessonKeys)
+    for (const l of lessons) {
+      const lk = lessonKey(l)
+      out[lk] = ps.has(lk) ? 'preview' : 'consolidate'
+    }
+    return out
+  }
+  const cls = classifyPlanWords(plan, vocab)
+  for (const l of lessons) {
+    const lk = lessonKey(l)
+    const seen = new Set<string>()
+    const inLesson: string[] = []
+    for (const d of plan.days) {
+      for (const k of d.newWordKeys) {
+        if (seen.has(k)) continue
+        const e = vocab.find(w => wordKey(w) === k)
+        if (e && e.unit === l.unit && e.lesson === l.lesson) {
+          seen.add(k)
+          inLesson.push(k)
+        }
+      }
+    }
+    if (inLesson.length === 0) out[lk] = 'consolidate'
+    else out[lk] = inLesson.every(k => cls.get(k) === 'preview') ? 'preview' : 'consolidate'
+  }
+  return out
+}
+
+function buildArrangeBaselineKey(
+  weekStart: string,
+  lessons: { unit: string; lesson: string }[],
+  quotas: Record<string, number>,
+): string {
+  const sorted = [...lessons].sort((a, b) => lessonKey(a).localeCompare(lessonKey(b)))
+  return `${weekStart}|${sorted.map(lessonKey).join('|')}|${sorted.map(l => String(quotas[lessonKey(l)] ?? 3)).join(',')}`
+}
 
 function getWeekEnd(weekStart: string): string {
   const [y, m, d] = weekStart.split('-').map(Number)
@@ -81,10 +169,18 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   // step: 'list' | 'params' | 'arrange'
   const [step, setStep] = useState<'list' | 'params' | 'arrange'>('list')
   const [isEditingPlan, setIsEditingPlan] = useState(false)
+  /** Plan being edited (same form as create); keeps id/progress/weekCompletion until save. */
+  const [editingPlan, setEditingPlan] = useState<WeeklyPlan | null>(null)
+  /** When unchanged from open-edit, arrange step reuses existing `days` layout. */
+  const [editArrangeBaselineKey, setEditArrangeBaselineKey] = useState<string | null>(null)
   const [showLessonPicker, setShowLessonPicker] = useState(false)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
   // per-lesson daily quota: key = "unit::lesson"
   const [lessonQuotas, setLessonQuotas] = useState<Record<string, number>>({})
+  /** User picks 必记/预习 per lesson; keys may include deselected lessons (ignored below). */
+  const [lessonKindOverrides, setLessonKindOverrides] = useState<
+    Record<string, 'consolidate' | 'preview'>
+  >({})
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
   const [pendingDate, setPendingDate] = useState<string>(todayStr())
   const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
@@ -112,6 +208,15 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   }, [pendingLessons, suggestedLesson])
   const activeLesson = activeLessons[0] ?? null
 
+  const lessonKinds = useMemo(() => {
+    const out: Record<string, 'consolidate' | 'preview'> = {}
+    for (const l of activeLessons) {
+      const k = lessonKey(l)
+      out[k] = lessonKindOverrides[k] ?? 'consolidate'
+    }
+    return out
+  }, [activeLessons, lessonKindOverrides])
+
   // Per-lesson word groups
   const lessonGroups = useMemo(() => {
     if (!activeLessons.length) return []
@@ -129,11 +234,10 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
   const totalPerDay = useMemo(() => resolvedQuotas.reduce((s, q) => s + q, 0), [resolvedQuotas])
 
-  const incompletePlans = useMemo(() => {
-    return allPlans.filter(
-      (plan) => !plan.days.every((day) => plan.progress[day.date]?.quizDone === true),
-    )
-  }, [allPlans])
+  const sortedAllPlans = useMemo(
+    () => [...allPlans].sort((a, b) => b.weekStart.localeCompare(a.weekStart)),
+    [allPlans],
+  )
 
   const dialogWeekStart = useMemo(
     () => getWeekStart(new Date(pendingDate + 'T12:00:00'), weekStartDay),
@@ -165,8 +269,55 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     [vocab, masteryMap, currentAndNextWeekPlans],
   )
 
+  const handleMarkWeekComplete = useCallback(
+    async (plan: WeeklyPlan) => {
+      if (plan.weekCompletion) return
+      if (!window.confirm('确定将本周标记为已结束？将根据当前进度与掌握度生成结课报告并保存。')) return
+      const report = buildEnglishWeeklyReport(plan, vocab, masteryMap)
+      const weekCompletion = { completedAt: new Date().toISOString(), report }
+      const updated: WeeklyPlan = { ...plan, weekCompletion }
+      const saved = await savePlan(updated)
+      const targetId = saved.id ?? plan.id
+      if (targetId) {
+        router.push(`/english/words/weekly/${targetId}/report`)
+      }
+    },
+    [vocab, masteryMap, savePlan, router],
+  )
+
+  const openEditPlan = useCallback((plan: WeeklyPlan) => {
+    if (plan.weekCompletion) return
+    const parsed = parsePlanLessons(plan)
+    const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
+    const lkinds = hydrateLessonKindOverridesFromPlan(plan, parsed, vocab)
+    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, quotas)
+    setPendingDate(plan.weekStart)
+    setWeekStartDay(plan.weekStartDay)
+    setPendingLessons(parsed)
+    setLessonQuotas(quotas)
+    setLessonKindOverrides(lkinds)
+    setEditArrangeBaselineKey(baseline)
+    setEditingPlan(plan)
+    setIsEditingPlan(true)
+    setShowLessonPicker(true)
+    setStep('params')
+  }, [vocab])
+
   const handleGoToArrange = useCallback(() => {
     if (!activeLesson) return
+    const snap = buildArrangeBaselineKey(dialogWeekStart, activeLessons, lessonQuotas)
+    if (isEditingPlan && editingPlan && snap === editArrangeBaselineKey) {
+      setDraftDays(editingPlan.days.map(d => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
+      const wordSet = new Set(lessonWords.map(w => wordKey(w)))
+      const assigned = new Set(editingPlan.days.flatMap(d => d.newWordKeys))
+      const un = [...wordSet].filter(k => !assigned.has(k))
+      setUnassignedKeys(un)
+      setCarryoverCount(0)
+      setSelectedKeys(new Set())
+      setStep('arrange')
+      return
+    }
+
     const { days, unassigned } = buildWeeklyPlan(
       lessonWords,
       dialogWeekStart,
@@ -176,23 +327,25 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     )
 
     // Carryover: previous-week plan's consolidate words with stage < 2 (spec §3.7)
-    const prevWeekStart = (() => {
-      const [y, m, d] = dialogWeekStart.split('-').map(Number)
-      const prev = new Date(y, m - 1, d - 7)
-      return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`
-    })()
-    const prevPlan = allPlans.find(p => p.weekStart === prevWeekStart)
     const carryover: string[] = []
-    if (prevPlan) {
-      const cls = classifyPlanWords(prevPlan, vocab)
-      const alreadyAssigned = new Set<string>(days.flatMap(d => d.newWordKeys))
-      const alreadyUnassigned = new Set(unassigned)
-      for (const [k, kind] of cls) {
-        if (kind !== 'consolidate') continue
-        if (alreadyAssigned.has(k) || alreadyUnassigned.has(k)) continue
-        const m = masteryMap[k]
-        const stage = m?.stage ?? 0
-        if (stage < 2) carryover.push(k)
+    if (!isEditingPlan) {
+      const prevWeekStart = (() => {
+        const [y, m, d] = dialogWeekStart.split('-').map(Number)
+        const prev = new Date(y, m - 1, d - 7)
+        return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`
+      })()
+      const prevPlan = allPlans.find(p => p.weekStart === prevWeekStart)
+      if (prevPlan) {
+        const cls = classifyPlanWords(prevPlan, vocab)
+        const alreadyAssigned = new Set<string>(days.flatMap(d => d.newWordKeys))
+        const alreadyUnassigned = new Set(unassigned)
+        for (const [k, kind] of cls) {
+          if (kind !== 'consolidate') continue
+          if (alreadyAssigned.has(k) || alreadyUnassigned.has(k)) continue
+          const m = masteryMap[k]
+          const stage = m?.stage ?? 0
+          if (stage < 2) carryover.push(k)
+        }
       }
     }
 
@@ -201,7 +354,22 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     setCarryoverCount(carryover.length)
     setSelectedKeys(new Set())
     setStep('arrange')
-  }, [activeLesson, lessonWords, lessonGroups, resolvedQuotas, totalPerDay, dialogWeekStart, allPlans, vocab, masteryMap])
+  }, [
+    activeLesson,
+    activeLessons,
+    lessonQuotas,
+    editArrangeBaselineKey,
+    editingPlan,
+    isEditingPlan,
+    lessonWords,
+    lessonGroups,
+    resolvedQuotas,
+    totalPerDay,
+    dialogWeekStart,
+    allPlans,
+    vocab,
+    masteryMap,
+  ])
 
   // Move selected keys to a day (or to unassigned pool if dayIdx === -1)
   const handleMoveWords = useCallback((keys: Set<string>, targetDayIdx: number) => {
@@ -222,19 +390,36 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
   const handleConfirmArrange = useCallback(async () => {
     if (!activeLesson) return
-    const plan: WeeklyPlan = {
+    const wasEditing = isEditingPlan
+    const previewLessonKeys = activeLessons
+      .filter((l) => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview')
+      .map((l) => lessonKey(l))
+    const planBase: WeeklyPlan = {
       weekStart: dialogWeekStart,
       unit: activeLessons.map((l) => l.unit).join(', '),
       lesson: activeLessons.map((l) => l.lesson).join(', '),
       weekStartDay,
       newWordsPerDay: totalPerDay,
       days: draftDays,
-      progress: {},
+      progress: wasEditing && editingPlan ? editingPlan.progress : {},
+      previewLessonKeys,
+      ...(wasEditing && editingPlan?.weekCompletion
+        ? { weekCompletion: editingPlan.weekCompletion }
+        : {}),
+      ...(wasEditing && editingPlan?.id ? { id: editingPlan.id } : {}),
+    }
+    const kindMap = classifyPlanWords(planBase, vocab)
+    const plan: WeeklyPlan = {
+      ...planBase,
+      wordKinds: Object.fromEntries(kindMap),
     }
     const saved = await savePlan(plan)
     setStep('list')
     setCarryoverCount(0)
-    if (saved.id) {
+    setIsEditingPlan(false)
+    setEditingPlan(null)
+    setEditArrangeBaselineKey(null)
+    if (!wasEditing && saved.id) {
       router.push('/english/words/weekly/' + saved.id)
     }
   }, [
@@ -246,6 +431,10 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     weekStartDay,
     savePlan,
     router,
+    lessonKinds,
+    vocab,
+    isEditingPlan,
+    editingPlan,
   ])
 
   // ── OLD REVIEW SESSION ───────────────────────────────────────────────────
@@ -283,13 +472,21 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 <input
                   type="date"
                   value={pendingDate}
+                  disabled={isEditingPlan}
                   onChange={(e) => e.target.value && setPendingDate(e.target.value)}
-                  className="cursor-pointer rounded-[10px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3 py-1.5 text-[.88rem] font-bold text-[var(--wm-text)] outline-none focus:border-[var(--wm-accent)]"
+                  className={`rounded-[10px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3 py-1.5 text-[.88rem] font-bold text-[var(--wm-text)] outline-none focus:border-[var(--wm-accent)] ${
+                    isEditingPlan ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                  }`}
                 />
                 <span className="text-[.75rem] font-bold text-[var(--wm-text-dim)]">
                   → 周 {fmtWeekRange(dialogWeekStart, weekStartDay)}
                 </span>
               </div>
+              {isEditingPlan && (
+                <p className="mt-1.5 text-[.65rem] text-[var(--wm-text-dim)]">
+                  编辑已有计划时不能更改周起始日，以免与已存进度错位。
+                </p>
+              )}
             </div>
 
             {activeLesson ? (
@@ -311,45 +508,131 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 </div>
 
                 {showLessonPicker && (
-                  <div className="mb-4 max-h-[240px] overflow-hidden overflow-y-auto rounded-xl border border-[var(--wm-border)]">
+                  <div className="mb-4 max-h-[280px] overflow-hidden overflow-y-auto rounded-xl border border-[var(--wm-border)]">
                     {orderedLessons.map((l) => {
+                      const lk = lessonKey(l)
                       const isActive = activeLessons.some(
                         (al) => al.unit === l.unit && al.lesson === l.lesson,
                       )
+                      const kind = lessonKinds[lk] ?? 'consolidate'
                       return (
-                        <button
-                          key={`${l.unit}::${l.lesson}`}
-                          onClick={() => {
-                            setPendingLessons((prev) => {
-                              const exists = prev.some(
-                                (p) => p.unit === l.unit && p.lesson === l.lesson,
-                              )
-                              if (exists)
-                                return prev.filter(
-                                  (p) => !(p.unit === l.unit && p.lesson === l.lesson),
-                                )
-                              return [...prev, l]
-                            })
-                          }}
-                          className={`flex w-full cursor-pointer items-center gap-2.5 border-b border-[var(--wm-border)] px-4 py-2.5 text-left text-[1rem] font-bold transition-all last:border-0 ${
-                            isActive
-                              ? 'bg-[rgba(245,158,11,.12)] text-[#fbbf24]'
-                              : 'bg-[var(--wm-surface2)] text-[var(--wm-text)] hover:bg-[var(--wm-surface)]'
+                        <div
+                          key={lk}
+                          className={`flex w-full items-stretch border-b border-[var(--wm-border)] last:border-0 ${
+                            isActive ? 'bg-[rgba(245,158,11,.12)]' : 'bg-[var(--wm-surface2)]'
                           }`}
                         >
-                          <span
-                            className={`inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center rounded-[4px] border text-[.6rem] font-black transition-all ${
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPendingLessons((prev) => {
+                                const exists = prev.some(
+                                  (p) => p.unit === l.unit && p.lesson === l.lesson,
+                                )
+                                if (exists)
+                                  return prev.filter(
+                                    (p) => !(p.unit === l.unit && p.lesson === l.lesson),
+                                  )
+                                return [...prev, l]
+                              })
+                            }}
+                            className={`flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 px-4 py-2.5 text-left text-[1rem] font-bold transition-all ${
                               isActive
-                                ? 'border-[#f59e0b] bg-[rgba(245,158,11,.3)] text-[#fbbf24]'
-                                : 'border-[var(--wm-border)] bg-transparent'
+                                ? 'text-[#fbbf24]'
+                                : 'text-[var(--wm-text)] hover:bg-[var(--wm-surface)]'
                             }`}
                           >
-                            {isActive && '✓'}
-                          </span>
-                          {l.unit} · {l.lesson}
-                        </button>
+                            <span
+                              className={`inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center rounded-[4px] border text-[.6rem] font-black transition-all ${
+                                isActive
+                                  ? 'border-[#f59e0b] bg-[rgba(245,158,11,.3)] text-[#fbbf24]'
+                                  : 'border-[var(--wm-border)] bg-transparent'
+                              }`}
+                            >
+                              {isActive && '✓'}
+                            </span>
+                            {l.unit} · {l.lesson}
+                          </button>
+                          {isActive && (
+                            <div className="flex shrink-0 items-center gap-1 border-l border-[var(--wm-border)] px-2 py-2">
+                              <button
+                                type="button"
+                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))}
+                                className={`rounded-full border-[1.5px] px-2 py-0.5 text-[.62rem] font-extrabold transition-all ${
+                                  kind === 'consolidate'
+                                    ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
+                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(96,165,250,.35)]'
+                                }`}
+                              >
+                                必记
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))}
+                                className={`rounded-full border-[1.5px] px-2 py-0.5 text-[.62rem] font-extrabold transition-all ${
+                                  kind === 'preview'
+                                    ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
+                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(249,115,22,.35)]'
+                                }`}
+                              >
+                                预习
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       )
                     })}
+                  </div>
+                )}
+
+                {!showLessonPicker && activeLessons.length > 0 && (
+                  <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-3">
+                    <div className="mb-2 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                      本周类型（必记 / 预习）
+                    </div>
+                    <div className="space-y-1">
+                      {activeLessons.map((l) => {
+                        const lk = lessonKey(l)
+                        const kind = lessonKinds[lk] ?? 'consolidate'
+                        return (
+                          <div
+                            key={lk}
+                            className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--wm-border)] py-2 last:border-b-0 last:pb-0"
+                          >
+                            <span className="text-[.82rem] font-bold text-[var(--wm-text)]">
+                              {l.unit} · {l.lesson}
+                            </span>
+                            <div className="flex gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))}
+                                className={`rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
+                                  kind === 'consolidate'
+                                    ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
+                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(96,165,250,.35)]'
+                                }`}
+                              >
+                                必记
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))}
+                                className={`rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
+                                  kind === 'preview'
+                                    ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
+                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(249,115,22,.35)]'
+                                }`}
+                              >
+                                预习
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <p className="mt-2 text-[.65rem] leading-snug text-[var(--wm-text-dim)]">
+                      必记：本周要掌握；预习：先接触。可多课标预习。
+                    </p>
                   </div>
                 )}
 
@@ -407,12 +690,14 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                     {ALL_DAY_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
-                        onClick={() => setWeekStartDay(opt.value)}
-                        className={`cursor-pointer rounded-full border-[1.5px] px-3 py-1.5 text-[0.875rem] font-bold transition-all ${
+                        type="button"
+                        disabled={isEditingPlan}
+                        onClick={() => { if (!isEditingPlan) setWeekStartDay(opt.value) }}
+                        className={`rounded-full border-[1.5px] px-3 py-1.5 text-[0.875rem] font-bold transition-all ${
                           weekStartDay === opt.value
                             ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
                             : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
-                        }`}
+                        } ${isEditingPlan ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
                       >
                         {opt.label}
                       </button>
@@ -429,7 +714,14 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             {activeLesson && (
               <div className="mt-2 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
                 <button
-                  onClick={() => { setStep('list'); setCarryoverCount(0) }}
+                  type="button"
+                  onClick={() => {
+                    setStep('list')
+                    setCarryoverCount(0)
+                    setIsEditingPlan(false)
+                    setEditingPlan(null)
+                    setEditArrangeBaselineKey(null)
+                  }}
                   className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
                 >
                   取消
@@ -492,7 +784,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             {/* Header */}
             <div className="mb-1 flex items-center justify-between">
               <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-                编辑单词分配
+                {isEditingPlan ? '编辑周计划 · 分配' : '编辑单词分配'}
               </div>
               <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)]">
                 已分配 {totalAssigned} / {lessonWords.length} 词
@@ -653,8 +945,11 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               <button
                 onClick={() => {
                   setPendingLessons([])
+                  setLessonKindOverrides({})
                   setPendingDate(todayStr())
                   setIsEditingPlan(false)
+                  setEditingPlan(null)
+                  setEditArrangeBaselineKey(null)
                   setStep('params')
                 }}
                 className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
@@ -663,18 +958,19 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               </button>
             </div>
           </div>
-          {incompletePlans.length === 0 ? (
+          {sortedAllPlans.length === 0 ? (
             <div className="py-12 text-center text-sm text-[var(--wm-text-dim)]">
-              暂无未完成的周计划
+              暂无周计划
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
-              {incompletePlans.map((plan) => {
+            <div className="flex flex-col gap-2.5">
+              {sortedAllPlans.map((plan) => {
                 const doneDays = plan.days.filter(
                   (d) => plan.progress[d.date]?.quizDone === true,
                 ).length
-                const remaining = daysUntilExpiry(plan.weekStart)
-                const isExpired = remaining < 0
+                const showWeekExpiry = !plan.weekCompletion
+                const remaining = showWeekExpiry ? daysUntilExpiry(plan.weekStart) : 0
+                const isExpired = showWeekExpiry && remaining < 0
                 const weekEnd = getWeekEnd(plan.weekStart)
                 const units = plan.unit.split(', ')
                 const lessons = plan.lesson.split(', ')
@@ -683,37 +979,76 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   ? `${units[0]} · ${lessons.join(', ')}`
                   : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
                 return (
-                  <div key={plan.weekStart} className="flex items-center gap-2">
+                  <div
+                    key={plan.id ?? plan.weekStart}
+                    className="flex flex-row items-stretch gap-2"
+                  >
                     <button
                       onClick={() => {
                         if (plan.id) router.push('/english/words/weekly/' + plan.id)
                       }}
-                      className="min-w-0 flex-1 cursor-pointer rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-5 py-4 text-left transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)]"
+                      className="min-w-0 min-h-0 flex-1 cursor-pointer rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3 py-3 text-left transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)] sm:px-5 sm:py-4"
                     >
-                      <div className="mb-1 text-[1rem] font-bold text-[var(--wm-text)]">
+                      <div className="mb-1 flex flex-wrap items-center gap-2 text-[1rem] font-bold text-[var(--wm-text)]">
                         {lessonLabel}
+                        {plan.weekCompletion && (
+                          <span className="rounded-full border border-[rgba(74,222,128,.35)] bg-[rgba(74,222,128,.1)] px-2 py-0.5 text-[.62rem] font-extrabold text-[#86efac]">
+                            已结课
+                          </span>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
                         <span>
                           {fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}
                         </span>
                         <span>{doneDays}/7 天完成</span>
-                        <span className={isExpired ? 'text-[#f87171]' : 'text-[#fbbf24]'}>
-                          {isExpired ? `已过期 ${Math.abs(remaining)} 天` : `还剩 ${remaining} 天`}
-                        </span>
+                        {showWeekExpiry && (
+                          <span className={isExpired ? 'text-[#f87171]' : 'text-[#fbbf24]'}>
+                            {isExpired ? `已过期 ${Math.abs(remaining)} 天` : `还剩 ${remaining} 天`}
+                          </span>
+                        )}
                       </div>
                     </button>
-                    <button
-                      onClick={() => {
-                        if (window.confirm(`确定删除「${lessonLabel}」周计划？`)) {
-                          void deletePlan(plan.weekStart)
-                        }
-                      }}
-                      className="shrink-0 cursor-pointer rounded-[10px] border border-[var(--wm-border)] bg-transparent px-3 py-3 text-[.75rem] text-[var(--wm-text-dim)] transition-all hover:border-[#f87171] hover:bg-[rgba(248,113,113,.08)] hover:text-[#f87171]"
-                      title="删除"
-                    >
-                      🗑
-                    </button>
+                    <div className="flex flex-none flex-row flex-nowrap items-center justify-end gap-1.5 self-center sm:gap-2">
+                      {!plan.weekCompletion && plan.id && (
+                        <button
+                          type="button"
+                          onClick={() => { openEditPlan(plan) }}
+                          className="font-nunito inline-flex cursor-pointer items-center justify-center rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-2.5 py-2.5 text-center text-[.72rem] font-extrabold text-[#93c5fd] transition-all hover:border-[#60a5fa] hover:bg-[rgba(96,165,250,.14)] sm:px-3 sm:text-[.75rem] whitespace-nowrap"
+                        >
+                          编辑计划
+                        </button>
+                      )}
+                      {!plan.weekCompletion && (
+                        <button
+                          type="button"
+                          onClick={() => { void handleMarkWeekComplete(plan) }}
+                          className="font-nunito cursor-pointer rounded-[10px] border border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold text-[#4ade80] transition-all hover:border-[#4ade80] hover:bg-[rgba(74,222,128,.18)] sm:px-3 sm:text-[.75rem] whitespace-nowrap"
+                        >
+                          完成本周
+                        </button>
+                      )}
+                      {plan.weekCompletion && plan.id && (
+                        <Link
+                          href={`/english/words/weekly/${plan.id}/report`}
+                          className="font-nunito inline-flex cursor-pointer items-center justify-center rounded-[10px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-2.5 py-2.5 text-center text-[.72rem] font-extrabold text-[#c4b5fd] transition-all hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.12)] sm:px-3 sm:text-[.75rem] whitespace-nowrap"
+                        >
+                          结课报告
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`确定删除「${lessonLabel}」周计划？`)) {
+                            void deletePlan(plan.weekStart)
+                          }
+                        }}
+                        className="shrink-0 cursor-pointer rounded-[10px] border border-[var(--wm-border)] bg-transparent px-2.5 py-2.5 text-[.72rem] text-[var(--wm-text-dim)] transition-all hover:border-[#f87171] hover:bg-[rgba(248,113,113,.08)] hover:text-[#f87171] sm:px-3 sm:text-[.75rem] whitespace-nowrap"
+                        title="删除"
+                        type="button"
+                      >
+                        删除
+                      </button>
+                    </div>
                   </div>
                 )
               })}

@@ -6,32 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useWordsContext } from '@/contexts/WordsContext'
 import type { WeeklyPlan } from '@/utils/type'
 import WeeklyPlanSession from '@/components/english/words/WeeklyPlanSession'
-import { supabase } from '@/lib/supabase'
-
-async function loadPlanById(userId: string, planId: string): Promise<WeeklyPlan | null> {
-  try {
-    const { data, error } = await supabase
-      .from('weekly_plans')
-      .select('id, week_start, unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data')
-      .eq('user_id', userId)
-      .eq('id', planId)
-      .single()
-    if (error || !data) return null
-    const row = data as Record<string, unknown>
-    return {
-      id: row.id as string,
-      weekStart: row.week_start as string,
-      unit: row.unit as string,
-      lesson: row.lesson as string,
-      weekStartDay: (row.week_start_day as number) ?? 4,
-      newWordsPerDay: (row.new_words_per_day as number) ?? 3,
-      days: row.plan_data as WeeklyPlan['days'],
-      progress: (row.progress_data as WeeklyPlan['progress']) ?? {},
-    }
-  } catch {
-    return null
-  }
-}
+import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 
 export default function WeeklyPlanPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
@@ -47,7 +22,7 @@ export default function WeeklyPlanPage({ params }: { params: Promise<{ id: strin
       const { id } = await params
       if (cancelled) return
       setIsLoading(true)
-      const loaded = await loadPlanById(user.id, id)
+      const loaded = await loadWeeklyPlanById(user.id, id)
       if (!cancelled) {
         setPlan(loaded)
         setIsLoading(false)
@@ -80,6 +55,7 @@ export default function WeeklyPlanPage({ params }: { params: Promise<{ id: strin
 
   return (
     <WeeklyPlanSession
+      key={plan.id ?? plan.weekStart}
       initialPlan={plan}
       vocab={vocab}
       onBack={() => router.push('/english/words/daily')}

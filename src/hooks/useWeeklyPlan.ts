@@ -4,6 +4,8 @@ import {useState, useCallback, useEffect, useMemo, useRef} from 'react'
 import type {User} from '@supabase/supabase-js'
 import {supabase} from '@/lib/supabase'
 import {getWeekStart} from '@/utils/english-helpers'
+import { decodeWeeklyPlanProgress, encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
+import { parsePlanDataFromSupabase, serializePlanDataForSupabase } from '@/utils/weeklyPlanPayload'
 import type {WeeklyPlan, WeekDayProgress} from '@/utils/type'
 
 const SYSTEM_DEFAULTS = {weekStartDay: 4, newWordsPerDay: 3}
@@ -16,16 +18,23 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
             .eq('user_id', userId)
             .order('week_start', {ascending: false})
         if (error || !data) return []
-        return data.map(row => ({
-            id: row.id as string,
-            weekStart: row.week_start,
-            unit: row.unit,
-            lesson: row.lesson,
-            weekStartDay: (row as Record<string, unknown>).week_start_day as number ?? SYSTEM_DEFAULTS.weekStartDay,
-            newWordsPerDay: (row as Record<string, unknown>).new_words_per_day as number ?? SYSTEM_DEFAULTS.newWordsPerDay,
-            days: row.plan_data as WeeklyPlan['days'],
-            progress: (row.progress_data as WeeklyPlan['progress']) ?? {},
-        }))
+        return data.map(row => {
+            const { progress, weekCompletion } = decodeWeeklyPlanProgress(row.progress_data)
+            const { days, previewLessonKeys, wordKinds } = parsePlanDataFromSupabase(row.plan_data)
+            return {
+                id: row.id as string,
+                weekStart: row.week_start,
+                unit: row.unit,
+                lesson: row.lesson,
+                weekStartDay: (row as Record<string, unknown>).week_start_day as number ?? SYSTEM_DEFAULTS.weekStartDay,
+                newWordsPerDay: (row as Record<string, unknown>).new_words_per_day as number ?? SYSTEM_DEFAULTS.newWordsPerDay,
+                days,
+                ...(previewLessonKeys !== undefined ? { previewLessonKeys } : {}),
+                ...(wordKinds !== undefined ? { wordKinds } : {}),
+                progress,
+                weekCompletion,
+            }
+        })
     } catch {
         return []
     }
@@ -43,8 +52,8 @@ async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<string | n
                     lesson: plan.lesson,
                     week_start_day: plan.weekStartDay,
                     new_words_per_day: plan.newWordsPerDay,
-                    plan_data: plan.days,
-                    progress_data: plan.progress,
+                    plan_data: serializePlanDataForSupabase(plan),
+                    progress_data: encodeWeeklyPlanProgress(plan.progress, plan.weekCompletion),
                     updated_at: new Date().toISOString(),
                 },
                 {onConflict: 'user_id,week_start'},

@@ -376,9 +376,16 @@ export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: s
  * Classify every word referenced by a plan as consolidate (must-memorize this week)
  * or preview (first-touch, next week's consolidate).
  *
- * Rule: find the (unit, lesson) pairs covered by the plan, pick the one that appears
- * latest in `getOrderedLessons(vocab)`, and mark its words as 'preview'. All others
- * are 'consolidate'. A single-lesson plan has no preview words.
+ * When `plan.previewLessonKeys` is set (including `[]`), words whose
+ * `(unit, lesson)` is listed there are 'preview'; all others are 'consolidate'.
+ *
+ * When `plan.previewLessonKeys` is omitted (legacy rows), find the (unit, lesson)
+ * pairs covered by the plan, pick the one that appears latest in
+ * `getOrderedLessons(vocab)`, and mark its words as 'preview'. All others are
+ * 'consolidate'. A single-lesson plan has no preview words.
+ *
+ * When `plan.wordKinds` is set, each listed key overrides the lesson-based
+ * classification for that word (edit page / per-word tuning).
  */
 export function classifyPlanWords(
   plan: WeeklyPlan,
@@ -393,29 +400,46 @@ export function classifyPlanWords(
   const keyToEntry = new Map<string, WordEntry>()
   for (const w of vocab) keyToEntry.set(wordKey(w), w)
 
-  const lessonsInPlan = new Set<string>()
-  for (const k of planKeys) {
-    const entry = keyToEntry.get(k)
-    if (entry) lessonsInPlan.add(`${entry.unit}::${entry.lesson}`)
-  }
+  if (plan.previewLessonKeys !== undefined) {
+    const previewSet = new Set(plan.previewLessonKeys)
+    for (const k of planKeys) {
+      const entry = keyToEntry.get(k)
+      if (!entry) continue
+      const lk = `${entry.unit}::${entry.lesson}`
+      result.set(k, previewSet.has(lk) ? 'preview' : 'consolidate')
+    }
+  } else {
+    const lessonsInPlan = new Set<string>()
+    for (const k of planKeys) {
+      const entry = keyToEntry.get(k)
+      if (entry) lessonsInPlan.add(`${entry.unit}::${entry.lesson}`)
+    }
 
-  const ordered = getOrderedLessons(vocab)
-  let previewLessonKey: string | null = null
-  if (lessonsInPlan.size >= 2) {
-    for (let i = ordered.length - 1; i >= 0; i--) {
-      const key = `${ordered[i].unit}::${ordered[i].lesson}`
-      if (lessonsInPlan.has(key)) {
-        previewLessonKey = key
-        break
+    const ordered = getOrderedLessons(vocab)
+    let previewLessonKey: string | null = null
+    if (lessonsInPlan.size >= 2) {
+      for (let i = ordered.length - 1; i >= 0; i--) {
+        const key = `${ordered[i].unit}::${ordered[i].lesson}`
+        if (lessonsInPlan.has(key)) {
+          previewLessonKey = key
+          break
+        }
       }
+    }
+
+    for (const k of planKeys) {
+      const entry = keyToEntry.get(k)
+      if (!entry) continue
+      const lk = `${entry.unit}::${entry.lesson}`
+      result.set(k, lk === previewLessonKey ? 'preview' : 'consolidate')
     }
   }
 
-  for (const k of planKeys) {
-    const entry = keyToEntry.get(k)
-    if (!entry) continue
-    const lk = `${entry.unit}::${entry.lesson}`
-    result.set(k, lk === previewLessonKey ? 'preview' : 'consolidate')
+  if (plan.wordKinds) {
+    for (const k of planKeys) {
+      const w = plan.wordKinds[k]
+      if (w === 'consolidate' || w === 'preview') result.set(k, w)
+    }
   }
   return result
 }

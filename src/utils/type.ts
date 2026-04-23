@@ -169,6 +169,48 @@ export interface WeekDayProgress {
   completedAt?: string // ISO date
 }
 
+export interface EnglishWeeklyReport {
+  version: 1
+  weekRangeLabel: string
+  unitLessonLabel: string
+  generatedAt: string
+  execution: {
+    daysInWeek: number
+    daysWithQuiz: number
+    dayCompletionRatePercent: number
+    averageQuizScore: number | null
+    highScoreDays: number
+    lowScoreDays: number
+  }
+  byDay: {
+    date: string
+    weekdayLabel: string
+    displayDate: string
+    hadSession: boolean
+    lastScore: number | null
+  }[]
+  vocabulary: {
+    totalPlanWordKeys: number
+    consolidateCount: number
+    previewCount: number
+    consolidateMet: number
+    newWordSlotsPerDay: number
+  }
+  spotlightWords: {
+    word: string
+    kind: 'consolidate' | 'preview'
+    stage: number
+    level: 0 | 1 | 2 | 3
+  }[]
+  narrative: string[]
+  suggestions: string[]
+}
+
+export interface WeekCompletion {
+  completedAt: string
+  report: EnglishWeeklyReport
+}
+
 export interface WeeklyPlan {
   id?: string // Supabase UUID primary key; undefined until first save
   weekStart: string // ISO date of the Thursday starting this week
@@ -178,6 +220,19 @@ export interface WeeklyPlan {
   newWordsPerDay: number // default 3
   days: WeeklyPlanDay[] // 7 entries index 0=Thu … 6=Wed
   progress: Record<string, WeekDayProgress> // keyed by date string
+  /** Set when the learner marks the week complete; stored inside progress_data JSON. */
+  weekCompletion?: WeekCompletion
+  /**
+   * Lessons (keys `unit::lesson`) whose new words count as 预习 for this plan.
+   * When set (including `[]`), classification is explicit. When omitted, legacy
+   * heuristic applies (latest lesson in vocab among multi-lesson plans = preview).
+   */
+  previewLessonKeys?: string[]
+  /**
+   * Per-wordKey override for 必记 vs 预习. When present for a key, wins over
+   * `previewLessonKeys` / legacy heuristic. Stored in `plan_data` JSON.
+   */
+  wordKinds?: Record<string, 'consolidate' | 'preview'>
 }
 
 // Math weekly plan types
