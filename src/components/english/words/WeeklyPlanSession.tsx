@@ -9,6 +9,9 @@ import {
   getDailySessionWords,
   hilite,
   highlightExample,
+  interleaveOrderedQuizSlots,
+  normalizeQuizTypes,
+  shuffle,
   wordKey,
   ALL_CN_DAYS,
   fmtDate,
@@ -258,15 +261,14 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   )
 
   const startQuiz = useCallback(() => {
-    const qs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[] = []
-    words.forEach((w) => {
-      const types = w.kind === 'consolidate' ? [...consolidateTypes] : [...previewTypes]
-      types.forEach((t) => qs.push({ key: wordKey(w.entry), type: t, kind: w.kind }))
+    const seed = Date.now()
+    const shuffled = shuffle(words, seed)
+    const groups = shuffled.map(w => {
+      const raw = w.kind === 'consolidate' ? consolidateTypes : previewTypes
+      const types = normalizeQuizTypes(Array.from(raw))
+      return types.map(t => ({ key: wordKey(w.entry), type: t, kind: w.kind }))
     })
-    for (let i = qs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[qs[i], qs[j]] = [qs[j], qs[i]]
-    }
+    const qs = interleaveOrderedQuizSlots(groups, seed + 1)
     quizResultBuffer.current = []
     setQuizQKeys(qs)
     setCurQ(0)

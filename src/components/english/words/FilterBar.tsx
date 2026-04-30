@@ -19,6 +19,7 @@ interface FilterBarProps {
   onToggleWord: (word: string) => void
   onClearWords: () => void
   onFlipAll?: () => void
+  onShuffleOrder?: () => void
   masteryFilter?: MasteryLevel | null
   onMasteryFilter?: (level: MasteryLevel | null) => void
   masteryMap?: WordMasteryMap
@@ -38,6 +39,7 @@ export default function FilterBar({
   onToggleWord,
   onClearWords,
   onFlipAll,
+  onShuffleOrder,
   masteryFilter,
   onMasteryFilter,
 }: FilterBarProps) {
@@ -194,15 +196,27 @@ export default function FilterBar({
           >
             清除单词筛选
           </button>
-          {onFlipAll && (
+          {(onFlipAll || onShuffleOrder) && (
             <>
               <div className="h-[22px] w-px bg-[var(--wm-border)]" />
-              <button
-                onClick={onFlipAll}
-                className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] px-4 py-1.5 text-[0.875rem] font-bold text-white transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(96,165,250,.4)]"
-              >
-                🔄 {allFlipped ? '全部翻回' : '全部翻面'}
-              </button>
+              {onShuffleOrder && (
+                <button
+                  type="button"
+                  onClick={onShuffleOrder}
+                  disabled={filteredCount === 0}
+                  className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-[1.5px] border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[#a855f7] hover:text-[#a855f7] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  🔀 随机排序
+                </button>
+              )}
+              {onFlipAll && (
+                <button
+                  onClick={onFlipAll}
+                  className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] px-4 py-1.5 text-[0.875rem] font-bold text-white transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(96,165,250,.4)]"
+                >
+                  🔄 {allFlipped ? '全部翻回' : '全部翻面'}
+                </button>
+              )}
             </>
           )}
         </div>

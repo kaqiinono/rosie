@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { WordEntry } from '@/utils/type'
-import { hilite, highlightExample, shuffle, buildQuizOptions } from '@/utils/english-helpers'
+import {
+  hilite,
+  highlightExample,
+  buildQuizOptions,
+  buildQuizQuestions,
+  normalizeQuizTypes,
+} from '@/utils/english-helpers'
 import { getWordSizeClass } from '@/utils/phonics'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
@@ -57,12 +63,10 @@ export default function ImmersiveMode({
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   const startQuiz = useCallback(() => {
-    const types = practiceTypes.length ? practiceTypes : (['A', 'B'] as ('A' | 'B' | 'C')[])
+    const raw = practiceTypes.length ? practiceTypes : (['A', 'B'] as ('A' | 'B' | 'C')[])
+    const types = normalizeQuizTypes(raw)
     const seed = Date.now()
-    const shuffled = shuffle(words, seed)
-    let qs = shuffled.map((w, i) => ({ word: w, type: types[i % types.length] }))
-    qs = shuffle(qs, seed + 1)
-    setQuizQs(qs)
+    setQuizQs(buildQuizQuestions(words, types, seed))
     setCurQ(0)
     setQScore(0)
     setQAnswered(false)

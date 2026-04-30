@@ -4,8 +4,10 @@ import { useState, useMemo, useCallback, useRef } from 'react'
 import type { WordEntry } from '@/utils/type'
 import {
   buildQuizOptions,
+  buildQuizQuestions,
   hilite,
   highlightExample,
+  normalizeQuizTypes,
   wordKey,
 } from '@/utils/english-helpers'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
@@ -55,13 +57,8 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   }, [recordBatch, setIsImmersive, onBack])
 
   const startQuiz = useCallback(() => {
-    const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
-    const qs: DpQuizQ[] = []
-    words.forEach(w => types.forEach(t => qs.push({ word: w, type: t })))
-    for (let i = qs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[qs[i], qs[j]] = [qs[j], qs[i]]
-    }
+    const types = normalizeQuizTypes([...enabledTypes] as ('A' | 'B' | 'C')[])
+    const qs = buildQuizQuestions(words, types, Date.now())
     quizResultBuffer.current = []
     setQuizQs(qs)
     setCurQ(0)

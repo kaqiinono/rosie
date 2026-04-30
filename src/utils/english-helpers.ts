@@ -153,6 +153,36 @@ export interface QuizQuestion {
   type: 'A' | 'B' | 'C'
 }
 
+const QUIZ_TYPE_ORDER: ('A' | 'B' | 'C')[] = ['A', 'B', 'C']
+
+/** Selected types in difficulty order (A → B → C), ignoring duplicates. */
+export function normalizeQuizTypes(types: ('A' | 'B' | 'C')[]): ('A' | 'B' | 'C')[] {
+  const set = new Set(types)
+  return QUIZ_TYPE_ORDER.filter(t => set.has(t))
+}
+
+/**
+ * Randomly interleave several ordered sequences without reordering within each sequence.
+ * Used so each word’s quiz stays A → B → C while the global order stays unpredictable.
+ */
+export function interleaveOrderedQuizSlots<T>(groups: T[][], seed: number): T[] {
+  const pointers = groups.map(() => 0)
+  const r = rng(seed)
+  const out: T[] = []
+  const total = groups.reduce((s, g) => s + g.length, 0)
+  for (let n = 0; n < total; n++) {
+    const available: number[] = []
+    for (let i = 0; i < groups.length; i++) {
+      if (pointers[i]! < groups[i]!.length) available.push(i)
+    }
+    if (available.length === 0) break
+    const pick = available[Math.floor(r() * available.length)]!
+    out.push(groups[pick]![pointers[pick]!]!)
+    pointers[pick]!++
+  }
+  return out
+}
+
 export interface DailySessionWord {
   entry: WordEntry
   kind: 'consolidate' | 'preview'
@@ -160,20 +190,54 @@ export interface DailySessionWord {
   met: boolean
 }
 
+/**
+ * Build quiz questions: per word, types run A → B → C (subset chosen); words are shuffled;
+ * global order is a random interleaving so other words’ B/C may appear before this word’s A,
+ * but never this word’s B/C before this word’s A.
+ */
 export function buildQuizQuestions(
   words: WordEntry[],
   types: ('A' | 'B' | 'C')[],
+  seed = Date.now(),
 ): QuizQuestion[] {
-  const seed = Date.now()
-  const shuffled = shuffle(words, seed)
-  let qs = shuffled.map((w, i) => ({ word: w, type: types[i % types.length] }))
-  qs = shuffle(qs, seed + 1)
-  return qs
+  const orderedTypes = normalizeQuizTypes(types)
+  if (!orderedTypes.length || !words.length) return []
+  const shuffledWords = shuffle(words, seed)
+  const groups: QuizQuestion[][] = shuffledWords.map(w =>
+    orderedTypes.map(type => ({ word: w, type })),
+  )
+  return interleaveOrderedQuizSlots(groups, seed + 1)
+}
+
+/** Longest common prefix length (ASCII), for morphologically related forms (interest / interesting / interested). */
+function morphAffinity(a: string, b: string): number {
+  const x = a.toLowerCase()
+  const y = b.toLowerCase()
+  if (x === y) return 0
+  let i = 0
+  const m = Math.min(x.length, y.length)
+  while (i < m && x[i] === y[i]) i++
+  let score = i
+  if (i >= 4 && (x.startsWith(y) || y.startsWith(x))) score += 4
+  return score
+}
+
+function cnCharOverlap(a: string, b: string): number {
+  const ma = a.match(/[\u4e00-\u9fff]/g)
+  const mb = b.match(/[\u4e00-\u9fff]/g)
+  if (!ma?.length || !mb?.length) return 0
+  const set = new Set(ma)
+  return mb.filter(c => set.has(c)).length
+}
+
+function distractorScore(correct: WordEntry, candidate: WordEntry): number {
+  return morphAffinity(correct.word, candidate.word) * 14 + cnCharOverlap(correct.explanation, candidate.explanation)
 }
 
 /**
  * Build 4 multiple-choice options for a quiz question.
- * Prefers distractors from the same lesson; falls back to the full pool.
+ * Prefers distractors from the same lesson, ranked by word-form similarity and overlapping
+ * gloss characters (同一课近义/同根词更容易进选项).
  * Uses a deterministic seed so options stay stable across re-renders.
  */
 export function buildQuizOptions(
@@ -181,9 +245,17 @@ export function buildQuizOptions(
   pool: WordEntry[],
   seed: number,
 ): WordEntry[] {
-  let candidates = pool.filter(w => w.lesson === correctWord.lesson && w.word !== correctWord.word)
-  if (candidates.length < 3) candidates = pool.filter(w => w.word !== correctWord.word)
-  return shuffle([correctWord, ...shuffle(candidates, seed).slice(0, 3)], seed + 10)
+  const others = pool.filter(w => w.word !== correctWord.word)
+  const sameLesson = others.filter(w => w.unit === correctWord.unit && w.lesson === correctWord.lesson)
+
+  const rankPool =
+    sameLesson.length >= 3
+      ? [...sameLesson].sort((a, b) => distractorScore(correctWord, b) - distractorScore(correctWord, a))
+      : [...others].sort((a, b) => distractorScore(correctWord, b) - distractorScore(correctWord, a))
+
+  const head = rankPool.slice(0, Math.min(12, rankPool.length))
+  const picked = shuffle(head, seed).slice(0, 3)
+  return shuffle([correctWord, ...picked], seed + 10)
 }
 
 export function getResultEmoji(pct: number): string {

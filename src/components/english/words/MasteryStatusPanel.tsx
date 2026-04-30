@@ -84,7 +84,10 @@ export default function MasteryStatusPanel({
       })
   }, [vocab, masteryMap, orderedWordsInScope, today])
 
-  const hardCount = rows.filter((r): r is Extract<PanelRow, { unpracticed: false }> => !r.unpracticed && r.m.isHard && !r.graduated).length
+  const hardCount = rows.filter(
+    (r): r is Extract<PanelRow, { unpracticed: false }> =>
+      !r.unpracticed && r.m.isHard === true && !r.graduated,
+  ).length
   const graduatedCount = rows.filter((r): r is Extract<PanelRow, { unpracticed: false }> => !r.unpracticed && r.graduated).length
   const practicedCount = rows.filter((r) => !r.unpracticed).length
   const pendingInScopeCount = rows.length - practicedCount

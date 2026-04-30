@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useWordsContext } from '@/contexts/WordsContext'
+import { shuffle, wordKey } from '@/utils/english-helpers'
 
 import FilterBar from '@/components/english/words/FilterBar'
 import PhonicsLegend from '@/components/english/words/PhonicsLegend'
@@ -19,6 +20,18 @@ export default function CardsPage() {
 
   const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set())
   const [allFlipped, setAllFlipped] = useState(false)
+  /** Shuffled order only applies when `sig` matches current filter signature. */
+  const [shuffleState, setShuffleState] = useState<{ sig: string; seed: number } | null>(null)
+
+  const filterSig = useMemo(
+    () => filteredWords.map(w => wordKey(w)).join('|'),
+    [filteredWords],
+  )
+
+  const displayWords = useMemo(() => {
+    if (!shuffleState || shuffleState.sig !== filterSig) return filteredWords
+    return shuffle(filteredWords, shuffleState.seed)
+  }, [filteredWords, filterSig, shuffleState])
 
   const resetCards = useCallback(() => {
     setFlippedSet(new Set())
@@ -75,8 +88,13 @@ export default function CardsPage() {
   const flipAll = useCallback(() => {
     const newFlipped = !allFlipped
     setAllFlipped(newFlipped)
-    setFlippedSet(newFlipped ? new Set(filteredWords.map((_, i) => i)) : new Set())
-  }, [allFlipped, filteredWords])
+    setFlippedSet(newFlipped ? new Set(displayWords.map((_, i) => i)) : new Set())
+  }, [allFlipped, displayWords])
+
+  const shuffleOrder = useCallback(() => {
+    setShuffleState({ sig: filterSig, seed: Date.now() })
+    resetCards()
+  }, [filterSig, resetCards])
 
   return (
     <>
@@ -94,6 +112,7 @@ export default function CardsPage() {
         onToggleWord={toggleWord}
         onClearWords={clearWords}
         onFlipAll={flipAll}
+        onShuffleOrder={shuffleOrder}
         masteryFilter={masteryFilter}
         onMasteryFilter={setMasteryFilter}
         masteryMap={masteryMap}
@@ -101,7 +120,7 @@ export default function CardsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
         <PhonicsLegend />
         <CardsGrid
-          words={filteredWords}
+          words={displayWords}
           flippedSet={flippedSet}
           onFlip={flipCard}
           masteryMap={masteryMap}
