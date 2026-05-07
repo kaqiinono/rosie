@@ -988,6 +988,22 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   // ── DONE ─────────────────────────────────────────────────────────────────
   if (phase === 'done') {
+    const isSubTask = currentSubTask !== 'all'
+    const otherSubTask: 'consolidate' | 'preview' =
+      currentSubTask === 'consolidate' ? 'preview' : 'consolidate'
+    const dayIndex2 = selectedDate
+      ? plan.days.findIndex((d) => d.date === selectedDate)
+      : -1
+    const sessionForDone =
+      isSubTask && dayIndex2 >= 0
+        ? getDailySessionWords(plan, vocab, masteryMap, dayIndex2)
+        : []
+    const hasOtherWords = sessionForDone.some((s) => s.kind === otherSubTask)
+    const otherAlreadyDone =
+      otherSubTask === 'consolidate'
+        ? plan.progress[selectedDate ?? '']?.consolidateDone === true
+        : plan.progress[selectedDate ?? '']?.previewDone === true
+
     const total = quizQs.length
     const pct = total ? Math.round((score / total) * 100) : 0
     const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪'
@@ -1009,7 +1025,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           </div>
           <div className="mb-2.5 text-[.9rem] font-bold text-[var(--wm-text-dim)]">{msg}</div>
           <div className="mb-2 text-[0.875rem] leading-loose text-[var(--wm-text-dim)]">
-            正确率 {pct}% · {words.length} 个单词
+            正确率 {pct}% · {words.length} 个{currentSubTask === 'consolidate' ? '必记' : currentSubTask === 'preview' ? '预习' : ''}词
             {selectedDate &&
               ` · ${fmtDate(selectedDate)} ${cnDays[plan.days.findIndex((d) => d.date === selectedDate)]}`}
           </div>
@@ -1029,6 +1045,18 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             >
               返回周计划
             </button>
+            {isSubTask && hasOtherWords && !otherAlreadyDone && selectedDate && (
+              <button
+                onClick={() => startStudy(selectedDate, otherSubTask)}
+                className={`font-nunito cursor-pointer rounded-[10px] border-0 px-6 py-2.5 text-[.88rem] font-extrabold text-white transition-all hover:-translate-y-px ${
+                  otherSubTask === 'consolidate'
+                    ? 'bg-gradient-to-br from-[#1e40af] to-[#60a5fa] shadow-[0_3px_12px_rgba(96,165,250,.3)]'
+                    : 'bg-gradient-to-br from-[#9a3412] to-[#fb923c] shadow-[0_3px_12px_rgba(249,115,22,.3)]'
+                }`}
+              >
+                {otherSubTask === 'consolidate' ? '📘 继续必记练习 →' : '🔖 继续预习练习 →'}
+              </button>
+            )}
           </div>
         </div>
         <MasteryStatusPanel
