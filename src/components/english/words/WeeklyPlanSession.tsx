@@ -139,6 +139,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const [studyIdx, setStudyIdx] = useState(() => snap0?.studyIdx ?? 0)
   const [studyDefOnly, setStudyDefOnly] = useState(false)
+  const [currentSubTask, setCurrentSubTask] = useState<'all' | 'consolidate' | 'preview'>('all')
   const [studyWordVisible, setStudyWordVisible] = useState(false)
 
   const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]>(
@@ -241,15 +242,22 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   )
 
   const startStudy = useCallback(
-    (dateStr: string) => {
-      const anyTypeSelected = consolidateTypes.size + previewTypes.size > 0
+    (dateStr: string, subTask: 'all' | 'consolidate' | 'preview' = 'all') => {
+      const relevantTypes = subTask === 'preview' ? previewTypes : consolidateTypes
+      const anyTypeSelected =
+        subTask === 'all'
+          ? consolidateTypes.size + previewTypes.size > 0
+          : relevantTypes.size > 0
       if (!anyTypeSelected) {
         alert('请至少选择一种题型！')
         return
       }
       const session = buildSessionWords(dateStr)
-      if (session.length === 0) return
-      setWordKeys(session.map(({ entry, kind }) => ({ key: wordKey(entry), kind })))
+      const filtered =
+        subTask === 'all' ? session : session.filter((s) => s.kind === subTask)
+      if (filtered.length === 0) return
+      setCurrentSubTask(subTask)
+      setWordKeys(filtered.map(({ entry, kind }) => ({ key: wordKey(entry), kind })))
       setStudyIdx(0)
       setStudyWordVisible(false)
       setStudyDefOnly(false)
