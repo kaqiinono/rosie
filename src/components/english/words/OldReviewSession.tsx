@@ -56,11 +56,11 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
 
   const startQuiz = useCallback(() => {
     const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
+    const queues = words.map(w => types.map(t => ({ word: w, type: t })))
     const qs: DpQuizQ[] = []
-    words.forEach(w => types.forEach(t => qs.push({ word: w, type: t })))
-    for (let i = qs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[qs[i], qs[j]] = [qs[j], qs[i]]
+    while (queues.some(q => q.length > 0)) {
+      const nonEmpty = queues.filter(q => q.length > 0)
+      qs.push(nonEmpty[Math.floor(Math.random() * nonEmpty.length)].shift()!)
     }
     quizResultBuffer.current = []
     setQuizQs(qs)

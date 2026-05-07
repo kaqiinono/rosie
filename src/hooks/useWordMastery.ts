@@ -39,21 +39,48 @@ export function useWordMastery(user: User | null) {
     const today = new Date().toISOString().slice(0, 10)
     setMasteryMap(prev => {
       const next = { ...prev }
+
+      // Aggregate per word: collect corrects/total across all question types
+      const byKey = new Map<string, { entry: WordEntry; corrects: number; total: number }>()
       for (const { entry, correct: isCorrect } of results) {
         const key = wordKey(entry)
+        const g = byKey.get(key) ?? { entry, corrects: 0, total: 0 }
+        g.corrects += isCorrect ? 1 : 0
+        g.total += 1
+        byKey.set(key, g)
+      }
+
+      // One stage change per word per session; same-day sessions don't re-advance
+      for (const [key, g] of byKey) {
         const cur = next[key] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-        const updated = isCorrect ? advanceStage(cur, today) : regressStage(cur, today)
+        const allCorrect = g.corrects === g.total
+        const majorityCorrect = g.corrects > g.total / 2
+        const alreadySeenToday = cur.lastSeen === today
+
+        let updated: WordMasteryInfo
+        if (allCorrect && !alreadySeenToday) {
+          updated = advanceStage(cur, today, key)
+        } else if (!majorityCorrect && !alreadySeenToday) {
+          updated = regressStage(cur, today)
+        } else {
+          updated = cur
+        }
+
+        // Always accumulate answer counts and history regardless of stage change
+        const perItemHistory = results
+          .filter(r => wordKey(r.entry) === key)
+          .map(r => ({ date: today, correct: r.correct }))
+
         next[key] = {
           ...updated,
-          correct: isCorrect ? cur.correct + 1 : cur.correct,
-          incorrect: isCorrect ? cur.incorrect : cur.incorrect + 1,
+          correct: cur.correct + g.corrects,
+          incorrect: cur.incorrect + (g.total - g.corrects),
           lastSeen: today,
-          reviewHistory: [...(cur.reviewHistory ?? []), { date: today, correct: isCorrect }],
+          reviewHistory: [...(cur.reviewHistory ?? []), ...perItemHistory],
         }
       }
 
-      const rows = results.map(({ entry }) => {
-        const key = wordKey(entry)
+      const rows = [...byKey.keys()].map(key => {
         const updated = next[key]
         return {
           user_id: user.id,
@@ -64,7 +91,7 @@ export function useWordMastery(user: User | null) {
           stage: updated.stage,
           next_review_date: updated.nextReviewDate ?? null,
           is_hard: updated.isHard ?? false,
-          review_history: next[key].reviewHistory ?? [],
+          review_history: updated.reviewHistory ?? [],
           updated_at: new Date().toISOString(),
         }
       })

@@ -59,9 +59,15 @@ export default function ImmersiveMode({
   const startQuiz = useCallback(() => {
     const types = practiceTypes.length ? practiceTypes : (['A', 'B'] as ('A' | 'B' | 'C')[])
     const seed = Date.now()
-    const shuffled = shuffle(words, seed)
-    let qs = shuffled.map((w, i) => ({ word: w, type: types[i % types.length] }))
-    qs = shuffle(qs, seed + 1)
+    const shuffledWords = shuffle(words, seed)
+    // Per-word ordered queues: randomly pick from non-empty queues so words interleave
+    // freely, but each word's types always appear in A→B→C order
+    const queues = shuffledWords.map(w => types.map(t => ({ word: w, type: t })))
+    const qs: { word: WordEntry; type: 'A' | 'B' | 'C' }[] = []
+    while (queues.some(q => q.length > 0)) {
+      const nonEmpty = queues.filter(q => q.length > 0)
+      qs.push(nonEmpty[Math.floor(Math.random() * nonEmpty.length)].shift()!)
+    }
     setQuizQs(qs)
     setCurQ(0)
     setQScore(0)

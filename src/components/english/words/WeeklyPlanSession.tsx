@@ -4,7 +4,9 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import type { WordEntry, WeeklyPlan, WeekDayProgress } from '@/utils/type'
 import {
   buildQuizOptions,
-  getReviewWordsForDay,
+  getDailySessionWords,
+  classifyPlanWords,
+  type WordKind,
   hilite,
   highlightExample,
   wordKey,
@@ -12,7 +14,7 @@ import {
   fmtDate,
   fmtWeekRange,
 } from '@/utils/english-helpers'
-import { getWordMasteryLevel, MASTERY_ICON } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
@@ -33,15 +35,15 @@ type Phase = 'week-view' | 'study' | 'quiz' | 'done'
 interface DpQuizQ {
   word: WordEntry
   type: 'A' | 'B' | 'C'
-  isReview: boolean
+  kind: WordKind
 }
 
 interface SessionSnapshot {
   phase: 'study' | 'quiz'
   selectedDate: string
   studyIdx: number
-  words: { key: string; isReview: boolean }[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[]
+  words: { key: string; kind?: WordKind }[]
+  quizQs: { key: string; type: 'A' | 'B' | 'C'; kind?: WordKind }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
 }
@@ -101,19 +103,23 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setSelectedDate(firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null)
   }
 
-  const [enabledTypes, setEnabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
+  // Independent question-type sets for consolidate vs preview words (§3.3)
+  const [consolidateTypes, setConsolidateTypes] = useState<Set<string>>(new Set(['A', 'C']))
+  const [previewTypes, setPreviewTypes] = useState<Set<string>>(new Set(['A', 'B']))
 
   // Words and quiz questions are stored as key arrays; actual WordEntry objects are derived via useMemo
   // so they hydrate automatically when vocab loads — no setState-in-effect required
-  const [wordKeys, setWordKeys] = useState<{ key: string; isReview: boolean }[]>(() => snap0?.words ?? [])
+  const [wordKeys, setWordKeys] = useState<{ key: string; kind: WordKind }[]>(
+    () => (snap0?.words ?? []).map(w => ({ key: w.key, kind: w.kind ?? 'consolidate' })),
+  )
   const words = useMemo(
     () =>
       wordKeys
-        .map(({ key, isReview }) => {
+        .map(({ key, kind }) => {
           const entry = vocab.find((w) => wordKey(w) === key)
-          return entry ? { entry, isReview } : null
+          return entry ? { entry, kind } : null
         })
-        .filter((w): w is { entry: WordEntry; isReview: boolean } => w !== null),
+        .filter((w): w is { entry: WordEntry; kind: WordKind } => w !== null),
     [wordKeys, vocab],
   )
 
@@ -121,15 +127,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [studyDefOnly, setStudyDefOnly] = useState(false)
   const [studyWordVisible, setStudyWordVisible] = useState(false)
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[]>(
-    () => snap0?.quizQs ?? [],
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]>(
+    () => (snap0?.quizQs ?? []).map(q => ({ key: q.key, type: q.type, kind: q.kind ?? 'consolidate' })),
   )
   const quizQs = useMemo(
     () =>
       quizQKeys
-        .map(({ key, type, isReview }) => {
+        .map(({ key, type, kind }) => {
           const entry = vocab.find((w) => wordKey(w) === key)
-          return entry ? { word: entry, type, isReview } : null
+          return entry ? { word: entry, type, kind } : null
         })
         .filter((q): q is DpQuizQ => q !== null),
     [quizQKeys, vocab],
@@ -194,31 +200,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     [user],
   )
 
-  const buildSessionWords = useCallback(
-    (dateStr: string) => {
-      const dayIndex = plan.days.findIndex((d) => d.date === dateStr)
-      if (dayIndex === -1) return []
-      const dayPlan = plan.days[dayIndex]
-      const newWords = dayPlan.newWordKeys
-        .map((k) => vocab.find((w) => wordKey(w) === k))
-        .filter((w): w is WordEntry => !!w)
-      const { weekReview } = getReviewWordsForDay(vocab, masteryMap, plan, dayIndex)
-      return [
-        ...newWords.map((e) => ({ entry: e, isReview: false })),
-        ...weekReview.map((e) => ({ entry: e, isReview: true })),
-      ]
-    },
-    [plan, vocab, masteryMap],
-  )
-
   const startStudy = useCallback(
     (dateStr: string) => {
-      if (!enabledTypes.size) {
-        alert('请至少选择一种题型！')
-        return
-      }
-      const session = buildSessionWords(dateStr)
-      setWordKeys(session.map(({ entry, isReview }) => ({ key: wordKey(entry), isReview })))
+      const dayIndex = plan.days.findIndex((d) => d.date === dateStr)
+      if (dayIndex === -1) return
+      const session = getDailySessionWords(plan, vocab, masteryMap, dayIndex)
+      if (!session.length) return
+      setWordKeys(session.map(({ entry, kind }) => ({ key: wordKey(entry), kind })))
       setStudyIdx(0)
       setStudyWordVisible(false)
       setStudyDefOnly(false)
@@ -226,25 +214,27 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       setPhase('study')
       setIsImmersive(true)
     },
-    [enabledTypes, buildSessionWords, setIsImmersive],
+    [plan, vocab, masteryMap, setIsImmersive],
   )
 
   const startQuiz = useCallback(() => {
-    const types = [...enabledTypes] as ('A' | 'B' | 'C')[]
-    const qs: { key: string; type: 'A' | 'B' | 'C'; isReview: boolean }[] = []
-    words.forEach((w) =>
-      types.forEach((t) => qs.push({ key: wordKey(w.entry), type: t, isReview: w.isReview })),
-    )
-    for (let i = qs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[qs[i], qs[j]] = [qs[j], qs[i]]
+    // Per-word ordered queues: each word's types appear in selected order (A→B→C),
+    // but different words are randomly interleaved
+    const queues = words.map(w => {
+      const types = [...(w.kind === 'preview' ? previewTypes : consolidateTypes)] as ('A' | 'B' | 'C')[]
+      return types.map(t => ({ key: wordKey(w.entry), type: t, kind: w.kind }))
+    })
+    const qs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[] = []
+    while (queues.some(q => q.length > 0)) {
+      const nonEmpty = queues.filter(q => q.length > 0)
+      qs.push(nonEmpty[Math.floor(Math.random() * nonEmpty.length)].shift()!)
     }
     quizResultBuffer.current = []
     setQuizQKeys(qs)
     setCurQ(0)
     setScore(0)
     setPhase('quiz')
-  }, [words, enabledTypes])
+  }, [words, consolidateTypes, previewTypes])
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
@@ -284,6 +274,23 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   // ── WEEK VIEW ────────────────────────────────────────────────────────────
   if (phase === 'week-view') {
     const today = todayStr()
+    const kindMap = classifyPlanWords(plan, vocab)
+    const lastDay = plan.days[plan.days.length - 1]
+    const isLastDay = lastDay?.date === today
+
+    // Progress bar data
+    const allConsolidateKeys = [...kindMap.entries()]
+      .filter(([, k]) => k === 'consolidate')
+      .map(([key]) => key)
+    const consolidateTotal = allConsolidateKeys.length
+    const consolidateDone = allConsolidateKeys.filter(k => {
+      const m = masteryMap[k]
+      return m !== undefined && (m.stage ?? 0) >= CONSOLIDATE_PASS_STAGE
+    }).length
+
+    // Sunday fallback: unmastered consolidate words
+    const unmasteredConsolidate = consolidateTotal - consolidateDone
+
     return (
       <>
         <div className="mx-auto max-w-[1280px] px-4 py-5">
@@ -323,15 +330,42 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               </div>
             </div>
 
+            {/* Progress bar (§3.5.3) */}
+            {consolidateTotal > 0 && (
+              <div className="mt-3 mb-1">
+                <div className="mb-1 flex items-center justify-between text-[.65rem] font-bold">
+                  <span className="text-[var(--wm-text-dim)]">本周必记</span>
+                  <span className={consolidateDone === consolidateTotal ? 'text-[#4ade80]' : 'text-[var(--wm-text-dim)]'}>
+                    {consolidateDone} / {consolidateTotal} 达标
+                  </span>
+                </div>
+                <div className="h-[5px] w-full rounded-full bg-white/[.06]">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#4ade80] to-[#22d3ee] transition-[width] duration-500"
+                    style={{ width: `${consolidateTotal ? (consolidateDone / consolidateTotal) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Sunday fallback banner (§3.5.4) */}
+            {isLastDay && unmasteredConsolidate > 0 && (
+              <div className="mt-3 rounded-[10px] border border-[rgba(248,113,113,.4)] bg-[rgba(248,113,113,.1)] px-4 py-2.5 text-[.78rem] font-bold text-[#f87171]">
+                ⚠️ 今日兜底：还有 {unmasteredConsolidate} 个必记词未达标，今天务必攻克
+              </div>
+            )}
+
             {/* 7-day grid */}
             <div className="scrollbar-none mt-3 flex gap-2 overflow-x-auto px-7 py-2 sm:grid sm:grid-cols-7 sm:overflow-visible sm:px-0 sm:py-0">
               {plan.days.map((day, i) => {
                 const isDone = plan.progress[day.date]?.quizDone === true
                 const isToday = day.date === today
                 const isPast = day.date < today && !isDone
-                const newCount = day.newWordKeys.length
-                const { weekReview, oldReview } = getReviewWordsForDay(vocab, masteryMap, plan, i)
-                const reviewCount = weekReview.length + oldReview.length
+                // Count consolidate/preview words introduced up to this day (§3.5.2)
+                const introducedKeys = new Set<string>()
+                for (let j = 0; j <= i; j++) plan.days[j]?.newWordKeys.forEach(k => introducedKeys.add(k))
+                let dayConsolidate = 0; let dayPreview = 0
+                introducedKeys.forEach(k => { if (kindMap.get(k) === 'preview') dayPreview++; else dayConsolidate++ })
                 const isSelected = selectedDate === day.date
 
                 let borderColor = 'rgba(255,255,255,.07)'
@@ -392,7 +426,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                       {fmtDate(day.date)}
                     </div>
                     <div className="text-center text-[.58rem] leading-tight font-bold opacity-60">
-                      {isDone ? '✓ 完成' : isToday ? '今天' : `${newCount}+${reviewCount}`}
+                      {isDone ? '✓ 完成' : isToday ? '今天' : `必记${dayConsolidate}·预习${dayPreview}`}
                     </div>
                   </button>
                 )
@@ -406,16 +440,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               const dayPlan = plan.days[dayIndex]
               if (!dayPlan) return null
               const isDone = plan.progress[selectedDate]?.quizDone === true
-              const newWords = dayPlan.newWordKeys
-                .map((k) => vocab.find((w) => wordKey(w) === k))
-                .filter((w): w is WordEntry => !!w)
-              const { weekReview } = getReviewWordsForDay(
-                vocab,
-                masteryMap,
-                plan,
-                dayIndex,
-              )
-              const total = newWords.length + weekReview.length
+              const sessionWords = getDailySessionWords(plan, vocab, masteryMap, dayIndex)
+              const sessionConsolidate = sessionWords.filter(w => w.kind === 'consolidate')
+              const sessionPreview = sessionWords.filter(w => w.kind === 'preview')
+              const consolidateDoneCount = sessionConsolidate.filter(w => (masteryMap[wordKey(w.entry)]?.stage ?? 0) >= CONSOLIDATE_PASS_STAGE).length
               return (
                 <div className="border-t border-[var(--wm-border)] pt-4">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -423,14 +451,14 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                       {fmtDate(selectedDate)} {cnDays[dayIndex]}
                     </span>
                     <span className="rounded-full border border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#fb923c]">
-                      新词 {newWords.length}
+                      必记 {sessionConsolidate.length}
                     </span>
-                    {weekReview.length > 0 && (
+                    {sessionPreview.length > 0 && (
                       <span className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.15)] px-2 py-0.5 text-[.65rem] font-bold text-[#93c5fd]">
-                        本周复习 {weekReview.length}
+                        预习 {sessionPreview.length}
                       </span>
                     )}
-                    <span className="text-[.68rem] text-[var(--wm-text-dim)]">共 {total} 词</span>
+                    <span className="text-[.68rem] text-[var(--wm-text-dim)]">共 {sessionWords.length} 词</span>
                     {isDone && plan.progress[selectedDate]?.lastScore !== undefined && (
                       <span className="ml-auto text-[.72rem] font-bold text-[#4ade80]">
                         上次 {plan.progress[selectedDate].lastScore}%
@@ -438,18 +466,20 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     )}
                   </div>
 
-                  {newWords.length > 0 && (
+                  {sessionConsolidate.length > 0 && (
                     <div className="mb-3">
                       <div className="mb-1.5 text-[.6rem] font-extrabold tracking-widest text-[#fb923c] uppercase">
-                        今日新词
+                        必记（{sessionConsolidate.length} 个，已达标 {consolidateDoneCount}）
                       </div>
                       <div className="flex flex-wrap gap-1.5">
-                        {newWords.map((w) => {
-                          const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
+                        {sessionConsolidate.map(({ entry: w }) => {
+                          const m = masteryMap[wordKey(w)]
+                          const passed = (m?.stage ?? 0) >= CONSOLIDATE_PASS_STAGE
+                          const level = getWordMasteryLevel(m?.correct ?? 0)
                           return (
                             <span
                               key={wordKey(w)}
-                              className="rounded-full border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] px-2.5 py-1 text-[0.875rem] font-bold text-[#fb923c]"
+                              className={`rounded-full border-[1.5px] px-2.5 py-1 text-[0.875rem] font-bold ${passed ? 'border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.08)] text-[#4ade80]' : 'border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] text-[#fb923c]'}`}
                             >
                               {level > 0 && (
                                 <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
@@ -462,13 +492,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     </div>
                   )}
 
-                  {weekReview.length > 0 && (
+                  {sessionPreview.length > 0 && (
                     <div className="mb-3">
                       <div className="mb-1.5 text-[.6rem] font-extrabold tracking-widest text-[#93c5fd] uppercase">
-                        本周复习
+                        预习（{sessionPreview.length} 个）
                       </div>
                       <div className="flex flex-wrap gap-1.5">
-                        {weekReview.map((w) => {
+                        {sessionPreview.map(({ entry: w }) => {
                           const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
                           return (
                             <span
@@ -486,53 +516,48 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     </div>
                   )}
 
-
-                  {total === 0 && (
+                  {sessionWords.length === 0 && (
                     <div className="mb-4 text-[1.125rem] text-[var(--wm-text-dim)]">
                       暂无单词，所有词已掌握！
                     </div>
                   )}
 
-                  <div className="mb-2.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                    题型选择
-                  </div>
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {(['A', 'B', 'C'] as const).map((t) => {
-                      const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
-                      const on = enabledTypes.has(t)
-                      return (
-                        <button
-                          key={t}
-                          onClick={() =>
-                            setEnabledTypes((prev) => {
-                              const n = new Set(prev)
-                              if (n.has(t)) n.delete(t)
-                              else n.add(t)
-                              return n
-                            })
-                          }
-                          className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3.5 py-2.5 text-[0.875rem] font-bold transition-all select-none ${
-                            on
-                              ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
-                              : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
-                          }`}
-                        >
-                          <span
-                            className={`inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[.6rem] font-black ${
-                              t === 'A'
-                                ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
-                                : t === 'B'
-                                  ? 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
-                                  : 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
-                            }`}
-                          >
-                            {t}
-                          </span>
-                          {labels[t]}
-                        </button>
-                      )
-                    })}
-                  </div>
+                  {/* Dual-row question type selector (§3.3 / §3.5.1) */}
+                  {(() => {
+                    const labels = { A: '释义→选单词', B: '单词→选释义', C: '释义→默写' }
+                    const badgeCls = { A: 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]', B: 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]', C: 'bg-[rgba(74,222,128,.12)] text-[#4ade80]' }
+                    const makeRow = (
+                      label: string,
+                      types: Set<string>,
+                      setTypes: React.Dispatch<React.SetStateAction<Set<string>>>,
+                    ) => (
+                      <div className="mb-2">
+                        <div className="mb-1 text-[.6rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">{label}</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(['A', 'B', 'C'] as const).map(t => {
+                            const on = types.has(t)
+                            return (
+                              <button
+                                key={t}
+                                onClick={() => setTypes(prev => { const n = new Set(prev); if (n.has(t)) n.delete(t); else n.add(t); return n })}
+                                className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] border-[1.5px] px-3 py-2 text-[0.8rem] font-bold transition-all select-none ${on ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]' : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'}`}
+                              >
+                                <span className={`inline-flex h-[16px] w-[16px] items-center justify-center rounded-[4px] text-[.55rem] font-black ${badgeCls[t]}`}>{t}</span>
+                                {labels[t]}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                    return (
+                      <div className="mb-4">
+                        <div className="mb-1.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">题型选择</div>
+                        {makeRow('必记词', consolidateTypes, setConsolidateTypes)}
+                        {sessionPreview.length > 0 && makeRow('预习词', previewTypes, setPreviewTypes)}
+                      </div>
+                    )
+                  })()}
 
                   <button
                     onClick={() => startStudy(selectedDate)}
@@ -640,12 +665,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             <div className="relative z-[1] flex flex-wrap justify-center gap-1.5">
               <span
                 className={`rounded-full border px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider uppercase ${
-                  w.isReview
+                  w.kind === 'preview'
                     ? 'border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.2)] text-[#93c5fd]'
                     : 'border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.2)] text-[#fb923c]'
                 }`}
               >
-                {w.isReview ? '复习' : '新词'}
+                {w.kind === 'preview' ? '预习' : '必记'}
               </span>
               <span className="rounded-full border border-[rgba(233,69,96,.3)] bg-[rgba(233,69,96,.2)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[var(--wm-accent)] uppercase">
                 {w.entry.unit}

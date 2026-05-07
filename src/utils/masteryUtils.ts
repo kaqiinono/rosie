@@ -8,6 +8,19 @@ export const HARD_INTERVALS = [1, 2, 4, 7, 14, 30, 60, 90] // stage 0-7; stage 8
 export const GRADUATED_STAGE_NORMAL = 7
 export const GRADUATED_STAGE_HARD = 8
 
+// Weekly plan pass criterion: consolidate words are "stable" when stage >= this value
+export const CONSOLIDATE_PASS_STAGE = 2
+
+// Deterministic per-word jitter so words advancing on the same day don't all expire together.
+// Returns 0, 1, or 2 days based on a hash of the key.
+export function hashOffset(key: string, mod = 3): number {
+  let h = 0
+  for (let i = 0; i < key.length; i++) {
+    h = ((h << 5) - h + key.charCodeAt(i)) | 0
+  }
+  return Math.abs(h) % mod
+}
+
 function addDays(dateStr: string, days: number): string {
   const d = new Date(dateStr)
   d.setDate(d.getDate() + days)
@@ -30,7 +43,7 @@ export function ensureStageInit(info: WordMasteryInfo, today: string): WordMaste
   }
 }
 
-export function advanceStage(info: WordMasteryInfo, today: string): WordMasteryInfo {
+export function advanceStage(info: WordMasteryInfo, today: string, wordKey = ''): WordMasteryInfo {
   const initialized = ensureStageInit(info, today)
   const intervals = initialized.isHard ? HARD_INTERVALS : NORMAL_INTERVALS
   const maxStage = initialized.isHard ? GRADUATED_STAGE_HARD : GRADUATED_STAGE_NORMAL
@@ -38,7 +51,10 @@ export function advanceStage(info: WordMasteryInfo, today: string): WordMasteryI
   return {
     ...initialized,
     stage: newStage,
-    nextReviewDate: newStage >= maxStage ? undefined : addDays(today, intervals[newStage] ?? 90),
+    nextReviewDate:
+      newStage >= maxStage
+        ? undefined
+        : addDays(today, (intervals[newStage] ?? 90) + hashOffset(wordKey)),
   }
 }
 

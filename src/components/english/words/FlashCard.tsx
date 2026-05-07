@@ -30,7 +30,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
   return (
     <div
-      className="min-h-[256px]"
+      className="min-h-[256px] overflow-hidden rounded-2xl"
       style={{ perspective: '1200px', animation: `card-flip-fade-up .3s ease ${delay}s backwards` }}
     >
       <div
@@ -43,7 +43,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
       >
         {/* ── Front ── */}
         <div
-          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-2 p-4 ${MASTERY_BORDER[level]}`}
+          className={`absolute inset-0 flex flex-col rounded-2xl border-2 p-4 ${MASTERY_BORDER[level]}`}
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
@@ -113,7 +113,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
         {/* ── Back ── */}
         <div
-          className="absolute inset-0 flex min-h-[256px] items-center justify-center overflow-hidden rounded-2xl p-5"
+          className="absolute inset-0 flex min-h-[256px] items-center justify-center rounded-2xl p-5"
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
