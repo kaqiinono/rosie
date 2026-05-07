@@ -302,11 +302,40 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       const finalScore = quizResultBuffer.current.filter((r) => r.correct).length
       const pct = Math.round((finalScore / quizQs.length) * 100)
       if (selectedDate) {
-        void updateDayProgress(selectedDate, {
-          quizDone: true,
-          lastScore: pct,
-          completedAt: todayStr(),
-        })
+        const existing = planRef.current.progress[selectedDate] ?? {}
+
+        if (currentSubTask === 'all') {
+          // Original behavior: mark the whole day done
+          void updateDayProgress(selectedDate, {
+            quizDone: true,
+            lastScore: pct,
+            completedAt: todayStr(),
+          })
+        } else {
+          // Sub-task behavior: only mark the sub-task done
+          const consolidateDone =
+            currentSubTask === 'consolidate' ? true : existing.consolidateDone
+          const previewDone =
+            currentSubTask === 'preview' ? true : existing.previewDone
+
+          const dayIndex = planRef.current.days.findIndex((d) => d.date === selectedDate)
+          const session = getDailySessionWords(planRef.current, vocab, masteryMap, dayIndex)
+          const hasPreview = session.some((s) => s.kind === 'preview')
+          const quizDone =
+            consolidateDone === true && (!hasPreview || previewDone === true)
+
+          void updateDayProgress(selectedDate, {
+            ...existing,
+            quizDone,
+            lastScore: pct,
+            completedAt: existing.completedAt ?? todayStr(),
+            consolidateDone,
+            previewDone,
+            ...(currentSubTask === 'consolidate'
+              ? { consolidateScore: pct }
+              : { previewScore: pct }),
+          })
+        }
       }
       recordBatch(quizResultBuffer.current)
       quizResultBuffer.current = []
@@ -314,7 +343,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     } else {
       setCurQ(next)
     }
-  }, [curQ, quizQs, selectedDate, updateDayProgress, recordBatch])
+  }, [curQ, quizQs, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch])
 
   const quizOptions = useMemo(() => {
     const q = quizQs[curQ]
