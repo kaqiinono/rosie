@@ -10,6 +10,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/41',
+    title: '间隔趣题探险',
+    description: '掌握间隔核心原理，解决锯木头、爬楼梯、敲钟 3 大经典题型。',
+    icon: '✂️',
+    lectureNum: '第 41 讲',
+    tags: ['间隔趣题', '锯木头·爬楼·敲钟', '37 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/39',
     title: '盈亏问题探险',
     description: '掌握盈亏核心公式：份数 = 总差额 ÷ 每份差额，解决盈盈、亏亏、盈亏、盈恰、亏恰 5 大题型。',

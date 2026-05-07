@@ -16,11 +16,13 @@
 
 ---
 
-## 读取 PDF 的正确流程
+## 读取题目文件的正确流程
 
-**在录入任何题目之前，必须先通读全部 PDF 页面，确认题目总数。**
+题目文件可以是 **PDF、TXT、MD** 中的任意一种或多种，处理方式相同。
 
-1. 读完所有页，列出每道题的标题/关键数字
+**在录入任何题目之前，必须先通读全部内容，确认题目总数。**
+
+1. 读完所有内容，列出每道题的标题/关键数字
 2. 确认总题数（例："共 12 道：例题1-6 + 练一练1-6"）
 3. 确认后再逐题录入，避免因未读完而遗漏后续模块
 
@@ -28,7 +30,7 @@
 
 ---
 
-## 关于不完整 PDF
+## 关于不完整的题目文件
 
 **可以分批提供内容，不影响页面生成。**
 
@@ -239,7 +241,7 @@ export default function LessonFig2() {
 
 ## 第一步：新建数据文件
 
-> **分工说明：你只需提供 PDF，Claude 从 PDF 中读取所有题目内容并生成该文件，不需要你手动填写。**
+> **分工说明：你只需提供题目文件（PDF / TXT / MD 均可），Claude 从文件中读取所有题目内容并生成该文件，不需要你手动填写。**
 
 **新建文件：** `src/utils/lesson36-data.ts`（若有 figureNode 则用 `.tsx`）
 
@@ -309,10 +311,10 @@ export const TAG_STYLE = {...}
 
 ## 第二步：从 PDF 解析首页内容
 
-> **分工说明：你只需提供 PDF，Claude 负责提取内容并生成所有代码，不需要你手动填写任何字段。**
+> **分工说明：你只需提供题目文件（PDF / TXT / MD 均可），Claude 负责提取内容并生成所有代码，不需要你手动填写任何字段。**
 
 首页由两个地方的内容拼合而成：**数据文件**（题型定义）+ **HomePage 组件**（文案和模块描述）。
-以下是 Claude 从 PDF 中提取的 6 类信息及其对应代码位置：
+以下是 Claude 从文件中提取的 6 类信息及其对应代码位置：
 
 ---
 
@@ -342,7 +344,7 @@ export const TAG_STYLE = {...}
 
 #### 4. 题型列表 → 填入数据文件 `PROBLEM_TYPES` + `TYPE_STYLE` + `TAG_STYLE`
 
-对每一种题型，从 PDF 提取：
+对每一种题型，从文件中提取：
 
 | 字段 | 说明 | 示例 |
 |------|------|------|
@@ -356,7 +358,7 @@ export const TAG_STYLE = {...}
 
 #### 5. 各模块题目数量 → 填入 `HomePage.tsx` 的 `MODULES` 描述
 
-从 PDF 数题目数量（共 7 个导航模块，各自说明如下）：
+从文件中统计题目数量（共 7 个导航模块，各自说明如下）：
 
 | 模块 | 首页卡片 | 描述模板 / 说明 |
 |------|---------|----------------|
@@ -434,64 +436,575 @@ export const TAG_STYLE: Record<string, string> = {
 
 ---
 
-## 第三步：新建组件目录，复制并修改 6 个文件
+## 第三步：新建组件目录
 
-新建目录：`src/components/math/lesson36/`
+新建目录：`src/components/math/lesson{N}/`
 
-| 源文件 | 目标文件 | 改动内容 |
-|--------|----------|----------|
-| `lesson35/Lesson35Provider.tsx` | `lesson36/Lesson36Provider.tsx` | 全局替换 `Lesson35` → `Lesson36`（storage key 无需改，已通用） |
-| `lesson35/AppHeader.tsx` | `lesson36/AppHeader.tsx` | `BASE = '/math/ny/36'`；import `useLesson36`；Logo 文字改为第36讲内容（注意：用户登录区域由全局 `AccountBar` 统一管理，AppHeader 不包含登录/退出 UI） |
-| `lesson35/Sidebar.tsx` | `lesson36/Sidebar.tsx` | `BASE = '/math/ny/36'`；import `useLesson36`；有补充题时在 SECTIONS 增加 supplement 条目 |
-| `lesson35/BottomNav.tsx` | `lesson36/BottomNav.tsx` | `BASE = '/math/ny/36'`；import `useLesson36` |
-| `lesson35/HomePage.tsx` | `lesson36/HomePage.tsx` | `BASE = '/math/ny/36'`；import 改为 `lesson36-data`；Hero 区域改为第36讲标题和描述；有补充题时在 MODULES 增加 supplement 卡片 |
-| `lesson35/FilterPanel.tsx` | `lesson36/FilterPanel.tsx` | `BASE = '/math/ny/36'`；有补充题时在 SOURCE_BTNS 增加 supplement 按钮 |
+所有讲次共享 `src/components/math/shared/` 中的基础组件，每个讲次只需创建轻量 wrapper。共 6 个文件，其中 4 个是极简 wrapper，2 个（`ProblemDetail`、`FilterPanel`、`HomePage`）有实质内容。
 
-### 可直接复用的组件（从 lesson35 import，无需复制）
+### `Lesson{N}Provider.tsx`（5 行）
 
-- `ProblemDetail`
-- `RatioDiagram`
-- `BlockDiagram`
-- `DualBlockDiagram`
-- `CongratsModal`
-- `Toast`
-- `LoginModal`
+```typescript
+'use client'
 
-> **注意：** `ProblemList` 内部 import 了 `TAG_STYLE from '@/utils/lesson35-data'`。如果新讲次的题型 tag 颜色不同，需在 `lesson36/` 目录也复制一份 `ProblemList.tsx`，只改这一行 import 为 `lesson36-data`。
+import { createLessonProvider } from '@/components/math/shared/createLessonProvider'
+
+const { Provider, useLessonContext } = createLessonProvider('Lesson{N}')
+
+export default Provider
+export { useLessonContext as useLesson{N} }
+```
+
+### `AppHeader.tsx`
+
+```typescript
+'use client'
+
+import LessonAppHeader from '@/components/math/shared/LessonAppHeader'
+import type { ProblemSet } from '@/utils/type'
+import { useLesson{N} } from './Lesson{N}Provider'
+
+const CONFIG = {
+  basePath: '/math/ny/{N}',
+  emoji: '✂️',               // 讲次主题 emoji
+  titleShort: '间隔',        // 2-3个字的主题简称
+  titleFull: '探险',
+  titleColor: 'text-sky-700',
+  navActiveColor: 'text-sky-700',
+  navActiveBorderColor: '#0369a1',
+} as const
+
+export default function AppHeader({ problems }: { problems: ProblemSet }) {
+  return <LessonAppHeader config={CONFIG} problems={problems} useLessonContext={useLesson{N}} />
+}
+```
+
+### `Sidebar.tsx`
+
+```typescript
+'use client'
+
+import LessonSidebar from '@/components/math/shared/LessonSidebar'
+import type { ProblemSet } from '@/utils/type'
+import { useLesson{N} } from './Lesson{N}Provider'
+
+const BASE = '/math/ny/{N}'
+
+const CONFIG = {
+  basePath: BASE,
+  activeClass: 'bg-sky-50 font-bold text-sky-700',
+  sections: [
+    { key: 'pretest',  path: `${BASE}/pretest`,  icon: '📝', label: '课前测' },
+    { key: 'lesson',   path: `${BASE}/lesson`,   icon: '📖', label: '课堂讲解' },
+    { key: 'homework', path: `${BASE}/homework`, icon: '✏️', label: '课后巩固' },
+    { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', label: '拓展练习' },
+    // { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', label: '附加题' },
+    { key: 'alltest',  path: `${BASE}/alltest`,  icon: '🎯', label: '综合题库' },
+  ],
+  extraLinks: [],
+} as const
+
+export default function Sidebar({ problems }: { problems: ProblemSet }) {
+  return <LessonSidebar config={CONFIG} problems={problems} useLessonContext={useLesson{N}} />
+}
+```
+
+> **补充题时**：在 sections 中 workbook 后面加入 `{ key: 'supplement', ... }` 条目。
+
+### `BottomNav.tsx`
+
+```typescript
+'use client'
+
+import LessonBottomNav from '@/components/math/shared/LessonBottomNav'
+import { useLesson{N} } from './Lesson{N}Provider'
+
+const CONFIG = {
+  basePath: '/math/ny/{N}',
+  activeColor: 'text-sky-700',
+} as const
+
+export default function BottomNav() {
+  return <LessonBottomNav config={CONFIG} useLessonContext={useLesson{N}} />
+}
+```
+
+### `ProblemList.tsx`
+
+```typescript
+'use client'
+
+import LessonProblemList from '@/components/math/shared/LessonProblemList'
+import type { Problem } from '@/utils/type'
+import { TAG_STYLE } from '@/utils/lesson{N}-data'
+
+type Props = {
+  problems: Problem[]
+  solveCount: Record<string, number>
+  basePath: string
+  showSource?: boolean
+  sourceLabel?: string
+}
+
+export default function ProblemList({ problems, solveCount, basePath, showSource, sourceLabel }: Props) {
+  return (
+    <LessonProblemList
+      problems={problems}
+      solveCount={solveCount}
+      basePath={basePath}
+      lessonId="{N}"
+      tagStyles={TAG_STYLE}
+      showSource={showSource}
+      sourceLabel={sourceLabel}
+    />
+  )
+}
+```
+
+### `ProblemDetail.tsx`
+
+每讲独立，使用共享的 `QuestionLayout` 组件。结构模板：
+
+```typescript
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import type { Problem } from '@/utils/type'
+import { TAG_STYLE } from '@/utils/lesson{N}-data'
+import { useLesson{N} } from './Lesson{N}Provider'
+import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import QuestionLayout from '@/components/math/shared/QuestionLayout'
+
+interface ProblemDetailProps {
+  problem: Problem
+  mode?: 'full' | 'inline'
+}
+
+export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailProps) {
+  const router = useRouter()
+  const { solveCount, handleSolve, addWrong } = useLesson{N}()
+  const count = solveCount[problem.id] ?? 0
+  const level = getMasteryLevel(count)
+
+  const [answer, setAnswer] = useState('')
+  const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
+
+  useEffect(() => {
+    setAnswer('')
+    setFeedback(null)
+  }, [problem.id])
+
+  function checkAnswer() {
+    if (!answer) return
+    const v = Number(answer)
+    if (v === problem.finalAns) {
+      setFeedback({ text: '🎉 完全正确！你真棒！', ok: true })
+      handleSolve(problem.id)
+    } else {
+      setFeedback({ text: `❌ 不对哦，再想想？提示：答案是 ${problem.finalAns} 以内的数。`, ok: false })
+      addWrong(problem.id)
+    }
+  }
+
+  const solution = (
+    <div className="mb-3.5 rounded-lg border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] to-yellow-light p-3.5">
+      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-yellow-dark">🔍 题型分析</div>
+      <ul className="flex flex-col gap-1.5">
+        {problem.analysis.map((a, i) => (
+          <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]">
+            <span className="shrink-0">💡</span>{a}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+
+  const question = (
+    <div className="flex flex-col gap-1.5">
+      <div className="min-w-0 flex-1">
+        <span className={`mb-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] ?? 'bg-gray-100 text-gray-600'}`}>
+          {problem.tagLabel}
+        </span>
+        <div
+          className="mb-3.5 rounded-lg border-l-3 border-[主题色]-300 bg-[主题色]-50 px-3.5 py-3 text-sm leading-relaxed text-text-secondary [&>strong]:font-bold [&>strong]:text-text-primary"
+          dangerouslySetInnerHTML={{ __html: problem.text }}
+        />
+      </div>
+      <div>{problem.figureNode}</div>
+    </div>
+  )
+
+  const answerDom = (
+    <>
+      <div className="mb-3 flex items-center gap-2">
+        <div className="h-px flex-1 bg-border-light" />
+        <div className="whitespace-nowrap text-xs font-semibold text-text-muted">✏️ 写出答案</div>
+        <div className="h-px flex-1 bg-border-light" />
+      </div>
+      <div className="mb-3 rounded-lg border border-dashed border-border-light bg-[#f9fafb] p-3.5">
+        <div className="text-[13px] text-text-secondary">{problem.finalQ}</div>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+          <input type="number"
+            className="w-[72px] rounded-lg border border-border-light px-2 py-1.5 text-center text-sm"
+            placeholder="？" value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && checkAnswer()} />
+          <span>{problem.finalUnit}</span>
+          <button onClick={checkAnswer}
+            className="cursor-pointer rounded-full bg-[主题色]-600 px-4 py-2 text-[13px] font-semibold text-white shadow-[...] transition-all active:translate-y-px">
+            检查答案
+          </button>
+        </div>
+        {feedback && (
+          <div className={`mt-2 text-[13px] ${feedback.ok ? 'text-app-green-dark' : 'text-app-red'}`}>
+            {feedback.text}
+          </div>
+        )}
+      </div>
+    </>
+  )
+
+  return (
+    <div>
+      {mode === 'full' && (
+        <div className="mb-4 flex items-center gap-2.5 border-b border-border-light pb-3.5">
+          <button onClick={() => router.back()}
+            className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-gray-100 text-lg transition-colors hover:bg-gray-200">
+            ‹
+          </button>
+          <div className="flex-1 text-[17px] font-bold">{problem.title}</div>
+          <div className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[level]}`}>
+            {MASTERY_ICON[level]}
+          </div>
+        </div>
+      )}
+      <QuestionLayout question={question} solution={solution} answer={answerDom} />
+    </div>
+  )
+}
+```
+
+> **主题色**：每讲替换为对应的 Tailwind 颜色名（如 `amber`、`sky`、`green`），与 AppHeader / Sidebar 的颜色保持一致。
+
+### `HomePage.tsx`
+
+```tsx
+'use client'
+
+import Link from 'next/link'
+import type { ProblemSet, Problem } from '@/utils/type'
+import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson{N}-data'
+
+const BASE = '/math/ny/{N}'
+
+interface HomePageProps {
+  problems: ProblemSet
+  solveCount: Record<string, number>
+}
+
+// ✏️ 按实际模块调整（无补充题则删掉 supplement 行）
+const MODULES = [
+  { key: 'pretest',  path: `${BASE}/pretest`,  icon: '📝', bg: 'bg-[#fef9c3]',       title: '课前测',   desc: 'N道摸底题 · 检验起始水平' },
+  { key: 'lesson',   path: `${BASE}/lesson`,   icon: '📖', bg: 'bg-app-blue-light',   title: '课堂讲解', desc: '例题1-N · [题型描述]' },
+  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light',  title: '课后巩固', desc: '巩固1-N · 强化练习' },
+  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '闯关1-N · 综合挑战' },
+  // { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '附加题', desc: 'N道附加题 · 深度提升' },
+]
+
+export default function HomePage({ problems, solveCount }: HomePageProps) {
+  const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
+  const allProblemIds = new Set((Object.values(problems) as Problem[][]).flatMap(list => list.map(p => p.id)))
+  const masteredAll = Object.entries(solveCount).filter(([id, c]) => allProblemIds.has(id) && c >= 3).length
+  const attemptedAll = Object.entries(solveCount).filter(([id, c]) => allProblemIds.has(id) && c >= 1).length
+
+  function getProgress(key: string) {
+    const list = problems[key as keyof ProblemSet]
+    if (!list) return { mastered: 0, attempted: 0, total: 0 }
+    return {
+      mastered: list.filter(p => (solveCount[p.id] ?? 0) >= 3).length,
+      attempted: list.filter(p => (solveCount[p.id] ?? 0) >= 1).length,
+      total: list.length,
+    }
+  }
+
+  return (
+    <div>
+      {/* Hero — ✏️ 替换主题色和文案 */}
+      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-[主题色]-50 via-[主题色浅] to-[主题色亮] p-6">
+        <div className="pointer-events-none absolute -right-2.5 -top-2.5 text-[90px] opacity-[0.12] rotate-[15deg]">
+          [emoji]
+        </div>
+        <h1 className="mb-1.5 text-2xl font-extrabold text-[主题色]-900">[主题名] [emoji]</h1>
+        <p className="text-[13px] leading-relaxed text-[主题色]-800">
+          第{N}讲 · 一年级目标班<br />[一句话描述]
+        </p>
+      </div>
+
+      {/* Problem Types */}
+      <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 [主题名] · N大题型</div>
+        <div className="mb-3 text-[13px] leading-relaxed text-text-secondary">
+          <strong className="text-text-primary">核心公式：</strong>
+          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">[公式]</code>
+          [核心原理一句话描述]
+        </div>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {PROBLEM_TYPES.map(t => {
+            const style = TYPE_STYLE[t.tag]
+            return (
+              <Link
+                key={t.tag}
+                href={`${BASE}/alltest?type=${t.tag}`}
+                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} transition-all hover:shadow-md`}
+              >
+                <div className={`mb-1 flex items-center justify-between text-xs font-bold ${style.titleColor}`}>
+                  {t.label}
+                  <span className="text-[10px] opacity-60">点击查看题目→</span>
+                </div>
+                <div className={`text-xs leading-relaxed ${style.textColor}`}>
+                  {t.desc}
+                  <em className="mt-0.5 block opacity-80">{t.example}</em>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+        <div className="mt-3 flex items-start gap-2 rounded-lg bg-[主题色]-50 p-3">
+          <span className="shrink-0 text-base">⭐</span>
+          <span className="text-xs leading-relaxed text-[主题色]-800">
+            万能口诀：<strong>[口诀内容]</strong>
+          </span>
+        </div>
+      </div>
+
+      {/* Module Cards */}
+      <div className="mb-2.5 text-[13px] font-bold text-text-secondary">📂 学习模块</div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {MODULES.map(m => {
+          const prog = getProgress(m.key)
+          const masteredPct = prog.total > 0 ? Math.round((prog.mastered / prog.total) * 100) : 0
+          const attemptedPct = prog.total > 0 ? Math.round((prog.attempted / prog.total) * 100) : 0
+          return (
+            <Link
+              key={m.key}
+              href={m.path}
+              className="flex items-center gap-3 rounded-[14px] border-2 border-transparent bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
+            >
+              <div className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl text-[22px] ${m.bg}`}>
+                {m.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-bold text-text-primary">{m.title}</div>
+                <div className="mb-1 text-xs text-text-muted">{m.desc}</div>
+                <div className="flex items-center gap-1.5">
+                  <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+                    <div className="absolute inset-y-0 left-0 rounded-sm bg-gray-300 transition-[width] duration-500"
+                      style={{ width: `${attemptedPct}%` }} />
+                    <div className="absolute inset-y-0 left-0 rounded-sm bg-app-green transition-[width] duration-500"
+                      style={{ width: `${masteredPct}%` }} />
+                  </div>
+                  <div className="whitespace-nowrap text-[11px] text-text-muted">
+                    ✅ {prog.mastered}/{prog.total}
+                  </div>
+                </div>
+              </div>
+              <div className="shrink-0 text-xl text-text-muted">›</div>
+            </Link>
+          )
+        })}
+
+        {/* All-test card — ✏️ 替换主题色 */}
+        <Link
+          href={`${BASE}/alltest`}
+          className="flex items-center gap-3 rounded-[14px] border-2 border-[主题色]-300 bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
+        >
+          <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-[主题浅背景] text-[22px]">
+            🎯
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-bold text-[主题色]-700">综合题库</div>
+            <div className="mb-1 text-xs text-text-muted">全部题目 · 按题型/来源筛选 · 综合训练</div>
+            <div className="flex items-center gap-1.5">
+              <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+                <div className="absolute inset-y-0 left-0 rounded-sm bg-[主题色]-200 transition-[width] duration-500"
+                  style={{ width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%` }} />
+                <div className="absolute inset-y-0 left-0 rounded-sm bg-[主题色]-500 transition-[width] duration-500"
+                  style={{ width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%` }} />
+              </div>
+              <div className="whitespace-nowrap text-[11px] text-text-muted">
+                ✅ {masteredAll}/{totalAll}
+              </div>
+            </div>
+          </div>
+          <div className="shrink-0 text-xl text-[主题色]-500">›</div>
+        </Link>
+      </div>
+    </div>
+  )
+}
+```
 
 ---
 
-## 第三步：新建路由目录（12-14 个页面文件）
+## 第三步（路由）：新建路由目录（12-14 个页面文件）
 
 新建目录：`src/app/math/ny/36/`
 
 ### `layout.tsx`
 
-复制 `src/app/math/ny/35/layout.tsx`，替换：
-- `lesson35-data` → `lesson36-data`
-- `Lesson35Provider` / `useLesson35` → `Lesson36Provider` / `useLesson36`
-- `lesson35/` (import 路径) → `lesson36/`
-- 有补充题时，在 `SECTION_COUNTS` 增加：`supplement: PROBLEMS.supplement?.length ?? 0`
+```tsx
+'use client'
 
-### `page.tsx`
+import { usePathname } from 'next/navigation'
+import { PROBLEMS } from '@/utils/lesson{N}-data'
+import Lesson{N}Provider, { useLesson{N} } from '@/components/math/lesson{N}/Lesson{N}Provider'
+import AppHeader from '@/components/math/lesson{N}/AppHeader'
+import Sidebar from '@/components/math/lesson{N}/Sidebar'
+import BottomNav from '@/components/math/lesson{N}/BottomNav'
+import CongratsModal from '@/components/math/lesson35/CongratsModal'
+import Toast from '@/components/math/lesson35/Toast'
 
-复制，替换所有 `lesson35` → `lesson36` 引用。
+const SECTION_COUNTS: Record<string, number> = {
+  pretest: PROBLEMS.pretest.length,
+  lesson: PROBLEMS.lesson.length,
+  homework: PROBLEMS.homework.length,
+  workbook: PROBLEMS.workbook.length,
+  // supplement: PROBLEMS.supplement?.length ?? 0,  // 有补充题时取消注释
+}
+
+function getNextHref(pathname: string): string | undefined {
+  const parts = pathname.split('/')
+  const section = parts[4]
+  const index = parseInt(parts[5])
+  if (!section || isNaN(index)) return undefined
+  const total = SECTION_COUNTS[section]
+  if (!total || index >= total) return undefined
+  return `/math/ny/{N}/${section}/${index + 1}`
+}
+
+function InnerLayout({ children }: { children: React.ReactNode }) {
+  const { toast, setToast, showCongrats, setShowCongrats } = useLesson{N}()
+  const pathname = usePathname()
+  const nextHref = getNextHref(pathname)
+
+  return (
+    <div
+      className="flex min-h-screen flex-col bg-[主题背景色] text-[15px] text-text-primary"
+      style={{ fontFamily: '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif' }}
+    >
+      <AppHeader problems={PROBLEMS} />
+      <div className="mx-auto flex w-full max-w-[1400px] flex-1 pb-[60px] md:pb-0">
+        <Sidebar problems={PROBLEMS} />
+        <div className="min-w-0 flex-1 overflow-y-auto p-5 md:px-8 md:py-6">
+          {children}
+        </div>
+      </div>
+      <BottomNav />
+      <CongratsModal visible={showCongrats} onClose={() => setShowCongrats(false)} nextHref={nextHref} />
+      <Toast message={toast} onDismiss={() => setToast(null)} />
+    </div>
+  )
+}
+
+export default function Lesson{N}Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <Lesson{N}Provider>
+      <InnerLayout>{children}</InnerLayout>
+    </Lesson{N}Provider>
+  )
+}
+```
+
+> **主题背景色** 颜色参考（与 AppHeader `titleColor` 同色系的极浅色）：
+> - sky 主题 → `bg-[#f0f9ff]`；amber 主题 → `bg-[#fffbeb]`；green 主题 → `bg-[#f0fdf4]`
+
+### `page.tsx`（讲次首页 hub）
+
+```tsx
+'use client'
+
+import { PROBLEMS } from '@/utils/lesson{N}-data'
+import { useLesson{N} } from '@/components/math/lesson{N}/Lesson{N}Provider'
+import HomePage from '@/components/math/lesson{N}/HomePage'
+
+export default function Lesson{N}Page() {
+  const { solveCount } = useLesson{N}()
+  return <HomePage problems={PROBLEMS} solveCount={solveCount} />
+}
+```
 
 ### `lesson/page.tsx`、`homework/page.tsx`、`workbook/page.tsx`、`pretest/page.tsx`
 
-复制对应文件，替换：
-- `lesson35-data` → `lesson36-data`
-- `useLesson35` → `useLesson36`
-- `lesson35/ProblemList` → `lesson36/ProblemList`（如已复制）
-- `basePath="/math/ny/35/lesson"` → `basePath="/math/ny/36/lesson"`（各自对应）
-- 页面描述文字（如"6道例题"）按实际修改
+各页面结构完全相同，只替换颜色和文案。以 `lesson/page.tsx` 为完整模板：
+
+```tsx
+'use client'
+
+import { PROBLEMS } from '@/utils/lesson{N}-data'
+import { useLesson{N} } from '@/components/math/lesson{N}/Lesson{N}Provider'
+import ProblemList from '@/components/math/lesson{N}/ProblemList'
+
+export default function LessonPage() {
+  const { solveCount } = useLesson{N}()
+  const list = PROBLEMS.lesson        // ✏️ homework/workbook/pretest 时改为对应字段
+  const attempted = list.filter(p => (solveCount[p.id] ?? 0) >= 1).length
+  const mastered = list.filter(p => (solveCount[p.id] ?? 0) >= 3).length
+  const total = list.length
+
+  return (
+    <div>
+      <div className="mb-3.5 rounded-[14px] border border-blue-200 bg-gradient-to-br from-blue-50 to-[#dbeafe] p-4">
+        {/* ✏️ 各模块色系：lesson=blue, homework=green, workbook=purple, pretest=yellow */}
+        <div className="mb-1 text-sm font-extrabold text-blue-900">📖 课堂讲解 · 第{N}讲</div>
+        <div className="mb-2 text-xs text-blue-700">{total}道例题 · [题型描述]</div>
+        <div className="flex items-center gap-2">
+          <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-blue-100">
+            <div className="absolute inset-y-0 left-0 rounded-full bg-blue-200 transition-[width] duration-400"
+              style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }} />
+            <div className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-[width] duration-400"
+              style={{ width: `${total > 0 ? Math.round((mastered / total) * 100) : 0}%` }} />
+          </div>
+          <div className="shrink-0 text-xs font-bold text-blue-700">
+            练过 {attempted} · 🦋 {mastered}/{total}
+          </div>
+        </div>
+      </div>
+      <ProblemList problems={list} solveCount={solveCount} basePath="/math/ny/{N}/lesson" />
+      {/* ✏️ basePath 末尾改为对应 section 名 */}
+    </div>
+  )
+}
+```
+
+| 模块 | `PROBLEMS.xxx` | 图标+标题 | 色系 |
+|------|---------------|-----------|------|
+| `lesson/page.tsx` | `.lesson` | `📖 课堂讲解` | `blue` |
+| `homework/page.tsx` | `.homework` | `✏️ 课后巩固` | `green` |
+| `workbook/page.tsx` | `.workbook` | `📚 拓展练习` | `purple` |
+| `pretest/page.tsx` | `.pretest` | `📝 课前测` | `yellow` |
 
 ### `lesson/[id]/page.tsx`、`homework/[id]/page.tsx`、`workbook/[id]/page.tsx`、`pretest/[id]/page.tsx`
 
-复制，替换：
-- `lesson35-data` → `lesson36-data`（同时更新 `LESSON_TIP` 的 import，如不需要口诀则删除）
-- `lesson35/ProblemDetail` → `lesson35/ProblemDetail`（可直接复用，路径不变）
-- `<ProblemDetail problem={problem} tip={LESSON_TIP} />` → 如无口诀改为 `<ProblemDetail problem={problem} />`
+所有详情页结构完全相同，只替换 section 名：
+
+```tsx
+'use client'
+
+import { use } from 'react'
+import { notFound } from 'next/navigation'
+import { PROBLEMS } from '@/utils/lesson{N}-data'
+import ProblemDetail from '@/components/math/lesson{N}/ProblemDetail'
+
+export default function LessonProblemPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const index = parseInt(id) - 1
+  const list = PROBLEMS.lesson   // ✏️ 改为对应 section：lesson/homework/workbook/pretest
+  const problem = list[index]
+  if (!problem) notFound()
+  return <ProblemDetail problem={problem} />
+}
+```
 
 ### `supplement/page.tsx`（有补充题时新增）
 
@@ -805,7 +1318,8 @@ const ExpandedCard = memo(function ExpandedCard({
           <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
           <div className="mt-0.5 flex flex-wrap gap-1">
             <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
-            <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">{srcLabel}</span>
+            {/* ✏️ 来源标签背景/文字改为讲次主题色 */}
+            <span className="rounded-full bg-[主题浅背景] px-2 py-px text-[10px] font-semibold text-[主题色]-700">{srcLabel}</span>
           </div>
         </div>
         <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
@@ -845,18 +1359,20 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
     setCollapsedIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next })
   }, [])
 
+  // ✏️ btnOn/btnOff 和筛选面板颜色使用讲次主题色（下方以 sky 为例，替换为实际颜色）
   const btnBase = 'cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95'
-  const btnOn  = 'border-[#a855f7] bg-[#a855f7] text-white'
-  const btnOff = 'border-[#d8b4fe] bg-[#fdf4ff] text-[#7e22ce]'
+  const btnOn  = 'border-[主题色]-600 bg-[主题色]-600 text-white'
+  const btnOff = 'border-[主题色]-300 bg-[主题浅背景] text-[主题色]-700'
 
   return (
     <div>
-      <div className="mb-3 rounded-[14px] border border-[#e879f9] bg-gradient-to-br from-[#fdf4ff] to-[#f3e8ff] p-4">
-        <div className="mb-1.5 text-[15px] font-extrabold text-[#7e22ce]">🎯 综合题库 · 第N讲</div>
-        <div className="mb-2.5 text-xs text-[#6b21a8]">全部{total}道题 · 多选筛选 · 按题型/来源练习</div>
+      {/* ✏️ border/bg/text 替换为讲次主题色 */}
+      <div className="mb-3 rounded-[14px] border border-[主题色]-200 bg-gradient-to-br from-[主题浅背景] to-[主题色]-100 p-4">
+        <div className="mb-1.5 text-[15px] font-extrabold text-[主题色]-800">🎯 综合题库 · 第N讲</div>
+        <div className="mb-2.5 text-xs text-[主题色]-700">全部{total}道题 · 多选筛选 · 按题型/来源练习</div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">📂 来源筛选（可多选）</div>
+          <div className="mb-1.5 text-[11px] font-bold text-[主题色]-700">📂 来源筛选</div>
           <div className="flex flex-wrap gap-1.5">
             {SOURCE_BTNS.map(b => (
               <button key={b.key} onClick={() => onToggleFilter('source', b.key)}
@@ -866,7 +1382,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🏷️ 题型筛选（可多选）</div>
+          <div className="mb-1.5 text-[11px] font-bold text-[主题色]-700">🏷️ 题型筛选</div>
           <div className="flex flex-wrap gap-1.5">
             {TYPE_BTNS.map(b => (
               <button key={b.key} onClick={() => onToggleFilter('type', b.key)}
@@ -876,7 +1392,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🎯 掌握度筛选</div>
+          <div className="mb-1.5 text-[11px] font-bold text-[主题色]-700">🎯 掌握度</div>
           <div className="flex flex-wrap gap-1.5">
             {MASTERY_BTNS.map(b => (
               <button key={b.key} onClick={() => onSetMastery(b.key)}
@@ -886,18 +1402,18 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mt-2 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] text-[#6b21a8]">
-            <span>练过 <strong className="text-[#7e22ce]">{attempted}</strong> 道</span>
-            <span className="text-[#c4b5fd]">·</span>
-            <span>🦋 掌握 <strong className="text-[#7e22ce]">{mastered}</strong> 道</span>
-            <span className="text-[#c4b5fd]">·</span>
+          <div className="flex items-center gap-1.5 text-[11px] text-[主题色]-700">
+            <span>练过 <strong className="text-[主题色]-800">{attempted}</strong> 道</span>
+            <span className="text-[主题色]-300">·</span>
+            <span>🦋 掌握 <strong className="text-[主题色]-800">{mastered}</strong> 道</span>
+            <span className="text-[主题色]-300">·</span>
             <span>共 {total} 题</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-[#e9d5ff]">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-[#c4b5fd] transition-[width] duration-400"
+            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-[主题色]-100">
+              <div className="absolute inset-y-0 left-0 rounded-full bg-[主题色]-200 transition-[width] duration-400"
                 style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }} />
-              <div className="absolute inset-y-0 left-0 rounded-full bg-[#a855f7] transition-[width] duration-400"
+              <div className="absolute inset-y-0 left-0 rounded-full bg-[主题色]-500 transition-[width] duration-400"
                 style={{ width: `${pct}%` }} />
             </div>
             <button onClick={toggleDetailMode}
@@ -1062,6 +1578,6 @@ src/app/math/
 
 下次告诉 Claude：
 
-> "按照 `docs/add-new-lesson.md` 的指引，帮我添加第36讲，题目内容如下：（PDF 内容）"
+> "按照 `docs/add-new-lesson.md` 的指引，帮我添加第36讲，题目内容如下：（附上 PDF / TXT / MD 文件）"
 
 Claude 会按照本指引直接生成所有文件。
