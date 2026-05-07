@@ -708,44 +708,45 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                     )}
                   </div>
 
-                  {/* 主按钮：全部练习（原有行为） */}
-                  <button
-                    onClick={() => startStudy(selectedDate)}
-                    className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
-                  >
-                    {isDone ? '🔄 重新练习' : '🚀 开始练习'}
-                  </button>
+                  {/* 练习按钮区：全部练习 + 可选分开练习（同一行） */}
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <button
+                      onClick={() => startStudy(selectedDate)}
+                      className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
+                    >
+                      {isDone ? '🔄 重新练习' : '🚀 开始练习'}
+                    </button>
 
-                  {/* 可选分开练习行：仅当同时有必记和预习词时显示 */}
-                  {hasBothKinds && (
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <span className="text-[.65rem] font-bold text-[var(--wm-text-dim)]">分开练习：</span>
-                      <button
-                        onClick={() => startStudy(selectedDate, 'consolidate')}
-                        className={`font-nunito cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.75rem] font-extrabold transition-all hover:-translate-y-px ${
-                          consolidateDoneToday
-                            ? 'border-[rgba(96,165,250,.6)] bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
-                            : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.07)] text-[#93c5fd] hover:border-[#60a5fa]'
-                        }`}
-                      >
-                        {consolidateDoneToday
-                          ? `✓ 必记${consolidateScore !== undefined ? ' ' + consolidateScore + '%' : ''}`
-                          : `📘 必记 (${consolidateList.length})`}
-                      </button>
-                      <button
-                        onClick={() => startStudy(selectedDate, 'preview')}
-                        className={`font-nunito cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.75rem] font-extrabold transition-all hover:-translate-y-px ${
-                          previewDoneToday
-                            ? 'border-[rgba(249,115,22,.6)] bg-[rgba(249,115,22,.15)] text-[#f97316]'
-                            : 'border-[rgba(249,115,22,.35)] bg-[rgba(249,115,22,.07)] text-[#fb923c] hover:border-[#f97316]'
-                        }`}
-                      >
-                        {previewDoneToday
-                          ? `✓ 预习${previewScore !== undefined ? ' ' + previewScore + '%' : ''}`
-                          : `🔖 预习 (${previewList.length})`}
-                      </button>
-                    </div>
-                  )}
+                    {hasBothKinds && (
+                      <>
+                        <span className="select-none text-[.7rem] font-bold text-[var(--wm-text-dim)] opacity-30">|</span>
+                        <button
+                          onClick={() => startStudy(selectedDate, 'consolidate')}
+                          className={`font-nunito cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.75rem] font-extrabold transition-all hover:-translate-y-px ${
+                            consolidateDoneToday
+                              ? 'border-[rgba(96,165,250,.6)] bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
+                              : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.07)] text-[#93c5fd] hover:border-[#60a5fa]'
+                          }`}
+                        >
+                          {consolidateDoneToday
+                            ? `✓ 必记${consolidateScore !== undefined ? ' ' + consolidateScore + '%' : ''}`
+                            : `📘 必记 (${consolidateList.length})`}
+                        </button>
+                        <button
+                          onClick={() => startStudy(selectedDate, 'preview')}
+                          className={`font-nunito cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.75rem] font-extrabold transition-all hover:-translate-y-px ${
+                            previewDoneToday
+                              ? 'border-[rgba(249,115,22,.6)] bg-[rgba(249,115,22,.15)] text-[#f97316]'
+                              : 'border-[rgba(249,115,22,.35)] bg-[rgba(249,115,22,.07)] text-[#fb923c] hover:border-[#f97316]'
+                          }`}
+                        >
+                          {previewDoneToday
+                            ? `✓ 预习${previewScore !== undefined ? ' ' + previewScore + '%' : ''}`
+                            : `🔖 预习 (${previewList.length})`}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               )
             })()}
