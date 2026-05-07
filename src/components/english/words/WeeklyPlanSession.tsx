@@ -17,7 +17,7 @@ import {
   fmtDate,
   fmtWeekRange,
 } from '@/utils/english-helpers'
-import { getWordMasteryLevel, MASTERY_ICON } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
@@ -326,6 +326,23 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   // ── WEEK VIEW ────────────────────────────────────────────────────────────
   if (phase === 'week-view') {
     const today = todayStr()
+    const kindMap = classifyPlanWords(plan, vocab)
+    const lastDay = plan.days[plan.days.length - 1]
+    const isLastDay = lastDay?.date === today
+
+    // Progress bar data
+    const allConsolidateKeys = [...kindMap.entries()]
+      .filter(([, k]) => k === 'consolidate')
+      .map(([key]) => key)
+    const consolidateTotal = allConsolidateKeys.length
+    const consolidateDone = allConsolidateKeys.filter(k => {
+      const m = masteryMap[k]
+      return m !== undefined && (m.stage ?? 0) >= CONSOLIDATE_PASS_STAGE
+    }).length
+
+    // Sunday fallback: unmastered consolidate words
+    const unmasteredConsolidate = consolidateTotal - consolidateDone
+
     return (
       <>
         <div className="mx-auto max-w-[1280px] px-4 py-5">
@@ -379,6 +396,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 </div>
               </div>
             )}
+
 
             {/* 7-day grid */}
             <div className="scrollbar-none mt-3 flex gap-2 overflow-x-auto px-7 py-2 sm:grid sm:grid-cols-7 sm:overflow-visible sm:px-0 sm:py-0">

@@ -8,23 +8,23 @@ export const HARD_INTERVALS = [1, 2, 4, 7, 14, 30, 60, 90] // stage 0-7; stage 8
 export const GRADUATED_STAGE_NORMAL = 7
 export const GRADUATED_STAGE_HARD = 8
 
-function addDays(dateStr: string, days: number): string {
-  const d = new Date(dateStr)
-  d.setDate(d.getDate() + days)
-  return d.toISOString().slice(0, 10)
-}
+// Weekly plan pass criterion: consolidate words are "stable" when stage >= this value
+export const CONSOLIDATE_PASS_STAGE = 2
 
-/**
- * Stable integer hash in [0, mod). Used to desynchronize SRS nextReviewDate
- * so a batch of words advanced the same day don't all come due on the same
- * future day.
- */
-export function hashOffset(key: string, mod: number = 3): number {
+// Deterministic per-word jitter so words advancing on the same day don't all expire together.
+// Returns 0, 1, or 2 days based on a hash of the key.
+export function hashOffset(key: string, mod = 3): number {
   let h = 0
   for (let i = 0; i < key.length; i++) {
     h = ((h << 5) - h + key.charCodeAt(i)) | 0
   }
   return Math.abs(h) % mod
+}
+
+function addDays(dateStr: string, days: number): string {
+  const d = new Date(dateStr)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
 }
 
 export function ensureStageInit(info: WordMasteryInfo, today: string): WordMasteryInfo {
@@ -56,8 +56,7 @@ export function advanceStage(
   return {
     ...initialized,
     stage: newStage,
-    nextReviewDate:
-      newStage >= maxStage ? undefined : addDays(today, (intervals[newStage] ?? 90) + offset),
+    nextReviewDate: newStage >= maxStage ? undefined : addDays(today, (intervals[newStage] ?? 90) + offset),
   }
 }
 

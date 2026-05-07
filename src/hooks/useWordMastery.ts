@@ -66,11 +66,9 @@ export function useWordMastery(user: User | null) {
         } else if (!majorityCorrect && !sameDay) {
           stageUpdated = regressStage(cur, today)
         } else {
-          // Same day, or mixed correct/incorrect on a new day: keep stage/nextReviewDate
           stageUpdated = cur
         }
 
-        // Append each individual answer to reviewHistory for full history
         const historyAppends = results
           .filter(r => wordKey(r.entry) === key)
           .map(r => ({ date: today, correct: r.correct }))

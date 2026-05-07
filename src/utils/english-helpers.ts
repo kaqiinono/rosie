@@ -1,5 +1,5 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan } from './type'
-import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD } from './masteryUtils'
+import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from './masteryUtils'
 import { KW_MAP } from './english-data'
 
 export function escHtml(s: string): string {
@@ -398,6 +398,9 @@ export function buildWeeklyPlan(
  * excluding words that appear in any of `excludeWeekPlans` (typically the current
  * and next week's plans — see spec §3.6). Excludes graduated words.
  * Sorted by overdue days desc, then stage asc.
+ *
+ * Words that appear in any of `excludeWeekPlans` are omitted — they are handled
+ * by the weekly plan session and should not appear in the old-review pool.
  */
 export function getOldReviewWords(
   vocab: WordEntry[],
@@ -429,6 +432,129 @@ export function getOldReviewWords(
     })
     .sort((a, b) => b.overdueDays - a.overdueDays || a.stage - b.stage)
     .map(({ w }) => w)
+}
+
+export type WordKind = 'consolidate' | 'preview'
+
+/**
+ * Classify every word in a weekly plan as 'consolidate' (must-master this week)
+ * or 'preview' (first exposure, will be consolidated next week).
+ *
+ * Rule: words from the last lesson (by vocab order) in the plan are 'preview';
+ * all others are 'consolidate'. If the plan covers only one lesson, all words
+ * are 'consolidate'.
+ */
+export function classifyPlanWords(
+  plan: WeeklyPlan,
+  vocab: WordEntry[],
+): Map<string, WordKind> {
+  const allKeys = new Set<string>()
+  for (const day of plan.days) {
+    for (const k of day.newWordKeys) allKeys.add(k)
+  }
+  if (allKeys.size === 0) return new Map()
+
+  // Find which (unit, lesson) pairs appear in this plan
+  const planLessons = new Set<string>()
+  for (const w of vocab) {
+    const k = wordKey(w)
+    if (allKeys.has(k)) planLessons.add(`${w.unit}::${w.lesson}`)
+  }
+
+  // Find the last lesson in vocab order that appears in the plan
+  const ordered = getOrderedLessons(vocab)
+  let lastLessonKey = ''
+  for (const { unit, lesson } of ordered) {
+    const lk = `${unit}::${lesson}`
+    if (planLessons.has(lk)) lastLessonKey = lk
+  }
+
+  const result = new Map<string, WordKind>()
+  for (const w of vocab) {
+    const k = wordKey(w)
+    if (!allKeys.has(k)) continue
+    const lk = `${w.unit}::${w.lesson}`
+    // Only mark as preview when there are multiple lessons (≥ 2 distinct lessons)
+    result.set(k, planLessons.size >= 2 && lk === lastLessonKey ? 'preview' : 'consolidate')
+  }
+  return result
+}
+
+export interface SessionWord {
+  entry: WordEntry
+  kind: WordKind
+}
+
+/**
+ * Build the ordered word list for a given day's session.
+ * Includes all words introduced on days 0..dayIndex (no 9-word cap).
+ * Old-review words are excluded — they appear only via the dedicated old-review entry.
+ *
+ * Sort order:
+ *   1. Unmastered consolidate words  (stage asc, correct asc, incorrect desc)
+ *   2. Mastered consolidate words    (stage >= CONSOLIDATE_PASS_STAGE)
+ *   3. Preview words                 (original plan order)
+ */
+export function getDailySessionWords(
+  plan: WeeklyPlan,
+  vocab: WordEntry[],
+  masteryMap: WordMasteryMap,
+  dayIndex: number,
+): SessionWord[] {
+  const introducedKeys = new Set<string>()
+  for (let i = 0; i <= dayIndex; i++) {
+    plan.days[i]?.newWordKeys.forEach(k => introducedKeys.add(k))
+  }
+  if (introducedKeys.size === 0) return []
+
+  const kindMap = classifyPlanWords(plan, vocab)
+
+  // Preserve original plan order for preview words
+  const planOrder = new Map<string, number>()
+  let idx = 0
+  for (const day of plan.days) {
+    for (const k of day.newWordKeys) {
+      if (!planOrder.has(k)) planOrder.set(k, idx++)
+    }
+  }
+
+  const consolidateUnmastered: SessionWord[] = []
+  const consolidateMastered: SessionWord[] = []
+  const previewWords: SessionWord[] = []
+
+  for (const w of vocab) {
+    const k = wordKey(w)
+    if (!introducedKeys.has(k)) continue
+    const kind = kindMap.get(k) ?? 'consolidate'
+    const m = masteryMap[k]
+    const stage = m?.stage ?? 0
+
+    if (kind === 'preview') {
+      previewWords.push({ entry: w, kind })
+    } else if (stage >= CONSOLIDATE_PASS_STAGE) {
+      consolidateMastered.push({ entry: w, kind })
+    } else {
+      consolidateUnmastered.push({ entry: w, kind })
+    }
+  }
+
+  consolidateUnmastered.sort((a, b) => {
+    const ma = masteryMap[wordKey(a.entry)]
+    const mb = masteryMap[wordKey(b.entry)]
+    const sa = ma?.stage ?? 0
+    const sb = mb?.stage ?? 0
+    if (sa !== sb) return sa - sb
+    const ca = ma?.correct ?? 0
+    const cb = mb?.correct ?? 0
+    if (ca !== cb) return ca - cb
+    return (mb?.incorrect ?? 0) - (ma?.incorrect ?? 0)
+  })
+
+  previewWords.sort((a, b) =>
+    (planOrder.get(wordKey(a.entry)) ?? 0) - (planOrder.get(wordKey(b.entry)) ?? 0),
+  )
+
+  return [...consolidateUnmastered, ...consolidateMastered, ...previewWords]
 }
 
 export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: string }[] {

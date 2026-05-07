@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@/utils/type'
 import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords } from '@/utils/english-helpers'
+import { CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import OldReviewSession from './OldReviewSession'
 import { useAuth } from '@/contexts/AuthContext'
@@ -327,33 +328,36 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       resolvedQuotas,
     )
 
-    // Carryover: previous-week plan's consolidate words with stage < 2 (spec §3.7)
-    const carryover: string[] = []
+    // Carryover: previous-week plan's consolidate words with stage < CONSOLIDATE_PASS_STAGE (§3.7)
+    let rolloverKeys: string[] = []
+    let rolloverCount = 0
     if (!isEditingPlan) {
-      const prevWeekStart = (() => {
-        const [y, m, d] = dialogWeekStart.split('-').map(Number)
-        const prev = new Date(y, m - 1, d - 7)
-        return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`
-      })()
-      const prevPlan = allPlans.find(p => p.weekStart === prevWeekStart)
+      const [ny, nm, nd] = dialogWeekStart.split('-').map(Number)
+      const prevWeekStart = new Date(ny, nm - 1, nd - 7)
+      const prevWeekStartStr = `${prevWeekStart.getFullYear()}-${String(prevWeekStart.getMonth() + 1).padStart(2, '0')}-${String(prevWeekStart.getDate()).padStart(2, '0')}`
+      const prevPlan = allPlans.find(p => p.weekStart === prevWeekStartStr)
       if (prevPlan) {
-        const cls = classifyPlanWords(prevPlan, vocab)
-        const alreadyAssigned = new Set<string>(days.flatMap(d => d.newWordKeys))
-        const alreadyUnassigned = new Set(unassigned)
-        for (const [k, kind] of cls) {
-          if (kind !== 'consolidate') continue
-          if (alreadyAssigned.has(k) || alreadyUnassigned.has(k)) continue
-          const m = masteryMap[k]
-          const stage = m?.stage ?? 0
-          if (stage < 2) carryover.push(k)
-        }
+        const prevKindMap = classifyPlanWords(prevPlan, vocab)
+        rolloverKeys = [...prevKindMap.entries()]
+          .filter(([key, kind]) => {
+            if (kind !== 'consolidate') return false
+            const m = masteryMap[key]
+            return !m || (m.stage ?? 0) < CONSOLIDATE_PASS_STAGE
+          })
+          .map(([key]) => key)
+          .filter(k => !days.some(d => d.newWordKeys.includes(k)) && !unassigned.includes(k))
+        rolloverCount = rolloverKeys.length
       }
     }
 
     setDraftDays(days)
-    setUnassignedKeys([...unassigned, ...carryover])
-    setCarryoverCount(carryover.length)
+    setUnassignedKeys([...unassigned, ...rolloverKeys])
     setSelectedKeys(new Set())
+    if (rolloverCount > 0) {
+      sessionStorage.setItem('rollover_keys', JSON.stringify(rolloverKeys))
+    } else {
+      sessionStorage.removeItem('rollover_keys')
+    }
     setStep('arrange')
   }, [
     activeLesson,
@@ -745,12 +749,19 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   if (step === 'arrange') {
     const totalAssigned = draftDays.reduce((s, d) => s + d.newWordKeys.length, 0)
     const hasSelection = selectedKeys.size > 0
+    const rolloverKeySet = new Set<string>(
+      typeof window !== 'undefined'
+        ? (() => { try { return JSON.parse(sessionStorage.getItem('rollover_keys') ?? '[]') as string[] } catch { return [] } })()
+        : [],
+    )
+    const rolloverCount = rolloverKeySet.size
 
     // WordChip component (inline for brevity)
     const renderChip = (key: string) => {
       const entry = keyToWord.get(key)
       const word = entry?.word ?? key.split('::')[2] ?? key
       const isSelected = selectedKeys.has(key)
+      const isRollover = rolloverKeySet.has(key)
       return (
         <button
           key={key}
@@ -766,9 +777,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
           className={`cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.82rem] font-bold transition-all ${
             isSelected
               ? 'border-[#f59e0b] bg-[rgba(245,158,11,.2)] text-[#fbbf24] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
-              : 'border-[var(--wm-border)] bg-[var(--wm-surface)] text-[var(--wm-text)] hover:border-[#f59e0b] hover:text-[#fbbf24]'
+              : isRollover
+                ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd] hover:border-[#a78bfa]'
+                : 'border-[var(--wm-border)] bg-[var(--wm-surface)] text-[var(--wm-text)] hover:border-[#f59e0b] hover:text-[#fbbf24]'
           }`}
         >
+          {isRollover && <span className="mr-1 text-[.6rem]">↻</span>}
           {word}
         </button>
       )
@@ -794,6 +808,13 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
             <div className="mb-3 text-[.72rem] text-[var(--wm-text-dim)]">
               点击单词可多选，再点击目标日期批量移动
             </div>
+
+            {/* Rollover notice (§3.7) */}
+            {rolloverCount > 0 && (
+              <div className="mb-3 rounded-[10px] border border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.08)] px-4 py-2.5 text-[.75rem] font-bold text-[#c4b5fd]">
+                ↻ 上周有 {rolloverCount} 个必记词未达标，已加入待分配池，请安排到合适日子
+              </div>
+            )}
 
             {/* Selection status bar */}
             {hasSelection && (
