@@ -47,6 +47,7 @@ interface SessionSnapshot {
   version: 2
   phase: 'study' | 'quiz'
   selectedDate: string
+  subTask: 'all' | 'consolidate' | 'preview'
   studyIdx: number
   words: { key: string; kind: WordKind }[]
   quizQs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]
@@ -139,7 +140,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const [studyIdx, setStudyIdx] = useState(() => snap0?.studyIdx ?? 0)
   const [studyDefOnly, setStudyDefOnly] = useState(false)
-  const [currentSubTask, setCurrentSubTask] = useState<'all' | 'consolidate' | 'preview'>('all')
+  const [currentSubTask, setCurrentSubTask] = useState<'all' | 'consolidate' | 'preview'>(
+    () => snap0?.subTask ?? 'all',
+  )
   const [studyWordVisible, setStudyWordVisible] = useState(false)
 
   const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]>(
@@ -188,6 +191,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           version: 2,
           phase,
           selectedDate: selectedDate ?? '',
+          subTask: currentSubTask,
           studyIdx,
           words: wordKeys,
           quizQs: quizQKeys,
@@ -198,7 +202,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         } satisfies SessionSnapshot),
       )
     } catch { /* noop */ }
-  }, [plan.id, phase, selectedDate, studyIdx, wordKeys, quizQKeys, curQ])
+  }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
