@@ -762,6 +762,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       const word = entry?.word ?? key.split('::')[2] ?? key
       const isSelected = selectedKeys.has(key)
       const isRollover = rolloverKeySet.has(key)
+      const wordKind: 'consolidate' | 'preview' = entry
+        ? (lessonKinds[`${entry.unit}::${entry.lesson}`] ?? 'consolidate')
+        : 'consolidate'
       return (
         <button
           key={key}
@@ -779,7 +782,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               ? 'border-[#f59e0b] bg-[rgba(245,158,11,.2)] text-[#fbbf24] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
               : isRollover
                 ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd] hover:border-[#a78bfa]'
-                : 'border-[var(--wm-border)] bg-[var(--wm-surface)] text-[var(--wm-text)] hover:border-[#f59e0b] hover:text-[#fbbf24]'
+                : wordKind === 'preview'
+                  ? 'border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] text-[#fb923c] hover:border-[#f97316]'
+                  : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.07)] text-[#93c5fd] hover:border-[#60a5fa]'
           }`}
         >
           {isRollover && <span className="mr-1 text-[.6rem]">↻</span>}
@@ -805,8 +810,18 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 已分配 {totalAssigned} / {lessonWords.length} 词
               </div>
             </div>
-            <div className="mb-3 text-[.72rem] text-[var(--wm-text-dim)]">
+            <div className="mb-2 text-[.72rem] text-[var(--wm-text-dim)]">
               点击单词可多选，再点击目标日期批量移动
+            </div>
+            <div className="mb-3 flex items-center gap-3 text-[.68rem]">
+              <span className="flex items-center gap-1">
+                <span className="inline-block h-2 w-2 rounded-full bg-[rgba(96,165,250,.6)]" />
+                <span className="text-[#93c5fd]">必记</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block h-2 w-2 rounded-full bg-[rgba(249,115,22,.6)]" />
+                <span className="text-[#fb923c]">预习</span>
+              </span>
             </div>
 
             {/* Rollover notice (§3.7) */}
