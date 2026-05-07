@@ -718,7 +718,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
                   {/* 可选分开练习行：仅当同时有必记和预习词时显示 */}
                   {hasBothKinds && (
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span className="text-[.65rem] font-bold text-[var(--wm-text-dim)]">分开练习：</span>
                       <button
                         onClick={() => startStudy(selectedDate, 'consolidate')}
