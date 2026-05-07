@@ -165,8 +165,12 @@ export interface WeeklyPlanDay {
 
 export interface WeekDayProgress {
   quizDone: boolean
-  lastScore?: number // percentage 0–100
+  lastScore?: number // 最近一次完成（子任务或全天）的得分 0–100
   completedAt?: string // ISO date
+  consolidateDone?: boolean   // 必记子任务已完成
+  previewDone?: boolean       // 预习子任务已完成
+  consolidateScore?: number   // 0–100
+  previewScore?: number       // 0–100
 }
 
 export interface EnglishWeeklyReport {
