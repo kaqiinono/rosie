@@ -19,6 +19,15 @@ const courses: CourseCardData[] = [
     variant: 'amber',
   },
   {
+    href: '/math/ny/40',
+    title: '周长问题探险',
+    description: '掌握拼图法、剪切法、平移法、标向法，解决各类长方形、正方形及不规则图形的周长问题。',
+    icon: '📐',
+    lectureNum: '第 40 讲',
+    tags: ['周长问题', '剪切·平移·标向', '38 道互动题'],
+    variant: 'violet',
+  },
+  {
     href: '/math/ny/39',
     title: '盈亏问题探险',
     description: '掌握盈亏核心公式：份数 = 总差额 ÷ 每份差额，解决盈盈、亏亏、盈亏、盈恰、亏恰 5 大题型。',

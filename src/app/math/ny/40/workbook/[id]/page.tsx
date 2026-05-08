@@ -1,0 +1,14 @@
+'use client'
+
+import { use } from 'react'
+import { notFound } from 'next/navigation'
+import { PROBLEMS } from '@/utils/lesson40-data'
+import ProblemDetail from '@/components/math/lesson40/ProblemDetail'
+
+export default function WorkbookProblemPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const index = parseInt(id) - 1
+  const problem = PROBLEMS.workbook[index]
+  if (!problem) notFound()
+  return <ProblemDetail problem={problem} />
+}
