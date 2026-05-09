@@ -49,10 +49,6 @@ const SECTION_LABELS: Record<SectionKey, string> = {
   supplement: '附加题', pretest: '课前测',
 }
 
-function stripHtml(html: string) {
-  return html.replace(/<[^>]+>/g, '')
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function QuizDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -335,9 +331,14 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                 </div>
 
                 {/* ── Problem text ── */}
-                <p className="text-sm text-slate-700 leading-relaxed mb-4" style={{ lineHeight: '1.75' }}>
-                  {stripHtml(problem.text)}
-                </p>
+                <div
+                  className="quiz-problem-text text-sm text-slate-700 mb-4"
+                  style={{ lineHeight: '1.75' }}
+                  dangerouslySetInnerHTML={{ __html: problem.text }}
+                />
+                {problem.figureNode && (
+                  <div className="mb-4 flex justify-center">{problem.figureNode}</div>
+                )}
 
                 {/* ── Answer area ── */}
                 <div className="rounded-xl p-3" style={{ background: submitted ? 'transparent' : '#f8fafc', border: submitted ? 'none' : '1px solid #e2e8f0' }}>
@@ -424,6 +425,15 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+        .quiz-problem-text p { margin: 0 0 .5em; }
+        .quiz-problem-text p:last-child { margin-bottom: 0; }
+        .quiz-problem-text img {
+          display: block;
+          max-width: 100%;
+          height: auto;
+          margin: .5rem auto;
+          border-radius: .5rem;
+        }
       `}</style>
     </div>
   )
