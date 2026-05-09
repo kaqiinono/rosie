@@ -1591,6 +1591,60 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
 
 ---
 
+## 第七步：在综合组卷页注册新讲次
+
+`/math/ny/quiz` 是跨讲次组卷工具。它的"新增题目"弹窗、已保存试卷的渲染、打印视图都依赖**三份硬编码清单**，每新增一讲必须**同时**更新三个文件，否则：
+
+- 用户在「新增题目」弹窗里看不到该讲次
+- 已保存的试卷如果包含该讲次的题目，详情页与打印页会渲染为空
+
+### 7-A 在 `src/app/math/ny/quiz/page.tsx`
+
+顶部追加 import（注意**同时**导入 `PROBLEMS` 与 `PROBLEM_TYPES`）：
+
+```typescript
+import { PROBLEMS as PN, PROBLEM_TYPES as PTN } from '@/utils/lessonN-data'
+```
+
+在 `LESSON_META` 数组末尾追加：
+
+```typescript
+{ id: 'N', name: '[主题名称]', data: PN, types: PTN },
+```
+
+### 7-B 在 `src/app/math/ny/quiz/[id]/page.tsx`
+
+顶部追加 `import { PROBLEMS as PN } from '@/utils/lessonN-data'`，然后在两个映射中加入新讲次：
+
+```typescript
+const LESSON_DATA: Record<string, ProblemSet> = {
+  // ...已有讲次
+  'N': PN,
+}
+
+const LESSON_NAMES: Record<string, string> = {
+  // ...已有讲次
+  'N': '[主题名称]',
+}
+```
+
+### 7-C 在 `src/app/math/ny/quiz/[id]/print/page.tsx`
+
+同样顶部 import + 更新 `LESSON_DATA` 映射（该文件没有 `LESSON_NAMES`）：
+
+```typescript
+import { PROBLEMS as PN } from '@/utils/lessonN-data'
+
+const LESSON_DATA: Record<string, ProblemSet> = {
+  // ...已有讲次
+  'N': PN,
+}
+```
+
+> **三处必须保持一致。** 任何一处遗漏都会让用户在某个入口看不到题目，但又不会报任何错。
+
+---
+
 ## 快速检查清单
 
 添加第 N 讲时，逐项确认：
@@ -1631,6 +1685,11 @@ src/app/math/
 每日计划页（第六步，两个文件必须同步更新）：
   [ ] src/app/math/ny/plan/page.tsx              — 添加 import 并在 PROBLEM_SETS 中注册新讲次
   [ ] src/components/math/MathWeeklyPractice.tsx — 在 LESSONS 数组末尾追加新讲次配置
+
+综合组卷页（第七步，三个文件必须同步更新）：
+  [ ] src/app/math/ny/quiz/page.tsx              — 添加 import (含 PROBLEM_TYPES) 并在 LESSON_META 末尾追加
+  [ ] src/app/math/ny/quiz/[id]/page.tsx         — 添加 import 并更新 LESSON_DATA + LESSON_NAMES
+  [ ] src/app/math/ny/quiz/[id]/print/page.tsx   — 添加 import 并更新 LESSON_DATA
 ```
 
 ---

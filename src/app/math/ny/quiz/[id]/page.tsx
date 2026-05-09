@@ -12,18 +12,21 @@ import { PROBLEMS as P36 } from '@/utils/lesson36-data'
 import { PROBLEMS as P37 } from '@/utils/lesson37-data'
 import { PROBLEMS as P38 } from '@/utils/lesson38-data'
 import { PROBLEMS as P39 } from '@/utils/lesson39-data'
+import { PROBLEMS as P40 } from '@/utils/lesson40-data'
+import { PROBLEMS as P41 } from '@/utils/lesson41-data'
 import type { Problem, ProblemSet } from '@/utils/type'
 import type { QuizPaper, QuizAnswerRecord } from '@/hooks/useMathQuiz'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
 const LESSON_DATA: Record<string, ProblemSet> = {
-  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39,
+  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41,
 }
 
 const LESSON_NAMES: Record<string, string> = {
   '34': '乘法分配律', '35': '归一问题', '36': '星期几问题',
   '37': '鸡兔同笼', '38': '一笔画', '39': '盈亏问题',
+  '40': '周长问题', '41': '间隔趣题',
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
