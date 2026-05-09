@@ -1534,6 +1534,63 @@ import { PROBLEMS as PROBLEMSN, PROBLEM_TYPES as PTN, TAG_STYLE as TSN } from '.
 
 ---
 
+## 第六步：在每日计划页注册新讲次
+
+`/math/ny/plan` 是按周安排的"数学每日一练"页面。该页面的可选讲次列表是**两份硬编码清单**，每新增一讲必须**同时**更新两个文件，否则用户在每日一练里看不到新讲次的题目。
+
+### 6-A 在 `src/app/math/ny/plan/page.tsx` 中注册数据源
+
+在文件顶部已有 import 行之后追加：
+
+```typescript
+import { PROBLEMS as PROBLEMSN } from '@/utils/lessonN-data'
+```
+
+并在 `PROBLEM_SETS` 对象中追加一项：
+
+```typescript
+const PROBLEM_SETS: Record<string, ProblemSet> = {
+  // ...已有讲次
+  'N': PROBLEMSN,
+}
+```
+
+### 6-B 在 `src/components/math/MathWeeklyPractice.tsx` 中追加讲次选项
+
+在文件顶部的 `LESSONS` 数组**末尾**追加：
+
+```typescript
+{
+  id: 'N',
+  label: '第N讲 · [主题名称]',
+  short: '[主题简称]',           // 用于卡片标题
+  emoji: '[emoji]',              // 与首页卡片相同
+  color: 'rgba(R,G,B,1)',        // 主色，与下方 bg/border 同色
+  bg: 'rgba(R,G,B,.08)',         // 背景填充
+  border: 'rgba(R,G,B,.3)',      // 边框
+  desc: '一句话描述题型重点',     // 卡片副标题
+},
+```
+
+### 颜色参考
+
+| 讲次 | RGB |
+|------|-----|
+| 34 乘法分配律 | `rgba(159,130,246,*)` 紫 |
+| 35 归一问题 | `#3b82f6` 蓝 |
+| 36 星期几问题 | `rgba(245,158,11,*)` 琥珀 |
+| 37 鸡兔同笼 | `rgba(133,200,11,*)` 黄绿 |
+| 38 一笔画 | `rgba(236,72,153,*)` 玫红 |
+| 39 盈亏问题 | `rgba(16,185,129,*)` 翠绿 |
+| 40 周长问题 | `rgba(99,102,241,*)` 靛蓝 |
+| 41 间隔趣题 | `rgba(249,115,22,*)` 橙 |
+
+新讲次选一个未使用的颜色，如 `rgba(14,165,233,*)`（天蓝）、`rgba(168,85,247,*)`（紫罗兰）等。
+
+> **注意：** `MathWeeklyPractice` 组件内部仅依赖 `lesson` / `homework` / `workbook` / `pretest` 四个 section 来生成每日计划，`supplement` 不计入。无需为没有 supplement 的讲次做任何特殊处理。
+
+---
+
 ## 快速检查清单
 
 添加第 N 讲时，逐项确认：
@@ -1570,6 +1627,10 @@ src/app/math/ny/N/
 
 src/app/math/
   [ ] page.tsx                             — 在 courses 数组最前面追加新讲次卡片（第四步）
+
+每日计划页（第六步，两个文件必须同步更新）：
+  [ ] src/app/math/ny/plan/page.tsx              — 添加 import 并在 PROBLEM_SETS 中注册新讲次
+  [ ] src/components/math/MathWeeklyPractice.tsx — 在 LESSONS 数组末尾追加新讲次配置
 ```
 
 ---
