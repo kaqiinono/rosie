@@ -228,31 +228,60 @@ export default function QuizPage() {
       <div className="min-h-screen bg-slate-50">
         {/* ── Top bar ─────────────────────────────────────────────────── */}
         <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-slate-100">
-          <div className="mx-auto max-w-2xl pl-4 pr-[168px] lg:pr-4 h-14 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link
-                href="/math"
-                className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors no-underline"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                返回
-              </Link>
-              <h1 className="text-sm font-bold text-slate-800">综合组卷</h1>
+          <div className="mx-auto max-w-2xl">
+            {/* Row 1: back + title (right padding reserves room for AccountBar on mobile) */}
+            <div className="flex items-center justify-between h-12 lg:h-14 pl-4 pr-[168px] lg:pr-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <Link
+                  href="/math"
+                  className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors no-underline shrink-0"
+                  aria-label="返回数学首页"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  返回
+                </Link>
+                <h1 className="text-sm font-bold text-slate-800 truncate">综合组卷</h1>
+              </div>
+              {/* Inline actions on lg+ where AccountBar floats outside container */}
+              <div className="hidden lg:flex shrink-0 items-center gap-2">
+                <Link
+                  href="/math/mistakes"
+                  className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-500 hover:bg-rose-100 transition-colors no-underline"
+                >
+                  错题本
+                </Link>
+                <button
+                  onClick={openModal}
+                  className="rounded-full bg-indigo-500 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition-colors cursor-pointer"
+                >
+                  + 新增题目
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* Row 2: actions on < lg, full-width for thumb reach */}
+            <div className="flex items-center gap-2 px-4 pb-3 lg:hidden">
               <Link
                 href="/math/mistakes"
-                className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-500 hover:bg-rose-100 transition-colors no-underline"
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3.5 py-2 text-sm font-semibold text-rose-500 hover:bg-rose-100 transition-colors no-underline"
               >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
                 错题本
               </Link>
               <button
                 onClick={openModal}
-                className="rounded-full bg-indigo-500 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition-colors"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600 transition-colors cursor-pointer shadow-sm"
+                style={{ boxShadow: '0 4px 12px rgba(99,102,241,.25)' }}
               >
-                + 新增题目
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                新增题目
               </button>
             </div>
           </div>
@@ -338,37 +367,43 @@ export default function QuizPage() {
           <div>
             <p className="mb-3 text-xs font-bold text-slate-400 uppercase tracking-widest">试卷记录</p>
             {papers.length === 0 ? (
-              <div className="py-16 text-center">
-                <p className="text-slate-400 text-sm">还没有保存过试卷</p>
-                <p className="text-slate-300 text-xs mt-1">点击「新增题目」开始组卷</p>
+              <div
+                className="py-12 px-6 text-center rounded-2xl bg-white"
+                style={{ border: '1px dashed #cbd5e1' }}
+              >
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                  </svg>
+                </div>
+                <p className="text-slate-500 text-sm font-semibold">还没有保存过试卷</p>
+                <p className="text-slate-400 text-xs mt-1">点击「新增题目」开始组卷</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
                 {papers.map(paper => (
                   <div
                     key={paper.id}
-                    className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 cursor-pointer hover:shadow-md transition-all"
+                    className="flex items-center gap-2 rounded-2xl bg-white pl-4 pr-2 py-3 cursor-pointer hover:shadow-md transition-all"
                     style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,.04)' }}
                     onClick={() => router.push(`/math/ny/quiz/${paper.id}`)}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-800">{paper.title}</p>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px]">
+                      <p className="text-sm font-bold text-slate-800 truncate">{paper.title}</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
                         <span className="text-slate-400">{paper.problems.length} 题</span>
                         <span className="text-slate-300">·</span>
                         <span className="text-slate-400">{formatDate(paper.createdAt)}</span>
+                        <span className="text-slate-300">·</span>
                         {paper.completedAt ? (
-                          <>
-                            <span className="text-slate-300">·</span>
-                            <span className="font-semibold text-emerald-600">
-                              {paper.score ?? 0}/{paper.totalScore} 分
-                            </span>
-                          </>
+                          <span className="font-semibold text-emerald-600">
+                            {paper.score ?? 0}/{paper.totalScore} 分
+                          </span>
                         ) : (
-                          <>
-                            <span className="text-slate-300">·</span>
-                            <span className="font-semibold text-amber-500">未作答</span>
-                          </>
+                          <span className="font-semibold text-amber-500">未作答</span>
                         )}
                       </div>
                     </div>
@@ -377,20 +412,26 @@ export default function QuizPage() {
                         e.stopPropagation()
                         window.open(`/math/ny/quiz/${paper.id}/print`, '_blank')
                       }}
-                      className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors"
+                      className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full text-slate-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors cursor-pointer"
                       title="打印"
+                      aria-label="打印试卷"
                     >
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M3.5 5V2h7v3M3.5 10.5h-1a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1h-1M3.5 8.5h7V12h-7z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="6 9 6 2 18 2 18 9"/>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                        <rect x="6" y="14" width="12" height="8"/>
                       </svg>
                     </button>
                     <button
                       onClick={e => { e.stopPropagation(); void deletePaper(paper.id) }}
-                      className="shrink-0 rounded-full p-1.5 text-slate-300 hover:bg-slate-100 hover:text-slate-500 transition-colors"
+                      className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full text-slate-300 hover:bg-rose-50 hover:text-rose-500 transition-colors cursor-pointer"
                       title="删除"
+                      aria-label="删除试卷"
                     >
-                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                        <path d="M10 3H3M5.5 3V2h2v1M4 10.5l-.5-6m6 6L10 4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6M14 11v6"/>
                       </svg>
                     </button>
                   </div>
