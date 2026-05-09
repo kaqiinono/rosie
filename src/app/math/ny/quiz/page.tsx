@@ -228,7 +228,7 @@ export default function QuizPage() {
       <div className="min-h-screen bg-slate-50">
         {/* ── Top bar ─────────────────────────────────────────────────── */}
         <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-slate-100">
-          <div className="mx-auto max-w-2xl px-4 h-14 flex items-center justify-between">
+          <div className="mx-auto max-w-2xl pl-4 pr-[168px] lg:pr-4 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link
                 href="/math"
