@@ -170,15 +170,20 @@ export function interleaveOrderedQuizSlots<T>(groups: T[][], seed: number): T[] 
   const r = rng(seed)
   const out: T[] = []
   const total = groups.reduce((s, g) => s + g.length, 0)
+  let lastPick = -1
   for (let n = 0; n < total; n++) {
     const available: number[] = []
     for (let i = 0; i < groups.length; i++) {
       if (pointers[i]! < groups[i]!.length) available.push(i)
     }
     if (available.length === 0) break
-    const pick = available[Math.floor(r() * available.length)]!
+    // Exclude the last-picked group when other options exist, so the same
+    // word is never asked twice in a row (A immediately followed by B/C).
+    const candidates = available.length > 1 ? available.filter(i => i !== lastPick) : available
+    const pick = candidates[Math.floor(r() * candidates.length)]!
     out.push(groups[pick]![pointers[pick]!]!)
     pointers[pick]!++
+    lastPick = pick
   }
   return out
 }
