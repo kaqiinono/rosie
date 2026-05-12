@@ -25,6 +25,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const isPracticePage = pathname.includes('/practice')
   const isDaily = pathname.includes('/daily')
   const isWeeklyPage = pathname.includes('/weekly/')
+  const isFlash = pathname.includes('/flash')
   // When previewCards is true on the practice page, show vocab cards first; then switch to quiz
   const immersiveMode = isPracticePage && !previewCards ? 'practice' : 'vocab'
 
@@ -53,12 +54,12 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [vocab])
 
   const enterImmersive = useCallback(() => {
-    if (!isDaily && !filteredWords.length) {
+    if (!isDaily && !isFlash && !filteredWords.length) {
       alert('请先筛选单词！')
       return
     }
     setIsImmersive(true)
-  }, [isDaily, filteredWords.length, setIsImmersive])
+  }, [isDaily, isFlash, filteredWords.length, setIsImmersive])
 
   return (
     <div className="min-h-screen font-nunito" style={{ background: 'var(--wm-bg)', color: 'var(--wm-text)' }}>
@@ -82,7 +83,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       />
       {/* ImmersiveMode opens when immersive is active on non-daily pages */}
       <ImmersiveMode
-        open={isImmersive && !isDaily && !isWeeklyPage}
+        open={isImmersive && !isDaily && !isWeeklyPage && !isFlash}
         words={filteredWords}
         allWords={vocab}
         mode={immersiveMode}
