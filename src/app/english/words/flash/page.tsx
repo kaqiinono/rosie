@@ -1375,58 +1375,50 @@ function FlashCardFace({ card }: { card: PhraseCard }) {
 
 function FlashCard({
   card,
-  recitationMode,
+  flipped,
+  clickable,
+  onToggle,
 }: {
   card: PhraseCard
-  recitationMode: boolean
+  // true ⇒ show the emoji+zh face (rotated 180deg from the default full-content face)
+  flipped: boolean
+  clickable: boolean
+  onToggle: () => void
 }) {
-  const [flipped, setFlipped] = useState(false)
-
-  if (!recitationMode) {
-    // Default mode: show full card content directly
-    return (
-      <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
+  const inner = (
+    <div
+      className={`relative h-full min-h-[260px] w-full rounded-2xl transition-transform duration-500 [transform-style:preserve-3d] sm:min-h-[280px] ${
+        flipped ? '[transform:rotateY(180deg)]' : ''
+      }`}
+    >
+      {/* Default face (visible at 0deg) — full content */}
+      <div className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md [backface-visibility:hidden]">
         <FlashCardFace card={card} />
       </div>
-    )
-  }
 
-  // Recitation mode: 3D flip card
-  return (
-    <button
-      type="button"
-      onClick={() => setFlipped((f) => !f)}
-      aria-pressed={flipped}
-      aria-label={flipped ? `隐藏 ${card.phrase} 的详情` : `查看 ${card.phrase} 的详情`}
-      className="group block w-full cursor-pointer text-left [perspective:1200px] focus:outline-none"
-    >
-      <div
-        className={`relative h-full min-h-[260px] w-full rounded-2xl transition-transform duration-500 [transform-style:preserve-3d] sm:min-h-[280px] ${
-          flipped ? '[transform:rotateY(180deg)]' : ''
-        }`}
-      >
-        {/* Front face — emoji + Chinese only */}
-        <div className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow duration-200 group-hover:shadow-md [backface-visibility:hidden]">
-          <div
-            className={`${card.bg} relative flex flex-1 items-center justify-center px-3 py-6`}
-          >
-            {card.label && (
-              <span className="absolute top-2 left-2.5 rounded bg-pink-500 px-1.5 py-0.5 text-[11px] leading-none font-bold text-white select-none">
-                {card.label}
-              </span>
-            )}
-            <span
-              className="text-7xl select-none sm:text-8xl"
-              role="img"
-              aria-label={card.zh}
-            >
-              {card.emoji}
+      {/* Flipped face (visible at 180deg) — emoji + Chinese only */}
+      <div className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-md [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <div
+          className={`${card.bg} relative flex flex-1 items-center justify-center px-3 py-6`}
+        >
+          {card.label && (
+            <span className="absolute top-2 left-2.5 rounded bg-pink-500 px-1.5 py-0.5 text-[11px] leading-none font-bold text-white select-none">
+              {card.label}
             </span>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 bg-white px-4 py-4">
-            <p className="text-center text-base font-semibold tracking-tight text-gray-900 sm:text-lg">
-              {card.zh}
-            </p>
+          )}
+          <span
+            className="text-7xl select-none sm:text-8xl"
+            role="img"
+            aria-label={card.zh}
+          >
+            {card.emoji}
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-1.5 bg-white px-4 py-4">
+          <p className="text-center text-base font-semibold tracking-tight text-gray-900 sm:text-lg">
+            {card.zh}
+          </p>
+          {clickable && (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
               <svg
                 viewBox="0 0 24 24"
@@ -1443,15 +1435,30 @@ function FlashCard({
               </svg>
               点击翻转
             </span>
-          </div>
-        </div>
-
-        {/* Back face — full content */}
-        <div className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-md [backface-visibility:hidden] [transform:rotateY(180deg)]">
-          <FlashCardFace card={card} />
+          )}
         </div>
       </div>
-    </button>
+    </div>
+  )
+
+  if (clickable) {
+    return (
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-pressed={flipped}
+        aria-label={flipped ? `隐藏 ${card.phrase} 的详情` : `查看 ${card.phrase} 的详情`}
+        className="group block w-full cursor-pointer text-left [perspective:1200px] focus:outline-none"
+      >
+        {inner}
+      </button>
+    )
+  }
+
+  return (
+    <div className="block w-full [perspective:1200px]" aria-label={card.phrase}>
+      {inner}
+    </div>
   )
 }
 
@@ -1462,14 +1469,18 @@ function Section({
   subtitle,
   cards,
   recitationMode,
-  resetKey,
+  allFlipped,
+  manualFlips,
+  onToggleCardFlip,
 }: {
   id?: string
   title: string
   subtitle: string
   cards: PhraseCard[]
   recitationMode: boolean
-  resetKey: number
+  allFlipped: boolean
+  manualFlips: Set<string>
+  onToggleCardFlip: (key: string) => void
 }) {
   return (
     <section id={id} className="mb-12 scroll-mt-32">
@@ -1479,14 +1490,22 @@ function Section({
           {subtitle} · {cards.length} 个词
         </p>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-        {cards.map((card) => (
-          <FlashCard
-            key={`${card.phrase}-${recitationMode ? 'r' : 'n'}-${resetKey}`}
-            card={card}
-            recitationMode={recitationMode}
-          />
-        ))}
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(10rem,100%),1fr))] gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+        {cards.map((card) => {
+          // XOR of three booleans: card shows the emoji+zh face when an odd
+          // number of {recitationMode, allFlipped, manualFlip} are true.
+          const flipped =
+            (recitationMode !== allFlipped) !== manualFlips.has(card.phrase)
+          return (
+            <FlashCard
+              key={card.phrase}
+              card={card}
+              flipped={flipped}
+              clickable={recitationMode}
+              onToggle={() => onToggleCardFlip(card.phrase)}
+            />
+          )
+        })}
       </div>
     </section>
   )
@@ -1601,6 +1620,8 @@ function StickyNav({
   onClearUnits,
   recitationMode,
   onToggleRecitation,
+  allFlipped,
+  onToggleAllFlipped,
   onReset,
   topOffset,
   totalCount,
@@ -1610,6 +1631,8 @@ function StickyNav({
   onClearUnits: () => void
   recitationMode: boolean
   onToggleRecitation: () => void
+  allFlipped: boolean
+  onToggleAllFlipped: () => void
   onReset: () => void
   topOffset: number
   totalCount: number
@@ -1682,6 +1705,34 @@ function StickyNav({
                 </svg>
               </button>
             )}
+
+            <button
+              type="button"
+              onClick={onToggleAllFlipped}
+              aria-pressed={allFlipped}
+              className={`inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-xl px-3 text-sm font-semibold transition-all duration-200 sm:h-11 sm:px-4 ${
+                allFlipped
+                  ? 'bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-sm hover:shadow-md'
+                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700'
+              }`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+                aria-hidden="true"
+              >
+                <path d="M16 3h5v5" />
+                <path d="M21 3 13 11" />
+                <path d="M8 21H3v-5" />
+                <path d="M3 21l8-8" />
+              </svg>
+              <span>{allFlipped ? '全部翻回' : '全部翻面'}</span>
+            </button>
 
             <button
               type="button"
@@ -2036,7 +2087,8 @@ function ImmersiveFlash({
 // ── Page ────────────────────────────────────────────────────────────────────
 export default function FlashcardList() {
   const [recitationMode, setRecitationMode] = useState(false)
-  const [resetKey, setResetKey] = useState(0)
+  const [allFlipped, setAllFlipped] = useState(false)
+  const [manualFlips, setManualFlips] = useState<Set<string>>(new Set())
   const [selectedUnits, setSelectedUnits] = useState<Set<number>>(new Set())
   const { isImmersive, setIsImmersive } = useImmersive()
   const headerHeight = useHeaderHeight()
@@ -2052,8 +2104,27 @@ export default function FlashcardList() {
     }
   }, [anchorOffset])
 
-  const handleToggleRecitation = () => setRecitationMode((m) => !m)
-  const handleReset = () => setResetKey((k) => k + 1)
+  const handleToggleRecitation = () => {
+    setRecitationMode((m) => !m)
+    setAllFlipped(false)
+    setManualFlips(new Set())
+  }
+  const handleToggleAllFlipped = () => {
+    setAllFlipped((a) => !a)
+    setManualFlips(new Set())
+  }
+  const handleToggleCardFlip = (key: string) => {
+    setManualFlips((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+  const handleReset = () => {
+    setAllFlipped(false)
+    setManualFlips(new Set())
+  }
   const toggleUnit = (u: number) => {
     setSelectedUnits((prev) => {
       const next = new Set(prev)
@@ -2111,6 +2182,8 @@ export default function FlashcardList() {
           onClearUnits={clearUnits}
           recitationMode={recitationMode}
           onToggleRecitation={handleToggleRecitation}
+          allFlipped={allFlipped}
+          onToggleAllFlipped={handleToggleAllFlipped}
           onReset={handleReset}
           topOffset={stickyTop}
           totalCount={flatCards.length}
@@ -2131,28 +2204,36 @@ export default function FlashcardList() {
           subtitle="Holidays — activities"
           cards={travelPhrases}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="② 旅行物品与人物"
           subtitle="Holidays — travel items"
           cards={travelItems}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="③ 旅行动词搭配"
           subtitle="Verb collocations for journeys"
           cards={travelVerbs}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="④ 不规则动词过去式"
           subtitle="Irregular past simple verbs"
           cards={irregularVerbs}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <GrammarSection
           block={pastSimpleGrammar}
@@ -2176,28 +2257,36 @@ export default function FlashcardList() {
           subtitle="Bedroom & home items (A–K)"
           cards={homeItems}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="② 不定代词"
           subtitle="someone, anyone, everywhere …"
           cards={indefinitePronouns}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="③ 休闲活动"
           subtitle="Free-time activities"
           cards={freeTimeActivities}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="④ 家居安全（Life Skills）"
           subtitle="Safety at home"
           cards={safetyItems}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <GrammarSection
           block={indefinitePronounsGrammar}
@@ -2221,21 +2310,27 @@ export default function FlashcardList() {
           subtitle="Clothes (A–L)"
           cards={clothes}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="② 材质"
           subtitle="Materials"
           cards={materials}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <Section
           title="③ 物主代词与限定词"
           subtitle="Pronouns and determiners"
           cards={possessivePronouns}
           recitationMode={recitationMode}
-          resetKey={resetKey}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
         />
         <GrammarSection
           block={pronounsGrammar}
