@@ -20,11 +20,22 @@ export default function AnalysisImage({ src, alt = '题解图' }: AnalysisImageP
       }
     }
     document.addEventListener('keydown', onKey)
-    const prev = document.body.style.overflow
+    const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+
+    // Temporarily relax the viewport meta so mobile users can pinch-to-zoom the
+    // image. The app sets maximumScale=1 globally for a native-app feel, which
+    // also blocks image zoom.
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
+    const prevViewport = meta?.content ?? ''
+    if (meta) {
+      meta.content = 'width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes'
+    }
+
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prev
+      document.body.style.overflow = prevOverflow
+      if (meta) meta.content = prevViewport
     }
   }, [open])
 
