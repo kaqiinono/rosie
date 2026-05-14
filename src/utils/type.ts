@@ -100,6 +100,12 @@ export interface Problem {
   finalUnit: string
   finalAns: number
   figureNode?: ReactNode
+  /**
+   * Solution-area image path (relative to /public), e.g. `/img/math/41-P5.png`.
+   * Rendered inside the 题解 panel via `AnalysisImage`. Works in `.ts` data files
+   * since it's a plain string — for fully custom JSX diagrams, use `figureNode`.
+   */
+  analysisImg?: string
 }
 
 export interface ProblemSet {

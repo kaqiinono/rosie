@@ -7,6 +7,7 @@ import { TAG_STYLE } from '@/utils/lesson41-data'
 import { useLesson41 } from './Lesson41Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import AnalysisImage from '@/components/math/shared/AnalysisImage'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -56,6 +57,7 @@ export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailP
           </li>
         ))}
       </ul>
+      {problem.analysisImg && <AnalysisImage src={problem.analysisImg} alt={problem.title} />}
     </div>
   )
 

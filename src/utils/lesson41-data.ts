@@ -68,6 +68,7 @@ const PRETEST: Problem[] = [
     finalQ: '一共可以得到多少段小木棍？',
     finalUnit: '段',
     finalAns: 30,
+    analysisImg: '/img/math/41-P4.png',
   },
   {
     id: '41-P5',
@@ -81,6 +82,7 @@ const PRETEST: Problem[] = [
       '从位置14到位置27顺时针，中间经过：15, 16, …, 26',
       '共 26 − 15 + 1 = 12 名同学',
     ],
+    analysisImg: '/img/math/41-P5.png',
     type: 'none',
     finalQ: '立立与奇奇之间有多少名同学？',
     finalUnit: '名',
@@ -98,6 +100,7 @@ const PRETEST: Problem[] = [
       '从位置22到位置32顺时针，中间经过：23, 24, …, 31',
       '共 31 − 23 + 1 = 9 名同学',
     ],
+    analysisImg: '/img/math/41-P6.png',
     type: 'none',
     finalQ: '立立与奇奇之间有多少名同学？',
     finalUnit: '名',
@@ -114,6 +117,7 @@ const PRETEST: Problem[] = [
       '从位置17到位置26顺时针，中间经过：18, 19, …, 25',
       '共 25 − 18 + 1 = 8 名同学',
     ],
+    analysisImg: '/img/math/41-P7.png',
     type: 'none',
     finalQ: '立立与奇奇之间有多少名同学？',
     finalUnit: '名',
@@ -677,11 +681,34 @@ export const PROBLEM_TYPES = [
   },
 ]
 
-export const TYPE_STYLE: Record<string, { bg: string; border: string; titleColor: string; textColor: string }> = {
-  type1: { bg: 'bg-orange-50', border: 'border-l-orange-500', titleColor: 'text-orange-800', textColor: 'text-orange-900' },
-  type2: { bg: 'bg-green-50', border: 'border-l-green-500', titleColor: 'text-green-800', textColor: 'text-green-900' },
-  type3: { bg: 'bg-purple-50', border: 'border-l-purple-500', titleColor: 'text-purple-800', textColor: 'text-purple-900' },
-  type4: { bg: 'bg-blue-50', border: 'border-l-blue-500', titleColor: 'text-blue-800', textColor: 'text-blue-900' },
+export const TYPE_STYLE: Record<
+  string,
+  { bg: string; border: string; titleColor: string; textColor: string }
+> = {
+  type1: {
+    bg: 'bg-orange-50',
+    border: 'border-l-orange-500',
+    titleColor: 'text-orange-800',
+    textColor: 'text-orange-900',
+  },
+  type2: {
+    bg: 'bg-green-50',
+    border: 'border-l-green-500',
+    titleColor: 'text-green-800',
+    textColor: 'text-green-900',
+  },
+  type3: {
+    bg: 'bg-purple-50',
+    border: 'border-l-purple-500',
+    titleColor: 'text-purple-800',
+    textColor: 'text-purple-900',
+  },
+  type4: {
+    bg: 'bg-blue-50',
+    border: 'border-l-blue-500',
+    titleColor: 'text-blue-800',
+    textColor: 'text-blue-900',
+  },
 }
 
 export const TAG_STYLE: Record<string, string> = {

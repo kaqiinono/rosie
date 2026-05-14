@@ -239,6 +239,57 @@ export default function LessonFig2() {
 
 ---
 
+## 关于题解配图（analysisImg）
+
+**当题目需要在「题解」区域配一张静态图（手绘讲解图 / 标注示意图 / 拍照截图）时，使用 `analysisImg` 字段。**
+
+- `analysisImg?: string` — 题解配图，**只是字符串路径**，无需 JSX，因此 `.ts` 数据文件无需改名为 `.tsx`
+- 图片放到 `public/img/math/` 下，命名建议为 `{讲次}-{题号}.png`（例 `41-P5.png`）
+- 渲染位置：题解面板（🔍 题型分析）下方，由共享组件 `AnalysisImage`（`src/components/math/shared/AnalysisImage.tsx`）统一渲染样式
+- 仅当字段存在时才显示，未设置时不影响任何题目
+
+### 使用步骤
+
+**1. 把图片放入 public：**
+```
+public/img/math/41-P5.png
+```
+
+**2. 在题目对象中加一行：**
+```typescript
+{
+  id: '41-P5',
+  title: '课前测5 · 圆圈站队（一）',
+  // ...其他字段...
+  analysisImg: '/img/math/41-P5.png',   // ← 新增
+  // ...
+}
+```
+
+**3. 确保 `ProblemDetail.tsx` 已渲染该字段**（lesson41 已接入；新讲次复制 lesson41 的 ProblemDetail 时自动具备此能力）：
+```tsx
+import AnalysisImage from '@/components/math/shared/AnalysisImage'
+
+const solution = (
+  <div className="...">
+    <div>🔍 题型分析</div>
+    <ul>{problem.analysis.map(...)}</ul>
+    {problem.analysisImg && <AnalysisImage src={problem.analysisImg} alt={problem.title} />}
+  </div>
+)
+```
+
+### `analysisImg` vs `figureNode` 怎么选
+
+| 字段 | 显示位置 | 类型 | 适用场景 | 是否要求 `.tsx` |
+|------|----------|------|----------|----------------|
+| `analysisImg` | 题解区（折叠面板内） | `string` 路径 | 静态题解图（PNG / JPG / SVG 文件） | 否，`.ts` 即可 |
+| `figureNode` | 题目区（题面下方） | `ReactNode` | 题目本身配图、可交互 SVG、动态 JSX | 是，必须 `.tsx` |
+
+两者可同时使用：`figureNode` 展示题目所需的图，`analysisImg` 展示题解推导图。
+
+---
+
 ## 第一步：新建数据文件
 
 > **分工说明：你只需提供题目文件（PDF / TXT / MD 均可），Claude 从文件中读取所有题目内容并生成该文件，不需要你手动填写。**
