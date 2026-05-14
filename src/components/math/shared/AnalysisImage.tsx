@@ -1,19 +1,78 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 interface AnalysisImageProps {
   src: string
   alt?: string
 }
 
 export default function AnalysisImage({ src, alt = '题解图' }: AnalysisImageProps) {
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [open])
+
   return (
-    <div className="mt-2.5 flex justify-center">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={alt}
-        className="w-full max-w-md rounded-lg border border-sky-200 bg-white"
-      />
-    </div>
+    <>
+      <div className="mt-2.5 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="group relative cursor-zoom-in"
+          aria-label="放大查看题解图"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            className="w-full max-w-md rounded-lg border border-sky-200 bg-white transition-transform group-hover:scale-[1.01]"
+          />
+          <span className="pointer-events-none absolute right-1.5 bottom-1.5 rounded-md bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+            点击放大 🔍
+          </span>
+        </button>
+      </div>
+
+      {open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={alt}
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain shadow-2xl"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setOpen(false)
+            }}
+            className="absolute top-4 right-4 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/95 text-xl font-bold text-gray-700 shadow-lg transition hover:bg-white"
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </div>
+      )}
+    </>
   )
 }
