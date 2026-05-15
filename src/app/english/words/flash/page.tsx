@@ -1283,6 +1283,400 @@ const possessivePronouns: PhraseCard[] = [
   },
 ]
 
+// ── Unit 9: Recycled Fashion (Reading 2) ───────────────────────────────────
+const recycledFashion: PhraseCard[] = [
+  {
+    phrase: 'recycle',
+    zh: '回收利用；循环再造',
+    emoji: '♻️',
+    bg: 'bg-green-50',
+    example: 'Designers can recycle plastic bottles into clothes.',
+    exZh: '设计师可以把塑料瓶回收做成衣服。',
+  },
+  {
+    phrase: 'designer',
+    zh: '设计师',
+    emoji: '🎨',
+    bg: 'bg-fuchsia-50',
+    example: 'The designer made a dress from recycled materials.',
+    exZh: '那位设计师用回收材料做了一条裙子。',
+  },
+  {
+    phrase: 'jewellery',
+    zh: '珠宝；首饰',
+    emoji: '💍',
+    bg: 'bg-yellow-50',
+    example: 'She makes jewellery from old metal forks.',
+    exZh: '她用旧金属叉子制作首饰。',
+  },
+  {
+    phrase: 'food can',
+    zh: '食物罐头',
+    emoji: '🥫',
+    bg: 'bg-orange-50',
+    example: 'They turn food cans into cool accessories.',
+    exZh: '他们把食物罐头改造成酷酷的配饰。',
+  },
+  {
+    phrase: 'toilet paper',
+    zh: '卫生纸；厕纸',
+    emoji: '🧻',
+    bg: 'bg-pink-50',
+    example: 'One designer made a dress from toilet paper!',
+    exZh: '有位设计师居然用卫生纸做了一条裙子！',
+  },
+  {
+    phrase: 'car tyres',
+    zh: '汽车轮胎',
+    emoji: '🛞',
+    bg: 'bg-stone-50',
+    example: 'You can make shoes from old car tyres.',
+    exZh: '你可以用旧汽车轮胎做鞋。',
+  },
+  {
+    phrase: 'noisy',
+    zh: '吵闹的；发出噪声的',
+    emoji: '📢',
+    bg: 'bg-red-50',
+    example: 'A skirt made from food cans is very noisy.',
+    exZh: '用食物罐头做的裙子非常吵。',
+  },
+]
+
+// ── Unit 10: Shopping Vocabulary (Buying & Selling) ────────────────────────
+const shoppingItems: PhraseCard[] = [
+  {
+    phrase: 'bill',
+    zh: '账单；账款',
+    emoji: '🧾',
+    bg: 'bg-amber-50',
+    example: 'I always check the bills when I eat in cafés or restaurants.',
+    exZh: '我在咖啡馆或餐厅吃饭时总会核对账单。',
+    label: 'C',
+  },
+  {
+    phrase: 'cash',
+    zh: '现金；现款',
+    emoji: '💵',
+    bg: 'bg-emerald-50',
+    example: "I'm sorry, but I haven't got much cash.",
+    exZh: '对不起，我没带多少现金。',
+    label: 'U',
+  },
+  {
+    phrase: 'discount',
+    zh: '折扣；优惠',
+    emoji: '🏷️',
+    bg: 'bg-rose-50',
+    example: "I'm not interested in any discounts.",
+    exZh: '我对任何折扣都不感兴趣。',
+    label: 'C',
+  },
+  {
+    phrase: 'price',
+    zh: '价格；价钱',
+    emoji: '💲',
+    bg: 'bg-orange-50',
+    example: 'I look at the price before I buy expensive things.',
+    exZh: '在买贵重物品之前我会先看价格。',
+    label: 'C',
+  },
+  {
+    phrase: 'purse',
+    zh: '钱包（女式）；零钱袋',
+    emoji: '👛',
+    bg: 'bg-pink-50',
+    example: 'I never have any cash in my wallet or purse.',
+    exZh: '我钱包里从来没有现金。',
+    label: 'C',
+  },
+  {
+    phrase: 'receipt',
+    zh: '收据；发票',
+    emoji: '🧻',
+    bg: 'bg-sky-50',
+    example: 'I make sure I keep a few receipts from my shopping.',
+    exZh: '我确保留下一些购物的收据。',
+    label: 'C',
+  },
+  {
+    phrase: 'sale',
+    zh: '大减价；促销',
+    emoji: '🛍️',
+    bg: 'bg-red-50',
+    example: 'I usually buy a lot of T-shirts and tops in the sales.',
+    exZh: '我通常会在打折时买很多 T 恤和上衣。',
+    label: 'C',
+  },
+  {
+    phrase: 'wallet',
+    zh: '钱包（男式）；皮夹',
+    emoji: '👝',
+    bg: 'bg-yellow-50',
+    example: "He's got some money in his wallet.",
+    exZh: '他钱包里有一些钱。',
+    label: 'C',
+  },
+]
+
+// ── Unit 10: Shopping Places & Culture ─────────────────────────────────────
+const shoppingPlaces: PhraseCard[] = [
+  {
+    phrase: 'charity shop',
+    zh: '慈善商店',
+    emoji: '🛒',
+    bg: 'bg-violet-50',
+    example: "I'm taking some clothes to the charity shop to donate them.",
+    exZh: '我要把一些衣服捐到慈善商店。',
+  },
+  {
+    phrase: "farmers' market",
+    zh: '农贸市场；农夫市集',
+    emoji: '🥬',
+    bg: 'bg-green-50',
+    example: "I like buying fruit and vegetables at the Farmers' Market.",
+    exZh: "我喜欢在农贸市场买水果和蔬菜。",
+  },
+  {
+    phrase: 'shopping centre',
+    zh: '购物中心；商场',
+    emoji: '🏬',
+    bg: 'bg-sky-50',
+    example: "I shop at Northgate Mall because there are lots of stores.",
+    exZh: '我在 Northgate 购物中心购物，因为那里店铺很多。',
+  },
+  {
+    phrase: 'mall',
+    zh: '购物中心（美式）',
+    emoji: '🏢',
+    bg: 'bg-indigo-50',
+    example: 'In the United States, shopping centres are called malls.',
+    exZh: '在美国，购物中心被称为 malls。',
+  },
+  {
+    phrase: 'technology',
+    zh: '科技；技术（产品）',
+    emoji: '📱',
+    bg: 'bg-cyan-50',
+    example: 'There is an excellent choice of technology stores in the mall.',
+    exZh: '商场里有很多很棒的科技产品店。',
+  },
+  {
+    phrase: 'window shopping',
+    zh: '逛街（只看不买）',
+    emoji: '🪟',
+    bg: 'bg-teal-50',
+    example: 'I can look at things in different shops and go window shopping.',
+    exZh: '我可以在不同的店里看东西，逛逛橱窗。',
+  },
+  {
+    phrase: 'penny',
+    zh: '便士；一分钱',
+    emoji: '🪙',
+    bg: 'bg-amber-50',
+    example: 'Every penny counts! I shop carefully.',
+    exZh: '一分钱都很重要！我购物很谨慎。',
+  },
+  {
+    phrase: 'donate',
+    zh: '捐赠；捐献',
+    emoji: '🎁',
+    bg: 'bg-rose-50',
+    example: 'Some charity shops only have clothes people donate.',
+    exZh: '有些慈善商店只卖人们捐赠的衣服。',
+  },
+  {
+    phrase: 'accessories',
+    zh: '配饰；饰品',
+    emoji: '👜',
+    bg: 'bg-fuchsia-50',
+    example: 'Others have jewellery, accessories and furniture.',
+    exZh: '其他店还有珠宝、配饰和家具。',
+  },
+  {
+    phrase: 'local',
+    zh: '本地的；当地的',
+    emoji: '📍',
+    bg: 'bg-lime-50',
+    example: 'The food at the market is from local farms.',
+    exZh: '市场里的食物来自当地农场。',
+  },
+]
+
+// ── Unit 10: Phrases with "for" ────────────────────────────────────────────
+const forPhrases: PhraseCard[] = [
+  {
+    phrase: 'for + time',
+    zh: '持续（一段时间）',
+    emoji: '⏳',
+    bg: 'bg-blue-50',
+    example: 'People can order cookies online for the next day.',
+    exZh: '人们可以网上订饼干，第二天就到。',
+    label: 'time',
+  },
+  {
+    phrase: 'for + payment',
+    zh: '为…付款；以（多少钱）',
+    emoji: '💳',
+    bg: 'bg-emerald-50',
+    example: 'Cory sells his cookies for just over a dollar each.',
+    exZh: 'Cory 的饼干一块多美元一块。',
+    label: 'payment',
+  },
+  {
+    phrase: 'for + occasion',
+    zh: '为了（某场合）',
+    emoji: '🎂',
+    bg: 'bg-pink-50',
+    example: 'People often buy cookies for parties.',
+    exZh: '人们常常买饼干用于派对。',
+    label: 'occasion',
+  },
+  {
+    phrase: 'be famous for',
+    zh: '因…而闻名',
+    emoji: '⭐',
+    bg: 'bg-amber-50',
+    example: 'Australia is famous for its beaches and amazing countryside.',
+    exZh: '澳大利亚以海滩和壮观的乡村闻名。',
+    label: 'reason',
+  },
+  {
+    phrase: 'word for',
+    zh: '表示…的词',
+    emoji: '🔤',
+    bg: 'bg-violet-50',
+    example: "What's British English for 'cookies'?",
+    exZh: "'cookies' 用英式英语怎么说？",
+    label: 'meaning',
+  },
+  {
+    phrase: 'book / pay for',
+    zh: '预订 / 付款',
+    emoji: '🍽️',
+    bg: 'bg-orange-50',
+    example: "Let's book a table for lunch.",
+    exZh: '我们预订一张午餐的桌子吧。',
+  },
+]
+
+// ── Unit 10: Entrepreneurs & Business ──────────────────────────────────────
+const businessWords: PhraseCard[] = [
+  {
+    phrase: 'entrepreneur',
+    zh: '企业家；创业者',
+    emoji: '💼',
+    bg: 'bg-orange-50',
+    example: 'Two young entrepreneurs started their own businesses.',
+    exZh: '两位年轻的创业者开创了自己的事业。',
+  },
+  {
+    phrase: 'business',
+    zh: '生意；公司',
+    emoji: '🏪',
+    bg: 'bg-amber-50',
+    example: 'He started his business when he was six years old.',
+    exZh: '他六岁就开始了自己的生意。',
+  },
+  {
+    phrase: 'website',
+    zh: '网站',
+    emoji: '🌐',
+    bg: 'bg-sky-50',
+    example: 'Mr Cory sells his cookies on his website.',
+    exZh: 'Cory 先生在他的网站上卖饼干。',
+  },
+  {
+    phrase: 'customer',
+    zh: '顾客；客户',
+    emoji: '🛍️',
+    bg: 'bg-cyan-50',
+    example: 'They try the recipes at home before they sell them to customers.',
+    exZh: '他们在卖给顾客前会先在家里试做食谱。',
+  },
+  {
+    phrase: 'recipe',
+    zh: '食谱；配方',
+    emoji: '📖',
+    bg: 'bg-yellow-50',
+    example: 'His mum tried a lot of different recipes for cookies.',
+    exZh: '他妈妈尝试了很多不同的饼干食谱。',
+  },
+  {
+    phrase: 'review',
+    zh: '评论；评价',
+    emoji: '⭐',
+    bg: 'bg-rose-50',
+    example: 'Children can post their reviews of hotels and restaurants.',
+    exZh: '孩子们可以发表对酒店和餐厅的评价。',
+  },
+  {
+    phrase: 'expensive',
+    zh: '昂贵的',
+    emoji: '💎',
+    bg: 'bg-violet-50',
+    example: 'I look at the price before I buy expensive things, like some shoes.',
+    exZh: '我在买贵重物品如鞋子之前会先看价格。',
+  },
+  {
+    phrase: 'spend',
+    zh: '花费（钱 / 时间）',
+    emoji: '💸',
+    bg: 'bg-pink-50',
+    example: 'I spend a bit of time every week looking at clothes online.',
+    exZh: '我每周都花一点时间在网上看衣服。',
+  },
+]
+
+// ── Unit 10: Quantifiers (some / any / a lot of / a few / a bit of) ────────
+const quantifierCards: PhraseCard[] = [
+  {
+    phrase: 'some',
+    zh: '一些；若干（肯定句）',
+    emoji: '🟢',
+    bg: 'bg-emerald-50',
+    example: 'I often ask the shop assistant for some advice.',
+    exZh: '我常向店员咨询一些建议。',
+    label: 'C+U',
+  },
+  {
+    phrase: 'any',
+    zh: '任何；一些（否定 / 疑问句）',
+    emoji: '🔴',
+    bg: 'bg-rose-50',
+    example: "I'm not interested in any discounts.",
+    exZh: '我对任何折扣都不感兴趣。',
+    label: 'C+U',
+  },
+  {
+    phrase: 'a lot of',
+    zh: '许多；大量（肯定句）',
+    emoji: '🟣',
+    bg: 'bg-violet-50',
+    example: 'I usually buy a lot of T-shirts in the sales.',
+    exZh: '我通常会在打折时买很多 T 恤。',
+    label: 'C+U',
+  },
+  {
+    phrase: 'a few',
+    zh: '一些；几个（仅可数）',
+    emoji: '🔵',
+    bg: 'bg-sky-50',
+    example: 'I keep a few receipts from my shopping.',
+    exZh: '我会留下几张购物收据。',
+    label: 'C',
+  },
+  {
+    phrase: 'a bit of',
+    zh: '一点；少量（仅不可数）',
+    emoji: '🟡',
+    bg: 'bg-amber-50',
+    example: 'I spend a bit of time looking at clothes online.',
+    exZh: '我会花一点时间在网上看衣服。',
+    label: 'U',
+  },
+]
+
 // ── Grammar reference content ─────────────────────────────────────────────
 const pastSimpleGrammar: GrammarBlock = {
   title: '一般过去时：不规则动词',
@@ -1341,32 +1735,85 @@ const pronounsGrammar: GrammarBlock = {
   ],
 }
 
+const quantifiersGrammar: GrammarBlock = {
+  title: '量词：some / any / a lot of / a few / a bit of',
+  subtitle: 'some, any, a lot of, a few, a bit of',
+  rule: '区分可数与不可数名词，并据此选择量词。some / a lot of 通用于肯定句；any 用于否定句和疑问句；a few 只接可数名词复数；a bit of 只接不可数名词。',
+  examples: [
+    {
+      en: 'I often ask the shop assistant for some advice.',
+      zh: 'some + 不可数（肯定句）：常向店员要些建议。',
+    },
+    {
+      en: 'I usually buy a lot of clothes, like T-shirts and tops.',
+      zh: 'a lot of + 可数复数（肯定句）：通常会买很多衣服。',
+    },
+    {
+      en: "I'm not interested in any discounts.",
+      zh: 'any + 可数复数（否定句）：我对折扣不感兴趣。',
+    },
+    {
+      en: 'I make sure I keep a few receipts from my shopping.',
+      zh: 'a few + 可数复数（肯定句）：留几张收据。',
+    },
+    {
+      en: 'I spend a bit of time looking at clothes online.',
+      zh: 'a bit of + 不可数（肯定句）：花点时间逛网店。',
+    },
+    {
+      en: '❌ I want to buy a clothes. → ✅ I want to buy some clothes.',
+      zh: 'clothes 是复数名词，不可加 a/an，应配 some。',
+      note: '常见易错点',
+    },
+    {
+      en: "❌ Please bring a pencils. → ✅ Please bring some pencils.",
+      zh: '可数复数前不能用 a，肯定句用 some。',
+      note: '常见易错点',
+    },
+  ],
+  tip: '速记：能数的用 a few（少数几个）；不能数的用 a bit of（一点点）。肯定 = some / a lot of，否定/疑问 = any。',
+}
+
 // ── Shared card component ───────────────────────────────────────────────────
 function FlashCardFace({ card }: { card: PhraseCard }) {
   return (
     <>
-      <div className={`${card.bg} relative flex h-24 items-center justify-center sm:h-28`}>
+      <div
+        className={`${card.bg} relative flex h-24 shrink-0 items-center justify-center sm:h-28`}
+      >
         {card.label && (
-          <span className="absolute top-2 left-2.5 rounded bg-pink-500 px-1.5 py-0.5 text-[11px] leading-none font-bold text-white select-none">
+          <span className="absolute top-2 left-2 rounded bg-pink-500 px-1.5 py-0.5 text-[10px] leading-none font-bold text-white select-none sm:left-2.5 sm:text-[11px]">
             {card.label}
           </span>
         )}
-        <span className="text-5xl select-none sm:text-6xl" role="img" aria-label={card.phrase}>
+        <span
+          className="text-5xl leading-none select-none sm:text-6xl"
+          role="img"
+          aria-label={card.phrase}
+        >
           {card.emoji}
         </span>
       </div>
-      <div className="flex flex-col gap-3 p-4">
-        <div>
-          <p className="text-base font-semibold tracking-tight text-gray-900">{card.phrase}</p>
-          <p className="mt-0.5 text-sm text-gray-500">{card.zh}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
+        <div className="min-w-0">
+          <p className="line-clamp-2 text-sm font-semibold tracking-tight break-words text-gray-900 sm:text-base">
+            {card.phrase}
+          </p>
+          <p className="mt-0.5 line-clamp-2 text-xs break-words text-gray-500 sm:text-sm">
+            {card.zh}
+          </p>
         </div>
         <hr className="border-gray-100" />
-        <div>
+        <div className="min-w-0">
           <p className="mb-1 text-[10px] font-medium tracking-widest text-gray-400 uppercase">
             例句
           </p>
-          <p className="text-sm leading-relaxed text-gray-600 italic">{card.example}</p>
-          <p className="mt-1 text-xs leading-relaxed text-gray-400">{card.exZh}</p>
+          <p className="line-clamp-3 text-xs leading-relaxed break-words text-gray-600 italic sm:text-sm">
+            {card.example}
+          </p>
+          <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed break-words text-gray-400 sm:text-xs">
+            {card.exZh}
+          </p>
         </div>
       </div>
     </>
@@ -1387,7 +1834,7 @@ function FlashCard({
 }) {
   const inner = (
     <div
-      className={`relative h-full min-h-[260px] w-full rounded-2xl transition-transform duration-500 [transform-style:preserve-3d] sm:min-h-[280px] ${
+      className={`relative h-full min-h-[290px] w-full rounded-2xl transition-transform duration-500 [transform-style:preserve-3d] sm:min-h-[310px] ${
         flipped ? '[transform:rotateY(180deg)]' : ''
       }`}
     >
@@ -1589,6 +2036,416 @@ function GrammarSection({ block, accent }: { block: GrammarBlock; accent: string
   )
 }
 
+// ── Content Summary types ──────────────────────────────────────────────────
+interface SummaryWord {
+  en: string
+  zh?: string
+}
+
+interface SummarySection {
+  title: string
+  zh?: string
+  words?: SummaryWord[]
+  bullets?: string[]
+  examples?: string[]
+}
+
+interface SummaryPart {
+  label: string
+  zhLabel?: string
+  defaultOpen?: boolean
+  sections: SummarySection[]
+}
+
+interface UnitSummary {
+  topic: string
+  topicZh: string
+  parts: SummaryPart[]
+}
+
+// ── Content Summary block ──────────────────────────────────────────────────
+function ContentSummarySection({
+  summary,
+  accent,
+}: {
+  summary: UnitSummary
+  accent: string
+}) {
+  return (
+    <section className="mb-12 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+      <div className={`${accent} px-5 py-4 sm:px-6`}>
+        <p className="text-[11px] font-bold tracking-widest text-white/80 uppercase">
+          Content Summary · 内容总结
+        </p>
+        <h3 className="mt-0.5 text-lg font-bold text-white sm:text-xl">
+          Topic: {summary.topic}
+        </h3>
+        <p className="mt-0.5 text-sm text-white/80">{summary.topicZh}</p>
+      </div>
+      <div className="divide-y divide-gray-100">
+        {summary.parts.map((part) => (
+          <details
+            key={part.label}
+            open={part.defaultOpen}
+            className="group [&_summary::-webkit-details-marker]:hidden"
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-gray-900 sm:text-base">
+                  {part.label}
+                </p>
+                {part.zhLabel && (
+                  <p className="mt-0.5 truncate text-xs text-gray-500">{part.zhLabel}</p>
+                )}
+              </div>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180"
+                aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <div className="space-y-4 px-4 pb-4 sm:px-6 sm:pb-5">
+              {part.sections.map((section, si) => (
+                <div key={si} className="min-w-0">
+                  <p className="text-xs font-bold tracking-wide text-gray-800 sm:text-sm">
+                    {section.title}
+                    {section.zh && (
+                      <span className="ml-1.5 text-xs font-medium text-gray-400">
+                        {section.zh}
+                      </span>
+                    )}
+                  </p>
+                  {section.words && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {section.words.map((w, wi) => (
+                        <span
+                          key={wi}
+                          className="inline-flex items-baseline gap-1 rounded-md border border-gray-100 bg-gray-50 px-2 py-1 text-xs"
+                        >
+                          <span className="font-semibold text-gray-900">{w.en}</span>
+                          {w.zh && <span className="text-gray-500">{w.zh}</span>}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {section.bullets && (
+                    <ul className="mt-2 space-y-1.5">
+                      {section.bullets.map((b, bi) => (
+                        <li
+                          key={bi}
+                          className="flex gap-2 text-xs leading-relaxed text-gray-600 sm:text-sm"
+                        >
+                          <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-gray-400" />
+                          <span className="min-w-0 break-words">{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {section.examples && (
+                    <div className="mt-2 space-y-1.5">
+                      {section.examples.map((e, ei) => (
+                        <p
+                          key={ei}
+                          className="rounded-md bg-gray-50 px-2.5 py-1.5 text-xs leading-relaxed break-words text-gray-700 sm:text-sm"
+                        >
+                          <span className="italic">{e}</span>
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ── Unit 9 content summary ─────────────────────────────────────────────────
+const unit9Summary: UnitSummary = {
+  topic: 'Clothes and their materials',
+  topicZh: '服装与其材质',
+  parts: [
+    {
+      label: 'Part 1 · Vocabulary',
+      zhLabel: '词汇',
+      defaultOpen: true,
+      sections: [
+        {
+          title: 'Clothes',
+          zh: '衣服',
+          words: [
+            { en: 'boots', zh: '靴子' },
+            { en: 'cap', zh: '帽子' },
+            { en: 'gloves', zh: '手套' },
+            { en: 'jumper', zh: '套衫' },
+            { en: 'scarf', zh: '围巾' },
+            { en: 'socks', zh: '袜子' },
+            { en: 'suit', zh: '西装' },
+            { en: 'sunglasses', zh: '太阳镜' },
+            { en: 'swimming costume', zh: '女士游泳衣' },
+            { en: 'swimming shorts', zh: '泳裤' },
+          ],
+        },
+        {
+          title: 'Materials',
+          zh: '材料',
+          words: [
+            { en: 'cork', zh: '软木' },
+            { en: 'cotton', zh: '棉' },
+            { en: 'leather', zh: '皮革' },
+            { en: 'metal', zh: '金属' },
+            { en: 'plastic', zh: '塑料' },
+            { en: 'wool', zh: '羊毛' },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Part 2 · Grammar',
+      zhLabel: '语法 · Pronouns and determiners 代词与限定词',
+      defaultOpen: true,
+      sections: [
+        {
+          title: 'Determiners 限定词',
+          zh: '后必须接名词',
+          words: [
+            { en: 'my' },
+            { en: 'your' },
+            { en: 'his' },
+            { en: 'her' },
+            { en: 'its' },
+            { en: 'our' },
+            { en: 'their' },
+          ],
+        },
+        {
+          title: 'Pronouns 物主代词',
+          zh: '可独立使用',
+          words: [
+            { en: 'mine' },
+            { en: 'yours' },
+            { en: 'his' },
+            { en: 'hers' },
+            { en: '— (no its-form)' },
+            { en: 'ours' },
+            { en: 'theirs' },
+          ],
+        },
+        {
+          title: 'Examples 例句',
+          examples: [
+            "They're my boots. → The boots are mine.",
+            "Are they your swimming shorts? → Are they yours?",
+            "It's his / her jumper. → It's his / hers.",
+            "It's our clothes blog. → It's ours.",
+            "They are their swimming costumes. → They're theirs.",
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Part 3 · Reading',
+      zhLabel: '阅读理解目标',
+      sections: [
+        {
+          title: 'Reading 1 — Best-buy blog',
+          zh: '阅读博客分享的最佳购物',
+          bullets: [
+            '识别博客发帖人提到的服装、颜色、场合与感受',
+            '掌握扫读技巧，定位时间、物品、购买原因、评价',
+            '回答关于"最佳购买物品"与"购物原因"的问题',
+            '掌握重点词：best buy、suit、jumper 等',
+            '区分喜好与评价词：cool、boring、great 等',
+            '能向同伴描述自己近期的"最佳购买物品"',
+          ],
+        },
+        {
+          title: 'Reading 2 — Recycled fashion',
+          zh: '用回收材料制作服装与饰品',
+          bullets: [
+            '掌握核心词：recycle、designer、contest 等',
+            '定位材料（金属、软木、塑料、卫生纸、轮胎）与制品的对应关系',
+            '回答关于制作材料、用途、使用注意事项的问题',
+            '比较不同材料制品的来源、用途、外观，归纳非常规材料在时尚与环保中的应用',
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Part 4 · Listening & Speaking',
+      zhLabel: '听力 & 口语目标',
+      sections: [
+        {
+          title: 'Listening 听力关键词',
+          words: [
+            { en: 'jacket', zh: '夹克' },
+            { en: 'necklace', zh: '项链' },
+            { en: 'shorts', zh: '短裤' },
+            { en: 'newspaper', zh: '报纸' },
+            { en: 'magazine', zh: '杂志' },
+            { en: 'chocolate', zh: '巧克力' },
+            { en: 'money-notes', zh: '纸币' },
+          ],
+        },
+        {
+          title: 'Speaking 口语任务',
+          bullets: [
+            '两两合作，在时装秀情境中用英语准确描述服装单品、颜色、材质',
+            '通过轮流描述、倾听同伴描述，提升听说能力',
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+// ── Unit 10 content summary ────────────────────────────────────────────────
+const unit10Summary: UnitSummary = {
+  topic: 'Buying and selling things',
+  topicZh: '买卖与购物',
+  parts: [
+    {
+      label: 'Part 1 · Vocabulary',
+      zhLabel: '词汇',
+      defaultOpen: true,
+      sections: [
+        {
+          title: 'Buying and selling',
+          zh: '买卖',
+          words: [
+            { en: 'bill', zh: '账单' },
+            { en: 'cash', zh: '现金' },
+            { en: 'discount', zh: '折扣' },
+            { en: 'price', zh: '价格' },
+            { en: 'receipt', zh: '收据' },
+            { en: 'sale', zh: '特价销售' },
+            { en: 'purse', zh: '女士钱包' },
+            { en: 'wallet', zh: '男士钱包' },
+          ],
+        },
+        {
+          title: 'Phrases with for',
+          zh: '与 for 相关的词组',
+          bullets: [
+            'for + 款额 → 以 …… 价格',
+            'for + 场合 → 为了',
+            'for + 时间 → 以便 / 为了',
+            'for + 原因 → 因为',
+            'for + 某个词汇 → 对于 / 关于（询问含义）',
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Part 2 · Grammar',
+      zhLabel: '语法 · some / any / a lot of / a few / a bit of',
+      defaultOpen: true,
+      sections: [
+        {
+          title: '1. some',
+          zh: '肯定句 + 可数 / 不可数名词',
+          examples: [
+            'I look at the price before I buy expensive things, like some shoes.',
+            'I often ask the shop assistant for some advice on what to buy.',
+          ],
+        },
+        {
+          title: '2. any',
+          zh: '否定句 + 可数 / 不可数名词',
+          examples: [
+            "I'm not interested in any discounts.",
+            'I never have any cash in my wallet or purse.',
+          ],
+        },
+        {
+          title: '3. a lot of',
+          zh: '肯定句 + 可数 / 不可数名词',
+          examples: [
+            'I usually buy a lot of clothes, like T-shirts and tops, in the sales.',
+            'I share a lot of music with my friends.',
+          ],
+        },
+        {
+          title: '4. a few',
+          zh: '肯定句 + 可数名词',
+          examples: ['I make sure I keep a few receipts from my shopping.'],
+        },
+        {
+          title: '5. a bit of',
+          zh: '肯定句 + 不可数名词',
+          examples: ['I spend a bit of time looking at clothes online.'],
+        },
+      ],
+    },
+    {
+      label: 'Part 3 · Reading',
+      zhLabel: '阅读理解目标',
+      sections: [
+        {
+          title: 'Reading 1 — Shopping quiz',
+          zh: '购物习惯问卷',
+          bullets: [
+            '识别问卷中关于购物习惯的描述与分类',
+            '掌握扫读技巧，理解问卷核心内容并做 Yes / No 选择',
+            '与同伴讨论彼此购物方式、消费习惯的异同',
+            '掌握重点词：discounts、receipts、cash 等',
+            '能区分购物语境下的可数 / 不可数名词',
+          ],
+        },
+        {
+          title: 'Reading 2 — Two young entrepreneurs',
+          zh: '两位年轻创业者的故事',
+          bullets: [
+            '掌握核心词：entrepreneur、business、website 等',
+            '通过扫读定位姓名、国家、生意名称、创业起因、发展过程',
+            '回答关于创业动机、产品开发、业务现状的细节问题',
+            '比较两位创业者的动机、起步方式与目标受众，归纳异同',
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Part 4 · Listening & Writing',
+      zhLabel: '听力 & 写作目标',
+      sections: [
+        {
+          title: 'Listening 听力关键词',
+          words: [
+            { en: 'shopping centre', zh: '购物中心' },
+            { en: 'buy', zh: '买' },
+            { en: 'shops', zh: '商店' },
+            { en: 'market', zh: '市场' },
+            { en: 'size', zh: '尺码' },
+            { en: 'website', zh: '网站' },
+            { en: 'jumpers', zh: '套衫' },
+            { en: 'jacket', zh: '夹克' },
+          ],
+        },
+        {
+          title: 'Writing 写作任务',
+          zh: '在线购物遇到问题',
+          bullets: [
+            '围绕"在线购物遇到问题"创作约 50 词的故事',
+            '运用 after that / after (two weeks) / (six days) later / finally 连接事件',
+            '按"想买物品 → 购买方式 → 到货时长 → 问题 → 解决 → 结局"完成叙事',
+            '与同伴互读、检查错误、给出改进建议',
+          ],
+        },
+      ],
+    },
+  ],
+}
+
 // ── Top navigation (anchor links) ──────────────────────────────────────────
 const UNIT_DEFS: { unit: number; label: string; sub: string; activeGradient: string; activeRing: string }[] = [
   {
@@ -1611,6 +2468,13 @@ const UNIT_DEFS: { unit: number; label: string; sub: string; activeGradient: str
     sub: 'Clothes',
     activeGradient: 'from-pink-500 to-rose-500',
     activeRing: 'shadow-[0_2px_10px_rgba(236,72,153,0.35)]',
+  },
+  {
+    unit: 10,
+    label: 'Unit 10',
+    sub: 'Shopping',
+    activeGradient: 'from-orange-500 to-amber-500',
+    activeRing: 'shadow-[0_2px_10px_rgba(249,115,22,0.35)]',
   },
 ]
 
@@ -2139,6 +3003,7 @@ export default function FlashcardList() {
   const showUnit7 = showAll || selectedUnits.has(7)
   const showUnit8 = showAll || selectedUnits.has(8)
   const showUnit9 = showAll || selectedUnits.has(9)
+  const showUnit10 = showAll || selectedUnits.has(10)
 
   const flatCards = useMemo(() => {
     const out: { card: PhraseCard; unit: number }[] = []
@@ -2153,12 +3018,21 @@ export default function FlashcardList() {
       )
     }
     if (showUnit9) {
-      ;[...clothes, ...materials, ...possessivePronouns].forEach((card) =>
+      ;[...clothes, ...materials, ...possessivePronouns, ...recycledFashion].forEach((card) =>
         out.push({ card, unit: 9 }),
       )
     }
+    if (showUnit10) {
+      ;[
+        ...shoppingItems,
+        ...shoppingPlaces,
+        ...forPhrases,
+        ...quantifierCards,
+        ...businessWords,
+      ].forEach((card) => out.push({ card, unit: 10 }))
+    }
     return out
-  }, [showUnit7, showUnit8, showUnit9])
+  }, [showUnit7, showUnit8, showUnit9, showUnit10])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -2166,13 +3040,13 @@ export default function FlashcardList() {
         {/* Page header */}
         <div className="mb-6">
           <p className="text-xs font-bold tracking-widest text-emerald-600 uppercase">
-            Units 7–9 Review
+            Units 7–10 Review
           </p>
           <h1 className="mt-1 text-2xl font-bold text-gray-900 sm:text-3xl">
-            英语单词卡片 · 第 7–9 单元复习
+            英语单词卡片 · 第 7–10 单元复习
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Vocabulary Flashcards · An Exciting Trip · Favourite Places · Clothes and Fashion
+            Vocabulary Flashcards · An Exciting Trip · Favourite Places · Clothes and Fashion · Buying Things
           </p>
         </div>
 
@@ -2332,9 +3206,88 @@ export default function FlashcardList() {
           manualFlips={manualFlips}
           onToggleCardFlip={handleToggleCardFlip}
         />
+        <Section
+          title="④ 回收时尚"
+          subtitle="Recycled fashion — Reading 2"
+          cards={recycledFashion}
+          recitationMode={recitationMode}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
+        />
         <GrammarSection
           block={pronounsGrammar}
           accent="bg-gradient-to-r from-pink-500 to-rose-500"
+        />
+        <ContentSummarySection
+          summary={unit9Summary}
+          accent="bg-gradient-to-r from-pink-500 to-rose-500"
+        />
+          </>
+        )}
+
+        {/* Unit 10 */}
+        {showUnit10 && (
+          <>
+        <UnitHeader
+          id="unit-10"
+          unit={10}
+          title="Buying Things"
+          zhTitle="买东西；购物"
+          accent="bg-gradient-to-br from-orange-500 to-amber-500"
+        />
+        <Section
+          title="① 购物词汇（可数 / 不可数）"
+          subtitle="Buying and selling · countable & uncountable"
+          cards={shoppingItems}
+          recitationMode={recitationMode}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
+        />
+        <Section
+          title="② 购物场所与文化"
+          subtitle="Shopping places & culture"
+          cards={shoppingPlaces}
+          recitationMode={recitationMode}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
+        />
+        <Section
+          title="③ 介词 for 的常见搭配"
+          subtitle="Phrases with for"
+          cards={forPhrases}
+          recitationMode={recitationMode}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
+        />
+        <Section
+          title="④ 量词卡片"
+          subtitle="Quantifiers · some / any / a lot of / a few / a bit of"
+          cards={quantifierCards}
+          recitationMode={recitationMode}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
+        />
+        <Section
+          title="⑤ 创业与商业词汇"
+          subtitle="Young entrepreneurs"
+          cards={businessWords}
+          recitationMode={recitationMode}
+          allFlipped={allFlipped}
+          manualFlips={manualFlips}
+          onToggleCardFlip={handleToggleCardFlip}
+        />
+        <GrammarSection
+          block={quantifiersGrammar}
+          accent="bg-gradient-to-r from-orange-500 to-amber-500"
+        />
+        <ContentSummarySection
+          summary={unit10Summary}
+          accent="bg-gradient-to-r from-orange-500 to-amber-500"
         />
           </>
         )}
@@ -2345,8 +3298,8 @@ export default function FlashcardList() {
             🎯 复习目标 · Review Goals
           </p>
           <p className="mt-2 text-sm leading-relaxed text-gray-600">
-            掌握 Units 7–9 全部词汇与短语 · 熟记 26 个不规则动词过去式 · 能区分不定代词的用法
-            · 正确使用限定词与物主代词
+            掌握 Units 7–10 全部词汇与短语 · 熟记 26 个不规则动词过去式 · 能区分不定代词的用法
+            · 正确使用限定词与物主代词 · 掌握 some / any / a lot of / a few / a bit of 的用法
           </p>
         </div>
       </div>
