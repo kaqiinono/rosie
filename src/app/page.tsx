@@ -29,16 +29,6 @@ const modules: ModuleCardData[] = [
     icon: '📖',
   },
   {
-    href: '/ox/reading',
-    title: '扩展阅读',
-    description: '精选英语短文，培养阅读习惯，拓展词汇与理解能力。',
-    tag: 'READING',
-    variant: 'reading',
-    stats: ['英语短文', '词汇积累', '阅读理解'],
-    enterText: '开始阅读',
-    icon: '📚',
-  },
-  {
     href: '/today',
     title: '今日计划',
     description: '一键查看今天的数学题目和英语单词，高效完成每日任务。',
