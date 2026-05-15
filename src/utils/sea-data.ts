@@ -6,6 +6,7 @@ import { PROBLEMS as PROBLEMS38, PROBLEM_TYPES as PT38, TAG_STYLE as TS38 } from
 import { PROBLEMS as PROBLEMS39, PROBLEM_TYPES as PT39, TAG_STYLE as TS39 } from './lesson39-data'
 import { PROBLEMS as PROBLEMS40, PROBLEM_TYPES as PT40, TAG_STYLE as TS40 } from './lesson40-data'
 import { PROBLEMS as PROBLEMS41, PROBLEM_TYPES as PT41, TAG_STYLE as TS41 } from './lesson41-data'
+import { PROBLEMS as PROBLEMS42, PROBLEM_TYPES as PT42, TAG_STYLE as TS42 } from './lesson42-data'
 import type { Problem, ProblemSet } from './type'
 
 export interface SeaLessonMeta {
@@ -99,6 +100,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: TS41,
     types: PT41.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
     problems: PROBLEMS41,
+  },
+  {
+    id: '42',
+    title: '第42讲·生活智力题',
+    shortTitle: '42·生活智力',
+    icon: '🧠',
+    badgeClass: 'bg-rose-100 text-rose-700',
+    tagStyle: TS42,
+    types: PT42.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS42,
   },
 ]
 

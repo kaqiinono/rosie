@@ -10,6 +10,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/42',
+    title: '生活智力题挑战',
+    description: '天平称重、空瓶换水、绳子计时、量水标线、找假币 —— 用智慧解决生活中的真问题。',
+    icon: '🧠',
+    lectureNum: '第 42 讲',
+    tags: ['生活智力题', '称重·换水·计时·找异物', '14 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/41',
     title: '间隔趣题探险',
     description: '掌握间隔核心原理，解决锯木头、爬楼梯、敲钟 3 大经典题型。',

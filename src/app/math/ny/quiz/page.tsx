@@ -14,6 +14,7 @@ import { PROBLEMS as P38, PROBLEM_TYPES as PT38 } from '@/utils/lesson38-data'
 import { PROBLEMS as P39, PROBLEM_TYPES as PT39 } from '@/utils/lesson39-data'
 import { PROBLEMS as P40, PROBLEM_TYPES as PT40 } from '@/utils/lesson40-data'
 import { PROBLEMS as P41, PROBLEM_TYPES as PT41 } from '@/utils/lesson41-data'
+import { PROBLEMS as P42, PROBLEM_TYPES as PT42 } from '@/utils/lesson42-data'
 import type { Problem, ProblemSet } from '@/utils/type'
 import type { QuizProblemItem } from '@/hooks/useMathQuiz'
 
@@ -56,6 +57,7 @@ const LESSON_META: Array<{
   { id: '39', name: '盈亏问题', data: P39, types: PT39 },
   { id: '40', name: '周长问题', data: P40, types: PT40 },
   { id: '41', name: '间隔趣题', data: P41, types: PT41 },
+  { id: '42', name: '生活智力题', data: P42, types: PT42 },
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
