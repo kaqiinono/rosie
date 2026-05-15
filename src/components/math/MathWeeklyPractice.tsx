@@ -211,28 +211,26 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
       setProblemsPerDay(defaultParams.problemsPerDay)
     }
   }
-  // Auto-open dialog when no plan exists (during-render)
+  // Auto-open dialog only for first-time users with zero plans (during-render).
+  // If the user already has prior plans, let them choose from the list instead
+  // of forcing the dialog open every visit.
   const [autoOpenKey, setAutoOpenKey] = useState('')
-  const newOpenKey = `${isLoading}|${!!weeklyPlan}|${!!defaultParams}`
+  const newOpenKey = `${isLoading}|${allPlans.length}|${!!defaultParams}`
   if (autoOpenKey !== newOpenKey) {
     setAutoOpenKey(newOpenKey)
-    if (!isLoading && !weeklyPlan && defaultParams) {
+    if (!isLoading && allPlans.length === 0 && defaultParams) {
       setSelectedWeekStart(currentWeekStart ?? '')
       setShowParamsDialog(true)
     }
   }
-  // Auto-select date when plan loads (during-render)
+  // Auto-select date when plan loads (during-render). The plan's week range
+  // already covers today (since weeklyPlan is found by date-range coverage),
+  // so we no longer compare weekStart values.
   const [autoSelectKey, setAutoSelectKey] = useState('')
-  const newSelectKey = `${isLoading}|${weeklyPlan?.weekStart ?? ''}|${currentWeekStart ?? ''}|${showParamsDialog}`
+  const newSelectKey = `${isLoading}|${weeklyPlan?.weekStart ?? ''}|${showParamsDialog}`
   if (autoSelectKey !== newSelectKey) {
     setAutoSelectKey(newSelectKey)
-    if (
-      !isLoading &&
-      weeklyPlan &&
-      currentWeekStart &&
-      weeklyPlan.weekStart === currentWeekStart &&
-      !showParamsDialog
-    ) {
+    if (!isLoading && weeklyPlan && !showParamsDialog) {
       const todayDay = weeklyPlan.days.find((d) => d.date === today)
       setSelectedDate(todayDay ? today : (weeklyPlan.days[0]?.date ?? null))
     }
@@ -301,7 +299,8 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     }
     await savePlan(plan)
     setShowParamsDialog(false)
-    if (targetWeek === currentWeekStart) setSelectedDate(today)
+    // If the new plan's range covers today, jump to today.
+    if (plan.days.some((d) => d.date === today)) setSelectedDate(today)
   }, [
     problemSets,
     selectedLesson,
@@ -698,9 +697,64 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     )
   }
 
-  // ── Week View ───────────────────────────────────────────────────────────────
-  if (!weeklyPlan) return null
+  // ── Empty-state View (no current-week plan) ─────────────────────────────────
+  if (!weeklyPlan) {
+    return (
+      <>
+        <div className="mx-auto max-w-160 px-4 py-6">
+          <div
+            className="mb-5 rounded-2xl px-5 py-10 text-center"
+            style={{
+              background: 'rgba(255,248,240,0.65)',
+              border: '2px dashed rgba(251,146,60,.35)',
+            }}
+          >
+            <div className="mb-3 text-5xl">📅</div>
+            <div className="mb-2 text-[16px] font-extrabold text-orange-800">
+              本周还没有计划
+            </div>
+            <div className="mb-5 text-[12px] text-gray-500">
+              创建一个本周的计划，开始今天的数学冒险吧 🚀
+            </div>
+            <button
+              type="button"
+              onClick={openCreateDialog}
+              className="cursor-pointer rounded-xl px-6 py-3 text-[14px] font-extrabold text-white transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
+                boxShadow: '0 6px 18px rgba(249,115,22,.4)',
+              }}
+            >
+              🚀 创建本周计划
+            </button>
+          </div>
 
+          {allPlans.length > 0 && (
+            <AllPlansList
+              plans={allPlans}
+              currentWeekStart={currentWeekStart ?? ''}
+              onDelete={deletePlan}
+              onEdit={(plan) => {
+                setSelectedLesson(plan.lessonId)
+                setWeekStartDay(plan.weekStartDay)
+                setProblemsPerDay(plan.problemsPerDay)
+                setSelectedWeekStart(plan.weekStart)
+                setShowParamsDialog(true)
+              }}
+            />
+          )}
+        </div>
+
+        {allPlanProblems.length > 0 && (
+          <div className="mt-4">
+            <ProblemMasteryPanel problems={allPlanProblems} masteryMap={masteryMap} />
+          </div>
+        )}
+      </>
+    )
+  }
+
+  // ── Week View ───────────────────────────────────────────────────────────────
   const lessonInfo = LESSONS.find((l) => l.id === weeklyPlan.lessonId) ?? LESSONS[0]
   const dayPlan = selectedDate ? weeklyPlan.days.find((d) => d.date === selectedDate) : null
   const dayProgress = weeklyPlan.progress[selectedDate ?? ''] ?? { doneKeys: [] }

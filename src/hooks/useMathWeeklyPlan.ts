@@ -4,29 +4,34 @@ import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { getWeekStart } from '@/utils/english-helpers'
+import { todayStr } from '@/utils/constant'
 import type { MathWeeklyPlan, MathDayProgress } from '@/utils/type'
 
 const SYSTEM_DEFAULTS = { weekStartDay: 4, problemsPerDay: 3 }
 
-async function loadFromCloud(userId: string, weekStart: string): Promise<MathWeeklyPlan | null> {
+function weekEndDateOf(weekStart: string): string {
+  const [y, m, d] = weekStart.split('-').map(Number)
+  const end = new Date(y, m - 1, d + 6)
+  return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
+}
+
+async function loadAllPlansFromCloud(userId: string): Promise<MathWeeklyPlan[]> {
   try {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('math_weekly_plans')
-      .select('lesson_id, week_start_day, problems_per_day, plan_data, progress_data')
+      .select('lesson_id, week_start, week_start_day, problems_per_day, plan_data, progress_data')
       .eq('user_id', userId)
-      .eq('week_start', weekStart)
-      .single()
-    if (error || !data) return null
-    return {
-      weekStart,
-      lessonId: data.lesson_id,
-      weekStartDay: data.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
-      problemsPerDay: data.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
-      days: data.plan_data as MathWeeklyPlan['days'],
-      progress: (data.progress_data as MathWeeklyPlan['progress']) ?? {},
-    }
+    if (!data) return []
+    return data.map(row => ({
+      weekStart: row.week_start,
+      lessonId: row.lesson_id,
+      weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+      problemsPerDay: row.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
+      days: row.plan_data as MathWeeklyPlan['days'],
+      progress: (row.progress_data as MathWeeklyPlan['progress']) ?? {},
+    }))
   } catch {
-    return null
+    return []
   }
 }
 
@@ -50,113 +55,105 @@ async function saveToCloud(userId: string, plan: MathWeeklyPlan): Promise<void> 
   } catch { /* ignore */ }
 }
 
-async function loadAllPriorPlans(userId: string, currentWeekStart: string): Promise<MathWeeklyPlan[]> {
-  try {
-    const { data } = await supabase
-      .from('math_weekly_plans')
-      .select('lesson_id, week_start_day, problems_per_day, plan_data, progress_data, week_start')
-      .eq('user_id', userId)
-      .neq('week_start', currentWeekStart)
-    if (data) {
-      return data.map(row => ({
-        weekStart: row.week_start,
-        lessonId: row.lesson_id,
-        weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
-        problemsPerDay: row.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
-        days: row.plan_data as MathWeeklyPlan['days'],
-        progress: (row.progress_data as MathWeeklyPlan['progress']) ?? {},
-      }))
-    }
-  } catch { /* ignore */ }
-  return []
-}
-
 export function useMathWeeklyPlan(user: User | null) {
-  const [weeklyPlan, setWeeklyPlan] = useState<MathWeeklyPlan | null>(null)
-  const [priorPlans, setPriorPlans] = useState<MathWeeklyPlan[]>([])
+  const [plansState, setPlansState] = useState<MathWeeklyPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
-
-  // defaultParams derived from most recent prior plan (sorted by weekStart desc)
-  const defaultParams = useMemo((): { weekStartDay: number; problemsPerDay: number } => {
-    if (priorPlans.length === 0) return SYSTEM_DEFAULTS
-    const sorted = [...priorPlans].sort((a, b) => b.weekStart.localeCompare(a.weekStart))
-    const recent = sorted[0]
-    return {
-      weekStartDay: recent.weekStartDay,
-      problemsPerDay: recent.problemsPerDay,
-    }
-  }, [priorPlans])
-
-  const currentWeekStart = useMemo(() => {
-    return getWeekStart(undefined, 4)
-  }, [])
 
   useEffect(() => {
     if (!user) return
     const init = async () => {
       setIsLoading(true)
-      const [cloud, prior] = await Promise.all([
-        loadFromCloud(user.id, currentWeekStart),
-        loadAllPriorPlans(user.id, currentWeekStart),
-      ])
-      setWeeklyPlan(cloud)
-      setPriorPlans(prior)
+      const plans = await loadAllPlansFromCloud(user.id)
+      setPlansState(plans)
       setIsLoading(false)
     }
     void init()
-  }, [user, currentWeekStart])
+  }, [user])
+
+  // The "current week plan" is whichever plan's 7-day range covers today,
+  // regardless of weekStartDay — this avoids mismatches when users change start day.
+  const weeklyPlan = useMemo(() => {
+    const t = todayStr()
+    return plansState.find(plan => plan.weekStart <= t && t <= weekEndDateOf(plan.weekStart)) ?? null
+  }, [plansState])
+
+  const priorPlans = useMemo(
+    () => plansState.filter(p => p !== weeklyPlan),
+    [plansState, weeklyPlan],
+  )
+
+  // defaultParams derived from most recent plan (sorted by weekStart desc)
+  const defaultParams = useMemo((): { weekStartDay: number; problemsPerDay: number } => {
+    if (plansState.length === 0) return SYSTEM_DEFAULTS
+    const sorted = [...plansState].sort((a, b) => b.weekStart.localeCompare(a.weekStart))
+    const recent = sorted[0]
+    return {
+      weekStartDay: recent.weekStartDay,
+      problemsPerDay: recent.problemsPerDay,
+    }
+  }, [plansState])
+
+  // currentWeekStart follows the user's preferred weekStartDay so "this week"
+  // matches the user's calendar convention.
+  const currentWeekStart = useMemo(() => {
+    return getWeekStart(undefined, defaultParams.weekStartDay)
+  }, [defaultParams.weekStartDay])
 
   const savePlan = useCallback(async (plan: MathWeeklyPlan) => {
-    if (plan.weekStart === currentWeekStart) {
-      setWeeklyPlan(plan)
-    } else {
-      setPriorPlans(prev => {
-        const idx = prev.findIndex(p => p.weekStart === plan.weekStart)
-        if (idx >= 0) {
-          const copy = [...prev]
-          copy[idx] = plan
-          return copy
-        }
-        return [...prev, plan]
-      })
-    }
+    setPlansState(prev => {
+      const idx = prev.findIndex(p => p.weekStart === plan.weekStart)
+      if (idx >= 0) {
+        const copy = [...prev]
+        copy[idx] = plan
+        return copy
+      }
+      return [...prev, plan]
+    })
     if (user) await saveToCloud(user.id, plan)
-  }, [user, currentWeekStart])
+  }, [user])
 
   const addDoneKey = useCallback(async (date: string, key: string) => {
-    setWeeklyPlan(prev => {
-      if (!prev) return prev
-      const existing = prev.progress[date] ?? { doneKeys: [] }
+    setPlansState(prev => {
+      const idx = prev.findIndex(plan => plan.days.some(d => d.date === date))
+      if (idx < 0) return prev
+      const plan = prev[idx]
+      const existing = plan.progress[date] ?? { doneKeys: [] }
       if (existing.doneKeys.includes(key)) return prev
-      const today = new Date().toISOString()
-      const dayPlan = prev.days.find(d => d.date === date)
+      const now = new Date().toISOString()
+      const dayPlan = plan.days.find(d => d.date === date)
       const newDoneKeys = [...existing.doneKeys, key]
       const allRequired = dayPlan?.problems.map(p => p.key) ?? []
       const allDone = allRequired.every(k => newDoneKeys.includes(k))
       const updated: MathWeeklyPlan = {
-        ...prev,
+        ...plan,
         progress: {
-          ...prev.progress,
+          ...plan.progress,
           [date]: {
             doneKeys: newDoneKeys,
-            completedAt: allDone ? (existing.completedAt ?? today) : existing.completedAt,
+            completedAt: allDone ? (existing.completedAt ?? now) : existing.completedAt,
           },
         },
       }
       if (user) void saveToCloud(user.id, updated)
-      return updated
+      const copy = [...prev]
+      copy[idx] = updated
+      return copy
     })
   }, [user])
 
   const updateDayProgress = useCallback(async (date: string, progress: MathDayProgress) => {
-    setWeeklyPlan(prev => {
-      if (!prev) return prev
+    setPlansState(prev => {
+      const idx = prev.findIndex(plan => plan.days.some(d => d.date === date))
+      if (idx < 0) return prev
+      const plan = prev[idx]
       const updated: MathWeeklyPlan = {
-        ...prev,
-        progress: { ...prev.progress, [date]: progress },
+        ...plan,
+        progress: { ...plan.progress, [date]: progress },
       }
       if (user) void saveToCloud(user.id, updated)
-      return updated
+      const copy = [...prev]
+      copy[idx] = updated
+      return copy
     })
   }, [user])
 
@@ -169,18 +166,13 @@ export function useMathWeeklyPlan(user: User | null) {
         .eq('user_id', user.id)
         .eq('week_start', weekStart)
     } catch { /* ignore */ }
-    if (weekStart === currentWeekStart) {
-      setWeeklyPlan(null)
-    } else {
-      setPriorPlans(prev => prev.filter(p => p.weekStart !== weekStart))
-    }
-  }, [user, currentWeekStart])
+    setPlansState(prev => prev.filter(p => p.weekStart !== weekStart))
+  }, [user])
 
-  const allPlans = useMemo(() => {
-    const plans: MathWeeklyPlan[] = [...priorPlans]
-    if (weeklyPlan) plans.push(weeklyPlan)
-    return plans.sort((a, b) => b.weekStart.localeCompare(a.weekStart))
-  }, [priorPlans, weeklyPlan])
+  const allPlans = useMemo(
+    () => [...plansState].sort((a, b) => b.weekStart.localeCompare(a.weekStart)),
+    [plansState],
+  )
 
   const allPriorKeys: string[] = useMemo(() => priorPlans.flatMap(plan =>
     plan.days.flatMap(day => [...day.problems, ...day.optionalProblems].map(p => p.key))

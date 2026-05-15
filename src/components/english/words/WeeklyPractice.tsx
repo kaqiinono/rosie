@@ -1018,13 +1018,13 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 return (
                   <div
                     key={plan.id ?? plan.weekStart}
-                    className="flex flex-row items-stretch gap-2"
+                    className="group flex flex-col rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)] sm:flex-row sm:items-stretch"
                   >
                     <button
                       onClick={() => {
                         if (plan.id) router.push('/english/words/weekly/' + plan.id)
                       }}
-                      className="min-w-0 min-h-0 flex-1 cursor-pointer rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3 py-3 text-left transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)] sm:px-5 sm:py-4"
+                      className="min-w-0 min-h-0 flex-1 cursor-pointer rounded-t-[14px] px-3 py-3 text-left sm:rounded-l-[14px] sm:rounded-tr-none sm:px-5 sm:py-4"
                     >
                       <div className="mb-1 flex flex-wrap items-center gap-2 text-[1rem] font-bold text-[var(--wm-text)]">
                         {lessonLabel}
@@ -1046,7 +1046,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                         )}
                       </div>
                     </button>
-                    <div className="flex flex-none flex-row flex-nowrap items-center justify-end gap-1.5 self-center sm:gap-2">
+                    <div className="flex flex-row flex-wrap items-center justify-end gap-1.5 px-3 pt-1 pb-3 sm:flex-none sm:flex-nowrap sm:gap-2 sm:self-center sm:px-4 sm:py-4 sm:pl-0 sm:pt-4">
                       {!plan.weekCompletion && plan.id && (
                         <button
                           type="button"
