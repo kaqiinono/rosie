@@ -328,8 +328,8 @@ export interface CalcSettings {
   enableAddSub: boolean
   enableMulDiv: boolean
   enableMixed: boolean
-  levelCap: number // 1..12
-  currentLevel: number // 1..12 — advanced by adaptive logic
+  levelCap: number // 1..18
+  currentLevel: number // 1..18 — advanced by adaptive logic
   adaptive: boolean
   soundEnabled: boolean
   lastCount: number // 20/30/50/100

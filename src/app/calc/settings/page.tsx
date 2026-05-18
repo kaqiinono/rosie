@@ -118,19 +118,19 @@ export default function CalcSettingsPage() {
           <div className="space-y-2">
             <ToggleRow
               label="加减法"
-              description="100 以内加减（档 1-3, 5, 8）"
+              description="10 到 100 以内加减（档 1-5）"
               value={settings.enableAddSub}
               onChange={(v) => update({ enableAddSub: v })}
             />
             <ToggleRow
               label="乘除法"
-              description="1×1 到 19×19 范围内的乘除（档 4, 6, 7, 9, 11）"
+              description="乘法口诀 · 除法 · ×10-19 拓展（档 6-14, 16, 18）"
               value={settings.enableMulDiv}
               onChange={(v) => update({ enableMulDiv: v })}
             />
             <ToggleRow
               label="混合运算"
-              description="两运算符 + 三运算符挑战题（档 10, 12, 挑战）"
+              description="两运算符 + 三运算符挑战题（档 15, 17, 挑战）"
               value={settings.enableMixed}
               onChange={(v) => update({ enableMixed: v })}
             />

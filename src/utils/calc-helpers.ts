@@ -66,7 +66,7 @@ export function generateOneQuestion(settings: CalcSettings, asChallenge = false)
 /**
  * Build a session of `count` questions.
  * - mistakeRatio fraction of slots come from unresolved mistakes (when available).
- * - If settings.currentLevel >= 10 AND enableMixed AND count >= 10, the last 1-2 slots become challenge questions.
+ * - If settings.currentLevel >= 15 AND enableMixed AND count >= 10, the last 1-2 slots become challenge questions.
  */
 export function buildSession(
   settings: CalcSettings,
@@ -100,7 +100,7 @@ export function buildSession(
   }
 
   const unresolved = mistakes.filter((m) => !m.resolved)
-  const challengeUnlocked = settings.currentLevel >= 10 && settings.enableMixed
+  const challengeUnlocked = settings.currentLevel >= 15 && settings.enableMixed
   const challengeSlots = challengeUnlocked && count >= 10 ? (count >= 20 ? 2 : 1) : 0
   const out: CalcQuestion[] = []
   const seenSigs = new Set<string>()

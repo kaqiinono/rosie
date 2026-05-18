@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS: CalcSettings = {
   enableAddSub: true,
   enableMulDiv: true,
   enableMixed: true,
-  levelCap: 12,
+  levelCap: 18,
   currentLevel: 1,
   adaptive: true,
   soundEnabled: true,
