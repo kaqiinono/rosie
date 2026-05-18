@@ -41,6 +41,15 @@ const variantStyles = {
     enterHover: 'group-hover:bg-gradient-to-br group-hover:from-amber-400 group-hover:to-orange-400 group-hover:text-white',
     deco: 'bg-amber-400',
   },
+  calc: {
+    accent: 'bg-gradient-to-r from-violet-500 to-fuchsia-500',
+    iconBg: 'bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-500/15 dark:to-fuchsia-500/15',
+    tag: 'text-violet-800 bg-violet-100 dark:bg-violet-500/15 dark:text-violet-300',
+    statDot: 'bg-violet-500',
+    enter: 'bg-gradient-to-br from-violet-50 to-fuchsia-50 text-violet-800 dark:bg-violet-500/10 dark:text-violet-300',
+    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-violet-500 group-hover:to-fuchsia-500 group-hover:text-white',
+    deco: 'bg-violet-500',
+  },
 }
 
 export default function ModuleCard({ data }: { data: ModuleCardData }) {

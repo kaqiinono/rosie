@@ -38,6 +38,16 @@ const modules: ModuleCardData[] = [
     enterText: '查看今日计划',
     icon: '🗓️',
   },
+  {
+    href: '/calc',
+    title: '口算天地',
+    description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',
+    tag: 'CALC',
+    variant: 'calc',
+    stats: ['12 关闯关', '错题持久化', '金币兑换'],
+    enterText: '开始口算',
+    icon: '🧮',
+  },
 ]
 
 export default function HomePage() {

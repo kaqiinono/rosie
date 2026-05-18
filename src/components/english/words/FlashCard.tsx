@@ -30,7 +30,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
   return (
     <div
-      className="min-h-[256px] overflow-hidden rounded-2xl"
+      className="min-h-[256px] rounded-2xl"
       style={{ perspective: '1200px', animation: `card-flip-fade-up .3s ease ${delay}s backwards` }}
     >
       <div
@@ -38,15 +38,19 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
         className="relative min-h-[256px] w-full cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
         style={{
           transformStyle: 'preserve-3d',
-          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0)',
+          WebkitTransformStyle: 'preserve-3d',
+          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          WebkitTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
         }}
       >
         {/* ── Front ── */}
         <div
-          className={`absolute inset-0 flex flex-col rounded-2xl border-2 p-4 ${MASTERY_BORDER[level]}`}
+          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-2 p-4 ${MASTERY_BORDER[level]}`}
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg) translateZ(0.01px)',
+            WebkitTransform: 'rotateY(0deg) translateZ(0.01px)',
             background: 'linear-gradient(145deg, #1c1c3a 0%, #111126 100%)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,.05), 0 4px 24px rgba(0,0,0,.35)',
           }}
@@ -113,11 +117,12 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
         {/* ── Back ── */}
         <div
-          className="absolute inset-0 flex min-h-[256px] items-center justify-center rounded-2xl p-5"
+          className="absolute inset-0 flex min-h-[256px] items-center justify-center overflow-hidden rounded-2xl p-5"
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)',
+            transform: 'rotateY(180deg) translateZ(0.01px)',
+            WebkitTransform: 'rotateY(180deg) translateZ(0.01px)',
             background: 'linear-gradient(145deg, #0b1a36 0%, #0e2244 100%)',
             border: '1px solid rgba(96,165,250,.1)',
             boxShadow: 'inset 0 1px 0 rgba(96,165,250,.07), 0 4px 24px rgba(0,0,0,.35)',

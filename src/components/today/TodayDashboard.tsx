@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useWordData } from '@/hooks/useWordData'
+import { useCalcDaily } from '@/hooks/useCalcDaily'
 import { todayStr } from '@/utils/constant'
 import type { WordEntry } from '@/utils/type'
 
@@ -138,6 +139,7 @@ export default function TodayDashboard() {
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
+  const calcDaily = useCalcDaily(user)
 
   const today = todayStr()
 
@@ -162,13 +164,17 @@ export default function TodayDashboard() {
 
   const hasMath = mathPlan && mathProblems.length > 0
   const hasEnglish = englishPlan && newWordKeys.length > 0
+  const calcDoneCount = calcDaily.todayDone
+  const calcTargetCount = calcDaily.todayTarget
+  const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
+  const calcAccuracy = calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
   return (
     <div className="mx-auto max-w-[640px] px-4 pb-12">
 
       {/* Stats cards row */}
       {(hasMath || hasEnglish) && (
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
           {/* Math card */}
           <div
             className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
@@ -233,6 +239,38 @@ export default function TodayDashboard() {
               />
             </div>
           </div>
+
+          {/* Calc card */}
+          <div
+            className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
+            style={{
+              background: calcAllDone
+                ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
+                : 'linear-gradient(135deg, #f3e8ff, #fae8ff)',
+              border: `1.5px solid ${calcAllDone ? 'rgba(34,197,94,.3)' : 'rgba(139,92,246,.25)'}`,
+              boxShadow: calcAllDone ? '0 4px 16px rgba(34,197,94,.12)' : '0 4px 16px rgba(139,92,246,.1)',
+            }}
+          >
+            <div className="absolute -right-2 -top-2 text-3xl opacity-15">🧮</div>
+            <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: calcAllDone ? '#16a34a' : '#7c3aed' }}>
+              口算
+            </div>
+            <div className="text-[26px] font-black leading-none" style={{ color: calcAllDone ? '#15803d' : '#8b5cf6' }}>
+              {calcDoneCount}<span className="text-[16px] font-semibold opacity-60">/{calcTargetCount}</span>
+            </div>
+            <div className="text-[10px] mt-1 font-medium" style={{ color: calcAllDone ? '#16a34a' : '#6d28d9' }}>
+              {calcAllDone ? `🎉 完成 · 得 ${calcDaily.todayCoins}⭐` : (calcDoneCount > 0 ? `正确率 ${calcAccuracy}%` : '今日还未练习')}
+            </div>
+            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,.08)' }}>
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${calcTargetCount > 0 ? Math.min(100, (calcDoneCount / calcTargetCount) * 100) : 0}%`,
+                  background: calcAllDone ? '#22c55e' : '#8b5cf6',
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -245,12 +283,14 @@ export default function TodayDashboard() {
             </span>
             英语单词预习
           </h2>
-          <Link
-            href="/english/words/daily"
-            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
-          >
-            前往练习 →
-          </Link>
+          {englishPlan?.id && (
+            <Link
+              href={`/english/words/weekly/${englishPlan.id}`}
+              className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
+            >
+              前往练习 →
+            </Link>
+          )}
         </div>
 
         {hasEnglish ? (
@@ -291,6 +331,64 @@ export default function TodayDashboard() {
             </Link>
           </div>
         )}
+      </section>
+
+      {/* Calc section */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-[0_3px_10px_rgba(139,92,246,.3)]">
+              🧮
+            </span>
+            今日口算挑战
+          </h2>
+          <Link
+            href={`/calc?count=${calcTargetCount}`}
+            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-violet-600"
+          >
+            {calcAllDone ? '再练一组 →' : '前往练习 →'}
+          </Link>
+        </div>
+
+        <div
+          className="rounded-2xl px-4 py-4"
+          style={{
+            background: calcAllDone
+              ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
+              : 'linear-gradient(135deg, #f5f3ff, #fae8ff)',
+            border: `1.5px solid ${calcAllDone ? 'rgba(34,197,94,.25)' : 'rgba(139,92,246,.2)'}`,
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-[24px]"
+              style={{
+                background: calcAllDone
+                  ? 'linear-gradient(135deg, #22c55e, #4ade80)'
+                  : 'linear-gradient(135deg, #8b5cf6, #a855f7)',
+                color: 'white',
+                boxShadow: calcAllDone
+                  ? '0 3px 10px rgba(34,197,94,.3)'
+                  : '0 3px 10px rgba(139,92,246,.3)',
+              }}
+            >
+              {calcAllDone ? '✓' : '🧮'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[14px] font-extrabold" style={{ color: calcAllDone ? '#15803d' : '#6d28d9' }}>
+                {calcAllDone
+                  ? `今日完成 ${calcDoneCount} 题`
+                  : `进度 ${calcDoneCount} / ${calcTargetCount}`}
+              </div>
+              <div className="text-[11px] mt-0.5" style={{ color: calcAllDone ? '#16a34a' : '#7c3aed' }}>
+                {calcDoneCount > 0
+                  ? `正确率 ${calcAccuracy}% · 已得 ⭐ ${calcDaily.todayCoins}`
+                  : '加减乘除闯关，答对得星星兑换奖券'}
+              </div>
+            </div>
+            {calcAllDone && <span className="text-2xl">🎉</span>}
+          </div>
+        </div>
       </section>
 
       {/* Math section */}

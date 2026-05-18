@@ -5,7 +5,7 @@ export interface ModuleCardData {
   title: string
   description: string
   tag: string
-  variant: 'math' | 'english' | 'reading' | 'today'
+  variant: 'math' | 'english' | 'reading' | 'today' | 'calc'
   stats: string[]
   enterText: string
   icon: string
@@ -173,10 +173,10 @@ export interface WeekDayProgress {
   quizDone: boolean
   lastScore?: number // 最近一次完成（子任务或全天）的得分 0–100
   completedAt?: string // ISO date
-  consolidateDone?: boolean   // 必记子任务已完成
-  previewDone?: boolean       // 预习子任务已完成
-  consolidateScore?: number   // 0–100
-  previewScore?: number       // 0–100
+  consolidateDone?: boolean // 必记子任务已完成
+  previewDone?: boolean // 预习子任务已完成
+  consolidateScore?: number // 0–100
+  previewScore?: number // 0–100
 }
 
 export interface EnglishWeeklyReport {
@@ -302,4 +302,77 @@ export interface MathWeeklyLessonReviewState {
   dailyAssignments: Record<string, string> // date → assigned problemKey (one per day)
   dailyDoneKeys: Record<string, string[]> // date → completed keys
   dailySkipped: Record<string, true> // date → skipped flag
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// 口算 (Mental Arithmetic) module — /calc
+// ─────────────────────────────────────────────────────────────────────────
+
+export type CalcOp = 'add' | 'sub' | 'mul' | 'div'
+export type CalcCategory = 'addsub' | 'muldiv' | 'mixed'
+export type CalcLevel = number | 'C'
+
+export interface CalcQuestion {
+  display: string // "3 + 5 × 2 = ?"
+  signature: string // canonical: "add(3,mul(5,2))"
+  arity: 1 | 2 | 3
+  level: CalcLevel
+  answer: number
+  isChallenge: boolean
+  category: CalcCategory
+  /** Per-question coin (before streak bonus). Challenge questions already include ×2 here. */
+  coinBase: number
+}
+
+export interface CalcSettings {
+  enableAddSub: boolean
+  enableMulDiv: boolean
+  enableMixed: boolean
+  levelCap: number // 1..12
+  currentLevel: number // 1..12 — advanced by adaptive logic
+  adaptive: boolean
+  soundEnabled: boolean
+  lastCount: number // 20/30/50/100
+  lastTimeLimit: number // seconds, 0=unlimited
+}
+
+export type VoucherCategory = 'movie' | 'snack' | 'toy' | 'wish' | 'cartoon' | 'generic'
+
+export interface Voucher {
+  id: string
+  category: VoucherCategory
+  redeemedAt: string
+  usedAt: string | null
+  coinsSpent: number
+}
+
+export type CalcMode = 'daily' | 'free' | 'mistakes'
+
+export interface CalcSession {
+  id?: string
+  date: string // YYYY-MM-DD
+  startedAt: string
+  finishedAt: string
+  count: number
+  correctCount: number
+  retryCount: number
+  wrongCount: number
+  challengeCorrect: number
+  timeSpentSec: number
+  coinsEarned: number
+  mode: CalcMode
+  maxStreak: number
+  topLevel: CalcLevel
+}
+
+export interface CalcMistake {
+  id?: string
+  signature: string
+  display: string
+  answer: number
+  level: CalcLevel
+  category: CalcCategory
+  lastWrongAt: string
+  consecutiveCorrect: number // ≥3 ⇒ resolved
+  resolved: boolean
 }

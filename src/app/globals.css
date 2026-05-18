@@ -136,6 +136,11 @@
   50% { transform: scale(1.12) }
 }
 
+@keyframes slide-up {
+  from { transform: translateY(40px) scale(0.97); opacity: 0 }
+  to { transform: translateY(0) scale(1); opacity: 1 }
+}
+
 @keyframes fall {
   to { transform: translateY(110vh) rotate(720deg); opacity: 0 }
 }
