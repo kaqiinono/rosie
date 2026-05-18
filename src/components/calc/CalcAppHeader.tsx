@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import WalletBadge from './WalletBadge'
 
 interface Props {
   balance: number
@@ -14,9 +13,9 @@ interface Props {
 }
 
 export default function CalcAppHeader({
-  balance,
-  soundEnabled,
-  onToggleSound,
+  // balance,
+  // soundEnabled,
+  // onToggleSound,
   title = '口算天地',
   backHref = '/',
   backLabel = '首页',
@@ -41,14 +40,14 @@ export default function CalcAppHeader({
             border: '1px solid rgba(139,92,246,0.25)',
           }}
         >
-          <span className="text-[14px] font-bold leading-none">←</span>
+          <span className="text-[14px] leading-none font-bold">←</span>
           <span className="hidden text-[12px] font-bold sm:inline">{backLabel}</span>
         </Link>
 
-        <div className="flex flex-1 items-center gap-2 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="inline-block text-xl">🧮</span>
           <div
-            className="font-fredoka font-extrabold text-[17px] leading-tight tracking-tight truncate"
+            className="font-fredoka truncate text-[17px] leading-tight font-extrabold tracking-tight"
             style={{
               background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
               WebkitBackgroundClip: 'text',
@@ -58,23 +57,21 @@ export default function CalcAppHeader({
             {title}
           </div>
         </div>
-
-        <WalletBadge balance={balance} />
         {rightExtra}
 
-        <button
-          type="button"
-          onClick={onToggleSound}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] text-violet-300 transition-all hover:text-white"
-          style={{
-            background: 'rgba(139,92,246,0.15)',
-            border: '1px solid rgba(139,92,246,0.2)',
-          }}
-          aria-label={soundEnabled ? '关闭音效' : '开启音效'}
-          title={soundEnabled ? '关闭音效' : '开启音效'}
-        >
-          {soundEnabled ? '🔊' : '🔇'}
-        </button>
+        {/*<button*/}
+        {/*  type="button"*/}
+        {/*  onClick={onToggleSound}*/}
+        {/*  className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] text-violet-300 transition-all hover:text-white"*/}
+        {/*  style={{*/}
+        {/*    background: 'rgba(139,92,246,0.15)',*/}
+        {/*    border: '1px solid rgba(139,92,246,0.2)',*/}
+        {/*  }}*/}
+        {/*  aria-label={soundEnabled ? '关闭音效' : '开启音效'}*/}
+        {/*  title={soundEnabled ? '关闭音效' : '开启音效'}*/}
+        {/*>*/}
+        {/*  {soundEnabled ? '🔊' : '🔇'}*/}
+        {/*</button>*/}
       </div>
     </header>
   )

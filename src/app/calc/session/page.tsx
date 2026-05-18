@@ -13,7 +13,7 @@ import NumberPad from '@/components/calc/NumberPad'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
-import { buildSession, coinReward } from '@/utils/calc-helpers'
+import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
 import { todayStr } from '@/utils/constant'
@@ -25,7 +25,7 @@ interface AttemptStat {
   isChallenge: boolean
   firstTryCorrect: boolean
   finallyCorrect: boolean
-  wasMistake: boolean   // was already in the unresolved mistake pool when shown
+  wasMistake: boolean // was already in the unresolved mistake pool when shown
 }
 
 function formatTimer(s: number) {
@@ -63,7 +63,7 @@ export default function CalcSessionPage() {
   const [questions, setQuestions] = useState<CalcQuestion[] | null>(null)
   const [idx, setIdx] = useState(0)
   const [input, setInput] = useState('')
-  const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)   // 0 or 1 wrong attempts so far
+  const [attemptsForCurrent, setAttemptsForCurrent] = useState(0) // 0 or 1 wrong attempts so far
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
   const [revealAnswer, setRevealAnswer] = useState<number | null>(null)
 
@@ -81,6 +81,7 @@ export default function CalcSessionPage() {
   const [now, setNow] = useState<number>(() => Date.now())
   const [done, setDone] = useState(false)
   const [levelUpTo, setLevelUpTo] = useState<number | null>(null)
+  const [timeBonusEarned, setTimeBonusEarned] = useState(0)
   const [finalStats, setFinalStats] = useState<{
     correct: number
     retry: number
@@ -113,7 +114,6 @@ export default function CalcSessionPage() {
   useEffect(() => {
     if (!questions || idx >= questions.length) return
     if (questions[idx].isChallenge) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowChallengeBanner(true)
       playSfx('challenge', settings.soundEnabled)
       const t = setTimeout(() => setShowChallengeBanner(false), 1400)
@@ -126,15 +126,19 @@ export default function CalcSessionPage() {
   const remainingSec = requestedTimeLimit > 0 ? Math.max(0, requestedTimeLimit - elapsedSec) : null
 
   // ── Finish handler ───────────────────────────────────────────────
-  const finishSession = useCallback(async () => {
+  const finishSession = useCallback(() => {
     if (done) return
     setDone(true)
     const finalElapsed = Math.floor((Date.now() - startedTsMs) / 1000)
     const log = attemptsLogRef.current
-    const correctCount = log.filter(a => a.firstTryCorrect).length
-    const retryCount = log.filter(a => !a.firstTryCorrect && a.finallyCorrect).length
-    const wrongCount = log.filter(a => !a.finallyCorrect).length
-    const challengeCorrect = log.filter(a => a.isChallenge && a.finallyCorrect).length
+    const correctCount = log.filter((a) => a.firstTryCorrect).length
+    const retryCount = log.filter((a) => !a.firstTryCorrect && a.finallyCorrect).length
+    const wrongCount = log.filter((a) => !a.finallyCorrect).length
+    const challengeCorrect = log.filter((a) => a.isChallenge && a.finallyCorrect).length
+
+    const timeBonus = calcTimeBonus(log.length, requestedTimeLimit, finalElapsed)
+    setTimeBonusEarned(timeBonus)
+
     setFinalStats({
       correct: correctCount,
       retry: retryCount,
@@ -146,8 +150,8 @@ export default function CalcSessionPage() {
 
     // record session
     const topLevel = log.reduce<CalcLevel>((max, a) => {
-      const av = a.level === 'C' ? 99 : a.level as number
-      const mv = max === 'C' ? 99 : max as number
+      const av = a.level === 'C' ? 99 : (a.level as number)
+      const mv = max === 'C' ? 99 : (max as number)
       return av > mv ? a.level : max
     }, 1)
 
@@ -161,17 +165,17 @@ export default function CalcSessionPage() {
       wrongCount,
       challengeCorrect,
       timeSpentSec: finalElapsed,
-      coinsEarned: coinsTotal,
+      coinsEarned: coinsTotal + timeBonus,
       mode,
       maxStreak,
       topLevel,
     })
 
     // adaptive level check (count only first-try-correct AT current level numeric)
-    const atLevel = log.filter(a => a.level === settings.currentLevel)
+    const atLevel = log.filter((a) => a.level === settings.currentLevel)
     if (atLevel.length > 0) {
       const advanced = await checkAndAdvance({
-        firstTryCorrect: atLevel.filter(a => a.firstTryCorrect).length,
+        firstTryCorrect: atLevel.filter((a) => a.firstTryCorrect).length,
         total: atLevel.length,
       })
       if (advanced > settings.currentLevel) {
@@ -182,12 +186,22 @@ export default function CalcSessionPage() {
 
     playSfx('complete', settings.soundEnabled)
     launchConfetti(30)
-  }, [done, wallet, coinsTotal, maxStreak, mode, settings.currentLevel, settings.soundEnabled, checkAndAdvance, startedTsMs, startedAtIso])
+  }, [
+    done,
+    wallet,
+    coinsTotal,
+    maxStreak,
+    mode,
+    settings.currentLevel,
+    settings.soundEnabled,
+    checkAndAdvance,
+    startedTsMs,
+    startedAtIso,
+  ])
 
   // time-up
   useEffect(() => {
     if (remainingSec !== null && remainingSec <= 0 && !done && questions) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       void finishSession()
     }
   }, [remainingSec, done, questions, finishSession])
@@ -200,11 +214,11 @@ export default function CalcSessionPage() {
     if (!Number.isFinite(userAns)) return
 
     const isCorrect = userAns === q.answer
-    const wasMistake = mistakes.some(m => !m.resolved && m.signature === q.signature)
+    const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
 
     if (isCorrect) {
       const isFirstTry = attemptsForCurrent === 0
-      const reward = isFirstTry ? coinReward(q, streak) : 0   // no coins on retry-correct
+      const reward = isFirstTry ? coinReward(q, streak) : 0 // no coins on retry-correct
       const isChallengeCorrect = q.isChallenge && isFirstTry
       const bonus = isFirstTry ? (streak >= 10 ? 2 : streak >= 5 ? 1 : 0) : 0
 
@@ -216,7 +230,7 @@ export default function CalcSessionPage() {
       if (reward > 0) playSfx('coin', settings.soundEnabled)
       if (isChallengeCorrect) launchConfetti(20)
 
-      setCoinsTotal(c => c + reward)
+      setCoinsTotal((c) => c + reward)
       const nextStreak = isFirstTry ? streak + 1 : 0
       setStreak(nextStreak)
       if (nextStreak > maxStreak) setMaxStreak(nextStreak)
@@ -242,7 +256,7 @@ export default function CalcSessionPage() {
         if (idx + 1 >= questions.length) {
           void finishSession()
         } else {
-          setIdx(i => i + 1)
+          setIdx((i) => i + 1)
         }
       }
       window.setTimeout(advance, isChallengeCorrect ? 1100 : 750)
@@ -284,13 +298,24 @@ export default function CalcSessionPage() {
         if (idx + 1 >= questions.length) {
           void finishSession()
         } else {
-          setIdx(i => i + 1)
+          setIdx((i) => i + 1)
         }
       }, 1700)
     }
   }, [
-    questions, done, feedback, idx, input, attemptsForCurrent, streak, maxStreak,
-    mistakes, settings.soundEnabled, addMistake, recordCorrect, finishSession,
+    questions,
+    done,
+    feedback,
+    idx,
+    input,
+    attemptsForCurrent,
+    streak,
+    maxStreak,
+    mistakes,
+    settings.soundEnabled,
+    addMistake,
+    recordCorrect,
+    finishSession,
   ])
 
   if (settingsLoading || !questions) {
@@ -304,7 +329,10 @@ export default function CalcSessionPage() {
           backHref="/calc"
           backLabel="返回"
         />
-        <div className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]" style={{ color: 'rgba(196,181,253,0.5)' }}>
+        <div
+          className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
+          style={{ color: 'rgba(196,181,253,0.5)' }}
+        >
           准备题目中…
         </div>
       </>
@@ -325,23 +353,23 @@ export default function CalcSessionPage() {
         backLabel="退出"
       />
 
-      <main className="mx-auto max-w-[640px] px-4 pt-3 pb-6 relative">
+      <main className="relative mx-auto max-w-[640px] px-4 pt-3 pb-6">
         {/* Top status */}
         <div
           className="mb-2 flex items-center justify-between text-[12px] font-bold tabular-nums"
           style={{ color: 'rgba(196,181,253,0.6)' }}
         >
-          <div>
-            {remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}
+          <div>{remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}</div>
+          <div style={{ color: 'rgba(245,243,255,0.5)' }}>
+            {idx + 1} / {questions.length}
           </div>
-          <div style={{ color: 'rgba(245,243,255,0.5)' }}>{idx + 1} / {questions.length}</div>
           <div style={{ color: '#fb923c' }}>{streak >= 2 ? `🔥 ${streak}` : ' '}</div>
         </div>
 
         {/* Real-time star bar */}
-        <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
           <div
-            className="flex items-center gap-1.5 rounded-full px-3 py-1 shrink-0"
+            className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1"
             style={{
               background: 'rgba(251,191,36,0.12)',
               border: '1px solid rgba(251,191,36,0.22)',
@@ -389,7 +417,7 @@ export default function CalcSessionPage() {
         </div>
 
         <div
-          className="mb-5 h-1.5 rounded-full overflow-hidden"
+          className="mb-5 h-1.5 overflow-hidden rounded-full"
           style={{ background: 'rgba(255,255,255,0.07)' }}
         >
           <div
@@ -411,7 +439,7 @@ export default function CalcSessionPage() {
         <div className="mb-4" style={{ minHeight: 52 }}>
           {feedback === 'correct' && (
             <div
-              className="py-3 text-center rounded-xl text-[15px] font-extrabold"
+              className="rounded-xl py-3 text-center text-[15px] font-extrabold"
               style={{
                 background: 'rgba(34,197,94,0.15)',
                 border: '1px solid rgba(34,197,94,0.3)',
@@ -419,12 +447,13 @@ export default function CalcSessionPage() {
                 animation: 'pop-in 0.25s ease',
               }}
             >
-              ✓ 答对啦！{lastResult && lastResult.stars > 0 ? `本题 +${lastResult.stars} ⭐` : '（第二次）'}
+              ✓ 答对啦！
+              {lastResult && lastResult.stars > 0 ? `本题 +${lastResult.stars} ⭐` : '（第二次）'}
             </div>
           )}
           {feedback === 'challenge-correct' && (
             <div
-              className="py-3 text-center rounded-xl text-[15px] font-extrabold"
+              className="rounded-xl py-3 text-center text-[15px] font-extrabold"
               style={{
                 background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(236,72,153,0.15))',
                 border: '1px solid rgba(245,158,11,0.4)',
@@ -437,7 +466,7 @@ export default function CalcSessionPage() {
           )}
           {feedback === 'retry' && (
             <div
-              className="py-3 text-center rounded-xl text-[15px] font-extrabold"
+              className="rounded-xl py-3 text-center text-[15px] font-extrabold"
               style={{
                 background: 'rgba(251,191,36,0.12)',
                 border: '1px solid rgba(251,191,36,0.25)',
@@ -450,7 +479,7 @@ export default function CalcSessionPage() {
           )}
           {feedback === 'wrong' && (
             <div
-              className="py-3 text-center rounded-xl text-[14px] font-extrabold"
+              className="rounded-xl py-3 text-center text-[14px] font-extrabold"
               style={{
                 background: 'rgba(239,68,68,0.12)',
                 border: '1px solid rgba(239,68,68,0.28)',
@@ -469,7 +498,7 @@ export default function CalcSessionPage() {
 
         {/* Input */}
         <div
-          className="mx-auto mb-4 h-16 max-w-[260px] flex items-center justify-center rounded-2xl transition-all duration-200"
+          className="mx-auto mb-4 flex h-16 max-w-[260px] items-center justify-center rounded-2xl transition-all duration-200"
           style={{
             background: 'rgba(139,92,246,0.08)',
             border: `1.5px solid ${input ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.2)'}`,
@@ -477,7 +506,7 @@ export default function CalcSessionPage() {
           }}
         >
           <span
-            className="font-fredoka font-black leading-none tabular-nums"
+            className="font-fredoka leading-none font-black tabular-nums"
             style={{
               fontSize: 'clamp(28px, 6vw, 38px)',
               color: input ? '#e9d5ff' : 'rgba(196,181,253,0.25)',
@@ -507,6 +536,7 @@ export default function CalcSessionPage() {
           wrongCount={finalStats.wrong}
           total={finalStats.total}
           coinsEarned={coinsTotal}
+          timeBonusEarned={timeBonusEarned}
           timeSpentSec={finalStats.timeSec}
           maxStreak={maxStreak}
           challengeCorrect={finalStats.challenge}

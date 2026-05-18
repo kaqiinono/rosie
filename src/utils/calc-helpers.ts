@@ -165,6 +165,33 @@ export function maybeAdvanceLevel(
   return settings.currentLevel
 }
 
+/**
+ * Time-limit bonus stars earned at session end.
+ * Only applies when a time limit was selected (timeLimitSec > 0).
+ * Bonus tiers based on actual time spent (not affected by how much time was left):
+ *   ≤1 min  → ×1.0 per question
+ *   ≤3 min  → ×0.6
+ *   ≤5 min  → ×0.5  (matches user example: 10 q in 5 min → +5)
+ *   ≤10 min → ×0.3  (matches: 10 q in 10 min → +3)
+ *   > 10 min → 0
+ */
+export function calcTimeBonus(count: number, timeLimitSec: number, timeSpentSec: number): number {
+  if (timeLimitSec <= 0) return 0
+  if (timeSpentSec <= 60) return count
+  if (timeSpentSec <= 180) return Math.round(count * 0.6)
+  if (timeSpentSec <= 300) return Math.round(count * 0.5)
+  if (timeSpentSec <= 600) return Math.round(count * 0.3)
+  return 0
+}
+
+/**
+ * Preview: guaranteed minimum bonus earned when finishing exactly at the time limit.
+ * Used by CalcConfigBar to display star hints per chip.
+ */
+export function timeLimitBonusPreview(count: number, timeLimitSec: number): number {
+  return calcTimeBonus(count, timeLimitSec, timeLimitSec)
+}
+
 export const VOUCHER_PRICE = 50
 
 export const VOUCHER_META: Record<string, { emoji: string; label: string; gradient: string }> = {

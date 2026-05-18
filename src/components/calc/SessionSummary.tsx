@@ -8,6 +8,7 @@ interface Props {
   wrongCount: number
   total: number
   coinsEarned: number
+  timeBonusEarned?: number
   timeSpentSec: number
   maxStreak: number
   challengeCorrect: number
@@ -21,12 +22,21 @@ function formatTime(s: number) {
   return `${m}:${String(r).padStart(2, '0')}`
 }
 
+function formatTimeChinese(s: number) {
+  const m = Math.floor(s / 60)
+  const r = s % 60
+  if (m === 0) return `${r}秒`
+  if (r === 0) return `${m}分钟`
+  return `${m}分${r}秒`
+}
+
 export default function SessionSummary({
   correctCount,
   retryCount,
   wrongCount,
   total,
   coinsEarned,
+  timeBonusEarned = 0,
   timeSpentSec,
   maxStreak,
   challengeCorrect,
@@ -35,6 +45,7 @@ export default function SessionSummary({
 }: Props) {
   const accuracy = total > 0 ? Math.round(((correctCount + retryCount) / total) * 100) : 0
   const trophy = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🌟' : '💪'
+  const totalCoins = coinsEarned + timeBonusEarned
 
   return (
     <div
@@ -124,13 +135,74 @@ export default function SessionSummary({
             }}
           >
             <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(251,191,36,0.5)' }}>
-              金币
+              {timeBonusEarned > 0 ? '合计星星' : '星星'}
             </div>
             <div className="font-fredoka text-[20px] font-black" style={{ color: '#fbbf24' }}>
-              +{coinsEarned} ⭐
+              +{totalCoins} ⭐
             </div>
+            {timeBonusEarned > 0 && (
+              <div className="text-[9px] font-semibold mt-0.5" style={{ color: 'rgba(251,191,36,0.5)' }}>
+                基础{coinsEarned} + 限时{timeBonusEarned}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Time bonus celebration card */}
+        {timeBonusEarned > 0 && (
+          <div
+            className="mt-3 rounded-xl px-4 py-3 text-left"
+            style={{
+              background: 'linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(251,113,133,0.1) 100%)',
+              border: '1px solid rgba(245,158,11,0.4)',
+              boxShadow: '0 0 20px rgba(245,158,11,0.12)',
+              animation: 'pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.25s both',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div
+                  className="text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: 'rgba(251,191,36,0.7)' }}
+                >
+                  ⚡ 限时挑战加成
+                </div>
+                <div
+                  className="font-fredoka text-[28px] font-black leading-tight"
+                  style={{
+                    background: 'linear-gradient(90deg, #fbbf24, #f97316)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  +{timeBonusEarned} ⭐
+                </div>
+                <div className="text-[10px] font-semibold mt-0.5" style={{ color: 'rgba(251,191,36,0.55)' }}>
+                  {formatTimeChinese(timeSpentSec)} 内完成 · 速度奖励
+                </div>
+              </div>
+              <div
+                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-[28px]"
+                style={{
+                  background: 'rgba(245,158,11,0.15)',
+                  border: '2px solid rgba(245,158,11,0.3)',
+                }}
+              >
+                ⚡
+              </div>
+            </div>
+            <div
+              className="mt-2 rounded-lg px-3 py-1.5 text-[11px] font-bold text-center"
+              style={{
+                background: 'rgba(245,158,11,0.12)',
+                border: '1px solid rgba(245,158,11,0.2)',
+                color: '#fbbf24',
+              }}
+            >
+              太厉害了！继续挑战更短时间赢更多星星！
+            </div>
+          </div>
+        )}
 
         {(maxStreak >= 3 || challengeCorrect > 0) && (
           <div className="mt-3 flex justify-center gap-3 text-[11px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
