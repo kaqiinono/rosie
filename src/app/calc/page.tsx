@@ -103,7 +103,7 @@ export default function CalcHomePage() {
                 className="text-[10px] font-extrabold tracking-widest uppercase mb-0.5"
                 style={{ color: 'rgba(196,181,253,0.5)' }}
               >
-                当前难度
+                {settings.freeMode ? '自由练习' : '当前难度'}
               </div>
               <div
                 className="font-fredoka text-[22px] font-black leading-none"
@@ -113,13 +113,12 @@ export default function CalcHomePage() {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                {formatLevel(settings.currentLevel)}
-                <span className="text-[13px] ml-1.5" style={{ color: 'rgba(196,181,253,0.5)', WebkitTextFillColor: 'rgba(196,181,253,0.5)' }}>
-                  / Lv.{settings.levelCap}
-                </span>
+                {settings.freeMode
+                  ? `${settings.freeModeLevels.length} 种题型`
+                  : formatLevel(settings.currentLevel)}
               </div>
               <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>
-                {currentSpec.label}
+                {settings.freeMode ? '混合出题 · 不评估升降级' : currentSpec.label}
               </div>
             </div>
             <Link
@@ -267,6 +266,24 @@ export default function CalcHomePage() {
             <span style={{ color: 'rgba(249,168,212,0.5)' }}>→</span>
           </Link>
         </div>
+
+        <Link
+          href="/calc/report"
+          className="flex items-center gap-2.5 rounded-2xl px-4 py-3 no-underline transition-all"
+          style={{
+            background: 'rgba(125,211,252,0.06)',
+            border: '1px solid rgba(125,211,252,0.18)',
+          }}
+        >
+          <span className="text-xl">📊</span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-extrabold" style={{ color: '#7dd3fc' }}>练习报告</div>
+            <div className="text-[11px] truncate" style={{ color: 'rgba(125,211,252,0.55)' }}>
+              查看关卡进度 · 最弱题 · 关键事件
+            </div>
+          </div>
+          <span style={{ color: 'rgba(125,211,252,0.5)' }}>→</span>
+        </Link>
 
         {/* Recent sessions */}
         {wallet.sessions.length > 0 && (

@@ -1,13 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import QuickPracticeModal from '@/components/calc/QuickPracticeModal'
-import { LEVELS, levelSpec } from '@/utils/calc-levels'
+import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
+import { LEVELS, formatLevel, levelSpec } from '@/utils/calc-levels'
+import { enabledLevels } from '@/utils/calc-helpers'
+import type { CalcCategory, CalcLevel } from '@/utils/type'
 
 interface ToggleRowProps {
   label: string
@@ -50,12 +53,113 @@ function ToggleRow({ label, description, value, onChange }: ToggleRowProps) {
   )
 }
 
+interface LevelChipProps {
+  level: CalcLevel
+  label: string
+  selected: boolean
+  onToggle: () => void
+}
+
+function LevelChip({ level, label, selected, onToggle }: LevelChipProps) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2 text-left transition-all"
+      style={{
+        background: selected ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
+        border: `1px solid ${selected ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
+      }}
+    >
+      <div
+        className="text-[12px] font-extrabold leading-none"
+        style={{ color: selected ? '#c4b5fd' : 'rgba(245,243,255,0.55)' }}
+      >
+        {formatLevel(level)}
+      </div>
+      <div className="text-[10px] leading-tight" style={{ color: 'rgba(245,243,255,0.4)' }}>
+        {label}
+      </div>
+    </button>
+  )
+}
+
+const CATEGORY_LABELS: Record<CalcCategory, string> = {
+  addsub: '加减法',
+  muldiv: '乘除法',
+  mixed: '混合运算',
+}
+
 export default function CalcSettingsPage() {
   const { user } = useAuth()
   const { settings, update, isLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { mistakes } = useCalcMistakes(user)
   const [practiceOpen, setPracticeOpen] = useState(false)
+
+  const numericLevels = useMemo(() => LEVELS.filter(l => l.level !== 'C'), [])
+  const levelsByCategory = useMemo(() => {
+    const groups: Record<CalcCategory, typeof LEVELS> = { addsub: [], muldiv: [], mixed: [] }
+    for (const spec of LEVELS) groups[spec.category].push(spec)
+    return groups
+  }, [])
+
+  const selectedSet = useMemo(
+    () => new Set<CalcLevel>(settings.freeModeLevels),
+    [settings.freeModeLevels],
+  )
+
+  const isLevelSelected = (level: CalcLevel) => selectedSet.has(level)
+
+  const toggleLevel = (level: CalcLevel) => {
+    const next = new Set(selectedSet)
+    if (next.has(level)) next.delete(level)
+    else next.add(level)
+    update({ freeModeLevels: Array.from(next) })
+  }
+
+  /** True if every level in `category` is currently selected in freeModeLevels. */
+  const categoryAllSelected = (cat: CalcCategory): boolean => {
+    const levels = levelsByCategory[cat]
+    if (levels.length === 0) return false
+    return levels.every(l => selectedSet.has(l.level))
+  }
+
+  /** Bulk-add or bulk-remove all levels of a category from freeModeLevels. */
+  const setCategorySelected = (cat: CalcCategory, on: boolean) => {
+    const levels = levelsByCategory[cat]
+    const next = new Set(selectedSet)
+    if (on) for (const l of levels) next.add(l.level)
+    else for (const l of levels) next.delete(l.level)
+    update({ freeModeLevels: Array.from(next) })
+  }
+
+  /** Category toggle in normal mode = simple boolean setting. In free mode = bulk-select. */
+  const getCategoryToggleValue = (cat: CalcCategory): boolean => {
+    if (settings.freeMode) return categoryAllSelected(cat)
+    if (cat === 'addsub') return settings.enableAddSub
+    if (cat === 'muldiv') return settings.enableMulDiv
+    return settings.enableMixed
+  }
+  const setCategoryToggle = (cat: CalcCategory, v: boolean) => {
+    if (settings.freeMode) {
+      setCategorySelected(cat, v)
+      return
+    }
+    if (cat === 'addsub') update({ enableAddSub: v })
+    else if (cat === 'muldiv') update({ enableMulDiv: v })
+    else update({ enableMixed: v })
+  }
+
+  /** Enable free mode: pre-populate selection from currently enabled levels (Q3=b). */
+  const handleFreeModeToggle = (on: boolean) => {
+    if (on && settings.freeModeLevels.length === 0) {
+      const initial = enabledLevels(settings, true)
+      update({ freeMode: true, freeModeLevels: initial })
+    } else {
+      update({ freeMode: on })
+    }
+  }
 
   if (isLoading) {
     return (
@@ -79,7 +183,7 @@ export default function CalcSettingsPage() {
   }
 
   const currentSpec = levelSpec(settings.currentLevel)
-  const numericLevels = LEVELS.filter(l => l.level !== 'C')
+  const selectedCount = settings.freeModeLevels.length
 
   const selectStyle = {
     background: 'rgba(255,255,255,0.06)',
@@ -94,6 +198,10 @@ export default function CalcSettingsPage() {
     appearance: 'auto' as const,
   }
 
+  const practiceSubtitle = settings.freeMode
+    ? `自由练习 · 已选 ${selectedCount} 种题型`
+    : `Lv.${settings.currentLevel} · ${currentSpec.label}`
+
   return (
     <>
       <CalcAppHeader
@@ -107,37 +215,42 @@ export default function CalcSettingsPage() {
 
       <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
 
-        {/* Operation types */}
+        {/* Operation types — in free mode these become bulk-select shortcuts */}
         <section>
           <h2
             className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
             style={{ color: 'rgba(196,181,253,0.45)' }}
           >
             运算类型
+            {settings.freeMode && (
+              <span className="ml-2 normal-case tracking-normal" style={{ color: 'rgba(196,181,253,0.3)' }}>
+                · 点击 = 该类别全选 / 取消
+              </span>
+            )}
           </h2>
           <div className="space-y-2">
             <ToggleRow
               label="加减法"
               description="10 到 100 以内加减（档 1-5）"
-              value={settings.enableAddSub}
-              onChange={(v) => update({ enableAddSub: v })}
+              value={getCategoryToggleValue('addsub')}
+              onChange={(v) => setCategoryToggle('addsub', v)}
             />
             <ToggleRow
               label="乘除法"
               description="乘法口诀 · 除法 · ×10-19 拓展（档 6-14, 16, 18）"
-              value={settings.enableMulDiv}
-              onChange={(v) => update({ enableMulDiv: v })}
+              value={getCategoryToggleValue('muldiv')}
+              onChange={(v) => setCategoryToggle('muldiv', v)}
             />
             <ToggleRow
               label="混合运算"
               description="两运算符 + 三运算符挑战题（档 15, 17, 挑战）"
-              value={settings.enableMixed}
-              onChange={(v) => update({ enableMixed: v })}
+              value={getCategoryToggleValue('mixed')}
+              onChange={(v) => setCategoryToggle('mixed', v)}
             />
           </div>
         </section>
 
-        {/* Difficulty */}
+        {/* Difficulty / mode */}
         <section>
           <h2
             className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
@@ -152,69 +265,124 @@ export default function CalcSettingsPage() {
               border: '1px solid rgba(139,92,246,0.15)',
             }}
           >
-            <div className="flex flex-wrap items-center gap-3 justify-between">
-              <div className="min-w-0 flex-1">
-                <div
-                  className="text-[11px] font-bold mb-1"
-                  style={{ color: 'rgba(196,181,253,0.5)' }}
-                >
-                  当前难度
-                </div>
-                <select
-                  value={settings.currentLevel}
-                  onChange={(e) => {
-                    const next = Number(e.target.value)
-                    const patch: { currentLevel: number; levelCap?: number } = { currentLevel: next }
-                    if (next > settings.levelCap) patch.levelCap = next
-                    update(patch)
-                  }}
-                  style={selectStyle}
-                >
-                  {numericLevels.map(l => (
-                    <option key={l.level as number} value={l.level as number}>
-                      Lv.{l.level} · {l.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="text-[10px] mt-1" style={{ color: 'rgba(245,243,255,0.3)' }}>
-                  {currentSpec.label}
-                </div>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div
-                  className="text-[11px] font-bold mb-1"
-                  style={{ color: 'rgba(196,181,253,0.5)' }}
-                >
-                  上限
-                </div>
-                <select
-                  value={settings.levelCap}
-                  onChange={(e) => {
-                    const next = Number(e.target.value)
-                    const patch: { levelCap: number; currentLevel?: number } = { levelCap: next }
-                    if (next < settings.currentLevel) patch.currentLevel = next
-                    update(patch)
-                  }}
-                  style={selectStyle}
-                >
-                  {numericLevels.map(l => (
-                    <option key={l.level as number} value={l.level as number}>
-                      Lv.{l.level} · {l.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="text-[10px] mt-1" style={{ color: 'rgba(245,243,255,0.3)' }}>
-                  最多升到这一档
-                </div>
-              </div>
-            </div>
-
             <ToggleRow
-              label="自适应升档"
-              description="最近 30 题正确率 >85% 时自动解锁下一档（直到上限）"
-              value={settings.adaptive}
-              onChange={(v) => update({ adaptive: v })}
+              label="自由练习"
+              description="自选题型混合出题；关闭则按进度推进（带 A/B/C 评估与自适应升档）"
+              value={settings.freeMode}
+              onChange={handleFreeModeToggle}
             />
+
+            {!settings.freeMode && (
+              <>
+                <div>
+                  <div
+                    className="text-[11px] font-bold mb-1"
+                    style={{ color: 'rgba(196,181,253,0.5)' }}
+                  >
+                    当前难度
+                  </div>
+                  <select
+                    value={settings.currentLevel}
+                    onChange={(e) => update({ currentLevel: Number(e.target.value) })}
+                    style={selectStyle}
+                  >
+                    {numericLevels.map(l => (
+                      <option key={l.level as number} value={l.level as number}>
+                        Lv.{l.level} · {l.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="text-[10px] mt-1" style={{ color: 'rgba(245,243,255,0.3)' }}>
+                    {currentSpec.label}
+                  </div>
+                </div>
+
+                <ToggleRow
+                  label="自适应升档"
+                  description="最近 30 题正确率 >85% 时自动解锁下一档（最高 Lv.18）"
+                  value={settings.adaptive}
+                  onChange={(v) => update({ adaptive: v })}
+                />
+              </>
+            )}
+
+            {settings.freeMode && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div
+                    className="text-[11px] font-bold"
+                    style={{ color: 'rgba(196,181,253,0.5)' }}
+                  >
+                    挑选题型 · 已选 {selectedCount} 种
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => update({ freeModeLevels: LEVELS.map(l => l.level) })}
+                      className="rounded-md px-2 py-1 text-[10px] font-extrabold"
+                      style={{
+                        background: 'rgba(139,92,246,0.15)',
+                        border: '1px solid rgba(139,92,246,0.3)',
+                        color: '#c4b5fd',
+                      }}
+                    >
+                      全选
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => update({ freeModeLevels: [] })}
+                      className="rounded-md px-2 py-1 text-[10px] font-extrabold"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'rgba(245,243,255,0.55)',
+                      }}
+                    >
+                      清空
+                    </button>
+                  </div>
+                </div>
+
+                {(['addsub', 'muldiv', 'mixed'] as const).map((cat) => {
+                  const levels = levelsByCategory[cat]
+                  if (levels.length === 0) return null
+                  return (
+                    <div key={cat}>
+                      <div
+                        className="text-[10px] font-extrabold uppercase tracking-wider mb-1.5"
+                        style={{ color: 'rgba(196,181,253,0.35)' }}
+                      >
+                        {CATEGORY_LABELS[cat]}
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+                        {levels.map((l) => (
+                          <LevelChip
+                            key={String(l.level)}
+                            level={l.level}
+                            label={l.label}
+                            selected={isLevelSelected(l.level)}
+                            onToggle={() => toggleLevel(l.level)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+
+                {selectedCount === 0 && (
+                  <div
+                    className="rounded-lg px-3 py-2 text-[11px]"
+                    style={{
+                      background: 'rgba(244,114,182,0.1)',
+                      border: '1px solid rgba(244,114,182,0.3)',
+                      color: '#fbcfe8',
+                    }}
+                  >
+                    至少选择一个题型，否则出题将退回到 Lv.1。
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </section>
 
@@ -233,6 +401,12 @@ export default function CalcSettingsPage() {
             onChange={(v) => update({ soundEnabled: v })}
           />
         </section>
+
+        {/* Time limits */}
+        <TimeLimitsSection
+          overrides={settings.timeLimitOverrides}
+          onChange={(next) => update({ timeLimitOverrides: next })}
+        />
 
         {/* Info */}
         <section
@@ -263,8 +437,8 @@ export default function CalcSettingsPage() {
 
       {practiceOpen && (
         <QuickPracticeModal
-          title="试试当前难度"
-          subtitle={`Lv.${settings.currentLevel} · ${currentSpec.label}`}
+          title={settings.freeMode ? '试试自由练习' : '试试当前难度'}
+          subtitle={practiceSubtitle}
           settings={settings}
           mistakes={mistakes}
           buildCount={settings.lastCount}

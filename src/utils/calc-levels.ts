@@ -377,6 +377,9 @@ export function levelSpec(level: CalcLevel): LevelSpec {
   return found ?? LEVELS[0]
 }
 
+/** Highest numeric level (the challenge level 'C' is separate). */
+export const MAX_NUMERIC_LEVEL = 18
+
 /** Format level for display: "Lv.6" or "挑战" */
 export function formatLevel(level: CalcLevel): string {
   return level === 'C' ? '挑战' : `Lv.${level}`

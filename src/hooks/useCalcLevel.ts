@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { MAX_NUMERIC_LEVEL } from '@/utils/calc-levels'
 import type { CalcSettings } from '@/utils/type'
 
 /**
@@ -18,12 +19,12 @@ export function useCalcLevel(
   const checkAndAdvance = useCallback(
     async (recentAtLevel: { firstTryCorrect: number; total: number }): Promise<number> => {
       if (!settings.adaptive) return settings.currentLevel
-      if (settings.currentLevel >= settings.levelCap) return settings.currentLevel
+      if (settings.currentLevel >= MAX_NUMERIC_LEVEL) return settings.currentLevel
       if (recentAtLevel.total < 30) return settings.currentLevel
       const accuracy = recentAtLevel.firstTryCorrect / recentAtLevel.total
       if (accuracy < 0.85) return settings.currentLevel
 
-      const next = Math.min(settings.currentLevel + 1, settings.levelCap)
+      const next = Math.min(settings.currentLevel + 1, MAX_NUMERIC_LEVEL)
       updateSettings({ currentLevel: next })
       if (user) {
         try {
@@ -37,7 +38,7 @@ export function useCalcLevel(
       }
       return next
     },
-    [settings.adaptive, settings.currentLevel, settings.levelCap, updateSettings, user],
+    [settings.adaptive, settings.currentLevel, updateSettings, user],
   )
 
   return { currentLevel: settings.currentLevel, checkAndAdvance }

@@ -328,12 +328,79 @@ export interface CalcSettings {
   enableAddSub: boolean
   enableMulDiv: boolean
   enableMixed: boolean
-  levelCap: number // 1..18
-  currentLevel: number // 1..18 — advanced by adaptive logic
+  currentLevel: number // 1..18 — advanced by adaptive logic (capped at MAX_NUMERIC_LEVEL)
   adaptive: boolean
   soundEnabled: boolean
   lastCount: number // 20/30/50/100
   lastTimeLimit: number // seconds, 0=unlimited
+  /** Global session counter — incremented every time a session finishes. Used by cold-problem rescue. */
+  sessionCounter: number
+  /** User-configured time limit overrides in milliseconds, keyed by category bucket (see calc-time-limits.ts). */
+  timeLimitOverrides: Record<string, number>
+  /**
+   * Free-practice mode. When true, sessions are built from `freeModeLevels` (a user-picked subset),
+   * the mastery state machine / adaptive level-up is skipped, and the single "currentLevel" cursor
+   * is unused for question generation. Problem-state attempts are still recorded.
+   */
+  freeMode: boolean
+  /** Levels the user picked for free-practice mode. May include 'C' (challenge). */
+  freeModeLevels: CalcLevel[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// 口算 mastery system (per master.md)
+// ─────────────────────────────────────────────────────────────────────────
+
+export type CalcProblemStatus = 'active' | 'review' | 'mastered' | 'forced'
+
+export interface QuestionAttempt {
+  correct: boolean
+  timeMs: number
+  /** Whether the first attempt landed within the configured time limit.
+   *  Optional for backward compat with rows written before Phase 4. */
+  withinLimit?: boolean
+}
+
+export interface CalcProblemState {
+  signature: string
+  level: CalcLevel
+  proficiency: number // 0..5
+  attemptCount: number
+  appearanceCount: number
+  recentResults: QuestionAttempt[] // most-recent at the end, capped at 10
+  status: CalcProblemStatus
+  shortMasteredAt: string | null // YYYY-MM-DD
+  reviewR1Due: string | null
+  reviewR2Due: string | null
+  reviewR3Due: string | null
+  longMastered: boolean
+  lastSeenSession: number | null
+  timesSeenThisRound: number
+  consecutiveWrong: number
+  forcedNext: boolean
+  updatedAt: string
+}
+
+export type CalcLevelStatus =
+  | 'practicing'
+  | 'abc_passed'
+  | 'review_r1'
+  | 'review_r2'
+  | 'review_r3'
+  | 'mastered'
+
+export interface CalcLevelStateInfo {
+  level: CalcLevel
+  status: CalcLevelStatus
+  abcPassedDate: string | null
+  reviewR1Date: string | null
+  reviewR2Date: string | null
+  reviewR3Date: string | null
+  sessionCountInLevel: number
+  warmupComplete: boolean
+  warmupAnswered: number
+  lastSessionAccuracy: number | null
+  consecutivePoorSessions: number
 }
 
 export type VoucherCategory = 'movie' | 'snack' | 'toy' | 'wish' | 'cartoon' | 'generic'

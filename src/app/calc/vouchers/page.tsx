@@ -11,6 +11,7 @@ import VoucherCard from '@/components/calc/VoucherCard'
 import VoucherRedeemModal from '@/components/calc/VoucherRedeemModal'
 import EarnStarsModal from '@/components/calc/EarnStarsModal'
 import { VOUCHER_PRICE } from '@/utils/calc-helpers'
+import { MAX_NUMERIC_LEVEL } from '@/utils/calc-levels'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
 import { todayStr } from '@/utils/constant'
@@ -69,7 +70,7 @@ export default function CalcVouchersPage() {
         mode: 'free',
         maxStreak: 0,
         topLevel: (typeof settings.currentLevel === 'number'
-          ? Math.min(settings.currentLevel + 1, settings.levelCap)
+          ? Math.min(settings.currentLevel + 1, MAX_NUMERIC_LEVEL)
           : settings.currentLevel) as CalcLevel,
       })
       if (starsEarned > 0) {

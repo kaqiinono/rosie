@@ -3,30 +3,36 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import type { CalcSettings } from '@/utils/type'
+import type { CalcLevel, CalcSettings } from '@/utils/type'
 
 const DEFAULT_SETTINGS: CalcSettings = {
   enableAddSub: true,
   enableMulDiv: true,
   enableMixed: true,
-  levelCap: 18,
   currentLevel: 1,
   adaptive: true,
   soundEnabled: true,
   lastCount: 20,
   lastTimeLimit: 0,
+  sessionCounter: 0,
+  timeLimitOverrides: {},
+  freeMode: false,
+  freeModeLevels: [],
 }
 
 interface RawRow {
   enable_addsub: boolean
   enable_muldiv: boolean
   enable_mixed: boolean
-  level_cap: number
   current_level: number
   adaptive: boolean
   sound_enabled: boolean
   last_count: number
   last_time_limit: number
+  session_counter: number | null
+  time_limit_overrides: Record<string, number> | null
+  free_mode: boolean | null
+  free_mode_levels: CalcLevel[] | null
 }
 
 function rowToSettings(row: RawRow): CalcSettings {
@@ -34,12 +40,15 @@ function rowToSettings(row: RawRow): CalcSettings {
     enableAddSub: row.enable_addsub,
     enableMulDiv: row.enable_muldiv,
     enableMixed: row.enable_mixed,
-    levelCap: row.level_cap,
     currentLevel: row.current_level,
     adaptive: row.adaptive,
     soundEnabled: row.sound_enabled,
     lastCount: row.last_count,
     lastTimeLimit: row.last_time_limit,
+    sessionCounter: row.session_counter ?? 0,
+    timeLimitOverrides: row.time_limit_overrides ?? {},
+    freeMode: row.free_mode ?? false,
+    freeModeLevels: row.free_mode_levels ?? [],
   }
 }
 
@@ -49,12 +58,15 @@ function settingsToRow(s: CalcSettings, userId: string) {
     enable_addsub: s.enableAddSub,
     enable_muldiv: s.enableMulDiv,
     enable_mixed: s.enableMixed,
-    level_cap: s.levelCap,
     current_level: s.currentLevel,
     adaptive: s.adaptive,
     sound_enabled: s.soundEnabled,
     last_count: s.lastCount,
     last_time_limit: s.lastTimeLimit,
+    session_counter: s.sessionCounter,
+    time_limit_overrides: s.timeLimitOverrides,
+    free_mode: s.freeMode,
+    free_mode_levels: s.freeModeLevels,
     updated_at: new Date().toISOString(),
   }
 }
@@ -70,7 +82,7 @@ export function useCalcSettings(user: User | null) {
       const { data } = await supabase
         .from('calc_settings')
         .select(
-          'enable_addsub,enable_muldiv,enable_mixed,level_cap,current_level,adaptive,sound_enabled,last_count,last_time_limit',
+          'enable_addsub,enable_muldiv,enable_mixed,current_level,adaptive,sound_enabled,last_count,last_time_limit,session_counter,time_limit_overrides,free_mode,free_mode_levels',
         )
         .eq('user_id', user.id)
         .maybeSingle()

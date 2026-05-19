@@ -2,11 +2,11 @@
 
 /**
  * Shared answering-loop logic for any calc practice surface.
- * Handles: question progression, input, attempts, streak, star accumulation.
- * Callers supply questions + soundEnabled; callers own any persistence/timer logic.
+ * Handles: question progression, input, attempts, streak, star accumulation, per-question timing.
+ * Callers supply questions + soundEnabled + per-question time limit; callers own persistence.
  */
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { playSfx } from '@/components/calc/audio'
 import type { CalcQuestion } from '@/utils/type'
 
@@ -18,6 +18,10 @@ export interface QuestionResult {
   firstTry: boolean
   finallyCorrect: boolean
   signature: string
+  /** Time spent on this question from display to first submission, in ms. */
+  timeMs: number
+  /** Whether the first attempt landed within the configured time limit. */
+  withinLimit: boolean
 }
 
 export type SessionFeedback = 'correct' | 'retry' | 'wrong' | null
@@ -31,7 +35,6 @@ export interface UseCalcSessionReturn {
   streak: number
   maxStreak: number
   starsTotal: number
-  /** Reward from the most-recently resolved question (cleared between questions). */
   lastResult: { stars: number; bonus: number } | null
   done: boolean
   progress: number
@@ -39,10 +42,16 @@ export interface UseCalcSessionReturn {
   handleSubmit: () => void
 }
 
+export interface UseCalcSessionOptions {
+  /** Returns the time limit in ms for a given question. If omitted, withinLimit is always true. */
+  getTimeLimitMs?: (q: CalcQuestion) => number
+}
+
 export function useCalcSession(
   questions: CalcQuestion[],
   soundEnabled: boolean,
   onDone?: () => void,
+  options?: UseCalcSessionOptions,
 ): UseCalcSessionReturn {
   const [idx, setIdx] = useState(0)
   const [input, setInput] = useState('')
@@ -53,21 +62,30 @@ export function useCalcSession(
   const [feedback, setFeedback] = useState<SessionFeedback>(null)
   const [lastResult, setLastResult] = useState<{ stars: number; bonus: number } | null>(null)
   const [done, setDone] = useState(false)
-  const resultsRef = useRef<QuestionResult[]>([])
+  const [results, setResults] = useState<QuestionResult[]>([])
+  const questionStartRef = useRef<number>(0)
+  const firstAttemptTimeRef = useRef<number | null>(null)
 
   const currentQ = questions[idx] ?? null
   const progress = questions.length > 0 ? Math.round((idx / questions.length) * 100) : 0
+
+  // Reset the question-start timestamp whenever the current question changes.
+  useEffect(() => {
+    if (currentQ && attemptsForCurrent === 0) {
+      questionStartRef.current = performance.now()
+      firstAttemptTimeRef.current = null
+    }
+  }, [currentQ, attemptsForCurrent])
 
   const advance = useCallback(() => {
     setFeedback(null)
     setInput('')
     setAttemptsForCurrent(0)
-    // keep lastResult visible briefly after advancing; clear on next question render
     if (idx + 1 >= questions.length) {
       setDone(true)
       onDone?.()
     } else {
-      setIdx(i => i + 1)
+      setIdx((i) => i + 1)
       setLastResult(null)
     }
   }, [idx, questions.length, onDone])
@@ -77,26 +95,37 @@ export function useCalcSession(
     const val = Number(input)
     if (!Number.isFinite(val) || input === '') return
 
+    const now = performance.now()
+    if (firstAttemptTimeRef.current === null) firstAttemptTimeRef.current = now
+    const elapsed = Math.round(firstAttemptTimeRef.current - questionStartRef.current)
+    const limit = options?.getTimeLimitMs?.(currentQ)
+    const withinLimit = typeof limit === 'number' && limit > 0 ? elapsed <= limit : true
+
     if (val === currentQ.answer) {
       const isFirst = attemptsForCurrent === 0
       const bonus = streak >= 10 ? 2 : streak >= 5 ? 1 : 0
       const stars = isFirst ? currentQ.coinBase + bonus : 0
 
       if (isFirst) {
-        setStarsTotal(t => t + stars)
+        setStarsTotal((t) => t + stars)
         const next = streak + 1
         setStreak(next)
-        setMaxStreak(m => Math.max(m, next))
+        setMaxStreak((m) => Math.max(m, next))
         setLastResult({ stars, bonus })
       }
 
-      resultsRef.current.push({
-        stars,
-        bonus: isFirst ? bonus : 0,
-        firstTry: isFirst,
-        finallyCorrect: true,
-        signature: currentQ.signature,
-      })
+      setResults((prev) => [
+        ...prev,
+        {
+          stars,
+          bonus: isFirst ? bonus : 0,
+          firstTry: isFirst,
+          finallyCorrect: true,
+          signature: currentQ.signature,
+          timeMs: elapsed,
+          withinLimit: isFirst ? withinLimit : false,
+        },
+      ])
 
       setFeedback('correct')
       playSfx('correct', soundEnabled)
@@ -114,16 +143,21 @@ export function useCalcSession(
       setFeedback('wrong')
       setStreak(0)
       playSfx('wrong', soundEnabled)
-      resultsRef.current.push({
-        stars: 0,
-        bonus: 0,
-        firstTry: false,
-        finallyCorrect: false,
-        signature: currentQ.signature,
-      })
+      setResults((prev) => [
+        ...prev,
+        {
+          stars: 0,
+          bonus: 0,
+          firstTry: false,
+          finallyCorrect: false,
+          signature: currentQ.signature,
+          timeMs: elapsed,
+          withinLimit: false,
+        },
+      ])
       window.setTimeout(advance, 1200)
     }
-  }, [currentQ, done, feedback, input, attemptsForCurrent, streak, advance, soundEnabled])
+  }, [currentQ, done, feedback, input, attemptsForCurrent, streak, advance, soundEnabled, options])
 
   return {
     idx,
@@ -137,7 +171,7 @@ export function useCalcSession(
     lastResult,
     done,
     progress,
-    results: resultsRef.current,
+    results,
     handleSubmit,
   }
 }

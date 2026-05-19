@@ -10,6 +10,7 @@ import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import { buildSession } from '@/utils/calc-helpers'
 import { useCalcSession } from '@/hooks/useCalcSession'
+import { useAuth } from '@/contexts/AuthContext'
 import type { CalcMistake, CalcQuestion, CalcSettings } from '@/utils/type'
 
 interface Props {
@@ -46,11 +47,23 @@ export default function QuickPracticeModal({
   onClose,
   doneLabel = '收好星星，返回 →',
 }: Props) {
+  const { user } = useAuth()
   // Build or use provided questions exactly once
   const questions = useMemo<CalcQuestion[]>(() => {
     if (propQuestions) return propQuestions
     if (!settings) return []
-    return buildSession(settings, buildCount, mistakes, 0, 'free')
+    return buildSession(
+      settings,
+      buildCount,
+      mistakes,
+      {
+        problemStates: new Map(),
+        userId: user?.id ?? 'anonymous',
+        sessionNo: 0,
+        today: new Date().toISOString().slice(0, 10),
+      },
+      'free',
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -239,7 +252,11 @@ export default function QuickPracticeModal({
         key={idx}
         style={{ animation: 'fade-up 0.28s ease backwards' }}
       >
-        {currentQ && (
+        {currentQ && (() => {
+          const m = currentQ.display.match(/^(.*?)\s*=\s*\?\s*$/)
+          const hasSeparator = m !== null
+          const expr = m?.[1] ?? currentQ.display
+          return (
           <>
             <div
               className="font-fredoka font-black tracking-tight leading-none"
@@ -249,16 +266,19 @@ export default function QuickPracticeModal({
                 textShadow: '0 0 20px rgba(251,191,36,0.2)',
               }}
             >
-              {currentQ.display.replace(/\s*=\s*\?$/, '')}
+              {expr}
             </div>
-            <div
-              className="mt-2 font-fredoka font-black"
-              style={{ fontSize: 'clamp(26px, 5vw, 36px)', color: 'rgba(251,191,36,0.35)' }}
-            >
-              = ?
-            </div>
+            {hasSeparator && (
+              <div
+                className="mt-2 font-fredoka font-black"
+                style={{ fontSize: 'clamp(26px, 5vw, 36px)', color: 'rgba(251,191,36,0.35)' }}
+              >
+                = ?
+              </div>
+            )}
           </>
-        )}
+          )
+        })()}
       </div>
 
       {/* ── Inline feedback banner ── */}

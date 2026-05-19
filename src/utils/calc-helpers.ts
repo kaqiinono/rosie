@@ -1,5 +1,15 @@
-import { LEVELS, levelSpec } from './calc-levels'
-import type { CalcCategory, CalcLevel, CalcMistake, CalcQuestion, CalcSettings } from './type'
+import { LEVELS, MAX_NUMERIC_LEVEL, levelSpec } from './calc-levels'
+import { bankFor } from './calc-bank'
+import { assembleLevelPicks } from './calc-session-builder'
+import { applyForm, pickForm } from './calc-forms'
+import type {
+  CalcCategory,
+  CalcLevel,
+  CalcMistake,
+  CalcProblemState,
+  CalcQuestion,
+  CalcSettings,
+} from './type'
 
 /** Coin reward including streak bonus. coinBase already accounts for ×2 on challenge questions. */
 export function coinReward(question: CalcQuestion, streak: number): number {
@@ -26,62 +36,50 @@ export function enabledLevels(settings: CalcSettings, includeChallenge: boolean)
   return out
 }
 
-/**
- * Pick the level for the next question.
- * Distribution: 70% current, 20% lower, 10% higher (try N+1 if available).
- */
-function pickLevel(settings: CalcSettings): CalcLevel {
-  const enabled = enabledLevels(settings, false) // challenge questions handled separately
-  if (enabled.length === 0) return 1
-  const cur = settings.currentLevel
-  const r = Math.random()
-  if (r < 0.7) {
-    // try current level if enabled, else fallback to highest enabled ≤ current
-    if (enabled.includes(cur)) return cur
-  } else if (r < 0.9) {
-    // try a lower enabled level
-    const lower = enabled.filter((l) => typeof l === 'number' && (l as number) < cur)
-    if (lower.length > 0) return lower[Math.floor(Math.random() * lower.length)]
-  } else {
-    // try N+1 if within cap & enabled
-    const upper = enabled.find((l) => typeof l === 'number' && (l as number) === cur + 1)
-    if (upper !== undefined) return upper
-  }
-  // Fallback: pick the closest enabled level to current
-  const closest = enabled.reduce((best, l) => {
-    if (typeof l !== 'number') return best
-    const bestVal = typeof best === 'number' ? best : 0
-    return Math.abs(l - cur) < Math.abs(bestVal - cur) ? l : best
-  }, enabled[0])
-  return closest
+/** Generate a fresh challenge question (for the trailing challenge slots). */
+export function generateChallenge(): CalcQuestion {
+  return levelSpec('C').generate()
 }
 
-/** Generate one fresh question (no mistake injection). */
-export function generateOneQuestion(settings: CalcSettings, asChallenge = false): CalcQuestion {
-  if (asChallenge) return levelSpec('C').generate()
-  const lvl = pickLevel(settings)
-  return levelSpec(lvl).generate()
+export interface BuildSessionContext {
+  /** Pre-loaded problem states for the current level (and possibly adjacent). */
+  problemStates: Map<string, CalcProblemState>
+  /** Resolved user id; needed for seeded banks (addsub / mixed). */
+  userId: string
+  /** Session number this build is FOR (last completed session + 1). Used for cold rescue. */
+  sessionNo: number
+  /** YYYY-MM-DD; used to determine which review_rN_due dates are due. */
+  today: string
+  /** True ⇒ last_session_accuracy < 0.75 ⇒ assault-mode slot layout. */
+  assaultMode?: boolean
+  /** False during warmup (first 10 problems at a fresh level) — P0/P3/P4/P5 suppressed. */
+  warmupComplete?: boolean
 }
 
 /**
- * Build a session of `count` questions.
- * - mistakeRatio fraction of slots come from unresolved mistakes (when available).
- * - If settings.currentLevel >= 15 AND enableMixed AND count >= 10, the last 1-2 slots become challenge questions.
+ * Build a session of `count` questions per master.md §四–§六.
+ *
+ * Phase 2 behaviour:
+ *   - Delegates to `assembleLevelPicks` for P0 (forced) + P1 (cold) + P2 (active)
+ *   - P3 (review-due) / P4 (old-level mix) / P5 (mastered audit) are Phase 3+
+ *   - Reserves trailing 1–2 slots for challenge if currentLevel ≥ 15 + enableMixed + count ≥ 10
+ *   - Mistakes mode: pull from `calc_mistakes` (legacy behaviour, untouched)
  */
 export function buildSession(
   settings: CalcSettings,
   count: number,
   mistakes: CalcMistake[],
-  mistakeRatio = 0.2,
+  ctx: BuildSessionContext,
   mode: 'daily' | 'free' | 'mistakes' = 'daily',
 ): CalcQuestion[] {
   if (mode === 'mistakes') {
-    // 100% from unresolved mistakes (top up with fresh if not enough)
     const pool = mistakes.filter((m) => !m.resolved)
     const out: CalcQuestion[] = []
     for (let i = 0; i < count; i++) {
       if (i < pool.length) {
         const m = pool[i]
+        // Mistakes always render in their original (standard) form — the display
+        // string is what the kid got wrong. No form variation here.
         out.push({
           display: `${m.display.replace(/\s*=\s*\?\s*$/, '')} = ?`,
           signature: m.signature,
@@ -93,86 +91,140 @@ export function buildSession(
           coinBase: 1,
         })
       } else {
-        out.push(generateOneQuestion(settings))
+        const fallback = pickFromBank(settings.currentLevel, ctx, 1)
+        if (fallback.length > 0) out.push(withForm(fallback[0], ctx))
       }
     }
     return out
   }
 
-  const unresolved = mistakes.filter((m) => !m.resolved)
-  const challengeUnlocked = settings.currentLevel >= 15 && settings.enableMixed
-  const challengeSlots = challengeUnlocked && count >= 10 ? (count >= 20 ? 2 : 1) : 0
-  const out: CalcQuestion[] = []
-  const seenSigs = new Set<string>()
-
-  for (let i = 0; i < count - challengeSlots; i++) {
-    let q: CalcQuestion | null = null
-
-    if (unresolved.length > 0 && Math.random() < mistakeRatio) {
-      // pick a random unresolved mistake not already used this session
-      const available = unresolved.filter((m) => !seenSigs.has(m.signature))
-      if (available.length > 0) {
-        const m = available[Math.floor(Math.random() * available.length)]
-        q = {
-          display: `${m.display.replace(/\s*=\s*\?\s*$/, '')} = ?`,
-          signature: m.signature,
-          arity: 1,
-          level: m.level,
-          answer: m.answer,
-          isChallenge: false,
-          category: m.category,
-          coinBase: 1,
-        }
-      }
-    }
-
-    if (!q) {
-      // generate fresh, retry to avoid intra-session sig dupes
-      for (let t = 0; t < 4; t++) {
-        const candidate = generateOneQuestion(settings)
-        if (!seenSigs.has(candidate.signature)) {
-          q = candidate
-          break
-        }
-      }
-      if (!q) q = generateOneQuestion(settings)
-    }
-
-    seenSigs.add(q.signature)
-    out.push(q)
+  // Free-practice mode: round-robin across user-picked levels, ignore enabledLevels/currentLevel.
+  if (settings.freeMode) {
+    return buildFreeModeSession(settings, count, ctx)
   }
 
-  // Append challenge questions at end
+  const challengeUnlocked = settings.currentLevel >= 15 && settings.enableMixed
+  const challengeSlots = challengeUnlocked && count >= 10 ? (count >= 20 ? 2 : 1) : 0
+  const mainCount = count - challengeSlots
+
+  const picks = pickFromBank(settings.currentLevel, ctx, mainCount)
+  const out = picks.map((q) => withForm(q, ctx))
+
   for (let i = 0; i < challengeSlots; i++) {
-    out.push(generateOneQuestion(settings, true))
+    // Challenge questions always use standard form (per calc-forms.ts).
+    out.push(generateChallenge())
   }
   return out
 }
 
 /**
+ * Free-practice picker. Distributes `count` questions round-robin across
+ * `settings.freeModeLevels`. Challenge level ('C') in the list contributes
+ * 1–2 trailing challenge slots when count ≥ 10. Empty selection falls back
+ * to a single Lv.1 batch so the session is never empty.
+ */
+function buildFreeModeSession(
+  settings: CalcSettings,
+  count: number,
+  ctx: BuildSessionContext,
+): CalcQuestion[] {
+  const picked = settings.freeModeLevels
+  const hasChallenge = picked.includes('C')
+  const numericPicked = picked.filter((l): l is number => typeof l === 'number')
+
+  if (numericPicked.length === 0 && !hasChallenge) {
+    // Defensive fallback — UI should prevent empty selection, but if it slips through
+    // we degrade gracefully to a Lv.1 batch instead of an empty session.
+    const fallback = pickFromBank(1, ctx, count)
+    return fallback.map((q) => withForm(q, ctx))
+  }
+
+  if (numericPicked.length === 0) {
+    const out: CalcQuestion[] = []
+    for (let i = 0; i < count; i++) out.push(generateChallenge())
+    return out
+  }
+
+  const challengeSlots = hasChallenge && count >= 10 ? (count >= 20 ? 2 : 1) : 0
+  const mainCount = count - challengeSlots
+
+  const perLevel = Math.floor(mainCount / numericPicked.length)
+  const remainder = mainCount % numericPicked.length
+
+  const picks: CalcQuestion[] = []
+  numericPicked.forEach((level, i) => {
+    const slots = perLevel + (i < remainder ? 1 : 0)
+    if (slots <= 0) return
+    const batch = pickFromBank(level as CalcLevel, ctx, slots)
+    for (const q of batch) picks.push(withForm(q, ctx))
+  })
+
+  // Fisher-Yates shuffle so different levels are interleaved.
+  for (let i = picks.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[picks[i], picks[j]] = [picks[j], picks[i]]
+  }
+
+  for (let i = 0; i < challengeSlots; i++) picks.push(generateChallenge())
+  return picks
+}
+
+/** Apply the form variation appropriate for the current appearance_count. */
+function withForm(q: CalcQuestion, ctx: BuildSessionContext): CalcQuestion {
+  const state = ctx.problemStates.get(q.signature)
+  const form = pickForm(state?.appearanceCount ?? 0)
+  return applyForm(q, form)
+}
+
+function pickFromBank(level: CalcLevel, ctx: BuildSessionContext, count: number): CalcQuestion[] {
+  const bank = bankFor(level, ctx.userId)
+  if (!bank || bank.length === 0) {
+    const out: CalcQuestion[] = []
+    for (let i = 0; i < count; i++) out.push(levelSpec(level).generate())
+    return out
+  }
+  // P4 — load currentLevel-1's bank for old-level mix (master.md §9.2)
+  let oldLevelBank: CalcQuestion[] | null = null
+  if (typeof level === 'number' && level > 1) {
+    oldLevelBank = bankFor((level - 1) as CalcLevel, ctx.userId)
+  }
+  return assembleLevelPicks({
+    level,
+    bank,
+    problemStates: ctx.problemStates,
+    sessionNo: ctx.sessionNo,
+    today: ctx.today,
+    count,
+    userId: ctx.userId,
+    oldLevelBank,
+    assaultMode: ctx.assaultMode,
+    warmupComplete: ctx.warmupComplete,
+  })
+}
+
+/**
  * Decide whether to advance currentLevel based on recent session stats.
  * Returns the new currentLevel (>= settings.currentLevel).
+ * Kept for Phase 1; Phase 5 replaces this with the A/B/C + spaced verification logic.
  */
 export function maybeAdvanceLevel(
   settings: CalcSettings,
   recentAtLevel: { firstTryCorrect: number; total: number },
 ): number {
   if (!settings.adaptive) return settings.currentLevel
-  if (settings.currentLevel >= settings.levelCap) return settings.currentLevel
+  if (settings.currentLevel >= MAX_NUMERIC_LEVEL) return settings.currentLevel
   if (recentAtLevel.total < 30) return settings.currentLevel
   const accuracy = recentAtLevel.firstTryCorrect / recentAtLevel.total
-  if (accuracy >= 0.85) return Math.min(settings.currentLevel + 1, settings.levelCap)
+  if (accuracy >= 0.85) return Math.min(settings.currentLevel + 1, MAX_NUMERIC_LEVEL)
   return settings.currentLevel
 }
 
 /**
- * Time-limit bonus stars earned at session end.
- * Only applies when a time limit was selected (timeLimitSec > 0).
- * Bonus tiers based on actual time spent (not affected by how much time was left):
+ * Time-limit bonus stars earned at session end (unchanged).
  *   ≤1 min  → ×1.0 per question
  *   ≤3 min  → ×0.6
- *   ≤5 min  → ×0.5  (matches user example: 10 q in 5 min → +5)
- *   ≤10 min → ×0.3  (matches: 10 q in 10 min → +3)
+ *   ≤5 min  → ×0.5
+ *   ≤10 min → ×0.3
  *   > 10 min → 0
  */
 export function calcTimeBonus(count: number, timeLimitSec: number, timeSpentSec: number): number {
@@ -184,15 +236,11 @@ export function calcTimeBonus(count: number, timeLimitSec: number, timeSpentSec:
   return 0
 }
 
-/**
- * Preview: guaranteed minimum bonus earned when finishing exactly at the time limit.
- * Used by CalcConfigBar to display star hints per chip.
- */
 export function timeLimitBonusPreview(count: number, timeLimitSec: number): number {
   return calcTimeBonus(count, timeLimitSec, timeLimitSec)
 }
 
-export const VOUCHER_PRICE = 50
+export const VOUCHER_PRICE = 100
 
 export const VOUCHER_META: Record<string, { emoji: string; label: string; gradient: string }> = {
   movie: { emoji: '🎬', label: '电影券', gradient: 'from-indigo-500 to-purple-500' },

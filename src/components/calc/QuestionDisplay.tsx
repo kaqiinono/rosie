@@ -6,8 +6,13 @@ interface Props {
 }
 
 export default function QuestionDisplay({ display, isChallenge }: Props) {
-  const m = display.match(/^(.*?)\s*=\s*\?$/)
+  // Forms 0/1 end with "= ?" — strip suffix and render the standalone "= ?" line.
+  // Form 2 (blank) embeds the answer in the expression (e.g. `6 × □ = 42`),
+  // so omit the separator line.
+  const m = display.match(/^(.*?)\s*=\s*\?\s*$/)
+  const hasSeparator = m !== null
   const expr = m?.[1] ?? display
+
   return (
     <div
       key={display}
@@ -37,15 +42,17 @@ export default function QuestionDisplay({ display, isChallenge }: Props) {
       >
         {expr}
       </div>
-      <div
-        className="mt-2 font-fredoka font-black leading-none"
-        style={{
-          fontSize: 'clamp(30px, 6vw, 42px)',
-          color: 'rgba(167,139,250,0.55)',
-        }}
-      >
-        = ?
-      </div>
+      {hasSeparator && (
+        <div
+          className="mt-2 font-fredoka font-black leading-none"
+          style={{
+            fontSize: 'clamp(30px, 6vw, 42px)',
+            color: 'rgba(167,139,250,0.55)',
+          }}
+        >
+          = ?
+        </div>
+      )}
     </div>
   )
 }

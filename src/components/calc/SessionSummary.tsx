@@ -13,6 +13,10 @@ interface Props {
   maxStreak: number
   challengeCorrect: number
   levelUpTo?: number | null
+  levelDownTo?: number | null
+  nextSessionAssault?: boolean
+  /** Optional caption shown when a level transitioned to abc_passed / review_r1 / review_r2 etc. */
+  reviewMilestone?: string | null
   onAgain: () => void
 }
 
@@ -41,6 +45,9 @@ export default function SessionSummary({
   maxStreak,
   challengeCorrect,
   levelUpTo,
+  levelDownTo,
+  nextSessionAssault,
+  reviewMilestone,
   onAgain,
 }: Props) {
   const accuracy = total > 0 ? Math.round(((correctCount + retryCount) / total) * 100) : 0
@@ -87,6 +94,45 @@ export default function SessionSummary({
             }}
           >
             🎉 升级到 Lv.{levelUpTo} 啦！
+          </div>
+        )}
+
+        {levelDownTo && (
+          <div
+            className="mt-3 rounded-xl px-3 py-2 text-[12px] font-extrabold"
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.28)',
+              color: '#fca5a5',
+            }}
+          >
+            📉 暂时回到 Lv.{levelDownTo} 多练几次再上来
+          </div>
+        )}
+
+        {reviewMilestone && (
+          <div
+            className="mt-3 rounded-xl px-3 py-2 text-[12px] font-extrabold"
+            style={{
+              background: 'rgba(34,197,94,0.1)',
+              border: '1px solid rgba(34,197,94,0.28)',
+              color: '#4ade80',
+            }}
+          >
+            ✨ {reviewMilestone}
+          </div>
+        )}
+
+        {nextSessionAssault && (
+          <div
+            className="mt-3 rounded-xl px-3 py-2 text-[11px] font-extrabold"
+            style={{
+              background: 'rgba(245,158,11,0.08)',
+              border: '1px solid rgba(245,158,11,0.22)',
+              color: '#fbbf24',
+            }}
+          >
+            ⚔️ 下次进入攻坚模式，重点突破薄弱题
           </div>
         )}
 
