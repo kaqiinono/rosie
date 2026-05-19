@@ -6,12 +6,17 @@ interface QuestionLayoutProps {
   question: React.ReactNode
   solution: React.ReactNode
   answer: React.ReactNode
+  defaultSolutionOpen?: boolean
 }
 
-export default function QuestionLayout({ question, solution, answer }: QuestionLayoutProps) {
-  const [solutionOpen, setSolutionOpen] = useState(false)
+export default function QuestionLayout({ question, solution, answer, defaultSolutionOpen = false }: QuestionLayoutProps) {
+  const [solutionOpen, setSolutionOpen] = useState(defaultSolutionOpen)
   const solutionRef = useRef<HTMLDivElement>(null)
   const [solutionHeight, setSolutionHeight] = useState(0)
+
+  useEffect(() => {
+    setSolutionOpen(defaultSolutionOpen)
+  }, [defaultSolutionOpen])
 
   useEffect(() => {
     if (solutionRef.current) {

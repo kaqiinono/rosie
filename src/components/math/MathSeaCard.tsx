@@ -7,7 +7,7 @@ export default function MathSeaCard() {
   return (
     <Link
       href="/math/sea"
-      className="group relative block w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(99,102,241,.25)]"
+      className="group relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(99,102,241,.25)]"
       style={{
         background: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #ede9fe 100%)',
         border: '2px solid rgba(99,102,241,.3)',

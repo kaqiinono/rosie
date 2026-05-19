@@ -12,10 +12,11 @@ interface HomePageProps {
 }
 
 const MODULES = [
-  { key: 'pretest',  path: `${BASE}/pretest`,  icon: '📝', bg: 'bg-[#fef9c3]',       title: '课前测',   desc: '暂未上线 · 后续补充' },
-  { key: 'lesson',   path: `${BASE}/lesson`,   icon: '📖', bg: 'bg-rose-100',         title: '课堂讲解', desc: '例题1-14 · 涵盖称重/分账/换瓶/计时/找异物 5 大题型' },
-  { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light',  title: '课后巩固', desc: '暂未上线 · 后续补充' },
-  { key: 'workbook', path: `${BASE}/workbook`, icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '暂未上线 · 后续补充' },
+  { key: 'pretest',    path: `${BASE}/pretest`,    icon: '📝', bg: 'bg-[#fef9c3]',        title: '课前测',   desc: '暂未上线 · 后续补充' },
+  { key: 'lesson',     path: `${BASE}/lesson`,     icon: '📖', bg: 'bg-rose-100',         title: '课堂讲解', desc: '例题1-14 · 涵盖称重/分账/换瓶/计时/找异物 5 大题型' },
+  { key: 'homework',   path: `${BASE}/homework`,   icon: '✏️', bg: 'bg-app-green-light',  title: '课后巩固', desc: '巩固1-6 · 5 大题型对应训练' },
+  { key: 'workbook',   path: `${BASE}/workbook`,   icon: '📚', bg: 'bg-app-purple-light', title: '拓展练习', desc: '闯关1-12 · 综合挑战 + 策略思维' },
+  { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-teal-100',         title: '附加题',   desc: '6 道趣味智力题 · 过河/对折/几何/数列' },
 ]
 
 export default function HomePage({ problems, solveCount }: HomePageProps) {
@@ -49,10 +50,10 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
 
       {/* Problem Types */}
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
-        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 生活智力题 · 5大题型</div>
+        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 生活智力题 · 6大题型</div>
         <div className="mb-3 text-[13px] leading-relaxed text-text-secondary">
           <strong className="text-text-primary">核心思路：</strong>
-          列出所有可能 → 去重 / 找规律 → 用最少操作达到目标。本讲题目共同特点是<strong>"组合 + 操作"</strong>，没有现成公式套，重点训练有序枚举与策略选择。
+          列出所有可能 → 去重 / 找规律 → 用最少操作达到目标。本讲题目共同特点是<strong>"组合 + 操作 + 策略"</strong>，没有现成公式套，重点训练有序枚举与策略选择。
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {PROBLEM_TYPES.map(t => {
@@ -78,7 +79,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <div className="mt-3 flex items-start gap-2 rounded-lg bg-rose-50 p-3">
           <span className="shrink-0 text-base">⭐</span>
           <span className="text-xs leading-relaxed text-rose-800">
-            万能口诀：<strong>能枚举的全枚举去重；分账先求单价；换水扣"换购比-1"；绳子香两端点燃时间减半；天平找异物分三等分。</strong>
+            万能口诀：<strong>能枚举的全枚举去重；分账先求单价；换水扣"换购比-1"；绳子香两端点燃时间减半；天平找异物分三等分；综合策略找模型 / 对称 / 必胜态。</strong>
           </span>
         </div>
       </div>

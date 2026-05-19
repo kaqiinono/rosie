@@ -26,10 +26,11 @@ interface FilterPanelProps {
 }
 
 const SOURCE_BTNS = [
-  { key: 'pretest',  label: '📝 课前测' },
-  { key: 'lesson',   label: '📖 课堂' },
-  { key: 'homework', label: '✏️ 课后' },
-  { key: 'workbook', label: '📚 拓展' },
+  { key: 'pretest',    label: '📝 课前测' },
+  { key: 'lesson',     label: '📖 课堂' },
+  { key: 'homework',   label: '✏️ 课后' },
+  { key: 'workbook',   label: '📚 拓展' },
+  { key: 'supplement', label: '📒 附加' },
 ]
 
 const TYPE_BTNS = [
@@ -38,6 +39,7 @@ const TYPE_BTNS = [
   { key: 'type3', label: '题型3·空瓶换水' },
   { key: 'type4', label: '题型4·计时量水' },
   { key: 'type5', label: '题型5·天平找异物' },
+  { key: 'type6', label: '题型6·综合策略' },
 ]
 
 const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
@@ -53,6 +55,7 @@ const TAG_COLORS: Record<string, string> = {
   type3: 'bg-green-100 text-green-800',
   type4: 'bg-sky-100 text-sky-800',
   type5: 'bg-purple-100 text-purple-800',
+  type6: 'bg-teal-100 text-teal-800',
 }
 
 function getProblemHref(setName: string, indexInSet: number): string {
@@ -68,10 +71,10 @@ function matchesMastery(count: number, mastery: MasteryFilter): boolean {
 }
 
 const ExpandedCard = memo(function ExpandedCard({
-  p, setName, idx, solveCount, isOpen, cardId, onToggle,
+  p, setName, idx, solveCount, isOpen, cardId, onToggle, defaultSolutionOpen,
 }: {
   p: Problem; setName: string; idx: number; solveCount: Record<string, number>
-  isOpen: boolean; cardId: string; onToggle: (id: string) => void
+  isOpen: boolean; cardId: string; onToggle: (id: string) => void; defaultSolutionOpen: boolean
 }) {
   const count = solveCount[p.id] ?? 0
   const level = getMasteryLevel(count)
@@ -94,7 +97,7 @@ const ExpandedCard = memo(function ExpandedCard({
       </button>
       {isOpen && (
         <div className="border-t border-border-light px-4 pb-5 pt-3">
-          <ProblemDetail problem={p} mode="inline" />
+          <ProblemDetail problem={p} mode="inline" defaultSolutionOpen={defaultSolutionOpen} />
         </div>
       )}
     </div>
@@ -103,6 +106,7 @@ const ExpandedCard = memo(function ExpandedCard({
 
 export default function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
   const [showDetail, setShowDetail] = useState(false)
+  const [autoExpand, setAutoExpand] = useState(false)
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
 
   const all: { p: Problem; setName: string; idx: number }[] = []
@@ -122,6 +126,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
   const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
 
   const toggleDetailMode = useCallback(() => { setShowDetail(v => !v); setCollapsedIds(new Set()) }, [])
+  const toggleAutoExpand = useCallback(() => { setAutoExpand(v => !v) }, [])
   const toggleCard = useCallback((id: string) => {
     setCollapsedIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next })
   }, [])
@@ -166,6 +171,16 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
           </div>
         </div>
 
+        <div className="mb-2">
+          <div className="mb-1.5 text-[11px] font-bold text-rose-700">📖 题解显示</div>
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={toggleAutoExpand}
+              className={`${btnBase} ${autoExpand ? btnOn : btnOff}`}>
+              {autoExpand ? '✅ 自动展开题解' : '⭕ 自动展开题解'}
+            </button>
+          </div>
+        </div>
+
         <div className="mt-2 space-y-1.5">
           <div className="flex items-center gap-1.5 text-[11px] text-rose-700">
             <span>练过 <strong className="text-rose-800">{attempted}</strong> 道</span>
@@ -193,7 +208,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         <div className="flex flex-col gap-2">
           {filtered.map(({ p, setName, idx }) => (
             <ExpandedCard key={p.id} p={p} setName={setName} idx={idx} solveCount={solveCount}
-              isOpen={!collapsedIds.has(p.id)} cardId={p.id} onToggle={toggleCard} />
+              isOpen={!collapsedIds.has(p.id)} cardId={p.id} onToggle={toggleCard} defaultSolutionOpen={autoExpand} />
           ))}
           {filtered.length === 0 && <div className="py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}
         </div>
