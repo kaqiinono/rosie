@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { VOUCHER_PRICES } from '@/utils/calc-helpers'
+import { voucherTotalPrice } from '@/utils/calc-helpers'
 import type { Voucher, VoucherCategory } from '@/utils/type'
 
 interface VoucherRow {
@@ -61,7 +61,7 @@ export function useCalcVouchers(user: User | null) {
       try {
         const { data, error } = await supabase
           .from('calc_vouchers')
-          .insert({ user_id: user.id, category, coins_spent: VOUCHER_PRICES[category] ?? 50 })
+          .insert({ user_id: user.id, category, coins_spent: voucherTotalPrice(category) })
           .select('id,category,redeemed_at,used_at,coins_spent')
           .single()
         if (error || !data) return null

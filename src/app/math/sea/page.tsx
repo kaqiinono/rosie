@@ -8,6 +8,8 @@ import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@/utils/
 import { SOURCE_LABELS } from '@/utils/constant'
 import { getMasteryLevel } from '@/utils/masteryUtils'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import { useStarHud } from '@/components/stars/StarHudProvider'
+import StarProgressBar from '@/components/stars/StarProgressBar'
 
 // ── Ocean animation styles ─────────────────────────────────────────────────────
 
@@ -379,18 +381,22 @@ function PracticeProblem({
 
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
+  const { awardStars } = useStarHud()
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswer(''); setFeedback(null)
   }, [problem.id])
 
-  function checkAnswer() {
+  function checkAnswer(e?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>) {
     if (!answer.trim()) return
     const v = Number(answer)
     if (v === problem.finalAns) {
-      setFeedback({ text: '🎉 完全正确！你真棒！', ok: true })
+      setFeedback({ text: '🎉 完全正确！+1 ☀️ 蓝太阳', ok: true })
       onSolve(problem.id)
+      const target = e && 'currentTarget' in e ? (e.currentTarget as HTMLElement) : null
+      const rect = target?.getBoundingClientRect()
+      void awardStars('blue', 1, rect ? { origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } } : undefined)
     } else {
       setFeedback({
         text: `❌ 不对哦，再想想？提示：答案是 ${problem.finalAns} 以内的数。`,
@@ -452,11 +458,11 @@ function PracticeProblem({
             placeholder="？"
             value={answer}
             onChange={e => setAnswer(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && checkAnswer()}
+            onKeyDown={e => e.key === 'Enter' && checkAnswer(e)}
           />
           <span className="text-gray-600">{problem.finalUnit}</span>
           <button
-            onClick={checkAnswer}
+            onClick={e => checkAnswer(e)}
             className="cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-semibold text-white transition-all active:scale-95"
             style={{ background: 'linear-gradient(135deg, #0891b2, #0284c7)', boxShadow: '0 3px 10px rgba(8,145,178,0.35)' }}
           >
@@ -620,6 +626,19 @@ function PracticeOverlay({
           未做题型优先 ·{' '}
           {pool.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0).length} 题待探索
         </span>
+      </div>
+
+      {/* Session star progress */}
+      <div
+        className="relative z-10 shrink-0 px-4 py-2"
+        style={{
+          background: 'rgba(2,11,28,0.7)',
+          borderBottom: '1px solid rgba(0,229,255,0.1)',
+        }}
+      >
+        <div className="mx-auto max-w-[700px]">
+          <StarProgressBar color="blue" target={10} label="本次海上探索" compact />
+        </div>
       </div>
 
       {/* Problem — light card floating in the dark */}

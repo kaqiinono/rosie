@@ -246,21 +246,29 @@ export function timeLimitBonusPreview(count: number, timeLimitSec: number): numb
   return calcTimeBonus(count, timeLimitSec, timeLimitSec)
 }
 
-export const VOUCHER_PRICE = 50  // kept for legacy balance calculations; prefer VOUCHER_PRICES per category
+export const VOUCHER_PRICE = 50 // kept for legacy balance calculations; prefer VOUCHER_PRICES per category
 
-export const VOUCHER_PRICES: Record<string, number> = {
-  play10: 50,
-  dance: 50,
-  dog: 50,
-  popcorn: 20,
-  generic: 500,
-  snack: 100,
-  cartoon: 120,
-  movie: 150,
-  toy: 200,
-  wish: 300,
-  universal: 500,
-  shopping: 200
+// Tuple of [yellow, red, blue] stars required to redeem each voucher.
+// Yellow = calc (口算), Red = English, Blue = Math.
+export const VOUCHER_PRICES: Record<string, [number, number, number]> = {
+  play10: [50, 10, 0],
+  dance: [50, 10, 0],
+  dog: [50, 10, 0],
+  popcorn: [20, 10, 0],
+  generic: [500, 100, 10],
+  snack: [100, 50, 5],
+  cartoon: [120, 20, 2],
+  movie: [150, 20, 3],
+  toy: [200, 20, 2],
+  wish: [300, 20, 4],
+  universal: [500, 100, 10],
+  shopping: [200, 50, 3],
+}
+
+export function voucherTotalPrice(category: string): number {
+  const p = VOUCHER_PRICES[category]
+  if (!p) return 50
+  return p[0] + p[1] + p[2]
 }
 
 export const VOUCHER_META: Record<string, { emoji: string; label: string; gradient: string }> = {

@@ -24,7 +24,8 @@ import MasteryStatusPanel from './MasteryStatusPanel'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
-import { useStarEarning } from '@/hooks/useStarEarning'
+import { useStarHud } from '@/components/stars/StarHudProvider'
+import StarProgressBar from '@/components/stars/StarProgressBar'
 import { supabase } from '@/lib/supabase'
 import { todayStr } from '@/utils/constant'
 
@@ -92,7 +93,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const { user } = useAuth()
   const { masteryMap, recordBatch } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
-  const { earnStars } = useStarEarning(user)
+  const { awardStars, session: starSession } = useStarHud()
   const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
 
   const [plan, setPlan] = useState<WeeklyPlan>(initialPlan)
@@ -295,9 +296,17 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const handleAnswer = useCallback(
     (correct: boolean) => {
       if (correct) setScore((s) => s + 1)
-      if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct })
+      const q = quizQs[curQ]
+      if (q) {
+        quizResultBuffer.current.push({ entry: q.word, correct })
+        if (correct) {
+          // 单选题 (A/B) +1 红星; 填空题 (C) +2 红星
+          const amount = q.type === 'C' ? 2 : 1
+          void awardStars('red', amount)
+        }
+      }
     },
-    [quizQs, curQ],
+    [quizQs, curQ, awardStars],
   )
 
   const nextQ = useCallback(() => {
@@ -342,13 +351,19 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         }
       }
       recordBatch(quizResultBuffer.current)
-      void earnStars('english', finalScore).then(() => setLastStarsEarned(finalScore))
+      // Stars are already awarded per-question via handleAnswer above.
+      // We only surface a tally here for the "done" screen.
+      const starsFromThisRun = quizResultBuffer.current.reduce((sum, r, idx) => {
+        if (!r.correct) return sum
+        return sum + (quizQs[idx]?.type === 'C' ? 2 : 1)
+      }, 0)
+      setLastStarsEarned(starsFromThisRun)
       quizResultBuffer.current = []
       setPhase('done')
     } else {
       setCurQ(next)
     }
-  }, [curQ, quizQs, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch, earnStars])
+  }, [curQ, quizQs, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch])
 
   const quizOptions = useMemo(() => {
     const q = quizQs[curQ]
@@ -959,6 +974,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   // ── QUIZ ─────────────────────────────────────────────────────────────────
   if (phase === 'quiz' && quizQs[curQ]) {
     const q = quizQs[curQ]
+    // Stars available this run: A/B = 1, C = 2 per question
+    const possibleStars = quizQs.reduce((sum, qq) => sum + (qq.type === 'C' ? 2 : 1), 0)
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-2 flex items-center gap-3 py-3">
@@ -978,7 +995,20 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             ← 回到记忆
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">✏️ 单词测试</div>
+          <div className="ml-auto hidden text-[11px] font-bold text-[var(--wm-text-dim)] sm:block">
+            题型 {q.type} · {q.type === 'C' ? '+2⭐/题' : '+1⭐/题'}
+          </div>
         </div>
+
+        {/* Live red star progress for this quiz */}
+        <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5">
+          <StarProgressBar color="red" target={Math.max(1, possibleStars)} label="本次练习红月亮" compact />
+          <div className="mt-1 flex flex-wrap gap-x-3 text-[10px] font-bold text-rose-700/70">
+            <span>本次已得 {starSession.red} 红🌙</span>
+            <span>总目标 {possibleStars} 红🌙</span>
+          </div>
+        </div>
+
         <QuizCard
           question={{ word: q.word, type: q.type }}
           options={quizOptions}

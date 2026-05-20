@@ -12,6 +12,8 @@ import {
 import { getWordSizeClass } from '@/utils/phonics'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
+import { useStarHud } from '@/components/stars/StarHudProvider'
+import StarProgressBar from '@/components/stars/StarProgressBar'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -161,6 +163,8 @@ export default function ImmersiveMode({
     }
   }, [curQ, quizQs, onQuizComplete])
 
+  const { awardStars } = useStarHud()
+
   const handleMCAnswer = useCallback(
     (chosen: string, correct: string) => {
       if (qAnswered) return
@@ -168,11 +172,14 @@ export default function ImmersiveMode({
       setQAnswered(true)
       setQCorrect(isCorrect)
       setQSelected(chosen)
-      if (isCorrect) setQScore((s) => s + 1)
+      if (isCorrect) {
+        setQScore((s) => s + 1)
+        void awardStars('red', 1)
+      }
       if (quizQs[curQ])
         quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
     },
-    [qAnswered, quizQs, curQ],
+    [qAnswered, quizQs, curQ, awardStars],
   )
 
   const handleSpellSubmit = useCallback(
@@ -182,10 +189,14 @@ export default function ImmersiveMode({
       setQAnswered(true)
       setQCorrect(ok)
       setSpellOk(ok)
-      if (ok) setQScore((s) => s + 1)
+      if (ok) {
+        setQScore((s) => s + 1)
+        // Fill-in-blank (spelling) awards 2 red stars per correct answer.
+        void awardStars('red', 2)
+      }
       if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: ok })
     },
-    [qAnswered, quizQs, curQ],
+    [qAnswered, quizQs, curQ, awardStars],
   )
 
   useEffect(() => {
@@ -474,6 +485,7 @@ export default function ImmersiveMode({
                   ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
                   : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
 
+              const targetStars = qTotal ? qTotal * (practiceTypes.includes('C') ? 2 : 1) : qTotal
               return (
                 <div className="@container flex w-full max-w-[1000px] flex-col gap-4 rounded-[20px] border border-white/[.08] bg-white/[.04] p-[clamp(1rem,3.5cqi,1.75rem)]">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -483,12 +495,17 @@ export default function ImmersiveMode({
                       {isA
                         ? '题型 A · 看释义选单词'
                         : isC
-                          ? '题型 C · 看释义默写单词'
+                          ? '题型 C · 看释义默写单词 (+2⭐/题)'
                           : '题型 B · 看单词选释义'}
                     </span>
                     <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">
-                      ✓ {qScore}
+                      ✓ {qScore} / {qTotal}
                     </div>
+                  </div>
+
+                  {/* Live red star progress for this practice session */}
+                  <div className="rounded-2xl border border-rose-300/30 bg-rose-500/10 p-2.5">
+                    <StarProgressBar color="red" target={Math.max(1, targetStars)} label="本次练习红月亮" compact />
                   </div>
 
                   <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">

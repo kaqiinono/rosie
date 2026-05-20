@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import type { CalcSession, CalcMode, CalcLevel } from '@/utils/type'
-import { levelKey } from '@/utils/calc-helpers'
+import type { CalcSession, CalcMode, CalcLevel, VoucherCategory } from '@/utils/type'
+import { levelKey, VOUCHER_PRICES } from '@/utils/calc-helpers'
 import { todayStr } from '@/utils/constant'
 
 interface SessionRow {
@@ -43,8 +43,8 @@ function rowToSession(r: SessionRow): CalcSession {
   }
 }
 
-interface VoucherSumRow { coins_spent: number }
-interface StarSessionRow { coins_earned: number }
+interface VoucherCategoryRow { category: VoucherCategory }
+interface StarSessionRow { coins_earned: number; source: 'english' | 'math' }
 
 async function fetchWalletData(userId: string) {
   const [{ data: sessionRows }, { data: voucherRows }] = await Promise.all([
@@ -56,43 +56,44 @@ async function fetchWalletData(userId: string) {
       .limit(200),
     supabase
       .from('calc_vouchers')
-      .select('coins_spent')
+      .select('category')
       .eq('user_id', userId),
   ])
   const sessions = (sessionRows ?? []).map(r => rowToSession(r as SessionRow))
-  const spend = ((voucherRows ?? []) as VoucherSumRow[]).reduce(
-    (sum, v) => sum + (v.coins_spent ?? 0),
-    0,
-  )
-  let starEarned = 0
+  const voucherCategories = ((voucherRows ?? []) as VoucherCategoryRow[]).map(v => v.category)
+  let redEarned = 0
+  let blueEarned = 0
   try {
     const { data: starRows } = await supabase
       .from('star_sessions')
-      .select('coins_earned')
+      .select('coins_earned,source')
       .eq('user_id', userId)
-    starEarned = ((starRows ?? []) as StarSessionRow[]).reduce(
-      (sum, r) => sum + (r.coins_earned ?? 0),
-      0,
-    )
+    for (const r of (starRows ?? []) as StarSessionRow[]) {
+      const amt = r.coins_earned ?? 0
+      if (r.source === 'english') redEarned += amt
+      else if (r.source === 'math') blueEarned += amt
+    }
   } catch { /* star_sessions table may not exist before migration */ }
-  return { sessions, spend, starEarned }
+  return { sessions, voucherCategories, redEarned, blueEarned }
 }
 
 export function useCalcWallet(user: User | null) {
   const [sessions, setSessions] = useState<CalcSession[]>([])
-  const [voucherSpend, setVoucherSpend] = useState(0)
-  const [starEarned, setStarEarned] = useState(0)
+  const [voucherCategories, setVoucherCategories] = useState<VoucherCategory[]>([])
+  const [redEarned, setRedEarned] = useState(0)
+  const [blueEarned, setBlueEarned] = useState(0)
   const [isLoading, setIsLoading] = useState(() => user !== null)
 
   useEffect(() => {
     if (!user) return
     let cancelled = false
     const init = async () => {
-      const { sessions: ss, spend, starEarned: se } = await fetchWalletData(user.id)
+      const data = await fetchWalletData(user.id)
       if (cancelled) return
-      setSessions(ss)
-      setVoucherSpend(spend)
-      setStarEarned(se)
+      setSessions(data.sessions)
+      setVoucherCategories(data.voucherCategories)
+      setRedEarned(data.redEarned)
+      setBlueEarned(data.blueEarned)
       setIsLoading(false)
     }
     void init()
@@ -101,18 +102,34 @@ export function useCalcWallet(user: User | null) {
 
   const refresh = useCallback(async () => {
     if (!user) return
-    const { sessions: ss, spend, starEarned: se } = await fetchWalletData(user.id)
-    setSessions(ss)
-    setVoucherSpend(spend)
-    setStarEarned(se)
+    const data = await fetchWalletData(user.id)
+    setSessions(data.sessions)
+    setVoucherCategories(data.voucherCategories)
+    setRedEarned(data.redEarned)
+    setBlueEarned(data.blueEarned)
   }, [user])
 
-  const coinsEarnedTotal = useMemo(
+  const yellowEarnedTotal = useMemo(
     () => sessions.reduce((sum, s) => sum + (s.coinsEarned ?? 0), 0),
     [sessions],
   )
 
-  const balance = Math.max(0, coinsEarnedTotal + starEarned - voucherSpend)
+  const { yellowSpent, redSpent, blueSpent } = useMemo(() => {
+    let y = 0, r = 0, b = 0
+    for (const cat of voucherCategories) {
+      const p = VOUCHER_PRICES[cat]
+      if (!p) continue
+      y += p[0]; r += p[1]; b += p[2]
+    }
+    return { yellowSpent: y, redSpent: r, blueSpent: b }
+  }, [voucherCategories])
+
+  const yellowBalance = Math.max(0, yellowEarnedTotal - yellowSpent)
+  const redBalance = Math.max(0, redEarned - redSpent)
+  const blueBalance = Math.max(0, blueEarned - blueSpent)
+
+  // Legacy: calc pages display `balance` as the user's calc-earned stars (yellow).
+  const balance = yellowBalance
 
   const todaySessions = useMemo(() => {
     const t = todayStr()
@@ -164,21 +181,28 @@ export function useCalcWallet(user: User | null) {
     [user, refresh],
   )
 
-  const spendCoins = useCallback(async (amount: number) => {
-    // Optimistically bump voucher spend; useCalcVouchers handles actual insert
-    setVoucherSpend(v => v + amount)
+  const spendVoucher = useCallback(async (category: VoucherCategory) => {
+    // Optimistically register the voucher; useCalcVouchers handles the actual insert.
+    setVoucherCategories(prev => [...prev, category])
   }, [])
 
   return {
     sessions,
     balance,
-    coinsEarnedTotal,
-    voucherSpend,
+    yellowBalance,
+    redBalance,
+    blueBalance,
+    yellowEarnedTotal,
+    redEarned,
+    blueEarned,
+    yellowSpent,
+    redSpent,
+    blueSpent,
     todayQuestionsDone,
     todayCorrect,
     todayCoinsEarned,
     recordSession,
-    spendCoins,
+    spendVoucher,
     refresh,
     isLoading,
   }

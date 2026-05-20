@@ -69,7 +69,7 @@ export default function HomePage() {
     <>
       <OrbBackground variant="home" />
 
-      <div className="relative z-1 flex min-h-screen flex-col items-center justify-center gap-9 px-5 py-8 pb-12">
+      <div className="relative z-1 flex min-h-screen flex-col items-center justify-center gap-9 px-5 py-8 pt-18 pb-12">
         <section className="max-w-[540px] text-center">
           <div className="animate-wave inline-block origin-[70%_70%] text-[52px]">👋</div>
           <div className="text-text-secondary mt-2 text-[15px] font-semibold tracking-wide">

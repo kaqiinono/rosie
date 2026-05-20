@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from 'next'
 import ServiceWorkerRegistrar from '@/components/shared/ServiceWorkerRegistrar'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ImmersiveProvider } from '@/contexts/ImmersiveContext'
-import AccountBar from '@/components/shared/AccountBar'
+import TopRightBar from '@/components/shared/TopRightBar'
 import AuthGuard from '@/components/shared/AuthGuard'
+import { StarHudProvider } from '@/components/stars/StarHudProvider'
+import StarBurstOverlay from '@/components/stars/StarBurst'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -36,8 +38,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ImmersiveProvider>
             <ServiceWorkerRegistrar />
             <AuthGuard>
-              <AccountBar />
-              {children}
+              <StarHudProvider>
+                <TopRightBar />
+                {children}
+                <StarBurstOverlay />
+              </StarHudProvider>
             </AuthGuard>
           </ImmersiveProvider>
         </AuthProvider>

@@ -30,7 +30,8 @@ const courses: CourseCardData[] = [
   {
     href: '/math/ny/40',
     title: '周长问题探险',
-    description: '掌握拼图法、剪切法、平移法、标向法，解决各类长方形、正方形及不规则图形的周长问题。',
+    description:
+      '掌握拼图法、剪切法、平移法、标向法，解决各类长方形、正方形及不规则图形的周长问题。',
     icon: '📐',
     lectureNum: '第 40 讲',
     tags: ['周长问题', '剪切·平移·标向', '38 道互动题'],
@@ -39,7 +40,8 @@ const courses: CourseCardData[] = [
   {
     href: '/math/ny/39',
     title: '盈亏问题探险',
-    description: '掌握盈亏核心公式：份数 = 总差额 ÷ 每份差额，解决盈盈、亏亏、盈亏、盈恰、亏恰 5 大题型。',
+    description:
+      '掌握盈亏核心公式：份数 = 总差额 ÷ 每份差额，解决盈盈、亏亏、盈亏、盈恰、亏恰 5 大题型。',
     icon: '⚖️',
     lectureNum: '第 39 讲',
     tags: ['盈亏问题', '差额公式', '12 道互动题'],
@@ -48,7 +50,8 @@ const courses: CourseCardData[] = [
   {
     href: '/math/ny/38',
     title: '一笔画探险',
-    description: '掌握一笔画的秘密：端点、奇点与偶点，判断能否一笔画，以及如何改造图形让它可以一笔画。',
+    description:
+      '掌握一笔画的秘密：端点、奇点与偶点，判断能否一笔画，以及如何改造图形让它可以一笔画。',
     icon: '✏️',
     lectureNum: '第 38 讲',
     tags: ['一笔画', '奇点偶点', '5道附加题'],
@@ -57,7 +60,8 @@ const courses: CourseCardData[] = [
   {
     href: '/math/ny/37',
     title: '鸡兔同笼探险',
-    description: '掌握假设法4大题型：头和腿和基础、先求头和、双组分配、倒扣分，附加题挑战特殊条件与代数方法。',
+    description:
+      '掌握假设法4大题型：头和腿和基础、先求头和、双组分配、倒扣分，附加题挑战特殊条件与代数方法。',
     icon: '🐔',
     lectureNum: '第 37 讲',
     tags: ['鸡兔同笼', '假设法', '34 道互动题'],
@@ -66,7 +70,8 @@ const courses: CourseCardData[] = [
   {
     href: '/math/ny/36',
     title: '星期几问题探险',
-    description: '掌握 3 大题型推算任意日期的星期几：同月/跨月天数余数法、跨年平年+1/闰年+2 累计偏移、确定星期几的分布分析。',
+    description:
+      '掌握 3 大题型推算任意日期的星期几：同月/跨月天数余数法、跨年平年+1/闰年+2 累计偏移、确定星期几的分布分析。',
     icon: '📅',
     lectureNum: '第 36 讲',
     tags: ['星期几问题', '余数推算', '25 道互动题'],
@@ -75,7 +80,8 @@ const courses: CourseCardData[] = [
   {
     href: '/math/ny/35',
     title: '归一问题探险',
-    description: '学会用倍比图解决归一问题，覆盖 5 大题型：基础归一、直接倍比、双归一、反向归一、变化归一。',
+    description:
+      '学会用倍比图解决归一问题，覆盖 5 大题型：基础归一、直接倍比、双归一、反向归一、变化归一。',
     icon: '🎯',
     lectureNum: '第 35 讲',
     tags: ['归一问题', '倍比图', '29 道互动题'],
@@ -98,13 +104,13 @@ export default function MathPage() {
       <OrbBackground variant="math" />
       <BackLink />
 
-      <div className="relative z-1 flex min-h-screen flex-col items-center justify-center gap-7 px-5 py-8 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:py-6">
+      <div className="relative z-1 flex min-h-screen flex-col items-center justify-center gap-7 px-5 py-8 pt-70 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:py-6">
         <section className="max-w-[480px] text-center">
-          <div className="inline-block animate-bounce-slow text-5xl">🧮</div>
-          <h1 className="mt-2 bg-gradient-to-br from-blue-900 via-violet-600 to-amber-500 bg-clip-text text-[clamp(26px,5vw,34px)] font-black leading-tight text-transparent">
+          <div className="animate-bounce-slow inline-block text-5xl">🧮</div>
+          <h1 className="mt-2 bg-gradient-to-br from-blue-900 via-violet-600 to-amber-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
             数学探险乐园
           </h1>
-          <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+          <p className="text-text-secondary mt-1.5 text-sm leading-relaxed">
             选一节课开始今天的数学冒险吧
           </p>
         </section>
@@ -122,7 +128,7 @@ export default function MathPage() {
           ))}
         </section>
 
-        <div className="text-xs text-text-muted">Rosie 的数学探险乐园</div>
+        <div className="text-text-muted text-xs">Rosie 的数学探险乐园</div>
       </div>
     </>
   )

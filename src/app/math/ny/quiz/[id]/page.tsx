@@ -6,6 +6,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { useMathQuiz, computeQuizPoints } from '@/hooks/useMathQuiz'
 import { supabase } from '@/lib/supabase'
+import { useStarHud } from '@/components/stars/StarHudProvider'
+import StarProgressBar from '@/components/stars/StarProgressBar'
 import { PROBLEMS as P34 } from '@/utils/lesson34-data'
 import { PROBLEMS as P35 } from '@/utils/lesson35-data'
 import { PROBLEMS as P36 } from '@/utils/lesson36-data'
@@ -57,6 +59,8 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   const { user } = useAuth()
   const { handleSolve } = useMathSolved(user)
   const { completePaper } = useMathQuiz(user)
+  const { awardStars } = useStarHud()
+  const [starBreakdown, setStarBreakdown] = useState<{ base: number; bonus: number } | null>(null)
 
   const [paper, setPaper] = useState<QuizPaper | null>(null)
   const [loading, setLoading] = useState(true)
@@ -152,6 +156,18 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
     setResults(newResults)
     setSubmitted(true)
     setSubmitting(false)
+
+    // ── Award blue stars: +1 per correct, +20% bonus if all correct
+    const correctN = paper.problems.filter(item => newResults[item.problemId]).length
+    const allCorrect = correctN > 0 && correctN === paper.problems.length
+    const bonus = allCorrect ? Math.round(correctN * 0.2) : 0
+    setStarBreakdown({ base: correctN, bonus })
+    if (correctN > 0) {
+      void awardStars('blue', correctN, {
+        bonus,
+        bonusLabel: bonus > 0 ? `全对加成 +20% (+${bonus}⭐)` : undefined,
+      })
+    }
   }
 
   const allAnswered = paper?.problems.every(
@@ -223,6 +239,16 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
       </div>
 
       <div className="mx-auto max-w-2xl px-4 py-5">
+        {/* ── Star progress (live) ─────────────────────────────────────── */}
+        {!submitted && paper.problems.length > 0 && (
+          <div className="mb-4 rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3">
+            <StarProgressBar color="blue" target={paper.problems.length} label="本套试卷可得" compact />
+            <p className="mt-1.5 text-[11px] text-blue-700/70">
+              答对 1 题 +1 <span className="font-bold">蓝⭐</span>，全对再加成 +20%！
+            </p>
+          </div>
+        )}
+
         {/* ── Score summary ────────────────────────────────────────────── */}
         {submitted && (
           <div className="mb-5 rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', border: '1.5px solid #a7f3d0' }}>
@@ -240,6 +266,28 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                 {correctCount === paper.problems.length ? '🎉' : correctCount >= paper.problems.length * 0.6 ? '👍' : '📚'}
               </div>
             </div>
+
+            {/* Star reward breakdown */}
+            {starBreakdown && (starBreakdown.base + starBreakdown.bonus) > 0 && (
+              <div className="border-t border-emerald-200 bg-white/60 px-5 py-3">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] font-bold">
+                  <span className="text-blue-700">
+                    本次获得 <span className="font-fredoka text-[18px] text-blue-600">{starBreakdown.base + starBreakdown.bonus}</span> 蓝⭐
+                  </span>
+                  <span className="text-slate-500">·</span>
+                  <span className="text-slate-600">基础 +{starBreakdown.base}</span>
+                  {starBreakdown.bonus > 0 && (
+                    <>
+                      <span className="text-slate-500">·</span>
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700">
+                        全对加成 +{starBreakdown.bonus} (+20%)
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
             {correctCount < paper.problems.length && (
               <div className="border-t border-emerald-200 px-5 py-2.5">
                 <Link

@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMathSolved } from '@/hooks/useMathSolved'
-import { useStarEarning } from '@/hooks/useStarEarning'
+import { useStarHud } from '@/components/stars/StarHudProvider'
 import { supabase } from '@/lib/supabase'
 
 interface LessonContextType {
@@ -40,7 +40,7 @@ export function createLessonProvider(displayName: string): {
   function Provider({ children }: { children: ReactNode }): ReactNode {
     const { user } = useAuth()
     const { solveCount, handleSolve: solveAndSync } = useMathSolved(user)
-    const { earnStars } = useStarEarning(user)
+    const { awardStars } = useStarHud()
     const [toast, setToast] = useState<string | null>(null)
     const [showCongrats, setShowCongrats] = useState(false)
     const [wrongIds, setWrongIds] = useState<Set<string>>(new Set())
@@ -74,9 +74,8 @@ export function createLessonProvider(displayName: string): {
         return next
       })
 
-      // Award stars: 5 for first solve, 3 for second, 1 for subsequent
-      const stars = newCount === 1 ? 5 : newCount === 2 ? 3 : 1
-      void earnStars('math', stars)
+      // Award exactly 1 blue star per correct check (visible via StarHud + burst).
+      void awardStars('blue', 1)
 
       if (newCount === 1) {
         setShowCongrats(true)
