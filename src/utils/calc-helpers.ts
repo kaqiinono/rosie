@@ -188,7 +188,7 @@ function pickFromBank(level: CalcLevel, ctx: BuildSessionContext, count: number)
   if (typeof level === 'number' && level > 1) {
     oldLevelBank = bankFor((level - 1) as CalcLevel, ctx.userId)
   }
-  return assembleLevelPicks({
+  const picks = assembleLevelPicks({
     level,
     bank,
     problemStates: ctx.problemStates,
@@ -200,6 +200,12 @@ function pickFromBank(level: CalcLevel, ctx: BuildSessionContext, count: number)
     assaultMode: ctx.assaultMode,
     warmupComplete: ctx.warmupComplete,
   })
+  // When the bank is smaller than count (e.g. level 7/8/9/12 have only 18 items),
+  // pad to the requested count by generating additional questions so the session
+  // length matches what the user configured.
+  const gen = levelSpec(level).generate
+  while (picks.length < count) picks.push(gen())
+  return picks
 }
 
 /**
@@ -240,15 +246,36 @@ export function timeLimitBonusPreview(count: number, timeLimitSec: number): numb
   return calcTimeBonus(count, timeLimitSec, timeLimitSec)
 }
 
-export const VOUCHER_PRICE = 100
+export const VOUCHER_PRICE = 50  // kept for legacy balance calculations; prefer VOUCHER_PRICES per category
+
+export const VOUCHER_PRICES: Record<string, number> = {
+  play10: 50,
+  dance: 50,
+  dog: 50,
+  popcorn: 20,
+  generic: 500,
+  snack: 100,
+  cartoon: 120,
+  movie: 150,
+  toy: 200,
+  wish: 300,
+  universal: 500,
+  shopping: 200
+}
 
 export const VOUCHER_META: Record<string, { emoji: string; label: string; gradient: string }> = {
+  play10: { emoji: '⏱️', label: '玩十分钟', gradient: 'from-green-500 to-teal-500' },
+  dance: { emoji: '💃', label: '舞蹈券', gradient: 'from-pink-500 to-rose-400' },
+  popcorn: { emoji: '🍿', label: '爆米花券', gradient: 'from-yellow-400 to-orange-400' },
   movie: { emoji: '🎬', label: '电影券', gradient: 'from-indigo-500 to-purple-500' },
   snack: { emoji: '🍿', label: '零食券', gradient: 'from-orange-500 to-rose-500' },
   toy: { emoji: '🧸', label: '玩具券', gradient: 'from-pink-500 to-fuchsia-500' },
   wish: { emoji: '🌠', label: '心愿券', gradient: 'from-amber-500 to-violet-500' },
   cartoon: { emoji: '📺', label: '动画券', gradient: 'from-teal-500 to-emerald-500' },
   generic: { emoji: '🎁', label: '通用券', gradient: 'from-slate-500 to-zinc-500' },
+  universal: { emoji: '🎡', label: '环球影城', gradient: 'from-blue-500 to-cyan-400' },
+  shopping: { emoji: '🛍️', label: '购物券', gradient: 'from-violet-500 to-purple-400' },
+  dog: { emoji: '🐶', label: '遛狗券', gradient: 'from-yellow-500 to-amber-400' },
 }
 
 export function levelKey(level: CalcLevel): string {

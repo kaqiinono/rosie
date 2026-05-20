@@ -44,6 +44,7 @@ function rowToSession(r: SessionRow): CalcSession {
 }
 
 interface VoucherSumRow { coins_spent: number }
+interface StarSessionRow { coins_earned: number }
 
 async function fetchWalletData(userId: string) {
   const [{ data: sessionRows }, { data: voucherRows }] = await Promise.all([
@@ -63,22 +64,35 @@ async function fetchWalletData(userId: string) {
     (sum, v) => sum + (v.coins_spent ?? 0),
     0,
   )
-  return { sessions, spend }
+  let starEarned = 0
+  try {
+    const { data: starRows } = await supabase
+      .from('star_sessions')
+      .select('coins_earned')
+      .eq('user_id', userId)
+    starEarned = ((starRows ?? []) as StarSessionRow[]).reduce(
+      (sum, r) => sum + (r.coins_earned ?? 0),
+      0,
+    )
+  } catch { /* star_sessions table may not exist before migration */ }
+  return { sessions, spend, starEarned }
 }
 
 export function useCalcWallet(user: User | null) {
   const [sessions, setSessions] = useState<CalcSession[]>([])
   const [voucherSpend, setVoucherSpend] = useState(0)
+  const [starEarned, setStarEarned] = useState(0)
   const [isLoading, setIsLoading] = useState(() => user !== null)
 
   useEffect(() => {
     if (!user) return
     let cancelled = false
     const init = async () => {
-      const { sessions: ss, spend } = await fetchWalletData(user.id)
+      const { sessions: ss, spend, starEarned: se } = await fetchWalletData(user.id)
       if (cancelled) return
       setSessions(ss)
       setVoucherSpend(spend)
+      setStarEarned(se)
       setIsLoading(false)
     }
     void init()
@@ -87,9 +101,10 @@ export function useCalcWallet(user: User | null) {
 
   const refresh = useCallback(async () => {
     if (!user) return
-    const { sessions: ss, spend } = await fetchWalletData(user.id)
+    const { sessions: ss, spend, starEarned: se } = await fetchWalletData(user.id)
     setSessions(ss)
     setVoucherSpend(spend)
+    setStarEarned(se)
   }, [user])
 
   const coinsEarnedTotal = useMemo(
@@ -97,7 +112,7 @@ export function useCalcWallet(user: User | null) {
     [sessions],
   )
 
-  const balance = Math.max(0, coinsEarnedTotal - voucherSpend)
+  const balance = Math.max(0, coinsEarnedTotal + starEarned - voucherSpend)
 
   const todaySessions = useMemo(() => {
     const t = todayStr()
@@ -149,9 +164,9 @@ export function useCalcWallet(user: User | null) {
     [user, refresh],
   )
 
-  const spendCoins = useCallback(async () => {
+  const spendCoins = useCallback(async (amount: number) => {
     // Optimistically bump voucher spend; useCalcVouchers handles actual insert
-    setVoucherSpend(v => v + 50)
+    setVoucherSpend(v => v + amount)
   }, [])
 
   return {

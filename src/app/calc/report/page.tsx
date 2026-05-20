@@ -1,19 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { supabase } from '@/lib/supabase'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import { LEVELS, formatLevel, levelSpec } from '@/utils/calc-levels'
-import { expectedBankSize } from '@/utils/calc-bank'
+import { bankFor, expectedBankSize } from '@/utils/calc-bank'
 import type { CalcLevel, CalcLevelStateInfo, CalcLevelStatus } from '@/utils/type'
 
 interface ProblemStateLite {
   signature: string
   level: number
   proficiency: number
+  attempt_count: number
   status: 'active' | 'review' | 'mastered' | 'forced'
   consecutive_wrong: number
   last_seen_session: number | null
@@ -109,6 +110,7 @@ export default function CalcReportPage() {
   const [problemStates, setProblemStates] = useState<ProblemStateLite[]>([])
   const [events, setEvents] = useState<EventRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -121,7 +123,7 @@ export default function CalcReportPage() {
           .eq('user_id', user.id),
         supabase
           .from('calc_problem_state')
-          .select('signature,level,proficiency,status,consecutive_wrong,last_seen_session,updated_at')
+          .select('signature,level,proficiency,attempt_count,status,consecutive_wrong,last_seen_session,updated_at')
           .eq('user_id', user.id),
         supabase
           .from('calc_event_log')
@@ -157,6 +159,33 @@ export default function CalcReportPage() {
     if (ps.status === 'mastered') agg.mastered += 1
     else if (ps.status === 'review') agg.review += 1
   }
+
+  // Per-level problem detail for expandable view
+  const levelProblemDetail = useMemo(() => {
+    if (selectedLevel === null || !user) return null
+    const bank = bankFor(selectedLevel as CalcLevel, user.id)
+    if (!bank) return null
+    const stateMap = new Map(problemStates.filter(p => p.level === selectedLevel).map(p => [p.signature, p]))
+    return bank.map((q) => {
+      const s = stateMap.get(q.signature)
+      const mastered = s?.status === 'review' || s?.status === 'mastered'
+      let reason = ''
+      if (!s) {
+        reason = '从未作答'
+      } else if (mastered) {
+        reason = s.status === 'mastered' ? '长期掌握' : '已达标（复习中）'
+      } else if (s.consecutive_wrong >= 2) {
+        reason = `连续做错 ${s.consecutive_wrong} 次`
+      } else if (s.attempt_count < 2) {
+        reason = `作答次数不足（仅 ${s.attempt_count} 次，需 ≥2）`
+      } else if (s.proficiency <= 2) {
+        reason = `熟练度偏低（${s.proficiency}/5）`
+      } else {
+        reason = `练习中（熟练度 ${s.proficiency ?? 0}/5）`
+      }
+      return { display: q.display, signature: q.signature, mastered, reason, s }
+    })
+  }, [selectedLevel, user, problemStates, bankFor])  // eslint-disable-line react-hooks/exhaustive-deps
 
   // Weakest 10 problems — proficiency asc, then consecutive_wrong desc
   const weakest = [...problemStates]
@@ -206,45 +235,96 @@ export default function CalcReportPage() {
                     : 0
                   const status = state?.status ?? 'practicing'
                   const nextDue = state ? nextDueLabel(state) : null
+                  const expanded = selectedLevel === level
                   return (
-                    <div
-                      key={level}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2"
-                      style={{
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid rgba(255,255,255,0.07)',
-                      }}
-                    >
-                      <div
-                        className="font-fredoka text-[15px] font-black tabular-nums shrink-0 w-12"
-                        style={{ color: STATUS_COLOR[status] }}
+                    <div key={level}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLevel(expanded ? null : level)}
+                        className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left transition-all"
+                        style={{
+                          background: expanded ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
+                          border: expanded ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                        }}
                       >
-                        {formatLevel(level)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
-                          {levelSpec(level).label}
-                        </div>
-                        <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
-                          <span style={{ color: STATUS_COLOR[status] }}>{STATUS_LABEL[status]}</span>
-                          {' · '}
-                          {agg.mastered + agg.review}/{expected} 题（{masteredPct}%）
-                          {nextDue && (
-                            <span style={{ color: 'rgba(125,211,252,0.7)' }}> · {nextDue}</span>
-                          )}
-                        </div>
-                      </div>
-                      {state && state.lastSessionAccuracy !== null && (
                         <div
-                          className="text-[11px] font-extrabold tabular-nums"
-                          style={{
-                            color:
-                              state.lastSessionAccuracy >= 0.9 ? '#4ade80'
-                              : state.lastSessionAccuracy >= 0.75 ? '#fbbf24'
-                              : '#f87171',
-                          }}
+                          className="font-fredoka text-[15px] font-black tabular-nums shrink-0 w-12"
+                          style={{ color: STATUS_COLOR[status] }}
                         >
-                          {Math.round(state.lastSessionAccuracy * 100)}%
+                          {formatLevel(level)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
+                            {levelSpec(level).label}
+                          </div>
+                          <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+                            <span style={{ color: STATUS_COLOR[status] }}>{STATUS_LABEL[status]}</span>
+                            {' · '}
+                            {agg.mastered + agg.review}/{expected} 题（{masteredPct}%）
+                            {nextDue && (
+                              <span style={{ color: 'rgba(125,211,252,0.7)' }}> · {nextDue}</span>
+                            )}
+                          </div>
+                        </div>
+                        {state && state.lastSessionAccuracy !== null && (
+                          <div
+                            className="text-[11px] font-extrabold tabular-nums"
+                            style={{
+                              color:
+                                state.lastSessionAccuracy >= 0.9 ? '#4ade80'
+                                : state.lastSessionAccuracy >= 0.75 ? '#fbbf24'
+                                : '#f87171',
+                            }}
+                          >
+                            {Math.round(state.lastSessionAccuracy * 100)}%
+                          </div>
+                        )}
+                        <span className="text-[10px] shrink-0" style={{ color: 'rgba(196,181,253,0.4)' }}>
+                          {expanded ? '▲' : '▼'}
+                        </span>
+                      </button>
+
+                      {expanded && levelProblemDetail && (
+                        <div
+                          className="mt-1 rounded-xl overflow-hidden"
+                          style={{ border: '1px solid rgba(139,92,246,0.15)' }}
+                        >
+                          {/* Header */}
+                          <div
+                            className="grid text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5"
+                            style={{
+                              gridTemplateColumns: '1fr auto auto',
+                              background: 'rgba(139,92,246,0.08)',
+                              color: 'rgba(196,181,253,0.45)',
+                            }}
+                          >
+                            <span>题目</span>
+                            <span className="text-right pr-3">状态</span>
+                            <span className="text-right w-32">原因</span>
+                          </div>
+                          {levelProblemDetail.map((item) => (
+                            <div
+                              key={item.signature}
+                              className="grid items-center px-3 py-1.5 text-[11px]"
+                              style={{
+                                gridTemplateColumns: '1fr auto auto',
+                                borderTop: '1px solid rgba(255,255,255,0.04)',
+                              }}
+                            >
+                              <span className="font-mono font-semibold" style={{ color: '#e9d5ff' }}>
+                                {item.display.replace(' = ?', '')}
+                              </span>
+                              <span
+                                className="font-extrabold pr-3"
+                                style={{ color: item.mastered ? '#4ade80' : item.s?.consecutive_wrong >= 2 ? '#f87171' : 'rgba(196,181,253,0.5)' }}
+                              >
+                                {item.mastered ? '✓' : item.s?.consecutive_wrong >= 2 ? '✗' : '○'}
+                              </span>
+                              <span className="text-right w-32 truncate" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                                {item.reason}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>

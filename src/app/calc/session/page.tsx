@@ -347,6 +347,7 @@ export default function CalcSessionPage() {
     if (atLevelLog.length > 0 && mode === 'daily' && !settings.freeMode) {
       const today = todayStr()
       const firstTryCorrect = atLevelLog.filter((a) => a.firstTryCorrect).length
+      const withinLimitCount = atLevelLog.filter((a) => a.withinLimit).length
       const currentBank = bankFor(settings.currentLevel, user?.id ?? 'anonymous') ?? []
 
       // Use the freshly-updated problem states (already in problemState.states after upsert)
@@ -356,6 +357,7 @@ export default function CalcSessionPage() {
       const abc = evaluateABC(settings.currentLevel, statesNow, currentBank, {
         count: atLevelLog.length,
         firstTryCorrect,
+        withinLimitCount,
       })
       const prevLevelInfo = levelState.getLevelState(settings.currentLevel)
       const {
@@ -366,7 +368,7 @@ export default function CalcSessionPage() {
       } = applyLevelSessionResult({
         prev: prevLevelInfo,
         abc,
-        atLevel: { count: atLevelLog.length, firstTryCorrect },
+        atLevel: { count: atLevelLog.length, firstTryCorrect, withinLimitCount },
         minLevel: 1,
         today,
       })

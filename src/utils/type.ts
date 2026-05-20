@@ -403,7 +403,7 @@ export interface CalcLevelStateInfo {
   consecutivePoorSessions: number
 }
 
-export type VoucherCategory = 'movie' | 'snack' | 'toy' | 'wish' | 'cartoon' | 'generic'
+export type VoucherCategory = 'movie' | 'snack' | 'toy' | 'wish' | 'cartoon' | 'generic' | 'play10' | 'dance' | 'universal' | 'shopping' | 'dog' | 'popcorn'
 
 export interface Voucher {
   id: string

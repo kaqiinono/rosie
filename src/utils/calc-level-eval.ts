@@ -16,9 +16,9 @@ import type {
  *   abc_passed_date: r1=+2d, r2=+7d, r3=+30d.
  */
 
-const REVIEW_R1_DAYS = 2
-const REVIEW_R2_DAYS = 7
-const REVIEW_R3_DAYS = 30
+const REVIEW_R1_DAYS = 0
+const REVIEW_R2_DAYS = 0
+const REVIEW_R3_DAYS = 0
 
 const R1_PASS_THRESHOLD = 0.9
 const R2_PASS_THRESHOLD = 0.9
@@ -30,6 +30,7 @@ const POOR_STREAK_FOR_DEMOTION = 3
 const ABC_ACCURACY_THRESHOLD = 0.9
 const ABC_MASTERY_RATIO = 0.8
 const ABC_COVERAGE_FLOOR = 2 // attemptCount ≥ 2 per bank item
+const TIME_LIMIT_RATIO = 0.9 // ≥90% of questions must be answered within per-level time limit
 
 const MIN_AT_LEVEL_FOR_EVAL = 5 // need ≥5 problems answered at level to evaluate transitions
 
@@ -53,6 +54,7 @@ export interface ABCResult {
   a: { passed: boolean; coverageOk: boolean; accuracyOk: boolean; accuracy: number }
   b: { passed: boolean; masteredCount: number; required: number }
   c: { passed: boolean; struggling: string[] }
+  d: { passed: boolean; withinLimitRate: number }
 }
 
 export interface SessionResultAtLevel {
@@ -60,6 +62,8 @@ export interface SessionResultAtLevel {
   count: number
   /** First-try-correct count at this level. */
   firstTryCorrect: number
+  /** Count of first attempts answered within the configured per-level time limit. */
+  withinLimitCount: number
 }
 
 export function evaluateABC(
@@ -94,11 +98,16 @@ export function evaluateABC(
     .map((q) => q.signature)
   const cPassed = struggling.length === 0
 
+  // ── D: within-time-limit rate ─────────────────────────────────────
+  const withinLimitRate = result.count > 0 ? result.withinLimitCount / result.count : 0
+  const dPassed = withinLimitRate >= TIME_LIMIT_RATIO
+
   return {
-    passed: aPassed && bPassed && cPassed,
+    passed: aPassed && bPassed && cPassed && dPassed,
     a: { passed: aPassed, coverageOk, accuracyOk, accuracy },
     b: { passed: bPassed, masteredCount, required },
     c: { passed: cPassed, struggling },
+    d: { passed: dPassed, withinLimitRate },
   }
 }
 
@@ -199,6 +208,8 @@ export function applyLevelSessionResult(input: LevelEvalInput): LevelEvalOutput 
 
   // Need enough at-level problems for evaluation to be meaningful
   const meaningful = atLevel.count >= MIN_AT_LEVEL_FOR_EVAL
+  const withinLimitRate = atLevel.count > 0 ? atLevel.withinLimitCount / atLevel.count : 0
+  const withinLimitOk = withinLimitRate >= TIME_LIMIT_RATIO
 
   if (meaningful) {
     switch (prev.status) {
@@ -212,7 +223,7 @@ export function applyLevelSessionResult(input: LevelEvalInput): LevelEvalOutput 
       }
       case 'abc_passed': {
         if (isDateDue(prev.abcPassedDate, REVIEW_R1_DAYS, today)) {
-          if (accuracy >= R1_PASS_THRESHOLD) {
+          if (accuracy >= R1_PASS_THRESHOLD && withinLimitOk) {
             nextStatus = 'review_r1'
             nextR1 = today
             transitions.push({ type: 'review_pass', round: 'r1' })
@@ -230,7 +241,7 @@ export function applyLevelSessionResult(input: LevelEvalInput): LevelEvalOutput 
       }
       case 'review_r1': {
         if (isDateDue(prev.abcPassedDate, REVIEW_R2_DAYS, today)) {
-          if (accuracy >= R2_PASS_THRESHOLD) {
+          if (accuracy >= R2_PASS_THRESHOLD && withinLimitOk) {
             nextStatus = 'review_r2'
             nextR2 = today
             transitions.push({ type: 'review_pass', round: 'r2' })
@@ -247,7 +258,7 @@ export function applyLevelSessionResult(input: LevelEvalInput): LevelEvalOutput 
       }
       case 'review_r2': {
         if (isDateDue(prev.abcPassedDate, REVIEW_R3_DAYS, today)) {
-          if (accuracy >= R3_PASS_THRESHOLD) {
+          if (accuracy >= R3_PASS_THRESHOLD && withinLimitOk) {
             nextStatus = 'mastered'
             nextR3 = today
             transitions.push({ type: 'review_pass', round: 'r3' })

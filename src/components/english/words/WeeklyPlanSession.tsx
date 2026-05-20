@@ -24,6 +24,7 @@ import MasteryStatusPanel from './MasteryStatusPanel'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useStarEarning } from '@/hooks/useStarEarning'
 import { supabase } from '@/lib/supabase'
 import { todayStr } from '@/utils/constant'
 
@@ -91,6 +92,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const { user } = useAuth()
   const { masteryMap, recordBatch } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
+  const { earnStars } = useStarEarning(user)
   const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
 
   const [plan, setPlan] = useState<WeeklyPlan>(initialPlan)
@@ -161,6 +163,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
+  const [lastStarsEarned, setLastStarsEarned] = useState(0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
@@ -285,6 +288,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setQuizQKeys(qs)
     setCurQ(0)
     setScore(0)
+    setLastStarsEarned(0)
     setPhase('quiz')
   }, [words, consolidateTypes, previewTypes])
 
@@ -338,12 +342,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         }
       }
       recordBatch(quizResultBuffer.current)
+      void earnStars('english', finalScore).then(() => setLastStarsEarned(finalScore))
       quizResultBuffer.current = []
       setPhase('done')
     } else {
       setCurQ(next)
     }
-  }, [curQ, quizQs, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch])
+  }, [curQ, quizQs, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch, earnStars])
 
   const quizOptions = useMemo(() => {
     const q = quizQs[curQ]
@@ -1025,6 +1030,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             {score} / {total}
           </div>
           <div className="mb-2.5 text-[.9rem] font-bold text-[var(--wm-text-dim)]">{msg}</div>
+          {lastStarsEarned > 0 && (
+            <div className="mb-2 text-[0.875rem] font-extrabold" style={{ color: '#fbbf24' }}>
+              ⭐ 获得 {lastStarsEarned} 颗星星
+            </div>
+          )}
           <div className="mb-2 text-[0.875rem] leading-loose text-[var(--wm-text-dim)]">
             正确率 {pct}% · {words.length} 个{currentSubTask === 'consolidate' ? '必记' : currentSubTask === 'preview' ? '预习' : ''}词
             {selectedDate &&

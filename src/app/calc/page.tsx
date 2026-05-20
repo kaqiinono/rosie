@@ -1,14 +1,17 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
+import { useCalcLevelState } from '@/hooks/useCalcLevelState'
+import { useCalcProblemState } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
+import CalcLevelProgressBar from '@/components/calc/CalcLevelProgressBar'
 import { formatLevel, levelSpec } from '@/utils/calc-levels'
 import { playSfx } from '@/components/calc/audio'
 
@@ -19,6 +22,15 @@ export default function CalcHomePage() {
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { mistakes } = useCalcMistakes(user)
+  const levelState = useCalcLevelState(user)
+  const problemState = useCalcProblemState(user)
+
+  useEffect(() => {
+    if (!settingsLoading && !settings.freeMode) {
+      void levelState.loadForLevels([settings.currentLevel])
+      void problemState.loadForLevels([settings.currentLevel])
+    }
+  }, [settingsLoading, settings.freeMode, settings.currentLevel]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const unresolvedMistakes = useMemo(
     () => mistakes.filter(m => !m.resolved),
@@ -193,6 +205,16 @@ export default function CalcHomePage() {
           </div>
         </section>
 
+        {/* Level progress (daily mode only) */}
+        {!settings.freeMode && (
+          <CalcLevelProgressBar
+            levelState={levelState.getLevelState(settings.currentLevel)}
+            problemStates={problemState.states}
+            level={settings.currentLevel}
+            userId={user?.id ?? ''}
+          />
+        )}
+
         {/* Config */}
         <section>
           <div
@@ -249,7 +271,7 @@ export default function CalcHomePage() {
             <span style={{ color: 'rgba(251,191,36,0.5)' }}>→</span>
           </Link>
           <Link
-            href="/calc/vouchers"
+            href="/vouchers"
             className="flex items-center gap-2.5 rounded-2xl px-4 py-3 no-underline transition-all"
             style={{
               background: 'rgba(236,72,153,0.07)',

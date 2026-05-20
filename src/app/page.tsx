@@ -48,6 +48,16 @@ const modules: ModuleCardData[] = [
     enterText: '开始口算',
     icon: '🧮',
   },
+  {
+    href: '/vouchers',
+    title: '我的奖券',
+    description: '口算、英语、数学均可赚星星，积攒后兑换心愿奖券。',
+    tag: 'STARS',
+    variant: 'calc',
+    stats: ['全模块通用', '兑换奖券', '星星余额'],
+    enterText: '查看奖券',
+    icon: '⭐',
+  },
 ]
 
 export default function HomePage() {
