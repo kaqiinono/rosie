@@ -18,13 +18,12 @@ interface SessionRow {
   wrong_count: number
   challenge_correct: number
   time_spent_sec: number
-  coins_earned: number
   mode: CalcMode
   max_streak: number
   top_level: string
 }
 
-function rowToSession(r: SessionRow): CalcSession {
+function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {
   return {
     id: r.id,
     date: r.date,
@@ -36,7 +35,7 @@ function rowToSession(r: SessionRow): CalcSession {
     wrongCount: r.wrong_count,
     challengeCorrect: r.challenge_correct,
     timeSpentSec: r.time_spent_sec,
-    coinsEarned: r.coins_earned,
+    coinsEarned,
     mode: r.mode,
     maxStreak: r.max_streak,
     topLevel: r.top_level === 'C' ? 'C' : Number(r.top_level),
@@ -44,13 +43,17 @@ function rowToSession(r: SessionRow): CalcSession {
 }
 
 interface VoucherCategoryRow { category: VoucherCategory }
-interface StarSessionRow { coins_earned: number; source: 'english' | 'math' }
+interface StarSessionRow {
+  coins_earned: number
+  source: 'english' | 'math' | 'calc'
+  ref_id: string | null
+}
 
 async function fetchWalletData(userId: string) {
-  const [{ data: sessionRows }, { data: voucherRows }] = await Promise.all([
+  const [{ data: sessionRows }, { data: voucherRows }, { data: starRows }] = await Promise.all([
     supabase
       .from('calc_sessions')
-      .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,coins_earned,mode,max_streak,top_level')
+      .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level')
       .eq('user_id', userId)
       .order('finished_at', { ascending: false })
       .limit(200),
@@ -58,28 +61,43 @@ async function fetchWalletData(userId: string) {
       .from('calc_vouchers')
       .select('category')
       .eq('user_id', userId),
+    supabase
+      .from('star_sessions')
+      .select('coins_earned,source,ref_id')
+      .eq('user_id', userId),
   ])
-  const sessions = (sessionRows ?? []).map(r => rowToSession(r as SessionRow))
-  const voucherCategories = ((voucherRows ?? []) as VoucherCategoryRow[]).map(v => v.category)
+
+  // Aggregate stars by color + build per-session coin map for calc UI
+  let yellowEarned = 0
   let redEarned = 0
   let blueEarned = 0
-  try {
-    const { data: starRows } = await supabase
-      .from('star_sessions')
-      .select('coins_earned,source')
-      .eq('user_id', userId)
-    for (const r of (starRows ?? []) as StarSessionRow[]) {
-      const amt = r.coins_earned ?? 0
-      if (r.source === 'english') redEarned += amt
-      else if (r.source === 'math') blueEarned += amt
+  const coinsBySessionId = new Map<string, number>()
+  for (const r of (starRows ?? []) as StarSessionRow[]) {
+    const amt = r.coins_earned ?? 0
+    if (r.source === 'calc') {
+      yellowEarned += amt
+      if (r.ref_id) {
+        coinsBySessionId.set(r.ref_id, (coinsBySessionId.get(r.ref_id) ?? 0) + amt)
+      }
+    } else if (r.source === 'english') {
+      redEarned += amt
+    } else if (r.source === 'math') {
+      blueEarned += amt
     }
-  } catch { /* star_sessions table may not exist before migration */ }
-  return { sessions, voucherCategories, redEarned, blueEarned }
+  }
+
+  const sessions = (sessionRows ?? []).map((r) => {
+    const row = r as SessionRow
+    return rowToSession(row, coinsBySessionId.get(row.id) ?? 0)
+  })
+  const voucherCategories = ((voucherRows ?? []) as VoucherCategoryRow[]).map(v => v.category)
+  return { sessions, voucherCategories, yellowEarned, redEarned, blueEarned }
 }
 
 export function useCalcWallet(user: User | null) {
   const [sessions, setSessions] = useState<CalcSession[]>([])
   const [voucherCategories, setVoucherCategories] = useState<VoucherCategory[]>([])
+  const [yellowEarned, setYellowEarned] = useState(0)
   const [redEarned, setRedEarned] = useState(0)
   const [blueEarned, setBlueEarned] = useState(0)
   const [isLoading, setIsLoading] = useState(() => user !== null)
@@ -92,6 +110,7 @@ export function useCalcWallet(user: User | null) {
       if (cancelled) return
       setSessions(data.sessions)
       setVoucherCategories(data.voucherCategories)
+      setYellowEarned(data.yellowEarned)
       setRedEarned(data.redEarned)
       setBlueEarned(data.blueEarned)
       setIsLoading(false)
@@ -105,14 +124,12 @@ export function useCalcWallet(user: User | null) {
     const data = await fetchWalletData(user.id)
     setSessions(data.sessions)
     setVoucherCategories(data.voucherCategories)
+    setYellowEarned(data.yellowEarned)
     setRedEarned(data.redEarned)
     setBlueEarned(data.blueEarned)
   }, [user])
 
-  const yellowEarnedTotal = useMemo(
-    () => sessions.reduce((sum, s) => sum + (s.coinsEarned ?? 0), 0),
-    [sessions],
-  )
+  const yellowEarnedTotal = yellowEarned
 
   const { yellowSpent, redSpent, blueSpent } = useMemo(() => {
     let y = 0, r = 0, b = 0
@@ -124,7 +141,7 @@ export function useCalcWallet(user: User | null) {
     return { yellowSpent: y, redSpent: r, blueSpent: b }
   }, [voucherCategories])
 
-  const yellowBalance = Math.max(0, yellowEarnedTotal - yellowSpent)
+  const yellowBalance = Math.max(0, yellowEarned - yellowSpent)
   const redBalance = Math.max(0, redEarned - redSpent)
   const blueBalance = Math.max(0, blueEarned - blueSpent)
 
@@ -157,7 +174,7 @@ export function useCalcWallet(user: User | null) {
   const recordSession = useCallback(
     async (session: Omit<CalcSession, 'id'>) => {
       if (!user) return
-      const row = {
+      const sessionRow = {
         user_id: user.id,
         date: session.date,
         started_at: session.startedAt,
@@ -168,13 +185,25 @@ export function useCalcWallet(user: User | null) {
         wrong_count: session.wrongCount,
         challenge_correct: session.challengeCorrect,
         time_spent_sec: session.timeSpentSec,
-        coins_earned: session.coinsEarned,
         mode: session.mode,
         max_streak: session.maxStreak,
         top_level: levelKey(session.topLevel as CalcLevel),
       }
       try {
-        await supabase.from('calc_sessions').insert(row)
+        const { data: inserted } = await supabase
+          .from('calc_sessions')
+          .insert(sessionRow)
+          .select('id')
+          .single()
+        if (inserted && session.coinsEarned > 0) {
+          await supabase.from('star_sessions').insert({
+            user_id: user.id,
+            date: session.date,
+            source: 'calc',
+            coins_earned: session.coinsEarned,
+            ref_id: (inserted as { id: string }).id,
+          })
+        }
       } catch { /* ignore */ }
       await refresh()
     },

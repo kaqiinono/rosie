@@ -24,6 +24,7 @@ export const STORAGE_KEYS = {
   ENGLISH_SEL_STAGE: 'english-sel-stage',
   ENGLISH_SEL_UNITS: 'english-sel-units',
   ENGLISH_SEL_LESSONS: 'english-sel-lessons',
+  WEEKLY_PLAN_LAST_LESSONS: 'weekly-plan-last-lessons',
 } as const
 
 export const NAV_PAGES = [

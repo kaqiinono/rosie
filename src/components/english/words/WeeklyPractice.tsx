@@ -11,7 +11,7 @@ import OldReviewSession from './OldReviewSession'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { todayStr } from '@/utils/constant'
+import { todayStr, STORAGE_KEYS } from '@/utils/constant'
 import { buildEnglishWeeklyReport } from '@/utils/buildEnglishWeeklyReport'
 
 interface WeeklyPracticeProps {
@@ -132,6 +132,32 @@ function getWeekEnd(weekStart: string): string {
   return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
 }
 
+function loadCachedLessons(): { unit: string; lesson: string }[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEYS.WEEKLY_PLAN_LAST_LESSONS)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter(
+      (x): x is { unit: string; lesson: string } =>
+        x != null && typeof x.unit === 'string' && typeof x.lesson === 'string',
+    )
+  } catch {
+    return []
+  }
+}
+
+function saveCachedLessons(lessons: { unit: string; lesson: string }[]): void {
+  if (typeof window === 'undefined') return
+  try {
+    const slim = lessons.map(l => ({ unit: l.unit, lesson: l.lesson }))
+    window.localStorage.setItem(STORAGE_KEYS.WEEKLY_PLAN_LAST_LESSONS, JSON.stringify(slim))
+  } catch {
+    // localStorage may be unavailable (private mode, quota, etc.) — silently skip.
+  }
+}
+
 function daysUntilExpiry(weekStart: string): number {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -201,6 +227,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const [unassignedKeys, setUnassignedKeys] = useState<string[]>([])
   const [carryoverCount, setCarryoverCount] = useState(0)
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set())
+  // drag-and-drop state: dragOverIdx uses -1 for the unassigned pool, 0..N-1 for day rows
+  const [draggedKeys, setDraggedKeys] = useState<string[] | null>(null)
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
 
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
   const suggestedLesson = useMemo(() => orderedLessons[0] ?? null, [orderedLessons])
@@ -219,13 +248,23 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     return out
   }, [activeLessons, lessonKindOverrides])
 
-  // Per-lesson word groups
+  // Per-lesson word groups.
+  //
+  // For 必记 (consolidate) lessons, order each group ascending by mastery stage
+  // so the least-familiar words land in the earliest days of the week — initial
+  // assignment only; the edit-existing-plan path reuses the saved layout.
+  // 预习 (preview) lessons keep their natural vocab order.
   const lessonGroups = useMemo(() => {
     if (!activeLessons.length) return []
-    return activeLessons.map(l =>
-      vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson),
-    )
-  }, [vocab, activeLessons])
+    return activeLessons.map(l => {
+      const group = vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson)
+      if ((lessonKinds[lessonKey(l)] ?? 'consolidate') !== 'consolidate') return group
+      return group
+        .map((w, i) => ({ w, i, stage: masteryMap[wordKey(w)]?.stage ?? 0 }))
+        .sort((a, b) => a.stage - b.stage || a.i - b.i)
+        .map(({ w }) => w)
+    })
+  }, [vocab, activeLessons, lessonKinds, masteryMap])
 
   const lessonWords = useMemo(() => lessonGroups.flat(), [lessonGroups])
 
@@ -419,6 +458,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       wordKinds: Object.fromEntries(kindMap),
     }
     const saved = await savePlan(plan)
+    saveCachedLessons(activeLessons)
     setStep('list')
     setCarryoverCount(0)
     setIsEditingPlan(false)
@@ -755,6 +795,44 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
         : [],
     )
     const rolloverCount = rolloverKeySet.size
+    const isDragging = draggedKeys !== null
+
+    const handleChipDragStart = (e: React.DragEvent<HTMLButtonElement>, key: string) => {
+      e.stopPropagation()
+      // If the chip the user grabbed is part of a multi-selection, drag the whole batch;
+      // otherwise drag just this chip (without disturbing existing selection).
+      const keys = selectedKeys.has(key) && selectedKeys.size > 1
+        ? Array.from(selectedKeys)
+        : [key]
+      setDraggedKeys(keys)
+      try {
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData('text/plain', keys.join(','))
+      } catch {
+        // Some browsers (older Safari) throw on setData; safe to ignore.
+      }
+    }
+
+    const handleChipDragEnd = () => {
+      setDraggedKeys(null)
+      setDragOverIdx(null)
+    }
+
+    const handleZoneDragOver = (e: React.DragEvent, idx: number) => {
+      if (!draggedKeys) return
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'move'
+      if (dragOverIdx !== idx) setDragOverIdx(idx)
+    }
+
+    const handleZoneDrop = (e: React.DragEvent, idx: number) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!draggedKeys || draggedKeys.length === 0) return
+      handleMoveWords(new Set(draggedKeys), idx)
+      setDraggedKeys(null)
+      setDragOverIdx(null)
+    }
 
     // WordChip component (inline for brevity)
     const renderChip = (key: string) => {
@@ -762,12 +840,16 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       const word = entry?.word ?? key.split('::')[2] ?? key
       const isSelected = selectedKeys.has(key)
       const isRollover = rolloverKeySet.has(key)
+      const isDraggingThis = draggedKeys?.includes(key) ?? false
       const wordKind: 'consolidate' | 'preview' = entry
         ? (lessonKinds[`${entry.unit}::${entry.lesson}`] ?? 'consolidate')
         : 'consolidate'
       return (
         <button
           key={key}
+          draggable
+          onDragStart={(e) => handleChipDragStart(e, key)}
+          onDragEnd={handleChipDragEnd}
           onClick={(e) => {
             e.stopPropagation()
             setSelectedKeys(prev => {
@@ -777,7 +859,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               return next
             })
           }}
-          className={`cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.82rem] font-bold transition-all ${
+          className={`cursor-grab rounded-full border-[1.5px] px-3 py-1 text-[.82rem] font-bold transition-all active:cursor-grabbing ${
+            isDraggingThis ? 'opacity-40' : ''
+          } ${
             isSelected
               ? 'border-[#f59e0b] bg-[rgba(245,158,11,.2)] text-[#fbbf24] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
               : isRollover
@@ -811,7 +895,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               </div>
             </div>
             <div className="mb-2 text-[.72rem] text-[var(--wm-text-dim)]">
-              点击单词可多选，再点击目标日期批量移动
+              拖拽单词到目标星期块；或点击多选后再点目标日期批量移动
             </div>
             <div className="mb-3 flex items-center gap-3 text-[.68rem]">
               <span className="flex items-center gap-1">
@@ -854,11 +938,17 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
             {/* Unassigned pool */}
             {unassignedKeys.length > 0 && (
-              <div className={`mb-4 rounded-[14px] border transition-all ${
-                hasSelection
-                  ? 'border-[rgba(248,113,113,.5)] bg-[rgba(248,113,113,.05)]'
-                  : 'border-[rgba(248,113,113,.3)] bg-[rgba(248,113,113,.04)]'
-              }`}>
+              <div
+                onDragOver={(e) => handleZoneDragOver(e, -1)}
+                onDrop={(e) => handleZoneDrop(e, -1)}
+                className={`mb-4 rounded-[14px] border transition-all ${
+                  dragOverIdx === -1
+                    ? 'border-[#f87171] bg-[rgba(248,113,113,.14)] shadow-[0_0_0_2px_rgba(248,113,113,.3)]'
+                    : hasSelection || isDragging
+                      ? 'border-[rgba(248,113,113,.5)] bg-[rgba(248,113,113,.05)]'
+                      : 'border-[rgba(248,113,113,.3)] bg-[rgba(248,113,113,.04)]'
+                }`}
+              >
                 <button
                   onClick={() => { if (hasSelection) handleMoveWords(selectedKeys, -1) }}
                   disabled={!hasSelection}
@@ -870,9 +960,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   <span className="ml-auto text-[.68rem] font-bold text-[#f87171]">
                     {unassignedKeys.length} 词
                   </span>
-                  {hasSelection && (
+                  {(hasSelection || isDragging) && (
                     <span className="ml-1 rounded-full bg-[rgba(248,113,113,.2)] px-2 py-0.5 text-[.65rem] font-extrabold text-[#f87171]">
-                      移回这里
+                      {isDragging ? '拖到这里' : '移回这里'}
                     </span>
                   )}
                 </button>
@@ -887,10 +977,14 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               {draftDays.map((day, dayIdx) => (
                 <div
                   key={day.date}
+                  onDragOver={(e) => handleZoneDragOver(e, dayIdx)}
+                  onDrop={(e) => handleZoneDrop(e, dayIdx)}
                   className={`rounded-[14px] border transition-all ${
-                    hasSelection
-                      ? 'border-[rgba(245,158,11,.5)] bg-[rgba(245,158,11,.04)]'
-                      : 'border-[var(--wm-border)] bg-[var(--wm-surface2)]'
+                    dragOverIdx === dayIdx
+                      ? 'border-[#f59e0b] bg-[rgba(245,158,11,.14)] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
+                      : hasSelection || isDragging
+                        ? 'border-[rgba(245,158,11,.5)] bg-[rgba(245,158,11,.04)]'
+                        : 'border-[var(--wm-border)] bg-[var(--wm-surface2)]'
                   }`}
                 >
                   <button
@@ -911,9 +1005,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                     <span className="ml-auto text-[.68rem] font-bold text-[var(--wm-text-dim)]">
                       {day.newWordKeys.length} 词
                     </span>
-                    {hasSelection && (
+                    {(hasSelection || isDragging) && (
                       <span className="ml-1 rounded-full bg-[rgba(245,158,11,.2)] px-2 py-0.5 text-[.65rem] font-extrabold text-[#fbbf24]">
-                        移到这里
+                        {isDragging ? '拖到这里' : '移到这里'}
                       </span>
                     )}
                   </button>
@@ -981,7 +1075,10 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
               )}
               <button
                 onClick={() => {
-                  setPendingLessons([])
+                  const cached = loadCachedLessons().filter(c =>
+                    orderedLessons.some(o => o.unit === c.unit && o.lesson === c.lesson),
+                  )
+                  setPendingLessons(cached)
                   setLessonKindOverrides({})
                   setPendingDate(todayStr())
                   setIsEditingPlan(false)

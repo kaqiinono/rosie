@@ -13,7 +13,7 @@ import { getWordSizeClass } from '@/utils/phonics'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
 import { useStarHud } from '@/components/stars/StarHudProvider'
-import StarProgressBar from '@/components/stars/StarProgressBar'
+import ColoredStar from '@/components/stars/ColoredStar'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -163,7 +163,7 @@ export default function ImmersiveMode({
     }
   }, [curQ, quizQs, onQuizComplete])
 
-  const { awardStars } = useStarHud()
+  const { awardStars, session: starSession } = useStarHud()
 
   const handleMCAnswer = useCallback(
     (chosen: string, correct: string) => {
@@ -503,10 +503,70 @@ export default function ImmersiveMode({
                     </div>
                   </div>
 
-                  {/* Live red star progress for this practice session */}
-                  <div className="rounded-2xl border border-rose-300/30 bg-rose-500/10 p-2.5">
-                    <StarProgressBar color="red" target={Math.max(1, targetStars)} label="本次练习红月亮" compact />
-                  </div>
+                  {/* Live red moon progress — dark immersive variant */}
+                  {(() => {
+                    const earned = starSession.red
+                    const goal = Math.max(1, targetStars)
+                    const pct = Math.min(100, (earned / goal) * 100)
+                    const reached = earned >= goal
+                    return (
+                      <div className="rounded-2xl border border-rose-400/20 bg-white/[.04] px-3.5 py-2.5 backdrop-blur">
+                        <div className="mb-1.5 flex items-center gap-2">
+                          <ColoredStar color="red" size={16} glow={6} />
+                          <span className="text-[11px] font-extrabold tracking-[.14em] text-rose-300/80 uppercase">
+                            本次月亮
+                          </span>
+                          <span className="font-fredoka ml-auto text-[14px] font-black tabular-nums text-rose-100">
+                            {earned}
+                            <span className="ml-0.5 text-[11px] text-rose-100/40">/{goal}</span>
+                          </span>
+                          <span
+                            className="inline-flex h-4 w-4 items-center justify-center"
+                            style={{
+                              filter: reached
+                                ? 'drop-shadow(0 0 6px rgba(239,68,68,.9))'
+                                : 'grayscale(40%)',
+                              opacity: reached ? 1 : 0.4,
+                            }}
+                            aria-hidden
+                          >
+                            <ColoredStar color="red" size={14} glow={0} />
+                          </span>
+                        </div>
+                        <div
+                          className="relative h-2 overflow-hidden rounded-full bg-white/[.06]"
+                          style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,.4)' }}
+                        >
+                          <div
+                            className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out"
+                            style={{
+                              width: `${pct}%`,
+                              background: 'linear-gradient(90deg, #fb7185, #e11d48)',
+                              boxShadow:
+                                '0 0 10px rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
+                            }}
+                          />
+                          {pct > 0 && pct < 100 && (
+                            <div
+                              className="pointer-events-none absolute inset-y-0 w-1/3 opacity-50 mix-blend-overlay"
+                              style={{
+                                left: `${Math.max(0, pct - 18)}%`,
+                                background:
+                                  'linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent)',
+                                animation: 'imm-moon-shimmer 1.6s linear infinite',
+                              }}
+                            />
+                          )}
+                        </div>
+                        <style jsx>{`
+                          @keyframes imm-moon-shimmer {
+                            0% { transform: translateX(-100%); }
+                            100% { transform: translateX(280%); }
+                          }
+                        `}</style>
+                      </div>
+                    )
+                  })()}
 
                   <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">
                     {isA || isC ? (

@@ -426,6 +426,12 @@ export interface CalcSession {
   wrongCount: number
   challengeCorrect: number
   timeSpentSec: number
+  /**
+   * Stars earned in this session (derived from star_sessions via ref_id join).
+   * Not stored on calc_sessions itself — the canonical ledger is star_sessions.
+   * Pass it to {@link CalcWallet.recordSession} and it will be persisted as a
+   * star_sessions row with source='calc' and ref_id pointing at the new session.
+   */
   coinsEarned: number
   mode: CalcMode
   maxStreak: number

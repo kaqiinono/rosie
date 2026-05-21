@@ -279,6 +279,12 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
             ← 回到记忆
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">✏️ 旧词测试</div>
+          <button
+            onClick={flushAndBack}
+            className="font-nunito ml-auto shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
+          >
+            退出复习
+          </button>
         </div>
         <QuizCard
           question={{ word: q.word, type: q.type }}

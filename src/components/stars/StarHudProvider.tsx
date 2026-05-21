@@ -43,10 +43,10 @@ export function useStarHud(): StarHudContextValue {
   return ctx
 }
 
-const COLOR_TO_SOURCE: Record<StarColor, 'english' | 'math' | null> = {
+const COLOR_TO_SOURCE: Record<StarColor, 'english' | 'math' | 'calc'> = {
   red: 'english',
   blue: 'math',
-  yellow: null, // calc has its own pipeline; vouchers page only displays yellow from calc_sessions
+  yellow: 'calc',
 }
 
 let burstIdSeq = 0
@@ -103,11 +103,8 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
       playStarEarn(color, total, bonus)
 
       // Persist
-      const source = COLOR_TO_SOURCE[color]
-      if (source) {
-        await earnStars(source, total)
-        scheduleRefresh()
-      }
+      await earnStars(COLOR_TO_SOURCE[color], total)
+      scheduleRefresh()
     },
     [earnStars, optimistic, scheduleRefresh, session, wallet.yellowBalance, wallet.redBalance, wallet.blueBalance],
   )
@@ -117,15 +114,16 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // Once wallet refresh catches up, drain optimistic delta back to zero.
+  // Only depends on wallet balances — listing optimistic.* would cause the effect to
+  // fire on the optimistic bump itself and immediately reset it before refresh lands.
   useEffect(() => {
     if (!user) return
-    if (optimistic.yellow === 0 && optimistic.red === 0 && optimistic.blue === 0) return
-    // Heuristic: when wallet completes its async refresh, clear the optimistic offset.
-    // Since wallet.balance is reactive, this effect re-runs whenever balances change.
-    setOptimistic({ yellow: 0, red: 0, blue: 0 })
-    // wallet.* are the actual deps that matter — listing them keeps lint happy without
-    // a stale-closure risk because we only clear once on each balance update.
-  }, [user, wallet.yellowBalance, wallet.redBalance, wallet.blueBalance, optimistic.yellow, optimistic.red, optimistic.blue])
+    setOptimistic(prev =>
+      prev.yellow === 0 && prev.red === 0 && prev.blue === 0
+        ? prev
+        : { yellow: 0, red: 0, blue: 0 },
+    )
+  }, [user, wallet.yellowBalance, wallet.redBalance, wallet.blueBalance])
 
   const value = useMemo<StarHudContextValue>(() => ({
     yellowBalance: wallet.yellowBalance + optimistic.yellow,
