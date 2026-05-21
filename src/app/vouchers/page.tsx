@@ -5,23 +5,26 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcVouchers } from '@/hooks/useCalcVouchers'
+import { templateTotalPrice, useVoucherCatalog } from '@/hooks/useVoucherCatalog'
 import VoucherCard from '@/components/calc/VoucherCard'
-import { VOUCHER_META, VOUCHER_PRICES, voucherTotalPrice } from '@/utils/calc-helpers'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
-import type { VoucherCategory } from '@/utils/type'
+import type { VoucherCategory, VoucherTemplate } from '@/utils/type'
 import ColoredStar from '@/components/stars/ColoredStar'
 import { STAR_COLOR_HEX } from '@/components/stars/star-types'
-
-const CATEGORIES = (Object.keys(VOUCHER_PRICES) as VoucherCategory[]).sort(
-  (a, b) => voucherTotalPrice(a) - voucherTotalPrice(b),
-)
 
 export default function VouchersPage() {
   const { user } = useAuth()
   const wallet = useCalcWallet(user)
   const { vouchers, redeem, markUsed, isLoading } = useCalcVouchers(user)
+  const catalog = useVoucherCatalog(user)
   const [redeeming, setRedeeming] = useState<VoucherCategory | null>(null)
+
+  // Catalog shown in shop: active (non-archived) templates, sorted by total price
+  const shopTemplates = useMemo(
+    () => [...catalog.visible].sort((a, b) => templateTotalPrice(a) - templateTotalPrice(b)),
+    [catalog.visible],
+  )
 
   const { available, used } = useMemo(() => {
     const a: typeof vouchers = []
@@ -32,26 +35,23 @@ export default function VouchersPage() {
     return { available: a, used: u }
   }, [vouchers])
 
-  const canAffordCat = (cat: VoucherCategory): boolean => {
-    const p = VOUCHER_PRICES[cat]
-    if (!p) return false
-    return wallet.yellowBalance >= p[0] && wallet.redBalance >= p[1] && wallet.blueBalance >= p[2]
-  }
+  const canAffordTemplate = (t: VoucherTemplate): boolean =>
+    wallet.yellowBalance >= t.priceYellow
+    && wallet.redBalance >= t.priceRed
+    && wallet.blueBalance >= t.priceBlue
 
-  const affordableCount = CATEGORIES.filter(canAffordCat).length
+  const affordableCount = shopTemplates.filter(canAffordTemplate).length
 
-  const handleRedeem = async (category: VoucherCategory) => {
-    const p = VOUCHER_PRICES[category]
-    if (!p || redeeming) return
-    if (!canAffordCat(category)) return
-    const meta = VOUCHER_META[category]
-    const costStr = `口算 ${p[0]}⭐ · 英语 ${p[1]}⭐ · 数学 ${p[2]}⭐`
-    if (!window.confirm(`确定花 ${costStr} 兑换【${meta?.label ?? category}】？`)) return
-    setRedeeming(category)
+  const handleRedeem = async (t: VoucherTemplate) => {
+    if (redeeming) return
+    if (!canAffordTemplate(t)) return
+    const costStr = `口算 ${t.priceYellow}⭐ · 英语 ${t.priceRed}⭐ · 数学 ${t.priceBlue}⭐`
+    if (!window.confirm(`确定花 ${costStr} 兑换【${t.label}】？`)) return
+    setRedeeming(t.category)
     try {
-      const v = await redeem(category)
+      const v = await redeem(t)
       if (v) {
-        await wallet.spendVoucher(category)
+        await wallet.spendVoucher(t.category)
         await wallet.refresh()
         playSfx('redeem', true)
         launchConfetti(40)
@@ -262,13 +262,11 @@ export default function VouchersPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5">
-            {CATEGORIES.map((cat) => {
-              const meta = VOUCHER_META[cat]
-              const price = VOUCHER_PRICES[cat]
-              if (!price) return null
-              const [py, pr, pb] = price
-              const canAfford = canAffordCat(cat)
-              const isRedeeming = redeeming === cat
+            {shopTemplates.map((t) => {
+              const meta = { emoji: t.emoji, label: t.label, gradient: t.gradient }
+              const [py, pr, pb] = [t.priceYellow, t.priceRed, t.priceBlue]
+              const canAfford = canAffordTemplate(t)
+              const isRedeeming = redeeming === t.category
               const missY = Math.max(0, py - wallet.yellowBalance)
               const missR = Math.max(0, pr - wallet.redBalance)
               const missB = Math.max(0, pb - wallet.blueBalance)
@@ -284,10 +282,10 @@ export default function VouchersPage() {
               ].filter((c) => c.miss > 0)
               return (
                 <button
-                  key={cat}
+                  key={t.category}
                   type="button"
                   disabled={!canAfford || !!redeeming}
-                  onClick={() => handleRedeem(cat)}
+                  onClick={() => handleRedeem(t)}
                   className="group relative flex min-h-[140px] flex-col overflow-hidden rounded-2xl p-3 text-left transition-all duration-200 sm:min-h-[150px]"
                   style={{
                     background: canAfford ? 'rgba(255,255,255,0.88)' : 'rgba(248,250,252,0.75)',
@@ -477,6 +475,7 @@ export default function VouchersPage() {
                 <VoucherCard
                   key={v.id}
                   voucher={v}
+                  template={catalog.getById(v.category)}
                   onMarkUsed={() => {
                     if (window.confirm('确定标记为已使用？')) {
                       void markUsed(v.id)
@@ -508,7 +507,7 @@ export default function VouchersPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {used.map((v) => (
-                <VoucherCard key={v.id} voucher={v} />
+                <VoucherCard key={v.id} voucher={v} template={catalog.getById(v.category)} />
               ))}
             </div>
           </section>

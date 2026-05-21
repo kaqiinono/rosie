@@ -1,11 +1,12 @@
 'use client'
 
-import type { Voucher } from '@/utils/type'
-import { VOUCHER_META, VOUCHER_PRICES } from '@/utils/calc-helpers'
+import type { Voucher, VoucherTemplate } from '@/utils/type'
 import ColoredStar from '@/components/stars/ColoredStar'
 
 interface Props {
   voucher: Voucher
+  /** Template metadata — passed in by the parent which holds the catalog. */
+  template?: VoucherTemplate
   onMarkUsed?: () => void
 }
 
@@ -19,15 +20,20 @@ function formatDate(iso: string): string {
 // to stay readable against any of the saturated voucher gradients.
 const STAR_TEXT = { yellow: '#fef3c7', red: '#fee2e2', blue: '#dbeafe' } as const
 
-export default function VoucherCard({ voucher, onMarkUsed }: Props) {
-  const meta = VOUCHER_META[voucher.category]
+const FALLBACK_GRADIENT = 'from-slate-500 to-zinc-500'
+
+export default function VoucherCard({ voucher, template, onMarkUsed }: Props) {
+  const meta = {
+    emoji: template?.emoji ?? '🎁',
+    label: template?.label ?? voucher.category,
+    gradient: template?.gradient ?? FALLBACK_GRADIENT,
+  }
   const used = voucher.usedAt !== null
-  const price = VOUCHER_PRICES[voucher.category]
-  const breakdown = price
+  const breakdown = template
     ? [
-        { color: 'yellow' as const, value: price[0] },
-        { color: 'red' as const, value: price[1] },
-        { color: 'blue' as const, value: price[2] },
+        { color: 'yellow' as const, value: template.priceYellow },
+        { color: 'red' as const, value: template.priceRed },
+        { color: 'blue' as const, value: template.priceBlue },
       ].filter((c) => c.value > 0)
     : []
 

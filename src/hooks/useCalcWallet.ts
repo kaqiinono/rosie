@@ -4,8 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { CalcSession, CalcMode, CalcLevel, VoucherCategory } from '@/utils/type'
-import { levelKey, VOUCHER_PRICES } from '@/utils/calc-helpers'
+import { levelKey } from '@/utils/calc-helpers'
 import { todayStr } from '@/utils/constant'
+
+interface TemplatePriceRow {
+  category: string
+  price_yellow: number
+  price_red: number
+  price_blue: number
+}
 
 interface SessionRow {
   id: string
@@ -42,7 +49,7 @@ function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {
   }
 }
 
-interface VoucherCategoryRow { category: VoucherCategory }
+interface VoucherCategoryRow { category: VoucherCategory; free: boolean | null }
 interface StarSessionRow {
   coins_earned: number
   source: 'english' | 'math' | 'calc'
@@ -50,7 +57,7 @@ interface StarSessionRow {
 }
 
 async function fetchWalletData(userId: string) {
-  const [{ data: sessionRows }, { data: voucherRows }, { data: starRows }] = await Promise.all([
+  const [{ data: sessionRows }, { data: voucherRows }, { data: starRows }, { data: templateRows }] = await Promise.all([
     supabase
       .from('calc_sessions')
       .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level')
@@ -59,13 +66,21 @@ async function fetchWalletData(userId: string) {
       .limit(200),
     supabase
       .from('calc_vouchers')
-      .select('category')
+      .select('category,free')
       .eq('user_id', userId),
     supabase
       .from('star_sessions')
       .select('coins_earned,source,ref_id')
       .eq('user_id', userId),
+    supabase
+      .from('voucher_templates')
+      .select('category,price_yellow,price_red,price_blue'),
   ])
+
+  const priceByCategory = new Map<string, [number, number, number]>()
+  for (const r of (templateRows ?? []) as TemplatePriceRow[]) {
+    priceByCategory.set(r.category, [r.price_yellow, r.price_red, r.price_blue])
+  }
 
   // Aggregate stars by color + build per-session coin map for calc UI
   let yellowEarned = 0
@@ -90,13 +105,24 @@ async function fetchWalletData(userId: string) {
     const row = r as SessionRow
     return rowToSession(row, coinsBySessionId.get(row.id) ?? 0)
   })
-  const voucherCategories = ((voucherRows ?? []) as VoucherCategoryRow[]).map(v => v.category)
-  return { sessions, voucherCategories, yellowEarned, redEarned, blueEarned }
+  const voucherRecords = ((voucherRows ?? []) as VoucherCategoryRow[]).map(v => ({
+    category: v.category,
+    free: v.free === true,
+  }))
+  return { sessions, voucherRecords, yellowEarned, redEarned, blueEarned, priceByCategory }
+}
+
+interface VoucherRecord {
+  category: VoucherCategory
+  free: boolean
 }
 
 export function useCalcWallet(user: User | null) {
   const [sessions, setSessions] = useState<CalcSession[]>([])
-  const [voucherCategories, setVoucherCategories] = useState<VoucherCategory[]>([])
+  const [voucherRecords, setVoucherRecords] = useState<VoucherRecord[]>([])
+  const [priceByCategory, setPriceByCategory] = useState<Map<string, [number, number, number]>>(
+    () => new Map(),
+  )
   const [yellowEarned, setYellowEarned] = useState(0)
   const [redEarned, setRedEarned] = useState(0)
   const [blueEarned, setBlueEarned] = useState(0)
@@ -109,7 +135,8 @@ export function useCalcWallet(user: User | null) {
       const data = await fetchWalletData(user.id)
       if (cancelled) return
       setSessions(data.sessions)
-      setVoucherCategories(data.voucherCategories)
+      setVoucherRecords(data.voucherRecords)
+      setPriceByCategory(data.priceByCategory)
       setYellowEarned(data.yellowEarned)
       setRedEarned(data.redEarned)
       setBlueEarned(data.blueEarned)
@@ -123,7 +150,8 @@ export function useCalcWallet(user: User | null) {
     if (!user) return
     const data = await fetchWalletData(user.id)
     setSessions(data.sessions)
-    setVoucherCategories(data.voucherCategories)
+    setVoucherRecords(data.voucherRecords)
+    setPriceByCategory(data.priceByCategory)
     setYellowEarned(data.yellowEarned)
     setRedEarned(data.redEarned)
     setBlueEarned(data.blueEarned)
@@ -133,13 +161,14 @@ export function useCalcWallet(user: User | null) {
 
   const { yellowSpent, redSpent, blueSpent } = useMemo(() => {
     let y = 0, r = 0, b = 0
-    for (const cat of voucherCategories) {
-      const p = VOUCHER_PRICES[cat]
+    for (const v of voucherRecords) {
+      if (v.free) continue // admin-granted vouchers don't count toward spent
+      const p = priceByCategory.get(v.category)
       if (!p) continue
       y += p[0]; r += p[1]; b += p[2]
     }
     return { yellowSpent: y, redSpent: r, blueSpent: b }
-  }, [voucherCategories])
+  }, [voucherRecords, priceByCategory])
 
   const yellowBalance = Math.max(0, yellowEarned - yellowSpent)
   const redBalance = Math.max(0, redEarned - redSpent)
@@ -212,7 +241,7 @@ export function useCalcWallet(user: User | null) {
 
   const spendVoucher = useCallback(async (category: VoucherCategory) => {
     // Optimistically register the voucher; useCalcVouchers handles the actual insert.
-    setVoucherCategories(prev => [...prev, category])
+    setVoucherRecords(prev => [...prev, { category, free: false }])
   }, [])
 
   return {

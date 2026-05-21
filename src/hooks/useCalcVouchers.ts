@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { voucherTotalPrice } from '@/utils/calc-helpers'
-import type { Voucher, VoucherCategory } from '@/utils/type'
+import type { Voucher, VoucherCategory, VoucherTemplate } from '@/utils/type'
+import { templateTotalPrice } from '@/hooks/useVoucherCatalog'
 
 interface VoucherRow {
   id: string
@@ -56,12 +56,16 @@ export function useCalcVouchers(user: User | null) {
   }, [user])
 
   const redeem = useCallback(
-    async (category: VoucherCategory): Promise<Voucher | null> => {
+    async (template: VoucherTemplate): Promise<Voucher | null> => {
       if (!user) return null
       try {
         const { data, error } = await supabase
           .from('calc_vouchers')
-          .insert({ user_id: user.id, category, coins_spent: voucherTotalPrice(category) })
+          .insert({
+            user_id: user.id,
+            category: template.category,
+            coins_spent: templateTotalPrice(template),
+          })
           .select('id,category,redeemed_at,used_at,coins_spent')
           .single()
         if (error || !data) return null
@@ -71,6 +75,29 @@ export function useCalcVouchers(user: User | null) {
       } catch {
         return null
       }
+    },
+    [user],
+  )
+
+  /**
+   * Admin grant: create a voucher without deducting any stars from balance.
+   * Persists `free=true` so `useCalcWallet` skips it in spent totals.
+   */
+  const grantFree = useCallback(
+    async (template: VoucherTemplate): Promise<Voucher | null> => {
+      if (!user) return null
+      const { data, error } = await supabase
+        .from('calc_vouchers')
+        .insert({ user_id: user.id, category: template.category, coins_spent: 0, free: true })
+        .select('id,category,redeemed_at,used_at,coins_spent')
+        .single()
+      if (error || !data) {
+        console.error('[calc_vouchers] grant failed', error)
+        return null
+      }
+      const v = rowToVoucher(data as VoucherRow)
+      setVouchers(prev => [v, ...prev])
+      return v
     },
     [user],
   )
@@ -91,5 +118,5 @@ export function useCalcVouchers(user: User | null) {
     [user],
   )
 
-  return { vouchers, redeem, markUsed, refresh, isLoading }
+  return { vouchers, redeem, grantFree, markUsed, refresh, isLoading }
 }

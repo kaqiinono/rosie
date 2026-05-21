@@ -246,45 +246,9 @@ export function timeLimitBonusPreview(count: number, timeLimitSec: number): numb
   return calcTimeBonus(count, timeLimitSec, timeLimitSec)
 }
 
-export const VOUCHER_PRICE = 50 // kept for legacy balance calculations; prefer VOUCHER_PRICES per category
-
-// Tuple of [yellow, red, blue] stars required to redeem each voucher.
-// Yellow = calc (口算), Red = English, Blue = Math.
-export const VOUCHER_PRICES: Record<string, [number, number, number]> = {
-  play10: [50, 10, 0],
-  dance: [50, 10, 0],
-  dog: [50, 10, 0],
-  popcorn: [20, 10, 0],
-  generic: [500, 100, 10],
-  snack: [100, 50, 5],
-  cartoon: [120, 20, 2],
-  movie: [150, 20, 3],
-  toy: [200, 20, 2],
-  wish: [300, 20, 4],
-  universal: [500, 100, 10],
-  shopping: [200, 50, 3],
-}
-
-export function voucherTotalPrice(category: string): number {
-  const p = VOUCHER_PRICES[category]
-  if (!p) return 50
-  return p[0] + p[1] + p[2]
-}
-
-export const VOUCHER_META: Record<string, { emoji: string; label: string; gradient: string }> = {
-  play10: { emoji: '⏱️', label: '玩十分钟', gradient: 'from-green-500 to-teal-500' },
-  dance: { emoji: '💃', label: '舞蹈券', gradient: 'from-pink-500 to-rose-400' },
-  popcorn: { emoji: '🍿', label: '爆米花券', gradient: 'from-yellow-400 to-orange-400' },
-  movie: { emoji: '🎬', label: '电影券', gradient: 'from-indigo-500 to-purple-500' },
-  snack: { emoji: '🍿', label: '零食券', gradient: 'from-orange-500 to-rose-500' },
-  toy: { emoji: '🧸', label: '玩具券', gradient: 'from-pink-500 to-fuchsia-500' },
-  wish: { emoji: '🌠', label: '心愿券', gradient: 'from-amber-500 to-violet-500' },
-  cartoon: { emoji: '📺', label: '动画券', gradient: 'from-teal-500 to-emerald-500' },
-  generic: { emoji: '🎁', label: '通用券', gradient: 'from-slate-500 to-zinc-500' },
-  universal: { emoji: '🎡', label: '环球影城', gradient: 'from-blue-500 to-cyan-400' },
-  shopping: { emoji: '🛍️', label: '购物券', gradient: 'from-violet-500 to-purple-400' },
-  dog: { emoji: '🐶', label: '遛狗券', gradient: 'from-yellow-500 to-amber-400' },
-}
+// Voucher prices, labels and gradients live in the `voucher_templates` DB table
+// and are accessed via `useVoucherCatalog`. The previously hardcoded constants
+// were migrated by docs/voucher-templates.sql.
 
 export function levelKey(level: CalcLevel): string {
   return typeof level === 'number' ? String(level) : level
