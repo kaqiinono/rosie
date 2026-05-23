@@ -7,8 +7,6 @@ import {
   buildQuizOptions,
   classifyPlanWords,
   getDailySessionWords,
-  hilite,
-  highlightExample,
   interleaveOrderedQuizSlots,
   normalizeQuizTypes,
   shuffle,
@@ -18,9 +16,10 @@ import {
   fmtWeekRange,
 } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
-import PhonicsWord from './PhonicsWord'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
+import StudyPhase from './StudyPhase'
+import DoneSummary from './DoneSummary'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
@@ -46,7 +45,7 @@ interface DpQuizQ {
 }
 
 interface SessionSnapshot {
-  version: 2
+  version: 3
   phase: 'study' | 'quiz'
   selectedDate: string
   subTask: 'all' | 'consolidate' | 'preview'
@@ -55,6 +54,7 @@ interface SessionSnapshot {
   quizQs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
+  isQuizPaused: boolean
 }
 
 function getWeekDayLabels(startDay: number): string[] {
@@ -67,7 +67,7 @@ function loadSessionSnapshot(planId: string | undefined): SessionSnapshot | null
     const raw = sessionStorage.getItem(`weekly_session_${planId}`)
     if (!raw) return null
     const snap = JSON.parse(raw) as Partial<SessionSnapshot>
-    if (snap.version !== 2) return null
+    if (snap.version !== 3) return null
     if (snap.phase !== 'study' && snap.phase !== 'quiz') return null
     return snap as SessionSnapshot
   } catch { return null }
@@ -146,7 +146,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [currentSubTask, setCurrentSubTask] = useState<'all' | 'consolidate' | 'preview'>(
     () => snap0?.subTask ?? 'all',
   )
-  const [studyWordVisible, setStudyWordVisible] = useState(false)
 
   const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]>(
     () => snap0?.quizQs ?? [],
@@ -165,6 +164,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const [lastStarsEarned, setLastStarsEarned] = useState(0)
+  const [isQuizPaused, setIsQuizPaused] = useState(() => snap0?.isQuizPaused ?? false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
@@ -192,7 +192,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       sessionStorage.setItem(
         key,
         JSON.stringify({
-          version: 2,
+          version: 3,
           phase,
           selectedDate: selectedDate ?? '',
           subTask: currentSubTask,
@@ -203,10 +203,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           quizResults: quizResultBuffer.current
             .slice(0, curQ)
             .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+          isQuizPaused,
         } satisfies SessionSnapshot),
       )
     } catch { /* noop */ }
-  }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
+  }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ, isQuizPaused])
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
@@ -267,11 +268,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       setCurrentSubTask(subTask)
       setWordKeys(filtered.map(({ entry, kind }) => ({ key: wordKey(entry), kind })))
       setStudyIdx(0)
-      setStudyWordVisible(false)
       setStudyDefOnly(false)
       setSelectedDate(dateStr)
       setPhase('study')
       setIsImmersive(true)
+      setIsQuizPaused(false)
+      setQuizQKeys([])
+      setCurQ(0)
+      setScore(0)
+      quizResultBuffer.current = []
     },
     [consolidateTypes, previewTypes, buildSessionWords, setIsImmersive],
   )
@@ -290,6 +295,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setCurQ(0)
     setScore(0)
     setLastStarsEarned(0)
+    setIsQuizPaused(false)
     setPhase('quiz')
   }, [words, consolidateTypes, previewTypes])
 
@@ -359,6 +365,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       }, 0)
       setLastStarsEarned(starsFromThisRun)
       quizResultBuffer.current = []
+      setIsQuizPaused(false)
       setPhase('done')
     } else {
       setCurQ(next)
@@ -800,174 +807,38 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   if (phase === 'study' && words[studyIdx]) {
     const w = words[studyIdx]
     const total = words.length
+    const canResume =
+      isQuizPaused && quizQKeys.length > 0 && curQ < quizQKeys.length
     return (
-      <div
-        className="mx-auto flex max-w-[1280px] flex-col overflow-hidden px-4 max-sm:px-3"
-        style={{ height: isImmersive ? '100dvh' : 'calc(100dvh - 56px)' }}
-      >
-        <div className="mb-0 flex shrink-0 flex-wrap items-center gap-2 py-2.5">
-          <div className="flex min-w-0 flex-1 items-center gap-2">
-            <button
-              onClick={() => setPhase('week-view')}
-              className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3 py-1.5 text-[.75rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
-            >
-              ← 返回
-            </button>
-            <div className="font-fredoka truncate text-[1rem] text-[var(--wm-text)]">
-              📖 记忆单词
-            </div>
-          </div>
-          <div className="shrink-0 rounded-full border border-[var(--wm-border)] bg-[var(--wm-surface)] px-2.5 py-1 text-[.72rem] font-bold whitespace-nowrap text-[var(--wm-text-dim)]">
-            {studyIdx + 1} / {total}
-          </div>
-          <button
-            onClick={() => {
-              setStudyDefOnly(!studyDefOnly)
-              setStudyWordVisible(false)
-            }}
-            className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-3 py-1.5 text-[.72rem] font-extrabold whitespace-nowrap transition-all select-none ${
-              studyDefOnly
-                ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                : 'border-white/10 bg-white/5 text-white/50'
+      <StudyPhase
+        entry={w.entry}
+        currentIdx={studyIdx}
+        totalCount={total}
+        title="📖 记忆单词"
+        studyDefOnly={studyDefOnly}
+        onStudyDefOnlyChange={setStudyDefOnly}
+        isImmersive={isImmersive}
+        onExitImmersive={exitImmersive}
+        progressGradientClasses="from-[#d97706] via-[#f59e0b] to-[#fbbf24]"
+        nextButtonGradientClasses="from-[#d97706] to-[#f59e0b]"
+        nextButtonShadowClass="shadow-[0_3px_12px_rgba(217,119,6,.4)]"
+        wordBadge={
+          <span
+            className={`rounded-full border px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider uppercase ${
+              w.kind === 'consolidate'
+                ? 'border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.2)] text-[#93c5fd]'
+                : 'border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.2)] text-[#fb923c]'
             }`}
           >
-            <span>✨</span> 仅看释义
-            <div
-              className={`relative h-3.5 w-7 rounded-[7px] transition-colors ${studyDefOnly ? 'bg-[rgba(245,158,11,.5)]' : 'bg-white/10'}`}
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 h-2.5 w-2.5 rounded-full transition-all ${studyDefOnly ? 'translate-x-3.5 bg-[#f59e0b]' : 'bg-white/40'}`}
-              />
-            </div>
-          </button>
-          {isImmersive && (
-            <button
-              onClick={exitImmersive}
-              className="shrink-0 cursor-pointer rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[.72rem] font-bold text-white/55 transition-all hover:bg-white/20 hover:text-white/80"
-            >
-              ✕ 退出沉浸
-            </button>
-          )}
-        </div>
-        <div className="mb-2 h-[3px] shrink-0 rounded-sm bg-white/[.04]">
-          <div
-            className="h-full rounded-sm bg-gradient-to-r from-[#d97706] via-[#f59e0b] to-[#fbbf24] transition-[width] duration-400"
-            style={{ width: `${((studyIdx + 1) / total) * 100}%` }}
-          />
-        </div>
-
-        <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-[16px] border border-[var(--wm-border)] max-sm:flex-col">
-          {/* Left — word */}
-          <div
-            className={`relative flex flex-col items-center justify-center gap-3 overflow-hidden px-7 py-6 transition-all duration-400 max-sm:px-5 ${
-              studyDefOnly && !studyWordVisible
-                ? 'w-0 overflow-hidden p-0 opacity-0 max-sm:h-0 max-sm:w-full'
-                : 'w-1/2 opacity-100 max-sm:h-[45%] max-sm:w-full'
-            }`}
-            style={{ background: 'linear-gradient(135deg, #1a1a30 0%, #12122a 100%)' }}
-          >
-            <div className="font-fredoka pointer-events-none absolute top-1/2 right-[-10px] -translate-y-1/2 text-[min(35vw,240px)] leading-none text-white/[.022] select-none">
-              {w.entry.word.charAt(0).toUpperCase()}
-            </div>
-            <div className="relative z-[1] flex flex-wrap justify-center gap-1.5">
-              <span
-                className={`rounded-full border px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider uppercase ${
-                  w.kind === 'consolidate'
-                    ? 'border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.2)] text-[#93c5fd]'
-                    : 'border-[rgba(249,115,22,.3)] bg-[rgba(249,115,22,.2)] text-[#fb923c]'
-                }`}
-              >
-                {w.kind === 'consolidate' ? '必记' : '预习'}
-              </span>
-              <span className="rounded-full border border-[rgba(233,69,96,.3)] bg-[rgba(233,69,96,.2)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[var(--wm-accent)] uppercase">
-                {w.entry.unit}
-              </span>
-            </div>
-            <div className="font-nunito relative z-[1] text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
-              <PhonicsWord text={w.entry.word} syllables={w.entry.syllables} />
-            </div>
-            {w.entry.ipa && (
-              <div className="relative z-[1] text-[clamp(.85rem,1.8vw,1rem)] font-semibold text-[var(--wm-accent2)] italic opacity-85">
-                {w.entry.ipa}
-              </div>
-            )}
-            {w.entry.example && (
-              <div className="relative z-[1] w-full border-t border-white/[.07] pt-3 text-center">
-                <div className="mb-1.5 text-[.55rem] font-extrabold tracking-widest text-white/30 uppercase">
-                  例句
-                </div>
-                <div
-                  className="text-[1rem] leading-loose text-[rgba(200,200,255,.5)] italic [&_strong]:font-extrabold [&_strong]:text-[#4ade80] [&_strong]:not-italic"
-                  dangerouslySetInnerHTML={{
-                    __html: highlightExample(w.entry.example, w.entry.word),
-                  }}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Right — definition */}
-          <div
-            onClick={() => {
-              if (studyDefOnly) setStudyWordVisible(!studyWordVisible)
-            }}
-            className={`relative flex flex-col items-center justify-center px-7 py-6 transition-all duration-400 max-sm:w-full max-sm:px-5 ${
-              studyDefOnly && !studyWordVisible
-                ? 'w-full cursor-pointer max-sm:flex-1'
-                : studyDefOnly
-                  ? 'w-1/2 cursor-pointer max-sm:flex-1'
-                  : 'w-1/2 cursor-default max-sm:flex-1'
-            }`}
-            style={{ background: 'linear-gradient(135deg, #0e2a50 0%, #1a1a2e 100%)' }}
-          >
-            <div className="flex w-full max-w-[420px] flex-col items-start gap-2">
-              <div className="text-[.6rem] font-extrabold tracking-widest text-[rgba(96,165,250,.6)] uppercase">
-                释义
-              </div>
-              <div
-                className="text-[clamp(1rem,2.5vw,1.45rem)] leading-loose font-bold text-[#f0f0ff]"
-                dangerouslySetInnerHTML={{
-                  __html: hilite(w.entry.explanation, w.entry.word, w.entry.keywords),
-                }}
-              />
-            </div>
-            {studyDefOnly && (
-              <div className="absolute right-5 bottom-4 flex items-center gap-1 text-[.65rem] font-bold text-white/25">
-                {studyWordVisible ? '点击隐藏单词' : '点击查看单词'}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center justify-center gap-3.5 py-2">
-          <button
-            onClick={() => {
-              if (studyIdx > 0) {
-                setStudyIdx(studyIdx - 1)
-                setStudyWordVisible(false)
-              }
-            }}
-            disabled={studyIdx === 0}
-            className="font-nunito cursor-pointer rounded-full border-[1.5px] border-white/10 bg-transparent px-6 py-2.5 text-[1rem] font-bold text-white/40 transition-all hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:cursor-default disabled:opacity-20"
-          >
-            ← 上一个
-          </button>
-          <div className="min-w-[60px] text-center text-[0.875rem] font-bold text-white/30">
-            {studyIdx + 1} / {total}
-          </div>
-          <button
-            onClick={() => {
-              if (studyIdx < total - 1) {
-                setStudyIdx(studyIdx + 1)
-                setStudyWordVisible(false)
-              } else startQuiz()
-            }}
-            className="font-nunito cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-7 py-2.5 text-[1rem] font-extrabold text-white shadow-[0_3px_12px_rgba(217,119,6,.4)] hover:-translate-y-px"
-          >
-            {studyIdx === total - 1 ? '✅ 开始测试 →' : '下一个 →'}
-          </button>
-        </div>
-      </div>
+            {w.kind === 'consolidate' ? '必记' : '预习'}
+          </span>
+        }
+        onBack={() => setPhase('week-view')}
+        onPrev={() => setStudyIdx(studyIdx - 1)}
+        onNext={() => setStudyIdx(studyIdx + 1)}
+        onComplete={canResume ? () => setPhase('quiz') : startQuiz}
+        completeButtonText={canResume ? '🔄 恢复测试 →' : '✅ 开始测试 →'}
+      />
     )
   }
 
@@ -981,13 +852,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
             onClick={() => {
-              // Flush results so far before returning to study phase
-              if (quizResultBuffer.current.length > 0) {
-                recordBatch(quizResultBuffer.current)
-                quizResultBuffer.current = []
-              }
+              setIsQuizPaused(true)
               setStudyIdx(0)
-              setStudyWordVisible(false)
               setPhase('study')
             }}
             className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
@@ -1042,9 +908,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
     const total = quizQs.length
     const pct = total ? Math.round((score / total) * 100) : 0
-    const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪'
-    const msg =
-      pct >= 90 ? '完美！' : pct >= 70 ? '太棒了！' : pct >= 50 ? '不错哦！' : '继续加油！'
     const masteredCount = words.filter(
       (w) =>
         getWordMasteryLevel(
@@ -1054,52 +917,49 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
     return (
       <>
-        <div className="mx-auto max-w-[500px] px-5 py-10 text-center">
-          <div className="mb-3.5 text-[3.5rem]">{emoji}</div>
-          <div className="font-fredoka mb-1.5 bg-gradient-to-br from-[#d97706] to-[#f59e0b] bg-clip-text text-[3rem] text-transparent">
-            {score} / {total}
-          </div>
-          <div className="mb-2.5 text-[.9rem] font-bold text-[var(--wm-text-dim)]">{msg}</div>
-          {lastStarsEarned > 0 && (
-            <div className="mb-2 text-[0.875rem] font-extrabold" style={{ color: '#fbbf24' }}>
-              ⭐ 获得 {lastStarsEarned} 颗星星
-            </div>
-          )}
-          <div className="mb-2 text-[0.875rem] leading-loose text-[var(--wm-text-dim)]">
-            正确率 {pct}% · {words.length} 个{currentSubTask === 'consolidate' ? '必记' : currentSubTask === 'preview' ? '预习' : ''}词
-            {selectedDate &&
-              ` · ${fmtDate(selectedDate)} ${cnDays[plan.days.findIndex((d) => d.date === selectedDate)]}`}
-          </div>
-          <div className="mb-5 text-[1rem] font-bold text-[#4ade80]">
-            本次练习：{masteredCount}/{words.length} 个单词已掌握 🦋
-          </div>
-          <div className="flex flex-wrap justify-center gap-2.5">
-            <button
-              onClick={() => startQuiz()}
-              className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)]"
-            >
-              🔄 重新测试
-            </button>
-            <button
-              onClick={() => setPhase('week-view')}
-              className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[var(--wm-text-dim)]"
-            >
-              返回周计划
-            </button>
-            {isSubTask && hasOtherWords && !otherAlreadyDone && selectedDate && (
+        <DoneSummary
+          score={score}
+          total={total}
+          scoreGradientClasses="from-[#d97706] to-[#f59e0b]"
+          starsEarned={lastStarsEarned}
+          detailLine={
+            <>
+              正确率 {pct}% · {words.length} 个{currentSubTask === 'consolidate' ? '必记' : currentSubTask === 'preview' ? '预习' : ''}词
+              {selectedDate &&
+                ` · ${fmtDate(selectedDate)} ${cnDays[plan.days.findIndex((d) => d.date === selectedDate)]}`}
+            </>
+          }
+          masteredCount={masteredCount}
+          wordsCount={words.length}
+          actions={
+            <>
               <button
-                onClick={() => startStudy(selectedDate, otherSubTask)}
-                className={`font-nunito cursor-pointer rounded-[10px] border-0 px-6 py-2.5 text-[.88rem] font-extrabold text-white transition-all hover:-translate-y-px ${
-                  otherSubTask === 'consolidate'
-                    ? 'bg-gradient-to-br from-[#1e40af] to-[#60a5fa] shadow-[0_3px_12px_rgba(96,165,250,.3)]'
-                    : 'bg-gradient-to-br from-[#9a3412] to-[#fb923c] shadow-[0_3px_12px_rgba(249,115,22,.3)]'
-                }`}
+                onClick={() => startQuiz()}
+                className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)]"
               >
-                {otherSubTask === 'consolidate' ? '📘 继续必记练习 →' : '🔖 继续预习练习 →'}
+                🔄 重新测试
               </button>
-            )}
-          </div>
-        </div>
+              <button
+                onClick={() => setPhase('week-view')}
+                className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[var(--wm-text-dim)]"
+              >
+                返回周计划
+              </button>
+              {isSubTask && hasOtherWords && !otherAlreadyDone && selectedDate && (
+                <button
+                  onClick={() => startStudy(selectedDate, otherSubTask)}
+                  className={`font-nunito cursor-pointer rounded-[10px] border-0 px-6 py-2.5 text-[.88rem] font-extrabold text-white transition-all hover:-translate-y-px ${
+                    otherSubTask === 'consolidate'
+                      ? 'bg-gradient-to-br from-[#1e40af] to-[#60a5fa] shadow-[0_3px_12px_rgba(96,165,250,.3)]'
+                      : 'bg-gradient-to-br from-[#9a3412] to-[#fb923c] shadow-[0_3px_12px_rgba(249,115,22,.3)]'
+                  }`}
+                >
+                  {otherSubTask === 'consolidate' ? '📘 继续必记练习 →' : '🔖 继续预习练习 →'}
+                </button>
+              )}
+            </>
+          }
+        />
         <MasteryStatusPanel
           vocab={vocab}
           masteryMap={masteryMap}

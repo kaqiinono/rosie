@@ -132,8 +132,19 @@ export default function HomePage() {
           ))}
         </section>
 
-        <div className="text-text-muted text-xs">
-          Made with <em className="text-rose-500 not-italic">♥</em> for Rosie
+        <div className="flex flex-col items-center gap-2">
+          <div className="text-text-muted text-xs">
+            Made with <em className="text-rose-500 not-italic">♥</em> for Rosie
+          </div>
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold text-slate-400 transition hover:text-amber-700"
+            style={{ background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.18)' }}
+            aria-label="管理"
+          >
+            <span aria-hidden>🛠</span>
+            <span>管理</span>
+          </Link>
         </div>
       </div>
     </>

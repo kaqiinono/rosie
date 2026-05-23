@@ -403,7 +403,27 @@ export interface CalcLevelStateInfo {
   consecutivePoorSessions: number
 }
 
-export type VoucherCategory = 'movie' | 'snack' | 'toy' | 'wish' | 'cartoon' | 'generic' | 'play10' | 'dance' | 'universal' | 'shopping' | 'dog' | 'popcorn'
+/**
+ * Voucher category is a free-text slug stored in voucher_templates.category.
+ * Old code referenced a fixed enum; templates are now data, so this is an
+ * opaque string. Use {@link VoucherTemplate} for display + price lookup.
+ */
+export type VoucherCategory = string
+
+export interface VoucherTemplate {
+  category: string
+  label: string
+  emoji: string
+  /** Tailwind gradient utility class, e.g. 'from-indigo-500 to-purple-500'. */
+  gradient: string
+  priceYellow: number
+  priceRed: number
+  priceBlue: number
+  sortOrder: number
+  archived: boolean
+  createdAt: string
+  updatedAt: string
+}
 
 export interface Voucher {
   id: string
