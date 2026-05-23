@@ -316,9 +316,9 @@ export default function CalcReportPage() {
                               </span>
                               <span
                                 className="font-extrabold pr-3"
-                                style={{ color: item.mastered ? '#4ade80' : item.s?.consecutive_wrong >= 2 ? '#f87171' : 'rgba(196,181,253,0.5)' }}
+                                style={{ color: item.mastered ? '#4ade80' :item.s?.consecutive_wrong &&  item.s?.consecutive_wrong >= 2 ? '#f87171' : 'rgba(196,181,253,0.5)' }}
                               >
-                                {item.mastered ? '✓' : item.s?.consecutive_wrong >= 2 ? '✗' : '○'}
+                                {item.mastered ? '✓' : item.s?.consecutive_wrong  && item.s?.consecutive_wrong >= 2 ? '✗' : '○'}
                               </span>
                               <span className="text-right w-32 truncate" style={{ color: 'rgba(196,181,253,0.45)' }}>
                                 {item.reason}
