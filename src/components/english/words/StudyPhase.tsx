@@ -4,6 +4,7 @@ import { useState, type ReactNode } from 'react'
 import type { WordEntry } from '@/utils/type'
 import { hilite, highlightExample } from '@/utils/english-helpers'
 import PhonicsWord from './PhonicsWord'
+import SpeakButton from './SpeakButton'
 
 interface StudyPhaseProps {
   entry: WordEntry
@@ -137,8 +138,11 @@ export default function StudyPhase({
               {entry.unit}
             </span>
           </div>
-          <div className="font-nunito relative z-[1] text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
-            <PhonicsWord text={entry.word} syllables={entry.syllables} />
+          <div className="relative z-[1] flex items-center gap-3">
+            <div className="font-nunito text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
+              <PhonicsWord text={entry.word} syllables={entry.syllables} />
+            </div>
+            <SpeakButton word={entry.word} size="text-[1.5rem]" className="opacity-40 hover:opacity-90" />
           </div>
           {entry.ipa && (
             <div className="relative z-[1] text-[clamp(.85rem,1.8vw,1rem)] font-semibold text-[var(--wm-accent2)] italic opacity-85">

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
+import { useStarHud } from '@/components/stars/StarHudProvider'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import { useCalcLevel } from '@/hooks/useCalcLevel'
 import {
@@ -62,6 +63,7 @@ export default function CalcSessionPage() {
   const { user } = useAuth()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
+  const { refresh: refreshStarHud } = useStarHud()
   const { mistakes, addMistake, recordCorrect, refresh: refreshMistakes } = useCalcMistakes(user)
   const { checkAndAdvance } = useCalcLevel(user, settings, update)
   const problemState = useCalcProblemState(user)
@@ -253,6 +255,8 @@ export default function CalcSessionPage() {
       maxStreak,
       topLevel,
     })
+    // Sync the global StarHud balance so the top-left chip updates immediately.
+    void refreshStarHud()
 
     // 2. Bump global session counter
     const nextSessionNo = settings.sessionCounter + 1
@@ -465,6 +469,7 @@ export default function CalcSessionPage() {
     done,
     user,
     wallet,
+    refreshStarHud,
     coinsTotal,
     maxStreak,
     mode,

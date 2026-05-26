@@ -131,6 +131,7 @@ export interface WordEntry {
   lesson: string
   word: string
   explanation: string
+  chineseDef?: string
   ipa?: string
   example?: string
   phonics?: string

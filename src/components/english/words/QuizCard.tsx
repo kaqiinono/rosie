@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import type { WordEntry } from '@/utils/type'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
+import SpeakButton from './SpeakButton'
 
 interface QuizCardProps {
   question: { word: WordEntry; type: 'A' | 'B' | 'C' }
@@ -155,7 +156,10 @@ export default function QuizCard({
         {question.type === 'B' && (
           <>
             <div className="mb-1 text-[clamp(2rem,4cqi,1.4rem)] leading-snug font-black">
-              <PhonicsWord text={question.word.word} syllables={question.word.syllables} />
+              <div className="flex items-center gap-2">
+                <PhonicsWord text={question.word.word} syllables={question.word.syllables} />
+                <SpeakButton word={question.word.word} className="opacity-50 hover:opacity-100 shrink-0" />
+              </div>
               {question.word.ipa && (
                 <div className="mt-1 text-[clamp(.8rem,2.5cqi,.95rem)] font-semibold text-[var(--wm-accent2)] italic">
                   {question.word.ipa}
@@ -218,12 +222,19 @@ export default function QuizCard({
       </div>
 
       {answered && wasCorrect === false && (
-        <button
-          onClick={onNext}
-          className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.75rem,2.5cqi,1rem)] text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
-        >
-          下一题 →
-        </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 rounded-[10px] border border-[var(--wm-accent3)] bg-[rgba(74,222,128,.08)] px-4 py-2.5 text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-accent3)]">
+            <span className="text-[.75rem] font-extrabold uppercase tracking-wide opacity-60">正确答案</span>
+            <span className="ml-1">{question.word.word}</span>
+            <SpeakButton word={question.word.word} size="text-[1rem]" className="opacity-60 hover:opacity-100" />
+          </div>
+          <button
+            onClick={onNext}
+            className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.75rem,2.5cqi,1rem)] text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
+          >
+            下一题 →
+          </button>
+        </div>
       )}
     </div>
   )

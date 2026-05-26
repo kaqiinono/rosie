@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import type { WordEntry } from '@/utils/type'
 import { SAMPLE_WORDS } from '@/utils/english-data'
 
-const SELECT_COLS = 'stage, unit, lesson, word, explanation, ipa, example, phonics, syllables, keywords'
+const SELECT_COLS = 'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
 
 // localStorage 缓存：按 stage 分 key，避免单词量大时整体缓存过重
 // key 格式：word_cache_v1_{userId}_{stage}（stage 为空用 __null__）
@@ -94,6 +94,7 @@ function toRow(user_id: string, w: WordEntry) {
     lesson: w.lesson,
     word: w.word,
     explanation: w.explanation,
+    chinese_def: w.chineseDef ?? null,
     ipa: w.ipa ?? null,
     example: w.example ?? null,
     phonics: w.phonics ?? null,
@@ -109,6 +110,7 @@ function fromRow(row: Record<string, unknown>): WordEntry {
     lesson: row.lesson as string,
     word: row.word as string,
     explanation: row.explanation as string,
+    chineseDef: (row.chinese_def as string) ?? undefined,
     ipa: (row.ipa as string) ?? undefined,
     example: (row.example as string) ?? undefined,
     phonics: (row.phonics as string) ?? undefined,

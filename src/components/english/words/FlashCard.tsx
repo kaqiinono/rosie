@@ -5,6 +5,7 @@ import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@/utils/masteryUtils'
 import PhonicsWord from './PhonicsWord'
+import SpeakButton from './SpeakButton'
 
 interface FlashCardProps {
   entry: WordEntry
@@ -88,12 +89,15 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
             )}
           </div>
 
-          {/* Center: word + ipa */}
+          {/* Center: word + ipa + speak */}
           <div className="relative z-[1] flex flex-1 flex-col items-center justify-center gap-1.5 py-1">
-            <div
-              className={`font-nunito ${wordFontSize} text-center leading-tight font-black break-words`}
-            >
-              <PhonicsWord text={entry.word} syllables={entry.syllables} />
+            <div className="flex items-center gap-2">
+              <div
+                className={`font-nunito ${wordFontSize} text-center leading-tight font-black break-words`}
+              >
+                <PhonicsWord text={entry.word} syllables={entry.syllables} />
+              </div>
+              <SpeakButton word={entry.word} className="opacity-50 hover:opacity-100" />
             </div>
             {entry.ipa && (
               <div className="text-center text-[1.125rem] font-medium tracking-wide text-[#e879f9] italic opacity-80">
@@ -102,12 +106,14 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
             )}
           </div>
 
-          {/* Bottom: definition preview */}
-          <div className="relative z-[1] mt-0.5 border-t border-white/[.06] pt-2">
-            <p className="line-clamp-2 text-[.8rem] leading-relaxed text-white/[.28]">
-              {entry.example}
-            </p>
-          </div>
+          {/* Bottom: english example preview */}
+          {entry.example && (
+            <div className="relative z-[1] mt-0.5 border-t border-white/[.06] pt-2">
+              <p className="line-clamp-2 text-[.8rem] leading-relaxed text-white/[.28]">
+                {entry.example}
+              </p>
+            </div>
+          )}
 
           {/* Flip hint */}
           <span className="absolute right-2.5 bottom-2 text-[.62rem] font-bold text-white/[.14] select-none">
@@ -117,7 +123,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
         {/* ── Back ── */}
         <div
-          className="absolute inset-0 flex min-h-[256px] items-center justify-center overflow-hidden rounded-2xl p-5"
+          className="absolute inset-0 flex min-h-[256px] flex-col items-center justify-center gap-0 overflow-hidden rounded-2xl p-5"
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
@@ -128,11 +134,21 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
             boxShadow: 'inset 0 1px 0 rgba(96,165,250,.07), 0 4px 24px rgba(0,0,0,.35)',
           }}
         >
-          {/* Definition — centered */}
+          {/* English definition */}
           <div
             className="text-center text-[1.15rem] leading-relaxed font-bold text-[#dde8ff] [&_strong]:font-extrabold [&_strong]:text-[#60a5fa]"
             dangerouslySetInnerHTML={{ __html: explHtml }}
           />
+
+          {/* Chinese definition */}
+          {entry.chineseDef && (
+            <div className="mt-4 flex w-full flex-col items-center gap-1.5">
+              <div className="h-px w-10 rounded-full" style={{ background: 'rgba(96,165,250,.15)' }} />
+              <p className="text-center text-[.82rem] font-semibold tracking-wide text-white/40">
+                {entry.chineseDef}
+              </p>
+            </div>
+          )}
 
           {/* Flip back hint */}
           <span className="absolute right-2.5 bottom-2 text-[.62rem] font-bold text-white/[.14] select-none">

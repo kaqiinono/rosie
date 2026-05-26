@@ -12,6 +12,7 @@ import {
 import { getWordSizeClass } from '@/utils/phonics'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
+import SpeakButton from './SpeakButton'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import ColoredStar from '@/components/stars/ColoredStar'
 
@@ -572,7 +573,10 @@ export default function ImmersiveMode({
                     {isA || isC ? (
                       q.word.explanation
                     ) : (
-                      <PhonicsWord text={q.word.word} syllables={q.word.syllables} />
+                      <div className="flex items-center gap-2">
+                        <PhonicsWord text={q.word.word} syllables={q.word.syllables} />
+                        <SpeakButton word={q.word.word} size="text-[1.2rem]" className="opacity-50 hover:opacity-100 shrink-0" />
+                      </div>
                     )}
                   </div>
                   {!isA && !isC && q.word.ipa && (

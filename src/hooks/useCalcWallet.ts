@@ -219,21 +219,29 @@ export function useCalcWallet(user: User | null) {
         top_level: levelKey(session.topLevel as CalcLevel),
       }
       try {
-        const { data: inserted } = await supabase
+        const { data: inserted, error: sessionErr } = await supabase
           .from('calc_sessions')
           .insert(sessionRow)
           .select('id')
           .single()
+        if (sessionErr) {
+          console.error('[calc_sessions] insert failed', { userId: user.id, error: sessionErr })
+        }
         if (inserted && session.coinsEarned > 0) {
-          await supabase.from('star_sessions').insert({
+          const { error: starErr } = await supabase.from('star_sessions').insert({
             user_id: user.id,
             date: session.date,
             source: 'calc',
             coins_earned: session.coinsEarned,
             ref_id: (inserted as { id: string }).id,
           })
+          if (starErr) {
+            console.error('[star_sessions] calc insert failed', { userId: user.id, error: starErr })
+          }
         }
-      } catch { /* ignore */ }
+      } catch (err) {
+        console.error('[recordSession] unexpected error', err)
+      }
       await refresh()
     },
     [user, refresh],
