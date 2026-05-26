@@ -187,6 +187,11 @@ export default function StudyPhase({
                 __html: hilite(entry.explanation, entry.word, entry.keywords),
               }}
             />
+            {entry.chineseDef && (
+              <div className="text-[clamp(.82rem,1.8vw,1rem)] leading-relaxed text-white/35">
+                {entry.chineseDef}
+              </div>
+            )}
           </div>
           {studyDefOnly && (
             <div className="absolute right-5 bottom-4 flex items-center gap-1 text-[.65rem] font-bold text-white/25">

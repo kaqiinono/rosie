@@ -86,9 +86,13 @@ function clearAllCache(userId: string) {
   } catch { /* ignore */ }
 }
 
-function toRow(user_id: string, w: WordEntry) {
+const UPSERT_OPTS = { onConflict: 'unit,lesson,word,stage', ignoreDuplicates: false } as const
+
+let initLock: string | null = null
+
+function toRow(creator: string, w: WordEntry) {
   return {
-    user_id,
+    creator,
     stage: w.stage ?? null,
     unit: w.unit,
     lesson: w.lesson,
@@ -124,16 +128,15 @@ export function useWordData(user: User | null) {
 
   useEffect(() => {
     if (!user) return
+    if (initLock === user.id) return
+    initLock = user.id
     void (async () => {
-      // 1. 立即展示缓存（如有），让页面瞬间有内容
       const cached = readCachedVocab(user.id)
       if (cached) setVocabState(cached)
 
-      // 2. 后台从 Supabase 拉最新数据
       const { data } = await supabase
         .from('word_entries')
         .select(SELECT_COLS)
-        .eq('user_id', user.id)
         .order('unit')
         .order('lesson')
 
@@ -142,22 +145,21 @@ export function useWordData(user: User | null) {
         setVocabState(words)
         writeCacheByStage(user.id, words)
       } else if (!cached) {
-        // 首次使用且无缓存：写入示例数据
-        await supabase.from('word_entries').insert(SAMPLE_WORDS.map(w => toRow(user.id, w)))
+        await supabase.from('word_entries').upsert(SAMPLE_WORDS.map(w => toRow(user.id, w)), UPSERT_OPTS)
         setVocabState(SAMPLE_WORDS)
         writeCacheByStage(user.id, SAMPLE_WORDS)
       }
-      // 若 DB 返回空但有缓存，保持缓存数据（异常情况，不清空页面）
     })()
+    return () => { initLock = null }
   }, [user])
 
   const setVocab = useCallback(async (words: WordEntry[]) => {
     setVocabState(words)
     if (!user) return
     clearAllCache(user.id)
-    await supabase.from('word_entries').delete().eq('user_id', user.id)
+    await supabase.from('word_entries').delete().neq('id', '')
     if (words.length > 0) {
-      await supabase.from('word_entries').insert(words.map(w => toRow(user.id, w)))
+      await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
       writeCacheByStage(user.id, words)
     }
   }, [user])
@@ -170,13 +172,12 @@ export function useWordData(user: User | null) {
     clearCacheForStages(user.id, stages.map(stageKey))
 
     for (const stage of stages) {
-      await supabase.from('word_entries').delete().eq('user_id', user.id).eq('stage', stage)
+      await supabase.from('word_entries').delete().eq('stage', stage)
     }
-    await supabase.from('word_entries').insert(words.map(w => toRow(user.id, w)))
+    await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
     const { data } = await supabase
       .from('word_entries')
       .select(SELECT_COLS)
-      .eq('user_id', user.id)
       .order('unit')
       .order('lesson')
     if (data) {
