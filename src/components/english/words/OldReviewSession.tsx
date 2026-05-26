@@ -156,6 +156,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
           </button>
         </div>
         <QuizCard
+          key={curQ}
           question={{ word: q.word, type: q.type }}
           options={quizOptions}
           currentIndex={curQ}

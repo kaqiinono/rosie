@@ -29,14 +29,6 @@ export default function QuizCard({
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
   const [spellCorrect, setSpellCorrect] = useState<boolean | null>(null)
-  const [prevIndex, setPrevIndex] = useState(currentIndex)
-  if (prevIndex !== currentIndex) {
-    setPrevIndex(currentIndex)
-    setAnswered(false)
-    setWasCorrect(null)
-    setSelectedWord(null)
-    setSpellCorrect(null)
-  }
 
   useEffect(() => {
     if (answered && wasCorrect === true) {

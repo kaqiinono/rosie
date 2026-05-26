@@ -876,6 +876,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         </div>
 
         <QuizCard
+          key={curQ}
           question={{ word: q.word, type: q.type }}
           options={quizOptions}
           currentIndex={curQ}
