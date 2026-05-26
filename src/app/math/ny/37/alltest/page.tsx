@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PROBLEMS } from '@/utils/lesson37-data'
 import { useLesson37 } from '@/components/math/lesson37/Lesson37Provider'
+import type { ProblemDifficulty } from '@/utils/difficulty'
 import FilterPanel from '@/components/math/lesson37/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
@@ -26,7 +27,17 @@ function AlltestContent() {
     }
   }, [typeParam])
 
-  const toggleFilter = (axis: 'source' | 'type', value: string) => {
+  const toggleFilter = (axis: 'source' | 'type' | 'difficulty', value: string) => {
+    if (axis === 'difficulty') {
+      const level = Number(value) as ProblemDifficulty
+      setFilters(f => {
+        const next = new Set(f.difficulty)
+        if (next.has(level)) next.delete(level)
+        else next.add(level)
+        return { ...f, difficulty: next }
+      })
+      return
+    }
     setFilters(f => {
       const next = new Set(f[axis])
       if (next.has(value)) next.delete(value)

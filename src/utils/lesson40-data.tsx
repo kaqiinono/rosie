@@ -79,7 +79,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-P1',
       title: '课前测1 · 正方形排成一行',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 1,
       text: '把边长分别是 <strong>5</strong>、<strong>4</strong>、<strong>3</strong>、<strong>2</strong> 厘米的 4 个正方形按从大到小的顺序排成一行，排成的图形周长是多少厘米？',
       figureNode: (
         <img
@@ -104,7 +104,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-P2',
       title: '课前测2 · 长方形纸片横竖剪刀',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 2,
       text: '一张长为 <strong>10</strong> 厘米、宽为 <strong>5</strong> 厘米的长方形纸片，横着剪了 <strong>2</strong> 刀，竖着剪了 <strong>3</strong> 刀，请问剪完后得到的所有长方形的周长之和是多少厘米？',
       figureNode: (
         <img
@@ -128,7 +128,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-P3',
       title: '课前测3 · 大长方形分成12个小正方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 2,
       text: '把一个大长方形分成 <strong>12</strong> 个小正方形，已知每个小正方形的周长为 <strong>8</strong> 厘米，求大长方形的周长。',
       figureNode: (
         <img
@@ -152,7 +152,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-P4',
       title: '课前测4 · 15个小长方形组合图',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 2,
       text: '下图是由 <strong>15</strong> 个长为 <strong>10</strong> 厘米、宽为 <strong>4</strong> 厘米的小长方形组合而成的阶梯图形，求这个图形的周长。',
       figureNode: (
         <img
@@ -176,7 +176,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-P5',
       title: '课前测5 · 相邻边垂直多边形',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 2,
       text: '如图所示，相邻的两条线段互相垂直，求这个多边形的周长是多少厘米？',
       figureNode: (
         <img
@@ -204,7 +204,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L1',
       title: '课1 · 3个长方形拼大长方形（种数）',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 2,
       text: '用 <strong>3</strong> 个长 <strong>4</strong> 厘米、宽 <strong>2</strong> 厘米的长方形拼成一个大长方形，请问拼成的大长方形的周长有多少种不同的可能？',
       figureNode: (
         <img
@@ -228,7 +228,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L2',
       title: '练一练1 · 6个正方形拼大长方形（种数）',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '用 <strong>6</strong> 个边长为 <strong>3</strong> 厘米的正方形拼成一个大长方形，请问拼成的大长方形的周长有多少种不同的可能？',
       analysis: [
         '6的因数对：1×6、2×3',
@@ -245,7 +245,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L3',
       title: '课2 · 4个小长方形拼大长方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 2,
       text: '如图所示，用 <strong>4</strong> 个相同的长为 <strong>9</strong> 厘米的小长方形拼成一个大长方形，请问大长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -270,7 +270,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L4',
       title: '练一练2 · 4个小长方形拼大长方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '如图所示，用 <strong>4</strong> 个相同的宽为 <strong>5</strong> 厘米的小长方形拼成一个大长方形，请问大长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -294,7 +294,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L5',
       title: '课3 · 长方形横剪1刀竖剪2刀',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 2,
       text: '一张长为 <strong>7</strong> 厘米、宽为 <strong>3</strong> 厘米的长方形纸片，横着剪了 <strong>1</strong> 刀，竖着剪了 <strong>2</strong> 刀，请问剪完后得到的所有长方形的周长之和是多少厘米？',
       figureNode: (
         <img
@@ -318,7 +318,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L6',
       title: '练一练3 · 正方形横剪1刀竖剪1刀',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 3,
       text: '纳纳将一张边长为 <strong>8</strong> 厘米的正方形纸片横着剪了 <strong>1</strong> 刀，竖着剪了 <strong>1</strong> 刀，请问剪完后得到的所有长方形的周长之和是多少厘米？',
       figureNode: (
         <img
@@ -342,7 +342,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L7',
       title: '课4 · 礼品盒阶梯形周长',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 2,
       text: '六一儿童节快要到了，一年级一班准备了一些礼品盒，每个礼品盒长 <strong>20</strong> 厘米，高 <strong>10</strong> 厘米，摆成如图所示的阶梯形，请问整个图形的周长是多少厘米？',
       figureNode: (
         <img
@@ -366,7 +366,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L8',
       title: '练一练4 · 等边三角形拼平行四边形',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 3,
       text: '用 <strong>20</strong> 个边长为 <strong>4</strong> 厘米的等边三角形拼接成一个大的平行四边形，请问大平行四边形的周长是多少厘米？',
       figureNode: (
         <img
@@ -391,7 +391,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L9',
       title: '课5 · 小区平面图晨跑',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 2,
       text: '下图是某个小区的平面图（单位：米），约约每天早上会沿着小区晨跑 <strong>2</strong> 圈，请问约约每天跑多少米？',
       figureNode: (
         <img
@@ -415,7 +415,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L10',
       title: '练一练5 · 凹凸图形周长（平移法）',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 3,
       text: '如图，两个凹凸图形的相邻边都互相垂直，用平移法求这两个图形的周长。（单位：厘米）',
       analysis: [
         '平移法核心：把凹入的边"平移"到对侧，凹凸图形→等效长方形',
@@ -433,7 +433,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L11',
       title: '课6 · 标向法求多边形周长',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 2,
       text: '如图所示，这个多边形任意相邻的两条边都互相垂直，求这个多边形的周长是多少？（单位：厘米）',
       figureNode: (
         <img
@@ -458,7 +458,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-L12',
       title: '练一练6 · 两图形标向法',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 3,
       text: '如下图，两个多边形任意相邻的两条边都互相垂直，分别求两个多边形的周长。（单位：厘米）',
       figureNode: (
         <img
@@ -484,7 +484,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-H1',
       title: '课后巩固1 · 4个长方形拼大长方形（种数）',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '用 <strong>4</strong> 个长 <strong>6</strong> 厘米、宽 <strong>2</strong> 厘米的长方形拼成一个大长方形，请问拼成的大长方形的周长有多少种不同的可能？',
       figureNode: (
         <img
@@ -508,7 +508,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-H2',
       title: '课后巩固2 · 5个小长方形拼大长方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '如图所示，用 <strong>5</strong> 个相同的长为 <strong>12</strong> 厘米的小长方形拼成一个大长方形，请问大长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -533,7 +533,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-H3',
       title: '课后巩固3 · 长方形横剪2刀竖剪3刀',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 3,
       text: '一个长为 <strong>20</strong> 厘米、宽为 <strong>10</strong> 厘米的长方形纸片，被横着剪了 <strong>2</strong> 刀，竖着剪了 <strong>3</strong> 刀，剪完后所形成的所有长方形的周长总和是多少？',
       figureNode: (
         <img
@@ -557,7 +557,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-H4',
       title: '课后巩固4 · 砖墙阶梯形周长',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 3,
       text: '下图是一面砖墙的平面图，每块砖长 <strong>8</strong> 厘米，高 <strong>4</strong> 厘米，一共摆了 <strong>6</strong> 层，请问摆好后的图形的周长是多少厘米？',
       figureNode: (
         <img
@@ -581,7 +581,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-H5',
       title: '课后巩固5 · 玩具侧面图周长',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 3,
       text: '如图是一个玩具的侧面图，任意相邻的两条边都互相垂直，图中最短线段（共 <strong>15</strong> 条）的长度都是 <strong>3</strong> 厘米，请问这个玩具侧面图的周长是多少厘米？',
       figureNode: (
         <img
@@ -605,7 +605,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-H6',
       title: '课后巩固6 · 相邻边垂直多边形',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 3,
       text: '如图所示，这个多边形任意相邻的两条边都互相垂直，求这个多边形的周长是多少？（单位：厘米）',
       figureNode: (
         <img
@@ -632,7 +632,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W1',
       title: '闯关1 · 12个正方形可拼几种周长',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '<strong>12</strong> 个边长为 <strong>2</strong> 厘米的正方形，可以拼出多少种不同周长的长方形？',
       figureNode: (
         <img
@@ -657,7 +657,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W2',
       title: '闯关2 · 5个小长方形拼大长方形最小周长',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '用 <strong>5</strong> 个长为 <strong>2</strong> 厘米、宽为 <strong>1</strong> 厘米的长方形拼成一个大长方形，在所有可能的拼法中，大长方形周长最小是多少厘米？',
       figureNode: (
         <img
@@ -682,7 +682,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W3',
       title: '闯关3 · 正方形分成3个长方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '如图所示，一个正方形被分成了三个相同的长方形。如果这个正方形的周长是 <strong>12</strong> 厘米，那么其中一个长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -705,7 +705,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W4',
       title: '闯关4 · 8个小长方形拼大长方形，求小长方形周长',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 3,
       text: '如图，用 <strong>8</strong> 个相同的小长方形拼成一个大长方形，已知大长方形的周长是 <strong>28</strong> 厘米，那么小长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -729,7 +729,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W5',
       title: '闯关5 · 正方形横竖各剪一刀',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 3,
       text: '一个周长为 <strong>22</strong> 厘米的正方形，沿着水平方向和竖直方向各剪一刀，请问剪完后形成的 4 个小长方形的周长之和是多少厘米？',
       figureNode: (
         <img
@@ -754,7 +754,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W6',
       title: '闯关6 · 长方形横剪3刀竖剪4刀',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 3,
       text: '一张长为 <strong>20</strong> 厘米、宽为 <strong>10</strong> 厘米的长方形纸片，被横着剪了 <strong>3</strong> 刀，竖着剪了 <strong>4</strong> 刀，剪完后所形成的所有长方形的周长总和是多少？',
       figureNode: (
         <img
@@ -778,7 +778,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W7',
       title: '闯关7 · 长方形剪去正方形求周长',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 3,
       text: '在一个长为 <strong>8</strong> 厘米、宽为 <strong>6</strong> 厘米的长方形纸片上剪去一个边长为 <strong>3</strong> 厘米的正方形：①剪去的正方形在右上角；②剪去的正方形在右边中间（不含角）。两种情况下剩下图形的周长分别是多少厘米？',
       figureNode: (
         <img
@@ -803,7 +803,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W8',
       title: '闯关8 · 4个小长方形摆成图形',
       tag: 'type3',
-      tagLabel: '平移法',
+      tagLabel: '平移法', difficulty: 3,
       text: '把 <strong>4</strong> 个长为 <strong>3</strong> 厘米、宽为 <strong>1</strong> 厘米的长方形摆成如下图形，则图形的周长是多少厘米？',
       figureNode: (
         <img
@@ -828,7 +828,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W9',
       title: '闯关9 · 复杂阶梯多边形周长',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 3,
       text: '请求出下面图形的周长。（单位：厘米）',
       figureNode: (
         <img
@@ -852,7 +852,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W10',
       title: '闯关10 · 最少知道几条边',
       tag: 'type4',
-      tagLabel: '标向法',
+      tagLabel: '标向法', difficulty: 4,
       text: '如下图所示，图形的边长已由字母标出，如果想求出这个图形的周长，最少需要知道几条边的长度？',
       figureNode: (
         <img
@@ -876,7 +876,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W11',
       title: '闯关11 · 大正方形=小正方形+4个长方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 5,
       text: '如图，用一个边长是 <strong>4</strong> 厘米的小正方形和 <strong>4</strong> 个相同的长方形，一起拼成一个边长是 <strong>10</strong> 厘米的大正方形，那么小长方形的长和宽分别是多少厘米？',
       figureNode: (
         <img
@@ -901,7 +901,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-W12',
       title: '闯关12 · 大正方形=8小长方形+1小正方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 5,
       text: '下面的大正方形是由 <strong>8</strong> 个相同的小长方形和 <strong>1</strong> 个小正方形拼成的，已知大正方形的周长为 <strong>400</strong>，小正方形的周长为 <strong>160</strong>，求每个小长方形的周长是多少？',
       figureNode: (
         <img
@@ -929,7 +929,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-S1',
       title: '附加题1 · 8个小长方形拼大长方形周长',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 4,
       text: '下图是由 <strong>8</strong> 个相同的小长方形拼成的大长方形，已知小长方形的长是 <strong>9</strong> 厘米，宽是 <strong>3</strong> 厘米，那么拼成的大长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -954,7 +954,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-S2',
       title: '附加题2 · 大长方形分成5个小正方形',
       tag: 'type1',
-      tagLabel: '拼图法',
+      tagLabel: '拼图法', difficulty: 4,
       text: '一个长方形被平均分成了 <strong>5</strong> 个小正方形，已知每个小正方形的周长是 <strong>13</strong> 厘米，那么大长方形的周长是多少厘米？',
       figureNode: (
         <img
@@ -979,7 +979,7 @@ export const PROBLEMS: ProblemSet = {
       id: '40-S3',
       title: '附加题3 · 6个正方形拼成图形，求单个周长',
       tag: 'type2',
-      tagLabel: '剪切法',
+      tagLabel: '剪切法', difficulty: 4,
       text: '用 <strong>6</strong> 个大小相同的正方形拼成如图所示的图形后，周长比原来 6 个正方形周长的和少了 <strong>20</strong> 厘米，那么原来一个正方形的周长是多少厘米？',
       figureNode: (
         <img

@@ -17,19 +17,20 @@ import { PROBLEMS as P39 } from '@/utils/lesson39-data'
 import { PROBLEMS as P40 } from '@/utils/lesson40-data'
 import { PROBLEMS as P41 } from '@/utils/lesson41-data'
 import { PROBLEMS as P42 } from '@/utils/lesson42-data'
+import { PROBLEMS as P43 } from '@/utils/lesson43-data'
 import type { Problem, ProblemSet } from '@/utils/type'
 import type { QuizPaper, QuizAnswerRecord } from '@/hooks/useMathQuiz'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
 const LESSON_DATA: Record<string, ProblemSet> = {
-  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42,
+  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43,
 }
 
 const LESSON_NAMES: Record<string, string> = {
   '34': '乘法分配律', '35': '归一问题', '36': '星期几问题',
   '37': '鸡兔同笼', '38': '一笔画', '39': '盈亏问题',
-  '40': '周长问题', '41': '间隔趣题', '42': '生活智力题',
+  '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识',
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'

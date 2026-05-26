@@ -7,6 +7,12 @@ import { useMathSolved } from '@/hooks/useMathSolved'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@/utils/sea-data'
 import { SOURCE_LABELS } from '@/utils/constant'
 import { getMasteryLevel } from '@/utils/masteryUtils'
+import {
+  ALL_DIFFICULTY_LEVELS,
+  DIFFICULTY_FILTER_BTNS,
+  allDifficultiesSelected,
+  type ProblemDifficulty,
+} from '@/utils/difficulty'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import StarProgressBar from '@/components/stars/StarProgressBar'
@@ -718,6 +724,9 @@ export default function MathSeaPage() {
     new Set(['pretest', 'lesson', 'homework', 'workbook', 'supplement'])
   )
   const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all')
+  const [selectedDifficulties, setSelectedDifficulties] = useState<Set<ProblemDifficulty>>(
+    () => new Set(ALL_DIFFICULTY_LEVELS),
+  )
   const [practiceMode, setPracticeMode] = useState(false)
   const [filterOpen, setFilterOpen] = useState(true)
   const [page, setPage] = useState(1)
@@ -780,6 +789,7 @@ export default function MathSeaPage() {
   const allLessonsSelected = selectedLessons.size === SEA_LESSONS.length
   const allSectionsSelected = selectedSections.size === 5
   const allTypesSelected = availableTypes.length > 0 && availableTypes.every(t => selectedTypes.has(`${t.lessonId}::${t.tag}`))
+  const allDifficultySelected = allDifficultiesSelected(selectedDifficulties)
 
   const toggleAllLessons = useCallback(() => {
     setPage(1)
@@ -810,12 +820,32 @@ export default function MathSeaPage() {
     }
   }, [allTypesSelected, availableTypes])
 
+  const toggleDifficulty = useCallback((level: ProblemDifficulty) => {
+    setPage(1)
+    setSelectedDifficulties(prev => {
+      const next = new Set(prev)
+      if (next.has(level)) next.delete(level)
+      else next.add(level)
+      return next
+    })
+  }, [])
+
+  const toggleAllDifficulties = useCallback(() => {
+    setPage(1)
+    if (allDifficultySelected) {
+      setSelectedDifficulties(new Set())
+    } else {
+      setSelectedDifficulties(new Set(ALL_DIFFICULTY_LEVELS))
+    }
+  }, [allDifficultySelected])
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return SEA_POOL.filter(sp => {
       if (!selectedLessons.has(sp.lessonId)) return false
       if (!selectedSections.has(sp.section)) return false
       if (selectedTypes.size > 0 && !selectedTypes.has(`${sp.lessonId}::${sp.problem.tag}`)) return false
+      if (!selectedDifficulties.has(sp.problem.difficulty)) return false
       const c = solveCount[sp.problem.id] ?? 0
       if (masteryFilter === 'unstarted' && c > 0) return false
       if (masteryFilter === 'reinforce' && (c === 0 || c >= 3)) return false
@@ -826,7 +856,7 @@ export default function MathSeaPage() {
       }
       return true
     })
-  }, [search, selectedLessons, selectedSections, selectedTypes, masteryFilter, solveCount])
+  }, [search, selectedLessons, selectedSections, selectedTypes, selectedDifficulties, masteryFilter, solveCount])
 
   const stats = useMemo(() => {
     const total = filtered.length
@@ -969,6 +999,11 @@ export default function MathSeaPage() {
                 <span className="rounded-full px-2 py-0.5 text-[10px]" style={{ background: 'rgba(0,229,255,0.1)', color: 'rgba(0,229,255,0.7)', border: '1px solid rgba(0,229,255,0.2)' }}>
                   {selectedSections.size}/5 来源
                 </span>
+                {!allDifficultySelected && (
+                  <span className="rounded-full px-2 py-0.5 text-[10px]" style={{ background: 'rgba(255,209,102,0.1)', color: 'rgba(255,209,102,0.8)', border: '1px solid rgba(255,209,102,0.25)' }}>
+                    难度 {selectedDifficulties.size}/5
+                  </span>
+                )}
                 {masteryFilter !== 'all' && (
                   <span className="rounded-full px-2 py-0.5 text-[10px]" style={{ background: 'rgba(255,209,102,0.1)', color: 'rgba(255,209,102,0.8)', border: '1px solid rgba(255,209,102,0.25)' }}>
                     {MASTERY_BTNS.find(b => b.key === masteryFilter)?.label}
@@ -1024,6 +1059,33 @@ export default function MathSeaPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Difficulty filter */}
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="sea-section-label">难度</span>
+                    <button
+                      type="button"
+                      onClick={toggleAllDifficulties}
+                      className="cursor-pointer text-[10px] transition-colors"
+                      style={{ color: 'rgba(0,229,255,0.5)' }}
+                    >
+                      {allDifficultySelected ? '全不选' : '全选'}
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {DIFFICULTY_FILTER_BTNS.map(b => (
+                      <button
+                        key={b.key}
+                        type="button"
+                        onClick={() => toggleDifficulty(b.key)}
+                        className={`sea-chip-${selectedDifficulties.has(b.key) ? 'on' : 'off'} cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-semibold transition-all active:scale-95`}
+                      >
+                        {b.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Section + Mastery in 2 cols */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

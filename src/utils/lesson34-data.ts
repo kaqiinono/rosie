@@ -29,7 +29,7 @@ export const TAG_STYLE: Record<string, string> = {
 
 const LESSON: Problem[] = [
   {
-    id: '34-L1', title: '例题1：凑整法基础', tag: 'type1', tagLabel: '凑整法',
+    id: '34-L1', title: '例题1：凑整法基础', tag: 'type1', tagLabel: '凑整法', difficulty: 1,
     text: '用巧妙的方法计算：<strong>4×13×25</strong>',
     analysis: [
       '找凑整对：4×25=100',
@@ -40,7 +40,7 @@ const LESSON: Problem[] = [
     type: 'none', finalQ: '4×13×25 = ？', finalUnit: '', finalAns: 1300,
   },
   {
-    id: '34-L2', title: '例题2：拆分因数凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-L2', title: '例题2：拆分因数凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 2,
     text: '用巧妙的方法计算：<strong>25×32</strong>',
     analysis: [
       '拆分32=4×8，凑整：25×4=100',
@@ -51,7 +51,7 @@ const LESSON: Problem[] = [
     type: 'none', finalQ: '25×32 = ？', finalUnit: '', finalAns: 800,
   },
   {
-    id: '34-L3', title: '例题3：含除法的凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-L3', title: '例题3：含除法的凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 2,
     text: '用巧妙的方法计算：<strong>32×6÷8</strong>',
     analysis: [
       '32÷8=4（先除后移位）',
@@ -62,7 +62,7 @@ const LESSON: Problem[] = [
     type: 'none', finalQ: '32×6÷8 = ？', finalUnit: '', finalAns: 24,
   },
   {
-    id: '34-L4', title: '例题4：乘法分配律展开', tag: 'type2', tagLabel: '分配律',
+    id: '34-L4', title: '例题4：乘法分配律展开', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '用巧妙的方法计算：<strong>(20+4)×25</strong>',
     analysis: [
       '乘法分配律：(A+B)×N = A×N + B×N',
@@ -73,7 +73,7 @@ const LESSON: Problem[] = [
     type: 'none', finalQ: '(20+4)×25 = ？', finalUnit: '', finalAns: 600,
   },
   {
-    id: '34-L5', title: '例题5：提取公因数', tag: 'type2', tagLabel: '分配律',
+    id: '34-L5', title: '例题5：提取公因数', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '用巧妙的方法计算：<strong>29×16 + 29×84</strong>',
     analysis: [
       '提取公因数29',
@@ -84,7 +84,7 @@ const LESSON: Problem[] = [
     type: 'none', finalQ: '29×16 + 29×84 = ？', finalUnit: '', finalAns: 2900,
   },
   {
-    id: '34-L6', title: '例题6：除法提取公分母', tag: 'type2', tagLabel: '分配律',
+    id: '34-L6', title: '例题6：除法提取公分母', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '用巧妙的方法计算：<strong>30÷4 + 31÷4 + 32÷4 + 33÷4 + 34÷4</strong>',
     analysis: [
       '除数相同，提取公分母4',
@@ -98,67 +98,67 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '34-H1', title: '课后巩固1(1)：凑整乘法', tag: 'type1', tagLabel: '凑整法',
+    id: '34-H1', title: '课后巩固1(1)：凑整乘法', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>240×25</strong>',
     analysis: ['240=60×4，凑整：4×25=100', '= 60×(4×25)', '= 60×100', '= 6000'],
     type: 'none', finalQ: '240×25 = ？', finalUnit: '', finalAns: 6000,
   },
   {
-    id: '34-H2', title: '课后巩固1(2)：多因数凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-H2', title: '课后巩固1(2)：多因数凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>125×2×9×5×8</strong>',
     analysis: ['125×8=1000，2×5=10', '= (125×8)×(2×5)×9', '= 1000×10×9', '= 90000'],
     type: 'none', finalQ: '125×2×9×5×8 = ？', finalUnit: '', finalAns: 90000,
   },
   {
-    id: '34-H3', title: '课后巩固2(1)：拆因数凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-H3', title: '课后巩固2(1)：拆因数凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>56×625</strong>',
     analysis: ['56=8×7，凑整：8×625=5000', '= 7×(8×625)', '= 7×5000', '= 35000'],
     type: 'none', finalQ: '56×625 = ？', finalUnit: '', finalAns: 35000,
   },
   {
-    id: '34-H4', title: '课后巩固2(2)：多因数综合', tag: 'type1', tagLabel: '凑整法',
+    id: '34-H4', title: '课后巩固2(2)：多因数综合', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>19×25×32×125</strong>',
     analysis: ['25×4=100，8×125=1000，32=4×8', '= 19×(25×4)×(8×125)', '= 19×100×1000', '= 1900000'],
     type: 'none', finalQ: '19×25×32×125 = ？', finalUnit: '', finalAns: 1900000,
   },
   {
-    id: '34-H5', title: '课后巩固3(1)：乘除凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-H5', title: '课后巩固3(1)：乘除凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>38×4÷19</strong>',
     analysis: ['38÷19=2，先除后算', '= (38÷19)×4', '= 2×4', '= 8'],
     type: 'none', finalQ: '38×4÷19 = ？', finalUnit: '', finalAns: 8,
   },
   {
-    id: '34-H6', title: '课后巩固3(2)：连续除法', tag: 'type1', tagLabel: '凑整法',
+    id: '34-H6', title: '课后巩固3(2)：连续除法', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>2400÷25÷4</strong>',
     analysis: ['25×4=100，连除等于÷100', '= 2400÷(25×4)', '= 2400÷100', '= 24'],
     type: 'none', finalQ: '2400÷25÷4 = ？', finalUnit: '', finalAns: 24,
   },
   {
-    id: '34-H7', title: '课后巩固4(1)：分配律展开', tag: 'type2', tagLabel: '分配律',
+    id: '34-H7', title: '课后巩固4(1)：分配律展开', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '按照示例改写算式：例 (4+40)×25=4×25+40×25<br/><strong>(100-4)×25</strong>',
     analysis: ['分配律展开', '= 100×25 - 4×25', '= 2500 - 100', '= 2400'],
     type: 'none', finalQ: '(100-4)×25 = ？', finalUnit: '', finalAns: 2400,
   },
   {
-    id: '34-H8', title: '课后巩固4(2)：分配律展开', tag: 'type2', tagLabel: '分配律',
+    id: '34-H8', title: '课后巩固4(2)：分配律展开', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '按照示例改写算式：<strong>125×(40-8)</strong>',
     analysis: ['分配律展开', '= 125×40 - 125×8', '= 5000 - 1000', '= 4000'],
     type: 'none', finalQ: '125×(40-8) = ？', finalUnit: '', finalAns: 4000,
   },
   {
-    id: '34-H9', title: '课后巩固5(1)：提取公因数', tag: 'type2', tagLabel: '分配律',
+    id: '34-H9', title: '课后巩固5(1)：提取公因数', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>33×66 + 33×34</strong>',
     analysis: ['提取公因数33', '= 33×(66+34)', '= 33×100', '= 3300'],
     type: 'none', finalQ: '33×66 + 33×34 = ？', finalUnit: '', finalAns: 3300,
   },
   {
-    id: '34-H10', title: '课后巩固5(2)：提取公因数', tag: 'type2', tagLabel: '分配律',
+    id: '34-H10', title: '课后巩固5(2)：提取公因数', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>155×81 - 55×81</strong>',
     analysis: ['提取公因数81', '= 81×(155-55)', '= 81×100', '= 8100'],
     type: 'none', finalQ: '155×81 - 55×81 = ？', finalUnit: '', finalAns: 8100,
   },
   {
-    id: '34-H11', title: '课后巩固6：除法提取公分母', tag: 'type2', tagLabel: '分配律',
+    id: '34-H11', title: '课后巩固6：除法提取公分母', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>21÷5 + 22÷5 + 23÷5 + 24÷5 + 25÷5</strong>',
     analysis: ['除数相同，提取公分母5', '= (21+22+23+24+25)÷5', '= 115÷5', '= 23'],
     type: 'none', finalQ: '21÷5+22÷5+23÷5+24÷5+25÷5 = ？', finalUnit: '', finalAns: 23,
@@ -167,73 +167,73 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '34-W1', title: '闯关1：多因数凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-W1', title: '闯关1：多因数凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>25×32×56×125</strong>',
     analysis: ['25×4=100，8×125=1000，32=4×8', '= (25×4)×(8×125)×56', '= 100×1000×56', '= 5600000'],
     type: 'none', finalQ: '25×32×56×125 = ？', finalUnit: '', finalAns: 5600000,
   },
   {
-    id: '34-W2', title: '闯关2：乘除混合凑整', tag: 'type1', tagLabel: '凑整法',
+    id: '34-W2', title: '闯关2：乘除混合凑整', tag: 'type1', tagLabel: '凑整法', difficulty: 3,
     text: '用巧妙的方法计算：<strong>14÷26×52</strong>',
     analysis: ['52÷26=2，先整理除法', '= 14×(52÷26)', '= 14×2', '= 28'],
     type: 'none', finalQ: '14÷26×52 = ？', finalUnit: '', finalAns: 28,
   },
   {
-    id: '34-W3', title: '闯关3：近整数展开', tag: 'type2', tagLabel: '分配律',
+    id: '34-W3', title: '闯关3：近整数展开', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>101×68</strong>',
     analysis: ['101=100+1，展开分配律', '= (100+1)×68', '= 100×68 + 1×68', '= 6800+68 = 6868'],
     type: 'none', finalQ: '101×68 = ？', finalUnit: '', finalAns: 6868,
   },
   {
-    id: '34-W4', title: '闯关4：提取公因数', tag: 'type2', tagLabel: '分配律',
+    id: '34-W4', title: '闯关4：提取公因数', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>32×47 + 47×68</strong>',
     analysis: ['提取公因数47', '= 47×(32+68)', '= 47×100', '= 4700'],
     type: 'none', finalQ: '32×47 + 47×68 = ？', finalUnit: '', finalAns: 4700,
   },
   {
-    id: '34-W5', title: '闯关5：近整数提取', tag: 'type2', tagLabel: '分配律',
+    id: '34-W5', title: '闯关5：近整数提取', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>19×36 + 36×82</strong>',
     analysis: ['提取公因数36', '= 36×(19+82)', '= 36×101', '= 36×100+36×1', '= 3636'],
     type: 'none', finalQ: '19×36 + 36×82 = ？', finalUnit: '', finalAns: 3636,
   },
   {
-    id: '34-W6', title: '闯关6：三项提取公因数', tag: 'type2', tagLabel: '分配律',
+    id: '34-W6', title: '闯关6：三项提取公因数', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>15×26 + 26×54 + 31×26</strong>',
     analysis: ['提取公因数26', '= 26×(15+54+31)', '= 26×100', '= 2600'],
     type: 'none', finalQ: '15×26+26×54+31×26 = ？', finalUnit: '', finalAns: 2600,
   },
   {
-    id: '34-W7', title: '闯关7：三项凑百提取', tag: 'type2', tagLabel: '分配律',
+    id: '34-W7', title: '闯关7：三项凑百提取', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>45×28 + 28×54 + 28×1</strong>',
     analysis: ['提取公因数28', '= 28×(45+54+1)', '= 28×100', '= 2800'],
     type: 'none', finalQ: '45×28+28×54+28×1 = ？', finalUnit: '', finalAns: 2800,
   },
   {
-    id: '34-W8', title: '闯关8：三乘项综合', tag: 'type2', tagLabel: '分配律',
+    id: '34-W8', title: '闯关8：三乘项综合', tag: 'type2', tagLabel: '分配律', difficulty: 3,
     text: '用巧妙的方法计算：<strong>5×13×27 + 5×13×74 - 13×5×1</strong>',
     analysis: ['提取公因数13×5=65', '= 13×5×(27+74-1)', '= 65×100', '= 6500'],
     type: 'none', finalQ: '5×13×27+5×13×74-13×5×1 = ？', finalUnit: '', finalAns: 6500,
   },
   {
-    id: '34-W9', title: '闯关9：隐藏公因数', tag: 'type2', tagLabel: '分配律',
+    id: '34-W9', title: '闯关9：隐藏公因数', tag: 'type2', tagLabel: '分配律', difficulty: 4,
     text: '用巧妙的方法计算：<strong>13×52 + 39×16</strong>',
     analysis: ['39=13×3，提取公因数13', '= 13×52 + 13×48', '= 13×(52+48)', '= 13×100 = 1300'],
     type: 'none', finalQ: '13×52 + 39×16 = ？', finalUnit: '', finalAns: 1300,
   },
   {
-    id: '34-W10', title: '闯关10：消去多项因数', tag: 'type1', tagLabel: '凑整法',
+    id: '34-W10', title: '闯关10：消去多项因数', tag: 'type1', tagLabel: '凑整法', difficulty: 4,
     text: '用巧妙的方法计算：<strong>11×10×9×6×5×4×3×2×1÷22÷24÷25÷27</strong>',
     analysis: ['11÷22=1/2，9÷27=1/3，4÷24=1/6', '6×3×2=36，36÷36=1', '= 10×5÷25', '= 50÷25 = 2'],
     type: 'none', finalQ: '计算结果 = ？', finalUnit: '', finalAns: 2,
   },
   {
-    id: '34-W11', title: '闯关11：神奇等差数', tag: 'type2', tagLabel: '分配律',
+    id: '34-W11', title: '闯关11：神奇等差数', tag: 'type2', tagLabel: '分配律', difficulty: 4,
     text: '用巧妙的方法计算：<strong>222222×444444÷888888</strong>',
     analysis: ['222222=2×111111，444444=4×111111，888888=8×111111', '= 2×111111×4×111111÷(8×111111)', '= 2×4÷8×111111', '= 1×111111 = 111111'],
     type: 'none', finalQ: '222222×444444÷888888 = ？', finalUnit: '', finalAns: 111111,
   },
   {
-    id: '34-W12', title: '闯关12：已知推算', tag: 'type2', tagLabel: '分配律',
+    id: '34-W12', title: '闯关12：已知推算', tag: 'type2', tagLabel: '分配律', difficulty: 5,
     text: '已知：12345679×9 = 111111111<br/>那么：<strong>12345679×8</strong> = ？',
     analysis: ['12345679×8 = 12345679×(9-1)', '= 12345679×9 - 12345679×1', '= 111111111 - 12345679', '= 98765432'],
     type: 'none', finalQ: '12345679×8 = ？', finalUnit: '', finalAns: 98765432,
@@ -243,11 +243,13 @@ const WORKBOOK: Problem[] = [
 function makeSupp(n: number, text: string, factorN: number, inner: string, ans: number, _isSubtract = false): Problem {
   const coeff = ans / factorN
   const label = coeff === 100 ? '100' : coeff === 1000 ? '1000' : `${coeff}`
+  const difficulty = (n <= 30 ? 2 : n <= 70 ? 3 : 4) as 2 | 3 | 4
   return {
     id: `34-S${n}`,
     title: `补充题${n}`,
     tag: 'type2',
     tagLabel: '分配律',
+    difficulty,
     text,
     analysis: [
       `提取公因数${factorN}`,
@@ -367,7 +369,7 @@ const SUPPLEMENT: Problem[] = [
 
 const PRETEST: Problem[] = [
   {
-    id: '34-P1', title: '课前测1：凑整乘法(1)', tag: 'type1', tagLabel: '凑整法',
+    id: '34-P1', title: '课前测1：凑整乘法(1)', tag: 'type1', tagLabel: '凑整法', difficulty: 1,
     text: '用巧妙的方法计算：<strong>25×125×16</strong>',
     analysis: [
       '找凑整对：25×16=400，400×125=50000',
@@ -378,7 +380,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '25×125×16 = ？', finalUnit: '', finalAns: 50000,
   },
   {
-    id: '34-P2', title: '课前测2：凑整乘法(2)', tag: 'type1', tagLabel: '凑整法',
+    id: '34-P2', title: '课前测2：凑整乘法(2)', tag: 'type1', tagLabel: '凑整法', difficulty: 2,
     text: '用巧妙的方法计算：<strong>19×25×64×125</strong>',
     analysis: [
       '拆分64=4×16，重新分组',
@@ -389,7 +391,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '19×25×64×125 = ？', finalUnit: '', finalAns: 3800000,
   },
   {
-    id: '34-P3', title: '课前测3：含除法凑整(1)', tag: 'type1', tagLabel: '凑整法',
+    id: '34-P3', title: '课前测3：含除法凑整(1)', tag: 'type1', tagLabel: '凑整法', difficulty: 2,
     text: '计算：<strong>48×5÷8</strong>',
     analysis: [
       '先做除法：48÷8=6',
@@ -400,7 +402,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '48×5÷8 = ？', finalUnit: '', finalAns: 30,
   },
   {
-    id: '34-P4', title: '课前测4：含除法凑整(2)', tag: 'type1', tagLabel: '凑整法',
+    id: '34-P4', title: '课前测4：含除法凑整(2)', tag: 'type1', tagLabel: '凑整法', difficulty: 2,
     text: '计算：<strong>1600÷25÷4</strong>',
     analysis: [
       '连续除法=除以乘积：25×4=100',
@@ -411,7 +413,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '1600÷25÷4 = ？', finalUnit: '', finalAns: 16,
   },
   {
-    id: '34-P5', title: '课前测5：分配律展开(1)', tag: 'type2', tagLabel: '分配律',
+    id: '34-P5', title: '课前测5：分配律展开(1)', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '请用简便方法计算：<strong>(1000−40)×25</strong>',
     analysis: [
       '乘法分配律：(A−B)×N = A×N − B×N',
@@ -422,7 +424,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '(1000−40)×25 = ？', finalUnit: '', finalAns: 24000,
   },
   {
-    id: '34-P6', title: '课前测6：分配律展开(2)', tag: 'type2', tagLabel: '分配律',
+    id: '34-P6', title: '课前测6：分配律展开(2)', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '请用简便方法计算：<strong>125×(80+8)</strong>',
     analysis: [
       '乘法分配律：N×(A+B) = N×A + N×B',
@@ -433,7 +435,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '125×(80+8) = ？', finalUnit: '', finalAns: 11000,
   },
   {
-    id: '34-P7', title: '课前测7：提取公因数(1)', tag: 'type2', tagLabel: '分配律',
+    id: '34-P7', title: '课前测7：提取公因数(1)', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '怎样才能算得又快又准？<strong>47×146−46×47</strong>',
     analysis: [
       '提取公因数47',
@@ -444,7 +446,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '47×146−46×47 = ？', finalUnit: '', finalAns: 4700,
   },
   {
-    id: '34-P8', title: '课前测8：提取公因数(2)', tag: 'type2', tagLabel: '分配律',
+    id: '34-P8', title: '课前测8：提取公因数(2)', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '怎样才能算得又快又准？<strong>54+99×99+45</strong>',
     analysis: [
       '先加：54+45=99',
@@ -455,7 +457,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '54+99×99+45 = ？', finalUnit: '', finalAns: 9900,
   },
   {
-    id: '34-P9', title: '课前测9：除法分配律(1)', tag: 'type2', tagLabel: '分配律',
+    id: '34-P9', title: '课前测9：除法分配律(1)', tag: 'type2', tagLabel: '分配律', difficulty: 2,
     text: '用巧妙的方法计算：<strong>981÷40+19÷40</strong>',
     analysis: [
       '分母相同，合并分子',
@@ -466,7 +468,7 @@ const PRETEST: Problem[] = [
     type: 'none', finalQ: '981÷40+19÷40 = ？', finalUnit: '', finalAns: 25,
   },
   {
-    id: '34-P10', title: '课前测10：除法分配律(2)', tag: 'type2', tagLabel: '分配律',
+    id: '34-P10', title: '课前测10：除法分配律(2)', tag: 'type2', tagLabel: '分配律', difficulty: 1,
     text: '用巧妙的方法计算：<strong>51÷5+52÷5+53÷5+54÷5</strong>',
     analysis: [
       '分母相同，合并所有分子',

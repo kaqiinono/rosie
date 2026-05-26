@@ -46,7 +46,7 @@ const LESSON: Problem[] = [
     id: '38-L1',
     title: '例1 · 判断一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 1,
     text: '请判断下面图形能否一笔画。<br/>图①：三角形＋底边延伸出奇点（2奇点）；图②：矩形内切圆（4奇点）；图③：三角形底部带椭圆弧（0奇点）；图④：平行四边形＋两对角线交叉（4奇点）。',
     analysis: [
       '一笔画条件：奇点数 = 0（闭合回路）或 2（从一奇点到另一奇点）',
@@ -65,7 +65,7 @@ const LESSON: Problem[] = [
     id: '38-L2',
     title: '例2 · 六面体蚂蚁比赛',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 2,
     text: '下图六面体的顶点 <strong>B</strong> 和 <strong>E</strong> 处各有一只蚂蚁，它们比赛看谁能一次不重复地爬过所有的棱线，最终到达顶点 <strong>D</strong>。已知爬行速度相同，那么<strong>在何处的蚂蚁能获胜</strong>？',
     analysis: [
       '把棱线看作图的边，顶点为图的节点，计算各顶点度数',
@@ -85,7 +85,7 @@ const LESSON: Problem[] = [
     id: '38-L3',
     title: '例3 · 哥尼斯堡七桥',
     tag: 'type5',
-    tagLabel: '欧拉路径',
+    tagLabel: '欧拉路径', difficulty: 4,
     text: '如下图所示，两条河流的交汇处有两个岛，有<strong>七座桥</strong>连接这两个岛及河岸（节点A、B、C、D、E）。请问：一个散步者能否<strong>一次不重复地走遍这七座桥</strong>？',
     analysis: [
       '把每个陆地/岛看作节点，每座桥看作连接两节点的边',
@@ -104,7 +104,7 @@ const LESSON: Problem[] = [
     id: '38-L4',
     title: '例4 · 最少几笔画出',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 2,
     text: '观察下列各图，每个图形最少需要几笔画出？<br/>图①：1间小房子（屋顶+地板）；图②：2间并排小房子；图③：3间并排小房子；图④：4间并排小房子。',
     analysis: [
       '最少笔数 = 奇点数 ÷ 2（奇点数为0时最少1笔）',
@@ -124,7 +124,7 @@ const LESSON: Problem[] = [
     id: '38-L5',
     title: '例5 · 添线或去线使能一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 2,
     text: '下面的图形能不能一笔画出？如果不能，请在每个图中分别<strong>添加或者去掉最少的线</strong>，使它们都能一笔画出。<br/>左图：三角形+底部延长线形成X形；右图：正六边形+内部连线组合。',
     analysis: [
       '左图：统计奇点数 → 4个奇点 → 不能一笔画',
@@ -143,7 +143,7 @@ const LESSON: Problem[] = [
     id: '38-L6',
     title: '例6 · 林间小路最多走多少米',
     tag: 'type7',
-    tagLabel: '最长路程',
+    tagLabel: '最长路程', difficulty: 2,
     text: '张爷爷在林间小路散步，现在要从某一点出发，如果<strong>每条小路只允许走一次</strong>，他<strong>最多能走多少米</strong>？图中各段路程如图所示（单位：km）。',
     analysis: [
       '把路网图转化为图论问题：节点=路口，边=路段',
@@ -165,7 +165,7 @@ const LESSON: Problem[] = [
     id: '38-L7',
     title: '练1 · 判断一笔画（2图）',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面哪些图形可以一笔画，请判断。<br/>左图：两个三角形共享底边，中间有两个交点（2奇点）；右图：矩形底部悬挂两个小圆（0奇点）。',
     analysis: [
       '左图：三角形＋内部连接线，2个奇点 → ✓ 能一笔画',
@@ -182,7 +182,7 @@ const LESSON: Problem[] = [
     id: '38-L8',
     title: '练2 · 游乐场路线比较',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '如图所示，线段代表游乐场中的小路，文文和立立分别站在 <strong>A</strong>、<strong>B</strong> 两点处，他们约定以相同的速度分别从各自位置出发，走遍游乐场的每一条小路，最终到达 <strong>C</strong> 处的摩天轮，请问<strong>谁先到达</strong>？',
     analysis: [
       '把路图转化为图论问题，统计各节点度数',
@@ -202,7 +202,7 @@ const LESSON: Problem[] = [
     id: '38-L9',
     title: '练3 · 五桥问题',
     tag: 'type5',
-    tagLabel: '欧拉路径',
+    tagLabel: '欧拉路径', difficulty: 4,
     text: '在一条河中有两个岛，河上的<strong>五座桥</strong>把陆地与小岛连接起来。请问：一个散步者能否<strong>一次不重复地走遍这五座桥</strong>？',
     analysis: [
       '节点：陆地C（北岸）、岛A（左岛）、岛B（右岛）、陆地D（南岸）',
@@ -221,7 +221,7 @@ const LESSON: Problem[] = [
     id: '38-L10',
     title: '练4 · 两图最少几笔',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下图中的每个图形最少需要几笔画出？<br/>左图：中心点向外8条辐射线（星形，8奇点）；右图：立体盒子形（正面矩形＋内部两小圆，8奇点）。',
     analysis: [
       '左图（辐射星形）：8个端点各度数=1（奇点），共8奇点 → 8÷2 = 4笔',
@@ -238,7 +238,7 @@ const LESSON: Problem[] = [
     id: '38-L11',
     title: '练5 · 四棱锥添铁丝',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下图是一个用铁丝围成的<strong>四棱锥框架</strong>，小蚂蚁想从某一个顶点开始爬，发现总是没有办法一次不重复地爬过所有的铁丝，请你在任意两个点之间<strong>再添加或去掉一根直的铁丝</strong>来帮助小蚂蚁！顶点为 A、B、C、D（底面）和 E（顶点）。',
     analysis: [
       '四棱锥有5个顶点，8条棱',
@@ -258,7 +258,7 @@ const LESSON: Problem[] = [
     id: '38-L12',
     title: '练6 · 学校道路最多走多少米',
     tag: 'type7',
-    tagLabel: '最长路程',
+    tagLabel: '最长路程', difficulty: 3,
     text: '下图是纳约学校内的道路示意图（3×3方格，每一小段路的长度都是 <strong>100 米</strong>），立立现在要任选一点作为起点，沿着每一段小路前进，如果<strong>每条路只允许走一次</strong>，请问他<strong>最多能走多少米</strong>？',
     analysis: [
       '3×3方格路网：4×4=16个路口，共 3×4+3×4=24 段路，总长 24×100=2400 m',
@@ -281,7 +281,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W1',
     title: '闯关1 · 判断四图一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面的图形，哪些能一笔画出？哪些不能一笔画出？<br/>图①：矩形内嵌X（对角线）；图②：三角形内有垂直线段；图③：矩形内切圆（菱形套矩形）；图④：小车形状（车身+两轮，但车轮与车身仅点接触，不连通）。',
     analysis: [
       '图①（矩形+X）：4个角各度数3（奇），中心度数4（偶）→ 4奇点 ✗',
@@ -300,7 +300,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W2',
     title: '闯关2 · 判断并标起终点',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面各图形，能不能一笔画？能一笔画的图形起点和终点各在哪里？<br/>图①：圆圈套矩形；图②：两圆用线段相连（4节点交叉）；图③：三角形+底部高线（多交叉）；图④：矩形内有多条水平线分割。',
     analysis: [
       '图①（圆套矩形）：2个奇点 → ✓ 能一笔画，起终点为两个奇点',
@@ -319,7 +319,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W3',
     title: '闯关3 · 四图最少几笔',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面各图，至少需要几笔画出？<br/>图①：小车形状（车身+两轮完整连接）；图②：桶形（梯形+弧线）；图③：2×2方格；图④：L形方格组合。',
     analysis: [
       '图①（小车）：12个奇点 → 12÷2 = 6笔',
@@ -338,7 +338,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W4',
     title: '闯关4 · 最少加几条线一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面的图形能否一笔画？如果不能，<strong>至少添加几条线</strong>就可以一笔画出？<br/>图①：大矩形内竖线平分（2格）；图②：两矩形中间有弧线连接；图③：两矩形+内嵌小矩形。',
     analysis: [
       '图①（大矩形平分）：0个奇点（全偶）→ ✓ 已能一笔画，加0条线',
@@ -356,7 +356,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W5',
     title: '闯关5 · 去掉一条线后一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面的图形都不能一笔画出，请你在<strong>每个图中去掉一条线</strong>，使它们都能够一笔画出。<br/>左图：矩形＋内切圆＋连线（4奇点）；右图：矩形+X形重叠图案（4奇点）。',
     analysis: [
       '左图：4个奇点 → 去掉连接2个奇点的那条线 → 2奇点 → 能一笔画',
@@ -373,7 +373,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W6',
     title: '闯关6 · 添加或去掉最少的线',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面的图形都不能一笔画出，请你<strong>添加或去掉最少的线</strong>，使它们都能够一笔画出。<br/>左图：嵌套矩形（外矩形＋内矩形＋连接线，4奇点）；右图：梯形＋内部X连线（4奇点）。',
     analysis: [
       '左图：4个奇点 → 去掉1条连接两奇点的线 → 2奇点 → 能一笔画',
@@ -390,7 +390,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W7',
     title: '闯关7 · 甲乙昆虫谁能爬遍',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下图中的线段代表小路，请你考虑一下，<strong>甲、乙两只昆虫分别从现在所在的地点出发，能够一次不重复爬遍所有小路的是哪只昆虫</strong>？图形为矩形＋两对角线，甲在顶部奇点，乙在左侧边上偶点。',
     analysis: [
       '矩形＋两对角线：4个顶点各度数3（奇），中心交叉点度数4（偶）→ 4个奇点',
@@ -409,7 +409,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W8',
     title: '闯关8 · 游乐园谁先出',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '周末纳纳和约约到游乐园去玩耍，两个人同时分别从 <strong>A</strong>、<strong>B</strong> 出发，以相同的速度<strong>玩遍所有的项目</strong>，最后从出口出来。那么<strong>谁出来的时间更早一些</strong>？（图为矩形＋内部X格子，出口在右侧，纳纳在A（左下奇点），约约在B（顶部中间偶点））',
     analysis: [
       '分析路网图：矩形+内部对角线组成的格子',
@@ -429,7 +429,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W9',
     title: '闯关9 · 迷宫出入口设在哪',
     tag: 'type5',
-    tagLabel: '欧拉路径',
+    tagLabel: '欧拉路径', difficulty: 4,
     text: '下图是一个迷宫通道的平面图，天天想要不重复地走遍每条通道，那么<strong>出、入口应该分别设在哪里呢</strong>？（图中有节点 A、B、G、H、I、J、K、C、D、E、F 等）',
     analysis: [
       '把每个交叉点/通道端点看作节点，每条通道看作边',
@@ -449,7 +449,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W10',
     title: '闯关10 · 展览馆能否穿过所有门',
     tag: 'type5',
-    tagLabel: '欧拉路径',
+    tagLabel: '欧拉路径', difficulty: 4,
     text: '下图是某展览馆的平面图，一个参观者能否<strong>不重复地穿过每一扇门</strong>？如果不能，请说明理由；如果能，应从哪开始走？（左图：三角形展厅+外部，右图：矩形展馆多房间）',
     analysis: [
       '左图（三角形展馆）：把每个房间和室外看作节点，每扇门看作边',
@@ -468,7 +468,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W11',
     title: '闯关11 · 邮递员送信最优路线',
     tag: 'type5',
-    tagLabel: '欧拉路径',
+    tagLabel: '欧拉路径', difficulty: 5,
     text: '邮递员叔叔要将 <strong>11 封信</strong>分别送到下图中的 <strong>11 个地点</strong>，不走重复路，怎样走最合适？（图形为三角形路网，节点 A-K 共11个，需从某点出发经过所有节点不重复走完所有路段）',
     analysis: [
       '把地点看作节点，路段看作边，统计各节点度数',
@@ -487,7 +487,7 @@ const WORKBOOK: Problem[] = [
     id: '38-W12',
     title: '闯关12 · 邮递员最短投信路程',
     tag: 'type7',
-    tagLabel: '最长路程',
+    tagLabel: '最长路程', difficulty: 5,
     text: '一个邮递员投递信件要走的街道如图所示，图中数字表示各条街道长度（单位：千米），他从<strong>邮局出发</strong>，要<strong>走遍各街道，最后回到邮局</strong>。怎样走才能使所走的行程最短？全程多少千米？',
     analysis: [
       '要走遍所有街道并回到出发点 → 这是中国邮递员问题（求最短欧拉回路）',
@@ -510,7 +510,7 @@ const HOMEWORK: Problem[] = [
     id: '38-H1',
     title: '课后1 · 判断一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '请判断下面三个图形能否一笔画。<br/>图①：土星环形（大椭圆＋倾斜环＋小圆）；图②：两个圆圈用两条线相连；图③：矩形内接菱形（菱形角点在矩形各边中点）。',
     analysis: [
       '一笔画条件：奇点数 = 0（闭合回路）或 2（从一个奇点到另一个奇点）',
@@ -528,7 +528,7 @@ const HOMEWORK: Problem[] = [
     id: '38-H2',
     title: '课后2 · 浇花路线比较',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '老师让同学们给校园里所有道路上的花浇水，小晴和图图同时分别从 <strong>A</strong>、<strong>B</strong> 出发，以相同的速度浇完所有道路的花，最后到达 <strong>C</strong>。请问：<strong>两人谁先到达 C</strong>？',
     analysis: [
       '把道路看作一笔画图：矩形＋两条对角线，共5个顶点',
@@ -550,7 +550,7 @@ const HOMEWORK: Problem[] = [
     id: '38-H3',
     title: '课后3 · 图书馆参观路线',
     tag: 'type5',
-    tagLabel: '欧拉路径',
+    tagLabel: '欧拉路径', difficulty: 4,
     text: '下图是某市图书馆的示意图，共有五个区域 <strong>A、B、C、D、E</strong>。桑桑要去图书馆看书，如果他要一次不重复地穿过每扇门，那么他应该如何走？请帮忙标出入口和出口及具体的线路图。',
     analysis: [
       '把每个区域和室外看作"顶点"，每扇门看作连接两顶点的"边"',
@@ -569,7 +569,7 @@ const HOMEWORK: Problem[] = [
     id: '38-H4',
     title: '课后4 · 最少几笔画出',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '观察下列各图，每个图形最少需要几笔画出？<br/>图①：五边形加全部对角线；图②：大圆＋8条辐条＋内圆；图③：三间相连的小房子。',
     analysis: [
       '最少笔数 = 奇点数 ÷ 2（奇点数为0时最少需1笔，即欧拉回路）',
@@ -587,7 +587,7 @@ const HOMEWORK: Problem[] = [
     id: '38-H5',
     title: '课后5 · 添线或去线使能一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 3,
     text: '下面的图形能否一笔画成？如果不能，请添加或者去掉一条线，使它们都能一笔画出。<br/>左图：矩形＋内嵌矩形＋X；右图：三个相切圆加竖向连接线。',
     analysis: [
       '左图：统计奇点数 → 4个奇点（不满足条件）',
@@ -605,7 +605,7 @@ const HOMEWORK: Problem[] = [
     id: '38-H6',
     title: '课后6 · 长方体棱爬行',
     tag: 'type6',
-    tagLabel: '立体棱爬行',
+    tagLabel: '立体棱爬行', difficulty: 4,
     text: '一只木箱的长、宽、高分别为 <strong>5、4、3</strong> 厘米（见下图），有一只甲虫从 <strong>A</strong> 点出发，沿棱爬行，每条棱不允许重复，则甲虫回到 A 点时，<strong>最多能爬行多少厘米</strong>？',
     analysis: [
       '长方体共有 12 条棱：长棱4条×5=20 cm，宽棱4条×4=16 cm，高棱4条×3=12 cm',
@@ -632,7 +632,7 @@ const SUPPLEMENT: Problem[] = [
     id: '38-S1',
     title: '附加1 · 正方体棱爬行',
     tag: 'type1',
-    tagLabel: '立体棱爬行',
+    tagLabel: '立体棱爬行', difficulty: 4,
     text: '一只蚂蚁沿正方体的棱爬行，经过所有的顶点，且它没有重复走任何一条棱，最后回到出发点。那么它<strong>至少有几条棱没有经过</strong>？',
     analysis: [
       '正方体有 12 条棱，8 个顶点，每个顶点连接 3 条棱（奇点）',
@@ -652,7 +652,7 @@ const SUPPLEMENT: Problem[] = [
     id: '38-S2',
     title: '附加2 · 长方体棱爬行',
     tag: 'type1',
-    tagLabel: '立体棱爬行',
+    tagLabel: '立体棱爬行', difficulty: 4,
     text: '一条小虫从 A 点出发，沿长 <strong>6 厘米</strong>、宽 <strong>4 厘米</strong>、高 <strong>5 厘米</strong>的长方体的棱爬行，它没有重复走任何一条棱，那么它<strong>最多能爬多少厘米</strong>？',
     analysis: [
       '长方体各棱：长 6cm×4条，宽 4cm×4条，高 5cm×4条',
@@ -673,7 +673,7 @@ const SUPPLEMENT: Problem[] = [
     id: '38-S3',
     title: '附加3 · 博物馆参观路线',
     tag: 'type2',
-    tagLabel: '平面路线',
+    tagLabel: '平面路线', difficulty: 4,
     text: '下图是一座博物馆的示意图，游客从<strong>入口</strong>进入博物馆。是否能找到一条参观路线，<strong>穿过所有的门并且每扇门恰好经过一次</strong>？',
     analysis: [
       '把每个房间（区域）和室外看作"点"，每扇门看作连接两点的"线"',
@@ -693,7 +693,7 @@ const SUPPLEMENT: Problem[] = [
     id: '38-S4',
     title: '附加4 · 展览厅参观路线',
     tag: 'type2',
-    tagLabel: '平面路线',
+    tagLabel: '平面路线', difficulty: 4,
     text: '下图是某展厅的平面图，由 <strong>5 个展室</strong>组成，任意两展室之间都有门相通，整个展览厅还有一个<strong>进口</strong>和一个<strong>出口</strong>。游客能否一次不重复地穿过所有的门，并且从入口进、从出口出？',
     analysis: [
       '5 个展室两两相通 → C(5,2) = 10 扇内部门，每个展室连 4 扇内门（偶数）',
@@ -714,7 +714,7 @@ const SUPPLEMENT: Problem[] = [
     id: '38-S5',
     title: '附加5 · 动物园街道最短路程',
     tag: 'type3',
-    tagLabel: '最短路程',
+    tagLabel: '最短路程', difficulty: 4,
     text: '老师带同学们乘观光车游览野生动物园，大巴车从<strong>起点</strong>出发，走遍每一条街道最后回到起点。街道宽（千米）从左到右为 3、4、2、1、4，高度为 5 千米。<strong>大巴车所走的最短路程是多少千米</strong>？',
     analysis: [
       '街道总长：底边 3+4+2+1+4=14 km，顶边 14 km，纵向 6 条各 5 km = 30 km',
@@ -740,7 +740,7 @@ const PRETEST: Problem[] = [
     id: '38-P1',
     title: '课前测1 · 判断一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 1,
     text: '请判断下面图形能否一笔画。<br/>图①：两个矩形交叉重叠（4个奇点）；图②：双山峰（大小三角形并列，2个奇点）；图③：圆形分成4个扇形（4个奇点）。',
     analysis: [
       '一笔画条件：奇点数 = 0（闭合回路）或 2（从一奇点到另一奇点）',
@@ -758,7 +758,7 @@ const PRETEST: Problem[] = [
     id: '38-P2',
     title: '课前测2 · 判断并标出起终点',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 2,
     text: '下面的图形能否一笔画出？能一笔画的图形，起点和终点各在哪里？',
     analysis: [
       '图①（2×2网格+对角线）：内部产生多处奇点（每条对角线与网格线交叉），奇点数 ≥ 4 → ✗ 不能一笔画',
@@ -775,7 +775,7 @@ const PRETEST: Problem[] = [
     id: '38-P3',
     title: '课前测3 · 最少几笔画出',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 2,
     text: '观察下列各图，每个图形最少需要几笔画出？<br/>图①：2格矩形（1条竖分隔线）；图②：3格矩形（2条竖分隔线）；图③：带内角矩形（竖线＋横线各一条）。',
     analysis: [
       '最少笔数 = 奇点数 ÷ 2（奇点数为0时最少1笔）',
@@ -794,7 +794,7 @@ const PRETEST: Problem[] = [
     id: '38-P4',
     title: '课前测4 · 添线或去线使能一笔画',
     tag: 'type4',
-    tagLabel: '一笔画判断',
+    tagLabel: '一笔画判断', difficulty: 2,
     text: '下面的图形都不能一笔画出，请你分别在每个图中添加或去掉最少的线，使它们都能一笔画出。<br/>图①：三角形＋内部辅助线；图②：圆形＋十字＋两条对角线。',
     analysis: [
       '图①（三角形+内线）：统计奇点数 → 4个奇点，需减少到0或2',
@@ -813,7 +813,7 @@ const PRETEST: Problem[] = [
     id: '38-P5',
     title: '课前测5 · 正方体棱爬行最长路',
     tag: 'type6',
-    tagLabel: '立体棱爬行',
+    tagLabel: '立体棱爬行', difficulty: 4,
     text: '一条甲虫沿长 <strong>6 厘米</strong>的正方体的棱爬行。甲虫从 <strong>A 点</strong>出发，每条棱不允许重复，则甲虫<strong>回到 A 点时，最多能爬行多少厘米</strong>？',
     analysis: [
       '正方体共有 12 条棱，每条棱长 6 cm，棱总长 = 12 × 6 = 72 cm',

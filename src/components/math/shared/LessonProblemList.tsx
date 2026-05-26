@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { Problem } from '@/utils/type'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
+import DifficultyStars from '@/components/math/shared/DifficultyStars'
 
 type Props = {
   problems: Problem[]
@@ -57,6 +58,7 @@ export default function LessonProblemList({
                 >
                   {p.tagLabel} 🔍
                 </span>
+                <DifficultyStars level={p.difficulty} />
                 {showSource && sourceLabel && (
                   <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
                     {sourceLabel}

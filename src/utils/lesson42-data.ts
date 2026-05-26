@@ -5,7 +5,7 @@ const PRETEST: Problem[] = [
     id: '42-P1',
     title: '课前测1 · 三砝码单边',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 1,
     text: '现有重量分别为 <strong>2 克、5 克、6 克</strong>的 3 个砝码，用这三个砝码能够称出多少种不同重量的物体？（砝码只能放在天平的一边）',
     analysis: [
       '每个砝码"用 / 不用" → 非空子集共 2³ − 1 = 7 种组合',
@@ -24,7 +24,7 @@ const PRETEST: Problem[] = [
     id: '42-P2',
     title: '课前测2 · 四砝码两边',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 2,
     text: '苗苗有 4 个砝码，重量分别为 <strong>1 克、3 克、4 克、5 克</strong>，用这 4 个砝码能够称出多少种不同重量的物体？（砝码可放在天平的两边）',
     analysis: [
       '两边称重：每个砝码 3 种状态（放物品侧 / 不用 / 放另一侧）',
@@ -43,7 +43,7 @@ const PRETEST: Problem[] = [
     id: '42-P3',
     title: '课前测3 · 奶酪棒分账',
     tag: 'type2',
-    tagLabel: '公平分账',
+    tagLabel: '公平分账', difficulty: 2,
     text: '小纳、小月、小梦三个好朋友共买了 <strong>15 块奶酪棒</strong>，每人吃了 <strong>5 块</strong>，小纳付了 8 块奶酪棒的钱，小月付了 7 块奶酪棒的钱，小梦没有付钱。吃完后，小梦拿出 <strong>10 元钱</strong>补给小纳和小月，请问<strong>小纳和小月分别应得多少元</strong>？',
     analysis: [
       '小梦吃 5 块，付 10 元 → 每块奶酪棒 10 ÷ 5 = 2 元',
@@ -61,7 +61,7 @@ const PRETEST: Problem[] = [
     id: '42-P4',
     title: '课前测4 · 空可乐罐换可乐',
     tag: 'type3',
-    tagLabel: '空瓶换水',
+    tagLabel: '空瓶换水', difficulty: 2,
     text: '纳约商店开展"<strong>3 个空可乐罐换 1 罐可乐</strong>"的促销活动（空可乐罐不够时，可以从商店借空可乐罐，但要归还相同数量的空可乐罐），月月有 <strong>12 个空可乐罐</strong>，那么月月最多能喝到几瓶可乐？',
     analysis: [
       '每喝 1 瓶，净消耗 (3 − 1) = 2 个空罐（喝完再得 1 个，实际只用掉 2 个）',
@@ -79,7 +79,7 @@ const PRETEST: Problem[] = [
     id: '42-P5',
     title: '课前测5 · 大小勺量酒',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 2,
     text: '现有一缸酒和大、小两个勺子，大勺子一次装满能装 <strong>15 克</strong>酒，小勺子一次装满能装 <strong>8 克</strong>酒，现用这两个勺子如何准确地量出 <strong>22 克</strong>酒？最少需要几次操作（每次舀满计 1 次）？',
     analysis: [
       '目标：22 = 15 × 2 − 8 × 1 = 30 − 8',
@@ -101,7 +101,7 @@ const LESSON: Problem[] = [
     id: '42-L1',
     title: '例1 · 砝码单边称重',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 1,
     text: '一台天平在称物时，只允许在天平的一边放砝码，现在给你 <strong>1 克、2 克、5 克、7 克</strong>的砝码各一个，那么在天平上能称出几种不同重量的物体？',
     analysis: [
       '每个砝码"用 / 不用" → 共 2⁴ − 1 = 15 种组合（去掉一个都不放）',
@@ -119,7 +119,7 @@ const LESSON: Problem[] = [
     id: '42-L2',
     title: '练一练 · 三砝码单边',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 3,
     text: '一台天平在称物时，只允许在天平的一边放砝码，现在给你 <strong>2 克、3 克、4 克</strong>的砝码各一个，那么在天平上能称出几种不同重量的物体？',
     analysis: [
       '非空子集共 2³ − 1 = 7 种',
@@ -138,7 +138,7 @@ const LESSON: Problem[] = [
     id: '42-L3',
     title: '例2 · 砝码两边称重',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 2,
     text: '现有重量分别为 <strong>1 克、3 克、9 克</strong>的 3 个砝码，可放在天平的两边，用这 3 个砝码能够称出几种不同重量的物体？',
     analysis: [
       '每个砝码 3 种状态：右盘(+) / 不用(0) / 左盘(−) → 共 3³ = 27 种',
@@ -156,7 +156,7 @@ const LESSON: Problem[] = [
     id: '42-L4',
     title: '练一练 · 两边称重',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 3,
     text: '文文有 3 个砝码，重量分别为 <strong>1 克、2 克、6 克</strong>，砝码可以放在天平的两边，用这 3 个砝码能够称出几种不同重量的物体？',
     analysis: [
       '每个砝码 3 态：3³ = 27，去全 0 = 26，去镜像 ÷2 = 13 种组合',
@@ -173,7 +173,7 @@ const LESSON: Problem[] = [
     id: '42-L5',
     title: '例3 · 三人买面包分账',
     tag: 'type2',
-    tagLabel: '公平分账',
+    tagLabel: '公平分账', difficulty: 2,
     text: '甲、乙、丙三人共买了 <strong>9 个相同的面包</strong>，每人吃了 <strong>3 个</strong>。甲付了 5 个面包的钱，乙付了 4 个面包的钱，丙没有付钱。吃完后，丙拿出 <strong>6 元钱</strong>补给甲、乙两人，<strong>甲应得多少元</strong>？',
     analysis: [
       '丙吃 3 个，实付 6 元 → 每个面包 6 ÷ 3 = 2 元',
@@ -190,7 +190,7 @@ const LESSON: Problem[] = [
     id: '42-L6',
     title: '练一练 · 雪糕分账',
     tag: 'type2',
-    tagLabel: '公平分账',
+    tagLabel: '公平分账', difficulty: 3,
     text: '纳纳、约约和立立三人共买了 <strong>12 块相同的梦龙雪糕</strong>，每人吃 <strong>4 块</strong>。纳纳付了 7 块雪糕的钱，约约付了 5 块雪糕的钱，立立没有付钱。吃完后，立立拿出 <strong>16 元钱</strong>补给纳纳和约约，请问<strong>纳纳应得多少元</strong>？',
     analysis: [
       '立立吃 4 块，付 16 元 → 每块 16 ÷ 4 = 4 元',
@@ -208,7 +208,7 @@ const LESSON: Problem[] = [
     id: '42-L7',
     title: '例4 · 4 空瓶换 1 瓶',
     tag: 'type3',
-    tagLabel: '空瓶换水',
+    tagLabel: '空瓶换水', difficulty: 2,
     text: '商店规定：<strong>4 个空瓶可换 1 瓶</strong>矿泉水。纳纳有 <strong>15 个空瓶</strong>，最多能喝几瓶水？（空瓶不够时可以借，但要归还相同数量的空瓶）',
     analysis: [
       '思路：每喝 1 瓶水，最终净消耗 (4 − 1) = 3 个空瓶（喝完又得 1 个，相当于只用 3 个）',
@@ -226,7 +226,7 @@ const LESSON: Problem[] = [
     id: '42-L8',
     title: '练一练 · 桃核换桃',
     tag: 'type3',
-    tagLabel: '空瓶换水',
+    tagLabel: '空瓶换水', difficulty: 3,
     text: '纳约水果店"<strong>3 个桃核换 1 个桃</strong>"促销（桃核不够时可借，但要归还相同数量的桃核），一个桃售价 <strong>1 元</strong>。如果你有 <strong>10 元钱</strong>，最多能吃几个桃？',
     analysis: [
       '10 元先直接买 10 个桃 → 得 10 个桃核',
@@ -244,7 +244,7 @@ const LESSON: Problem[] = [
     id: '42-L9',
     title: '例5 · 绳子定时 9 分钟',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 2,
     text: '两根粗细均匀的绳子，每根从一端点燃可烧 <strong>12 分钟</strong>，绳子不能折叠。如果要用 <strong>两根绳子</strong>准确定出 <strong>9 分钟</strong>的时间，应如何操作？',
     analysis: [
       '关键技巧：一根绳两端同时点燃 → 燃烧时间减半（12 ÷ 2 = 6 分钟）',
@@ -262,7 +262,7 @@ const LESSON: Problem[] = [
     id: '42-L10',
     title: '练一练 · 香测 15 分钟',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 2,
     text: '有两支粗细不均匀且长度不同的香，每支点燃后都能燃烧 <strong>1 个小时</strong>。怎样用这两支香准确定出 <strong>15 分钟</strong>？',
     analysis: [
       '香 A 两端同时点燃 → 30 分钟烧完；同时香 B 一端点燃',
@@ -280,7 +280,7 @@ const LESSON: Problem[] = [
     id: '42-L11',
     title: '例6 · 量出 100 克水',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 2,
     text: '有大、中、小 3 个瓶子，分别可以装入水 <strong>1000 克、700 克、300 克</strong>。现在大瓶装满水，希望通过水在 3 个瓶子间的流动，使得中瓶和小瓶上都标出 <strong>100 克</strong>的刻度线，问最少要倒几次水？',
     analysis: [
       '①大→中：大 1000→300，中 0→700',
@@ -301,7 +301,7 @@ const LESSON: Problem[] = [
     id: '42-L12',
     title: '练一练 · 量 3 升水',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 3,
     text: '有两个没有刻度的杯子，大杯装满 <strong>8 升</strong>水，小杯装满 <strong>5 升</strong>水。如何用这两个杯子准确量出 <strong>3 升水</strong>？最少要倒几步？',
     analysis: [
       '①把大杯装满（8 升）',
@@ -319,7 +319,7 @@ const LESSON: Problem[] = [
     id: '42-L13',
     title: '附加题1 · 9 枚金币找假币',
     tag: 'type5',
-    tagLabel: '天平找异物',
+    tagLabel: '天平找异物', difficulty: 4,
     text: '有 <strong>9 枚金币</strong>外观完全相同，其中 8 枚真币、1 枚假币，假币<strong>不知轻重</strong>（真币重量一样）。用一台无砝码的天平称，请问<strong>至少称几次</strong>才能保证找出假币？',
     analysis: [
       '不知轻重 → 第一次称要锁定假币所在分组及它"偏轻"还是"偏重"',
@@ -337,7 +337,7 @@ const LESSON: Problem[] = [
     id: '42-L14',
     title: '附加题2 · 27 个球找次品',
     tag: 'type5',
-    tagLabel: '天平找异物',
+    tagLabel: '天平找异物', difficulty: 4,
     text: '有 <strong>27 个球</strong>，其中 1 个次品，外观与正品相同但<strong>比正品轻</strong>。用一台无砝码的天平称，<strong>最少称几次</strong>能找出这个次品？',
     analysis: [
       '已知次品偏轻 → 每次称可把目标分成 3 组等分',
@@ -360,7 +360,7 @@ const HOMEWORK: Problem[] = [
     id: '42-H1',
     title: '巩固1 · 砝码两边称重',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 3,
     text: '奇奇有 3 个砝码，重量分别为 <strong>2 克、3 克和 4 克</strong>，砝码可以放在天平的<strong>两边</strong>，用这 3 个砝码可以称出几种不同重量的物体？',
     analysis: [
       '每个砝码 3 种状态：右盘(+) / 不用(0) / 左盘(−) → 3³ = 27 种',
@@ -379,7 +379,7 @@ const HOMEWORK: Problem[] = [
     id: '42-H2',
     title: '巩固2 · 棒棒糖三人分账',
     tag: 'type2',
-    tagLabel: '公平分账',
+    tagLabel: '公平分账', difficulty: 3,
     text: '纳纳、约约和立立三人共买了 <strong>15 个相同的棒棒糖</strong>，每人吃 <strong>5 个</strong>。纳纳付了 <strong>9 个</strong>棒棒糖的钱，约约付了 <strong>6 个</strong>棒棒糖的钱，立立没有付钱。吃完后，立立拿出 <strong>25 元钱</strong>补给纳纳和约约，请问<strong>纳纳和约约分别应得多少元</strong>？',
     analysis: [
       '立立吃 5 个，付 25 元 → 每个棒棒糖 25 ÷ 5 = 5 元',
@@ -397,7 +397,7 @@ const HOMEWORK: Problem[] = [
     id: '42-H3',
     title: '巩固3 · 3 空瓶换 1 瓶',
     tag: 'type3',
-    tagLabel: '空瓶换水',
+    tagLabel: '空瓶换水', difficulty: 3,
     text: '某商店规定：<strong>3 个空瓶可换 1 瓶汽水</strong>。纳纳买了 <strong>12 瓶汽水</strong>，请问他最多可喝多少瓶汽水？（空瓶不够时可借，但要归还相同数量的空瓶）',
     analysis: [
       '思路：每喝 1 瓶净消耗 (3 − 1) = 2 个空瓶',
@@ -415,7 +415,7 @@ const HOMEWORK: Problem[] = [
     id: '42-H4',
     title: '巩固4 · 木棍测 30 分钟',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 3,
     text: '有两根粗细不均匀且长度不同的木棍，每根木棍点燃后都能燃烧 <strong>2 个小时（120 分钟）</strong>，怎样用这样的两根木棍确定 <strong>30 分钟</strong>的时间？',
     analysis: [
       '木棍 A 两端同时点燃 → 60 分钟烧完；同时木棍 B 一端点燃',
@@ -432,7 +432,7 @@ const HOMEWORK: Problem[] = [
     id: '42-H5',
     title: '巩固5 · 12 升啤酒分 6 升',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 3,
     text: '某人有 <strong>12 升啤酒</strong>一瓶，想从中倒出 <strong>6 升</strong>。他没有 6 升的容器，只有一个 <strong>8 升</strong>的容器和一个 <strong>5 升</strong>的容器。怎样倒才能使 8 升容器中恰好装好 <strong>6 升</strong>啤酒？',
     analysis: [
       '①12 升瓶 → 8 升容器装满：12→4，8→8，5→0',
@@ -452,7 +452,7 @@ const HOMEWORK: Problem[] = [
     id: '42-H6',
     title: '巩固6 · 3 硬币不知轻重',
     tag: 'type5',
-    tagLabel: '天平找异物',
+    tagLabel: '天平找异物', difficulty: 4,
     text: '有 <strong>3 枚外表完全相同的硬币</strong>，已知其中有一枚假币和真币的重量不一样，但<strong>不知道假币比真币轻还是重</strong>。用一台无砝码的天平，请问至少要称几次才能找出这枚假币，并推断出假币比真币轻还是重？',
     analysis: [
       '设三枚为 A、B、C',
@@ -474,7 +474,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W1',
     title: '闯关1 · 4 砝码两边',
     tag: 'type1',
-    tagLabel: '砝码称重组合',
+    tagLabel: '砝码称重组合', difficulty: 3,
     text: '现有重量分别为 <strong>1 克、2 克、3 克、4 克</strong>的 4 个砝码，砝码可放在天平的<strong>两边</strong>，用这 4 个砝码能够称出几种不同重量的物体？',
     analysis: [
       '每个砝码 3 态：3⁴ = 81 种状态，去全 0 = 80，去镜像 ÷2 = 40 种组合',
@@ -493,7 +493,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W2',
     title: '闯关2 · 24 巧克力三人分',
     tag: 'type2',
-    tagLabel: '公平分账',
+    tagLabel: '公平分账', difficulty: 3,
     text: '甲、乙、丙三人一起买了 <strong>24 块巧克力</strong>，平均分着吃。乙没带钱，甲出了 <strong>10 块</strong>巧克力的钱，丙出了 <strong>14 块</strong>巧克力的钱。回家后乙拿出 <strong>24 元钱</strong>给甲、丙两人分。请问甲、丙各应拿多少钱？',
     analysis: [
       '三人平分 → 每人吃 24 ÷ 3 = 8 块',
@@ -512,7 +512,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W3',
     title: '闯关3 · 5 空盒换 1 盒糖',
     tag: 'type3',
-    tagLabel: '空瓶换水',
+    tagLabel: '空瓶换水', difficulty: 3,
     text: '纳约糖果店活动：吃完糖果后，<strong>5 个空盒可换 1 盒糖</strong>。奇奇和小朋友共买了 <strong>8 盒糖</strong>。每人吃 1 盒，最多有几人能吃到糖果？（空盒不够时可借，但要归还）',
     analysis: [
       '每换 1 盒净消耗 (5 − 1) = 4 个空盒',
@@ -529,7 +529,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W4',
     title: '闯关4 · 啤酒花费',
     tag: 'type3',
-    tagLabel: '空瓶换水',
+    tagLabel: '空瓶换水', difficulty: 3,
     text: '饭店里 <strong>5 个空啤酒瓶可换 1 瓶啤酒</strong>，1 瓶 <strong>5 元</strong>。老魏一伙想喝 <strong>20 瓶</strong>啤酒，最少需花多少钱？（空瓶不够时可借，但要归还）',
     analysis: [
       '每换 1 瓶净消耗 (5 − 1) = 4 个空瓶',
@@ -547,7 +547,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W5',
     title: '闯关5 · 8 分钟绳测 6 分钟',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 3,
     text: '有两根长短粗细相同的绳子，从一端点火每根都正好 <strong>8 分钟</strong>燃尽。怎样用这两根绳子确定 <strong>6 分钟</strong>的时间？',
     analysis: [
       '绳 A 两端同时点燃 + 绳 B 一端点燃',
@@ -564,7 +564,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W6',
     title: '闯关6 · 10 升牛奶分 2+2',
     tag: 'type4',
-    tagLabel: '计时与量水',
+    tagLabel: '计时与量水', difficulty: 3,
     text: '卖牛奶的人有两桶 <strong>10 升装</strong>的牛奶。两个顾客各带容器买 <strong>2 升</strong>牛奶。一个带 <strong>5 升</strong>容器，另一个带 <strong>4 升</strong>容器。怎样解决？（核心要给两人各分出 2 升）',
     analysis: [
       '先给"带 4 升容器"的顾客：',
@@ -584,7 +584,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W7',
     title: '闯关7 · 18 硬币找轻假',
     tag: 'type5',
-    tagLabel: '天平找异物',
+    tagLabel: '天平找异物', difficulty: 4,
     text: '现有形状完全相同的硬币 <strong>18 枚</strong>，其中有 1 枚假币，<strong>假币比真币轻</strong>。用无砝码的天平，至少称几次才能找出这枚假币？',
     analysis: [
       '已知偏轻 → 每次三等分',
@@ -605,7 +605,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W8',
     title: '闯关8 · 12 硬币不知轻重',
     tag: 'type5',
-    tagLabel: '天平找异物',
+    tagLabel: '天平找异物', difficulty: 4,
     text: '有 <strong>12 枚外表完全相同的硬币</strong>，其中一枚是假币，<strong>不知道假币比真币轻还是重</strong>。用无砝码的天平，至少称几次能找出假币并判断轻重？',
     analysis: [
       '①把 12 枚分成 4+4+4 三组：左 4 vs 右 4',
@@ -625,7 +625,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W9',
     title: '闯关9 · 10 箱零件电子秤',
     tag: 'type5',
-    tagLabel: '天平找异物',
+    tagLabel: '天平找异物', difficulty: 4,
     text: '有 <strong>10 箱零件</strong>，每箱 10 个。9 箱每个零件重 10 克，1 箱每个重 9 克。能否用<strong>电子秤只称一次</strong>就确定哪一箱重量是 9 克？',
     analysis: [
       '给箱子编号 1 ~ 10，从第 k 号箱中取出 k 个零件，全部放电子秤上',
@@ -643,7 +643,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W10',
     title: '闯关10 · 25 人 7 人船渡河',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '一年级一班共 <strong>25 名</strong>同学要渡过一条河。只有一条可乘 <strong>7 人</strong>的橡皮船（无船工），<strong>每过一次河需 3 分钟</strong>。请问最少需多少分钟？',
     analysis: [
       '船无船工 → 中途每次去后必须有 1 人划回（净送 7 − 1 = 6 人）',
@@ -661,7 +661,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W11',
     title: '闯关11 · 3 圆分 10 妖精',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 5,
     text: '白雪公主被女巫困住，七个小矮人前去营救。女巫说：<strong>只要在圆形阵法中画出 3 个一样大的圆圈，把 10 个妖精一个一个地分开</strong>就放人。能帮小矮人想想办法吗？',
     analysis: [
       '关键：3 个圆两两相交划分平面，可形成最多 (3×3−3)+1 = 7 个区域',
@@ -679,7 +679,7 @@ const WORKBOOK: Problem[] = [
     id: '42-W12',
     title: '闯关12 · 两堆火柴博弈',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 5,
     text: '有两堆火柴，一堆 <strong>35 根</strong>，另一堆 <strong>24 根</strong>。小纳、小约轮流取，小纳先取。每次只能在<strong>任一堆</strong>中取且不限根数，但不能不取。规定取得最后一根者为胜者。若都采用最佳方法，<strong>小纳第一次取多少根可必胜</strong>？',
     analysis: [
       '必胜策略：让两堆数量相同后，模仿对方在另一堆的操作',
@@ -700,7 +700,7 @@ const SUPPLEMENT: Problem[] = [
     id: '42-S1',
     title: '附加1 · 大小和尚过河',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '一个大和尚带着两个小和尚过河。大和尚 <strong>50 千克</strong>，每个小和尚 <strong>25 千克</strong>。河上没有桥，他们不会游泳，只有一只最大载重 <strong>50 千克</strong>的小船。怎样让三人全部过河？',
     analysis: [
       '①两个小和尚一起过河（25+25=50 千克）',
@@ -719,7 +719,7 @@ const SUPPLEMENT: Problem[] = [
     id: '42-S2',
     title: '附加2 · 绳子对折 5 次剪',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '把一根绳子对折 <strong>5 次</strong>后，再从中间剪一次，这根绳子被分成了多少段？',
     analysis: [
       '规律：对折 n 次后从中间剪一刀 → 共 2ⁿ + 1 段',
@@ -736,7 +736,7 @@ const SUPPLEMENT: Problem[] = [
     id: '42-S3',
     title: '附加3 · 六边形切角',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '一个六边形被<strong>切去一个角</strong>之后还剩下几个角？',
     analysis: [
       '依切法不同有三种情况：',
@@ -754,7 +754,7 @@ const SUPPLEMENT: Problem[] = [
     id: '42-S4',
     title: '附加4 · 49 同学过河',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '三年级一班共 <strong>49 名</strong>同学要渡河，只有一条可乘 <strong>7 人</strong>的橡皮船。<strong>每过一次河需 3 分钟</strong>。用这条橡皮艇把全班同学都运到对岸，最少需多少分钟？',
     analysis: [
       '每次往返净送 7 − 1 = 6 人',
@@ -772,7 +772,7 @@ const SUPPLEMENT: Problem[] = [
     id: '42-S5',
     title: '附加5 · 棋子盒子',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '若干个同样的盒子排成一排，小明把 <strong>五十多个同样的棋子</strong>分装在盒中，其中只有 1 个盒子<strong>没装棋子</strong>。然后他外出。小光从每个有棋子的盒子里各拿 1 个棋子放在空盒内，再把盒子重新排了一下。小明回来仔细查看，<strong>没发现动过</strong>。请问共有多少个盒子？',
     analysis: [
       '"看不出来"的关键：操作前后盒子棋子数的分布完全不变',
@@ -790,7 +790,7 @@ const SUPPLEMENT: Problem[] = [
     id: '42-S6',
     title: '附加6 · 4×4 加 4 碟子',
     tag: 'type6',
-    tagLabel: '综合策略',
+    tagLabel: '综合策略', difficulty: 4,
     text: '桌上放了 4 排碟子，每排 4 个，共 <strong>16 个</strong>。现在<strong>再放 4 个碟子</strong>，要使<strong>横看、竖看、对角线看</strong>每排都是 5 个，<strong>碟子总数</strong>是几？',
     analysis: [
       '每行、每列、每条对角线都恰好多 1 个 → 新增 4 个分别占 4 个不同行 + 4 个不同列',

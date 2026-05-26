@@ -325,6 +325,7 @@ export const TAG_STYLE = {...}
   title: '课1 · 标题',
   tag: 'type1',        // 题型分类 tag（对应 PROBLEM_TYPES 中的 tag）
   tagLabel: '标签文字',
+  difficulty: 2,       // ⚠️ 必填：难度 1–5 星（见下方「难度系数」）
   text: '题目正文，可用 <strong>加粗</strong> 关键数字',
   analysis: [
     '第一步：说明',
@@ -356,6 +357,32 @@ export const TAG_STYLE = {...}
   finalUnit: '个',
   finalAns: 480,
 }
+```
+
+### 难度系数（difficulty，必填）
+
+每道题必须设置 `difficulty: 1 | 2 | 3 | 4 | 5`（整数，表示 1–5 星）。
+
+| 星级 | 含义 | 判断要点 |
+|------|------|----------|
+| **1** | 入门 | 直接套公式或单步计算，几乎无需建模 |
+| **2** | 基础 | 多一步（如先求公差/项数），或课前测常规题 |
+| **3** | 中等 | 标准应用题、课后巩固、拓展前半段 |
+| **4** | 较难 | 多步综合、一题多问、拓展后段 |
+| **5** | 挑战 | 非标准规律、综合变化、讲次标注「最难」类 |
+
+**录入流程：**
+
+1. 录入题目时由 Claude 根据题面与解析**逐题评定**（不要全部填同一星）。
+2. 同一讲次内：课堂「例题」通常 ≤「练一练」≤ 拓展「闯关10+」。
+3. 拿不准的题可在 `scripts/difficulty-overrides.json` 写死 ID → 星级，再运行 `node scripts/apply-difficulty.mjs` 批量写入（仅用于补全或重算，新讲次仍建议手写进数据文件）。
+4. UI 展示：`LessonProblemList` 与 `ProblemDetail` 会通过 `DifficultyStars` 显示星级；综合题库 `FilterPanel` 使用 `DifficultyFilterRow` 提供难度多选筛选（`alltest/page.tsx` 需同步 `filters.difficulty` 与 `toggleFilter` 逻辑）。
+
+**示例：**
+
+```typescript
+{ id: '43-L1', title: '例1 · 递增数列第12项', tag: 'type1', tagLabel: '求第几项', difficulty: 1, ... }
+{ id: '43-W12', title: '闯关12 · 算式和总和', tag: 'type6', tagLabel: '综合规律', difficulty: 5, ... }
 ```
 
 ---
@@ -1099,6 +1126,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PROBLEMS } from '@/utils/lessonN-data'
 import { useLessonN } from '@/components/math/lessonN/LessonNProvider'
+import type { ProblemDifficulty } from '@/utils/difficulty'
 import FilterPanel from '@/components/math/lessonN/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
@@ -1114,9 +1142,20 @@ function AlltestContent() {
     // type: 列出数据文件中所有 PROBLEM_TYPES 的 tag（type1, type2, ...）
     type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5', 'type6']),
     mastery: 'all' as MasteryFilter,
+    difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
   }))
 
-  const toggleFilter = (axis: 'source' | 'type', value: string) => {
+  const toggleFilter = (axis: 'source' | 'type' | 'difficulty', value: string) => {
+    if (axis === 'difficulty') {
+      const level = Number(value) as ProblemDifficulty
+      setFilters(f => {
+        const next = new Set(f.difficulty)
+        if (next.has(level)) next.delete(level)
+        else next.add(level)
+        return { ...f, difficulty: next }
+      })
+      return
+    }
     setFilters(f => {
       const next = new Set(f[axis])
       if (next.has(value)) next.delete(value)
@@ -1410,7 +1449,14 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
     setCollapsedIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next })
   }, [])
 
-  // ✏️ btnOn/btnOff 和筛选面板颜色使用讲次主题色（下方以 sky 为例，替换为实际颜色）
+  // ✏️ 难度筛选：使用共享组件 DifficultyFilterRow（见 lesson43/FilterPanel.tsx）
+// import DifficultyFilterRow from '@/components/math/shared/DifficultyFilterRow'
+// Filters 接口需含 difficulty: Set<ProblemDifficulty>
+// 筛选逻辑：filters.difficulty.has(p.difficulty)
+// alltest/page.tsx 初始 state 含 difficulty: new Set<ProblemDifficulty>([1,2,3,4,5])
+// toggleFilter 需处理 axis === 'difficulty'（见任一讲次 alltest 页）
+
+// ✏️ btnOn/btnOff 和筛选面板颜色使用讲次主题色（下方以 sky 为例，替换为实际颜色）
   const btnBase = 'cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95'
   const btnOn  = 'border-[主题色]-600 bg-[主题色]-600 text-white'
   const btnOff = 'border-[主题色]-300 bg-[主题浅背景] text-[主题色]-700'
@@ -1702,7 +1748,7 @@ const LESSON_DATA: Record<string, ProblemSet> = {
 
 ```
 src/utils/
-  [ ] lessonN-data.ts                    — 数据文件（题目内容，ID 必须加 N- 前缀）
+  [ ] lessonN-data.ts                    — 数据文件（题目内容，ID 必须加 N- 前缀；每题含 difficulty 1–5）
   [ ] sea-data.ts                        — 在 SEA_LESSONS 末尾注册新讲次（第五步）
 
 src/components/math/lessonN/

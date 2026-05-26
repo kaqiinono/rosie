@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PROBLEMS } from '@/utils/lesson36-data'
 import { useLesson36 } from '@/components/math/lesson36/Lesson36Provider'
+import type { ProblemDifficulty } from '@/utils/difficulty'
 import FilterPanel from '@/components/math/lesson36/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
@@ -17,9 +18,20 @@ function AlltestContent() {
     source: new Set(['lesson', 'homework', 'workbook', 'pretest']),
     type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5', 'type6']),
     mastery: 'all' as MasteryFilter,
+    difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
   }))
 
-  const toggleFilter = (axis: 'source' | 'type', value: string) => {
+  const toggleFilter = (axis: 'source' | 'type' | 'difficulty', value: string) => {
+    if (axis === 'difficulty') {
+      const level = Number(value) as ProblemDifficulty
+      setFilters(f => {
+        const next = new Set(f.difficulty)
+        if (next.has(level)) next.delete(level)
+        else next.add(level)
+        return { ...f, difficulty: next }
+      })
+      return
+    }
     setFilters(f => {
       const next = new Set(f[axis])
       if (next.has(value)) next.delete(value)

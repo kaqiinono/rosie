@@ -5,7 +5,7 @@ const LESSON: Problem[] = [
     id: '37-L1',
     title: '例题1：鸡兔同笼10头34腿',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 1,
     text: '鸡和兔关在一个笼子里，数数共有<strong>10个头</strong>，<strong>34条腿</strong>，请问：鸡和兔各有多少只？',
     analysis: [
       '① 假设10只全是兔：4×10=40条腿',
@@ -22,7 +22,7 @@ const LESSON: Problem[] = [
     id: '37-L2',
     title: '练一练：蜻蜓蜘蛛7只46腿',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '一只蜻蜓6条腿，一只蜘蛛8条腿，现有蜻蜓和蜘蛛共<strong>7只</strong>，共有<strong>46条腿</strong>，那么蜘蛛有几只？蜻蜓有几只？',
     analysis: [
       '① 假设7只全是蜻蜓：6×7=42条腿',
@@ -39,7 +39,7 @@ const LESSON: Problem[] = [
     id: '37-L3',
     title: '例题2：自行车三轮车8辆21轮',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 2,
     text: '车棚里自行车和三轮车一共有<strong>8辆</strong>，数一数，一共有<strong>21个轮子</strong>，那么自行车有多少辆？',
     analysis: [
       '① 假设8辆全是自行车：2×8=16个轮子',
@@ -56,7 +56,7 @@ const LESSON: Problem[] = [
     id: '37-L4',
     title: '练一练：三角形长方形9张33角',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '朱朱有三角形、长方形的卡片共<strong>9张</strong>，这些卡片共有<strong>33个角</strong>，那么两种卡片各有多少张？',
     analysis: [
       '① 假设9张全是三角形：3×9=27个角',
@@ -73,7 +73,7 @@ const LESSON: Problem[] = [
     id: '37-L5',
     title: '例题3：2分5分硬币12枚39分',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 2,
     text: '桑桑的储蓄罐里共有2分和5分硬币<strong>12枚</strong>，桑桑数了一下，一共有<strong>39分</strong>，那么两种硬币各有多少枚？',
     analysis: [
       '① 假设12枚全是2分：2×12=24分',
@@ -90,7 +90,7 @@ const LESSON: Problem[] = [
     id: '37-L6',
     title: '练一练：1角5角邮票14张30角',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '图图用一些钱买了1角和5角的邮票共<strong>14张</strong>，一共花了<strong>30角</strong>，求两种邮票各买了多少张？',
     analysis: [
       '① 假设14张全是1角：1×14=14角',
@@ -107,7 +107,7 @@ const LESSON: Problem[] = [
     id: '37-L7',
     title: '例题4：骆驼24驼峰60只脚',
     tag: 'type2',
-    tagLabel: '先求头和',
+    tagLabel: '先求头和', difficulty: 2,
     text: '骆驼有两种：背上只有一个驼峰的单峰骆驼和背上有两个驼峰的双峰骆驼。有一群骆驼共有<strong>24个驼峰</strong>，<strong>60只脚</strong>，那么单峰骆驼有多少只？',
     analysis: [
       '关键：所有骆驼都有4只脚，先求总只数',
@@ -126,7 +126,7 @@ const LESSON: Problem[] = [
     id: '37-L8',
     title: '练一练：新兵270千米平均30',
     tag: 'type2',
-    tagLabel: '先求头和',
+    tagLabel: '先求头和', difficulty: 3,
     text: '新兵入营后进行野营拉练，晴天每天可以走<strong>35千米</strong>，雨天每天只能走<strong>20千米</strong>，新兵营一连几天共走了<strong>270千米</strong>，平均每天走了<strong>30千米</strong>，那么其中有几天是雨天呢？',
     analysis: [
       '关键：用总路程÷平均速度先求天数（头和）',
@@ -145,7 +145,7 @@ const LESSON: Problem[] = [
     id: '37-L9',
     title: '例题5：喜羊羊分水果80桔70苹',
     tag: 'type3',
-    tagLabel: '双组分配',
+    tagLabel: '双组分配', difficulty: 2,
     text: '喜羊羊老师给幼儿园两个班的孩子分水果，大班每人分得<strong>2个桔子和3个苹果</strong>，小班每人分得<strong>2个桔子和1个苹果</strong>，她一共分出了<strong>80个桔子</strong>和<strong>70个苹果</strong>，请问：大班有多少个孩子？',
     analysis: [
       '关键：两班桔子一样多（都是每人2个），用桔子求总人数',
@@ -165,7 +165,7 @@ const LESSON: Problem[] = [
     id: '37-L10',
     title: '练一练：优良生分练习本30数26英',
     tag: 'type3',
-    tagLabel: '双组分配',
+    tagLabel: '双组分配', difficulty: 3,
     text: '十月老师给同学们发练习本，表现<strong>优秀</strong>的同学每人分得3个数学练习本和4个英语练习本，表现<strong>良好</strong>的同学每人分得3个数学练习本和2个英语练习本，结果总共发了<strong>30个数学练习本</strong>和<strong>26个英语练习本</strong>，请问：表现优秀的有多少人？',
     analysis: [
       '关键：两组数学本一样多（都是每人3个），用数学本求总人数',
@@ -185,7 +185,7 @@ const LESSON: Problem[] = [
     id: '37-L11',
     title: '例题6（倒扣分）：婷婷竞赛20题60分',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 3,
     text: '一次数学竞赛共有<strong>20道题</strong>，做对一道题得<strong>5分</strong>，做错一道题倒扣<strong>3分</strong>，婷婷做了所有的题，最后考了<strong>60分</strong>，你知道婷婷做对了几道题吗？',
     analysis: [
       '头和：20道（做了所有题）',
@@ -204,7 +204,7 @@ const LESSON: Problem[] = [
     id: '37-L12',
     title: '练一练（倒扣分）：工人运花瓶40个352元',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 4,
     text: '工人运青花瓷瓶<strong>40个</strong>，规定完整运一个到目的地给运费<strong>10元</strong>，损坏一个倒赔<strong>2元</strong>，运完这批花瓶后，工人共得<strong>352元</strong>，那么工人在运输中损坏了几个？',
     analysis: [
       '头和：40个（运了全部花瓶）',
@@ -226,7 +226,7 @@ const HOMEWORK: Problem[] = [
     id: '37-H1',
     title: '课后巩固1：鸡兔6只16腿',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '鸡兔共有<strong>6只</strong>，关在同一个笼子里，每只鸡有两条腿，每只兔子有四条腿，笼中共有<strong>16条腿</strong>，那么，笼中有多少只鸡？多少只兔？',
     analysis: [
       '① 假设6只全是鸡：2×6=12条腿',
@@ -243,7 +243,7 @@ const HOMEWORK: Problem[] = [
     id: '37-H2',
     title: '课后巩固2：停车场10辆37轮',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '在一个停车场上，现有车辆<strong>10辆</strong>，其中汽车有4个轮子，三轮车有3个轮子，这些车共有<strong>37个轮子</strong>，那么三轮车有多少辆？',
     analysis: [
       '① 假设10辆全是汽车：4×10=40个轮子',
@@ -260,7 +260,7 @@ const HOMEWORK: Problem[] = [
     id: '37-H3',
     title: '课后巩固3：2分5分13枚41分',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '现有2分和5分硬币共<strong>13枚</strong>，共值<strong>41分</strong>，那么2分硬币有多少枚，5分硬币有多少枚？',
     analysis: [
       '① 假设13枚全是2分：2×13=26分',
@@ -277,7 +277,7 @@ const HOMEWORK: Problem[] = [
     id: '37-H4',
     title: '课后巩固4：光头强砍树80棵平均8棵',
     tag: 'type2',
-    tagLabel: '先求头和',
+    tagLabel: '先求头和', difficulty: 3,
     text: '熊大和熊二出门旅游，光头强开始大肆砍伐树木，他晴天每天可以砍<strong>10棵树</strong>，雨天每天能砍<strong>6棵树</strong>，光头强一连几天共砍了<strong>80棵</strong>，平均每天砍<strong>8棵</strong>，那么其中有几天是雨天呢？',
     analysis: [
       '头和：80÷8=10天（共砍了10天）',
@@ -295,7 +295,7 @@ const HOMEWORK: Problem[] = [
     id: '37-H5',
     title: '课后巩固5：星星花店120康乃馨50百合',
     tag: 'type3',
-    tagLabel: '双组分配',
+    tagLabel: '双组分配', difficulty: 3,
     text: '星星花店热销两种花束，小花束由<strong>10朵康乃馨和5朵百合</strong>组合，大花束由<strong>15朵康乃馨和5朵百合</strong>组合，这些花束共用了<strong>120朵康乃馨</strong>和<strong>50朵百合</strong>，那么，小花束和大花束分别有多少束呢？',
     analysis: [
       '关键：两种花束百合一样多（都是5朵），用百合求总束数',
@@ -315,7 +315,7 @@ const HOMEWORK: Problem[] = [
     id: '37-H6',
     title: '课后巩固6（倒扣分）：小约竞赛20题79分',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 4,
     text: '某次数学竞赛，共有<strong>20道题</strong>，每道题做对得<strong>5分</strong>，没做或做错都要扣<strong>2分</strong>，小约得了<strong>79分</strong>，他做对了多少道题？',
     analysis: [
       '头和：20道（做了全部题目）',
@@ -337,7 +337,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W1',
     title: '闯关1：鸡兔14只40腿',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '小晴家里有一个农场，农场里有鸡和兔子等小动物。我们知道鸡有2条腿，兔子有4条腿。鸡和兔子一共有<strong>14只</strong>，它们的腿数共有<strong>40条</strong>。请问鸡和兔各几只？',
     analysis: [
       '① 假设14只全是鸡：2×14=28条腿',
@@ -354,7 +354,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W2',
     title: '闯关2：短信彩信150条39元',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '纳纳这个月花了<strong>39元</strong>用于手机短信和彩信，短信和彩信共<strong>150条</strong>。彩信每条<strong>5角</strong>，短信每条<strong>2角</strong>。请问他发了多少条短信？',
     analysis: [
       '总金额：39元=390角',
@@ -372,7 +372,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W3',
     title: '闯关3：摩托自行车34辆78轮',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '停车场上共有摩托车和自行车<strong>34辆</strong>，其中每辆摩托车有3个轮子，每辆自行车有2个轮子，所有车辆共有<strong>78个轮子</strong>，那么，自行车有多少辆？',
     analysis: [
       '① 假设34辆全是摩托车：3×34=102个轮子',
@@ -389,7 +389,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W4',
     title: '闯关4（倒扣分）：托运玻璃240箱最多损坏几箱',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 4,
     text: '托运公司托运玻璃仪器<strong>240箱</strong>，合同规定每箱运费<strong>20元</strong>，若有损坏，被损坏的箱不仅不给运费，还要每箱赔偿损失费<strong>100元</strong>，那么运后结算时要想获得运费，最多只能损坏多少箱？',
     analysis: [
       '头和：240箱',
@@ -407,7 +407,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W5',
     title: '闯关5：宿舍30间160人',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '某学校有<strong>30间宿舍</strong>，大宿舍每间住6人，小宿舍每间住4人，已知这些宿舍中共住了<strong>160人</strong>，那么其中有多少间大宿舍？',
     analysis: [
       '① 假设30间全是小宿舍：4×30=120人',
@@ -424,7 +424,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W6',
     title: '闯关6：变异青蛙42只150腿',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 4,
     text: '某地因为环境污染严重，一部分青蛙发生了变异，有些青蛙有3条腿，有些青蛙有5条腿。从该地捕捉了<strong>42只青蛙</strong>，总共有<strong>150条腿</strong>，其中5条腿的青蛙有<strong>两只</strong>，则4条腿的青蛙有多少只？',
     analysis: [
       '先处理已知的5条腿青蛙：2只×5腿=10条腿',
@@ -443,7 +443,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W7',
     title: '闯关7：植树节35学生+班主任112棵',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 3,
     text: '植树节那天，班主任带着全班<strong>35名同学</strong>去植树，班主任自己种了<strong>6棵</strong>，每名男生种了<strong>4棵</strong>，每名女生种了<strong>2棵</strong>，师生一共种了<strong>112棵树</strong>，那么全班有多少名男生？',
     analysis: [
       '学生种树：112−6=106棵（去掉班主任的）',
@@ -462,7 +462,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W8',
     title: '闯关8：魏老师分花135红70蓝',
     tag: 'type3',
-    tagLabel: '双组分配',
+    tagLabel: '双组分配', difficulty: 3,
     text: '魏老师给幼儿园两个班的孩子分小花花，大班每人分得<strong>5朵红花和2朵蓝花</strong>，小班每人分得<strong>3朵红花和2朵蓝花</strong>，魏老师一共分出了<strong>135朵红花</strong>和<strong>70朵蓝花</strong>，那么小班有多少个孩子？',
     analysis: [
       '关键：两班蓝花一样多（都是每人2朵），用蓝花求总人数',
@@ -482,7 +482,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W9',
     title: '闯关9（倒扣分）：纳纳试卷21题得0分',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 5,
     text: '一张试卷共有<strong>21道题目</strong>，每答对一题得<strong>8分</strong>，每答错一题倒扣<strong>6分</strong>，纳纳答完了全部的题目却得了<strong>零分</strong>，那么他一共答对了多少道题目？',
     analysis: [
       '头和：21道，腿和：0分',
@@ -500,7 +500,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W10',
     title: '闯关10（倒扣分）：大富翁16次走24步',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 5,
     text: '约约喜欢玩大富翁的游戏，扔骰子点数大时，就向前走<strong>5步</strong>，点数小时，就后退<strong>3步</strong>，最后发现扔了<strong>16次</strong>之后，向前走了<strong>24步</strong>，请问约约扔骰子点数大有多少次？',
     analysis: [
       '头和：16次，腿和：+24步',
@@ -518,7 +518,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W11',
     title: '闯关11：悦悦徒步15天450千米',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 5,
     text: '悦悦徒步旅行中国，平路每天走<strong>38千米</strong>，山路每天走<strong>23千米</strong>，她<strong>15天</strong>共走了<strong>450千米</strong>，请问：这段时间她走了多少千米山路？',
     analysis: [
       '头和：15天，腿和：450千米',
@@ -536,7 +536,7 @@ const WORKBOOK: Problem[] = [
     id: '37-W12',
     title: '闯关12（两步）：犀牛羚羊孔雀26头80脚',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 5,
     text: '犀牛、羚羊、孔雀三种动物共有头<strong>26个</strong>，脚<strong>80只</strong>，犄角<strong>20只</strong>。已知犀牛有4只脚、1只犄角，羚羊有4只脚、2只犄角，孔雀有2只脚、没有犄角。那么，犀牛、羚羊、孔雀各有几只呢？',
     analysis: [
       '第一步：用脚数区分孔雀（2只脚）和牛羊（4只脚）',
@@ -558,7 +558,7 @@ const PRETEST: Problem[] = [
     id: '37-P1',
     title: '课前测1：鸵鸟大象36眼52腿',
     tag: 'type2',
-    tagLabel: '先求头和',
+    tagLabel: '先求头和', difficulty: 1,
     text: '动物园里有一群鸵鸟和大象，它们共有<strong>36只眼睛</strong>和<strong>52条腿</strong>，请问：鸵鸟有多少只？（注：鸵鸟有2条腿，大象有4条腿，每种动物都有2只眼睛）',
     analysis: [
       '关键：每种动物都有2只眼睛，用眼睛求总只数',
@@ -578,7 +578,7 @@ const PRETEST: Problem[] = [
     id: '37-P2',
     title: '课前测2：停车场21辆67轮',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 2,
     text: '在一个停车场里，现有车辆<strong>21辆</strong>，其中汽车有4个轮子，摩托车有3个轮子，这些车共有<strong>67个轮子</strong>，那么四轮的汽车有多少辆？',
     analysis: [
       '① 假设21辆全是汽车：4×21=84个轮子',
@@ -595,7 +595,7 @@ const PRETEST: Problem[] = [
     id: '37-P3',
     title: '课前测3：2元5元31张92元',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 2,
     text: '立立有2元人民币和5元人民币共<strong>31张</strong>，合计<strong>92元</strong>，请问这两种人民币各有多少张？',
     analysis: [
       '① 假设31张全是2元：2×31=62元',
@@ -612,7 +612,7 @@ const PRETEST: Problem[] = [
     id: '37-P4',
     title: '课前测4：松鼠采松果112个平均14',
     tag: 'type2',
-    tagLabel: '先求头和',
+    tagLabel: '先求头和', difficulty: 2,
     text: '松鼠采松果，晴天每天可以采<strong>20个</strong>，雨天每天只能采<strong>14个</strong>，它一连几天采了<strong>112个</strong>松果，平均每天采<strong>14个</strong>，那么其中有几天是雨天呢？',
     analysis: [
       '头和：112÷14=8天（共采了8天）',
@@ -630,7 +630,7 @@ const PRETEST: Problem[] = [
     id: '37-P5',
     title: '课前测5（倒扣分）：3人共10题各人得分',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 3,
     text: '纳约小学3名同学参加数学竞赛，共<strong>10道题</strong>，答对一道题得<strong>10分</strong>，答错一道题扣<strong>3分</strong>，这3名同学都回答了所有的题，纳纳得了<strong>87分</strong>，约约得了<strong>74分</strong>，立立得了<strong>9分</strong>，请问他们三人一共答对了多少道题？',
     analysis: [
       '方法：对每人算答对数，公式：对=(得分+30)÷13',
@@ -651,7 +651,7 @@ const SUPPLEMENT: Problem[] = [
     id: '37-S1',
     title: '附加题1：一四年级44人植树100棵',
     tag: 'type1',
-    tagLabel: '头和腿和·基础',
+    tagLabel: '头和腿和·基础', difficulty: 4,
     text: '一年级和四年级的同学去参加植树活动，一共有<strong>44人</strong>，一年级每人植<strong>2棵</strong>，四年级每人植<strong>5棵</strong>，正好一共植了<strong>100棵</strong>，那么参加植树活动的一年级学生和四年级学生各有多少人？',
     analysis: [
       '① 假设44人全是一年级：2×44=88棵',
@@ -668,7 +668,7 @@ const SUPPLEMENT: Problem[] = [
     id: '37-S2',
     title: '附加题2（倒扣分）：100只花瓶92元',
     tag: 'type4',
-    tagLabel: '倒扣分',
+    tagLabel: '倒扣分', difficulty: 5,
     text: '百货店委托搬运站运送<strong>100只花瓶</strong>，双方规定每只运费<strong>1元</strong>，但如果发生损坏，那么每打破一只不仅不给运费，而且还要赔偿<strong>1元</strong>，结果搬运站共得运费<strong>92元</strong>，那么搬运过程中共打破了几只花瓶？',
     analysis: [
       '头和：100只，腿和：92元',
@@ -686,7 +686,7 @@ const SUPPLEMENT: Problem[] = [
     id: '37-S3',
     title: '附加题3（特殊）：鸡兔同数量共60腿',
     tag: 'type5',
-    tagLabel: '特殊条件',
+    tagLabel: '特殊条件', difficulty: 5,
     text: '鸡兔同笼，<strong>鸡和兔数量一样多</strong>，共有<strong>60条腿</strong>，那么鸡有多少只？',
     analysis: [
       '方法：设鸡x只，则兔也x只（数量相等）',
@@ -704,7 +704,7 @@ const SUPPLEMENT: Problem[] = [
     id: '37-S4',
     title: '附加题4（特殊）：兔是鸡2倍共100腿',
     tag: 'type5',
-    tagLabel: '特殊条件',
+    tagLabel: '特殊条件', difficulty: 5,
     text: '鸡兔同笼，<strong>兔的只数是鸡的只数的2倍</strong>，它们共有<strong>100条腿</strong>，那么鸡和兔各有多少只？',
     analysis: [
       '方法：设鸡x只，则兔2x只（兔是鸡的2倍）',
@@ -722,7 +722,7 @@ const SUPPLEMENT: Problem[] = [
     id: '37-S5',
     title: '附加题5（特殊）：鸡比兔3倍多1共82腿',
     tag: 'type5',
-    tagLabel: '特殊条件',
+    tagLabel: '特殊条件', difficulty: 5,
     text: '鸡兔同笼，<strong>鸡的只数比兔的只数的3倍多1只</strong>，它们共有<strong>82条腿</strong>，那么鸡和兔各有多少只？',
     analysis: [
       '方法：设兔x只，则鸡(3x+1)只',

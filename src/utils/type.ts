@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import type { ProblemDifficulty } from './difficulty'
 
 export interface ModuleCardData {
   href: string
@@ -81,6 +82,8 @@ export interface Problem {
   title: string
   tag: string
   tagLabel: string
+  /** 难度 1–5 星：1 入门，5 挑战 */
+  difficulty: ProblemDifficulty
   text: string
   analysis: string[]
   type: 'ratio3' | 'ratio3b' | 'none'

@@ -10,6 +10,7 @@ import RatioDiagram from './RatioDiagram'
 import BlockDiagram from './BlockDiagram'
 import DualBlockDiagram from './DualBlockDiagram'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import DifficultyStars from '@/components/math/shared/DifficultyStars'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -56,6 +57,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDe
         >
           {problem.tagLabel}
         </span>
+        <DifficultyStars level={problem.difficulty} size="md" />
 
         {/* Problem text */}
         <div

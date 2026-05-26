@@ -7,6 +7,7 @@ import { PROBLEMS as PROBLEMS39, PROBLEM_TYPES as PT39, TAG_STYLE as TS39 } from
 import { PROBLEMS as PROBLEMS40, PROBLEM_TYPES as PT40, TAG_STYLE as TS40 } from './lesson40-data'
 import { PROBLEMS as PROBLEMS41, PROBLEM_TYPES as PT41, TAG_STYLE as TS41 } from './lesson41-data'
 import { PROBLEMS as PROBLEMS42, PROBLEM_TYPES as PT42, TAG_STYLE as TS42 } from './lesson42-data'
+import { PROBLEMS as PROBLEMS43, PROBLEM_TYPES as PT43, TAG_STYLE as TS43 } from './lesson43-data'
 import type { Problem, ProblemSet } from './type'
 
 export interface SeaLessonMeta {
@@ -110,6 +111,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: TS42,
     types: PT42.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
     problems: PROBLEMS42,
+  },
+  {
+    id: '43',
+    title: '第43讲·等差数列初识',
+    shortTitle: '43·等差数列',
+    icon: '📊',
+    badgeClass: 'bg-cyan-100 text-cyan-700',
+    tagStyle: TS43,
+    types: PT43.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS43,
   },
 ]
 

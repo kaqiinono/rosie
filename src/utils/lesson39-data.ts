@@ -5,7 +5,7 @@ const LESSON: Problem[] = [
     id: '39-L1',
     title: '例1 · 盈盈问题：买铅笔',
     tag: 'type1',
-    tagLabel: '盈盈',
+    tagLabel: '盈盈', difficulty: 1,
     text: '妈妈给了文文一些钱去买铅笔。到了文具店，文文发现如果买 <strong>6 支</strong>铅笔，剩下 <strong>11 元</strong>；如果买 <strong>4 支</strong>同样的铅笔，剩下 <strong>19 元</strong>。请问，妈妈给了文文多少钱？',
     analysis: [
       '两次购买都有剩余（盈盈问题）',
@@ -24,7 +24,7 @@ const LESSON: Problem[] = [
     id: '39-L2',
     title: '练一练 · 盈盈问题：孙悟空发香蕉',
     tag: 'type1',
-    tagLabel: '盈盈',
+    tagLabel: '盈盈', difficulty: 3,
     text: '孙悟空给小猴子发香蕉，每只小猴子发的香蕉一样多。如果每只小猴子发 <strong>7 根</strong>香蕉，最后还能剩 <strong>4 根</strong>；如果每只小猴子发 <strong>4 根</strong>香蕉，最后能剩 <strong>25 根</strong>。请问孙悟空一共准备了多少根香蕉？',
     analysis: [
       '两次分配都有剩余（盈盈问题）',
@@ -43,7 +43,7 @@ const LESSON: Problem[] = [
     id: '39-L3',
     title: '例2 · 盈恰问题：弹珠放盒子',
     tag: 'type4',
-    tagLabel: '盈恰',
+    tagLabel: '盈恰', difficulty: 2,
     text: '奇奇要把一些弹珠放在盒子里。如果每个盒子放 <strong>2 个</strong>，最后剩下 <strong>9 个</strong>；如果每个盒子放 <strong>5 个</strong>，<strong>正好放完</strong>。那么有多少个盒子？有多少个弹珠？',
     analysis: [
       '一次有剩余（盈），一次正好（恰）→ 盈恰问题',
@@ -62,7 +62,7 @@ const LESSON: Problem[] = [
     id: '39-L4',
     title: '练一练 · 亏恰问题：约约做数学题',
     tag: 'type5',
-    tagLabel: '亏恰',
+    tagLabel: '亏恰', difficulty: 4,
     text: '约约在假期中计划做一些数学题。若每天做 <strong>4 道题</strong>，则会剩 <strong>12 道题</strong>做不完；若每天做 <strong>5 道题</strong>，<strong>正好全部做完</strong>。请问假期有多少天？约约一共准备做多少道题？',
     analysis: [
       '一次不足（亏），一次正好（恰）→ 亏恰问题',
@@ -81,7 +81,7 @@ const LESSON: Problem[] = [
     id: '39-L5',
     title: '例3 · 亏亏问题：张阿姨的玫瑰花',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 2,
     text: '张阿姨准备把一些玫瑰花放到花瓶中。如果每瓶放入 <strong>9 朵</strong>玫瑰花，还差 <strong>6 朵</strong>；如果每瓶放入 <strong>10 朵</strong>玫瑰花，还差 <strong>11 朵</strong>。请问有多少个花瓶？有多少朵玫瑰花？',
     analysis: [
       '两次放置都不够（亏亏问题）',
@@ -100,7 +100,7 @@ const LESSON: Problem[] = [
     id: '39-L6',
     title: '练一练 · 亏亏问题：花花买发卡',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 3,
     text: '花花想买一定数量的发卡。如果每个发卡 <strong>8 角钱</strong>，就少了 <strong>1 元 3 角</strong>（即 13 角）；如果每个发卡 <strong>1 元钱</strong>（即 10 角），就少了 <strong>3 元 7 角</strong>（即 37 角）。那么花花一共带了多少钱（单位：角）？',
     analysis: [
       '两次都钱不够（亏亏问题），统一单位用"角"',
@@ -120,7 +120,7 @@ const LESSON: Problem[] = [
     id: '39-L7',
     title: '例4 · 盈亏问题：兔妈妈的萝卜',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 2,
     text: '兔妈妈要出趟远门，给小白兔留下了一筐萝卜。如果小白兔每天吃 <strong>4 个</strong>，会多出 <strong>23 个</strong>萝卜；如果每天吃 <strong>6 个</strong>，则又少 <strong>7 个</strong>萝卜。那么这筐萝卜有多少个？',
     analysis: [
       '一次有多余（盈23个），一次不够（亏7个）→ 盈亏问题',
@@ -139,7 +139,7 @@ const LESSON: Problem[] = [
     id: '39-L8',
     title: '练一练 · 盈亏问题：搬砖',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '五一劳动节，一个小组的同学们去参加搬砖劳动。如果每人搬 <strong>3 块砖</strong>，还会剩下 <strong>16 块砖</strong>没人搬；如果每人搬 <strong>9 块砖</strong>，则还少 <strong>2 块砖</strong>。请问这个小组有多少人？要搬的砖共有多少块？',
     analysis: [
       '一次有多余（盈16块），一次不够（亏2块）→ 盈亏问题',
@@ -158,7 +158,7 @@ const LESSON: Problem[] = [
     id: '39-L9',
     title: '例5 · 盈亏问题：合唱队开会',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 2,
     text: '"百灵鸟"合唱队的同学到会议室开会。若每条长椅上坐 <strong>3 人</strong>，就会有 <strong>9 位同学</strong>没地方坐；若每条长椅上坐 <strong>7 人</strong>，则会空出 <strong>1 条长椅</strong>。请问合唱队有多少人？',
     analysis: [
       '坐3人时人多（盈9人），坐7人时椅多（空1条=亏7人）→ 盈亏问题',
@@ -177,7 +177,7 @@ const LESSON: Problem[] = [
     id: '39-L10',
     title: '练一练 · 盈亏问题：朱朱的水果箱',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '朱朱给班里同学买了若干箱水果，班里男生去搬水果。如果每 <strong>3 个人</strong>抬一个箱子，那么就会有 <strong>2 个箱子</strong>没人抬；如果每 <strong>2 个人</strong>抬一个箱子，那么抬完全部的箱子后，还有 <strong>7 个人</strong>没有干活。请问班里共有多少名男生？',
     analysis: [
       '每3人/箱时，2箱没人抬 → 缺少 2×3=6 人（亏6人）',
@@ -197,7 +197,7 @@ const LESSON: Problem[] = [
     id: '39-L11',
     title: '例6 · 变形盈亏：少先队员植树',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 2,
     text: '少先队员去植树。如果每人挖 <strong>5 个</strong>树坑，则有 <strong>2 个人</strong>没有树坑挖；如果其中两人各挖 <strong>6 个</strong>树坑，其余每人挖 <strong>3 个</strong>树坑，就恰好挖完所有的树坑。请问共有多少名少先队员？共挖了多少个树坑？',
     analysis: [
       '条件①：每人挖5个，2人没坑挖 → 多了 2×5=10 个"坑的容量"（相当于亏10坑）',
@@ -217,7 +217,7 @@ const LESSON: Problem[] = [
     id: '39-L12',
     title: '练一练 · 变形盈亏：韦老师安排帐篷',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '韦老师带着一年级孩子们去露营。若每个帐篷住 <strong>7 人</strong>，则有 <strong>2 个帐篷</strong>没有人住；若其中两个帐篷各住 <strong>6 人</strong>，其余帐篷各住 <strong>4 人</strong>，则刚好所有学生都住下。那么共有多少个帐篷？共有多少个孩子？',
     analysis: [
       '条件①：每帐住7人，2帐没人住 → 多了 2×7=14 个"住宿容量"（亏14人）',
@@ -240,7 +240,7 @@ const PRETEST: Problem[] = [
     id: '39-P1',
     title: '课前测1 · 盈恰：校运会分水',
     tag: 'type4',
-    tagLabel: '盈恰',
+    tagLabel: '盈恰', difficulty: 1,
     text: '校运会长跑，如果每名选手分 <strong>4 瓶</strong>水，还剩 <strong>16 瓶</strong>；如果每名选手多分 <strong>2 瓶</strong>水（即每人分 6 瓶），则刚好分完。那么，有多少位运动员？有多少瓶水？',
     analysis: [
       '条件A：每人分4瓶，余16瓶（盈16）',
@@ -259,7 +259,7 @@ const PRETEST: Problem[] = [
     id: '39-P2',
     title: '课前测2 · 盈盈：铅笔单价',
     tag: 'type1',
-    tagLabel: '盈盈',
+    tagLabel: '盈盈', difficulty: 2,
     text: '奇奇和立立各带了相同数目的钱去买文具。奇奇买了 <strong>9 支</strong>铅笔，剩下 <strong>5 元 5 角</strong>；立立买了 <strong>12 支</strong>铅笔，剩下 <strong>4 元</strong>。那么铅笔多少钱一支？',
     analysis: [
       '两人带同样多的钱，都买了铅笔且都有剩余（盈盈问题）',
@@ -278,7 +278,7 @@ const PRETEST: Problem[] = [
     id: '39-P3',
     title: '课前测3 · 亏亏：分巧克力',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 2,
     text: '老师给小朋友们分巧克力。如果每人分 <strong>3 块</strong>，则少 <strong>5 块</strong>；如果每人分 <strong>4 块</strong>，则少 <strong>9 块</strong>。那么，有多少个小朋友？有多少块巧克力？',
     analysis: [
       '两次分法都不够（亏亏问题）',
@@ -297,7 +297,7 @@ const PRETEST: Problem[] = [
     id: '39-P4',
     title: '课前测4 · 变形盈亏：分糖果',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 2,
     text: '小朋友分糖果，如果每人分 <strong>8 个</strong>，那么还余 <strong>18 个</strong>；如果其中 <strong>10 个</strong>小朋友每人分 <strong>7 个</strong>，其余的小朋友每人分 <strong>10 个</strong>，就刚好分完。那么，有多少个小朋友？分多少个糖果？',
     analysis: [
       '设共有 n 个小朋友，糖果总数 = 8n + 18',
@@ -317,7 +317,7 @@ const PRETEST: Problem[] = [
     id: '39-P5',
     title: '课前测5 · 盈亏：会议室长椅',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 2,
     text: '学校安排学生到会议室听报告。如果每 <strong>3 人</strong>坐一条长椅，那么剩下 <strong>18 人</strong>没有地方坐；如果每 <strong>5 人</strong>坐一条长椅，则刚好空出 <strong>两条</strong>长椅。那么，有多少名学生来听报告？',
     analysis: [
       '条件A：每椅坐3人，18人无座（亏18人）',
@@ -340,7 +340,7 @@ const HOMEWORK: Problem[] = [
     id: '39-H1',
     title: '课后巩固1 · 盈盈：老师发本子',
     tag: 'type1',
-    tagLabel: '盈盈',
+    tagLabel: '盈盈', difficulty: 3,
     text: '老师将一些本子发给学生，如果给每名学生发 <strong>10 个</strong>本子，就会多 <strong>10 个</strong>本子；如果给每名学生发 <strong>8 个</strong>本子，就会多 <strong>38 个</strong>本子。请问老师要将多少个本子发给多少个学生？',
     analysis: [
       '两种分法都有多余（盈盈问题）',
@@ -359,7 +359,7 @@ const HOMEWORK: Problem[] = [
     id: '39-H2',
     title: '课后巩固2 · 盈恰：分小玩具',
     tag: 'type4',
-    tagLabel: '盈恰',
+    tagLabel: '盈恰', difficulty: 3,
     text: '一年级目标班的同学分小玩具，如果每人分 <strong>4 个</strong>正好分完；如果每人分 <strong>3 个</strong>就会多出 <strong>12 个</strong>。请问有多少位同学？分多少个小玩具？',
     analysis: [
       '一次恰好（恰），一次有剩余（盈12）→ 盈恰问题',
@@ -377,7 +377,7 @@ const HOMEWORK: Problem[] = [
     id: '39-H3',
     title: '课后巩固3 · 亏亏：羊羊发奖学金',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 3,
     text: '羊羊给获奖的小朋友发奖学金，如果每人发 <strong>6 元</strong>就少 <strong>12 元</strong>；如果每人发 <strong>9 元</strong>就少 <strong>24 元</strong>。请问羊羊准备发多少元奖学金？',
     analysis: [
       '两次分法都不够（亏亏问题）',
@@ -396,7 +396,7 @@ const HOMEWORK: Problem[] = [
     id: '39-H4',
     title: '课后巩固4 · 盈亏：桑桑爸爸的旅游奖金',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '桑桑的爸爸发了一些奖金，一家人准备用这些钱旅游。如果每人需要花费 <strong>1600 元</strong>，总花费比奖金还多 <strong>500 元</strong>；如果每人只需花费 <strong>1300 元</strong>，结果还能剩下 <strong>400 元</strong>。请问桑桑全家一共有多少人？爸爸一共发了多少奖金？',
     analysis: [
       '去三亚：每人1600元，少500元（亏500）',
@@ -416,7 +416,7 @@ const HOMEWORK: Problem[] = [
     id: '39-H5',
     title: '课后巩固5 · 盈亏：猪妈妈的餐布',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '猪妈妈带着孩子去野餐，如果每张餐布周围坐 <strong>4 只</strong>小猪，就有 <strong>6 只</strong>小猪没地方坐；如果每张餐布周围多坐 <strong>2 只</strong>小猪（即每张坐 6 只），就会多出 <strong>1 张</strong>餐布。请问一共有多少只小猪？猪妈妈一共带了多少张餐布？',
     analysis: [
       '条件A：每张坐4只，6只无座（亏6只）',
@@ -436,7 +436,7 @@ const HOMEWORK: Problem[] = [
     id: '39-H6',
     title: '课后巩固6 · 变形亏亏：士兵背炮弹',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 3,
     text: '有若干名士兵背炮弹，如果每个人背 <strong>7 枚</strong>炮弹，则有 <strong>2 个人</strong>没有炮弹可背；如果其中有 <strong>1 名士兵只背 2 枚</strong>炮弹，剩下的士兵每人背 <strong>6 枚</strong>炮弹，正好能背上全部炮弹。请问一共有多少枚炮弹？',
     analysis: [
       '条件A：每人背7枚，2人没炮弹 → 相当于亏 2×7=14 枚',
@@ -457,7 +457,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W1',
     title: '闯关1 · 盈盈：老师分剪纸',
     tag: 'type1',
-    tagLabel: '盈盈',
+    tagLabel: '盈盈', difficulty: 3,
     text: '老师给一年级目标班的同学们分剪纸，如果分给 <strong>6 个</strong>同学，每人分到的一样多，还剩 <strong>18 张</strong>；后来又来了两个同学，分给他们同样多的剪纸后，就只剩下 <strong>2 张</strong>了。请问老师一共拿来了多少张剪纸？',
     analysis: [
       '分给6人余18，分给8人（多来2人）余2（盈盈问题）',
@@ -474,7 +474,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W2',
     title: '闯关2 · 盈盈：婷婷买包子',
     tag: 'type1',
-    tagLabel: '盈盈',
+    tagLabel: '盈盈', difficulty: 3,
     text: '婷婷去帮妈妈买包子，原来包子 <strong>6 角</strong>一个，她买完包子还能剩 <strong>3 元 4 角</strong>；到了后发现包子涨价了，现在要 <strong>7 角</strong>一个，于是钱只剩了 <strong>2 元 8 角</strong>。请问婷婷要买几个包子？',
     analysis: [
       '统一单位用"角"：剩 34 角 vs 剩 28 角（盈盈问题）',
@@ -492,7 +492,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W3',
     title: '闯关3 · 亏亏：哥哥买游戏币',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 3,
     text: '哥哥带着几个弟弟去电玩城抓娃娃，他买了若干个游戏币准备发给弟弟们，开始准备给每人 <strong>7 个</strong>，结果缺 <strong>3 个</strong>；后来每个弟弟都要求再加 <strong>3 个</strong>（即每人 10 个），这样就会缺 <strong>15 个</strong>。请问哥哥一共买了多少个游戏币？',
     analysis: [
       '两次分法都不够（亏亏问题）',
@@ -511,7 +511,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W4',
     title: '闯关4 · 亏亏：老师发积分卡',
     tag: 'type2',
-    tagLabel: '亏亏',
+    tagLabel: '亏亏', difficulty: 3,
     text: '老师给同学们发积分卡，如果给每人发 <strong>10 分</strong>，就会缺 <strong>8 分</strong>；如果每人发 <strong>14 分</strong>，这样就会缺 <strong>28 分</strong>。那么一共有多少名同学？老师带了多少分积分卡？',
     analysis: [
       '两次分法都不够（亏亏问题）',
@@ -530,7 +530,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W5',
     title: '闯关5 · 盈亏：目标班看电影',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '目标班同学去看电影，到了电影院发现：如果每排坐 <strong>12 人</strong>，一共会空出 <strong>20 个</strong>座位；如果每排只坐 <strong>10 人</strong>，则会少了 <strong>10 个</strong>座位。请问目标班一共多少个同学？',
     analysis: [
       '条件A：每排坐12人，空20座（盈20）',
@@ -550,7 +550,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W6',
     title: '闯关6 · 盈亏：纳约小学宿舍',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '纳约小学为一年级新同学分配宿舍，每间宿舍的床位数一样多。如果每间宿舍住进 <strong>4 人</strong>，一共有 <strong>4 间</strong>宿舍空着；如果每间宿舍住进 <strong>3 人</strong>，一共会少 <strong>3 个</strong>床位。请问纳约小学一共有多少间宿舍？',
     analysis: [
       '条件A：每间住4人，4间空着 → 相当于多了 4×4=16 人的"容量"（盈16人）',
@@ -569,7 +569,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W7',
     title: '闯关7 · 盈亏：老师和学生',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '有一些老师和学生，如果一个老师教 <strong>3 个</strong>学生，会剩下 <strong>6 个</strong>学生没有老师教；如果一个老师教 <strong>4 个</strong>学生，就会有 <strong>1 个</strong>老师没有学生可教。请问一共有多少个学生？',
     analysis: [
       '条件A：每人教3个，余6个学生（盈6）',
@@ -589,7 +589,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W8',
     title: '闯关8 · 盈亏：魏老师发牛奶',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '魏老师给同学们发牛奶，每个同学发的一样多，每箱牛奶有 <strong>12 盒</strong>。发给 <strong>9 个</strong>同学后，还剩下半箱；这时又新来了 <strong>5 个</strong>同学，如果给他们也发同样多的牛奶，还差 <strong>两箱</strong>。请问魏老师开始准备了几箱牛奶？',
     analysis: [
       '余半箱 = 余6盒（盈6），差两箱 = 差24盒（亏24）',
@@ -607,7 +607,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W9',
     title: '闯关9 · 盈亏：吉吉国王分香蕉',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 3,
     text: '吉吉国王将一筐香蕉分给小猴子们。如果给每只公猴分 <strong>5 个</strong>则还剩 <strong>10 个</strong>；如果给每只公猴分 <strong>8 个</strong>则还少 <strong>2 个</strong>，已知公猴比母猴多 <strong>3 只</strong>。请问这筐香蕉共有多少个？',
     analysis: [
       '条件A：每只公猴5个，余10个（盈10）',
@@ -625,7 +625,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W10',
     title: '闯关10 · 变形盈亏：海盗分金币',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 4,
     text: '海盗们分金币，其中两人每人分 <strong>6 枚</strong>，其余每人分 <strong>4 枚</strong>，会剩下 <strong>4 枚</strong>金币；如果有 <strong>1 人分 10 枚</strong>，其余每人分 <strong>6 枚</strong>，则会少 <strong>18 枚</strong>金币。请问海盗有多少人？金币有多少枚？',
     analysis: [
       '转化条件A：等效"全员分4枚"，则余 4+2×2=8 枚（2人各多分2枚，相当于多余8枚，盈8）',
@@ -645,7 +645,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W11',
     title: '闯关11 · 变形盈亏：体育课发乒乓球',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 5,
     text: '体育课上，老师给学生们发乒乓球。每人 <strong>6 个</strong>还会多出 <strong>12 个</strong>乒乓球，如果人数增加到原来的 <strong>4 倍</strong>，那么每人分 <strong>2 个</strong>乒乓球还缺少 <strong>8 个</strong>。请问有多少个乒乓球？',
     analysis: [
       '条件A：n 人每人6个，余12（盈12）',
@@ -665,7 +665,7 @@ const WORKBOOK: Problem[] = [
     id: '39-W12',
     title: '闯关12 · 盈亏范围：韦老师住宿',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 5,
     text: '韦老师带着若干名学生去外地参加数学竞赛，晚上需要办理住宿。如果每间宿舍住 <strong>2 人</strong>，就会有 <strong>8 个人</strong>没有宿舍住；如果每间宿舍住 <strong>3 人</strong>，最后一间宿舍就会不空也不满。需要住宿的同学<strong>最多</strong>可能有多少名？',
     analysis: [
       '条件A：每间住2人，余8人（亏8人）',
@@ -686,7 +686,7 @@ const SUPPLEMENT: Problem[] = [
     id: '39-S1',
     title: '附加题1 · 盈亏：糖果分配',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 4,
     text: '一盘糖果约 20 个左右，几位小朋友分。若每人分 <strong>3 个</strong>，则余下 <strong>2 个</strong>；若每人分 <strong>4 个</strong>，则差 <strong>3 个</strong>。这盘糖果有多少个？',
     analysis: [
       '条件A：每人3个，余2个（盈2）',
@@ -706,7 +706,7 @@ const SUPPLEMENT: Problem[] = [
     id: '39-S2',
     title: '附加题2 · 盈亏：笔记本单价',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 4,
     text: '王老师去文具店买笔记本，若买 <strong>7 个</strong>，则所带的钱差 <strong>110 元</strong>；若买 <strong>5 个</strong>，则所带的钱还多 <strong>30 元</strong>。那么一个笔记本多少元？',
     analysis: [
       '买7个差110（亏110），买5个多30（盈30）',
@@ -724,7 +724,7 @@ const SUPPLEMENT: Problem[] = [
     id: '39-S3',
     title: '附加题3 · 盈亏换算：买肉',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 4,
     text: '小明妈妈带着一笔钱去买肉，若买 <strong>10 千克牛肉</strong>则还差 <strong>6 元</strong>；若买 <strong>12 千克猪肉</strong>则还剩 <strong>4 元</strong>。已知每千克牛肉比猪肉贵 <strong>3 元</strong>，那么小明妈妈带了多少元？',
     analysis: [
       '将买10千克牛肉转换为买10千克猪肉：贵 3×10=30元，即差6 → 若买猪肉反而多了 30−6=24元（盈24）',
@@ -743,7 +743,7 @@ const SUPPLEMENT: Problem[] = [
     id: '39-S4',
     title: '附加题4 · 盈亏人数差：分糖粒',
     tag: 'type3',
-    tagLabel: '盈亏',
+    tagLabel: '盈亏', difficulty: 4,
     text: '幼儿园把一袋糖果分给小朋友。如果分给大班的小朋友，每人 <strong>5 粒</strong>就缺 <strong>6 粒</strong>；如果分给小班的小朋友，每人 <strong>4 粒</strong>就余 <strong>4 粒</strong>。已知大班比小班少 <strong>2 个</strong>小朋友，那么这袋糖果共有多少粒？',
     analysis: [
       '设大班 a 人，小班 a+2 人',

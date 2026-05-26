@@ -11,6 +11,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/43',
+    title: '等差数列初识探险',
+    description: '认识首项、公差、项数与求和公式，解决生活中的等差数列问题。',
+    icon: '📊',
+    lectureNum: '第 43 讲',
+    tags: ['等差数列', '求项·求和·应用', '49 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/42',
     title: '生活智力题挑战',
     description: '天平称重、空瓶换水、绳子计时、量水标线、找假币 —— 用智慧解决生活中的真问题。',

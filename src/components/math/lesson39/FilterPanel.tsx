@@ -5,6 +5,8 @@ import Link from 'next/link'
 import type { Problem, ProblemSet } from '@/utils/type'
 import { SOURCE_LABELS } from '@/utils/constant'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
+import type { ProblemDifficulty } from '@/utils/difficulty'
+import DifficultyFilterRow from '@/components/math/shared/DifficultyFilterRow'
 import ProblemDetail from './ProblemDetail'
 
 const BASE = '/math/ny/39'
@@ -15,13 +17,14 @@ interface Filters {
   source: Set<string>
   type: Set<string>
   mastery: MasteryFilter
+  difficulty: Set<ProblemDifficulty>
 }
 
 interface FilterPanelProps {
   problems: ProblemSet
   solveCount: Record<string, number>
   filters: Filters
-  onToggleFilter: (axis: 'source' | 'type', value: string) => void
+  onToggleFilter: (axis: 'source' | 'type' | 'difficulty', value: string) => void
   onSetMastery: (value: MasteryFilter) => void
 }
 
@@ -115,6 +118,7 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
     ({ p, setName }) =>
       filters.source.has(setName) &&
       filters.type.has(p.tag) &&
+      filters.difficulty.has(p.difficulty) &&
       matchesMastery(solveCount[p.id] ?? 0, filters.mastery),
   )
   const total = filtered.length
@@ -165,7 +169,17 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
           </div>
         </div>
 
-        <div className="mb-2">
+        
+        <DifficultyFilterRow
+          selected={filters.difficulty}
+          onToggle={level => onToggleFilter('difficulty', String(level))}
+          btnBase={btnBase}
+          btnOn={btnOn}
+          btnOff={btnOff}
+          accentClass="text-text-secondary"
+        />
+
+<div className="mb-2">
           <div className="mb-1.5 text-[11px] font-bold text-[#6b21a8]">🎯 掌握度</div>
           <div className="flex flex-wrap gap-1.5">
             {MASTERY_BTNS.map(b => (

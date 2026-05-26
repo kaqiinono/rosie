@@ -7,6 +7,7 @@ import { TAG_STYLE } from '@/utils/lesson39-data'
 import { useLesson39 } from './Lesson39Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import DifficultyStars from '@/components/math/shared/DifficultyStars'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -67,6 +68,7 @@ export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailP
         >
           {problem.tagLabel}
         </span>
+        <DifficultyStars level={problem.difficulty} size="md" />
         <div
           className="mb-3.5 rounded-lg border-l-3 border-amber-300 bg-[#fffbeb] px-3.5 py-3 text-sm leading-relaxed text-text-secondary [&>strong]:font-bold [&>strong]:text-text-primary"
           dangerouslySetInnerHTML={{ __html: problem.text }}

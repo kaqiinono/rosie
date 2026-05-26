@@ -9,6 +9,7 @@ import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/mastery
 import AssumptionDiagram from './AssumptionDiagram'
 import EquationDiagram from './EquationDiagram'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import DifficultyStars from '@/components/math/shared/DifficultyStars'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -62,6 +63,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDe
         >
           {problem.tagLabel}
         </span>
+        <DifficultyStars level={problem.difficulty} size="md" />
 
         {/* Problem text */}
         <div

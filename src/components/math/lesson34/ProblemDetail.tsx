@@ -7,6 +7,7 @@ import { TAG_STYLE } from '@/utils/lesson34-data'
 import { useLesson34 } from './Lesson34Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import DifficultyStars from '@/components/math/shared/DifficultyStars'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -52,6 +53,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDe
         >
           {problem.tagLabel}
         </span>
+        <DifficultyStars level={problem.difficulty} size="md" />
 
         <div
           className="text-text-secondary [&>strong]:text-text-primary mb-3.5 rounded-lg border-l-3 border-amber-400 bg-amber-50 px-3.5 py-3 text-sm leading-relaxed [&>strong]:font-bold"

@@ -5,7 +5,7 @@ const PRETEST: Problem[] = [
     id: '41-P1',
     title: '课前测1 · 爬楼梯',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 1,
     text: '奇奇家住在 <strong>15 层</strong>，每层楼梯有 <strong>20 个阶梯</strong>。有天电梯坏了，他只能爬楼梯，如果他每上一个阶梯需要 <strong>1 秒</strong>，请问他到家需要多少秒？',
     analysis: [
       '从1楼到15楼，共有 15 − 1 = 14 个楼层间隔',
@@ -22,7 +22,7 @@ const PRETEST: Problem[] = [
     id: '41-P2',
     title: '课前测2 · 植树问题',
     tag: 'type4',
-    tagLabel: '圆形与队列',
+    tagLabel: '圆形与队列', difficulty: 2,
     text: '有一块三角形的土地，三条边长度分别为 <strong>120 米、150 米、80 米</strong>，在这块土地的四周每隔 <strong>10 米</strong>种一棵树，一共要种多少棵树？',
     analysis: [
       '三角形土地的周长 = 120 + 150 + 80 = 350 米',
@@ -39,7 +39,7 @@ const PRETEST: Problem[] = [
     id: '41-P3',
     title: '课前测3 · 锯圆木',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 2,
     text: '有 <strong>8 根木料</strong>，每根长 <strong>10 米</strong>，需要把它们锯成长为 <strong>2 米</strong>的圆木，每锯开一处需要 <strong>4 分钟</strong>，请问全部锯完需要多少分钟？',
     analysis: [
       '每根 10 米锯成 2 米：10 ÷ 2 = 5 段，需 5 − 1 = 4 次',
@@ -55,7 +55,7 @@ const PRETEST: Problem[] = [
     id: '41-P4',
     title: '课前测4 · 双色锯点',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 2,
     text: '一根 <strong>90 厘米</strong>长的木棍，先每隔 <strong>5 厘米</strong>画一个红点，每隔 <strong>6 厘米</strong>画一个绿点，沿红点和绿点锯开，一共可以得到多少段小木棍？',
     analysis: [
       '红点（不含端点90cm）：5, 10, …, 85，共 17 个',
@@ -74,7 +74,7 @@ const PRETEST: Problem[] = [
     id: '41-P5',
     title: '课前测5 · 圆圈站队（一）',
     tag: 'type4',
-    tagLabel: '圆形与队列',
+    tagLabel: '圆形与队列', difficulty: 2,
     text: '某班有 <strong>43 名学生</strong>，站成一圆形的圈，从某人 A 开始数。立立是顺时针数第 <strong>27</strong> 个，奇奇是逆时针数第 <strong>31</strong> 个，立立与奇奇之间（不经过 A 的一侧）有多少名同学？',
     analysis: [
       '立立在顺时针位置 27',
@@ -92,7 +92,7 @@ const PRETEST: Problem[] = [
     id: '41-P6',
     title: '课前测6 · 圆圈站队（二）',
     tag: 'type4',
-    tagLabel: '圆形与队列',
+    tagLabel: '圆形与队列', difficulty: 2,
     text: '某班有 <strong>43 名学生</strong>，站成一圆形的圈，从某人 A 开始数。立立是顺时针数第 <strong>22</strong> 个，奇奇是逆时针数第 <strong>13</strong> 个，立立与奇奇之间（较短的一侧）有多少名同学？',
     analysis: [
       '立立在顺时针位置 22',
@@ -110,7 +110,7 @@ const PRETEST: Problem[] = [
     id: '41-P7',
     title: '课前测7 · 圆圈站队（三）',
     tag: 'type4',
-    tagLabel: '圆形与队列',
+    tagLabel: '圆形与队列', difficulty: 2,
     text: '某班有 <strong>43 名学生</strong>，站成一圆形的圈，从某人 A 开始数。立立是顺时针数第 <strong>26</strong> 个，奇奇是顺时针数第 <strong>17</strong> 个，立立与奇奇之间（较短的一侧）有多少名同学？',
     analysis: [
       '立立在顺时针位置 26，奇奇在顺时针位置 17',
@@ -130,7 +130,7 @@ const LESSON: Problem[] = [
     id: '41-L1',
     title: '例1 · 多根木棍全锯完',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 1,
     text: '有 <strong>6 根木棍</strong>，每根长 <strong>12 米</strong>，需要把它们锯成长为 <strong>3 米</strong>的短棍，每锯开一处需要 <strong>2 分钟</strong>，请问全部锯完需要多少分钟？',
     analysis: [
       '每根 12 米锯成 3 米：12 ÷ 3 = 4 段，需 4 − 1 = 3 次',
@@ -146,7 +146,7 @@ const LESSON: Problem[] = [
     id: '41-L2',
     title: '练一练 · 锯面包',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '小气鬼把一根面包分成 <strong>5 段</strong>用了 <strong>20 秒</strong>，若以同样的速度，他要把另外同样的 <strong>3 根面包每根分成 4 段</strong>，要用多少秒？',
     analysis: [
       '1根→5段，需 5 − 1 = 4 次；20秒 ÷ 4 = 5 秒/次',
@@ -163,7 +163,7 @@ const LESSON: Problem[] = [
     id: '41-L3',
     title: '例2 · 比较工作量',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 2,
     text: '甲、乙两组分别领取 <strong>4 米、3 米</strong>圆木，要求都锯成 <strong>1 米</strong>长的小段，每次锯需 <strong>1 分钟</strong>，且甲、乙最后均锯出了 <strong>12 段</strong>，工作量最小的组共锯多少分钟？',
     analysis: [
       '甲：4米→1米=4段，需3次/根；12段=3根，共 3×3=9次 → 9分钟',
@@ -179,7 +179,7 @@ const LESSON: Problem[] = [
     id: '41-L4',
     title: '练一练 · 多规格比较',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '纳纳和约约分别领取 <strong>8 米、10 米</strong>木棍，都按 <strong>2 米</strong>规格锯开。最后，纳纳锯了 <strong>24 段</strong>，约约锯了 <strong>25 段</strong>，工作量大的比工作量小的多锯多少次？',
     analysis: [
       '纳纳：8÷2=4段，需3次/根；24段=6根，共 6×3=18次',
@@ -195,7 +195,7 @@ const LESSON: Problem[] = [
     id: '41-L5',
     title: '例3 · 爬楼梯求时间',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 2,
     text: '文文家住在 <strong>8 楼</strong>，电梯坏了，他从 <strong>1 楼走到 5 楼</strong>共用了 <strong>36 秒</strong>，照此速度他还要走多少秒才能到家？',
     analysis: [
       '1楼→5楼：5 − 1 = 4 个楼层间隔，用时 36 秒',
@@ -212,7 +212,7 @@ const LESSON: Problem[] = [
     id: '41-L6',
     title: '练一练 · 送餐员爬楼',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '送餐员从大厦 <strong>1 层</strong>开始爬楼梯，速度保持不变。他爬到 <strong>5 层</strong>用了 <strong>7 分钟</strong>，又过了 <strong>21 分钟</strong>，请问他爬到了几层？',
     analysis: [
       '1层→5层：5 − 1 = 4 个间隔，用时 7 分钟',
@@ -229,7 +229,7 @@ const LESSON: Problem[] = [
     id: '41-L7',
     title: '例4 · 速度比较',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 2,
     text: '奇奇和立立同时从 <strong>1 楼</strong>往上走。当奇奇到达 <strong>3 层</strong>时，立立恰好到了 <strong>5 层</strong>。照此速度，当立立走到 <strong>17 层</strong>时，奇奇到达了哪一层？',
     analysis: [
       '奇奇: 1→3层 = 2 个间隔；立立: 1→5层 = 4 个间隔',
@@ -247,7 +247,7 @@ const LESSON: Problem[] = [
     id: '41-L8',
     title: '练一练 · 青蛙跳台阶',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '蹦蹦和跳跳从 <strong>1 楼</strong>开始比赛跳台阶，当蹦蹦跳到 <strong>3 楼</strong>时，跳跳才刚到 <strong>2 楼</strong>，那么当蹦蹦跳到 <strong>9 楼</strong>时，跳跳能到几楼？',
     analysis: [
       '蹦蹦: 1→3层 = 2 个间隔；跳跳: 1→2层 = 1 个间隔',
@@ -265,7 +265,7 @@ const LESSON: Problem[] = [
     id: '41-L9',
     title: '例5 · 几点钟敲几下',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 2,
     text: '五点钟的时候，挂钟敲了 <strong>5 下</strong>，用了 <strong>12 秒</strong>，那么在 <strong>十一点钟</strong>时，挂钟敲了 11 下，用了多少秒？',
     analysis: [
       '5 下之间有 5 − 1 = 4 个间隔，用时 12 秒',
@@ -282,7 +282,7 @@ const LESSON: Problem[] = [
     id: '41-L10',
     title: '练一练 · 钟楼敲钟',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 3,
     text: '钟楼上的大钟整点时敲相应的点数，早上 <strong>6 点</strong>时敲钟用了 <strong>40 秒</strong>，那么 <strong>12 点</strong>时敲钟共用了多少秒？',
     analysis: [
       '6 下之间有 6 − 1 = 5 个间隔，用时 40 秒',
@@ -299,7 +299,7 @@ const LESSON: Problem[] = [
     id: '41-L11',
     title: '例6 · 间隔计时推算',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 2,
     text: '手机从响第 1 声开始，每隔 <strong>5 秒</strong>响一下。响第 <strong>21 下</strong>的时刻为早上 8 点 20 分 36 秒，请问从第 1 声到第 21 声共经过了多少秒？',
     analysis: [
       '从第1声到第21声，共有 21 − 1 = 20 个间隔',
@@ -316,7 +316,7 @@ const LESSON: Problem[] = [
     id: '41-L12',
     title: '练一练 · 庙里敲钟倒推',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 3,
     text: '山上的庙里有一座钟，每隔 <strong>10 秒</strong>敲一下。敲第 <strong>20 下</strong>的时候为早上 8 点 17 分 40 秒，请问从第 1 下到第 20 下共经过了多少秒？',
     analysis: [
       '从第1下到第20下，共有 20 − 1 = 19 个间隔',
@@ -336,7 +336,7 @@ const HOMEWORK: Problem[] = [
     id: '41-H1',
     title: '巩固1 · 两根锯成8段',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '奇奇将一根木头锯成 <strong>2 段</strong>需要 <strong>4 分钟</strong>，如果他要把同样的 <strong>两根木头每根都锯成 8 段</strong>，需要锯多少分钟？',
     analysis: [
       '1根→2段，需 1 次；4分钟/次',
@@ -353,7 +353,7 @@ const HOMEWORK: Problem[] = [
     id: '41-H2',
     title: '巩固2 · 谁用时最短',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '奇奇和文文比赛锯木头，都要锯成 <strong>1 米</strong>长的段，每锯一次花 <strong>5 分钟</strong>。奇奇每根 <strong>4 米</strong>，文文每根 <strong>3 米</strong>。最后，奇奇锯出 <strong>28 段</strong>，文文锯出 <strong>30 段</strong>，用时最短的人共花了多少分钟？',
     analysis: [
       '奇奇：4米→4段，需3次/根；28段=7根，共 7×3=21次，21×5=105分钟',
@@ -369,7 +369,7 @@ const HOMEWORK: Problem[] = [
     id: '41-H3',
     title: '巩固3 · 快递员爬楼',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '快递员从一楼走到 <strong>七楼</strong>用了 <strong>12 分钟</strong>，按照同样的速度往上爬，又爬了 <strong>16 分钟</strong>才到客户家，请问客户家在几楼？',
     analysis: [
       '1楼→7楼：7 − 1 = 6 个间隔，用时 12 分钟',
@@ -386,7 +386,7 @@ const HOMEWORK: Problem[] = [
     id: '41-H4',
     title: '巩固4 · 约约和奶奶',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '约约和奶奶同时从 <strong>1 层</strong>爬楼梯回 <strong>16 层</strong>的家。当约约走到 <strong>4 层</strong>时，奶奶正好上到 <strong>2 层</strong>，当约约走到家时，奶奶在第几层？',
     analysis: [
       '约约: 1→4层 = 3 个间隔；奶奶: 1→2层 = 1 个间隔',
@@ -404,7 +404,7 @@ const HOMEWORK: Problem[] = [
     id: '41-H5',
     title: '巩固5 · 石英钟敲钟',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 3,
     text: '思思家的石英钟敲 <strong>5 下</strong>要 <strong>8 秒钟</strong>，请问敲 <strong>8 下</strong>要多少秒？',
     analysis: [
       '5 下之间有 5 − 1 = 4 个间隔，用时 8 秒',
@@ -421,7 +421,7 @@ const HOMEWORK: Problem[] = [
     id: '41-H6',
     title: '巩固6 · 敲鼓推算',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 3,
     text: '约约每天早上练习敲鼓，从敲第 <strong>1 下</strong>开始，每隔 <strong>8 秒</strong>敲一下。敲第 <strong>11 下</strong>的时刻为早上 <strong>8 点 08 分 12 秒</strong>，请问从第 1 下到第 11 下共经过了多少秒？',
     analysis: [
       '从第1下到第11下，共有 11 − 1 = 10 个间隔',
@@ -441,7 +441,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W1',
     title: '闯关1 · 伐木场比赛',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '光头强把一根 <strong>45 米</strong>的木材锯成 <strong>3 米</strong>一段只要 <strong>140 秒</strong>，按这样的速度，他把同样一根木材锯成 <strong>9 段</strong>需要多少秒？',
     analysis: [
       '45米→3米：45÷3=15段，需 15−1=14次；140÷14=10秒/次',
@@ -457,7 +457,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W2',
     title: '闯关2 · 多根截多段',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '把一根木头截成 <strong>3 段</strong>要花 <strong>6 分钟</strong>，要把 <strong>10 根木头都截成 6 段</strong>，请问需要多少分钟？',
     analysis: [
       '3段需 3 − 1 = 2 次；6分钟÷2=3分钟/次',
@@ -474,7 +474,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W3',
     title: '闯关3 · 钢管锯次数',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '有 <strong>13 根钢管</strong>，其中 <strong>8 米长</strong>的有 4 根，<strong>6 米长</strong>的有 9 根，现在要把它们都锯成 <strong>1 米</strong>长的钢管，请问一共要锯多少次？',
     analysis: [
       '8米→1米：8段，需 7次；4根共 4×7=28次',
@@ -490,7 +490,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W4',
     title: '闯关4 · 三人锯木比较',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 3,
     text: '甲、乙、丙三人锯木棍，分别领取 <strong>8 米、10 米、6 米</strong>，都按 <strong>2 米</strong>规格锯开。最后，甲、乙、丙分别锯了 <strong>24、25、21 段</strong>，工作量最大的比工作量最小的多锯多少次？',
     analysis: [
       '甲：8÷2=4段，需3次/根；24段=6根，共 6×3=18次',
@@ -507,7 +507,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W5',
     title: '闯关5 · 思思爬楼梯',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '思思从一楼爬到 <strong>三楼</strong>用 <strong>6 分钟</strong>，按照同样的速度往上爬，又爬了 <strong>15 分钟</strong>才到家，那么思思家住在几楼？',
     analysis: [
       '1楼→3楼：3 − 1 = 2 个间隔，用时 6 分钟',
@@ -524,7 +524,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W6',
     title: '闯关6 · 台阶总数',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '小立住 <strong>6 楼</strong>，小奇住 <strong>5 楼</strong>，两人每天从一楼爬楼回家。小立上楼走 <strong>100 级台阶</strong>，每层楼梯数相同，请问小奇每天上楼走多少级台阶？',
     analysis: [
       '1楼→6楼：6 − 1 = 5 个间隔，共 100 级',
@@ -541,7 +541,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W7',
     title: '闯关7 · 电线杆追问',
     tag: 'type2',
-    tagLabel: '爬楼梯',
+    tagLabel: '爬楼梯', difficulty: 3,
     text: '纳纳和爷爷同时从 <strong>第1根电线杆</strong>出发，速度保持不变。当爷爷走到 <strong>第4根</strong>时，纳纳恰好走到 <strong>第7根</strong>。请问当纳纳走到 <strong>第13根</strong>时，爷爷走到了第几根？',
     analysis: [
       '爷爷: 1→4 = 3个间隔；纳纳: 1→7 = 6个间隔',
@@ -559,7 +559,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W8',
     title: '闯关8 · 时钟敲12下',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 3,
     text: '时钟 <strong>7 点</strong>敲了 <strong>7 下</strong>，花了 <strong>12 秒</strong>，照这样计算，请问 <strong>12 点</strong>敲 12 下需要多少秒？',
     analysis: [
       '7 下之间有 7 − 1 = 6 个间隔，用时 12 秒',
@@ -576,7 +576,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W9',
     title: '闯关9 · 怪钟响几次',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 3,
     text: '立立家有一个怪钟，每隔 <strong>15 分钟</strong>响一次，从 <strong>上午 10 点</strong>到 <strong>中午 12 点</strong>（两头都响）一共响了多少次？',
     analysis: [
       '上午10点到中午12点：共 120 分钟',
@@ -593,7 +593,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W10',
     title: '闯关10 · 实验记录倒推',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 4,
     text: '约约在实验室每隔 <strong>5 小时</strong>做一次记录。做第 <strong>12 次</strong>记录时，正好是 <strong>2021 年 1 月 1 日早上 9 点整</strong>。请问从第 1 次到第 12 次共经过了多少小时？',
     analysis: [
       '从第1次到第12次，共有 12 − 1 = 11 个间隔',
@@ -610,7 +610,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W11',
     title: '闯关11 · 敲钟带休息',
     tag: 'type3',
-    tagLabel: '敲钟与计时',
+    tagLabel: '敲钟与计时', difficulty: 5,
     text: '庙里的钟从敲第 <strong>1 下</strong>开始，每隔 <strong>5 秒</strong>敲一下，每敲完 <strong>10 下</strong>后休息 <strong>2 分钟</strong>。敲第 <strong>20 下</strong>时为早上 <strong>8 点 17 分 40 秒</strong>，请问从第 1 下到第 20 下共经过了多少秒？',
     analysis: [
       '第1-10下：9个间隔 × 5秒 = 45秒',
@@ -628,7 +628,7 @@ const WORKBOOK: Problem[] = [
     id: '41-W12',
     title: '闯关12 · 交替锯木棍',
     tag: 'type1',
-    tagLabel: '锯木头与切割',
+    tagLabel: '锯木头与切割', difficulty: 5,
     text: '一根长 <strong>350 厘米</strong>的木棍，从一端开始，先 <strong>30 厘米</strong>一段，再 <strong>10 厘米</strong>一段，这样长短交替锯成小段，请问可以锯成多少段长 <strong>30 厘米</strong>的木棍？',
     analysis: [
       '每组"30cm+10cm" = 40cm',
