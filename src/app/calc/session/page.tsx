@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
@@ -58,7 +58,6 @@ function formatTimer(s: number) {
 }
 
 export default function CalcSessionPage() {
-  const router = useRouter()
   const params = useSearchParams()
   const { user } = useAuth()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
@@ -121,6 +120,8 @@ export default function CalcSessionPage() {
     timeSec: number
   } | null>(null)
 
+  const [sessionKey, setSessionKey] = useState(0)
+
   // Initialize session ONCE after settings + mistakes ready, AND user is loaded
   const initRef = useRef(false)
   useEffect(() => {
@@ -179,7 +180,7 @@ export default function CalcSessionPage() {
       questionStartRef.current = performance.now()
     }
     void init()
-  }, [settings, settingsLoading, mistakes, requestedCount, mode, user, problemState, levelState])
+  }, [settings, settingsLoading, mistakes, requestedCount, mode, user, problemState, levelState, sessionKey])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -852,9 +853,30 @@ export default function CalcSessionPage() {
           nextSessionAssault={nextSessionAssault}
           onAgain={() => {
             void refreshMistakes()
-            router.replace(
-              `/calc/session?count=${requestedCount}&time=${requestedTimeLimit}&mode=${mode}&t=${Date.now()}`,
-            )
+            setQuestions(null)
+            setIdx(0)
+            setInput('')
+            setAttemptsForCurrent(0)
+            setFeedback(null)
+            setRevealAnswer(null)
+            setShowChallengeBanner(false)
+            setAssaultActive(false)
+            setCoinsTotal(0)
+            setStreak(0)
+            setMaxStreak(0)
+            setLastResult(null)
+            attemptsLogRef.current = []
+            setStartedTsMs(0)
+            setStartedAtIso('')
+            setDone(false)
+            setLevelUpTo(null)
+            setLevelDownTo(null)
+            setReviewMilestone(null)
+            setNextSessionAssault(false)
+            setTimeBonusEarned(0)
+            setFinalStats(null)
+            initRef.current = false
+            setSessionKey((k) => k + 1)
           }}
         />
       )}
