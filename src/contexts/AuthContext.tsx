@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
+    try { localStorage.clear() } catch { /* ignore */ }
     await supabase.auth.signOut()
   }
 

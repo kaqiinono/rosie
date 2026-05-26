@@ -126,15 +126,17 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
   }, [user, wallet.yellowBalance, wallet.redBalance, wallet.blueBalance])
 
   const value = useMemo<StarHudContextValue>(() => ({
-    yellowBalance: wallet.yellowBalance + optimistic.yellow,
-    redBalance: wallet.redBalance + optimistic.red,
-    blueBalance: wallet.blueBalance + optimistic.blue,
+    // Always expose pure DB values — optimistic is kept internally for burst
+    // animation calculations only and must not distort the displayed balance.
+    yellowBalance: wallet.yellowBalance,
+    redBalance: wallet.redBalance,
+    blueBalance: wallet.blueBalance,
     session,
     bursts,
     awardStars,
     consumeBurst,
     refresh: wallet.refresh,
-  }), [wallet.yellowBalance, wallet.redBalance, wallet.blueBalance, wallet.refresh, optimistic, session, bursts, awardStars, consumeBurst])
+  }), [wallet.yellowBalance, wallet.redBalance, wallet.blueBalance, wallet.refresh, session, bursts, awardStars, consumeBurst])
 
   return <StarHudCtx.Provider value={value}>{children}</StarHudCtx.Provider>
 }

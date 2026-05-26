@@ -3,7 +3,16 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+    // Single-tab app — bypass Web Locks to prevent "Lock broken by steal" AbortErrors
+    // when multiple hooks issue concurrent Supabase requests on the same page.
+    lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => fn(),
+  },
+})
 
 export type Database = {
   public: {

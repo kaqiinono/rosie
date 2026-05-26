@@ -777,6 +777,39 @@ export default function MathSeaPage() {
     })
   }, [])
 
+  const allLessonsSelected = selectedLessons.size === SEA_LESSONS.length
+  const allSectionsSelected = selectedSections.size === 5
+  const allTypesSelected = availableTypes.length > 0 && availableTypes.every(t => selectedTypes.has(`${t.lessonId}::${t.tag}`))
+
+  const toggleAllLessons = useCallback(() => {
+    setPage(1)
+    if (allLessonsSelected) {
+      setSelectedLessons(new Set())
+      setSelectedTypes(new Set())
+    } else {
+      setSelectedLessons(new Set(SEA_LESSONS.map(l => l.id)))
+      setSelectedTypes(allTypeKeys)
+    }
+  }, [allLessonsSelected, allTypeKeys])
+
+  const toggleAllSections = useCallback((sectionKeys: string[]) => {
+    setPage(1)
+    if (allSectionsSelected) {
+      setSelectedSections(new Set())
+    } else {
+      setSelectedSections(new Set(sectionKeys))
+    }
+  }, [allSectionsSelected])
+
+  const toggleAllTypes = useCallback(() => {
+    setPage(1)
+    if (allTypesSelected) {
+      setSelectedTypes(new Set())
+    } else {
+      setSelectedTypes(new Set(availableTypes.map(t => `${t.lessonId}::${t.tag}`)))
+    }
+  }, [allTypesSelected, availableTypes])
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return SEA_POOL.filter(sp => {
@@ -950,7 +983,10 @@ export default function MathSeaPage() {
 
                 {/* Lesson filter */}
                 <div>
-                  <div className="sea-section-label mb-2">课程</div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="sea-section-label">课程</span>
+                    <button onClick={toggleAllLessons} className="cursor-pointer text-[10px] transition-colors" style={{ color: 'rgba(0,229,255,0.5)' }}>{allLessonsSelected ? '全不选' : '全选'}</button>
+                  </div>
                   <div className="scroll-glow flex gap-1.5 pb-1">
                     {SEA_LESSONS.map(l => (
                       <button
@@ -967,7 +1003,10 @@ export default function MathSeaPage() {
                 {/* Type filter */}
                 {availableTypes.length > 0 && (
                   <div>
-                    <div className="sea-section-label mb-2">题型</div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="sea-section-label">题型</span>
+                      <button onClick={toggleAllTypes} className="cursor-pointer text-[10px] transition-colors" style={{ color: 'rgba(0,229,255,0.5)' }}>{allTypesSelected ? '全不选' : '全选'}</button>
+                    </div>
                     <div className="flex flex-wrap gap-1.5">
                       {availableTypes.map(t => {
                         const key = `${t.lessonId}::${t.tag}`
@@ -989,7 +1028,10 @@ export default function MathSeaPage() {
                 {/* Section + Mastery in 2 cols */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <div className="sea-section-label mb-2">来源</div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="sea-section-label">来源</span>
+                      <button onClick={() => toggleAllSections(SECTION_BTNS.map(b => b.key))} className="cursor-pointer text-[10px] transition-colors" style={{ color: 'rgba(0,229,255,0.5)' }}>{allSectionsSelected ? '全不选' : '全选'}</button>
+                    </div>
                     <div className="flex flex-wrap gap-1.5">
                       {SECTION_BTNS.map(b => (
                         <button

@@ -57,7 +57,12 @@ interface StarSessionRow {
 }
 
 async function fetchWalletData(userId: string) {
-  const [{ data: sessionRows }, { data: voucherRows }, { data: starRows }, { data: templateRows }] = await Promise.all([
+  const [
+    { data: sessionRows, error: sessErr },
+    { data: voucherRows, error: vouchErr },
+    { data: starRows, error: starErr },
+    { data: templateRows, error: tmplErr },
+  ] = await Promise.all([
     supabase
       .from('calc_sessions')
       .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level')
@@ -76,6 +81,10 @@ async function fetchWalletData(userId: string) {
       .from('voucher_templates')
       .select('category,price_yellow,price_red,price_blue'),
   ])
+  if (sessErr) console.error('[wallet] calc_sessions fetch failed', sessErr)
+  if (vouchErr) console.error('[wallet] calc_vouchers fetch failed', vouchErr)
+  if (starErr) console.error('[wallet] star_sessions fetch failed', starErr)
+  if (tmplErr) console.error('[wallet] voucher_templates fetch failed', tmplErr)
 
   const priceByCategory = new Map<string, [number, number, number]>()
   for (const r of (templateRows ?? []) as TemplatePriceRow[]) {

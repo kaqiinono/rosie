@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface AppHeaderProps {
   onImport: () => void
@@ -22,6 +23,9 @@ const TABS = [
 export default function AppHeader({ onImport, onExport, onImmersive }: AppHeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const { user } = useAuth()
+  const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
+  const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
   const [menuOpen, setMenuOpen] = useState(false)
   const ddRef = useRef<HTMLDivElement>(null)
 
@@ -38,7 +42,7 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2.5">
         <Link href={'/'}>
           <div className="font-fredoka bg-gradient-to-br from-[var(--wm-accent)] to-[var(--wm-accent2)] bg-clip-text text-2xl font-bold whitespace-nowrap text-transparent">
-            📚 Rosie Fun
+            📚 {username ?? 'Rosie'} Fun
           </div>
         </Link>
 

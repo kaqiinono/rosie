@@ -1092,7 +1092,7 @@ const _RAW_WORDS: WordEntry[] = [{
   "stage": "4A",
   "unit": "Unit 4",
   "lesson": "Lesson 3",
-  "word": "chilli pepper (AmE Chili pepper)",
+  "word": "chilli pepper",
   "explanation": "the small green or red fruit of a type of pepper plant that is used in cooking to give a hot taste to food, often dried or made into powder",
   "ipa": "/ˈtʃɪli ˌpepər/",
   "example": "She added a red chilli pepper to the stir-fry to make it spicy."
@@ -2179,7 +2179,7 @@ export const CHINESE_DEF_MAP: Record<string, string> = {
   'slice': '切片；切成薄片',
   'dip': '蘸；浸',
   'dish': '一道菜；菜肴',
-  'chilli pepper (AmE Chili pepper)': '辣椒',
+  'chilli pepper': '辣椒',
   'pan': '平底锅；煎锅',
   'gently': '轻轻地；温和地',
   'recipe': '食谱；烹饪方法',

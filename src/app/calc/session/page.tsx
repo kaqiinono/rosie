@@ -95,8 +95,10 @@ export default function CalcSessionPage() {
   const [assaultActive, setAssaultActive] = useState(false)
 
   const [coinsTotal, setCoinsTotal] = useState(0)
+  const coinsTotalRef = useRef(0)
   const [streak, setStreak] = useState(0)
   const [maxStreak, setMaxStreak] = useState(0)
+  const maxStreakRef = useRef(0)
   const [lastResult, setLastResult] = useState<{ stars: number; bonus: number } | null>(null)
 
   const attemptsLogRef = useRef<AttemptStat[]>([])
@@ -251,9 +253,9 @@ export default function CalcSessionPage() {
       wrongCount,
       challengeCorrect,
       timeSpentSec: finalElapsed,
-      coinsEarned: coinsTotal + timeBonus,
+      coinsEarned: coinsTotalRef.current + timeBonus,
       mode,
-      maxStreak,
+      maxStreak: maxStreakRef.current,
       topLevel,
     })
     // Sync the global StarHud balance so the top-left chip updates immediately.
@@ -471,8 +473,6 @@ export default function CalcSessionPage() {
     user,
     wallet,
     refreshStarHud,
-    coinsTotal,
-    maxStreak,
     mode,
     settings.currentLevel,
     settings.soundEnabled,
@@ -525,10 +525,14 @@ export default function CalcSessionPage() {
       if (reward > 0) playSfx('coin', settings.soundEnabled)
       if (isChallengeCorrect) launchConfetti(20)
 
+      coinsTotalRef.current += reward
       setCoinsTotal((c) => c + reward)
       const nextStreak = isFirstTry ? streak + 1 : 0
       setStreak(nextStreak)
-      if (nextStreak > maxStreak) setMaxStreak(nextStreak)
+      if (nextStreak > maxStreakRef.current) {
+        maxStreakRef.current = nextStreak
+        setMaxStreak(nextStreak)
+      }
 
       attemptsLogRef.current.push({
         signature: q.signature,
@@ -861,8 +865,10 @@ export default function CalcSessionPage() {
             setRevealAnswer(null)
             setShowChallengeBanner(false)
             setAssaultActive(false)
+            coinsTotalRef.current = 0
             setCoinsTotal(0)
             setStreak(0)
+            maxStreakRef.current = 0
             setMaxStreak(0)
             setLastResult(null)
             attemptsLogRef.current = []

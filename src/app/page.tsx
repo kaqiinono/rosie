@@ -63,7 +63,8 @@ const modules: ModuleCardData[] = [
 export default function HomePage() {
   const greeting = useGreeting()
   const { user, loading } = useAuth()
-  const username = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
+  const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
+  const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
 
   return (
     <>
@@ -76,7 +77,7 @@ export default function HomePage() {
             {greeting}
           </div>
           <h1 className="mt-1.5 bg-gradient-to-br from-slate-800 via-indigo-500 to-emerald-500 bg-clip-text text-[clamp(28px,5vw,38px)] leading-tight font-black text-transparent">
-            Rosie 的学习乐园
+            {username ?? 'Rosie'} 的学习乐园
           </h1>
           <p className="text-text-secondary mt-2 text-[15px] leading-relaxed">
             选一个模块开始今天的学习吧
@@ -134,7 +135,7 @@ export default function HomePage() {
 
         <div className="flex flex-col items-center gap-2">
           <div className="text-text-muted text-xs">
-            Made with <em className="text-rose-500 not-italic">♥</em> for Rosie
+            Made with <em className="text-rose-500 not-italic">♥</em> for {username ?? 'Rosie'}
           </div>
           <Link
             href="/admin"

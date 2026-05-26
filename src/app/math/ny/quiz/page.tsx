@@ -557,9 +557,27 @@ export default function QuizPage() {
             <div className="flex flex-col gap-5 px-5 py-4">
               {/* Lesson selector */}
               <section>
-                <p className="mb-2.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                  选择课题
-                </p>
+                <div className="mb-2.5 flex items-center gap-2">
+                  <p className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+                    选择课题
+                  </p>
+                  <button
+                    onClick={() => {
+                      const available = LESSON_META.filter(l => !existingIds.has(l.id))
+                      const allSel = available.every(l => modalLessons.includes(l.id))
+                      if (allSel) {
+                        setModalLessons([])
+                        setModalTypes({})
+                      } else {
+                        setModalLessons(available.map(l => l.id))
+                        setModalTypes({})
+                      }
+                    }}
+                    className="text-[11px] text-indigo-500 hover:text-indigo-700"
+                  >
+                    {LESSON_META.filter(l => !existingIds.has(l.id)).every(l => modalLessons.includes(l.id)) ? '取消全选' : '全选'}
+                  </button>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {LESSON_META.map(({ id, name }) => {
                     const alreadyIn = existingIds.has(id)

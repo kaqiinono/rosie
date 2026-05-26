@@ -6,6 +6,7 @@ import CourseCard from '@/components/math/CourseCard'
 import MathDailyCard from '@/components/math/MathDailyCard'
 import MathSeaCard from '@/components/math/MathSeaCard'
 import MathQuizCard from '@/components/math/MathQuizCard'
+import { useAuth } from '@/contexts/AuthContext'
 import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
@@ -99,6 +100,9 @@ const courses: CourseCardData[] = [
 ]
 
 export default function MathPage() {
+  const { user } = useAuth()
+  const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
+  const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
   return (
     <>
       <OrbBackground variant="math" />
@@ -128,7 +132,7 @@ export default function MathPage() {
           ))}
         </section>
 
-        <div className="text-text-muted text-xs">Rosie 的数学探险乐园</div>
+        <div className="text-text-muted text-xs">{username ?? 'Rosie'} 的数学探险乐园</div>
       </div>
     </>
   )

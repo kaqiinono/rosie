@@ -153,6 +153,8 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
   const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
   const attempted = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 1).length
   const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
+  const allSourceSelected = SOURCE_BTNS.every(b => filters.source.has(b.key))
+  const allTypeSelected = TYPE_BTNS.every(b => filters.type.has(b.key))
 
   const toggleDetailMode = useCallback(() => {
     setShowDetail(v => !v)
@@ -176,7 +178,10 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         <div className="mb-2.5 text-xs text-purple-900">全部29道题 · 多选筛选 · 按题型/来源练习</div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-purple-900">📂 来源筛选（可多选）</div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[11px] font-bold text-purple-900">📂 来源筛选</span>
+            <button onClick={() => SOURCE_BTNS.forEach(b => { if (allSourceSelected || !filters.source.has(b.key)) onToggleFilter('source', b.key) })} className="cursor-pointer text-[10px] text-purple-500 hover:text-purple-700 transition-colors">{allSourceSelected ? '全不选' : '全选'}</button>
+          </div>
           <div className="flex flex-wrap gap-1.5">
             {SOURCE_BTNS.map(b => (
               <button
@@ -195,7 +200,10 @@ export default function FilterPanel({ problems, solveCount, filters, onToggleFil
         </div>
 
         <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-purple-900">🏷️ 题型筛选（可多选）</div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[11px] font-bold text-purple-900">🏷️ 题型筛选</span>
+            <button onClick={() => TYPE_BTNS.forEach(b => { if (allTypeSelected || !filters.type.has(b.key)) onToggleFilter('type', b.key) })} className="cursor-pointer text-[10px] text-purple-500 hover:text-purple-700 transition-colors">{allTypeSelected ? '全不选' : '全选'}</button>
+          </div>
           <div className="flex flex-wrap gap-1.5">
             {TYPE_BTNS.map(b => (
               <button

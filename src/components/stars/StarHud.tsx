@@ -40,7 +40,7 @@ function Chip({ color, value, bumped }: ChipProps) {
   )
 }
 
-const HIDE_ON = ['/vouchers', '/login']
+const HIDE_ON = ['/login']
 
 function useBalanceBump(balance: number) {
   const [bumped, setBumped] = useState(false)
