@@ -12,9 +12,10 @@ import DifficultyStars from '@/components/math/shared/DifficultyStars'
 interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
+  defaultSolutionOpen?: boolean
 }
 
-export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full', defaultSolutionOpen = false }: ProblemDetailProps) {
   const router = useRouter()
   const { solveCount, handleSolve, addWrong } = useLesson38()
   const count = solveCount[problem.id] ?? 0
@@ -133,7 +134,7 @@ export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailP
           </div>
         </div>
       )}
-      <QuestionLayout question={question} solution={solution} answer={answerDom} />
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
     </div>
   )
 }

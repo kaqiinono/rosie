@@ -10,7 +10,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
     // Single-tab app — bypass Web Locks to prevent "Lock broken by steal" AbortErrors
     // when multiple hooks issue concurrent Supabase requests on the same page.
-    lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => fn(),
+    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn(),
   },
 })
 

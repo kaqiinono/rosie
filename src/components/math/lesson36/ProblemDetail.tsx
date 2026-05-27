@@ -20,6 +20,7 @@ interface ProblemDetailProps {
   tip?: string
   leftDiagram?: React.ReactNode
   rightDiagram?: React.ReactNode
+  defaultSolutionOpen?: boolean
 }
 
 const VALID_TOTAL_DAYS = new Set([28, 29, 30, 31])
@@ -94,7 +95,7 @@ function buildFlowChart(
   return null
 }
 
-export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolutionOpen = false }: ProblemDetailProps) {
   const router = useRouter()
   const { solveCount, handleSolve, addWrong } = useLesson36()
   const count = solveCount[problem.id] ?? 0
@@ -236,7 +237,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDe
           </div>
         </div>
       )}
-      <QuestionLayout question={question} solution={solution} answer={answerDom} />
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
     </div>
   )
 }

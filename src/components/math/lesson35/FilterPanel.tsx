@@ -1,356 +1,47 @@
 'use client'
 
-import { memo, useCallback, useState } from 'react'
-import Link from 'next/link'
-import type { Problem, ProblemSet } from '@/utils/type'
-import { SOURCE_LABELS } from '@/utils/constant'
-import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
-import type { ProblemDifficulty } from '@/utils/difficulty'
-import DifficultyFilterRow from '@/components/math/shared/DifficultyFilterRow'
+import { createFilterPanel } from '@/components/math/shared/FilterPanel'
 import ProblemDetail from './ProblemDetail'
 
-const BASE = '/math/ny/35'
+export type { Filters, MasteryFilter, FilterPanelProps } from '@/components/math/shared/FilterPanel'
 
-type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
-
-interface Filters {
-  source: Set<string>
-  type: Set<string>
-  mastery: MasteryFilter
-  difficulty: Set<ProblemDifficulty>
-}
-
-interface FilterPanelProps {
-  problems: ProblemSet
-  solveCount: Record<string, number>
-  filters: Filters
-  onToggleFilter: (axis: 'source' | 'type' | 'difficulty', value: string) => void
-  onSetMastery: (value: MasteryFilter) => void
-}
-
-const SOURCE_BTNS = [
-  { key: 'lesson', label: '📖 课堂' },
-  { key: 'homework', label: '✏️ 课后' },
-  { key: 'workbook', label: '📚 练习册' },
-  { key: 'pretest', label: '📝 课前测' },
-]
-
-const TYPE_BTNS = [
-  { key: 'type1', label: '基础归一' },
-  { key: 'type2', label: '直接倍比' },
-  { key: 'type3', label: '双归一' },
-  { key: 'type4', label: '反向归一' },
-  { key: 'type5', label: '变化归一' },
-]
-
-const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
-  { key: 'all', label: '全部' },
-  { key: 'unstarted', label: '📚 未做' },
-  { key: 'reinforce', label: '🌱 需巩固' },
-  { key: 'mastered', label: '✅ 已掌握' },
-]
-
-const TAG_COLORS: Record<string, string> = {
-  type1: 'bg-app-blue-light text-app-blue-dark',
-  type2: 'bg-app-green-light text-app-green-dark',
-  type3: 'bg-app-purple-light text-app-purple-dark',
-  type4: 'bg-app-orange-light text-app-orange',
-  type5: 'bg-app-red-light text-app-red',
-}
-
-function getProblemHref(setName: string, indexInSet: number): string {
-  return `${BASE}/${setName}/${indexInSet + 1}`
-}
-
-function matchesMastery(count: number, mastery: MasteryFilter): boolean {
-  if (mastery === 'all') return true
-  if (mastery === 'unstarted') return count === 0
-  if (mastery === 'reinforce') return count >= 1 && count < 3
-  if (mastery === 'mastered') return count >= 3
-  return true
-}
-
-/* ── Memoized expanded card ── */
-const ExpandedCard = memo(function ExpandedCard({
-  p,
-  setName,
-  idx,
-  solveCount,
-  isOpen,
-  cardId,
-  onToggle,
-}: {
-  p: Problem
-  setName: string
-  idx: number
-  solveCount: Record<string, number>
-  isOpen: boolean
-  cardId: string
-  onToggle: (id: string) => void
-}) {
-  const count = solveCount[p.id] ?? 0
-  const level = getMasteryLevel(count)
-  const srcLabel = SOURCE_LABELS[setName] || setName
-  return (
-    <div
-      className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow ${MASTERY_BORDER[level]}`}
-    >
-      {/* Header row — tap to toggle */}
-      <button
-        onClick={() => onToggle(cardId)}
-        className="flex w-full cursor-pointer items-center gap-2.5 rounded-[12px] p-3 text-left"
-      >
-        <div
-          className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}
-        >
-          {idx + 1}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
-          <div className="mt-0.5 flex flex-wrap gap-1">
-            <span
-              className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}
-            >
-              {p.tagLabel}
-            </span>
-            <span className="rounded-full bg-purple-100 px-2 py-px text-[10px] font-semibold text-purple-800">
-              {srcLabel}
-            </span>
-          </div>
-        </div>
-        <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
-        <svg
-          className={`shrink-0 w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-        >
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-
-      {/* Detail body — only mounted when open */}
-      {isOpen && (
-        <div className="border-t border-border-light px-4 pb-5 pt-3">
-          <ProblemDetail problem={p} mode="inline" />
-        </div>
-      )}
-    </div>
-  )
-})
-
-export default function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
-  const [showDetail, setShowDetail] = useState(false)
-  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
-
-  const all: { p: Problem; setName: string; idx: number }[] = []
-  ;(Object.entries(problems) as [string, Problem[]][]).forEach(([setName, list]) => {
-    list.forEach((p, i) => all.push({ p, setName, idx: i }))
-  })
-
-  const filtered = all.filter(
-    ({ p, setName }) =>
-      filters.source.has(setName) &&
-      filters.type.has(p.tag) &&
-      filters.difficulty.has(p.difficulty) &&
-      matchesMastery(solveCount[p.id] ?? 0, filters.mastery),
-  )
-  const total = filtered.length
-  const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
-  const attempted = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 1).length
-  const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
-  const allSourceSelected = SOURCE_BTNS.every(b => filters.source.has(b.key))
-  const allTypeSelected = TYPE_BTNS.every(b => filters.type.has(b.key))
-
-  const toggleDetailMode = useCallback(() => {
-    setShowDetail(v => !v)
-    setCollapsedIds(new Set())
-  }, [])
-
-  const toggleCard = useCallback((id: string) => {
-    setCollapsedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
-
-  return (
-    <div>
-      {/* Filter header */}
-      <div className="mb-3 rounded-[14px] border border-fuchsia-400 bg-gradient-to-br from-purple-50 to-purple-100 p-4">
-        <div className="mb-1.5 text-[15px] font-extrabold text-purple-800">🎯 综合测试题库</div>
-        <div className="mb-2.5 text-xs text-purple-900">全部29道题 · 多选筛选 · 按题型/来源练习</div>
-
-        <div className="mb-2">
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[11px] font-bold text-purple-900">📂 来源筛选</span>
-            <button onClick={() => SOURCE_BTNS.forEach(b => { if (allSourceSelected || !filters.source.has(b.key)) onToggleFilter('source', b.key) })} className="cursor-pointer text-[10px] text-purple-500 hover:text-purple-700 transition-colors">{allSourceSelected ? '全不选' : '全选'}</button>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {SOURCE_BTNS.map(b => (
-              <button
-                key={b.key}
-                onClick={() => onToggleFilter('source', b.key)}
-                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
-                  filters.source.has(b.key)
-                    ? 'border-purple-500 bg-purple-500 text-white'
-                    : 'border-purple-300 bg-purple-50 text-purple-800'
-                }`}
-              >
-                {b.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-2">
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[11px] font-bold text-purple-900">🏷️ 题型筛选</span>
-            <button onClick={() => TYPE_BTNS.forEach(b => { if (allTypeSelected || !filters.type.has(b.key)) onToggleFilter('type', b.key) })} className="cursor-pointer text-[10px] text-purple-500 hover:text-purple-700 transition-colors">{allTypeSelected ? '全不选' : '全选'}</button>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {TYPE_BTNS.map(b => (
-              <button
-                key={b.key}
-                onClick={() => onToggleFilter('type', b.key)}
-                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
-                  filters.type.has(b.key)
-                    ? 'border-purple-500 bg-purple-500 text-white'
-                    : 'border-purple-300 bg-purple-50 text-purple-800'
-                }`}
-              >
-                {b.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        
-        <DifficultyFilterRow
-          selected={filters.difficulty}
-          onToggle={level => onToggleFilter('difficulty', String(level))}
-          btnBase={btnBase}
-          btnOn={btnOn}
-          btnOff={btnOff}
-          accentClass="text-text-secondary"
-        />
-
-<div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-purple-900">🎯 掌握度筛选</div>
-          <div className="flex flex-wrap gap-1.5">
-            {MASTERY_BTNS.map(b => (
-              <button
-                key={b.key}
-                onClick={() => onSetMastery(b.key)}
-                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
-                  filters.mastery === b.key
-                    ? 'border-purple-500 bg-purple-500 text-white'
-                    : 'border-purple-300 bg-purple-50 text-purple-800'
-                }`}
-              >
-                {b.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-2 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] text-purple-900">
-            <span>练过 <strong className="text-purple-800">{attempted}</strong> 道</span>
-            <span className="text-purple-300">·</span>
-            <span>🦋 掌握 <strong className="text-purple-800">{mastered}</strong> 道</span>
-            <span className="text-purple-300">·</span>
-            <span>共 {total} 题</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-purple-200">
-              <div
-                className="absolute inset-y-0 left-0 rounded-full bg-purple-300 transition-[width] duration-400"
-                style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }}
-              />
-              <div
-                className="absolute inset-y-0 left-0 rounded-full bg-purple-500 transition-[width] duration-400"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-            <button
-              onClick={toggleDetailMode}
-              className={`shrink-0 cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
-                showDetail
-                  ? 'border-purple-500 bg-purple-500 text-white'
-                  : 'border-purple-300 bg-white text-purple-800'
-              }`}
-            >
-              {showDetail ? '收起 ↑' : '展开 ↓'}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Problem list */}
-      {showDetail ? (
-        <div className="flex flex-col gap-2">
-          {filtered.map(({ p, setName, idx }) => (
-            <ExpandedCard
-              key={p.id}
-              p={p}
-              setName={setName}
-              idx={idx}
-              solveCount={solveCount}
-              isOpen={!collapsedIds.has(p.id)}
-              cardId={p.id}
-              onToggle={toggleCard}
-            />
-          ))}
-          {filtered.length === 0 && (
-            <div className="py-6 text-center text-[13px] text-text-muted">
-              没有符合筛选条件的题目
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(({ p, setName, idx }) => {
-            const count = solveCount[p.id] ?? 0
-            const level = getMasteryLevel(count)
-            const srcLabel = SOURCE_LABELS[setName] || setName
-            return (
-              <Link
-                key={p.id}
-                href={getProblemHref(setName, idx)}
-                className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${MASTERY_BORDER[level]} hover:border-border-light`}
-              >
-                <div
-                  className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}
-                >
-                  {idx + 1}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
-                  <div className="mt-0.5 flex flex-wrap gap-1">
-                    <span
-                      className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}
-                    >
-                      {p.tagLabel}
-                    </span>
-                    <span className="rounded-full bg-purple-100 px-2 py-px text-[10px] font-semibold text-purple-800">
-                      {srcLabel}
-                    </span>
-                  </div>
-                </div>
-                <div className="shrink-0 text-base">
-                  {MASTERY_ICON[level]}
-                </div>
-              </Link>
-            )
-          })}
-          {filtered.length === 0 && (
-            <div className="col-span-full py-6 text-center text-[13px] text-text-muted">
-              没有符合筛选条件的题目
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
+export default createFilterPanel({
+  base: '/math/ny/35',
+  title: '🎯 综合测试题库',
+  theme: {
+    btnOn:              'border-purple-500 bg-purple-500 text-white',
+    btnOff:             'border-purple-300 bg-purple-50 text-purple-800',
+    containerBorder:    'border-fuchsia-400',
+    containerGradient:  'bg-gradient-to-br from-purple-50 to-purple-100',
+    titleColor:         'text-purple-800',
+    labelColor:         'text-purple-900',
+    toggleColor:        'text-purple-500 hover:text-purple-700',
+    progressTrack:      'bg-purple-200',
+    progressAttempted:  'bg-purple-300',
+    progressMastered:   'bg-purple-500',
+    dotColor:           'text-purple-300',
+    strongColor:        'text-purple-800',
+    srcBadge:           'bg-purple-100 text-purple-800',
+    accentClass:        'text-text-secondary',
+  },
+  sourceBtns: [
+    { key: 'lesson',   label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
+    { key: 'workbook', label: '📚 拓展' },
+    { key: 'pretest',  label: '📝 课前测' },
+  ],
+  typeBtns: [
+    { key: 'type1', label: '题型1·基础比' },
+    { key: 'type2', label: '题型2·连锁比' },
+    { key: 'type3', label: '题型3·画线段图' },
+    { key: 'type4', label: '题型4·按比分配' },
+    { key: 'type5', label: '题型5·变比与不变量' },
+  ],
+  tagColors: {
+    type1: 'bg-purple-100 text-purple-800',
+    type2: 'bg-blue-100 text-blue-800',
+    type3: 'bg-green-100 text-green-800',
+    type4: 'bg-orange-100 text-orange-800',
+    type5: 'bg-rose-100 text-rose-800',
+  },
+}, ProblemDetail)

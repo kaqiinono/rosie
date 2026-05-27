@@ -185,15 +185,15 @@ const SECTION_COUNTS: Record<string, number> = {
 }
 ```
 
-**3. FilterPanel.tsx** 的 `SOURCE_BTNS` 增加 supplement：
+**3. FilterPanel.tsx** 的 `sourceBtns` 增加 supplement（在 `createFilterPanel` 配置中）：
 ```typescript
-const SOURCE_BTNS = [
-  { key: 'lesson', label: '📖 课堂' },
-  { key: 'homework', label: '✏️ 课后' },
-  { key: 'workbook', label: '📚 拓展' },
+sourceBtns: [
+  { key: 'pretest',    label: '📝 课前测' },
+  { key: 'lesson',     label: '📖 课堂' },
+  { key: 'homework',   label: '✏️ 课后' },
+  { key: 'workbook',   label: '📚 拓展' },
   { key: 'supplement', label: '📒 补充题' },  // 新增
-  { key: 'pretest', label: '📝 课前测' },
-]
+],
 ```
 
 **4. alltest/page.tsx** 的 source 初始 Set 增加 supplement：
@@ -518,7 +518,7 @@ export const TAG_STYLE: Record<string, string> = {
 
 新建目录：`src/components/math/lesson{N}/`
 
-所有讲次共享 `src/components/math/shared/` 中的基础组件，每个讲次只需创建轻量 wrapper。共 6 个文件，其中 4 个是极简 wrapper，2 个（`ProblemDetail`、`FilterPanel`、`HomePage`）有实质内容。
+所有讲次共享 `src/components/math/shared/` 中的基础组件，每个讲次只需创建轻量 wrapper。共 6 个文件，其中 5 个是极简 wrapper（含 `FilterPanel` 使用 `createFilterPanel` 工厂），1 个（`ProblemDetail`、`HomePage`）有实质内容。
 
 ### `Lesson{N}Provider.tsx`（5 行）
 
@@ -657,9 +657,10 @@ import QuestionLayout from '@/components/math/shared/QuestionLayout'
 interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
+  defaultSolutionOpen?: boolean
 }
 
-export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full', defaultSolutionOpen = false }: ProblemDetailProps) {
   const router = useRouter()
   const { solveCount, handleSolve, addWrong } = useLesson{N}()
   const count = solveCount[problem.id] ?? 0
@@ -757,7 +758,7 @@ export default function ProblemDetail({ problem, mode = 'full' }: ProblemDetailP
           </div>
         </div>
       )}
-      <QuestionLayout question={question} solution={solution} answer={answerDom} />
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
     </div>
   )
 }
@@ -1317,247 +1318,69 @@ export default function MistakesPage() {
 
 ### `FilterPanel.tsx`（`src/components/math/lessonN/FilterPanel.tsx`）
 
-完整模板（替换 `N`；SOURCE_BTNS 和 TYPE_BTNS 按实际讲次调整）：
+使用共享工厂 `createFilterPanel`，只需传入配置和 `ProblemDetail` 组件：
 
 ```tsx
 'use client'
 
-import { memo, useCallback, useState } from 'react'
-import Link from 'next/link'
-import type { Problem, ProblemSet } from '@/utils/type'
-import { SOURCE_LABELS } from '@/utils/constant'
-import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
+import { createFilterPanel } from '@/components/math/shared/FilterPanel'
 import ProblemDetail from './ProblemDetail'
 
-const BASE = '/math/ny/N'
+export type { Filters, MasteryFilter, FilterPanelProps } from '@/components/math/shared/FilterPanel'
 
-type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
-
-interface Filters {
-  source: Set<string>
-  type: Set<string>
-  mastery: MasteryFilter
-}
-
-interface FilterPanelProps {
-  problems: ProblemSet
-  solveCount: Record<string, number>
-  filters: Filters
-  onToggleFilter: (axis: 'source' | 'type', value: string) => void
-  onSetMastery: (value: MasteryFilter) => void
-}
-
-// ✏️ 按实际讲次调整（包含 supplement 时加上）
-const SOURCE_BTNS = [
-  { key: 'pretest',    label: '📝 课前测' },
-  { key: 'lesson',     label: '📖 课堂' },
-  { key: 'homework',   label: '✏️ 课后' },
-  { key: 'workbook',   label: '📚 拓展' },
-  // { key: 'supplement', label: '📒 附加' },
-]
-
-// ✏️ 按实际讲次题型调整（tag/label 与 PROBLEM_TYPES 对应）
-const TYPE_BTNS = [
-  { key: 'type1', label: '题型1·XXX' },
-  { key: 'type2', label: '题型2·XXX' },
-  // ...
-]
-
-const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
-  { key: 'all',       label: '全部' },
-  { key: 'unstarted', label: '📚 未做' },
-  { key: 'reinforce', label: '🌱 需巩固' },
-  { key: 'mastered',  label: '✅ 已掌握' },
-]
-
-// ✏️ 与 PROBLEM_TYPES 的 color 字段对应
-const TAG_COLORS: Record<string, string> = {
-  type1: 'bg-blue-100 text-blue-800',
-  type2: 'bg-green-100 text-green-800',
-  // ...
-}
-
-function getProblemHref(setName: string, indexInSet: number): string {
-  return `${BASE}/${setName}/${indexInSet + 1}`
-}
-
-function matchesMastery(count: number, mastery: MasteryFilter): boolean {
-  if (mastery === 'all') return true
-  if (mastery === 'unstarted') return count === 0
-  if (mastery === 'reinforce') return count >= 1 && count < 3
-  if (mastery === 'mastered') return count >= 3
-  return true
-}
-
-const ExpandedCard = memo(function ExpandedCard({
-  p, setName, idx, solveCount, isOpen, cardId, onToggle,
-}: {
-  p: Problem; setName: string; idx: number; solveCount: Record<string, number>
-  isOpen: boolean; cardId: string; onToggle: (id: string) => void
-}) {
-  const count = solveCount[p.id] ?? 0
-  const level = getMasteryLevel(count)
-  const srcLabel = SOURCE_LABELS[setName] || setName
-  return (
-    <div className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${MASTERY_BORDER[level]}`}>
-      <button onClick={() => onToggle(cardId)} className="flex w-full cursor-pointer items-center gap-2.5 rounded-[12px] p-3 text-left">
-        <div className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}>
-          {idx + 1}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
-          <div className="mt-0.5 flex flex-wrap gap-1">
-            <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
-            {/* ✏️ 来源标签背景/文字改为讲次主题色 */}
-            <span className="rounded-full bg-[主题浅背景] px-2 py-px text-[10px] font-semibold text-[主题色]-700">{srcLabel}</span>
-          </div>
-        </div>
-        <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
-        <span className={`shrink-0 text-[13px] font-bold text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
-      </button>
-      {isOpen && (
-        <div className="border-t border-border-light px-4 pb-5 pt-3">
-          <ProblemDetail problem={p} mode="inline" />
-        </div>
-      )}
-    </div>
-  )
-})
-
-export default function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
-  const [showDetail, setShowDetail] = useState(false)
-  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
-
-  const all: { p: Problem; setName: string; idx: number }[] = []
-  ;(Object.entries(problems) as [string, Problem[]][]).forEach(([setName, list]) => {
-    list.forEach((p, i) => all.push({ p, setName, idx: i }))
-  })
-
-  const filtered = all.filter(
-    ({ p, setName }) =>
-      filters.source.has(setName) &&
-      filters.type.has(p.tag) &&
-      matchesMastery(solveCount[p.id] ?? 0, filters.mastery),
-  )
-  const total = filtered.length
-  const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
-  const attempted = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 1).length
-  const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
-
-  const toggleDetailMode = useCallback(() => { setShowDetail(v => !v); setCollapsedIds(new Set()) }, [])
-  const toggleCard = useCallback((id: string) => {
-    setCollapsedIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next })
-  }, [])
-
-  // ✏️ 难度筛选：使用共享组件 DifficultyFilterRow（见 lesson43/FilterPanel.tsx）
-// import DifficultyFilterRow from '@/components/math/shared/DifficultyFilterRow'
-// Filters 接口需含 difficulty: Set<ProblemDifficulty>
-// 筛选逻辑：filters.difficulty.has(p.difficulty)
-// alltest/page.tsx 初始 state 含 difficulty: new Set<ProblemDifficulty>([1,2,3,4,5])
-// toggleFilter 需处理 axis === 'difficulty'（见任一讲次 alltest 页）
-
-// ✏️ btnOn/btnOff 和筛选面板颜色使用讲次主题色（下方以 sky 为例，替换为实际颜色）
-  const btnBase = 'cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95'
-  const btnOn  = 'border-[主题色]-600 bg-[主题色]-600 text-white'
-  const btnOff = 'border-[主题色]-300 bg-[主题浅背景] text-[主题色]-700'
-
-  return (
-    <div>
-      {/* ✏️ border/bg/text 替换为讲次主题色 */}
-      <div className="mb-3 rounded-[14px] border border-[主题色]-200 bg-gradient-to-br from-[主题浅背景] to-[主题色]-100 p-4">
-        <div className="mb-1.5 text-[15px] font-extrabold text-[主题色]-800">🎯 综合题库 · 第N讲</div>
-        <div className="mb-2.5 text-xs text-[主题色]-700">全部{total}道题 · 多选筛选 · 按题型/来源练习</div>
-
-        <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[主题色]-700">📂 来源筛选</div>
-          <div className="flex flex-wrap gap-1.5">
-            {SOURCE_BTNS.map(b => (
-              <button key={b.key} onClick={() => onToggleFilter('source', b.key)}
-                className={`${btnBase} ${filters.source.has(b.key) ? btnOn : btnOff}`}>{b.label}</button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[主题色]-700">🏷️ 题型筛选</div>
-          <div className="flex flex-wrap gap-1.5">
-            {TYPE_BTNS.map(b => (
-              <button key={b.key} onClick={() => onToggleFilter('type', b.key)}
-                className={`${btnBase} ${filters.type.has(b.key) ? btnOn : btnOff}`}>{b.label}</button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-2">
-          <div className="mb-1.5 text-[11px] font-bold text-[主题色]-700">🎯 掌握度</div>
-          <div className="flex flex-wrap gap-1.5">
-            {MASTERY_BTNS.map(b => (
-              <button key={b.key} onClick={() => onSetMastery(b.key)}
-                className={`${btnBase} ${filters.mastery === b.key ? btnOn : btnOff}`}>{b.label}</button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-2 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] text-[主题色]-700">
-            <span>练过 <strong className="text-[主题色]-800">{attempted}</strong> 道</span>
-            <span className="text-[主题色]-300">·</span>
-            <span>🦋 掌握 <strong className="text-[主题色]-800">{mastered}</strong> 道</span>
-            <span className="text-[主题色]-300">·</span>
-            <span>共 {total} 题</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-[主题色]-100">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-[主题色]-200 transition-[width] duration-400"
-                style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }} />
-              <div className="absolute inset-y-0 left-0 rounded-full bg-[主题色]-500 transition-[width] duration-400"
-                style={{ width: `${pct}%` }} />
-            </div>
-            <button onClick={toggleDetailMode}
-              className={`shrink-0 ${btnBase} ${showDetail ? btnOn : `${btnOff} bg-white`}`}>
-              {showDetail ? '收起 ↑' : '展开 ↓'}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {showDetail ? (
-        <div className="flex flex-col gap-2">
-          {filtered.map(({ p, setName, idx }) => (
-            <ExpandedCard key={p.id} p={p} setName={setName} idx={idx} solveCount={solveCount}
-              isOpen={!collapsedIds.has(p.id)} cardId={p.id} onToggle={toggleCard} />
-          ))}
-          {filtered.length === 0 && <div className="py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(({ p, setName, idx }) => {
-            const count = solveCount[p.id] ?? 0
-            const level = getMasteryLevel(count)
-            return (
-              <Link key={p.id} href={getProblemHref(setName, idx)}
-                className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all ${MASTERY_BORDER[level]}`}>
-                <div className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}>
-                  {idx + 1}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
-                  <div className="mt-0.5 flex flex-wrap gap-1">
-                    <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${TAG_COLORS[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
-                    <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">{SOURCE_LABELS[setName] || setName}</span>
-                  </div>
-                </div>
-                <div className="shrink-0 text-base">{MASTERY_ICON[level]}</div>
-              </Link>
-            )
-          })}
-          {filtered.length === 0 && <div className="col-span-full py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}
-        </div>
-      )}
-    </div>
-  )
-}
+export default createFilterPanel({
+  base: '/math/ny/N',
+  title: '🎯 综合题库 · 第N讲',
+  theme: {
+    btnOn:              'border-sky-600 bg-sky-600 text-white',       // ✏️ 替换为讲次主题色
+    btnOff:             'border-sky-300 bg-[#f0f9ff] text-sky-700',
+    containerBorder:    'border-sky-200',
+    containerGradient:  'bg-gradient-to-br from-[#f0f9ff] to-[#e0f2fe]',
+    titleColor:         'text-sky-800',
+    labelColor:         'text-sky-700',
+    toggleColor:        'text-sky-500 hover:text-sky-700',
+    progressTrack:      'bg-sky-100',
+    progressAttempted:  'bg-sky-200',
+    progressMastered:   'bg-sky-500',
+    dotColor:           'text-sky-300',
+    strongColor:        'text-sky-800',
+    srcBadge:           'bg-[#e0f2fe] text-[#0369a1]',
+    accentClass:        'text-sky-700',
+  },
+  // ✏️ 按实际讲次调整（包含 supplement 时加上）
+  sourceBtns: [
+    { key: 'pretest',    label: '📝 课前测' },
+    { key: 'lesson',     label: '📖 课堂' },
+    { key: 'homework',   label: '✏️ 课后' },
+    { key: 'workbook',   label: '📚 拓展' },
+    // { key: 'supplement', label: '📒 附加' },
+  ],
+  // ✏️ 按实际讲次题型调整（tag/label 与 PROBLEM_TYPES 对应）
+  typeBtns: [
+    { key: 'type1', label: '题型1·XXX' },
+    { key: 'type2', label: '题型2·XXX' },
+  ],
+  // ✏️ 与 PROBLEM_TYPES 的 color 字段对应
+  tagColors: {
+    type1: 'bg-blue-100 text-blue-800',
+    type2: 'bg-green-100 text-green-800',
+  },
+}, ProblemDetail)
 ```
+
+共享工厂 `createFilterPanel`（`src/components/math/shared/FilterPanel.tsx`）内置了来源/题型/难度/掌握度四维筛选、题解自动展开开关、展开/收起详情卡片等全部功能。新讲次无需编写任何 JSX。
+
+`theme` 颜色参考（已有讲次）：
+
+| 讲次 | 主色 | btnOn 前缀 |
+|------|------|-----------|
+| 34 | amber | `border-amber-500 bg-amber-500` |
+| 35 | purple | `border-purple-500 bg-purple-500` |
+| 36-39 | purple (hex) | `border-[#a855f7] bg-[#a855f7]` |
+| 40 | green | `border-green-600 bg-green-600` |
+| 41 | sky | `border-sky-600 bg-sky-600` |
+| 42 | rose | `border-rose-600 bg-rose-600` |
+| 43 | cyan | `border-cyan-600 bg-cyan-600` |
 
 ---
 
@@ -1757,7 +1580,7 @@ src/components/math/lessonN/
   [ ] Sidebar.tsx
   [ ] BottomNav.tsx
   [ ] HomePage.tsx
-  [ ] FilterPanel.tsx
+  [ ] FilterPanel.tsx                    — 使用 createFilterPanel 工厂，只需配置颜色/按钮
   [ ] ProblemList.tsx                    — 仅当新讲次 TAG_STYLE 与 35 不同时需要复制
 
 src/app/math/ny/N/

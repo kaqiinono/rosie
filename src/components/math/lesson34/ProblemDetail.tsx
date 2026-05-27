@@ -13,9 +13,10 @@ interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
   tip?: string
+  defaultSolutionOpen?: boolean
 }
 
-export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolutionOpen = false }: ProblemDetailProps) {
   const router = useRouter()
   const { solveCount, handleSolve, addWrong } = useLesson34()
   const count = solveCount[problem.id] ?? 0
@@ -145,7 +146,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip }: ProblemDe
         </div>
       )}
 
-      <QuestionLayout question={question} solution={solution} answer={answerDom} />
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
     </div>
   )
 }
