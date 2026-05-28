@@ -131,7 +131,7 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
   }
 
   const handleConfirm = () => {
-    onSubmit(segments.join(''))
+    onSubmit(placed.join(''))
   }
 
   return (
