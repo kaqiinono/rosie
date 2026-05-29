@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import type { WordEntry } from '@/utils/type'
 import {
   buildQuizOptions,
@@ -29,21 +29,114 @@ interface DpQuizQ {
   type: 'A' | 'B' | 'C'
 }
 
+interface OldReviewSnapshot {
+  version: 1
+  phase: 'study' | 'quiz'
+  studyIdx: number
+  wordKeys: string[]
+  quizQs: { key: string; type: 'A' | 'B' | 'C' }[]
+  curQ: number
+  quizResults: { key: string; correct: boolean }[]
+}
+
+const OLD_REVIEW_STORAGE_KEY = 'old_review_session'
+
+function loadOldReviewSnapshot(): OldReviewSnapshot | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(OLD_REVIEW_STORAGE_KEY)
+    if (!raw) return null
+    const snap = JSON.parse(raw) as Partial<OldReviewSnapshot>
+    if (snap.version !== 1) return null
+    if (snap.phase !== 'study' && snap.phase !== 'quiz') return null
+    return snap as OldReviewSnapshot
+  } catch { return null }
+}
+
 export default function OldReviewSession({ words, vocab, onBack }: OldReviewSessionProps) {
   const { masteryMap, recordBatch } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
-  const [phase, setPhase] = useState<Phase>('study')
-  const [studyIdx, setStudyIdx] = useState(0)
+  // Read sessionStorage exactly once via a lazy-init state (immutable after mount)
+  const [snap0] = useState(() => loadOldReviewSnapshot())
+  const hydrationDone = useRef(false)
+
+  const [phase, setPhase] = useState<Phase>(() => snap0?.phase ?? 'study')
+  const [studyIdx, setStudyIdx] = useState(() => snap0?.studyIdx ?? 0)
   const [studyDefOnly, setStudyDefOnly] = useState(false)
 
   const [enabledTypes] = useState<Set<string>>(new Set(['A', 'B', 'C']))
 
-  const [quizQs, setQuizQs] = useState<DpQuizQ[]>([])
-  const [curQ, setCurQ] = useState(0)
-  const [score, setScore] = useState(0)
-  const [isQuizPaused, setIsQuizPaused] = useState(false)
+  // Session words are stored as keys so they're vocab-independent (persistence
+  // never corrupts mid-load). Snapshot takes precedence over `words` prop so an
+  // interrupted session resumes with the exact same word list.
+  const [sessionWordKeys] = useState<string[]>(
+    () => snap0?.wordKeys ?? words.map(wordKey),
+  )
+  const sessionWords = useMemo<WordEntry[]>(
+    () =>
+      sessionWordKeys
+        .map((k) => vocab.find((w) => wordKey(w) === k))
+        .filter((w): w is WordEntry => w !== undefined),
+    [sessionWordKeys, vocab],
+  )
+
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' }[]>(
+    () => snap0?.quizQs ?? [],
+  )
+  const quizQs = useMemo<DpQuizQ[]>(
+    () =>
+      quizQKeys
+        .map(({ key, type }) => {
+          const entry = vocab.find((w) => wordKey(w) === key)
+          return entry ? { word: entry, type } : null
+        })
+        .filter((q): q is DpQuizQ => q !== null),
+    [quizQKeys, vocab],
+  )
+
+  const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
+  const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+
+  // One-time: hydrate quizResultBuffer + activate immersive mode after vocab is loaded
+  useEffect(() => {
+    if (hydrationDone.current || !snap0 || !vocab.length) return
+    hydrationDone.current = true
+    quizResultBuffer.current = snap0.quizResults
+      .map(({ key, correct }) => {
+        const entry = vocab.find((w) => wordKey(w) === key)
+        return entry ? { entry, correct } : null
+      })
+      .filter((r): r is { entry: WordEntry; correct: boolean } => r !== null)
+    setIsImmersive(true)
+  }, [snap0, vocab, setIsImmersive])
+
+  // Persist active session to sessionStorage on every relevant state change.
+  // Cleared on 'done' or voluntary exit (flushAndBack); accidental exit keeps it.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (phase === 'done') {
+      try { sessionStorage.removeItem(OLD_REVIEW_STORAGE_KEY) } catch { /* noop */ }
+      return
+    }
+    try {
+      sessionStorage.setItem(
+        OLD_REVIEW_STORAGE_KEY,
+        JSON.stringify({
+          version: 1,
+          phase,
+          studyIdx,
+          wordKeys: sessionWordKeys,
+          quizQs: quizQKeys,
+          curQ,
+          quizResults: quizResultBuffer.current
+            .slice(0, curQ)
+            .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+        } satisfies OldReviewSnapshot),
+      )
+    } catch { /* noop */ }
+  }, [phase, studyIdx, sessionWordKeys, quizQKeys, curQ])
 
   // Flush any accumulated quiz results and exit — called on every exit path
   const flushAndBack = useCallback(() => {
@@ -51,20 +144,20 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
       recordBatch(quizResultBuffer.current)
       quizResultBuffer.current = []
     }
+    try { sessionStorage.removeItem(OLD_REVIEW_STORAGE_KEY) } catch { /* noop */ }
     setIsImmersive(false)
     onBack()
   }, [recordBatch, setIsImmersive, onBack])
 
   const startQuiz = useCallback(() => {
     const types = normalizeQuizTypes([...enabledTypes] as ('A' | 'B' | 'C')[])
-    const qs = buildQuizQuestions(words, types, Date.now())
+    const qs = buildQuizQuestions(sessionWords, types, Date.now())
     quizResultBuffer.current = []
-    setQuizQs(qs)
+    setQuizQKeys(qs.map((q) => ({ key: wordKey(q.word), type: q.type })))
     setCurQ(0)
     setScore(0)
-    setIsQuizPaused(false)
     setPhase('quiz')
-  }, [words, enabledTypes])
+  }, [sessionWords, enabledTypes])
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
@@ -79,7 +172,6 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     if (next >= quizQs.length) {
       recordBatch(quizResultBuffer.current)
       quizResultBuffer.current = []
-      setIsQuizPaused(false)
       setPhase('done')
     } else {
       setCurQ(next)
@@ -93,13 +185,12 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     return buildQuizOptions(q.word, vocab, seed)
   }, [quizQs, curQ, vocab])
 
-  const total = words.length
+  const total = sessionWords.length
 
   // ── STUDY ────────────────────────────────────────────────────────────────
   if (phase === 'study') {
-    const w = words[studyIdx]
+    const w = sessionWords[studyIdx]
     if (!w) return null
-    const canResume = isQuizPaused && quizQs.length > 0 && curQ < quizQs.length
     return (
       <StudyPhase
         entry={w}
@@ -121,12 +212,8 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         onBack={flushAndBack}
         onPrev={() => setStudyIdx(studyIdx - 1)}
         onNext={() => setStudyIdx(studyIdx + 1)}
-        onComplete={
-          canResume
-            ? () => setPhase('quiz')
-            : () => { setIsImmersive(true); startQuiz() }
-        }
-        completeButtonText={canResume ? '🔄 恢复测试 →' : '✅ 开始测试 →'}
+        onComplete={() => { setIsImmersive(true); startQuiz() }}
+        completeButtonText="✅ 开始测试 →"
       />
     )
   }
@@ -139,7 +226,10 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
             onClick={() => {
-              setIsQuizPaused(true)
+              setQuizQKeys([])
+              setCurQ(0)
+              setScore(0)
+              quizResultBuffer.current = []
               setStudyIdx(0)
               setPhase('study')
             }}
@@ -173,7 +263,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   if (phase === 'done') {
     const totalQs = quizQs.length
     const pct = totalQs ? Math.round((score / totalQs) * 100) : 0
-    const masteredCount = words.filter(
+    const masteredCount = sessionWords.filter(
       w => getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) === 3,
     ).length
 
@@ -183,9 +273,9 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
           score={score}
           total={totalQs}
           scoreGradientClasses="from-[#7c3aed] to-[#a855f7]"
-          detailLine={`正确率 ${pct}% · 旧词复习 ${words.length} 个单词`}
+          detailLine={`正确率 ${pct}% · 旧词复习 ${sessionWords.length} 个单词`}
           masteredCount={masteredCount}
-          wordsCount={words.length}
+          wordsCount={sessionWords.length}
           actions={
             <>
               <button

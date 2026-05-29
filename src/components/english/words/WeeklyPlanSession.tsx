@@ -54,7 +54,6 @@ interface SessionSnapshot {
   quizQs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
-  isQuizPaused: boolean
 }
 
 function getWeekDayLabels(startDay: number): string[] {
@@ -164,7 +163,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const [lastStarsEarned, setLastStarsEarned] = useState(0)
-  const [isQuizPaused, setIsQuizPaused] = useState(() => snap0?.isQuizPaused ?? false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
@@ -203,11 +201,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           quizResults: quizResultBuffer.current
             .slice(0, curQ)
             .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
-          isQuizPaused,
         } satisfies SessionSnapshot),
       )
     } catch { /* noop */ }
-  }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ, isQuizPaused])
+  }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
@@ -272,7 +269,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       setSelectedDate(dateStr)
       setPhase('study')
       setIsImmersive(true)
-      setIsQuizPaused(false)
       setQuizQKeys([])
       setCurQ(0)
       setScore(0)
@@ -295,7 +291,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setCurQ(0)
     setScore(0)
     setLastStarsEarned(0)
-    setIsQuizPaused(false)
     setPhase('quiz')
   }, [words, consolidateTypes, previewTypes])
 
@@ -365,7 +360,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       }, 0)
       setLastStarsEarned(starsFromThisRun)
       quizResultBuffer.current = []
-      setIsQuizPaused(false)
       setPhase('done')
     } else {
       setCurQ(next)
@@ -807,8 +801,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   if (phase === 'study' && words[studyIdx]) {
     const w = words[studyIdx]
     const total = words.length
-    const canResume =
-      isQuizPaused && quizQKeys.length > 0 && curQ < quizQKeys.length
     return (
       <StudyPhase
         entry={w.entry}
@@ -836,8 +828,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         onBack={() => setPhase('week-view')}
         onPrev={() => setStudyIdx(studyIdx - 1)}
         onNext={() => setStudyIdx(studyIdx + 1)}
-        onComplete={canResume ? () => setPhase('quiz') : startQuiz}
-        completeButtonText={canResume ? '🔄 恢复测试 →' : '✅ 开始测试 →'}
+        onComplete={startQuiz}
+        completeButtonText="✅ 开始测试 →"
       />
     )
   }
@@ -852,7 +844,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
             onClick={() => {
-              setIsQuizPaused(true)
+              setQuizQKeys([])
+              setCurQ(0)
+              setScore(0)
+              quizResultBuffer.current = []
               setStudyIdx(0)
               setPhase('study')
             }}
