@@ -29,13 +29,24 @@ export default function QuizCard({
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
   const [spellCorrect, setSpellCorrect] = useState<boolean | null>(null)
+  const [isExiting, setIsExiting] = useState(false)
+  const [prevIndex, setPrevIndex] = useState(currentIndex)
+  if (prevIndex !== currentIndex) {
+    setPrevIndex(currentIndex)
+    setIsExiting(false)
+  }
+
+  const handleNext = useCallback(() => {
+    setIsExiting(true)
+    setTimeout(onNext, 150)
+  }, [onNext])
 
   useEffect(() => {
     if (answered && wasCorrect === true) {
-      const t = setTimeout(onNext, 600)
+      const t = setTimeout(handleNext, 600)
       return () => clearTimeout(t)
     }
-  }, [answered, wasCorrect, onNext])
+  }, [answered, wasCorrect, handleNext])
 
   const handleMC = useCallback(
     (chosen: string) => {
@@ -79,7 +90,7 @@ export default function QuizCard({
   const pct = (currentIndex / totalCount) * 100
 
   return (
-    <div className="@container w-full">
+    <div className={`@container w-full transition-opacity duration-150 ${isExiting ? 'opacity-0' : 'opacity-100'}`}>
       <div className="mb-4">
         <div className="mb-2 h-2 overflow-hidden rounded-sm bg-[var(--wm-surface)]">
           <div
@@ -97,7 +108,7 @@ export default function QuizCard({
         </div>
       </div>
 
-      <div className="mb-3 rounded-[var(--wm-radius)] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-[clamp(.9rem,3.5cqi,1.5rem)]">
+      <div key={currentIndex} className="mb-3 rounded-[var(--wm-radius)] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-[clamp(.9rem,3.5cqi,1.5rem)] animate-fade-up">
         <div
           className={`mb-3 inline-block rounded-full px-2.5 py-1 text-[clamp(.65rem,1.8cqi,.75rem)] font-extrabold tracking-wide uppercase ${badgeConfig.cls}`}
         >
@@ -221,7 +232,7 @@ export default function QuizCard({
             <SpeakButton word={question.word.word} size="text-[1rem]" className="opacity-60 hover:opacity-100" />
           </div>
           <button
-            onClick={onNext}
+            onClick={handleNext}
             className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.75rem,2.5cqi,1rem)] text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
           >
             下一题 →

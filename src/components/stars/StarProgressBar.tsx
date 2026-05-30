@@ -97,7 +97,7 @@ export default function StarProgressBar({ color, target, label, milestones = tru
             style={{
               left: `${Math.max(0, pct - 18)}%`,
               background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)',
-              animation: 'star-bar-shimmer 1.6s linear infinite',
+              animation: 'burst-bar-shimmer 1.6s linear infinite',
             }}
           />
         )}
@@ -123,12 +123,6 @@ export default function StarProgressBar({ color, target, label, milestones = tru
           🏁
         </div>
       </div>
-      <style jsx>{`
-        @keyframes star-bar-shimmer {
-          0%   { transform: translateX(-100%); }
-          100% { transform: translateX(280%);  }
-        }
-      `}</style>
     </div>
   )
 }

@@ -240,3 +240,31 @@
   50% { transform: scale(1.05, 0.95) }
   75% { transform: scale(0.98, 1.02) }
 }
+
+@keyframes burst-pop {
+  0% { transform: scale(0.2) rotate(-20deg); opacity: 0 }
+  55% { transform: scale(1.15) rotate(8deg); opacity: 1 }
+  100% { transform: scale(1) rotate(0deg); opacity: 1 }
+}
+
+@keyframes burst-halo {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.9 }
+  100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0 }
+}
+
+@keyframes burst-sparkle {
+  0% { transform: translate(-50%, -50%) translate(0, 0) rotate(0) scale(0.4); opacity: 0 }
+  25% { opacity: 1 }
+  100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0); opacity: 0 }
+}
+
+@keyframes burst-rise {
+  0% { transform: translateY(8px) scale(0.85); opacity: 0 }
+  40% { opacity: 1 }
+  100% { transform: translateY(-4px) scale(1); opacity: 1 }
+}
+
+@keyframes burst-bar-shimmer {
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(280%) }
+}

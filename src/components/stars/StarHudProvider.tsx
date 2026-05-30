@@ -60,16 +60,25 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
   // Optimistic local-only balance deltas — let UI reflect immediately even before wallet.refresh completes.
   const [optimistic, setOptimistic] = useState<SessionTotals>({ yellow: 0, red: 0, blue: 0 })
   const pendingRefreshRef = useRef<number | null>(null)
+  // Refs so awardStars reads latest values without them in its dep array — prevents cascading
+  // re-renders on every star award (session/optimistic change on each award, which would
+  // otherwise invalidate awardStars and all consumers that close over it).
+  const sessionRef = useRef(session)
+  sessionRef.current = session
+  const optimisticRef = useRef(optimistic)
+  optimisticRef.current = optimistic
+  const walletRefreshRef = useRef(wallet.refresh)
+  walletRefreshRef.current = wallet.refresh
 
   const scheduleRefresh = useCallback(() => {
     if (pendingRefreshRef.current !== null) {
       window.clearTimeout(pendingRefreshRef.current)
     }
     pendingRefreshRef.current = window.setTimeout(() => {
-      void wallet.refresh()
+      void walletRefreshRef.current()
       pendingRefreshRef.current = null
     }, 600)
-  }, [wallet])
+  }, [])
 
   const awardStars = useCallback<StarHudContextValue['awardStars']>(
     async (color, amount, opts) => {
@@ -87,7 +96,7 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
         (color === 'yellow' ? wallet.yellowBalance
           : color === 'red' ? wallet.redBalance
             : wallet.blueBalance) +
-        optimistic[color] +
+        optimisticRef.current[color] +
         total
       const ev: BurstEvent = {
         id: ++burstIdSeq,
@@ -95,7 +104,7 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
         amount: safeAmount,
         bonus: bonus > 0 ? bonus : undefined,
         bonusLabel: opts?.bonusLabel,
-        sessionTotal: session[color] + total,
+        sessionTotal: sessionRef.current[color] + total,
         total: nextTotalBalance,
         origin: opts?.origin,
       }
@@ -106,7 +115,7 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
       await earnStars(COLOR_TO_SOURCE[color], total)
       scheduleRefresh()
     },
-    [earnStars, optimistic, scheduleRefresh, session, wallet.yellowBalance, wallet.redBalance, wallet.blueBalance],
+    [earnStars, scheduleRefresh, wallet.yellowBalance, wallet.redBalance, wallet.blueBalance],
   )
 
   const consumeBurst = useCallback((id: number) => {

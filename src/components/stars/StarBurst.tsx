@@ -115,7 +115,7 @@ function BurstView({ event, onDone }: BurstViewProps) {
     >
       {/* Soft radial halo */}
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 animate-[star-halo_1.6s_ease-out_forwards]"
+        className="absolute -translate-x-1/2 -translate-y-1/2 animate-[burst-halo_1.6s_ease-out_forwards]"
         style={{
           left: '50%',
           top: '50%',
@@ -133,7 +133,7 @@ function BurstView({ event, onDone }: BurstViewProps) {
           style={{
             left: '50%',
             top: '50%',
-            animation: `star-sparkle 1.4s cubic-bezier(.22,1,.36,1) forwards`,
+            animation: `burst-sparkle 1.4s cubic-bezier(.22,1,.36,1) forwards`,
             animationDelay: `${s.delay}ms`,
             transform: 'translate(-50%, -50%)',
             // Custom property used by the keyframes to vary trajectory per sparkle
@@ -149,13 +149,13 @@ function BurstView({ event, onDone }: BurstViewProps) {
 
       {/* Centerpiece: hero star with bounce-in */}
       <div className="relative flex flex-col items-center gap-2">
-        <div className="animate-[star-pop_700ms_cubic-bezier(.34,1.56,.64,1)_forwards]">
+        <div className="animate-[burst-pop_700ms_cubic-bezier(.34,1.56,.64,1)_forwards]">
           <BigStar color={event.color} size={event.bonus ? 120 : 96} />
         </div>
 
         {/* +N pill */}
         <div
-          className="font-fredoka animate-[star-rise_1.2s_ease-out_forwards] rounded-full px-4 py-1.5 font-black"
+          className="font-fredoka animate-[burst-rise_1.2s_ease-out_forwards] rounded-full px-4 py-1.5 font-black"
           style={{
             background: `linear-gradient(135deg, ${hex.soft}, ${hex.primary})`,
             color: '#fff',
@@ -171,7 +171,7 @@ function BurstView({ event, onDone }: BurstViewProps) {
 
         {/* Stat ribbon */}
         <div
-          className="flex animate-[star-rise_1.2s_ease-out_120ms_forwards] flex-col items-center gap-1 rounded-2xl px-3 py-2 text-center"
+          className="flex animate-[burst-rise_1.2s_ease-out_120ms_forwards] flex-col items-center gap-1 rounded-2xl px-3 py-2 text-center"
           style={{
             background: 'rgba(255,255,255,0.95)',
             border: `2px solid ${hex.primary}80`,
@@ -199,60 +199,6 @@ function BurstView({ event, onDone }: BurstViewProps) {
         </div>
       </div>
 
-      {/* Component-local keyframes */}
-      <style jsx>{`
-        @keyframes star-pop {
-          0% {
-            transform: scale(0.2) rotate(-20deg);
-            opacity: 0;
-          }
-          55% {
-            transform: scale(1.15) rotate(8deg);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(1) rotate(0deg);
-            opacity: 1;
-          }
-        }
-        @keyframes star-halo {
-          0% {
-            transform: translate(-50%, -50%) scale(0.3);
-            opacity: 0.9;
-          }
-          100% {
-            transform: translate(-50%, -50%) scale(1.4);
-            opacity: 0;
-          }
-        }
-        @keyframes star-sparkle {
-          0% {
-            transform: translate(-50%, -50%) translate(0, 0) rotate(0) scale(0.4);
-            opacity: 0;
-          }
-          25% {
-            opacity: 1;
-          }
-          100% {
-            transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) rotate(var(--rot))
-              scale(0);
-            opacity: 0;
-          }
-        }
-        @keyframes star-rise {
-          0% {
-            transform: translateY(8px) scale(0.85);
-            opacity: 0;
-          }
-          40% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-4px) scale(1);
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   )
 }
