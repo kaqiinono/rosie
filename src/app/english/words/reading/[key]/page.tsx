@@ -140,9 +140,17 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   }
 
   return (
-    <main className="font-nunito relative z-[1] mx-auto max-w-3xl px-4 pt-6 pb-32">
+    <main
+      className="font-nunito relative z-[1] mx-auto max-w-3xl px-4 pt-6 pb-32"
+      style={{ colorScheme: 'light' }}
+    >
+      {/* 全屏深色背景 —— iPhone Safari 深色模式下,某些浏览器版本会因为
+          colorScheme: light 把父布局的 var(--wm-bg) 渲染异常;这里显式贴一层
+          原色,白色阅读卡在深底上对比更突出。 */}
+      <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
+
       {/* Page header */}
-      <div className="mb-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-5 ring-1 ring-orange-200/60 dark:from-orange-500/10 dark:to-amber-500/10 dark:ring-orange-500/20">
+      <div className="mb-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-5 ring-1 ring-orange-200/60">
         <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Link
@@ -190,7 +198,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
       </div>
 
       {/* Passage body */}
-      <div className="rounded-2xl bg-white p-5 ring-1 ring-gray-200 sm:p-7 dark:bg-[var(--wm-surface)] dark:ring-[var(--wm-border)]">
+      <div className="rounded-2xl bg-white p-5 ring-1 ring-gray-200 sm:p-7">
         <PassageView
           passage={passage}
           lessonWords={lessonWords}
@@ -203,9 +211,9 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
 
       {/* Bottom word strip */}
       {lessonWords.length > 0 && (
-        <div className="mt-6 rounded-2xl bg-[var(--wm-surface)] p-4 ring-1 ring-[var(--wm-border)]">
+        <div className="mt-6 rounded-2xl bg-gray-50 p-4 ring-1 ring-gray-200">
           <div className="mb-2.5 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[var(--wm-text)]">本课词汇 · {lessonWords.length}</h3>
+            <h3 className="text-sm font-bold text-gray-900">本课词汇 · {lessonWords.length}</h3>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {lessonWords.map((w) => {
