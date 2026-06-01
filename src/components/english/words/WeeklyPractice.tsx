@@ -209,6 +209,9 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const [lessonKindOverrides, setLessonKindOverrides] = useState<
     Record<string, 'consolidate' | 'preview'>
   >({})
+  /** Single lesson key marked as this week's 重点 (focus). Mutually exclusive across lessons,
+   *  must be a 必记 lesson; auto-clears when the lesson is removed or flipped to 预习. */
+  const [focusLessonOverride, setFocusLessonOverride] = useState<string | null>(null)
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
   const [pendingDate, setPendingDate] = useState<string>(todayStr())
   const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
@@ -337,6 +340,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     setPendingLessons(parsed)
     setLessonQuotas(quotas)
     setLessonKindOverrides(lkinds)
+    setFocusLessonOverride(plan.focusLessonKey ?? null)
     setEditArrangeBaselineKey(baseline)
     setEditingPlan(plan)
     setIsEditingPlan(true)
@@ -438,6 +442,15 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     const previewLessonKeys = activeLessons
       .filter((l) => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview')
       .map((l) => lessonKey(l))
+    // Only persist focusLessonKey if it points to an active 必记 lesson
+    const activeKeys = new Set(activeLessons.map(lessonKey))
+    const previewSet = new Set(previewLessonKeys)
+    const validFocus =
+      focusLessonOverride &&
+      activeKeys.has(focusLessonOverride) &&
+      !previewSet.has(focusLessonOverride)
+        ? focusLessonOverride
+        : undefined
     const planBase: WeeklyPlan = {
       weekStart: dialogWeekStart,
       unit: activeLessons.map((l) => l.unit).join(', '),
@@ -447,6 +460,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       days: draftDays,
       progress: wasEditing && editingPlan ? editingPlan.progress : {},
       previewLessonKeys,
+      ...(validFocus !== undefined ? { focusLessonKey: validFocus } : {}),
       ...(wasEditing && editingPlan?.weekCompletion
         ? { weekCompletion: editingPlan.weekCompletion }
         : {}),
@@ -477,6 +491,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     savePlan,
     router,
     lessonKinds,
+    focusLessonOverride,
     vocab,
     isEditingPlan,
     editingPlan,
@@ -574,10 +589,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                                 const exists = prev.some(
                                   (p) => p.unit === l.unit && p.lesson === l.lesson,
                                 )
-                                if (exists)
+                                if (exists) {
+                                  if (focusLessonOverride === lk) setFocusLessonOverride(null)
                                   return prev.filter(
                                     (p) => !(p.unit === l.unit && p.lesson === l.lesson),
                                   )
+                                }
                                 return [...prev, l]
                               })
                             }}
@@ -597,12 +614,34 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                               {isActive && '✓'}
                             </span>
                             {l.unit} · {l.lesson}
+                            {focusLessonOverride === lk && (
+                              <span className="ml-1 text-[.85rem]" title="本周重点">⭐</span>
+                            )}
                           </button>
                           {isActive && (
                             <div className="flex shrink-0 items-center gap-1 border-l border-[var(--wm-border)] px-2 py-2">
                               <button
                                 type="button"
-                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))}
+                                disabled={kind !== 'consolidate'}
+                                title={kind !== 'consolidate' ? '只有必记课才能设为本周重点' : '设为本周重点（启用阅读+课文题型）'}
+                                onClick={() =>
+                                  setFocusLessonOverride((prev) => (prev === lk ? null : lk))
+                                }
+                                className={`flex h-[22px] w-[22px] items-center justify-center rounded-full border-[1.5px] text-[.8rem] transition-all ${
+                                  focusLessonOverride === lk
+                                    ? 'border-[#f59e0b] bg-gradient-to-br from-[#fbbf24] to-[#f59e0b] text-white shadow-[0_2px_8px_rgba(245,158,11,.4)]'
+                                    : kind === 'consolidate'
+                                      ? 'cursor-pointer border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[#f59e0b] hover:text-[#f59e0b]'
+                                      : 'cursor-not-allowed border-[var(--wm-border)]/40 bg-transparent text-[var(--wm-text-dim)]/40'
+                                }`}
+                              >
+                                ⭐
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))
+                                }}
                                 className={`rounded-full border-[1.5px] px-2 py-0.5 text-[.62rem] font-extrabold transition-all ${
                                   kind === 'consolidate'
                                     ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
@@ -613,7 +652,10 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))}
+                                onClick={() => {
+                                  setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))
+                                  if (focusLessonOverride === lk) setFocusLessonOverride(null)
+                                }}
                                 className={`rounded-full border-[1.5px] px-2 py-0.5 text-[.62rem] font-extrabold transition-all ${
                                   kind === 'preview'
                                     ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
@@ -633,24 +675,45 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                 {!showLessonPicker && activeLessons.length > 0 && (
                   <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-3">
                     <div className="mb-2 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                      本周类型（必记 / 预习）
+                      本周类型（必记 / 预习 / ⭐重点）
                     </div>
                     <div className="space-y-1">
                       {activeLessons.map((l) => {
                         const lk = lessonKey(l)
                         const kind = lessonKinds[lk] ?? 'consolidate'
+                        const isFocus = focusLessonOverride === lk
                         return (
                           <div
                             key={lk}
                             className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--wm-border)] py-2 last:border-b-0 last:pb-0"
                           >
-                            <span className="text-[.82rem] font-bold text-[var(--wm-text)]">
+                            <span className="flex items-center gap-1.5 text-[.82rem] font-bold text-[var(--wm-text)]">
                               {l.unit} · {l.lesson}
+                              {isFocus && <span title="本周重点">⭐</span>}
                             </span>
-                            <div className="flex gap-1.5">
+                            <div className="flex items-center gap-1.5">
                               <button
                                 type="button"
-                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))}
+                                disabled={kind !== 'consolidate'}
+                                title={kind !== 'consolidate' ? '只有必记课才能设为本周重点' : '设为本周重点'}
+                                onClick={() =>
+                                  setFocusLessonOverride((prev) => (prev === lk ? null : lk))
+                                }
+                                className={`flex h-[22px] w-[22px] items-center justify-center rounded-full border-[1.5px] text-[.8rem] transition-all ${
+                                  isFocus
+                                    ? 'border-[#f59e0b] bg-gradient-to-br from-[#fbbf24] to-[#f59e0b] text-white shadow-[0_2px_8px_rgba(245,158,11,.4)]'
+                                    : kind === 'consolidate'
+                                      ? 'cursor-pointer border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[#f59e0b] hover:text-[#f59e0b]'
+                                      : 'cursor-not-allowed border-[var(--wm-border)]/40 bg-transparent text-[var(--wm-text-dim)]/40'
+                                }`}
+                              >
+                                ⭐
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))
+                                }}
                                 className={`rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
                                   kind === 'consolidate'
                                     ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
@@ -661,7 +724,10 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))}
+                                onClick={() => {
+                                  setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))
+                                  if (focusLessonOverride === lk) setFocusLessonOverride(null)
+                                }}
                                 className={`rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
                                   kind === 'preview'
                                     ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
@@ -676,7 +742,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                       })}
                     </div>
                     <p className="mt-2 text-[.65rem] leading-snug text-[var(--wm-text-dim)]">
-                      必记：本周要掌握；预习：先接触。可多课标预习。
+                      必记：本周要掌握；预习：先接触；⭐：本周核心课（启用阅读+课文题型）。
                     </p>
                   </div>
                 )}
@@ -1080,6 +1146,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   )
                   setPendingLessons(cached)
                   setLessonKindOverrides({})
+                  setFocusLessonOverride(null)
                   setPendingDate(todayStr())
                   setIsEditingPlan(false)
                   setEditingPlan(null)

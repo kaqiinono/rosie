@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import type { WordEntry } from '@/utils/type'
 import {
   hilite,
@@ -8,8 +9,10 @@ import {
   buildQuizOptions,
   buildQuizQuestions,
   normalizeQuizTypes,
+  type QuizType,
 } from '@/utils/english-helpers'
 import { getWordSizeClass } from '@/utils/phonics'
+import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
 import SpeakButton from './SpeakButton'
@@ -23,14 +26,20 @@ interface ImmersiveModeProps {
   words: WordEntry[]
   allWords: WordEntry[]
   mode: ImmMode
-  practiceTypes: ('A' | 'B' | 'C')[]
+  practiceTypes: QuizType[]
   onClose: () => void
   onQuizComplete?: (results: { entry: WordEntry; correct: boolean }[]) => void
 }
 
 interface ImmQuizQ {
   word: WordEntry
-  type: 'A' | 'B' | 'C'
+  type: QuizType
+}
+
+function blankWordInSentence(sentence: string, word: string): string {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`\\b(${escaped})s?\\b`, 'i')
+  return sentence.replace(re, '_______')
 }
 
 export default function ImmersiveMode({
@@ -42,6 +51,7 @@ export default function ImmersiveMode({
   onClose,
   onQuizComplete,
 }: ImmersiveModeProps) {
+  const router = useRouter()
   const [idx, setIdx] = useState(0)
   const [defOnly, setDefOnly] = useState(false)
   const [wordShown, setWordShown] = useState(true)
@@ -65,18 +75,25 @@ export default function ImmersiveMode({
   const [showResults, setShowResults] = useState(false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
+  // Type D is eligible whenever the word's own lesson has a passage that
+  // contains a sentence for it. No reliance on a week-level focus marker.
+  const isEligibleForTypeD = useCallback((entry: WordEntry) => {
+    const p = findPassage(entry.unit, entry.lesson)
+    return p !== undefined && findSentenceForWord(p, entry.word) !== null
+  }, [])
+
   const startQuiz = useCallback(() => {
-    const raw = practiceTypes.length ? practiceTypes : (['A', 'B'] as ('A' | 'B' | 'C')[])
+    const raw = practiceTypes.length ? practiceTypes : (['A', 'B'] as QuizType[])
     const types = normalizeQuizTypes(raw)
     const seed = Date.now()
-    setQuizQs(buildQuizQuestions(words, types, seed))
+    setQuizQs(buildQuizQuestions(words, types, seed, isEligibleForTypeD))
     setCurQ(0)
     setQScore(0)
     setQAnswered(false)
     setQSelected(null)
     setSpellOk(null)
     setShowResults(false)
-  }, [words, practiceTypes])
+  }, [words, practiceTypes, isEligibleForTypeD])
 
   // Clear quiz result buffer when practice opens (ref access must stay in an effect)
   useEffect(() => {
@@ -200,17 +217,42 @@ export default function ImmersiveMode({
     [qAnswered, quizQs, curQ, awardStars],
   )
 
-  useEffect(() => {
-    if (qAnswered && qCorrect === true) {
-      const t = setTimeout(nextQuizQ, 600)
-      return () => clearTimeout(t)
-    }
-  }, [qAnswered, qCorrect, nextQuizQ])
+  /** D-type extra reward: same +2 stars as C since both probe production-quality recall. */
+  const handleTypeDAnswer = useCallback(
+    (chosen: string, correct: string) => {
+      if (qAnswered) return
+      const isCorrect = chosen === correct
+      setQAnswered(true)
+      setQCorrect(isCorrect)
+      setQSelected(chosen)
+      if (isCorrect) {
+        setQScore((s) => s + 1)
+        void awardStars('red', 2)
+      }
+      if (quizQs[curQ])
+        quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
+    },
+    [qAnswered, quizQs, curQ, awardStars],
+  )
 
   const qTotal = quizQs.length
   const q = quizQs[curQ]
   const qPct = qTotal ? Math.round((qScore / qTotal) * 100) : 0
   const qEmoji = qPct >= 90 ? '🏆' : qPct >= 70 ? '🎉' : qPct >= 50 ? '💪' : '😅'
+
+  // Generalized 3B: any correct answer whose word has a passage offers
+  // "查看原文" — and we disable auto-advance to give the learner a chance to click it.
+  const currentPassage = q ? findPassage(q.word.unit, q.word.lesson) : undefined
+  const currentSentence =
+    currentPassage && q ? findSentenceForWord(currentPassage, q.word.word) : null
+  const hasPassageContext = currentPassage !== undefined && currentSentence !== null
+
+  useEffect(() => {
+    if (qAnswered && qCorrect === true && !hasPassageContext) {
+      const t = setTimeout(nextQuizQ, 600)
+      return () => clearTimeout(t)
+    }
+  }, [qAnswered, qCorrect, nextQuizQ, hasPassageContext])
 
   const qOptions = useMemo(() => {
     if (!q) return []
@@ -480,13 +522,22 @@ export default function ImmersiveMode({
               const opts = qOptions
               const isA = q.type === 'A'
               const isC = q.type === 'C'
+              const isD = q.type === 'D'
+              const isMultiChoice = isA || isD
+              const dPassage = isD ? findPassage(q.word.unit, q.word.lesson) : undefined
+              const passageSentence = isD && dPassage
+                ? findSentenceForWord(dPassage, q.word.word)
+                : null
               const badgeStyle = isA
                 ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
                 : isC
                   ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
-                  : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
+                  : isD
+                    ? 'bg-[rgba(245,158,11,.18)] text-[#fbbf24]'
+                    : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
 
-              const targetStars = qTotal ? qTotal * (practiceTypes.includes('C') ? 2 : 1) : qTotal
+              const stars2x = practiceTypes.includes('C') || practiceTypes.includes('D')
+              const targetStars = qTotal ? qTotal * (stars2x ? 2 : 1) : qTotal
               return (
                 <div className="@container flex w-full max-w-[1000px] flex-col gap-4 rounded-[20px] border border-white/[.08] bg-white/[.04] p-[clamp(1rem,3.5cqi,1.75rem)]">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -497,7 +548,9 @@ export default function ImmersiveMode({
                         ? '题型 A · 看释义选单词'
                         : isC
                           ? '题型 C · 看释义默写单词 (+2⭐/题)'
-                          : '题型 B · 看单词选释义'}
+                          : isD
+                            ? '📖 题型 D · 课文语境填空 (+2⭐/题)'
+                            : '题型 B · 看单词选释义'}
                     </span>
                     <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">
                       ✓ {qScore} / {qTotal}
@@ -569,17 +622,28 @@ export default function ImmersiveMode({
                     )
                   })()}
 
-                  <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">
-                    {isA || isC ? (
-                      q.word.explanation
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <PhonicsWord text={q.word.word} syllables={q.word.syllables} />
-                        <SpeakButton word={q.word.word} size="text-[1.2rem]" className="opacity-50 hover:opacity-100 shrink-0" />
+                  {isD && passageSentence ? (
+                    <div className="rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-500/[.08] to-orange-500/[.06] px-4 py-4">
+                      <div className="mb-2 text-[clamp(.62rem,1.6cqi,.72rem)] font-extrabold tracking-[.14em] text-amber-300/80 uppercase">
+                        📖 来自 {q.word.unit} · {q.word.lesson} 课文
                       </div>
-                    )}
-                  </div>
-                  {!isA && !isC && q.word.ipa && (
+                      <div className="text-[clamp(1.1rem,3.2cqi,1.7rem)] leading-relaxed font-bold text-[#fef3c7]">
+                        “{blankWordInSentence(passageSentence.sentence, q.word.word)}”
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">
+                      {isA || isC ? (
+                        q.word.explanation
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <PhonicsWord text={q.word.word} syllables={q.word.syllables} />
+                          <SpeakButton word={q.word.word} size="text-[1.2rem]" className="opacity-50 hover:opacity-100 shrink-0" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {!isA && !isC && !isD && q.word.ipa && (
                     <div className="text-[clamp(.8rem,2.5cqi,.95rem)] font-semibold text-[#f0abfc] italic">
                       {q.word.ipa}
                     </div>
@@ -589,12 +653,14 @@ export default function ImmersiveMode({
                       ? '请选出对应的英文单词：'
                       : isC
                         ? '请拼写出对应的英文单词或短语：'
-                        : '请选出正确的释义：'}
+                        : isD
+                          ? '请选出填入空格的单词或短语：'
+                          : '请选出正确的释义：'}
                   </div>
 
-                  {!isC && (
+                  {isMultiChoice && (
                     <div
-                      className={`grid gap-[clamp(.4rem,1.5cqi,.6rem)] ${isA ? 'grid-cols-1 @lg:grid-cols-2' : 'grid-cols-1'}`}
+                      className={`grid gap-[clamp(.4rem,1.5cqi,.6rem)] ${isA || isD ? 'grid-cols-1 @lg:grid-cols-2' : 'grid-cols-1'}`}
                     >
                       {opts.map((o, optIdx) => {
                         const isCorrect = o.word === q.word.word
@@ -615,7 +681,11 @@ export default function ImmersiveMode({
                           <button
                             key={o.word}
                             disabled={qAnswered}
-                            onClick={() => handleMCAnswer(o.word, q.word.word)}
+                            onClick={() =>
+                              isD
+                                ? handleTypeDAnswer(o.word, q.word.word)
+                                : handleMCAnswer(o.word, q.word.word)
+                            }
                             className={`font-nunito flex cursor-pointer items-start gap-[clamp(.4rem,1.2cqi,.6rem)] rounded-xl border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(1.2rem,2.2cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${cls} ${
                               !qAnswered
                                 ? 'hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.1)]'
@@ -625,7 +695,7 @@ export default function ImmersiveMode({
                             <span className={`shrink-0 font-extrabold tabular-nums ${labelCls}`}>
                               {label}.
                             </span>
-                            <span>{isA ? o.word : o.explanation}</span>
+                            <span>{isA || isD ? o.word : o.explanation}</span>
                           </button>
                         )
                       })}
@@ -642,13 +712,47 @@ export default function ImmersiveMode({
                     />
                   )}
 
+                  {/* 答对 + 该词有课文 → 显示查看原文 + 手动下一题（3B 通用化） */}
+                  {qAnswered && qCorrect === true && hasPassageContext && currentPassage && (
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <button
+                        onClick={() => {
+                          onClose()
+                          router.push(`/english/words/reading/${currentPassage.key}?focus=${encodeURIComponent(q.word.word)}`)
+                        }}
+                        className="font-nunito cursor-pointer rounded-xl border-[1.5px] border-amber-500/40 bg-amber-500/[.08] px-5 py-2 text-[clamp(.78rem,2.4cqi,.9rem)] font-bold text-amber-300 transition-all hover:bg-amber-500/[.18]"
+                      >
+                        📖 查看课文原句 →
+                      </button>
+                      <button
+                        onClick={nextQuizQ}
+                        className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-5 py-2 text-[clamp(.78rem,2.4cqi,.9rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"
+                      >
+                        下一题 →
+                      </button>
+                    </div>
+                  )}
+
                   {qAnswered && qCorrect === false && (
-                    <button
-                      onClick={nextQuizQ}
-                      className="font-nunito cursor-pointer self-center rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-7 py-[clamp(.6rem,2cqi,.8rem)] text-[clamp(.88rem,2.8cqi,1rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"
-                    >
-                      下一题 →
-                    </button>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {hasPassageContext && currentPassage && (
+                        <button
+                          onClick={() => {
+                            onClose()
+                            router.push(`/english/words/reading/${currentPassage.key}?focus=${encodeURIComponent(q.word.word)}`)
+                          }}
+                          className="font-nunito cursor-pointer rounded-xl border-[1.5px] border-amber-500/40 bg-amber-500/[.08] px-5 py-2 text-[clamp(.78rem,2.4cqi,.9rem)] font-bold text-amber-300 transition-all hover:bg-amber-500/[.18]"
+                        >
+                          📖 查看课文原句 →
+                        </button>
+                      )}
+                      <button
+                        onClick={nextQuizQ}
+                        className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-7 py-[clamp(.6rem,2cqi,.8rem)] text-[clamp(.88rem,2.8cqi,1rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"
+                      >
+                        下一题 →
+                      </button>
+                    </div>
                   )}
                 </div>
               )

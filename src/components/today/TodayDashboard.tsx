@@ -7,6 +7,7 @@ import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useWordData } from '@/hooks/useWordData'
 import { useCalcDaily } from '@/hooks/useCalcDaily'
 import { todayStr } from '@/utils/constant'
+import { findPassage } from '@/utils/reading-data'
 import type { WordEntry } from '@/utils/type'
 
 function wordKeyStr(e: WordEntry): string {
@@ -134,6 +135,77 @@ function WordCard({ entry, isNew }: WordCardProps) {
   )
 }
 
+interface ThreeStepRowProps {
+  index: number
+  done: boolean
+  /** When true, render in a muted state — used to hint "complete the previous step first". */
+  pendingDimmed?: boolean
+  icon: string
+  title: string
+  subtitle?: string
+  /** Optional helper text shown below the subtitle in lighter weight. */
+  hint?: string
+  href: string
+  color: 'orange' | 'blue' | 'purple'
+}
+
+function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint, href, color }: ThreeStepRowProps) {
+  const palette = {
+    orange: { bg: 'linear-gradient(135deg,#ffedd5,#fde68a)', border: 'rgba(251,146,60,.3)', text: '#c2410c', sub: '#9a3412', dot: 'linear-gradient(135deg,#f97316,#fbbf24)' },
+    blue:   { bg: 'linear-gradient(135deg,#dbeafe,#e0f2fe)', border: 'rgba(59,130,246,.28)', text: '#1d4ed8', sub: '#1e3a8a', dot: 'linear-gradient(135deg,#3b82f6,#60a5fa)' },
+    purple: { bg: 'linear-gradient(135deg,#ede9fe,#f5d0fe)', border: 'rgba(168,85,247,.28)', text: '#7c3aed', sub: '#5b21b6', dot: 'linear-gradient(135deg,#a855f7,#c084fc)' },
+  }[color]
+
+  const greenBg = 'linear-gradient(135deg,#dcfce7,#bbf7d0)'
+  const greenBorder = 'rgba(34,197,94,.3)'
+
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-3 rounded-2xl px-4 py-3 no-underline transition-all hover:-translate-y-0.5 ${pendingDimmed ? 'opacity-80' : ''}`}
+      style={{
+        background: done ? greenBg : palette.bg,
+        border: `1.5px solid ${done ? greenBorder : palette.border}`,
+        boxShadow: done ? '0 4px 16px rgba(34,197,94,.1)' : '0 4px 16px rgba(0,0,0,.04)',
+      }}
+    >
+      <div
+        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[20px] text-white"
+        style={{ background: done ? 'linear-gradient(135deg,#22c55e,#4ade80)' : palette.dot }}
+      >
+        {done ? '✓' : icon}
+        <span
+          className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold text-white"
+          style={{ background: done ? '#16a34a' : '#1f2937' }}
+        >
+          {index}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div
+          className="text-[14px] font-extrabold leading-tight"
+          style={{ color: done ? '#166534' : palette.text }}
+        >
+          {title}
+        </div>
+        {subtitle && (
+          <div className="text-[11px] font-medium mt-0.5 truncate" style={{ color: done ? '#16a34a' : palette.sub }}>
+            {subtitle}
+          </div>
+        )}
+        {hint && (
+          <div className="text-[10px] mt-0.5" style={{ color: done ? '#16a34a' : '#a16207' }}>
+            💡 {hint}
+          </div>
+        )}
+      </div>
+      <span className="text-[14px] font-extrabold" style={{ color: done ? '#16a34a' : palette.text }}>
+        →
+      </span>
+    </Link>
+  )
+}
+
 export default function TodayDashboard() {
   const { user } = useAuth()
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
@@ -150,6 +222,48 @@ export default function TodayDashboard() {
   const vocabByKey = Object.fromEntries(vocab.map(w => [wordKeyStr(w), w]))
   const todayWords = newWordKeys.map(k => vocabByKey[k]).filter(Boolean) as WordEntry[]
   const englishDone = !!englishProgress?.quizDone
+
+  // Reading prompt (Stage 1 of three-stage loop): surfaces when *any* of
+  // today's new-word lessons has a passage available. If the week-plan has a
+  // ⭐ focus lesson, prefer that passage; otherwise pick the lesson contributing
+  // the most words today.
+  const readingDoneToday = !!englishProgress?.readingDone
+
+  const suggestedPassage = (() => {
+    if (!todayWords.length) return null
+    const focusKey = englishPlan?.focusLessonKey
+    // Prefer the ⭐ focus lesson if today's words include it AND it has a passage
+    if (focusKey) {
+      const [u, l] = focusKey.split('::')
+      const focusP = findPassage(u, l)
+      if (focusP && todayWords.some(w => w.unit === focusP.unit && w.lesson === focusP.lesson)) {
+        return focusP
+      }
+    }
+    // Otherwise pick the lesson contributing the most words today that has a passage
+    const counts = new Map<string, { unit: string; lesson: string; n: number }>()
+    for (const w of todayWords) {
+      const k = `${w.unit}::${w.lesson}`
+      const cur = counts.get(k)
+      if (cur) cur.n += 1
+      else counts.set(k, { unit: w.unit, lesson: w.lesson, n: 1 })
+    }
+    const sorted = [...counts.values()].sort((a, b) => b.n - a.n)
+    for (const c of sorted) {
+      const p = findPassage(c.unit, c.lesson)
+      if (p) return p
+    }
+    return null
+  })()
+  const todayHasFocusWords = !!suggestedPassage
+
+  // Split today's words into consolidate vs preview using wordKinds (the plan's
+  // per-word classification). Drives the ②③ counts in the three-step layout.
+  const wordKinds = englishPlan?.wordKinds ?? {}
+  const consolidateNewCount = newWordKeys.filter(k => (wordKinds[k] ?? 'consolidate') === 'consolidate').length
+  const previewNewCount = newWordKeys.filter(k => wordKinds[k] === 'preview').length
+  const consolidateDone = !!englishProgress?.consolidateDone
+  const previewDone = !!englishProgress?.previewDone
 
   // Math: today's required problems
   const mathToday = mathPlan?.days.find(d => d.date === today)
@@ -295,6 +409,50 @@ export default function TodayDashboard() {
 
         {hasEnglish ? (
           <>
+            {/* Three-step task flow ①②③ (design 1A + 计划页三步式) */}
+            <div className="mb-3 space-y-2">
+              {todayHasFocusWords && suggestedPassage && (
+                <ThreeStepRow
+                  index={1}
+                  done={readingDoneToday}
+                  pendingDimmed={false}
+                  icon="📖"
+                  title="读课文"
+                  subtitle={readingDoneToday ? `已读 · ${suggestedPassage.title}` : `建议先读 · ${suggestedPassage.title}`}
+                  hint={readingDoneToday ? undefined : '先建立语境记忆，再练习效果更好'}
+                  href={`/english/words/reading/${suggestedPassage.key}?from=today`}
+                  color="orange"
+                />
+              )}
+              {consolidateNewCount > 0 && englishPlan?.id && (
+                <ThreeStepRow
+                  index={todayHasFocusWords ? 2 : 1}
+                  done={consolidateDone}
+                  pendingDimmed={todayHasFocusWords && !readingDoneToday && !consolidateDone}
+                  icon="🆕"
+                  title={`必记词练习 ${consolidateNewCount} 个`}
+                  subtitle={consolidateDone ? `已完成${englishProgress?.consolidateScore !== undefined ? ` · ${englishProgress.consolidateScore}%` : ''}` : '今日新增的必记单词'}
+                  hint={todayHasFocusWords && !readingDoneToday && !consolidateDone ? '建议先读课文' : undefined}
+                  href={`/english/words/weekly/${englishPlan.id}`}
+                  color="blue"
+                />
+              )}
+              {previewNewCount > 0 && englishPlan?.id && (
+                <ThreeStepRow
+                  index={
+                    (todayHasFocusWords ? 1 : 0) + (consolidateNewCount > 0 ? 1 : 0) + 1
+                  }
+                  done={previewDone}
+                  pendingDimmed={false}
+                  icon="🔖"
+                  title={`预习词练习 ${previewNewCount} 个`}
+                  subtitle={previewDone ? `已完成${englishProgress?.previewScore !== undefined ? ` · ${englishProgress.previewScore}%` : ''}` : '提前接触下周内容'}
+                  href={`/english/words/weekly/${englishPlan.id}`}
+                  color="purple"
+                />
+              )}
+            </div>
+
             {todayWords.length > 0 ? (
               <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4">
                 {todayWords.map((word) => (

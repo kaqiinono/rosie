@@ -268,3 +268,15 @@
   0% { transform: translateX(-100%) }
   100% { transform: translateX(280%) }
 }
+
+/* Reading passage focus flash — applied via DOM class from PassageView */
+@keyframes reading-flash-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.55); }
+}
+.reading-flash {
+  animation: reading-flash-pulse 0.7s ease-in-out 3;
+  outline: 3px solid rgba(251, 191, 36, 0.85);
+  outline-offset: 2px;
+  border-radius: 6px;
+}

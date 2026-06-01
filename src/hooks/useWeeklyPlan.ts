@@ -20,7 +20,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
         if (error || !data) return []
         return data.map(row => {
             const { progress, weekCompletion } = decodeWeeklyPlanProgress(row.progress_data)
-            const { days, previewLessonKeys, wordKinds } = parsePlanDataFromSupabase(row.plan_data)
+            const { days, previewLessonKeys, wordKinds, focusLessonKey } = parsePlanDataFromSupabase(row.plan_data)
             return {
                 id: row.id as string,
                 weekStart: row.week_start,
@@ -31,6 +31,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
                 days,
                 ...(previewLessonKeys !== undefined ? { previewLessonKeys } : {}),
                 ...(wordKinds !== undefined ? { wordKinds } : {}),
+                ...(focusLessonKey !== undefined ? { focusLessonKey } : {}),
                 progress,
                 weekCompletion,
             }

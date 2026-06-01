@@ -1,9 +1,17 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useImmersive } from '@/contexts/ImmersiveContext'
 
 type BlankToken = { type: 'text'; value: string } | { type: 'blank' }
+
+/**
+ * 1C 课文模式 — when on, FlashCardFace shows the example with the phrase blanked
+ * out (forcing language-context recall) instead of leading with the phrase itself.
+ * Used as a local-only context so the existing Section / FlashCard prop chain
+ * doesn't need to grow further.
+ */
+const PassageModeContext = createContext(false)
 
 const STOPWORDS = new Set([
   'a', 'an', 'the',
@@ -1776,6 +1784,60 @@ const quantifiersGrammar: GrammarBlock = {
 
 // ── Shared card component ───────────────────────────────────────────────────
 function FlashCardFace({ card }: { card: PhraseCard }) {
+  const passageMode = useContext(PassageModeContext)
+
+  if (passageMode) {
+    const tokens = blankOutExample(card.example, card.phrase)
+    return (
+      <>
+        <div
+          className={`${card.bg} relative flex h-20 shrink-0 items-center justify-center sm:h-24`}
+        >
+          {card.label && (
+            <span className="absolute top-2 left-2 rounded bg-pink-500 px-1.5 py-0.5 text-[10px] leading-none font-bold text-white select-none sm:left-2.5 sm:text-[11px]">
+              {card.label}
+            </span>
+          )}
+          <span
+            className="select-none text-3xl leading-none opacity-80 sm:text-4xl"
+            role="img"
+            aria-label={card.phrase}
+          >
+            {card.emoji}
+          </span>
+          <span className="absolute right-2 top-2 rounded-full bg-amber-500/90 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+            📖 课文
+          </span>
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4">
+          <div className="min-w-0">
+            <p className="mb-1 text-[10px] font-medium tracking-widest text-amber-700 uppercase">
+              语境填空 · 想想空格里是什么词
+            </p>
+            <p className="text-sm leading-relaxed font-semibold break-words text-gray-800 sm:text-[15px]">
+              {tokens.map((t, i) =>
+                t.type === 'text' ? (
+                  <span key={i}>{t.value}</span>
+                ) : (
+                  <span
+                    key={i}
+                    className="mx-0.5 inline-block min-w-[3.5em] rounded bg-amber-100 px-1.5 py-0.5 align-baseline text-amber-700"
+                  >
+                    ______
+                  </span>
+                ),
+              )}
+            </p>
+          </div>
+          <hr className="border-gray-100" />
+          <p className="line-clamp-2 text-[11px] leading-relaxed break-words text-gray-400 sm:text-xs">
+            {card.exZh}
+          </p>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div
@@ -2486,6 +2548,8 @@ function StickyNav({
   onToggleRecitation,
   allFlipped,
   onToggleAllFlipped,
+  passageMode,
+  onTogglePassageMode,
   onReset,
   topOffset,
   totalCount,
@@ -2497,6 +2561,8 @@ function StickyNav({
   onToggleRecitation: () => void
   allFlipped: boolean
   onToggleAllFlipped: () => void
+  passageMode: boolean
+  onTogglePassageMode: () => void
   onReset: () => void
   topOffset: number
   totalCount: number
@@ -2569,6 +2635,21 @@ function StickyNav({
                 </svg>
               </button>
             )}
+
+            <button
+              type="button"
+              onClick={onTogglePassageMode}
+              aria-pressed={passageMode}
+              title="正面显示例句挖空，认知方向从'词→意思'反转为'语境→词'"
+              className={`inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-xl px-3 text-sm font-semibold transition-all duration-200 sm:h-11 sm:px-4 ${
+                passageMode
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm hover:shadow-md'
+                  : 'border border-gray-200 bg-white text-gray-700 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700'
+              }`}
+            >
+              <span className="text-base leading-none">📖</span>
+              <span>{passageMode ? '退出课文模式' : '课文模式'}</span>
+            </button>
 
             <button
               type="button"
@@ -2954,6 +3035,7 @@ export default function FlashcardList() {
   const [allFlipped, setAllFlipped] = useState(false)
   const [manualFlips, setManualFlips] = useState<Set<string>>(new Set())
   const [selectedUnits, setSelectedUnits] = useState<Set<number>>(new Set())
+  const [passageMode, setPassageMode] = useState(false)
   const { isImmersive, setIsImmersive } = useImmersive()
   const headerHeight = useHeaderHeight()
   const stickyTop = headerHeight + 8
@@ -3035,6 +3117,7 @@ export default function FlashcardList() {
   }, [showUnit7, showUnit8, showUnit9, showUnit10])
 
   return (
+    <PassageModeContext.Provider value={passageMode}>
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         {/* Page header */}
@@ -3058,6 +3141,8 @@ export default function FlashcardList() {
           onToggleRecitation={handleToggleRecitation}
           allFlipped={allFlipped}
           onToggleAllFlipped={handleToggleAllFlipped}
+          passageMode={passageMode}
+          onTogglePassageMode={() => setPassageMode((v) => !v)}
           onReset={handleReset}
           topOffset={stickyTop}
           totalCount={flatCards.length}
@@ -3308,5 +3393,6 @@ export default function FlashcardList() {
         <ImmersiveFlash cards={flatCards} onClose={() => setIsImmersive(false)} />
       )}
     </div>
+    </PassageModeContext.Provider>
   )
 }

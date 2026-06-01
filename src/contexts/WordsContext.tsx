@@ -32,8 +32,8 @@ interface WordsContextValue {
   setMasteryFilter: Dispatch<SetStateAction<MasteryLevel | null>>
   filteredWords: WordEntry[]
   // practice types (shared for immersive mode)
-  practiceTypes: ('A' | 'B' | 'C')[]
-  setPracticeTypes: Dispatch<SetStateAction<('A' | 'B' | 'C')[]>>
+  practiceTypes: ('A' | 'B' | 'C' | 'D')[]
+  setPracticeTypes: Dispatch<SetStateAction<('A' | 'B' | 'C' | 'D')[]>>
   previewCards: boolean
   setPreviewCards: Dispatch<SetStateAction<boolean>>
 }
@@ -68,7 +68,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   })
   const [selWords, setSelWords] = useState<Set<string>>(new Set())
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
-  const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C')[]>(['A', 'B'])
+  const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C' | 'D')[]>(['A', 'B'])
   const [previewCards, setPreviewCards] = useState(false)
 
   const setSelStage = (stage: string) => {

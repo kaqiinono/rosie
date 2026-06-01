@@ -197,3 +197,15 @@ vercel --prod
 ## License
 
 Private — 仅供学习使用。
+
+
+### 
+```md
+ /add-passage Unit 6 Lesson 1
+
+  [贴课文文本]
+
+  或者把课文放进 docs/U6L1.md：
+  
+  /add-passage 加 U6L1 的课文，文本在 docs/U6L1.md
+```

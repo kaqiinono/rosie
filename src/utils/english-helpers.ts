@@ -148,15 +148,17 @@ export function buildDailyPlan(totalWords: number): DayPlan[] {
   return plan
 }
 
+export type QuizType = 'A' | 'B' | 'C' | 'D'
+
 export interface QuizQuestion {
   word: WordEntry
-  type: 'A' | 'B' | 'C'
+  type: QuizType
 }
 
-const QUIZ_TYPE_ORDER: ('A' | 'B' | 'C')[] = ['A', 'B', 'C']
+const QUIZ_TYPE_ORDER: QuizType[] = ['A', 'B', 'C', 'D']
 
-/** Selected types in difficulty order (A → B → C), ignoring duplicates. */
-export function normalizeQuizTypes(types: ('A' | 'B' | 'C')[]): ('A' | 'B' | 'C')[] {
+/** Selected types in difficulty order (A → B → C → D), ignoring duplicates. */
+export function normalizeQuizTypes(types: QuizType[]): QuizType[] {
   const set = new Set(types)
   return QUIZ_TYPE_ORDER.filter(t => set.has(t))
 }
@@ -196,20 +198,26 @@ export interface DailySessionWord {
 }
 
 /**
- * Build quiz questions: per word, types run A → B → C (subset chosen); words are shuffled;
- * global order is a random interleaving so other words’ B/C may appear before this word’s A,
- * but never this word’s B/C before this word’s A.
+ * Build quiz questions: per word, types run A → B → C → D (subset chosen); words are shuffled;
+ * global order is a random interleaving so other words’ later types may appear before this
+ * word’s A, but never this word’s later types before its A.
+ *
+ * Type D (课文语境填空) is only generated for words for which `eligibleForTypeD` returns
+ * true. Words that don't satisfy the predicate simply skip the D slot.
  */
 export function buildQuizQuestions(
   words: WordEntry[],
-  types: ('A' | 'B' | 'C')[],
+  types: QuizType[],
   seed = Date.now(),
+  eligibleForTypeD?: (entry: WordEntry) => boolean,
 ): QuizQuestion[] {
   const orderedTypes = normalizeQuizTypes(types)
   if (!orderedTypes.length || !words.length) return []
   const shuffledWords = shuffle(words, seed)
   const groups: QuizQuestion[][] = shuffledWords.map(w =>
-    orderedTypes.map(type => ({ word: w, type })),
+    orderedTypes
+      .filter(type => type !== 'D' || (eligibleForTypeD ? eligibleForTypeD(w) : false))
+      .map(type => ({ word: w, type })),
   )
   return interleaveOrderedQuizSlots(groups, seed + 1)
 }

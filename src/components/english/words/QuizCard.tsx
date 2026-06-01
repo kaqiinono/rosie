@@ -1,13 +1,21 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import type { WordEntry } from '@/utils/type'
+import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
 import SpeakButton from './SpeakButton'
 
+function blankWordInSentence(sentence: string, word: string): string {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`\\b(${escaped})s?\\b`, 'i')
+  return sentence.replace(re, '_______')
+}
+
 interface QuizCardProps {
-  question: { word: WordEntry; type: 'A' | 'B' | 'C' }
+  question: { word: WordEntry; type: 'A' | 'B' | 'C' | 'D' }
   options: WordEntry[]
   currentIndex: number
   totalCount: number
@@ -25,6 +33,7 @@ export default function QuizCard({
   onAnswer,
   onNext,
 }: QuizCardProps) {
+  const router = useRouter()
   const [answered, setAnswered] = useState(false)
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null)
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
@@ -36,17 +45,30 @@ export default function QuizCard({
     setIsExiting(false)
   }
 
+  // Passage lookup is shared across two features:
+  //   - Type D rendering (挖空原句 question body)
+  //   - "查看原文" jump button shown on ANY correct answer when the word's
+  //     lesson has a passage containing it (design 3B, generalized).
+  const passage = findPassage(question.word.unit, question.word.lesson)
+  const passageSentence = passage ? findSentenceForWord(passage, question.word.word) : null
+  const hasPassageContext = passage !== undefined && passageSentence !== null
+  // Type D specifically needs the sentence to render the blanked-question UI.
+  const dPassage = question.type === 'D' ? passage : null
+  const dSentence = question.type === 'D' ? passageSentence : null
+
   const handleNext = useCallback(() => {
     setIsExiting(true)
     setTimeout(onNext, 150)
   }, [onNext])
 
   useEffect(() => {
-    if (answered && wasCorrect === true) {
+    // When the word has passage context, the learner is offered a "查看原文"
+    // jump on correct answers — don't auto-advance, give them time to decide.
+    if (answered && wasCorrect === true && !hasPassageContext) {
       const t = setTimeout(handleNext, 600)
       return () => clearTimeout(t)
     }
-  }, [answered, wasCorrect, handleNext])
+  }, [answered, wasCorrect, handleNext, hasPassageContext])
 
   const handleMC = useCallback(
     (chosen: string) => {
@@ -84,6 +106,10 @@ export default function QuizCard({
     C: {
       text: '题型 C：看释义 → 默写单词',
       cls: 'bg-[rgba(245,166,35,.2)] text-[var(--wm-accent2)] border border-[rgba(245,166,35,.3)]',
+    },
+    D: {
+      text: '📖 题型 D：课文语境填空',
+      cls: 'bg-[rgba(245,158,11,.18)] text-[#fbbf24] border border-[rgba(245,158,11,.35)]',
     },
   }[question.type]
 
@@ -222,7 +248,73 @@ export default function QuizCard({
             />
           </>
         )}
+
+        {question.type === 'D' && dSentence && (
+          <>
+            <div className="mb-3 rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 px-4 py-3">
+              <div className="mb-1.5 text-[clamp(.6rem,1.7cqi,.7rem)] font-extrabold tracking-[.14em] text-amber-700 uppercase">
+                📖 来自 {question.word.unit} · {question.word.lesson} 课文
+              </div>
+              <div className="text-[clamp(1.05rem,3.2cqi,1.4rem)] leading-relaxed font-bold text-amber-950">
+                “{blankWordInSentence(dSentence.sentence, question.word.word)}”
+              </div>
+            </div>
+            <div className="mb-3 text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
+              请选出填入空格的单词或短语：
+            </div>
+            <div className="grid grid-cols-1 gap-[clamp(.4rem,1.5cqi,.6rem)] @lg:grid-cols-2">
+              {options.map((o) => {
+                const isCorrect = o.word === question.word.word
+                const isSelected = selectedWord === o.word
+                let btnCls =
+                  'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text)]'
+                if (answered) {
+                  if (isCorrect)
+                    btnCls =
+                      'border-[var(--wm-accent3)] bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)]'
+                  else if (isSelected)
+                    btnCls =
+                      'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
+                }
+                return (
+                  <button
+                    key={o.word}
+                    disabled={answered}
+                    onClick={() => handleMC(o.word)}
+                    className={`font-nunito cursor-pointer rounded-[10px] border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(.88rem,3cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${btnCls} ${
+                      !answered ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]' : ''
+                    }`}
+                  >
+                    {o.word}
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
+
+      {/* 3B generalized: 答对 + 该词有课文 → 显示查看原文 + 手动下一题 */}
+      {answered && wasCorrect === true && hasPassageContext && passage && (
+        <div className="mt-2 flex flex-col gap-2">
+          <button
+            onClick={() => {
+              router.push(
+                `/english/words/reading/${passage.key}?focus=${encodeURIComponent(question.word.word)}`,
+              )
+            }}
+            className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-amber-400 bg-amber-50 py-[clamp(.7rem,2.4cqi,.95rem)] text-[clamp(.85rem,2.8cqi,1rem)] font-extrabold text-amber-700 transition-all hover:bg-amber-100"
+          >
+            📖 查看课文原句 →
+          </button>
+          <button
+            onClick={handleNext}
+            className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.7rem,2.4cqi,.95rem)] text-[clamp(.85rem,2.8cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
+          >
+            下一题 →
+          </button>
+        </div>
+      )}
 
       {answered && wasCorrect === false && (
         <div className="flex flex-col gap-2">
@@ -231,6 +323,18 @@ export default function QuizCard({
             <span className="ml-1">{question.word.word}</span>
             <SpeakButton word={question.word.word} size="text-[1rem]" className="opacity-60 hover:opacity-100" />
           </div>
+          {hasPassageContext && passage && (
+            <button
+              onClick={() => {
+                router.push(
+                  `/english/words/reading/${passage.key}?focus=${encodeURIComponent(question.word.word)}`,
+                )
+              }}
+              className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-amber-400 bg-amber-50 py-[clamp(.7rem,2.4cqi,.95rem)] text-[clamp(.85rem,2.8cqi,1rem)] font-bold text-amber-700 transition-all hover:bg-amber-100"
+            >
+              📖 查看课文原句 →
+            </button>
+          )}
           <button
             onClick={handleNext}
             className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.75rem,2.5cqi,1rem)] text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"

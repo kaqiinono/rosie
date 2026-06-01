@@ -4,6 +4,7 @@ import type { WordEntry, WordMasteryInfo } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@/utils/masteryUtils'
+import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
 
@@ -13,6 +14,20 @@ interface FlashCardProps {
   onFlip: () => void
   index: number
   masteryInfo?: WordMasteryInfo
+}
+
+function highlightWordInSentence(sentence: string, word: string) {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`\\b(${escaped})s?\\b`, 'i')
+  const m = sentence.match(re)
+  if (!m || m.index === undefined) return sentence
+  return (
+    <>
+      {sentence.slice(0, m.index)}
+      <span className="font-extrabold text-amber-300">{sentence.slice(m.index, m.index + m[0].length)}</span>
+      {sentence.slice(m.index + m[0].length)}
+    </>
+  )
 }
 
 export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }: FlashCardProps) {
@@ -28,6 +43,12 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
 
   const delay = Math.min(index * 0.03, 0.25)
   const explHtml = hilite(entry.explanation, entry.word, entry.keywords)
+
+  // Show 课文原句 for any word whose lesson has a passage — independent of
+  // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;
+  // here we just key off "is there a passage for this lesson?".
+  const passage = findPassage(entry.unit, entry.lesson)
+  const passageSentence = passage ? findSentenceForWord(passage, entry.word) : null
 
   return (
     <div
@@ -106,9 +127,24 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
             )}
           </div>
 
-          {/* Bottom: english example preview */}
+          {/* Bottom: passage sentence (if lesson has one) + generic example.
+              Both shown when a passage is available so the learner gets the
+              real context AND a varied second sentence — per design 1B. */}
+          {passageSentence && (
+            <div className="relative z-[1] mt-0.5 rounded-lg border border-amber-500/20 bg-amber-500/[.07] px-2 py-1.5">
+              <div className="mb-0.5 flex items-center gap-1 text-[.55rem] font-extrabold tracking-wider text-amber-300/80 uppercase">
+                <span>📖</span> 课文原句
+              </div>
+              <p className="line-clamp-2 text-[.78rem] leading-relaxed text-white/55">
+                {highlightWordInSentence(passageSentence.sentence, entry.word)}
+              </p>
+            </div>
+          )}
           {entry.example && (
             <div className="relative z-[1] mt-0.5 border-t border-white/[.06] pt-2">
+              <div className="mb-0.5 text-[.55rem] font-extrabold tracking-wider text-white/[.22] uppercase">
+                通用例句
+              </div>
               <p className="line-clamp-2 text-[.8rem] leading-relaxed text-white/[.28]">
                 {entry.example}
               </p>

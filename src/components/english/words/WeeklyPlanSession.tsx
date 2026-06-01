@@ -16,6 +16,7 @@ import {
   fmtWeekRange,
 } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
+import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import QuizCard from './QuizCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
@@ -40,7 +41,7 @@ type WordKind = 'consolidate' | 'preview'
 
 interface DpQuizQ {
   word: WordEntry
-  type: 'A' | 'B' | 'C'
+  type: 'A' | 'B' | 'C' | 'D'
   kind: WordKind
 }
 
@@ -51,7 +52,7 @@ interface SessionSnapshot {
   subTask: 'all' | 'consolidate' | 'preview'
   studyIdx: number
   words: { key: string; kind: WordKind }[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]
+  quizQs: { key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
 }
@@ -117,11 +118,22 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setSelectedDate(firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null)
   }
 
-  const [consolidateTypes, setConsolidateTypes] = useState<Set<'A' | 'B' | 'C'>>(
-    new Set(['A', 'C']),
+  const [consolidateTypes, setConsolidateTypes] = useState<Set<'A' | 'B' | 'C' | 'D'>>(
+    new Set(['A', 'C', 'D']),
   )
-  const [previewTypes, setPreviewTypes] = useState<Set<'A' | 'B' | 'C'>>(
+  const [previewTypes, setPreviewTypes] = useState<Set<'A' | 'B' | 'C' | 'D'>>(
     new Set(['A', 'B']),
+  )
+
+  // Type D is enabled per-word based on whether the word's own lesson has a
+  // passage sentence — completely decoupled from the plan's ⭐ focus marker
+  // (which is a plan-level annotation, not a feature gate).
+  const isEligibleForTypeD = useCallback(
+    (entry: WordEntry) => {
+      const p = findPassage(entry.unit, entry.lesson)
+      return p !== undefined && findSentenceForWord(p, entry.word) !== null
+    },
+    [],
   )
 
   // Words and quiz questions are stored as key arrays; actual WordEntry objects are derived via useMemo
@@ -140,13 +152,20 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     [wordKeys, vocab],
   )
 
+  /** Does the current session contain any Type-D-eligible consolidate word?
+   *  Used to conditionally show the D toggle in the type selector. */
+  const anyEligibleConsolidateWord = useMemo(
+    () => words.some((w) => w.kind === 'consolidate' && isEligibleForTypeD(w.entry)),
+    [words, isEligibleForTypeD],
+  )
+
   const [studyIdx, setStudyIdx] = useState(() => snap0?.studyIdx ?? 0)
   const [studyDefOnly, setStudyDefOnly] = useState(false)
   const [currentSubTask, setCurrentSubTask] = useState<'all' | 'consolidate' | 'preview'>(
     () => snap0?.subTask ?? 'all',
   )
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C'; kind: WordKind }[]>(
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind }[]>(
     () => snap0?.quizQs ?? [],
   )
   const quizQs = useMemo(
@@ -282,7 +301,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     const shuffled = shuffle(words, seed)
     const groups = shuffled.map(w => {
       const raw = w.kind === 'consolidate' ? consolidateTypes : previewTypes
-      const types = normalizeQuizTypes(Array.from(raw))
+      let types = normalizeQuizTypes(Array.from(raw))
+      // Type D requires the word to be in the focus lesson AND have a passage sentence.
+      // Filter out D for ineligible words rather than skipping the whole word.
+      if (types.includes('D') && !isEligibleForTypeD(w.entry)) {
+        types = types.filter(t => t !== 'D')
+      }
       return types.map(t => ({ key: wordKey(w.entry), type: t, kind: w.kind }))
     })
     const qs = interleaveOrderedQuizSlots(groups, seed + 1)
@@ -292,7 +316,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setScore(0)
     setLastStarsEarned(0)
     setPhase('quiz')
-  }, [words, consolidateTypes, previewTypes])
+  }, [words, consolidateTypes, previewTypes, isEligibleForTypeD])
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
@@ -301,8 +325,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       if (q) {
         quizResultBuffer.current.push({ entry: q.word, correct })
         if (correct) {
-          // 单选题 (A/B) +1 红星; 填空题 (C) +2 红星
-          const amount = q.type === 'C' ? 2 : 1
+          // 单选题 (A/B) +1 红星; 填空题 (C) / 课文语境填空 (D) +2 红星
+          const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
           void awardStars('red', amount)
         }
       }
@@ -653,8 +677,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                   <div className="mb-4 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="min-w-[5.5rem] text-[.72rem] font-bold text-[#93c5fd]">必记词题型</span>
-                      {(['A', 'B', 'C'] as const).map((t) => {
-                        const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
+                      {((anyEligibleConsolidateWord ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'C']) as ('A' | 'B' | 'C' | 'D')[]).map((t) => {
+                        const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写', D: '📖 课文填空' }
                         const on = consolidateTypes.has(t)
                         return (
                           <button
@@ -668,7 +692,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                             }
                             className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[.82rem] font-bold transition-all select-none ${
                               on
-                                ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
+                                ? t === 'D'
+                                  ? 'border-[rgba(245,158,11,.55)] bg-[rgba(245,158,11,.12)] text-[#fbbf24]'
+                                  : 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
                                 : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
                             }`}
                           >
@@ -678,7 +704,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                                   ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
                                   : t === 'B'
                                     ? 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
-                                    : 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
+                                    : t === 'C'
+                                      ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
+                                      : 'bg-[rgba(245,158,11,.18)] text-[#fbbf24]'
                               }`}
                             >
                               {t}
@@ -692,6 +720,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="min-w-[5.5rem] text-[.72rem] font-bold text-[#fb923c]">预习词题型</span>
                         {(['A', 'B', 'C'] as const).map((t) => {
+                          // Preview lessons never use Type D — only consolidate/focus lesson uses passage context.
                           const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写' }
                           const on = previewTypes.has(t)
                           return (
@@ -707,7 +736,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                               className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[.82rem] font-bold transition-all select-none ${
                                 on
                                   ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd]'
-                                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+                                  : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)]'
                               }`}
                             >
                               <span
@@ -838,7 +867,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   if (phase === 'quiz' && quizQs[curQ]) {
     const q = quizQs[curQ]
     // Stars available this run: A/B = 1, C = 2 per question
-    const possibleStars = quizQs.reduce((sum, qq) => sum + (qq.type === 'C' ? 2 : 1), 0)
+    const possibleStars = quizQs.reduce((sum, qq) => sum + (qq.type === 'C' || qq.type === 'D' ? 2 : 1), 0)
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-2 flex items-center gap-3 py-3">
@@ -857,7 +886,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">✏️ 单词测试</div>
           <div className="ml-auto hidden text-[11px] font-bold text-[var(--wm-text-dim)] sm:block">
-            题型 {q.type} · {q.type === 'C' ? '+2⭐/题' : '+1⭐/题'}
+            题型 {q.type} · {q.type === 'C' || q.type === 'D' ? '+2⭐/题' : '+1⭐/题'}
           </div>
         </div>
 

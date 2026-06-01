@@ -26,7 +26,7 @@ type Phase = 'study' | 'quiz' | 'done'
 
 interface DpQuizQ {
   word: WordEntry
-  type: 'A' | 'B' | 'C'
+  type: 'A' | 'B' | 'C' | 'D'
 }
 
 interface OldReviewSnapshot {
@@ -34,7 +34,7 @@ interface OldReviewSnapshot {
   phase: 'study' | 'quiz'
   studyIdx: number
   wordKeys: string[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C' }[]
+  quizQs: { key: string; type: 'A' | 'B' | 'C' | 'D' }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
 }
@@ -81,7 +81,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     [sessionWordKeys, vocab],
   )
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' }[]>(
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D' }[]>(
     () => snap0?.quizQs ?? [],
   )
   const quizQs = useMemo<DpQuizQ[]>(
@@ -150,7 +150,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   }, [recordBatch, setIsImmersive, onBack])
 
   const startQuiz = useCallback(() => {
-    const types = normalizeQuizTypes([...enabledTypes] as ('A' | 'B' | 'C')[])
+    const types = normalizeQuizTypes([...enabledTypes] as ('A' | 'B' | 'C' | 'D')[])
     const qs = buildQuizQuestions(sessionWords, types, Date.now())
     quizResultBuffer.current = []
     setQuizQKeys(qs.map((q) => ({ key: wordKey(q.word), type: q.type })))

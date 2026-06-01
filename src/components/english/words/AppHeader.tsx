@@ -17,6 +17,7 @@ const TABS = [
   { id: 'cards', path: `${BASE}/cards`, icon: '🃏', label: '单词' },
   { id: 'practice', path: `${BASE}/practice`, icon: '✏️', label: '练习' },
   { id: 'daily', path: `${BASE}/daily`, icon: '📅', label: '计划' },
+  { id: 'reading', path: `${BASE}/reading`, icon: '📖', label: '阅读' },
   { id: 'flash', path: `${BASE}/flash`, icon: '🗂️', label: '闪卡' },
 ]
 

@@ -181,6 +181,8 @@ export interface WeekDayProgress {
   previewDone?: boolean // 预习子任务已完成
   consolidateScore?: number // 0–100
   previewScore?: number // 0–100
+  /** True once the learner has scrolled past 50% of the focus-lesson passage on this day. */
+  readingDone?: boolean
 }
 
 export interface EnglishWeeklyReport {
@@ -247,6 +249,12 @@ export interface WeeklyPlan {
    * `previewLessonKeys` / legacy heuristic. Stored in `plan_data` JSON.
    */
   wordKinds?: Record<string, 'consolidate' | 'preview'>
+  /**
+   * The single lesson key (`unit::lesson`) marked as this week's "重点" focus.
+   * Drives passage-aware behaviour: reading entrypoint, Type D question generation,
+   * passage sentence on word cards. Must be a 必记 lesson (not preview).
+   */
+  focusLessonKey?: string
 }
 
 // Math weekly plan types

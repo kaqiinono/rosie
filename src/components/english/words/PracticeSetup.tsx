@@ -4,26 +4,37 @@ import { useState } from 'react'
 
 interface PracticeSetupProps {
   scopeLabel: string
-  onStart: (types: ('A' | 'B' | 'C')[], preview: boolean) => void
+  onStart: (types: ('A' | 'B' | 'C' | 'D')[], preview: boolean) => void
+  /** When true, the Type D toggle (课文语境填空) is shown — set when at least one
+   *  filtered word comes from the focus lesson and has a passage sentence. */
+  typeDAvailable?: boolean
 }
 
-export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProps) {
+export default function PracticeSetup({ scopeLabel, onStart, typeDAvailable }: PracticeSetupProps) {
   const [typeA, setTypeA] = useState(true)
   const [typeB, setTypeB] = useState(false)
   const [typeC, setTypeC] = useState(true)
+  const [typeD, setTypeD] = useState(true)
   const [preview, setPreview] = useState(false)
 
   const handleStart = () => {
-    const types: ('A' | 'B' | 'C')[] = []
+    const types: ('A' | 'B' | 'C' | 'D')[] = []
     if (typeA) types.push('A')
     if (typeB) types.push('B')
     if (typeC) types.push('C')
+    if (typeD && typeDAvailable) types.push('D')
     if (!types.length) {
       alert('请至少选一种题型！')
       return
     }
     onStart(types, preview)
   }
+
+  const baseTypes = [
+    { key: 'A', label: 'A. 释义→选单词', checked: typeA, toggle: setTypeA },
+    { key: 'B', label: 'B. 单词→选释义', checked: typeB, toggle: setTypeB },
+    { key: 'C', label: 'C. 释义→默写', checked: typeC, toggle: setTypeC },
+  ] as const
 
   return (
     <div className="mb-5 rounded-[var(--wm-radius)] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6">
@@ -34,13 +45,7 @@ export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProp
           题型
         </span>
         <div className="flex flex-wrap gap-2">
-          {(
-            [
-              { key: 'A', label: 'A. 释义→选单词', checked: typeA, toggle: setTypeA },
-              { key: 'B', label: 'B. 单词→选释义', checked: typeB, toggle: setTypeB },
-              { key: 'C', label: 'C. 释义→默写', checked: typeC, toggle: setTypeC },
-            ] as const
-          ).map((t) => (
+          {baseTypes.map((t) => (
             <button
               key={t.key}
               onClick={() => t.toggle(!t.checked)}
@@ -53,6 +58,20 @@ export default function PracticeSetup({ scopeLabel, onStart }: PracticeSetupProp
               {t.label}
             </button>
           ))}
+          {typeDAvailable && (
+            <button
+              key="D"
+              onClick={() => setTypeD(!typeD)}
+              title="本周重点课的词，挖空课文原句作答"
+              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+                typeD
+                  ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+              }`}
+            >
+              📖 D. 课文语境填空
+            </button>
+          )}
         </div>
       </div>
 

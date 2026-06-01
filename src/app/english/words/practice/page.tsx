@@ -1,8 +1,10 @@
 'use client'
 
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useEffect, useRef } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
+import { findPassage, findPassageByKey, findSentenceForWord } from '@/utils/reading-data'
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'
 
@@ -19,6 +21,40 @@ export default function PracticePage() {
     setPreviewCards,
   } = useWordsContext()
   const { setIsImmersive } = useImmersive()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  // 3C: Context-practice entry from the reading page. When the URL carries
+  // `?context=<passageKey>`, auto-filter to that lesson and launch immersive
+  // Type-D practice without going through the manual PracticeSetup step.
+  const contextPassageKey = searchParams.get('context')
+  const autoLaunchedRef = useRef(false)
+  useEffect(() => {
+    if (!contextPassageKey || autoLaunchedRef.current || vocab.length === 0) return
+    const passage = findPassageByKey(contextPassageKey)
+    if (!passage) return
+    autoLaunchedRef.current = true
+    setSelUnits(new Set([passage.unit]))
+    setSelLessons(new Set([`${passage.unit}::${passage.lesson}`]))
+    setSelWords(new Set())
+    setMasteryFilter(null)
+    setPracticeTypes(['D'])
+    setPreviewCards(false)
+    setIsImmersive(true)
+    // Drop the query so a refresh doesn't re-launch.
+    router.replace('/english/words/practice')
+  }, [contextPassageKey, vocab.length, setSelUnits, setSelLessons, setSelWords, setMasteryFilter, setPracticeTypes, setPreviewCards, setIsImmersive, router])
+
+  // Type D is available whenever any filtered word's lesson has a passage
+  // sentence for it — completely independent of the week-plan's ⭐ focus marker.
+  const typeDAvailable = useMemo(
+    () =>
+      filteredWords.some((w) => {
+        const passage = findPassage(w.unit, w.lesson)
+        return passage !== undefined && findSentenceForWord(passage, w.word) !== null
+      }),
+    [filteredWords],
+  )
 
   const scopeLabel = useMemo(() => {
     const units = selUnits.size ? [...selUnits].join(', ') : '全部Unit'
@@ -28,7 +64,7 @@ export default function PracticePage() {
     return `${units} / ${lessons}（${filteredWords.length}词）`
   }, [selUnits, selLessons, filteredWords.length])
 
-  const startPractice = useCallback((types: ('A' | 'B' | 'C')[], preview: boolean) => {
+  const startPractice = useCallback((types: ('A' | 'B' | 'C' | 'D')[], preview: boolean) => {
     if (!filteredWords.length) {
       alert('请先选择单词范围！')
       return
@@ -88,7 +124,7 @@ export default function PracticePage() {
         masteryMap={masteryMap}
       />
       <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
-        <PracticeSetup scopeLabel={scopeLabel} onStart={startPractice} />
+        <PracticeSetup scopeLabel={scopeLabel} onStart={startPractice} typeDAvailable={typeDAvailable} />
       </div>
     </>
   )
