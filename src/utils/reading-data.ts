@@ -31,6 +31,87 @@ export interface ReadingPassage {
 
 export const readingPassages: ReadingPassage[] = [
   {
+    key: 'u5l1',
+    unit: 'Unit 5',
+    lesson: 'Lesson 1',
+    title: 'Letters to HelpMe Hal',
+    paragraphs: [
+      "Dear HelpMe Hal,\n\nI've just moved to Berlin, and this is my first term at Handel School. I've been at the school two weeks, and I haven't met any new friends.",
+      "I have tried to talk to classmates after the bell rings at the end of the lessons, but nobody says much to me at all. Well, one person did. She told me that I can't wear a sweatshirt over my uniform. I'm really friendly, and want to meet people. I've never changed schools before. I don't know what to do. Please help!\n\nLonely Lea",
+      "Dear Lonely Lea,\n\nCongratulations! You've taken your first step. Writing a letter to the school magazine is a great thing to do. Now, people will know that there's a super-friendly new student.",
+      "Here are some ideas for making friends. First, don't talk to friends after the bell rings. Most people must move quickly to their next lesson. It's not you – people haven't got the time to talk. Instead, ask to sit with classmates at lunch, in the canteen. You'll have more time. Or, go out into the playground during the break. Find people doing something that is interesting to you, and talk to them. You'll have friends in no time!\n\nGood luck,\n\nHelpMe Hal",
+    ],
+    glossary: [
+      {
+        word: 'uniform',
+        ipa: '/ˈjuːnɪfɔːrm/',
+        meaningCn: 'n. 制服，校服',
+        meaningEn: 'the official clothes students must wear at school',
+        category: '校园生活与日常词汇',
+      },
+      {
+        word: 'playground',
+        ipa: '/ˈpleɪɡraʊnd/',
+        meaningCn: 'n. 操场，游乐场',
+        meaningEn: 'an outdoor area at school where children play during breaks',
+        category: '校园生活与日常词汇',
+      },
+      {
+        word: 'congratulations',
+        ipa: '/kənˌɡrætʃuˈleɪʃnz/',
+        meaningCn: 'int. & n. 祝贺，恭喜',
+        meaningEn: 'words you say to praise someone for something good they did',
+        category: '校园生活与日常词汇',
+      },
+      {
+        word: 'in no time',
+        meaningCn: '立即，马上，很快',
+        meaningEn: 'very soon; after a short period',
+        category: '核心短语与高阶表达',
+      },
+      {
+        word: 'change schools',
+        meaningCn: '转学',
+        meaningEn: 'to leave one school and start attending another',
+        category: '核心短语与高阶表达',
+      },
+      {
+        word: 'take a step',
+        meaningCn: '迈出一步，采取行动',
+        meaningEn: 'to do something as the first move toward a goal',
+        category: '核心短语与高阶表达',
+      },
+      {
+        word: 'Berlin',
+        meaningCn: '柏林（德国首都）',
+        meaningEn: 'the capital city of Germany',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Handel',
+        meaningCn: '韩德尔（文中指校名）',
+        meaningEn: 'the name of the school in this passage',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Hal',
+        meaningCn: '哈尔（专栏作者名）',
+        meaningEn: 'the name of the advice columnist in this passage',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Lea',
+        meaningCn: '莉亚（学生署名）',
+        meaningEn: 'the nickname of the student who wrote the first letter',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+    ],
+  },
+  {
     key: 'u5l2',
     unit: 'Unit 5',
     lesson: 'Lesson 2',

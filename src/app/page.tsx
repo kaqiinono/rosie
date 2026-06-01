@@ -49,6 +49,16 @@ const modules: ModuleCardData[] = [
     icon: '🧮',
   },
   {
+    href: '/flipbook',
+    title: '绘本阅读',
+    description: '3D 翻页讲义，上传 PDF 与讲解音频，按时间轴自动翻页。',
+    tag: 'READ',
+    variant: 'reading',
+    stats: ['PDF 翻页', '音频联动', '进度保存'],
+    enterText: '打开书架',
+    icon: '📕',
+  },
+  {
     href: '/vouchers',
     title: '我的奖券',
     description: '口算、英语、数学均可赚星星，积攒后兑换心愿奖券。',

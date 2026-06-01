@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
+import { useReadingPassageMedia } from '@/hooks/useReadingPassageMedia'
+import ReadingAudioButton from '@/components/english/reading/ReadingAudioButton'
 import { findPassageByKey, findSentenceForWord, readingPassages } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
 import type { MasteryLevel } from '@/utils/masteryUtils'
@@ -30,6 +32,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const { vocab, masteryMap, recordRecallAttempt } = useWordsContext()
   const { user } = useAuth()
   const { weeklyPlan, updateDayProgress } = useWeeklyPlan(user)
+  const { getUrlForPassage } = useReadingPassageMedia(user)
   const searchParams = useSearchParams()
   const focusWord = searchParams.get('focus')
 
@@ -238,9 +241,17 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           )}
         </div>
 
-        <h1 className="font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">
-          {passage.title}
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="min-w-0 flex-1 font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">
+            {passage.title}
+          </h1>
+          <ReadingAudioButton
+            src={getUrlForPassage(passage.key)}
+            mode="once"
+            size="md"
+            className="mt-0.5"
+          />
+        </div>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
           {LEGEND.map((l) => (
             <div key={l.level} className="flex items-center gap-1.5">

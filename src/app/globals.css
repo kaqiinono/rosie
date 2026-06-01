@@ -366,3 +366,206 @@
   .recall-mark-correct::after { right: 4px; font-size: 10px; }
   .recall-mark-wrong::after { right: 3px; font-size: 11px; }
 }
+
+/* Flipbook — immersive reader (warm storybook theater) */
+.flipbook-module {
+  --flipbook-bg: #14110f;
+  --flipbook-fg: #f5f0e8;
+  --flipbook-muted: rgba(245, 240, 232, 0.55);
+  --flipbook-accent: #e8a54b;
+  --flipbook-accent-fg: #1a1208;
+  --flipbook-chrome-bg: rgba(20, 17, 15, 0.88);
+  --flipbook-chrome-border: rgba(245, 240, 232, 0.08);
+  --flipbook-control-bg: rgba(245, 240, 232, 0.08);
+  --flipbook-control-hover: rgba(245, 240, 232, 0.14);
+  background: var(--flipbook-bg);
+  color-scheme: dark;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+.flipbook-module:not(:has(.flipbook-reader)) {
+  background: linear-gradient(165deg, #1a0f08 0%, #2a1810 35%, #1f120c 70%, #120a06 100%);
+}
+
+.flipbook-module:has(.flipbook-reader) {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.flipbook-reader {
+  --flipbook-bg: #0a0907;
+  background: radial-gradient(ellipse 130% 90% at 50% 45%, #1f1a14 0%, #100d0a 55%, var(--flipbook-bg) 100%);
+}
+
+/* Inner wrapper — host for the CSS-rotated landscape mode on mobile. */
+.flipbook-rotator {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  transform-origin: center center;
+  transition: transform 350ms cubic-bezier(0.4, 0.05, 0.2, 1);
+}
+
+.flipbook-rotator--landscape {
+  width: 100vh;
+  height: 100vw;
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Soft vignette baked into the stage — focuses eye on the page. */
+.flipbook-vignette {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 50%, transparent 30%, rgba(0, 0, 0, 0.35) 100%),
+    radial-gradient(circle at 50% 0%, rgba(232, 165, 75, 0.04) 0%, transparent 50%);
+}
+
+/* Frosted chrome — header + audio overlay. */
+.flipbook-chrome-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 12, 10, 0.92) 0%,
+    rgba(15, 12, 10, 0.78) 60%,
+    rgba(15, 12, 10, 0) 100%
+  );
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.flipbook-chrome-overlay--bottom {
+  background: linear-gradient(
+    to top,
+    rgba(15, 12, 10, 0.94) 0%,
+    rgba(15, 12, 10, 0.82) 55%,
+    rgba(15, 12, 10, 0) 100%
+  );
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Title — display serif accent, distinct from body sans. */
+.flipbook-title {
+  font-family: "Cormorant Garamond", "Source Han Serif SC", "Noto Serif SC",
+    "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  font-style: italic;
+}
+
+/* Pill control — uniform, refined */
+.flipbook-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 36px;
+  height: 32px;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  background: var(--flipbook-control-bg);
+  color: var(--flipbook-fg);
+  font-size: 11px;
+  line-height: 1;
+  transition: background 200ms ease, color 200ms ease, transform 150ms ease;
+  flex-shrink: 0;
+}
+
+.flipbook-chip:hover {
+  background: var(--flipbook-control-hover);
+}
+
+.flipbook-chip:active {
+  transform: scale(0.96);
+}
+
+/* Stage — react-pageflip mount target gets a crisp grounded shadow. */
+.flipbook-shadow {
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.04))
+    drop-shadow(0 28px 56px rgba(0, 0, 0, 0.65))
+    drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+}
+
+/* Each page — warm paper, subtle inner ring to imply edge thickness. */
+.flipbook-page-surface {
+  background:
+    radial-gradient(ellipse 100% 100% at 50% 50%, #fdf9f1 0%, #f5efe2 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Edge hints — translucent gradient affordances showing tap zones. */
+.flipbook-edge-hint {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  width: 36px;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+  z-index: 5;
+}
+
+.flipbook-edge-hint--left {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(232, 165, 75, 0.16) 0%,
+    rgba(232, 165, 75, 0.04) 60%,
+    transparent 100%
+  );
+  border-left: 1px solid rgba(232, 165, 75, 0.18);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+}
+
+.flipbook-edge-hint--right {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    rgba(232, 165, 75, 0.16) 0%,
+    rgba(232, 165, 75, 0.04) 60%,
+    transparent 100%
+  );
+  border-right: 1px solid rgba(232, 165, 75, 0.18);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+}
+
+/* Subtle pulse on first appearance — onboarding cue. */
+@keyframes flipbook-edge-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.flipbook-edge-hint--left,
+.flipbook-edge-hint--right {
+  animation: flipbook-edge-pulse 2400ms ease-in-out 1;
+}
+
+.flipbook-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--flipbook-control-bg);
+  border-radius: 999px;
+}
+
+.flipbook-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--flipbook-accent);
+  cursor: pointer;
+}
+
+.flipbook-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: var(--flipbook-accent);
+  cursor: pointer;
+}
