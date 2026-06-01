@@ -16,6 +16,7 @@ import { PROBLEMS as P40, PROBLEM_TYPES as PT40 } from '@/utils/lesson40-data'
 import { PROBLEMS as P41, PROBLEM_TYPES as PT41 } from '@/utils/lesson41-data'
 import { PROBLEMS as P42, PROBLEM_TYPES as PT42 } from '@/utils/lesson42-data'
 import { PROBLEMS as P43, PROBLEM_TYPES as PT43 } from '@/utils/lesson43-data'
+import { PROBLEMS as P44, PROBLEM_TYPES as PT44 } from '@/utils/lesson44-data'
 import type { Problem, ProblemSet } from '@/utils/type'
 import type { QuizProblemItem } from '@/hooks/useMathQuiz'
 
@@ -60,6 +61,7 @@ const LESSON_META: Array<{
   { id: '41', name: '间隔趣题', data: P41, types: PT41 },
   { id: '42', name: '生活智力题', data: P42, types: PT42 },
   { id: '43', name: '等差数列初识', data: P43, types: PT43 },
+  { id: '44', name: '统筹优化', data: P44, types: PT44 },
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

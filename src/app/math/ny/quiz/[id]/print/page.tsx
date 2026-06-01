@@ -14,13 +14,14 @@ import { PROBLEMS as P40 } from '@/utils/lesson40-data'
 import { PROBLEMS as P41 } from '@/utils/lesson41-data'
 import { PROBLEMS as P42 } from '@/utils/lesson42-data'
 import { PROBLEMS as P43 } from '@/utils/lesson43-data'
+import { PROBLEMS as P44 } from '@/utils/lesson44-data'
 import type { Problem, ProblemSet } from '@/utils/type'
 import { computeQuizPoints, type QuizPaper } from '@/hooks/useMathQuiz'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
 const LESSON_DATA: Record<string, ProblemSet> = {
-  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43,
+  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'

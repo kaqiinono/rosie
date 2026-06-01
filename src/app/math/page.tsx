@@ -11,6 +11,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/44',
+    title: '统筹优化探险',
+    description: '合理安排时间、减少等候、过河过桥、烙饼刷漆与最短路径 —— 生活中的统筹问题。',
+    icon: '⏱️',
+    lectureNum: '第 44 讲',
+    tags: ['统筹优化', '排队·过河·路径', '40 道互动题'],
+    variant: 'violet',
+  },
+  {
     href: '/math/ny/43',
     title: '等差数列初识探险',
     description: '认识首项、公差、项数与求和公式，解决生活中的等差数列问题。',
