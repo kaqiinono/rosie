@@ -49,12 +49,13 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
-        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 等差数列初识 · 6大题型</div>
+        <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 等差数列初识 · 7大题型</div>
         <div className="mb-3 text-[13px] leading-relaxed text-text-secondary">
           <strong className="text-text-primary">核心公式：</strong>
           <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">第n项 = 首项 + (n−1)×公差</code>
           <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">项数 = (末项−首项)÷公差+1</code>
-          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">和 = (首项+末项)×项数÷2</code>
+          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">首末项求和 = (首项+末项)×项数÷2</code>
+          <code className="mx-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs">中项求和 = 中项×项数</code>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {PROBLEM_TYPES.map(t => {
@@ -80,7 +81,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <div className="mt-3 flex items-start gap-2 rounded-lg bg-cyan-50 p-3">
           <span className="shrink-0 text-base">⭐</span>
           <span className="text-xs leading-relaxed text-cyan-800">
-            万能口诀：<strong>求第几项 → 首项加 (n−1) 个公差；求项数 → 末减首除公差再加一；求和 → 首加末乘项数除以二。</strong>
+            万能口诀：<strong>求第几项 → 首项加 (n−1) 个公差；求项数 → 末减首除公差再加一；首末项求和 → 首加末乘项数除以二；中项求和 → 总和除以项数得中项。</strong>
           </span>
         </div>
       </div>

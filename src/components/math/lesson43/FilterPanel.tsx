@@ -36,7 +36,8 @@ export default createFilterPanel({
     { key: 'type2', label: '题型2·求项数' },
     { key: 'type3', label: '题型3·公差首末' },
     { key: 'type4', label: '题型4·数列应用' },
-    { key: 'type5', label: '题型5·数列求和' },
+    { key: 'type5', label: '题型5·首末项求和' },
+    { key: 'type7', label: '题型7·中项求和' },
     { key: 'type6', label: '题型6·综合规律' },
   ],
   tagColors: {
@@ -45,6 +46,7 @@ export default createFilterPanel({
     type3: 'bg-orange-100 text-orange-800',
     type4: 'bg-purple-100 text-purple-800',
     type5: 'bg-red-100 text-red-800',
+    type7: 'bg-teal-100 text-teal-800',
     type6: 'bg-pink-100 text-pink-800',
   },
 }, ProblemDetail)

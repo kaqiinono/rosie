@@ -16,7 +16,7 @@ function AlltestContent() {
 
   const [filters, setFilters] = useState(() => ({
     source: new Set(['pretest', 'lesson', 'homework', 'workbook', 'supplement']),
-    type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5', 'type6']),
+    type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5', 'type7', 'type6']),
     mastery: 'all' as MasteryFilter,
     difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
   }))
