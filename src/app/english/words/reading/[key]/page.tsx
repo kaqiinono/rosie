@@ -89,10 +89,14 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
     return vocab.filter((w) => w.unit === passage.unit && w.lesson === passage.lesson)
   }, [vocab, passage])
 
+  // Recall outcomes drive the cute in-passage decorations (🌸 for correct,
+  // 💩 for wrong). Distinct from masteryMap because we want a per-attempt visual
+  // even when mastery itself doesn't advance (wrong answer doesn't penalise).
+  const [recallOutcomes, setRecallOutcomes] = useState<Record<string, 'correct' | 'wrong'>>({})
+
   const handleRecallAnswer = useCallback(
     (entry: WordEntry, correct: boolean) => {
-      // Mastery only advances on correct recall; a wrong answer simply reveals
-      // the word in-context without penalising the learner.
+      setRecallOutcomes((prev) => ({ ...prev, [wordKey(entry)]: correct ? 'correct' : 'wrong' }))
       if (correct) recordBatch([{ entry, correct: true }])
     },
     [recordBatch],
@@ -140,8 +144,18 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
       {/* Page header */}
       <div className="mb-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-5 ring-1 ring-orange-200/60 dark:from-orange-500/10 dark:to-amber-500/10 dark:ring-orange-500/20">
         <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-orange-700 ring-1 ring-orange-200">
-            📖 {passage.unit} · {passage.lesson}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/english/words/reading"
+              className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold text-orange-700 ring-1 ring-orange-200 transition hover:-translate-x-0.5 hover:bg-white"
+              aria-label="返回阅读列表"
+            >
+              <span className="text-[14px] leading-none">←</span>
+              <span>返回</span>
+            </Link>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-orange-700 ring-1 ring-orange-200">
+              📖 {passage.unit} · {passage.lesson}
+            </div>
           </div>
           {/* Mode toggle (2C) */}
           <div className="inline-flex rounded-full bg-white/70 p-0.5 ring-1 ring-orange-200">
@@ -182,6 +196,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           lessonWords={lessonWords}
           masteryMap={masteryMap}
           focusWord={focusWord}
+          recallOutcomes={recallOutcomes}
           renderParagraphFooter={readingMode === 'learn' ? renderQuizFooter : undefined}
         />
       </div>

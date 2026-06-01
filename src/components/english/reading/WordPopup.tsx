@@ -12,6 +12,7 @@ import {
   MASTERY_ICON,
   type MasteryLevel,
 } from '@/utils/masteryUtils'
+import SpeakButton from '@/components/english/words/SpeakButton'
 
 interface WordPopupProps {
   entry: WordEntry | null
@@ -100,10 +101,15 @@ export default function WordPopup({ entry, passage, mastery, onClose }: WordPopu
         </button>
 
         <div className="px-5 pt-5 pb-2">
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-center gap-2">
             <h3 className="text-2xl font-extrabold text-gray-900">{entry.word}</h3>
+            <SpeakButton
+              word={entry.word}
+              size="text-[1.2rem]"
+              className="h-9 w-9 bg-amber-100 text-amber-700 hover:bg-amber-200 hover:scale-110"
+            />
             {MASTERY_ICON[level] && (
-              <span className="text-lg" title={LEVEL_LABEL[level]}>{MASTERY_ICON[level]}</span>
+              <span className="ml-auto text-lg" title={LEVEL_LABEL[level]}>{MASTERY_ICON[level]}</span>
             )}
           </div>
           {entry.ipa && (

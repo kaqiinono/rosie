@@ -280,3 +280,89 @@
   outline-offset: 2px;
   border-radius: 6px;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Recall-quiz outcome decorations on words inside reading passages.
+   All decorations live INSIDE the capsule box — no floating emojis that
+   spill into neighbouring lines or kiss adjacent capsules.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@keyframes recall-bloom {
+  0%, 100% { transform: translateY(-50%) rotate(-8deg) scale(1); }
+  50%      { transform: translateY(-50%) rotate(10deg) scale(1.18); }
+}
+@keyframes recall-wobble {
+  0%, 100% { transform: translateY(-50%) rotate(-6deg); }
+  50%      { transform: translateY(-52%) rotate(8deg); }
+}
+
+/* Common: convert to inline-block so absolute decorations + margins behave
+   reliably, and adjacent capsules don't visually touch each other. */
+.recall-mark-correct,
+.recall-mark-wrong {
+  display: inline-block !important;
+  position: relative;
+  margin: 0 4px !important;
+  vertical-align: baseline;
+}
+
+/* Correct — floral capsule: pink + lavender gradient with hot-pink ring and
+   a 🌸 anchored inside the right edge (rotates gently). */
+.recall-mark-correct {
+  background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 55%, #ede9fe 100%) !important;
+  color: #be185d !important;
+  border: none !important;
+  box-shadow:
+    0 0 0 2px #f9a8d4,
+    0 2px 0 #ec4899,
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  padding: 2px 22px 2px 8px !important;  /* right-pad reserves room for 🌸 */
+}
+.recall-mark-correct::after {
+  content: '🌸';
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  transform-origin: center;
+  animation: recall-bloom 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 1px 1px rgba(236, 72, 153, 0.3));
+}
+
+/* Wrong — rose+amber capsule with red ring, 💩 wobbling inside right edge. */
+.recall-mark-wrong {
+  background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%) !important;
+  color: #b45309 !important;
+  border: none !important;
+  box-shadow:
+    0 0 0 2px #fca5a5,
+    0 2px 0 #ef4444;
+  padding: 2px 22px 2px 8px !important;
+  text-decoration: wavy underline #fb7185 1px;
+  text-underline-offset: 4px;
+}
+.recall-mark-wrong::after {
+  content: '💩';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+  transform-origin: center;
+  animation: recall-wobble 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+/* Tighter on mobile so capsules don't dominate narrow passage columns. */
+@media (max-width: 640px) {
+  .recall-mark-correct,
+  .recall-mark-wrong {
+    margin: 0 3px !important;
+    padding: 1px 18px 1px 6px !important;
+  }
+  .recall-mark-correct::after { right: 4px; font-size: 10px; }
+  .recall-mark-wrong::after { right: 3px; font-size: 11px; }
+}

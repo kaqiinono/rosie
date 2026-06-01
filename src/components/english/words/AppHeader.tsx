@@ -54,18 +54,24 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
               <button
                 key={t.id}
                 onClick={() => router.push(t.path)}
-                className={`font-nunito cursor-pointer rounded-[9px] px-2.5 py-1.5 text-[0.875rem] font-bold transition-all ${
+                title={t.label}
+                aria-label={t.label}
+                className={`font-nunito flex shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-[9px] px-2 py-1.5 text-[0.875rem] font-bold transition-all sm:px-2.5 ${
                   active
                     ? 'bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] text-white shadow-[0_3px_10px_rgba(233,69,96,.35)]'
                     : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
                 }`}
               >
-                {t.icon} {t.label}
+                <span aria-hidden className="text-[1rem] leading-none">{t.icon}</span>
+                <span className="hidden sm:inline">{t.label}</span>
               </button>
             )
           })}
         </nav>
 
+        {/* 词库管理 + 沉浸模式 仅在 /cards 路由下显示 —— 这两个动作都强绑定词卡视图,
+            放在其他路由(/practice / /daily / /flash / /reading)上只是视觉噪音。 */}
+        {pathname.startsWith(`${BASE}/cards`) && (
         <div className="flex shrink-0 items-center gap-2">
           <div ref={ddRef} className="relative">
             <button
@@ -161,6 +167,7 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
             沉浸模式
           </button>
         </div>
+        )}
       </div>
     </header>
   )

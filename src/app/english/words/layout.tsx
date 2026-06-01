@@ -55,12 +55,14 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [vocab])
 
   const enterImmersive = useCallback(() => {
-    if (!isDaily && !isFlash && !isReading && !filteredWords.length) {
+    // 沉浸模式入口仅出现在 /cards 上,这里是防御性兜底:其他路由意外触发时直接 return,
+    // 避免 AppHeader 被隐藏但 ImmersiveMode 又不渲染,导致用户无返回出口。
+    if (!filteredWords.length) {
       alert('请先筛选单词！')
       return
     }
     setIsImmersive(true)
-  }, [isDaily, isFlash, isReading, filteredWords.length, setIsImmersive])
+  }, [filteredWords.length, setIsImmersive])
 
   return (
     <div className="min-h-screen font-nunito" style={{ background: 'var(--wm-bg)', color: 'var(--wm-text)' }}>
@@ -68,7 +70,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         className="fixed inset-0 pointer-events-none z-0"
         style={{ background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)' }}
       />
-      {!isImmersive && (
+      {(!isImmersive || isReading) && (
         <AppHeader
           onImport={() => setImportOpen(true)}
           onExport={handleExport}

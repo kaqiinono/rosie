@@ -13,6 +13,11 @@ interface PassageViewProps {
   lessonWords: WordEntry[]
   masteryMap: WordMasteryMap
   focusWord?: string | null
+  /**
+   * Per-word recall outcome (keyed by `wordKey(entry)`).
+   * Drives the cute floral / 粑粑 decoration on matched words.
+   */
+  recallOutcomes?: Record<string, 'correct' | 'wrong'>
   /** Optional render slot injected at the end of each paragraph (e.g. recall quiz). */
   renderParagraphFooter?: (paragraphIndex: number) => ReactNode
 }
@@ -34,6 +39,7 @@ export default function PassageView({
   lessonWords,
   masteryMap,
   focusWord,
+  recallOutcomes,
   renderParagraphFooter,
 }: PassageViewProps) {
   const [selected, setSelected] = useState<WordEntry | null>(null)
@@ -95,12 +101,15 @@ export default function PassageView({
         const occ = occurrenceMap.get(occKey) ?? 0
         occurrenceMap.set(occKey, occ + 1)
         const id = slugForWord(entry.word, paragraphIndex, occ)
+        const outcome = recallOutcomes?.[wordKey(entry)]
+        const outcomeClass =
+          outcome === 'correct' ? 'recall-mark-correct' : outcome === 'wrong' ? 'recall-mark-wrong' : ''
         parts.push(
           <button
             key={`${id}-${m.index}`}
             id={id}
             onClick={() => setSelected(entry)}
-            className={`relative inline cursor-pointer rounded-md px-1 py-0.5 font-bold transition-colors ${LEVEL_CLASS[level]}`}
+            className={`relative inline cursor-pointer rounded-md px-1 py-0.5 font-bold transition-colors ${LEVEL_CLASS[level]} ${outcomeClass}`}
           >
             {matched}
           </button>,
