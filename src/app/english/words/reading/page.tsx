@@ -1,53 +1,95 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useMemo } from 'react'
+import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { readingPassages, findPassage } from '@/utils/reading-data'
+import { useWordsContext } from '@/contexts/WordsContext'
+import { readingPassages } from '@/utils/reading-data'
+import { wordKey } from '@/utils/english-helpers'
+import { getWordMasteryLevel } from '@/utils/masteryUtils'
 
 export default function ReadingIndexPage() {
-  const router = useRouter()
   const { user } = useAuth()
   const { weeklyPlan, isLoading } = useWeeklyPlan(user)
+  const { vocab, masteryMap } = useWordsContext()
 
-  useEffect(() => {
-    if (isLoading) return
-    let key: string | null = null
+  const focusKey = weeklyPlan?.focusLessonKey ?? null
 
-    // Prefer the current week's focus lesson if it has a passage
-    const focusKey = weeklyPlan?.focusLessonKey
-    if (focusKey) {
-      const [unit, lesson] = focusKey.split('::')
-      const p = findPassage(unit, lesson)
-      if (p) key = p.key
-    }
-
-    // Otherwise: first lesson in the current plan that has a passage
-    if (!key && weeklyPlan) {
-      const units = weeklyPlan.unit.split(',').map((s) => s.trim())
-      const lessons = weeklyPlan.lesson.split(',').map((s) => s.trim())
-      for (let i = 0; i < units.length; i++) {
-        const p = findPassage(units[i], lessons[i] ?? lessons[0])
-        if (p) {
-          key = p.key
-          break
-        }
+  const cards = useMemo(() => {
+    return readingPassages.map((p) => {
+      const lessonWords = vocab.filter((w) => w.unit === p.unit && w.lesson === p.lesson)
+      const mastered = lessonWords.reduce((n, w) => {
+        const info = masteryMap[wordKey(w)]
+        return n + (info && getWordMasteryLevel(info.correct) >= 3 ? 1 : 0)
+      }, 0)
+      const isFocus = focusKey === `${p.unit}::${p.lesson}`
+      return {
+        passage: p,
+        wordCount: lessonWords.length,
+        masteredCount: mastered,
+        glossaryCount: p.glossary?.length ?? 0,
+        paragraphCount: p.paragraphs.length,
+        isFocus,
       }
-    }
-
-    // Final fallback: first available passage
-    if (!key) key = readingPassages[0]?.key ?? null
-
-    if (key) router.replace(`/english/words/reading/${key}`)
-  }, [router, weeklyPlan, isLoading])
+    })
+  }, [vocab, masteryMap, focusKey])
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center text-[var(--wm-text-dim)]">
-      <div className="text-center">
-        <div className="mb-2 text-4xl">📖</div>
-        <div className="font-nunito">正在打开课文…</div>
+    <main className="font-nunito relative z-[1] mx-auto max-w-3xl px-4 pt-6 pb-32" style={{ colorScheme: 'light' }}>
+      <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
+
+      <div className="mb-4 flex items-baseline justify-between gap-3">
+        <h1 className="font-fredoka text-xl font-bold text-[var(--wm-text)] sm:text-2xl">
+          📚 阅读课文
+        </h1>
+        {isLoading && (
+          <span className="text-[11px] text-[var(--wm-text-dim)]">载入本周计划…</span>
+        )}
       </div>
-    </div>
+
+      {cards.length === 0 ? (
+        <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-gray-200">
+          <div className="mb-2 text-4xl">📭</div>
+          <div className="font-bold text-gray-800">还没有课文</div>
+          <div className="mt-1 text-[12px] text-gray-500">敬请期待新课文上线。</div>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {cards.map(({ passage: p, wordCount, masteredCount, glossaryCount, paragraphCount, isFocus }) => (
+            <li key={p.key}>
+              <Link
+                href={`/english/words/reading/${p.key}`}
+                className="group block rounded-2xl bg-white p-4 no-underline ring-1 ring-gray-200 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(245,158,11,.18)] hover:ring-orange-300 sm:p-5"
+              >
+                <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-bold text-orange-700 ring-1 ring-orange-200">
+                    📖 {p.unit} · {p.lesson}
+                  </span>
+                  {isFocus && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-sky-500 to-indigo-500 px-2 py-0.5 text-[11px] font-bold text-white ring-1 ring-sky-300">
+                      ⭐ 本周精读
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-fredoka text-lg font-bold text-gray-900 group-hover:text-orange-700 sm:text-xl">
+                  {p.title}
+                </h2>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-gray-600">
+                  <span>📄 {paragraphCount} 段</span>
+                  {wordCount > 0 && (
+                    <span>
+                      📝 本课词 <span className="font-bold text-emerald-700">{masteredCount}</span>
+                      <span className="text-gray-400"> / {wordCount} 已掌握</span>
+                    </span>
+                  )}
+                  {glossaryCount > 0 && <span>📒 {glossaryCount} 难点词</span>}
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
   )
 }

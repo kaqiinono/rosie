@@ -109,6 +109,62 @@ export function useWordMastery(user: User | null) {
     })
   }, [user])
 
+  /**
+   * Record a paragraph-recall attempt (correct OR wrong). Always tags the
+   * review history entry with `source: 'recall'` so we can derive coverage.
+   * Correct: bumps `correct` and may advance stage (mirrors recordBatch).
+   * Wrong:   bumps `incorrect` but never regresses stage — recall is gentle.
+   */
+  const recordRecallAttempt = useCallback((entry: WordEntry, correct: boolean) => {
+    if (!user) return
+    const today = new Date().toISOString().slice(0, 10)
+    const key = wordKey(entry)
+
+    setMasteryMap(prev => {
+      const cur: WordMasteryInfo = prev[key] ?? { correct: 0, incorrect: 0, lastSeen: '' }
+      const sameDay = cur.lastSeen === today
+      const stageUpdated = correct && !sameDay ? advanceStage(cur, today, key) : cur
+
+      const updated: WordMasteryInfo = {
+        ...stageUpdated,
+        correct: cur.correct + (correct ? 1 : 0),
+        incorrect: cur.incorrect + (correct ? 0 : 1),
+        lastSeen: today,
+        reviewHistory: [
+          ...(cur.reviewHistory ?? []),
+          { date: today, correct, source: 'recall' },
+        ],
+      }
+
+      const next = { ...prev, [key]: updated }
+
+      supabase
+        .from('word_mastery')
+        .upsert(
+          [
+            {
+              user_id: user.id,
+              word_key: key,
+              correct: updated.correct,
+              incorrect: updated.incorrect,
+              last_seen: today,
+              stage: updated.stage ?? null,
+              next_review_date: updated.nextReviewDate ?? null,
+              is_hard: updated.isHard ?? false,
+              review_history: updated.reviewHistory ?? [],
+              updated_at: new Date().toISOString(),
+            },
+          ],
+          { onConflict: 'user_id,word_key' },
+        )
+        .then(({ error }) => {
+          if (error) console.error('[word_mastery] recall upsert failed', error)
+        })
+
+      return next
+    })
+  }, [user])
+
   const getMastery = useCallback((entry: WordEntry): WordMasteryInfo => {
     return masteryMap[wordKey(entry)] ?? { correct: 0, incorrect: 0, lastSeen: '' }
   }, [masteryMap])
@@ -117,5 +173,5 @@ export function useWordMastery(user: User | null) {
     return getWordMasteryLevel(getMastery(entry).correct) === 3
   }, [getMastery])
 
-  return { masteryMap, recordBatch, getMastery, isMastered }
+  return { masteryMap, recordBatch, recordRecallAttempt, getMastery, isMastered }
 }

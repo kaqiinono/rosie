@@ -60,7 +60,7 @@ describe('buildQuizQuestions', () => {
 
   it('preserves A → B → C order per word', () => {
     const qs = buildQuizQuestions(VOCAB.slice(0, 3), ['A', 'B', 'C'], 42)
-    const order = new Map<string, ('A' | 'B' | 'C')[]>()
+    const order = new Map<string, ('A' | 'B' | 'C' | 'D')[]>()
     for (const q of qs) {
       const arr = order.get(q.word.word) ?? []
       arr.push(q.type)
@@ -74,7 +74,9 @@ describe('buildQuizQuestions', () => {
   it('is deterministic for a given seed', () => {
     const a = buildQuizQuestions(VOCAB.slice(0, 3), ['A', 'B'], 100)
     const b = buildQuizQuestions(VOCAB.slice(0, 3), ['A', 'B'], 100)
-    expect(a.map(q => `${q.word.word}|${q.type}`)).toEqual(b.map(q => `${q.word.word}|${q.type}`))
+    expect(a.map((q) => `${q.word.word}|${q.type}`)).toEqual(
+      b.map((q) => `${q.word.word}|${q.type}`),
+    )
   })
 })
 
@@ -82,18 +84,18 @@ describe('buildQuizOptions', () => {
   it('returns exactly 4 options including the correct word', () => {
     const opts = buildQuizOptions(VOCAB[0], VOCAB, 1)
     expect(opts.length).toBe(4)
-    expect(opts.some(o => o.word === VOCAB[0].word)).toBe(true)
+    expect(opts.some((o) => o.word === VOCAB[0].word)).toBe(true)
   })
 
   it('never duplicates entries', () => {
     const opts = buildQuizOptions(VOCAB[0], VOCAB, 7)
-    const set = new Set(opts.map(o => o.word))
+    const set = new Set(opts.map((o) => o.word))
     expect(set.size).toBe(opts.length)
   })
 
   it('is deterministic for a given seed', () => {
-    const a = buildQuizOptions(VOCAB[0], VOCAB, 9).map(o => o.word)
-    const b = buildQuizOptions(VOCAB[0], VOCAB, 9).map(o => o.word)
+    const a = buildQuizOptions(VOCAB[0], VOCAB, 9).map((o) => o.word)
+    const b = buildQuizOptions(VOCAB[0], VOCAB, 9).map((o) => o.word)
     expect(a).toEqual(b)
   })
 })
@@ -152,32 +154,29 @@ describe('getFilteredWords', () => {
 
   it('keeps matching-stage words and all unstaged words', () => {
     const out = getFilteredWords(VOCAB, 'G2', new Set(), new Set(), new Set())
-    expect(out.every(v => !v.stage || v.stage === 'G2')).toBe(true)
-    expect(out.map(v => v.word)).toContain('grape')
+    expect(out.every((v) => !v.stage || v.stage === 'G2')).toBe(true)
+    expect(out.map((v) => v.word)).toContain('grape')
   })
 
   it('drops words tagged with a different stage', () => {
-    const tagged: WordEntry[] = [
-      w({ word: 'one', stage: 'G1' }),
-      w({ word: 'two', stage: 'G2' }),
-    ]
+    const tagged: WordEntry[] = [w({ word: 'one', stage: 'G1' }), w({ word: 'two', stage: 'G2' })]
     const out = getFilteredWords(tagged, 'G2', new Set(), new Set(), new Set())
-    expect(out.map(v => v.word)).toEqual(['two'])
+    expect(out.map((v) => v.word)).toEqual(['two'])
   })
 
   it('filters by unit', () => {
     const out = getFilteredWords(VOCAB, '', new Set(['U2']), new Set(), new Set())
-    expect(out.map(v => v.word)).toEqual(['grape'])
+    expect(out.map((v) => v.word)).toEqual(['grape'])
   })
 
   it('filters by lesson (unit::lesson key)', () => {
     const out = getFilteredWords(VOCAB, '', new Set(), new Set(['U1::L2']), new Set())
-    expect(out.map(v => v.word).sort()).toEqual(['apple', 'banana'])
+    expect(out.map((v) => v.word).sort()).toEqual(['apple', 'banana'])
   })
 
   it('filters by word', () => {
     const out = getFilteredWords(VOCAB, '', new Set(), new Set(), new Set(['cat']))
-    expect(out.map(v => v.word)).toEqual(['cat'])
+    expect(out.map((v) => v.word)).toEqual(['cat'])
   })
 })
 

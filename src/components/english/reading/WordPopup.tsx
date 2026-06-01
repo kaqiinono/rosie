@@ -100,17 +100,23 @@ export default function WordPopup({ entry, passage, mastery, onClose }: WordPopu
           </svg>
         </button>
 
-        <div className="px-5 pt-5 pb-2">
-          <div className="flex items-center gap-2">
+        <div className="px-5 pt-5 pb-2 pr-14">
+          <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-2xl font-extrabold text-gray-900">{entry.word}</h3>
+            {MASTERY_ICON[level] && (
+              <span
+                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-600 ring-1 ring-gray-200"
+                title={LEVEL_LABEL[level]}
+              >
+                <span className="text-[13px] leading-none">{MASTERY_ICON[level]}</span>
+                <span>{LEVEL_LABEL[level]}</span>
+              </span>
+            )}
             <SpeakButton
               word={entry.word}
               size="text-[1.2rem]"
               className="h-9 w-9 bg-amber-100 text-amber-700 hover:bg-amber-200 hover:scale-110"
             />
-            {MASTERY_ICON[level] && (
-              <span className="ml-auto text-lg" title={LEVEL_LABEL[level]}>{MASTERY_ICON[level]}</span>
-            )}
           </div>
           {entry.ipa && (
             <div className="mt-0.5 text-sm italic text-gray-500">{entry.ipa}</div>
@@ -121,6 +127,11 @@ export default function WordPopup({ entry, passage, mastery, onClose }: WordPopu
           <div>
             <div className="mb-1 text-[11px] font-bold tracking-wider text-gray-400 uppercase">释义</div>
             <p className="text-[15px] leading-relaxed text-gray-800">{entry.explanation}</p>
+            {entry.chineseDef && (
+              <p className="mt-0.5 text-[12px] leading-snug text-gray-500">
+                {entry.chineseDef}
+              </p>
+            )}
           </div>
 
           {found && (

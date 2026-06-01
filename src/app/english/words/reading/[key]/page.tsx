@@ -8,12 +8,15 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { findPassageByKey, findSentenceForWord, readingPassages } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
-import { getWordMasteryLevel, type MasteryLevel } from '@/utils/masteryUtils'
+import type { MasteryLevel } from '@/utils/masteryUtils'
 import { todayStr } from '@/utils/constant'
 import type { WordEntry, WeekDayProgress } from '@/utils/type'
 import PassageView from '@/components/english/reading/PassageView'
 import WordPopup from '@/components/english/reading/WordPopup'
 import ParagraphRecallQuiz from '@/components/english/reading/ParagraphRecallQuiz'
+import UncoveredWordsReview from '@/components/english/reading/UncoveredWordsReview'
+import PreReadingRecall from '@/components/english/reading/PreReadingRecall'
+import GlossaryPanel from '@/components/english/reading/GlossaryPanel'
 
 const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 0, label: '未掌握', dot: 'bg-amber-400' },
@@ -22,23 +25,9 @@ const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 3, label: '已掌握', dot: 'bg-emerald-400' },
 ]
 
-const STRIP_PILL: Record<MasteryLevel, string> = {
-  0: 'bg-amber-50 text-amber-900 ring-amber-300',
-  1: 'bg-sky-50 text-sky-900 ring-sky-300',
-  2: 'bg-violet-50 text-violet-900 ring-violet-300',
-  3: 'bg-emerald-50 text-emerald-800 ring-emerald-300',
-}
-
-const STRIP_DOT: Record<MasteryLevel, string> = {
-  0: 'bg-amber-400',
-  1: 'bg-sky-400',
-  2: 'bg-violet-400',
-  3: 'bg-emerald-400',
-}
-
 export default function ReadingPassagePage({ params }: { params: Promise<{ key: string }> }) {
   const { key } = use(params)
-  const { vocab, masteryMap, recordBatch } = useWordsContext()
+  const { vocab, masteryMap, recordRecallAttempt } = useWordsContext()
   const { user } = useAuth()
   const { weeklyPlan, updateDayProgress } = useWeeklyPlan(user)
   const searchParams = useSearchParams()
@@ -48,6 +37,8 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const [stripSelected, setStripSelected] = useState<WordEntry | null>(null)
   /** Two reading modes per design 2C. Defaults to 学习模式 (with recall quizzes). */
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('learn')
+  const [preReadingOpen, setPreReadingOpen] = useState(false)
+  const [glossaryOpen, setGlossaryOpen] = useState(false)
 
   // Mark the daily 读课文 step complete once the learner has scrolled past 50%
   // of the passage. Guarded so we only write once per page mount.
@@ -97,10 +88,21 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const handleRecallAnswer = useCallback(
     (entry: WordEntry, correct: boolean) => {
       setRecallOutcomes((prev) => ({ ...prev, [wordKey(entry)]: correct ? 'correct' : 'wrong' }))
-      if (correct) recordBatch([{ entry, correct: true }])
+      recordRecallAttempt(entry, correct)
     },
-    [recordBatch],
+    [recordRecallAttempt],
   )
+
+  // Recall counts per lesson word — drives lowest-count-first picker rotation
+  // and the subtle ✓ⁿ mark on word capsules. Zero = never recalled.
+  const recallCounts = useMemo(() => {
+    const m: Record<string, number> = {}
+    for (const w of lessonWords) {
+      const info = masteryMap[wordKey(w)]
+      m[wordKey(w)] = info?.reviewHistory?.filter((r) => r.source === 'recall').length ?? 0
+    }
+    return m
+  }, [lessonWords, masteryMap])
 
   const renderQuizFooter = useCallback(
     (paragraphIndex: number) => {
@@ -112,10 +114,11 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           masteryMap={masteryMap}
           paragraphKey={`${passage.key}-${paragraphIndex}`}
           onAnswer={handleRecallAnswer}
+          recallCounts={recallCounts}
         />
       )
     },
-    [passage, lessonWords, masteryMap, handleRecallAnswer],
+    [passage, lessonWords, masteryMap, handleRecallAnswer, recallCounts],
   )
 
   if (!passage) {
@@ -123,7 +126,9 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
       <main className="font-nunito relative z-[1] mx-auto max-w-2xl px-4 py-12 text-center">
         <div className="mb-3 text-4xl">📭</div>
         <h2 className="mb-2 text-xl font-bold text-[var(--wm-text)]">课文不存在</h2>
-        <p className="mb-6 text-[var(--wm-text-dim)]">所请求的课文 <code>{key}</code> 还没有内容。</p>
+        <p className="mb-6 text-[var(--wm-text-dim)]">
+          所请求的课文 <code>{key}</code> 还没有内容。
+        </p>
         <div className="flex flex-wrap justify-center gap-2">
           {readingPassages.map((p) => (
             <Link
@@ -150,43 +155,92 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
       <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
 
       {/* Page header */}
-      <div className="mb-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-5 ring-1 ring-orange-200/60">
-        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Link
-              href="/english/words/reading"
-              className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold text-orange-700 ring-1 ring-orange-200 transition hover:-translate-x-0.5 hover:bg-white"
-              aria-label="返回阅读列表"
-            >
-              <span className="text-[14px] leading-none">←</span>
-              <span>返回</span>
-            </Link>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-orange-700 ring-1 ring-orange-200">
-              📖 {passage.unit} · {passage.lesson}
-            </div>
-          </div>
-          {/* Mode toggle (2C) */}
-          <div className="inline-flex rounded-full bg-white/70 p-0.5 ring-1 ring-orange-200">
+      <div className="mb-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-4 ring-1 ring-orange-200/60 sm:p-5">
+        {/* Row 1 — 导航条:返回 ⇆ 模式切换。永远单行,模式 toggle 用短文案 + nowrap */}
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <Link
+            href="/english/words/reading"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold text-orange-700 ring-1 ring-orange-200 transition hover:-translate-x-0.5 hover:bg-white"
+            aria-label="返回阅读列表"
+          >
+            <span className="text-[14px] leading-none">←</span>
+            <span>返回</span>
+          </Link>
+          <div className="inline-flex shrink-0 rounded-full bg-white/70 p-0.5 ring-1 ring-orange-200">
             {(['learn', 'focus'] as const).map((m) => {
               const active = readingMode === m
               return (
                 <button
                   key={m}
                   onClick={() => setReadingMode(m)}
-                  className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-extrabold transition ${
+                  className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-extrabold whitespace-nowrap transition ${
                     active
                       ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white shadow-sm'
                       : 'text-orange-700/70 hover:text-orange-800'
                   }`}
-                  title={m === 'learn' ? '段落末出现遮词回想题，掌握度会更新' : '只显示词高亮，纯阅读不打断'}
+                  title={
+                    m === 'learn'
+                      ? '段落末出现遮词回想题，掌握度会更新'
+                      : '只显示词高亮，纯阅读不打断'
+                  }
+                  aria-label={m === 'learn' ? '学习模式' : '专注阅读模式'}
                 >
-                  {m === 'learn' ? '🧠 学习模式' : '📖 专注阅读'}
+                  {m === 'learn' ? '🧠 学习' : '📖 专注'}
                 </button>
               )
             })}
           </div>
         </div>
-        <h1 className="font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">{passage.title}</h1>
+
+        {/* Row 2 — 信息+工具:Lesson 标识 + 前测/难点词芯片,允许自然换行 */}
+        <div className="mb-3 flex flex-wrap items-center gap-1.5">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-orange-700 ring-1 ring-orange-200">
+            📖 {passage.unit} · {passage.lesson}
+          </div>
+          <button
+            onClick={() => setPreReadingOpen((v) => !v)}
+            className={`inline-flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition hover:-translate-y-px ${
+              preReadingOpen
+                ? 'bg-gradient-to-br from-sky-500 to-indigo-500 text-white shadow-sm ring-1 ring-sky-300'
+                : 'bg-white/80 text-orange-700 ring-1 ring-orange-200 hover:bg-white'
+            }`}
+            title="阅读前测 · 测一下全部词"
+            aria-label="阅读前测"
+            aria-pressed={preReadingOpen}
+          >
+            <span className="text-[13px] leading-none">📋</span>
+            <span>预习</span>
+          </button>
+          {passage.glossary && passage.glossary.length > 0 && (
+            <button
+              onClick={() => setGlossaryOpen((v) => !v)}
+              className={`inline-flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition hover:-translate-y-px ${
+                glossaryOpen
+                  ? 'bg-gradient-to-br from-slate-600 to-slate-700 text-white shadow-sm ring-1 ring-slate-400'
+                  : 'bg-white/80 text-orange-700 ring-1 ring-orange-200 hover:bg-white'
+              }`}
+              title="难点词 · 阅读辅助查词"
+              aria-label="难点词"
+              aria-pressed={glossaryOpen}
+            >
+              <span className="text-[13px] leading-none">📒</span>
+              <span>难点词</span>
+              <span
+                className={`ml-0.5 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1 text-[9px] font-extrabold ${
+                  glossaryOpen
+                    ? 'bg-white/25 text-white'
+                    : 'bg-orange-100 text-orange-700 ring-1 ring-orange-200'
+                }`}
+              >
+                {passage.glossary.length}
+              </span>
+            </button>
+          )}
+        </div>
+
+        <h1 className="font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">
+          {passage.title}
+        </h1>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
           {LEGEND.map((l) => (
             <div key={l.level} className="flex items-center gap-1.5">
@@ -197,6 +251,25 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
         </div>
       </div>
 
+      {/* 阅读前测 · 由标题卡内「📋 前测」芯片触发,关闭后页面回归纯粹 */}
+      <PreReadingRecall
+        open={preReadingOpen}
+        onClose={() => setPreReadingOpen(false)}
+        passage={passage}
+        lessonWords={lessonWords}
+        masteryMap={masteryMap}
+        recallCounts={recallCounts}
+        onAnswer={handleRecallAnswer}
+        onWordClick={setStripSelected}
+      />
+
+      {/* 难点词面板 · 由标题卡内「📒 难点词」芯片触发,字典式查询 */}
+      <GlossaryPanel
+        open={glossaryOpen}
+        onClose={() => setGlossaryOpen(false)}
+        glossary={passage.glossary ?? []}
+      />
+
       {/* Passage body */}
       <div className="rounded-2xl bg-white p-5 ring-1 ring-gray-200 sm:p-7">
         <PassageView
@@ -205,47 +278,37 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           masteryMap={masteryMap}
           focusWord={focusWord}
           recallOutcomes={recallOutcomes}
+          recallCounts={recallCounts}
+          mode={readingMode}
           renderParagraphFooter={readingMode === 'learn' ? renderQuizFooter : undefined}
         />
       </div>
 
-      {/* Bottom word strip */}
-      {lessonWords.length > 0 && (
-        <div className="mt-6 rounded-2xl bg-gray-50 p-4 ring-1 ring-gray-200">
-          <div className="mb-2.5 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-gray-900">本课词汇 · {lessonWords.length}</h3>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {lessonWords.map((w) => {
-              const level = getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0)
-              return (
-                <button
-                  key={wordKey(w)}
-                  onClick={() => setStripSelected(w)}
-                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-bold ring-1 transition hover:-translate-y-px ${STRIP_PILL[level]}`}
-                >
-                  <span className={`inline-block h-1.5 w-1.5 rounded-full ${STRIP_DOT[level]}`} />
-                  {w.word}
-                </button>
-              )
-            })}
-          </div>
-        </div>
+      {/* 补考区:列出本课还没被段落回想题考过的词,可选完成 */}
+      {readingMode === 'learn' && lessonWords.length > 0 && (
+        <UncoveredWordsReview
+          passage={passage}
+          lessonWords={lessonWords}
+          recallCounts={recallCounts}
+          onAnswer={handleRecallAnswer}
+        />
       )}
 
       {/* 3C: 沉浸模式语境版入口 — 读完课文后开始 Type D 沉浸练习 */}
-      {lessonWords.some(w => {
+      {lessonWords.some((w) => {
         const p = passage
         return p && findSentenceForWord(p, w.word) !== null
       }) && (
         <Link
           href={`/english/words/practice?context=${passage.key}`}
-          className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 px-6 py-4 text-white shadow-[0_4px_14px_rgba(245,158,11,.35)] no-underline transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(245,158,11,.5)]"
+          className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 px-6 py-4 text-white no-underline shadow-[0_4px_14px_rgba(245,158,11,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(245,158,11,.5)]"
         >
           <span className="text-[20px]">🧠</span>
           <div className="text-center">
-            <div className="text-[15px] font-extrabold leading-tight">开始语境练习</div>
-            <div className="text-[11px] font-medium opacity-90 mt-0.5">用本课课文原句挖空，检验你的语境理解</div>
+            <div className="text-[15px] leading-tight font-extrabold">开始语境练习</div>
+            <div className="mt-0.5 text-[11px] font-medium opacity-90">
+              用本课课文原句挖空，检验你的语境理解
+            </div>
           </div>
           <span className="text-[18px] font-extrabold">→</span>
         </Link>

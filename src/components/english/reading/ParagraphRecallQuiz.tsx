@@ -14,6 +14,9 @@ interface ParagraphRecallQuizProps {
   /** Unique key for this paragraph; once answered we lock the quiz for this paragraph. */
   paragraphKey: string
   onAnswer: (entry: WordEntry, correct: boolean) => void
+  /** Recall counts per word key. Picker prefers lowest count → keeps rotating
+   *  through rounds rather than excluding. */
+  recallCounts?: Record<string, number>
 }
 
 const SENTENCE_RE = /(?<=[.!?])\s+/
@@ -26,18 +29,30 @@ function pickQuizTarget(
   paragraph: string,
   lessonWords: WordEntry[],
   masteryMap: WordMasteryMap,
+  recallCounts?: Record<string, number>,
 ): { entry: WordEntry; sentence: string } | null {
-  const candidates: { entry: WordEntry; sentence: string; level: number; correct: number }[] = []
+  const candidates: {
+    entry: WordEntry
+    sentence: string
+    level: number
+    correct: number
+    recalls: number
+  }[] = []
   const sentences = paragraph.split(SENTENCE_RE)
   for (const entry of lessonWords) {
     const m = masteryMap[wordKey(entry)]
     const level = getWordMasteryLevel(m?.correct ?? 0)
+    const recalls = recallCounts?.[wordKey(entry)] ?? 0
     const re = new RegExp(`\\b${escapeRe(entry.word)}s?\\b`, 'i')
     const hit = sentences.find((s) => re.test(s))
-    if (hit) candidates.push({ entry, sentence: hit, level, correct: m?.correct ?? 0 })
+    if (hit) candidates.push({ entry, sentence: hit, level, correct: m?.correct ?? 0, recalls })
   }
   if (!candidates.length) return null
-  candidates.sort((a, b) => a.level - b.level || a.correct - b.correct)
+  // Round-rotating priority: fewest recalls first, then lowest mastery,
+  // then least-correct. Never excludes — always rotates onto next round.
+  candidates.sort(
+    (a, b) => a.recalls - b.recalls || a.level - b.level || a.correct - b.correct,
+  )
   const chosen = candidates[0]
   return { entry: chosen.entry, sentence: chosen.sentence }
 }
@@ -72,9 +87,10 @@ export default function ParagraphRecallQuiz({
   masteryMap,
   paragraphKey,
   onAnswer,
+  recallCounts,
 }: ParagraphRecallQuizProps) {
   const target = useMemo(
-    () => pickQuizTarget(paragraphText, lessonWords, masteryMap),
+    () => pickQuizTarget(paragraphText, lessonWords, masteryMap, recallCounts),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [paragraphText, lessonWords, paragraphKey],
   )

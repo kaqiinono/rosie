@@ -154,6 +154,8 @@ export interface DailyRecord {
 export interface ReviewRecord {
   date: string // "YYYY-MM-DD"
   correct: boolean
+  /** Where the review came from. Absent on legacy rows = treat as 'flashcard'. */
+  source?: 'flashcard' | 'recall'
 }
 
 export interface WordMasteryInfo {

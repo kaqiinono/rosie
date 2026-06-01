@@ -19,6 +19,7 @@ interface WordsContextValue {
   upsertByStage: (words: WordEntry[]) => Promise<void>
   masteryMap: WordMasteryMap
   recordBatch: (results: { entry: WordEntry; correct: boolean }[]) => void
+  recordRecallAttempt: (entry: WordEntry, correct: boolean) => void
   // filter state
   selStage: string
   setSelStage: (stage: string) => void
@@ -43,7 +44,7 @@ const WordsContext = createContext<WordsContextValue | null>(null)
 export function WordsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
   const { vocab, setVocab, upsertByStage } = useWordData(user)
-  const { masteryMap, recordBatch } = useWordMastery(user)
+  const { masteryMap, recordBatch, recordRecallAttempt } = useWordMastery(user)
 
   const [selStage, setSelStageState] = useState<string>(() => {
     try {
@@ -95,7 +96,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   return (
     <WordsContext.Provider value={{
       user, vocab, setVocab, upsertByStage,
-      masteryMap, recordBatch,
+      masteryMap, recordBatch, recordRecallAttempt,
       selStage, setSelStage,
       selUnits, setSelUnits,
       selLessons, setSelLessons,
