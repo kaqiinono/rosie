@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@/utils/type'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
@@ -31,14 +32,16 @@ function highlightWordInSentence(sentence: string, word: string) {
 }
 
 export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }: FlashCardProps) {
+  const [sentenceExpanded, setSentenceExpanded] = useState(false)
   const sz = getWordSizeClass(entry.word)
   const level = getWordMasteryLevel(masteryInfo?.correct ?? 0)
+  // Bumped ~15% across the scale so the word reads as the clear focal point.
   const wordFontSize = {
-    xl: 'text-[2.1rem]',
-    lg: 'text-[1.85rem]',
-    md: 'text-[1.5rem]',
-    sm: 'text-[1.25rem]',
-    xs: 'text-[1.05rem]',
+    xl: 'text-[2.45rem]',
+    lg: 'text-[2.15rem]',
+    md: 'text-[1.75rem]',
+    sm: 'text-[1.45rem]',
+    xs: 'text-[1.2rem]',
   }[sz]
 
   const delay = Math.min(index * 0.03, 0.25)
@@ -121,35 +124,58 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
               <SpeakButton word={entry.word} className="opacity-50 hover:opacity-100" />
             </div>
             {entry.ipa && (
-              <div className="text-center text-[1.125rem] font-medium tracking-wide text-[#e879f9] italic opacity-80">
+              <div className="font-mono text-center text-[.78rem] font-normal tracking-normal text-white/30">
                 {entry.ipa}
               </div>
             )}
           </div>
 
-          {/* Bottom: passage sentence (if lesson has one) + generic example.
-              Both shown when a passage is available so the learner gets the
-              real context AND a varied second sentence — per design 1B. */}
-          {passageSentence && (
-            <div className="relative z-[1] mt-0.5 rounded-lg border border-amber-500/20 bg-amber-500/[.07] px-2 py-1.5">
-              <div className="mb-0.5 flex items-center gap-1 text-[.55rem] font-extrabold tracking-wider text-amber-300/80 uppercase">
-                <span>📖</span> 课文原句
+          {/* Bottom: prefer 课文原句 (real context). 通用例句 only shows nested
+              inside the expanded passage area, or standalone when no passage
+              exists for this word's lesson. */}
+          {passageSentence ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSentenceExpanded((v) => !v)
+              }}
+              className="group relative z-[1] mt-0.5 w-full cursor-pointer rounded-lg border border-amber-500/20 bg-amber-500/[.07] px-2 py-1.5 text-left transition hover:border-amber-500/40 hover:bg-amber-500/[.12]"
+              aria-expanded={sentenceExpanded}
+              title={sentenceExpanded ? '收起' : '展开全文'}
+            >
+              <div className="mb-0.5 flex items-center justify-between gap-1 text-[.55rem] font-extrabold tracking-wider text-amber-300/80 uppercase">
+                <span className="flex items-center gap-1">
+                  <span>📖</span> 课文原句
+                </span>
+                <span className="font-mono text-amber-300/60 transition group-hover:text-amber-300">
+                  {sentenceExpanded ? '收起 ▴' : '展开 ▾'}
+                </span>
               </div>
-              <p className="line-clamp-2 text-[.78rem] leading-relaxed text-white/55">
+              <p className={`text-[.78rem] leading-relaxed text-white/55 ${sentenceExpanded ? '' : 'line-clamp-3'}`}>
                 {highlightWordInSentence(passageSentence.sentence, entry.word)}
               </p>
-            </div>
-          )}
-          {entry.example && (
+              {sentenceExpanded && entry.example && (
+                <div className="mt-2 border-t border-amber-500/15 pt-2">
+                  <div className="mb-0.5 text-[.55rem] font-extrabold tracking-wider text-white/30 uppercase">
+                    通用例句
+                  </div>
+                  <p className="text-[.78rem] leading-relaxed text-white/40 italic">
+                    {entry.example}
+                  </p>
+                </div>
+              )}
+            </button>
+          ) : entry.example ? (
             <div className="relative z-[1] mt-0.5 border-t border-white/[.06] pt-2">
               <div className="mb-0.5 text-[.55rem] font-extrabold tracking-wider text-white/[.22] uppercase">
                 通用例句
               </div>
-              <p className="line-clamp-2 text-[.8rem] leading-relaxed text-white/[.28]">
+              <p className="text-[.8rem] leading-relaxed text-white/[.32]">
                 {entry.example}
               </p>
             </div>
-          )}
+          ) : null}
 
           {/* Flip hint */}
           <span className="absolute right-2.5 bottom-2 text-[.62rem] font-bold text-white/[.14] select-none">
