@@ -8,7 +8,12 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useReadingPassageAudio } from '@/hooks/useReadingPassageAudio'
 import ReadingAudioButton from '@/components/english/reading/ReadingAudioButton'
-import { findPassageByKey, findSentenceForWord, readingPassages } from '@/utils/reading-data'
+import {
+  findPassageByKey,
+  findSentenceForWord,
+  parseFocusLessonKey,
+  readingPassages,
+} from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
 import type { MasteryLevel } from '@/utils/masteryUtils'
 import { todayStr } from '@/utils/constant'
@@ -46,10 +51,13 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   // Mark the daily 读课文 step complete once the learner has scrolled past 50%
   // of the passage. Guarded so we only write once per page mount.
   const readingMarkedRef = useRef(false)
-  const isFocusPassage =
-    !!passage &&
-    !!weeklyPlan?.focusLessonKey &&
-    weeklyPlan.focusLessonKey === `${passage.unit}::${passage.lesson}`
+  const isFocusPassage = (() => {
+    if (!passage || !weeklyPlan?.focusLessonKey) return false
+    const parsed = parseFocusLessonKey(weeklyPlan.focusLessonKey)
+    if (!parsed) return false
+    if (parsed.stage && parsed.stage !== passage.stage) return false
+    return parsed.unit === passage.unit && parsed.lesson === passage.lesson
+  })()
   useEffect(() => {
     if (!isFocusPassage || !weeklyPlan) return
     const today = todayStr()

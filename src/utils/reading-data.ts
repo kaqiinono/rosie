@@ -21,7 +21,10 @@ export interface GlossaryWord {
 }
 
 export interface ReadingPassage {
+  /** Stable storage key — `{stage小写}-u{N}l{M}`, unique across stages. */
   key: string
+  /** English stage code, e.g. '4A'. Required: same Unit/Lesson can repeat across stages. */
+  stage: string
   unit: string
   lesson: string
   title: string
@@ -29,9 +32,39 @@ export interface ReadingPassage {
   glossary?: GlossaryWord[]
 }
 
+/** Stable key built from stage + unit + lesson — used for storage paths and DB rows. */
+export function buildPassageKey(stage: string, unit: string, lesson: string): string {
+  const u = unit.match(/\d+/)?.[0] ?? '?'
+  const l = lesson.match(/\d+/)?.[0] ?? '?'
+  return `${stage.toLowerCase()}-u${u}l${l}`
+}
+
+/**
+ * `focusLessonKey` serialization for `WeeklyPlan`.
+ * - With stage:  `{stage}::{unit}::{lesson}` (new)
+ * - Without:     `{unit}::{lesson}`          (legacy — kept readable for old data)
+ */
+export function buildFocusLessonKey(
+  stage: string | undefined,
+  unit: string,
+  lesson: string,
+): string {
+  return stage ? `${stage}::${unit}::${lesson}` : `${unit}::${lesson}`
+}
+
+export function parseFocusLessonKey(
+  key: string,
+): { stage?: string; unit: string; lesson: string } | null {
+  const parts = key.split('::')
+  if (parts.length === 3) return { stage: parts[0], unit: parts[1], lesson: parts[2] }
+  if (parts.length === 2) return { unit: parts[0], lesson: parts[1] }
+  return null
+}
+
 export const readingPassages: ReadingPassage[] = [
   {
-    key: 'u5l1',
+    key: '4a-u5l1',
+    stage: '4A',
     unit: 'Unit 5',
     lesson: 'Lesson 1',
     title: 'Letters to HelpMe Hal',
@@ -112,7 +145,8 @@ export const readingPassages: ReadingPassage[] = [
     ],
   },
   {
-    key: 'u5l2',
+    key: '4a-u5l2',
+    stage: '4A',
     unit: 'Unit 5',
     lesson: 'Lesson 2',
     title: 'A School on a Nature Reserve',
@@ -218,7 +252,8 @@ export const readingPassages: ReadingPassage[] = [
     ],
   },
   {
-    key: 'u5l3',
+    key: '4a-u5l3',
+    stage: '4A',
     unit: 'Unit 5',
     lesson: 'Lesson 3',
     title: "Who's new at school?",
@@ -292,16 +327,33 @@ export const readingPassages: ReadingPassage[] = [
   },
 ]
 
-export function findPassage(unit: string, lesson: string): ReadingPassage | undefined {
-  return readingPassages.find((p) => p.unit === unit && p.lesson === lesson)
+/**
+ * Three-dimensional passage lookup. `stage` is optional for backward
+ * compatibility — when omitted, falls back to two-dimensional matching
+ * (returns the first passage that matches unit + lesson regardless of stage).
+ */
+export function findPassage(
+  stage: string | undefined,
+  unit: string,
+  lesson: string,
+): ReadingPassage | undefined {
+  return readingPassages.find(
+    (p) => (!stage || p.stage === stage) && p.unit === unit && p.lesson === lesson,
+  )
 }
 
 export function findPassageByKey(key: string): ReadingPassage | undefined {
   return readingPassages.find((p) => p.key === key)
 }
 
-export function hasPassageForLesson(unit: string, lesson: string): boolean {
-  return readingPassages.some((p) => p.unit === unit && p.lesson === lesson)
+export function hasPassageForLesson(
+  stage: string | undefined,
+  unit: string,
+  lesson: string,
+): boolean {
+  return readingPassages.some(
+    (p) => (!stage || p.stage === stage) && p.unit === unit && p.lesson === lesson,
+  )
 }
 
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

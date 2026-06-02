@@ -78,7 +78,7 @@ export default function ImmersiveMode({
   // Type D is eligible whenever the word's own lesson has a passage that
   // contains a sentence for it. No reliance on a week-level focus marker.
   const isEligibleForTypeD = useCallback((entry: WordEntry) => {
-    const p = findPassage(entry.unit, entry.lesson)
+    const p = findPassage(entry.stage, entry.unit, entry.lesson)
     return p !== undefined && findSentenceForWord(p, entry.word) !== null
   }, [])
 
@@ -242,7 +242,7 @@ export default function ImmersiveMode({
 
   // Generalized 3B: any correct answer whose word has a passage offers
   // "查看原文" — and we disable auto-advance to give the learner a chance to click it.
-  const currentPassage = q ? findPassage(q.word.unit, q.word.lesson) : undefined
+  const currentPassage = q ? findPassage(q.word.stage, q.word.unit, q.word.lesson) : undefined
   const currentSentence =
     currentPassage && q ? findSentenceForWord(currentPassage, q.word.word) : null
   const hasPassageContext = currentPassage !== undefined && currentSentence !== null
@@ -524,7 +524,7 @@ export default function ImmersiveMode({
               const isC = q.type === 'C'
               const isD = q.type === 'D'
               const isMultiChoice = isA || isD
-              const dPassage = isD ? findPassage(q.word.unit, q.word.lesson) : undefined
+              const dPassage = isD ? findPassage(q.word.stage, q.word.unit, q.word.lesson) : undefined
               const passageSentence = isD && dPassage
                 ? findSentenceForWord(dPassage, q.word.word)
                 : null

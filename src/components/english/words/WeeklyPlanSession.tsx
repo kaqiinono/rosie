@@ -130,7 +130,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   // (which is a plan-level annotation, not a feature gate).
   const isEligibleForTypeD = useCallback(
     (entry: WordEntry) => {
-      const p = findPassage(entry.unit, entry.lesson)
+      const p = findPassage(entry.stage, entry.unit, entry.lesson)
       return p !== undefined && findSentenceForWord(p, entry.word) !== null
     },
     [],

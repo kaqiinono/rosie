@@ -83,6 +83,33 @@
   --animate-float-up: float-up 0.6s ease-out forwards;
   --animate-shimmer: shimmer 2s linear infinite;
   --animate-jelly: jelly 0.6s cubic-bezier(.36,.07,.19,.97);
+  --animate-eq: eq 900ms ease-in-out infinite;
+  --animate-player-glow: player-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.28); }
+  20% { transform: scaleY(0.9); }
+  40% { transform: scaleY(0.45); }
+  60% { transform: scaleY(1); }
+  80% { transform: scaleY(0.55); }
+}
+
+@keyframes player-glow {
+  0%, 100% {
+    box-shadow:
+      0 6px 18px -4px rgba(245, 158, 11, 0.55),
+      0 0 0 1px rgba(245, 158, 11, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  }
+  50% {
+    box-shadow:
+      0 10px 26px -4px rgba(245, 158, 11, 0.75),
+      0 0 0 1px rgba(251, 191, 36, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  }
 }
 
 @keyframes wave {
@@ -478,6 +505,88 @@
 
 .flipbook-chip:active {
   transform: scale(0.96);
+}
+
+/* AUTO pill switch — label + track/knob, on/off state is unmistakable */
+.flipbook-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 32px;
+  padding: 0 0.45rem 0 0.7rem;
+  border-radius: 999px;
+  background: var(--flipbook-control-bg);
+  color: var(--flipbook-muted);
+  font-size: 11px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 200ms ease, color 200ms ease, transform 150ms ease,
+    box-shadow 200ms ease;
+}
+
+.flipbook-switch:hover {
+  background: var(--flipbook-control-hover);
+}
+
+.flipbook-switch:active {
+  transform: scale(0.96);
+}
+
+.flipbook-switch__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 200ms ease;
+}
+
+.flipbook-switch__track {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(245, 240, 232, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(245, 240, 232, 0.16);
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+
+.flipbook-switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--flipbook-fg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: transform 220ms cubic-bezier(0.32, 0.72, 0.3, 1.2),
+    background 200ms ease;
+}
+
+.flipbook-switch--on {
+  color: var(--flipbook-fg);
+  background: rgba(232, 165, 75, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(232, 165, 75, 0.4);
+}
+
+.flipbook-switch--on:hover {
+  background: rgba(232, 165, 75, 0.24);
+}
+
+.flipbook-switch--on .flipbook-switch__label {
+  color: var(--flipbook-accent);
+}
+
+.flipbook-switch--on .flipbook-switch__track {
+  background: var(--flipbook-accent);
+  box-shadow: inset 0 0 0 1px var(--flipbook-accent),
+    0 0 8px rgba(232, 165, 75, 0.45);
+}
+
+.flipbook-switch--on .flipbook-switch__knob {
+  transform: translateX(12px);
+  background: var(--flipbook-accent-fg);
 }
 
 /* Stage — react-pageflip mount target gets a crisp grounded shadow. */

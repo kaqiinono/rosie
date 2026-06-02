@@ -50,7 +50,7 @@ export default function PracticePage() {
   const typeDAvailable = useMemo(
     () =>
       filteredWords.some((w) => {
-        const passage = findPassage(w.unit, w.lesson)
+        const passage = findPassage(w.stage, w.unit, w.lesson)
         return passage !== undefined && findSentenceForWord(passage, w.word) !== null
       }),
     [filteredWords],

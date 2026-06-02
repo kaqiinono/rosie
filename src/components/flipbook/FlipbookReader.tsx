@@ -400,17 +400,16 @@ export default function FlipbookReader({
           )}
           <button
             type="button"
+            role="switch"
             onClick={() => setAutoPlayOnFlip((v) => !v)}
-            className={clsx(
-              'flipbook-chip',
-              autoPlayOnFlip
-                ? 'bg-[var(--flipbook-accent)] text-[var(--flipbook-accent-fg)] hover:bg-[var(--flipbook-accent)]'
-                : '',
-            )}
-            aria-pressed={autoPlayOnFlip}
-            title="翻页自动播放"
+            className={clsx('flipbook-switch', autoPlayOnFlip && 'flipbook-switch--on')}
+            aria-checked={autoPlayOnFlip}
+            title={autoPlayOnFlip ? '翻页自动播放：开' : '翻页自动播放：关'}
           >
-            <span className="font-mono text-[10px] tracking-[0.14em] uppercase">AUTO</span>
+            <span className="flipbook-switch__label">AUTO</span>
+            <span className="flipbook-switch__track" aria-hidden>
+              <span className="flipbook-switch__knob" />
+            </span>
           </button>
           <button
             type="button"

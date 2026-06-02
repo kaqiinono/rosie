@@ -7,7 +7,7 @@ import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useWordData } from '@/hooks/useWordData'
 import { useCalcDaily } from '@/hooks/useCalcDaily'
 import { todayStr } from '@/utils/constant'
-import { findPassage } from '@/utils/reading-data'
+import { findPassage, parseFocusLessonKey } from '@/utils/reading-data'
 import type { WordEntry } from '@/utils/type'
 
 function wordKeyStr(e: WordEntry): string {
@@ -234,23 +234,25 @@ export default function TodayDashboard() {
     const focusKey = englishPlan?.focusLessonKey
     // Prefer the ⭐ focus lesson if today's words include it AND it has a passage
     if (focusKey) {
-      const [u, l] = focusKey.split('::')
-      const focusP = findPassage(u, l)
-      if (focusP && todayWords.some(w => w.unit === focusP.unit && w.lesson === focusP.lesson)) {
-        return focusP
+      const parsed = parseFocusLessonKey(focusKey)
+      if (parsed) {
+        const focusP = findPassage(parsed.stage, parsed.unit, parsed.lesson)
+        if (focusP && todayWords.some(w => w.unit === focusP.unit && w.lesson === focusP.lesson)) {
+          return focusP
+        }
       }
     }
     // Otherwise pick the lesson contributing the most words today that has a passage
-    const counts = new Map<string, { unit: string; lesson: string; n: number }>()
+    const counts = new Map<string, { stage?: string; unit: string; lesson: string; n: number }>()
     for (const w of todayWords) {
-      const k = `${w.unit}::${w.lesson}`
+      const k = `${w.stage ?? ''}::${w.unit}::${w.lesson}`
       const cur = counts.get(k)
       if (cur) cur.n += 1
-      else counts.set(k, { unit: w.unit, lesson: w.lesson, n: 1 })
+      else counts.set(k, { stage: w.stage, unit: w.unit, lesson: w.lesson, n: 1 })
     }
     const sorted = [...counts.values()].sort((a, b) => b.n - a.n)
     for (const c of sorted) {
-      const p = findPassage(c.unit, c.lesson)
+      const p = findPassage(c.stage, c.unit, c.lesson)
       if (p) return p
     }
     return null

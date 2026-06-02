@@ -49,7 +49,7 @@ export default function QuizCard({
   //   - Type D rendering (挖空原句 question body)
   //   - "查看原文" jump button shown on ANY correct answer when the word's
   //     lesson has a passage containing it (design 3B, generalized).
-  const passage = findPassage(question.word.unit, question.word.lesson)
+  const passage = findPassage(question.word.stage, question.word.unit, question.word.lesson)
   const passageSentence = passage ? findSentenceForWord(passage, question.word.word) : null
   const hasPassageContext = passage !== undefined && passageSentence !== null
   // Type D specifically needs the sentence to render the blanked-question UI.

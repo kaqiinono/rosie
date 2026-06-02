@@ -50,7 +50,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo }
   // Show 课文原句 for any word whose lesson has a passage — independent of
   // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;
   // here we just key off "is there a passage for this lesson?".
-  const passage = findPassage(entry.unit, entry.lesson)
+  const passage = findPassage(entry.stage, entry.unit, entry.lesson)
   const passageSentence = passage ? findSentenceForWord(passage, entry.word) : null
 
   return (
