@@ -26,6 +26,7 @@ export default function ReadingAudioButton({
 }: ReadingAudioButtonProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
+  const [buffering, setBuffering] = useState(false)
   const disabled = !src
 
   const isListCoordination = mode === 'loop' && onActivate !== undefined && passageKey !== undefined
@@ -36,17 +37,6 @@ export default function ReadingAudioButton({
       audioRef.current?.pause()
     }
   }, [activeKey, passageKey, isListCoordination])
-
-  useEffect(() => {
-    const el = audioRef.current
-    if (!el || !src) return
-    el.loop = mode === 'loop'
-    el.src = src
-    el.load()
-    return () => {
-      el.pause()
-    }
-  }, [src, mode])
 
   const toggle = useCallback(
     (e: React.MouseEvent) => {
@@ -63,32 +53,51 @@ export default function ReadingAudioButton({
       }
 
       if (isListCoordination) onActivate?.(passageKey!)
-      void el.play().catch(() => setPlaying(false))
+      void el.play().catch(() => {
+        setPlaying(false)
+        setBuffering(false)
+      })
     },
     [src, isListCoordination, onActivate, passageKey],
   )
 
-  const sizeClass =
-    size === 'sm'
-      ? 'h-8 w-8 text-[14px]'
-      : 'h-9 w-9 text-[15px]'
+  const sizeClass = size === 'sm' ? 'h-8 w-8 text-[14px]' : 'h-9 w-9 text-[15px]'
 
   return (
     <>
       {src && (
         <audio
           ref={audioRef}
-          preload="metadata"
+          src={src}
+          preload="none"
           loop={mode === 'loop'}
           onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
+          onPause={() => {
+            setPlaying(false)
+            setBuffering(false)
+          }}
           onEnded={() => setPlaying(false)}
+          onWaiting={() => setBuffering(true)}
+          onPlaying={() => setBuffering(false)}
+          onCanPlay={() => setBuffering(false)}
+          onError={() => {
+            setPlaying(false)
+            setBuffering(false)
+          }}
         />
       )}
       <button
         type="button"
         disabled={disabled}
-        aria-label={disabled ? '暂无朗读音频' : playing ? '暂停朗读' : '播放朗读'}
+        aria-label={
+          disabled
+            ? '暂无朗读音频'
+            : buffering
+              ? '缓冲中'
+              : playing
+                ? '暂停朗读'
+                : '播放朗读'
+        }
         title={disabled ? '请先上传音频' : mode === 'loop' ? '循环朗读' : '朗读一遍'}
         onClick={toggle}
         className={clsx(
@@ -102,7 +111,16 @@ export default function ReadingAudioButton({
           className,
         )}
       >
-        {playing ? '⏸' : '🔊'}
+        {buffering ? (
+          <span
+            aria-hidden
+            className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"
+          />
+        ) : playing ? (
+          '⏸'
+        ) : (
+          '🔊'
+        )}
       </button>
     </>
   )

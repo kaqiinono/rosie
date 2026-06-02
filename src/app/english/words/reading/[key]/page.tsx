@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { useReadingPassageMedia } from '@/hooks/useReadingPassageMedia'
+import { useReadingPassageAudio } from '@/hooks/useReadingPassageAudio'
 import ReadingAudioButton from '@/components/english/reading/ReadingAudioButton'
 import { findPassageByKey, findSentenceForWord, readingPassages } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
@@ -32,7 +32,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const { vocab, masteryMap, recordRecallAttempt } = useWordsContext()
   const { user } = useAuth()
   const { weeklyPlan, updateDayProgress } = useWeeklyPlan(user)
-  const { getUrlForPassage } = useReadingPassageMedia(user)
+  const audioUrl = useReadingPassageAudio(user, key)
   const searchParams = useSearchParams()
   const focusWord = searchParams.get('focus')
 
@@ -246,7 +246,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
             {passage.title}
           </h1>
           <ReadingAudioButton
-            src={getUrlForPassage(passage.key)}
+            src={audioUrl}
             mode="once"
             size="md"
             className="mt-0.5"

@@ -56,7 +56,7 @@ export async function renderPdfPageUrl(
       canvas.toBlob(
         (b) => (b ? resolve(b) : reject(new Error('无法导出页图'))),
         'image/webp',
-        0.92,
+        0.85,
       )
     })
     return URL.createObjectURL(blob)

@@ -5,6 +5,7 @@ const { registerRoute, NavigationRoute } = workbox.routing
 const { StaleWhileRevalidate, CacheFirst, NetworkFirst } = workbox.strategies
 const { ExpirationPlugin } = workbox.expiration
 const { CacheableResponsePlugin } = workbox.cacheableResponse
+const { RangeRequestsPlugin } = workbox.rangeRequests
 
 precacheAndRoute([
   { url: '/manifest.json', revision: null },
@@ -41,7 +42,26 @@ registerRoute(
     cacheName: 'images',
     plugins: [
       new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 30 * 24 * 60 * 60 }),
+      new ExpirationPlugin({ maxEntries: 300, maxAgeSeconds: 30 * 24 * 60 * 60 }),
+    ],
+  })
+)
+
+// Audio (mp3/m4a/wav/ogg): cache the full file on first listen. RangeRequestsPlugin
+// is required so the browser's range requests (HTML5 <audio> seek/metadata)
+// can be served from a cached 200 response. Query strings (?v=updatedAt) are
+// part of the cache key, so a new upload (new timestamp) naturally bypasses
+// the stale cache.
+registerRoute(
+  ({ url, request }) =>
+    request.destination === 'audio' ||
+    /\.(mp3|m4a|wav|aac|ogg)(\?|$)/i.test(url.pathname + url.search),
+  new CacheFirst({
+    cacheName: 'audio',
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [0, 200, 206] }),
+      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 30 * 24 * 60 * 60 }),
+      new RangeRequestsPlugin(),
     ],
   })
 )

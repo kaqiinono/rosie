@@ -52,7 +52,7 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 }
 
 /** 已是 WebP 则直接上传，PNG/JPG 才经 Canvas 转为 WebP */
-export async function imageFileToWebpBlob(file: File, quality = 0.92): Promise<Blob> {
+export async function imageFileToWebpBlob(file: File, quality = 0.85): Promise<Blob> {
   if (flipbookBasename(file.name).toLowerCase().endsWith('.webp')) {
     return file
   }

@@ -17,7 +17,6 @@ import {
   shouldSyncFlipFromAudio,
 } from '@/utils/flipbook-sync'
 import { FLIPBOOK_BASE_PROPS } from '@/utils/flipbook-flip-props'
-import { prefetchFlipbookImage, revokeFlipbookImageCache } from '@/utils/flipbook-image-cache'
 import {
   flipbookChunkTriggerContainingPage,
   flipbookPagesInChunk,
@@ -75,7 +74,7 @@ export default function FlipbookReader({
 
   const resolvedStart = Math.max(1, initialPage ?? 1)
   const [currentPage, setCurrentPage] = useState(resolvedStart)
-  const [loadedPages, setLoadedPages] = useState<Record<number, string>>({})
+  const [loadedPages, setLoadedPages] = useState<Set<number>>(() => new Set())
   const [bookSize, setBookSize] = useState<{ width: number; height: number } | null>(null)
   const [autoPlayOnFlip, setAutoPlayOnFlip] = useState(true)
   const [chromeVisible, setChromeVisible] = useState(true)
@@ -104,18 +103,8 @@ export default function FlipbookReader({
     return () => mq.removeEventListener('change', update)
   }, [])
 
-  const loadPageImage = useCallback(
-    async (pageNum: number) => {
-      const url = pageImageUrls[pageNum - 1]
-      if (!url) return
-      const displayUrl = await prefetchFlipbookImage(url)
-      setLoadedPages((prev) => (prev[pageNum] ? prev : { ...prev, [pageNum]: displayUrl }))
-    },
-    [pageImageUrls],
-  )
-
   const ensureChunkLoaded = useCallback(
-    async (triggerPage: number, priorityPage?: number) => {
+    async (triggerPage: number, _priorityPage?: number) => {
       if (triggerPage < 1 || totalPages === 0) return
       if (loadedTriggersRef.current.has(triggerPage)) return
       loadedTriggersRef.current.add(triggerPage)
@@ -123,17 +112,17 @@ export default function FlipbookReader({
       const pageNums = flipbookPagesInChunk(triggerPage, totalPages)
       if (pageNums.length === 0) return
 
-      const ordered =
-        priorityPage != null && pageNums.includes(priorityPage)
-          ? [priorityPage, ...pageNums.filter((n) => n !== priorityPage)]
-          : pageNums
-
-      await loadPageImage(ordered[0])
-      if (ordered.length > 1) {
-        void Promise.all(ordered.slice(1).map((pageNum) => loadPageImage(pageNum)))
-      }
+      setLoadedPages((prev) => {
+        let next: Set<number> | null = null
+        for (const p of pageNums) {
+          if (prev.has(p)) continue
+          if (!next) next = new Set(prev)
+          next.add(p)
+        }
+        return next ?? prev
+      })
     },
-    [loadPageImage, totalPages],
+    [totalPages],
   )
 
   const ensureChunksForViewing = useCallback(
@@ -153,8 +142,6 @@ export default function FlipbookReader({
       void ensureChunksForViewing(resolvedStart)
     })
   }, [resolvedStart, totalPages, ensureChunksForViewing])
-
-  useEffect(() => () => revokeFlipbookImageCache(), [])
 
   useEffect(() => {
     const el = stageRef.current
@@ -465,13 +452,13 @@ export default function FlipbookReader({
                 onFlip={handleFlip}
                 className="flipbook-shadow"
               >
-                {pageImageUrls.map((_url, i) => {
+                {pageImageUrls.map((url, i) => {
                   const pageNum = i + 1
                   return (
                     <FlipbookPage
                       key={`page-${pageNum}`}
                       pageNumber={pageNum}
-                      imageUrl={loadedPages[pageNum] ?? null}
+                      imageUrl={loadedPages.has(pageNum) ? url : null}
                     />
                   )
                 })}

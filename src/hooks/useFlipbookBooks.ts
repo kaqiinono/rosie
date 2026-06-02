@@ -12,6 +12,7 @@ import {
   type FlipbookBook,
   type FlipbookSyncManifest,
 } from '@/utils/flipbook-types'
+import { compressAudioToMp3 } from '@/utils/audio-compress'
 import { parseSyncManifest } from '@/utils/flipbook-sync'
 import type {
   FlipbookCreateOutcome,
@@ -109,6 +110,20 @@ export function useFlipbookBooks(user: User | null) {
 
   const getSignedPageImageUrls = useCallback(
     async (book: FlipbookBook): Promise<string[]> => {
+      // Fast path: page_count is recorded at upload time and the file naming
+      // convention is fixed (0001.webp ... NNNN.webp). Skip storage.list and
+      // build every URL synchronously — zero network for the reader open.
+      if (book.pageCount && book.pageCount > 0) {
+        const urls: string[] = []
+        for (let p = 1; p <= book.pageCount; p++) {
+          const path = flipbookPageImagePath(book.slug, p)
+          const { data } = supabase.storage.from(FLIPBOOK_BUCKET).getPublicUrl(path)
+          if (data?.publicUrl) urls.push(data.publicUrl)
+        }
+        return urls
+      }
+
+      // Fallback for legacy books missing page_count: enumerate the bucket.
       const prefix = flipbookPagesPrefix(book.slug)
       const { data, error } = await supabase.storage
         .from(FLIPBOOK_BUCKET)
@@ -291,9 +306,13 @@ export function useFlipbookBooks(user: User | null) {
       if (input.audioFile) {
         input.onAudioUploadPhase?.('start')
         audioPath = flipbookAudioPath(slug)
+        const compressed = await compressAudioToMp3(input.audioFile)
         const { error: audioErr } = await supabase.storage
           .from(FLIPBOOK_BUCKET)
-          .upload(audioPath, input.audioFile, { upsert: true, contentType: input.audioFile.type })
+          .upload(audioPath, compressed.blob, {
+            upsert: true,
+            contentType: compressed.contentType,
+          })
         if (audioErr) return { error: audioErr.message, outcome: 'aborted' }
         input.onAudioUploadPhase?.('done')
       }

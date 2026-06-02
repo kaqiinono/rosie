@@ -6,10 +6,10 @@ import { supabase } from '@/lib/supabase'
 import { readingPassages } from '@/utils/reading-data'
 import {
   READING_AUDIO_BUCKET,
-  readingAudioContentType,
   readingPassageAudioPath,
   type ReadingPassageMediaRow,
 } from '@/utils/reading-audio-types'
+import { compressAudioToMp3 } from '@/utils/audio-compress'
 
 type RawMediaRow = {
   passage_key: string
@@ -116,12 +116,13 @@ export function useReadingPassageMedia(user: User | null) {
     async (passageKey: string, file: File): Promise<{ error: string | null }> => {
       if (!user) return { error: '请先登录' }
 
+      const compressed = await compressAudioToMp3(file)
       const audioPath = readingPassageAudioPath(passageKey)
       const { error: storageErr } = await supabase.storage
         .from(READING_AUDIO_BUCKET)
-        .upload(audioPath, file, {
+        .upload(audioPath, compressed.blob, {
           upsert: true,
-          contentType: readingAudioContentType(file),
+          contentType: compressed.contentType,
         })
       if (storageErr) return { error: storageErr.message }
 

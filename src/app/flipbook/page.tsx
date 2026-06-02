@@ -91,31 +91,30 @@ export default function FlipbookShelfPage() {
         onEnded={() => setPlayingBookId(null)}
       />
 
-      <header className="mb-6 flex items-center justify-between">
-        <Link href="/" className="text-white/60 hover:text-white">
+      <header className="mb-6 flex items-center gap-3">
+        <Link href="/" className="shrink-0 text-white/60 hover:text-white">
           ◀ 首页
         </Link>
-        <h1 className="text-lg font-bold text-white">绘本阅读</h1>
-        <Link href="/flipbook/admin" className="text-sm text-orange-400 hover:text-orange-300">
-          管理
-        </Link>
+        <h1 className="flex-1 text-center text-lg font-bold text-white">绘本阅读</h1>
+        <span className="w-12 shrink-0" aria-hidden />
       </header>
 
-      <p className="mb-6 text-sm text-white/50">
+      <p className="mb-4 text-sm text-white/50">
         3D 翻页讲义，支持讲解音频与页码同步（需上传 sync.json）。
       </p>
+
+      <Link
+        href="/flipbook/admin"
+        className="mb-6 flex w-full items-center justify-center rounded-2xl border border-orange-400/35 bg-orange-400/10 py-3 text-sm font-semibold text-orange-300 transition-colors hover:bg-orange-400/15"
+      >
+        上传书籍
+      </Link>
 
       {isLoading ? (
         <p className="text-center text-white/50">加载书架…</p>
       ) : books.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/15 py-12 text-center">
           <p className="text-white/50">还没有书籍</p>
-          <Link
-            href="/flipbook/admin"
-            className="mt-3 inline-block text-orange-400 hover:text-orange-300"
-          >
-            去上传第一本书 →
-          </Link>
         </div>
       ) : (
         <ul className="flex flex-col gap-3">
