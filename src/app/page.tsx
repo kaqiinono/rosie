@@ -68,6 +68,16 @@ const modules: ModuleCardData[] = [
     enterText: '查看奖券',
     icon: '⭐',
   },
+  {
+    href: '/admin/audio',
+    title: '媒体管理',
+    description: '管理阅读朗读、绘本音频，上传独立音频视频，收藏夹循环播放。',
+    tag: 'MEDIA',
+    variant: 'reading',
+    stats: ['阅读 & 绘本', '独立音视频', '收藏夹播放'],
+    enterText: '打开媒体管理',
+    icon: '🎬',
+  },
 ]
 
 export default function HomePage() {
