@@ -112,6 +112,18 @@ export default function QuizCard({
 
   const pct = (currentIndex / totalCount) * 100
 
+  // Shared option-button class — tuned for instant tap response on mobile.
+  // Hover effects gated to hover-capable devices to avoid iOS sticky-hover.
+  const mcOptionBase =
+    'font-nunito cursor-pointer touch-manipulation rounded-[12px] border-2 ' +
+    'px-[clamp(.7rem,2.2cqi,1rem)] py-[clamp(.85rem,2.8cqi,1.15rem)] ' +
+    'text-left leading-snug font-bold break-words ' +
+    'transition-[transform,background,border-color,box-shadow] duration-150 ease-out ' +
+    'disabled:cursor-default [-webkit-tap-highlight-color:transparent] ' +
+    'active:scale-[.97]'
+  const mcOptionHover =
+    '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:border-[var(--wm-accent4)] [@media(hover:hover)]:hover:bg-[rgba(96,165,250,.1)] [@media(hover:hover)]:hover:shadow-[0_4px_14px_-4px_rgba(96,165,250,.4)]'
+
   // Pre-answer hint — compact inline pill placed next to the prompt line.
   // Available for types A/B/C when the word has passage context.
   // Type D already shows the blanked sentence inline as the question body.
@@ -164,30 +176,31 @@ export default function QuizCard({
               </span>
               {passageHintButton}
             </div>
-            <div className="grid grid-cols-1 gap-[clamp(.4rem,1.5cqi,.6rem)] @lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-[clamp(.5rem,1.7cqi,.7rem)] @lg:grid-cols-2">
               {options.map((o) => {
                 const isCorrect = o.word === question.word.word
                 const isSelected = selectedWord === o.word
                 let btnCls =
                   'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text)]'
+                let resultAnim = ''
                 if (answered) {
-                  if (isCorrect)
+                  if (isCorrect) {
                     btnCls =
                       'border-[var(--wm-accent3)] bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)]'
-                  else if (isSelected)
+                    resultAnim = 'animate-jelly'
+                  } else if (isSelected) {
                     btnCls =
                       'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
+                    resultAnim = 'animate-wiggle'
+                  }
                 }
                 return (
                   <button
                     key={o.word}
+                    type="button"
                     disabled={answered}
                     onClick={() => handleMC(o.word)}
-                    className={`font-nunito cursor-pointer rounded-[10px] border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(.88rem,3cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${btnCls} ${
-                      !answered
-                        ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]'
-                        : ''
-                    }`}
+                    className={`${mcOptionBase} text-[clamp(.92rem,3cqi,1.05rem)] ${btnCls} ${resultAnim} ${!answered ? mcOptionHover : ''}`}
                   >
                     {o.word}
                   </button>
@@ -216,30 +229,31 @@ export default function QuizCard({
               </span>
               {passageHintButton}
             </div>
-            <div className="grid grid-cols-1 gap-[clamp(.4rem,1.5cqi,.6rem)] @lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-[clamp(.5rem,1.7cqi,.7rem)] @lg:grid-cols-2">
               {options.map((o) => {
                 const isCorrect = o.word === question.word.word
                 const isSelected = selectedWord === o.word
                 let btnCls =
                   'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text)]'
+                let resultAnim = ''
                 if (answered) {
-                  if (isCorrect)
+                  if (isCorrect) {
                     btnCls =
                       'border-[var(--wm-accent3)] bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)]'
-                  else if (isSelected)
+                    resultAnim = 'animate-jelly'
+                  } else if (isSelected) {
                     btnCls =
                       'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
+                    resultAnim = 'animate-wiggle'
+                  }
                 }
                 return (
                   <button
                     key={o.word}
+                    type="button"
                     disabled={answered}
                     onClick={() => handleMC(o.word)}
-                    className={`font-nunito cursor-pointer rounded-[10px] border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(1.1rem,4cqi,2rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${btnCls} ${
-                      !answered
-                        ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]'
-                        : ''
-                    }`}
+                    className={`${mcOptionBase} text-[clamp(1.05rem,3.8cqi,1.45rem)] ${btnCls} ${resultAnim} ${!answered ? mcOptionHover : ''}`}
                   >
                     {o.explanation}
                   </button>
@@ -283,28 +297,31 @@ export default function QuizCard({
             <div className="mb-3 text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
               请选出填入空格的单词或短语：
             </div>
-            <div className="grid grid-cols-1 gap-[clamp(.4rem,1.5cqi,.6rem)] @lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-[clamp(.5rem,1.7cqi,.7rem)] @lg:grid-cols-2">
               {options.map((o) => {
                 const isCorrect = o.word === question.word.word
                 const isSelected = selectedWord === o.word
                 let btnCls =
                   'bg-[var(--wm-surface2)] border-[var(--wm-border)] text-[var(--wm-text)]'
+                let resultAnim = ''
                 if (answered) {
-                  if (isCorrect)
+                  if (isCorrect) {
                     btnCls =
                       'border-[var(--wm-accent3)] bg-[rgba(74,222,128,.15)] text-[var(--wm-accent3)]'
-                  else if (isSelected)
+                    resultAnim = 'animate-jelly'
+                  } else if (isSelected) {
                     btnCls =
                       'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
+                    resultAnim = 'animate-wiggle'
+                  }
                 }
                 return (
                   <button
                     key={o.word}
+                    type="button"
                     disabled={answered}
                     onClick={() => handleMC(o.word)}
-                    className={`font-nunito cursor-pointer rounded-[10px] border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(.88rem,3cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${btnCls} ${
-                      !answered ? 'hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]' : ''
-                    }`}
+                    className={`${mcOptionBase} text-[clamp(.92rem,3cqi,1.05rem)] ${btnCls} ${resultAnim} ${!answered ? mcOptionHover : ''}`}
                   >
                     {o.word}
                   </button>
@@ -323,8 +340,9 @@ export default function QuizCard({
             <SpeakButton word={question.word.word} size="text-[1rem]" className="opacity-60 hover:opacity-100" />
           </div>
           <button
+            type="button"
             onClick={handleNext}
-            className="font-nunito flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] py-[clamp(.75rem,2.5cqi,1rem)] text-[clamp(.88rem,3cqi,1rem)] font-bold text-[var(--wm-text)] transition-all hover:border-[var(--wm-accent4)] hover:bg-[rgba(96,165,250,.1)]"
+            className="font-nunito flex w-full cursor-pointer touch-manipulation items-center justify-center gap-1.5 rounded-[12px] border-2 border-[var(--wm-accent4)]/40 bg-gradient-to-b from-[rgba(96,165,250,.18)] to-[rgba(96,165,250,.08)] py-[clamp(.9rem,2.8cqi,1.15rem)] text-[clamp(.95rem,3cqi,1.05rem)] font-extrabold text-[var(--wm-text)] shadow-[0_4px_0_rgba(96,165,250,.25),inset_0_1px_0_rgba(255,255,255,.08)] [-webkit-tap-highlight-color:transparent] transition-[transform,box-shadow,background] duration-150 ease-out active:translate-y-[4px] active:shadow-[0_0_0_rgba(96,165,250,.25)] [@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:border-[var(--wm-accent4)] [@media(hover:hover)]:hover:bg-[rgba(96,165,250,.18)]"
           >
             下一题 →
           </button>

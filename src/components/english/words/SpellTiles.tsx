@@ -105,8 +105,15 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
   // Responsive sizing based on word length
   const tileSizeSmall =
     'w-12 h-12 text-[1.1rem] sm:w-14 sm:h-14 sm:text-[1.25rem] md:w-16 md:h-16 md:text-[1.4rem]'
-  const tileSizeLarge =
-    'w-24 h-12 text-[1.6rem] sm:w-26 sm:h-14 sm:text-[1.75rem] md:w-26 md:h-16 md:text-[1.8rem]'
+  // Pool tile: large, juicy candy-button — sized for 7-year-old fingers
+  const poolTileBase =
+    'relative touch-manipulation select-none font-nunito font-black ' +
+    'w-[clamp(3.75rem,17vw,5.5rem)] h-[clamp(3.5rem,15vw,4.5rem)] ' +
+    'sm:w-[clamp(4.5rem,14vw,6.5rem)] sm:h-[clamp(4rem,12vw,5rem)] ' +
+    'text-[clamp(1.55rem,5.5vw,2rem)] rounded-2xl border-2 ' +
+    '[-webkit-tap-highlight-color:transparent] [transform:translateZ(0)] ' +
+    'transition-[transform,box-shadow,filter] duration-[90ms] ease-out ' +
+    'will-change-transform'
   const tileGap = 'gap-2 sm:gap-2.5'
   const placeholderSize = 'text-[.75rem]'
 
@@ -160,7 +167,7 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
                   onClick={() => {
                     if (letter && !answered) handlePlacedTap(slotIdx)
                   }}
-                  className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] transition-all select-none ${cls}`}
+                  className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] touch-manipulation select-none transition-[transform,background,border-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] ${letter && !answered ? 'cursor-pointer active:scale-90 animate-pop-in' : ''} ${cls}`}
                 >
                   {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
                 </div>
@@ -170,33 +177,43 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
         ))}
       </div>
 
-      {/* Pool tiles */}
+      {/* Pool tiles — chunky 3D candy buttons with instant press feedback */}
       {!answered && (
-        <div className="mt-1 flex w-full flex-wrap items-center justify-center gap-2">
+        <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-2.5 sm:gap-3">
           {pool.map((letter, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => handlePoolTap(letter)}
-              className={`w-24 ${tileSizeLarge} font-nunito cursor-pointer rounded-lg border-2 border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] font-black text-[#c4b5fd] transition-all hover:-translate-y-0.5 hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)]`}
+              style={{ animationDelay: `${i * 35}ms` }}
+              className={`${poolTileBase} animate-pop-in cursor-pointer border-[#7c3aed]/70 bg-gradient-to-b from-[#c4b5fd] via-[#a78bfa] to-[#7c3aed] text-white shadow-[0_5px_0_#5b21b6,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(124,58,237,.6)] [text-shadow:0_2px_0_rgba(76,29,149,.6)] active:translate-y-[5px] active:shadow-[0_0_0_#5b21b6,inset_0_2px_4px_rgba(0,0,0,.25)] active:brightness-95 [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-110`}
             >
               {letter}
             </button>
           ))}
           <button
             key={'null'}
+            type="button"
             onClick={() => handlePoolTap(' ')}
-            className={`w-24 ${tileSizeLarge} font-nunito cursor-pointer rounded-lg border-2 border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.1)] font-black text-[#c4b5fd] transition-all hover:-translate-y-0.5 hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.2)]`}
-          />
+            aria-label="空格"
+            style={{ animationDelay: `${pool.length * 35}ms` }}
+            className={`${poolTileBase} animate-pop-in cursor-pointer border-[#0e7490]/70 bg-gradient-to-b from-[#a5f3fc] via-[#67e8f9] to-[#06b6d4] text-cyan-900 shadow-[0_5px_0_#155e75,inset_0_2px_0_rgba(255,255,255,.6),inset_0_-2px_0_rgba(0,0,0,.12),0_8px_18px_-6px_rgba(6,182,212,.6)] active:translate-y-[5px] active:shadow-[0_0_0_#155e75,inset_0_2px_4px_rgba(0,0,0,.25)] active:brightness-95 [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-110`}
+          >
+            <span className="text-[clamp(1.1rem,3.5vw,1.4rem)] tracking-[.4em] [text-shadow:0_2px_0_rgba(8,51,68,.3)]">
+              ␣
+            </span>
+          </button>
         </div>
       )}
 
-      {/* Confirm button — shown only when all slots filled */}
+      {/* Confirm button — chunky candy button to match pool tiles */}
       {allFilled && !answered && (
         <button
+          type="button"
           onClick={handleConfirm}
-          className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] p-3 text-[.88rem] font-extrabold text-white transition-all hover:-translate-y-px"
+          className="font-nunito relative mt-1 cursor-pointer touch-manipulation rounded-2xl border-2 border-emerald-700/60 bg-gradient-to-b from-[#86efac] via-[#4ade80] to-[#16a34a] py-3 text-[clamp(.95rem,3vw,1.1rem)] font-black tracking-wide text-white shadow-[0_5px_0_#15803d,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.12),0_10px_22px_-6px_rgba(34,197,94,.6)] [-webkit-tap-highlight-color:transparent] [text-shadow:0_2px_0_rgba(20,83,45,.5)] animate-pop-in transition-[transform,box-shadow,filter] duration-100 ease-out active:translate-y-[5px] active:shadow-[0_0_0_#15803d,inset_0_2px_4px_rgba(0,0,0,.25)] [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-110"
         >
-          ✓ 确认
+          ✓ 确认答案
         </button>
       )}
 
