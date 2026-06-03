@@ -112,15 +112,18 @@ export default function QuizCard({
 
   const pct = (currentIndex / totalCount) * 100
 
-  // Pre-answer "查看课文情境" hint — available for types A/B/C when the word
-  // has passage context. Type D already shows the blanked sentence inline.
+  // Pre-answer hint — compact inline pill placed next to the prompt line.
+  // Available for types A/B/C when the word has passage context.
+  // Type D already shows the blanked sentence inline as the question body.
   const showHintAvailable = !answered && hasPassageContext && question.type !== 'D'
   const passageHintButton = showHintAvailable ? (
     <button
       onClick={() => setShowPassageHint(true)}
-      className="font-nunito mb-3 flex w-fit cursor-pointer items-center gap-1.5 rounded-[10px] border-[1.5px] border-amber-400 bg-amber-50 px-3 py-1.5 text-[clamp(.78rem,2.4cqi,.9rem)] font-bold text-amber-700 transition-all hover:-translate-y-px hover:bg-amber-100"
+      title="看课文上下文"
+      className="font-nunito group inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-amber-300 bg-amber-50/80 px-2 py-0.5 text-[clamp(.62rem,1.8cqi,.72rem)] font-extrabold text-amber-700 transition hover:-translate-y-px hover:border-amber-400 hover:bg-amber-100"
     >
-      📖 查看课文情境 · 提示
+      <span aria-hidden className="text-[.95em] transition-transform group-hover:scale-110">💡</span>
+      <span>提示</span>
     </button>
   ) : null
 
@@ -155,10 +158,12 @@ export default function QuizCard({
             <div className="mb-1 text-[clamp(1rem,4cqi,1.4rem)] leading-snug font-black">
               {question.word.explanation}
             </div>
-            <div className="mb-4 text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
-              请选出对应的英文单词或短语：
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
+                请选出对应的英文单词或短语：
+              </span>
+              {passageHintButton}
             </div>
-            {passageHintButton}
             <div className="grid grid-cols-1 gap-[clamp(.4rem,1.5cqi,.6rem)] @lg:grid-cols-2">
               {options.map((o) => {
                 const isCorrect = o.word === question.word.word
@@ -205,10 +210,12 @@ export default function QuizCard({
                 </div>
               )}
             </div>
-            <div className="mb-4 text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
-              请选出正确的释义：
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
+                请选出正确的释义：
+              </span>
+              {passageHintButton}
             </div>
-            {passageHintButton}
             <div className="grid grid-cols-1 gap-[clamp(.4rem,1.5cqi,.6rem)] @lg:grid-cols-2">
               {options.map((o) => {
                 const isCorrect = o.word === question.word.word
@@ -247,10 +254,12 @@ export default function QuizCard({
             <div className="mb-1 text-[clamp(1.2rem,4cqi,1.4rem)] leading-snug font-black">
               {question.word.explanation}
             </div>
-            <div className="mb-4 text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
-              请拼写出对应的英文单词或短语：
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[clamp(.8rem,2.5cqi,.95rem)] text-[var(--wm-text-dim)]">
+                请拼写出对应的英文单词或短语：
+              </span>
+              {passageHintButton}
             </div>
-            {passageHintButton}
             <SpellTiles
               key={currentIndex}
               word={question.word.word}

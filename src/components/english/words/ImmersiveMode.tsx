@@ -648,24 +648,27 @@ export default function ImmersiveMode({
                       {q.word.ipa}
                     </div>
                   )}
-                  <div className="text-[clamp(.78rem,2.2cqi,.9rem)] font-semibold text-white/[.38]">
-                    {isA
-                      ? '请选出对应的英文单词：'
-                      : isC
-                        ? '请拼写出对应的英文单词或短语：'
-                        : isD
-                          ? '请选出填入空格的单词或短语：'
-                          : '请选出正确的释义：'}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[clamp(.78rem,2.2cqi,.9rem)] font-semibold text-white/[.38]">
+                      {isA
+                        ? '请选出对应的英文单词：'
+                        : isC
+                          ? '请拼写出对应的英文单词或短语：'
+                          : isD
+                            ? '请选出填入空格的单词或短语：'
+                            : '请选出正确的释义：'}
+                    </span>
+                    {!qAnswered && hasPassageContext && !isD && (
+                      <button
+                        onClick={() => setShowPassageHint(true)}
+                        title="看课文上下文"
+                        className="font-nunito group inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/[.08] px-2 py-0.5 text-[clamp(.62rem,1.8cqi,.7rem)] font-extrabold text-amber-300 transition hover:-translate-y-px hover:border-amber-400/60 hover:bg-amber-500/[.18]"
+                      >
+                        <span aria-hidden className="text-[.95em] transition-transform group-hover:scale-110">💡</span>
+                        <span>提示</span>
+                      </button>
+                    )}
                   </div>
-
-                  {!qAnswered && hasPassageContext && !isD && (
-                    <button
-                      onClick={() => setShowPassageHint(true)}
-                      className="font-nunito flex w-fit cursor-pointer items-center gap-1.5 self-start rounded-xl border-[1.5px] border-amber-500/40 bg-amber-500/[.08] px-3.5 py-1.5 text-[clamp(.72rem,2cqi,.82rem)] font-bold text-amber-300 transition-all hover:-translate-y-px hover:bg-amber-500/[.18]"
-                    >
-                      📖 查看课文情境 · 提示
-                    </button>
-                  )}
 
                   {isMultiChoice && (
                     <div
