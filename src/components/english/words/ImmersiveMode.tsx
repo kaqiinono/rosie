@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { useRouter } from 'next/navigation'
 import type { WordEntry } from '@/utils/type'
 import {
   hilite,
@@ -51,7 +50,6 @@ export default function ImmersiveMode({
   onClose,
   onQuizComplete,
 }: ImmersiveModeProps) {
-  const router = useRouter()
   const [idx, setIdx] = useState(0)
   const [defOnly, setDefOnly] = useState(false)
   const [wordShown, setWordShown] = useState(true)
@@ -73,6 +71,7 @@ export default function ImmersiveMode({
   const [qSelected, setQSelected] = useState<string | null>(null)
   const [spellOk, setSpellOk] = useState<boolean | null>(null)
   const [showResults, setShowResults] = useState(false)
+  const [showPassageHint, setShowPassageHint] = useState(false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
 
   // Type D is eligible whenever the word's own lesson has a passage that
@@ -178,6 +177,7 @@ export default function ImmersiveMode({
       setQCorrect(null)
       setQSelected(null)
       setSpellOk(null)
+      setShowPassageHint(false)
     }
   }, [curQ, quizQs, onQuizComplete])
 
@@ -240,19 +240,19 @@ export default function ImmersiveMode({
   const qPct = qTotal ? Math.round((qScore / qTotal) * 100) : 0
   const qEmoji = qPct >= 90 ? '🏆' : qPct >= 70 ? '🎉' : qPct >= 50 ? '💪' : '😅'
 
-  // Generalized 3B: any correct answer whose word has a passage offers
-  // "查看原文" — and we disable auto-advance to give the learner a chance to click it.
+  // Passage context drives the pre-answer "查看课文情境" hint modal.
+  // Only available when the word's lesson has a passage containing it.
   const currentPassage = q ? findPassage(q.word.stage, q.word.unit, q.word.lesson) : undefined
   const currentSentence =
     currentPassage && q ? findSentenceForWord(currentPassage, q.word.word) : null
   const hasPassageContext = currentPassage !== undefined && currentSentence !== null
 
   useEffect(() => {
-    if (qAnswered && qCorrect === true && !hasPassageContext) {
+    if (qAnswered && qCorrect === true) {
       const t = setTimeout(nextQuizQ, 600)
       return () => clearTimeout(t)
     }
-  }, [qAnswered, qCorrect, nextQuizQ, hasPassageContext])
+  }, [qAnswered, qCorrect, nextQuizQ])
 
   const qOptions = useMemo(() => {
     if (!q) return []
@@ -658,6 +658,15 @@ export default function ImmersiveMode({
                           : '请选出正确的释义：'}
                   </div>
 
+                  {!qAnswered && hasPassageContext && !isD && (
+                    <button
+                      onClick={() => setShowPassageHint(true)}
+                      className="font-nunito flex w-fit cursor-pointer items-center gap-1.5 self-start rounded-xl border-[1.5px] border-amber-500/40 bg-amber-500/[.08] px-3.5 py-1.5 text-[clamp(.72rem,2cqi,.82rem)] font-bold text-amber-300 transition-all hover:-translate-y-px hover:bg-amber-500/[.18]"
+                    >
+                      📖 查看课文情境 · 提示
+                    </button>
+                  )}
+
                   {isMultiChoice && (
                     <div
                       className={`grid gap-[clamp(.4rem,1.5cqi,.6rem)] ${isA || isD ? 'grid-cols-1 @lg:grid-cols-2' : 'grid-cols-1'}`}
@@ -712,40 +721,8 @@ export default function ImmersiveMode({
                     />
                   )}
 
-                  {/* 答对 + 该词有课文 → 显示查看原文 + 手动下一题（3B 通用化） */}
-                  {qAnswered && qCorrect === true && hasPassageContext && currentPassage && (
-                    <div className="flex flex-wrap justify-center gap-2">
-                      <button
-                        onClick={() => {
-                          onClose()
-                          router.push(`/english/words/reading/${currentPassage.key}?focus=${encodeURIComponent(q.word.word)}`)
-                        }}
-                        className="font-nunito cursor-pointer rounded-xl border-[1.5px] border-amber-500/40 bg-amber-500/[.08] px-5 py-2 text-[clamp(.78rem,2.4cqi,.9rem)] font-bold text-amber-300 transition-all hover:bg-amber-500/[.18]"
-                      >
-                        📖 查看课文原句 →
-                      </button>
-                      <button
-                        onClick={nextQuizQ}
-                        className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-5 py-2 text-[clamp(.78rem,2.4cqi,.9rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"
-                      >
-                        下一题 →
-                      </button>
-                    </div>
-                  )}
-
                   {qAnswered && qCorrect === false && (
                     <div className="flex flex-wrap justify-center gap-2">
-                      {hasPassageContext && currentPassage && (
-                        <button
-                          onClick={() => {
-                            onClose()
-                            router.push(`/english/words/reading/${currentPassage.key}?focus=${encodeURIComponent(q.word.word)}`)
-                          }}
-                          className="font-nunito cursor-pointer rounded-xl border-[1.5px] border-amber-500/40 bg-amber-500/[.08] px-5 py-2 text-[clamp(.78rem,2.4cqi,.9rem)] font-bold text-amber-300 transition-all hover:bg-amber-500/[.18]"
-                        >
-                          📖 查看课文原句 →
-                        </button>
-                      )}
                       <button
                         onClick={nextQuizQ}
                         className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-7 py-[clamp(.6rem,2cqi,.8rem)] text-[clamp(.88rem,2.8cqi,1rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"
@@ -789,6 +766,43 @@ export default function ImmersiveMode({
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Pre-answer passage hint modal */}
+      {showPassageHint && q && currentSentence && (
+        <div
+          className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
+          onClick={() => setShowPassageHint(false)}
+        >
+          <div
+            className="font-nunito relative w-full max-w-md overflow-hidden rounded-2xl border border-amber-500/30 bg-[#1a1a2e] shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowPassageHint(false)}
+              className="absolute top-3 right-3 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white"
+              aria-label="关闭"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="px-5 pt-5 pb-5">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-base">📖</span>
+                <span className="text-[12px] font-extrabold tracking-[.14em] text-amber-400 uppercase">
+                  来自 {q.word.unit} · {q.word.lesson} 课文
+                </span>
+              </div>
+              <div className="rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/[.10] to-orange-500/[.08] px-4 py-4 text-[1.15rem] leading-relaxed font-bold text-[#fef3c7]">
+                &ldquo;{blankWordInSentence(currentSentence.sentence, q.word.word)}&rdquo;
+              </div>
+              <div className="mt-3 text-center text-[11px] text-white/40">
+                根据课文情境，选出最合适的答案 ✨
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
