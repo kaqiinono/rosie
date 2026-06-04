@@ -475,6 +475,17 @@ export function findSentenceForWord(
 }
 
 /**
+ * Replace the first occurrence of `word` (including inflected forms) in
+ * `sentence` with `_______`. Uses the same inflection-tolerant regex as
+ * {@link findSentenceForWord} so that sentences found by that function are
+ * always blanked correctly (e.g. `interviewing` → `_______`).
+ */
+export function blankWordInSentence(sentence: string, word: string): string {
+  const re = new RegExp(inflectedSource(word), 'i')
+  return sentence.replace(re, '_______')
+}
+
+/**
  * Build a regex matching any glossary word as whole-word tokens. Supports
  * multi-word phrases (e.g. `nature reserve`, `South Africa`) and common
  * English inflections — see {@link buildWordMatchRegex} for details.

@@ -3,21 +3,12 @@
 import { useState, type ReactNode } from 'react'
 import type { WordEntry } from '@/utils/type'
 import type { ReadingPassage } from '@/utils/reading-data'
-import { findSentenceForWord } from '@/utils/reading-data'
+import { findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
 import { buildQuizOptions, wordKey } from '@/utils/english-helpers'
 import SpeakButton from '@/components/english/words/SpeakButton'
 
-function escapeRe(s: string) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-function blankSentence(sentence: string, word: string): string {
-  const re = new RegExp(`\\b${escapeRe(word)}s?\\b`, 'i')
-  return sentence.replace(re, '_______')
-}
-
 function highlightedSentence(sentence: string, word: string): ReactNode {
-  const re = new RegExp(`\\b${escapeRe(word)}s?\\b`, 'i')
+  const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}s?\\b`, 'i')
   const m = sentence.match(re)
   if (!m || m.index === undefined) return sentence
   return (
@@ -124,7 +115,7 @@ export default function RecallQuizStack({
                 {result ? (
                   <>&ldquo;{highlightedSentence(sentence, entry.word)}&rdquo;</>
                 ) : (
-                  <>&ldquo;{blankSentence(sentence, entry.word)}&rdquo;</>
+                  <>&ldquo;{blankWordInSentence(sentence, entry.word)}&rdquo;</>
                 )}
               </div>
             ) : (

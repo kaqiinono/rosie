@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
 import { buildQuizOptions, wordKey } from '@/utils/english-helpers'
+import { blankWordInSentence } from '@/utils/reading-data'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
 import SpeakButton from '@/components/english/words/SpeakButton'
 
@@ -20,10 +21,7 @@ interface ParagraphRecallQuizProps {
 }
 
 const SENTENCE_RE = /(?<=[.!?])\s+/
-
-function escapeRe(s: string) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 function pickQuizTarget(
   paragraph: string,
@@ -55,11 +53,6 @@ function pickQuizTarget(
   )
   const chosen = candidates[0]
   return { entry: chosen.entry, sentence: chosen.sentence }
-}
-
-function blankSentence(sentence: string, word: string): string {
-  const re = new RegExp(`\\b${escapeRe(word)}s?\\b`, 'i')
-  return sentence.replace(re, '_______')
 }
 
 function highlightedSentence(sentence: string, word: string, tone: 'emerald' | 'rose'): ReactNode {
@@ -239,7 +232,7 @@ export default function ParagraphRecallQuiz({
                   </span>
                 </div>
                 <div className="mb-4 rounded-xl bg-amber-50/70 px-3 py-3 text-[15px] leading-relaxed text-gray-800 ring-1 ring-amber-200">
-                  &ldquo;{blankSentence(target.sentence, target.entry.word)}&rdquo;
+                  &ldquo;{blankWordInSentence(target.sentence, target.entry.word)}&rdquo;
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {options.map((o) => (

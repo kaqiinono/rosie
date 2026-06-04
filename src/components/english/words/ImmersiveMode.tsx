@@ -11,7 +11,7 @@ import {
   type QuizType,
 } from '@/utils/english-helpers'
 import { getWordSizeClass } from '@/utils/phonics'
-import { findPassage, findSentenceForWord } from '@/utils/reading-data'
+import { findPassage, findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
 import SpeakButton from './SpeakButton'
@@ -35,11 +35,6 @@ interface ImmQuizQ {
   type: QuizType
 }
 
-function blankWordInSentence(sentence: string, word: string): string {
-  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const re = new RegExp(`\\b(${escaped})s?\\b`, 'i')
-  return sentence.replace(re, '_______')
-}
 
 export default function ImmersiveMode({
   open,
@@ -98,11 +93,6 @@ export default function ImmersiveMode({
   useEffect(() => {
     if (open && mode === 'practice') quizResultBuffer.current = []
   }, [open, mode])
-
-  // Clear result buffer when switching into practice via preview flow
-  useEffect(() => {
-    if (open && mode === 'practice') quizResultBuffer.current = []
-  }, [mode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const [prevOpen, setPrevOpen] = useState(open)
   if (prevOpen !== open) {
@@ -184,7 +174,7 @@ export default function ImmersiveMode({
   const { awardStars, session: starSession } = useStarHud()
 
   const handleMCAnswer = useCallback(
-    (chosen: string, correct: string) => {
+    (chosen: string, correct: string, stars: 1 | 2 = 1) => {
       if (qAnswered) return
       const isCorrect = chosen === correct
       setQAnswered(true)
@@ -192,7 +182,7 @@ export default function ImmersiveMode({
       setQSelected(chosen)
       if (isCorrect) {
         setQScore((s) => s + 1)
-        void awardStars('red', 1)
+        void awardStars('red', stars)
       }
       if (quizQs[curQ])
         quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
@@ -213,24 +203,6 @@ export default function ImmersiveMode({
         void awardStars('red', 2)
       }
       if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: ok })
-    },
-    [qAnswered, quizQs, curQ, awardStars],
-  )
-
-  /** D-type extra reward: same +2 stars as C since both probe production-quality recall. */
-  const handleTypeDAnswer = useCallback(
-    (chosen: string, correct: string) => {
-      if (qAnswered) return
-      const isCorrect = chosen === correct
-      setQAnswered(true)
-      setQCorrect(isCorrect)
-      setQSelected(chosen)
-      if (isCorrect) {
-        setQScore((s) => s + 1)
-        void awardStars('red', 2)
-      }
-      if (quizQs[curQ])
-        quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
     },
     [qAnswered, quizQs, curQ, awardStars],
   )
@@ -327,7 +299,7 @@ export default function ImmersiveMode({
             width:
               mode === 'vocab'
                 ? `${((idx + 1) / total) * 100}%`
-                : `${((curQ + 1) / qTotal) * 100}%`,
+                : `${qTotal ? ((curQ + 1) / qTotal) * 100 : 0}%`,
           }}
         />
       </div>
@@ -695,7 +667,7 @@ export default function ImmersiveMode({
                             disabled={qAnswered}
                             onClick={() =>
                               isD
-                                ? handleTypeDAnswer(o.word, q.word.word)
+                                ? handleMCAnswer(o.word, q.word.word, 2)
                                 : handleMCAnswer(o.word, q.word.word)
                             }
                             className={`font-nunito flex cursor-pointer items-start gap-[clamp(.4rem,1.2cqi,.6rem)] rounded-xl border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(1.2rem,2.2cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${cls} ${

@@ -2,16 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import type { WordEntry } from '@/utils/type'
-import { findPassage, findSentenceForWord } from '@/utils/reading-data'
+import { findPassage, findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpellTiles from './SpellTiles'
 import SpeakButton from './SpeakButton'
-
-function blankWordInSentence(sentence: string, word: string): string {
-  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const re = new RegExp(`\\b(${escaped})s?\\b`, 'i')
-  return sentence.replace(re, '_______')
-}
 
 interface QuizCardProps {
   question: { word: WordEntry; type: 'A' | 'B' | 'C' | 'D' }
@@ -212,7 +206,7 @@ export default function QuizCard({
 
         {question.type === 'B' && (
           <>
-            <div className="mb-1 text-[clamp(2rem,4cqi,1.4rem)] leading-snug font-black">
+            <div className="mb-1 text-[clamp(1.2rem,4cqi,1.4rem)] leading-snug font-black">
               <div className="flex items-center gap-2">
                 <PhonicsWord text={question.word.word} syllables={question.word.syllables} />
                 <SpeakButton word={question.word.word} className="opacity-50 hover:opacity-100 shrink-0" />

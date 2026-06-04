@@ -167,25 +167,27 @@ export function normalizeQuizTypes(types: QuizType[]): QuizType[] {
  * Randomly interleave several ordered sequences without reordering within each sequence.
  * Used so each word’s quiz stays A → B → C while the global order stays unpredictable.
  */
-export function interleaveOrderedQuizSlots<T>(groups: T[][], seed: number): T[] {
+export function interleaveOrderedQuizSlots<T>(groups: T[][], seed: number, minGap = 3): T[] {
   const pointers = groups.map(() => 0)
   const r = rng(seed)
   const out: T[] = []
   const total = groups.reduce((s, g) => s + g.length, 0)
-  let lastPick = -1
+  // Cap gap to the number of words minus one — the maximum that can ever be honoured.
+  const gap = Math.min(minGap, groups.length - 1)
+  const recentPicks: number[] = []
   for (let n = 0; n < total; n++) {
     const available: number[] = []
     for (let i = 0; i < groups.length; i++) {
       if (pointers[i]! < groups[i]!.length) available.push(i)
     }
     if (available.length === 0) break
-    // Exclude the last-picked group when other options exist, so the same
-    // word is never asked twice in a row (A immediately followed by B/C).
-    const candidates = available.length > 1 ? available.filter(i => i !== lastPick) : available
+    const recentSet = new Set(recentPicks)
+    const candidates = available.filter(i => !recentSet.has(i))
     const pick = candidates[Math.floor(r() * candidates.length)]!
     out.push(groups[pick]![pointers[pick]!]!)
     pointers[pick]!++
-    lastPick = pick
+    recentPicks.push(pick)
+    if (recentPicks.length > gap) recentPicks.shift()
   }
   return out
 }
