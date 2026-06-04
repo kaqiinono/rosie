@@ -5,16 +5,19 @@ import type { WordEntry } from '@/utils/type'
 import {
   buildQuizOptions,
   buildQuizQuestions,
+  buildReinforcementQuestions,
   normalizeQuizTypes,
   wordKey,
 } from '@/utils/english-helpers'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
-import QuizCard from './QuizCard'
+import QuizQuestionBody from './QuizQuestionBody'
+import { useQuizRunner } from './useQuizRunner'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useStarHud } from '@/components/stars/StarHudProvider'
 
 interface OldReviewSessionProps {
   words: WordEntry[]          // pre-computed due words, ordered by urgency
@@ -56,6 +59,7 @@ function loadOldReviewSnapshot(): OldReviewSnapshot | null {
 export default function OldReviewSession({ words, vocab, onBack }: OldReviewSessionProps) {
   const { masteryMap, recordBatch } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
+  const { awardStars } = useStarHud()
 
   // Read sessionStorage exactly once via a lazy-init state (immutable after mount)
   const [snap0] = useState(() => loadOldReviewSnapshot())
@@ -98,6 +102,8 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
+  const [reinforcementAppended, setReinforcementAppended] = useState(false)
 
   // One-time: hydrate quizResultBuffer + activate immersive mode after vocab is loaded
   useEffect(() => {
@@ -156,34 +162,72 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     setQuizQKeys(qs.map((q) => ({ key: wordKey(q.word), type: q.type })))
     setCurQ(0)
     setScore(0)
+    setHelpClicks({})
+    setReinforcementAppended(false)
     setPhase('quiz')
   }, [sessionWords, enabledTypes])
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
       if (correct) setScore(s => s + 1)
-      if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct })
+      const q = quizQs[curQ]
+      if (q) {
+        quizResultBuffer.current.push({ entry: q.word, correct })
+        if (correct) {
+          // 单选题 (A/B) +1 红星; 填空题 (C) / 课文语境填空 (D) +2 红星
+          const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
+          void awardStars('red', amount)
+        }
+      }
     },
-    [quizQs, curQ],
+    [quizQs, curQ, awardStars],
   )
 
   const nextQ = useCallback(() => {
     const next = curQ + 1
-    if (next >= quizQs.length) {
-      recordBatch(quizResultBuffer.current)
-      quizResultBuffer.current = []
-      setPhase('done')
-    } else {
+    if (next < quizQs.length) {
       setCurQ(next)
+      return
     }
-  }, [curQ, quizQs, recordBatch])
+    // End of main pass — append Type-C reinforcement for words the user asked help on.
+    const hasHelp = !reinforcementAppended && Object.values(helpClicks).some((c) => c > 0)
+    if (hasHelp) {
+      const extras = buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
+      if (extras.length > 0) {
+        setQuizQKeys((prev) => [
+          ...prev,
+          ...extras.map((q) => ({ key: wordKey(q.word), type: q.type })),
+        ])
+        setReinforcementAppended(true)
+        setCurQ(next)
+        return
+      }
+    }
+    recordBatch(quizResultBuffer.current)
+    quizResultBuffer.current = []
+    setPhase('done')
+  }, [curQ, quizQs.length, helpClicks, reinforcementAppended, vocab, recordBatch])
+
+  const handleHelpReveal = useCallback(() => {
+    const q = quizQs[curQ]
+    if (!q) return
+    const k = wordKey(q.word)
+    setHelpClicks((prev) => ({ ...prev, [k]: (prev[k] ?? 0) + 1 }))
+  }, [quizQs, curQ])
+
+  const currentQuestion = quizQs[curQ] ?? null
 
   const quizOptions = useMemo(() => {
-    const q = quizQs[curQ]
-    if (!q) return []
+    if (!currentQuestion) return []
     const seed = curQ * 997 + quizQs.length
-    return buildQuizOptions(q.word, vocab, seed)
-  }, [quizQs, curQ, vocab])
+    return buildQuizOptions(currentQuestion.word, vocab, seed)
+  }, [currentQuestion, curQ, quizQs.length, vocab])
+
+  const runner = useQuizRunner({
+    question: currentQuestion,
+    onCommit: handleAnswer,
+    onAdvance: nextQ,
+  })
 
   const total = sessionWords.length
 
@@ -219,8 +263,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   }
 
   // ── QUIZ ─────────────────────────────────────────────────────────────────
-  if (phase === 'quiz' && quizQs[curQ]) {
-    const q = quizQs[curQ]
+  if (phase === 'quiz' && currentQuestion) {
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-2 flex items-center gap-3 py-3">
@@ -245,15 +288,15 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
             退出复习
           </button>
         </div>
-        <QuizCard
-          key={curQ}
-          question={{ word: q.word, type: q.type }}
+        <QuizQuestionBody
+          question={currentQuestion}
           options={quizOptions}
-          currentIndex={curQ}
-          totalCount={quizQs.length}
           score={score}
-          onAnswer={handleAnswer}
-          onNext={nextQ}
+          total={quizQs.length}
+          runner={runner}
+          questionKey={curQ}
+          helpRevealed={currentQuestion ? (helpClicks[wordKey(currentQuestion.word)] ?? 0) : 0}
+          onHelpReveal={handleHelpReveal}
         />
       </div>
     )

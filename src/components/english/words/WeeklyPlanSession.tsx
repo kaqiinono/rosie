@@ -5,6 +5,7 @@ import type { WordEntry, WeeklyPlan, WeekDayProgress } from '@/utils/type'
 import { encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
+  buildReinforcementQuestions,
   classifyPlanWords,
   getDailySessionWords,
   interleaveOrderedQuizSlots,
@@ -17,7 +18,8 @@ import {
 } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import { findPassage, findSentenceForWord } from '@/utils/reading-data'
-import QuizCard from './QuizCard'
+import QuizQuestionBody from './QuizQuestionBody'
+import { useQuizRunner } from './useQuizRunner'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
@@ -152,13 +154,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     [wordKeys, vocab],
   )
 
-  /** Does the current session contain any Type-D-eligible consolidate word?
-   *  Used to conditionally show the D toggle in the type selector. */
-  const anyEligibleConsolidateWord = useMemo(
-    () => words.some((w) => w.kind === 'consolidate' && isEligibleForTypeD(w.entry)),
-    [words, isEligibleForTypeD],
-  )
-
   const [studyIdx, setStudyIdx] = useState(() => snap0?.studyIdx ?? 0)
   const [studyDefOnly, setStudyDefOnly] = useState(false)
   const [currentSubTask, setCurrentSubTask] = useState<'all' | 'consolidate' | 'preview'>(
@@ -183,6 +178,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const [lastStarsEarned, setLastStarsEarned] = useState(0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  // 🎈 帮助按钮：每揭一个字母 helpClicks[wordKey] += 1；练习结束后按计数追加 Type-C 巩固题。
+  const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
+  const [reinforcementAppended, setReinforcementAppended] = useState(false)
+  const [mainPassSnapshot, setMainPassSnapshot] = useState<{ score: number; total: number } | null>(null)
 
   // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
   useEffect(() => {
@@ -315,6 +314,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setCurQ(0)
     setScore(0)
     setLastStarsEarned(0)
+    setHelpClicks({})
+    setReinforcementAppended(false)
+    setMainPassSnapshot(null)
     setPhase('quiz')
   }, [words, consolidateTypes, previewTypes, isEligibleForTypeD])
 
@@ -336,10 +338,41 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const nextQ = useCallback(() => {
     const next = curQ + 1
-    if (next >= quizQs.length) {
-      const finalScore = quizResultBuffer.current.filter((r) => r.correct).length
-      const pct = Math.round((finalScore / quizQs.length) * 100)
-      if (selectedDate) {
+    if (next < quizQs.length) {
+      setCurQ(next)
+      return
+    }
+
+    // End of current pass. If the user asked for letter-reveal help on any words
+    // and we haven't appended the reinforcement batch yet, append it now and
+    // stay in quiz phase. Snapshot main-pass score so day-progress reflects
+    // the original quiz, not the reinforcement (which is "extra practice").
+    const hasHelp = !reinforcementAppended && Object.values(helpClicks).some((c) => c > 0)
+    if (hasHelp) {
+      const extras = buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
+      if (extras.length > 0) {
+        const mainScore = quizResultBuffer.current.filter((r) => r.correct).length
+        setMainPassSnapshot({ score: mainScore, total: quizQs.length })
+        // Preserve each word's original kind (consolidate/preview) for serialization parity.
+        const kindByKey = new Map<string, WordKind>()
+        for (const q of quizQs) kindByKey.set(wordKey(q.word), q.kind)
+        const newKeys = extras.map((q) => ({
+          key: wordKey(q.word),
+          type: q.type,
+          kind: kindByKey.get(wordKey(q.word)) ?? ('consolidate' as WordKind),
+        }))
+        setQuizQKeys((prev) => [...prev, ...newKeys])
+        setReinforcementAppended(true)
+        setCurQ(next)
+        return
+      }
+    }
+
+    // Truly done — day progress reflects main-pass score (snapshot if reinforcement ran).
+    const baseScore = mainPassSnapshot?.score ?? quizResultBuffer.current.filter((r) => r.correct).length
+    const baseTotal = mainPassSnapshot?.total ?? quizQs.length
+    const pct = baseTotal > 0 ? Math.round((baseScore / baseTotal) * 100) : 0
+    if (selectedDate) {
         const existing = planRef.current.progress[selectedDate] ?? {}
 
         if (currentSubTask === 'all') {
@@ -375,27 +408,41 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           })
         }
       }
-      recordBatch(quizResultBuffer.current)
-      // Stars are already awarded per-question via handleAnswer above.
-      // We only surface a tally here for the "done" screen.
-      const starsFromThisRun = quizResultBuffer.current.reduce((sum, r, idx) => {
-        if (!r.correct) return sum
-        return sum + (quizQs[idx]?.type === 'C' ? 2 : 1)
-      }, 0)
-      setLastStarsEarned(starsFromThisRun)
-      quizResultBuffer.current = []
-      setPhase('done')
-    } else {
-      setCurQ(next)
-    }
-  }, [curQ, quizQs, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch])
+    recordBatch(quizResultBuffer.current)
+    // Stars are already awarded per-question via handleAnswer above.
+    // We only surface a tally here for the "done" screen.
+    const starsFromThisRun = quizResultBuffer.current.reduce((sum, r, idx) => {
+      if (!r.correct) return sum
+      const t = quizQs[idx]?.type
+      return sum + (t === 'C' || t === 'D' ? 2 : 1)
+    }, 0)
+    setLastStarsEarned(starsFromThisRun)
+    quizResultBuffer.current = []
+    setPhase('done')
+  }, [curQ, quizQs, helpClicks, reinforcementAppended, mainPassSnapshot, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch])
+
+  const currentQuestion = quizQs[curQ] ?? null
 
   const quizOptions = useMemo(() => {
-    const q = quizQs[curQ]
-    if (!q) return []
+    if (!currentQuestion) return []
     const seed = curQ * 997 + quizQs.length
-    return buildQuizOptions(q.word, vocab, seed)
-  }, [quizQs, curQ, vocab])
+    return buildQuizOptions(currentQuestion.word, vocab, seed)
+  }, [currentQuestion, curQ, quizQs.length, vocab])
+
+  const runner = useQuizRunner({
+    question: currentQuestion,
+    onCommit: handleAnswer,
+    onAdvance: nextQ,
+  })
+
+  const handleHelpReveal = useCallback(() => {
+    if (!currentQuestion) return
+    const k = wordKey(currentQuestion.word)
+    setHelpClicks((prev) => ({ ...prev, [k]: (prev[k] ?? 0) + 1 }))
+  }, [currentQuestion])
+
+  const helpRevealedForCurrent = currentQuestion ? (helpClicks[wordKey(currentQuestion.word)] ?? 0) : 0
+  const inReinforcement = reinforcementAppended && mainPassSnapshot !== null && curQ >= mainPassSnapshot.total
 
   const planClassification = useMemo(() => classifyPlanWords(plan, vocab), [plan, vocab])
 
@@ -589,6 +636,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
               const consolidateScore = plan.progress[selectedDate]?.consolidateScore
               const previewScore = plan.progress[selectedDate]?.previewScore
               const hasBothKinds = consolidateList.length > 0 && previewList.length > 0
+              // Type D 题型的可用性按当日必记词列表来判（之前用 session 级 words，
+              // 冷启动时为空导致 D 永远隐藏）
+              const dayHasTypeDEligible = consolidateList.some((s) => isEligibleForTypeD(s.entry))
               return (
                 <div className="border-t border-[var(--wm-border)] pt-4">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -677,7 +727,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                   <div className="mb-4 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="min-w-[5.5rem] text-[.72rem] font-bold text-[#93c5fd]">必记词题型</span>
-                      {((anyEligibleConsolidateWord ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'C']) as ('A' | 'B' | 'C' | 'D')[]).map((t) => {
+                      {((dayHasTypeDEligible ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'C']) as ('A' | 'B' | 'C' | 'D')[]).map((t) => {
                         const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写', D: '📖 课文填空' }
                         const on = consolidateTypes.has(t)
                         return (
@@ -864,9 +914,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   }
 
   // ── QUIZ ─────────────────────────────────────────────────────────────────
-  if (phase === 'quiz' && quizQs[curQ]) {
-    const q = quizQs[curQ]
-    // Stars available this run: A/B = 1, C = 2 per question
+  if (phase === 'quiz' && currentQuestion) {
+    // Stars available this run: A/B = 1, C/D = 2 per question
     const possibleStars = quizQs.reduce((sum, qq) => sum + (qq.type === 'C' || qq.type === 'D' ? 2 : 1), 0)
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
@@ -885,8 +934,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             ← 回到记忆
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">✏️ 单词测试</div>
+          {inReinforcement && (
+            <span className="font-fredoka inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-2.5 py-1 text-[10px] font-black tracking-wide text-white shadow-[0_2px_0_rgba(0,0,0,.15)]">
+              🌱 巩固阶段
+            </span>
+          )}
           <div className="ml-auto hidden text-[11px] font-bold text-[var(--wm-text-dim)] sm:block">
-            题型 {q.type} · {q.type === 'C' || q.type === 'D' ? '+2⭐/题' : '+1⭐/题'}
+            题型 {currentQuestion.type} · {currentQuestion.type === 'C' || currentQuestion.type === 'D' ? '+2⭐/题' : '+1⭐/题'}
           </div>
         </div>
 
@@ -899,15 +953,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           </div>
         </div>
 
-        <QuizCard
-          key={curQ}
-          question={{ word: q.word, type: q.type }}
+        <QuizQuestionBody
+          question={currentQuestion}
           options={quizOptions}
-          currentIndex={curQ}
-          totalCount={quizQs.length}
           score={score}
-          onAnswer={handleAnswer}
-          onNext={nextQ}
+          total={quizQs.length}
+          runner={runner}
+          questionKey={curQ}
+          helpRevealed={helpRevealedForCurrent}
+          onHelpReveal={handleHelpReveal}
         />
       </div>
     )

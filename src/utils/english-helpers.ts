@@ -182,8 +182,11 @@ export function interleaveOrderedQuizSlots<T>(groups: T[][], seed: number, minGa
     }
     if (available.length === 0) break
     const recentSet = new Set(recentPicks)
-    const candidates = available.filter(i => !recentSet.has(i))
-    const pick = candidates[Math.floor(r() * candidates.length)]!
+    const filtered = available.filter(i => !recentSet.has(i))
+    // Gap is a soft constraint — when it would exclude every remaining group,
+    // fall back to the full available set so we don't pick `undefined`.
+    const pool = filtered.length > 0 ? filtered : available
+    const pick = pool[Math.floor(r() * pool.length)]!
     out.push(groups[pick]![pointers[pick]!]!)
     pointers[pick]!++
     recentPicks.push(pick)
@@ -222,6 +225,68 @@ export function buildQuizQuestions(
       .map(type => ({ word: w, type })),
   )
   return interleaveOrderedQuizSlots(groups, seed + 1)
+}
+
+/** Count of alphabetic characters in `s` (spaces/punctuation excluded). */
+export function letterCount(s: string): number {
+  let n = 0
+  for (const ch of s) if (/[a-zA-Z]/.test(ch)) n++
+  return n
+}
+
+/** Mask all-but-first-`revealed`-letters of `word`, preserving spaces/punctuation/case. */
+export function maskWord(word: string, revealed: number): string {
+  let shown = 0
+  let out = ''
+  for (const ch of word) {
+    if (/[a-zA-Z]/.test(ch)) {
+      if (shown < revealed) {
+        out += ch
+        shown++
+      } else {
+        out += '_'
+      }
+    } else {
+      out += ch
+    }
+  }
+  return out
+}
+
+/**
+ * Replace the first whole-word occurrence of `word` in `example` with a masked
+ * version where the first `revealed` letters are shown and the rest become
+ * underscores. Returns the example unchanged if no match is found.
+ */
+export function maskWordInExample(example: string, word: string, revealed: number): string {
+  const escaped = word.replace(/[-.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp('(?<![a-zA-Z])' + escaped + '(?![a-zA-Z])', 'i')
+  return example.replace(re, (m) => maskWord(m, revealed))
+}
+
+/**
+ * Build reinforcement Type-C questions for words the user asked for help on.
+ * Each word gets one repetition per click. Reps are interleaved so the same
+ * word never appears adjacent within `minGap`.
+ */
+export function buildReinforcementQuestions(
+  helpClicks: Record<string, number>,
+  vocab: WordEntry[],
+  keyOf: (w: WordEntry) => string,
+  seed: number,
+  minGap = 3,
+): QuizQuestion[] {
+  const groups: QuizQuestion[][] = []
+  for (const [k, count] of Object.entries(helpClicks)) {
+    if (count <= 0) continue
+    const entry = vocab.find(w => keyOf(w) === k)
+    if (!entry) continue
+    const reps: QuizQuestion[] = []
+    for (let i = 0; i < count; i++) reps.push({ word: entry, type: 'C' })
+    groups.push(reps)
+  }
+  if (!groups.length) return []
+  return interleaveOrderedQuizSlots(groups, seed, minGap)
 }
 
 /** Longest common prefix length (ASCII), for morphologically related forms (interest / interesting / interested). */

@@ -7,16 +7,18 @@ import {
   highlightExample,
   buildQuizOptions,
   buildQuizQuestions,
+  buildReinforcementQuestions,
   normalizeQuizTypes,
+  wordKey,
   type QuizType,
 } from '@/utils/english-helpers'
 import { getWordSizeClass } from '@/utils/phonics'
-import { findPassage, findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
+import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
-import SpellTiles from './SpellTiles'
-import SpeakButton from './SpeakButton'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import ColoredStar from '@/components/stars/ColoredStar'
+import { useQuizRunner, type QuizQuestion } from './useQuizRunner'
+import QuizQuestionBody from './QuizQuestionBody'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -28,11 +30,6 @@ interface ImmersiveModeProps {
   practiceTypes: QuizType[]
   onClose: () => void
   onQuizComplete?: (results: { entry: WordEntry; correct: boolean }[]) => void
-}
-
-interface ImmQuizQ {
-  word: WordEntry
-  type: QuizType
 }
 
 
@@ -58,19 +55,15 @@ export default function ImmersiveMode({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  const [quizQs, setQuizQs] = useState<ImmQuizQ[]>([])
+  const [quizQs, setQuizQs] = useState<QuizQuestion[]>([])
   const [curQ, setCurQ] = useState(0)
   const [qScore, setQScore] = useState(0)
-  const [qAnswered, setQAnswered] = useState(false)
-  const [qCorrect, setQCorrect] = useState<boolean | null>(null)
-  const [qSelected, setQSelected] = useState<string | null>(null)
-  const [spellOk, setSpellOk] = useState<boolean | null>(null)
   const [showResults, setShowResults] = useState(false)
-  const [showPassageHint, setShowPassageHint] = useState(false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
+  const [reinforcementAppended, setReinforcementAppended] = useState(false)
+  const [mainPassTotal, setMainPassTotal] = useState<number | null>(null)
 
-  // Type D is eligible whenever the word's own lesson has a passage that
-  // contains a sentence for it. No reliance on a week-level focus marker.
   const isEligibleForTypeD = useCallback((entry: WordEntry) => {
     const p = findPassage(entry.stage, entry.unit, entry.lesson)
     return p !== undefined && findSentenceForWord(p, entry.word) !== null
@@ -83,13 +76,12 @@ export default function ImmersiveMode({
     setQuizQs(buildQuizQuestions(words, types, seed, isEligibleForTypeD))
     setCurQ(0)
     setQScore(0)
-    setQAnswered(false)
-    setQSelected(null)
-    setSpellOk(null)
     setShowResults(false)
+    setHelpClicks({})
+    setReinforcementAppended(false)
+    setMainPassTotal(null)
   }, [words, practiceTypes, isEligibleForTypeD])
 
-  // Clear quiz result buffer when practice opens (ref access must stay in an effect)
   useEffect(() => {
     if (open && mode === 'practice') quizResultBuffer.current = []
   }, [open, mode])
@@ -107,7 +99,6 @@ export default function ImmersiveMode({
     }
   }
 
-  // When mode switches from 'vocab' → 'practice' while already open (preview → quiz flow)
   const [prevMode, setPrevMode] = useState(mode)
   if (prevMode !== mode) {
     setPrevMode(mode)
@@ -155,82 +146,77 @@ export default function ImmersiveMode({
     }
   }, [idx, defOnly])
 
-  const nextQuizQ = useCallback(() => {
-    const next = curQ + 1
-    if (next >= quizQs.length) {
-      onQuizComplete?.(quizResultBuffer.current)
-      quizResultBuffer.current = []
-      setShowResults(true)
-    } else {
-      setCurQ(next)
-      setQAnswered(false)
-      setQCorrect(null)
-      setQSelected(null)
-      setSpellOk(null)
-      setShowPassageHint(false)
-    }
-  }, [curQ, quizQs, onQuizComplete])
-
   const { awardStars, session: starSession } = useStarHud()
 
-  const handleMCAnswer = useCallback(
-    (chosen: string, correct: string, stars: 1 | 2 = 1) => {
-      if (qAnswered) return
-      const isCorrect = chosen === correct
-      setQAnswered(true)
-      setQCorrect(isCorrect)
-      setQSelected(chosen)
-      if (isCorrect) {
+  const currentQ = quizQs[curQ] ?? null
+
+  const handleCommit = useCallback(
+    (correct: boolean) => {
+      if (!currentQ) return
+      if (correct) {
         setQScore((s) => s + 1)
-        void awardStars('red', stars)
+        const amount = currentQ.type === 'C' || currentQ.type === 'D' ? 2 : 1
+        void awardStars('red', amount)
       }
-      if (quizQs[curQ])
-        quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: isCorrect })
+      quizResultBuffer.current.push({ entry: currentQ.word, correct })
     },
-    [qAnswered, quizQs, curQ, awardStars],
+    [currentQ, awardStars],
   )
 
-  const handleSpellSubmit = useCallback(
-    (val: string) => {
-      if (qAnswered) return
-      const ok = val.trim().toLowerCase() === quizQs[curQ]?.word.word.toLowerCase()
-      setQAnswered(true)
-      setQCorrect(ok)
-      setSpellOk(ok)
-      if (ok) {
-        setQScore((s) => s + 1)
-        // Fill-in-blank (spelling) awards 2 red stars per correct answer.
-        void awardStars('red', 2)
+  const handleAdvance = useCallback(() => {
+    const next = curQ + 1
+    if (next < quizQs.length) {
+      setCurQ(next)
+      return
+    }
+    // End of main pass: if the user asked for letter-reveal help on any words,
+    // append a reinforcement batch of Type-C questions before finishing.
+    const hasHelp = !reinforcementAppended && Object.values(helpClicks).some((c) => c > 0)
+    if (hasHelp) {
+      const extras = buildReinforcementQuestions(helpClicks, allWords, wordKey, Date.now())
+      if (extras.length > 0) {
+        setMainPassTotal(quizQs.length)
+        setQuizQs((prev) => [...prev, ...extras])
+        setReinforcementAppended(true)
+        setCurQ(next)
+        return
       }
-      if (quizQs[curQ]) quizResultBuffer.current.push({ entry: quizQs[curQ].word, correct: ok })
-    },
-    [qAnswered, quizQs, curQ, awardStars],
-  )
+    }
+    onQuizComplete?.(quizResultBuffer.current)
+    quizResultBuffer.current = []
+    setShowResults(true)
+  }, [curQ, quizQs.length, helpClicks, reinforcementAppended, allWords, onQuizComplete])
+
+  const handleHelpReveal = useCallback(() => {
+    if (!currentQ) return
+    const k = wordKey(currentQ.word)
+    setHelpClicks((prev) => ({ ...prev, [k]: (prev[k] ?? 0) + 1 }))
+  }, [currentQ])
+
+  const helpRevealedForCurrent = currentQ ? (helpClicks[wordKey(currentQ.word)] ?? 0) : 0
+  const inReinforcement = reinforcementAppended && mainPassTotal !== null && curQ >= mainPassTotal
+
+  const runner = useQuizRunner({
+    question: currentQ,
+    onCommit: handleCommit,
+    onAdvance: handleAdvance,
+  })
 
   const qTotal = quizQs.length
-  const q = quizQs[curQ]
   const qPct = qTotal ? Math.round((qScore / qTotal) * 100) : 0
   const qEmoji = qPct >= 90 ? '🏆' : qPct >= 70 ? '🎉' : qPct >= 50 ? '💪' : '😅'
 
-  // Passage context drives the pre-answer "查看课文情境" hint modal.
-  // Only available when the word's lesson has a passage containing it.
-  const currentPassage = q ? findPassage(q.word.stage, q.word.unit, q.word.lesson) : undefined
-  const currentSentence =
-    currentPassage && q ? findSentenceForWord(currentPassage, q.word.word) : null
-  const hasPassageContext = currentPassage !== undefined && currentSentence !== null
-
-  useEffect(() => {
-    if (qAnswered && qCorrect === true) {
-      const t = setTimeout(nextQuizQ, 600)
-      return () => clearTimeout(t)
-    }
-  }, [qAnswered, qCorrect, nextQuizQ])
-
   const qOptions = useMemo(() => {
-    if (!q) return []
+    if (!currentQ) return []
     const seed = curQ * 997 + quizQs.length
-    return buildQuizOptions(q.word, allWords, seed)
-  }, [q, curQ, quizQs.length, allWords])
+    return buildQuizOptions(currentQ.word, allWords, seed)
+  }, [currentQ, curQ, quizQs.length, allWords])
+
+  // Per-question star value summed for accurate live target (A/B=1, C/D=2)
+  const targetStars = useMemo(
+    () => quizQs.reduce((s, q) => s + (q.type === 'C' || q.type === 'D' ? 2 : 1), 0),
+    [quizQs],
+  )
 
   if (!open || !words.length) return null
 
@@ -247,12 +233,83 @@ export default function ImmersiveMode({
 
   const topVisible = bodyMode !== 'def-only'
 
+  const moonProgress = (() => {
+    const earned = starSession.red
+    const goal = Math.max(1, targetStars)
+    const pct = Math.min(100, (earned / goal) * 100)
+    const reached = earned >= goal
+    return (
+      <div className="rounded-2xl border border-rose-400/20 bg-white/[.04] px-3.5 py-2.5 backdrop-blur">
+        <div className="mb-1.5 flex items-center gap-2">
+          <ColoredStar color="red" size={16} glow={6} />
+          <span className="text-[11px] font-extrabold tracking-[.14em] text-rose-300/80 uppercase">
+            本次月亮
+          </span>
+          <span className="font-fredoka ml-auto text-[14px] font-black tabular-nums text-rose-100">
+            {earned}
+            <span className="ml-0.5 text-[11px] text-rose-100/40">/{goal}</span>
+          </span>
+          <span
+            className="inline-flex h-4 w-4 items-center justify-center"
+            style={{
+              filter: reached
+                ? 'drop-shadow(0 0 6px rgba(239,68,68,.9))'
+                : 'grayscale(40%)',
+              opacity: reached ? 1 : 0.4,
+            }}
+            aria-hidden
+          >
+            <ColoredStar color="red" size={14} glow={0} />
+          </span>
+        </div>
+        <div
+          className="relative h-2 overflow-hidden rounded-full bg-white/[.06]"
+          style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,.4)' }}
+        >
+          <div
+            className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out"
+            style={{
+              width: `${pct}%`,
+              background: 'linear-gradient(90deg, #fb7185, #e11d48)',
+              boxShadow:
+                '0 0 10px rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
+            }}
+          />
+          {pct > 0 && pct < 100 && (
+            <div
+              className="pointer-events-none absolute inset-y-0 w-1/3 opacity-50 mix-blend-overlay"
+              style={{
+                left: `${Math.max(0, pct - 18)}%`,
+                background:
+                  'linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent)',
+                animation: 'imm-moon-shimmer 1.6s linear infinite',
+              }}
+            />
+          )}
+        </div>
+        <style jsx>{`
+          @keyframes imm-moon-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(280%); }
+          }
+        `}</style>
+      </div>
+    )
+  })()
+
   return (
     <div className="fixed inset-0 z-[200] flex flex-col overflow-hidden bg-[#090914]">
       {/* Header */}
       <div className="z-10 flex shrink-0 flex-wrap items-center gap-2.5 border-b border-white/[.07] bg-[rgba(9,9,20,.98)] px-5 py-2.5">
-        <div className="font-fredoka mr-auto bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] bg-clip-text text-[1.05rem] text-transparent">
-          ⚡ 沉浸模式 · {mode === 'vocab' ? '背单词' : '单词练习'}
+        <div className="font-fredoka mr-auto flex items-center gap-2">
+          <span className="bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] bg-clip-text text-[1.05rem] text-transparent">
+            ⚡ 沉浸模式 · {mode === 'vocab' ? '背单词' : '单词练习'}
+          </span>
+          {mode === 'practice' && inReinforcement && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-2.5 py-0.5 text-[10px] font-black tracking-wide text-white shadow-[0_2px_0_rgba(0,0,0,.25)]">
+              🌱 巩固
+            </span>
+          )}
         </div>
         <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[.7rem] font-bold text-white/[.38]">
           {mode === 'vocab'
@@ -319,7 +376,6 @@ export default function ImmersiveMode({
                   'radial-gradient(ellipse at 40% 45%, rgba(109,40,217,.13) 0, transparent 62%), #0e0e22',
                 ...(isWide
                   ? {
-                      // Wide: absolute left panel, slides out left when def-only
                       position: 'absolute',
                       top: 0,
                       bottom: 0,
@@ -331,7 +387,6 @@ export default function ImmersiveMode({
                       transition: 'left 450ms cubic-bezier(.4,0,.2,1), opacity 320ms ease',
                     }
                   : {
-                      // Narrow: collapses vertically
                       flexShrink: 0,
                       maxHeight: topVisible ? '60vh' : '0px',
                       opacity: topVisible ? 1 : 0,
@@ -408,7 +463,6 @@ export default function ImmersiveMode({
                 cursor: defOnly ? 'pointer' : 'default',
                 ...(isWide
                   ? {
-                      // Wide: absolute right panel, expands to full width when def-only
                       position: 'absolute',
                       top: 0,
                       bottom: 0,
@@ -418,7 +472,6 @@ export default function ImmersiveMode({
                       transition: 'width 450ms cubic-bezier(.4,0,.2,1)',
                     }
                   : {
-                      // Narrow: takes remaining space
                       flex: 1,
                     }),
               }}
@@ -488,227 +541,19 @@ export default function ImmersiveMode({
               'radial-gradient(ellipse at 20% 30%, rgba(109,40,217,.09) 0, transparent 55%), #0c0c1d',
           }}
         >
-          {!showResults &&
-            q &&
-            (() => {
-              const opts = qOptions
-              const isA = q.type === 'A'
-              const isC = q.type === 'C'
-              const isD = q.type === 'D'
-              const isMultiChoice = isA || isD
-              const dPassage = isD ? findPassage(q.word.stage, q.word.unit, q.word.lesson) : undefined
-              const passageSentence = isD && dPassage
-                ? findSentenceForWord(dPassage, q.word.word)
-                : null
-              const badgeStyle = isA
-                ? 'bg-[rgba(96,165,250,.15)] text-[#60a5fa]'
-                : isC
-                  ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
-                  : isD
-                    ? 'bg-[rgba(245,158,11,.18)] text-[#fbbf24]'
-                    : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
-
-              const stars2x = practiceTypes.includes('C') || practiceTypes.includes('D')
-              const targetStars = qTotal ? qTotal * (stars2x ? 2 : 1) : qTotal
-              return (
-                <div className="@container flex w-full max-w-[1000px] flex-col gap-4 rounded-[20px] border border-white/[.08] bg-white/[.04] p-[clamp(1rem,3.5cqi,1.75rem)]">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span
-                      className={`inline-block w-fit rounded-full px-3 py-1 text-[clamp(.62rem,1.8cqi,.72rem)] font-extrabold tracking-wider uppercase ${badgeStyle}`}
-                    >
-                      {isA
-                        ? '题型 A · 看释义选单词'
-                        : isC
-                          ? '题型 C · 看释义默写单词 (+2⭐/题)'
-                          : isD
-                            ? '📖 题型 D · 课文语境填空 (+2⭐/题)'
-                            : '题型 B · 看单词选释义'}
-                    </span>
-                    <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">
-                      ✓ {qScore} / {qTotal}
-                    </div>
-                  </div>
-
-                  {/* Live red moon progress — dark immersive variant */}
-                  {(() => {
-                    const earned = starSession.red
-                    const goal = Math.max(1, targetStars)
-                    const pct = Math.min(100, (earned / goal) * 100)
-                    const reached = earned >= goal
-                    return (
-                      <div className="rounded-2xl border border-rose-400/20 bg-white/[.04] px-3.5 py-2.5 backdrop-blur">
-                        <div className="mb-1.5 flex items-center gap-2">
-                          <ColoredStar color="red" size={16} glow={6} />
-                          <span className="text-[11px] font-extrabold tracking-[.14em] text-rose-300/80 uppercase">
-                            本次月亮
-                          </span>
-                          <span className="font-fredoka ml-auto text-[14px] font-black tabular-nums text-rose-100">
-                            {earned}
-                            <span className="ml-0.5 text-[11px] text-rose-100/40">/{goal}</span>
-                          </span>
-                          <span
-                            className="inline-flex h-4 w-4 items-center justify-center"
-                            style={{
-                              filter: reached
-                                ? 'drop-shadow(0 0 6px rgba(239,68,68,.9))'
-                                : 'grayscale(40%)',
-                              opacity: reached ? 1 : 0.4,
-                            }}
-                            aria-hidden
-                          >
-                            <ColoredStar color="red" size={14} glow={0} />
-                          </span>
-                        </div>
-                        <div
-                          className="relative h-2 overflow-hidden rounded-full bg-white/[.06]"
-                          style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,.4)' }}
-                        >
-                          <div
-                            className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out"
-                            style={{
-                              width: `${pct}%`,
-                              background: 'linear-gradient(90deg, #fb7185, #e11d48)',
-                              boxShadow:
-                                '0 0 10px rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
-                            }}
-                          />
-                          {pct > 0 && pct < 100 && (
-                            <div
-                              className="pointer-events-none absolute inset-y-0 w-1/3 opacity-50 mix-blend-overlay"
-                              style={{
-                                left: `${Math.max(0, pct - 18)}%`,
-                                background:
-                                  'linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent)',
-                                animation: 'imm-moon-shimmer 1.6s linear infinite',
-                              }}
-                            />
-                          )}
-                        </div>
-                        <style jsx>{`
-                          @keyframes imm-moon-shimmer {
-                            0% { transform: translateX(-100%); }
-                            100% { transform: translateX(280%); }
-                          }
-                        `}</style>
-                      </div>
-                    )
-                  })()}
-
-                  {isD && passageSentence ? (
-                    <div className="rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-500/[.08] to-orange-500/[.06] px-4 py-4">
-                      <div className="mb-2 text-[clamp(.62rem,1.6cqi,.72rem)] font-extrabold tracking-[.14em] text-amber-300/80 uppercase">
-                        📖 来自 {q.word.unit} · {q.word.lesson} 课文
-                      </div>
-                      <div className="text-[clamp(1.1rem,3.2cqi,1.7rem)] leading-relaxed font-bold text-[#fef3c7]">
-                        “{blankWordInSentence(passageSentence.sentence, q.word.word)}”
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">
-                      {isA || isC ? (
-                        q.word.explanation
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <PhonicsWord text={q.word.word} syllables={q.word.syllables} />
-                          <SpeakButton word={q.word.word} size="text-[1.2rem]" className="opacity-50 hover:opacity-100 shrink-0" />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {!isA && !isC && !isD && q.word.ipa && (
-                    <div className="text-[clamp(.8rem,2.5cqi,.95rem)] font-semibold text-[#f0abfc] italic">
-                      {q.word.ipa}
-                    </div>
-                  )}
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-[clamp(.78rem,2.2cqi,.9rem)] font-semibold text-white/[.38]">
-                      {isA
-                        ? '请选出对应的英文单词：'
-                        : isC
-                          ? '请拼写出对应的英文单词或短语：'
-                          : isD
-                            ? '请选出填入空格的单词或短语：'
-                            : '请选出正确的释义：'}
-                    </span>
-                    {!qAnswered && hasPassageContext && !isD && (
-                      <button
-                        onClick={() => setShowPassageHint(true)}
-                        title="看课文上下文"
-                        className="font-nunito group inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/[.08] px-2 py-0.5 text-[clamp(.62rem,1.8cqi,.7rem)] font-extrabold text-amber-300 transition hover:-translate-y-px hover:border-amber-400/60 hover:bg-amber-500/[.18]"
-                      >
-                        <span aria-hidden className="text-[.95em] transition-transform group-hover:scale-110">💡</span>
-                        <span>提示</span>
-                      </button>
-                    )}
-                  </div>
-
-                  {isMultiChoice && (
-                    <div
-                      className={`grid gap-[clamp(.4rem,1.5cqi,.6rem)] ${isA || isD ? 'grid-cols-1 @lg:grid-cols-2' : 'grid-cols-1'}`}
-                    >
-                      {opts.map((o, optIdx) => {
-                        const isCorrect = o.word === q.word.word
-                        const isSel = qSelected === o.word
-                        let cls = 'bg-white/[.04] border-white/[.09] text-[#f0f0ff]'
-                        let labelCls = 'text-[#a78bfa]/60'
-                        if (qAnswered) {
-                          if (isCorrect) {
-                            cls = 'border-[#4ade80] bg-[rgba(74,222,128,.12)] text-[#4ade80]'
-                            labelCls = 'text-[#4ade80]/70'
-                          } else if (isSel) {
-                            cls = 'border-[#f87171] bg-[rgba(248,113,113,.12)] text-[#f87171]'
-                            labelCls = 'text-[#f87171]/70'
-                          }
-                        }
-                        const label = ['A', 'B', 'C', 'D'][optIdx] ?? String(optIdx + 1)
-                        return (
-                          <button
-                            key={o.word}
-                            disabled={qAnswered}
-                            onClick={() =>
-                              isD
-                                ? handleMCAnswer(o.word, q.word.word, 2)
-                                : handleMCAnswer(o.word, q.word.word)
-                            }
-                            className={`font-nunito flex cursor-pointer items-start gap-[clamp(.4rem,1.2cqi,.6rem)] rounded-xl border-2 px-[clamp(.6rem,2cqi,.9rem)] py-[clamp(.7rem,2.5cqi,1rem)] text-left text-[clamp(1.2rem,2.2cqi,1rem)] leading-snug font-bold break-words transition-all disabled:cursor-default ${cls} ${
-                              !qAnswered
-                                ? 'hover:border-[#a78bfa] hover:bg-[rgba(167,139,250,.1)]'
-                                : ''
-                            }`}
-                          >
-                            <span className={`shrink-0 font-extrabold tabular-nums ${labelCls}`}>
-                              {label}.
-                            </span>
-                            <span>{isA || isD ? o.word : o.explanation}</span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
-
-                  {isC && (
-                    <SpellTiles
-                      key={curQ}
-                      word={q.word.word}
-                      onSubmit={handleSpellSubmit}
-                      answered={qAnswered}
-                      isCorrect={spellOk}
-                    />
-                  )}
-
-                  {qAnswered && qCorrect === false && (
-                    <div className="flex flex-wrap justify-center gap-2">
-                      <button
-                        onClick={nextQuizQ}
-                        className="font-nunito cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-7 py-[clamp(.6rem,2cqi,.8rem)] text-[clamp(.88rem,2.8cqi,1rem)] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.35)] transition-all hover:-translate-y-0.5"
-                      >
-                        下一题 →
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )
-            })()}
+          {!showResults && currentQ && (
+            <QuizQuestionBody
+              question={currentQ}
+              options={qOptions}
+              score={qScore}
+              total={qTotal}
+              runner={runner}
+              questionKey={curQ}
+              progressSlot={moonProgress}
+              helpRevealed={helpRevealedForCurrent}
+              onHelpReveal={handleHelpReveal}
+            />
+          )}
 
           {showResults && (
             <div className="w-full max-w-[460px] rounded-[20px] border border-white/[.08] bg-white/[.04] px-7 py-11 text-center">
@@ -741,43 +586,6 @@ export default function ImmersiveMode({
               </button>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Pre-answer passage hint modal */}
-      {showPassageHint && q && currentSentence && (
-        <div
-          className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
-          onClick={() => setShowPassageHint(false)}
-        >
-          <div
-            className="font-nunito relative w-full max-w-md overflow-hidden rounded-2xl border border-amber-500/30 bg-[#1a1a2e] shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowPassageHint(false)}
-              className="absolute top-3 right-3 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white"
-              aria-label="关闭"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="px-5 pt-5 pb-5">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="text-base">📖</span>
-                <span className="text-[12px] font-extrabold tracking-[.14em] text-amber-400 uppercase">
-                  来自 {q.word.unit} · {q.word.lesson} 课文
-                </span>
-              </div>
-              <div className="rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/[.10] to-orange-500/[.08] px-4 py-4 text-[1.15rem] leading-relaxed font-bold text-[#fef3c7]">
-                &ldquo;{blankWordInSentence(currentSentence.sentence, q.word.word)}&rdquo;
-              </div>
-              <div className="mt-3 text-center text-[11px] text-white/40">
-                根据课文情境，选出最合适的答案 ✨
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>
