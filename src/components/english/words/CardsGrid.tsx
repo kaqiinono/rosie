@@ -9,9 +9,10 @@ interface CardsGridProps {
   flippedSet: Set<number>
   onFlip: (index: number) => void
   masteryMap?: WordMasteryMap
+  dualMode?: boolean
 }
 
-export default function CardsGrid({ words, flippedSet, onFlip, masteryMap }: CardsGridProps) {
+export default function CardsGrid({ words, flippedSet, onFlip, masteryMap, dualMode }: CardsGridProps) {
   if (!words.length) {
     return (
       <div className="col-span-full py-12 text-center text-[var(--wm-text-dim)]">
@@ -25,8 +26,14 @@ export default function CardsGrid({ words, flippedSet, onFlip, masteryMap }: Car
     )
   }
 
+  // Dual-mode cards show front + back side-by-side, so each tile needs roughly
+  // double the width to stay legible. Bump the minmax floor accordingly.
+  const gridCols = dualMode
+    ? 'grid-cols-[repeat(auto-fill,minmax(560px,1fr))] max-md:grid-cols-1'
+    : 'grid-cols-[repeat(auto-fill,minmax(280px,1fr))] max-sm:grid-cols-1'
+
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-sm:grid-cols-1">
+    <div className={`grid gap-4 ${gridCols}`}>
       {words.map((v, i) => (
         <FlashCard
           key={`${v.word}-${i}`}
@@ -35,6 +42,7 @@ export default function CardsGrid({ words, flippedSet, onFlip, masteryMap }: Car
           onFlip={() => onFlip(i)}
           index={i}
           masteryInfo={masteryMap?.[wordKey(v)]}
+          dualMode={dualMode}
         />
       ))}
     </div>

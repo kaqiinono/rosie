@@ -20,6 +20,8 @@ export default function CardsPage() {
 
   const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set())
   const [allFlipped, setAllFlipped] = useState(false)
+  /** Dual mode: render front + back side-by-side. Default ON. */
+  const [dualMode, setDualMode] = useState(true)
   /** Shuffled order only applies when `sig` matches current filter signature. */
   const [shuffleState, setShuffleState] = useState<{ sig: string; seed: number } | null>(null)
 
@@ -96,6 +98,12 @@ export default function CardsPage() {
     resetCards()
   }, [filterSig, resetCards])
 
+  const toggleDualMode = useCallback(() => {
+    setDualMode((v) => !v)
+    // Reset any per-card flip state — dual mode shows both sides regardless.
+    resetCards()
+  }, [resetCards])
+
   return (
     <>
       <FilterBar
@@ -107,11 +115,13 @@ export default function CardsPage() {
         selWords={selWords}
         filteredCount={filteredWords.length}
         allFlipped={allFlipped}
+        dualMode={dualMode}
         onToggleUnit={toggleUnit}
         onToggleLesson={toggleLesson}
         onToggleWord={toggleWord}
         onClearWords={clearWords}
         onFlipAll={flipAll}
+        onToggleDualMode={toggleDualMode}
         onShuffleOrder={shuffleOrder}
         masteryFilter={masteryFilter}
         onMasteryFilter={setMasteryFilter}
@@ -124,6 +134,7 @@ export default function CardsPage() {
           flippedSet={flippedSet}
           onFlip={flipCard}
           masteryMap={masteryMap}
+          dualMode={dualMode}
         />
       </div>
     </>

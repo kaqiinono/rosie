@@ -14,11 +14,13 @@ interface FilterBarProps {
   selWords: Set<string>
   filteredCount: number
   allFlipped?: boolean
+  dualMode?: boolean
   onToggleUnit: (unit: string) => void
   onToggleLesson: (lesson: string) => void
   onToggleWord: (word: string) => void
   onClearWords: () => void
   onFlipAll?: () => void
+  onToggleDualMode?: () => void
   onShuffleOrder?: () => void
   masteryFilter?: MasteryLevel | null
   onMasteryFilter?: (level: MasteryLevel | null) => void
@@ -34,11 +36,13 @@ export default function FilterBar({
   selWords,
   filteredCount,
   allFlipped,
+  dualMode,
   onToggleUnit,
   onToggleLesson,
   onToggleWord,
   onClearWords,
   onFlipAll,
+  onToggleDualMode,
   onShuffleOrder,
   masteryFilter,
   onMasteryFilter,
@@ -196,7 +200,7 @@ export default function FilterBar({
           >
             清除单词筛选
           </button>
-          {(onFlipAll || onShuffleOrder) && (
+          {(onFlipAll || onShuffleOrder || onToggleDualMode) && (
             <>
               <div className="h-[22px] w-px bg-[var(--wm-border)]" />
               {onShuffleOrder && (
@@ -212,9 +216,23 @@ export default function FilterBar({
               {onFlipAll && (
                 <button
                   onClick={onFlipAll}
-                  className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] px-4 py-1.5 text-[0.875rem] font-bold text-white transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(96,165,250,.4)]"
+                  disabled={dualMode}
+                  className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] px-4 py-1.5 text-[0.875rem] font-bold text-white transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(96,165,250,.4)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
                 >
                   🔄 {allFlipped ? '全部翻回' : '全部翻面'}
+                </button>
+              )}
+              {onToggleDualMode && (
+                <button
+                  type="button"
+                  onClick={onToggleDualMode}
+                  className={`font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg px-4 py-1.5 text-[0.875rem] font-bold transition-all ${
+                    dualMode
+                      ? 'border-0 bg-gradient-to-br from-[#10b981] to-[#059669] text-white hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(16,185,129,.4)]'
+                      : 'border-[1.5px] border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[#10b981] hover:text-[#10b981]'
+                  }`}
+                >
+                  📖 {dualMode ? '退出双面' : '双面模式'}
                 </button>
               )}
             </>
