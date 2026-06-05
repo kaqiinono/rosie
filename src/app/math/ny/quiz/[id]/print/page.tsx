@@ -104,25 +104,26 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
   return (
     <div className="print-root min-h-screen bg-slate-100">
       {/* ── Screen-only toolbar ─────────────────────────────────────────── */}
-      <div className="no-print sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-slate-100">
-        <div className="mx-auto max-w-[800px] px-4 h-14 flex items-center justify-between gap-3">
+      <div className="no-print sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-slate-100">
+        <div className="mx-auto max-w-[800px] px-3 sm:px-4 h-14 flex items-center gap-2 sm:gap-3">
           <Link
             href={`/math/ny/quiz/${id}`}
-            className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors no-underline"
+            className="flex items-center gap-1 sm:gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors no-underline shrink-0"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            返回
+            <span className="hidden sm:inline">返回</span>
           </Link>
-          <h1 className="text-sm font-bold text-slate-800 flex-1 min-w-0 truncate text-center">
+          <h1 className="hidden sm:block text-sm font-bold text-slate-800 flex-1 min-w-0 truncate text-center">
             打印预览 · {paper.title}
           </h1>
+          <div className="flex-1 sm:hidden" />
           <button
             onClick={() => window.print()}
-            className="rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition-colors"
+            className="shrink-0 rounded-full bg-indigo-500 px-3 sm:px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition-colors"
           >
-            🖨 打印
+            🖨 <span className="hidden sm:inline">打印</span>
           </button>
         </div>
       </div>
