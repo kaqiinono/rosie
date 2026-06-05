@@ -93,7 +93,8 @@ async function saveProgressToCloud(userId: string, plan: WeeklyPlan): Promise<vo
 
 export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: WeeklyPlanSessionProps) {
   const { user } = useAuth()
-  const { masteryMap, recordBatch } = useWordsContext()
+  const { masteryMap, recordBatch, practiceButtonStyle, setPracticeButtonStyle } =
+    useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
   const { awardStars, session: starSession } = useStarHud()
   const exitImmersive = useCallback(() => setIsImmersive(false), [setIsImmersive])
@@ -806,6 +807,36 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                         })}
                       </div>
                     )}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className="min-w-[5.5rem] text-[.72rem] font-bold text-[#e879f9]"
+                        title="默写题字母池按钮样式（candy = 水果造型，jelly = 果冻砖）"
+                      >
+                        字母砖样式
+                      </span>
+                      <button
+                        onClick={() => setPracticeButtonStyle('candy')}
+                        title="SVG 水果造型（草莓 / 蓝莓 / 爱心 / 糖果 / 棉花糖）"
+                        className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[.82rem] font-bold transition-all select-none ${
+                          practiceButtonStyle === 'candy'
+                            ? 'border-[rgba(236,72,153,.55)] bg-[rgba(236,72,153,.12)] text-[#f9a8d4]'
+                            : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)]'
+                        }`}
+                      >
+                        🍓 糖果造型
+                      </button>
+                      <button
+                        onClick={() => setPracticeButtonStyle('jelly')}
+                        title="圆角果冻砖（5 色彩虹）"
+                        className={`flex cursor-pointer items-center gap-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[.82rem] font-bold transition-all select-none ${
+                          practiceButtonStyle === 'jelly'
+                            ? 'border-[rgba(167,139,250,.55)] bg-[rgba(167,139,250,.12)] text-[#c4b5fd]'
+                            : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)]'
+                        }`}
+                      >
+                        💎 果冻砖
+                      </button>
+                    </div>
                   </div>
 
                   {/* 练习按钮区：全部练习 + 可选分开练习（同一行） */}
@@ -962,6 +993,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           questionKey={curQ}
           helpRevealed={helpRevealedForCurrent}
           onHelpReveal={handleHelpReveal}
+          spellButtonStyle={practiceButtonStyle}
         />
       </div>
     )

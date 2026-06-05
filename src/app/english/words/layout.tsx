@@ -11,7 +11,7 @@ import type { WordEntry } from '@/utils/type'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, setVocab, upsertByStage, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards } = useWordsContext()
+  const { vocab, setVocab, upsertByStage, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
   const [importOpen, setImportOpen] = useState(false)
@@ -91,6 +91,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         allWords={vocab}
         mode={immersiveMode}
         practiceTypes={practiceTypes}
+        spellButtonStyle={practiceButtonStyle}
         onClose={() => {
           if (isPracticePage && previewCards) {
             // Preview done — stay immersive but switch to quiz mode

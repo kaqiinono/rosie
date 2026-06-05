@@ -7,6 +7,7 @@ import { useImmersive } from '@/contexts/ImmersiveContext'
 import { findPassage, findPassageByKey, findSentenceForWord } from '@/utils/reading-data'
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'
+import type { SpellButtonStyle } from '@/components/english/words/SpellTiles'
 
 export default function PracticePage() {
   const {
@@ -19,6 +20,8 @@ export default function PracticePage() {
     masteryMap,
     setPracticeTypes,
     setPreviewCards,
+    practiceButtonStyle,
+    setPracticeButtonStyle,
   } = useWordsContext()
   const { setIsImmersive } = useImmersive()
   const searchParams = useSearchParams()
@@ -64,15 +67,19 @@ export default function PracticePage() {
     return `${units} / ${lessons}（${filteredWords.length}词）`
   }, [selUnits, selLessons, filteredWords.length])
 
-  const startPractice = useCallback((types: ('A' | 'B' | 'C' | 'D')[], preview: boolean) => {
-    if (!filteredWords.length) {
-      alert('请先选择单词范围！')
-      return
-    }
-    setPracticeTypes(types)
-    setPreviewCards(preview)
-    setIsImmersive(true)
-  }, [filteredWords.length, setPracticeTypes, setPreviewCards, setIsImmersive])
+  const startPractice = useCallback(
+    (types: ('A' | 'B' | 'C' | 'D')[], preview: boolean, buttonStyle: SpellButtonStyle) => {
+      if (!filteredWords.length) {
+        alert('请先选择单词范围！')
+        return
+      }
+      setPracticeTypes(types)
+      setPreviewCards(preview)
+      setPracticeButtonStyle(buttonStyle)
+      setIsImmersive(true)
+    },
+    [filteredWords.length, setPracticeTypes, setPreviewCards, setPracticeButtonStyle, setIsImmersive],
+  )
 
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
@@ -124,7 +131,12 @@ export default function PracticePage() {
         masteryMap={masteryMap}
       />
       <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
-        <PracticeSetup scopeLabel={scopeLabel} onStart={startPractice} typeDAvailable={typeDAvailable} />
+        <PracticeSetup
+          scopeLabel={scopeLabel}
+          onStart={startPractice}
+          typeDAvailable={typeDAvailable}
+          initialButtonStyle={practiceButtonStyle}
+        />
       </div>
     </>
   )

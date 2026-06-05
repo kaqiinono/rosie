@@ -1,21 +1,34 @@
 'use client'
 
 import { useState } from 'react'
+import type { SpellButtonStyle } from './SpellTiles'
 
 interface PracticeSetupProps {
   scopeLabel: string
-  onStart: (types: ('A' | 'B' | 'C' | 'D')[], preview: boolean) => void
+  onStart: (
+    types: ('A' | 'B' | 'C' | 'D')[],
+    preview: boolean,
+    buttonStyle: SpellButtonStyle,
+  ) => void
   /** When true, the Type D toggle (课文语境填空) is shown — set when at least one
    *  filtered word comes from the focus lesson and has a passage sentence. */
   typeDAvailable?: boolean
+  /** Initial button style (typically from context). Defaults to 'candy'. */
+  initialButtonStyle?: SpellButtonStyle
 }
 
-export default function PracticeSetup({ scopeLabel, onStart, typeDAvailable }: PracticeSetupProps) {
+export default function PracticeSetup({
+  scopeLabel,
+  onStart,
+  typeDAvailable,
+  initialButtonStyle = 'candy',
+}: PracticeSetupProps) {
   const [typeA, setTypeA] = useState(true)
   const [typeB, setTypeB] = useState(false)
   const [typeC, setTypeC] = useState(true)
   const [typeD, setTypeD] = useState(true)
   const [preview, setPreview] = useState(false)
+  const [buttonStyle, setButtonStyle] = useState<SpellButtonStyle>(initialButtonStyle)
 
   const handleStart = () => {
     const types: ('A' | 'B' | 'C' | 'D')[] = []
@@ -27,7 +40,7 @@ export default function PracticeSetup({ scopeLabel, onStart, typeDAvailable }: P
       alert('请至少选一种题型！')
       return
     }
-    onStart(types, preview)
+    onStart(types, preview, buttonStyle)
   }
 
   const baseTypes = [
@@ -72,6 +85,41 @@ export default function PracticeSetup({ scopeLabel, onStart, typeDAvailable }: P
               📖 D. 课文语境填空
             </button>
           )}
+        </div>
+      </div>
+
+      {/* Spell tile style — only matters when Type C is in the mix, but we always show
+          it here so the choice is visible at the entry. */}
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span
+          className="min-w-[60px] text-[0.875rem] font-bold text-[var(--wm-text-dim)]"
+          title="默写题字母池按钮样式"
+        >
+          字母砖
+        </span>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setButtonStyle('candy')}
+            title="SVG 水果造型（草莓 / 蓝莓 / 爱心 / 糖果 / 棉花糖）"
+            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+              buttonStyle === 'candy'
+                ? 'border-[#ec4899] bg-[rgba(236,72,153,.15)] text-[#f9a8d4]'
+                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+            }`}
+          >
+            🍓 糖果造型
+          </button>
+          <button
+            onClick={() => setButtonStyle('jelly')}
+            title="圆角果冻砖（5 色彩虹）"
+            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+              buttonStyle === 'jelly'
+                ? 'border-[#a78bfa] bg-[rgba(167,139,250,.15)] text-[#c4b5fd]'
+                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+            }`}
+          >
+            💎 果冻砖
+          </button>
         </div>
       </div>
 

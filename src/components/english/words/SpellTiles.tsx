@@ -1,32 +1,53 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import CandyButton, {
+  CANDY_PRESETS,
+  DEFAULT_PRESET_ORDER,
+} from '@/components/shared/CandyButton'
+import JellyButton, {
+  pickNonAdjacentJellyPresets,
+  type JellyPresetKey,
+} from '@/components/shared/JellyButton'
+
+export type SpellButtonStyle = 'candy' | 'jelly'
 
 interface SpellTilesProps {
   word: string
   onSubmit: (val: string) => void
   answered: boolean
   isCorrect: boolean | null
+  /** 字母池按钮样式：'candy' = SVG 水果造型（默认），'jelly' = 圆角果冻砖 */
+  buttonStyle?: SpellButtonStyle
 }
 
-// Candy color palette cycling through 5 flavours — gives a "bag of jellybeans" feel
-const CANDY_COLORS = [
-  // grape / lavender
-  'border-[#7c3aed]/70 bg-gradient-to-b from-[#c4b5fd] via-[#a78bfa] to-[#7c3aed] text-white shadow-[0_5px_0_#5b21b6,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(124,58,237,.55)] [text-shadow:0_2px_0_rgba(76,29,149,.6)]',
-  // tangerine / coral
-  'border-[#ea580c]/70 bg-gradient-to-b from-[#fed7aa] via-[#fb923c] to-[#ea580c] text-white shadow-[0_5px_0_#c2410c,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(234,88,12,.55)] [text-shadow:0_2px_0_rgba(124,45,18,.6)]',
-  // strawberry / rose
-  'border-[#be185d]/70 bg-gradient-to-b from-[#fbcfe8] via-[#f472b6] to-[#db2777] text-white shadow-[0_5px_0_#9d174d,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(190,24,93,.55)] [text-shadow:0_2px_0_rgba(131,24,67,.6)]',
-  // blueberry / sky
-  'border-[#0369a1]/70 bg-gradient-to-b from-[#bae6fd] via-[#38bdf8] to-[#0284c7] text-white shadow-[0_5px_0_#075985,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(3,105,161,.55)] [text-shadow:0_2px_0_rgba(7,89,133,.6)]',
-  // mint / emerald
-  'border-[#059669]/70 bg-gradient-to-b from-[#a7f3d0] via-[#34d399] to-[#059669] text-white shadow-[0_5px_0_#065f46,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(5,150,105,.55)] [text-shadow:0_2px_0_rgba(6,78,59,.6)]',
-]
+type CandyPresetKey = keyof typeof CANDY_PRESETS
 
-// Subtle scattered rotations — wrapper-level so press animation stays clean
+// Subtle scattered rotations — gives a "bag of candies" feel
 const TILE_ROTATIONS = [-2, 1.5, -1, 2.5, -1.5, 0.5, -2, 1]
 
-export default function SpellTiles({ word, onSubmit, answered, isCorrect }: SpellTilesProps) {
+function pickNonAdjacentCandyPresets(count: number): CandyPresetKey[] {
+  const all = DEFAULT_PRESET_ORDER
+  const out: CandyPresetKey[] = []
+  for (let i = 0; i < count; i++) {
+    const prev = out[i - 1]
+    const avail = all.filter((p) => p !== prev)
+    out.push(avail[Math.floor(Math.random() * avail.length)])
+  }
+  return out
+}
+
+type PoolState =
+  | { style: 'candy'; pool: string[]; tilePresets: CandyPresetKey[] }
+  | { style: 'jelly'; pool: string[]; tilePresets: JellyPresetKey[] }
+
+export default function SpellTiles({
+  word,
+  onSubmit,
+  answered,
+  isCorrect,
+  buttonStyle = 'candy',
+}: SpellTilesProps) {
   const segments = useMemo(() => word.split(''), [word])
 
   const segmentSlots = useMemo(() => {
@@ -39,7 +60,7 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
     return result
   }, [segments])
 
-  const [pool] = useState<string[]>(() => {
+  const [poolState] = useState<PoolState>(() => {
     const letters = word.replace(/ /g, '').split('')
     const uniqueLetters = [...new Set(letters)].sort()
     const wordLetterSet = new Set(uniqueLetters)
@@ -93,18 +114,38 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
     }
 
     const sorted = [...uniqueLetters, ...chosen].sort()
-    if (!hasDangerousPair(sorted)) return sorted
-
-    const arr = [...sorted]
-    for (let attempt = 0; attempt < 20; attempt++) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    let pool: string[] = sorted
+    if (hasDangerousPair(sorted)) {
+      const arr = [...sorted]
+      for (let attempt = 0; attempt < 20; attempt++) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[arr[i], arr[j]] = [arr[j], arr[i]]
+        }
+        if (!hasDangerousPair(arr)) {
+          pool = arr
+          break
+        }
       }
-      if (!hasDangerousPair(arr)) return arr
     }
-    return arr
+
+    if (buttonStyle === 'jelly') {
+      // jelly 模式空格砖单独用 cyan 色，所以这里只给字母分配色
+      return {
+        style: 'jelly',
+        pool,
+        tilePresets: pickNonAdjacentJellyPresets(pool.length),
+      }
+    }
+    // candy 模式空格砖也走糖果造型，所以多分一个 preset
+    return {
+      style: 'candy',
+      pool,
+      tilePresets: pickNonAdjacentCandyPresets(pool.length + 1),
+    }
   })
+
+  const pool = poolState.pool
 
   const [placed, setPlaced] = useState<(string | null)[]>(() => Array(word.length).fill(null))
 
@@ -112,15 +153,6 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
 
   const tileSizeSmall =
     'w-12 h-12 text-[1.1rem] sm:w-14 sm:h-14 sm:text-[1.25rem] md:w-16 md:h-16 md:text-[1.4rem]'
-
-  const poolTileBase =
-    'relative touch-manipulation select-none font-nunito font-black ' +
-    'w-[clamp(3.75rem,17vw,5.5rem)] h-[clamp(3.5rem,15vw,4.5rem)] ' +
-    'sm:w-[clamp(4.5rem,14vw,6.5rem)] sm:h-[clamp(4rem,12vw,5rem)] ' +
-    'text-[clamp(1.55rem,5.5vw,2rem)] rounded-3xl border-2 ' +
-    '[-webkit-tap-highlight-color:transparent] [transform:translateZ(0)] ' +
-    'transition-[transform,box-shadow,filter] duration-[90ms] ease-out ' +
-    'will-change-transform'
 
   const tileGap = 'gap-2 sm:gap-2.5'
   const placeholderSize = 'text-[.75rem]'
@@ -185,41 +217,81 @@ export default function SpellTiles({ word, onSubmit, answered, isCorrect }: Spel
         ))}
       </div>
 
-      {/* Pool tiles — rainbow jellybean candy buttons with scattered tilt */}
-      {!answered && (
-        <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-          {pool.map((letter, i) => (
+      {/* Pool tiles — render mode depends on buttonStyle */}
+      {!answered &&
+        (poolState.style === 'candy' ? (
+          <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-3 sm:gap-4">
+            {pool.map((letter, i) => {
+              const preset = CANDY_PRESETS[poolState.tilePresets[i]]
+              return (
+                <div
+                  key={i}
+                  style={{ transform: `rotate(${TILE_ROTATIONS[i % TILE_ROTATIONS.length]}deg)` }}
+                  className={`transition-opacity ${allFilled ? 'opacity-60' : ''}`}
+                >
+                  <CandyButton
+                    config={{
+                      ...preset,
+                      id: `pool-${i}-${letter}`,
+                      emoji: letter,
+                      textSize: 38,
+                      textColor: '#ffffff',
+                      textWeight: 900,
+                    }}
+                    showLabel={false}
+                    size={72}
+                    onClick={() => handlePoolTap(letter)}
+                  />
+                </div>
+              )
+            })}
             <div
-              key={i}
-              style={{ transform: `rotate(${TILE_ROTATIONS[i % TILE_ROTATIONS.length]}deg)` }}
+              style={{
+                transform: `rotate(${TILE_ROTATIONS[pool.length % TILE_ROTATIONS.length]}deg)`,
+              }}
+              className={`transition-opacity ${allFilled ? 'opacity-60' : ''}`}
             >
-              <button
-                type="button"
+              <CandyButton
+                config={{
+                  ...CANDY_PRESETS[poolState.tilePresets[pool.length]],
+                  id: 'pool-space',
+                  emoji: '␣',
+                  textSize: 30,
+                  textColor: '#ffffff',
+                  textWeight: 900,
+                }}
+                showLabel={false}
+                size={72}
+                onClick={() => handlePoolTap(' ')}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            {pool.map((letter, i) => (
+              <JellyButton
+                key={i}
+                preset={poolState.tilePresets[i]}
                 onClick={() => handlePoolTap(letter)}
-                style={{ animationDelay: `${i * 35}ms` }}
-                className={`${poolTileBase} animate-pop-in cursor-pointer ${CANDY_COLORS[i % CANDY_COLORS.length]} active:translate-y-[5px] active:shadow-[0_0_0_transparent,inset_0_2px_4px_rgba(0,0,0,.25)] active:brightness-95 [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-110`}
+                rotation={TILE_ROTATIONS[i % TILE_ROTATIONS.length]}
+                animationDelay={i * 35}
               >
                 {letter}
-              </button>
-            </div>
-          ))}
-          <div
-            style={{ transform: `rotate(${TILE_ROTATIONS[pool.length % TILE_ROTATIONS.length]}deg)` }}
-          >
-            <button
-              type="button"
+              </JellyButton>
+            ))}
+            <JellyButton
+              preset="cyan"
               onClick={() => handlePoolTap(' ')}
-              aria-label="空格"
-              style={{ animationDelay: `${pool.length * 35}ms` }}
-              className={`${poolTileBase} animate-pop-in cursor-pointer border-[#0e7490]/70 bg-gradient-to-b from-[#a5f3fc] via-[#67e8f9] to-[#06b6d4] text-cyan-900 shadow-[0_5px_0_#155e75,inset_0_2px_0_rgba(255,255,255,.6),inset_0_-2px_0_rgba(0,0,0,.12),0_8px_18px_-6px_rgba(6,182,212,.55)] active:translate-y-[5px] active:shadow-[0_0_0_transparent,inset_0_2px_4px_rgba(0,0,0,.25)] active:brightness-95 [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-110`}
+              rotation={TILE_ROTATIONS[pool.length % TILE_ROTATIONS.length]}
+              animationDelay={pool.length * 35}
+              ariaLabel="空格"
             >
               <span className="text-[clamp(1.1rem,3.5vw,1.4rem)] tracking-[.4em] [text-shadow:0_2px_0_rgba(8,51,68,.3)]">
                 ␣
               </span>
-            </button>
+            </JellyButton>
           </div>
-        </div>
-      )}
+        ))}
 
       {/* Confirm button — warm honey amber, encouraging not alarming */}
       {allFilled && !answered && (

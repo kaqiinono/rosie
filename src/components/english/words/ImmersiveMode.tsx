@@ -19,6 +19,7 @@ import { useStarHud } from '@/components/stars/StarHudProvider'
 import ColoredStar from '@/components/stars/ColoredStar'
 import { useQuizRunner, type QuizQuestion } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'
+import type { SpellButtonStyle } from './SpellTiles'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -28,6 +29,8 @@ interface ImmersiveModeProps {
   allWords: WordEntry[]
   mode: ImmMode
   practiceTypes: QuizType[]
+  /** Type-C 拼写题字母池样式（默认 'candy'，'jelly' 切换到圆角果冻砖） */
+  spellButtonStyle?: SpellButtonStyle
   onClose: () => void
   onQuizComplete?: (results: { entry: WordEntry; correct: boolean }[]) => void
 }
@@ -39,6 +42,7 @@ export default function ImmersiveMode({
   allWords,
   mode,
   practiceTypes,
+  spellButtonStyle,
   onClose,
   onQuizComplete,
 }: ImmersiveModeProps) {
@@ -552,6 +556,7 @@ export default function ImmersiveMode({
               progressSlot={moonProgress}
               helpRevealed={helpRevealedForCurrent}
               onHelpReveal={handleHelpReveal}
+              spellButtonStyle={spellButtonStyle}
             />
           )}
 

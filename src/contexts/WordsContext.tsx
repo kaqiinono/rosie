@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useMemo, useEffect } from '
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { SpellButtonStyle } from '@/components/english/words/SpellTiles'
 import type { MasteryLevel } from '@/utils/masteryUtils'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
 import { useAuth } from '@/contexts/AuthContext'
@@ -37,6 +38,9 @@ interface WordsContextValue {
   setPracticeTypes: Dispatch<SetStateAction<('A' | 'B' | 'C' | 'D')[]>>
   previewCards: boolean
   setPreviewCards: Dispatch<SetStateAction<boolean>>
+  /** Type-C 拼写题字母池按钮样式（共享，跨练习入口） */
+  practiceButtonStyle: SpellButtonStyle
+  setPracticeButtonStyle: Dispatch<SetStateAction<SpellButtonStyle>>
 }
 
 const WordsContext = createContext<WordsContextValue | null>(null)
@@ -71,6 +75,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
   const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C' | 'D')[]>(['A', 'B'])
   const [previewCards, setPreviewCards] = useState(false)
+  const [practiceButtonStyle, setPracticeButtonStyle] = useState<SpellButtonStyle>('candy')
 
   const setSelStage = (stage: string) => {
     setSelStageState(stage)
@@ -105,6 +110,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
       filteredWords,
       practiceTypes, setPracticeTypes,
       previewCards, setPreviewCards,
+      practiceButtonStyle, setPracticeButtonStyle,
     }}>
       {children}
     </WordsContext.Provider>

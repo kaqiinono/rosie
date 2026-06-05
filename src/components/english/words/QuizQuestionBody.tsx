@@ -5,7 +5,7 @@ import type { WordEntry } from '@/utils/type'
 import { findPassage, findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
-import SpellTiles from './SpellTiles'
+import SpellTiles, { type SpellButtonStyle } from './SpellTiles'
 import PassageHintModal from './PassageHintModal'
 import WordHelpModal from './WordHelpModal'
 import { letterCount } from '@/utils/english-helpers'
@@ -25,6 +25,8 @@ interface QuizQuestionBodyProps {
   helpRevealed?: number
   /** Called when the user clicks "再揭一个字母" — parent should increment its helpClicks counter. */
   onHelpReveal?: () => void
+  /** Type C 拼写题字母池按钮样式：'candy' = SVG 水果（默认），'jelly' = 圆角果冻砖 */
+  spellButtonStyle?: SpellButtonStyle
 }
 
 export default function QuizQuestionBody({
@@ -37,6 +39,7 @@ export default function QuizQuestionBody({
   questionKey,
   helpRevealed = 0,
   onHelpReveal,
+  spellButtonStyle,
 }: QuizQuestionBodyProps) {
   const isA = question.type === 'A'
   const isB = question.type === 'B'
@@ -206,6 +209,7 @@ export default function QuizQuestionBody({
             onSubmit={runner.handleSpellSubmit}
             answered={runner.answered}
             isCorrect={runner.spellOk}
+            buttonStyle={spellButtonStyle}
           />
         )}
 

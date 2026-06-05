@@ -2,6 +2,7 @@
 
 import type { WordEntry } from '@/utils/type'
 import { letterCount } from '@/utils/english-helpers'
+import { JellyTile, DEFAULT_JELLY_ORDER } from '@/components/shared/JellyButton'
 
 interface WordHelpModalProps {
   open: boolean
@@ -11,28 +12,6 @@ interface WordHelpModalProps {
   onClose: () => void
 }
 
-// Candy palette for revealed letter tiles — cycles through bright kid-friendly hues.
-// Same energy as SpellTiles' jellybean pool so the visual language stays consistent.
-const TILE_PALETTE = [
-  // grape
-  'from-[#c4b5fd] via-[#a78bfa] to-[#7c3aed] border-[#6d28d9]/60 shadow-[0_4px_0_#5b21b6,inset_0_2px_0_rgba(255,255,255,.4)]',
-  // tangerine
-  'from-[#fed7aa] via-[#fb923c] to-[#ea580c] border-[#c2410c]/60 shadow-[0_4px_0_#9a3412,inset_0_2px_0_rgba(255,255,255,.4)]',
-  // strawberry
-  'from-[#fbcfe8] via-[#f472b6] to-[#db2777] border-[#be185d]/60 shadow-[0_4px_0_#9d174d,inset_0_2px_0_rgba(255,255,255,.4)]',
-  // sky
-  'from-[#bae6fd] via-[#38bdf8] to-[#0284c7] border-[#0369a1]/60 shadow-[0_4px_0_#075985,inset_0_2px_0_rgba(255,255,255,.4)]',
-  // mint
-  'from-[#a7f3d0] via-[#34d399] to-[#059669] border-[#047857]/60 shadow-[0_4px_0_#065f46,inset_0_2px_0_rgba(255,255,255,.4)]',
-]
-// Compact inline palette — no big drop shadow so chips flow with the sentence baseline.
-const INLINE_PALETTE = [
-  'from-[#c4b5fd] to-[#7c3aed] border-[#6d28d9]/60',
-  'from-[#fed7aa] to-[#ea580c] border-[#c2410c]/60',
-  'from-[#fbcfe8] to-[#db2777] border-[#be185d]/60',
-  'from-[#bae6fd] to-[#0284c7] border-[#0369a1]/60',
-  'from-[#a7f3d0] to-[#059669] border-[#047857]/60',
-]
 const TILE_ROT = [-3, 2, -1.5, 2.5, -2, 1.5, -2.5, 1, -1, 3]
 // Playful mystery icons rotated per slot so unrevealed letters don't feel dull/blank.
 const MYSTERY_GLYPHS = ['🍬', '🌟', '🎈', '🎁', '🍭', '🪄', '🦄', '🧁']
@@ -154,35 +133,31 @@ export default function WordHelpModal({
                   />
                 )
               }
-              const isShown = t.revealedIdx >= 0
               const rot = TILE_ROT[i % TILE_ROT.length]
-              if (!isShown) {
-                const glyph = MYSTERY_GLYPHS[i % MYSTERY_GLYPHS.length]
+              if (t.revealedIdx < 0) {
                 return (
-                  <div
+                  <JellyTile
                     key={i}
-                    style={{
-                      transform: `rotate(${rot}deg)`,
-                      animationDelay: `${i * 120}ms`,
-                    }}
-                    className="font-fredoka animate-bounce-slow flex h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(2.5rem,8vw,3.25rem)] items-center justify-center rounded-2xl border-[2px] border-dashed border-sky-300 bg-gradient-to-br from-sky-50 to-indigo-50 text-[clamp(1.05rem,3.8vw,1.4rem)]"
+                    size="big"
+                    mystery
+                    rotation={rot}
+                    animationDelay={i * 120}
                   >
-                    {glyph}
-                  </div>
+                    {MYSTERY_GLYPHS[i % MYSTERY_GLYPHS.length]}
+                  </JellyTile>
                 )
               }
-              const palette = TILE_PALETTE[t.revealedIdx % TILE_PALETTE.length]
+              const presetKey = DEFAULT_JELLY_ORDER[t.revealedIdx % DEFAULT_JELLY_ORDER.length]
               return (
-                <div
+                <JellyTile
                   key={i}
-                  style={{
-                    transform: `rotate(${rot}deg)`,
-                    animationDelay: `${t.revealedIdx * 30}ms`,
-                  }}
-                  className={`font-fredoka animate-pop-in flex h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(2.5rem,8vw,3.25rem)] items-center justify-center rounded-2xl border-2 bg-gradient-to-b text-[clamp(1.2rem,4vw,1.6rem)] font-black text-white lowercase [text-shadow:0_2px_0_rgba(0,0,0,.25)] ${palette}`}
+                  size="big"
+                  preset={presetKey}
+                  rotation={rot}
+                  animationDelay={t.revealedIdx * 30}
                 >
                   {t.ch}
-                </div>
+                </JellyTile>
               )
             })}
           </div>
@@ -205,28 +180,29 @@ export default function WordHelpModal({
                           </span>
                         )
                       }
-                      const isShown = t.revealedIdx >= 0
-                      if (!isShown) {
-                        const glyph = MYSTERY_GLYPHS[(i + 3) % MYSTERY_GLYPHS.length]
+                      if (t.revealedIdx < 0) {
                         return (
-                          <span
+                          <JellyTile
                             key={i}
-                            style={{ animationDelay: `${i * 90}ms` }}
-                            className="font-fredoka animate-bounce-slow inline-flex h-[1.55em] w-[1.2em] items-center justify-center rounded-md border border-dashed border-sky-300 bg-white/70 text-[.85em] leading-none"
+                            size="inline"
+                            mystery
+                            animationDelay={i * 90}
                           >
-                            {glyph}
-                          </span>
+                            {MYSTERY_GLYPHS[(i + 3) % MYSTERY_GLYPHS.length]}
+                          </JellyTile>
                         )
                       }
-                      const palette = INLINE_PALETTE[t.revealedIdx % INLINE_PALETTE.length]
+                      const presetKey =
+                        DEFAULT_JELLY_ORDER[t.revealedIdx % DEFAULT_JELLY_ORDER.length]
                       return (
-                        <span
+                        <JellyTile
                           key={i}
-                          style={{ animationDelay: `${t.revealedIdx * 30}ms` }}
-                          className={`font-fredoka animate-pop-in inline-flex h-[1.55em] w-[1.2em] items-center justify-center rounded-md border bg-gradient-to-b text-[.85em] leading-none font-black text-white lowercase ${palette}`}
+                          size="inline"
+                          preset={presetKey}
+                          animationDelay={t.revealedIdx * 30}
                         >
                           {t.ch}
-                        </span>
+                        </JellyTile>
                       )
                     })}
                   </span>
