@@ -1,0 +1,32 @@
+[
+  {
+    "key": "4A::Unit 4::Lesson 3::chilli pepper",
+    "word": "chilli pepper",
+    "stage": "4A",
+    "unit": "Unit 4",
+    "lesson": "Lesson 3",
+    "fields": [
+      "chinese_def"
+    ],
+    "fileValues": {
+      "stage": "4A",
+      "unit": "Unit 4",
+      "lesson": "Lesson 3",
+      "word": "chilli pepper",
+      "explanation": "the small green or red fruit of a type of pepper plant that is used in cooking to give a hot taste to food, often dried or made into powder",
+      "ipa": "/ˈtʃɪli ˌpepər/",
+      "example": "She added a red chilli pepper to the stir-fry to make it spicy.",
+      "chineseDef": "辣椒",
+      "keywords": [
+        [
+          "green or red fruit",
+          "kw-blue"
+        ],
+        [
+          "hot taste",
+          "kw-red"
+        ]
+      ]
+    }
+  }
+]

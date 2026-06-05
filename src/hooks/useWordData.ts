@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { WordEntry } from '@/utils/type'
-import { SAMPLE_WORDS } from '@/utils/english-data'
 
 const SELECT_COLS = 'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
 
@@ -144,10 +143,6 @@ export function useWordData(user: User | null) {
         const words = data.map(fromRow)
         setVocabState(words)
         writeCacheByStage(user.id, words)
-      } else if (!cached) {
-        await supabase.from('word_entries').upsert(SAMPLE_WORDS.map(w => toRow(user.id, w)), UPSERT_OPTS)
-        setVocabState(SAMPLE_WORDS)
-        writeCacheByStage(user.id, SAMPLE_WORDS)
       }
     })()
     return () => { initLock = null }
