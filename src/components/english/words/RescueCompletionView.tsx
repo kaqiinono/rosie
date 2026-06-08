@@ -31,8 +31,8 @@ export default function RescueCompletionView({ eatenList }: Props) {
       style={{
         background: 'linear-gradient(135deg, #1a1200 0%, #0d0d0d 50%, #001a08 100%)',
         boxShadow:
-          'inset 0 0 0 1px rgba(251,191,36,.18), 0 0 28px 0 rgba(251,191,36,.07)',
-        border: '1px solid rgba(251,191,36,.35)',
+          'inset 0 0 0 1px color-mix(in srgb, var(--rescue-flash-warn) 18%, transparent), 0 0 28px 0 color-mix(in srgb, var(--rescue-flash-warn) 7%, transparent)',
+        border: '1px solid color-mix(in srgb, var(--rescue-flash-warn) 35%, transparent)',
       }}
     >
       {/* Section label */}
@@ -53,7 +53,6 @@ export default function RescueCompletionView({ eatenList }: Props) {
             key={i.wordKey}
             className="rounded-full border-[1.5px] px-3.5 py-1.5 text-[.82rem] font-extrabold transition-all duration-200 hover:scale-105"
             style={{
-              animationDelay: `${idx * 40}ms`,
               background: 'rgba(52,211,153,.14)',
               borderColor: 'rgba(52,211,153,.45)',
               color: 'var(--rescue-saved)',
@@ -70,10 +69,9 @@ export default function RescueCompletionView({ eatenList }: Props) {
             key={i.wordKey}
             className="rounded-full border-[1.5px] px-3.5 py-1.5 text-[.82rem] font-bold"
             style={{
-              animationDelay: `${(saved.length + idx) * 40}ms`,
               background: 'rgba(255,255,255,.04)',
               borderColor: 'rgba(251,191,36,.22)',
-              color: 'rgba(251,191,36,.58)',
+              color: 'color-mix(in srgb, var(--rescue-flash-warn) 58%, transparent)',
               animation: `fade-up .3s ease both ${(saved.length + idx) * 40}ms`,
             }}
             title="下次再战！"
