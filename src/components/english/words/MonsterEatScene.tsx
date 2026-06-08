@@ -4,8 +4,22 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { MONSTERS } from './monsters'
 import { EATEN_TITLE_MESSAGES, EATEN_SUB_MESSAGES, pickMessage } from '@/utils/constant'
 
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] ?? c),
+  )
+}
+
+const CANVAS_SIZE = 280        // outer animation div, px
+const MONSTER_SIZE = 220       // rendered SVG size, px
+const SVG_VIEWBOX = 200        // SVG viewBox dimension
+
 interface Props {
-  /** 不为 null 时显示弹层；null = 隐藏 */
+  /**
+   * Word to display in the eat animation.
+   * Must originate from WordEntry.word (controlled vocab data); never pass arbitrary user input.
+   * HTML-escaped before insertion via dangerouslySetInnerHTML.
+   */
   word: string | null
   monsterIdx: number
   /** 同 session 内第二次起，缩短动画到 1.2s */
@@ -27,7 +41,7 @@ export default function MonsterEatScene({
   // Pick a raw title template index (not substituted) so we can do rich HTML wrapping later
   const tplIdx = useMemo(
     () => Math.floor(Math.random() * EATEN_TITLE_MESSAGES.length),
-    // Re-randomise each time a new word is shown
+    // Intentionally keyed only on `word` — re-randomize template selection per new word.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [word],
   )
@@ -42,6 +56,7 @@ export default function MonsterEatScene({
 
   // Detect reduced-motion preference once on mount
   const reducedMotionRef = useRef(false)
+  // Snapshot at mount; does not react to mid-session OS reduced-motion changes.
   useEffect(() => {
     if (typeof window !== 'undefined') {
       reducedMotionRef.current = window.matchMedia(
@@ -100,8 +115,8 @@ export default function MonsterEatScene({
   // Flying-word target position: mouth center in canvas-pixel coords.
   // monster-body is 220×220, centered inside a 280×280 canvas.
   // SVG viewBox is 200×200, so scale = 220/200 = 1.1
-  const svgScale = 220 / 200
-  const monsterOff = (280 - 220) / 2 // 30px offset on each side
+  const svgScale = MONSTER_SIZE / SVG_VIEWBOX
+  const monsterOff = (CANVAS_SIZE - MONSTER_SIZE) / 2 // 30px offset on each side
   const targetLeft = monsterOff + monster.mouth.x * svgScale
   const targetTop = monsterOff + monster.mouth.y * svgScale
 
@@ -118,23 +133,21 @@ export default function MonsterEatScene({
           {/* Flying word chip — only rendered in enter/flying phases */}
           {(phase === 'enter' || phase === 'flying') && (
             <div
-              className="absolute z-10 rounded-xl px-5 py-2 text-[22px] font-extrabold text-white whitespace-nowrap"
+              className="absolute top-0 left-0 z-10 rounded-xl px-5 py-2 text-[22px] font-extrabold text-white whitespace-nowrap"
               style={{
                 background: 'linear-gradient(135deg,#7F77DD,#5DCAA5)',
                 boxShadow: '0 4px 18px rgba(127,119,221,.45)',
-                // In enter phase: centred at top of canvas
-                // In flying phase: animated toward mouth position, shrunk + faded
-                top: phase === 'enter' ? 10 : targetTop - 18,
-                left: phase === 'enter' ? '50%' : targetLeft,
-                transform:
-                  phase === 'enter'
-                    ? 'translateX(-50%) scale(1)'
-                    : 'translateX(-50%) scale(0.15) rotate(8deg)',
+                // Pin to top-left of canvas; animate only transform + opacity (no layout thrashing).
+                // translate(x,y) then translateX(-50%) centres the chip horizontally at position x.
+                // CSS applies transforms right-to-left: -50% offset first, then (x,y) translation.
+                transform: phase === 'enter'
+                  ? `translate(${CANVAS_SIZE / 2}px, 10px) translateX(-50%) scale(1)`
+                  : `translate(${targetLeft}px, ${targetTop - 18}px) translateX(-50%) scale(0.15) rotate(8deg)`,
                 opacity: phase === 'flying' ? 0 : 1,
-                transition:
-                  phase === 'flying'
-                    ? 'top .55s cubic-bezier(.55,0,.6,1), left .55s cubic-bezier(.55,0,.6,1), transform .55s cubic-bezier(.55,0,.6,1), opacity .45s ease .15s'
-                    : 'none',
+                transition: phase === 'flying'
+                  ? 'transform .55s cubic-bezier(.55,0,.6,1), opacity .45s ease .15s'
+                  : 'none',
+                willChange: phase === 'enter' ? 'transform' : undefined,
               }}
             >
               {word}
@@ -165,11 +178,8 @@ export default function MonsterEatScene({
               <div
                 dangerouslySetInnerHTML={{
                   __html: titleTpl
-                    .replace(
-                      /{word}/g,
-                      `<b style="color:#D85A30">${word}</b>`,
-                    )
-                    .replace(/{name}/g, `<b>${monster.name}</b>`),
+                    .replace(/{word}/g, `<b style="color:#D85A30">${escapeHtml(word)}</b>`)
+                    .replace(/{name}/g, `<b>${escapeHtml(monster.name)}</b>`),
                 }}
               />
               <div className="mt-1 font-bold text-[#854F0B]">{sub}</div>
