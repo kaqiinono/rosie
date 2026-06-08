@@ -211,7 +211,7 @@ export default function QuizQuestionBody({
           <div
             role="status"
             aria-live="polite"
-            className="rounded-2xl border border-[var(--rescue-half)]/40 bg-[rgba(96,165,250,.08)] px-4 py-3 text-center text-[.9rem] font-bold text-[#93c5fd] animate-[fadeUp_.2s_ease] shadow-[0_0_20px_rgba(96,165,250,.08)]"
+            className="rounded-2xl border border-[var(--rescue-half)]/40 bg-[rgba(96,165,250,.08)] px-4 py-3 text-center text-[.9rem] font-bold text-[#93c5fd] animate-[fade-up_.2s_ease] shadow-[0_0_20px_rgba(96,165,250,.08)]"
           >
             {retryHintMC}
           </div>
