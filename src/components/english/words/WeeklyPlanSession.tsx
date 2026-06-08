@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry, WeeklyPlan, WeekDayProgress } from '@/utils/type'
+import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole } from '@/utils/type'
 import { encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
@@ -20,6 +20,10 @@ import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/uti
 import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'
+import type { QuizCommitInfo } from './useQuizRunner'
+import { useRescueQueue } from '@/hooks/useRescueQueue'
+import MonsterEatScene from './MonsterEatScene'
+import RescueListBadge from './RescueListBadge'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
@@ -45,6 +49,8 @@ interface DpQuizQ {
   word: WordEntry
   type: 'A' | 'B' | 'C' | 'D'
   kind: WordKind
+  revealedHalf?: number
+  rescueRole?: RescueRole
 }
 
 interface SessionSnapshot {
@@ -161,15 +167,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     () => snap0?.subTask ?? 'all',
   )
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind }[]>(
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind; revealedHalf?: number; rescueRole?: RescueRole }[]>(
     () => snap0?.quizQs ?? [],
   )
   const quizQs = useMemo(
     () =>
       quizQKeys
-        .map(({ key, type, kind }) => {
+        .map(({ key, type, kind, revealedHalf, rescueRole }) => {
           const entry = vocab.find((w) => wordKey(w) === key)
-          return entry ? { word: entry, type, kind } : null
+          return entry ? { word: entry, type, kind, revealedHalf, rescueRole } : null
         })
         .filter((q): q is DpQuizQ => q !== null),
     [quizQKeys, vocab],
@@ -183,6 +189,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [reinforcementAppended, setReinforcementAppended] = useState(false)
   const [mainPassSnapshot, setMainPassSnapshot] = useState<{ score: number; total: number } | null>(null)
+
+  const rescue = useRescueQueue({ planId: plan.id ?? '', dateKey: selectedDate ?? 'none' })
+  const [eatenScene, setEatenScene] = useState<{ word: string; monsterIdx: number; isAbbreviated: boolean } | null>(null)
+  const eatenShownCountRef = useRef(0)
 
   // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
   useEffect(() => {
@@ -322,19 +332,34 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   }, [words, consolidateTypes, previewTypes, isEligibleForTypeD])
 
   const handleAnswer = useCallback(
-    (correct: boolean) => {
-      if (correct) setScore((s) => s + 1)
+    (info: QuizCommitInfo) => {
       const q = quizQs[curQ]
-      if (q) {
-        quizResultBuffer.current.push({ entry: q.word, correct })
-        if (correct) {
-          // 单选题 (A/B) +1 红星; 填空题 (C) / 课文语境填空 (D) +2 红星
-          const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
-          void awardStars('red', amount)
+      if (!q) return
+      const k = wordKey(q.word)
+      if (info.finalCorrect) setScore((s) => s + 1)
+
+      if (!q.rescueRole) {
+        // main-round original question
+        if (info.finalCorrect && info.usedRetry) {
+          rescue.enqueueHalf(q.word, q.type, k)
+        } else if (!info.finalCorrect) {
+          const { monsterIdx } = rescue.enqueueEaten(q.word, q.type, k)
+          const isAbbreviated = eatenShownCountRef.current > 0
+          eatenShownCountRef.current += 1
+          setEatenScene({ word: q.word.word, monsterIdx, isAbbreviated })
         }
+      } else {
+        // reinforcement/rescue-ladder question: advance its queue stage
+        rescue.advance(k, info.finalCorrect ? 'correct' : 'wrong')
+      }
+
+      quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
+      if (info.finalCorrect) {
+        const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
+        void awardStars('red', amount)
       }
     },
-    [quizQs, curQ, awardStars],
+    [quizQs, curQ, awardStars, rescue],
   )
 
   const nextQ = useCallback(() => {
@@ -984,6 +1009,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           </div>
         </div>
 
+        <RescueListBadge items={[...rescue.retryList, ...rescue.eatenList]} />
+
         <QuizQuestionBody
           question={currentQuestion}
           options={quizOptions}
@@ -994,6 +1021,14 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           helpRevealed={helpRevealedForCurrent}
           onHelpReveal={handleHelpReveal}
           spellButtonStyle={practiceButtonStyle}
+          eatenSceneActive={eatenScene !== null}
+        />
+
+        <MonsterEatScene
+          word={eatenScene?.word ?? null}
+          monsterIdx={eatenScene?.monsterIdx ?? 0}
+          isAbbreviated={eatenScene?.isAbbreviated ?? false}
+          onDismiss={() => { setEatenScene(null); nextQ() }}
         />
       </div>
     )

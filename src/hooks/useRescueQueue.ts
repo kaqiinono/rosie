@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
   QuizQuestion,
   RescueQueueItem,
@@ -9,6 +9,7 @@ import type {
 } from '@/utils/type'
 import { interleaveOrderedQuizSlots } from '@/utils/english-helpers'
 import { MONSTERS } from '@/components/english/words/monsters'
+import { STORAGE_KEYS } from '@/utils/constant'
 
 export interface RescueBatches {
   /** 主轮中段穿插：半对词同题型补练 1 次 */
@@ -28,9 +29,42 @@ export interface UseRescueQueueApi {
   clear(): void
 }
 
-export function useRescueQueue(): UseRescueQueueApi {
-  const [items, setItems] = useState<RescueQueueItem[]>([])
+export interface UseRescueQueueArgs { planId: string; dateKey: string }
+
+export function useRescueQueue({ planId, dateKey }: UseRescueQueueArgs): UseRescueQueueApi {
+  const [items, setItems] = useState<RescueQueueItem[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.RESCUE_QUEUE)
+      if (!raw) return []
+      const parsed = JSON.parse(raw) as { planId: string; dateKey: string; items: RescueQueueItem[] }
+      if (parsed.planId !== planId || parsed.dateKey !== dateKey) return []
+      return parsed.items
+    } catch { return [] }
+  })
   const seqRef = useRef(0)
+
+  // Debounced localStorage write (200ms) whenever items/planId/dateKey change
+  const writeTimerRef = useRef<number | null>(null)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (writeTimerRef.current) window.clearTimeout(writeTimerRef.current)
+    writeTimerRef.current = window.setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEYS.RESCUE_QUEUE, JSON.stringify({ planId, dateKey, items }))
+      } catch {}
+    }, 200)
+    return () => { if (writeTimerRef.current) window.clearTimeout(writeTimerRef.current) }
+  }, [items, planId, dateKey])
+
+  // Reset to empty when planId/dateKey changes; skip on initial mount
+  const keyRef = useRef(`${planId}::${dateKey}`)
+  useEffect(() => {
+    const k = `${planId}::${dateKey}`
+    if (keyRef.current === k) return
+    keyRef.current = k
+    setItems([])
+  }, [planId, dateKey])
 
   const enqueueHalf = useCallback((entry: WordEntry, type: QuizType, wordKey: string) => {
     const ts = ++seqRef.current
@@ -93,7 +127,10 @@ export function useRescueQueue(): UseRescueQueueApi {
     [items],
   )
 
-  const clear = useCallback(() => setItems([]), [])
+  const clear = useCallback(() => {
+    setItems([])
+    try { if (typeof window !== 'undefined') localStorage.removeItem(STORAGE_KEYS.RESCUE_QUEUE) } catch {}
+  }, [])
 
   const retryList = useMemo(
     () => items.filter((i) => i.severity === 'half'),
