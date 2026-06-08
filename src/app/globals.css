@@ -148,6 +148,11 @@
   to { opacity: 1; transform: translateY(0) }
 }
 
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes bg-shift {
   0%, 100% { background-position: 0% 50% }
   50% { background-position: 100% 50% }
@@ -198,6 +203,13 @@
     --ph-suffix: #82e0aa;
     --ph-silent: #888;
     --ph-plain: #f0f0ff;
+
+    /* 去挫败感配色 (spec §9.1) */
+    --rescue-half: #60A5FA;
+    --rescue-eaten: #FB923C;
+    --rescue-saved: #34D399;
+    --rescue-flash-warn: #FBBF24;
+    --monster-veil: rgba(20, 12, 50, 0.78);
   }
 
   .ph-vowel { color: var(--ph-vowel); font-weight: 900; }
