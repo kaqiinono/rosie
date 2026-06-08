@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
+import { pickMessage, RETRY_SPELL_MESSAGES } from '@/utils/constant'
 import CandyButton, {
   CANDY_PRESETS,
   DEFAULT_PRESET_ORDER,
@@ -19,6 +20,12 @@ interface SpellTilesProps {
   isCorrect: boolean | null
   /** 字母池按钮样式：'candy' = SVG 水果造型（默认），'jelly' = 圆角果冻砖 */
   buttonStyle?: SpellButtonStyle
+  /** 来自 useQuizRunner 的尝试态；默认 'first' */
+  attempt?: 'first' | 'retry' | 'done'
+  /** retry 飞回动画结束后调用，让上游清掉 isCorrect 以便二次提交 */
+  onRetryAcknowledged?: () => void
+  /** 半字母露出提示：预填并锁定前 N 个字母（按 word 顺序） */
+  revealedHalf?: number
 }
 
 type CandyPresetKey = keyof typeof CANDY_PRESETS
@@ -47,6 +54,9 @@ export default function SpellTiles({
   answered,
   isCorrect,
   buttonStyle = 'candy',
+  attempt = 'first',
+  onRetryAcknowledged,
+  revealedHalf,
 }: SpellTilesProps) {
   const segments = useMemo(() => word.split(''), [word])
 
@@ -59,6 +69,8 @@ export default function SpellTiles({
     }
     return result
   }, [segments])
+
+  const lockedCount = revealedHalf && revealedHalf > 0 ? Math.min(revealedHalf, word.length) : 0
 
   const [poolState] = useState<PoolState>(() => {
     const letters = word.replace(/ /g, '').split('')
@@ -147,7 +159,11 @@ export default function SpellTiles({
 
   const pool = poolState.pool
 
-  const [placed, setPlaced] = useState<(string | null)[]>(() => Array(word.length).fill(null))
+  const [placed, setPlaced] = useState<(string | null)[]>(() => {
+    const arr: (string | null)[] = Array(word.length).fill(null)
+    for (let i = 0; i < lockedCount; i++) arr[i] = word[i]
+    return arr
+  })
 
   const allFilled = placed.length === word.length && placed.every((p) => p !== null)
 
@@ -169,7 +185,7 @@ export default function SpellTiles({
   }
 
   const handlePlacedTap = (slotIdx: number) => {
-    if (answered) return
+    if (answered || slotIdx < lockedCount) return
     setPlaced((prev) => {
       const next = [...prev]
       next[slotIdx] = null
@@ -181,6 +197,39 @@ export default function SpellTiles({
     onSubmit(placed.join(''))
   }
 
+  const [retryFeedback, setRetryFeedback] = useState<{ correct: Set<number>; wrong: Set<number> } | null>(null)
+  const placedRef = useRef(placed)
+  placedRef.current = placed
+
+  useEffect(() => {
+    if (attempt !== 'retry') {
+      setRetryFeedback(null)
+      return
+    }
+    const snapshot = placedRef.current
+    const correct = new Set<number>()
+    const wrong = new Set<number>()
+    for (let i = 0; i < word.length; i++) {
+      const ch = snapshot[i]
+      if (ch == null) continue
+      if (ch.toLowerCase() === word[i].toLowerCase()) correct.add(i)
+      else wrong.add(i)
+    }
+    setRetryFeedback({ correct, wrong })
+    const t = setTimeout(() => {
+      setPlaced((prev) => {
+        const next = [...prev]
+        wrong.forEach((i) => { if (i >= lockedCount) next[i] = null })
+        return next
+      })
+      setRetryFeedback(null)
+      onRetryAcknowledged?.()
+    }, 700)
+    return () => clearTimeout(t)
+  }, [attempt, word, lockedCount, onRetryAcknowledged])
+
+  const retryHintSpell = useMemo(() => pickMessage(RETRY_SPELL_MESSAGES), [word])
+
   return (
     <div className="flex w-full flex-col gap-3">
       {/* Answer slots grouped by word segment */}
@@ -191,23 +240,30 @@ export default function SpellTiles({
               const slotIdx = segmentSlots[si].start + ci
               const letter = placed[slotIdx]
 
+              const isCorrectSlot = retryFeedback?.correct.has(slotIdx)
+              const isWrongSlot = retryFeedback?.wrong.has(slotIdx)
+              const isLockedSlot = slotIdx < lockedCount
+
               let cls = 'border-white/[.25] bg-white/[.04]'
-              if (answered) {
-                cls = isCorrect
-                  ? 'border-[#4ade80] bg-[rgba(74,222,128,.08)]'
-                  : 'border-[#f87171] bg-[rgba(248,113,113,.08)]'
+              if (answered && isCorrect) {
+                cls = 'border-[#4ade80] bg-[rgba(74,222,128,.08)]'
+              } else if (isCorrectSlot) {
+                cls = 'border-[#4ade80] bg-[rgba(74,222,128,.18)]'
+              } else if (isWrongSlot) {
+                cls = 'border-[var(--rescue-flash-warn)] bg-[rgba(251,191,36,.12)] animate-[shakeReturn_.3s_ease]'
+              } else if (isLockedSlot) {
+                cls = 'border-[#a78bfa]/50 bg-[rgba(167,139,250,.08)]'
               } else if (letter) {
-                cls =
-                  'border-[#a78bfa] bg-[rgba(167,139,250,.1)] cursor-pointer hover:border-[#f87171]'
+                cls = 'border-[#a78bfa] bg-[rgba(167,139,250,.1)] cursor-pointer'
               }
 
               return (
                 <div
                   key={ci}
                   onClick={() => {
-                    if (letter && !answered) handlePlacedTap(slotIdx)
+                    if (letter && !answered && slotIdx >= lockedCount) handlePlacedTap(slotIdx)
                   }}
-                  className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] touch-manipulation select-none transition-[transform,background,border-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] ${letter && !answered ? 'cursor-pointer active:scale-90 animate-pop-in' : ''} ${cls}`}
+                  className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] touch-manipulation select-none transition-[transform,background,border-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] ${letter && !answered && slotIdx >= lockedCount ? 'cursor-pointer active:scale-90 animate-pop-in' : ''} ${cls}`}
                 >
                   {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
                 </div>
@@ -305,21 +361,18 @@ export default function SpellTiles({
       )}
 
       {/* Feedback */}
-      {answered && isCorrect !== null && (
+      {attempt === 'done' && isCorrect === true && (
+        <div className="rounded-[10px] bg-[rgba(74,222,128,.12)] p-2.5 text-center text-[.86rem] font-bold text-[#4ade80]">
+          ✓ 正确！🎉
+        </div>
+      )}
+      {attempt === 'retry' && (
         <div
-          className={`rounded-[10px] p-2.5 text-center text-[.86rem] font-bold ${
-            isCorrect
-              ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
-              : 'bg-[rgba(248,113,113,.12)] text-[#f87171]'
-          }`}
+          role="status"
+          aria-live="polite"
+          className="rounded-2xl border border-[var(--rescue-flash-warn)]/40 bg-[rgba(251,191,36,.08)] px-4 py-3 text-center text-[.88rem] font-bold text-[#fbbf24] animate-[fade-up_.2s_ease]"
         >
-          {isCorrect ? (
-            '✓ 正确！🎉'
-          ) : (
-            <span>
-              ✗ 错误，正确答案：<strong>{word}</strong>
-            </span>
-          )}
+          {retryHintSpell}
         </div>
       )}
     </div>

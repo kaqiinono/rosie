@@ -224,6 +224,9 @@ export default function QuizQuestionBody({
             onSubmit={runner.handleSpellSubmit}
             answered={runner.answered}
             isCorrect={runner.spellOk}
+            attempt={runner.attempt}
+            onRetryAcknowledged={runner.acknowledgeSpellRetry}
+            revealedHalf={question.revealedHalf}
             buttonStyle={spellButtonStyle}
           />
         )}
