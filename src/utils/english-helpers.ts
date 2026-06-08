@@ -1,4 +1,4 @@
-import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from './type'
+import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion, RescueQueueItem } from './type'
 import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from './masteryUtils'
 
 export function escHtml(s: string): string {
@@ -279,6 +279,54 @@ export function buildReinforcementQuestions(
   }
   if (!groups.length) return []
   return interleaveOrderedQuizSlots(groups, seed, minGap)
+}
+
+/**
+ * Build half-correct batch: 1 question per still-pending half word, same type as original.
+ * Used for mid-main-round interleaving (spec §3).
+ * Type C words get `revealedHalf = ceil(word.length / 2)` for the half-letter reveal mode.
+ */
+export function buildHalfReinforcementBatch(
+  rescueItems: RescueQueueItem[],
+  seed: number,
+  minGap = 3,
+): QuizQuestion[] {
+  const halfActive = rescueItems.filter(
+    (i) => i.severity === 'half' && i.stage === 'pending',
+  )
+  if (!halfActive.length) return []
+  const groups: QuizQuestion[][] = halfActive.map((i) => [{
+    word: i.entry,
+    type: i.originalType,
+    revealedHalf:
+      i.originalType === 'C' ? Math.ceil(i.entry.word.length / 2) : undefined,
+    rescueRole: 'reinforce-half' as const,
+  }])
+  return interleaveOrderedQuizSlots(groups, seed, minGap)
+}
+
+/**
+ * Build eaten ladder batch: 3 questions per still-pending eaten word, in order.
+ * flashcard (A) -> reinforce-step1 (A) -> reinforce-step2 (originalType).
+ * Words ordered by enqueuedAtMs ascending. Used at the tail of main round (spec §3 §7).
+ */
+export function buildEatenLadderBatch(
+  rescueItems: RescueQueueItem[],
+): QuizQuestion[] {
+  const eatenActive = rescueItems
+    .filter((i) => i.severity === 'eaten' && i.stage === 'pending')
+    .sort((a, b) => a.enqueuedAtMs - b.enqueuedAtMs)
+  const out: QuizQuestion[] = []
+  for (const it of eatenActive) {
+    out.push({ word: it.entry, type: 'A', rescueRole: 'flashcard' })
+    out.push({ word: it.entry, type: 'A', rescueRole: 'reinforce-step1' })
+    out.push({
+      word: it.entry,
+      type: it.originalType,
+      rescueRole: 'reinforce-step2',
+    })
+  }
+  return out
 }
 
 /** Longest common prefix length (ASCII), for morphologically related forms (interest / interesting / interested). */
