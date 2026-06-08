@@ -1,13 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { WordEntry } from '@/utils/type'
-import type { QuizType } from '@/utils/english-helpers'
-
-export interface QuizQuestion {
-  word: WordEntry
-  type: QuizType
-}
+import type { QuizQuestion } from '@/utils/type'
 
 export interface QuizRunnerOptions {
   question: QuizQuestion | null

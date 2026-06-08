@@ -9,7 +9,8 @@ import SpellTiles, { type SpellButtonStyle } from './SpellTiles'
 import PassageHintModal from './PassageHintModal'
 import WordHelpModal from './WordHelpModal'
 import { letterCount } from '@/utils/english-helpers'
-import type { QuizQuestion, QuizRunnerState } from './useQuizRunner'
+import type { QuizQuestion } from '@/utils/type'
+import type { QuizRunnerState } from './useQuizRunner'
 
 interface QuizQuestionBodyProps {
   question: QuizQuestion

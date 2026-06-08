@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry, QuizQuestion, QuizType } from '@/utils/type'
 import {
   hilite,
   highlightExample,
@@ -10,14 +10,13 @@ import {
   buildReinforcementQuestions,
   normalizeQuizTypes,
   wordKey,
-  type QuizType,
 } from '@/utils/english-helpers'
 import { getWordSizeClass } from '@/utils/phonics'
 import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import ColoredStar from '@/components/stars/ColoredStar'
-import { useQuizRunner, type QuizQuestion } from './useQuizRunner'
+import { useQuizRunner } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'
 import type { SpellButtonStyle } from './SpellTiles'
 

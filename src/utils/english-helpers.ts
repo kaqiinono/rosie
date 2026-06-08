@@ -1,4 +1,4 @@
-import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan } from './type'
+import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from './type'
 import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from './masteryUtils'
 
 export function escHtml(s: string): string {
@@ -145,13 +145,6 @@ export function buildDailyPlan(totalWords: number): DayPlan[] {
     })
   }
   return plan
-}
-
-export type QuizType = 'A' | 'B' | 'C' | 'D'
-
-export interface QuizQuestion {
-  word: WordEntry
-  type: QuizType
 }
 
 const QUIZ_TYPE_ORDER: QuizType[] = ['A', 'B', 'C', 'D']

@@ -142,7 +142,7 @@ export interface WordEntry {
   keywords?: [string, string][]
 }
 
-export type QuizType = 'wordToMeaning' | 'meaningToWord' | 'spelling'
+export type QuizType = 'A' | 'B' | 'C' | 'D'
 
 export interface DailyRecord {
   date: string
@@ -482,4 +482,46 @@ export interface CalcMistake {
   lastWrongAt: string
   consecutiveCorrect: number // ≥3 ⇒ resolved
   resolved: boolean
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Quiz / rescue-queue types (English word-learning module)
+// ─────────────────────────────────────────────────────────────────────────
+
+export type RescueSeverity = 'half' | 'eaten'
+
+export type ReinforcementPhase = false | 'half-only' | 'eaten-only' | 'both'
+
+export type RescueRole =
+  | 'flashcard'
+  | 'reinforce-step1'   // 被吃阶梯：A 类识别桥
+  | 'reinforce-step2'   // 被吃阶梯：原题型再考
+  | 'reinforce-half'    // 半对补练（同题型）
+
+export interface QuizQuestion {
+  word: WordEntry
+  type: QuizType
+  /** C 类补练时露出多少字母（半字母露出），undefined = 全 mask */
+  revealedHalf?: number
+  /** 标记此题来自补练队列；undefined = 主轮原题 */
+  rescueRole?: RescueRole
+}
+
+export type RescueStage =
+  | 'pending'
+  | 'flashcard_done'
+  | 'reinforce1_done'
+  | 'consolidated'
+  | 'still_half'
+  | 'saved'
+  | 'lost'
+
+export interface RescueQueueItem {
+  wordKey: string
+  entry: WordEntry
+  severity: RescueSeverity
+  originalType: QuizType
+  stage: RescueStage
+  monsterIdx?: number
+  enqueuedAt: number  // ms timestamp，用于排序
 }
