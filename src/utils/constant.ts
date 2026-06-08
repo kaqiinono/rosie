@@ -89,13 +89,17 @@ export const RESCUE_SAVED_MESSAGES = [
 
 export const RESCUE_LOST_MESSAGES = [
   '🌙 这次没救回来也没关系，小怪兽答应等你晚点再来挑战~',
-  '🌟 别气馁，明天再来打它一顿！',
+  '🌟 别气馁，{name} 今天比较厉害，明天再打它一顿！',
   '💤 {name} 今天比较强，明天再练练就能打过它！',
 ] as const
 
 export const READING_RETRY_MESSAGE = '🔮 这个不对，看看别的？'
-export const READING_SECOND_WRONG_PREFIX = '🌟 这个是 '
-export const READING_SECOND_WRONG_SUFFIX = '！记一下~'
+/**
+ * Use with split('{word}') in JSX to wrap the word in <b>:
+ *   const [pre, post] = READING_SECOND_WRONG_TEMPLATE.split('{word}')
+ *   return <>{pre}<b>{word}</b>{post}</>
+ */
+export const READING_SECOND_WRONG_TEMPLATE = '🌟 这个是 {word}！记一下~'
 
 /** 从文案池随机选一句，做 {word}/{name} 替换 */
 export function pickMessage(
