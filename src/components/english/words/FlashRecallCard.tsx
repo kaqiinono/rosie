@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { WordEntry } from '@/utils/type'
 
 interface Props {
@@ -41,6 +41,9 @@ function SparkleParticle({
 
 export default function FlashRecallCard({ word, step, totalSteps, onDone }: Props) {
   const [leaving, setLeaving] = useState(false)
+  const t1Ref = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const t2Ref = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const doneFiredRef = useRef(false)
 
   useEffect(() => {
     // Auto pronunciation via SpeechSynthesis API
@@ -50,11 +53,15 @@ export default function FlashRecallCard({ word, step, totalSteps, onDone }: Prop
       u.rate = 0.85
       window.speechSynthesis.speak(u)
     }
-    const t1 = setTimeout(() => setLeaving(true), 1200)
-    const t2 = setTimeout(() => onDone(), 1500)
+    t1Ref.current = setTimeout(() => setLeaving(true), 1200)
+    t2Ref.current = setTimeout(() => {
+      if (doneFiredRef.current) return
+      doneFiredRef.current = true
+      onDone()
+    }, 1500)
     return () => {
-      clearTimeout(t1)
-      clearTimeout(t2)
+      if (t1Ref.current) clearTimeout(t1Ref.current)
+      if (t2Ref.current) clearTimeout(t2Ref.current)
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel()
       }
@@ -62,8 +69,15 @@ export default function FlashRecallCard({ word, step, totalSteps, onDone }: Prop
   }, [word, onDone])
 
   const handleSkip = () => {
+    if (doneFiredRef.current) return
+    if (t1Ref.current) clearTimeout(t1Ref.current)
+    if (t2Ref.current) clearTimeout(t2Ref.current)
     setLeaving(true)
-    setTimeout(onDone, 200)
+    setTimeout(() => {
+      if (doneFiredRef.current) return
+      doneFiredRef.current = true
+      onDone()
+    }, 200)
   }
 
   return (
