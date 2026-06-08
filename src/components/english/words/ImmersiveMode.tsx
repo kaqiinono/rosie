@@ -490,7 +490,7 @@ export default function ImmersiveMode({
                       ? 'text-[clamp(1.3rem,2.6vw,1.9rem)]'
                       : 'text-[clamp(1.6rem,3.5vw,2.4rem)]'
                   }`}
-                  dangerouslySetInnerHTML={{ __html: hilite(v.explanation, v.word, v.keywords) }}
+                  dangerouslySetInnerHTML={{ __html: hilite(v.explanation, v.keywords) }}
                 />
               </div>
               {defOnly && (

@@ -16,7 +16,6 @@ import { getFilteredWords, wordKey } from '@/utils/english-helpers'
 interface WordsContextValue {
   user: User | null
   vocab: WordEntry[]
-  setVocab: (words: WordEntry[]) => Promise<void>
   upsertByStage: (words: WordEntry[]) => Promise<void>
   masteryMap: WordMasteryMap
   recordBatch: (results: { entry: WordEntry; correct: boolean }[]) => void
@@ -47,7 +46,7 @@ const WordsContext = createContext<WordsContextValue | null>(null)
 
 export function WordsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
-  const { vocab, setVocab, upsertByStage } = useWordData(user)
+  const { vocab, upsertByStage } = useWordData(user)
   const { masteryMap, recordBatch, recordRecallAttempt } = useWordMastery(user)
 
   const [selStage, setSelStageState] = useState<string>(() => {
@@ -100,7 +99,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <WordsContext.Provider value={{
-      user, vocab, setVocab, upsertByStage,
+      user, vocab, upsertByStage,
       masteryMap, recordBatch, recordRecallAttempt,
       selStage, setSelStage,
       selUnits, setSelUnits,

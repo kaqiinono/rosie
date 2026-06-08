@@ -1,13 +1,12 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan } from './type'
 import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from './masteryUtils'
-import { KW_MAP } from './english-data'
 
 export function escHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }
 
-export function hilite(text: string, word: string, keywords?: [string, string][]): string {
-  const pairs = keywords ?? KW_MAP[word] ?? []
+export function hilite(text: string, keywords?: [string, string][]): string {
+  const pairs = keywords ?? []
   if (!pairs.length) return escHtml(text)
 
   const sorted = [...pairs].sort((a, b) => b[0].length - a[0].length)

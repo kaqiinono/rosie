@@ -47,7 +47,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
   }[sz]
 
   const delay = Math.min(index * 0.03, 0.25)
-  const explHtml = hilite(entry.explanation, entry.word, entry.keywords)
+  const explHtml = hilite(entry.explanation, entry.keywords)
 
   // Show 课文原句 for any word whose lesson has a passage — independent of
   // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;

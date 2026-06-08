@@ -1,5 +1,3 @@
-import { SYLLABLE_MAP } from './english-data'
-
 export type PhonicsClass =
   | 'ph-vowel' | 'ph-long' | 'ph-digraph' | 'ph-cluster'
   | 'ph-blend' | 'ph-r' | 'ph-magic' | 'ph-suffix' | 'ph-silent' | 'ph-plain'
@@ -101,7 +99,7 @@ export interface PhonicsSegment {
 export function colorizeWord(word: string, syllables?: string[]): PhonicsSegment[] {
   const chars = tokenize(word)
   const me = hasMagicE(word) ? magicEPos(word) : null
-  const sylls = syllables ?? SYLLABLE_MAP[word.toLowerCase()]
+  const sylls = syllables
 
   if (me) {
     chars[me.vi].c = 'ph-magic'
@@ -130,18 +128,46 @@ export function colorizeWord(word: string, syllables?: string[]): PhonicsSegment
   return segments
 }
 
+function splitAlphaCore(token: string): { prefix: string; core: string; suffix: string } | null {
+  const first = token.search(/[a-zA-Z]/)
+  if (first === -1) return null
+  let last = first
+  for (let i = token.length - 1; i >= 0; i--) {
+    if (/[a-zA-Z]/.test(token[i])) {
+      last = i
+      break
+    }
+  }
+  return {
+    prefix: token.slice(0, first),
+    core: token.slice(first, last + 1),
+    suffix: token.slice(last + 1),
+  }
+}
+
+/** Colorize the alphabetic core of a token, preserving leading/trailing punctuation. */
+function buildWordGroup(token: string, syllables?: string[]): PhonicsSegment[] {
+  const parts = splitAlphaCore(token)
+  if (!parts) return [{ text: token, cls: 'ph-plain' }]
+
+  const { prefix, core, suffix } = parts
+  const segments: PhonicsSegment[] = []
+  if (prefix) segments.push({ text: prefix, cls: 'ph-plain' })
+  if (core.length >= 2) {
+    segments.push(...colorizeWord(core, syllables))
+  } else if (core.length === 1) {
+    segments.push({ text: core, cls: 'ph-plain' })
+  }
+  if (suffix) segments.push({ text: suffix, cls: 'ph-plain' })
+  return segments
+}
+
 export function buildPhonicsSegments(text: string, syllables?: string[]): PhonicsSegment[][] {
   const words = text.trim().split(/\s+/)
   if (words.length === 1) {
-    const clean = text.replace(/[^a-zA-Z]/g, '')
-    if (clean.length >= 2) return [colorizeWord(clean, syllables)]
-    return [[{ text, cls: 'ph-plain' }]]
+    return [buildWordGroup(text, syllables)]
   }
-  return words.map(w => {
-    const clean = w.replace(/[^a-zA-Z]/g, '')
-    if (clean.length >= 2) return colorizeWord(clean)
-    return [{ text: w, cls: 'ph-plain' as PhonicsClass }]
-  })
+  return words.map(w => buildWordGroup(w))
 }
 
 export function getWordSizeClass(word: string): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {

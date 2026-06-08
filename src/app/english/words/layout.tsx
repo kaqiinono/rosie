@@ -11,7 +11,7 @@ import type { WordEntry } from '@/utils/type'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, setVocab, upsertByStage, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
+  const { vocab, upsertByStage, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
   const [importOpen, setImportOpen] = useState(false)
@@ -30,17 +30,12 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // When previewCards is true on the practice page, show vocab cards first; then switch to quiz
   const immersiveMode = isPracticePage && !previewCards ? 'practice' : 'vocab'
 
-  const handleImport = useCallback((words: WordEntry[]) => {
-    void setVocab(words)
+  const handleAppend = useCallback((words: WordEntry[]) => {
+    void upsertByStage(words)
     setSelUnits(new Set())
     setSelLessons(new Set())
     setSelWords(new Set())
-  }, [setVocab, setSelUnits, setSelLessons, setSelWords])
-
-  const handleAppend = useCallback((words: WordEntry[]) => {
-    void upsertByStage(words)
-    setSelWords(new Set())
-  }, [upsertByStage, setSelWords])
+  }, [upsertByStage, setSelUnits, setSelLessons, setSelWords])
 
   const handleExport = useCallback(async () => {
     const xlsx = await import('xlsx')
@@ -81,7 +76,6 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       <ImportModal
         open={importOpen}
         onClose={() => setImportOpen(false)}
-        onImport={handleImport}
         onAppend={handleAppend}
       />
       {/* ImmersiveMode opens when immersive is active on non-daily pages */}

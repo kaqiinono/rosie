@@ -184,7 +184,7 @@ export default function StudyPhase({
             <div
               className="text-[clamp(1rem,2.5vw,1.45rem)] leading-loose font-bold text-[#f0f0ff]"
               dangerouslySetInnerHTML={{
-                __html: hilite(entry.explanation, entry.word, entry.keywords),
+                __html: hilite(entry.explanation, entry.keywords),
               }}
             />
             {entry.chineseDef && (

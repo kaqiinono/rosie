@@ -72,19 +72,6 @@ function clearCacheForStages(userId: string, stages: string[]) {
   } catch { /* ignore */ }
 }
 
-function clearAllCache(userId: string) {
-  try {
-    const indexJson = localStorage.getItem(cacheIndexKey(userId))
-    if (indexJson) {
-      const stages: string[] = JSON.parse(indexJson)
-      for (const stage of stages) {
-        localStorage.removeItem(cacheDataKey(userId, stage))
-      }
-    }
-    localStorage.removeItem(cacheIndexKey(userId))
-  } catch { /* ignore */ }
-}
-
 const UPSERT_OPTS = { onConflict: 'unit,lesson,word,stage', ignoreDuplicates: false } as const
 
 let initLock: string | null = null
@@ -148,17 +135,6 @@ export function useWordData(user: User | null) {
     return () => { initLock = null }
   }, [user])
 
-  const setVocab = useCallback(async (words: WordEntry[]) => {
-    setVocabState(words)
-    if (!user) return
-    clearAllCache(user.id)
-    await supabase.from('word_entries').delete().neq('id', '')
-    if (words.length > 0) {
-      await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
-      writeCacheByStage(user.id, words)
-    }
-  }, [user])
-
   const upsertByStage = useCallback(async (words: WordEntry[]) => {
     if (!user || !words.length) return
     const stages = [...new Set(words.map(w => w.stage).filter(Boolean))] as string[]
@@ -182,5 +158,5 @@ export function useWordData(user: User | null) {
     }
   }, [user])
 
-  return { vocab, setVocab, upsertByStage }
+  return { vocab, upsertByStage }
 }

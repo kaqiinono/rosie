@@ -6,11 +6,10 @@ import type { WordEntry } from '@/utils/type'
 interface ImportModalProps {
   open: boolean
   onClose: () => void
-  onImport: (words: WordEntry[]) => void
   onAppend: (words: WordEntry[]) => void
 }
 
-export default function ImportModal({ open, onClose, onImport, onAppend }: ImportModalProps) {
+export default function ImportModal({ open, onClose, onAppend }: ImportModalProps) {
   const [status, setStatus] = useState<{ type: 'info' | 'success' | 'error'; text: string } | null>(
     null,
   )
@@ -88,10 +87,6 @@ export default function ImportModal({ open, onClose, onImport, onAppend }: Impor
     },
     [processFile],
   )
-
-  const handleImport = useCallback(() => {
-    if (importedVocab) { onImport(importedVocab); resetState(); onClose() }
-  }, [importedVocab, onImport, resetState, onClose])
 
   const handleAppend = useCallback(() => {
     if (importedVocab) { onAppend(importedVocab); resetState(); onClose() }
@@ -184,27 +179,17 @@ export default function ImportModal({ open, onClose, onImport, onAppend }: Impor
             取消
           </button>
           {importedVocab && (
-            <>
-              <button
-                onClick={handleAppend}
-                className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[#a855f7]/60 bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[#c084fc] transition-all hover:bg-[rgba(168,85,247,.1)]"
-              >
-                + 按Stage追加
-              </button>
-              <button
-                onClick={handleImport}
-                className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#16a34a] to-[#4ade80] px-6 py-2.5 text-[1rem] font-extrabold text-white"
-              >
-                替换全部
-              </button>
-            </>
+            <button
+              onClick={handleAppend}
+              className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#a855f7] to-[#c084fc] px-6 py-2.5 text-[1rem] font-extrabold text-white"
+            >
+              + 按Stage追加
+            </button>
           )}
         </div>
 
         <div className="mt-3.5 rounded-[10px] bg-white/[.04] p-3 text-[.72rem] text-white/30">
-          <span className="font-bold text-[#c084fc]">+ 按Stage追加</span>：删除同 Stage 的旧数据并写入新数据，其他 Stage 不受影响
-          <span className="mx-2 opacity-40">·</span>
-          <span className="font-bold text-[#4ade80]">替换全部</span>：清空所有数据后写入
+          <span className="font-bold text-[#c084fc]">+ 按Stage追加</span>：删除同 Stage 的旧数据并写入新数据，其他 Stage 不受影响。导入的 Excel 不带中文释义/音节拆分/关键词高亮，这些字段在 DB 里的现有值会被覆盖为空。
         </div>
       </div>
     </div>
