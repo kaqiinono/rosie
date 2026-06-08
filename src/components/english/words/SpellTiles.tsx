@@ -129,7 +129,7 @@ export default function SpellTiles({
     let pool: string[] = sorted
     if (hasDangerousPair(sorted)) {
       const arr = [...sorted]
-      for (let attempt = 0; attempt < 20; attempt++) {
+      for (let shufflePass = 0; shufflePass < 20; shufflePass++) {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1))
           ;[arr[i], arr[j]] = [arr[j], arr[i]]
@@ -251,6 +251,9 @@ export default function SpellTiles({
                 cls = 'border-[#4ade80] bg-[rgba(74,222,128,.18)]'
               } else if (isWrongSlot) {
                 cls = 'border-[var(--rescue-flash-warn)] bg-[rgba(251,191,36,.12)] animate-[shakeReturn_.3s_ease]'
+              } else if (answered) {
+                // 最终答错（被吃）：保持安静中性，怪兽弹层会接管，不显示可点击态
+                cls = 'border-white/[.18] bg-white/[.04]'
               } else if (isLockedSlot) {
                 cls = 'border-[#a78bfa]/50 bg-[rgba(167,139,250,.08)]'
               } else if (letter) {
