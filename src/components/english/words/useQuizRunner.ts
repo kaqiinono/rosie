@@ -109,7 +109,7 @@ export function useQuizRunner({
         return
       }
       setWrongChoices((s) => new Set(s).add(chosen))
-      finish(false, attempt === 'retry' || !allowRetry)
+      finish(false, attempt === 'retry')
     },
     [attempt, question, allowRetry, finish],
   )
@@ -127,7 +127,7 @@ export function useQuizRunner({
         setAttempt('retry')
         return
       }
-      finish(false, attempt === 'retry' || !allowRetry)
+      finish(false, attempt === 'retry')
     },
     [attempt, question, allowRetry, finish],
   )
