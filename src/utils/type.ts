@@ -142,8 +142,6 @@ export interface WordEntry {
   keywords?: [string, string][]
 }
 
-export type QuizType = 'A' | 'B' | 'C' | 'D'
-
 export interface DailyRecord {
   date: string
   newWords: string[]
@@ -488,8 +486,15 @@ export interface CalcMistake {
 // Quiz / rescue-queue types (English word-learning module)
 // ─────────────────────────────────────────────────────────────────────────
 
+export type QuizType = 'A' | 'B' | 'C' | 'D'
+
 export type RescueSeverity = 'half' | 'eaten'
 
+/**
+ * `false` = no reinforcement phase active yet (main round not finished).
+ * Once main round completes, becomes 'half-only' | 'eaten-only' | 'both'
+ * depending on what's in the rescue queue.
+ */
 export type ReinforcementPhase = false | 'half-only' | 'eaten-only' | 'both'
 
 export type RescueRole =
@@ -523,5 +528,6 @@ export interface RescueQueueItem {
   originalType: QuizType
   stage: RescueStage
   monsterIdx?: number
-  enqueuedAt: number  // ms timestamp，用于排序
+  /** Unix timestamp in ms; used for sort order within the rescue queue. */
+  enqueuedAtMs: number
 }
