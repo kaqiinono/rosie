@@ -45,10 +45,20 @@ export function useRescueQueue(): UseRescueQueueApi {
   }, [])
 
   const enqueueEaten = useCallback((entry: WordEntry, type: QuizType, wordKey: string) => {
+    const existing = items.find(
+      (i) => i.wordKey === wordKey && i.severity === 'eaten',
+    )
+    if (existing) {
+      // Already eaten — return existing monsterIdx, no state change.
+      return { monsterIdx: existing.monsterIdx ?? 0 }
+    }
     const monsterIdx = Math.floor(Math.random() * MONSTERS.length)
     const ts = ++seqRef.current
     setItems((prev) => {
-      if (prev.some((i) => i.wordKey === wordKey && i.severity === 'eaten')) return prev
+      // Defensive re-check inside the updater for strict-mode safety.
+      if (prev.some((i) => i.wordKey === wordKey && i.severity === 'eaten')) {
+        return prev
+      }
       // 同 wordKey 已是 half 时升级为 eaten
       const without = prev.filter((i) => i.wordKey !== wordKey)
       return [...without, {
@@ -58,7 +68,7 @@ export function useRescueQueue(): UseRescueQueueApi {
       }]
     })
     return { monsterIdx }
-  }, [])
+  }, [items])
 
   const advance = useCallback((wordKey: string, outcome: 'correct' | 'wrong') => {
     setItems((prev) => prev.map((it) => {
