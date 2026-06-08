@@ -17,6 +17,7 @@ import PhonicsWord from './PhonicsWord'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import ColoredStar from '@/components/stars/ColoredStar'
 import { useQuizRunner } from './useQuizRunner'
+import type { QuizCommitInfo } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'
 import type { SpellButtonStyle } from './SpellTiles'
 
@@ -154,14 +155,14 @@ export default function ImmersiveMode({
   const currentQ = quizQs[curQ] ?? null
 
   const handleCommit = useCallback(
-    (correct: boolean) => {
+    (info: QuizCommitInfo) => {
       if (!currentQ) return
-      if (correct) {
+      if (info.finalCorrect) {
         setQScore((s) => s + 1)
         const amount = currentQ.type === 'C' || currentQ.type === 'D' ? 2 : 1
         void awardStars('red', amount)
       }
-      quizResultBuffer.current.push({ entry: currentQ.word, correct })
+      quizResultBuffer.current.push({ entry: currentQ.word, correct: info.finalCorrect })
     },
     [currentQ, awardStars],
   )

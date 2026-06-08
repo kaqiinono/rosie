@@ -12,6 +12,7 @@ import {
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'
+import type { QuizCommitInfo } from './useQuizRunner'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
@@ -168,12 +169,12 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   }, [sessionWords, enabledTypes])
 
   const handleAnswer = useCallback(
-    (correct: boolean) => {
-      if (correct) setScore(s => s + 1)
+    (info: QuizCommitInfo) => {
+      if (info.finalCorrect) setScore(s => s + 1)
       const q = quizQs[curQ]
       if (q) {
-        quizResultBuffer.current.push({ entry: q.word, correct })
-        if (correct) {
+        quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
+        if (info.finalCorrect) {
           // 单选题 (A/B) +1 红星; 填空题 (C) / 课文语境填空 (D) +2 红星
           const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
           void awardStars('red', amount)
