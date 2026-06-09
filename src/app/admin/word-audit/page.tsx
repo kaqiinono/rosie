@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { SAMPLE_WORDS, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@/utils/english-data'
@@ -179,7 +180,7 @@ export default function WordAuditPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">📊 单词数据对账</h1>
-          <a href="/" className="text-sm text-slate-500 hover:underline">← 返回首页</a>
+          <Link href="/" className="text-sm text-slate-500 hover:underline">← 返回首页</Link>
         </div>
 
         <div className="rounded-lg bg-white p-4 text-sm text-slate-600 shadow-sm">

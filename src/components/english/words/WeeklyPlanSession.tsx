@@ -175,7 +175,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const quizQs = useMemo(
     () =>
       quizQKeys
-        .map(({ key, type, kind, revealedHalf, rescueRole }) => {
+        .map(({ key, type, kind, revealedHalf, rescueRole }): DpQuizQ | null => {
           const entry = vocab.find((w) => wordKey(w) === key)
           return entry ? { word: entry, type, kind, revealedHalf, rescueRole } : null
         })

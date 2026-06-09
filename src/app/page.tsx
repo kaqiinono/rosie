@@ -49,6 +49,16 @@ const modules: ModuleCardData[] = [
     icon: '🧮',
   },
   {
+    href: '/math/priority',
+    title: '数学大纲',
+    description: '数学大纲知识点分析与复习计划。',
+    tag: 'MATH',
+    variant: 'math',
+    stats: ['数学大纲', '模块优先级'],
+    enterText: '开始数学复习计划',
+    icon: '🧄',
+  },
+  {
     href: '/flipbook',
     title: '绘本阅读',
     description: '3D 翻页讲义，上传 PDF 与讲解音频，按时间轴自动翻页。',
@@ -59,16 +69,6 @@ const modules: ModuleCardData[] = [
     icon: '📕',
   },
   {
-    href: '/vouchers',
-    title: '我的奖券',
-    description: '口算、英语、数学均可赚星星，积攒后兑换心愿奖券。',
-    tag: 'STARS',
-    variant: 'calc',
-    stats: ['全模块通用', '兑换奖券', '星星余额'],
-    enterText: '查看奖券',
-    icon: '⭐',
-  },
-  {
     href: '/admin/audio',
     title: '媒体管理',
     description: '管理阅读朗读、绘本音频，上传独立音频视频，收藏夹循环播放。',
@@ -77,6 +77,16 @@ const modules: ModuleCardData[] = [
     stats: ['阅读 & 绘本', '独立音视频', '收藏夹播放'],
     enterText: '打开媒体管理',
     icon: '🎬',
+  },
+  {
+    href: '/vouchers',
+    title: '我的奖券',
+    description: '口算、英语、数学均可赚星星，积攒后兑换心愿奖券。',
+    tag: 'STARS',
+    variant: 'calc',
+    stats: ['全模块通用', '兑换奖券', '星星余额'],
+    enterText: '查看奖券',
+    icon: '⭐',
   },
 ]
 
@@ -160,7 +170,10 @@ export default function HomePage() {
           <Link
             href="/admin"
             className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold text-slate-400 transition hover:text-amber-700"
-            style={{ background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.18)' }}
+            style={{
+              background: 'rgba(148,163,184,0.08)',
+              border: '1px solid rgba(148,163,184,0.18)',
+            }}
             aria-label="管理"
           >
             <span aria-hidden>🛠</span>

@@ -102,23 +102,23 @@ describe('buildQuizOptions', () => {
 
 describe('hilite', () => {
   it('returns escaped text when no keywords supplied or matched', () => {
-    expect(hilite('a < b', 'word')).toBe('a &lt; b')
+    expect(hilite('a < b')).toBe('a &lt; b')
   })
 
   it('wraps matched keywords in span with class', () => {
-    const out = hilite('a quick fox', 'fox', [['quick', 'kw']])
+    const out = hilite('a quick fox', [['quick', 'kw']])
     expect(out).toContain('<span class="kw">quick</span>')
   })
 
   it('escapes hostile characters around matches', () => {
-    const out = hilite('<b>quick</b>', 'fox', [['quick', 'kw']])
+    const out = hilite('<b>quick</b>', [['quick', 'kw']])
     expect(out).toContain('&lt;b&gt;')
     expect(out).toContain('<span class="kw">quick</span>')
     expect(out).not.toContain('<b>')
   })
 
   it('prefers longest keyword match (no overlap)', () => {
-    const out = hilite('quick brown fox', 'fox', [
+    const out = hilite('quick brown fox', [
       ['quick', 'a'],
       ['quick brown', 'b'],
     ])

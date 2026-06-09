@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { pickMessage, RETRY_SPELL_MESSAGES } from '@/utils/constant'
 import CandyButton, {
   CANDY_PRESETS,
@@ -198,35 +198,46 @@ export default function SpellTiles({
   }
 
   const [retryFeedback, setRetryFeedback] = useState<{ correct: Set<number>; wrong: Set<number> } | null>(null)
-  const placedRef = useRef(placed)
-  placedRef.current = placed
 
-  useEffect(() => {
-    if (attempt !== 'retry') {
+  // Compute which tiles are right/wrong at the moment we enter the retry state.
+  // Derived during render (with a transition guard) — not via a setState-in-effect.
+  // At this transition `placed` still holds the just-submitted arrangement.
+  const [prevAttempt, setPrevAttempt] = useState(attempt)
+  if (prevAttempt !== attempt) {
+    setPrevAttempt(attempt)
+    if (attempt === 'retry') {
+      const correct = new Set<number>()
+      const wrong = new Set<number>()
+      for (let i = 0; i < word.length; i++) {
+        const ch = placed[i]
+        if (ch == null) continue
+        if (ch.toLowerCase() === word[i].toLowerCase()) correct.add(i)
+        else wrong.add(i)
+      }
+      setRetryFeedback({ correct, wrong })
+    } else {
       setRetryFeedback(null)
-      return
     }
-    const snapshot = placedRef.current
-    const correct = new Set<number>()
-    const wrong = new Set<number>()
-    for (let i = 0; i < word.length; i++) {
-      const ch = snapshot[i]
-      if (ch == null) continue
-      if (ch.toLowerCase() === word[i].toLowerCase()) correct.add(i)
-      else wrong.add(i)
-    }
-    setRetryFeedback({ correct, wrong })
+  }
+
+  // Genuine side effect: after briefly showing the feedback, fly the wrong tiles
+  // back to the tray. setStates here run inside a timeout (async), not synchronously.
+  useEffect(() => {
+    if (attempt !== 'retry' || !retryFeedback) return
+    const wrong = retryFeedback.wrong
     const t = setTimeout(() => {
       setPlaced((prev) => {
         const next = [...prev]
-        wrong.forEach((i) => { if (i >= lockedCount) next[i] = null })
+        wrong.forEach((i) => {
+          if (i >= lockedCount) next[i] = null
+        })
         return next
       })
       setRetryFeedback(null)
       onRetryAcknowledged?.()
     }, 700)
     return () => clearTimeout(t)
-  }, [attempt, word, lockedCount, onRetryAcknowledged])
+  }, [attempt, retryFeedback, lockedCount, onRetryAcknowledged])
 
   const retryHintSpell = useMemo(() => pickMessage(RETRY_SPELL_MESSAGES), [word])
 

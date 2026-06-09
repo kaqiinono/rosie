@@ -60,14 +60,15 @@ export function useRescueQueue({ planId, dateKey }: UseRescueQueueArgs): UseResc
     return () => { if (writeTimerRef.current) window.clearTimeout(writeTimerRef.current) }
   }, [items, planId, dateKey])
 
-  // Reset to empty when planId/dateKey changes; skip on initial mount
-  const keyRef = useRef(`${planId}::${dateKey}`)
-  useEffect(() => {
-    const k = `${planId}::${dateKey}`
-    if (keyRef.current === k) return
-    keyRef.current = k
+  // Reset to empty when planId/dateKey changes — done during render (the
+  // React-recommended pattern) rather than in an effect, to avoid a
+  // setState-in-effect cascade.
+  const [prevKey, setPrevKey] = useState(`${planId}::${dateKey}`)
+  const curKey = `${planId}::${dateKey}`
+  if (prevKey !== curKey) {
+    setPrevKey(curKey)
     setItems([])
-  }, [planId, dateKey])
+  }
 
   const enqueueHalf = useCallback((entry: WordEntry, type: QuizType, wordKey: string) => {
     const ts = ++seqRef.current
