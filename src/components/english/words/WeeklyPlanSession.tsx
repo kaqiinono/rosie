@@ -25,6 +25,7 @@ import { useRescueQueue } from '@/hooks/useRescueQueue'
 import MonsterEatScene from './MonsterEatScene'
 import RescueListBadge from './RescueListBadge'
 import FlashRecallCard from './FlashRecallCard'
+import RescueCompletionView from './RescueCompletionView'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
@@ -321,6 +322,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       return types.map(t => ({ key: wordKey(w.entry), type: t, kind: w.kind }))
     })
     const qs = interleaveOrderedQuizSlots(groups, seed + 1)
+    rescue.clear()
     quizResultBuffer.current = []
     setQuizQKeys(qs)
     setCurQ(0)
@@ -330,7 +332,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setReinforcementAppended(false)
     setMainPassSnapshot(null)
     setPhase('quiz')
-  }, [words, consolidateTypes, previewTypes, isEligibleForTypeD])
+  }, [words, consolidateTypes, previewTypes, isEligibleForTypeD, rescue])
 
   const handleAnswer = useCallback(
     (info: QuizCommitInfo) => {
@@ -438,7 +440,30 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           })
         }
       }
-    recordBatch(quizResultBuffer.current)
+    const allRescue = [...rescue.retryList, ...rescue.eatenList]
+    const masteryBatch: { entry: WordEntry; correct: boolean }[] = []
+    for (const r of quizResultBuffer.current) {
+      const k = wordKey(r.entry)
+      const queueItem = allRescue.find((i) => i.wordKey === k)
+      if (queueItem) {
+        if (queueItem.stage === 'consolidated' || queueItem.stage === 'saved') {
+          masteryBatch.push({ entry: r.entry, correct: true })
+          masteryBatch.push({ entry: r.entry, correct: false })
+        } else if (queueItem.stage === 'still_half') {
+          masteryBatch.push({ entry: r.entry, correct: false })
+        } else if (queueItem.stage === 'lost') {
+          masteryBatch.push({ entry: r.entry, correct: false })
+          masteryBatch.push({ entry: r.entry, correct: false })
+        } else {
+          // unexpected intermediate stage at completion — fall back to the actual main result
+          masteryBatch.push({ entry: r.entry, correct: r.correct })
+        }
+      } else {
+        // plain main-round word that was never enqueued (answered cleanly or wrong-without-rescue)
+        masteryBatch.push({ entry: r.entry, correct: r.correct })
+      }
+    }
+    recordBatch(masteryBatch)
     // Stars are already awarded per-question via handleAnswer above.
     // We only surface a tally here for the "done" screen.
     const starsFromThisRun = quizResultBuffer.current.reduce((sum, r, idx) => {
@@ -1102,7 +1127,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 🔄 重新测试
               </button>
               <button
-                onClick={() => setPhase('week-view')}
+                onClick={() => { rescue.clear(); setPhase('week-view') }}
                 className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[var(--wm-text-dim)]"
               >
                 返回周计划
@@ -1122,6 +1147,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             </>
           }
         />
+        <RescueCompletionView eatenList={rescue.eatenList} />
         <MasteryStatusPanel
           vocab={vocab}
           masteryMap={masteryMap}
