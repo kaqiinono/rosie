@@ -6,6 +6,7 @@ import { buildQuizOptions, wordKey } from '@/utils/english-helpers'
 import { blankWordInSentence } from '@/utils/reading-data'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
 import SpeakButton from '@/components/english/words/SpeakButton'
+import { READING_RETRY_MESSAGE } from '@/utils/constant'
 
 interface ParagraphRecallQuizProps {
   paragraphText: string
@@ -98,6 +99,8 @@ export default function ParagraphRecallQuiz({
   const [answered, setAnswered] = useState(false)
   const [selected, setSelected] = useState<WordEntry | null>(null)
   const [correct, setCorrect] = useState<boolean | null>(null)
+  const [attempt, setAttempt] = useState<'first' | 'retry' | 'done'>('first')
+  const [wrongPicks, setWrongPicks] = useState<Set<string>>(new Set())
 
   // Esc to close modal
   useEffect(() => {
@@ -109,23 +112,38 @@ export default function ParagraphRecallQuiz({
     return () => document.removeEventListener('keydown', onKey)
   }, [opened])
 
+  // Reset attempt machine when the target word changes
+  useEffect(() => {
+    setAttempt('first')
+    setWrongPicks(new Set())
+  }, [target?.entry.word])
+
   if (!target) return null
 
   const handlePick = (option: WordEntry) => {
-    if (answered) return
+    if (attempt === 'done') return
     const isCorrect = option.word === target.entry.word
-    setAnswered(true)
-    setSelected(option)
-    setCorrect(isCorrect)
-    onAnswer(target.entry, isCorrect)
+    if (isCorrect) {
+      setAnswered(true); setSelected(option); setCorrect(true); setAttempt('done')
+      onAnswer(target.entry, true)
+      return
+    }
+    if (attempt === 'first') {
+      setAttempt('retry')
+      setWrongPicks((s) => new Set(s).add(option.word))
+      return
+    }
+    // second wrong → commit + reveal
+    setAnswered(true); setSelected(option); setCorrect(false); setAttempt('done')
+    setWrongPicks((s) => new Set(s).add(option.word))
+    onAnswer(target.entry, false)
   }
 
   const ipaStr = target.entry.ipa ? target.entry.ipa.replace(/^\/|\/$/g, '') : null
 
   const retry = () => {
-    setAnswered(false)
-    setSelected(null)
-    setCorrect(null)
+    setAnswered(false); setSelected(null); setCorrect(null)
+    setAttempt('first'); setWrongPicks(new Set())
     setOpened(true)
   }
 
@@ -231,19 +249,32 @@ export default function ParagraphRecallQuiz({
                     段落回想 · 还记得这个词吗?
                   </span>
                 </div>
+                {attempt === 'retry' && (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="mb-3 rounded-lg border border-[var(--rescue-half)]/40 bg-[rgba(96,165,250,.1)] px-3 py-2 text-center text-[13px] font-bold text-[color:var(--rescue-half)] shadow-[0_0_20px_rgba(96,165,250,.1)] animate-[fade-up_.2s_ease]"
+                  >
+                    {READING_RETRY_MESSAGE}
+                  </div>
+                )}
                 <div className="mb-4 rounded-xl bg-amber-50/70 px-3 py-3 text-[15px] leading-relaxed text-gray-800 ring-1 ring-amber-200">
                   &ldquo;{blankWordInSentence(target.sentence, target.entry.word)}&rdquo;
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {options.map((o) => (
+                  {options.map((o) => {
+                    const wasWrong = wrongPicks.has(o.word)
+                    return (
                     <button
                       key={o.word}
                       onClick={() => handlePick(o)}
-                      className="cursor-pointer rounded-xl border-2 border-gray-200 bg-white px-3 py-3 text-left text-[14px] font-bold text-gray-800 transition-all hover:-translate-y-px hover:border-amber-400 hover:bg-amber-50 hover:shadow-sm"
+                      disabled={wasWrong}
+                      className={wasWrong ? 'cursor-default rounded-xl border-2 border-gray-200 bg-gray-50 px-3 py-3 text-left text-[14px] font-bold text-gray-400 opacity-40 transition-all' : 'cursor-pointer rounded-xl border-2 border-gray-200 bg-white px-3 py-3 text-left text-[14px] font-bold text-gray-800 transition-all hover:-translate-y-px hover:border-amber-400 hover:bg-amber-50 hover:shadow-sm'}
                     >
                       {o.word}
                     </button>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
