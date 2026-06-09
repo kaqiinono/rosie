@@ -24,6 +24,7 @@ import type { QuizCommitInfo } from './useQuizRunner'
 import { useRescueQueue } from '@/hooks/useRescueQueue'
 import MonsterEatScene from './MonsterEatScene'
 import RescueListBadge from './RescueListBadge'
+import FlashRecallCard from './FlashRecallCard'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
@@ -348,12 +349,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           eatenShownCountRef.current += 1
           setEatenScene({ word: q.word.word, monsterIdx, isAbbreviated })
         }
+        quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
       } else {
         // reinforcement/rescue-ladder question: advance its queue stage
         rescue.advance(k, info.finalCorrect ? 'correct' : 'wrong')
       }
-
-      quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
       if (info.finalCorrect) {
         const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
         void awardStars('red', amount)
@@ -369,23 +369,27 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       return
     }
 
-    // End of current pass. If the user asked for letter-reveal help on any words
-    // and we haven't appended the reinforcement batch yet, append it now and
-    // stay in quiz phase. Snapshot main-pass score so day-progress reflects
-    // the original quiz, not the reinforcement (which is "extra practice").
-    const hasHelp = !reinforcementAppended && Object.values(helpClicks).some((c) => c > 0)
-    if (hasHelp) {
-      const extras = buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
+    // End of current pass. Append rescue ladder (half/eaten batches) and/or
+    // help-reveal reinforcement if any words need it, and we haven't done so yet.
+    if (!reinforcementAppended) {
+      const { halfBatch, eatenBatch } = rescue.buildBatches(Date.now())
+      const helpExtras = Object.values(helpClicks).some((c) => c > 0)
+        ? buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now() + 1)
+        : []
+      const extras = [...halfBatch, ...eatenBatch, ...helpExtras]
       if (extras.length > 0) {
         const mainScore = quizResultBuffer.current.filter((r) => r.correct).length
         setMainPassSnapshot({ score: mainScore, total: quizQs.length })
-        // Preserve each word's original kind (consolidate/preview) for serialization parity.
         const kindByKey = new Map<string, WordKind>()
         for (const q of quizQs) kindByKey.set(wordKey(q.word), q.kind)
         const newKeys = extras.map((q) => ({
           key: wordKey(q.word),
           type: q.type,
           kind: kindByKey.get(wordKey(q.word)) ?? ('consolidate' as WordKind),
+          revealedHalf: q.revealedHalf,
+          // help-reinforcement questions have no rescueRole; tag them so they are treated as
+          // reinforcement (no buffer row, no monster) rather than main-round originals.
+          rescueRole: q.rescueRole ?? ('reinforce-half' as RescueRole),
         }))
         setQuizQKeys((prev) => [...prev, ...newKeys])
         setReinforcementAppended(true)
@@ -445,7 +449,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setLastStarsEarned(starsFromThisRun)
     quizResultBuffer.current = []
     setPhase('done')
-  }, [curQ, quizQs, helpClicks, reinforcementAppended, mainPassSnapshot, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch])
+  }, [curQ, quizQs, helpClicks, reinforcementAppended, mainPassSnapshot, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch, rescue])
 
   const currentQuestion = quizQs[curQ] ?? null
 
@@ -1011,18 +1015,30 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
         <RescueListBadge items={[...rescue.retryList, ...rescue.eatenList]} />
 
-        <QuizQuestionBody
-          question={currentQuestion}
-          options={quizOptions}
-          score={score}
-          total={quizQs.length}
-          runner={runner}
-          questionKey={curQ}
-          helpRevealed={helpRevealedForCurrent}
-          onHelpReveal={handleHelpReveal}
-          spellButtonStyle={practiceButtonStyle}
-          eatenSceneActive={eatenScene !== null}
-        />
+        {currentQuestion.rescueRole === 'flashcard' ? (
+          <FlashRecallCard
+            word={currentQuestion.word}
+            step={0}
+            totalSteps={3}
+            onDone={() => {
+              rescue.advance(wordKey(currentQuestion.word), 'correct')
+              nextQ()
+            }}
+          />
+        ) : (
+          <QuizQuestionBody
+            question={currentQuestion}
+            options={quizOptions}
+            score={score}
+            total={quizQs.length}
+            runner={runner}
+            questionKey={curQ}
+            helpRevealed={helpRevealedForCurrent}
+            onHelpReveal={handleHelpReveal}
+            spellButtonStyle={practiceButtonStyle}
+            eatenSceneActive={eatenScene !== null}
+          />
+        )}
 
         <MonsterEatScene
           word={eatenScene?.word ?? null}
