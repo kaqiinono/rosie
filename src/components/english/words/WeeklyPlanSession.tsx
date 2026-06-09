@@ -446,13 +446,15 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       const k = wordKey(r.entry)
       const queueItem = allRescue.find((i) => i.wordKey === k)
       if (queueItem) {
+        // Record each rescued/half word's FINAL demonstrated outcome as one result.
+        // recordBatch aggregates per word: all-correct advances the stage, majority-wrong
+        // regresses it. A {true,false} pair counts as majority-wrong (1 of 2) and would
+        // REGRESS — so we never mix; we record the single honest final verdict instead.
         if (queueItem.stage === 'consolidated' || queueItem.stage === 'saved') {
+          // half word recovered, or eaten word climbed the rescue ladder → reward (advance)
           masteryBatch.push({ entry: r.entry, correct: true })
-          masteryBatch.push({ entry: r.entry, correct: false })
-        } else if (queueItem.stage === 'still_half') {
-          masteryBatch.push({ entry: r.entry, correct: false })
-        } else if (queueItem.stage === 'lost') {
-          masteryBatch.push({ entry: r.entry, correct: false })
+        } else if (queueItem.stage === 'still_half' || queueItem.stage === 'lost') {
+          // reinforcement / rescue ladder ultimately failed → one gentle regress
           masteryBatch.push({ entry: r.entry, correct: false })
         } else {
           // unexpected intermediate stage at completion — fall back to the actual main result
