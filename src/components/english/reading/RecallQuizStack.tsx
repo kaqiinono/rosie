@@ -6,6 +6,7 @@ import type { ReadingPassage } from '@/utils/reading-data'
 import { findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
 import { buildQuizOptions, wordKey } from '@/utils/english-helpers'
 import SpeakButton from '@/components/english/words/SpeakButton'
+import { READING_RETRY_MESSAGE, READING_SECOND_WRONG_TEMPLATE } from '@/utils/constant'
 
 function highlightedSentence(sentence: string, word: string): ReactNode {
   const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}s?\\b`, 'i')
@@ -75,13 +76,30 @@ export default function RecallQuizStack({
   tone = 'amber',
 }: Props) {
   const [results, setResults] = useState<Record<string, Result>>({})
+  const [attempts, setAttempts] = useState<Record<string, 'first' | 'retry' | 'done'>>({})
+  const [wrongPicks, setWrongPicks] = useState<Record<string, Set<string>>>({})
 
   const handlePick = (target: WordEntry, option: WordEntry) => {
     const k = wordKey(target)
     if (results[k]) return
     const isCorrect = option.word === target.word
-    setResults((prev) => ({ ...prev, [k]: { selected: option, correct: isCorrect } }))
-    onAnswer(target, isCorrect)
+    const cur = attempts[k] ?? 'first'
+    if (isCorrect) {
+      setResults((prev) => ({ ...prev, [k]: { selected: option, correct: true } }))
+      setAttempts((prev) => ({ ...prev, [k]: 'done' }))
+      onAnswer(target, true)
+      return
+    }
+    if (cur === 'first') {
+      setAttempts((prev) => ({ ...prev, [k]: 'retry' }))
+      setWrongPicks((prev) => ({ ...prev, [k]: new Set([...(prev[k] ?? []), option.word]) }))
+      return
+    }
+    // second wrong → commit
+    setResults((prev) => ({ ...prev, [k]: { selected: option, correct: false } }))
+    setAttempts((prev) => ({ ...prev, [k]: 'done' }))
+    setWrongPicks((prev) => ({ ...prev, [k]: new Set([...(prev[k] ?? []), option.word]) }))
+    onAnswer(target, false)
   }
 
   const answeredCount = Object.keys(results).length
@@ -103,11 +121,14 @@ export default function RecallQuizStack({
           >
             <div className={`mb-2 flex items-center justify-between text-[11px] font-extrabold tracking-wide uppercase ${TONE_HEADER[tone]}`}>
               <span>第 {i + 1} / {items.length} 题</span>
-              {result && (
-                <span className={result.correct ? 'text-emerald-600' : 'text-rose-600'}>
-                  {result.correct ? '✓ 答对了' : '✗ 再看看'}
-                </span>
+              {result?.correct && <span className="text-emerald-600">✓ 答对了</span>}
+              {attempts[k] === 'retry' && (
+                <span className="text-[color:var(--rescue-half)]">{READING_RETRY_MESSAGE}</span>
               )}
+              {result && !result.correct && (() => {
+                const [pre, post] = READING_SECOND_WRONG_TEMPLATE.split('{word}')
+                return <span className="text-amber-600">{pre}<b>{entry.word}</b>{post}</span>
+              })()}
             </div>
 
             {sentence ? (
@@ -128,19 +149,21 @@ export default function RecallQuizStack({
             <div className="grid grid-cols-2 gap-2">
               {options.map((o) => {
                 const isTarget = o.word === entry.word
-                const wasSelected = result?.selected.word === o.word
+                const wasWrongPicked = wrongPicks[k]?.has(o.word)
                 let cls = `border-gray-200 bg-white text-gray-800 hover:-translate-y-px ${TONE_OPTION_HOVER[tone]}`
                 if (result) {
                   if (isTarget) cls = 'border-emerald-400 bg-emerald-50 text-emerald-800'
-                  else if (wasSelected) cls = 'border-rose-300 bg-rose-50 text-rose-700'
+                  else if (wasWrongPicked) cls = 'border-gray-200 bg-gray-50 text-gray-400'
                   else cls = 'border-gray-200 bg-gray-50 text-gray-400'
+                } else if (wasWrongPicked) {
+                  cls = 'border-gray-200 bg-gray-50 text-gray-400 opacity-50'
                 }
                 return (
                   <button
                     key={o.word}
                     onClick={() => handlePick(entry, o)}
-                    disabled={!!result}
-                    className={`rounded-xl border-2 px-3 py-2.5 text-left text-[14px] font-bold transition-all ${cls} ${result ? 'cursor-default' : 'cursor-pointer hover:shadow-sm'}`}
+                    disabled={!!result || !!wasWrongPicked}
+                    className={`rounded-xl border-2 px-3 py-2.5 text-left text-[14px] font-bold transition-all ${cls} ${result || wasWrongPicked ? 'cursor-default' : 'cursor-pointer hover:shadow-sm'}`}
                   >
                     {o.word}
                   </button>
