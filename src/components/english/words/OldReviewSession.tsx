@@ -6,6 +6,7 @@ import {
   buildQuizOptions,
   buildQuizQuestions,
   buildReinforcementQuestions,
+  buildWrongAnswerReinforcement,
   normalizeQuizTypes,
   wordKey,
 } from '@/utils/english-helpers'
@@ -190,10 +191,33 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
       setCurQ(next)
       return
     }
-    // End of main pass — append Type-C reinforcement for words the user asked help on.
-    const hasHelp = !reinforcementAppended && Object.values(helpClicks).some((c) => c > 0)
-    if (hasHelp) {
-      const extras = buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
+    // End of main pass — append reinforcement before finishing:
+    //  1) letter-reveal help words (Type-C drill), and
+    //  2) 错题补练: words missed even after the gentle retry, re-drilled in their
+    //     original type (deduped against the help set). quizQKeys only carries
+    //     {key,type}, so the Type-C half-reveal hint is dropped here by design.
+    if (!reinforcementAppended) {
+      const helpExtras = Object.values(helpClicks).some((c) => c > 0)
+        ? buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
+        : []
+      const typeByKey = new Map<string, 'A' | 'B' | 'C' | 'D'>()
+      for (const q of quizQs) {
+        const k = wordKey(q.word)
+        if (!typeByKey.has(k)) typeByKey.set(k, q.type)
+      }
+      const seen = new Set<string>()
+      const wrongItems: { entry: WordEntry; type: 'A' | 'B' | 'C' | 'D' }[] = []
+      for (const r of quizResultBuffer.current) {
+        if (r.correct) continue
+        const k = wordKey(r.entry)
+        if (seen.has(k) || (helpClicks[k] ?? 0) > 0) continue
+        const t = typeByKey.get(k)
+        if (!t) continue
+        seen.add(k)
+        wrongItems.push({ entry: r.entry, type: t })
+      }
+      const wrongExtras = buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
+      const extras = [...helpExtras, ...wrongExtras]
       if (extras.length > 0) {
         setQuizQKeys((prev) => [
           ...prev,
@@ -207,7 +231,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     recordBatch(quizResultBuffer.current)
     quizResultBuffer.current = []
     setPhase('done')
-  }, [curQ, quizQs.length, helpClicks, reinforcementAppended, vocab, recordBatch])
+  }, [curQ, quizQs, helpClicks, reinforcementAppended, vocab, recordBatch])
 
   const handleHelpReveal = useCallback(() => {
     const q = quizQs[curQ]

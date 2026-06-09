@@ -24,7 +24,7 @@ import type { QuizCommitInfo } from './useQuizRunner'
 import { useRescueQueue } from '@/hooks/useRescueQueue'
 import MonsterEatScene from './MonsterEatScene'
 import RescueListBadge from './RescueListBadge'
-import FlashRecallCard from './FlashRecallCard'
+import RescueReviewCarousel from './RescueReviewCarousel'
 import RescueCompletionView from './RescueCompletionView'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
@@ -193,7 +193,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [mainPassSnapshot, setMainPassSnapshot] = useState<{ score: number; total: number } | null>(null)
 
   const rescue = useRescueQueue({ planId: plan.id ?? '', dateKey: selectedDate ?? 'none' })
-  const [eatenScene, setEatenScene] = useState<{ word: string; monsterIdx: number; isAbbreviated: boolean } | null>(null)
+  const [eatenScene, setEatenScene] = useState<{ entry: WordEntry; monsterIdx: number; isAbbreviated: boolean } | null>(null)
+  // Eaten words to review in the manual carousel before the practice round begins.
+  const [rescueReview, setRescueReview] = useState<WordEntry[] | null>(null)
   const eatenShownCountRef = useRef(0)
 
   // One-time: hydrate quizResultBuffer (ref write — no setState) and activate immersive mode
@@ -349,7 +351,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           const { monsterIdx } = rescue.enqueueEaten(q.word, q.type, k)
           const isAbbreviated = eatenShownCountRef.current > 0
           eatenShownCountRef.current += 1
-          setEatenScene({ word: q.word.word, monsterIdx, isAbbreviated })
+          setEatenScene({ entry: q.word, monsterIdx, isAbbreviated })
         }
         quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
       } else {
@@ -374,11 +376,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     // End of current pass. Append rescue ladder (half/eaten batches) and/or
     // help-reveal reinforcement if any words need it, and we haven't done so yet.
     if (!reinforcementAppended) {
-      const { halfBatch, eatenBatch } = rescue.buildBatches(Date.now())
+      const { reviewWords, practice } = rescue.buildBatches(Date.now())
       const helpExtras = Object.values(helpClicks).some((c) => c > 0)
         ? buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now() + 1)
         : []
-      const extras = [...halfBatch, ...eatenBatch, ...helpExtras]
+      const extras = [...practice, ...helpExtras]
       if (extras.length > 0) {
         const mainScore = quizResultBuffer.current.filter((r) => r.correct).length
         setMainPassSnapshot({ score: mainScore, total: quizQs.length })
@@ -395,6 +397,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         }))
         setQuizQKeys((prev) => [...prev, ...newKeys])
         setReinforcementAppended(true)
+        // Eaten words get a manual review carousel (回看) before practice begins.
+        if (reviewWords.length > 0) setRescueReview(reviewWords)
         setCurQ(next)
         return
       }
@@ -1042,14 +1046,13 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
         <RescueListBadge items={[...rescue.retryList, ...rescue.eatenList]} />
 
-        {currentQuestion.rescueRole === 'flashcard' ? (
-          <FlashRecallCard
-            word={currentQuestion.word}
-            step={0}
-            totalSteps={3}
-            onDone={() => {
-              rescue.advance(wordKey(currentQuestion.word), 'correct')
-              nextQ()
+        {rescueReview ? (
+          <RescueReviewCarousel
+            words={rescueReview}
+            onStartPractice={() => {
+              // Mark every reviewed word as seen (flashcard_done) before practice starts.
+              rescueReview.forEach((w) => rescue.advance(wordKey(w), 'correct'))
+              setRescueReview(null)
             }}
           />
         ) : (
@@ -1068,7 +1071,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         )}
 
         <MonsterEatScene
-          word={eatenScene?.word ?? null}
+          entry={eatenScene?.entry ?? null}
           monsterIdx={eatenScene?.monsterIdx ?? 0}
           isAbbreviated={eatenScene?.isAbbreviated ?? false}
           onDismiss={() => { setEatenScene(null); nextQ() }}

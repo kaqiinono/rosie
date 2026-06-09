@@ -12,10 +12,13 @@ import { MONSTERS } from '@/components/english/words/monsters'
 import { STORAGE_KEYS } from '@/utils/constant'
 
 export interface RescueBatches {
-  /** 主轮中段穿插：半对词同题型补练 1 次 */
-  halfBatch: QuizQuestion[]
-  /** 主轮末尾追加：被吃词阶梯补练 = flashcard + A + 原题型 */
-  eatenBatch: QuizQuestion[]
+  /** Eaten words to review (manual carousel) before practice begins. */
+  reviewWords: WordEntry[]
+  /**
+   * Interleaved practice: half words (1 question) + eaten words (A recognition →
+   * original type), cross-mixed so the same word's questions never sit adjacent.
+   */
+  practice: QuizQuestion[]
 }
 
 export interface UseRescueQueueApi {
@@ -142,36 +145,32 @@ export function useRescueQueue({ planId, dateKey }: UseRescueQueueArgs): UseResc
   )
 
   const buildBatches = useCallback((seed: number): RescueBatches => {
-    // halfBatch: each still-pending half word -> 1 question, original type
-    const halfActive = items.filter(
-      (i) => i.severity === 'half' && i.stage === 'pending',
-    )
-    const halfGroups: QuizQuestion[][] = halfActive.map((i) => [{
-      word: i.entry,
-      type: i.originalType,
-      revealedHalf: i.originalType === 'C' ? Math.ceil(i.entry.word.length / 2) : undefined,
-      rescueRole: 'reinforce-half',
-    }])
-    const halfBatch = halfGroups.length
-      ? interleaveOrderedQuizSlots(halfGroups, seed, 3)
-      : []
-
-    // eatenBatch: ordered by enqueuedAtMs, each word -> 3 steps (flashcard + A + originalType)
+    const halfActive = items.filter((i) => i.severity === 'half' && i.stage === 'pending')
     const eatenActive = items
       .filter((i) => i.severity === 'eaten' && i.stage === 'pending')
       .sort((a, b) => a.enqueuedAtMs - b.enqueuedAtMs)
-    const eatenBatch: QuizQuestion[] = []
-    for (const it of eatenActive) {
-      eatenBatch.push({ word: it.entry, type: 'A', rescueRole: 'flashcard' })
-      eatenBatch.push({ word: it.entry, type: 'A', rescueRole: 'reinforce-step1' })
-      eatenBatch.push({
-        word: it.entry,
-        type: it.originalType,
-        rescueRole: 'reinforce-step2',
-      })
-    }
 
-    return { halfBatch, eatenBatch }
+    // One group per word. interleaveOrderedQuizSlots keeps each word's questions
+    // in order (A recognition before original type) AND spaces them ≥ minGap apart,
+    // so the same word's two question types never sit adjacent (交叉练习).
+    const halfGroups: QuizQuestion[][] = halfActive.map((i) => [
+      {
+        word: i.entry,
+        type: i.originalType,
+        revealedHalf: i.originalType === 'C' ? Math.ceil(i.entry.word.length / 2) : undefined,
+        rescueRole: 'reinforce-half',
+      },
+    ])
+    const eatenGroups: QuizQuestion[][] = eatenActive.map((it) => [
+      { word: it.entry, type: 'A', rescueRole: 'reinforce-step1' },
+      { word: it.entry, type: it.originalType, rescueRole: 'reinforce-step2' },
+    ])
+
+    const groups = [...halfGroups, ...eatenGroups]
+    const practice = groups.length ? interleaveOrderedQuizSlots(groups, seed, 2) : []
+    const reviewWords = eatenActive.map((it) => it.entry)
+
+    return { reviewWords, practice }
   }, [items])
 
   return {

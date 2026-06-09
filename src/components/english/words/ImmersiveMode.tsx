@@ -8,6 +8,7 @@ import {
   buildQuizOptions,
   buildQuizQuestions,
   buildReinforcementQuestions,
+  buildWrongAnswerReinforcement,
   normalizeQuizTypes,
   wordKey,
 } from '@/utils/english-helpers'
@@ -173,11 +174,32 @@ export default function ImmersiveMode({
       setCurQ(next)
       return
     }
-    // End of main pass: if the user asked for letter-reveal help on any words,
-    // append a reinforcement batch of Type-C questions before finishing.
-    const hasHelp = !reinforcementAppended && Object.values(helpClicks).some((c) => c > 0)
-    if (hasHelp) {
-      const extras = buildReinforcementQuestions(helpClicks, allWords, wordKey, Date.now())
+    // End of main pass — append reinforcement before finishing:
+    //  1) letter-reveal help words (Type-C drill), and
+    //  2) 错题补练: words missed even after the gentle retry, re-drilled in their
+    //     original type (deduped against the help set so nothing repeats twice).
+    if (!reinforcementAppended) {
+      const helpExtras = Object.values(helpClicks).some((c) => c > 0)
+        ? buildReinforcementQuestions(helpClicks, allWords, wordKey, Date.now())
+        : []
+      const typeByKey = new Map<string, QuizType>()
+      for (const q of quizQs) {
+        const k = wordKey(q.word)
+        if (!typeByKey.has(k)) typeByKey.set(k, q.type)
+      }
+      const seen = new Set<string>()
+      const wrongItems: { entry: WordEntry; type: QuizType }[] = []
+      for (const r of quizResultBuffer.current) {
+        if (r.correct) continue
+        const k = wordKey(r.entry)
+        if (seen.has(k) || (helpClicks[k] ?? 0) > 0) continue
+        const t = typeByKey.get(k)
+        if (!t) continue
+        seen.add(k)
+        wrongItems.push({ entry: r.entry, type: t })
+      }
+      const wrongExtras = buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
+      const extras = [...helpExtras, ...wrongExtras]
       if (extras.length > 0) {
         setMainPassTotal(quizQs.length)
         setQuizQs((prev) => [...prev, ...extras])
@@ -189,7 +211,7 @@ export default function ImmersiveMode({
     onQuizComplete?.(quizResultBuffer.current)
     quizResultBuffer.current = []
     setShowResults(true)
-  }, [curQ, quizQs.length, helpClicks, reinforcementAppended, allWords, onQuizComplete])
+  }, [curQ, quizQs, helpClicks, reinforcementAppended, allWords, onQuizComplete])
 
   const handleHelpReveal = useCallback(() => {
     if (!currentQ) return

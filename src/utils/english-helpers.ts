@@ -1,4 +1,4 @@
-import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion, RescueQueueItem } from './type'
+import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from './type'
 import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from './masteryUtils'
 
 export function escHtml(s: string): string {
@@ -282,52 +282,29 @@ export function buildReinforcementQuestions(
 }
 
 /**
- * Build half-correct batch: 1 question per still-pending half word, same type as original.
- * Used for mid-main-round interleaving (spec §3).
- * Type C words get `revealedHalf = ceil(word.length / 2)` for the half-letter reveal mode.
+ * Build 错题补练 (wrong-answer reinforcement): one repetition per word the learner
+ * missed (final verdict wrong — i.e. wrong even after the in-question gentle retry),
+ * re-drilled in the word's original question type. Type-C words get a half-letter
+ * reveal hint so the re-drill stays gentle. Interleaved so a word never repeats
+ * within `minGap`. Appended at the end of a practice/review main pass.
  */
-export function buildHalfReinforcementBatch(
-  rescueItems: RescueQueueItem[],
+export function buildWrongAnswerReinforcement(
+  wrongItems: { entry: WordEntry; type: QuizType }[],
   seed: number,
   minGap = 3,
 ): QuizQuestion[] {
-  const halfActive = rescueItems.filter(
-    (i) => i.severity === 'half' && i.stage === 'pending',
-  )
-  if (!halfActive.length) return []
-  const groups: QuizQuestion[][] = halfActive.map((i) => [{
-    word: i.entry,
-    type: i.originalType,
+  if (!wrongItems.length) return []
+  const groups: QuizQuestion[][] = wrongItems.map((it) => [{
+    word: it.entry,
+    type: it.type,
     revealedHalf:
-      i.originalType === 'C' ? Math.ceil(i.entry.word.length / 2) : undefined,
-    rescueRole: 'reinforce-half' as const,
+      it.type === 'C' ? Math.ceil(it.entry.word.length / 2) : undefined,
   }])
   return interleaveOrderedQuizSlots(groups, seed, minGap)
 }
 
-/**
- * Build eaten ladder batch: 3 questions per still-pending eaten word, in order.
- * flashcard (A) -> reinforce-step1 (A) -> reinforce-step2 (originalType).
- * Words ordered by enqueuedAtMs ascending. Used at the tail of main round (spec §3 §7).
- */
-export function buildEatenLadderBatch(
-  rescueItems: RescueQueueItem[],
-): QuizQuestion[] {
-  const eatenActive = rescueItems
-    .filter((i) => i.severity === 'eaten' && i.stage === 'pending')
-    .sort((a, b) => a.enqueuedAtMs - b.enqueuedAtMs)
-  const out: QuizQuestion[] = []
-  for (const it of eatenActive) {
-    out.push({ word: it.entry, type: 'A', rescueRole: 'flashcard' })
-    out.push({ word: it.entry, type: 'A', rescueRole: 'reinforce-step1' })
-    out.push({
-      word: it.entry,
-      type: it.originalType,
-      rescueRole: 'reinforce-step2',
-    })
-  }
-  return out
-}
+// Rescue reinforcement batches (review carousel words + interleaved practice) are
+// assembled in useRescueQueue.buildBatches — kept there so they share the live queue.
 
 /** Longest common prefix length (ASCII), for morphologically related forms (interest / interesting / interested). */
 function morphAffinity(a: string, b: string): number {
