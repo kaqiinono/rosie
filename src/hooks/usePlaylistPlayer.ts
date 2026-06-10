@@ -10,7 +10,8 @@ import {
 } from '@/utils/audio-manager-types'
 
 export interface PlaylistPlayer {
-  audioRef: React.RefObject<HTMLAudioElement | null>
+  // 用 <video> 作唯一媒体元素（纯音频隐藏画面、视频弹浮层），故 ref 为 HTMLVideoElement。
+  audioRef: React.RefObject<HTMLVideoElement | null>
   queue: PlayerTrack[]
   index: number
   current: PlayerTrack | null
@@ -42,7 +43,7 @@ function dedupeKey(t: PlayerTrack): string {
 }
 
 export function usePlaylistPlayer(): PlaylistPlayer {
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const audioRef = useRef<HTMLVideoElement | null>(null)
   const [queue, setQueue] = useState<PlayerTrack[]>([])
   const [index, setIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
