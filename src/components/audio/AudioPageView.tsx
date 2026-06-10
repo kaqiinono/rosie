@@ -60,54 +60,64 @@ export default function AudioPageView({ user }: Props) {
         </Link>
       </header>
 
-      {/* 收藏夹切换 */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+      {/* 收藏夹切换：自动换行的紧凑标签，无横向滚动 */}
+      <div className="mb-3 flex flex-wrap gap-2">
         {col.collections.map((c) => {
           const isSel = selected?.id === c.id
           return (
-            <div
+            <button
               key={c.id}
+              type="button"
               onClick={() => setSelectedId(c.id)}
               className={clsx(
-                'flex shrink-0 cursor-pointer items-center gap-1.5 rounded-2xl px-3 py-2 ring-1 transition',
+                'flex items-center gap-1.5 rounded-2xl px-3 py-2 ring-1 transition',
                 isSel
-                  ? 'bg-orange-400/15 text-orange-200 ring-orange-300/50'
+                  ? 'bg-orange-400/20 text-orange-100 ring-orange-300/60'
                   : 'bg-white/[0.06] text-white/70 ring-white/10 hover:bg-white/[0.1]',
               )}
             >
               <span className="text-[15px]">{KIND_ICON[c.kind]}</span>
               <span className="text-[13px] font-bold">{c.name}</span>
-              <span className="rounded-full bg-black/25 px-1.5 py-0.5 font-mono text-[10px] text-white/60">
+              <span
+                className={clsx(
+                  'rounded-full px-1.5 py-0.5 font-mono text-[10px]',
+                  isSel ? 'bg-orange-300/20 text-orange-100' : 'bg-black/25 text-white/55',
+                )}
+              >
                 {c.tracks.length}
               </span>
-              <button
-                type="button"
-                aria-label={`播放「${c.name}」`}
-                title="播放"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (c.tracks.length) player.play(c.tracks)
-                }}
-                className="ml-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-[11px] text-white/85 transition hover:bg-orange-400/30"
-              >
-                ▶
-              </button>
-              <button
-                type="button"
-                aria-label={`把「${c.name}」加入播放列表`}
-                title="加入播放列表"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (c.tracks.length) player.enqueue(c.tracks)
-                }}
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-[13px] text-white/85 transition hover:bg-orange-400/30"
-              >
-                ＋
-              </button>
-            </div>
+            </button>
           )
         })}
       </div>
+
+      {/* 选中收藏夹的操作条：播放整张 / 加入播放列表 */}
+      {selected && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="min-w-0 truncate text-[15px] font-bold text-white">
+            {KIND_ICON[selected.kind]} {selected.name}
+          </span>
+          <span className="shrink-0 text-[12px] text-white/40">{selected.tracks.length} 首</span>
+          <div className="ml-auto flex shrink-0 gap-2">
+            <button
+              type="button"
+              disabled={selected.tracks.length === 0}
+              onClick={() => player.play(selected.tracks)}
+              className="rounded-full bg-gradient-to-br from-orange-400 to-amber-500 px-3.5 py-2 text-[13px] font-bold text-white shadow-md transition active:scale-95 disabled:opacity-40"
+            >
+              ▶ 播放全部
+            </button>
+            <button
+              type="button"
+              disabled={selected.tracks.length === 0}
+              onClick={() => player.enqueue(selected.tracks)}
+              className="rounded-full bg-white/10 px-3 py-2 text-[13px] font-bold text-white/85 ring-1 ring-white/15 transition active:scale-95 hover:bg-white/15 disabled:opacity-40"
+            >
+              ＋ 加入
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 音频卡片网格 */}
       {col.isLoading ? (

@@ -135,7 +135,7 @@ export default function AudioManagerPage({ user }: Props) {
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-[960px] gap-5 px-4 py-6">
+      <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 py-6 md:flex-row md:gap-5">
         <PlaylistSidebar
           collections={col.collections}
           selectedId={selectedCollectionId}
