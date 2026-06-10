@@ -47,7 +47,7 @@ export default function PlaylistSidebar({
   }
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col gap-3">
+    <aside className="flex w-full shrink-0 flex-col gap-3 md:w-56">
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase">
           收藏夹

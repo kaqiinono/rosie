@@ -79,7 +79,7 @@ export default function StandaloneAudioTab({
   return (
     <div className="space-y-3">
       {/* Upload */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <input
           ref={inputRef}
           type="file"
@@ -230,8 +230,9 @@ export default function StandaloneAudioTab({
                 <button
                   type="button"
                   onClick={() => onAddAssetToCollection(a)}
-                  className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-amber-700 transition hover:bg-amber-50"
+                  className="max-w-[40vw] cursor-pointer truncate rounded-full px-2.5 py-1 text-[11px] font-bold text-amber-700 transition hover:bg-amber-50 sm:max-w-none"
                   style={{ border: '1.5px solid rgba(245,158,11,0.35)' }}
+                  title={addLabel}
                 >
                   + {addLabel}
                 </button>
