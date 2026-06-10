@@ -32,8 +32,6 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
   const live = player.isPlaying && !player.isPaused
   const loopActive = player.loopMode !== 'order'
 
-  if (player.queue.length === 0) return null
-
   const total = player.queue.length
 
   return (
@@ -68,7 +66,8 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
         </div>
       </div>
 
-      {/* 底部停靠条 */}
+      {/* 底部停靠条（队列空时不显示；上面的媒体元素始终挂载，保证首次播放可控制） */}
+      {total > 0 && (
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-3">
         {/* 播放列表面板 */}
         {showQueue && (
@@ -130,7 +129,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
         )}
 
         <div
-          className="pointer-events-auto relative isolate mx-auto flex max-w-2xl items-center gap-1.5 overflow-hidden rounded-[1.6rem] px-2.5 py-2 ring-1 ring-orange-600/40 sm:gap-2"
+          className="pointer-events-auto relative isolate mx-auto flex max-w-2xl flex-col gap-2 overflow-hidden rounded-[1.6rem] px-2.5 py-2.5 ring-1 ring-orange-600/40 sm:flex-row sm:items-center sm:gap-2 sm:py-2"
           style={{
             background: 'linear-gradient(135deg,#fb923c 0%,#f59e0b 52%,#f97316 100%)',
             boxShadow: live
@@ -152,11 +151,13 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
             )}
           />
 
-          {/* 均衡器 */}
-          <Equalizer live={live} />
+          {/* 信息行：均衡器 + 曲目（小屏单独占一行） */}
+          <div className="flex min-w-0 items-center gap-2 sm:flex-1">
+            {/* 均衡器 */}
+            <Equalizer live={live} />
 
-          {/* 曲目信息 */}
-          <div className="relative min-w-0 flex-1 leading-tight">
+            {/* 曲目信息 */}
+            <div className="relative min-w-0 flex-1 leading-tight">
             <div className="flex items-center gap-1.5">
               <span className="truncate text-[13px] font-extrabold text-white drop-shadow-[0_1px_0_rgba(0,0,0,0.12)]">
                 {current?.label ?? '—'}
@@ -195,12 +196,14 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
                 </button>
               )}
             </div>
+            </div>
           </div>
 
-          {/* 传输控件 */}
-          <GhostButton label="上一首" onClick={player.prev}>
-            <PrevIcon />
-          </GhostButton>
+          {/* 控件行：小屏换到第二行、可自动换行避免压缩 */}
+          <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-nowrap">
+            <GhostButton label="上一首" onClick={player.prev}>
+              <PrevIcon />
+            </GhostButton>
           <PrimaryDial label={player.isPaused ? '继续播放' : '暂停'} onClick={player.togglePause} pulse={live}>
             {player.isPaused ? <PlayIcon /> : <PauseIcon />}
           </PrimaryDial>
@@ -264,8 +267,10 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
           >
             <CloseIcon />
           </button>
+          </div>
         </div>
       </div>
+      )}
     </>
   )
 }
