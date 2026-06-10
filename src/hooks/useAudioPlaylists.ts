@@ -14,6 +14,7 @@ type RawPlaylist = {
   id: string
   user_id: string
   name: string
+  is_favorite: boolean
   sort_order: number
   created_at: string
   updated_at: string
@@ -39,6 +40,7 @@ function rowToPlaylist(r: RawPlaylist): AudioPlaylist {
     id: r.id,
     userId: r.user_id,
     name: r.name,
+    isFavorite: r.is_favorite ?? false,
     sortOrder: r.sort_order,
     createdAt: r.created_at,
     updatedAt: r.updated_at,

@@ -27,6 +27,7 @@ export interface AudioPlaylist {
   id: string
   userId: string
   name: string
+  isFavorite: boolean
   sortOrder: number
   createdAt: string
   updatedAt: string
