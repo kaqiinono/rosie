@@ -1,33 +1,36 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import {
-  AUDIO_MEDIA_BUCKET,
-  type AddPlaylistItemInput,
-  type AudioAsset,
-  type MediaType,
-} from '@/utils/audio-manager-types'
+import CollectionPills from '@/components/audio/CollectionPills'
+import type { CollectionMembership } from '@/hooks/useAudioCollections'
+import { AUDIO_MEDIA_BUCKET, type AudioAsset, type AudioPlaylistItem } from '@/utils/audio-manager-types'
 
 type Props = {
   assets: AudioAsset[]
   isLoading: boolean
   getAssetUrl: (storagePath: string) => string
-  onPlay: (url: string, label: string, mediaType: MediaType) => void
+  onPlayAsset: (asset: AudioAsset) => void
   onUpload: (file: File) => Promise<void>
   onDelete: (asset: AudioAsset) => Promise<void>
   onRename: (assetId: string, label: string) => Promise<void>
-  onAddToPlaylist: (input: AddPlaylistItemInput) => void
+  onAddAssetToCollection: (asset: AudioAsset) => void
+  selectedCollectionName: string | null
+  membership: (bucket: string, path: string) => CollectionMembership[]
+  onRemoveItem: (item: AudioPlaylistItem) => void
 }
 
 export default function StandaloneAudioTab({
   assets,
   isLoading,
   getAssetUrl,
-  onPlay,
+  onPlayAsset,
   onUpload,
   onDelete,
   onRename,
-  onAddToPlaylist,
+  onAddAssetToCollection,
+  selectedCollectionName,
+  membership,
+  onRemoveItem,
 }: Props) {
   const MAX_FILE_MB = 500
   const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
@@ -71,9 +74,11 @@ export default function StandaloneAudioTab({
     )
   }
 
+  const addLabel = selectedCollectionName ? `加入「${selectedCollectionName}」` : '加入收藏夹'
+
   return (
     <div className="space-y-3">
-      {/* Upload button */}
+      {/* Upload */}
       <div className="flex items-center gap-3">
         <input
           ref={inputRef}
@@ -101,10 +106,10 @@ export default function StandaloneAudioTab({
         </button>
         <span className="text-[11px] text-slate-400">
           支持音频 & 视频，可多选，单文件最大 {MAX_FILE_MB} MB
+          {selectedCollectionName ? ` · 上传后自动加入「${selectedCollectionName}」` : ''}
         </span>
       </div>
 
-      {/* Oversized file warning */}
       {oversizedNames.length > 0 && (
         <div
           className="flex items-start gap-3 rounded-xl px-4 py-3"
@@ -117,7 +122,9 @@ export default function StandaloneAudioTab({
             </div>
             <div className="mt-0.5 space-y-0.5">
               {oversizedNames.map((name) => (
-                <div key={name} className="truncate text-[11px] text-red-500">{name}</div>
+                <div key={name} className="truncate text-[11px] text-red-500">
+                  {name}
+                </div>
               ))}
             </div>
           </div>
@@ -140,117 +147,112 @@ export default function StandaloneAudioTab({
       )}
 
       {assets.map((a) => {
-        const url = getAssetUrl(a.storagePath)
         const isEditing = editingId === a.id
         const isVideo = a.mediaType === 'video'
+        const pills = membership(AUDIO_MEDIA_BUCKET, a.storagePath)
         return (
           <div
             key={a.id}
-            className="group flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 transition-all hover:shadow-md"
+            className="group rounded-2xl bg-white px-4 py-3.5 transition-all hover:shadow-md"
             style={{
               borderLeft: `3px solid ${isVideo ? '#6366f1' : '#f59e0b'}`,
               boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04)',
             }}
           >
-            {/* Media type icon */}
-            <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[15px]"
-              style={{
-                background: isVideo
-                  ? 'linear-gradient(135deg,rgba(99,102,241,0.15),rgba(79,70,229,0.08))'
-                  : 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(180,83,9,0.08))',
-              }}
-            >
-              {isVideo ? '🎬' : '🎵'}
-            </div>
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[15px]"
+                style={{
+                  background: isVideo
+                    ? 'linear-gradient(135deg,rgba(99,102,241,0.15),rgba(79,70,229,0.08))'
+                    : 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(180,83,9,0.08))',
+                }}
+              >
+                {isVideo ? '🎬' : '🎵'}
+              </div>
 
-            {/* Label / edit */}
-            <div className="min-w-0 flex-1">
-              {isEditing ? (
-                <input
-                  autoFocus
-                  value={editLabel}
-                  onChange={(e) => setEditLabel(e.target.value)}
-                  onBlur={() => void commitRename(a.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') void commitRename(a.id)
-                    if (e.key === 'Escape') setEditingId(null)
-                  }}
-                  className="w-full rounded-lg border border-amber-400 bg-amber-50/50 px-2 py-0.5 text-[13px] font-extrabold focus:outline-none focus:ring-1 focus:ring-amber-400"
-                />
-              ) : (
+              <div className="min-w-0 flex-1">
+                {isEditing ? (
+                  <input
+                    autoFocus
+                    value={editLabel}
+                    onChange={(e) => setEditLabel(e.target.value)}
+                    onBlur={() => void commitRename(a.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') void commitRename(a.id)
+                      if (e.key === 'Escape') setEditingId(null)
+                    }}
+                    className="w-full rounded-lg border border-amber-400 bg-amber-50/50 px-2 py-0.5 text-[13px] font-extrabold focus:outline-none focus:ring-1 focus:ring-amber-400"
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="cursor-text text-left text-[13px] font-extrabold text-slate-800 hover:text-amber-700"
+                    title="点击编辑名称"
+                    onClick={() => {
+                      setEditingId(a.id)
+                      setEditLabel(a.label)
+                    }}
+                  >
+                    {a.label}
+                  </button>
+                )}
+                <div className="mt-0.5">
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase"
+                    style={{
+                      background: isVideo ? 'rgba(99,102,241,0.1)' : 'rgba(245,158,11,0.1)',
+                      color: isVideo ? '#6366f1' : '#b45309',
+                    }}
+                  >
+                    {isVideo ? 'VIDEO' : 'AUDIO'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
-                  className="cursor-text text-left text-[13px] font-extrabold text-slate-800 hover:text-amber-700"
-                  title="点击编辑名称"
-                  onClick={() => {
-                    setEditingId(a.id)
-                    setEditLabel(a.label)
-                  }}
-                >
-                  {a.label}
-                </button>
-              )}
-              <div className="mt-0.5">
-                <span
-                  className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide"
+                  onClick={() => onPlayAsset(a)}
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[13px] text-white transition hover:scale-110"
                   style={{
-                    background: isVideo ? 'rgba(99,102,241,0.1)' : 'rgba(245,158,11,0.1)',
-                    color: isVideo ? '#6366f1' : '#b45309',
+                    background: isVideo
+                      ? 'linear-gradient(135deg,#6366f1,#4f46e5)'
+                      : 'linear-gradient(135deg,#f59e0b,#b45309)',
+                    boxShadow: isVideo
+                      ? '0 2px 8px rgba(99,102,241,0.35)'
+                      : '0 2px 8px rgba(245,158,11,0.35)',
                   }}
+                  title="播放"
                 >
-                  {isVideo ? 'VIDEO' : 'AUDIO'}
-                </span>
+                  ▶
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onAddAssetToCollection(a)}
+                  className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-amber-700 transition hover:bg-amber-50"
+                  style={{ border: '1.5px solid rgba(245,158,11,0.35)' }}
+                >
+                  + {addLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (window.confirm(`确定删除「${a.label}」？`)) await onDelete(a)
+                  }}
+                  className="cursor-pointer rounded-full p-1 text-[12px] text-slate-300 transition hover:bg-red-50 hover:text-red-500"
+                  title="删除"
+                >
+                  ✕
+                </button>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => onPlay(url, a.label, a.mediaType)}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[13px] text-white transition hover:scale-110"
-                style={{
-                  background: isVideo
-                    ? 'linear-gradient(135deg,#6366f1,#4f46e5)'
-                    : 'linear-gradient(135deg,#f59e0b,#b45309)',
-                  boxShadow: isVideo
-                    ? '0 2px 8px rgba(99,102,241,0.35)'
-                    : '0 2px 8px rgba(245,158,11,0.35)',
-                }}
-                title="播放"
-              >
-                ▶
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  onAddToPlaylist({
-                    itemType: 'standalone',
-                    mediaType: a.mediaType,
-                    label: a.label,
-                    storageBucket: AUDIO_MEDIA_BUCKET,
-                    storagePath: a.storagePath,
-                    refLink: null,
-                    assetId: a.id,
-                  })
-                }
-                className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-amber-700 transition hover:bg-amber-50"
-                style={{ border: '1.5px solid rgba(245,158,11,0.35)' }}
-              >
-                + 收藏
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  if (window.confirm(`确定删除「${a.label}」？`)) await onDelete(a)
-                }}
-                className="cursor-pointer rounded-full p-1 text-[12px] text-slate-300 transition hover:bg-red-50 hover:text-red-500"
-                title="删除"
-              >
-                ✕
-              </button>
-            </div>
+            {pills.length > 0 && (
+              <div className="mt-2 pl-12">
+                <CollectionPills entries={pills} onRemove={onRemoveItem} theme="light" />
+              </div>
+            )}
           </div>
         )
       })}
