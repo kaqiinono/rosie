@@ -82,6 +82,33 @@ export default function PlaylistSidebar({
       )}
 
       <div className="flex flex-col gap-1.5 overflow-y-auto">
+        {/* 独立媒体库（非收藏夹，管理 audio_assets） */}
+        <button
+          type="button"
+          onClick={() => onSelect('library')}
+          className="flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-left transition-all"
+          style={
+            selectedId === 'library'
+              ? {
+                  background: 'linear-gradient(135deg,rgba(99,102,241,0.14),rgba(79,70,229,0.06))',
+                  border: '1.5px solid rgba(99,102,241,0.4)',
+                  boxShadow: '0 2px 8px rgba(99,102,241,0.12)',
+                }
+              : {
+                  background: 'rgba(255,255,255,0.85)',
+                  border: '1.5px solid rgba(15,23,42,0.06)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                }
+          }
+        >
+          <span className="shrink-0 text-[13px]">🎬</span>
+          <span className="min-w-0 flex-1 truncate text-[12px] font-extrabold text-slate-800">
+            独立媒体库
+          </span>
+        </button>
+
+        <div className="my-0.5 h-px bg-slate-200/70" />
+
         {collections.map((c) => {
           const isSelected = selectedId === c.id
           const isRenaming = renamingId === c.id

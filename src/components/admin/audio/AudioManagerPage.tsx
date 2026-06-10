@@ -8,6 +8,7 @@ import { useAudioCollections } from '@/hooks/useAudioCollections'
 import { usePlaylistPlayer } from '@/hooks/usePlaylistPlayer'
 import StandaloneAudioTab from './StandaloneAudioTab'
 import PlaylistSidebar from './PlaylistSidebar'
+import CollectionView from './CollectionView'
 import PlayerDock from '@/components/audio/PlayerDock'
 import {
   AUDIO_MEDIA_BUCKET,
@@ -15,19 +16,14 @@ import {
   type AddPlaylistItemInput,
   type AudioAsset,
   type AudioCollection,
+  type AudioPlaylistItem,
   type PlayerTrack,
 } from '@/utils/audio-manager-types'
 
 type Props = { user: User | null }
 
 function assetToTrack(asset: AudioAsset, url: string): PlayerTrack {
-  return {
-    url,
-    label: asset.label,
-    refLink: null,
-    mediaType: asset.mediaType,
-    source: assetToInput(asset),
-  }
+  return { url, label: asset.label, refLink: null, mediaType: asset.mediaType, source: assetToInput(asset) }
 }
 
 function assetToInput(asset: AudioAsset): AddPlaylistItemInput {
@@ -50,8 +46,10 @@ function resolvePlaylistId(c: AudioCollection, favoriteId: string | null): strin
 }
 
 export default function AudioManagerPage({ user }: Props) {
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string>('favorites')
+  // 'library' = 独立媒体库；其余为收藏夹 id
+  const [selectedId, setSelectedId] = useState<string>('library')
   const [flash, setFlash] = useState<string | null>(null)
+  const [pendingAsset, setPendingAsset] = useState<AudioAsset | null>(null)
 
   const assetHook = useAudioAssets(user)
   const col = useAudioCollections(user)
@@ -62,25 +60,34 @@ export default function AudioManagerPage({ user }: Props) {
     window.setTimeout(() => setFlash(null), 1800)
   }
 
-  const selected = col.collections.find((c) => c.id === selectedCollectionId) ?? null
-  const selectedName = selected?.name ?? null
-
-  async function addAssetToCollection(asset: AudioAsset): Promise<boolean> {
-    if (!selected || !selected.acceptsItems) {
-      showFlash('请先选择「我的最爱」或某个歌单')
-      return false
-    }
-    const plId = resolvePlaylistId(selected, col.favoriteId)
-    if (!plId) return false
-    const ok = await col.addItem(plId, assetToInput(asset))
-    if (ok) showFlash(`已加入「${selected.name}」`)
-    return ok
-  }
+  const isLibrary = selectedId === 'library'
+  const selected = isLibrary ? null : col.collections.find((c) => c.id === selectedId) ?? null
 
   const current = player.current
-  const currentIsFavorite =
-    !!current?.source &&
-    col.favoriteKeySet.has(trackKey(current.source.storageBucket, current.source.storagePath))
+  const currentKey =
+    current?.source ? trackKey(current.source.storageBucket, current.source.storagePath) : null
+  const currentIsFavorite = currentKey !== null && col.favoriteKeySet.has(currentKey)
+
+  // 选中收藏夹视图里某曲目对应的 item（虚拟收藏夹不可移除）
+  function itemInSelected(track: PlayerTrack): AudioPlaylistItem | null {
+    if (!selected || !selected.acceptsItems || !track.source) return null
+    const realId = resolvePlaylistId(selected, col.favoriteId)
+    if (!realId) return null
+    const entry = col
+      .membership(track.source.storageBucket, track.source.storagePath)
+      .find((e) => e.collectionId === realId)
+    return entry?.item ?? null
+  }
+
+  async function confirmAddToCollection(c: AudioCollection) {
+    if (!pendingAsset) return
+    const realId = resolvePlaylistId(c, col.favoriteId)
+    if (realId) {
+      const ok = await col.addItem(realId, assetToInput(pendingAsset))
+      if (ok) showFlash(`已加入「${c.name}」`)
+    }
+    setPendingAsset(null)
+  }
 
   if (!user) {
     return (
@@ -97,6 +104,8 @@ export default function AudioManagerPage({ user }: Props) {
       </div>
     )
   }
+
+  const addTargets = col.collections.filter((c) => c.acceptsItems)
 
   return (
     <div
@@ -138,8 +147,8 @@ export default function AudioManagerPage({ user }: Props) {
       <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 py-6 md:flex-row md:gap-5">
         <PlaylistSidebar
           collections={col.collections}
-          selectedId={selectedCollectionId}
-          onSelect={setSelectedCollectionId}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
           onCreate={async (name) => {
             await col.createPlaylist(name)
             showFlash(`已创建「${name}」`)
@@ -153,14 +162,13 @@ export default function AudioManagerPage({ user }: Props) {
             if (!plId) return
             if (!window.confirm(`确定删除收藏夹「${c.name}」？`)) return
             await col.deletePlaylist(plId)
-            if (selectedCollectionId === c.id) setSelectedCollectionId('favorites')
+            if (selectedId === c.id) setSelectedId('library')
           }}
           onPlay={(c) => {
             if (c.tracks.length === 0) {
               showFlash('收藏夹为空')
               return
             }
-            setSelectedCollectionId(c.id)
             player.play(c.tracks)
           }}
           onEnqueue={(c) => {
@@ -174,38 +182,93 @@ export default function AudioManagerPage({ user }: Props) {
         />
 
         <div className="min-w-0 flex-1">
-          <StandaloneAudioTab
-            assets={assetHook.assets}
-            isLoading={assetHook.isLoading}
-            getAssetUrl={assetHook.getAssetUrl}
-            onPlayAsset={(asset) => player.play([assetToTrack(asset, assetHook.getAssetUrl(asset.storagePath))])}
-            onUpload={async (file) => {
-              const { error, asset } = await assetHook.uploadAsset(file)
-              if (error) {
-                showFlash(`上传失败：${error}`)
-                return
+          {isLibrary ? (
+            <StandaloneAudioTab
+              assets={assetHook.assets}
+              isLoading={assetHook.isLoading}
+              getAssetUrl={assetHook.getAssetUrl}
+              onPlayAsset={(asset) =>
+                player.play([assetToTrack(asset, assetHook.getAssetUrl(asset.storagePath))])
               }
-              if (asset && selected?.acceptsItems) {
-                const plId = resolvePlaylistId(selected, col.favoriteId)
-                if (plId) {
-                  const ok = await col.addItem(plId, assetToInput(asset))
-                  if (ok) showFlash(`已加入「${selected.name}」`)
+              onUpload={async (file) => {
+                const { error } = await assetHook.uploadAsset(file)
+                if (error) showFlash(`上传失败：${error}`)
+              }}
+              onDelete={async (asset) => {
+                await assetHook.deleteAsset(asset)
+              }}
+              onRename={async (id, label) => {
+                await assetHook.updateLabel(id, label)
+              }}
+              onAddAssetToCollection={(asset) => {
+                if (addTargets.length === 0) {
+                  showFlash('请先创建收藏夹')
+                  return
                 }
-              }
-            }}
-            onDelete={async (asset) => {
-              await assetHook.deleteAsset(asset)
-            }}
-            onRename={async (id, label) => {
-              await assetHook.updateLabel(id, label)
-            }}
-            onAddAssetToCollection={(asset) => void addAssetToCollection(asset)}
-            selectedCollectionName={selected?.acceptsItems ? selectedName : null}
-            membership={col.membership}
-            onRemoveItem={(item) => void col.removeItem(item)}
-          />
+                setPendingAsset(asset)
+              }}
+              membership={col.membership}
+              onRemoveItem={(item) => void col.removeItem(item)}
+            />
+          ) : selected ? (
+            <CollectionView
+              collection={selected}
+              currentKey={currentKey}
+              onPlayTrack={(track) => player.play([track])}
+              onPlayAll={() => player.play(selected.tracks)}
+              onEnqueueAll={() => {
+                player.enqueue(selected.tracks)
+                showFlash(`已加入播放列表（${selected.tracks.length}）`)
+              }}
+              getItem={itemInSelected}
+              onRemove={(item) => void col.removeItem(item)}
+            />
+          ) : null}
         </div>
       </main>
+
+      {/* 加入收藏夹 选择器 */}
+      {pendingAsset && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+          style={{ background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setPendingAsset(null)}
+        >
+          <div
+            className="w-full max-w-xs rounded-3xl bg-white p-5 shadow-2xl"
+            style={{ border: '1.5px solid rgba(245,158,11,0.2)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-1 text-[15px] font-extrabold text-slate-800">加入收藏夹</div>
+            <div
+              className="mb-4 truncate rounded-lg px-3 py-1.5 text-[12px] text-slate-600"
+              style={{ background: 'rgba(245,158,11,0.08)' }}
+            >
+              {pendingAsset.mediaType === 'video' ? '🎬' : '🎵'} {pendingAsset.label}
+            </div>
+            <div className="max-h-[50vh] space-y-1 overflow-y-auto">
+              {addTargets.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => void confirmAddToCollection(c)}
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-left transition hover:bg-amber-50"
+                  style={{ border: '1px solid rgba(15,23,42,0.06)' }}
+                >
+                  <span className="shrink-0">{c.kind === 'favorites' ? '❤️' : '🎵'}</span>
+                  <span className="flex-1 truncate text-[13px] font-bold text-slate-700">{c.name}</span>
+                  <span
+                    className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold text-amber-700"
+                    style={{ background: 'rgba(245,158,11,0.1)' }}
+                  >
+                    {c.tracks.length} 首
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <PlayerDock
         player={player}

@@ -14,7 +14,6 @@ type Props = {
   onDelete: (asset: AudioAsset) => Promise<void>
   onRename: (assetId: string, label: string) => Promise<void>
   onAddAssetToCollection: (asset: AudioAsset) => void
-  selectedCollectionName: string | null
   membership: (bucket: string, path: string) => CollectionMembership[]
   onRemoveItem: (item: AudioPlaylistItem) => void
 }
@@ -28,7 +27,6 @@ export default function StandaloneAudioTab({
   onDelete,
   onRename,
   onAddAssetToCollection,
-  selectedCollectionName,
   membership,
   onRemoveItem,
 }: Props) {
@@ -74,8 +72,6 @@ export default function StandaloneAudioTab({
     )
   }
 
-  const addLabel = selectedCollectionName ? `加入「${selectedCollectionName}」` : '加入收藏夹'
-
   return (
     <div className="space-y-3">
       {/* Upload */}
@@ -106,7 +102,6 @@ export default function StandaloneAudioTab({
         </button>
         <span className="text-[11px] text-slate-400">
           支持音频 & 视频，可多选，单文件最大 {MAX_FILE_MB} MB
-          {selectedCollectionName ? ` · 上传后自动加入「${selectedCollectionName}」` : ''}
         </span>
       </div>
 
@@ -230,11 +225,11 @@ export default function StandaloneAudioTab({
                 <button
                   type="button"
                   onClick={() => onAddAssetToCollection(a)}
-                  className="max-w-[40vw] cursor-pointer truncate rounded-full px-2.5 py-1 text-[11px] font-bold text-amber-700 transition hover:bg-amber-50 sm:max-w-none"
+                  className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-amber-700 transition hover:bg-amber-50"
                   style={{ border: '1.5px solid rgba(245,158,11,0.35)' }}
-                  title={addLabel}
+                  title="加入收藏夹"
                 >
-                  + {addLabel}
+                  + 加入收藏夹
                 </button>
                 <button
                   type="button"
