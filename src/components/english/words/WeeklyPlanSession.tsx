@@ -1044,7 +1044,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           </div>
         </div>
 
-        <RescueListBadge items={[...rescue.retryList, ...rescue.eatenList]} />
+        {/*<RescueListBadge items={[...rescue.retryList, ...rescue.eatenList]} />*/}
 
         {rescueReview ? (
           <RescueReviewCarousel

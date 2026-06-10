@@ -281,8 +281,15 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         onBack={flushAndBack}
         onPrev={() => setStudyIdx(studyIdx - 1)}
         onNext={() => setStudyIdx(studyIdx + 1)}
-        onComplete={() => { setIsImmersive(true); startQuiz() }}
-        completeButtonText="✅ 开始测试 →"
+        onComplete={() => {
+          setIsImmersive(true)
+          if (quizQKeys.length > 0) {
+            setPhase('quiz')
+          } else {
+            startQuiz()
+          }
+        }}
+        completeButtonText={quizQKeys.length > 0 ? '继续测试 →' : '✅ 开始测试 →'}
       />
     )
   }
@@ -293,14 +300,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-2 flex items-center gap-3 py-3">
           <button
-            onClick={() => {
-              setQuizQKeys([])
-              setCurQ(0)
-              setScore(0)
-              quizResultBuffer.current = []
-              setStudyIdx(0)
-              setPhase('study')
-            }}
+            onClick={() => setPhase('study')}
             className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
           >
             ← 回到记忆

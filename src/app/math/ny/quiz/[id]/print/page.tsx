@@ -4,6 +4,13 @@ import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { PROBLEMS as P12 } from '@/utils/lesson12-data'
+import { PROBLEMS as P13 } from '@/utils/lesson13-data'
+import { PROBLEMS as P15 } from '@/utils/lesson15-data'
+import { PROBLEMS as P18 } from '@/utils/lesson18-data'
+import { PROBLEMS as P23 } from '@/utils/lesson23-data'
+import { PROBLEMS as P29 } from '@/utils/lesson29-data'
+import { PROBLEMS as P30 } from '@/utils/lesson30-data'
 import { PROBLEMS as P34 } from '@/utils/lesson34-data'
 import { PROBLEMS as P35 } from '@/utils/lesson35-data'
 import { PROBLEMS as P36 } from '@/utils/lesson36-data'
@@ -21,6 +28,7 @@ import { computeQuizPoints, type QuizPaper } from '@/hooks/useMathQuiz'
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
 const LESSON_DATA: Record<string, ProblemSet> = {
+  '12': P12, '13': P13, '15': P15, '18': P18, '23': P23, '29': P29, '30': P30,
   '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
 }
 

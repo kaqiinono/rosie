@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 
 type TabKey = 'overview' | 'priority' | 'plan'
 
@@ -23,11 +24,17 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
   </span>
 )
 
-const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="mb-2.5 rounded-xl border border-gray-200 bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-900">
-    {children}
-  </div>
-)
+const Card = ({ children, href }: { children: React.ReactNode; href?: string }) => {
+  const cls = 'mb-2.5 rounded-xl border border-gray-200 bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-900'
+  if (href) {
+    return (
+      <Link href={href} className={`${cls} block no-underline transition-all hover:border-blue-300 hover:shadow-md dark:hover:border-blue-700`}>
+        {children}
+      </Link>
+    )
+  }
+  return <div className={cls}>{children}</div>
+}
 
 const TopicTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="mb-1 text-[15px] font-medium text-gray-900 dark:text-gray-100">{children}</p>
@@ -63,7 +70,7 @@ function OverviewPanel() {
     <div>
       <SectionTitle badge="P1 必考核心" badgeType="p1" subtitle="高频出题，必须掌握" />
 
-      <Card>
+      <Card href="/math/sea?lessons=12,34">
         <TopicTitle>🔢 巧算专题（第1、12、34讲）</TopicTitle>
         <TopicDesc>
           加减乘除的简便运算，贯穿全年。凑整法、带符号搬家、基准数法、乘法分配律等。
@@ -74,7 +81,7 @@ function OverviewPanel() {
         <Tag>分配律</Tag>
       </Card>
 
-      <Card>
+      <Card href="/math/sea?lessons=15,18,29,30">
         <TopicTitle>📏 和差倍问题（第15、18、29讲）</TopicTitle>
         <TopicDesc>
           目标班独有专题，分初步和进阶。线段图解题，公式：（和＋差）÷2＝大数；和倍、差倍模型。
@@ -85,7 +92,7 @@ function OverviewPanel() {
         <Tag>三量变式</Tag>
       </Card>
 
-      <Card>
+      <Card href="/math/sea?lessons=37,39">
         <TopicTitle>🐔 鸡兔同笼 / 盈亏问题（第37、40讲）</TopicTitle>
         <TopicDesc>经典应用题模型，目标班独有。假设法三步走；盈盈/盈亏/亏亏三类公式。</TopicDesc>
         <Tag>假设法</Tag>
@@ -93,7 +100,7 @@ function OverviewPanel() {
         <Tag>模型迁移</Tag>
       </Card>
 
-      <Card>
+      <Card href="/math/sea?lessons=36">
         <TopicTitle>🔄 周期问题（第30、36讲）</TopicTitle>
         <TopicDesc>利用余数求"第X个是什么"、日期星期推算。连接数列规律与实际应用。</TopicDesc>
         <Tag>余数原理</Tag>
@@ -101,7 +108,7 @@ function OverviewPanel() {
         <Tag>周期识别</Tag>
       </Card>
 
-      <Card>
+      <Card href="/math/sea?lessons=13,41">
         <TopicTitle>🌿 间隔/植树问题（第13、41讲）</TopicTitle>
         <TopicDesc>
           三种基本模型（两端栽、只栽一端、两端不栽），延伸到锯木头、敲钟、爬楼梯。
@@ -113,7 +120,7 @@ function OverviewPanel() {
 
       <SectionTitle badge="P2 重要专题" badgeType="p2" subtitle="高考察度，需要重点理解" />
 
-      <Card>
+      <Card href="/math/sea?lessons=23">
         <TopicTitle>🧩 逻辑推理（第23讲）</TopicTitle>
         <TopicDesc>假设法、列表法、排除法。解决真假话、人物关系推理。</TopicDesc>
         <Tag>列表排除</Tag>
@@ -134,7 +141,7 @@ function OverviewPanel() {
         <Tag>分类分割</Tag>
       </Card>
 
-      <Card>
+      <Card href="/math/sea?lessons=43">
         <TopicTitle>♾ 等差数列（第43讲）</TopicTitle>
         <TopicDesc>高斯公式：（首项＋末项）×项数÷2。求某项、求项数。</TopicDesc>
         <Tag>高斯公式</Tag>
@@ -150,7 +157,7 @@ function OverviewPanel() {
 
       <SectionTitle badge="P3 基础理解" badgeType="p3" subtitle="相对容易，理解思路即可" />
 
-      <Card>
+      <Card href="/math/sea?lessons=39,40">
         <TopicTitle>🧊 空间/几何类（第6、8、19、39讲）</TopicTitle>
         <TopicDesc>正方体展开图与相对面；多角度观察；图形剪拼；周长公式与平移法。</TopicDesc>
         <Tag>展开图</Tag>
@@ -165,7 +172,7 @@ function OverviewPanel() {
         <Tag>韦恩图</Tag>
       </Card>
 
-      <Card>
+      <Card href="/math/sea?lessons=35,44">
         <TopicTitle>⏱ 时间 / 归一 / 最优化（第20、35、44讲）</TopicTitle>
         <TopicDesc>时间推算；正反归一步骤；并行事件统筹安排。</TopicDesc>
         <Tag>时间计算</Tag>

@@ -8,6 +8,13 @@ import { useMathQuiz, computeQuizPoints } from '@/hooks/useMathQuiz'
 import { supabase } from '@/lib/supabase'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import StarProgressBar from '@/components/stars/StarProgressBar'
+import { PROBLEMS as P12 } from '@/utils/lesson12-data'
+import { PROBLEMS as P13 } from '@/utils/lesson13-data'
+import { PROBLEMS as P15 } from '@/utils/lesson15-data'
+import { PROBLEMS as P18 } from '@/utils/lesson18-data'
+import { PROBLEMS as P23 } from '@/utils/lesson23-data'
+import { PROBLEMS as P29 } from '@/utils/lesson29-data'
+import { PROBLEMS as P30 } from '@/utils/lesson30-data'
 import { PROBLEMS as P34 } from '@/utils/lesson34-data'
 import { PROBLEMS as P35 } from '@/utils/lesson35-data'
 import { PROBLEMS as P36 } from '@/utils/lesson36-data'
@@ -25,10 +32,13 @@ import type { QuizPaper, QuizAnswerRecord } from '@/hooks/useMathQuiz'
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
 const LESSON_DATA: Record<string, ProblemSet> = {
+  '12': P12, '13': P13, '15': P15, '18': P18, '23': P23, '29': P29, '30': P30,
   '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
 }
 
 const LESSON_NAMES: Record<string, string> = {
+  '12': '巧算加减法进阶', '13': '植树问题', '15': '和差问题',
+  '18': '和差倍初步', '23': '逻辑推理', '29': '算符大作战', '30': '和差倍进阶',
   '34': '乘法分配律', '35': '归一问题', '36': '星期几问题',
   '37': '鸡兔同笼', '38': '一笔画', '39': '盈亏问题',
   '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识', '44': '统筹优化',

@@ -1,3 +1,10 @@
+import { PROBLEMS as PROBLEMS12, PROBLEM_TYPES as PT12, TAG_STYLE as TS12 } from './lesson12-data'
+import { PROBLEMS as PROBLEMS13, PROBLEM_TYPES as PT13, TAG_STYLE as TS13 } from './lesson13-data'
+import { PROBLEMS as PROBLEMS15, PROBLEM_TYPES as PT15, TAG_STYLE as TS15 } from './lesson15-data'
+import { PROBLEMS as PROBLEMS18, PROBLEM_TYPES as PT18, TAG_STYLE as TS18 } from './lesson18-data'
+import { PROBLEMS as PROBLEMS23, PROBLEM_TYPES as PT23, TAG_STYLE as TS23 } from './lesson23-data'
+import { PROBLEMS as PROBLEMS29, PROBLEM_TYPES as PT29, TAG_STYLE as TS29 } from './lesson29-data'
+import { PROBLEMS as PROBLEMS30, PROBLEM_TYPES as PT30, TAG_STYLE as TS30 } from './lesson30-data'
 import { PROBLEMS as PROBLEMS34, PROBLEM_TYPES as PT34, TAG_STYLE as TS34 } from './lesson34-data'
 import { PROBLEMS as PROBLEMS35, PROBLEM_TYPES as PT35, TAG_STYLE as TS35 } from './lesson35-data'
 import { PROBLEMS as PROBLEMS36, PROBLEM_TYPES as PT36, TAG_STYLE as TS36 } from './lesson36-data'
@@ -23,6 +30,76 @@ export interface SeaLessonMeta {
 }
 
 export const SEA_LESSONS: SeaLessonMeta[] = [
+  {
+    id: '12',
+    title: '第12讲·巧算加减法进阶',
+    shortTitle: '12·巧算加减',
+    icon: '🔢',
+    badgeClass: 'bg-orange-100 text-orange-700',
+    tagStyle: TS12,
+    types: PT12.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS12,
+  },
+  {
+    id: '13',
+    title: '第13讲·植树问题',
+    shortTitle: '13·植树问题',
+    icon: '🌳',
+    badgeClass: 'bg-green-100 text-green-700',
+    tagStyle: TS13,
+    types: PT13.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS13,
+  },
+  {
+    id: '15',
+    title: '第15讲·和差问题',
+    shortTitle: '15·和差问题',
+    icon: '➕',
+    badgeClass: 'bg-sky-100 text-sky-700',
+    tagStyle: TS15,
+    types: PT15.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS15,
+  },
+  {
+    id: '18',
+    title: '第18讲·和差倍初步',
+    shortTitle: '18·和差倍初步',
+    icon: '✖️',
+    badgeClass: 'bg-purple-100 text-purple-700',
+    tagStyle: TS18,
+    types: PT18.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS18,
+  },
+  {
+    id: '23',
+    title: '第23讲·逻辑推理',
+    shortTitle: '23·逻辑推理',
+    icon: '🔍',
+    badgeClass: 'bg-violet-100 text-violet-700',
+    tagStyle: TS23,
+    types: PT23.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS23,
+  },
+  {
+    id: '29',
+    title: '第29讲·算符大作战',
+    shortTitle: '29·算符大作战',
+    icon: '🎮',
+    badgeClass: 'bg-rose-100 text-rose-700',
+    tagStyle: TS29,
+    types: PT29.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS29,
+  },
+  {
+    id: '30',
+    title: '第30讲·和差倍进阶',
+    shortTitle: '30·和差倍进阶',
+    icon: '🧮',
+    badgeClass: 'bg-amber-100 text-amber-700',
+    tagStyle: TS30,
+    types: PT30.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS30,
+  },
   {
     id: '34',
     title: '第34讲·乘法技巧',

@@ -1,6 +1,13 @@
 'use client'
 
 import MathWeeklyPractice from '@/components/math/MathWeeklyPractice'
+import { PROBLEMS as PROBLEMS12 } from '@/utils/lesson12-data'
+import { PROBLEMS as PROBLEMS13 } from '@/utils/lesson13-data'
+import { PROBLEMS as PROBLEMS15 } from '@/utils/lesson15-data'
+import { PROBLEMS as PROBLEMS18 } from '@/utils/lesson18-data'
+import { PROBLEMS as PROBLEMS23 } from '@/utils/lesson23-data'
+import { PROBLEMS as PROBLEMS29 } from '@/utils/lesson29-data'
+import { PROBLEMS as PROBLEMS30 } from '@/utils/lesson30-data'
 import { PROBLEMS as PROBLEMS34 } from '@/utils/lesson34-data'
 import { PROBLEMS as PROBLEMS35 } from '@/utils/lesson35-data'
 import { PROBLEMS as PROBLEMS36 } from '@/utils/lesson36-data'
@@ -16,6 +23,13 @@ import type { ProblemSet } from '@/utils/type'
 import Link from 'next/link'
 
 const PROBLEM_SETS: Record<string, ProblemSet> = {
+  '12': PROBLEMS12,
+  '13': PROBLEMS13,
+  '15': PROBLEMS15,
+  '18': PROBLEMS18,
+  '23': PROBLEMS23,
+  '29': PROBLEMS29,
+  '30': PROBLEMS30,
   '34': PROBLEMS34,
   '35': PROBLEMS35,
   '36': PROBLEMS36,

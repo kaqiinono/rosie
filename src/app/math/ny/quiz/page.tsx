@@ -6,6 +6,13 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { useMathQuiz } from '@/hooks/useMathQuiz'
+import { PROBLEMS as P12, PROBLEM_TYPES as PT12 } from '@/utils/lesson12-data'
+import { PROBLEMS as P13, PROBLEM_TYPES as PT13 } from '@/utils/lesson13-data'
+import { PROBLEMS as P15, PROBLEM_TYPES as PT15 } from '@/utils/lesson15-data'
+import { PROBLEMS as P18, PROBLEM_TYPES as PT18 } from '@/utils/lesson18-data'
+import { PROBLEMS as P23, PROBLEM_TYPES as PT23 } from '@/utils/lesson23-data'
+import { PROBLEMS as P29, PROBLEM_TYPES as PT29 } from '@/utils/lesson29-data'
+import { PROBLEMS as P30, PROBLEM_TYPES as PT30 } from '@/utils/lesson30-data'
 import { PROBLEMS as P34, PROBLEM_TYPES as PT34 } from '@/utils/lesson34-data'
 import { PROBLEMS as P35, PROBLEM_TYPES as PT35 } from '@/utils/lesson35-data'
 import { PROBLEMS as P36, PROBLEM_TYPES as PT36 } from '@/utils/lesson36-data'
@@ -51,6 +58,13 @@ const LESSON_META: Array<{
   data: ProblemSet
   types: Array<{ tag: string; label: string }>
 }> = [
+  { id: '12', name: '巧算加减法进阶', data: P12, types: PT12 },
+  { id: '13', name: '植树问题', data: P13, types: PT13 },
+  { id: '15', name: '和差问题', data: P15, types: PT15 },
+  { id: '18', name: '和差倍初步', data: P18, types: PT18 },
+  { id: '23', name: '逻辑推理', data: P23, types: PT23 },
+  { id: '29', name: '算符大作战', data: P29, types: PT29 },
+  { id: '30', name: '和差倍进阶', data: P30, types: PT30 },
   { id: '34', name: '乘法分配律', data: P34, types: PT34 },
   { id: '35', name: '归一问题', data: P35, types: PT35 },
   { id: '36', name: '星期几问题', data: P36, types: PT36 },

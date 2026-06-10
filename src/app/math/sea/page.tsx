@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@/utils/sea-data'
@@ -712,14 +713,33 @@ type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 export default function MathSeaPage() {
   const { user } = useAuth()
   const { solveCount, solvedAt, handleSolve } = useMathSolved(user)
+  const searchParams = useSearchParams()
 
   const [search, setSearch] = useState('')
   const allTypeKeys = useMemo(
     () => new Set(SEA_LESSONS.flatMap(l => l.types.map(t => `${l.id}::${t.tag}`))),
     []
   )
-  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(new Set(SEA_LESSONS.map(l => l.id)))
-  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(allTypeKeys)
+  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(() => {
+    const param = searchParams.get('lessons')
+    if (param) {
+      const ids = param.split(',').filter(id => SEA_LESSONS.some(l => l.id === id))
+      if (ids.length > 0) return new Set(ids)
+    }
+    return new Set(SEA_LESSONS.map(l => l.id))
+  })
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(() => {
+    const param = searchParams.get('lessons')
+    if (param) {
+      const ids = param.split(',').filter(id => SEA_LESSONS.some(l => l.id === id))
+      if (ids.length > 0) {
+        const types = new Set<string>()
+        for (const id of ids) SEA_LESSON_MAP[id]?.types.forEach(t => types.add(`${id}::${t.tag}`))
+        return types
+      }
+    }
+    return new Set(SEA_LESSONS.flatMap(l => l.types.map(t => `${l.id}::${t.tag}`)))
+  })
   const [selectedSections, setSelectedSections] = useState<Set<string>>(
     new Set(['pretest', 'lesson', 'homework', 'workbook', 'supplement'])
   )
@@ -728,7 +748,7 @@ export default function MathSeaPage() {
     () => new Set(ALL_DIFFICULTY_LEVELS),
   )
   const [practiceMode, setPracticeMode] = useState(false)
-  const [filterOpen, setFilterOpen] = useState(true)
+  const [filterOpen, setFilterOpen] = useState(() => !searchParams.get('lessons'))
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 20
 
@@ -1022,12 +1042,12 @@ export default function MathSeaPage() {
                     <span className="sea-section-label">课程</span>
                     <button onClick={toggleAllLessons} className="cursor-pointer text-[10px] transition-colors" style={{ color: 'rgba(0,229,255,0.5)' }}>{allLessonsSelected ? '全不选' : '全选'}</button>
                   </div>
-                  <div className="scroll-glow flex gap-1.5 pb-1">
-                    {SEA_LESSONS.map(l => (
+                  <div className="flex flex-wrap gap-1.5">
+                    {[...SEA_LESSONS].sort((a, b) => Number(b.id) - Number(a.id)).map(l => (
                       <button
                         key={l.id}
                         onClick={() => toggleLesson(l.id)}
-                        className={`sea-chip-${selectedLessons.has(l.id) ? 'on' : 'off'} shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all active:scale-95`}
+                        className={`sea-chip-${selectedLessons.has(l.id) ? 'on' : 'off'} cursor-pointer rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all active:scale-95`}
                       >
                         {l.icon} {l.shortTitle}
                       </button>
