@@ -1,8 +1,12 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 import type { AudioCollection, AudioPlaylistItem, PlayerTrack } from '@/utils/audio-manager-types'
+
+const MAX_FILE_MB = 500
+const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
 
 type Props = {
   collection: AudioCollection
@@ -14,6 +18,8 @@ type Props = {
   /** 解析某曲目在本收藏夹里的 item（虚拟收藏夹返回 null，不可移除）。 */
   getItem: (track: PlayerTrack) => AudioPlaylistItem | null
   onRemove: (item: AudioPlaylistItem) => void
+  /** 上传媒体并加入本收藏夹（仅可收藏的收藏夹提供）。 */
+  onUpload?: (file: File) => Promise<void>
 }
 
 export default function CollectionView({
@@ -24,8 +30,25 @@ export default function CollectionView({
   onEnqueueAll,
   getItem,
   onRemove,
+  onUpload,
 }: Props) {
   const empty = collection.tracks.length === 0
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null)
+
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const all = Array.from(e.target.files ?? [])
+    e.target.value = ''
+    if (!onUpload || all.length === 0) return
+    const valid = all.filter((f) => f.size <= MAX_FILE_BYTES)
+    if (valid.length === 0) return
+    setUploadProgress({ current: 0, total: valid.length })
+    for (let i = 0; i < valid.length; i++) {
+      await onUpload(valid[i]!)
+      setUploadProgress({ current: i + 1, total: valid.length })
+    }
+    setUploadProgress(null)
+  }
 
   return (
     <div className="space-y-3">
@@ -35,7 +58,31 @@ export default function CollectionView({
           <div className="truncate text-[15px] font-extrabold text-slate-800">{collection.name}</div>
           <div className="text-[11px] text-slate-400">{collection.tracks.length} 首</div>
         </div>
-        <div className="ml-auto flex shrink-0 gap-2">
+        <div className="ml-auto flex shrink-0 flex-wrap gap-2">
+          {onUpload && (
+            <>
+              <input
+                ref={inputRef}
+                type="file"
+                accept="audio/*,video/*"
+                multiple
+                className="hidden"
+                onChange={handleFiles}
+              />
+              <button
+                type="button"
+                disabled={uploadProgress !== null}
+                onClick={() => inputRef.current?.click()}
+                className="rounded-full px-3 py-2 text-[12px] font-extrabold text-white shadow-md transition active:scale-95 disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg,#10b981,#059669)' }}
+                title="上传媒体并加入本收藏夹"
+              >
+                {uploadProgress !== null
+                  ? `上传中 ${uploadProgress.current}/${uploadProgress.total}`
+                  : '↑ 上传到此'}
+              </button>
+            </>
+          )}
           <button
             type="button"
             disabled={empty}
