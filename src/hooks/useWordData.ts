@@ -135,6 +135,21 @@ export function useWordData(user: User | null) {
     return () => { initLock = null }
   }, [user])
 
+  // 从 DB 重新读取全量词库并刷新本地状态 + 缓存。空结果也会写入（用于删空场景）。
+  const refresh = useCallback(async () => {
+    if (!user) return
+    const { data } = await supabase
+      .from('word_entries')
+      .select(SELECT_COLS)
+      .order('unit')
+      .order('lesson')
+    if (data) {
+      const words = data.map(fromRow)
+      setVocabState(words)
+      writeCacheByStage(user.id, words)
+    }
+  }, [user])
+
   const upsertByStage = useCallback(async (words: WordEntry[]) => {
     if (!user || !words.length) return
     const stages = [...new Set(words.map(w => w.stage).filter(Boolean))] as string[]
@@ -146,17 +161,62 @@ export function useWordData(user: User | null) {
       await supabase.from('word_entries').delete().eq('stage', stage)
     }
     await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
-    const { data } = await supabase
-      .from('word_entries')
-      .select(SELECT_COLS)
-      .order('unit')
-      .order('lesson')
-    if (data) {
-      const allWords = data.map(fromRow)
-      setVocabState(allWords)
-      writeCacheByStage(user.id, allWords) // 写入完整缓存
-    }
-  }, [user])
+    await refresh()
+  }, [user, refresh])
 
-  return { vocab, upsertByStage }
+  // —— 按行 / 按词库的增量 CRUD（供管理后台使用，绝不整库替换）——
+
+  /** 增量 upsert 一批单词（按复合键冲突即更新），不删除任何 stage。单个添加传长度 1 的数组。 */
+  const addWords = useCallback(async (words: WordEntry[]) => {
+    if (!user || !words.length) return
+    await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
+    clearCacheForStages(user.id, [...new Set(words.map(w => stageKey(w.stage)))])
+    await refresh()
+  }, [user, refresh])
+
+  /** 按原复合键定位后更新（支持改键字段：拼写 / unit / lesson / stage）。 */
+  const updateWord = useCallback(async (original: WordEntry, updated: WordEntry) => {
+    if (!user) return
+    const base = supabase
+      .from('word_entries')
+      .update(toRow(user.id, updated))
+      .eq('unit', original.unit)
+      .eq('lesson', original.lesson)
+      .eq('word', original.word)
+    await (original.stage ? base.eq('stage', original.stage) : base.is('stage', null))
+    clearCacheForStages(user.id, [stageKey(original.stage), stageKey(updated.stage)])
+    await refresh()
+  }, [user, refresh])
+
+  /** 按复合键删除单个单词。 */
+  const deleteWord = useCallback(async (w: WordEntry) => {
+    if (!user) return
+    const base = supabase
+      .from('word_entries')
+      .delete()
+      .eq('unit', w.unit)
+      .eq('lesson', w.lesson)
+      .eq('word', w.word)
+    await (w.stage ? base.eq('stage', w.stage) : base.is('stage', null))
+    clearCacheForStages(user.id, [stageKey(w.stage)])
+    await refresh()
+  }, [user, refresh])
+
+  /** 删除整个词库（stage 下全部单词）。UI 层需二次确认。 */
+  const deleteStage = useCallback(async (stage: string) => {
+    if (!user || !stage) return
+    await supabase.from('word_entries').delete().eq('stage', stage)
+    clearCacheForStages(user.id, [stageKey(stage)])
+    await refresh()
+  }, [user, refresh])
+
+  /** 重命名词库：批量把 oldStage 的单词改到 newStage。 */
+  const renameStage = useCallback(async (oldStage: string, newStage: string) => {
+    if (!user || !newStage.trim() || oldStage === newStage) return
+    await supabase.from('word_entries').update({ stage: newStage }).eq('stage', oldStage)
+    clearCacheForStages(user.id, [stageKey(oldStage), stageKey(newStage)])
+    await refresh()
+  }, [user, refresh])
+
+  return { vocab, upsertByStage, addWords, updateWord, deleteWord, deleteStage, renameStage }
 }

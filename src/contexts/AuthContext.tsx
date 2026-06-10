@@ -25,18 +25,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-
+    // onAuthStateChange emits an INITIAL_SESSION event on subscribe, so it
+    // already delivers the current session — a separate getSession() call is
+    // redundant and (because it does a raw setUser) creates a second `user`
+    // object reference that re-fires every hook depending on [user].
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const next = session?.user ?? null
-      // Preserve the same User object reference on TOKEN_REFRESHED to avoid
-      // re-triggering all hooks that depend on [user] as an effect dependency.
+      // Preserve the same User object reference when the id is unchanged (e.g.
+      // TOKEN_REFRESHED) to avoid re-triggering [user]-dependent effects.
       setUser(prev => (prev?.id === next?.id ? prev : next))
+      setLoading(false)
     })
 
     return () => subscription.unsubscribe()

@@ -39,9 +39,36 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 Without these, auth will fail. The app requires login — there is no guest mode.
 
+Optional (enables the word-library auto-fill feature in `/admin/words`):
+
+```
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=   # optional, defaults to claude-haiku-4-5-20251001
+```
+
+If `ANTHROPIC_API_KEY` is unset, the `/api/word-enrich` route returns 503 and the client auto-fill falls back to the free dictionary API (dictionaryapi.dev).
+
 ## Architecture
 
-This is a Next.js 15 App Router PWA for elementary school math and English learning, targeting a single child (Rosie). **Login is required** — Supabase is the sole data store. There is no traditional backend; the app is purely client-side with SSG.
+This is a Next.js 15 App Router PWA for elementary school math and English learning, targeting a single child (Rosie). **Login is required** — Supabase is the sole data store. The app is almost entirely client-side with SSG; the only server code is a single Route Handler, `src/app/api/word-enrich/route.ts`, which proxies the Claude API for word auto-fill so the API key stays server-side.
+
+### Admin (`/admin`)
+
+`/admin` is a parent/admin hub (card menu). Sub-pages:
+- `/admin/awards` — stars & voucher management (was previously at `/admin`)
+- `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.
+- `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
+- `/admin/word-audit` — read-only data audit
+
+### Audio System
+
+Unified audio playback across the app:
+- **`useAudioCollections(user)`** (`src/hooks/`) aggregates four kinds of "collection" (`AudioCollection`): `favorites`(我的最爱, DB-persistent via `audio_playlists.is_favorite`), `reading`/`flipbook`(virtual, derived from passages/books with audio), and user playlists. Exposes `toggleFavorite`, `membership(bucket,path)`, `favoriteKeySet`, and playlist CRUD. Auto-creates the favorites playlist.
+- **`usePlaylistPlayer()`** (`src/hooks/`) is the single playback engine (one `<video>` media element app-wide). Loop modes 顺序/单曲/列表 (`order`/`one`/`all`) + loop count (count applies to current mode), `play`/`enqueue`/`prev`/`next`/`stop`.
+- **`<PlayerDock>`** (`src/components/audio/`) is the shared bottom player UI (transport, loop mode, loop count, favorite heart). Used by `/audio`, `/flipbook`, reading index, and `/admin/audio`.
+- **`<CollectionPills>`** shows which collections a track belongs to, with × to remove.
+- **`/audio`** — kid-facing (dark) listening page: switch collections, build a transient play queue from cards or whole collections.
+- Tables: `audio_assets`, `audio_playlists`(+`is_favorite`), `audio_playlist_items`. Migration: `docs/sql/audio-favorites-migration.sql` (run manually in Supabase).
 
 ### Data Flow
 

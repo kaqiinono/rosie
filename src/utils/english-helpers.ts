@@ -15,6 +15,7 @@ export function hilite(text: string, keywords?: [string, string][]): string {
   for (const [phrase, cls] of sorted) {
     const lo = text.toLowerCase()
     const ph = phrase.toLowerCase()
+    if (!ph) continue // 空短语会让 indexOf 在每个位置命中、死循环
     let idx = 0
     while ((idx = lo.indexOf(ph, idx)) !== -1) {
       const end = idx + phrase.length
@@ -69,6 +70,93 @@ export function shuffle<T>(arr: T[], seed?: number): T[] {
     [a[i], a[j]] = [a[j], a[i]]
   }
   return a
+}
+
+/** 把关键词高亮的颜色值规整成 globals.css 里的 .kw-* 类名 */
+export function normalizeKwColor(c: string): string {
+  const t = c.trim().toLowerCase()
+  if (!t) return 'kw-red'
+  if (t.startsWith('kw-')) return t
+  if (t === 'red' || t === '红') return 'kw-red'
+  if (t === 'gold' || t === 'yellow' || t === '金' || t === '黄') return 'kw-gold'
+  if (t === 'blue' || t === '蓝') return 'kw-blue'
+  return 'kw-red'
+}
+
+/** 解析音节单元格：逗号分隔 → string[]，如 "ap, ple" */
+export function parseSyllablesCell(s: string): string[] {
+  return s.split(',').map((x) => x.trim()).filter(Boolean)
+}
+
+/** 解析关键词高亮单元格：`词|颜色; 词|颜色` → [短语, kw-类名][]，颜色支持 red/gold/blue 或 kw-* */
+export function parseKeywordsCell(s: string): [string, string][] {
+  return s
+    .split(';')
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const [phrase, color] = part.split('|')
+      return [(phrase ?? '').trim(), normalizeKwColor(color ?? '')] as [string, string]
+    })
+    .filter(([ph]) => ph.length > 0)
+}
+
+export const WORD_TEMPLATE_HEADERS = [
+  'Stage',
+  'Unit',
+  'Lesson',
+  '单词 (word)',
+  '英文释义 (explanation)',
+  '中文释义 (chinese)',
+  '音标 (ipa)',
+  '例句 (example)',
+  'phonics',
+  '音节 (syllables, 逗号分隔)',
+  '关键词高亮 (词|颜色; 颜色=red/gold/blue)',
+]
+
+/**
+ * 把二维表格行解析成 WordEntry[]，供 Excel 导入与文本粘贴共用。
+ * 列顺序（含 stage 时）：Stage, Unit, Lesson, Word, Explanation, ChineseDef, IPA,
+ * Example, Phonics, Syllables(逗号分隔), Keywords(词|颜色; 词|颜色)。
+ * - hasHeader: 跳过首行表头（Excel 导出通常带表头）。
+ * - hasStageColumn: 行内是否含 stage 列；为 false 时整体左移一列，stage 取 defaultStage。
+ * - defaultStage: stage 为空时回填（粘贴场景下用当前选中的词库）。
+ * 缺 unit / lesson / word 的行会被跳过；后面的列缺省即留空。
+ */
+export function parseWordRows(
+  rows: unknown[][],
+  opts: { hasHeader?: boolean; hasStageColumn?: boolean; defaultStage?: string } = {},
+): WordEntry[] {
+  const { hasHeader = false, hasStageColumn = true, defaultStage } = opts
+  const out: WordEntry[] = []
+  const off = hasStageColumn ? 1 : 0
+  const cell = (r: unknown[], i: number) => String(r[i] ?? '').trim()
+  for (let i = hasHeader ? 1 : 0; i < rows.length; i++) {
+    const r = rows[i]
+    if (!r) continue
+    const stage = hasStageColumn ? cell(r, 0) : ''
+    const unit = cell(r, off)
+    const lesson = cell(r, off + 1)
+    const word = cell(r, off + 2)
+    if (!unit || !lesson || !word) continue
+    const syllables = parseSyllablesCell(cell(r, off + 8))
+    const keywords = parseKeywordsCell(cell(r, off + 9))
+    out.push({
+      stage: stage || defaultStage || undefined,
+      unit,
+      lesson,
+      word,
+      explanation: cell(r, off + 3),
+      chineseDef: cell(r, off + 4) || undefined,
+      ipa: cell(r, off + 5) || undefined,
+      example: cell(r, off + 6) || undefined,
+      phonics: cell(r, off + 7) || undefined,
+      syllables: syllables.length ? syllables : undefined,
+      keywords: keywords.length ? keywords : undefined,
+    })
+  }
+  return out
 }
 
 export function getAllStages(vocab: WordEntry[]): string[] {
