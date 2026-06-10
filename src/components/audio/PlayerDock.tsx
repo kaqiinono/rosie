@@ -20,6 +20,7 @@ type Props = {
 /**
  * 全站唯一的播放器视图。它渲染唯一的媒体元素（用 <video> 同时兼容纯音频与视频，
  * 纯音频时隐藏画面、视频时弹出浮层），并把 player.audioRef 绑上去。
+ * 视觉：暖橙拟物条，两种主题共用同一橙色外观，仅外发光略有差异。
  */
 export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme = 'dark' }: Props) {
   const [videoMinimized, setVideoMinimized] = useState(false)
@@ -28,9 +29,8 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
   const isVideo = current?.mediaType === 'video'
   const showVideoOverlay = isVideo && !videoMinimized
   const live = player.isPlaying && !player.isPaused
-  const dark = theme === 'dark'
+  const loopActive = player.loopMode !== 'order'
 
-  // 没有队列就不渲染（媒体元素也无需存在）。
   if (player.queue.length === 0) return null
 
   const total = player.queue.length
@@ -42,7 +42,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
         className="fixed z-40 overflow-hidden rounded-2xl bg-black transition-all duration-300"
         style={
           showVideoOverlay
-            ? { bottom: '84px', right: '16px', width: '280px', boxShadow: '0 12px 40px rgba(0,0,0,0.45)', opacity: 1 }
+            ? { bottom: '88px', right: '16px', width: '280px', boxShadow: '0 12px 40px rgba(0,0,0,0.45)', opacity: 1 }
             : { bottom: '-400px', right: '16px', width: '280px', opacity: 0, pointerEvents: 'none' }
         }
       >
@@ -70,55 +70,54 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
       {/* 底部停靠条 */}
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-3">
         <div
-          className={clsx(
-            'pointer-events-auto mx-auto flex max-w-2xl items-center gap-2 rounded-[1.4rem] px-2.5 py-2 ring-1 backdrop-blur',
-            dark
-              ? 'bg-[#1b1410]/92 ring-white/10'
-              : 'bg-white/92 ring-orange-200',
-          )}
+          className="pointer-events-auto relative isolate mx-auto flex max-w-2xl items-center gap-1.5 overflow-hidden rounded-[1.6rem] px-2.5 py-2 ring-1 ring-orange-600/40 sm:gap-2"
           style={{
-            boxShadow: dark
-              ? '0 -2px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)'
-              : '0 -2px 24px rgba(245,158,11,0.18), inset 0 1px 0 rgba(255,255,255,0.7)',
+            background: 'linear-gradient(135deg,#fb923c 0%,#f59e0b 52%,#f97316 100%)',
+            boxShadow: live
+              ? `0 10px 34px -6px rgba(245,158,11,0.6), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -2px 0 rgba(0,0,0,0.18)${theme === 'dark' ? ', 0 0 0 1px rgba(255,255,255,0.06)' : ''}`
+              : '0 7px 22px -6px rgba(245,158,11,0.45), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.18)',
             animation: live ? 'var(--animate-player-glow)' : undefined,
           }}
         >
-          {/* 均衡器 / 状态灯 */}
-          <Equalizer live={live} dark={dark} />
+          {/* 顶部高光 */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent"
+          />
+          <span
+            aria-hidden
+            className={clsx(
+              'pointer-events-none absolute inset-x-4 top-0 h-px',
+              live ? 'bg-white/80' : 'bg-white/40',
+            )}
+          />
+
+          {/* 均衡器 */}
+          <Equalizer live={live} />
 
           {/* 曲目信息 */}
-          <div className="min-w-0 flex-1 leading-tight">
+          <div className="relative min-w-0 flex-1 leading-tight">
             <div className="flex items-center gap-1.5">
-              <span
-                className={clsx(
-                  'truncate text-[13px] font-extrabold',
-                  dark ? 'text-white' : 'text-slate-800',
-                )}
-              >
+              <span className="truncate text-[13px] font-extrabold text-white drop-shadow-[0_1px_0_rgba(0,0,0,0.12)]">
                 {current?.label ?? '—'}
               </span>
               {current?.refLink && (
                 <Link
                   href={current.refLink}
                   title="跳转"
-                  className={clsx(
-                    'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] transition',
-                    dark
-                      ? 'text-white/45 hover:bg-white/10 hover:text-white'
-                      : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600',
-                  )}
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] text-white/70 transition hover:bg-white/20 hover:text-white"
                 >
                   →
                 </Link>
               )}
             </div>
-            <div className={clsx('font-mono text-[10px]', dark ? 'text-white/45' : 'text-slate-400')}>
+            <div className="font-mono text-[10px] tracking-wide text-white/70">
               {player.index + 1} / {total}
               {isVideo && videoMinimized && (
                 <button
                   type="button"
                   onClick={() => setVideoMinimized(false)}
-                  className="ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold text-orange-500 ring-1 ring-orange-300/50 transition hover:bg-orange-500/10"
+                  className="ml-2 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-bold text-white transition hover:bg-white/30"
                 >
                   展开视频
                 </button>
@@ -127,16 +126,13 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
           </div>
 
           {/* 传输控件 */}
-          <GhostButton label="上一首" onClick={player.prev} dark={dark}>
+          <GhostButton label="上一首" onClick={player.prev}>
             <PrevIcon />
           </GhostButton>
-          <PrimaryDial
-            label={player.isPaused ? '继续播放' : '暂停'}
-            onClick={player.togglePause}
-          >
+          <PrimaryDial label={player.isPaused ? '继续播放' : '暂停'} onClick={player.togglePause} pulse={live}>
             {player.isPaused ? <PlayIcon /> : <PauseIcon />}
           </PrimaryDial>
-          <GhostButton label="下一首" onClick={player.next} dark={dark}>
+          <GhostButton label="下一首" onClick={player.next}>
             <NextIcon />
           </GhostButton>
 
@@ -147,15 +143,15 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
             title={`${LOOP_MODE_LABEL[player.loopMode]}播放（点击切换）`}
             aria-label={`循环模式：${LOOP_MODE_LABEL[player.loopMode]}`}
             className={clsx(
-              'flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-bold transition active:scale-95',
-              player.loopMode === 'order'
-                ? dark
-                  ? 'bg-white/8 text-white/60 ring-1 ring-white/10'
-                  : 'bg-slate-100 text-slate-400 ring-1 ring-slate-200'
-                : 'bg-orange-500/15 text-orange-400 ring-1 ring-orange-400/40',
+              'group relative flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-bold transition active:scale-95',
+              loopActive
+                ? 'bg-white text-orange-600 shadow-[0_2px_6px_rgba(0,0,0,0.18)] ring-1 ring-orange-200/70'
+                : 'bg-black/15 text-white/90 ring-1 ring-black/10 hover:bg-black/25',
             )}
           >
-            <LoopIcon />
+            <span className="transition-transform group-active:rotate-180">
+              <LoopIcon />
+            </span>
             <span className="tabular-nums">{LOOP_MODE_LABEL[player.loopMode]}</span>
           </button>
 
@@ -165,10 +161,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
             onClick={player.cycleLoopCount}
             title="循环次数（点击切换）"
             aria-label={`循环次数：${player.loopCount === Infinity ? '无限' : player.loopCount}`}
-            className={clsx(
-              'flex h-8 shrink-0 items-center justify-center rounded-full px-2 font-mono text-[12px] font-bold tabular-nums transition active:scale-95',
-              dark ? 'bg-white/8 text-white/75 ring-1 ring-white/10' : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200',
-            )}
+            className="flex h-8 shrink-0 items-center justify-center rounded-full bg-black/15 px-2 font-mono text-[12px] font-bold tabular-nums text-white ring-1 ring-black/10 transition hover:bg-black/25 active:scale-95"
           >
             {player.loopCount === Infinity ? '∞' : `×${player.loopCount}`}
           </button>
@@ -182,10 +175,8 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
             className={clsx(
               'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition active:scale-90',
               isFavorite
-                ? 'bg-pink-500/20 text-pink-500 ring-1 ring-pink-400/50'
-                : dark
-                  ? 'text-white/45 hover:bg-white/10 hover:text-pink-400'
-                  : 'text-slate-400 hover:bg-pink-50 hover:text-pink-500',
+                ? 'bg-white text-pink-500 shadow-[0_2px_6px_rgba(0,0,0,0.18)] ring-1 ring-pink-200'
+                : 'bg-black/15 text-white/85 ring-1 ring-black/10 hover:bg-black/25 hover:text-white',
             )}
           >
             <HeartIcon filled={isFavorite} />
@@ -197,10 +188,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
             onClick={player.stop}
             aria-label="停止播放"
             title="停止播放"
-            className={clsx(
-              'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] transition hover:bg-red-500/70 hover:text-white',
-              dark ? 'bg-white/8 text-white/60' : 'bg-slate-100 text-slate-400',
-            )}
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/15 text-[12px] text-white/85 ring-1 ring-black/10 transition hover:bg-red-500 hover:text-white"
           >
             <CloseIcon />
           </button>
@@ -210,16 +198,18 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
   )
 }
 
-function Equalizer({ live, dark }: { live: boolean; dark: boolean }) {
+function Equalizer({ live }: { live: boolean }) {
   const bars = [{ delay: '0ms' }, { delay: '180ms' }, { delay: '90ms' }, { delay: '260ms' }]
   return (
-    <div aria-hidden className="flex h-9 w-9 shrink-0 items-end justify-center gap-[3px] rounded-xl bg-gradient-to-br from-orange-400/20 to-orange-500/5 px-1.5 py-2">
+    <div
+      aria-hidden
+      className="relative flex h-9 w-9 shrink-0 items-end justify-center gap-[3px] rounded-2xl bg-white/15 px-1.5 py-2 ring-1 ring-white/25"
+    >
       {bars.map((b, i) => (
         <span
           key={i}
           className={clsx(
-            'block w-[3px] origin-bottom rounded-full',
-            dark ? 'bg-orange-300' : 'bg-orange-500',
+            'block w-[3px] origin-bottom rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.6)]',
             live ? 'h-5' : 'h-1.5',
           )}
           style={live ? { animation: 'var(--animate-eq)', animationDelay: b.delay } : undefined}
@@ -233,10 +223,12 @@ function PrimaryDial({
   label,
   children,
   onClick,
+  pulse,
 }: {
   label: string
   children: React.ReactNode
   onClick: () => void
+  pulse?: boolean
 }) {
   return (
     <button
@@ -245,12 +237,19 @@ function PrimaryDial({
       aria-label={label}
       title={label}
       className={clsx(
-        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-orange-600',
-        'shadow-[0_2px_6px_rgba(0,0,0,0.25),inset_0_-1px_0_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.9)]',
-        'ring-1 ring-orange-200/60 transition-transform active:scale-90',
+        'relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-orange-600',
+        'shadow-[0_3px_8px_rgba(0,0,0,0.28),inset_0_-1px_0_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.9)]',
+        'ring-1 ring-orange-200/70 transition-transform active:scale-90',
       )}
     >
-      {children}
+      {pulse && (
+        <span
+          aria-hidden
+          className="absolute inset-0 animate-ping rounded-full bg-white/40"
+          style={{ animationDuration: '1.6s' }}
+        />
+      )}
+      <span className="relative">{children}</span>
     </button>
   )
 }
@@ -259,12 +258,10 @@ function GhostButton({
   label,
   children,
   onClick,
-  dark,
 }: {
   label: string
   children: React.ReactNode
   onClick: () => void
-  dark: boolean
 }) {
   return (
     <button
@@ -272,10 +269,7 @@ function GhostButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={clsx(
-        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition active:scale-90',
-        dark ? 'text-white/80 hover:bg-white/10 hover:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800',
-      )}
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/90 transition hover:bg-white/20 hover:text-white active:scale-90"
     >
       {children}
     </button>
@@ -331,7 +325,7 @@ function LoopIcon() {
 function HeartIcon({ filled }: { filled: boolean }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 21s-7.5-4.6-10-9.2C.6 9 1.6 5.6 4.6 4.7c2-.6 3.9.3 5 1.9 1.1-1.6 3-2.5 5-1.9 3 .9 4 4.3 2.6 7.1C19.5 16.4 12 21 12 21Z" />
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
     </svg>
   )
 }
