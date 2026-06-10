@@ -222,6 +222,22 @@ export default function AudioManagerPage({ user }: Props) {
               }}
               getItem={itemInSelected}
               onRemove={(item) => void col.removeItem(item)}
+              onUpload={
+                selected.acceptsItems
+                  ? async (file) => {
+                      const { error, asset } = await assetHook.uploadAsset(file)
+                      if (error) {
+                        showFlash(`上传失败：${error}`)
+                        return
+                      }
+                      const realId = resolvePlaylistId(selected, col.favoriteId)
+                      if (asset && realId) {
+                        const ok = await col.addItem(realId, assetToInput(asset))
+                        if (ok) showFlash(`已加入「${selected.name}」`)
+                      }
+                    }
+                  : undefined
+              }
             />
           ) : null}
         </div>
