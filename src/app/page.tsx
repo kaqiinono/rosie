@@ -69,16 +69,6 @@ const modules: ModuleCardData[] = [
     icon: '📕',
   },
   {
-    href: '/admin/audio',
-    title: '媒体管理',
-    description: '管理阅读朗读、绘本音频，上传独立音频视频，收藏夹循环播放。',
-    tag: 'MEDIA',
-    variant: 'reading',
-    stats: ['阅读 & 绘本', '独立音视频', '收藏夹播放'],
-    enterText: '打开媒体管理',
-    icon: '🎬',
-  },
-  {
     href: '/vouchers',
     title: '我的奖券',
     description: '口算、英语、数学均可赚星星，积攒后兑换心愿奖券。',

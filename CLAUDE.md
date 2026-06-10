@@ -39,9 +39,26 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 Without these, auth will fail. The app requires login — there is no guest mode.
 
+Optional (enables the word-library auto-fill feature in `/admin/words`):
+
+```
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=   # optional, defaults to claude-haiku-4-5-20251001
+```
+
+If `ANTHROPIC_API_KEY` is unset, the `/api/word-enrich` route returns 503 and the client auto-fill falls back to the free dictionary API (dictionaryapi.dev).
+
 ## Architecture
 
-This is a Next.js 15 App Router PWA for elementary school math and English learning, targeting a single child (Rosie). **Login is required** — Supabase is the sole data store. There is no traditional backend; the app is purely client-side with SSG.
+This is a Next.js 15 App Router PWA for elementary school math and English learning, targeting a single child (Rosie). **Login is required** — Supabase is the sole data store. The app is almost entirely client-side with SSG; the only server code is a single Route Handler, `src/app/api/word-enrich/route.ts`, which proxies the Claude API for word auto-fill so the API key stays server-side.
+
+### Admin (`/admin`)
+
+`/admin` is a parent/admin hub (card menu). Sub-pages:
+- `/admin/awards` — stars & voucher management (was previously at `/admin`)
+- `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.
+- `/admin/audio` — media management
+- `/admin/word-audit` — read-only data audit
 
 ### Data Flow
 

@@ -27,6 +27,8 @@ export const STORAGE_KEYS = {
   WEEKLY_PLAN_LAST_LESSONS: 'weekly-plan-last-lessons',
   /** Session 中间态：拯救队列。仅当前 session 有效，phase=done 时清除。spec §11.6 例外 */
   RESCUE_QUEUE: 'rescue_queue_v1',
+  /** 管理后台「草稿词库」：新建但还没写入单词的 stage 名（按 user.id 分 key 持久化） */
+  ADMIN_DRAFT_STAGES: 'admin-draft-stages',
 } as const
 
 export const NAV_PAGES = [

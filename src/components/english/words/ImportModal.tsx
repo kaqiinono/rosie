@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import type { WordEntry } from '@/utils/type'
+import { parseWordRows, WORD_TEMPLATE_HEADERS } from '@/utils/english-helpers'
 
 interface ImportModalProps {
   open: boolean
@@ -36,24 +37,7 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
       const ws = wb.Sheets[wb.SheetNames[0]]
       const rows: unknown[][] = utils.sheet_to_json(ws, { header: 1, defval: '' })
 
-      const vocab: WordEntry[] = []
-      for (let i = 1; i < rows.length; i++) {
-        const r = rows[i]
-        const stage = String(r[0] || '').trim()
-        const unit = String(r[1] || '').trim()
-        const lesson = String(r[2] || '').trim()
-        const word = String(r[3] || '').trim()
-        if (!unit || !lesson || !word) continue
-        vocab.push({
-          stage: stage || undefined,
-          unit,
-          lesson,
-          word,
-          explanation: String(r[4] || '').trim(),
-          ipa: String(r[5] || '').trim(),
-          example: String(r[6] || '').trim(),
-        })
-      }
+      const vocab = parseWordRows(rows, { hasHeader: true, hasStageColumn: true })
 
       if (!vocab.length) {
         setStatus({
@@ -97,12 +81,14 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
   const downloadTemplate = useCallback(async () => {
     const xlsx = await import('xlsx')
     const { utils, writeFile } = xlsx.default || xlsx
-    const headers = ['Stage', 'Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
     const sample = [
-      ['4B', 'Unit 1', 'Lesson 1', 'example word', 'an example meaning', '/ɪɡˈzɑːmpl/', 'This is an example sentence.'],
+      ['4B', 'Unit 1', 'Lesson 1', 'apple', 'a round fruit', '苹果', '/ˈæpəl/', 'I eat an apple.', 'a-pp-le', 'ap, ple', 'round|red; fruit|gold'],
     ]
-    const ws = utils.aoa_to_sheet([headers, ...sample])
-    ws['!cols'] = [{ wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
+    const ws = utils.aoa_to_sheet([WORD_TEMPLATE_HEADERS, ...sample])
+    ws['!cols'] = [
+      { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 18 }, { wch: 34 }, { wch: 14 },
+      { wch: 16 }, { wch: 40 }, { wch: 14 }, { wch: 18 }, { wch: 34 },
+    ]
     const wb = utils.book_new()
     utils.book_append_sheet(wb, ws, '单词数据')
     writeFile(wb, 'RosieFun_词库模版.xlsx')
@@ -129,7 +115,7 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
           📥 导入单词表
         </div>
         <div className="mb-1 text-[.8rem] text-white/40">
-          列顺序：Stage / Unit / Lesson / 单词 / 释义 / 音标 / 例句
+          列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节 / 关键词高亮
         </div>
         <button
           onClick={downloadTemplate}
@@ -189,7 +175,7 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
         </div>
 
         <div className="mt-3.5 rounded-[10px] bg-white/[.04] p-3 text-[.72rem] text-white/30">
-          <span className="font-bold text-[#c084fc]">+ 按Stage追加</span>：删除同 Stage 的旧数据并写入新数据，其他 Stage 不受影响。导入的 Excel 不带中文释义/音节拆分/关键词高亮，这些字段在 DB 里的现有值会被覆盖为空。
+          <span className="font-bold text-[#c084fc]">+ 按Stage追加</span>：删除同 Stage 的旧数据并写入新数据，其他 Stage 不受影响。模版已含中文释义 / 音节（逗号分隔）/ 关键词高亮（格式 <span className="font-mono">词|颜色; 词|颜色</span>，颜色填 red/gold/blue）——留空的列会被写为空。
         </div>
       </div>
     </div>
