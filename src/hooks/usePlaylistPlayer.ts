@@ -25,6 +25,7 @@ export interface PlaylistPlayer {
   prev: () => void
   next: () => void
   jumpTo: (i: number) => void
+  removeAt: (i: number) => void
   setLoopMode: (m: LoopMode) => void
   cycleLoopMode: () => void
   cycleLoopCount: () => void
@@ -128,6 +129,29 @@ export function usePlaylistPlayer(): PlaylistPlayer {
     [playAt],
   )
 
+  const removeAt = useCallback(
+    (i: number) => {
+      const q = queueRef.current
+      if (i < 0 || i >= q.length) return
+      const newQ = q.filter((_, idx) => idx !== i)
+      if (newQ.length === 0) {
+        stop()
+        return
+      }
+      queueRef.current = newQ
+      setQueue(newQ)
+      if (i < index) {
+        setIndex((x) => x - 1)
+      } else if (i === index) {
+        // 删的是当前曲：原位置现在指向下一首（末尾则回退一格）
+        loopsDoneRef.current = 0
+        playAt(newQ, Math.min(index, newQ.length - 1))
+      }
+      // i > index：index 不变
+    },
+    [index, playAt, stop],
+  )
+
   const prev = useCallback(() => {
     const len = queueRef.current.length
     if (!len) return
@@ -210,6 +234,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
     prev,
     next,
     jumpTo,
+    removeAt,
     setLoopMode,
     cycleLoopMode,
     cycleLoopCount,

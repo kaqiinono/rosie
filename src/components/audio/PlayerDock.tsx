@@ -24,6 +24,7 @@ type Props = {
  */
 export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme = 'dark' }: Props) {
   const [videoMinimized, setVideoMinimized] = useState(false)
+  const [showQueue, setShowQueue] = useState(false)
 
   const current = player.current
   const isVideo = current?.mediaType === 'video'
@@ -69,6 +70,65 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
 
       {/* 底部停靠条 */}
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-3">
+        {/* 播放列表面板 */}
+        {showQueue && (
+          <div className="pointer-events-auto mx-auto mb-2 max-w-2xl overflow-hidden rounded-2xl bg-[#1b1410]/96 ring-1 ring-white/10 backdrop-blur">
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
+              <span className="text-[12px] font-bold text-white/85">播放列表 · {total}</span>
+              <button
+                type="button"
+                onClick={() => setShowQueue(false)}
+                className="rounded-full px-2 py-0.5 text-[11px] font-bold text-white/55 transition hover:bg-white/10 hover:text-white"
+              >
+                收起
+              </button>
+            </div>
+            <ul className="max-h-[44vh] overflow-y-auto p-1.5">
+              {player.queue.map((t, i) => {
+                const playing = i === player.index
+                return (
+                  <li key={`${t.url}-${i}`} className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => player.jumpTo(i)}
+                      className={clsx(
+                        'flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2.5 py-2 text-left transition',
+                        playing ? 'bg-orange-400/15' : 'hover:bg-white/5',
+                      )}
+                    >
+                      <span
+                        className={clsx(
+                          'w-5 shrink-0 text-center font-mono text-[11px]',
+                          playing ? 'text-orange-300' : 'text-white/35',
+                        )}
+                      >
+                        {playing ? '♪' : i + 1}
+                      </span>
+                      <span
+                        className={clsx(
+                          'truncate text-[13px]',
+                          playing ? 'font-bold text-orange-200' : 'text-white/80',
+                        )}
+                      >
+                        {t.label}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => player.removeAt(i)}
+                      aria-label="从播放列表移除"
+                      title="移除"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] text-white/40 transition hover:bg-red-500/20 hover:text-red-300"
+                    >
+                      <CloseIcon />
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
+
         <div
           className="pointer-events-auto relative isolate mx-auto flex max-w-2xl items-center gap-1.5 overflow-hidden rounded-[1.6rem] px-2.5 py-2 ring-1 ring-orange-600/40 sm:gap-2"
           style={{
@@ -111,13 +171,25 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
                 </Link>
               )}
             </div>
-            <div className="font-mono text-[10px] tracking-wide text-white/70">
-              {player.index + 1} / {total}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowQueue((s) => !s)}
+                aria-label="播放列表"
+                title="查看播放列表"
+                className={clsx(
+                  'flex items-center gap-1 rounded-full px-1.5 font-mono text-[10px] tracking-wide transition',
+                  showQueue ? 'bg-white/25 text-white' : 'text-white/70 hover:bg-white/15 hover:text-white',
+                )}
+              >
+                <ListIcon />
+                {player.index + 1} / {total}
+              </button>
               {isVideo && videoMinimized && (
                 <button
                   type="button"
                   onClick={() => setVideoMinimized(false)}
-                  className="ml-2 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-bold text-white transition hover:bg-white/30"
+                  className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-bold text-white transition hover:bg-white/30"
                 >
                   展开视频
                 </button>
@@ -326,6 +398,14 @@ function HeartIcon({ filled }: { filled: boolean }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  )
+}
+
+function ListIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
     </svg>
   )
 }
