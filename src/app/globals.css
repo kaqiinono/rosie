@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* This app is a fixed light theme (the genuinely-dark modules use their own
+   scoped CSS). Rebind `dark:` to be class-based so accidental dark variants
+   don't fire on phones set to system dark mode — which would turn cards dark
+   while their text stays dark-on-dark and disappears. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --background: 0 0% 100%;

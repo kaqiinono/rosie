@@ -57,8 +57,18 @@ This is a Next.js 15 App Router PWA for elementary school math and English learn
 `/admin` is a parent/admin hub (card menu). Sub-pages:
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.
-- `/admin/audio` — media management
+- `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
 - `/admin/word-audit` — read-only data audit
+
+### Audio System
+
+Unified audio playback across the app:
+- **`useAudioCollections(user)`** (`src/hooks/`) aggregates four kinds of "collection" (`AudioCollection`): `favorites`(我的最爱, DB-persistent via `audio_playlists.is_favorite`), `reading`/`flipbook`(virtual, derived from passages/books with audio), and user playlists. Exposes `toggleFavorite`, `membership(bucket,path)`, `favoriteKeySet`, and playlist CRUD. Auto-creates the favorites playlist.
+- **`usePlaylistPlayer()`** (`src/hooks/`) is the single playback engine (one `<video>` media element app-wide). Loop modes 顺序/单曲/列表 (`order`/`one`/`all`) + loop count (count applies to current mode), `play`/`enqueue`/`prev`/`next`/`stop`.
+- **`<PlayerDock>`** (`src/components/audio/`) is the shared bottom player UI (transport, loop mode, loop count, favorite heart). Used by `/audio`, `/flipbook`, reading index, and `/admin/audio`.
+- **`<CollectionPills>`** shows which collections a track belongs to, with × to remove.
+- **`/audio`** — kid-facing (dark) listening page: switch collections, build a transient play queue from cards or whole collections.
+- Tables: `audio_assets`, `audio_playlists`(+`is_favorite`), `audio_playlist_items`. Migration: `docs/sql/audio-favorites-migration.sql` (run manually in Supabase).
 
 ### Data Flow
 
