@@ -130,6 +130,19 @@ Both math and English have a weekly plan system with the same Thursday-start wee
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
 - `/today` — unified dashboard showing both English and math daily tasks
 
+### 口算 Module (`/calc`)
+
+Mental-arithmetic practice. Question generation is **composable**, not a fixed level ladder:
+
+- **Building blocks** (`src/utils/calc-blocks.ts`) — `BLOCKS` is a catalog of pure single-operation generators, each with a difficulty range and an `op`/`group` tag (加 `add` / 减 `sub` / 乘 `mul` / 除 `div`). Each block exposes `generateSingle()` (a standalone `CalcQuestion`) and `sampleTerm()` (a sub-term for mixed composition). Difficulty ordering is inherent: 加 < 减 < 乘 < 除 < 混合.
+- **Mixed operations** (`src/utils/calc-mixed.ts`) — 7 fixed skeletons (`SKELETONS`: 加减/乘除 同级、加减与乘法、加减乘除全混合、3 个带括号变体). A `MixedOp` = `{ skeleton, blockIds, enabled }`; `assembleMixed()` builds a multi-operator `CalcQuestion` whose parts are drawn from the chosen blocks (guarantees non-negative integer answers + integer division). Parents compose these in `/calc/settings` via `MixedOpComposer`/`MixedOpList`.
+- **AST primitives** live in `src/utils/calc-ast.ts` (`evalAst`/`renderAst`/`signatureOf`/`parseSignature`/`makeQuestion`). `signature` is the canonical key used for proficiency tracking.
+- **Session building** (`buildSession` in `src/utils/calc-helpers.ts`) — sources = selected blocks ∪ enabled+valid mixed ops; question count is allocated across sources weighted toward weak ones (`w = 1 − proficiency/5`, with a per-source floor); block sources resurface ~35% weakest specific facts (via `parseSignature`) and generate the rest fresh; carried mistakes are appended. Each question is tagged with `sourceBlockId`/`sourceMixedOpId`.
+- **Proficiency** (`useCalcProblemState`, `calc_problem_state` table) — lightweight 0–5 per `signature` (no spaced-repetition/adaptive ladder; that machinery was removed). Rows carry `block_id`/`mixed_op_id` attribution.
+- **Mistakes** — wrong questions are appended to the **end** of the current session for make-up (redo until correct), and unresolved ones carry into the **next** session: next total = configured count + last session's unresolved count (`calc_mistakes.session_no`, `lastSessionUnresolved`). Resolved after 3 consecutive correct.
+- **Reports** — `SessionSummary` shows per-source results + next-focus preview; `/calc/report` shows per-block / per-mixed mastery (avg proficiency) + weakest problems. Both share the same `calc_problem_state` proficiency.
+- **State** is in `CalcSettings` (`selectedBlocks: string[]`, `mixedOps: MixedOp[]`, plus sound/count/time-limit). Tables: `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`. Migration: `docs/sql/calc-redesign-migration.sql` (run manually). The old `calc_level_state`/`calc_event_log` tables are no longer written.
+
 ### PWA
 
 - Service Worker: `public/sw.js` (Workbox CDN, no npm dependency)
