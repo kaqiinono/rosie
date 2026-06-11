@@ -7,6 +7,7 @@ import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import BlockPicker from '@/components/calc/BlockPicker'
+import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
 import QuickPracticeModal from '@/components/calc/QuickPracticeModal'
 import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
@@ -148,36 +149,13 @@ export default function CalcSettingsPage() {
           />
         </section>
 
-        {/* 混合运算 — placeholder, real composer arrives in a later task */}
+        {/* 混合运算 */}
         <section>
           <SectionHeading>混合运算</SectionHeading>
-          <div
-            className="relative overflow-hidden rounded-2xl px-5 py-6 text-center"
-            style={{
-              background: 'rgba(139,92,246,0.06)',
-              border: '1px dashed rgba(139,92,246,0.28)',
-            }}
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full"
-              style={{ background: 'radial-gradient(circle, rgba(219,39,119,0.18), transparent 70%)' }}
-            />
-            <div className="text-[26px] leading-none">🧩</div>
-            <div
-              className="mt-2 font-fredoka text-[15px] font-black"
-              style={{
-                background: 'linear-gradient(90deg, #c4b5fd, #f9a8d4)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              混合运算编排 · 即将开放
-            </div>
-            <div className="mt-1 text-[11px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
-              自己搭配 +−×÷ 组合题，敬请期待～
-            </div>
-          </div>
+          <MixedOpList
+            mixedOps={settings.mixedOps}
+            onChange={(next) => update({ mixedOps: next })}
+          />
         </section>
 
         {/* 题量 / 限时 */}
