@@ -119,7 +119,7 @@ export function useCalcMistakes(user: User | null) {
 
   /** Mark a correct answer against a mistake; advances consecutive_correct, sets resolved at 3. */
   const recordCorrect = useCallback(
-    async (signature: string) => {
+    async (signature: string, sessionNo: number) => {
       if (!user) return
       const existing = mistakes.find(m => m.signature === signature)
       if (!existing) return
@@ -128,12 +128,14 @@ export function useCalcMistakes(user: User | null) {
       try {
         await supabase
           .from('calc_mistakes')
-          .update({ consecutive_correct: nextCount, resolved: nextResolved })
+          // Bump session_no to the current session so an unresolved mistake that made
+          // partial progress (1–2 corrects) keeps carrying into the next session.
+          .update({ consecutive_correct: nextCount, resolved: nextResolved, session_no: sessionNo })
           .eq('user_id', user.id)
           .eq('signature', signature)
       } catch { /* ignore */ }
       setMistakes(prev => prev.map(m => m.signature === signature
-        ? { ...m, consecutiveCorrect: nextCount, resolved: nextResolved }
+        ? { ...m, consecutiveCorrect: nextCount, resolved: nextResolved, sessionNo }
         : m))
     },
     [user, mistakes],

@@ -77,7 +77,8 @@ const addGen = {
 const subGen = {
   r10: (): [number, number] => { const a = randInt(0, 10); return [a, randInt(0, a)] },
   r20a: (): [number, number] => { const a = randInt(10, 20); return [a, randInt(0, a % 10)] },
-  r20b: (): [number, number] => { const a = randInt(11, 19); return [a, randInt((a % 10) + 1, 9)] },
+  // a capped at 18: a=19 (units 9) has no single-digit borrow subtrahend → randInt(10,9) degenerates to b=10.
+  r20b: (): [number, number] => { const a = randInt(11, 18); return [a, randInt((a % 10) + 1, 9)] },
   r100a: (): [number, number] => {
     const aT = randInt(2, 9) * 10, aO = randInt(0, 9)
     const bT = randInt(0, aT / 10 - 1) * 10, bO = randInt(0, aO)

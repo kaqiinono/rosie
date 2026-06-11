@@ -240,8 +240,11 @@ export default function CalcSessionPage() {
           today,
         )
       }
-      state.blockId = first.sourceBlockId
-      state.mixedOpId = first.sourceMixedOpId
+      // Only (re)assign attribution when this question carried a source. Carried
+      // make-up mistakes have no source — keep the signature's existing block/mixed
+      // attribution instead of wiping it to null.
+      if (first.sourceBlockId) state.blockId = first.sourceBlockId
+      if (first.sourceMixedOpId) state.mixedOpId = first.sourceMixedOpId
       nextStates.push(state)
     }
     if (nextStates.length) await problemState.upsertStates(nextStates)
@@ -434,7 +437,7 @@ export default function CalcSessionPage() {
       })
 
       if (wasMistake) {
-        void recordCorrect(q.signature)
+        void recordCorrect(q.signature, settings.sessionCounter + 1)
       }
 
       window.setTimeout(goNext, isChallengeCorrect ? 1100 : 750)
