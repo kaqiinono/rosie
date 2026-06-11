@@ -51,7 +51,7 @@ export default function CalcSessionPage() {
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { refresh: refreshStarHud } = useStarHud()
-  const { mistakes, addMistake, recordCorrect, refresh: refreshMistakes } = useCalcMistakes(user)
+  const { mistakes, addMistake, recordCorrect, lastSessionUnresolved, refresh: refreshMistakes } = useCalcMistakes(user)
   const problemState = useCalcProblemState(user)
 
   const requestedCount = useMemo(() => {
@@ -130,9 +130,12 @@ export default function CalcSessionPage() {
       // Use the returned map directly — `problemState.states` is still the stale
       // pre-load value within this same closure (React state updates async).
       const loadedStates = await problemState.loadAll()
+      // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
+      // Previous session number == current sessionCounter (it bumps after finish).
+      const carried = lastSessionUnresolved(settings.sessionCounter)
       const session = buildSession(settings, requestedCount, {
         problemStates: loadedStates,
-      })
+      }, carried)
       setQuestions(session)
       plannedCountRef.current = session.length
       setPlannedCount(session.length)
@@ -141,7 +144,7 @@ export default function CalcSessionPage() {
       questionStartRef.current = performance.now()
     }
     void init()
-  }, [settings, settingsLoading, requestedCount, mode, user, sessionKey, problemState])
+  }, [settings, settingsLoading, requestedCount, mode, user, sessionKey, problemState, lastSessionUnresolved])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -392,7 +395,7 @@ export default function CalcSessionPage() {
       setRevealAnswer(q.answer)
       setStreak(0)
       playSfx('wrong', settings.soundEnabled)
-      void addMistake(q)
+      void addMistake(q, settings.sessionCounter + 1)
 
       attemptsLogRef.current.push({
         signature: q.signature,

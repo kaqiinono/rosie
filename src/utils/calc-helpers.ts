@@ -4,6 +4,7 @@ import { assembleMixed, isMixedOpValid } from './calc-mixed'
 import type {
   CalcCategory,
   CalcLevel,
+  CalcMistake,
   CalcProblemState,
   CalcQuestion,
   CalcSettings,
@@ -36,11 +37,17 @@ type Source =
  * facts (via `parseSignature`); the rest is generated fresh. Mixed sources are
  * always generated fresh via `assembleMixed`. Every produced question is tagged
  * with its source for later attribution.
+ *
+ * `carried` are the previous session's still-unresolved mistakes, appended as
+ * make-up questions ON TOP of `count` (total length = count + carried.length,
+ * truncated so carried never exceeds `count`). They are mixed into the shuffle
+ * so they aren't predictably first.
  */
 export function buildSession(
   settings: CalcSettings,
   count: number,
   ctx: BuildCtx,
+  carried: CalcMistake[] = [],
 ): CalcQuestion[] {
   // 1. Sources
   const sources: Source[] = []
@@ -84,7 +91,22 @@ export function buildSession(
     }
   })
 
-  // 5. Shuffle (Fisher-Yates)
+  // 5. Append carried-over make-up questions (capped at `count` for safety).
+  const carry = carried.slice(0, count)
+  for (const m of carry) {
+    out.push({
+      display: `${m.display.replace(/\s*=\s*\?\s*$/, '')} = ?`,
+      signature: m.signature,
+      arity: 1,
+      level: m.level,
+      answer: m.answer,
+      isChallenge: false,
+      category: m.category,
+      coinBase: 1,
+    })
+  }
+
+  // 6. Shuffle the WHOLE thing (Fisher-Yates) so carried ones aren't predictably first.
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
     ;[out[i], out[j]] = [out[j], out[i]]

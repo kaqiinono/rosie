@@ -496,6 +496,8 @@ export interface CalcMistake {
   lastWrongAt: string
   consecutiveCorrect: number // ≥3 ⇒ resolved
   resolved: boolean
+  /** The session number during which this mistake was last recorded (for carry-over make-up). */
+  sessionNo?: number
 }
 
 // ─────────────────────────────────────────────────────────────────────────

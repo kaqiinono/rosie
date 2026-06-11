@@ -16,6 +16,7 @@ interface MistakeRow {
   last_wrong_at: string
   consecutive_correct: number
   resolved: boolean
+  session_no: number | null
 }
 
 function rowToMistake(r: MistakeRow): CalcMistake {
@@ -29,6 +30,7 @@ function rowToMistake(r: MistakeRow): CalcMistake {
     lastWrongAt: r.last_wrong_at,
     consecutiveCorrect: r.consecutive_correct,
     resolved: r.resolved,
+    sessionNo: r.session_no ?? undefined,
   }
 }
 
@@ -42,7 +44,7 @@ export function useCalcMistakes(user: User | null) {
     const init = async () => {
       const { data } = await supabase
         .from('calc_mistakes')
-        .select('id,signature,display,answer,level,category,last_wrong_at,consecutive_correct,resolved')
+        .select('id,signature,display,answer,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
         .eq('user_id', user.id)
         .order('last_wrong_at', { ascending: false })
       if (cancelled) return
@@ -57,15 +59,20 @@ export function useCalcMistakes(user: User | null) {
     if (!user) return
     const { data } = await supabase
       .from('calc_mistakes')
-      .select('id,signature,display,answer,level,category,last_wrong_at,consecutive_correct,resolved')
+      .select('id,signature,display,answer,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
       .eq('user_id', user.id)
       .order('last_wrong_at', { ascending: false })
     setMistakes((data ?? []).map(r => rowToMistake(r as MistakeRow)))
   }, [user])
 
-  /** Add or re-set a mistake when the user answers wrong twice. */
+  /**
+   * Add or re-set a mistake when the user answers wrong twice.
+   * `sessionNo` is the running session's number; it is stored on both insert and
+   * update so a repeatedly-missed mistake keeps moving forward to the latest
+   * session and thus keeps being carried into the next one.
+   */
   const addMistake = useCallback(
-    async (q: CalcQuestion) => {
+    async (q: CalcQuestion, sessionNo: number) => {
       if (!user) return
       try {
         await supabase
@@ -81,6 +88,7 @@ export function useCalcMistakes(user: User | null) {
               last_wrong_at: new Date().toISOString(),
               consecutive_correct: 0,
               resolved: false,
+              session_no: sessionNo,
             },
             { onConflict: 'user_id,signature' },
           )
@@ -90,7 +98,7 @@ export function useCalcMistakes(user: User | null) {
         const existing = prev.find(m => m.signature === q.signature)
         if (existing) {
           return prev.map(m => m.signature === q.signature
-            ? { ...m, consecutiveCorrect: 0, resolved: false, lastWrongAt: new Date().toISOString() }
+            ? { ...m, consecutiveCorrect: 0, resolved: false, lastWrongAt: new Date().toISOString(), sessionNo }
             : m)
         }
         return [{
@@ -102,6 +110,7 @@ export function useCalcMistakes(user: User | null) {
           lastWrongAt: new Date().toISOString(),
           consecutiveCorrect: 0,
           resolved: false,
+          sessionNo,
         }, ...prev]
       })
     },
@@ -130,7 +139,14 @@ export function useCalcMistakes(user: User | null) {
     [user, mistakes],
   )
 
-  return { mistakes, addMistake, recordCorrect, refresh, isLoading }
+  /** Unresolved mistakes recorded during the given (previous) session number. */
+  const lastSessionUnresolved = useCallback(
+    (prevSessionNo: number): CalcMistake[] =>
+      mistakes.filter(m => !m.resolved && m.sessionNo === prevSessionNo),
+    [mistakes],
+  )
+
+  return { mistakes, addMistake, recordCorrect, refresh, lastSessionUnresolved, isLoading }
 }
 
 export type { CalcLevel }
