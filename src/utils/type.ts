@@ -336,27 +336,31 @@ export interface CalcQuestion {
   coinBase: number
 }
 
+export type CalcSkeletonId =
+  | 'as'          // 加减混合
+  | 'md'          // 乘除混合
+  | 'asm'         // 加减与乘法
+  | 'asmd'        // 加减乘除全混合
+  | 'as_m_paren'  // 加减与乘法·带括号
+  | 'md_paren'    // 乘除·带括号
+  | 'asmd_paren'  // 加减乘除·带括号
+
+export interface MixedOp {
+  id: string            // uuid
+  skeleton: CalcSkeletonId
+  blockIds: string[]    // 选中的积木块 ID
+  enabled: boolean
+  label?: string
+}
+
 export interface CalcSettings {
-  enableAddSub: boolean
-  enableMulDiv: boolean
-  enableMixed: boolean
-  currentLevel: number // 1..20 — advanced by adaptive logic (capped at MAX_NUMERIC_LEVEL)
-  adaptive: boolean
+  selectedBlocks: string[]   // 单运算练习选中的积木块 ID
+  mixedOps: MixedOp[]        // 编排出的混合运算
   soundEnabled: boolean
-  lastCount: number // 20/30/50/100
-  lastTimeLimit: number // seconds, 0=unlimited
-  /** Global session counter — incremented every time a session finishes. Used by cold-problem rescue. */
-  sessionCounter: number
-  /** User-configured time limit overrides in milliseconds, keyed by category bucket (see calc-time-limits.ts). */
+  lastCount: number          // 20/30/50/100
+  lastTimeLimit: number       // seconds, 0=unlimited
+  sessionCounter: number      // 每次 session 完成自增
   timeLimitOverrides: Record<string, number>
-  /**
-   * Free-practice mode. When true, sessions are built from `freeModeLevels` (a user-picked subset),
-   * the mastery state machine / adaptive level-up is skipped, and the single "currentLevel" cursor
-   * is unused for question generation. Problem-state attempts are still recorded.
-   */
-  freeMode: boolean
-  /** Levels the user picked for free-practice mode. May include 'C' (challenge). */
-  freeModeLevels: CalcLevel[]
 }
 
 // ─────────────────────────────────────────────────────────────────────────
