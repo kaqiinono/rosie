@@ -7,6 +7,7 @@ import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
+import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import QuestionDisplay from '@/components/calc/QuestionDisplay'
 import NumberPad from '@/components/calc/NumberPad'
@@ -19,7 +20,7 @@ import { timeLimitFromSettings } from '@/utils/calc-time-limits'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
 import { todayStr } from '@/utils/constant'
-import type { CalcLevel, CalcMode, CalcQuestion } from '@/utils/type'
+import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion } from '@/utils/type'
 
 interface AttemptStat {
   signature: string
@@ -32,6 +33,10 @@ interface AttemptStat {
   timeMs: number
   /** Whether the first attempt was within the configured time limit. */
   withinLimit: boolean
+  /** Attribution: which single-op block this question came from. */
+  sourceBlockId?: string
+  /** Attribution: which mixed-op generator this question came from. */
+  sourceMixedOpId?: string
 }
 
 function formatTimer(s: number) {
@@ -48,6 +53,7 @@ export default function CalcSessionPage() {
   const wallet = useCalcWallet(user)
   const { refresh: refreshStarHud } = useStarHud()
   const { mistakes, addMistake, recordCorrect, refresh: refreshMistakes } = useCalcMistakes(user)
+  const problemState = useCalcProblemState(user)
 
   const requestedCount = useMemo(() => {
     const n = Number(params.get('count'))
@@ -114,15 +120,19 @@ export default function CalcSessionPage() {
     if (!user) return
     initRef.current = true
 
-    const init = () => {
-      const session = buildSession(settings, requestedCount, mistakes)
+    const init = async () => {
+      // Load all of the user's problem states so buildSession can weight toward weak ones.
+      await problemState.loadAll()
+      const session = buildSession(settings, requestedCount, {
+        problemStates: problemState.states,
+      })
       setQuestions(session)
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
       questionStartRef.current = performance.now()
     }
-    init()
-  }, [settings, settingsLoading, mistakes, requestedCount, mode, user, sessionKey])
+    void init()
+  }, [settings, settingsLoading, requestedCount, mode, user, sessionKey, problemState])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -197,6 +207,34 @@ export default function CalcSessionPage() {
       return av > mv ? a.level : max
     }, 1)
 
+    // ── Record lightweight per-signature proficiency with source attribution ──
+    const nextSessionNo = settings.sessionCounter + 1
+    const today = todayStr()
+    const grouped = new Map<string, AttemptStat[]>()
+    for (const a of log) {
+      const arr = grouped.get(a.signature)
+      if (arr) arr.push(a)
+      else grouped.set(a.signature, [a])
+    }
+    const nextStates: CalcProblemState[] = []
+    for (const group of grouped.values()) {
+      const first = group[0]
+      let state = problemState.getState(first.signature, first.level)
+      for (const a of group) {
+        state = applyAttempt(
+          state,
+          { correct: a.finallyCorrect, timeMs: a.timeMs, withinLimit: a.withinLimit },
+          a.withinLimit,
+          nextSessionNo,
+          today,
+        )
+      }
+      state.blockId = first.sourceBlockId
+      state.mixedOpId = first.sourceMixedOpId
+      nextStates.push(state)
+    }
+    if (nextStates.length) await problemState.upsertStates(nextStates)
+
     // 1. Persist session row (unchanged)
     await wallet.recordSession({
       date: todayStr(),
@@ -233,6 +271,7 @@ export default function CalcSessionPage() {
     startedTsMs,
     startedAtIso,
     requestedTimeLimit,
+    problemState,
   ])
 
   // time-up
@@ -294,6 +333,8 @@ export default function CalcSessionPage() {
         wasMistake,
         timeMs: elapsedMs,
         withinLimit: isFirstTry ? withinLimit : false,
+        sourceBlockId: q.sourceBlockId,
+        sourceMixedOpId: q.sourceMixedOpId,
       })
 
       if (wasMistake) {
@@ -341,6 +382,8 @@ export default function CalcSessionPage() {
         wasMistake,
         timeMs: elapsedMs,
         withinLimit: false,
+        sourceBlockId: q.sourceBlockId,
+        sourceMixedOpId: q.sourceMixedOpId,
       })
 
       // master.md §6.2 — interleave wrong problems +4 positions later in the queue
