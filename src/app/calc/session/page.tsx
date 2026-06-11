@@ -15,6 +15,8 @@ import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
+import { blockById } from '@/utils/calc-blocks'
+import { skeletonMeta } from '@/utils/calc-mixed'
 import { timeLimitFromSettings } from '@/utils/calc-time-limits'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
@@ -36,6 +38,8 @@ interface AttemptStat {
   sourceBlockId?: string
   /** Attribution: which mixed-op generator this question came from. */
   sourceMixedOpId?: string
+  /** Question display with trailing "= ?" stripped, for wrong-answer review. */
+  display?: string
 }
 
 function formatTimer(s: number) {
@@ -113,6 +117,12 @@ export default function CalcSessionPage() {
     avgMs: number | null
     /** Mean per-question time of the PREVIOUS session, in ms (null if none). */
     prevAvgMs: number | null
+    /** Per-source performance breakdown for this session. */
+    bySource: { label: string; total: number; firstTryCorrect: number; proficiency: number }[]
+    /** Distinct wrong-question displays from this session (final answer wrong), capped. */
+    newWeak: string[]
+    /** Source labels to focus on next time, weakest-first. */
+    nextFocus: string[]
   } | null>(null)
 
   const [sessionKey, setSessionKey] = useState(0)
@@ -202,17 +212,6 @@ export default function CalcSessionPage() {
           : (prevSession.count > 0 ? Math.round((prevSession.timeSpentSec * 1000) / prevSession.count) : null))
       : null
 
-    setFinalStats({
-      correct: correctCount,
-      retry: retryCount,
-      wrong: wrongCount,
-      total: log.length,
-      challenge: challengeCorrect,
-      timeSec: finalElapsed,
-      avgMs,
-      prevAvgMs,
-    })
-
     const topLevel = log.reduce<CalcLevel>((max, a) => {
       const av = a.level === 'C' ? 99 : (a.level as number)
       const mv = max === 'C' ? 99 : (max as number)
@@ -247,6 +246,67 @@ export default function CalcSessionPage() {
     }
     if (nextStates.length) await problemState.upsertStates(nextStates)
 
+    // ── Per-source breakdown for this session's summary ──
+    const sourceKeyOf = (a: AttemptStat): string | null => {
+      if (a.sourceBlockId) return `block:${a.sourceBlockId}`
+      if (a.sourceMixedOpId) return `mixed:${a.sourceMixedOpId}`
+      return null
+    }
+    const sourceLabelOf = (key: string): string => {
+      const [kind, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
+      if (kind === 'block') return blockById(id)?.label ?? id
+      const mixedOp = settings.mixedOps.find((m) => m.id === id)
+      return mixedOp?.label ?? (mixedOp ? skeletonMeta(mixedOp.skeleton).label : id)
+    }
+    const sourceGroups = new Map<string, AttemptStat[]>()
+    for (const a of log) {
+      const key = sourceKeyOf(a)
+      if (!key) continue
+      const arr = sourceGroups.get(key)
+      if (arr) arr.push(a)
+      else sourceGroups.set(key, [a])
+    }
+    const bySource = Array.from(sourceGroups.entries()).map(([key, attempts]) => {
+      const [kind, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
+      const relevantStates = nextStates.filter((s) =>
+        kind === 'block' ? s.blockId === id : s.mixedOpId === id,
+      )
+      const proficiency = relevantStates.length > 0
+        ? Math.round(relevantStates.reduce((sum, s) => sum + s.proficiency, 0) / relevantStates.length)
+        : 0
+      return {
+        label: sourceLabelOf(key),
+        total: attempts.length,
+        firstTryCorrect: attempts.filter((a) => a.firstTryCorrect).length,
+        proficiency,
+      }
+    })
+
+    // ── Newly-exposed weak spots: distinct wrong-final question displays ──
+    const newWeak = Array.from(
+      new Set(log.filter((a) => !a.finallyCorrect).map((a) => a.display).filter((d): d is string => !!d)),
+    ).slice(0, 8)
+
+    // ── Next-focus preview: weakest-proficiency sources, ascending ──
+    const nextFocus = [...bySource]
+      .sort((a, b) => a.proficiency - b.proficiency)
+      .slice(0, 5)
+      .map((s) => s.label)
+
+    setFinalStats({
+      correct: correctCount,
+      retry: retryCount,
+      wrong: wrongCount,
+      total: log.length,
+      challenge: challengeCorrect,
+      timeSec: finalElapsed,
+      avgMs,
+      prevAvgMs,
+      bySource,
+      newWeak,
+      nextFocus,
+    })
+
     // 1. Persist session row (unchanged)
     await wallet.recordSession({
       date: todayStr(),
@@ -279,6 +339,7 @@ export default function CalcSessionPage() {
     mode,
     settings.soundEnabled,
     settings.sessionCounter,
+    settings.mixedOps,
     update,
     startedTsMs,
     startedAtIso,
@@ -408,6 +469,7 @@ export default function CalcSessionPage() {
         withinLimit: false,
         sourceBlockId: q.sourceBlockId,
         sourceMixedOpId: q.sourceMixedOpId,
+        display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
 
       // Collect the wrong question for make-up at the session tail (push a fresh
@@ -668,6 +730,9 @@ export default function CalcSessionPage() {
           prevAvgMs={finalStats.prevAvgMs}
           maxStreak={maxStreak}
           challengeCorrect={finalStats.challenge}
+          bySource={finalStats.bySource}
+          newWeak={finalStats.newWeak}
+          nextFocus={finalStats.nextFocus}
           levelUpTo={null}
           levelDownTo={null}
           reviewMilestone={null}

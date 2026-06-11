@@ -21,7 +21,20 @@ interface Props {
   nextSessionAssault?: boolean
   /** Optional caption shown when a level transitioned to abc_passed / review_r1 / review_r2 etc. */
   reviewMilestone?: string | null
+  /** Per-source (building block / mixed op) performance breakdown for this session. */
+  bySource?: { label: string; total: number; firstTryCorrect: number; proficiency: number }[]
+  /** Distinct wrong-final question displays exposed this session (already stripped of "= ?"). */
+  newWeak?: string[]
+  /** Source labels the next session will focus on, weakest-first. */
+  nextFocus?: string[]
   onAgain: () => void
+}
+
+/** 熟练度 pill color: red ≤1, amber 2-3, green ≥4. */
+function proficiencyColor(p: number) {
+  if (p <= 1) return { color: '#fca5a5', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.28)' }
+  if (p <= 3) return { color: '#fbbf24', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)' }
+  return { color: '#4ade80', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.25)' }
 }
 
 function formatTime(s: number) {
@@ -59,6 +72,9 @@ export default function SessionSummary({
   levelDownTo,
   nextSessionAssault,
   reviewMilestone,
+  bySource,
+  newWeak,
+  nextFocus,
   onAgain,
 }: Props) {
   const accuracy = total > 0 ? Math.round(((correctCount + retryCount) / total) * 100) : 0
@@ -322,6 +338,111 @@ export default function SessionSummary({
           <div className="mt-3 flex justify-center gap-3 text-[11px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
             {maxStreak >= 3 && <span>🔥 最长连对 {maxStreak}</span>}
             {challengeCorrect > 0 && <span>⭐ 挑战题 {challengeCorrect} 道</span>}
+          </div>
+        )}
+
+        {/* Per-source performance breakdown */}
+        {bySource && bySource.length > 0 && (
+          <div
+            className="mt-3 rounded-xl px-4 py-3 text-left"
+            style={{
+              background: 'rgba(139,92,246,0.06)',
+              border: '1px solid rgba(139,92,246,0.18)',
+            }}
+          >
+            <div
+              className="text-[10px] font-extrabold uppercase tracking-widest"
+              style={{ color: 'rgba(196,181,253,0.55)' }}
+            >
+              📊 本次各项表现
+            </div>
+            <div className="mt-2 flex flex-col gap-1.5">
+              {bySource.map((s) => {
+                const pc = proficiencyColor(s.proficiency)
+                return (
+                  <div key={s.label} className="flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1 truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>
+                      {s.label}
+                    </div>
+                    <div className="shrink-0 text-[11px] font-semibold tabular-nums" style={{ color: 'rgba(245,243,255,0.5)' }}>
+                      {s.firstTryCorrect}/{s.total} 对
+                    </div>
+                    <div
+                      className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold"
+                      style={{ color: pc.color, background: pc.bg, border: `1px solid ${pc.border}` }}
+                    >
+                      熟练 {s.proficiency}/5
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Newly-exposed weak spots */}
+        {newWeak && newWeak.length > 0 && (
+          <div
+            className="mt-3 rounded-xl px-4 py-3 text-left"
+            style={{
+              background: 'rgba(245,158,11,0.06)',
+              border: '1px solid rgba(245,158,11,0.18)',
+            }}
+          >
+            <div
+              className="text-[10px] font-extrabold uppercase tracking-widest"
+              style={{ color: 'rgba(251,191,36,0.6)' }}
+            >
+              🌱 新冒出的薄弱
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {newWeak.map((d) => (
+                <span
+                  key={d}
+                  className="rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums"
+                  style={{
+                    color: '#fbbf24',
+                    background: 'rgba(245,158,11,0.12)',
+                    border: '1px solid rgba(245,158,11,0.25)',
+                  }}
+                >
+                  {d}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Next-focus preview */}
+        {nextFocus && nextFocus.length > 0 && (
+          <div
+            className="mt-3 rounded-xl px-4 py-3 text-left"
+            style={{
+              background: 'rgba(139,92,246,0.06)',
+              border: '1px solid rgba(139,92,246,0.18)',
+            }}
+          >
+            <div
+              className="text-[10px] font-extrabold uppercase tracking-widest"
+              style={{ color: 'rgba(196,181,253,0.55)' }}
+            >
+              下次重点练
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {nextFocus.map((label) => (
+                <span
+                  key={label}
+                  className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                  style={{
+                    color: '#c4b5fd',
+                    background: 'rgba(139,92,246,0.12)',
+                    border: '1px solid rgba(139,92,246,0.25)',
+                  }}
+                >
+                  🎯 {label}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 
