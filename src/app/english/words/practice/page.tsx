@@ -8,6 +8,7 @@ import { findPassage, findPassageByKey, findSentenceForWord } from '@/utils/read
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'
 import type { SpellButtonStyle } from '@/components/english/words/SpellTiles'
+import type { QuizType } from '@/utils/type'
 
 export default function PracticePage() {
   const {
@@ -68,7 +69,7 @@ export default function PracticePage() {
   }, [selUnits, selLessons, filteredWords.length])
 
   const startPractice = useCallback(
-    (types: ('A' | 'B' | 'C' | 'D')[], preview: boolean, buttonStyle: SpellButtonStyle) => {
+    (types: QuizType[], preview: boolean, buttonStyle: SpellButtonStyle) => {
       if (!filteredWords.length) {
         alert('请先选择单词范围！')
         return

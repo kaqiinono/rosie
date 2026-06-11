@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import type { SpellButtonStyle } from './SpellTiles'
+import type { QuizType } from '@/utils/type'
 
 interface PracticeSetupProps {
   scopeLabel: string
   onStart: (
-    types: ('A' | 'B' | 'C' | 'D')[],
+    types: QuizType[],
     preview: boolean,
     buttonStyle: SpellButtonStyle,
   ) => void
@@ -27,11 +28,17 @@ export default function PracticeSetup({
   const [typeB, setTypeB] = useState(false)
   const [typeC, setTypeC] = useState(true)
   const [typeD, setTypeD] = useState(true)
+  // 全拼测试（题型 E）：选中后与其它题型互斥，只考全拼、考完统一判分。
+  const [typeE, setTypeE] = useState(false)
   const [preview, setPreview] = useState(false)
   const [buttonStyle, setButtonStyle] = useState<SpellButtonStyle>(initialButtonStyle)
 
   const handleStart = () => {
-    const types: ('A' | 'B' | 'C' | 'D')[] = []
+    if (typeE) {
+      onStart(['E'], preview, buttonStyle)
+      return
+    }
+    const types: QuizType[] = []
     if (typeA) types.push('A')
     if (typeB) types.push('B')
     if (typeC) types.push('C')
@@ -61,11 +68,14 @@ export default function PracticeSetup({
           {baseTypes.map((t) => (
             <button
               key={t.key}
+              disabled={typeE}
               onClick={() => t.toggle(!t.checked)}
-              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
-                t.checked
-                  ? 'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
-                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+              className={`flex items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+                typeE
+                  ? 'cursor-not-allowed border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] opacity-40'
+                  : t.checked
+                    ? 'cursor-pointer border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
+                    : 'cursor-pointer border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
               }`}
             >
               {t.label}
@@ -74,18 +84,39 @@ export default function PracticeSetup({
           {typeDAvailable && (
             <button
               key="D"
+              disabled={typeE}
               onClick={() => setTypeD(!typeD)}
               title="本周重点课的词，挖空课文原句作答"
-              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
-                typeD
-                  ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+              className={`flex items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+                typeE
+                  ? 'cursor-not-allowed border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] opacity-40'
+                  : typeD
+                    ? 'cursor-pointer border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+                    : 'cursor-pointer border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
               }`}
             >
               📖 D. 课文语境填空
             </button>
           )}
+          {/* 全拼测试：选中后独占，其它题型置灰不可选 */}
+          <button
+            key="E"
+            onClick={() => setTypeE((v) => !v)}
+            title="只看释义，凭记忆拼出完整单词；无字母提示、无长度提示；自制 26 字母键盘；全部答完后统一判分，错词按全拼补练"
+            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
+              typeE
+                ? 'border-[#e879f9] bg-[rgba(232,121,249,.18)] text-[#f0abfc] shadow-[0_0_14px_rgba(232,121,249,.3)]'
+                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
+            }`}
+          >
+            🔤 全拼测试
+          </button>
         </div>
+        {typeE && (
+          <p className="mt-1 w-full text-[0.78rem] font-semibold text-[#f0abfc]/80">
+            🔒 全拼测试模式：只考全拼、无任何提示，全部答完后统一判分，错词会用全拼再补练一轮。
+          </p>
+        )}
       </div>
 
       {/* Spell tile style — only matters when Type C is in the mix, but we always show

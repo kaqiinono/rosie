@@ -7,6 +7,7 @@ import { pickMessage, RETRY_MC_MESSAGES } from '@/utils/constant'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
 import SpellTiles, { type SpellButtonStyle } from './SpellTiles'
+import FullSpellInput from './FullSpellInput'
 import PassageHintModal from './PassageHintModal'
 import WordHelpModal from './WordHelpModal'
 import { letterCount } from '@/utils/english-helpers'
@@ -31,6 +32,10 @@ interface QuizQuestionBodyProps {
   spellButtonStyle?: SpellButtonStyle
   /** When a monster-eat overlay is taking over advancing (WeeklyPlanSession only), suppress the inline 下一题 button. Optional; defaults false so other callers are unaffected. */
   eatenSceneActive?: boolean
+  /** Type-E 全拼测试：主轮"考完再判分"模式。true 时输入只记录答案并前进，不即时判分/反馈。 */
+  fullSpellDeferred?: boolean
+  /** Type-E 主轮提交回调（仅 fullSpellDeferred 时使用）：记录答案并前进到下一题。 */
+  onDeferredSubmit?: (val: string) => void
 }
 
 export default function QuizQuestionBody({
@@ -45,11 +50,14 @@ export default function QuizQuestionBody({
   onHelpReveal,
   spellButtonStyle,
   eatenSceneActive = false,
+  fullSpellDeferred = false,
+  onDeferredSubmit,
 }: QuizQuestionBodyProps) {
   const isA = question.type === 'A'
   const isB = question.type === 'B'
   const isC = question.type === 'C'
   const isD = question.type === 'D'
+  const isE = question.type === 'E'
   const isMultiChoice = isA || isB || isD
 
   const retryHintMC = useMemo(() => pickMessage(RETRY_MC_MESSAGES), [questionKey])
@@ -65,14 +73,18 @@ export default function QuizQuestionBody({
       ? 'bg-[rgba(74,222,128,.12)] text-[#4ade80]'
       : isD
         ? 'bg-[rgba(245,158,11,.18)] text-[#fbbf24]'
-        : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
+        : isE
+          ? 'bg-[rgba(232,121,249,.15)] text-[#e879f9]'
+          : 'bg-[rgba(167,139,250,.15)] text-[#a78bfa]'
   const badgeText = isA
     ? '题型 A · 看释义选单词'
     : isC
       ? '题型 C · 看释义默写单词 (+2⭐/题)'
       : isD
         ? '📖 题型 D · 课文语境填空 (+2⭐/题)'
-        : '题型 B · 看单词选释义'
+        : isE
+          ? '🔤 全拼测试 · 凭记忆拼出完整单词 (+2⭐/题)'
+          : '题型 B · 看单词选释义'
 
   const promptText = isA
     ? '请选出对应的英文单词：'
@@ -80,14 +92,17 @@ export default function QuizQuestionBody({
       ? '请拼写出对应的英文单词或短语：'
       : isD
         ? '请选出填入空格的单词或短语：'
-        : '请选出正确的释义：'
+        : isE
+          ? '凭记忆拼出完整单词（无字母提示、无长度提示）：'
+          : '请选出正确的释义：'
 
-  const showHintAvailable = !runner.answered && hasPassageContext && !isD
+  // Type E is a pure recall test — no passage hint, no letter-reveal help.
+  const showHintAvailable = !runner.answered && hasPassageContext && !isD && !isE
   // Help button shows the word's own example with progressive letter reveal — only
   // useful when (a) the example exists and (b) the user hasn't answered yet.
   // Available across all 4 types; for Type B (word already visible) it still serves
   // as a comprehension hint via the example sentence.
-  const showHelpAvailable = !runner.answered && !!question.word.example && !!onHelpReveal
+  const showHelpAvailable = !runner.answered && !!question.word.example && !!onHelpReveal && !isE
 
   return (
     <>
@@ -98,9 +113,15 @@ export default function QuizQuestionBody({
           >
             {badgeText}
           </span>
-          <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">
-            ✓ {score} / {total}
-          </div>
+          {fullSpellDeferred ? (
+            <div className="inline-flex items-center gap-1 rounded-full bg-[rgba(232,121,249,.12)] px-2.5 py-1 text-[clamp(.62rem,1.8cqi,.72rem)] font-extrabold text-[#e879f9]">
+              🔒 答完统一判分
+            </div>
+          ) : (
+            <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">
+              ✓ {score} / {total}
+            </div>
+          )}
         </div>
 
         {progressSlot}
@@ -116,7 +137,7 @@ export default function QuizQuestionBody({
           </div>
         ) : (
           <div className="text-[clamp(1.3rem,4cqi,2.5rem)] leading-relaxed font-black text-[#f0f0ff]">
-            {isA || isC ? (
+            {isA || isC || isE ? (
               question.word.explanation
             ) : (
               <div className="flex items-center gap-2">
@@ -231,7 +252,25 @@ export default function QuizQuestionBody({
           />
         )}
 
-        {runner.attempt === 'done' && runner.wasCorrect === false && !eatenSceneActive && (
+        {isE && (
+          <FullSpellInput
+            key={questionKey}
+            word={question.word.word}
+            deferred={fullSpellDeferred}
+            onSubmit={
+              fullSpellDeferred
+                ? (onDeferredSubmit ?? (() => {}))
+                : runner.handleSpellSubmit
+            }
+            answered={runner.answered}
+            isCorrect={runner.spellOk}
+            attempt={runner.attempt}
+            onRetryAcknowledged={runner.acknowledgeSpellRetry}
+            buttonStyle={spellButtonStyle}
+          />
+        )}
+
+        {!fullSpellDeferred && runner.attempt === 'done' && runner.wasCorrect === false && !eatenSceneActive && (
           <div className="flex flex-wrap justify-center gap-2">
             <button
               onClick={runner.requestAdvance}

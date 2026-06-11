@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
-import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryMap, QuizType } from '@/utils/type'
 import type { SpellButtonStyle } from '@/components/english/words/SpellTiles'
 import type { MasteryLevel } from '@/utils/masteryUtils'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
@@ -33,8 +33,8 @@ interface WordsContextValue {
   setMasteryFilter: Dispatch<SetStateAction<MasteryLevel | null>>
   filteredWords: WordEntry[]
   // practice types (shared for immersive mode)
-  practiceTypes: ('A' | 'B' | 'C' | 'D')[]
-  setPracticeTypes: Dispatch<SetStateAction<('A' | 'B' | 'C' | 'D')[]>>
+  practiceTypes: QuizType[]
+  setPracticeTypes: Dispatch<SetStateAction<QuizType[]>>
   previewCards: boolean
   setPreviewCards: Dispatch<SetStateAction<boolean>>
   /** Type-C 拼写题字母池按钮样式（共享，跨练习入口） */
@@ -72,7 +72,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   })
   const [selWords, setSelWords] = useState<Set<string>>(new Set())
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
-  const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C' | 'D')[]>(['A', 'B'])
+  const [practiceTypes, setPracticeTypes] = useState<QuizType[]>(['A', 'B'])
   const [previewCards, setPreviewCards] = useState(false)
   const [practiceButtonStyle, setPracticeButtonStyle] = useState<SpellButtonStyle>('candy')
 

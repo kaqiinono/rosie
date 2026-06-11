@@ -235,7 +235,7 @@ export function buildDailyPlan(totalWords: number): DayPlan[] {
   return plan
 }
 
-const QUIZ_TYPE_ORDER: QuizType[] = ['A', 'B', 'C', 'D']
+const QUIZ_TYPE_ORDER: QuizType[] = ['A', 'B', 'C', 'D', 'E']
 
 /** Selected types in difficulty order (A → B → C → D), ignoring duplicates. */
 export function normalizeQuizTypes(types: QuizType[]): QuizType[] {

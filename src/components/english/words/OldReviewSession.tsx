@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry, QuizType } from '@/utils/type'
 import {
   buildQuizOptions,
   buildQuizQuestions,
@@ -31,7 +31,7 @@ type Phase = 'study' | 'quiz' | 'done'
 
 interface DpQuizQ {
   word: WordEntry
-  type: 'A' | 'B' | 'C' | 'D'
+  type: QuizType
 }
 
 interface OldReviewSnapshot {
@@ -39,7 +39,7 @@ interface OldReviewSnapshot {
   phase: 'study' | 'quiz'
   studyIdx: number
   wordKeys: string[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C' | 'D' }[]
+  quizQs: { key: string; type: QuizType }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
 }
@@ -87,7 +87,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     [sessionWordKeys, vocab],
   )
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D' }[]>(
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: QuizType }[]>(
     () => snap0?.quizQs ?? [],
   )
   const quizQs = useMemo<DpQuizQ[]>(
@@ -158,7 +158,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   }, [recordBatch, setIsImmersive, onBack])
 
   const startQuiz = useCallback(() => {
-    const types = normalizeQuizTypes([...enabledTypes] as ('A' | 'B' | 'C' | 'D')[])
+    const types = normalizeQuizTypes([...enabledTypes] as (QuizType)[])
     const qs = buildQuizQuestions(sessionWords, types, Date.now())
     quizResultBuffer.current = []
     setQuizQKeys(qs.map((q) => ({ key: wordKey(q.word), type: q.type })))
@@ -200,13 +200,13 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
       const helpExtras = Object.values(helpClicks).some((c) => c > 0)
         ? buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
         : []
-      const typeByKey = new Map<string, 'A' | 'B' | 'C' | 'D'>()
+      const typeByKey = new Map<string, QuizType>()
       for (const q of quizQs) {
         const k = wordKey(q.word)
         if (!typeByKey.has(k)) typeByKey.set(k, q.type)
       }
       const seen = new Set<string>()
-      const wrongItems: { entry: WordEntry; type: 'A' | 'B' | 'C' | 'D' }[] = []
+      const wrongItems: { entry: WordEntry; type: QuizType }[] = []
       for (const r of quizResultBuffer.current) {
         if (r.correct) continue
         const k = wordKey(r.entry)

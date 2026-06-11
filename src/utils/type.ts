@@ -486,7 +486,7 @@ export interface CalcMistake {
 // Quiz / rescue-queue types (English word-learning module)
 // ─────────────────────────────────────────────────────────────────────────
 
-export type QuizType = 'A' | 'B' | 'C' | 'D'
+export type QuizType = 'A' | 'B' | 'C' | 'D' | 'E'
 
 export type RescueSeverity = 'half' | 'eaten'
 

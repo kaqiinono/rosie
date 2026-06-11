@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole } from '@/utils/type'
+import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole, QuizType } from '@/utils/type'
 import { encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
@@ -49,7 +49,7 @@ type WordKind = 'consolidate' | 'preview'
 
 interface DpQuizQ {
   word: WordEntry
-  type: 'A' | 'B' | 'C' | 'D'
+  type: QuizType
   kind: WordKind
   revealedHalf?: number
   rescueRole?: RescueRole
@@ -62,7 +62,7 @@ interface SessionSnapshot {
   subTask: 'all' | 'consolidate' | 'preview'
   studyIdx: number
   words: { key: string; kind: WordKind }[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind }[]
+  quizQs: { key: string; type: QuizType; kind: WordKind }[]
   curQ: number
   quizResults: { key: string; correct: boolean }[]
 }
@@ -129,10 +129,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setSelectedDate(firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null)
   }
 
-  const [consolidateTypes, setConsolidateTypes] = useState<Set<'A' | 'B' | 'C' | 'D'>>(
+  const [consolidateTypes, setConsolidateTypes] = useState<Set<QuizType>>(
     new Set(['A', 'C', 'D']),
   )
-  const [previewTypes, setPreviewTypes] = useState<Set<'A' | 'B' | 'C' | 'D'>>(
+  const [previewTypes, setPreviewTypes] = useState<Set<QuizType>>(
     new Set(['A', 'B']),
   )
 
@@ -169,7 +169,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     () => snap0?.subTask ?? 'all',
   )
 
-  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind; revealedHalf?: number; rescueRole?: RescueRole }[]>(
+  const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: QuizType; kind: WordKind; revealedHalf?: number; rescueRole?: RescueRole }[]>(
     () => snap0?.quizQs ?? [],
   )
   const quizQs = useMemo(
@@ -788,7 +788,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                   <div className="mb-4 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="min-w-[5.5rem] text-[.72rem] font-bold text-[#93c5fd]">必记词题型</span>
-                      {((dayHasTypeDEligible ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'C']) as ('A' | 'B' | 'C' | 'D')[]).map((t) => {
+                      {((dayHasTypeDEligible ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'C']) as (QuizType)[]).map((t) => {
                         const labels = { A: '释义 → 选单词', B: '单词 → 选释义', C: '释义 → 默写', D: '📖 课文填空' }
                         const on = consolidateTypes.has(t)
                         return (

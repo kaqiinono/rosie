@@ -65,6 +65,8 @@ export default function ImmersiveMode({
   const [qScore, setQScore] = useState(0)
   const [showResults, setShowResults] = useState(false)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  // Type-E 全拼测试主轮"考完再判分"：暂存每道主轮题的对错（按题序），主轮结束后统一结算。
+  const deferredResultsRef = useRef<Record<number, boolean>>({})
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [reinforcementAppended, setReinforcementAppended] = useState(false)
   const [mainPassTotal, setMainPassTotal] = useState<number | null>(null)
@@ -87,8 +89,17 @@ export default function ImmersiveMode({
     setMainPassTotal(null)
   }, [words, practiceTypes, isEligibleForTypeD])
 
+  // 重玩（再练一次）：事件回调里重置 deferred 记录，避免上一轮残留。
+  const replayQuiz = useCallback(() => {
+    deferredResultsRef.current = {}
+    startQuiz()
+  }, [startQuiz])
+
   useEffect(() => {
-    if (open && mode === 'practice') quizResultBuffer.current = []
+    if (open && mode === 'practice') {
+      quizResultBuffer.current = []
+      deferredResultsRef.current = {}
+    }
   }, [open, mode])
 
   const [prevOpen, setPrevOpen] = useState(open)
@@ -160,12 +171,54 @@ export default function ImmersiveMode({
       if (!currentQ) return
       if (info.finalCorrect) {
         setQScore((s) => s + 1)
-        const amount = currentQ.type === 'C' || currentQ.type === 'D' ? 2 : 1
+        const amount =
+          currentQ.type === 'C' || currentQ.type === 'D' || currentQ.type === 'E' ? 2 : 1
         void awardStars('red', amount)
       }
       quizResultBuffer.current.push({ entry: currentQ.word, correct: info.finalCorrect })
     },
     [currentQ, awardStars],
+  )
+
+  // Type-E 主轮：记录本题答案、前进；主轮最后一题提交后统一判分并补练（题型仍为 E）。
+  const handleDeferredSubmit = useCallback(
+    (val: string) => {
+      if (!currentQ) return
+      const correct = val.trim().toLowerCase() === currentQ.word.word.toLowerCase()
+      deferredResultsRef.current[curQ] = correct
+      const next = curQ + 1
+      if (next < quizQs.length) {
+        setCurQ(next)
+        return
+      }
+      // 主轮考察完毕 —— 现在统一判分。
+      let correctCount = 0
+      const wrongItems: { entry: WordEntry; type: QuizType }[] = []
+      for (let i = 0; i < quizQs.length; i++) {
+        const ok = deferredResultsRef.current[i] ?? false
+        quizResultBuffer.current.push({ entry: quizQs[i].word, correct: ok })
+        if (ok) {
+          correctCount++
+          void awardStars('red', 2)
+        } else {
+          wrongItems.push({ entry: quizQs[i].word, type: 'E' })
+        }
+      }
+      setQScore(correctCount)
+      // 错误单词补练（方式同其他题型，题型仍为 E）。
+      const extras = buildWrongAnswerReinforcement(wrongItems, Date.now() + 11)
+      if (extras.length > 0) {
+        setMainPassTotal(quizQs.length)
+        setQuizQs((prev) => [...prev, ...extras])
+        setReinforcementAppended(true)
+        setCurQ(next)
+        return
+      }
+      onQuizComplete?.(quizResultBuffer.current)
+      quizResultBuffer.current = []
+      setShowResults(true)
+    },
+    [currentQ, curQ, quizQs, awardStars, onQuizComplete],
   )
 
   const handleAdvance = useCallback(() => {
@@ -221,6 +274,8 @@ export default function ImmersiveMode({
 
   const helpRevealedForCurrent = currentQ ? (helpClicks[wordKey(currentQ.word)] ?? 0) : 0
   const inReinforcement = reinforcementAppended && mainPassTotal !== null && curQ >= mainPassTotal
+  // Type-E 主轮（未进入补练）走"考完再判分"的延迟模式；补练阶段恢复即时判分。
+  const isDeferredE = currentQ?.type === 'E' && !inReinforcement
 
   const runner = useQuizRunner({
     question: currentQ,
@@ -240,7 +295,11 @@ export default function ImmersiveMode({
 
   // Per-question star value summed for accurate live target (A/B=1, C/D=2)
   const targetStars = useMemo(
-    () => quizQs.reduce((s, q) => s + (q.type === 'C' || q.type === 'D' ? 2 : 1), 0),
+    () =>
+      quizQs.reduce(
+        (s, q) => s + (q.type === 'C' || q.type === 'D' || q.type === 'E' ? 2 : 1),
+        0,
+      ),
     [quizQs],
   )
 
@@ -579,6 +638,8 @@ export default function ImmersiveMode({
               helpRevealed={helpRevealedForCurrent}
               onHelpReveal={handleHelpReveal}
               spellButtonStyle={spellButtonStyle}
+              fullSpellDeferred={isDeferredE}
+              onDeferredSubmit={handleDeferredSubmit}
             />
           )}
 
@@ -600,7 +661,7 @@ export default function ImmersiveMode({
                       : '继续努力，你可以的！'}
               </div>
               <button
-                onClick={startQuiz}
+                onClick={replayQuiz}
                 className="font-nunito mr-2 cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-6 py-2.5 text-[.86rem] font-extrabold text-white"
               >
                 🔄 再练一次
