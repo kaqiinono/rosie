@@ -237,7 +237,7 @@ export default function CalcSettingsPage() {
             />
             <ToggleRow
               label="乘除法"
-              description="乘法口诀 · 除法 · ×10-19 拓展（档 6-14, 16, 18）"
+              description="乘法口诀 · 除法 · ×10-19 拓展 · 2-19 综合（档 6-14, 16, 18-20）"
               value={getCategoryToggleValue('muldiv')}
               onChange={(v) => setCategoryToggle('muldiv', v)}
             />
@@ -299,7 +299,7 @@ export default function CalcSettingsPage() {
 
                 <ToggleRow
                   label="自适应升档"
-                  description="最近 30 题正确率 >85% 时自动解锁下一档（最高 Lv.18）"
+                  description="最近 30 题正确率 >85% 时自动解锁下一档（最高 Lv.20）"
                   value={settings.adaptive}
                   onChange={(v) => update({ adaptive: v })}
                 />

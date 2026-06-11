@@ -28,6 +28,7 @@ interface SessionRow {
   mode: CalcMode
   max_streak: number
   top_level: string
+  question_times_ms: number[] | null
 }
 
 function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {
@@ -46,6 +47,7 @@ function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {
     mode: r.mode,
     maxStreak: r.max_streak,
     topLevel: r.top_level === 'C' ? 'C' : Number(r.top_level),
+    questionTimesMs: r.question_times_ms ?? [],
   }
 }
 
@@ -65,7 +67,7 @@ async function fetchWalletData(userId: string) {
   ] = await Promise.all([
     supabase
       .from('calc_sessions')
-      .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level')
+      .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms')
       .eq('user_id', userId)
       .order('finished_at', { ascending: false })
       .limit(200),
@@ -212,7 +214,12 @@ export function useCalcWallet(user: User | null) {
   const recordSession = useCallback(
     async (session: Omit<CalcSession, 'id'>) => {
       if (!user) return
+      // Generate the id client-side so the star_sessions row can reference it
+      // WITHOUT depending on a RETURNING select (which RLS may block — that was
+      // silently dropping calc stars from the ledger).
+      const sessionId = crypto.randomUUID()
       const sessionRow = {
+        id: sessionId,
         user_id: user.id,
         date: session.date,
         started_at: session.startedAt,
@@ -226,23 +233,22 @@ export function useCalcWallet(user: User | null) {
         mode: session.mode,
         max_streak: session.maxStreak,
         top_level: levelKey(session.topLevel as CalcLevel),
+        question_times_ms: session.questionTimesMs ?? [],
       }
       try {
-        const { data: inserted, error: sessionErr } = await supabase
-          .from('calc_sessions')
-          .insert(sessionRow)
-          .select('id')
-          .single()
+        const { error: sessionErr } = await supabase.from('calc_sessions').insert(sessionRow)
         if (sessionErr) {
           console.error('[calc_sessions] insert failed', { userId: user.id, error: sessionErr })
         }
-        if (inserted && session.coinsEarned > 0) {
+        // Write the star row whenever the session insert succeeded — no longer
+        // gated on a returned row, only on the session actually persisting.
+        if (!sessionErr && session.coinsEarned > 0) {
           const { error: starErr } = await supabase.from('star_sessions').insert({
             user_id: user.id,
             date: session.date,
             source: 'calc',
             coins_earned: session.coinsEarned,
-            ref_id: (inserted as { id: string }).id,
+            ref_id: sessionId,
           })
           if (starErr) {
             console.error('[star_sessions] calc insert failed', { userId: user.id, error: starErr })

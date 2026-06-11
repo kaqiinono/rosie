@@ -72,10 +72,11 @@ function makeQuestion(
   return { display, signature, arity, level, answer, isChallenge, category, coinBase }
 }
 
-/** Generate a multiplication where ONE factor is drawn from `key` set, the other from 1-9. */
+/** Generate a multiplication where ONE factor is drawn from `key` set, the other from 2-9.
+ *  Factor 1 is excluded everywhere — ×1 has no learning value. */
 function genMulWithKey(key: readonly number[], level: CalcLevel, coinBase: number): CalcQuestion {
   const keyFactor = pickOp(key)
-  const otherFactor = randInt(1, 9)
+  const otherFactor = randInt(2, 9)
   // Randomize order so display shows e.g. "3×7" or "7×3"
   const left = Math.random() < 0.5 ? keyFactor : otherFactor
   const right = left === keyFactor ? otherFactor : keyFactor
@@ -178,9 +179,9 @@ function genL5(): CalcQuestion {
 
 // === 第二阶段 · 乘法口诀（由易到难拆分） ===
 
-// Lv.6: 乘法 1、2、5
+// Lv.6: 乘法 2、5（×1 已移除）
 function genL6(): CalcQuestion {
-  return genMulWithKey([1, 2, 5], 6, 2)
+  return genMulWithKey([2, 5], 6, 2)
 }
 
 // Lv.7: 乘法 3、4
@@ -198,10 +199,10 @@ function genL9(): CalcQuestion {
   return genMulWithKey([8, 9], 9, 2)
 }
 
-// Lv.10: 乘法 1-9 综合
+// Lv.10: 乘法 2-9 综合（×1 已移除）
 function genL10(): CalcQuestion {
-  const a = randInt(1, 9)
-  const b = randInt(1, 9)
+  const a = randInt(2, 9)
+  const b = randInt(2, 9)
   return makeQuestion({ op: 'mul', left: a, right: b }, 10, 'muldiv', 2)
 }
 
@@ -222,12 +223,12 @@ function genL13(): CalcQuestion {
   return genDivWithKey([6, 7, 8, 9], 13, 2)
 }
 
-// Lv.14: 乘除混合（1-9 范围）
+// Lv.14: 乘除混合（乘法 2-9，除法 1-9）
 function genL14(): CalcQuestion {
   const isMul = Math.random() < 0.5
   if (isMul) {
-    const a = randInt(1, 9)
-    const b = randInt(1, 9)
+    const a = randInt(2, 9)
+    const b = randInt(2, 9)
     return makeQuestion({ op: 'mul', left: a, right: b }, 14, 'muldiv', 2)
   }
   const divisor = randInt(1, 9)
@@ -321,6 +322,26 @@ function genL18(): CalcQuestion {
   return makeQuestion({ op: 'div', left: key * other, right: key }, 18, 'muldiv', 4)
 }
 
+// Lv.19: 乘法 2-19 综合（全表乘法压轴，两因数 2-19）
+function genL19(): CalcQuestion {
+  const a = randInt(2, 19)
+  const b = randInt(2, 19)
+  return makeQuestion({ op: 'mul', left: a, right: b }, 19, 'muldiv', 4)
+}
+
+// Lv.20: 乘除混合 2-19（乘除随机，范围 2-19）
+function genL20(): CalcQuestion {
+  const isMul = Math.random() < 0.5
+  if (isMul) {
+    const a = randInt(2, 19)
+    const b = randInt(2, 19)
+    return makeQuestion({ op: 'mul', left: a, right: b }, 20, 'muldiv', 4)
+  }
+  const divisor = randInt(2, 19)
+  const quotient = randInt(2, 19)
+  return makeQuestion({ op: 'div', left: divisor * quotient, right: divisor }, 20, 'muldiv', 4)
+}
+
 // Challenge: 三运算符 含括号
 function genLC(): CalcQuestion {
   for (let i = 0; i < 8; i++) {
@@ -356,11 +377,11 @@ export const LEVELS: LevelSpec[] = [
   { level: 3,  category: 'addsub', label: '20 以内加减（进退位）',     generate: genL3 },
   { level: 4,  category: 'addsub', label: '100 以内加减（不进退位）',   generate: genL4 },
   { level: 5,  category: 'addsub', label: '100 以内加减（进退位）',    generate: genL5 },
-  { level: 6,  category: 'muldiv', label: '乘法 1、2、5',             generate: genL6 },
+  { level: 6,  category: 'muldiv', label: '乘法 2、5',                generate: genL6 },
   { level: 7,  category: 'muldiv', label: '乘法 3、4',                generate: genL7 },
   { level: 8,  category: 'muldiv', label: '乘法 6、7',                generate: genL8 },
   { level: 9,  category: 'muldiv', label: '乘法 8、9',                generate: genL9 },
-  { level: 10, category: 'muldiv', label: '乘法 1-9 综合',            generate: genL10 },
+  { level: 10, category: 'muldiv', label: '乘法 2-9 综合',            generate: genL10 },
   { level: 11, category: 'muldiv', label: '除法 ÷1、÷2、÷5',          generate: genL11 },
   { level: 12, category: 'muldiv', label: '除法 ÷3、÷4',              generate: genL12 },
   { level: 13, category: 'muldiv', label: '除法 ÷6、÷7、÷8、÷9',      generate: genL13 },
@@ -369,6 +390,8 @@ export const LEVELS: LevelSpec[] = [
   { level: 16, category: 'muldiv', label: '乘除拓展 ×10、×11、×12',  generate: genL16 },
   { level: 17, category: 'mixed',  label: '两运算符混合（100 内）',    generate: genL17 },
   { level: 18, category: 'muldiv', label: '乘除拓展 ×13-19',         generate: genL18 },
+  { level: 19, category: 'muldiv', label: '乘法 2-19 综合',          generate: genL19 },
+  { level: 20, category: 'muldiv', label: '乘除混合 2-19',           generate: genL20 },
   { level: 'C', category: 'mixed', label: '挑战：三运算符',           generate: genLC },
 ]
 
@@ -378,7 +401,7 @@ export function levelSpec(level: CalcLevel): LevelSpec {
 }
 
 /** Highest numeric level (the challenge level 'C' is separate). */
-export const MAX_NUMERIC_LEVEL = 18
+export const MAX_NUMERIC_LEVEL = 20
 
 /** Format level for display: "Lv.6" or "挑战" */
 export function formatLevel(level: CalcLevel): string {

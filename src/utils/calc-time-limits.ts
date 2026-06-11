@@ -19,7 +19,7 @@ export type TimeLimitBucket =
   | 'div_hard'  // ÷6-9, Lv.13
   | 'muldiv_1_9' // Lv.14
   | 'mixed_2op'  // Lv.15 + Lv.17
-  | 'muldiv_ext' // Lv.16 + Lv.18
+  | 'muldiv_ext' // Lv.16 + Lv.18 + Lv.19 + Lv.20
   | 'challenge'
 
 export const DEFAULT_LIMIT_MS: Record<TimeLimitBucket, number> = {
@@ -59,6 +59,8 @@ export function bucketFor(level: CalcLevel): TimeLimitBucket {
     case 16: return 'muldiv_ext'
     case 17: return 'mixed_2op'
     case 18: return 'muldiv_ext'
+    case 19: return 'muldiv_ext'
+    case 20: return 'muldiv_ext'
     default: return 'add_10'
   }
 }

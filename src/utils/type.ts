@@ -340,7 +340,7 @@ export interface CalcSettings {
   enableAddSub: boolean
   enableMulDiv: boolean
   enableMixed: boolean
-  currentLevel: number // 1..18 — advanced by adaptive logic (capped at MAX_NUMERIC_LEVEL)
+  currentLevel: number // 1..20 — advanced by adaptive logic (capped at MAX_NUMERIC_LEVEL)
   adaptive: boolean
   soundEnabled: boolean
   lastCount: number // 20/30/50/100
@@ -468,6 +468,8 @@ export interface CalcSession {
   mode: CalcMode
   maxStreak: number
   topLevel: CalcLevel
+  /** First-attempt solve time (ms) per question, in order. Empty for legacy rows. */
+  questionTimesMs?: number[]
 }
 
 export interface CalcMistake {

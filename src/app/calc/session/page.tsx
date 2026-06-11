@@ -102,6 +102,8 @@ export default function CalcSessionPage() {
   const [lastResult, setLastResult] = useState<{ stars: number; bonus: number } | null>(null)
 
   const attemptsLogRef = useRef<AttemptStat[]>([])
+  // First-attempt solve time (ms) per question, in order — persisted for timing analysis.
+  const questionTimesRef = useRef<number[]>([])
   const questionStartRef = useRef<number>(0)
   const [startedTsMs, setStartedTsMs] = useState<number>(0)
   const [startedAtIso, setStartedAtIso] = useState<string>('')
@@ -120,6 +122,10 @@ export default function CalcSessionPage() {
     total: number
     challenge: number
     timeSec: number
+    /** Mean first-attempt solve time this session, in ms (null if no data). */
+    avgMs: number | null
+    /** Mean per-question time of the PREVIOUS session, in ms (null if none). */
+    prevAvgMs: number | null
   } | null>(null)
 
   const [sessionKey, setSessionKey] = useState(0)
@@ -227,6 +233,19 @@ export default function CalcSessionPage() {
     const timeBonus = calcTimeBonus(log.length, requestedTimeLimit, finalElapsed)
     setTimeBonusEarned(timeBonus)
 
+    // ── Timing analysis: this session's avg per-question time vs the previous session ──
+    const qTimes = questionTimesRef.current
+    const avgMs = qTimes.length > 0
+      ? Math.round(qTimes.reduce((s, t) => s + t, 0) / qTimes.length)
+      : null
+    // wallet.sessions is the pre-recording list (closure captured at render) → [0] is the last session.
+    const prevSession = wallet.sessions[0]
+    const prevAvgMs = prevSession
+      ? (prevSession.questionTimesMs && prevSession.questionTimesMs.length > 0
+          ? Math.round(prevSession.questionTimesMs.reduce((s, t) => s + t, 0) / prevSession.questionTimesMs.length)
+          : (prevSession.count > 0 ? Math.round((prevSession.timeSpentSec * 1000) / prevSession.count) : null))
+      : null
+
     setFinalStats({
       correct: correctCount,
       retry: retryCount,
@@ -234,6 +253,8 @@ export default function CalcSessionPage() {
       total: log.length,
       challenge: challengeCorrect,
       timeSec: finalElapsed,
+      avgMs,
+      prevAvgMs,
     })
 
     const topLevel = log.reduce<CalcLevel>((max, a) => {
@@ -257,6 +278,7 @@ export default function CalcSessionPage() {
       mode,
       maxStreak: maxStreakRef.current,
       topLevel,
+      questionTimesMs: qTimes,
     })
     // Sync the global StarHud balance so the top-left chip updates immediately.
     void refreshStarHud()
@@ -351,7 +373,64 @@ export default function CalcSessionPage() {
     // Skipped in free-practice mode: questions span arbitrary levels, so the
     // "focus level" state machine + adaptive level-up cannot meaningfully apply.
     const atLevelLog = log.filter((a) => !a.isChallenge && a.level === settings.currentLevel)
-    if (atLevelLog.length > 0 && mode === 'daily' && !settings.freeMode) {
+    if (settings.freeMode && mode !== 'mistakes') {
+      // Free practice: evaluate EACH selected numeric level independently (per-level
+      // A/B/C + level-up). A level that masters is swapped for level+1 in the picker.
+      const today = todayStr()
+      const statesNow = new Map(problemState.states)
+      for (const s of nextStates) statesNow.set(s.signature, s)
+
+      const freeLevels = settings.freeModeLevels.filter((l): l is number => typeof l === 'number')
+      let nextFreeLevels = [...settings.freeModeLevels]
+      let promotedTo: number | null = null
+
+      for (const L of freeLevels) {
+        const lvlLog = log.filter((a) => !a.isChallenge && a.level === L)
+        if (lvlLog.length === 0) continue
+        const firstTryCorrect = lvlLog.filter((a) => a.firstTryCorrect).length
+        const withinLimitCount = lvlLog.filter((a) => a.withinLimit).length
+        const bank = bankFor(L as CalcLevel, user?.id ?? 'anonymous') ?? []
+        const abc = evaluateABC(L as CalcLevel, statesNow, bank, {
+          count: lvlLog.length,
+          firstTryCorrect,
+          withinLimitCount,
+        })
+        const { next, transitions, bumpCurrentLevel } = applyLevelSessionResult({
+          prev: levelState.getLevelState(L as CalcLevel),
+          abc,
+          atLevel: { count: lvlLog.length, firstTryCorrect, withinLimitCount },
+          minLevel: L, // disable demotion in free mode — only level-up applies
+          today,
+        })
+        await levelState.upsertLevelState(next)
+
+        if (user) {
+          for (const t of transitions) {
+            if (t.type === 'level_up') {
+              void writeCalcEvent({
+                userId: user.id,
+                type: 'level_up',
+                level: L as CalcLevel,
+                detail: { to: t.to, sessionNo: nextSessionNo, free: true },
+              })
+            }
+          }
+        }
+
+        if (bumpCurrentLevel && L < MAX_NUMERIC_LEVEL) {
+          const newL = L + 1
+          nextFreeLevels = nextFreeLevels.filter((x) => x !== L)
+          if (!nextFreeLevels.includes(newL)) nextFreeLevels.push(newL)
+          if (promotedTo === null) promotedTo = newL
+        }
+      }
+
+      if (promotedTo !== null) {
+        update({ freeModeLevels: nextFreeLevels })
+        setLevelUpTo(promotedTo)
+        playSfx('levelup', settings.soundEnabled)
+      }
+    } else if (atLevelLog.length > 0 && mode === 'daily') {
       const today = todayStr()
       const firstTryCorrect = atLevelLog.filter((a) => a.firstTryCorrect).length
       const withinLimitCount = atLevelLog.filter((a) => a.withinLimit).length
@@ -457,7 +536,7 @@ export default function CalcSessionPage() {
         update({ currentLevel: newLevel })
       }
     } else if (atLevelLog.length > 0) {
-      // 'free' or 'mistakes' mode — still bump warmup counters but skip transitions
+      // 'mistakes' mode — still bump warmup counters but skip transitions
       const firstTryCorrect = atLevelLog.filter((a) => a.firstTryCorrect).length
       const accuracy = atLevelLog.length > 0 ? firstTryCorrect / atLevelLog.length : 0
       await levelState.recordSessionAtLevel(settings.currentLevel, atLevelLog.length, accuracy)
@@ -478,6 +557,7 @@ export default function CalcSessionPage() {
     settings.soundEnabled,
     settings.sessionCounter,
     settings.freeMode,
+    settings.freeModeLevels,
     update,
     checkAndAdvance,
     problemState,
@@ -510,6 +590,9 @@ export default function CalcSessionPage() {
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
     const limitMs = timeLimitFromSettings(q.level, settings)
     const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
+
+    // Record the first-attempt solve time once per question (the genuine think time).
+    if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
 
     if (isCorrect) {
       const isFirstTry = attemptsForCurrent === 0
@@ -849,6 +932,8 @@ export default function CalcSessionPage() {
           coinsEarned={coinsTotal}
           timeBonusEarned={timeBonusEarned}
           timeSpentSec={finalStats.timeSec}
+          avgMs={finalStats.avgMs}
+          prevAvgMs={finalStats.prevAvgMs}
           maxStreak={maxStreak}
           challengeCorrect={finalStats.challenge}
           levelUpTo={levelUpTo}
@@ -865,6 +950,7 @@ export default function CalcSessionPage() {
             setRevealAnswer(null)
             setShowChallengeBanner(false)
             setAssaultActive(false)
+            questionTimesRef.current = []
             coinsTotalRef.current = 0
             setCoinsTotal(0)
             setStreak(0)

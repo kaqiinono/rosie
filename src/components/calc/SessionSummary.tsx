@@ -10,6 +10,10 @@ interface Props {
   coinsEarned: number
   timeBonusEarned?: number
   timeSpentSec: number
+  /** Mean first-attempt solve time this session, in ms (null if no data). */
+  avgMs?: number | null
+  /** Mean per-question time of the previous session, in ms (null if none). */
+  prevAvgMs?: number | null
   maxStreak: number
   challengeCorrect: number
   levelUpTo?: number | null
@@ -34,6 +38,11 @@ function formatTimeChinese(s: number) {
   return `${m}分${r}秒`
 }
 
+/** ms → "3.2秒" (one decimal). */
+function formatSeconds(ms: number) {
+  return `${(ms / 1000).toFixed(1)}秒`
+}
+
 export default function SessionSummary({
   correctCount,
   retryCount,
@@ -42,6 +51,8 @@ export default function SessionSummary({
   coinsEarned,
   timeBonusEarned = 0,
   timeSpentSec,
+  avgMs = null,
+  prevAvgMs = null,
   maxStreak,
   challengeCorrect,
   levelUpTo,
@@ -193,6 +204,63 @@ export default function SessionSummary({
             )}
           </div>
         </div>
+
+        {/* Timing analysis — total time, avg per question, and trend vs last session */}
+        {avgMs !== null && (() => {
+          const deltaMs = prevAvgMs !== null ? prevAvgMs - avgMs : null // +ve = faster = 进步
+          const faster = deltaMs !== null && deltaMs > 0
+          const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100 // ignore <0.1s noise
+          return (
+            <div
+              className="mt-3 rounded-xl px-4 py-3 text-left"
+              style={{
+                background: 'rgba(125,211,252,0.07)',
+                border: '1px solid rgba(125,211,252,0.2)',
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div
+                    className="text-[10px] font-extrabold uppercase tracking-widest"
+                    style={{ color: 'rgba(125,211,252,0.6)' }}
+                  >
+                    ⏱ 本次计时
+                  </div>
+                  <div className="font-fredoka text-[18px] font-black leading-tight mt-0.5" style={{ color: '#7dd3fc' }}>
+                    总用时 {formatTimeChinese(timeSpentSec)}
+                  </div>
+                  <div className="text-[11px] font-semibold" style={{ color: 'rgba(125,211,252,0.6)' }}>
+                    平均每题 {formatSeconds(avgMs)}
+                  </div>
+                </div>
+                {meaningful ? (
+                  <div
+                    className="shrink-0 rounded-xl px-3 py-2 text-center"
+                    style={{
+                      background: faster ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
+                      border: `1px solid ${faster ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                    }}
+                  >
+                    <div className="font-fredoka text-[16px] font-black leading-none" style={{ color: faster ? '#4ade80' : '#fbbf24' }}>
+                      {faster ? '↑ 进步' : '↓ 退步'}
+                    </div>
+                    <div className="text-[10px] font-bold mt-0.5" style={{ color: faster ? 'rgba(74,222,128,0.7)' : 'rgba(251,191,36,0.7)' }}>
+                      每题{faster ? '快' : '慢'} {formatSeconds(Math.abs(deltaMs))}
+                    </div>
+                  </div>
+                ) : prevAvgMs !== null ? (
+                  <div className="shrink-0 text-[11px] font-bold" style={{ color: 'rgba(125,211,252,0.5)' }}>
+                    ≈ 与上次持平
+                  </div>
+                ) : (
+                  <div className="shrink-0 text-[10px] font-semibold" style={{ color: 'rgba(125,211,252,0.4)' }}>
+                    首场基准
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Time bonus celebration card */}
         {timeBonusEarned > 0 && (
