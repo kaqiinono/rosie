@@ -15,7 +15,6 @@ import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
-import { interleaveWrong } from '@/utils/calc-session-builder'
 import { timeLimitFromSettings } from '@/utils/calc-time-limits'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
@@ -73,6 +72,12 @@ export default function CalcSessionPage() {
   // ── Session state ────────────────────────────────────────────────
   const [questions, setQuestions] = useState<CalcQuestion[] | null>(null)
   const [idx, setIdx] = useState(0)
+  // Wrong questions collected during the session, appended to the tail for make-up.
+  const wrongQueueRef = useRef<CalcQuestion[]>([])
+  // Number of originally-planned questions (excludes make-up tail).
+  // Ref for use inside event-handler closures; state mirror for render.
+  const plannedCountRef = useRef(0)
+  const [plannedCount, setPlannedCount] = useState(0)
   const [input, setInput] = useState('')
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
@@ -129,6 +134,8 @@ export default function CalcSessionPage() {
         problemStates: loadedStates,
       })
       setQuestions(session)
+      plannedCountRef.current = session.length
+      setPlannedCount(session.length)
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
       questionStartRef.current = performance.now()
@@ -295,6 +302,29 @@ export default function CalcSessionPage() {
     const isCorrect = userAns === q.answer
     const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
 
+    // Advance to the next question. At end-of-list, drain any collected wrong
+    // questions to the tail for make-up and continue; only finish when the queue
+    // is empty at end-of-list.
+    const goNext = () => {
+      setFeedback(null)
+      setInput('')
+      setAttemptsForCurrent(0)
+      setLastResult(null)
+      setRevealAnswer(null)
+      if (idx + 1 < questions.length) {
+        setIdx((i) => i + 1)
+        return
+      }
+      if (wrongQueueRef.current.length > 0) {
+        const drained = wrongQueueRef.current
+        wrongQueueRef.current = []
+        setQuestions((prev) => (prev ? [...prev, ...drained] : prev))
+        setIdx((i) => i + 1) // step into the first appended make-up question
+        return
+      }
+      void finishSession()
+    }
+
     // Compute per-question time + within-limit
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
     const limitMs = timeLimitFromSettings(q.level, settings)
@@ -343,18 +373,7 @@ export default function CalcSessionPage() {
         void recordCorrect(q.signature)
       }
 
-      const advance = () => {
-        setFeedback(null)
-        setInput('')
-        setAttemptsForCurrent(0)
-        setLastResult(null)
-        if (idx + 1 >= questions.length) {
-          void finishSession()
-        } else {
-          setIdx((i) => i + 1)
-        }
-      }
-      window.setTimeout(advance, isChallengeCorrect ? 1100 : 750)
+      window.setTimeout(goNext, isChallengeCorrect ? 1100 : 750)
       return
     }
 
@@ -388,24 +407,14 @@ export default function CalcSessionPage() {
         sourceMixedOpId: q.sourceMixedOpId,
       })
 
-      // master.md §6.2 — interleave wrong problems +4 positions later in the queue
-      // so the brain has to retrieve rather than rely on short-term memory.
+      // Collect the wrong question for make-up at the session tail (push a fresh
+      // shallow copy so its identity is distinct from the in-list instance).
       // Skip for challenge questions (those are one-off) and for mistakes mode (already revisiting).
       if (!q.isChallenge && mode !== 'mistakes') {
-        setQuestions((prev) => (prev ? interleaveWrong(prev, idx, q) : prev))
+        wrongQueueRef.current.push({ ...q })
       }
 
-      window.setTimeout(() => {
-        setFeedback(null)
-        setRevealAnswer(null)
-        setInput('')
-        setAttemptsForCurrent(0)
-        if (idx + 1 >= questions.length) {
-          void finishSession()
-        } else {
-          setIdx((i) => i + 1)
-        }
-      }, 1700)
+      window.setTimeout(goNext, 1700)
     }
   }, [
     questions,
@@ -446,7 +455,9 @@ export default function CalcSessionPage() {
   }
 
   const currentQ = questions[idx]
-  const progress = Math.round((idx / questions.length) * 100)
+  const planned = plannedCount || questions.length
+  const progress = Math.min(100, Math.round((Math.min(idx, planned) / planned) * 100))
+  const inMakeupTail = idx >= planned
 
   return (
     <>
@@ -466,9 +477,15 @@ export default function CalcSessionPage() {
           style={{ color: 'rgba(196,181,253,0.6)' }}
         >
           <div>{remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}</div>
-          <div style={{ color: 'rgba(245,243,255,0.5)' }}>
-            {idx + 1} / {questions.length}
-          </div>
+          {inMakeupTail ? (
+            <div style={{ color: 'rgba(251,191,36,0.7)' }}>
+              💪 错题补做 {idx - planned + 1} / {questions.length - planned}
+            </div>
+          ) : (
+            <div style={{ color: 'rgba(245,243,255,0.5)' }}>
+              {idx + 1} / {planned}
+            </div>
+          )}
           <div style={{ color: '#fb923c' }}>{streak >= 2 ? `🔥 ${streak}` : ' '}</div>
         </div>
 
@@ -656,6 +673,9 @@ export default function CalcSessionPage() {
             void refreshMistakes()
             setQuestions(null)
             setIdx(0)
+            wrongQueueRef.current = []
+            plannedCountRef.current = 0
+            setPlannedCount(0)
             setInput('')
             setAttemptsForCurrent(0)
             setFeedback(null)
