@@ -69,6 +69,16 @@ const modules: ModuleCardData[] = [
     icon: '📕',
   },
   {
+    href: '/audio',
+    title: '音频天地',
+    description: '阅读、绘本、我的最爱，收藏夹连播，单曲/列表循环随心听。',
+    tag: 'AUDIO',
+    variant: 'reading',
+    stats: ['收藏夹连播', '循环次数', '我的最爱'],
+    enterText: '开始听音频',
+    icon: '🎧',
+  },
+  {
     href: '/vouchers',
     title: '我的奖券',
     description: '口算、英语、数学均可赚星星，积攒后兑换心愿奖券。',
