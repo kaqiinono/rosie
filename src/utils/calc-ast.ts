@@ -37,6 +37,31 @@ export function signatureOf(n: AstNode): string {
   return `${n.op}(${signatureOf(n.left)},${signatureOf(n.right)})`
 }
 
+/**
+ * Parse the canonical form produced by {@link signatureOf} back into an AstNode.
+ * Leaves are integer strings; nodes are `op(left,right)` with op ∈ add|sub|mul|div,
+ * e.g. `"mul(6,7)"` or `"sub(add(3,4),2)"`. Assumes well-formed input.
+ */
+export function parseSignature(sig: string): AstNode {
+  const open = sig.indexOf('(')
+  if (open === -1) return Number(sig)
+  const op = sig.slice(0, open) as CalcOp
+  // inside is everything between the matching outer parens
+  const inside = sig.slice(open + 1, sig.length - 1)
+  // split on the top-level comma (depth 0)
+  let depth = 0
+  let comma = -1
+  for (let i = 0; i < inside.length; i++) {
+    const c = inside[i]
+    if (c === '(') depth++
+    else if (c === ')') depth--
+    else if (c === ',' && depth === 0) { comma = i; break }
+  }
+  const left = parseSignature(inside.slice(0, comma))
+  const right = parseSignature(inside.slice(comma + 1))
+  return { op, left, right }
+}
+
 export function precedence(op: CalcOp): number {
   return op === 'add' || op === 'sub' ? 1 : 2
 }

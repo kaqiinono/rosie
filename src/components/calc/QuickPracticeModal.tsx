@@ -10,7 +10,7 @@ import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import { buildSession } from '@/utils/calc-helpers'
 import { useCalcSession } from '@/hooks/useCalcSession'
-import type { CalcMistake, CalcQuestion, CalcSettings } from '@/utils/type'
+import type { CalcQuestion, CalcSettings } from '@/utils/type'
 
 interface Props {
   /** Modal title shown in the header bar */
@@ -21,7 +21,6 @@ interface Props {
   questions?: CalcQuestion[]
   /** If `questions` is omitted, build from these settings */
   settings?: CalcSettings
-  mistakes?: CalcMistake[]
   /** Number of questions to build (ignored when `questions` is provided) */
   buildCount?: number
   soundEnabled: boolean
@@ -39,7 +38,6 @@ export default function QuickPracticeModal({
   subtitle,
   questions: propQuestions,
   settings,
-  mistakes = [],
   buildCount = 15,
   soundEnabled,
   goalStars,
@@ -50,7 +48,7 @@ export default function QuickPracticeModal({
   const questions = useMemo<CalcQuestion[]>(() => {
     if (propQuestions) return propQuestions
     if (!settings) return []
-    return buildSession(settings, buildCount, mistakes)
+    return buildSession(settings, buildCount, { problemStates: new Map() })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
-import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import BlockPicker from '@/components/calc/BlockPicker'
 import MixedOpList from '@/components/calc/MixedOpList'
@@ -75,7 +74,6 @@ export default function CalcSettingsPage() {
   const { user } = useAuth()
   const { settings, update, isLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
-  const { mistakes } = useCalcMistakes(user)
   const [practiceOpen, setPracticeOpen] = useState(false)
 
   const toggleBlock = (id: string) => {
@@ -210,7 +208,6 @@ export default function CalcSettingsPage() {
           title="试试当前设置"
           subtitle={practiceSubtitle}
           settings={settings}
-          mistakes={mistakes}
           buildCount={settings.lastCount}
           soundEnabled={settings.soundEnabled}
           onClose={() => setPracticeOpen(false)}

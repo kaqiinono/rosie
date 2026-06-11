@@ -334,6 +334,10 @@ export interface CalcQuestion {
   category: CalcCategory
   /** Per-question coin (before streak bonus). Challenge questions already include ×2 here. */
   coinBase: number
+  /** Attribution: which building block produced this question (set by buildSession). */
+  sourceBlockId?: string
+  /** Attribution: which mixed-op generator produced this question (set by buildSession). */
+  sourceMixedOpId?: string
 }
 
 export type CalcSkeletonId =
