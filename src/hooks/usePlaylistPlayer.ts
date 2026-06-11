@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   LOOP_COUNTS,
   trackKey,
@@ -54,7 +54,10 @@ export function usePlaylistPlayer(): PlaylistPlayer {
   const loopsDoneRef = useRef(0)
 
   const queueRef = useRef<PlayerTrack[]>([])
-  queueRef.current = queue
+
+  useEffect(() => {
+    queueRef.current = queue
+  }, [queue]);
 
   const playAt = useCallback((tracks: PlayerTrack[], i: number) => {
     const el = audioRef.current

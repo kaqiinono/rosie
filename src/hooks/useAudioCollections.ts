@@ -63,6 +63,7 @@ export function useAudioCollections(user: User | null) {
     if (!user) return
     const existing = userPlaylists.find((p) => p.isFavorite)
     if (existing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFavoriteId(existing.id)
       creatingFavoriteRef.current = false
       return
