@@ -7,17 +7,6 @@ import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useStarHud } from '@/components/stars/StarHudProvider'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
-import { useCalcLevel } from '@/hooks/useCalcLevel'
-import {
-  useCalcProblemState,
-  applyAttempt,
-  justCrossedFour,
-  justReviewPassed,
-  justReviewFailed,
-  justShortMastered,
-  justMasteredDemoted,
-} from '@/hooks/useCalcProblemState'
-import { useCalcLevelState } from '@/hooks/useCalcLevelState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import QuestionDisplay from '@/components/calc/QuestionDisplay'
 import NumberPad from '@/components/calc/NumberPad'
@@ -26,16 +15,11 @@ import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
 import { interleaveWrong } from '@/utils/calc-session-builder'
-import { writeCalcEvent } from '@/utils/calc-event-log'
 import { timeLimitFromSettings } from '@/utils/calc-time-limits'
-import { applyLevelSessionResult, evaluateABC, isAssaultMode } from '@/utils/calc-level-eval'
-import { bankFor } from '@/utils/calc-bank'
-import { MAX_NUMERIC_LEVEL } from '@/utils/calc-levels'
-import AssaultBanner from '@/components/calc/AssaultBanner'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
 import { todayStr } from '@/utils/constant'
-import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion } from '@/utils/type'
+import type { CalcLevel, CalcMode, CalcQuestion } from '@/utils/type'
 
 interface AttemptStat {
   signature: string
@@ -64,9 +48,6 @@ export default function CalcSessionPage() {
   const wallet = useCalcWallet(user)
   const { refresh: refreshStarHud } = useStarHud()
   const { mistakes, addMistake, recordCorrect, refresh: refreshMistakes } = useCalcMistakes(user)
-  const { checkAndAdvance } = useCalcLevel(user, settings, update)
-  const problemState = useCalcProblemState(user)
-  const levelState = useCalcLevelState(user)
 
   const requestedCount = useMemo(() => {
     const n = Number(params.get('count'))
@@ -92,7 +73,6 @@ export default function CalcSessionPage() {
   const [revealAnswer, setRevealAnswer] = useState<number | null>(null)
 
   const [showChallengeBanner, setShowChallengeBanner] = useState(false)
-  const [assaultActive, setAssaultActive] = useState(false)
 
   const [coinsTotal, setCoinsTotal] = useState(0)
   const coinsTotalRef = useRef(0)
@@ -110,10 +90,6 @@ export default function CalcSessionPage() {
 
   const [now, setNow] = useState<number>(() => Date.now())
   const [done, setDone] = useState(false)
-  const [levelUpTo, setLevelUpTo] = useState<number | null>(null)
-  const [levelDownTo, setLevelDownTo] = useState<number | null>(null)
-  const [reviewMilestone, setReviewMilestone] = useState<string | null>(null)
-  const [nextSessionAssault, setNextSessionAssault] = useState(false)
   const [timeBonusEarned, setTimeBonusEarned] = useState(0)
   const [finalStats, setFinalStats] = useState<{
     correct: number
@@ -138,57 +114,15 @@ export default function CalcSessionPage() {
     if (!user) return
     initRef.current = true
 
-    const init = async () => {
-      // Seed banks for current level (and one below for future P4 mixing)
-      await problemState.seedBank(settings.currentLevel)
-      if (typeof settings.currentLevel === 'number' && settings.currentLevel > 1) {
-        await problemState.seedBank((settings.currentLevel - 1) as CalcLevel)
-      }
-      const levelsToLoad: CalcLevel[] = [settings.currentLevel]
-      if (typeof settings.currentLevel === 'number' && settings.currentLevel > 1) {
-        levelsToLoad.push((settings.currentLevel - 1) as CalcLevel)
-      }
-      await problemState.loadForLevels(levelsToLoad)
-      await levelState.loadForLevels(levelsToLoad)
-
-      const levelInfo = levelState.getLevelState(settings.currentLevel)
-      // Assault mode + warmup state apply only in normal daily mode (the state
-      // machine is bypassed in free / mistakes modes).
-      const phase5Active = mode === 'daily' && !settings.freeMode
-      const assault = phase5Active && isAssaultMode(levelInfo)
-      const session = buildSession(
-        settings,
-        requestedCount,
-        mistakes,
-        {
-          problemStates: problemState.states,
-          userId: user.id,
-          sessionNo: settings.sessionCounter + 1,
-          today: todayStr(),
-          assaultMode: assault,
-          warmupComplete: phase5Active ? levelInfo.warmupComplete : true,
-        },
-        mode,
-      )
-      if (assault) {
-        setAssaultActive(true)
-        void writeCalcEvent({
-          userId: user.id,
-          type: 'assault_mode_on',
-          level: settings.currentLevel,
-          detail: {
-            lastAccuracy: levelInfo.lastSessionAccuracy,
-            sessionNo: settings.sessionCounter + 1,
-          },
-        })
-      }
+    const init = () => {
+      const session = buildSession(settings, requestedCount, mistakes)
       setQuestions(session)
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
       questionStartRef.current = performance.now()
     }
-    void init()
-  }, [settings, settingsLoading, mistakes, requestedCount, mode, user, problemState, levelState, sessionKey])
+    init()
+  }, [settings, settingsLoading, mistakes, requestedCount, mode, user, sessionKey])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -284,284 +218,18 @@ export default function CalcSessionPage() {
     void refreshStarHud()
 
     // 2. Bump global session counter
-    const nextSessionNo = settings.sessionCounter + 1
-    update({ sessionCounter: nextSessionNo })
-
-    // 3. Update per-problem states (skip 'mistakes' mode — those signatures may not be in current bank)
-    // Hoisted so the Phase 5 ABC evaluation below can reference the freshly-updated states.
-    const nextStates: CalcProblemState[] = []
-    if (mode !== 'mistakes') {
-      const today = todayStr()
-      const groupedBySig = new Map<string, AttemptStat[]>()
-      for (const a of log) {
-        if (a.isChallenge) continue // challenge questions aren't tracked per-signature for now
-        const arr = groupedBySig.get(a.signature) ?? []
-        arr.push(a)
-        groupedBySig.set(a.signature, arr)
-      }
-      for (const [signature, attempts] of groupedBySig) {
-        const sample = attempts[0]
-        let state = problemState.getState(signature, sample.level)
-        for (const a of attempts) {
-          const attempt = {
-            correct: a.finallyCorrect,
-            timeMs: a.timeMs,
-            withinLimit: a.withinLimit,
-          }
-          const prevSnap = state
-
-          // event: consecutive_wrong crosses 4 (master.md §6.1 type C)
-          if (user && justCrossedFour(prevSnap, attempt)) {
-            void writeCalcEvent({
-              userId: user.id,
-              type: 'forced_problem',
-              level: prevSnap.level,
-              signature: prevSnap.signature,
-              detail: { reason: 'consecutive_wrong>=4', sessionNo: nextSessionNo },
-            })
-          }
-
-          state = applyAttempt(state, attempt, a.withinLimit, nextSessionNo, today)
-
-          if (user) {
-            const passedRound = justReviewPassed(prevSnap, state)
-            if (passedRound !== null) {
-              void writeCalcEvent({
-                userId: user.id,
-                type: 'review_pass',
-                level: state.level,
-                signature: state.signature,
-                detail: { round: passedRound, sessionNo: nextSessionNo },
-              })
-            }
-            if (justReviewFailed(prevSnap, state)) {
-              void writeCalcEvent({
-                userId: user.id,
-                type: 'review_fail',
-                level: state.level,
-                signature: state.signature,
-                detail: { sessionNo: nextSessionNo },
-              })
-            }
-            if (justShortMastered(prevSnap, state)) {
-              // No dedicated event type yet — log under review_pass with round=short
-              void writeCalcEvent({
-                userId: user.id,
-                type: 'review_pass',
-                level: state.level,
-                signature: state.signature,
-                detail: { round: 'short_mastered', sessionNo: nextSessionNo },
-              })
-            }
-            if (justMasteredDemoted(prevSnap, state)) {
-              void writeCalcEvent({
-                userId: user.id,
-                type: 'review_fail',
-                level: state.level,
-                signature: state.signature,
-                detail: { reason: 'mastered_audit_wrong', sessionNo: nextSessionNo },
-              })
-            }
-          }
-        }
-        nextStates.push(state)
-      }
-      if (nextStates.length > 0) await problemState.upsertStates(nextStates)
-    }
-
-    // 4. Phase 5 — evaluate ABC + level state machine
-    // Skipped in free-practice mode: questions span arbitrary levels, so the
-    // "focus level" state machine + adaptive level-up cannot meaningfully apply.
-    const atLevelLog = log.filter((a) => !a.isChallenge && a.level === settings.currentLevel)
-    if (settings.freeMode && mode !== 'mistakes') {
-      // Free practice: evaluate EACH selected numeric level independently (per-level
-      // A/B/C + level-up). A level that masters is swapped for level+1 in the picker.
-      const today = todayStr()
-      const statesNow = new Map(problemState.states)
-      for (const s of nextStates) statesNow.set(s.signature, s)
-
-      const freeLevels = settings.freeModeLevels.filter((l): l is number => typeof l === 'number')
-      let nextFreeLevels = [...settings.freeModeLevels]
-      let promotedTo: number | null = null
-
-      for (const L of freeLevels) {
-        const lvlLog = log.filter((a) => !a.isChallenge && a.level === L)
-        if (lvlLog.length === 0) continue
-        const firstTryCorrect = lvlLog.filter((a) => a.firstTryCorrect).length
-        const withinLimitCount = lvlLog.filter((a) => a.withinLimit).length
-        const bank = bankFor(L as CalcLevel, user?.id ?? 'anonymous') ?? []
-        const abc = evaluateABC(L as CalcLevel, statesNow, bank, {
-          count: lvlLog.length,
-          firstTryCorrect,
-          withinLimitCount,
-        })
-        const { next, transitions, bumpCurrentLevel } = applyLevelSessionResult({
-          prev: levelState.getLevelState(L as CalcLevel),
-          abc,
-          atLevel: { count: lvlLog.length, firstTryCorrect, withinLimitCount },
-          minLevel: L, // disable demotion in free mode — only level-up applies
-          today,
-        })
-        await levelState.upsertLevelState(next)
-
-        if (user) {
-          for (const t of transitions) {
-            if (t.type === 'level_up') {
-              void writeCalcEvent({
-                userId: user.id,
-                type: 'level_up',
-                level: L as CalcLevel,
-                detail: { to: t.to, sessionNo: nextSessionNo, free: true },
-              })
-            }
-          }
-        }
-
-        if (bumpCurrentLevel && L < MAX_NUMERIC_LEVEL) {
-          const newL = L + 1
-          nextFreeLevels = nextFreeLevels.filter((x) => x !== L)
-          if (!nextFreeLevels.includes(newL)) nextFreeLevels.push(newL)
-          if (promotedTo === null) promotedTo = newL
-        }
-      }
-
-      if (promotedTo !== null) {
-        update({ freeModeLevels: nextFreeLevels })
-        setLevelUpTo(promotedTo)
-        playSfx('levelup', settings.soundEnabled)
-      }
-    } else if (atLevelLog.length > 0 && mode === 'daily') {
-      const today = todayStr()
-      const firstTryCorrect = atLevelLog.filter((a) => a.firstTryCorrect).length
-      const withinLimitCount = atLevelLog.filter((a) => a.withinLimit).length
-      const currentBank = bankFor(settings.currentLevel, user?.id ?? 'anonymous') ?? []
-
-      // Use the freshly-updated problem states (already in problemState.states after upsert)
-      const statesNow = new Map(problemState.states)
-      for (const s of nextStates) statesNow.set(s.signature, s)
-
-      const abc = evaluateABC(settings.currentLevel, statesNow, currentBank, {
-        count: atLevelLog.length,
-        firstTryCorrect,
-        withinLimitCount,
-      })
-      const prevLevelInfo = levelState.getLevelState(settings.currentLevel)
-      const {
-        next: nextLevelInfo,
-        transitions,
-        bumpCurrentLevel,
-        demote,
-      } = applyLevelSessionResult({
-        prev: prevLevelInfo,
-        abc,
-        atLevel: { count: atLevelLog.length, firstTryCorrect, withinLimitCount },
-        minLevel: 1,
-        today,
-      })
-
-      await levelState.upsertLevelState(nextLevelInfo)
-
-      // Write transition events + capture user-facing milestones
-      for (const t of transitions) {
-        if (!user) continue
-        if (t.type === 'abc_passed') {
-          setReviewMilestone(`关卡 A/B/C 达标！第 2 天再来复测一次`)
-          void writeCalcEvent({
-            userId: user.id,
-            type: 'review_pass',
-            level: settings.currentLevel,
-            detail: { round: 'abc_passed', sessionNo: nextSessionNo },
-          })
-        } else if (t.type === 'review_pass') {
-          const labelByRound = { r1: '通过第 1 轮复测', r2: '通过第 2 轮复测', r3: '通过第 3 轮复测' }
-          setReviewMilestone(labelByRound[t.round])
-          void writeCalcEvent({
-            userId: user.id,
-            type: 'review_pass',
-            level: settings.currentLevel,
-            detail: { round: `level_${t.round}`, sessionNo: nextSessionNo },
-          })
-        } else if (t.type === 'review_fail') {
-          setReviewMilestone(`第 ${t.round.toUpperCase()} 复测未通过，回到日常练习`)
-          void writeCalcEvent({
-            userId: user.id,
-            type: 'review_fail',
-            level: settings.currentLevel,
-            detail: { round: `level_${t.round}`, accuracy: t.accuracy, sessionNo: nextSessionNo },
-          })
-        } else if (t.type === 'level_up') {
-          void writeCalcEvent({
-            userId: user.id,
-            type: 'level_up',
-            level: settings.currentLevel,
-            detail: { to: t.to, sessionNo: nextSessionNo },
-          })
-        } else if (t.type === 'level_down') {
-          void writeCalcEvent({
-            userId: user.id,
-            type: 'level_down',
-            level: settings.currentLevel,
-            detail: { to: t.to, reason: t.reason, sessionNo: nextSessionNo },
-          })
-        }
-      }
-
-      // Will the NEXT session be in assault mode? (master.md §6.3 — based on
-      // the accuracy we just recorded.)
-      const accuracyNow = atLevelLog.length > 0 ? firstTryCorrect / atLevelLog.length : 0
-      if (nextLevelInfo.warmupComplete && accuracyNow < 0.75 && !bumpCurrentLevel && !demote) {
-        setNextSessionAssault(true)
-      }
-
-      if (bumpCurrentLevel) {
-        const newLevel = Math.min(MAX_NUMERIC_LEVEL, settings.currentLevel + 1)
-        update({ currentLevel: newLevel })
-        setLevelUpTo(newLevel)
-        playSfx('levelup', settings.soundEnabled)
-      } else if (demote && settings.currentLevel > 1) {
-        const newLevel = settings.currentLevel - 1
-        setLevelDownTo(newLevel)
-        await problemState.resetLevelForDemotion(newLevel as CalcLevel)
-        // Reset the demoted-to level's status to practicing as well (clear any prior abc/reviews)
-        const demotedLevelInfo = levelState.getLevelState(newLevel as CalcLevel)
-        await levelState.upsertLevelState({
-          ...demotedLevelInfo,
-          status: 'practicing',
-          abcPassedDate: null,
-          reviewR1Date: null,
-          reviewR2Date: null,
-          reviewR3Date: null,
-          consecutivePoorSessions: 0,
-        })
-        update({ currentLevel: newLevel })
-      }
-    } else if (atLevelLog.length > 0) {
-      // 'mistakes' mode — still bump warmup counters but skip transitions
-      const firstTryCorrect = atLevelLog.filter((a) => a.firstTryCorrect).length
-      const accuracy = atLevelLog.length > 0 ? firstTryCorrect / atLevelLog.length : 0
-      await levelState.recordSessionAtLevel(settings.currentLevel, atLevelLog.length, accuracy)
-    }
-
-    // 5. Legacy adaptive level advancement — disabled in Phase 5 (A/B/C above governs).
-    void checkAndAdvance
+    update({ sessionCounter: settings.sessionCounter + 1 })
 
     playSfx('complete', settings.soundEnabled)
     launchConfetti(30)
   }, [
     done,
-    user,
     wallet,
     refreshStarHud,
     mode,
-    settings.currentLevel,
     settings.soundEnabled,
     settings.sessionCounter,
-    settings.freeMode,
-    settings.freeModeLevels,
     update,
-    checkAndAdvance,
-    problemState,
-    levelState,
     startedTsMs,
     startedAtIso,
     requestedTimeLimit,
@@ -747,7 +415,6 @@ export default function CalcSessionPage() {
       />
 
       <main className="relative mx-auto max-w-[640px] px-4 pt-3 pb-6">
-        {assaultActive && <AssaultBanner />}
         {/* Top status */}
         <div
           className="mb-2 flex items-center justify-between text-[12px] font-bold tabular-nums"
@@ -936,10 +603,10 @@ export default function CalcSessionPage() {
           prevAvgMs={finalStats.prevAvgMs}
           maxStreak={maxStreak}
           challengeCorrect={finalStats.challenge}
-          levelUpTo={levelUpTo}
-          levelDownTo={levelDownTo}
-          reviewMilestone={reviewMilestone}
-          nextSessionAssault={nextSessionAssault}
+          levelUpTo={null}
+          levelDownTo={null}
+          reviewMilestone={null}
+          nextSessionAssault={false}
           onAgain={() => {
             void refreshMistakes()
             setQuestions(null)
@@ -949,7 +616,6 @@ export default function CalcSessionPage() {
             setFeedback(null)
             setRevealAnswer(null)
             setShowChallengeBanner(false)
-            setAssaultActive(false)
             questionTimesRef.current = []
             coinsTotalRef.current = 0
             setCoinsTotal(0)
@@ -961,10 +627,6 @@ export default function CalcSessionPage() {
             setStartedTsMs(0)
             setStartedAtIso('')
             setDone(false)
-            setLevelUpTo(null)
-            setLevelDownTo(null)
-            setReviewMilestone(null)
-            setNextSessionAssault(false)
             setTimeBonusEarned(0)
             setFinalStats(null)
             initRef.current = false

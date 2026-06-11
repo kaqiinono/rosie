@@ -1,18 +1,14 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
-import { useCalcLevelState } from '@/hooks/useCalcLevelState'
-import { useCalcProblemState } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
-import CalcLevelProgressBar from '@/components/calc/CalcLevelProgressBar'
-import { formatLevel, levelSpec } from '@/utils/calc-levels'
 import { playSfx } from '@/components/calc/audio'
 
 export default function CalcHomePage() {
@@ -22,15 +18,6 @@ export default function CalcHomePage() {
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { mistakes } = useCalcMistakes(user)
-  const levelState = useCalcLevelState(user)
-  const problemState = useCalcProblemState(user)
-
-  useEffect(() => {
-    if (!settingsLoading && !settings.freeMode) {
-      void levelState.loadForLevels([settings.currentLevel])
-      void problemState.loadForLevels([settings.currentLevel])
-    }
-  }, [settingsLoading, settings.freeMode, settings.currentLevel]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const unresolvedMistakes = useMemo(
     () => mistakes.filter(m => !m.resolved),
@@ -71,7 +58,8 @@ export default function CalcHomePage() {
     )
   }
 
-  const currentSpec = levelSpec(settings.currentLevel)
+  const blockCount = settings.selectedBlocks.length
+  const mixedCount = settings.mixedOps.filter((m) => m.enabled).length
   const todayAccuracy = wallet.todayQuestionsDone > 0
     ? Math.round((wallet.todayCorrect / wallet.todayQuestionsDone) * 100)
     : 0
@@ -115,7 +103,7 @@ export default function CalcHomePage() {
                 className="text-[10px] font-extrabold tracking-widest uppercase mb-0.5"
                 style={{ color: 'rgba(196,181,253,0.5)' }}
               >
-                {settings.freeMode ? '自由练习' : '当前难度'}
+                练习内容
               </div>
               <div
                 className="font-fredoka text-[22px] font-black leading-none"
@@ -125,12 +113,10 @@ export default function CalcHomePage() {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                {settings.freeMode
-                  ? `${settings.freeModeLevels.length} 种题型`
-                  : formatLevel(settings.currentLevel)}
+                已选 {blockCount} 种单运算
               </div>
               <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>
-                {settings.freeMode ? '混合出题 · 不评估升降级' : currentSpec.label}
+                {mixedCount} 种混合运算
               </div>
             </div>
             <Link
@@ -204,16 +190,6 @@ export default function CalcHomePage() {
             </div>
           </div>
         </section>
-
-        {/* Level progress (daily mode only) */}
-        {!settings.freeMode && (
-          <CalcLevelProgressBar
-            levelState={levelState.getLevelState(settings.currentLevel)}
-            problemStates={problemState.states}
-            level={settings.currentLevel}
-            userId={user?.id ?? ''}
-          />
-        )}
 
         {/* Config */}
         <section>
