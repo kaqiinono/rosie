@@ -1,4 +1,3 @@
-import { LEVELS } from './calc-levels'
 import { BLOCKS, blockById } from './calc-blocks'
 import type {
   CalcCategory,
@@ -14,23 +13,6 @@ export function coinReward(question: CalcQuestion, streak: number): number {
   if (streak >= 10) bonus = 2
   else if (streak >= 5) bonus = 1
   return question.coinBase + bonus
-}
-
-/** Returns levels enabled by the settings (filter out categories user disabled). */
-export function enabledLevels(settings: CalcSettings, includeChallenge: boolean): CalcLevel[] {
-  const out: CalcLevel[] = []
-  for (const spec of LEVELS) {
-    if (spec.level === 'C') {
-      if (includeChallenge && settings.enableMixed) out.push('C')
-      continue
-    }
-    if (typeof spec.level === 'number' && spec.level > settings.currentLevel) continue
-    if (spec.category === 'addsub' && !settings.enableAddSub) continue
-    if (spec.category === 'muldiv' && !settings.enableMulDiv) continue
-    if (spec.category === 'mixed' && !settings.enableMixed) continue
-    out.push(spec.level)
-  }
-  return out
 }
 
 /**

@@ -10,7 +10,6 @@ import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import { buildSession } from '@/utils/calc-helpers'
 import { useCalcSession } from '@/hooks/useCalcSession'
-import { useAuth } from '@/contexts/AuthContext'
 import type { CalcMistake, CalcQuestion, CalcSettings } from '@/utils/type'
 
 interface Props {
@@ -47,23 +46,11 @@ export default function QuickPracticeModal({
   onClose,
   doneLabel = '收好星星，返回 →',
 }: Props) {
-  const { user } = useAuth()
   // Build or use provided questions exactly once
   const questions = useMemo<CalcQuestion[]>(() => {
     if (propQuestions) return propQuestions
     if (!settings) return []
-    return buildSession(
-      settings,
-      buildCount,
-      mistakes,
-      {
-        problemStates: new Map(),
-        userId: user?.id ?? 'anonymous',
-        sessionNo: 0,
-        today: new Date().toISOString().slice(0, 10),
-      },
-      'free',
-    )
+    return buildSession(settings, buildCount, mistakes)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

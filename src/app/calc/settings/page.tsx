@@ -1,16 +1,16 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
+import BlockPicker from '@/components/calc/BlockPicker'
+import CalcConfigBar from '@/components/calc/CalcConfigBar'
 import QuickPracticeModal from '@/components/calc/QuickPracticeModal'
 import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
-import { LEVELS, formatLevel, levelSpec } from '@/utils/calc-levels'
-import { enabledLevels } from '@/utils/calc-helpers'
-import type { CalcCategory, CalcLevel } from '@/utils/type'
+import { blocksByGroup } from '@/utils/calc-blocks'
 
 interface ToggleRowProps {
   label: string
@@ -53,41 +53,21 @@ function ToggleRow({ label, description, value, onChange }: ToggleRowProps) {
   )
 }
 
-interface LevelChipProps {
-  level: CalcLevel
-  label: string
-  selected: boolean
-  onToggle: () => void
+interface SectionHeadingProps {
+  children: React.ReactNode
+  suffix?: React.ReactNode
 }
 
-function LevelChip({ level, label, selected, onToggle }: LevelChipProps) {
+function SectionHeading({ children, suffix }: SectionHeadingProps) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2 text-left transition-all"
-      style={{
-        background: selected ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${selected ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
-      }}
+    <h2
+      className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
+      style={{ color: 'rgba(196,181,253,0.45)' }}
     >
-      <div
-        className="text-[12px] font-extrabold leading-none"
-        style={{ color: selected ? '#c4b5fd' : 'rgba(245,243,255,0.55)' }}
-      >
-        {formatLevel(level)}
-      </div>
-      <div className="text-[10px] leading-tight" style={{ color: 'rgba(245,243,255,0.4)' }}>
-        {label}
-      </div>
-    </button>
+      {children}
+      {suffix}
+    </h2>
   )
-}
-
-const CATEGORY_LABELS: Record<CalcCategory, string> = {
-  addsub: '加减法',
-  muldiv: '乘除法',
-  mixed: '混合运算',
 }
 
 export default function CalcSettingsPage() {
@@ -97,68 +77,19 @@ export default function CalcSettingsPage() {
   const { mistakes } = useCalcMistakes(user)
   const [practiceOpen, setPracticeOpen] = useState(false)
 
-  const numericLevels = useMemo(() => LEVELS.filter(l => l.level !== 'C'), [])
-  const levelsByCategory = useMemo(() => {
-    const groups: Record<CalcCategory, typeof LEVELS> = { addsub: [], muldiv: [], mixed: [] }
-    for (const spec of LEVELS) groups[spec.category].push(spec)
-    return groups
-  }, [])
-
-  const selectedSet = useMemo(
-    () => new Set<CalcLevel>(settings.freeModeLevels),
-    [settings.freeModeLevels],
-  )
-
-  const isLevelSelected = (level: CalcLevel) => selectedSet.has(level)
-
-  const toggleLevel = (level: CalcLevel) => {
-    const next = new Set(selectedSet)
-    if (next.has(level)) next.delete(level)
-    else next.add(level)
-    update({ freeModeLevels: Array.from(next) })
+  const toggleBlock = (id: string) => {
+    const next = new Set(settings.selectedBlocks)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    update({ selectedBlocks: [...next] })
   }
 
-  /** True if every level in `category` is currently selected in freeModeLevels. */
-  const categoryAllSelected = (cat: CalcCategory): boolean => {
-    const levels = levelsByCategory[cat]
-    if (levels.length === 0) return false
-    return levels.every(l => selectedSet.has(l.level))
-  }
-
-  /** Bulk-add or bulk-remove all levels of a category from freeModeLevels. */
-  const setCategorySelected = (cat: CalcCategory, on: boolean) => {
-    const levels = levelsByCategory[cat]
-    const next = new Set(selectedSet)
-    if (on) for (const l of levels) next.add(l.level)
-    else for (const l of levels) next.delete(l.level)
-    update({ freeModeLevels: Array.from(next) })
-  }
-
-  /** Category toggle in normal mode = simple boolean setting. In free mode = bulk-select. */
-  const getCategoryToggleValue = (cat: CalcCategory): boolean => {
-    if (settings.freeMode) return categoryAllSelected(cat)
-    if (cat === 'addsub') return settings.enableAddSub
-    if (cat === 'muldiv') return settings.enableMulDiv
-    return settings.enableMixed
-  }
-  const setCategoryToggle = (cat: CalcCategory, v: boolean) => {
-    if (settings.freeMode) {
-      setCategorySelected(cat, v)
-      return
-    }
-    if (cat === 'addsub') update({ enableAddSub: v })
-    else if (cat === 'muldiv') update({ enableMulDiv: v })
-    else update({ enableMixed: v })
-  }
-
-  /** Enable free mode: pre-populate selection from currently enabled levels (Q3=b). */
-  const handleFreeModeToggle = (on: boolean) => {
-    if (on && settings.freeModeLevels.length === 0) {
-      const initial = enabledLevels(settings, true)
-      update({ freeMode: true, freeModeLevels: initial })
-    } else {
-      update({ freeMode: on })
-    }
+  const toggleGroup = (group: 'add' | 'sub' | 'mul' | 'div', on: boolean) => {
+    const ids = blocksByGroup(group).map((b) => b.id)
+    const next = new Set(settings.selectedBlocks)
+    if (on) ids.forEach((i) => next.add(i))
+    else ids.forEach((i) => next.delete(i))
+    update({ selectedBlocks: [...next] })
   }
 
   if (isLoading) {
@@ -182,25 +113,9 @@ export default function CalcSettingsPage() {
     )
   }
 
-  const currentSpec = levelSpec(settings.currentLevel)
-  const selectedCount = settings.freeModeLevels.length
-
-  const selectStyle = {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1.5px solid rgba(139,92,246,0.3)',
-    color: '#c4b5fd',
-    borderRadius: '0.5rem',
-    padding: '6px 12px',
-    fontSize: '13px',
-    fontWeight: 800,
-    outline: 'none',
-    width: '100%',
-    appearance: 'auto' as const,
-  }
-
-  const practiceSubtitle = settings.freeMode
-    ? `自由练习 · 已选 ${selectedCount} 种题型`
-    : `Lv.${settings.currentLevel} · ${currentSpec.label}`
+  const blockCount = settings.selectedBlocks.length
+  const mixedCount = settings.mixedOps.filter((m) => m.enabled).length
+  const practiceSubtitle = `已选 ${blockCount} 种单运算 · ${mixedCount} 种混合`
 
   return (
     <>
@@ -215,185 +130,75 @@ export default function CalcSettingsPage() {
 
       <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
 
-        {/* Operation types — in free mode these become bulk-select shortcuts */}
+        {/* 单运算 — multi-select building blocks */}
         <section>
-          <h2
-            className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-            style={{ color: 'rgba(196,181,253,0.45)' }}
-          >
-            运算类型
-            {settings.freeMode && (
+          <SectionHeading
+            suffix={
               <span className="ml-2 normal-case tracking-normal" style={{ color: 'rgba(196,181,253,0.3)' }}>
-                · 点击 = 该类别全选 / 取消
+                · 已选 {blockCount} 种
               </span>
-            )}
-          </h2>
-          <div className="space-y-2">
-            <ToggleRow
-              label="加减法"
-              description="10 到 100 以内加减（档 1-5）"
-              value={getCategoryToggleValue('addsub')}
-              onChange={(v) => setCategoryToggle('addsub', v)}
-            />
-            <ToggleRow
-              label="乘除法"
-              description="乘法口诀 · 除法 · ×10-19 拓展 · 2-19 综合（档 6-14, 16, 18-20）"
-              value={getCategoryToggleValue('muldiv')}
-              onChange={(v) => setCategoryToggle('muldiv', v)}
-            />
-            <ToggleRow
-              label="混合运算"
-              description="两运算符 + 三运算符挑战题（档 15, 17, 挑战）"
-              value={getCategoryToggleValue('mixed')}
-              onChange={(v) => setCategoryToggle('mixed', v)}
-            />
-          </div>
+            }
+          >
+            单运算
+          </SectionHeading>
+          <BlockPicker
+            selected={settings.selectedBlocks}
+            onToggle={toggleBlock}
+            onToggleGroup={toggleGroup}
+          />
         </section>
 
-        {/* Difficulty / mode */}
+        {/* 混合运算 — placeholder, real composer arrives in a later task */}
         <section>
-          <h2
-            className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-            style={{ color: 'rgba(196,181,253,0.45)' }}
-          >
-            难度
-          </h2>
+          <SectionHeading>混合运算</SectionHeading>
           <div
-            className="rounded-xl p-4 space-y-3"
+            className="relative overflow-hidden rounded-2xl px-5 py-6 text-center"
             style={{
               background: 'rgba(139,92,246,0.06)',
-              border: '1px solid rgba(139,92,246,0.15)',
+              border: '1px dashed rgba(139,92,246,0.28)',
             }}
           >
-            <ToggleRow
-              label="自由练习"
-              description="自选题型混合出题；关闭则按进度推进（带 A/B/C 评估与自适应升档）"
-              value={settings.freeMode}
-              onChange={handleFreeModeToggle}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(219,39,119,0.18), transparent 70%)' }}
             />
-
-            {!settings.freeMode && (
-              <>
-                <div>
-                  <div
-                    className="text-[11px] font-bold mb-1"
-                    style={{ color: 'rgba(196,181,253,0.5)' }}
-                  >
-                    当前难度
-                  </div>
-                  <select
-                    value={settings.currentLevel}
-                    onChange={(e) => update({ currentLevel: Number(e.target.value) })}
-                    style={selectStyle}
-                  >
-                    {numericLevels.map(l => (
-                      <option key={l.level as number} value={l.level as number}>
-                        Lv.{l.level} · {l.label}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="text-[10px] mt-1" style={{ color: 'rgba(245,243,255,0.3)' }}>
-                    {currentSpec.label}
-                  </div>
-                </div>
-
-                <ToggleRow
-                  label="自适应升档"
-                  description="最近 30 题正确率 >85% 时自动解锁下一档（最高 Lv.20）"
-                  value={settings.adaptive}
-                  onChange={(v) => update({ adaptive: v })}
-                />
-              </>
-            )}
-
-            {settings.freeMode && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div
-                    className="text-[11px] font-bold"
-                    style={{ color: 'rgba(196,181,253,0.5)' }}
-                  >
-                    挑选题型 · 已选 {selectedCount} 种
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => update({ freeModeLevels: LEVELS.map(l => l.level) })}
-                      className="rounded-md px-2 py-1 text-[10px] font-extrabold"
-                      style={{
-                        background: 'rgba(139,92,246,0.15)',
-                        border: '1px solid rgba(139,92,246,0.3)',
-                        color: '#c4b5fd',
-                      }}
-                    >
-                      全选
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => update({ freeModeLevels: [] })}
-                      className="rounded-md px-2 py-1 text-[10px] font-extrabold"
-                      style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'rgba(245,243,255,0.55)',
-                      }}
-                    >
-                      清空
-                    </button>
-                  </div>
-                </div>
-
-                {(['addsub', 'muldiv', 'mixed'] as const).map((cat) => {
-                  const levels = levelsByCategory[cat]
-                  if (levels.length === 0) return null
-                  return (
-                    <div key={cat}>
-                      <div
-                        className="text-[10px] font-extrabold uppercase tracking-wider mb-1.5"
-                        style={{ color: 'rgba(196,181,253,0.35)' }}
-                      >
-                        {CATEGORY_LABELS[cat]}
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
-                        {levels.map((l) => (
-                          <LevelChip
-                            key={String(l.level)}
-                            level={l.level}
-                            label={l.label}
-                            selected={isLevelSelected(l.level)}
-                            onToggle={() => toggleLevel(l.level)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-
-                {selectedCount === 0 && (
-                  <div
-                    className="rounded-lg px-3 py-2 text-[11px]"
-                    style={{
-                      background: 'rgba(244,114,182,0.1)',
-                      border: '1px solid rgba(244,114,182,0.3)',
-                      color: '#fbcfe8',
-                    }}
-                  >
-                    至少选择一个题型，否则出题将退回到 Lv.1。
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="text-[26px] leading-none">🧩</div>
+            <div
+              className="mt-2 font-fredoka text-[15px] font-black"
+              style={{
+                background: 'linear-gradient(90deg, #c4b5fd, #f9a8d4)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              混合运算编排 · 即将开放
+            </div>
+            <div className="mt-1 text-[11px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+              自己搭配 +−×÷ 组合题，敬请期待～
+            </div>
           </div>
         </section>
 
-        {/* Audio */}
+        {/* 题量 / 限时 */}
         <section>
-          <h2
-            className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-            style={{ color: 'rgba(196,181,253,0.45)' }}
-          >
-            音效
-          </h2>
+          <SectionHeading>题量 · 限时</SectionHeading>
+          <CalcConfigBar
+            count={settings.lastCount}
+            timeLimit={settings.lastTimeLimit}
+            onChange={(patch) =>
+              update(
+                patch.count !== undefined
+                  ? { lastCount: patch.count }
+                  : { lastTimeLimit: patch.timeLimit },
+              )
+            }
+          />
+        </section>
+
+        {/* 音效 */}
+        <section>
+          <SectionHeading>音效</SectionHeading>
           <ToggleRow
             label="开启答题音效"
             description="答对、答错、金币、挑战、升档等提示音"
@@ -402,24 +207,11 @@ export default function CalcSettingsPage() {
           />
         </section>
 
-        {/* Time limits */}
+        {/* 限时细则 */}
         <TimeLimitsSection
           overrides={settings.timeLimitOverrides}
           onChange={(next) => update({ timeLimitOverrides: next })}
         />
-
-        {/* Info */}
-        <section
-          className="rounded-xl px-4 py-3 text-[11px]"
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            color: 'rgba(245,243,255,0.3)',
-          }}
-        >
-          上次配置：题量 {settings.lastCount} 题 · 限时{' '}
-          {settings.lastTimeLimit === 0 ? '不限' : `${settings.lastTimeLimit / 60} 分钟`}
-        </section>
 
         {/* Try-out button */}
         <button
@@ -437,7 +229,7 @@ export default function CalcSettingsPage() {
 
       {practiceOpen && (
         <QuickPracticeModal
-          title={settings.freeMode ? '试试自由练习' : '试试当前难度'}
+          title="试试当前设置"
           subtitle={practiceSubtitle}
           settings={settings}
           mistakes={mistakes}
