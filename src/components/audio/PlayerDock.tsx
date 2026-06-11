@@ -26,13 +26,35 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
   const [videoMinimized, setVideoMinimized] = useState(false)
   const [showQueue, setShowQueue] = useState(false)
 
-  const current = player.current
+  // Destructure so render only reads state/callbacks, not the ref-bearing player object.
+  const {
+    audioRef,
+    queue,
+    index,
+    current,
+    isPlaying,
+    isPaused,
+    loopMode,
+    loopCount,
+    togglePause,
+    prev,
+    next,
+    jumpTo,
+    removeAt,
+    cycleLoopMode,
+    cycleLoopCount,
+    stop,
+    onEnded,
+    notifyPlay,
+    notifyPause,
+  } = player
+
   const isVideo = current?.mediaType === 'video'
   const showVideoOverlay = isVideo && !videoMinimized
-  const live = player.isPlaying && !player.isPaused
-  const loopActive = player.loopMode !== 'order'
+  const live = isPlaying && !isPaused
+  const loopActive = loopMode !== 'order'
 
-  const total = player.queue.length
+  const total = queue.length
 
   return (
     <>
@@ -46,13 +68,13 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
         }
       >
         <video
-          ref={player.audioRef}
+          ref={audioRef}
           className="block max-h-[200px] w-full object-contain"
           preload="none"
           playsInline
-          onEnded={player.onEnded}
-          onPlay={player.notifyPlay}
-          onPause={player.notifyPause}
+          onEnded={onEnded}
+          onPlay={notifyPlay}
+          onPause={notifyPause}
         />
         <div className="flex items-center justify-between bg-black/60 px-3 py-1.5">
           <span className="truncate text-[11px] font-bold text-white/80">{current?.label}</span>
@@ -83,13 +105,13 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
               </button>
             </div>
             <ul className="max-h-[44vh] overflow-y-auto p-1.5">
-              {player.queue.map((t, i) => {
-                const playing = i === player.index
+              {queue.map((t, i) => {
+                const playing = i === index
                 return (
                   <li key={`${t.url}-${i}`} className="flex items-center gap-1">
                     <button
                       type="button"
-                      onClick={() => player.jumpTo(i)}
+                      onClick={() => jumpTo(i)}
                       className={clsx(
                         'flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2.5 py-2 text-left transition',
                         playing ? 'bg-orange-400/15' : 'hover:bg-white/5',
@@ -114,7 +136,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
                     </button>
                     <button
                       type="button"
-                      onClick={() => player.removeAt(i)}
+                      onClick={() => removeAt(i)}
                       aria-label="从播放列表移除"
                       title="移除"
                       className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] text-white/40 transition hover:bg-red-500/20 hover:text-red-300"
@@ -184,7 +206,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
                 )}
               >
                 <ListIcon />
-                {player.index + 1} / {total}
+                {index + 1} / {total}
               </button>
               {isVideo && videoMinimized && (
                 <button
@@ -201,22 +223,22 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
 
           {/* 控件行：小屏换到第二行、可自动换行避免压缩 */}
           <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-nowrap">
-            <GhostButton label="上一首" onClick={player.prev}>
+            <GhostButton label="上一首" onClick={prev}>
               <PrevIcon />
             </GhostButton>
-          <PrimaryDial label={player.isPaused ? '继续播放' : '暂停'} onClick={player.togglePause} pulse={live}>
-            {player.isPaused ? <PlayIcon /> : <PauseIcon />}
+          <PrimaryDial label={isPaused ? '继续播放' : '暂停'} onClick={togglePause} pulse={live}>
+            {isPaused ? <PlayIcon /> : <PauseIcon />}
           </PrimaryDial>
-          <GhostButton label="下一首" onClick={player.next}>
+          <GhostButton label="下一首" onClick={next}>
             <NextIcon />
           </GhostButton>
 
           {/* 循环模式 */}
           <button
             type="button"
-            onClick={player.cycleLoopMode}
-            title={`${LOOP_MODE_LABEL[player.loopMode]}播放（点击切换）`}
-            aria-label={`循环模式：${LOOP_MODE_LABEL[player.loopMode]}`}
+            onClick={cycleLoopMode}
+            title={`${LOOP_MODE_LABEL[loopMode]}播放（点击切换）`}
+            aria-label={`循环模式：${LOOP_MODE_LABEL[loopMode]}`}
             className={clsx(
               'group relative flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-bold transition active:scale-95',
               loopActive
@@ -227,18 +249,18 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
             <span className="transition-transform group-active:rotate-180">
               <LoopIcon />
             </span>
-            <span className="tabular-nums">{LOOP_MODE_LABEL[player.loopMode]}</span>
+            <span className="tabular-nums">{LOOP_MODE_LABEL[loopMode]}</span>
           </button>
 
           {/* 循环次数 */}
           <button
             type="button"
-            onClick={player.cycleLoopCount}
+            onClick={cycleLoopCount}
             title="循环次数（点击切换）"
-            aria-label={`循环次数：${player.loopCount === Infinity ? '无限' : player.loopCount}`}
+            aria-label={`循环次数：${loopCount === Infinity ? '无限' : loopCount}`}
             className="flex h-8 shrink-0 items-center justify-center rounded-full bg-black/15 px-2 font-mono text-[12px] font-bold tabular-nums text-white ring-1 ring-black/10 transition hover:bg-black/25 active:scale-95"
           >
-            {player.loopCount === Infinity ? '∞' : `×${player.loopCount}`}
+            {loopCount === Infinity ? '∞' : `×${loopCount}`}
           </button>
 
           {/* 桃心收藏 */}
@@ -260,7 +282,7 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
           {/* 关闭 */}
           <button
             type="button"
-            onClick={player.stop}
+            onClick={stop}
             aria-label="停止播放"
             title="停止播放"
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/15 text-[12px] text-white/85 ring-1 ring-black/10 transition hover:bg-red-500 hover:text-white"
