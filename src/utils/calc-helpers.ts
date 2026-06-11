@@ -1,12 +1,9 @@
-import { LEVELS, MAX_NUMERIC_LEVEL, levelSpec } from './calc-levels'
-import { bankFor } from './calc-bank'
-import { assembleLevelPicks } from './calc-session-builder'
-import { applyForm, pickForm } from './calc-forms'
+import { LEVELS } from './calc-levels'
+import { BLOCKS, blockById } from './calc-blocks'
 import type {
   CalcCategory,
   CalcLevel,
   CalcMistake,
-  CalcProblemState,
   CalcQuestion,
   CalcSettings,
 } from './type'
@@ -36,193 +33,33 @@ export function enabledLevels(settings: CalcSettings, includeChallenge: boolean)
   return out
 }
 
-/** Generate a fresh challenge question (for the trailing challenge slots). */
-export function generateChallenge(): CalcQuestion {
-  return levelSpec('C').generate()
-}
-
-export interface BuildSessionContext {
-  /** Pre-loaded problem states for the current level (and possibly adjacent). */
-  problemStates: Map<string, CalcProblemState>
-  /** Resolved user id; needed for seeded banks (addsub / mixed). */
-  userId: string
-  /** Session number this build is FOR (last completed session + 1). Used for cold rescue. */
-  sessionNo: number
-  /** YYYY-MM-DD; used to determine which review_rN_due dates are due. */
-  today: string
-  /** True ⇒ last_session_accuracy < 0.75 ⇒ assault-mode slot layout. */
-  assaultMode?: boolean
-  /** False during warmup (first 10 problems at a fresh level) — P0/P3/P4/P5 suppressed. */
-  warmupComplete?: boolean
-}
-
 /**
- * Build a session of `count` questions per master.md §四–§六.
+ * Build a session of `count` questions from the user's selected single-op
+ * "blocks" (`settings.selectedBlocks`).
  *
- * Phase 2 behaviour:
- *   - Delegates to `assembleLevelPicks` for P0 (forced) + P1 (cold) + P2 (active)
- *   - P3 (review-due) / P4 (old-level mix) / P5 (mastered audit) are Phase 3+
- *   - Reserves trailing 1–2 slots for challenge if currentLevel ≥ 15 + enableMixed + count ≥ 10
- *   - Mistakes mode: pull from `calc_mistakes` (legacy behaviour, untouched)
+ * Phase 2 (temporary): single-op only, round-robin across selected blocks,
+ * shuffled. Phase 5 will replace this with weakness weighting + mixed
+ * sources + mistake carry-over (hence `_mistakes` is currently unused).
  */
 export function buildSession(
   settings: CalcSettings,
   count: number,
-  mistakes: CalcMistake[],
-  ctx: BuildSessionContext,
-  mode: 'daily' | 'free' | 'mistakes' = 'daily',
+  _mistakes: CalcMistake[],
 ): CalcQuestion[] {
-  if (mode === 'mistakes') {
-    const pool = mistakes.filter((m) => !m.resolved)
-    const out: CalcQuestion[] = []
-    for (let i = 0; i < count; i++) {
-      if (i < pool.length) {
-        const m = pool[i]
-        // Mistakes always render in their original (standard) form — the display
-        // string is what the kid got wrong. No form variation here.
-        out.push({
-          display: `${m.display.replace(/\s*=\s*\?\s*$/, '')} = ?`,
-          signature: m.signature,
-          arity: 1,
-          level: m.level,
-          answer: m.answer,
-          isChallenge: false,
-          category: m.category,
-          coinBase: 1,
-        })
-      } else {
-        const fallback = pickFromBank(settings.currentLevel, ctx, 1)
-        if (fallback.length > 0) out.push(withForm(fallback[0], ctx))
-      }
-    }
-    return out
+  const sources = settings.selectedBlocks
+    .map(blockById)
+    .filter((b): b is NonNullable<ReturnType<typeof blockById>> => !!b)
+  const pool = sources.length > 0 ? sources : [BLOCKS[0]] // 兜底 add:10
+  const out: CalcQuestion[] = []
+  for (let i = 0; i < count; i++) {
+    const blk = pool[i % pool.length]
+    out.push(blk.generateSingle())
   }
-
-  // Free-practice mode: round-robin across user-picked levels, ignore enabledLevels/currentLevel.
-  if (settings.freeMode) {
-    return buildFreeModeSession(settings, count, ctx)
-  }
-
-  const challengeUnlocked = settings.currentLevel >= 15 && settings.enableMixed
-  const challengeSlots = challengeUnlocked && count >= 10 ? (count >= 20 ? 2 : 1) : 0
-  const mainCount = count - challengeSlots
-
-  const picks = pickFromBank(settings.currentLevel, ctx, mainCount)
-  const out = picks.map((q) => withForm(q, ctx))
-
-  for (let i = 0; i < challengeSlots; i++) {
-    // Challenge questions always use standard form (per calc-forms.ts).
-    out.push(generateChallenge())
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
   }
   return out
-}
-
-/**
- * Free-practice picker. Distributes `count` questions round-robin across
- * `settings.freeModeLevels`. Challenge level ('C') in the list contributes
- * 1–2 trailing challenge slots when count ≥ 10. Empty selection falls back
- * to a single Lv.1 batch so the session is never empty.
- */
-function buildFreeModeSession(
-  settings: CalcSettings,
-  count: number,
-  ctx: BuildSessionContext,
-): CalcQuestion[] {
-  const picked = settings.freeModeLevels
-  const hasChallenge = picked.includes('C')
-  const numericPicked = picked.filter((l): l is number => typeof l === 'number')
-
-  if (numericPicked.length === 0 && !hasChallenge) {
-    // Defensive fallback — UI should prevent empty selection, but if it slips through
-    // we degrade gracefully to a Lv.1 batch instead of an empty session.
-    const fallback = pickFromBank(1, ctx, count)
-    return fallback.map((q) => withForm(q, ctx))
-  }
-
-  if (numericPicked.length === 0) {
-    const out: CalcQuestion[] = []
-    for (let i = 0; i < count; i++) out.push(generateChallenge())
-    return out
-  }
-
-  const challengeSlots = hasChallenge && count >= 10 ? (count >= 20 ? 2 : 1) : 0
-  const mainCount = count - challengeSlots
-
-  const perLevel = Math.floor(mainCount / numericPicked.length)
-  const remainder = mainCount % numericPicked.length
-
-  const picks: CalcQuestion[] = []
-  numericPicked.forEach((level, i) => {
-    const slots = perLevel + (i < remainder ? 1 : 0)
-    if (slots <= 0) return
-    const batch = pickFromBank(level as CalcLevel, ctx, slots)
-    for (const q of batch) picks.push(withForm(q, ctx))
-  })
-
-  // Fisher-Yates shuffle so different levels are interleaved.
-  for (let i = picks.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[picks[i], picks[j]] = [picks[j], picks[i]]
-  }
-
-  for (let i = 0; i < challengeSlots; i++) picks.push(generateChallenge())
-  return picks
-}
-
-/** Apply the form variation appropriate for the current appearance_count. */
-function withForm(q: CalcQuestion, ctx: BuildSessionContext): CalcQuestion {
-  const state = ctx.problemStates.get(q.signature)
-  const form = pickForm(state?.appearanceCount ?? 0)
-  return applyForm(q, form)
-}
-
-function pickFromBank(level: CalcLevel, ctx: BuildSessionContext, count: number): CalcQuestion[] {
-  const bank = bankFor(level, ctx.userId)
-  if (!bank || bank.length === 0) {
-    const out: CalcQuestion[] = []
-    for (let i = 0; i < count; i++) out.push(levelSpec(level).generate())
-    return out
-  }
-  // P4 — load currentLevel-1's bank for old-level mix (master.md §9.2)
-  let oldLevelBank: CalcQuestion[] | null = null
-  if (typeof level === 'number' && level > 1) {
-    oldLevelBank = bankFor((level - 1) as CalcLevel, ctx.userId)
-  }
-  const picks = assembleLevelPicks({
-    level,
-    bank,
-    problemStates: ctx.problemStates,
-    sessionNo: ctx.sessionNo,
-    today: ctx.today,
-    count,
-    userId: ctx.userId,
-    oldLevelBank,
-    assaultMode: ctx.assaultMode,
-    warmupComplete: ctx.warmupComplete,
-  })
-  // When the bank is smaller than count (e.g. level 7/8/9/12 have only 18 items),
-  // pad to the requested count by generating additional questions so the session
-  // length matches what the user configured.
-  const gen = levelSpec(level).generate
-  while (picks.length < count) picks.push(gen())
-  return picks
-}
-
-/**
- * Decide whether to advance currentLevel based on recent session stats.
- * Returns the new currentLevel (>= settings.currentLevel).
- * Kept for Phase 1; Phase 5 replaces this with the A/B/C + spaced verification logic.
- */
-export function maybeAdvanceLevel(
-  settings: CalcSettings,
-  recentAtLevel: { firstTryCorrect: number; total: number },
-): number {
-  if (!settings.adaptive) return settings.currentLevel
-  if (settings.currentLevel >= MAX_NUMERIC_LEVEL) return settings.currentLevel
-  if (recentAtLevel.total < 30) return settings.currentLevel
-  const accuracy = recentAtLevel.firstTryCorrect / recentAtLevel.total
-  if (accuracy >= 0.85) return Math.min(settings.currentLevel + 1, MAX_NUMERIC_LEVEL)
-  return settings.currentLevel
 }
 
 /**
