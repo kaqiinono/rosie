@@ -6,99 +6,68 @@ import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { supabase } from '@/lib/supabase'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
-import { LEVELS, formatLevel, levelSpec } from '@/utils/calc-levels'
-import { bankFor, expectedBankSize } from '@/utils/calc-bank'
-import type { CalcLevel, CalcLevelStateInfo, CalcLevelStatus } from '@/utils/type'
+import { BLOCK_GROUPS, blocksByGroup } from '@/utils/calc-blocks'
+import { skeletonMeta } from '@/utils/calc-mixed'
+import type { CalcProblemStatus } from '@/utils/type'
 
 interface ProblemStateLite {
   signature: string
-  level: number
   proficiency: number
   attempt_count: number
-  status: 'active' | 'review' | 'mastered' | 'forced'
+  status: CalcProblemStatus
   consecutive_wrong: number
-  last_seen_session: number | null
-  updated_at: string
+  block_id: string | null
+  mixed_op_id: string | null
 }
 
-interface LevelStateRow {
-  level: number
-  status: CalcLevelStatus
-  abc_passed_date: string | null
-  review_r1_date: string | null
-  review_r2_date: string | null
-  review_r3_date: string | null
-  warmup_complete: boolean
-  warmup_answered: number
-  last_session_accuracy: number | null
-  consecutive_poor_sessions: number
-  session_count_in_level: number
+// ── Mastery helpers ────────────────────────────────────────────────────────
+
+interface MasteryStat {
+  /** 0..100, computed over answered rows only */
+  pct: number
+  /** number of rows with attempt_count > 0 */
+  answered: number
+  /** total attempts across rows */
+  attempts: number
 }
 
-interface EventRow {
-  id: string
-  occurred_at: string
-  event_type: string
-  level: number | null
-  signature: string | null
-  detail: Record<string, unknown> | null
+/** mastery% = round( avgProficiency / 5 * 100 ) over rows with attempt_count > 0 */
+function masteryOf(rows: ProblemStateLite[]): MasteryStat {
+  const answered = rows.filter((r) => r.attempt_count > 0)
+  const attempts = rows.reduce((s, r) => s + r.attempt_count, 0)
+  if (answered.length === 0) return { pct: 0, answered: 0, attempts }
+  const avg = answered.reduce((s, r) => s + r.proficiency, 0) / answered.length
+  return { pct: Math.round((avg / 5) * 100), answered: answered.length, attempts }
 }
 
-function rowToLevelState(r: LevelStateRow): CalcLevelStateInfo {
-  return {
-    level: r.level === 99 ? 'C' : r.level,
-    status: r.status,
-    abcPassedDate: r.abc_passed_date,
-    reviewR1Date: r.review_r1_date,
-    reviewR2Date: r.review_r2_date,
-    reviewR3Date: r.review_r3_date,
-    sessionCountInLevel: r.session_count_in_level,
-    warmupComplete: r.warmup_complete,
-    warmupAnswered: r.warmup_answered,
-    lastSessionAccuracy: r.last_session_accuracy,
-    consecutivePoorSessions: r.consecutive_poor_sessions,
+function masteryColor(pct: number, answered: number): string {
+  if (answered === 0) return 'rgba(196,181,253,0.4)'
+  if (pct >= 80) return '#4ade80'
+  if (pct >= 50) return '#fbbf24'
+  return '#f87171'
+}
+
+function statusLabel(stat: MasteryStat): string {
+  if (stat.answered === 0) return '未练'
+  if (stat.pct >= 80) return '已掌握'
+  return '练习中'
+}
+
+/** Prettify a raw signature: add(a,b)→a+b, sub→−, mul→×, div→÷. Falls back to raw. */
+function prettySignature(sig: string): string {
+  const m = sig.match(/^(add|sub|mul|div)\((-?\d+),(-?\d+)\)$/)
+  if (m) {
+    const opSym = { add: '+', sub: '−', mul: '×', div: '÷' }[m[1]] ?? '?'
+    return `${m[2]} ${opSym} ${m[3]}`
   }
+  return sig
 }
 
-const STATUS_LABEL: Record<CalcLevelStatus, string> = {
-  practicing: '练习中',
-  abc_passed: 'A/B/C 已通过',
-  review_r1: '第 1 轮通过',
-  review_r2: '第 2 轮通过',
-  review_r3: '第 3 轮通过',
-  mastered: '已掌握',
-}
-
-const STATUS_COLOR: Record<CalcLevelStatus, string> = {
-  practicing: '#c4b5fd',
-  abc_passed: '#a78bfa',
-  review_r1: '#7dd3fc',
-  review_r2: '#5eead4',
-  review_r3: '#34d399',
-  mastered: '#fbbf24',
-}
-
-const EVENT_LABEL: Record<string, string> = {
-  level_up: '🎉 升级',
-  level_down: '📉 降级',
-  review_pass: '✅ 复测通过',
-  review_fail: '❌ 复测未通过',
-  assault_mode_on: '⚔️ 攻坚模式',
-  forced_problem: '🔒 难题强化',
-}
-
-function addDays(date: string, days: number): string {
-  const d = new Date(`${date}T00:00:00Z`)
-  d.setUTCDate(d.getUTCDate() + days)
-  return d.toISOString().slice(0, 10)
-}
-
-function nextDueLabel(state: CalcLevelStateInfo): string | null {
-  if (!state.abcPassedDate) return null
-  if (state.status === 'abc_passed') return `r1 检验 · ${addDays(state.abcPassedDate, 2)}`
-  if (state.status === 'review_r1') return `r2 检验 · ${addDays(state.abcPassedDate, 7)}`
-  if (state.status === 'review_r2') return `r3 检验 · ${addDays(state.abcPassedDate, 30)}`
-  return null
+function sortWeakest(rows: ProblemStateLite[]): ProblemStateLite[] {
+  return [...rows].sort((a, b) => {
+    if (a.proficiency !== b.proficiency) return a.proficiency - b.proficiency
+    return b.consecutive_wrong - a.consecutive_wrong
+  })
 }
 
 export default function CalcReportPage() {
@@ -106,95 +75,58 @@ export default function CalcReportPage() {
   const { settings, update } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
 
-  const [levelStates, setLevelStates] = useState<Map<number | 'C', CalcLevelStateInfo>>(new Map())
   const [problemStates, setProblemStates] = useState<ProblemStateLite[]>([])
-  const [events, setEvents] = useState<EventRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null)
+  const [expandedBlock, setExpandedBlock] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
     let cancelled = false
     const load = async () => {
-      const [{ data: ls }, { data: ps }, { data: ev }] = await Promise.all([
-        supabase
-          .from('calc_level_state')
-          .select('level,status,abc_passed_date,review_r1_date,review_r2_date,review_r3_date,session_count_in_level,warmup_complete,warmup_answered,last_session_accuracy,consecutive_poor_sessions')
-          .eq('user_id', user.id),
-        supabase
-          .from('calc_problem_state')
-          .select('signature,level,proficiency,attempt_count,status,consecutive_wrong,last_seen_session,updated_at')
-          .eq('user_id', user.id),
-        supabase
-          .from('calc_event_log')
-          .select('id,occurred_at,event_type,level,signature,detail')
-          .eq('user_id', user.id)
-          .order('occurred_at', { ascending: false })
-          .limit(30),
-      ])
+      const { data } = await supabase
+        .from('calc_problem_state')
+        .select('signature,proficiency,attempt_count,status,consecutive_wrong,block_id,mixed_op_id')
+        .eq('user_id', user.id)
       if (cancelled) return
-      const map = new Map<number | 'C', CalcLevelStateInfo>()
-      for (const r of (ls ?? []) as LevelStateRow[]) {
-        const s = rowToLevelState(r)
-        map.set(s.level, s)
-      }
-      setLevelStates(map)
-      setProblemStates((ps ?? []) as ProblemStateLite[])
-      setEvents((ev ?? []) as EventRow[])
+      setProblemStates((data ?? []) as ProblemStateLite[])
       setLoading(false)
     }
     void load()
     return () => { cancelled = true }
   }, [user])
 
-  // Aggregate stats per level
-  const numericLevels = LEVELS.filter((l) => l.level !== 'C')
+  // Index rows by block_id and mixed_op_id for cheap grouping.
+  const rowsByBlock = useMemo(() => {
+    const map = new Map<string, ProblemStateLite[]>()
+    for (const r of problemStates) {
+      if (!r.block_id) continue
+      const arr = map.get(r.block_id)
+      if (arr) arr.push(r)
+      else map.set(r.block_id, [r])
+    }
+    return map
+  }, [problemStates])
 
-  const masteryByLevel = new Map<number, { total: number; mastered: number; review: number }>()
-  for (const ps of problemStates) {
-    const lvl = ps.level
-    if (!masteryByLevel.has(lvl)) masteryByLevel.set(lvl, { total: 0, mastered: 0, review: 0 })
-    const agg = masteryByLevel.get(lvl)!
-    agg.total += 1
-    if (ps.status === 'mastered') agg.mastered += 1
-    else if (ps.status === 'review') agg.review += 1
-  }
+  const rowsByMixedOp = useMemo(() => {
+    const map = new Map<string, ProblemStateLite[]>()
+    for (const r of problemStates) {
+      if (!r.mixed_op_id) continue
+      const arr = map.get(r.mixed_op_id)
+      if (arr) arr.push(r)
+      else map.set(r.mixed_op_id, [r])
+    }
+    return map
+  }, [problemStates])
 
-  // Per-level problem detail for expandable view
-  const levelProblemDetail = useMemo(() => {
-    if (selectedLevel === null || !user) return null
-    const bank = bankFor(selectedLevel as CalcLevel, user.id)
-    if (!bank) return null
-    const stateMap = new Map(problemStates.filter(p => p.level === selectedLevel).map(p => [p.signature, p]))
-    return bank.map((q) => {
-      const s = stateMap.get(q.signature)
-      const mastered = s?.status === 'review' || s?.status === 'mastered'
-      let reason = ''
-      if (!s) {
-        reason = '从未作答'
-      } else if (mastered) {
-        reason = s.status === 'mastered' ? '长期掌握' : '已达标（复习中）'
-      } else if (s.consecutive_wrong >= 2) {
-        reason = `连续做错 ${s.consecutive_wrong} 次`
-      } else if (s.attempt_count < 2) {
-        reason = `作答次数不足（仅 ${s.attempt_count} 次，需 ≥2）`
-      } else if (s.proficiency <= 2) {
-        reason = `熟练度偏低（${s.proficiency}/5）`
-      } else {
-        reason = `练习中（熟练度 ${s.proficiency ?? 0}/5）`
-      }
-      return { display: q.display, signature: q.signature, mastered, reason, s }
-    })
-  }, [selectedLevel, user, problemStates, bankFor])  // eslint-disable-line react-hooks/exhaustive-deps
+  // Weakest 10 across all rows (not mastered).
+  const weakest = useMemo(
+    () => sortWeakest(problemStates.filter((p) => p.status !== 'mastered')).slice(0, 10),
+    [problemStates],
+  )
 
-  // Weakest 10 problems — proficiency asc, then consecutive_wrong desc
-  const weakest = [...problemStates]
-    .filter((p) => p.status === 'active' || p.status === 'forced')
-    .sort((a, b) => {
-      if (a.proficiency !== b.proficiency) return a.proficiency - b.proficiency
-      return b.consecutive_wrong - a.consecutive_wrong
-    })
-    .slice(0, 10)
+  const recentSessions = wallet.sessions.slice(0, 5)
+  const mixedOps = settings.mixedOps
+  const hasData = problemStates.length > 0 || wallet.sessions.length > 0
 
   return (
     <>
@@ -207,140 +139,192 @@ export default function CalcReportPage() {
         backLabel="口算"
       />
 
-      <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5">
+      <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-6">
         {loading && (
           <div className="text-center text-[13px] py-10" style={{ color: 'rgba(196,181,253,0.4)' }}>
             加载中…
           </div>
         )}
 
-        {!loading && (
+        {!loading && !hasData && (
+          <div
+            className="text-center text-[13px] py-12 rounded-2xl"
+            style={{
+              color: 'rgba(196,181,253,0.6)',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.07)',
+            }}
+          >
+            还没有练习数据，先去练一练吧～
+          </div>
+        )}
+
+        {!loading && hasData && (
           <>
-            {/* Levels overview */}
+            {/* 1. 掌握度总览 — grouped by block group */}
             <section>
               <h2
                 className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
                 style={{ color: 'rgba(196,181,253,0.45)' }}
               >
-                关卡状态
+                掌握度总览
               </h2>
-              <div className="space-y-1.5">
-                {numericLevels.map((spec) => {
-                  const level = spec.level as number
-                  const state = levelStates.get(level)
-                  const agg = masteryByLevel.get(level) ?? { total: 0, mastered: 0, review: 0 }
-                  const expected = expectedBankSize(level)
-                  const masteredPct = expected > 0
-                    ? Math.round(((agg.mastered + agg.review) / expected) * 100)
-                    : 0
-                  const status = state?.status ?? 'practicing'
-                  const nextDue = state ? nextDueLabel(state) : null
-                  const expanded = selectedLevel === level
-                  return (
-                    <div key={level}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedLevel(expanded ? null : level)}
-                        className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left transition-all"
-                        style={{
-                          background: expanded ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
-                          border: expanded ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(255,255,255,0.07)',
-                        }}
-                      >
-                        <div
-                          className="font-fredoka text-[15px] font-black tabular-nums shrink-0 w-12"
-                          style={{ color: STATUS_COLOR[status] }}
-                        >
-                          {formatLevel(level)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
-                            {levelSpec(level).label}
-                          </div>
-                          <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
-                            <span style={{ color: STATUS_COLOR[status] }}>{STATUS_LABEL[status]}</span>
-                            {' · '}
-                            {agg.mastered + agg.review}/{expected} 题（{masteredPct}%）
-                            {nextDue && (
-                              <span style={{ color: 'rgba(125,211,252,0.7)' }}> · {nextDue}</span>
-                            )}
-                          </div>
-                        </div>
-                        {state && state.lastSessionAccuracy !== null && (
-                          <div
-                            className="text-[11px] font-extrabold tabular-nums"
-                            style={{
-                              color:
-                                state.lastSessionAccuracy >= 0.9 ? '#4ade80'
-                                : state.lastSessionAccuracy >= 0.75 ? '#fbbf24'
-                                : '#f87171',
-                            }}
-                          >
-                            {Math.round(state.lastSessionAccuracy * 100)}%
-                          </div>
-                        )}
-                        <span className="text-[10px] shrink-0" style={{ color: 'rgba(196,181,253,0.4)' }}>
-                          {expanded ? '▲' : '▼'}
-                        </span>
-                      </button>
-
-                      {expanded && levelProblemDetail && (
-                        <div
-                          className="mt-1 rounded-xl overflow-hidden"
-                          style={{ border: '1px solid rgba(139,92,246,0.15)' }}
-                        >
-                          {/* Header */}
-                          <div
-                            className="grid text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5"
-                            style={{
-                              gridTemplateColumns: '1fr auto auto',
-                              background: 'rgba(139,92,246,0.08)',
-                              color: 'rgba(196,181,253,0.45)',
-                            }}
-                          >
-                            <span>题目</span>
-                            <span className="text-right pr-3">状态</span>
-                            <span className="text-right w-32">原因</span>
-                          </div>
-                          {levelProblemDetail.map((item) => (
-                            <div
-                              key={item.signature}
-                              className="grid items-center px-3 py-1.5 text-[11px]"
+              <div className="space-y-4">
+                {BLOCK_GROUPS.map(({ group, label }) => (
+                  <div key={group}>
+                    <div
+                      className="mb-1.5 text-[12px] font-extrabold"
+                      style={{ color: '#c4b5fd' }}
+                    >
+                      {label}
+                    </div>
+                    <div className="space-y-1.5">
+                      {blocksByGroup(group).map((block) => {
+                        const rows = rowsByBlock.get(block.id) ?? []
+                        const stat = masteryOf(rows)
+                        const expanded = expandedBlock === block.id
+                        const weak = sortWeakest(
+                          rows.filter((r) => r.status !== 'mastered'),
+                        )
+                        return (
+                          <div key={block.id}>
+                            <button
+                              type="button"
+                              onClick={() => setExpandedBlock(expanded ? null : block.id)}
+                              className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left transition-all"
                               style={{
-                                gridTemplateColumns: '1fr auto auto',
-                                borderTop: '1px solid rgba(255,255,255,0.04)',
+                                background: expanded ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
+                                border: expanded ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(255,255,255,0.07)',
                               }}
                             >
-                              <span className="font-mono font-semibold" style={{ color: '#e9d5ff' }}>
-                                {item.display.replace(' = ?', '')}
-                              </span>
-                              <span
-                                className="font-extrabold pr-3"
-                                style={{ color: item.mastered ? '#4ade80' :item.s?.consecutive_wrong &&  item.s?.consecutive_wrong >= 2 ? '#f87171' : 'rgba(196,181,253,0.5)' }}
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
+                                  {block.label}
+                                </div>
+                                <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+                                  <span style={{ color: masteryColor(stat.pct, stat.answered) }}>
+                                    {statusLabel(stat)}
+                                  </span>
+                                  {' · 作答 '}{stat.attempts}{' 次'}
+                                </div>
+                              </div>
+                              <div
+                                className="text-[13px] font-black tabular-nums shrink-0"
+                                style={{ color: masteryColor(stat.pct, stat.answered) }}
                               >
-                                {item.mastered ? '✓' : item.s?.consecutive_wrong  && item.s?.consecutive_wrong >= 2 ? '✗' : '○'}
+                                {stat.answered === 0 ? '—' : `${stat.pct}%`}
+                              </div>
+                              <span className="text-[10px] shrink-0" style={{ color: 'rgba(196,181,253,0.4)' }}>
+                                {expanded ? '▲' : '▼'}
                               </span>
-                              <span className="text-right w-32 truncate" style={{ color: 'rgba(196,181,253,0.45)' }}>
-                                {item.reason}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                            </button>
+
+                            {expanded && (
+                              <div
+                                className="mt-1 rounded-xl overflow-hidden"
+                                style={{ border: '1px solid rgba(139,92,246,0.15)' }}
+                              >
+                                {weak.length === 0 ? (
+                                  <div
+                                    className="px-3 py-2 text-[11px]"
+                                    style={{ color: 'rgba(196,181,253,0.45)' }}
+                                  >
+                                    {stat.answered === 0 ? '这一块还没练过～' : '都掌握了 🎉'}
+                                  </div>
+                                ) : (
+                                  weak.map((item) => (
+                                    <div
+                                      key={item.signature}
+                                      className="grid items-center px-3 py-1.5 text-[11px]"
+                                      style={{
+                                        gridTemplateColumns: '1fr auto auto',
+                                        borderTop: '1px solid rgba(255,255,255,0.04)',
+                                      }}
+                                    >
+                                      <span className="font-mono font-semibold" style={{ color: '#e9d5ff' }}>
+                                        {prettySignature(item.signature)}
+                                      </span>
+                                      <span
+                                        className="font-extrabold tabular-nums pr-3"
+                                        style={{ color: item.proficiency <= 1 ? '#f87171' : '#fbbf24' }}
+                                      >
+                                        熟练 {item.proficiency}/5
+                                      </span>
+                                      <span
+                                        className="text-right font-extrabold tabular-nums w-12"
+                                        style={{ color: item.consecutive_wrong > 0 ? '#f87171' : 'rgba(196,181,253,0.3)' }}
+                                      >
+                                        {item.consecutive_wrong > 0 ? `×${item.consecutive_wrong}` : '·'}
+                                      </span>
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
-                  )
-                })}
+                  </div>
+                ))}
               </div>
             </section>
 
-            {/* Weakest 10 */}
+            {/* 2. 混合运算 */}
+            {mixedOps.length > 0 && (
+              <section>
+                <h2
+                  className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
+                  style={{ color: 'rgba(196,181,253,0.45)' }}
+                >
+                  混合运算
+                </h2>
+                <div className="space-y-1.5">
+                  {mixedOps.map((op) => {
+                    const rows = rowsByMixedOp.get(op.id) ?? []
+                    const stat = masteryOf(rows)
+                    const label = op.label ?? skeletonMeta(op.skeleton).label
+                    return (
+                      <div
+                        key={op.id}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2"
+                        style={{
+                          background: 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.07)',
+                        }}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
+                            {label}
+                          </div>
+                          <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+                            <span style={{ color: masteryColor(stat.pct, stat.answered) }}>
+                              {statusLabel(stat)}
+                            </span>
+                            {' · 作答 '}{stat.attempts}{' 次'}
+                          </div>
+                        </div>
+                        <div
+                          className="text-[13px] font-black tabular-nums shrink-0"
+                          style={{ color: masteryColor(stat.pct, stat.answered) }}
+                        >
+                          {stat.answered === 0 ? '—' : `${stat.pct}%`}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* 3. 最弱 10 题 */}
             {weakest.length > 0 && (
               <section>
                 <h2
                   className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
                   style={{ color: 'rgba(196,181,253,0.45)' }}
                 >
-                  待加强（最弱 10 道）
+                  最弱 10 题
                 </h2>
                 <div className="space-y-1">
                   {weakest.map((p) => (
@@ -352,11 +336,8 @@ export default function CalcReportPage() {
                         border: '1px solid rgba(255,255,255,0.07)',
                       }}
                     >
-                      <span className="font-extrabold tabular-nums w-12 shrink-0" style={{ color: '#a78bfa' }}>
-                        Lv.{p.level}
-                      </span>
                       <span className="font-mono text-[11px] flex-1 truncate" style={{ color: '#e9d5ff' }}>
-                        {p.signature}
+                        {prettySignature(p.signature)}
                       </span>
                       <span
                         className="text-[10px] font-extrabold tabular-nums shrink-0"
@@ -375,26 +356,22 @@ export default function CalcReportPage() {
               </section>
             )}
 
-            {/* Event timeline */}
-            {events.length > 0 && (
+            {/* 4. 最近练习 */}
+            {recentSessions.length > 0 && (
               <section>
                 <h2
                   className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
                   style={{ color: 'rgba(196,181,253,0.45)' }}
                 >
-                  关键事件
+                  最近练习
                 </h2>
                 <div className="space-y-1">
-                  {events.map((e) => {
-                    const date = e.occurred_at.slice(0, 10)
-                    const time = e.occurred_at.slice(11, 16)
-                    const label = EVENT_LABEL[e.event_type] ?? e.event_type
-                    const levelLabel = e.level !== null
-                      ? (e.level === 99 ? '挑战' : `Lv.${e.level}`)
-                      : null
+                  {recentSessions.map((s, i) => {
+                    const done = s.correctCount + s.retryCount + s.wrongCount
+                    const right = s.correctCount + s.retryCount
                     return (
                       <div
-                        key={e.id}
+                        key={s.id ?? `${s.finishedAt}-${i}`}
                         className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px]"
                         style={{
                           background: 'rgba(255,255,255,0.03)',
@@ -402,35 +379,25 @@ export default function CalcReportPage() {
                         }}
                       >
                         <span className="text-[11px] tabular-nums shrink-0" style={{ color: 'rgba(245,243,255,0.45)' }}>
-                          {date.slice(5)} {time}
+                          {s.date.slice(5)}
                         </span>
-                        <span className="font-extrabold truncate" style={{ color: '#e9d5ff' }}>
-                          {label}
-                          {levelLabel && (
-                            <span className="ml-1" style={{ color: 'rgba(167,139,250,0.7)' }}>
-                              {levelLabel}
-                            </span>
-                          )}
+                        <span className="text-[11px] tabular-nums" style={{ color: '#e9d5ff' }}>
+                          {done} 题
                         </span>
-                        {e.signature && (
-                          <span className="font-mono text-[10px] ml-auto shrink-0" style={{ color: 'rgba(245,243,255,0.4)' }}>
-                            {e.signature}
-                          </span>
-                        )}
+                        <span
+                          className="text-[11px] font-extrabold tabular-nums"
+                          style={{ color: '#4ade80' }}
+                        >
+                          对 {right}
+                        </span>
+                        <span className="ml-auto text-[11px] font-extrabold tabular-nums shrink-0" style={{ color: '#fbbf24' }}>
+                          ⭐ {s.coinsEarned}
+                        </span>
                       </div>
                     )
                   })}
                 </div>
               </section>
-            )}
-
-            {events.length === 0 && weakest.length === 0 && !loading && (
-              <div
-                className="text-center text-[12px] py-8"
-                style={{ color: 'rgba(196,181,253,0.4)' }}
-              >
-                还没有练习数据。开始一次 session 后再来看看～
-              </div>
             )}
           </>
         )}
