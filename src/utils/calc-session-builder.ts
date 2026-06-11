@@ -55,9 +55,9 @@ function isDueDate(due: string | null, today: string): boolean {
 function isReviewDue(state: CalcProblemState, today: string): boolean {
   return (
     state.status === 'review' &&
-    (isDueDate(state.reviewR1Due, today) ||
-      isDueDate(state.reviewR2Due, today) ||
-      isDueDate(state.reviewR3Due, today))
+    (isDueDate(state.reviewR1Due ?? null, today) ||
+      isDueDate(state.reviewR2Due ?? null, today) ||
+      isDueDate(state.reviewR3Due ?? null, today))
   )
 }
 
@@ -80,7 +80,8 @@ function coldThreshold(state: CalcProblemState): number {
 }
 
 function isColdSelectable(state: CalcProblemState | null, sessionNo: number): boolean {
-  if (!state || state.lastSeenSession === null) return false
+  if (!state || state.lastSeenSession === null || state.lastSeenSession === undefined)
+    return false
   // 'mastered' problems are revived very rarely — Phase 3+ will sample these in P5
   if (state.status === 'mastered') return false
   return sessionNo - state.lastSeenSession > coldThreshold(state)

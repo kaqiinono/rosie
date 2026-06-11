@@ -385,16 +385,22 @@ export interface CalcProblemState {
   appearanceCount: number
   recentResults: QuestionAttempt[] // most-recent at the end, capped at 10
   status: CalcProblemStatus
-  shortMasteredAt: string | null // YYYY-MM-DD
-  reviewR1Due: string | null
-  reviewR2Due: string | null
-  reviewR3Due: string | null
-  longMastered: boolean
-  lastSeenSession: number | null
-  timesSeenThisRound: number
   consecutiveWrong: number
-  forcedNext: boolean
   updatedAt: string
+  /** Attribution: which building block this problem was drawn from. */
+  blockId?: string
+  /** Attribution: which mixed-op generator this problem was drawn from. */
+  mixedOpId?: string
+  // ── Legacy spaced-repetition fields (no longer written/read by the new
+  //    lightweight proficiency logic; kept optional to avoid a DB migration). ──
+  shortMasteredAt?: string | null // YYYY-MM-DD
+  reviewR1Due?: string | null
+  reviewR2Due?: string | null
+  reviewR3Due?: string | null
+  longMastered?: boolean
+  lastSeenSession?: number | null
+  timesSeenThisRound?: number
+  forcedNext?: boolean
 }
 
 export type CalcLevelStatus =
