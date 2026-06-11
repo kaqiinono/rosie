@@ -145,8 +145,8 @@ export interface UseCalcProblemStateReturn {
   isLoading: boolean
   /** Load (or refresh) state for the given levels. */
   loadForLevels: (levels: CalcLevel[]) => Promise<void>
-  /** Load all problem states for the user (no level filter), into `states`. */
-  loadAll: () => Promise<void>
+  /** Load all problem states for the user (no level filter), into `states`. Returns the loaded map. */
+  loadAll: () => Promise<Map<string, CalcProblemState>>
   /** Returns a per-signature state, synthesizing a fresh default for unseen entries. */
   getState: (signature: string, level: CalcLevel) => CalcProblemState
   /** Persist a batch of state mutations. Local map updates immediately. */
@@ -179,20 +179,23 @@ export function useCalcProblemState(user: User | null): UseCalcProblemStateRetur
     [userId],
   )
 
-  const loadAll = useCallback(async () => {
-    if (!userId) return
+  const loadAll = useCallback(async (): Promise<Map<string, CalcProblemState>> => {
+    if (!userId) return new Map()
     setIsLoading(true)
     const { data } = await supabase
       .from('calc_problem_state')
       .select(SELECT_COLS)
       .eq('user_id', userId)
     const rows = (data ?? []) as ProblemStateRow[]
+    const loaded = new Map<string, CalcProblemState>()
+    for (const r of rows) loaded.set(r.signature, rowToState(r))
     setStates((prev) => {
       const next = new Map(prev)
-      for (const r of rows) next.set(r.signature, rowToState(r))
+      for (const [sig, st] of loaded) next.set(sig, st)
       return next
     })
     setIsLoading(false)
+    return loaded
   }, [userId])
 
   const getState = useCallback(

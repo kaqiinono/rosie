@@ -122,9 +122,11 @@ export default function CalcSessionPage() {
 
     const init = async () => {
       // Load all of the user's problem states so buildSession can weight toward weak ones.
-      await problemState.loadAll()
+      // Use the returned map directly — `problemState.states` is still the stale
+      // pre-load value within this same closure (React state updates async).
+      const loadedStates = await problemState.loadAll()
       const session = buildSession(settings, requestedCount, {
-        problemStates: problemState.states,
+        problemStates: loadedStates,
       })
       setQuestions(session)
       setStartedAtIso(new Date().toISOString())
