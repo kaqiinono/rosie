@@ -15,7 +15,7 @@ export type TimeLimitBucket =
   | 'mul_easy'   // 1/2/5 ×, Lv.6 + Lv.7 (3,4 small)
   | 'mul_hard'  // 6/7/8/9 ×, Lv.8 + Lv.9
   | 'mul_mix'   // Lv.10 mixed 1-9
-  | 'div_easy'   // ÷1/2/5, Lv.11 + Lv.12
+  | 'div_easy'   // ÷2/5, ÷3/4, Lv.11 + Lv.12
   | 'div_hard'  // ÷6-9, Lv.13
   | 'muldiv_1_9' // Lv.14
   | 'mixed_2op'  // Lv.15 + Lv.17

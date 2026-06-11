@@ -208,9 +208,9 @@ function genL10(): CalcQuestion {
 
 // === 第三阶段 · 除法（与乘法口诀对应拆分） ===
 
-// Lv.11: 除法 ÷1、÷2、÷5（结果 1-9）
+// Lv.11: 除法 ÷2、÷5（结果 1-9，÷1 已移除）
 function genL11(): CalcQuestion {
-  return genDivWithKey([1, 2, 5], 11, 2)
+  return genDivWithKey([2, 5], 11, 2)
 }
 
 // Lv.12: 除法 ÷3、÷4（结果 1-9）
@@ -223,7 +223,7 @@ function genL13(): CalcQuestion {
   return genDivWithKey([6, 7, 8, 9], 13, 2)
 }
 
-// Lv.14: 乘除混合（乘法 2-9，除法 1-9）
+// Lv.14: 乘除混合（乘法 2-9，除数 2-9，÷1 已移除）
 function genL14(): CalcQuestion {
   const isMul = Math.random() < 0.5
   if (isMul) {
@@ -231,7 +231,7 @@ function genL14(): CalcQuestion {
     const b = randInt(2, 9)
     return makeQuestion({ op: 'mul', left: a, right: b }, 14, 'muldiv', 2)
   }
-  const divisor = randInt(1, 9)
+  const divisor = randInt(2, 9)
   const quotient = randInt(1, 9)
   return makeQuestion({ op: 'div', left: divisor * quotient, right: divisor }, 14, 'muldiv', 2)
 }
@@ -382,7 +382,7 @@ export const LEVELS: LevelSpec[] = [
   { level: 8,  category: 'muldiv', label: '乘法 6、7',                generate: genL8 },
   { level: 9,  category: 'muldiv', label: '乘法 8、9',                generate: genL9 },
   { level: 10, category: 'muldiv', label: '乘法 2-9 综合',            generate: genL10 },
-  { level: 11, category: 'muldiv', label: '除法 ÷1、÷2、÷5',          generate: genL11 },
+  { level: 11, category: 'muldiv', label: '除法 ÷2、÷5',              generate: genL11 },
   { level: 12, category: 'muldiv', label: '除法 ÷3、÷4',              generate: genL12 },
   { level: 13, category: 'muldiv', label: '除法 ÷6、÷7、÷8、÷9',      generate: genL13 },
   { level: 14, category: 'muldiv', label: '乘除混合（1-9）',          generate: genL14 },

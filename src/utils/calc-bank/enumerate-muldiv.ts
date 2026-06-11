@@ -6,16 +6,16 @@ import { buildFlatQuestion } from './build-question'
  * Each multiplication signature `mul(k, n)` has its canonical division inverse
  * `div(k·n, k)`. Both are enumerated.
  *
- * Bank sizes (canonical) — ×1 removed from all multiplication (no factor 1):
+ * Bank sizes (canonical) — factor 1 removed from mul AND ÷1 removed from div:
  *   Lv.6  → 16  (k∈{2,5},  n∈2..9, mul only — no div)
  *   Lv.7  → 16  (k∈{3,4},  n∈2..9)
  *   Lv.8  → 16  (k∈{6,7},  n∈2..9)
  *   Lv.9  → 16  (k∈{8,9},  n∈2..9)
  *   Lv.10 → 64  (a,b∈2..9 mul only)
- *   Lv.11 → 27  (d∈{1,2,5}, q∈1..9, div only — ÷ keeps 1)
+ *   Lv.11 → 18  (d∈{2,5}, q∈1..9, div only)
  *   Lv.12 → 18  (d∈{3,4})
  *   Lv.13 → 36  (d∈{6,7,8,9})
- *   Lv.14 → 145 (mul 2..9² 64 + div 1..9² 81)
+ *   Lv.14 → 136 (mul 2..9² 64 + div d∈2..9 q∈1..9 72)
  *   Lv.16 → 69  (k∈{10,11,12}, mul n∈2..12 33 + div n∈1..12 36)
  *   Lv.18 → 161 (k∈13..19, mul n∈2..12 77 + div n∈1..12 84)
  */
@@ -63,12 +63,12 @@ export function enumerateMuldivBank(level: CalcLevel): CalcQuestion[] | null {
     case 8:  return mulBank([6, 7],    range(2, 9), 8)
     case 9:  return mulBank([8, 9],    range(2, 9), 9)
     case 10: return mulBank(range(2, 9), range(2, 9), 10)
-    case 11: return divBank([1, 2, 5], range(1, 9), 11)
+    case 11: return divBank([2, 5], range(1, 9), 11) // ÷1 removed
     case 12: return divBank([3, 4],    range(1, 9), 12)
     case 13: return divBank([6, 7, 8, 9], range(1, 9), 13)
     case 14: return [
       ...mulBank(range(2, 9), range(2, 9), 14), // mul drops ×1
-      ...divBank(range(1, 9), range(1, 9), 14), // ÷ keeps 1
+      ...divBank(range(2, 9), range(1, 9), 14), // divisor drops ÷1
     ]
     case 16: return [
       ...mulBank([10, 11, 12], range(2, 12), 16), // mul drops ×1

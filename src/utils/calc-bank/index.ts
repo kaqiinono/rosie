@@ -34,10 +34,10 @@ export function expectedBankSize(level: CalcLevel): number {
     case 8: return 16  // [6,7] × [2-9]
     case 9: return 16  // [8,9] × [2-9]
     case 10: return 64 // [2-9] × [2-9]
-    case 11: return 27
+    case 11: return 18 // [2,5] × [1-9]
     case 12: return 18
     case 13: return 36
-    case 14: return 145 // mul [2-9]² 64 + div [1-9]² 81
+    case 14: return 136 // mul [2-9]² 64 + div d[2-9]×q[1-9] 72
     case 15: return 60
     case 16: return 69 // mul 33 + div 36
     case 17: return 80
