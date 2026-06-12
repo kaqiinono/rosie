@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import type { CalcAnswer, CalcCategory, CalcLevel, CalcMistake, CalcQuestion } from '@/utils/type'
+import type { CalcAnswer, CalcCategory, CalcLevel, CalcMistake, CalcQuestion, ErrorTag } from '@/utils/type'
 import { levelKey, parseLevelKey } from '@/utils/calc-helpers'
 import { answerFromRow, answerToNumeric } from '@/utils/calc-answer'
 
@@ -19,6 +19,8 @@ interface MistakeRow {
   consecutive_correct: number
   resolved: boolean
   session_no: number | null
+  user_answer: string | null
+  error_tag: string | null
 }
 
 function rowToMistake(r: MistakeRow): CalcMistake {
@@ -33,6 +35,8 @@ function rowToMistake(r: MistakeRow): CalcMistake {
     consecutiveCorrect: r.consecutive_correct,
     resolved: r.resolved,
     sessionNo: r.session_no ?? undefined,
+    userAnswer: r.user_answer ?? undefined,
+    errorTag: (r.error_tag as ErrorTag | null) ?? null,
   }
 }
 
@@ -46,7 +50,7 @@ export function useCalcMistakes(user: User | null) {
     const init = async () => {
       const { data } = await supabase
         .from('calc_mistakes')
-        .select('id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
+        .select('id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no,user_answer,error_tag')
         .eq('user_id', user.id)
         .order('last_wrong_at', { ascending: false })
       if (cancelled) return
@@ -61,7 +65,7 @@ export function useCalcMistakes(user: User | null) {
     if (!user) return
     const { data } = await supabase
       .from('calc_mistakes')
-      .select('id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
+      .select('id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no,user_answer,error_tag')
       .eq('user_id', user.id)
       .order('last_wrong_at', { ascending: false })
     setMistakes((data ?? []).map(r => rowToMistake(r as MistakeRow)))
@@ -74,7 +78,7 @@ export function useCalcMistakes(user: User | null) {
    * session and thus keeps being carried into the next one.
    */
   const addMistake = useCallback(
-    async (q: CalcQuestion, sessionNo: number) => {
+    async (q: CalcQuestion, sessionNo: number, userAnswer?: string, errorTag?: ErrorTag | null) => {
       if (!user) return
       try {
         await supabase
@@ -92,6 +96,8 @@ export function useCalcMistakes(user: User | null) {
               consecutive_correct: 0,
               resolved: false,
               session_no: sessionNo,
+              user_answer: userAnswer ?? null,
+              error_tag: errorTag ?? null,
             },
             { onConflict: 'user_id,signature' },
           )
@@ -101,7 +107,7 @@ export function useCalcMistakes(user: User | null) {
         const existing = prev.find(m => m.signature === q.signature)
         if (existing) {
           return prev.map(m => m.signature === q.signature
-            ? { ...m, consecutiveCorrect: 0, resolved: false, lastWrongAt: new Date().toISOString(), sessionNo }
+            ? { ...m, consecutiveCorrect: 0, resolved: false, lastWrongAt: new Date().toISOString(), sessionNo, userAnswer, errorTag }
             : m)
         }
         return [{
@@ -114,6 +120,8 @@ export function useCalcMistakes(user: User | null) {
           consecutiveCorrect: 0,
           resolved: false,
           sessionNo,
+          userAnswer,
+          errorTag,
         }, ...prev]
       })
     },
