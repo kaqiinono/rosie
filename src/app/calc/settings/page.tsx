@@ -156,6 +156,17 @@ export default function CalcSettingsPage() {
           />
         </section>
 
+        {/* 题型选项 */}
+        <section>
+          <SectionHeading>题型选项</SectionHeading>
+          <ToggleRow
+            label="包含逆运算（挖空）"
+            description="部分单运算题以 48 + □ = 105 的形式出现，考察更深"
+            value={settings.includeInverse}
+            onChange={(v) => update({ includeInverse: v })}
+          />
+        </section>
+
         {/* 题量 / 限时 */}
         <section>
           <SectionHeading>题量 · 限时</SectionHeading>
