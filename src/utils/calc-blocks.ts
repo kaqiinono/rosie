@@ -133,6 +133,7 @@ export const BLOCKS: CalcBlock[] = [
   mulBlock('mul:1012', '×10-12', mulKey([10, 11, 12], 2, 12)),
   mulBlock('mul:1319', '×13-19', mulKey([13, 14, 15, 16, 17, 18, 19], 2, 19)),
   mulBlock('mul:219', '2-19 综合', mulBoth(2, 19)),
+  mulBlock('mul:2d1d', '两位数×一位数', () => [randInt(11, 99), randInt(2, 9)]),
   mulBlock('mul:2d', '两位数×两位数', mulBoth(11, 99)),
   divBlock('div:25', '÷2、5', divKey([2, 5], 2, 9)),
   divBlock('div:34', '÷3、4', divKey([3, 4], 2, 9)),
@@ -155,3 +156,12 @@ export const BLOCK_GROUPS: { group: CalcBlock['group']; label: string }[] = [
   { group: 'mul', label: '乘法' },
   { group: 'div', label: '除法' },
 ]
+
+/** Block ids whose questions can be answered in a column ("竖式") layout.
+ *  add/sub: multi-digit; mul: two-digit × one-digit; div: multi-digit ÷ one-digit. */
+export const VERTICAL_BLOCK_IDS = new Set<string>([
+  'add:1000', 'add:10000',
+  'sub:1000', 'sub:10000',
+  'mul:2d1d',
+  'div:multi',
+])
