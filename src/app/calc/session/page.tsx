@@ -15,10 +15,11 @@ import VerticalCalc from '@/components/calc/VerticalCalc'
 import DivisionVertical from '@/components/calc/DivisionVertical'
 import RemainderPad from '@/components/calc/RemainderPad'
 import FractionPad from '@/components/calc/FractionPad'
+import FractionPie from '@/components/calc/FractionPie'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
-import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
+import { buildSession, calcTimeBonus, coinReward, fractionPieSpec } from '@/utils/calc-helpers'
 import { checkAnswer, formatAnswer, isReducibleFraction } from '@/utils/calc-answer'
 import { parseSignature } from '@/utils/calc-ast'
 import { blockById } from '@/utils/calc-blocks'
@@ -187,6 +188,7 @@ export default function CalcSessionPage() {
   useEffect(() => {
     if (questions && idx < questions.length) {
       questionStartRef.current = performance.now()
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setReduceHint(false)
     }
   }, [idx, questions])
@@ -787,7 +789,21 @@ export default function CalcSessionPage() {
         </div>
 
         {currentQ.answer.kind === 'fraction' ? (
-          <FractionPad key={idx} disabled={!!feedback || done} onSubmit={handleFractionSubmit} />
+          (() => {
+            const spec = fractionPieSpec(currentQ)
+            return spec ? (
+              <FractionPie
+                key={idx}
+                operands={spec.operands}
+                den={spec.den}
+                op={spec.op}
+                disabled={!!feedback || done}
+                onSubmit={(n) => handleFractionSubmit(`${n}/${spec.den}`)}
+              />
+            ) : (
+              <FractionPad key={idx} disabled={!!feedback || done} onSubmit={handleFractionSubmit} />
+            )
+          })()
         ) : currentQ.answer.kind === 'remainder' ? (
           <RemainderPad key={idx} disabled={!!feedback || done} onSubmit={handleRemainderSubmit} />
         ) : currentQ.answerMode === 'vertical' ? (
