@@ -10,7 +10,8 @@ import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import RemainderPad from './RemainderPad'
 import FractionPad from './FractionPad'
-import { buildSession } from '@/utils/calc-helpers'
+import FractionPie from './FractionPie'
+import { buildSession, fractionPieSpec } from '@/utils/calc-helpers'
 import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
 import type { CalcQuestion, CalcSettings } from '@/utils/type'
@@ -355,7 +356,21 @@ export default function QuickPracticeModal({
 
       {/* ── Answer area: RemainderPad for 有余数除法, else number pad ── */}
       {currentQ && currentQ.answer.kind === 'fraction' ? (
-        <FractionPad key={`frac-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
+        (() => {
+          const spec = fractionPieSpec(currentQ)
+          return spec ? (
+            <FractionPie
+              key={`fpie-${idx}`}
+              operands={spec.operands}
+              den={spec.den}
+              op={spec.op}
+              disabled={!!feedback || done}
+              onSubmit={(n) => submitValue(`${n}/${spec.den}`)}
+            />
+          ) : (
+            <FractionPad key={`frac-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
+          )
+        })()
       ) : currentQ && currentQ.answer.kind === 'remainder' ? (
         <RemainderPad key={`rem-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
       ) : (
