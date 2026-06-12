@@ -2,6 +2,7 @@ import {
   AstNode, CalcOp, makeQuestion, randInt, pickOne,
 } from './calc-ast'
 import type { CalcQuestion } from './type'
+import { remainderAnswer } from './calc-answer'
 
 export interface CalcBlock {
   id: string
@@ -58,6 +59,38 @@ function divBlock(id: string, label: string, gen: () => [number, number]): CalcB
     sampleTerm() {
       const [a, b] = gen()
       return { ast: { op: 'div', left: a, right: b }, value: a / b }
+    },
+  }
+}
+function remainderBlock(
+  id: string,
+  label: string,
+  gen: () => { dividend: number; divisor: number; quotient: number; remainder: number },
+): CalcBlock {
+  return {
+    id,
+    op: 'div',
+    label,
+    group: 'div',
+    noResurface: true,
+    generateSingle(): CalcQuestion {
+      const { dividend, divisor, quotient, remainder } = gen()
+      return {
+        display: `${dividend} ÷ ${divisor} = ?`,
+        signature: `div(${dividend},${divisor})`,
+        arity: 1,
+        level: 0,
+        answer: remainderAnswer(quotient, remainder),
+        isChallenge: false,
+        category: 'muldiv',
+        coinBase: 2,
+      }
+    },
+    sampleTerm() {
+      // Remainder blocks shouldn't compose into mixed ops; provide a benign exact-div term.
+      const d = randInt(2, 9)
+      const q = randInt(2, 9)
+      return { ast: { op: 'div', left: d * q, right: d }, value: q }
     },
   }
 }
@@ -146,6 +179,12 @@ export const BLOCKS: CalcBlock[] = [
   divBlock('div:1319', '÷13-19', divKey([13, 14, 15, 16, 17, 18, 19], 2, 19)),
   divBlock('div:219', '÷2-19 综合', divRange(2, 19, 2, 19)),
   divBlock('div:multi', '多位数÷一位数', divRange(2, 9, 11, 99)),
+  remainderBlock('div:rem', '有余数除法', () => {
+    const divisor = randInt(2, 9)
+    const quotient = randInt(2, 9)
+    const remainder = randInt(1, divisor - 1)
+    return { dividend: divisor * quotient + remainder, divisor, quotient, remainder }
+  }),
 ]
 
 const BLOCK_MAP = new Map(BLOCKS.map((b) => [b.id, b]))
@@ -168,3 +207,6 @@ export const VERTICAL_BLOCK_IDS = new Set<string>([
   'mul:2d1d',
   'div:multi',
 ])
+
+/** Blocks whose answers need the商/余 RemainderPad — excluded from the number-pad-only modal. */
+export const REMAINDER_BLOCK_IDS = new Set<string>(['div:rem'])
