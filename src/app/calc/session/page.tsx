@@ -11,10 +11,13 @@ import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import QuestionDisplay from '@/components/calc/QuestionDisplay'
 import NumberPad from '@/components/calc/NumberPad'
+import VerticalCalc from '@/components/calc/VerticalCalc'
+import DivisionVertical from '@/components/calc/DivisionVertical'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
+import { parseSignature } from '@/utils/calc-ast'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
 import { timeLimitFromSettings } from '@/utils/calc-time-limits'
@@ -461,6 +464,22 @@ export default function CalcSessionPage() {
     ],
   )
 
+  // Single-attempt grading for vertical (竖式) questions: the component self-checks
+  // and locks, so there is no two-try retry — settle directly on first submit.
+  const handleVerticalSubmit = useCallback(
+    (isCorrect: boolean) => {
+      if (!questions || done || feedback) return
+      const q = questions[idx]
+      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+      const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+      const limitMs = timeLimitFromSettings(q.level, settings)
+      const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
+      questionTimesRef.current.push(elapsedMs)
+      settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake)
+    },
+    [questions, done, feedback, idx, mistakes, settings, settleQuestion],
+  )
+
   const handleSubmit = useCallback(() => {
     if (!questions || done || feedback) return
     const q = questions[idx]
@@ -691,35 +710,69 @@ export default function CalcSessionPage() {
           )}
         </div>
 
-        {/* Input */}
-        <div
-          className="mx-auto mb-4 flex h-16 max-w-[260px] items-center justify-center rounded-2xl transition-all duration-200"
-          style={{
-            background: 'rgba(139,92,246,0.08)',
-            border: `1.5px solid ${input ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.2)'}`,
-            boxShadow: input ? '0 0 14px rgba(139,92,246,0.15)' : 'none',
-          }}
-        >
-          <span
-            className="font-fredoka leading-none font-black tabular-nums"
-            style={{
-              fontSize: 'clamp(28px, 6vw, 38px)',
-              color: input ? '#e9d5ff' : 'rgba(196,181,253,0.25)',
-            }}
-          >
-            {input || '·'}
-          </span>
-        </div>
+        {currentQ.answerMode === 'vertical' ? (
+          (() => {
+            const ast = parseSignature(currentQ.signature)
+            if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
+              return null
+            }
+            const disabled = !!feedback || done
+            if (ast.op === 'div') {
+              return (
+                <DivisionVertical
+                  key={idx}
+                  dividend={ast.left}
+                  divisor={ast.right}
+                  disabled={disabled}
+                  onSubmit={(r) => handleVerticalSubmit(r.correct)}
+                />
+              )
+            }
+            const opSym = ast.op === 'add' ? '+' : ast.op === 'sub' ? '-' : '×'
+            return (
+              <VerticalCalc
+                key={idx}
+                a={ast.left}
+                b={ast.right}
+                op={opSym}
+                disabled={disabled}
+                onSubmit={(r) => handleVerticalSubmit(r.resultCorrect)}
+              />
+            )
+          })()
+        ) : (
+          <>
+            {/* Input */}
+            <div
+              className="mx-auto mb-4 flex h-16 max-w-[260px] items-center justify-center rounded-2xl transition-all duration-200"
+              style={{
+                background: 'rgba(139,92,246,0.08)',
+                border: `1.5px solid ${input ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.2)'}`,
+                boxShadow: input ? '0 0 14px rgba(139,92,246,0.15)' : 'none',
+              }}
+            >
+              <span
+                className="font-fredoka leading-none font-black tabular-nums"
+                style={{
+                  fontSize: 'clamp(28px, 6vw, 38px)',
+                  color: input ? '#e9d5ff' : 'rgba(196,181,253,0.25)',
+                }}
+              >
+                {input || '·'}
+              </span>
+            </div>
 
-        {/* Pad */}
-        <div className="mx-auto max-w-[320px]">
-          <NumberPad
-            value={input}
-            onChange={setInput}
-            onSubmit={handleSubmit}
-            disabled={!!feedback || done}
-          />
-        </div>
+            {/* Pad */}
+            <div className="mx-auto max-w-[320px]">
+              <NumberPad
+                value={input}
+                onChange={setInput}
+                onSubmit={handleSubmit}
+                disabled={!!feedback || done}
+              />
+            </div>
+          </>
+        )}
       </main>
 
       {showChallengeBanner && <ChallengeBanner coins={currentQ.coinBase} />}
