@@ -73,6 +73,8 @@ const addGen = {
     do { a = randInt(10, 89); b = randInt(10, 99 - a); t++ } while ((a % 10) + (b % 10) < 10 && t < 6)
     return [a, b]
   },
+  r1000: (): [number, number] => { const a = randInt(100, 899); return [a, randInt(50, Math.min(999 - a, 500))] },
+  r10000: (): [number, number] => { const a = randInt(1000, 8000); return [a, randInt(500, Math.min(9999 - a, 3000))] },
 }
 const subGen = {
   r10: (): [number, number] => { const a = randInt(0, 10); return [a, randInt(0, a)] },
@@ -89,6 +91,8 @@ const subGen = {
     do { a = randInt(21, 100); b = randInt(11, a - 1); t++ } while ((a % 10) >= (b % 10) && t < 6)
     return [a, b]
   },
+  r1000: (): [number, number] => { const a = randInt(100, 999); return [a, randInt(50, a - 1)] },
+  r10000: (): [number, number] => { const a = randInt(1000, 9999); return [a, randInt(100, a - 1)] },
 }
 function mulKey(keys: readonly number[], otherMin: number, otherMax: number) {
   return (): [number, number] => {
@@ -112,11 +116,15 @@ export const BLOCKS: CalcBlock[] = [
   addBlock('add:20b', '20 以内进位', addGen.r20b),
   addBlock('add:100a', '100 以内不进位', addGen.r100a),
   addBlock('add:100b', '100 以内进位', addGen.r100b),
+  addBlock('add:1000', '1000 以内', addGen.r1000),
+  addBlock('add:10000', '万以内', addGen.r10000),
   subBlock('sub:10', '10 以内', subGen.r10),
   subBlock('sub:20a', '20 以内不退位', subGen.r20a),
   subBlock('sub:20b', '20 以内退位', subGen.r20b),
   subBlock('sub:100a', '100 以内不退位', subGen.r100a),
   subBlock('sub:100b', '100 以内退位', subGen.r100b),
+  subBlock('sub:1000', '1000 以内', subGen.r1000),
+  subBlock('sub:10000', '万以内', subGen.r10000),
   mulBlock('mul:25', '×2、5', mulKey([2, 5], 2, 9)),
   mulBlock('mul:34', '×3、4', mulKey([3, 4], 2, 9)),
   mulBlock('mul:67', '×6、7', mulKey([6, 7], 2, 9)),
@@ -125,6 +133,7 @@ export const BLOCKS: CalcBlock[] = [
   mulBlock('mul:1012', '×10-12', mulKey([10, 11, 12], 2, 12)),
   mulBlock('mul:1319', '×13-19', mulKey([13, 14, 15, 16, 17, 18, 19], 2, 19)),
   mulBlock('mul:219', '2-19 综合', mulBoth(2, 19)),
+  mulBlock('mul:2d', '两位数×两位数', mulBoth(11, 99)),
   divBlock('div:25', '÷2、5', divKey([2, 5], 2, 9)),
   divBlock('div:34', '÷3、4', divKey([3, 4], 2, 9)),
   divBlock('div:69', '÷6-9', divKey([6, 7, 8, 9], 2, 9)),
@@ -132,6 +141,7 @@ export const BLOCKS: CalcBlock[] = [
   divBlock('div:1012', '÷10-12', divKey([10, 11, 12], 2, 12)),
   divBlock('div:1319', '÷13-19', divKey([13, 14, 15, 16, 17, 18, 19], 2, 19)),
   divBlock('div:219', '÷2-19 综合', divRange(2, 19, 2, 19)),
+  divBlock('div:multi', '多位数÷一位数', divRange(2, 9, 11, 99)),
 ]
 
 const BLOCK_MAP = new Map(BLOCKS.map((b) => [b.id, b]))
