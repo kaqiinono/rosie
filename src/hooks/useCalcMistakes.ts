@@ -61,7 +61,7 @@ export function useCalcMistakes(user: User | null) {
     if (!user) return
     const { data } = await supabase
       .from('calc_mistakes')
-      .select('id,signature,display,answer,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
+      .select('id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
       .eq('user_id', user.id)
       .order('last_wrong_at', { ascending: false })
     setMistakes((data ?? []).map(r => rowToMistake(r as MistakeRow)))
