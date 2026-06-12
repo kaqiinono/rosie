@@ -73,8 +73,40 @@ function clearCacheForStages(userId: string, stages: string[]) {
 }
 
 const UPSERT_OPTS = { onConflict: 'unit,lesson,word,stage', ignoreDuplicates: false } as const
+const FETCH_PAGE_SIZE = 1000
+const UPSERT_CHUNK = 500
 
 let initLock: string | null = null
+
+/** Supabase/PostgREST 默认最多返回 1000 行，必须分页拉全量。 */
+async function fetchAllWordEntries(): Promise<WordEntry[]> {
+  const all: WordEntry[] = []
+  let from = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('word_entries')
+      .select(SELECT_COLS)
+      .order('stage', { nullsFirst: true })
+      .order('unit')
+      .order('lesson')
+      .range(from, from + FETCH_PAGE_SIZE - 1)
+    if (error) throw error
+    if (!data || data.length === 0) break
+    all.push(...data.map(fromRow))
+    if (data.length < FETCH_PAGE_SIZE) break
+    from += FETCH_PAGE_SIZE
+  }
+  return all
+}
+
+async function upsertWordRows(creator: string, words: WordEntry[]) {
+  const rows = words.map((w) => toRow(creator, w))
+  for (let i = 0; i < rows.length; i += UPSERT_CHUNK) {
+    const chunk = rows.slice(i, i + UPSERT_CHUNK)
+    const { error } = await supabase.from('word_entries').upsert(chunk, UPSERT_OPTS)
+    if (error) throw error
+  }
+}
 
 function toRow(creator: string, w: WordEntry) {
   return {
@@ -120,17 +152,9 @@ export function useWordData(user: User | null) {
       const cached = readCachedVocab(user.id)
       if (cached) setVocabState(cached)
 
-      const { data } = await supabase
-        .from('word_entries')
-        .select(SELECT_COLS)
-        .order('unit')
-        .order('lesson')
-
-      if (data && data.length > 0) {
-        const words = data.map(fromRow)
-        setVocabState(words)
-        writeCacheByStage(user.id, words)
-      }
+      const words = await fetchAllWordEntries()
+      setVocabState(words)
+      if (words.length > 0) writeCacheByStage(user.id, words)
     })()
     return () => { initLock = null }
   }, [user])
@@ -138,16 +162,9 @@ export function useWordData(user: User | null) {
   // 从 DB 重新读取全量词库并刷新本地状态 + 缓存。空结果也会写入（用于删空场景）。
   const refresh = useCallback(async () => {
     if (!user) return
-    const { data } = await supabase
-      .from('word_entries')
-      .select(SELECT_COLS)
-      .order('unit')
-      .order('lesson')
-    if (data) {
-      const words = data.map(fromRow)
-      setVocabState(words)
-      writeCacheByStage(user.id, words)
-    }
+    const words = await fetchAllWordEntries()
+    setVocabState(words)
+    writeCacheByStage(user.id, words)
   }, [user])
 
   const upsertByStage = useCallback(async (words: WordEntry[]) => {
@@ -160,7 +177,7 @@ export function useWordData(user: User | null) {
     for (const stage of stages) {
       await supabase.from('word_entries').delete().eq('stage', stage)
     }
-    await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
+    await upsertWordRows(user.id, words)
     await refresh()
   }, [user, refresh])
 
@@ -169,7 +186,7 @@ export function useWordData(user: User | null) {
   /** 增量 upsert 一批单词（按复合键冲突即更新），不删除任何 stage。单个添加传长度 1 的数组。 */
   const addWords = useCallback(async (words: WordEntry[]) => {
     if (!user || !words.length) return
-    await supabase.from('word_entries').upsert(words.map(w => toRow(user.id, w)), UPSERT_OPTS)
+    await upsertWordRows(user.id, words)
     clearCacheForStages(user.id, [...new Set(words.map(w => stageKey(w.stage)))])
     await refresh()
   }, [user, refresh])

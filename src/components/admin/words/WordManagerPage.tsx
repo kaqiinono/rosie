@@ -7,6 +7,7 @@ import type { WordEntry } from '@/utils/type'
 import { useWordData } from '@/hooks/useWordData'
 import { STORAGE_KEYS } from '@/utils/constant'
 import WordFormModal from './WordFormModal'
+import WordPreviewModal from './WordPreviewModal'
 import BatchAddModal from './BatchAddModal'
 import NewStageModal from './NewStageModal'
 import { withDraftEntry, type StageTree, type StageUnit } from './types'
@@ -79,6 +80,7 @@ export default function WordManagerPage({ user }: Props) {
   const [selLesson, setSelLesson] = useState('')
   const [search, setSearch] = useState('')
   const [form, setForm] = useState<FormState>(null)
+  const [previewWord, setPreviewWord] = useState<WordEntry | null>(null)
   const [batchOpen, setBatchOpen] = useState(false)
   const [newStageOpen, setNewStageOpen] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
@@ -398,6 +400,13 @@ export default function WordManagerPage({ user }: Props) {
                       <td className="px-3 py-2 text-right whitespace-nowrap">
                         <button
                           type="button"
+                          onClick={() => setPreviewWord(w)}
+                          className="cursor-pointer rounded px-2 py-1 text-[12px] font-bold text-indigo-600 transition hover:bg-indigo-50"
+                        >
+                          预览
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setForm({ mode: 'edit', word: w })}
                           className="cursor-pointer rounded px-2 py-1 text-[12px] font-bold text-slate-600 transition hover:bg-slate-100"
                         >
@@ -426,6 +435,10 @@ export default function WordManagerPage({ user }: Props) {
           onCancel={() => setNewStageOpen(false)}
           onSubmit={handleCreateStage}
         />
+      )}
+
+      {previewWord && (
+        <WordPreviewModal word={previewWord} onClose={() => setPreviewWord(null)} />
       )}
 
       {form && (

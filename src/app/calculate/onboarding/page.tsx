@@ -85,10 +85,17 @@ export default function OnboardingPage() {
         }
       }
 
+      // No more questions left in the probe bank — finish instead of getting
+      // stuck on the loading screen.
+      if (currentIdx + 1 >= questions.length) {
+        setStep('done')
+        return
+      }
+
       setCurrentIdx((i) => i + 1)
       setInputValue('')
     },
-    [currentQ, results, theta],
+    [currentQ, results, theta, currentIdx, questions.length],
   )
 
   const handleSkip = useCallback(() => {

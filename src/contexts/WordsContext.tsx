@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { STORAGE_KEYS } from '@/utils/constant'
 import { useWordData } from '@/hooks/useWordData'
 import { useWordMastery } from '@/hooks/useWordMastery'
-import { getFilteredWords, wordKey } from '@/utils/english-helpers'
+import { getFilteredWords, getAllUnits, wordKey } from '@/utils/english-helpers'
 
 interface WordsContextValue {
   user: User | null
@@ -56,7 +56,7 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
     } catch { /* ignore */ }
     return '4A'
   })
-  const [selUnits, setSelUnits] = useState<Set<string>>(() => {
+  const [selUnitsRaw, setSelUnitsRaw] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.ENGLISH_SEL_UNITS)
       if (saved) return new Set(JSON.parse(saved) as string[])
@@ -79,13 +79,28 @@ export function WordsProvider({ children }: { children: React.ReactNode }) {
   const setSelStage = (stage: string) => {
     setSelStageState(stage)
     localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_STAGE, stage)
-    setSelUnits(new Set())
+    const units = getAllUnits(vocab, stage)
+    setSelUnitsRaw(units.length ? new Set([units[0]]) : new Set())
     setSelLessons(new Set())
   }
 
+  const stageUnits = useMemo(() => getAllUnits(vocab, selStage), [vocab, selStage])
+
+  /** 无选中或选中项不属于当前 Stage 时，回退到第一个 Unit。 */
+  const selUnits = useMemo(() => {
+    if (!stageUnits.length) return selUnitsRaw
+    if (selUnitsRaw.size === 0) return new Set([stageUnits[0]])
+    if ([...selUnitsRaw].every((u) => stageUnits.includes(u))) return selUnitsRaw
+    return new Set([stageUnits[0]])
+  }, [selUnitsRaw, stageUnits])
+
+  const setSelUnits: Dispatch<SetStateAction<Set<string>>> = (action) => {
+    setSelUnitsRaw(action)
+  }
+
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_UNITS, JSON.stringify([...selUnits]))
-  }, [selUnits])
+    localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_UNITS, JSON.stringify([...selUnitsRaw]))
+  }, [selUnitsRaw])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_LESSONS, JSON.stringify([...selLessons]))
