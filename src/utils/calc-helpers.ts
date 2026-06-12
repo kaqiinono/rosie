@@ -1,6 +1,7 @@
 import { BLOCKS, blockById, type CalcBlock } from './calc-blocks'
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
+import { toInverseQuestion } from './calc-inverse'
 import type {
   CalcCategory,
   CalcLevel,
@@ -91,11 +92,28 @@ export function buildSession(
     }
   })
 
+  // 4.5 Optionally rewrite ~30% of eligible single-op block questions into the
+  // inverse blank form (48 + □ = 105). Only block-sourced arity-1 questions are
+  // eligible; mixed-op and carried questions are left as-is.
+  if (settings.includeInverse) {
+    for (let i = 0; i < out.length; i++) {
+      const q = out[i]
+      if (q.sourceBlockId && q.arity === 1 && Math.random() < 0.3) {
+        const inv = toInverseQuestion(q)
+        if (inv) out[i] = inv
+      }
+    }
+  }
+
   // 5. Append carried-over make-up questions (capped at `count` for safety).
   const carry = carried.slice(0, count)
   for (const m of carry) {
+    // Inverse mistakes are stored as a complete blank equation ("48 + □ = 105");
+    // normal mistakes are stored as a bare LHS needing "= ?". Detect by the blank glyph.
+    const expr = m.display.replace(/\s*=\s*\?\s*$/, '')
+    const display = expr.includes('□') ? expr : `${expr} = ?`
     out.push({
-      display: `${m.display.replace(/\s*=\s*\?\s*$/, '')} = ?`,
+      display,
       signature: m.signature,
       arity: 1,
       level: m.level,
