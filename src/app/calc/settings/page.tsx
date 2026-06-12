@@ -159,12 +159,20 @@ export default function CalcSettingsPage() {
         {/* 题型选项 */}
         <section>
           <SectionHeading>题型选项</SectionHeading>
-          <ToggleRow
-            label="包含逆运算（挖空）"
-            description="部分单运算题以 48 + □ = 105 的形式出现，考察更深"
-            value={settings.includeInverse}
-            onChange={(v) => update({ includeInverse: v })}
-          />
+          <div className="space-y-2">
+            <ToggleRow
+              label="包含逆运算（挖空）"
+              description="部分单运算题以 48 + □ = 105 的形式出现，考察更深"
+              value={settings.includeInverse}
+              onChange={(v) => update({ includeInverse: v })}
+            />
+            <ToggleRow
+              label="大数题用竖式作答"
+              description="1000以内 / 万以内加减、两位数×一位数、多位数÷一位数 用竖式格子作答"
+              value={settings.verticalForBigNumbers}
+              onChange={(v) => update({ verticalForBigNumbers: v })}
+            />
+          </div>
         </section>
 
         {/* 题量 / 限时 */}
