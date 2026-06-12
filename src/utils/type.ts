@@ -324,6 +324,14 @@ export type CalcOp = 'add' | 'sub' | 'mul' | 'div'
 export type CalcCategory = 'addsub' | 'muldiv' | 'mixed'
 export type CalcLevel = number | 'C'
 
+/** A question's canonical answer. `int` is the only kind produced before Phase 3b/3c;
+ *  `decimal`/`remainder`/`fraction` are defined now so the answer helpers are complete. */
+export type CalcAnswer =
+  | { kind: 'int'; value: number }
+  | { kind: 'decimal'; value: number; places: number }
+  | { kind: 'remainder'; quotient: number; remainder: number }
+  | { kind: 'fraction'; num: number; den: number }
+
 export interface CalcQuestion {
   display: string // "3 + 5 × 2 = ?"
   signature: string // canonical: "add(3,mul(5,2))"
