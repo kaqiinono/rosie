@@ -1,6 +1,5 @@
 'use client'
 
-import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
 
 type Op = '+' | '-' | '×'
@@ -192,7 +191,13 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
   return (
     <div className="flex flex-col items-center gap-4">
       {/* Vertical layout */}
-      <div className="rounded-2xl bg-white/[0.06] p-4">
+      <div
+        className="rounded-2xl p-4"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
         {/* Carry row */}
         <div className="mb-1 flex justify-end gap-1">
           <div className="w-8" />
@@ -211,13 +216,30 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
                 key={`c${i}`}
                 type="button"
                 onClick={() => !disabled && !checked && setActiveCell({ type: 'carry', idx: i })}
-                className={clsx(
-                  'flex h-7 w-10 items-center justify-center rounded border text-xs font-bold transition',
-                  isActive && 'border-blue-400 bg-blue-500/20 text-blue-300',
-                  !isActive && !checked && 'border-white/20 bg-white/[0.03] text-white/60',
-                  showCorrect && 'border-green-400 bg-green-500/20 text-green-400',
-                  showError && 'border-red-400 bg-red-500/20 text-red-400',
-                )}
+                className="flex h-7 w-10 items-center justify-center rounded text-xs font-black transition-all select-none active:scale-[0.93]"
+                style={{
+                  border: isActive
+                    ? '1px solid rgba(139,92,246,0.5)'
+                    : showCorrect
+                      ? '1px solid rgba(74,222,128,0.5)'
+                      : showError
+                        ? '1px solid rgba(248,113,113,0.5)'
+                        : '1px solid rgba(255,255,255,0.08)',
+                  background: isActive
+                    ? 'rgba(139,92,246,0.2)'
+                    : showCorrect
+                      ? 'rgba(74,222,128,0.15)'
+                      : showError
+                        ? 'rgba(248,113,113,0.15)'
+                        : 'rgba(255,255,255,0.03)',
+                  color: isActive
+                    ? '#c4b5fd'
+                    : showCorrect
+                      ? '#4ade80'
+                      : showError
+                        ? '#f87171'
+                        : 'rgba(196,181,253,0.4)',
+                }}
               >
                 {val !== null ? val : ''}
               </button>
@@ -229,7 +251,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
         <div className="flex justify-end gap-1">
           <div className="w-8" />
           {aPad.map((d, i) => (
-            <div key={`a${i}`} className="flex h-12 w-10 items-center justify-center text-xl font-bold text-white">
+            <div key={`a${i}`} className="flex h-12 w-10 items-center justify-center text-xl font-black" style={{ color: '#f5f3ff' }}>
               {d !== null ? d : ''}
             </div>
           ))}
@@ -237,18 +259,18 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
 
         {/* Operator + second operand */}
         <div className="flex justify-end gap-1">
-          <div className="flex h-12 w-8 items-center justify-center text-xl font-bold text-white/60">
+          <div className="flex h-12 w-8 items-center justify-center text-xl font-black" style={{ color: 'rgba(196,181,253,0.6)' }}>
             {op}
           </div>
           {bPad.map((d, i) => (
-            <div key={`b${i}`} className="flex h-12 w-10 items-center justify-center text-xl font-bold text-white">
+            <div key={`b${i}`} className="flex h-12 w-10 items-center justify-center text-xl font-black" style={{ color: '#f5f3ff' }}>
               {d !== null ? d : ''}
             </div>
           ))}
         </div>
 
         {/* Divider */}
-        <div className="my-1 border-t-2 border-white/30" />
+        <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
 
         {/* Result row */}
         <div className="flex justify-end gap-1">
@@ -264,13 +286,30 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
                 key={`r${i}`}
                 type="button"
                 onClick={() => !disabled && !checked && setActiveCell({ type: 'result', idx: i })}
-                className={clsx(
-                  'flex h-12 w-10 items-center justify-center rounded-lg border-2 text-xl font-bold transition',
-                  isActive && 'border-blue-400 bg-blue-500/20 text-blue-300',
-                  !isActive && !checked && 'border-white/20 bg-white/[0.05] text-white',
-                  showCorrect && 'border-green-400 bg-green-500/20 text-green-400',
-                  showError && 'border-red-400 bg-red-500/20 text-red-400',
-                )}
+                className="flex h-12 w-10 items-center justify-center rounded-xl border-2 text-xl font-black transition-all select-none active:scale-[0.93]"
+                style={{
+                  borderColor: isActive
+                    ? 'rgba(139,92,246,0.5)'
+                    : showCorrect
+                      ? 'rgba(74,222,128,0.5)'
+                      : showError
+                        ? 'rgba(248,113,113,0.5)'
+                        : 'rgba(255,255,255,0.08)',
+                  background: isActive
+                    ? 'rgba(139,92,246,0.2)'
+                    : showCorrect
+                      ? 'rgba(74,222,128,0.15)'
+                      : showError
+                        ? 'rgba(248,113,113,0.15)'
+                        : 'rgba(255,255,255,0.05)',
+                  color: isActive
+                    ? '#c4b5fd'
+                    : showCorrect
+                      ? '#4ade80'
+                      : showError
+                        ? '#f87171'
+                        : '#f5f3ff',
+                }}
               >
                 {val !== null ? val : ''}
               </button>
@@ -281,14 +320,20 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
 
       {/* Number pad */}
       {!checked && (
-        <div className="grid w-full max-w-xs grid-cols-3 gap-2">
+        <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
             <button
               key={d}
               type="button"
               disabled={disabled}
               onClick={() => handleDigitInput(d)}
-              className="min-h-[48px] rounded-xl bg-white text-xl font-bold shadow transition-colors hover:bg-gray-50 active:bg-gray-100"
+              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+              }}
             >
               {d}
             </button>
@@ -297,7 +342,12 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
             type="button"
             disabled={disabled}
             onClick={handleDelete}
-            className="min-h-[48px] rounded-xl bg-white text-xl font-bold shadow transition-colors hover:bg-gray-50 active:bg-gray-100"
+            className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
+              border: '1px solid rgba(239,68,68,0.2)',
+            }}
             aria-label="删除"
           >
             ⌫
@@ -306,7 +356,13 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
             type="button"
             disabled={disabled}
             onClick={() => handleDigitInput(0)}
-            className="min-h-[48px] rounded-xl bg-white text-xl font-bold shadow transition-colors hover:bg-gray-50 active:bg-gray-100"
+            className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+            }}
           >
             0
           </button>
@@ -314,7 +370,13 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
             type="button"
             disabled={disabled}
             onClick={handleCheck}
-            className="min-h-[48px] rounded-xl bg-blue-500 text-xl font-bold text-white shadow transition-colors hover:bg-blue-600 active:bg-blue-700"
+            className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+            style={{
+              background: 'linear-gradient(135deg, #059669, #10b981)',
+              color: '#ffffff',
+              boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
+              border: '1px solid rgba(16,185,129,0.25)',
+            }}
           >
             检查
           </button>

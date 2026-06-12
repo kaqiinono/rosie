@@ -1,6 +1,5 @@
 'use client'
 
-import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
 
 type DivisionVerticalProps = {
@@ -111,26 +110,42 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="rounded-2xl bg-white/[0.06] p-4 w-full">
+      <div
+        className="rounded-2xl p-4 w-full"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
         {/* Quotient row */}
         <div className="mb-1 flex justify-center gap-1">
           {quotientInputs.map((val, i) => {
             const correctVal = correctQuotient[i]
             const showCorrect = checked && val === correctVal
-            const showWrong = checked && val !== correctVal
             const isActive = !checked && activeIdx === i
             return (
               <button
                 key={i}
                 type="button"
                 onClick={() => !checked && !disabled && setActiveIdx(i)}
-                className={clsx(
-                  'flex h-10 w-10 items-center justify-center rounded-md border-2 text-lg font-bold transition',
-                  isActive && 'border-blue-400 bg-blue-500/20 text-blue-300',
-                  !isActive && !checked && 'border-white/20 bg-white/[0.05] text-white',
-                  showCorrect && 'border-green-400 bg-green-500/20 text-green-400',
-                  showWrong && 'border-red-400 bg-red-500/20 text-red-400',
-                )}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 text-lg font-black transition-all select-none active:scale-[0.93]"
+                style={{
+                  borderColor: isActive
+                    ? 'rgba(139,92,246,0.5)'
+                    : checked
+                      ? (showCorrect ? 'rgba(74,222,128,0.5)' : 'rgba(248,113,113,0.5)')
+                      : 'rgba(255,255,255,0.08)',
+                  background: isActive
+                    ? 'rgba(139,92,246,0.2)'
+                    : checked
+                      ? (showCorrect ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)')
+                      : 'rgba(255,255,255,0.05)',
+                  color: isActive
+                    ? '#c4b5fd'
+                    : checked
+                      ? (showCorrect ? '#4ade80' : '#f87171')
+                      : '#f5f3ff',
+                }}
               >
                 {val !== null ? val : ''}
               </button>
@@ -139,19 +154,23 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
         </div>
 
         {/* Divider line */}
-        <div className="mx-auto mb-2 h-0.5 w-[calc(100%-2rem)] bg-white/30" />
+        <div className="mx-auto mb-2 h-0.5 w-[calc(100%-2rem)]" style={{ background: 'rgba(196,181,253,0.25)' }} />
 
         {/* Divisor | Dividend */}
         <div className="flex items-center justify-center gap-2">
-          <div className="rounded-md bg-white/[0.05] px-3 py-2 text-xl font-bold text-white/80">
+          <div
+            className="rounded-xl px-3 py-2 text-xl font-black"
+            style={{ background: 'rgba(255,255,255,0.05)', color: '#e9d5ff' }}
+          >
             {divisor}
           </div>
-          <div className="text-2xl text-white/50">⟍</div>
+          <div className="text-2xl" style={{ color: 'rgba(196,181,253,0.4)' }}>⟍</div>
           <div className="flex gap-1">
             {dividendStr.split('').map((d, i) => (
               <div
                 key={i}
-                className="flex h-10 w-10 items-center justify-center text-xl font-bold text-white"
+                className="flex h-10 w-10 items-center justify-center text-xl font-black"
+                style={{ color: '#f5f3ff' }}
               >
                 {d}
               </div>
@@ -161,15 +180,15 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
 
         {/* Per-round breakdown after check */}
         {checked && (
-          <div className="mt-3 border-t border-white/10 pt-3">
-            <div className="text-xs text-white/40 mb-1">分步详情</div>
+          <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="text-xs mb-1" style={{ color: 'rgba(196,181,253,0.4)' }}>分步详情</div>
             {rounds.map((r, i) => (
-              <div key={i} className="text-xs text-white/60">
+              <div key={i} className="text-xs" style={{ color: 'rgba(196,181,253,0.6)' }}>
                 第{i + 1}轮: {r.trial} × {divisor} = {r.product}，余 {r.remainder}
               </div>
             ))}
             {finalRemainder > 0 && (
-              <div className="mt-1 text-xs text-amber-400">最终余数: {finalRemainder}</div>
+              <div className="mt-1 text-xs font-bold" style={{ color: '#f59e0b' }}>最终余数: {finalRemainder}</div>
             )}
           </div>
         )}
@@ -178,34 +197,50 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
       {/* Controls */}
       {!checked && (
         <>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <button
               type="button"
               disabled={disabled}
               onClick={() => handleAdjust(-1)}
-              className="rounded-lg bg-white/10 px-3 py-1.5 text-sm font-bold text-white hover:bg-white/15"
+              className="rounded-xl px-3 py-1.5 text-sm font-black transition-all select-none active:scale-[0.93]"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }}
             >
               −1
             </button>
-            <span className="text-xs text-white/40 self-center">微调当前位</span>
+            <span className="text-xs" style={{ color: 'rgba(196,181,253,0.4)' }}>微调当前位</span>
             <button
               type="button"
               disabled={disabled}
               onClick={() => handleAdjust(1)}
-              className="rounded-lg bg-white/10 px-3 py-1.5 text-sm font-bold text-white hover:bg-white/15"
+              className="rounded-xl px-3 py-1.5 text-sm font-black transition-all select-none active:scale-[0.93]"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }}
             >
               +1
             </button>
           </div>
 
-          <div className="grid w-full max-w-xs grid-cols-3 gap-2">
+          <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
               <button
                 key={d}
                 type="button"
                 disabled={disabled}
                 onClick={() => handleDigit(d)}
-                className="min-h-[44px] rounded-xl bg-white text-lg font-bold shadow hover:bg-gray-50"
+                className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+                }}
               >
                 {d}
               </button>
@@ -214,7 +249,12 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               type="button"
               disabled={disabled}
               onClick={handleDelete}
-              className="min-h-[44px] rounded-xl bg-white text-lg font-bold shadow hover:bg-gray-50"
+              className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+              style={{
+                background: 'rgba(239,68,68,0.1)',
+                color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
+                border: '1px solid rgba(239,68,68,0.2)',
+              }}
             >
               ⌫
             </button>
@@ -222,7 +262,13 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               type="button"
               disabled={disabled}
               onClick={() => handleDigit(0)}
-              className="min-h-[44px] rounded-xl bg-white text-lg font-bold shadow hover:bg-gray-50"
+              className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+              }}
             >
               0
             </button>
@@ -230,7 +276,13 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               type="button"
               disabled={disabled}
               onClick={handleCheck}
-              className="min-h-[44px] rounded-xl bg-blue-500 text-lg font-bold text-white shadow hover:bg-blue-600"
+              className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+              style={{
+                background: 'linear-gradient(135deg, #059669, #10b981)',
+                color: '#ffffff',
+                boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
+                border: '1px solid rgba(16,185,129,0.25)',
+              }}
             >
               检查
             </button>
