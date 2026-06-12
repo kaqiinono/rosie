@@ -361,6 +361,8 @@ export interface CalcSettings {
   selectedBlocks: string[]   // 单运算练习选中的积木块 ID
   mixedOps: MixedOp[]        // 编排出的混合运算
   soundEnabled: boolean
+  /** When true, ~30% of single-op questions render as an inverse blank form (48 + □ = 105). */
+  includeInverse: boolean
   lastCount: number          // 20/30/50/100
   lastTimeLimit: number       // seconds, 0=unlimited
   sessionCounter: number      // 每次 session 完成自增
