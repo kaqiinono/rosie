@@ -60,7 +60,13 @@ export default function CalcSessionPage() {
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { refresh: refreshStarHud } = useStarHud()
-  const { mistakes, addMistake, recordCorrect, lastSessionUnresolved, refresh: refreshMistakes } = useCalcMistakes(user)
+  const {
+    mistakes,
+    addMistake,
+    recordCorrect,
+    lastSessionUnresolved,
+    refresh: refreshMistakes,
+  } = useCalcMistakes(user)
   const problemState = useCalcProblemState(user)
 
   const requestedCount = useMemo(() => {
@@ -148,9 +154,14 @@ export default function CalcSessionPage() {
       // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
       // Previous session number == current sessionCounter (it bumps after finish).
       const carried = lastSessionUnresolved(settings.sessionCounter)
-      const session = buildSession(settings, requestedCount, {
-        problemStates: loadedStates,
-      }, carried)
+      const session = buildSession(
+        settings,
+        requestedCount,
+        {
+          problemStates: loadedStates,
+        },
+        carried,
+      )
       setQuestions(session)
       plannedCountRef.current = session.length
       setPlannedCount(session.length)
@@ -159,7 +170,16 @@ export default function CalcSessionPage() {
       questionStartRef.current = performance.now()
     }
     void init()
-  }, [settings, settingsLoading, requestedCount, mode, user, sessionKey, problemState, lastSessionUnresolved])
+  }, [
+    settings,
+    settingsLoading,
+    requestedCount,
+    mode,
+    user,
+    sessionKey,
+    problemState,
+    lastSessionUnresolved,
+  ])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -206,15 +226,19 @@ export default function CalcSessionPage() {
 
     // ── Timing analysis: this session's avg per-question time vs the previous session ──
     const qTimes = questionTimesRef.current
-    const avgMs = qTimes.length > 0
-      ? Math.round(qTimes.reduce((s, t) => s + t, 0) / qTimes.length)
-      : null
+    const avgMs =
+      qTimes.length > 0 ? Math.round(qTimes.reduce((s, t) => s + t, 0) / qTimes.length) : null
     // wallet.sessions is the pre-recording list (closure captured at render) → [0] is the last session.
     const prevSession = wallet.sessions[0]
     const prevAvgMs = prevSession
-      ? (prevSession.questionTimesMs && prevSession.questionTimesMs.length > 0
-          ? Math.round(prevSession.questionTimesMs.reduce((s, t) => s + t, 0) / prevSession.questionTimesMs.length)
-          : (prevSession.count > 0 ? Math.round((prevSession.timeSpentSec * 1000) / prevSession.count) : null))
+      ? prevSession.questionTimesMs && prevSession.questionTimesMs.length > 0
+        ? Math.round(
+            prevSession.questionTimesMs.reduce((s, t) => s + t, 0) /
+              prevSession.questionTimesMs.length,
+          )
+        : prevSession.count > 0
+          ? Math.round((prevSession.timeSpentSec * 1000) / prevSession.count)
+          : null
       : null
 
     const topLevel = log.reduce<CalcLevel>((max, a) => {
@@ -279,9 +303,12 @@ export default function CalcSessionPage() {
       const relevantStates = nextStates.filter((s) =>
         kind === 'block' ? s.blockId === id : s.mixedOpId === id,
       )
-      const proficiency = relevantStates.length > 0
-        ? Math.round(relevantStates.reduce((sum, s) => sum + s.proficiency, 0) / relevantStates.length)
-        : 0
+      const proficiency =
+        relevantStates.length > 0
+          ? Math.round(
+              relevantStates.reduce((sum, s) => sum + s.proficiency, 0) / relevantStates.length,
+            )
+          : 0
       return {
         label: sourceLabelOf(key),
         total: attempts.length,
@@ -292,7 +319,12 @@ export default function CalcSessionPage() {
 
     // ── Newly-exposed weak spots: distinct wrong-final question displays ──
     const newWeak = Array.from(
-      new Set(log.filter((a) => !a.finallyCorrect).map((a) => a.display).filter((d): d is string => !!d)),
+      new Set(
+        log
+          .filter((a) => !a.finallyCorrect)
+          .map((a) => a.display)
+          .filter((d): d is string => !!d),
+      ),
     ).slice(0, 8)
 
     // ── Next-focus preview: weakest-proficiency sources, ascending ──
@@ -668,7 +700,7 @@ export default function CalcSessionPage() {
         </div>
 
         {/* Inline feedback banner */}
-        <div className="mb-4" style={{ minHeight: 52 }}>
+        <div className="mb-4" style={{ minHeight: 26 }}>
           {feedback === 'correct' && (
             <div
               className="rounded-xl py-3 text-center text-[15px] font-extrabold"
@@ -729,15 +761,15 @@ export default function CalcSessionPage() {
         </div>
 
         {currentQ.answer.kind === 'remainder' ? (
-          <RemainderPad
-            key={idx}
-            disabled={!!feedback || done}
-            onSubmit={handleRemainderSubmit}
-          />
+          <RemainderPad key={idx} disabled={!!feedback || done} onSubmit={handleRemainderSubmit} />
         ) : currentQ.answerMode === 'vertical' ? (
           (() => {
             const ast = parseSignature(currentQ.signature)
-            if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
+            if (
+              typeof ast === 'number' ||
+              typeof ast.left !== 'number' ||
+              typeof ast.right !== 'number'
+            ) {
               return null
             }
             const disabled = !!feedback || done
@@ -793,6 +825,7 @@ export default function CalcSessionPage() {
                 onChange={setInput}
                 onSubmit={handleSubmit}
                 disabled={!!feedback || done}
+                allowDecimal={currentQ.answer.kind === 'decimal'}
               />
             </div>
           </>

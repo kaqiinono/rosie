@@ -55,27 +55,40 @@ export default function QuickPracticeModal({
   }, [])
 
   const session = useCalcSession(questions, soundEnabled)
-  const { idx, currentQ, input, setInput, feedback, streak, starsTotal, lastResult, done, progress, results, submitValue } = session
+  const {
+    idx,
+    currentQ,
+    input,
+    setInput,
+    feedback,
+    streak,
+    starsTotal,
+    lastResult,
+    done,
+    progress,
+    results,
+    submitValue,
+  } = session
 
   const starsLeft = goalStars !== undefined ? Math.max(0, goalStars - starsTotal) : null
 
   // ── Done screen ───────────────────────────────────────────────────────
   if (done) {
     const total = results.length
-    const correct = results.filter(r => r.firstTry).length
+    const correct = results.filter((r) => r.firstTry).length
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0
 
     return (
       <ModalShell onClose={() => onClose(starsTotal)}>
         <div className="text-center">
           <div
-            className="text-[52px] mb-1"
+            className="mb-1 text-[52px]"
             style={{ animation: 'pop-in 0.4s cubic-bezier(.34,1.56,.64,1)' }}
           >
             {accuracy >= 90 ? '🎉' : accuracy >= 70 ? '🌈' : '💫'}
           </div>
           <div
-            className="font-fredoka text-[24px] font-black mb-1"
+            className="font-fredoka mb-1 text-[24px] font-black"
             style={{
               background: 'linear-gradient(90deg, #fbbf24, #f9a8d4, #a5f3fc)',
               WebkitBackgroundClip: 'text',
@@ -94,13 +107,13 @@ export default function QuickPracticeModal({
             }}
           >
             <div
-              className="text-[11px] font-extrabold tracking-widest uppercase mb-0.5"
+              className="mb-0.5 text-[11px] font-extrabold tracking-widest uppercase"
               style={{ color: 'rgba(251,191,36,0.55)' }}
             >
               本次获得
             </div>
             <div
-              className="font-fredoka text-[36px] font-black leading-none"
+              className="font-fredoka text-[36px] leading-none font-black"
               style={{
                 background: 'linear-gradient(90deg, #fbbf24, #f59e0b)',
                 WebkitBackgroundClip: 'text',
@@ -111,20 +124,37 @@ export default function QuickPracticeModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mb-5">
+          <div className="mb-5 grid grid-cols-2 gap-2">
             <div
               className="rounded-xl px-3 py-2"
               style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}
             >
-              <div className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'rgba(74,222,128,0.6)' }}>一次答对</div>
-              <div className="font-fredoka text-[20px] font-black" style={{ color: '#4ade80' }}>{correct}</div>
+              <div
+                className="text-[10px] font-bold tracking-wide uppercase"
+                style={{ color: 'rgba(74,222,128,0.6)' }}
+              >
+                一次答对
+              </div>
+              <div className="font-fredoka text-[20px] font-black" style={{ color: '#4ade80' }}>
+                {correct}
+              </div>
             </div>
             <div
               className="rounded-xl px-3 py-2"
-              style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)' }}
+              style={{
+                background: 'rgba(139,92,246,0.1)',
+                border: '1px solid rgba(139,92,246,0.2)',
+              }}
             >
-              <div className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'rgba(196,181,253,0.5)' }}>正确率</div>
-              <div className="font-fredoka text-[20px] font-black" style={{ color: '#c4b5fd' }}>{accuracy}%</div>
+              <div
+                className="text-[10px] font-bold tracking-wide uppercase"
+                style={{ color: 'rgba(196,181,253,0.5)' }}
+              >
+                正确率
+              </div>
+              <div className="font-fredoka text-[20px] font-black" style={{ color: '#c4b5fd' }}>
+                {accuracy}%
+              </div>
             </div>
           </div>
 
@@ -148,9 +178,9 @@ export default function QuickPracticeModal({
   return (
     <ModalShell title={title} subtitle={subtitle} onClose={() => onClose(starsTotal)}>
       {/* Progress bar */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="mb-3 flex items-center gap-2">
         <div
-          className="flex-1 h-2 rounded-full overflow-hidden"
+          className="h-2 flex-1 overflow-hidden rounded-full"
           style={{ background: 'rgba(255,255,255,0.07)' }}
         >
           <div
@@ -171,10 +201,10 @@ export default function QuickPracticeModal({
       </div>
 
       {/* ── Real-time star row ── */}
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
         {/* Running total */}
         <div
-          className="flex items-center gap-1.5 rounded-full px-3 py-1 shrink-0"
+          className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1"
           style={{
             background: 'rgba(251,191,36,0.12)',
             border: '1px solid rgba(251,191,36,0.25)',
@@ -193,7 +223,9 @@ export default function QuickPracticeModal({
             </span>
           )}
           {starsLeft === 0 && goalStars !== undefined && (
-            <span className="text-[10px] font-extrabold" style={{ color: '#4ade80' }}>✓ 达成!</span>
+            <span className="text-[10px] font-extrabold" style={{ color: '#4ade80' }}>
+              ✓ 达成!
+            </span>
           )}
         </div>
 
@@ -208,7 +240,11 @@ export default function QuickPracticeModal({
           >
             <span className="text-[12px]">🔥</span>
             <span className="text-[11px] font-extrabold" style={{ color: '#fb923c' }}>
-              {streak >= 10 ? `连对${streak} +2加成` : streak >= 5 ? `连对${streak} +1加成` : `连对${streak}`}
+              {streak >= 10
+                ? `连对${streak} +2加成`
+                : streak >= 5
+                  ? `连对${streak} +1加成`
+                  : `连对${streak}`}
             </span>
           </div>
         )}
@@ -239,40 +275,41 @@ export default function QuickPracticeModal({
         key={idx}
         style={{ animation: 'fade-up 0.28s ease backwards' }}
       >
-        {currentQ && (() => {
-          const m = currentQ.display.match(/^(.*?)\s*=\s*\?\s*$/)
-          const hasSeparator = m !== null
-          const expr = m?.[1] ?? currentQ.display
-          return (
-          <>
-            <div
-              className="font-fredoka font-black tracking-tight leading-none"
-              style={{
-                fontSize: 'clamp(38px, 8vw, 54px)',
-                color: '#f5f3ff',
-                textShadow: '0 0 20px rgba(251,191,36,0.2)',
-              }}
-            >
-              {expr}
-            </div>
-            {hasSeparator && (
-              <div
-                className="mt-2 font-fredoka font-black"
-                style={{ fontSize: 'clamp(26px, 5vw, 36px)', color: 'rgba(251,191,36,0.35)' }}
-              >
-                = ?
-              </div>
-            )}
-          </>
-          )
-        })()}
+        {currentQ &&
+          (() => {
+            const m = currentQ.display.match(/^(.*?)\s*=\s*\?\s*$/)
+            const hasSeparator = m !== null
+            const expr = m?.[1] ?? currentQ.display
+            return (
+              <>
+                <div
+                  className="font-fredoka leading-none font-black tracking-tight"
+                  style={{
+                    fontSize: 'clamp(38px, 8vw, 54px)',
+                    color: '#f5f3ff',
+                    textShadow: '0 0 20px rgba(251,191,36,0.2)',
+                  }}
+                >
+                  {expr}
+                </div>
+                {hasSeparator && (
+                  <div
+                    className="font-fredoka mt-2 font-black"
+                    style={{ fontSize: 'clamp(26px, 5vw, 36px)', color: 'rgba(251,191,36,0.35)' }}
+                  >
+                    = ?
+                  </div>
+                )}
+              </>
+            )
+          })()}
       </div>
 
       {/* ── Inline feedback banner ── */}
-      <div className="mb-3" style={{ minHeight: 46 }}>
+      <div className="mb-3" style={{ minHeight: 28 }}>
         {feedback === 'correct' && (
           <div
-            className="py-2 text-center rounded-xl text-[15px] font-extrabold"
+            className="rounded-xl py-2 text-center text-[15px] font-extrabold"
             style={{
               background: 'rgba(34,197,94,0.15)',
               border: '1px solid rgba(34,197,94,0.3)',
@@ -280,12 +317,13 @@ export default function QuickPracticeModal({
               animation: 'pop-in 0.25s ease',
             }}
           >
-            ✓ 答对啦！{lastResult && lastResult.stars > 0 ? `本题 +${lastResult.stars} ⭐` : '（第二次）'}
+            ✓ 答对啦！
+            {lastResult && lastResult.stars > 0 ? `本题 +${lastResult.stars} ⭐` : '（第二次）'}
           </div>
         )}
         {feedback === 'retry' && (
           <div
-            className="py-2 text-center rounded-xl text-[15px] font-extrabold"
+            className="rounded-xl py-2 text-center text-[15px] font-extrabold"
             style={{
               background: 'rgba(251,191,36,0.12)',
               border: '1px solid rgba(251,191,36,0.25)',
@@ -298,7 +336,7 @@ export default function QuickPracticeModal({
         )}
         {feedback === 'wrong' && (
           <div
-            className="py-2 text-center rounded-xl text-[14px] font-extrabold"
+            className="rounded-xl py-2 text-center text-[14px] font-extrabold"
             style={{
               background: 'rgba(239,68,68,0.12)',
               border: '1px solid rgba(239,68,68,0.25)',
@@ -316,16 +354,12 @@ export default function QuickPracticeModal({
 
       {/* ── Answer area: RemainderPad for 有余数除法, else number pad ── */}
       {currentQ && currentQ.answer.kind === 'remainder' ? (
-        <RemainderPad
-          key={`rem-${idx}`}
-          disabled={!!feedback || done}
-          onSubmit={submitValue}
-        />
+        <RemainderPad key={`rem-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
       ) : (
         <>
           {/* ── Input ── */}
           <div
-            className="mx-auto mb-3 h-14 max-w-[240px] flex items-center justify-center rounded-2xl transition-all duration-200"
+            className="mx-auto mb-3 flex h-14 max-w-[240px] items-center justify-center rounded-2xl transition-all duration-200"
             style={{
               background: 'rgba(251,191,36,0.06)',
               border: `1.5px solid ${input ? 'rgba(251,191,36,0.4)' : 'rgba(255,255,255,0.1)'}`,
@@ -333,7 +367,7 @@ export default function QuickPracticeModal({
             }}
           >
             <span
-              className="font-fredoka font-black leading-none tabular-nums"
+              className="font-fredoka leading-none font-black tabular-nums"
               style={{
                 fontSize: 'clamp(24px, 5vw, 32px)',
                 color: input ? '#fde68a' : 'rgba(255,255,255,0.15)',
@@ -349,6 +383,7 @@ export default function QuickPracticeModal({
             onChange={setInput}
             onSubmit={session.handleSubmit}
             disabled={!!feedback || done}
+            allowDecimal={currentQ?.answer.kind === 'decimal'}
           />
         </>
       )}
@@ -356,7 +391,7 @@ export default function QuickPracticeModal({
       <button
         type="button"
         onClick={() => onClose(starsTotal)}
-        className="mt-4 w-full text-[11px] font-semibold hover:opacity-70 transition-opacity"
+        className="mt-4 w-full text-[11px] font-semibold transition-opacity hover:opacity-70"
         style={{ color: 'rgba(245,243,255,0.28)' }}
       >
         先这样，保留 {starsTotal} ⭐ 离开
@@ -377,24 +412,26 @@ interface ShellProps {
 function ModalShell({ title, subtitle, children, onClose }: ShellProps) {
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      document.body.style.overflow = ''
+    }
   }, [])
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(14px)' }}
       onClick={onClose}
     >
       <div
-        className="w-full sm:max-w-[420px] rounded-t-3xl sm:rounded-3xl p-5 pb-8 sm:pb-5"
+        className="w-full rounded-t-3xl p-5 pb-8 sm:max-w-[420px] sm:rounded-3xl sm:pb-5"
         style={{
           background: 'rgba(10,9,30,0.98)',
           border: '1px solid rgba(251,191,36,0.18)',
           boxShadow: '0 -8px 40px rgba(251,191,36,0.1), 0 0 80px rgba(139,92,246,0.15)',
           animation: 'slide-up 0.3s cubic-bezier(.34,1.56,.64,1)',
         }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle (mobile) */}
         <div
@@ -402,11 +439,11 @@ function ModalShell({ title, subtitle, children, onClose }: ShellProps) {
           style={{ background: 'rgba(255,255,255,0.15)' }}
         />
         {title && (
-          <div className="flex items-center gap-2 mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <span className="text-[18px]">✨</span>
             <div>
               <div
-                className="font-fredoka text-[17px] font-black leading-tight"
+                className="font-fredoka text-[17px] leading-tight font-black"
                 style={{
                   background: 'linear-gradient(90deg, #fbbf24, #f9a8d4)',
                   WebkitBackgroundClip: 'text',
@@ -416,12 +453,15 @@ function ModalShell({ title, subtitle, children, onClose }: ShellProps) {
                 {title}
               </div>
               {subtitle && (
-                <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>
+                <div
+                  className="mt-0.5 text-[11px] font-semibold"
+                  style={{ color: 'rgba(245,243,255,0.35)' }}
+                >
                   {subtitle}
                 </div>
               )}
             </div>
-            <span className="text-[14px] ml-auto">🌟</span>
+            <span className="ml-auto text-[14px]">🌟</span>
           </div>
         )}
         {children}
