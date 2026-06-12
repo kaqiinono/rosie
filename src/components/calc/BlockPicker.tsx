@@ -14,6 +14,7 @@ const GROUP_ICONS: Record<CalcBlock['group'], string> = {
   mul: '✖️',
   div: '➗',
   decimal: '🔢',
+  fraction: '½',
 }
 
 export default function BlockPicker({ selected, onToggle, onToggleGroup }: Props) {

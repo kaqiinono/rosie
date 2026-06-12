@@ -8,7 +8,7 @@ export interface CalcBlock {
   id: string
   op: CalcOp
   label: string
-  group: 'add' | 'sub' | 'mul' | 'div' | 'decimal'
+  group: 'add' | 'sub' | 'mul' | 'div' | 'decimal' | 'fraction'
   /** When true, buildSession never reconstructs this block's facts from a signature
    *  (their answers don't round-trip through the integer AST, e.g. remainder). */
   noResurface?: boolean
@@ -258,6 +258,7 @@ export const BLOCK_GROUPS: { group: CalcBlock['group']; label: string }[] = [
   { group: 'mul', label: '乘法' },
   { group: 'div', label: '除法' },
   { group: 'decimal', label: '小数' },
+  { group: 'fraction', label: '分数' },
 ]
 
 /** Block ids whose questions can be answered in a column ("竖式") layout.
