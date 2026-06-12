@@ -66,3 +66,22 @@ export function answerToNumeric(a: CalcAnswer): number {
 export function answerFromRow(answerJson: CalcAnswer | null, legacyNumeric: number): CalcAnswer {
   return answerJson ?? { kind: 'int', value: legacyNumeric }
 }
+
+function gcd(a: number, b: number): number {
+  let x = Math.abs(a)
+  let y = Math.abs(b)
+  while (y) {
+    ;[x, y] = [y, x % y]
+  }
+  return x || 1
+}
+
+/** True when `input` ("a/b") is a valid non-zero fraction that is NOT in lowest terms. */
+export function isReducibleFraction(input: string): boolean {
+  const m = input.trim().match(/^(-?\d+)\s*\/\s*(-?\d+)$/)
+  if (!m) return false
+  const num = Number(m[1])
+  const den = Number(m[2])
+  if (den === 0 || num === 0) return false
+  return gcd(num, den) > 1
+}

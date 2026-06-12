@@ -55,6 +55,11 @@ function statusLabel(stat: MasteryStat): string {
 
 /** Prettify a raw signature: add(a,b)→a+b, sub→−, mul→×, div→÷. Falls back to raw. */
 function prettySignature(sig: string): string {
+  const fm = sig.match(/^frac:(add|sub|mul|div)\(([^,]+),([^,]+)\)$/)
+  if (fm) {
+    const opSym = { add: '+', sub: '−', mul: '×', div: '÷' }[fm[1]] ?? '?'
+    return `${fm[2]} ${opSym} ${fm[3]}`
+  }
   const m = sig.match(/^(add|sub|mul|div)\((-?\d+),(-?\d+)\)$/)
   if (m) {
     const opSym = { add: '+', sub: '−', mul: '×', div: '÷' }[m[1]] ?? '?'
