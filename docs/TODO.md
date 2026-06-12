@@ -6,12 +6,30 @@
 
 ---
 
+## Calc Fusion 总路线图
+
+```
+Phase 1  大整数 + 逆运算挖空     ✅ 已完成
+Phase 2  竖式                    ✅ 已完成
+Phase 3  答案模型 + 余数 + 小数  ✅ 已完成
+Phase 4  分数                    ✅ 已完成
+Phase 5  错误诊断 + 报告         ⏳ 进行中（Task 4–6）
+Phase 6  下线 /calculate         📋 待做（仅有 spec，无逐步 plan）
+```
+
+**Phase 6 做完 = calc-fusion 设计 spec 里的 6 个阶段全部结束。** 见文末「Phase 6 之后还有什么」。
+
+设计 spec：`docs/superpowers/specs/2026-06-12-calc-calculate-fusion-design.md`
+
+---
+
 ## 快速续接（复制给 AI）
 
 ```text
 请阅读 docs/TODO.md，从「当前优先级最高」的未完成项开始执行。
-详细步骤见 docs/superpowers/plans/2026-06-12-calc-fusion-phase5-error-report.md（Phase 5）。
-分支 feature/calc-fusion，不要改 Scope 外的文件。每完成一个 Task 运行 pnpm lint，Task 4/5 后再 pnpm build。
+Phase 5 细节：docs/superpowers/plans/2026-06-12-calc-fusion-phase5-error-report.md
+Phase 6 细节：docs/superpowers/specs/2026-06-12-calc-calculate-fusion-design.md § Phase 6
+分支 feature/calc-fusion。每完成一个 Task 运行 pnpm lint；涉及 UI/删路由时 pnpm build。
 ```
 
 ---
@@ -111,11 +129,67 @@ alter table calc_mistakes
   - off-by-1 → 粗心
 - [ ] Phase 1–4 口算功能仍正常（竖式、余数、小数、分数等）
 
-### Phase 5 明确不在范围
+### Phase 5 明确不在范围（留作可选 follow-up）
 
-- 按 block 的错误 breakdown
-- `calc_sessions.error_summary`
-- 旧模块 `/calculate`（只改 `/calc`）
+- 按 block 的错误 breakdown（spec 验收标准提到，但 Phase 5 plan 刻意 defer）
+- `calc_sessions.error_summary`（每场 session 错误汇总 JSON）
+- 旧模块 `/calculate`（留给 Phase 6 删）
+
+---
+
+## 🟢 优先级 3 — Calc Fusion Phase 6（下线 `/calculate`）
+
+**前置：** Phase 5 Task 6 全部通过；`/calc` 已能替代旧模块的核心能力。
+
+**设计 spec：** `docs/superpowers/specs/2026-06-12-calc-calculate-fusion-design.md` → § Phase 6
+
+**尚无**像 Phase 1–5 那样的逐步 plan 文件；按下面 checklist 执行即可。
+
+### 待做 ❌
+
+#### 1. 删应用代码
+
+- [ ] 删除 `src/app/calculate/**`（含 onboarding / session / report / mistakes / tree / level / settings）
+- [ ] 删除 `src/utils/calculate-*.ts`（9 个文件：`calculate-types`、`calculate-trees`、`calculate-generator` 等）
+- [ ] 删除 `src/hooks/useCalculateSettings.ts`、`useCalculateLevelState.ts`
+- [ ] 删除仅被 `/calculate` 使用的 `src/components/calculate/**`（**不要**删已港到 `components/calc/` 的竖式/分数等组件）
+- [ ] 全库搜索并清理残留引用：
+  ```bash
+  rg '/calculate|calculate_|from.*calculate-' src
+  ```
+  首页已只链 `/calc`；确认无外链、manifest、文档仍指向 `/calculate`
+
+#### 2. 更新文档
+
+- [ ] 更新 `CLAUDE.md`：移除 `/calculate` 模块说明，口算只保留 `/calc`
+- [ ] 在 `docs/TODO.md` 或 plan 里标记 Phase 6 完成
+
+#### 3. 删数据库（用户手动，不可逆）
+
+- [ ] **先备份** Supabase
+- [ ] 确认 `grep -rE "calculate_[a-z_]+" src` 无结果
+- [ ] 在 Supabase SQL Editor 执行 `docs/sql/calculate-decommission.sql`
+
+#### 4. 验证
+
+- [ ] `pnpm lint` + `pnpm build` 通过
+- [ ] 手动：首页 → `/calc` 全流程可用；访问 `/calculate` 应 404
+- [ ] commit 建议：`chore(calc): decommission legacy /calculate module`
+
+### Phase 6 明确不在范围
+
+- 不改 `/calc` 功能（除非删 calculate 时暴露的 dead import 需修）
+- 不自动迁移 `calculate_*` 表里的历史数据到 `calc_*`（旧数据随表 drop）
+
+---
+
+## Phase 6 之后还有什么？
+
+| 类别 | 说明 |
+|------|------|
+| **calc-fusion 主线** | **Phase 1–6 全部完成即 spec 定义的融合项目结束** |
+| **spec 里提过、但未单独成 Phase 的可选项** | 报告「每 block top 错误」、`calc_sessions.error_summary` — 需要可另开 small PR，不算 Phase 7 |
+| **与本项目无关的 backlog** | 见下文「优先级 2」：词库预览 build 修复、第 42 讲图解、PDF 整理等 |
 
 ---
 
@@ -140,7 +214,8 @@ alter table calc_mistakes
 3. 确认 Supabase 已跑 Phase 5 迁移 SQL
 4. 把本文 **Quick 续接** 段落发给 AI
 5. 先修 **优先级 0**（否则 build 红）
-6. 再按 plan 做 Task 4 → 5 → 6
+6. Phase 5：Task 4 → 5 → 6
+7. Phase 6：删 `/calculate` → 跑 decommission SQL → 更新 CLAUDE.md
 
 ---
 
@@ -148,10 +223,13 @@ alter table calc_mistakes
 
 | 用途 | 路径 |
 |------|------|
+| 融合设计 spec（Phase 1–6 总览） | `docs/superpowers/specs/2026-06-12-calc-calculate-fusion-design.md` |
 | Phase 5 详细 plan | `docs/superpowers/plans/2026-06-12-calc-fusion-phase5-error-report.md` |
 | Phase 5 DB 迁移 | `docs/sql/calc-phase5-error-tags-migration.sql` |
+| Phase 6 DB 删表 | `docs/sql/calculate-decommission.sql` |
 | 诊断引擎 | `src/utils/calc-diagnose.ts` |
 | 错题 hook | `src/hooks/useCalcMistakes.ts` |
 | 待改：会话 | `src/app/calc/session/page.tsx` |
 | 待改：报告 | `src/app/calc/report/page.tsx` |
+| 待删：旧口算 | `src/app/calculate/**`、`src/utils/calculate-*.ts` |
 | 项目约定 | `CLAUDE.md` |
