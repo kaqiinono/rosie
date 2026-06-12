@@ -3,8 +3,7 @@
 import { useState } from 'react'
 
 interface Props {
-  dividend: number
-  divisor: number
+  /** Submits the combined answer as "quotient…remainder". */
   onSubmit: (combined: string) => void
   disabled?: boolean
 }
@@ -15,23 +14,19 @@ const DIGIT_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0', '�
 
 const MAX_LEN = 3
 
-export default function RemainderPad({ dividend, divisor, onSubmit, disabled }: Props) {
+export default function RemainderPad({ onSubmit, disabled }: Props) {
   const [quotient, setQuotient] = useState('')
   const [remainder, setRemainder] = useState('')
   const [active, setActive] = useState<ActiveCell>('q')
   const [submitted, setSubmitted] = useState(false)
 
   const canSubmit = !submitted && !disabled && quotient.length > 0 && remainder.length > 0
+  const activeValue = active === 'q' ? quotient : remainder
 
   const setActiveValue = (next: string) => {
-    if (active === 'q') {
-      setQuotient(next)
-    } else {
-      setRemainder(next)
-    }
+    if (active === 'q') setQuotient(next)
+    else setRemainder(next)
   }
-
-  const activeValue = active === 'q' ? quotient : remainder
 
   const handleKey = (key: typeof DIGIT_KEYS[number]) => {
     if (disabled || submitted) return
@@ -46,67 +41,58 @@ export default function RemainderPad({ dividend, divisor, onSubmit, disabled }: 
       return
     }
     if (activeValue.length >= MAX_LEN) return
-    const next = activeValue === '0' ? key : activeValue + key
-    setActiveValue(next)
+    setActiveValue(activeValue === '0' ? key : activeValue + key)
+  }
+
+  const renderCell = (which: ActiveCell, value: string, label: string) => {
+    const on = active === which
+    return (
+      <div className="flex flex-col items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => !disabled && !submitted && setActive(which)}
+          className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 font-fredoka text-[28px] font-black tabular-nums transition-all select-none active:scale-[0.93] sm:h-18 sm:w-18"
+          style={{
+            borderColor: on ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)',
+            background: on ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)',
+            color: on ? '#c4b5fd' : '#f5f3ff',
+            boxShadow: on ? '0 0 16px rgba(139,92,246,0.25)' : 'none',
+          }}
+        >
+          {value || (on ? '·' : '')}
+        </button>
+        <span
+          className="text-[11px] font-extrabold"
+          style={{ color: on ? '#c4b5fd' : 'rgba(196,181,253,0.55)' }}
+        >
+          {label}
+        </span>
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      {/* Problem + answer cells */}
+    <div className="flex w-full flex-col items-center gap-4">
+      {/* Answer slots: 商 …… 余. The equation itself is shown above by QuestionDisplay. */}
       <div
-        className="flex w-full max-w-xs items-center justify-center gap-2 rounded-2xl p-4"
+        className="flex w-full max-w-[320px] items-center justify-center gap-4 rounded-2xl px-4 py-4"
         style={{
           background: 'rgba(255,255,255,0.04)',
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        <span className="text-xl font-black" style={{ color: '#f5f3ff' }}>
-          {dividend} ÷ {divisor} =
-        </span>
-
-        <div className="flex flex-col items-center gap-1">
-          <button
-            type="button"
-            onClick={() => !disabled && !submitted && setActive('q')}
-            className="flex h-12 w-14 items-center justify-center rounded-xl border-2 text-xl font-black transition-all select-none active:scale-[0.93]"
-            style={{
-              borderColor: active === 'q' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)',
-              background: active === 'q' ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)',
-              color: active === 'q' ? '#c4b5fd' : '#f5f3ff',
-            }}
-          >
-            {quotient}
-          </button>
-          <span className="text-[10px] font-bold" style={{ color: 'rgba(196,181,253,0.6)' }}>
-            商
-          </span>
-        </div>
-
-        <span className="text-xl font-black" style={{ color: 'rgba(196,181,253,0.6)' }}>
+        {renderCell('q', quotient, '商')}
+        <span
+          className="pb-5 text-[20px] font-black tracking-[0.2em]"
+          style={{ color: 'rgba(196,181,253,0.45)' }}
+        >
           ……
         </span>
-
-        <div className="flex flex-col items-center gap-1">
-          <button
-            type="button"
-            onClick={() => !disabled && !submitted && setActive('r')}
-            className="flex h-12 w-14 items-center justify-center rounded-xl border-2 text-xl font-black transition-all select-none active:scale-[0.93]"
-            style={{
-              borderColor: active === 'r' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)',
-              background: active === 'r' ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)',
-              color: active === 'r' ? '#c4b5fd' : '#f5f3ff',
-            }}
-          >
-            {remainder}
-          </button>
-          <span className="text-[10px] font-bold" style={{ color: 'rgba(196,181,253,0.6)' }}>
-            余
-          </span>
-        </div>
+        {renderCell('r', remainder, '余')}
       </div>
 
-      {/* Number pad */}
-      <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
+      {/* Keypad — matches NumberPad sizing/look. */}
+      <div className="grid w-full max-w-[320px] grid-cols-3 gap-2.5">
         {DIGIT_KEYS.map((key) => {
           const isSubmit = key === '✓'
           const isDel = key === '⌫'

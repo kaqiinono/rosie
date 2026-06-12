@@ -10,7 +10,6 @@ import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import RemainderPad from './RemainderPad'
 import { buildSession } from '@/utils/calc-helpers'
-import { parseSignature } from '@/utils/calc-ast'
 import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
 import type { CalcQuestion, CalcSettings } from '@/utils/type'
@@ -317,21 +316,11 @@ export default function QuickPracticeModal({
 
       {/* ── Answer area: RemainderPad for 有余数除法, else number pad ── */}
       {currentQ && currentQ.answer.kind === 'remainder' ? (
-        (() => {
-          const ast = parseSignature(currentQ.signature)
-          if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
-            return null
-          }
-          return (
-            <RemainderPad
-              key={`rem-${idx}`}
-              dividend={ast.left}
-              divisor={ast.right}
-              disabled={!!feedback || done}
-              onSubmit={submitValue}
-            />
-          )
-        })()
+        <RemainderPad
+          key={`rem-${idx}`}
+          disabled={!!feedback || done}
+          onSubmit={submitValue}
+        />
       ) : (
         <>
           {/* ── Input ── */}

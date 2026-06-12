@@ -729,21 +729,11 @@ export default function CalcSessionPage() {
         </div>
 
         {currentQ.answer.kind === 'remainder' ? (
-          (() => {
-            const ast = parseSignature(currentQ.signature)
-            if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
-              return null
-            }
-            return (
-              <RemainderPad
-                key={idx}
-                dividend={ast.left}
-                divisor={ast.right}
-                disabled={!!feedback || done}
-                onSubmit={handleRemainderSubmit}
-              />
-            )
-          })()
+          <RemainderPad
+            key={idx}
+            disabled={!!feedback || done}
+            onSubmit={handleRemainderSubmit}
+          />
         ) : currentQ.answerMode === 'vertical' ? (
           (() => {
             const ast = parseSignature(currentQ.signature)
