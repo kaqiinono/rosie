@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS: CalcSettings = {
   mixedOps: [],
   soundEnabled: true,
   includeInverse: false,
+  verticalForBigNumbers: true,
   lastCount: 20,
   lastTimeLimit: 0,
   sessionCounter: 0,
@@ -21,6 +22,7 @@ interface RawRow {
   mixed_ops: MixedOp[] | null
   sound_enabled: boolean
   include_inverse: boolean | null
+  vertical_for_big_numbers: boolean | null
   last_count: number
   last_time_limit: number
   session_counter: number | null
@@ -33,6 +35,7 @@ function rowToSettings(row: RawRow): CalcSettings {
     mixedOps: row.mixed_ops ?? [],
     soundEnabled: row.sound_enabled,
     includeInverse: row.include_inverse ?? false,
+    verticalForBigNumbers: row.vertical_for_big_numbers ?? true,
     lastCount: row.last_count,
     lastTimeLimit: row.last_time_limit,
     sessionCounter: row.session_counter ?? 0,
@@ -47,6 +50,7 @@ function settingsToRow(s: CalcSettings, userId: string) {
     mixed_ops: s.mixedOps,
     sound_enabled: s.soundEnabled,
     include_inverse: s.includeInverse,
+    vertical_for_big_numbers: s.verticalForBigNumbers,
     last_count: s.lastCount,
     last_time_limit: s.lastTimeLimit,
     session_counter: s.sessionCounter,
@@ -66,7 +70,7 @@ export function useCalcSettings(user: User | null) {
       const { data } = await supabase
         .from('calc_settings')
         .select(
-          'selected_blocks,mixed_ops,sound_enabled,last_count,last_time_limit,session_counter,time_limit_overrides,include_inverse',
+          'selected_blocks,mixed_ops,sound_enabled,last_count,last_time_limit,session_counter,time_limit_overrides,include_inverse,vertical_for_big_numbers',
         )
         .eq('user_id', user.id)
         .maybeSingle()

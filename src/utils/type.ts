@@ -338,6 +338,8 @@ export interface CalcQuestion {
   sourceBlockId?: string
   /** Attribution: which mixed-op generator produced this question (set by buildSession). */
   sourceMixedOpId?: string
+  /** How this question is answered. Absent/'pad' = number pad; 'vertical' = column (竖式) layout. */
+  answerMode?: 'pad' | 'vertical'
 }
 
 export type CalcSkeletonId =
@@ -363,6 +365,8 @@ export interface CalcSettings {
   soundEnabled: boolean
   /** When true, ~30% of single-op questions render as an inverse blank form (48 + □ = 105). */
   includeInverse: boolean
+  /** When true, questions from vertical-capable blocks are answered in 竖式 layout. */
+  verticalForBigNumbers: boolean
   lastCount: number          // 20/30/50/100
   lastTimeLimit: number       // seconds, 0=unlimited
   sessionCounter: number      // 每次 session 完成自增
