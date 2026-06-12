@@ -1,8 +1,8 @@
 import {
-  AstNode, CalcOp, makeQuestion, randInt, pickOne,
+  AstNode, CalcOp, makeQuestion, OP_SYMBOL, randInt, pickOne,
 } from './calc-ast'
-import type { CalcQuestion } from './type'
-import { remainderAnswer } from './calc-answer'
+import type { CalcCategory, CalcQuestion } from './type'
+import { decimalAnswer, remainderAnswer } from './calc-answer'
 
 export interface CalcBlock {
   id: string
@@ -91,6 +91,38 @@ function remainderBlock(
       const d = randInt(2, 9)
       const q = randInt(2, 9)
       return { ast: { op: 'div', left: d * q, right: d }, value: q }
+    },
+  }
+}
+
+function decimalBlock(
+  id: string,
+  label: string,
+  gen: () => { left: number; right: number; op: CalcOp; value: number; places: number },
+): CalcBlock {
+  return {
+    id,
+    op: 'add',
+    label,
+    group: 'decimal',
+    noResurface: true,
+    generateSingle(): CalcQuestion {
+      const { left, right, op, value, places } = gen()
+      const category: CalcCategory = op === 'add' || op === 'sub' ? 'addsub' : 'muldiv'
+      return {
+        display: `${String(left)} ${OP_SYMBOL[op]} ${String(right)} = ?`,
+        signature: `${op}(${left},${right})`,
+        arity: 1,
+        level: 0,
+        answer: decimalAnswer(value, places),
+        isChallenge: false,
+        category,
+        coinBase: 2,
+      }
+    },
+    sampleTerm() {
+      const a = randInt(2, 9)
+      return { ast: a, value: a }
     },
   }
 }
@@ -184,6 +216,34 @@ export const BLOCKS: CalcBlock[] = [
     const quotient = randInt(2, 9)
     const remainder = randInt(1, divisor - 1)
     return { dividend: divisor * quotient + remainder, divisor, quotient, remainder }
+  }),
+  decimalBlock('dec:add1', '一位小数加减', () => {
+    const isAdd = Math.random() < 0.5
+    const a = randInt(1, 8) * 10 + randInt(1, 9)
+    const b = randInt(1, 8) * 10 + randInt(1, 9)
+    if (isAdd) return { left: a / 10, right: b / 10, op: 'add', value: (a + b) / 10, places: 1 }
+    const hi = Math.max(a, b)
+    const lo = Math.min(a, b)
+    return { left: hi / 10, right: lo / 10, op: 'sub', value: (hi - lo) / 10, places: 1 }
+  }),
+  decimalBlock('dec:add2', '两位小数加减', () => {
+    const isAdd = Math.random() < 0.5
+    const a = randInt(1, 8) * 100 + randInt(1, 9) * 10 + randInt(1, 9)
+    const b = randInt(1, 8) * 100 + randInt(1, 9) * 10 + randInt(1, 9)
+    if (isAdd) return { left: a / 100, right: b / 100, op: 'add', value: (a + b) / 100, places: 2 }
+    const hi = Math.max(a, b)
+    const lo = Math.min(a, b)
+    return { left: hi / 100, right: lo / 100, op: 'sub', value: (hi - lo) / 100, places: 2 }
+  }),
+  decimalBlock('dec:mulInt', '小数×整数', () => {
+    const a = randInt(1, 8) * 10 + randInt(1, 9)
+    const k = randInt(2, 9)
+    return { left: a / 10, right: k, op: 'mul', value: (a * k) / 10, places: 1 }
+  }),
+  decimalBlock('dec:divInt', '小数÷整数', () => {
+    const q = randInt(1, 8) * 10 + randInt(1, 9)
+    const d = randInt(2, 9)
+    return { left: (q * d) / 10, right: d, op: 'div', value: q / 10, places: 1 }
   }),
 ]
 
