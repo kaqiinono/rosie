@@ -324,7 +324,7 @@ export default function QuickPracticeModal({
           }
           return (
             <RemainderPad
-              key={idx}
+              key={`rem-${idx}`}
               dividend={ast.left}
               divisor={ast.right}
               disabled={!!feedback || done}
