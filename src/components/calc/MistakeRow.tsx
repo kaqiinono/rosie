@@ -1,6 +1,7 @@
 'use client'
 
 import type { CalcMistake } from '@/utils/type'
+import { formatAnswer } from '@/utils/calc-answer'
 
 interface Props {
   mistake: CalcMistake
@@ -41,7 +42,7 @@ export default function MistakeRow({ mistake }: Props) {
       >
         {display} ={' '}
         <span style={{ color: mistake.resolved ? '#4ade80' : '#c4b5fd' }}>
-          {mistake.answer}
+          {formatAnswer(mistake.answer)}
         </span>
       </div>
       <div className="ml-auto flex items-center gap-2">

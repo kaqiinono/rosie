@@ -1,4 +1,4 @@
-import type { CalcCategory, CalcLevel, CalcOp, CalcQuestion } from './type'
+import type { CalcCategory, CalcLevel, CalcOp, CalcQuestion, CalcAnswer } from './type'
 
 export type { CalcOp }
 
@@ -90,7 +90,7 @@ export function makeQuestion(
 ): CalcQuestion {
   const display = `${renderAst(ast)} = ?`
   const signature = signatureOf(ast)
-  const answer = evalAst(ast)
+  const answer: CalcAnswer = { kind: 'int', value: evalAst(ast) }
   const arity = arityOf(ast) as 1 | 2 | 3
   return { display, signature, arity, level, answer, isChallenge, category, coinBase }
 }

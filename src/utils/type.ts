@@ -337,7 +337,7 @@ export interface CalcQuestion {
   signature: string // canonical: "add(3,mul(5,2))"
   arity: 1 | 2 | 3
   level: CalcLevel
-  answer: number
+  answer: CalcAnswer
   isChallenge: boolean
   category: CalcCategory
   /** Per-question coin (before streak bonus). Challenge questions already include ×2 here. */
@@ -504,7 +504,7 @@ export interface CalcMistake {
   id?: string
   signature: string
   display: string
-  answer: number
+  answer: CalcAnswer
   level: CalcLevel
   category: CalcCategory
   lastWrongAt: string

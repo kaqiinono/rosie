@@ -1,5 +1,5 @@
 import { parseSignature, OP_SYMBOL } from './calc-ast'
-import type { CalcQuestion } from './type'
+import type { CalcQuestion, CalcAnswer } from './type'
 
 /** Glyph used for the hidden operand. Matches the blank form QuestionDisplay already supports. */
 const BLANK = '□'
@@ -20,13 +20,15 @@ export function toInverseQuestion(q: CalcQuestion): CalcQuestion | null {
   const { op, left, right } = ast
   if (typeof left !== 'number' || typeof right !== 'number') return null
 
+  if (q.answer.kind !== 'int') return null
+  const c = q.answer.value
+
   const sym = OP_SYMBOL[op]
-  const c = q.answer
   const hideRight = Math.random() < 0.5
   const display = hideRight
     ? `${left} ${sym} ${BLANK} = ${c}`
     : `${BLANK} ${sym} ${right} = ${c}`
-  const answer = hideRight ? right : left
+  const answer: CalcAnswer = { kind: 'int', value: hideRight ? right : left }
 
   return { ...q, display, answer }
 }

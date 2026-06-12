@@ -3,14 +3,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import type { CalcCategory, CalcLevel, CalcMistake, CalcQuestion } from '@/utils/type'
+import type { CalcAnswer, CalcCategory, CalcLevel, CalcMistake, CalcQuestion } from '@/utils/type'
 import { levelKey, parseLevelKey } from '@/utils/calc-helpers'
+import { answerFromRow, answerToNumeric } from '@/utils/calc-answer'
 
 interface MistakeRow {
   id: string
   signature: string
   display: string
   answer: number
+  answer_json: CalcAnswer | null
   level: string
   category: CalcCategory
   last_wrong_at: string
@@ -24,7 +26,7 @@ function rowToMistake(r: MistakeRow): CalcMistake {
     id: r.id,
     signature: r.signature,
     display: r.display,
-    answer: r.answer,
+    answer: answerFromRow(r.answer_json, r.answer),
     level: parseLevelKey(r.level),
     category: r.category,
     lastWrongAt: r.last_wrong_at,
@@ -44,7 +46,7 @@ export function useCalcMistakes(user: User | null) {
     const init = async () => {
       const { data } = await supabase
         .from('calc_mistakes')
-        .select('id,signature,display,answer,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
+        .select('id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no')
         .eq('user_id', user.id)
         .order('last_wrong_at', { ascending: false })
       if (cancelled) return
@@ -82,7 +84,8 @@ export function useCalcMistakes(user: User | null) {
               user_id: user.id,
               signature: q.signature,
               display: q.display,
-              answer: q.answer,
+              answer: answerToNumeric(q.answer),
+              answer_json: q.answer,
               level: levelKey(q.level),
               category: q.category,
               last_wrong_at: new Date().toISOString(),

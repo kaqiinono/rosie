@@ -9,6 +9,7 @@
 import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import { buildSession } from '@/utils/calc-helpers'
+import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
 import type { CalcQuestion, CalcSettings } from '@/utils/type'
 
@@ -305,7 +306,7 @@ export default function QuickPracticeModal({
           >
             答案是{' '}
             <span className="font-fredoka text-[18px]" style={{ color: '#fca5a5' }}>
-              {currentQ?.answer}
+              {currentQ ? formatAnswer(currentQ.answer) : ''}
             </span>
             ，下次加油！
           </div>

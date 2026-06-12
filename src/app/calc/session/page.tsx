@@ -17,6 +17,7 @@ import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
+import { checkAnswer, formatAnswer } from '@/utils/calc-answer'
 import { parseSignature } from '@/utils/calc-ast'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
@@ -88,7 +89,7 @@ export default function CalcSessionPage() {
   const [input, setInput] = useState('')
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
-  const [revealAnswer, setRevealAnswer] = useState<number | null>(null)
+  const [revealAnswer, setRevealAnswer] = useState<string | null>(null)
 
   const [showChallengeBanner, setShowChallengeBanner] = useState(false)
 
@@ -431,7 +432,7 @@ export default function CalcSessionPage() {
 
       // final wrong
       setFeedback('wrong')
-      setRevealAnswer(q.answer)
+      setRevealAnswer(formatAnswer(q.answer))
       setStreak(0)
       playSfx('wrong', settings.soundEnabled)
       void addMistake(q, settings.sessionCounter + 1)
@@ -486,7 +487,7 @@ export default function CalcSessionPage() {
     const userAns = Number(input)
     if (!Number.isFinite(userAns)) return
 
-    const isCorrect = userAns === q.answer
+    const isCorrect = checkAnswer(input, q.answer)
     const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
 
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)

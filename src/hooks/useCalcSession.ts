@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { playSfx } from '@/components/calc/audio'
+import { checkAnswer } from '@/utils/calc-answer'
 import type { CalcQuestion } from '@/utils/type'
 
 export interface QuestionResult {
@@ -101,7 +102,7 @@ export function useCalcSession(
     const limit = options?.getTimeLimitMs?.(currentQ)
     const withinLimit = typeof limit === 'number' && limit > 0 ? elapsed <= limit : true
 
-    if (val === currentQ.answer) {
+    if (checkAnswer(input, currentQ.answer)) {
       const isFirst = attemptsForCurrent === 0
       const bonus = streak >= 10 ? 2 : streak >= 5 ? 1 : 0
       const stars = isFirst ? currentQ.coinBase + bonus : 0
