@@ -9,6 +9,7 @@
 import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import RemainderPad from './RemainderPad'
+import FractionPad from './FractionPad'
 import { buildSession } from '@/utils/calc-helpers'
 import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
@@ -353,7 +354,9 @@ export default function QuickPracticeModal({
       </div>
 
       {/* ── Answer area: RemainderPad for 有余数除法, else number pad ── */}
-      {currentQ && currentQ.answer.kind === 'remainder' ? (
+      {currentQ && currentQ.answer.kind === 'fraction' ? (
+        <FractionPad key={`frac-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
+      ) : currentQ && currentQ.answer.kind === 'remainder' ? (
         <RemainderPad key={`rem-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
       ) : (
         <>
