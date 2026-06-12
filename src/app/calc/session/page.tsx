@@ -360,107 +360,78 @@ export default function CalcSessionPage() {
   }, [remainingSec, done, questions, finishSession])
 
   // ── Submit answer ────────────────────────────────────────────────
-  const handleSubmit = useCallback(() => {
-    if (!questions || done || feedback) return
-    const q = questions[idx]
-    const userAns = Number(input)
-    if (!Number.isFinite(userAns)) return
-
-    const isCorrect = userAns === q.answer
-    const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
-
-    // Advance to the next question. At end-of-list, drain any collected wrong
-    // questions to the tail for make-up and continue; only finish when the queue
-    // is empty at end-of-list.
-    const goNext = () => {
-      setFeedback(null)
-      setInput('')
-      setAttemptsForCurrent(0)
-      setLastResult(null)
-      setRevealAnswer(null)
-      if (idx + 1 < questions.length) {
-        setIdx((i) => i + 1)
-        return
-      }
-      if (wrongQueueRef.current.length > 0) {
-        const drained = wrongQueueRef.current
-        wrongQueueRef.current = []
-        setQuestions((prev) => (prev ? [...prev, ...drained] : prev))
-        setIdx((i) => i + 1) // step into the first appended make-up question
-        return
-      }
-      void finishSession()
-    }
-
-    // Compute per-question time + within-limit
-    const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-    const limitMs = timeLimitFromSettings(q.level, settings)
-    const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
-
-    // Record the first-attempt solve time once per question (the genuine think time).
-    if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
-
-    if (isCorrect) {
-      const isFirstTry = attemptsForCurrent === 0
-      const reward = isFirstTry ? coinReward(q, streak) : 0
-      const isChallengeCorrect = q.isChallenge && isFirstTry
-      const bonus = isFirstTry ? (streak >= 10 ? 2 : streak >= 5 ? 1 : 0) : 0
-
-      if (isFirstTry && reward > 0) {
-        setLastResult({ stars: reward, bonus })
-      }
-      setFeedback(isChallengeCorrect ? 'challenge-correct' : 'correct')
-      playSfx(isChallengeCorrect ? 'streak' : 'correct', settings.soundEnabled)
-      if (reward > 0) playSfx('coin', settings.soundEnabled)
-      if (isChallengeCorrect) launchConfetti(20)
-
-      coinsTotalRef.current += reward
-      setCoinsTotal((c) => c + reward)
-      const nextStreak = isFirstTry ? streak + 1 : 0
-      setStreak(nextStreak)
-      if (nextStreak > maxStreakRef.current) {
-        maxStreakRef.current = nextStreak
-        setMaxStreak(nextStreak)
-      }
-
-      attemptsLogRef.current.push({
-        signature: q.signature,
-        level: q.level,
-        isChallenge: q.isChallenge,
-        firstTryCorrect: isFirstTry,
-        finallyCorrect: true,
-        wasMistake,
-        timeMs: elapsedMs,
-        withinLimit: isFirstTry ? withinLimit : false,
-        sourceBlockId: q.sourceBlockId,
-        sourceMixedOpId: q.sourceMixedOpId,
-      })
-
-      if (wasMistake) {
-        void recordCorrect(q.signature, settings.sessionCounter + 1)
-      }
-
-      window.setTimeout(goNext, isChallengeCorrect ? 1100 : 750)
-      return
-    }
-
-    // wrong
-    if (attemptsForCurrent === 0) {
-      setFeedback('retry')
-      setStreak(0)
-      playSfx('retry', settings.soundEnabled)
-      window.setTimeout(() => {
+  // Shared outcome bookkeeping for a settled question (correct, or final-wrong with
+  // no further retry). Updates streak/coins/log/mistakes/feedback and schedules advance.
+  const settleQuestion = useCallback(
+    (
+      q: CalcQuestion,
+      isCorrect: boolean,
+      isFirstTry: boolean,
+      elapsedMs: number,
+      withinLimit: boolean,
+      wasMistake: boolean,
+    ) => {
+      const goNext = () => {
         setFeedback(null)
         setInput('')
-        setAttemptsForCurrent(1)
-      }, 700)
-    } else {
+        setAttemptsForCurrent(0)
+        setLastResult(null)
+        setRevealAnswer(null)
+        if (!questions) return
+        if (idx + 1 < questions.length) {
+          setIdx((i) => i + 1)
+          return
+        }
+        if (wrongQueueRef.current.length > 0) {
+          const drained = wrongQueueRef.current
+          wrongQueueRef.current = []
+          setQuestions((prev) => (prev ? [...prev, ...drained] : prev))
+          setIdx((i) => i + 1)
+          return
+        }
+        void finishSession()
+      }
+
+      if (isCorrect) {
+        const reward = isFirstTry ? coinReward(q, streak) : 0
+        const isChallengeCorrect = q.isChallenge && isFirstTry
+        const bonus = isFirstTry ? (streak >= 10 ? 2 : streak >= 5 ? 1 : 0) : 0
+        if (isFirstTry && reward > 0) setLastResult({ stars: reward, bonus })
+        setFeedback(isChallengeCorrect ? 'challenge-correct' : 'correct')
+        playSfx(isChallengeCorrect ? 'streak' : 'correct', settings.soundEnabled)
+        if (reward > 0) playSfx('coin', settings.soundEnabled)
+        if (isChallengeCorrect) launchConfetti(20)
+        coinsTotalRef.current += reward
+        setCoinsTotal((c) => c + reward)
+        const nextStreak = isFirstTry ? streak + 1 : 0
+        setStreak(nextStreak)
+        if (nextStreak > maxStreakRef.current) {
+          maxStreakRef.current = nextStreak
+          setMaxStreak(nextStreak)
+        }
+        attemptsLogRef.current.push({
+          signature: q.signature,
+          level: q.level,
+          isChallenge: q.isChallenge,
+          firstTryCorrect: isFirstTry,
+          finallyCorrect: true,
+          wasMistake,
+          timeMs: elapsedMs,
+          withinLimit: isFirstTry ? withinLimit : false,
+          sourceBlockId: q.sourceBlockId,
+          sourceMixedOpId: q.sourceMixedOpId,
+        })
+        if (wasMistake) void recordCorrect(q.signature, settings.sessionCounter + 1)
+        window.setTimeout(goNext, isChallengeCorrect ? 1100 : 750)
+        return
+      }
+
+      // final wrong
       setFeedback('wrong')
       setRevealAnswer(q.answer)
       setStreak(0)
       playSfx('wrong', settings.soundEnabled)
       void addMistake(q, settings.sessionCounter + 1)
-
       attemptsLogRef.current.push({
         signature: q.signature,
         level: q.level,
@@ -474,15 +445,53 @@ export default function CalcSessionPage() {
         sourceMixedOpId: q.sourceMixedOpId,
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
-
-      // Collect the wrong question for make-up at the session tail (push a fresh
-      // shallow copy so its identity is distinct from the in-list instance).
-      // Skip for challenge questions (those are one-off) and for mistakes mode (already revisiting).
-      if (!q.isChallenge && mode !== 'mistakes') {
-        wrongQueueRef.current.push({ ...q })
-      }
-
+      if (!q.isChallenge && mode !== 'mistakes') wrongQueueRef.current.push({ ...q })
       window.setTimeout(goNext, 1700)
+    },
+    [
+      questions,
+      idx,
+      streak,
+      mode,
+      settings.soundEnabled,
+      settings.sessionCounter,
+      addMistake,
+      recordCorrect,
+      finishSession,
+    ],
+  )
+
+  const handleSubmit = useCallback(() => {
+    if (!questions || done || feedback) return
+    const q = questions[idx]
+    const userAns = Number(input)
+    if (!Number.isFinite(userAns)) return
+
+    const isCorrect = userAns === q.answer
+    const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+
+    const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+    const limitMs = timeLimitFromSettings(q.level, settings)
+    const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
+    if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
+
+    if (isCorrect) {
+      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake)
+      return
+    }
+
+    // wrong: first miss → retry; second miss → settle as final wrong.
+    if (attemptsForCurrent === 0) {
+      setFeedback('retry')
+      setStreak(0)
+      playSfx('retry', settings.soundEnabled)
+      window.setTimeout(() => {
+        setFeedback(null)
+        setInput('')
+        setAttemptsForCurrent(1)
+      }, 700)
+    } else {
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake)
     }
   }, [
     questions,
@@ -491,14 +500,9 @@ export default function CalcSessionPage() {
     idx,
     input,
     attemptsForCurrent,
-    streak,
-    maxStreak,
     mistakes,
-    mode,
     settings,
-    addMistake,
-    recordCorrect,
-    finishSession,
+    settleQuestion,
   ])
 
   if (settingsLoading || !questions) {
