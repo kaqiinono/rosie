@@ -10,7 +10,7 @@ import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
 import QuickPracticeModal from '@/components/calc/QuickPracticeModal'
 import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
-import { blocksByGroup } from '@/utils/calc-blocks'
+import { blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
 
 interface ToggleRowProps {
   label: string
@@ -83,7 +83,7 @@ export default function CalcSettingsPage() {
     update({ selectedBlocks: [...next] })
   }
 
-  const toggleGroup = (group: 'add' | 'sub' | 'mul' | 'div', on: boolean) => {
+  const toggleGroup = (group: CalcBlock['group'], on: boolean) => {
     const ids = blocksByGroup(group).map((b) => b.id)
     const next = new Set(settings.selectedBlocks)
     if (on) ids.forEach((i) => next.add(i))

@@ -49,7 +49,7 @@ function bucketize(op: MixedOp): BlockBuckets {
     if (b.group === 'add') add.push(b)
     else if (b.group === 'sub') sub.push(b)
     else if (b.group === 'mul') mul.push(b)
-    else div.push(b)
+    else if (b.group === 'div') div.push(b)
   }
   return { add, sub, mul, div, additive: [...add, ...sub], multiplicative: [...mul, ...div] }
 }
