@@ -332,6 +332,16 @@ export type CalcAnswer =
   | { kind: 'remainder'; quotient: number; remainder: number }
   | { kind: 'fraction'; num: number; den: number }
 
+export type ErrorTag =
+  | 'carry_miss'
+  | 'order_confusion'
+  | 'place_value'
+  | 'fraction_concept'
+  | 'comprehension'
+  | 'careless'
+  | 'formula_misuse'
+  | 'estimation_off'
+
 export interface CalcQuestion {
   display: string // "3 + 5 × 2 = ?"
   signature: string // canonical: "add(3,mul(5,2))"
@@ -512,6 +522,10 @@ export interface CalcMistake {
   resolved: boolean
   /** The session number during which this mistake was last recorded (for carry-over make-up). */
   sessionNo?: number
+  /** The child's (final-wrong) answer, for review. */
+  userAnswer?: string
+  /** Deterministic error classification, or null when unrecognized. */
+  errorTag?: ErrorTag | null
 }
 
 // ─────────────────────────────────────────────────────────────────────────
