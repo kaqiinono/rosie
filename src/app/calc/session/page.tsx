@@ -14,11 +14,12 @@ import NumberPad from '@/components/calc/NumberPad'
 import VerticalCalc from '@/components/calc/VerticalCalc'
 import DivisionVertical from '@/components/calc/DivisionVertical'
 import RemainderPad from '@/components/calc/RemainderPad'
+import FractionPad from '@/components/calc/FractionPad'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
-import { checkAnswer, formatAnswer } from '@/utils/calc-answer'
+import { checkAnswer, formatAnswer, isReducibleFraction } from '@/utils/calc-answer'
 import { parseSignature } from '@/utils/calc-ast'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
@@ -97,6 +98,7 @@ export default function CalcSessionPage() {
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
   const [revealAnswer, setRevealAnswer] = useState<string | null>(null)
+  const [reduceHint, setReduceHint] = useState(false)
 
   const [showChallengeBanner, setShowChallengeBanner] = useState(false)
 
@@ -185,6 +187,7 @@ export default function CalcSessionPage() {
   useEffect(() => {
     if (questions && idx < questions.length) {
       questionStartRef.current = performance.now()
+      setReduceHint(false)
     }
   }, [idx, questions])
 
@@ -530,6 +533,25 @@ export default function CalcSessionPage() {
     [questions, done, feedback, idx, mistakes, settings, settleQuestion],
   )
 
+  // Single-attempt grading for fraction questions: FractionPad submits "num/den".
+  // checkAnswer accepts any equivalent fraction; a correct-but-reducible answer
+  // gets a gentle 约分 hint (still counts as correct).
+  const handleFractionSubmit = useCallback(
+    (combined: string) => {
+      if (!questions || done || feedback) return
+      const q = questions[idx]
+      const correct = checkAnswer(combined, q.answer)
+      if (correct && isReducibleFraction(combined)) setReduceHint(true)
+      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+      const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+      const limitMs = timeLimitFromSettings(q.level, settings)
+      const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
+      questionTimesRef.current.push(elapsedMs)
+      settleQuestion(q, correct, true, elapsedMs, withinLimit, wasMistake)
+    },
+    [questions, done, feedback, idx, mistakes, settings, settleQuestion],
+  )
+
   const handleSubmit = useCallback(() => {
     if (!questions || done || feedback) return
     const q = questions[idx]
@@ -712,7 +734,11 @@ export default function CalcSessionPage() {
               }}
             >
               ✓ 答对啦！
-              {lastResult && lastResult.stars > 0 ? `本题 +${lastResult.stars} ⭐` : '（第二次）'}
+              {reduceHint
+                ? '还能再约一约哦～'
+                : lastResult && lastResult.stars > 0
+                  ? `本题 +${lastResult.stars} ⭐`
+                  : '（第二次）'}
             </div>
           )}
           {feedback === 'challenge-correct' && (
@@ -760,7 +786,9 @@ export default function CalcSessionPage() {
           )}
         </div>
 
-        {currentQ.answer.kind === 'remainder' ? (
+        {currentQ.answer.kind === 'fraction' ? (
+          <FractionPad key={idx} disabled={!!feedback || done} onSubmit={handleFractionSubmit} />
+        ) : currentQ.answer.kind === 'remainder' ? (
           <RemainderPad key={idx} disabled={!!feedback || done} onSubmit={handleRemainderSubmit} />
         ) : currentQ.answerMode === 'vertical' ? (
           (() => {
