@@ -1,4 +1,4 @@
-import { BLOCKS, blockById, type CalcBlock } from './calc-blocks'
+import { BLOCKS, blockById, VERTICAL_BLOCK_IDS, type CalcBlock } from './calc-blocks'
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
 import { toInverseQuestion } from './calc-inverse'
@@ -92,13 +92,23 @@ export function buildSession(
     }
   })
 
+  // 4.4 Tag questions from vertical-capable blocks so the session renders a 竖式 layout.
+  if (settings.verticalForBigNumbers) {
+    for (let i = 0; i < out.length; i++) {
+      const q = out[i]
+      if (q.sourceBlockId && VERTICAL_BLOCK_IDS.has(q.sourceBlockId)) {
+        out[i] = { ...q, answerMode: 'vertical' }
+      }
+    }
+  }
+
   // 4.5 Optionally rewrite ~30% of eligible single-op block questions into the
   // inverse blank form (48 + □ = 105). Only block-sourced arity-1 questions are
   // eligible; mixed-op and carried questions are left as-is.
   if (settings.includeInverse) {
     for (let i = 0; i < out.length; i++) {
       const q = out[i]
-      if (q.sourceBlockId && q.arity === 1 && Math.random() < 0.3) {
+      if (q.sourceBlockId && q.arity === 1 && q.answerMode !== 'vertical' && Math.random() < 0.3) {
         const inv = toInverseQuestion(q)
         if (inv) out[i] = inv
       }
