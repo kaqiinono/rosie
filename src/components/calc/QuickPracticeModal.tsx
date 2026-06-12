@@ -9,6 +9,7 @@
 import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
 import { buildSession } from '@/utils/calc-helpers'
+import { REMAINDER_BLOCK_IDS } from '@/utils/calc-blocks'
 import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
 import type { CalcQuestion, CalcSettings } from '@/utils/type'
@@ -49,7 +50,12 @@ export default function QuickPracticeModal({
   const questions = useMemo<CalcQuestion[]>(() => {
     if (propQuestions) return propQuestions
     if (!settings) return []
-    return buildSession(settings, buildCount, { problemStates: new Map() })
+    // The modal only has a NumberPad; remainder needs the商/余 pad, so drop those blocks here.
+    const padSettings = {
+      ...settings,
+      selectedBlocks: settings.selectedBlocks.filter((id) => !REMAINDER_BLOCK_IDS.has(id)),
+    }
+    return buildSession(padSettings, buildCount, { problemStates: new Map() })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
