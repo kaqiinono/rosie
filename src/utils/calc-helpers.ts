@@ -247,3 +247,22 @@ export function categoryLabel(cat: CalcCategory): string {
       return '混合运算'
   }
 }
+
+/**
+ * Pie-eligibility for a fraction question: same-denominator add/sub with a proper
+ * (≤ 1) non-negative answer. Returns the two operand numerators, the shared
+ * denominator, and the op — or null (caller falls back to the FractionPad keypad).
+ * Parses the display so it also works for carried mistakes (no sourceBlockId).
+ */
+export function fractionPieSpec(
+  q: CalcQuestion,
+): { operands: [number, number]; den: number; op: '+' | '−' } | null {
+  if (q.answer.kind !== 'fraction') return null
+  if (q.answer.num < 0 || q.answer.num > q.answer.den) return null
+  const m = q.display.match(/^(\d+)\/(\d+)\s*([+−-])\s*(\d+)\/(\d+)\s*=/)
+  if (!m) return null
+  const d1 = Number(m[2])
+  const d2 = Number(m[5])
+  if (d1 !== d2) return null
+  return { operands: [Number(m[1]), Number(m[4])], den: d1, op: m[3] === '+' ? '+' : '−' }
+}
