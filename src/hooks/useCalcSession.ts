@@ -41,6 +41,8 @@ export interface UseCalcSessionReturn {
   progress: number
   results: QuestionResult[]
   handleSubmit: () => void
+  /** Single-attempt grade for self-locking inputs (e.g. RemainderPad emitting "q…r"). */
+  submitValue: (raw: string) => void
 }
 
 export interface UseCalcSessionOptions {
@@ -160,6 +162,63 @@ export function useCalcSession(
     }
   }, [currentQ, done, feedback, input, attemptsForCurrent, streak, advance, soundEnabled, options])
 
+  // Single-attempt grading for self-locking inputs (e.g. RemainderPad emitting "q…r"),
+  // which can't drive the number-pad `input` and don't participate in the two-try loop.
+  const submitValue = useCallback(
+    (raw: string) => {
+      if (!currentQ || done || feedback || raw.trim() === '') return
+
+      const now = performance.now()
+      if (firstAttemptTimeRef.current === null) firstAttemptTimeRef.current = now
+      const elapsed = Math.round(firstAttemptTimeRef.current - questionStartRef.current)
+      const limit = options?.getTimeLimitMs?.(currentQ)
+      const withinLimit = typeof limit === 'number' && limit > 0 ? elapsed <= limit : true
+
+      if (checkAnswer(raw, currentQ.answer)) {
+        const bonus = streak >= 10 ? 2 : streak >= 5 ? 1 : 0
+        const stars = currentQ.coinBase + bonus
+        setStarsTotal((t) => t + stars)
+        const next = streak + 1
+        setStreak(next)
+        setMaxStreak((m) => Math.max(m, next))
+        setLastResult({ stars, bonus })
+        setResults((prev) => [
+          ...prev,
+          {
+            stars,
+            bonus,
+            firstTry: true,
+            finallyCorrect: true,
+            signature: currentQ.signature,
+            timeMs: elapsed,
+            withinLimit,
+          },
+        ])
+        setFeedback('correct')
+        playSfx('correct', soundEnabled)
+        window.setTimeout(advance, 700)
+      } else {
+        setStreak(0)
+        setResults((prev) => [
+          ...prev,
+          {
+            stars: 0,
+            bonus: 0,
+            firstTry: false,
+            finallyCorrect: false,
+            signature: currentQ.signature,
+            timeMs: elapsed,
+            withinLimit: false,
+          },
+        ])
+        setFeedback('wrong')
+        playSfx('wrong', soundEnabled)
+        window.setTimeout(advance, 1200)
+      }
+    },
+    [currentQ, done, feedback, streak, advance, soundEnabled, options],
+  )
+
   return {
     idx,
     currentQ,
@@ -174,5 +233,6 @@ export function useCalcSession(
     progress,
     results,
     handleSubmit,
+    submitValue,
   }
 }

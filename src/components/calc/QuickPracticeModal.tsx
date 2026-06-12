@@ -8,8 +8,9 @@
 
 import { useEffect, useMemo } from 'react'
 import NumberPad from './NumberPad'
+import RemainderPad from './RemainderPad'
 import { buildSession } from '@/utils/calc-helpers'
-import { REMAINDER_BLOCK_IDS } from '@/utils/calc-blocks'
+import { parseSignature } from '@/utils/calc-ast'
 import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
 import type { CalcQuestion, CalcSettings } from '@/utils/type'
@@ -50,17 +51,12 @@ export default function QuickPracticeModal({
   const questions = useMemo<CalcQuestion[]>(() => {
     if (propQuestions) return propQuestions
     if (!settings) return []
-    // The modal only has a NumberPad; remainder needs the商/余 pad, so drop those blocks here.
-    const padSettings = {
-      ...settings,
-      selectedBlocks: settings.selectedBlocks.filter((id) => !REMAINDER_BLOCK_IDS.has(id)),
-    }
-    return buildSession(padSettings, buildCount, { problemStates: new Map() })
+    return buildSession(settings, buildCount, { problemStates: new Map() })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const session = useCalcSession(questions, soundEnabled)
-  const { idx, currentQ, input, setInput, feedback, streak, starsTotal, lastResult, done, progress, results } = session
+  const { idx, currentQ, input, setInput, feedback, streak, starsTotal, lastResult, done, progress, results, submitValue } = session
 
   const starsLeft = goalStars !== undefined ? Math.max(0, goalStars - starsTotal) : null
 
@@ -319,33 +315,54 @@ export default function QuickPracticeModal({
         )}
       </div>
 
-      {/* ── Input ── */}
-      <div
-        className="mx-auto mb-3 h-14 max-w-[240px] flex items-center justify-center rounded-2xl transition-all duration-200"
-        style={{
-          background: 'rgba(251,191,36,0.06)',
-          border: `1.5px solid ${input ? 'rgba(251,191,36,0.4)' : 'rgba(255,255,255,0.1)'}`,
-          boxShadow: input ? '0 0 14px rgba(251,191,36,0.15)' : 'none',
-        }}
-      >
-        <span
-          className="font-fredoka font-black leading-none tabular-nums"
-          style={{
-            fontSize: 'clamp(24px, 5vw, 32px)',
-            color: input ? '#fde68a' : 'rgba(255,255,255,0.15)',
-          }}
-        >
-          {input || '·'}
-        </span>
-      </div>
+      {/* ── Answer area: RemainderPad for 有余数除法, else number pad ── */}
+      {currentQ && currentQ.answer.kind === 'remainder' ? (
+        (() => {
+          const ast = parseSignature(currentQ.signature)
+          if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
+            return null
+          }
+          return (
+            <RemainderPad
+              key={idx}
+              dividend={ast.left}
+              divisor={ast.right}
+              disabled={!!feedback || done}
+              onSubmit={submitValue}
+            />
+          )
+        })()
+      ) : (
+        <>
+          {/* ── Input ── */}
+          <div
+            className="mx-auto mb-3 h-14 max-w-[240px] flex items-center justify-center rounded-2xl transition-all duration-200"
+            style={{
+              background: 'rgba(251,191,36,0.06)',
+              border: `1.5px solid ${input ? 'rgba(251,191,36,0.4)' : 'rgba(255,255,255,0.1)'}`,
+              boxShadow: input ? '0 0 14px rgba(251,191,36,0.15)' : 'none',
+            }}
+          >
+            <span
+              className="font-fredoka font-black leading-none tabular-nums"
+              style={{
+                fontSize: 'clamp(24px, 5vw, 32px)',
+                color: input ? '#fde68a' : 'rgba(255,255,255,0.15)',
+              }}
+            >
+              {input || '·'}
+            </span>
+          </div>
 
-      {/* ── NumberPad ── */}
-      <NumberPad
-        value={input}
-        onChange={setInput}
-        onSubmit={session.handleSubmit}
-        disabled={!!feedback || done}
-      />
+          {/* ── NumberPad ── */}
+          <NumberPad
+            value={input}
+            onChange={setInput}
+            onSubmit={session.handleSubmit}
+            disabled={!!feedback || done}
+          />
+        </>
+      )}
 
       <button
         type="button"
