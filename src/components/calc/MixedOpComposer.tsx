@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { SKELETONS, skeletonMeta, isMixedOpValid } from '@/utils/calc-mixed'
-import { blocksByGroup, blockById, BLOCK_GROUPS, type CalcBlock } from '@/utils/calc-blocks'
+import { blocksByGroup, blockById, BLOCK_GROUPS } from '@/utils/calc-blocks'
 import type { MixedOp, CalcSkeletonId } from '@/utils/type'
 
 interface Props {
@@ -22,7 +22,7 @@ const EXAMPLE: Record<CalcSkeletonId, string> = {
   asmd_paren: '(2 + 4) × 3 ÷ 2',
 }
 
-const GROUP_ICONS: Record<CalcBlock['group'], string> = {
+const GROUP_ICONS: { add: string; sub: string; mul: string; div: string } = {
   add: '➕',
   sub: '➖',
   mul: '✖️',
@@ -30,8 +30,10 @@ const GROUP_ICONS: Record<CalcBlock['group'], string> = {
 }
 
 /** needs ('add'|'sub'|'mul'|'div') → 要展示的积木分组（去重，保持 BLOCK_GROUPS 顺序） */
-function groupsForNeeds(needs: ('add' | 'sub' | 'mul' | 'div')[]): CalcBlock['group'][] {
-  return BLOCK_GROUPS.map((g) => g.group).filter((g) => needs.includes(g))
+function groupsForNeeds(needs: ('add' | 'sub' | 'mul' | 'div')[]): ('add' | 'sub' | 'mul' | 'div')[] {
+  return BLOCK_GROUPS.map((g) => g.group).filter(
+    (g): g is 'add' | 'sub' | 'mul' | 'div' => needs.includes(g as 'add' | 'sub' | 'mul' | 'div'),
+  )
 }
 
 export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
@@ -61,9 +63,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
 
   const buildLabel = (): string => {
     if (!meta) return ''
-    const blockLabels = blockIds
-      .map((id) => blockById(id)?.label)
-      .filter((l): l is string => !!l)
+    const blockLabels = blockIds.map((id) => blockById(id)?.label).filter((l): l is string => !!l)
     if (blockLabels.length === 0) return meta.label
     return `${meta.label} · ${blockLabels.join('+')}`
   }
@@ -81,12 +81,12 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(14px)' }}
       onClick={onClose}
     >
       <div
-        className="flex w-full sm:max-w-[480px] max-h-[88vh] flex-col rounded-t-3xl sm:rounded-3xl"
+        className="flex max-h-[88vh] w-full flex-col rounded-t-3xl sm:max-w-[480px] sm:rounded-3xl"
         style={{
           background: 'rgba(10,9,30,0.98)',
           border: '1px solid rgba(139,92,246,0.25)',
@@ -105,7 +105,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
         <div className="flex shrink-0 items-center gap-2 px-5 pt-3 pb-2 sm:pt-5">
           <span className="text-[18px]">🧩</span>
           <div
-            className="font-fredoka text-[17px] font-black leading-tight"
+            className="font-fredoka text-[17px] leading-tight font-black"
             style={{
               background: 'linear-gradient(90deg, #c4b5fd, #f9a8d4)',
               WebkitBackgroundClip: 'text',
@@ -139,7 +139,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
               1
             </span>
             <span
-              className="text-[10px] font-extrabold uppercase tracking-wider"
+              className="text-[10px] font-extrabold tracking-wider uppercase"
               style={{ color: 'rgba(196,181,253,0.5)' }}
             >
               选一个骨架
@@ -162,13 +162,13 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
                   }}
                 >
                   <div
-                    className="text-[12px] font-extrabold leading-tight"
+                    className="text-[12px] leading-tight font-extrabold"
                     style={{ color: on ? '#e9d5ff' : 'rgba(245,243,255,0.6)' }}
                   >
                     {s.label}
                   </div>
                   <div
-                    className="mt-1 font-fredoka text-[14px] font-black tabular-nums leading-none"
+                    className="font-fredoka mt-1 text-[14px] leading-none font-black tabular-nums"
                     style={{ color: on ? '#fbbf24' : 'rgba(245,243,255,0.3)' }}
                   >
                     {EXAMPLE[s.id]}
@@ -189,7 +189,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
                   2
                 </span>
                 <span
-                  className="text-[10px] font-extrabold uppercase tracking-wider"
+                  className="text-[10px] font-extrabold tracking-wider uppercase"
                   style={{ color: 'rgba(196,181,253,0.5)' }}
                 >
                   挑选积木（每种至少一个）
@@ -203,10 +203,12 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
                   return (
                     <div key={group}>
                       <div
-                        className="mb-1.5 flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider"
+                        className="mb-1.5 flex items-center gap-1.5 text-[10px] font-extrabold tracking-wider uppercase"
                         style={{ color: 'rgba(196,181,253,0.45)' }}
                       >
-                        <span aria-hidden className="text-[12px] leading-none">{GROUP_ICONS[group]}</span>
+                        <span aria-hidden className="text-[12px] leading-none">
+                          {GROUP_ICONS[group]}
+                        </span>
                         {groupLabel}
                       </div>
                       <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
@@ -218,7 +220,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
                               type="button"
                               onClick={() => toggleBlock(b.id)}
                               aria-pressed={on}
-                              className="rounded-lg px-2.5 py-2.5 text-left text-[11px] font-extrabold leading-tight transition-all active:scale-95"
+                              className="rounded-lg px-2.5 py-2.5 text-left text-[11px] leading-tight font-extrabold transition-all active:scale-95"
                               style={{
                                 background: on ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
                                 border: `1px solid ${on ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
@@ -239,7 +241,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 px-5 pb-5 pt-2 sm:pb-5">
+        <div className="shrink-0 px-5 pt-2 pb-5 sm:pb-5">
           {!valid && skeleton && (
             <div
               className="mb-2 rounded-xl px-3 py-2 text-center text-[12px] font-extrabold"
