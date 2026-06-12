@@ -8,6 +8,9 @@ export interface CalcBlock {
   op: CalcOp
   label: string
   group: 'add' | 'sub' | 'mul' | 'div'
+  /** When true, buildSession never reconstructs this block's facts from a signature
+   *  (their answers don't round-trip through the integer AST, e.g. remainder). */
+  noResurface?: boolean
   generateSingle(): CalcQuestion
   sampleTerm(): { ast: AstNode; value: number }
 }

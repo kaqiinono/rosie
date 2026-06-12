@@ -183,7 +183,7 @@ function generateBlock(block: CalcBlock, n: number, states: CalcProblemState[]):
   const coinBase = category === 'addsub' ? 1 : 2
   const out: CalcQuestion[] = []
 
-  const resurfaceN = Math.round(0.35 * n)
+  const resurfaceN = block.noResurface ? 0 : Math.round(0.35 * n)
   const weak = states
     .filter((s) => s.blockId === block.id && s.status !== 'mastered')
     .sort((a, b) => a.proficiency - b.proficiency || b.consecutiveWrong - a.consecutiveWrong)
