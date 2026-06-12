@@ -13,6 +13,7 @@ import QuestionDisplay from '@/components/calc/QuestionDisplay'
 import NumberPad from '@/components/calc/NumberPad'
 import VerticalCalc from '@/components/calc/VerticalCalc'
 import DivisionVertical from '@/components/calc/DivisionVertical'
+import RemainderPad from '@/components/calc/RemainderPad'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
@@ -481,6 +482,22 @@ export default function CalcSessionPage() {
     [questions, done, feedback, idx, mistakes, settings, settleQuestion],
   )
 
+  // Single-attempt grading for remainder (有余数) questions: RemainderPad collects
+  // 商/余 and submits a "q…r" string, graded by checkAnswer.
+  const handleRemainderSubmit = useCallback(
+    (combined: string) => {
+      if (!questions || done || feedback) return
+      const q = questions[idx]
+      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+      const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+      const limitMs = timeLimitFromSettings(q.level, settings)
+      const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
+      questionTimesRef.current.push(elapsedMs)
+      settleQuestion(q, checkAnswer(combined, q.answer), true, elapsedMs, withinLimit, wasMistake)
+    },
+    [questions, done, feedback, idx, mistakes, settings, settleQuestion],
+  )
+
   const handleSubmit = useCallback(() => {
     if (!questions || done || feedback) return
     const q = questions[idx]
@@ -711,7 +728,23 @@ export default function CalcSessionPage() {
           )}
         </div>
 
-        {currentQ.answerMode === 'vertical' ? (
+        {currentQ.answer.kind === 'remainder' ? (
+          (() => {
+            const ast = parseSignature(currentQ.signature)
+            if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
+              return null
+            }
+            return (
+              <RemainderPad
+                key={idx}
+                dividend={ast.left}
+                divisor={ast.right}
+                disabled={!!feedback || done}
+                onSubmit={handleRemainderSubmit}
+              />
+            )
+          })()
+        ) : currentQ.answerMode === 'vertical' ? (
           (() => {
             const ast = parseSignature(currentQ.signature)
             if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
