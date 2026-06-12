@@ -2,7 +2,7 @@ import {
   AstNode, CalcOp, makeQuestion, OP_SYMBOL, randInt, pickOne,
 } from './calc-ast'
 import type { CalcCategory, CalcQuestion } from './type'
-import { decimalAnswer, remainderAnswer } from './calc-answer'
+import { decimalAnswer, fractionAnswer, remainderAnswer } from './calc-answer'
 
 export interface CalcBlock {
   id: string
@@ -115,6 +115,41 @@ function decimalBlock(
         arity: 1,
         level: 0,
         answer: decimalAnswer(value, places),
+        isChallenge: false,
+        category,
+        coinBase: 2,
+      }
+    },
+    sampleTerm() {
+      const a = randInt(2, 9)
+      return { ast: a, value: a }
+    },
+  }
+}
+
+type Frac = { num: number; den: number }
+
+function fractionBlock(
+  id: string,
+  label: string,
+  gen: () => { left: Frac; right: Frac | number; op: CalcOp; value: Frac },
+): CalcBlock {
+  const fmt = (x: Frac | number): string => (typeof x === 'number' ? String(x) : `${x.num}/${x.den}`)
+  return {
+    id,
+    op: 'add',
+    label,
+    group: 'fraction',
+    noResurface: true,
+    generateSingle(): CalcQuestion {
+      const { left, right, op, value } = gen()
+      const category: CalcCategory = op === 'add' || op === 'sub' ? 'addsub' : 'muldiv'
+      return {
+        display: `${fmt(left)} ${OP_SYMBOL[op]} ${fmt(right)} = ?`,
+        signature: `frac:${op}(${fmt(left)},${fmt(right)})`,
+        arity: 1,
+        level: 0,
+        answer: fractionAnswer(value.num, value.den),
         isChallenge: false,
         category,
         coinBase: 2,
@@ -244,6 +279,58 @@ export const BLOCKS: CalcBlock[] = [
     const q = randInt(1, 8) * 10 + randInt(1, 9)
     const d = randInt(2, 9)
     return { left: (q * d) / 10, right: d, op: 'div', value: q / 10, places: 1 }
+  }),
+  fractionBlock('frac:add-same', '同分母加减', () => {
+    const den = randInt(3, 9)
+    if (Math.random() < 0.5) {
+      const a = randInt(1, den - 1)
+      const b = randInt(1, den - 1)
+      return { left: { num: a, den }, right: { num: b, den }, op: 'add', value: { num: a + b, den } }
+    }
+    const a = randInt(2, den - 1)
+    const b = randInt(1, a - 1)
+    return { left: { num: a, den }, right: { num: b, den }, op: 'sub', value: { num: a - b, den } }
+  }),
+  fractionBlock('frac:add-diff', '异分母加减', () => {
+    for (let t = 0; t < 12; t++) {
+      const d1 = randInt(2, 6)
+      const d2 = pickOne([2, 3, 4, 5, 6].filter((x) => x !== d1))
+      const a = randInt(1, d1 - 1)
+      const b = randInt(1, d2 - 1)
+      const isAdd = Math.random() < 0.5
+      let L = { num: a, den: d1 }
+      let R = { num: b, den: d2 }
+      if (!isAdd && L.num * R.den < R.num * L.den) [L, R] = [R, L]
+      const num = isAdd ? L.num * R.den + R.num * L.den : L.num * R.den - R.num * L.den
+      if (num > 0) return { left: L, right: R, op: isAdd ? 'add' : 'sub', value: { num, den: L.den * R.den } }
+    }
+    return { left: { num: 1, den: 2 }, right: { num: 1, den: 3 }, op: 'add', value: { num: 5, den: 6 } }
+  }),
+  fractionBlock('frac:mul-int', '分数×整数', () => {
+    const den = randInt(2, 9)
+    const a = randInt(1, den - 1)
+    const k = randInt(2, 9)
+    return { left: { num: a, den }, right: k, op: 'mul', value: { num: a * k, den } }
+  }),
+  fractionBlock('frac:mul-frac', '分数×分数', () => {
+    const d1 = randInt(2, 6)
+    const d2 = randInt(2, 6)
+    const a = randInt(1, d1 - 1)
+    const b = randInt(1, d2 - 1)
+    return { left: { num: a, den: d1 }, right: { num: b, den: d2 }, op: 'mul', value: { num: a * b, den: d1 * d2 } }
+  }),
+  fractionBlock('frac:div-int', '分数÷整数', () => {
+    const den = randInt(2, 9)
+    const a = randInt(1, den - 1)
+    const k = randInt(2, 9)
+    return { left: { num: a, den }, right: k, op: 'div', value: { num: a, den: den * k } }
+  }),
+  fractionBlock('frac:div-frac', '分数÷分数', () => {
+    const d1 = randInt(2, 6)
+    const d2 = randInt(2, 6)
+    const a = randInt(1, d1 - 1)
+    const b = randInt(1, d2 - 1)
+    return { left: { num: a, den: d1 }, right: { num: b, den: d2 }, op: 'div', value: { num: a * d2, den: d1 * b } }
   }),
 ]
 
