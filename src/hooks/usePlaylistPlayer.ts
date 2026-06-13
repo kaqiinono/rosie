@@ -54,7 +54,12 @@ export function usePlaylistPlayer(): PlaylistPlayer {
   const loopsDoneRef = useRef(0)
 
   const queueRef = useRef<PlayerTrack[]>([])
-  queueRef.current = queue
+  // Keep a synchronous mirror of `queue` for callbacks. Updated alongside every
+  // setQueue in the callbacks below; this effect is a render-safe backstop
+  // (writing refs during render is disallowed by the react-hooks rule).
+  useEffect(() => {
+    queueRef.current = queue
+  }, [queue])
 
   const playAt = useCallback((tracks: PlayerTrack[], i: number) => {
     const el = audioRef.current

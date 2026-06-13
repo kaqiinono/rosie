@@ -26,6 +26,7 @@ import { PROBLEMS as P41 } from '@/utils/lesson41-data'
 import { PROBLEMS as P42 } from '@/utils/lesson42-data'
 import { PROBLEMS as P43 } from '@/utils/lesson43-data'
 import { PROBLEMS as P44 } from '@/utils/lesson44-data'
+import { PROBLEMS as P45 } from '@/utils/lesson45-data'
 import type { Problem, ProblemSet } from '@/utils/type'
 import type { QuizPaper, QuizAnswerRecord } from '@/hooks/useMathQuiz'
 
@@ -33,7 +34,7 @@ import type { QuizPaper, QuizAnswerRecord } from '@/hooks/useMathQuiz'
 
 const LESSON_DATA: Record<string, ProblemSet> = {
   '12': P12, '13': P13, '15': P15, '18': P18, '23': P23, '29': P29, '30': P30,
-  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
+  '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44, '45': P45,
 }
 
 const LESSON_NAMES: Record<string, string> = {
@@ -41,7 +42,7 @@ const LESSON_NAMES: Record<string, string> = {
   '18': '和差倍初步', '23': '逻辑推理', '29': '算符大作战', '30': '和差倍进阶',
   '34': '乘法分配律', '35': '归一问题', '36': '星期几问题',
   '37': '鸡兔同笼', '38': '一笔画', '39': '盈亏问题',
-  '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识', '44': '统筹优化',
+  '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识', '44': '统筹优化', '45': '火柴棒变身',
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'

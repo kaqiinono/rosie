@@ -11,6 +11,15 @@ import type { CourseCardData } from '@/utils/type'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/45',
+    title: '火柴棒变身探险',
+    description: '移一移、加一加，让火柴棒搭出的算式、图形和数字大变身。',
+    icon: '🔥',
+    lectureNum: '第 45 讲',
+    tags: ['火柴棒', '移棒·加棒·计数', '5 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/44',
     title: '统筹优化探险',
     description: '合理安排时间、减少等候、过河过桥、烙饼刷漆与最短路径 —— 生活中的统筹问题。',

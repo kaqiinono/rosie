@@ -19,6 +19,7 @@ import { PROBLEMS as PROBLEMS41 } from '@/utils/lesson41-data'
 import { PROBLEMS as PROBLEMS42 } from '@/utils/lesson42-data'
 import { PROBLEMS as PROBLEMS43 } from '@/utils/lesson43-data'
 import { PROBLEMS as PROBLEMS44 } from '@/utils/lesson44-data'
+import { PROBLEMS as PROBLEMS45 } from '@/utils/lesson45-data'
 import type { ProblemSet } from '@/utils/type'
 import Link from 'next/link'
 
@@ -41,6 +42,7 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
   '42': PROBLEMS42,
   '43': PROBLEMS43,
   '44': PROBLEMS44,
+  '45': PROBLEMS45,
 }
 
 export default function MathDailyPage() {
