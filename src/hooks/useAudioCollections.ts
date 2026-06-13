@@ -63,6 +63,10 @@ export function useAudioCollections(user: User | null) {
     if (!user) return
     const existing = userPlaylists.find((p) => p.isFavorite)
     if (existing) {
+      // Mirror the server-derived favorites id into state. React bails out when
+      // the value is unchanged, so this does not cascade; the create branch below
+      // needs the effect, so deriving-in-render isn't an option here.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFavoriteId(existing.id)
       creatingFavoriteRef.current = false
       return

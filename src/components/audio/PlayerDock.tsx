@@ -1,5 +1,13 @@
 'use client'
 
+/* eslint-disable react-hooks/refs --
+ * The `player` prop is the return of `usePlaylistPlayer`, which intentionally
+ * bundles the media-element ref (`audioRef`) together with playback state and
+ * callbacks. Because the object carries a RefObject, the react-hooks/refs rule
+ * taints every `player.*` read in render (even `player.queue`, `player.stop`)
+ * as a "ref access during render". `audioRef` is only ever bound via `ref={}`
+ * here (its `.current` is never read in render), so this is a false positive. */
+
 import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
