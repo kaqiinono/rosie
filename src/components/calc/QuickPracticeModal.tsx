@@ -7,11 +7,8 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import NumberPad from './NumberPad'
-import RemainderPad from './RemainderPad'
-import FractionPad from './FractionPad'
-import FractionPie from './FractionPie'
-import { buildSession, fractionPieSpec } from '@/utils/calc-helpers'
+import CalcAnswerInput from './CalcAnswerInput'
+import { buildSession } from '@/utils/calc-helpers'
 import { formatAnswer } from '@/utils/calc-answer'
 import { useCalcSession } from '@/hooks/useCalcSession'
 import type { CalcQuestion, CalcSettings } from '@/utils/type'
@@ -73,6 +70,14 @@ export default function QuickPracticeModal({
   } = session
 
   const starsLeft = goalStars !== undefined ? Math.max(0, goalStars - starsTotal) : null
+
+  // Vertical (竖式) questions self-check inside the component; map the boolean
+  // result onto the single-shot grader (correct → submit the answer, wrong → a
+  // sentinel that fails checkAnswer for every answer kind).
+  const submitVertical = (isCorrect: boolean) => {
+    if (!currentQ) return
+    submitValue(isCorrect ? formatAnswer(currentQ.answer) : '✗')
+  }
 
   // ── Done screen ───────────────────────────────────────────────────────
   if (done) {
@@ -354,56 +359,20 @@ export default function QuickPracticeModal({
         )}
       </div>
 
-      {/* ── Answer area: RemainderPad for 有余数除法, else number pad ── */}
-      {currentQ && currentQ.answer.kind === 'fraction' ? (
-        (() => {
-          const spec = fractionPieSpec(currentQ)
-          return spec ? (
-            <FractionPie
-              key={`fpie-${idx}`}
-              operands={spec.operands}
-              den={spec.den}
-              op={spec.op}
-              disabled={!!feedback || done}
-              onSubmit={(n) => submitValue(`${n}/${spec.den}`)}
-            />
-          ) : (
-            <FractionPad key={`frac-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
-          )
-        })()
-      ) : currentQ && currentQ.answer.kind === 'remainder' ? (
-        <RemainderPad key={`rem-${idx}`} disabled={!!feedback || done} onSubmit={submitValue} />
-      ) : (
-        <>
-          {/* ── Input ── */}
-          <div
-            className="mx-auto mb-3 flex h-14 max-w-[240px] items-center justify-center rounded-2xl transition-all duration-200"
-            style={{
-              background: 'rgba(251,191,36,0.06)',
-              border: `1.5px solid ${input ? 'rgba(251,191,36,0.4)' : 'rgba(255,255,255,0.1)'}`,
-              boxShadow: input ? '0 0 14px rgba(251,191,36,0.15)' : 'none',
-            }}
-          >
-            <span
-              className="font-fredoka leading-none font-black tabular-nums"
-              style={{
-                fontSize: 'clamp(24px, 5vw, 32px)',
-                color: input ? '#fde68a' : 'rgba(255,255,255,0.15)',
-              }}
-            >
-              {input || '·'}
-            </span>
-          </div>
-
-          {/* ── NumberPad ── */}
-          <NumberPad
-            value={input}
-            onChange={setInput}
-            onSubmit={session.handleSubmit}
-            disabled={!!feedback || done}
-            allowDecimal={currentQ?.answer.kind === 'decimal'}
-          />
-        </>
+      {/* ── Answer area (shared with the real session via CalcAnswerInput) ── */}
+      {currentQ && (
+        <CalcAnswerInput
+          key={idx}
+          question={currentQ}
+          disabled={!!feedback || done}
+          variant="compact"
+          input={input}
+          onInputChange={setInput}
+          onNumberSubmit={session.handleSubmit}
+          onFractionSubmit={submitValue}
+          onRemainderSubmit={submitValue}
+          onVerticalSubmit={submitVertical}
+        />
       )}
 
       <button

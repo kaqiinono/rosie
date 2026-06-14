@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
@@ -10,6 +11,7 @@ import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
 import QuickPracticeModal from '@/components/calc/QuickPracticeModal'
 import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
+import { playSfx } from '@/components/calc/audio'
 import { blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
 
 interface ToggleRowProps {
@@ -72,9 +74,30 @@ function SectionHeading({ children, suffix }: SectionHeadingProps) {
 
 export default function CalcSettingsPage() {
   const { user } = useAuth()
-  const { settings, update, isLoading } = useCalcSettings(user)
+  const router = useRouter()
+  const { settings, update, setSettings, isLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const [practiceOpen, setPracticeOpen] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  // Settings already persist on every `update()`; this button is an explicit
+  // "save now" affordance that re-upserts the current snapshot and confirms.
+  const handleSave = async () => {
+    await setSettings(settings)
+    setSaved(true)
+    window.setTimeout(() => setSaved(false), 1800)
+  }
+
+  // Mirror /calc 「开始口算」: jump straight into a real, persisted session.
+  const handleStart = () => {
+    playSfx('coin', settings.soundEnabled)
+    const params = new URLSearchParams({
+      count: String(settings.lastCount),
+      time: String(settings.lastTimeLimit),
+      mode: 'daily',
+    })
+    router.push(`/calc/session?${params.toString()}`)
+  }
 
   const toggleBlock = (id: string) => {
     const next = new Set(settings.selectedBlocks)
@@ -208,23 +231,52 @@ export default function CalcSettingsPage() {
           onChange={(next) => update({ timeLimitOverrides: next })}
         />
 
-        {/* Try-out button */}
-        <button
-          type="button"
-          onClick={() => setPracticeOpen(true)}
-          className="w-full rounded-2xl px-5 py-3.5 text-[15px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
-          style={{
-            background: 'linear-gradient(135deg, #7c3aed, #db2777)',
-            boxShadow: '0 6px 24px rgba(139,92,246,0.3)',
-          }}
-        >
-          ✨ 用当前设置练一练！
-        </button>
+        {/* Actions */}
+        <div className="space-y-2.5">
+          <button
+            type="button"
+            onClick={handleStart}
+            className="w-full rounded-2xl px-5 py-4 text-[17px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
+              boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
+            }}
+          >
+            🚀 开始练习 →
+          </button>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={() => setPracticeOpen(true)}
+              className="rounded-2xl px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
+              style={{
+                background: 'rgba(139,92,246,0.12)',
+                border: '1px solid rgba(139,92,246,0.3)',
+                color: '#c4b5fd',
+              }}
+            >
+              ✨ 预览
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="rounded-2xl px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
+              style={{
+                background: saved ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
+                color: saved ? '#4ade80' : 'rgba(245,243,255,0.7)',
+              }}
+            >
+              {saved ? '已保存 ✓' : '💾 保存设置'}
+            </button>
+          </div>
+        </div>
       </main>
 
       {practiceOpen && (
         <QuickPracticeModal
-          title="试试当前设置"
+          title="预览当前设置"
           subtitle={practiceSubtitle}
           settings={settings}
           buildCount={settings.lastCount}

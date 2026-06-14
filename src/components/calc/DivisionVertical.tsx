@@ -5,229 +5,231 @@ import { useCallback, useMemo, useState } from 'react'
 type DivisionVerticalProps = {
   dividend: number
   divisor: number
-  onSubmit: (result: {
-    correct: boolean
-    quotient: number[]
-    remainder: number
-  }) => void
+  onSubmit: (result: { correct: boolean; quotient: number[]; remainder: number }) => void
   disabled?: boolean
 }
 
-interface Round {
-  trial: number // 试商
-  product: number // trial × divisor
-  remainder: number // 当前轮余数
-  bringDown: number // 下移数字
+interface Step {
+  col: number // dividend digit column this quotient digit sits over
+  q: number // quotient digit
+  product: number // q × divisor
+  minuend: number // partial dividend before subtracting
+  diff: number // remainder after subtracting
 }
 
-function computeRounds(dividend: number, divisor: number): Round[] {
+/** Full long-division breakdown, tracking the column each quotient digit sits over. */
+function longDivision(dividend: number, divisor: number) {
   const digits = String(dividend).split('').map(Number)
-  const rounds: Round[] = []
+  const n = digits.length
+  const quotient: (number | null)[] = new Array(n).fill(null)
+  const steps: Step[] = []
   let current = 0
-
-  for (let i = 0; i < digits.length; i++) {
+  let started = false
+  for (let i = 0; i < n; i++) {
     current = current * 10 + digits[i]
-    if (current >= divisor || i === digits.length - 1 || rounds.length > 0) {
-      const trial = Math.floor(current / divisor)
-      const product = trial * divisor
-      const remainder = current - product
-      rounds.push({
-        trial,
-        product,
-        remainder,
-        bringDown: i < digits.length - 1 ? digits[i + 1] : -1,
-      })
-      current = remainder
+    if (current >= divisor || started) {
+      started = true
+      const q = Math.floor(current / divisor)
+      const product = q * divisor
+      const diff = current - product
+      quotient[i] = q
+      steps.push({ col: i, q, product, minuend: current, diff })
+      current = diff
     }
   }
-
-  return rounds
+  return { digits, n, quotient, steps, remainder: current }
 }
 
-function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: DivisionVerticalProps) {
-  const rounds = useMemo(() => computeRounds(dividend, divisor), [dividend, divisor])
-  const correctQuotient = rounds.map((r) => r.trial)
-  const finalRemainder = rounds[rounds.length - 1]?.remainder ?? 0
+/** Place a number's digits right-aligned so its last digit lands in column `endCol`. */
+function placeDigits(value: number, endCol: number, n: number): (string | null)[] {
+  const s = String(value)
+  const cells: (string | null)[] = new Array(n).fill(null)
+  for (let k = 0; k < s.length; k++) {
+    const col = endCol - (s.length - 1 - k)
+    if (col >= 0 && col < n) cells[col] = s[k]
+  }
+  return cells
+}
 
-  const [quotientInputs, setQuotientInputs] = useState<(number | null)[]>(() =>
-    Array(rounds.length).fill(null),
+type WorkRow =
+  | { kind: 'digits'; cells: (string | null)[] }
+  | { kind: 'line'; from: number; to: number }
+
+const BORDER = 'rgba(196,181,253,0.55)'
+const CELL = 'flex h-12 w-12 items-center justify-center text-2xl font-black'
+
+function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: DivisionVerticalProps) {
+  const { digits, n, quotient, steps, remainder } = useMemo(
+    () => longDivision(dividend, divisor),
+    [dividend, divisor],
   )
+  const quotientCols = useMemo(
+    () => quotient.map((q, i) => (q !== null ? i : -1)).filter((i) => i >= 0),
+    [quotient],
+  )
+
+  const [userQuotient, setUserQuotient] = useState<(number | null)[]>(() => new Array(n).fill(null))
   const [activeIdx, setActiveIdx] = useState(0)
   const [checked, setChecked] = useState(false)
+
+  const activeCol = quotientCols[activeIdx]
 
   const handleDigit = useCallback(
     (d: number) => {
       if (disabled || checked) return
-      setQuotientInputs((prev) => {
+      setUserQuotient((prev) => {
         const next = [...prev]
-        next[activeIdx] = d
+        next[activeCol] = d
         return next
       })
-      if (activeIdx < rounds.length - 1) {
-        setActiveIdx(activeIdx + 1)
-      }
+      if (activeIdx < quotientCols.length - 1) setActiveIdx(activeIdx + 1)
     },
-    [activeIdx, disabled, checked, rounds.length],
+    [disabled, checked, activeCol, activeIdx, quotientCols.length],
   )
 
   const handleDelete = useCallback(() => {
     if (disabled || checked) return
-    setQuotientInputs((prev) => {
+    setUserQuotient((prev) => {
       const next = [...prev]
-      next[activeIdx] = null
+      next[activeCol] = null
       return next
     })
     if (activeIdx > 0) setActiveIdx(activeIdx - 1)
-  }, [activeIdx, disabled, checked])
-
-  const handleAdjust = useCallback(
-    (delta: number) => {
-      if (disabled || checked) return
-      setQuotientInputs((prev) => {
-        const next = [...prev]
-        const cur = next[activeIdx] ?? 0
-        const adjusted = Math.max(0, Math.min(9, cur + delta))
-        next[activeIdx] = adjusted
-        return next
-      })
-    },
-    [activeIdx, disabled, checked],
-  )
+  }, [disabled, checked, activeCol, activeIdx])
 
   const handleCheck = useCallback(() => {
     if (checked) return
     setChecked(true)
-    const userQuotient = quotientInputs.map((v) => v ?? 0)
-    const allCorrect = userQuotient.every((v, i) => v === correctQuotient[i])
+    const allCorrect = quotientCols.every((c) => userQuotient[c] === quotient[c])
     onSubmit({
       correct: allCorrect,
-      quotient: userQuotient,
-      remainder: finalRemainder,
+      quotient: quotientCols.map((c) => userQuotient[c] ?? 0),
+      remainder,
     })
-  }, [checked, quotientInputs, correctQuotient, finalRemainder, onSubmit])
+  }, [checked, quotientCols, userQuotient, quotient, remainder, onSubmit])
 
-  const dividendStr = String(dividend)
+  const canAdvance = activeIdx < quotientCols.length - 1
+  const handleAction = useCallback(() => {
+    if (canAdvance) setActiveIdx(activeIdx + 1)
+    else handleCheck()
+  }, [canAdvance, activeIdx, handleCheck])
+
+  // Subtraction work, column-aligned (product → underline → bring-down minuend → … → remainder).
+  const workRows = useMemo<WorkRow[]>(() => {
+    const rows: WorkRow[] = []
+    steps.forEach((s, k) => {
+      rows.push({ kind: 'digits', cells: placeDigits(s.product, s.col, n) })
+      rows.push({ kind: 'line', from: s.col - String(s.product).length + 1, to: s.col })
+      if (k < steps.length - 1) {
+        rows.push({ kind: 'digits', cells: placeDigits(steps[k + 1].minuend, steps[k + 1].col, n) })
+      } else {
+        rows.push({ kind: 'digits', cells: placeDigits(s.diff, s.col, n) })
+      }
+    })
+    return rows
+  }, [steps, n])
 
   return (
     <div className="flex flex-col items-center gap-4">
+      {/* 厂字形 long division */}
       <div
-        className="rounded-2xl p-4 w-full"
-        style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }}
+        className="rounded-2xl p-4"
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
-        {/* Quotient row */}
-        <div className="mb-1 flex justify-center gap-1">
-          {quotientInputs.map((val, i) => {
-            const correctVal = correctQuotient[i]
-            const showCorrect = checked && val === correctVal
-            const isActive = !checked && activeIdx === i
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => !checked && !disabled && setActiveIdx(i)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 text-lg font-black transition-all select-none active:scale-[0.93]"
-                style={{
-                  borderColor: isActive
-                    ? 'rgba(139,92,246,0.5)'
-                    : checked
-                      ? (showCorrect ? 'rgba(74,222,128,0.5)' : 'rgba(248,113,113,0.5)')
-                      : 'rgba(255,255,255,0.08)',
-                  background: isActive
-                    ? 'rgba(139,92,246,0.2)'
-                    : checked
-                      ? (showCorrect ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)')
-                      : 'rgba(255,255,255,0.05)',
-                  color: isActive
-                    ? '#c4b5fd'
-                    : checked
-                      ? (showCorrect ? '#4ade80' : '#f87171')
-                      : '#f5f3ff',
-                }}
-              >
-                {val !== null ? val : ''}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Divider line */}
-        <div className="mx-auto mb-2 h-0.5 w-[calc(100%-2rem)]" style={{ background: 'rgba(196,181,253,0.25)' }} />
-
-        {/* Divisor | Dividend */}
-        <div className="flex items-center justify-center gap-2">
-          <div
-            className="rounded-xl px-3 py-2 text-xl font-black"
-            style={{ background: 'rgba(255,255,255,0.05)', color: '#e9d5ff' }}
-          >
-            {divisor}
+        <div className="flex items-start">
+          {/* 除数 — pushed down to line up with the 被除数 row */}
+          <div className="flex flex-col">
+            <div style={{ height: 54 }} />
+            <div className="flex h-12 items-center pr-2.5 text-2xl font-black" style={{ color: '#e9d5ff' }}>
+              {divisor}
+            </div>
           </div>
-          <div className="text-2xl" style={{ color: 'rgba(196,181,253,0.4)' }}>⟍</div>
-          <div className="flex gap-1">
-            {dividendStr.split('').map((d, i) => (
-              <div
-                key={i}
-                className="flex h-10 w-10 items-center justify-center text-xl font-black"
-                style={{ color: '#f5f3ff' }}
-              >
-                {d}
+
+          {/* 商 (top) + 厂 bracket over 被除数 + work */}
+          <div className="flex flex-col">
+            {/* 商 */}
+            <div className="flex pl-2">
+              {Array.from({ length: n }, (_, c) => {
+                if (quotient[c] === null) return <div key={`q${c}`} className="h-12 w-12" />
+                const idx = quotientCols.indexOf(c)
+                const isActive = !checked && idx === activeIdx
+                const val = userQuotient[c]
+                const ok = checked && val === quotient[c]
+                return (
+                  <button
+                    key={`q${c}`}
+                    type="button"
+                    onClick={() => !disabled && !checked && setActiveIdx(idx)}
+                    className={`${CELL} rounded-lg border-2 transition-all select-none active:scale-[0.93]`}
+                    style={{
+                      borderColor: isActive
+                        ? 'rgba(139,92,246,0.6)'
+                        : checked
+                          ? ok ? 'rgba(74,222,128,0.5)' : 'rgba(248,113,113,0.5)'
+                          : 'rgba(255,255,255,0.1)',
+                      background: isActive
+                        ? 'rgba(139,92,246,0.2)'
+                        : checked
+                          ? ok ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)'
+                          : 'rgba(255,255,255,0.05)',
+                      color: isActive
+                        ? '#c4b5fd'
+                        : checked
+                          ? ok ? '#4ade80' : '#f87171'
+                          : '#f5f3ff',
+                    }}
+                  >
+                    {val !== null ? val : ''}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* 厂 bracket: top line over 被除数 + left line; 被除数 and work sit inside */}
+            <div className="rounded-tl-lg border-t-2 border-l-2 pl-2 pt-1" style={{ borderColor: BORDER }}>
+              {/* 被除数 */}
+              <div className="flex">
+                {digits.map((d, c) => (
+                  <div key={`d${c}`} className={CELL} style={{ color: '#f5f3ff' }}>
+                    {d}
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {/* subtraction work — revealed after 检查 */}
+              {checked && (
+                <div className="flex flex-col">
+                  {workRows.map((row, ri) =>
+                    row.kind === 'digits' ? (
+                      <div key={`w${ri}`} className="flex">
+                        {row.cells.map((ch, c) => (
+                          <div key={c} className={CELL} style={{ color: 'rgba(196,181,253,0.85)' }}>
+                            {ch ?? ''}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div key={`w${ri}`} className="flex">
+                        {Array.from({ length: n }, (_, c) => (
+                          <div
+                            key={c}
+                            className="h-1 w-12"
+                            style={c >= row.from && c <= row.to ? { borderTop: `2px solid ${BORDER}` } : undefined}
+                          />
+                        ))}
+                      </div>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Per-round breakdown after check */}
-        {checked && (
-          <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <div className="text-xs mb-1" style={{ color: 'rgba(196,181,253,0.4)' }}>分步详情</div>
-            {rounds.map((r, i) => (
-              <div key={i} className="text-xs" style={{ color: 'rgba(196,181,253,0.6)' }}>
-                第{i + 1}轮: {r.trial} × {divisor} = {r.product}，余 {r.remainder}
-              </div>
-            ))}
-            {finalRemainder > 0 && (
-              <div className="mt-1 text-xs font-bold" style={{ color: '#f59e0b' }}>最终余数: {finalRemainder}</div>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Controls */}
+      {/* keypad */}
       {!checked && (
-        <>
-          <div className="flex gap-2 items-center">
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => handleAdjust(-1)}
-              className="rounded-xl px-3 py-1.5 text-sm font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
-            >
-              −1
-            </button>
-            <span className="text-xs" style={{ color: 'rgba(196,181,253,0.4)' }}>微调当前位</span>
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => handleAdjust(1)}
-              className="rounded-xl px-3 py-1.5 text-sm font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
-            >
-              +1
-            </button>
-          </div>
-
-          <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
+        <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
               <button
                 key={d}
@@ -235,12 +237,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
                 disabled={disabled}
                 onClick={() => handleDigit(d)}
                 className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-                }}
+                style={{ background: 'rgba(255,255,255,0.05)', color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}
               >
                 {d}
               </button>
@@ -250,11 +247,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               disabled={disabled}
               onClick={handleDelete}
               className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'rgba(239,68,68,0.1)',
-                color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
-                border: '1px solid rgba(239,68,68,0.2)',
-              }}
+              style={{ background: 'rgba(239,68,68,0.1)', color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5', border: '1px solid rgba(239,68,68,0.2)' }}
             >
               ⌫
             </button>
@@ -263,31 +256,24 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               disabled={disabled}
               onClick={() => handleDigit(0)}
               className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-              }}
+              style={{ background: 'rgba(255,255,255,0.05)', color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}
             >
               0
             </button>
             <button
               type="button"
               disabled={disabled}
-              onClick={handleCheck}
-              className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'linear-gradient(135deg, #059669, #10b981)',
-                color: '#ffffff',
-                boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
-                border: '1px solid rgba(16,185,129,0.25)',
-              }}
+              onClick={handleAction}
+              className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${canAdvance ? 'text-[15px]' : 'text-[22px]'}`}
+              style={
+                canAdvance
+                  ? { background: 'rgba(139,92,246,0.18)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }
+                  : { background: 'linear-gradient(135deg, #059669, #10b981)', color: '#ffffff', boxShadow: '0 4px 16px rgba(16,185,129,0.35)', border: '1px solid rgba(16,185,129,0.25)' }
+              }
             >
-              检查
+              {canAdvance ? 'Enter' : '✓'}
             </button>
-          </div>
-        </>
+        </div>
       )}
     </div>
   )

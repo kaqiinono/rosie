@@ -10,7 +10,7 @@ interface Props {
 
 type Cell = 'num' | 'den'
 
-const DIGIT_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0', '✓'] as const
+const DIGIT_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0', 'Enter'] as const
 
 const MAX_LEN = 2
 
@@ -31,7 +31,12 @@ export default function FractionPad({ onSubmit, disabled }: Props) {
 
   const handleKey = (key: typeof DIGIT_KEYS[number]) => {
     if (disabled || submitted) return
-    if (key === '✓') {
+    if (key === 'Enter') {
+      // Current cell done → jump to the next cell; on the last cell, submit.
+      if (active === 'num') {
+        setActive('den')
+        return
+      }
       if (!canSubmit) return
       setSubmitted(true)
       onSubmit(`${numerator}/${denominator}`)
@@ -85,27 +90,39 @@ export default function FractionPad({ onSubmit, disabled }: Props) {
       {/* Keypad — matches NumberPad/RemainderPad sizing/look. */}
       <div className="grid w-full max-w-[320px] grid-cols-3 gap-2.5">
         {DIGIT_KEYS.map((key) => {
-          const isSubmit = key === '✓'
+          const isAction = key === 'Enter'
           const isDel = key === '⌫'
-          const inactive = disabled || submitted || (isSubmit && !canSubmit)
+          // The action key switches cells (分子 → 分母 = Enter) and only submits (✓) on the last cell.
+          const onLastCell = active === 'den'
+          const actionLabel = onLastCell ? '✓' : 'Enter'
+          const enterReady = !onLastCell || canSubmit
+          const inactive = disabled || submitted || (isAction && !enterReady)
           return (
             <button
               key={key}
               type="button"
               onClick={() => handleKey(key)}
               disabled={inactive}
-              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+              className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${isAction && !onLastCell ? 'text-[15px]' : 'text-[24px]'}`}
               style={
-                isSubmit
-                  ? {
-                      background: inactive
-                        ? 'rgba(16,185,129,0.15)'
-                        : 'linear-gradient(135deg, #059669, #10b981)',
-                      color: inactive ? 'rgba(16,185,129,0.35)' : '#ffffff',
-                      boxShadow: inactive ? 'none' : '0 4px 16px rgba(16,185,129,0.35)',
-                      border: '1px solid rgba(16,185,129,0.25)',
-                      cursor: inactive ? 'not-allowed' : 'pointer',
-                    }
+                isAction
+                  ? onLastCell
+                    ? {
+                        background: inactive
+                          ? 'rgba(16,185,129,0.15)'
+                          : 'linear-gradient(135deg, #059669, #10b981)',
+                        color: inactive ? 'rgba(16,185,129,0.35)' : '#ffffff',
+                        boxShadow: inactive ? 'none' : '0 4px 16px rgba(16,185,129,0.35)',
+                        border: '1px solid rgba(16,185,129,0.25)',
+                        cursor: inactive ? 'not-allowed' : 'pointer',
+                      }
+                    : {
+                        background: 'rgba(139,92,246,0.18)',
+                        color: '#c4b5fd',
+                        border: '1px solid rgba(139,92,246,0.4)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+                        cursor: 'pointer',
+                      }
                   : isDel
                     ? {
                         background: 'rgba(239,68,68,0.1)',
@@ -120,7 +137,7 @@ export default function FractionPad({ onSubmit, disabled }: Props) {
                       }
               }
             >
-              {key}
+              {isAction ? actionLabel : key}
             </button>
           )
         })}

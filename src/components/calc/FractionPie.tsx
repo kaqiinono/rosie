@@ -28,19 +28,21 @@ function Pie({
   den,
   fillColor,
   onSliceClick,
+  size = PIE_SIZE,
 }: {
   fillCount: number
   den: number
   fillColor: string
   onSliceClick?: (i: number) => void
+  size?: number
 }) {
-  const r = PIE_SIZE / 2 - 2
-  const cx = PIE_SIZE / 2
-  const cy = PIE_SIZE / 2
+  const r = size / 2 - 2
+  const cx = size / 2
+  const cy = size / 2
   const interactive = !!onSliceClick
 
   return (
-    <svg width={PIE_SIZE} height={PIE_SIZE} className="shrink-0">
+    <svg width={size} height={size} className="shrink-0">
       {Array.from({ length: den }, (_, i) => (
         <path
           key={i}
@@ -96,7 +98,7 @@ export default function FractionPie({ operands, den, op, onSubmit, disabled }: P
         </span>
 
         <div className="flex flex-col items-center gap-1.5">
-          <Pie fillCount={filled} den={den} fillColor="#a78bfa" onSliceClick={tap} />
+          <Pie fillCount={filled} den={den} fillColor="#a78bfa" onSliceClick={tap} size={120} />
           <span
             className="font-fredoka text-[15px] font-black tabular-nums"
             style={{ color: filled > 0 ? '#c4b5fd' : 'rgba(196,181,253,0.45)' }}

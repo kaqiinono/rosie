@@ -10,18 +10,12 @@ import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import QuestionDisplay from '@/components/calc/QuestionDisplay'
-import NumberPad from '@/components/calc/NumberPad'
-import VerticalCalc from '@/components/calc/VerticalCalc'
-import DivisionVertical from '@/components/calc/DivisionVertical'
-import RemainderPad from '@/components/calc/RemainderPad'
-import FractionPad from '@/components/calc/FractionPad'
-import FractionPie from '@/components/calc/FractionPie'
+import CalcAnswerInput from '@/components/calc/CalcAnswerInput'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
-import { buildSession, calcTimeBonus, coinReward, fractionPieSpec } from '@/utils/calc-helpers'
+import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
 import { checkAnswer, formatAnswer, isReducibleFraction } from '@/utils/calc-answer'
-import { parseSignature } from '@/utils/calc-ast'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
 import { timeLimitFromSettings } from '@/utils/calc-time-limits'
@@ -788,92 +782,18 @@ export default function CalcSessionPage() {
           )}
         </div>
 
-        {currentQ.answer.kind === 'fraction' ? (
-          (() => {
-            const spec = fractionPieSpec(currentQ)
-            return spec ? (
-              <FractionPie
-                key={idx}
-                operands={spec.operands}
-                den={spec.den}
-                op={spec.op}
-                disabled={!!feedback || done}
-                onSubmit={(n) => handleFractionSubmit(`${n}/${spec.den}`)}
-              />
-            ) : (
-              <FractionPad key={idx} disabled={!!feedback || done} onSubmit={handleFractionSubmit} />
-            )
-          })()
-        ) : currentQ.answer.kind === 'remainder' ? (
-          <RemainderPad key={idx} disabled={!!feedback || done} onSubmit={handleRemainderSubmit} />
-        ) : currentQ.answerMode === 'vertical' ? (
-          (() => {
-            const ast = parseSignature(currentQ.signature)
-            if (
-              typeof ast === 'number' ||
-              typeof ast.left !== 'number' ||
-              typeof ast.right !== 'number'
-            ) {
-              return null
-            }
-            const disabled = !!feedback || done
-            if (ast.op === 'div') {
-              return (
-                <DivisionVertical
-                  key={idx}
-                  dividend={ast.left}
-                  divisor={ast.right}
-                  disabled={disabled}
-                  onSubmit={(r) => handleVerticalSubmit(r.correct)}
-                />
-              )
-            }
-            const opSym = ast.op === 'add' ? '+' : ast.op === 'sub' ? '-' : '×'
-            return (
-              <VerticalCalc
-                key={idx}
-                a={ast.left}
-                b={ast.right}
-                op={opSym}
-                disabled={disabled}
-                onSubmit={(r) => handleVerticalSubmit(r.resultCorrect)}
-              />
-            )
-          })()
-        ) : (
-          <>
-            {/* Input */}
-            <div
-              className="mx-auto mb-4 flex h-16 max-w-[260px] items-center justify-center rounded-2xl transition-all duration-200"
-              style={{
-                background: 'rgba(139,92,246,0.08)',
-                border: `1.5px solid ${input ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.2)'}`,
-                boxShadow: input ? '0 0 14px rgba(139,92,246,0.15)' : 'none',
-              }}
-            >
-              <span
-                className="font-fredoka leading-none font-black tabular-nums"
-                style={{
-                  fontSize: 'clamp(28px, 6vw, 38px)',
-                  color: input ? '#e9d5ff' : 'rgba(196,181,253,0.25)',
-                }}
-              >
-                {input || '·'}
-              </span>
-            </div>
-
-            {/* Pad */}
-            <div className="mx-auto max-w-[320px]">
-              <NumberPad
-                value={input}
-                onChange={setInput}
-                onSubmit={handleSubmit}
-                disabled={!!feedback || done}
-                allowDecimal={currentQ.answer.kind === 'decimal'}
-              />
-            </div>
-          </>
-        )}
+        <CalcAnswerInput
+          key={idx}
+          question={currentQ}
+          disabled={!!feedback || done}
+          variant="full"
+          input={input}
+          onInputChange={setInput}
+          onNumberSubmit={handleSubmit}
+          onFractionSubmit={handleFractionSubmit}
+          onRemainderSubmit={handleRemainderSubmit}
+          onVerticalSubmit={handleVerticalSubmit}
+        />
       </main>
 
       {showChallengeBanner && <ChallengeBanner coins={currentQ.coinBase} />}
