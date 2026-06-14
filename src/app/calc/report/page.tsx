@@ -8,7 +8,8 @@ import { supabase } from '@/lib/supabase'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import { BLOCK_GROUPS, blocksByGroup } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
-import type { CalcProblemStatus } from '@/utils/type'
+import { ERROR_TAG_LABELS } from '@/utils/calc-diagnose'
+import type { CalcProblemStatus, ErrorTag } from '@/utils/type'
 
 interface ProblemStateLite {
   signature: string
@@ -81,6 +82,7 @@ export default function CalcReportPage() {
   const wallet = useCalcWallet(user)
 
   const [problemStates, setProblemStates] = useState<ProblemStateLite[]>([])
+  const [errorCounts, setErrorCounts] = useState<{ tag: ErrorTag; count: number }[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedBlock, setExpandedBlock] = useState<string | null>(null)
 
@@ -94,6 +96,25 @@ export default function CalcReportPage() {
         .eq('user_id', user.id)
       if (cancelled) return
       setProblemStates((data ?? []) as ProblemStateLite[])
+
+      // Aggregate error-tag distribution across still-unresolved mistakes.
+      const { data: mistakeRows } = await supabase
+        .from('calc_mistakes')
+        .select('error_tag,resolved')
+        .eq('user_id', user.id)
+        .eq('resolved', false)
+        .not('error_tag', 'is', null)
+      if (cancelled) return
+      const counts = new Map<ErrorTag, number>()
+      for (const r of (mistakeRows ?? []) as { error_tag: ErrorTag }[]) {
+        counts.set(r.error_tag, (counts.get(r.error_tag) ?? 0) + 1)
+      }
+      setErrorCounts(
+        [...counts.entries()]
+          .map(([tag, count]) => ({ tag, count }))
+          .sort((a, b) => b.count - a.count),
+      )
+
       setLoading(false)
     }
     void load()
@@ -361,7 +382,49 @@ export default function CalcReportPage() {
               </section>
             )}
 
-            {/* 4. 最近练习 */}
+            {/* 4. 错误类型分布 */}
+            {errorCounts.length > 0 && (
+              <section>
+                <h2
+                  className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
+                  style={{ color: 'rgba(196,181,253,0.45)' }}
+                >
+                  错误类型分布
+                </h2>
+                <div className="space-y-1.5">
+                  {errorCounts.map(({ tag, count }) => {
+                    const max = errorCounts[0].count
+                    return (
+                      <div key={tag} className="flex items-center gap-2">
+                        <span className="w-24 shrink-0 text-[12px]" style={{ color: '#e9d5ff' }}>
+                          {ERROR_TAG_LABELS[tag]}
+                        </span>
+                        <div
+                          className="h-2 flex-1 overflow-hidden rounded-full"
+                          style={{ background: 'rgba(255,255,255,0.07)' }}
+                        >
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${Math.round((count / max) * 100)}%`,
+                              background: count >= 3 ? '#f87171' : '#fbbf24',
+                            }}
+                          />
+                        </div>
+                        <span
+                          className="w-8 text-right text-[11px] font-extrabold tabular-nums"
+                          style={{ color: 'rgba(196,181,253,0.6)' }}
+                        >
+                          {count}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* 5. 最近练习 */}
             {recentSessions.length > 0 && (
               <section>
                 <h2
