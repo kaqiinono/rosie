@@ -1,12 +1,14 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 type DivisionVerticalProps = {
   dividend: number
   divisor: number
   onSubmit: (result: { correct: boolean; quotient: number[]; remainder: number }) => void
   disabled?: boolean
+  /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
+  fill?: boolean
 }
 
 interface Step {
@@ -56,9 +58,14 @@ type WorkRow =
   | { kind: 'line'; from: number; to: number }
 
 const BORDER = 'rgba(196,181,253,0.55)'
-const CELL = 'flex h-12 w-12 items-center justify-center text-2xl font-black'
+// Cell geometry uses inline sizes (not Tailwind classes) so every column — cells,
+// blank spacers and the subtraction underlines — stays exactly in sync. In `fill`
+// mode the answer area is a size container and sizes are expressed in `cqh`, so the
+// whole 竖式 scales to its available height (no scroll, no keypad overlap). Compact
+// mode keeps fixed pixels for the settings preview.
+const CELL_BASE = 'flex items-center justify-center font-black'
 
-function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: DivisionVerticalProps) {
+function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill = false }: DivisionVerticalProps) {
   const { digits, n, quotient, steps, remainder } = useMemo(
     () => longDivision(dividend, divisor),
     [dividend, divisor],
@@ -74,20 +81,25 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
 
   const activeCol = quotientCols[activeIdx]
 
-  const handleDigit = useCallback(
-    (d: number) => {
-      if (disabled || checked) return
-      setUserQuotient((prev) => {
-        const next = [...prev]
-        next[activeCol] = d
-        return next
-      })
-      if (activeIdx < quotientCols.length - 1) setActiveIdx(activeIdx + 1)
-    },
-    [disabled, checked, activeCol, activeIdx, quotientCols.length],
-  )
+  const cellPx = fill ? 'clamp(34px, 16cqh, 64px)' : 68
+  const cellSize = { width: cellPx, height: cellPx }
+  const cellFont = fill ? 'clamp(20px, 9cqh, 36px)' : 36
+  // 商 row height + bracket pt-1 (4) + border-t-2 (2) → keeps 除数 aligned with 被除数.
+  const divisorPad = fill ? `calc(${cellPx} + 6px)` : 74
 
-  const handleDelete = useCallback(() => {
+  // Plain handlers — React Compiler memoizes these; hand-tuned useCallback deps
+  // here disagreed with its inference and forced it to skip the whole component.
+  const handleDigit = (d: number) => {
+    if (disabled || checked) return
+    setUserQuotient((prev) => {
+      const next = [...prev]
+      next[activeCol] = d
+      return next
+    })
+    if (activeIdx < quotientCols.length - 1) setActiveIdx(activeIdx + 1)
+  }
+
+  const handleDelete = () => {
     if (disabled || checked) return
     setUserQuotient((prev) => {
       const next = [...prev]
@@ -95,9 +107,9 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
       return next
     })
     if (activeIdx > 0) setActiveIdx(activeIdx - 1)
-  }, [disabled, checked, activeCol, activeIdx])
+  }
 
-  const handleCheck = useCallback(() => {
+  const handleCheck = () => {
     if (checked) return
     setChecked(true)
     const allCorrect = quotientCols.every((c) => userQuotient[c] === quotient[c])
@@ -106,13 +118,20 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
       quotient: quotientCols.map((c) => userQuotient[c] ?? 0),
       remainder,
     })
-  }, [checked, quotientCols, userQuotient, quotient, remainder, onSubmit])
+  }
 
-  const canAdvance = activeIdx < quotientCols.length - 1
-  const handleAction = useCallback(() => {
-    if (canAdvance) setActiveIdx(activeIdx + 1)
-    else handleCheck()
-  }, [canAdvance, activeIdx, handleCheck])
+  // Action key is value-based: 'Enter' jumps to the next empty 商 cell and only
+  // becomes '✓' once every 商 cell is filled — so tapping cells out of order never
+  // surfaces ✓ with blanks still open.
+  const quotientComplete = quotientCols.every((c) => userQuotient[c] !== null)
+  const handleAction = () => {
+    if (quotientComplete) {
+      handleCheck()
+      return
+    }
+    const nextEmpty = quotientCols.findIndex((c) => userQuotient[c] === null)
+    if (nextEmpty >= 0) setActiveIdx(nextEmpty)
+  }
 
   // Subtraction work, column-aligned (product → underline → bring-down minuend → … → remainder).
   const workRows = useMemo<WorkRow[]>(() => {
@@ -130,17 +149,27 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
   }, [steps, n])
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className={fill ? 'flex h-full w-full flex-col' : 'flex w-full flex-col'}>
+      {/* Answer area — grows to fill, vertically centered above the keypad. In fill
+          mode it's a size container so the 竖式 below can scale to its height. */}
+      <div
+        className={
+          fill
+            ? 'flex min-h-0 flex-1 flex-col items-center justify-center'
+            : 'flex flex-col items-center'
+        }
+        style={fill ? { containerType: 'size' } : undefined}
+      >
       {/* 厂字形 long division */}
       <div
-        className="rounded-2xl p-4"
+        className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="flex items-start">
           {/* 除数 — pushed down to line up with the 被除数 row */}
           <div className="flex flex-col">
-            <div style={{ height: 54 }} />
-            <div className="flex h-12 items-center pr-2.5 text-2xl font-black" style={{ color: '#e9d5ff' }}>
+            <div style={{ height: divisorPad }} />
+            <div className="flex items-center pr-2.5 font-black" style={{ height: cellPx, fontSize: cellFont, color: '#e9d5ff' }}>
               {divisor}
             </div>
           </div>
@@ -148,9 +177,9 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
           {/* 商 (top) + 厂 bracket over 被除数 + work */}
           <div className="flex flex-col">
             {/* 商 */}
-            <div className="flex pl-2">
+            <div className="flex pl-2 mb-1">
               {Array.from({ length: n }, (_, c) => {
-                if (quotient[c] === null) return <div key={`q${c}`} className="h-12 w-12" />
+                if (quotient[c] === null) return <div key={`q${c}`} style={cellSize} />
                 const idx = quotientCols.indexOf(c)
                 const isActive = !checked && idx === activeIdx
                 const val = userQuotient[c]
@@ -160,8 +189,10 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
                     key={`q${c}`}
                     type="button"
                     onClick={() => !disabled && !checked && setActiveIdx(idx)}
-                    className={`${CELL} rounded-lg border-2 transition-all select-none active:scale-[0.93]`}
+                    className={`${CELL_BASE} rounded-lg border-2 transition-all select-none active:scale-[0.93] ml-1`}
                     style={{
+                      ...cellSize,
+                      fontSize: cellFont,
                       borderColor: isActive
                         ? 'rgba(139,92,246,0.6)'
                         : checked
@@ -190,7 +221,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               {/* 被除数 */}
               <div className="flex">
                 {digits.map((d, c) => (
-                  <div key={`d${c}`} className={CELL} style={{ color: '#f5f3ff' }}>
+                  <div key={`d${c}`} className={CELL_BASE} style={{ ...cellSize, fontSize: cellFont, color: '#f5f3ff' }}>
                     {d}
                   </div>
                 ))}
@@ -203,7 +234,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
                     row.kind === 'digits' ? (
                       <div key={`w${ri}`} className="flex">
                         {row.cells.map((ch, c) => (
-                          <div key={c} className={CELL} style={{ color: 'rgba(196,181,253,0.85)' }}>
+                          <div key={c} className={CELL_BASE} style={{ ...cellSize, fontSize: cellFont, color: 'rgba(196,181,253,0.85)' }}>
                             {ch ?? ''}
                           </div>
                         ))}
@@ -213,8 +244,12 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
                         {Array.from({ length: n }, (_, c) => (
                           <div
                             key={c}
-                            className="h-1 w-12"
-                            style={c >= row.from && c <= row.to ? { borderTop: `2px solid ${BORDER}` } : undefined}
+                            className="h-1"
+                            style={
+                              c >= row.from && c <= row.to
+                                ? { width: cellPx, borderTop: `2px solid ${BORDER}` }
+                                : { width: cellPx }
+                            }
                           />
                         ))}
                       </div>
@@ -226,17 +261,18 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
           </div>
         </div>
       </div>
+      </div>
 
-      {/* keypad */}
+      {/* keypad — pinned to the bottom, full width (matches NumberPad) */}
       {!checked && (
-        <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
+        <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
               <button
                 key={d}
                 type="button"
                 disabled={disabled}
                 onClick={() => handleDigit(d)}
-                className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+                className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
                 style={{ background: 'rgba(255,255,255,0.05)', color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}
               >
                 {d}
@@ -246,7 +282,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               type="button"
               disabled={disabled}
               onClick={handleDelete}
-              className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
               style={{ background: 'rgba(239,68,68,0.1)', color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5', border: '1px solid rgba(239,68,68,0.2)' }}
             >
               ⌫
@@ -255,7 +291,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               type="button"
               disabled={disabled}
               onClick={() => handleDigit(0)}
-              className="h-14 rounded-2xl text-[22px] font-black transition-all select-none active:scale-[0.93]"
+              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
               style={{ background: 'rgba(255,255,255,0.05)', color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}
             >
               0
@@ -264,14 +300,14 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false }: Div
               type="button"
               disabled={disabled}
               onClick={handleAction}
-              className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${canAdvance ? 'text-[15px]' : 'text-[22px]'}`}
+              className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!quotientComplete ? 'text-[15px]' : 'text-[24px]'}`}
               style={
-                canAdvance
+                !quotientComplete
                   ? { background: 'rgba(139,92,246,0.18)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }
                   : { background: 'linear-gradient(135deg, #059669, #10b981)', color: '#ffffff', boxShadow: '0 4px 16px rgba(16,185,129,0.35)', border: '1px solid rgba(16,185,129,0.25)' }
               }
             >
-              {canAdvance ? 'Enter' : '✓'}
+              {!quotientComplete ? 'Enter' : '✓'}
             </button>
         </div>
       )}

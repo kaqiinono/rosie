@@ -9,8 +9,7 @@ import { useStarHud } from '@/components/stars/StarHudProvider'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
-import QuestionDisplay from '@/components/calc/QuestionDisplay'
-import CalcAnswerInput from '@/components/calc/CalcAnswerInput'
+import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
@@ -629,7 +628,12 @@ export default function CalcSessionPage() {
         backLabel="退出"
       />
 
-      <main className="relative mx-auto max-w-[640px] px-4 pt-3 pb-6">
+      <main
+        // Fill the viewport below the sticky CalcAppHeader (h-14 = 56px) so the
+        // CalcQuestionStage can center the equation and pin the keypad to the bottom.
+        className="relative mx-auto flex w-full max-w-[640px] flex-col px-4 pt-3 pb-6"
+        style={{ minHeight: 'calc(100svh - 56px)' }}
+      >
         {/* Top status */}
         <div
           className="mb-2 flex items-center justify-between text-[12px] font-bold tabular-nums"
@@ -712,13 +716,8 @@ export default function CalcSessionPage() {
           />
         </div>
 
-        {/* Question */}
-        <div className="my-6 sm:my-8">
-          <QuestionDisplay display={currentQ.display} isChallenge={currentQ.isChallenge} />
-        </div>
-
         {/* Inline feedback banner */}
-        <div className="mb-4" style={{ minHeight: 26 }}>
+        <div className="mb-2 shrink-0" style={{ minHeight: 26 }}>
           {feedback === 'correct' && (
             <div
               className="rounded-xl py-3 text-center text-[15px] font-extrabold"
@@ -782,11 +781,12 @@ export default function CalcSessionPage() {
           )}
         </div>
 
-        <CalcAnswerInput
-          key={idx}
+        <CalcQuestionStage
+          padKey={idx}
           question={currentQ}
+          isChallenge={currentQ.isChallenge}
           disabled={!!feedback || done}
-          variant="full"
+          className=""
           input={input}
           onInputChange={setInput}
           onNumberSubmit={handleSubmit}

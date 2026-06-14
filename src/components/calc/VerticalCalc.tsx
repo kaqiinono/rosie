@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 type Op = '+' | '-' | '×'
 
@@ -21,8 +21,24 @@ type VerticalCalcProps = {
 }
 
 // Shared cell geometry — every row uses the same widths so columns stay aligned.
-const LEAD = 'w-12' // leading spacer / operator column
-const DIGIT = 'h-16 w-14' // operand & result digit cells
+// In `fill` mode sizes are expressed in `cqh` (container-query height) so the whole
+// 竖式 scales to the height the answer area is actually given — fitting without a
+// scrollbar and without overlapping the keypad. Compact mode keeps fixed pixels.
+type Geo = { cell: { width: string | number; height: string | number }; lead: string | number; digitFont: string | number; carryH: string | number; carryFont: string | number }
+const FILL_GEO: Geo = {
+  cell: { width: 'clamp(26px, 13cqh, 52px)', height: 'clamp(30px, 16cqh, 60px)' },
+  lead: 'clamp(22px, 11cqh, 46px)',
+  digitFont: 'clamp(17px, 7.5cqh, 30px)',
+  carryH: 'clamp(14px, 5cqh, 22px)',
+  carryFont: 'clamp(9px, 3cqh, 12px)',
+}
+const COMPACT_GEO: Geo = {
+  cell: { width: 56, height: 64 },
+  lead: 48,
+  digitFont: 30,
+  carryH: 24,
+  carryFont: 12,
+}
 
 function getDigits(n: number): number[] {
   if (n === 0) return [0]
@@ -97,7 +113,7 @@ function computeMultiplication(a: number, b: number) {
   return { result, carries, resultDigits: getDigits(result) }
 }
 
-function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProps) {
+function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: VerticalCalcProps) {
   const { carries: correctCarries, resultDigits: correctResult } = useMemo(() => {
     if (op === '+') return computeAddition(a, b)
     if (op === '-') return computeSubtraction(a, b)
@@ -127,31 +143,34 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
   // 进位/退位 row is optional scaffolding (never graded); hidden by default.
   const [showCarry, setShowCarry] = useState(false)
 
-  const handleDigitInput = useCallback(
-    (digit: number) => {
-      if (disabled || checked) return
-      if (activeCell.type === 'carry') {
-        setUserCarries((prev) => {
-          const next = [...prev]
-          next[activeCell.idx] = digit
-          return next
-        })
-      } else {
-        setUserResult((prev) => {
-          const next = [...prev]
-          next[activeCell.idx] = digit
-          return next
-        })
-        // Auto-advance to the next result cell on the left.
-        if (activeCell.idx > leftmostResult) {
-          setActiveCell({ type: 'result', idx: activeCell.idx - 1 })
-        }
+  // Plain handlers — React Compiler memoizes these; hand-tuned useCallback deps
+  // here disagreed with its inference and forced it to skip the whole component.
+  const handleDigitInput = (digit: number) => {
+    if (disabled || checked) return
+    if (activeCell.type === 'carry') {
+      setUserCarries((prev) => {
+        const next = [...prev]
+        next[activeCell.idx] = digit
+        return next
+      })
+      // Auto-advance to the next carry cell on the left.
+      if (activeCell.idx > 0) {
+        setActiveCell({ type: 'carry', idx: activeCell.idx - 1 })
       }
-    },
-    [activeCell, disabled, checked, leftmostResult],
-  )
+    } else {
+      setUserResult((prev) => {
+        const next = [...prev]
+        next[activeCell.idx] = digit
+        return next
+      })
+      // Auto-advance to the next result cell on the left.
+      if (activeCell.idx > leftmostResult) {
+        setActiveCell({ type: 'result', idx: activeCell.idx - 1 })
+      }
+    }
+  }
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     if (disabled || checked) return
     if (activeCell.type === 'carry') {
       setUserCarries((prev) => {
@@ -166,9 +185,9 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
         return next
       })
     }
-  }, [activeCell, disabled, checked])
+  }
 
-  const handleCheck = useCallback(() => {
+  const handleCheck = () => {
     if (checked) return
     setChecked(true)
 
@@ -187,24 +206,48 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
       userCarries: uc,
       userResult: ur,
     })
-  }, [checked, userCarries, userResult, correctCarries, correctResult, totalCols, onSubmit])
+  }
 
-  // Enter advances result cells right→left; ✓ submits on the last (leftmost) cell.
-  const canAdvance = activeCell.type === 'result' && activeCell.idx > leftmostResult
-  const handleAction = useCallback(() => {
-    if (canAdvance) {
-      setActiveCell({ type: 'result', idx: activeCell.idx - 1 })
-    } else {
+  // Editable result columns, right→left (个位 first). The answer is complete once
+  // every one is filled — carry cells are optional scaffolding and never required.
+  const resultCols: number[] = []
+  for (let i = totalCols - 1; i >= leftmostResult; i--) resultCols.push(i)
+  const resultComplete = resultCols.every((c) => userResult[c] !== null)
+
+  // Action key is value-based: 'Enter' jumps to the next empty cell (advancing left
+  // through carry cells too) and only becomes '✓' once the result row is complete —
+  // so tapping a cell out of order never surfaces ✓ with blanks still open.
+  const handleAction = () => {
+    if (resultComplete) {
       handleCheck()
+      return
     }
-  }, [canAdvance, activeCell, handleCheck])
+    if (activeCell.type === 'carry' && activeCell.idx > 0) {
+      setActiveCell({ type: 'carry', idx: activeCell.idx - 1 })
+      return
+    }
+    const nextEmpty = resultCols.find((c) => userResult[c] === null)
+    if (nextEmpty !== undefined) setActiveCell({ type: 'result', idx: nextEmpty })
+  }
 
   const aPad = padLeft(aDigits, totalCols)
   const bPad = padLeft(bDigits, totalCols)
   const correctResultPad = padLeft(correctResult, totalCols)
 
+  const geo = fill ? FILL_GEO : COMPACT_GEO
+
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className={fill ? 'flex h-full w-full flex-col' : 'flex w-full flex-col'}>
+      {/* Answer area — grows to fill, vertically centered above the keypad. In fill
+          mode it's a size container so the 竖式 below can scale to its height. */}
+      <div
+        className={
+          fill
+            ? 'flex min-h-0 flex-1 flex-col items-center justify-center gap-3'
+            : 'flex flex-col items-center gap-4'
+        }
+        style={fill ? { containerType: 'size' } : undefined}
+      >
       {/* 进位格 toggle — auxiliary scaffolding, off by default, never graded */}
       <button
         type="button"
@@ -222,7 +265,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
 
       {/* Vertical layout */}
       <div
-        className="rounded-2xl p-4"
+        className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
         style={{
           background: 'rgba(255,255,255,0.04)',
           border: '1px solid rgba(255,255,255,0.08)',
@@ -230,8 +273,8 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
       >
         {/* 进位/退位 row — optional scaffolding; every column, never graded/colored */}
         {showCarry && (
-          <div className="mb-1 flex justify-end gap-1">
-            <div className="w-10" />
+          <div className="mb-0.5 flex justify-end gap-1">
+            <div style={{ width: geo.lead }} />
             {userCarries.map((val, i) => {
               const isActive = activeCell.type === 'carry' && activeCell.idx === i
               return (
@@ -239,8 +282,11 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
                   key={`c${i}`}
                   type="button"
                   onClick={() => !disabled && !checked && setActiveCell({ type: 'carry', idx: i })}
-                  className="flex h-9 w-12 items-center justify-center rounded text-sm font-black transition-all select-none active:scale-[0.93]"
+                  className="flex items-center justify-center rounded leading-none font-black transition-all select-none active:scale-[0.93]"
                   style={{
+                    width: geo.cell.width,
+                    height: geo.carryH,
+                    fontSize: geo.carryFont,
                     border: isActive ? '1px solid rgba(139,92,246,0.6)' : '1px dashed rgba(196,181,253,0.4)',
                     background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
                     color: isActive ? '#c4b5fd' : val !== null ? '#c4b5fd' : 'rgba(196,181,253,0.4)',
@@ -255,9 +301,9 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
 
         {/* First operand row */}
         <div className="flex justify-end gap-1">
-          <div className="w-10" />
+          <div style={{ width: geo.lead }} />
           {aPad.map((d, i) => (
-            <div key={`a${i}`} className="flex h-14 w-12 items-center justify-center text-2xl font-black" style={{ color: '#f5f3ff' }}>
+            <div key={`a${i}`} className="flex items-center justify-center font-black" style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}>
               {d !== null ? d : ''}
             </div>
           ))}
@@ -265,11 +311,11 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
 
         {/* Operator + second operand */}
         <div className="flex justify-end gap-1">
-          <div className="flex h-14 w-10 items-center justify-center text-2xl font-black" style={{ color: 'rgba(196,181,253,0.6)' }}>
+          <div className="flex items-center justify-center font-black" style={{ width: geo.lead, height: geo.cell.height, fontSize: geo.digitFont, color: 'rgba(196,181,253,0.6)' }}>
             {op}
           </div>
           {bPad.map((d, i) => (
-            <div key={`b${i}`} className="flex h-14 w-12 items-center justify-center text-2xl font-black" style={{ color: '#f5f3ff' }}>
+            <div key={`b${i}`} className="flex items-center justify-center font-black" style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}>
               {d !== null ? d : ''}
             </div>
           ))}
@@ -280,13 +326,13 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
 
         {/* Result row */}
         <div className="flex justify-end gap-1">
-          <div className="w-10" />
+          <div style={{ width: geo.lead }} />
           {userResult.map((val, i) => {
             // The result occupies only the rightmost `resultLen` columns; leading
             // columns (e.g. above the minuend's extra digit) are blank spacers.
             const editable = i >= totalCols - resultLen
             if (!editable) {
-              return <div key={`r${i}`} className="h-14 w-12" />
+              return <div key={`r${i}`} style={geo.cell} />
             }
             const correctVal = correctResultPad[i] ?? 0
             const isActive = activeCell?.type === 'result' && activeCell.idx === i
@@ -298,8 +344,10 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
                 key={`r${i}`}
                 type="button"
                 onClick={() => !disabled && !checked && setActiveCell({ type: 'result', idx: i })}
-                className="flex h-14 w-12 items-center justify-center rounded-xl border-2 text-2xl font-black transition-all select-none active:scale-[0.93]"
+                className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
                 style={{
+                  ...geo.cell,
+                  fontSize: geo.digitFont,
                   borderColor: isActive
                     ? 'rgba(139,92,246,0.5)'
                     : showCorrect
@@ -329,10 +377,11 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
           })}
         </div>
       </div>
+      </div>
 
-      {/* Number pad */}
+      {/* Number pad — pinned to the bottom, full width (matches NumberPad) */}
       {!checked && (
-        <div className="grid w-full max-w-xs grid-cols-3 gap-2.5">
+        <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
             <button
               key={d}
@@ -382,9 +431,9 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
             type="button"
             disabled={disabled}
             onClick={handleAction}
-            className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${canAdvance ? 'text-[15px]' : 'text-[24px]'}`}
+            className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!resultComplete ? 'text-[15px]' : 'text-[24px]'}`}
             style={
-              canAdvance
+              !resultComplete
                 ? {
                     background: 'rgba(139,92,246,0.18)',
                     color: '#c4b5fd',
@@ -399,7 +448,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false }: VerticalCalcProp
                   }
             }
           >
-            {canAdvance ? 'Enter' : '✓'}
+            {!resultComplete ? 'Enter' : '✓'}
           </button>
         </div>
       )}

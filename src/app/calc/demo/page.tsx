@@ -16,8 +16,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import CalcAnswerInput from '@/components/calc/CalcAnswerInput'
-import NumberPad from '@/components/calc/NumberPad'
+import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
 import { checkAnswer, intAnswer, decimalAnswer, remainderAnswer, fractionAnswer } from '@/utils/calc-answer'
 import type { CalcQuestion } from '@/utils/type'
 
@@ -27,8 +26,6 @@ type Sample = {
   key: string
   title: string
   note: string
-  /** Drop the big header expression — the 竖式 already shows the operands. */
-  hideExpr?: boolean
   question: CalcQuestion
 }
 
@@ -78,123 +75,28 @@ const SAMPLES: Sample[] = [
   {
     key: 'v-add',
     title: '竖式 · 加法',
-    hideExpr: true,
     note: '1000 / 万以内加法。VerticalCalc：进位行 + 结果格 + 内置键盘 + 检查。',
     question: q({ display: '855 + 72 = ?', signature: 'add(855,72)', answer: intAnswer(927), category: 'addsub', answerMode: 'vertical' }),
   },
   {
     key: 'v-sub',
     title: '竖式 · 减法',
-    hideExpr: true,
     note: '1000 / 万以内减法。退位行用同一 VerticalCalc 渲染。',
     question: q({ display: '1000 - 348 = ?', signature: 'sub(1000,348)', answer: intAnswer(652), category: 'addsub', answerMode: 'vertical' }),
   },
   {
     key: 'v-mul',
     title: '竖式 · 乘法',
-    hideExpr: true,
     note: '两位数 × 一位数。进位行 + 结果格。',
     question: q({ display: '37 × 6 = ?', signature: 'mul(37,6)', answer: intAnswer(222), category: 'muldiv', answerMode: 'vertical' }),
   },
   {
     key: 'v-div',
     title: '竖式 · 除法',
-    hideExpr: true,
     note: '多位数 ÷ 一位数。DivisionVertical：商行 + 微调 ±1 + 检查后分步详情。',
     question: q({ display: '84 ÷ 6 = ?', signature: 'div(84,6)', answer: intAnswer(14), category: 'muldiv', answerMode: 'vertical' }),
   },
 ]
-
-// ── Expression header (hidden for 竖式) ─────────────────────────────────────
-
-// Pad-less types (remainder / fraction / 竖式): the answer surface below is the
-// answer, so the header ends with "=" — no lonely "?". `size` lets 竖式 keep a
-// readable (but not dominating) equation above its grid.
-
-function EquationHeader({
-  display,
-  size = 'lg',
-  withEquals = true,
-}: {
-  display: string
-  size?: 'lg' | 'md'
-  withEquals?: boolean
-}) {
-  const expr = display.replace(/\s*=\s*\?\s*$/, '').trim()
-  const fontSize = size === 'lg' ? 'clamp(30px, 9vw, 44px)' : 'clamp(24px, 6.5vw, 34px)'
-  return (
-    <div className="flex select-none justify-center">
-      <span
-        className="font-fredoka leading-none font-black tracking-tight"
-        style={{ fontSize, color: '#f5f3ff', textShadow: '0 0 20px rgba(139,92,246,0.25)' }}
-      >
-        {withEquals ? `${expr} =` : expr}
-      </span>
-    </div>
-  )
-}
-
-// ── Inline answer box — the box itself IS the "?" ──────────────────────────
-
-function AnswerBox({ value }: { value: string }) {
-  const filled = value.length > 0
-  return (
-    <span
-      className="inline-flex items-center justify-center rounded-2xl px-3 transition-all"
-      style={{
-        minWidth: 'clamp(62px, 17vw, 90px)',
-        height: 'clamp(52px, 14vw, 68px)',
-        border: `2px solid ${filled ? 'rgba(168,139,250,0.75)' : 'rgba(168,139,250,0.3)'}`,
-        background: filled ? 'rgba(139,92,246,0.16)' : 'rgba(139,92,246,0.05)',
-        boxShadow: filled ? '0 0 22px rgba(139,92,246,0.3)' : 'none',
-      }}
-    >
-      <span
-        className="font-fredoka font-black tabular-nums"
-        style={{
-          fontSize: 'clamp(28px, 8vw, 40px)',
-          color: filled ? '#e9d5ff' : 'rgba(196,181,253,0.4)',
-        }}
-      >
-        {value || '?'}
-      </span>
-    </span>
-  )
-}
-
-// ── Equation line with the answer box placed where the unknown sits ────────
-
-function EquationLine({ display, input }: { display: string; input: string }) {
-  const bigNum = (text: string) => (
-    <span
-      className="font-fredoka leading-none font-black tracking-tight"
-      style={{ fontSize: 'clamp(30px, 9vw, 44px)', color: '#f5f3ff', textShadow: '0 0 20px rgba(139,92,246,0.25)' }}
-    >
-      {text}
-    </span>
-  )
-
-  let left: string
-  let right: string | null
-  if (display.includes('□')) {
-    // Inverse form: the box sits where the blank is — "48 + ▢ = 105".
-    const i = display.indexOf('□')
-    left = display.slice(0, i).trim()
-    right = display.slice(i + 1).trim()
-  } else {
-    // Normal form: "7 × 8 =" then the box.
-    left = `${display.replace(/\s*=\s*\?\s*$/, '').trim()} =`
-    right = null
-  }
-
-  return (
-    <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 px-2">
-      {bigNum(left)}
-      <AnswerBox value={input} />
-      {right && bigNum(right)}
-    </div>
-  )
-}
 
 // ── One interactive phone-frame card ───────────────────────────────────────
 
@@ -203,12 +105,6 @@ function DemoCard({ sample }: { sample: Sample }) {
   const [input, setInput] = useState('')
   const [result, setResult] = useState<'correct' | 'wrong' | null>(null)
   const [round, setRound] = useState(0)
-
-  // Plain number-pad types (int / decimal / inverse) get the inline-box layout;
-  // remainder / fraction / 竖式 keep their own dedicated pads via CalcAnswerInput.
-  const isPad =
-    (question.answer.kind === 'int' || question.answer.kind === 'decimal') &&
-    question.answerMode !== 'vertical'
 
   const grade = (ok: boolean) => {
     setResult(ok ? 'correct' : 'wrong')
@@ -288,61 +184,17 @@ function DemoCard({ sample }: { sample: Sample }) {
           )}
         </div>
 
-        {isPad ? (
-          /* Number-pad types: equation centered in the space above, keypad anchored at the bottom */
-          <div className="flex min-h-0 flex-1 flex-col px-4 pb-5">
-            <div className="flex flex-1 items-center justify-center">
-              <EquationLine display={question.display} input={input} />
-            </div>
-            <div className="mx-auto w-full max-w-[320px]">
-              <NumberPad
-                key={`${sample.key}-${round}`}
-                value={input}
-                onChange={setInput}
-                onSubmit={() => gradeRaw(input)}
-                disabled={result !== null}
-                allowDecimal={question.answer.kind === 'decimal'}
-              />
-            </div>
-          </div>
-        ) : sample.hideExpr ? (
-          /* 竖式: no header — start just below the top bar and let the grid fill downward */
-          <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 pt-6 pb-5">
-            <CalcAnswerInput
-              key={`${sample.key}-${round}`}
-              question={question}
-              disabled={result !== null}
-              variant="full"
-              input={input}
-              onInputChange={setInput}
-              onNumberSubmit={() => gradeRaw(input)}
-              onFractionSubmit={gradeRaw}
-              onRemainderSubmit={gradeRaw}
-              onVerticalSubmit={grade}
-            />
-          </div>
-        ) : (
-          /* remainder / fraction: equation centered above, answer surface at the bottom */
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-5">
-            <div className="flex min-h-0 flex-1 items-center justify-center py-3">
-              <EquationHeader display={question.display} size="lg" />
-            </div>
-            <div className="shrink-0">
-              <CalcAnswerInput
-                key={`${sample.key}-${round}`}
-                question={question}
-                disabled={result !== null}
-                variant="full"
-                input={input}
-                onInputChange={setInput}
-                onNumberSubmit={() => gradeRaw(input)}
-                onFractionSubmit={gradeRaw}
-                onRemainderSubmit={gradeRaw}
-                onVerticalSubmit={grade}
-              />
-            </div>
-          </div>
-        )}
+        <CalcQuestionStage
+          padKey={`${sample.key}-${round}`}
+          question={question}
+          disabled={result !== null}
+          input={input}
+          onInputChange={setInput}
+          onNumberSubmit={() => gradeRaw(input)}
+          onFractionSubmit={gradeRaw}
+          onRemainderSubmit={gradeRaw}
+          onVerticalSubmit={grade}
+        />
       </div>
     </div>
   )

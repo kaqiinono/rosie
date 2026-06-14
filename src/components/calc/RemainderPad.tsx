@@ -78,7 +78,7 @@ export default function RemainderPad({ onSubmit, disabled }: Props) {
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      {/* Answer slots: 商 …… 余. The equation itself is shown above by QuestionDisplay. */}
+      {/* Answer slots: 商 …… 余. The equation itself is shown above by the EquationHeader in CalcQuestionStage. */}
       <div
         className="flex w-full max-w-[320px] items-center justify-center gap-4 rounded-2xl px-4 py-4"
         style={{
