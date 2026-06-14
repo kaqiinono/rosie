@@ -3,152 +3,49 @@
 /**
  * 口算题型预览 Demo — `/calc/demo`
  *
- * A non-persisted gallery that renders ONE deterministic example of every
- * answer surface the calc module can produce, each inside a phone-sized frame
- * laid out the way the redesigned session screen should look:
- *   · 顶部信息压成一行（计时 / 进度 / 星星）
- *   · 普通题：算式紧贴键盘，去掉多余留白，一屏放下
- *   · 竖式题：移除大号算式，竖式本身就是主角，居中放大
- *
- * Every card is fully interactive (tap to answer) so layout/sizing can be
- * fine-tuned per type before porting the layout into the real session page.
+ * A non-persisted gallery of every answer surface the calc module can produce,
+ * each shown inside a phone-sized frame laid out the way the session screen looks.
+ * The frames here are NON-interactive previews — the whole card links to the
+ * per-type detail page (`/calc/demo/[key]`), where the question is fully playable
+ * in the exact session frame. Both render through the shared `CalcQuestionStage`,
+ * so the preview and the real thing can't drift.
  */
 
-import { useState } from 'react'
 import Link from 'next/link'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
-import { checkAnswer, intAnswer, decimalAnswer, remainderAnswer, fractionAnswer } from '@/utils/calc-answer'
-import type { CalcQuestion } from '@/utils/type'
+import { SAMPLES, type Sample } from './samples'
 
-// ── Sample questions (deterministic, one per rendering type) ───────────────
+const noop = () => {}
 
-type Sample = {
-  key: string
-  title: string
-  note: string
-  question: CalcQuestion
-}
-
-function q(
-  partial: Partial<CalcQuestion> & Pick<CalcQuestion, 'display' | 'signature' | 'answer' | 'category'>,
-): CalcQuestion {
-  return { arity: 1, level: 0, isChallenge: false, coinBase: 1, ...partial }
-}
-
-const SAMPLES: Sample[] = [
-  {
-    key: 'int',
-    title: '整数 · 数字键盘',
-    note: '默认题型。加 / 减 / 乘 / 除（整除）。answer.kind=int，无 answerMode。',
-    question: q({ display: '7 × 8 = ?', signature: 'mul(7,8)', answer: intAnswer(56), category: 'muldiv' }),
-  },
-  {
-    key: 'inverse',
-    title: '逆运算 · 挖空',
-    note: '「包含逆运算」开启时，约 30% 单运算整数题改成挖空式。仍用数字键盘。',
-    question: q({ display: '48 + □ = 105', signature: 'add(48,57)', answer: intAnswer(57), category: 'addsub' }),
-  },
-  {
-    key: 'decimal',
-    title: '小数 · 数字键盘（带小数点）',
-    note: '小数加减 / 小数×整数 / 小数÷整数。键盘出现「.」键，✓ 移到下方整行。',
-    question: q({ display: '3.5 + 2.7 = ?', signature: 'add(3.5,2.7)', answer: decimalAnswer(6.2, 1), category: 'addsub' }),
-  },
-  {
-    key: 'remainder',
-    title: '有余数除法 · 商…余',
-    note: '专用 RemainderPad，两格（商 / 余）+ 键盘。answer.kind=remainder。',
-    question: q({ display: '23 ÷ 4 = ?', signature: 'div(23,4)', answer: remainderAnswer(5, 3), category: 'muldiv', coinBase: 2 }),
-  },
-  {
-    key: 'frac-pie',
-    title: '分数 · 饼图',
-    note: '同分母加减且答案 ≤ 1 时，用可点选的饼图（FractionPie）。',
-    question: q({ display: '1/5 + 2/5 = ?', signature: 'frac:add(1/5,2/5)', answer: fractionAnswer(3, 5), category: 'addsub', coinBase: 2 }),
-  },
-  {
-    key: 'frac-pad',
-    title: '分数 · 分数键盘',
-    note: '异分母 / 分数乘除 / 答案 > 1 时，退回 FractionPad（分子分母两格）。',
-    question: q({ display: '1/2 + 1/3 = ?', signature: 'frac:add(1/2,1/3)', answer: fractionAnswer(5, 6), category: 'addsub', coinBase: 2 }),
-  },
-  {
-    key: 'v-add',
-    title: '竖式 · 加法',
-    note: '1000 / 万以内加法。VerticalCalc：进位行 + 结果格 + 内置键盘 + 检查。',
-    question: q({ display: '855 + 72 = ?', signature: 'add(855,72)', answer: intAnswer(927), category: 'addsub', answerMode: 'vertical' }),
-  },
-  {
-    key: 'v-sub',
-    title: '竖式 · 减法',
-    note: '1000 / 万以内减法。退位行用同一 VerticalCalc 渲染。',
-    question: q({ display: '1000 - 348 = ?', signature: 'sub(1000,348)', answer: intAnswer(652), category: 'addsub', answerMode: 'vertical' }),
-  },
-  {
-    key: 'v-mul',
-    title: '竖式 · 乘法',
-    note: '两位数 × 一位数。进位行 + 结果格。',
-    question: q({ display: '37 × 6 = ?', signature: 'mul(37,6)', answer: intAnswer(222), category: 'muldiv', answerMode: 'vertical' }),
-  },
-  {
-    key: 'v-div',
-    title: '竖式 · 除法',
-    note: '多位数 ÷ 一位数。DivisionVertical：商行 + 微调 ±1 + 检查后分步详情。',
-    question: q({ display: '84 ÷ 6 = ?', signature: 'div(84,6)', answer: intAnswer(14), category: 'muldiv', answerMode: 'vertical' }),
-  },
-]
-
-// ── One interactive phone-frame card ───────────────────────────────────────
+// ── One clickable phone-frame preview (links to the detail page) ────────────
 
 function DemoCard({ sample }: { sample: Sample }) {
   const { question } = sample
-  const [input, setInput] = useState('')
-  const [result, setResult] = useState<'correct' | 'wrong' | null>(null)
-  const [round, setRound] = useState(0)
-
-  const grade = (ok: boolean) => {
-    setResult(ok ? 'correct' : 'wrong')
-    if (!ok) {
-      // Demo: briefly show the "再想想" hint, then reset so the pad re-enables
-      // (and the multi-cell pads remount out of their locked state) for a retry.
-      window.setTimeout(() => {
-        setResult(null)
-        setInput('')
-        setRound((r) => r + 1)
-      }, 1100)
-    }
-  }
-  const gradeRaw = (raw: string) => grade(checkAnswer(raw, question.answer))
-
-  const reset = () => {
-    setInput('')
-    setResult(null)
-    setRound((r) => r + 1) // remount the pad/竖式 to a fresh state
-  }
 
   return (
-    <div className="flex flex-col gap-2">
+    <Link
+      href={`/calc/demo/${sample.key}`}
+      className="group flex flex-col gap-2 no-underline"
+    >
       {/* Label */}
       <div className="flex items-baseline justify-between gap-2 px-1">
         <h3 className="text-[14px] font-black" style={{ color: '#e9d5ff' }}>
           {sample.title}
         </h3>
-        <button
-          type="button"
-          onClick={reset}
-          className="shrink-0 text-[11px] font-bold transition-opacity hover:opacity-70"
-          style={{ color: 'rgba(196,181,253,0.5)' }}
+        <span
+          className="shrink-0 text-[11px] font-bold opacity-70 transition-opacity group-hover:opacity-100"
+          style={{ color: '#c4b5fd' }}
         >
-          ↺ 重置
-        </button>
+          打开 ↗
+        </span>
       </div>
       <p className="px-1 text-[11px] leading-snug" style={{ color: 'rgba(196,181,253,0.45)' }}>
         {sample.note}
       </p>
 
-      {/* Phone frame */}
+      {/* Phone frame — preview only; clicks fall through to the card link */}
       <div
-        className="relative mx-auto flex w-full max-w-[400px] flex-col overflow-hidden rounded-[2rem]"
+        className="relative mx-auto flex w-full max-w-[400px] flex-col overflow-hidden rounded-[2rem] transition-transform group-hover:-translate-y-1"
         style={{
           height: 'min(720px, 78svh)',
           minHeight: 560,
@@ -174,29 +71,26 @@ function DemoCard({ sample }: { sample: Sample }) {
           </div>
         </div>
 
-        {/* Result banner slot (fixed height to avoid layout shift) */}
-        <div className="flex h-7 shrink-0 items-center justify-center px-4 pt-1">
-          {result === 'correct' && (
-            <span className="text-[13px] font-black" style={{ color: '#4ade80' }}>✓ 答对啦！</span>
-          )}
-          {result === 'wrong' && (
-            <span className="text-[13px] font-black" style={{ color: '#f87171' }}>✗ 再想想～</span>
-          )}
-        </div>
+        {/* Banner slot spacer (parity with the session's feedback row) */}
+        <div className="h-7 shrink-0" />
 
-        <CalcQuestionStage
-          padKey={`${sample.key}-${round}`}
-          question={question}
-          disabled={result !== null}
-          input={input}
-          onInputChange={setInput}
-          onNumberSubmit={() => gradeRaw(input)}
-          onFractionSubmit={gradeRaw}
-          onRemainderSubmit={gradeRaw}
-          onVerticalSubmit={grade}
-        />
+        {/* Non-interactive stage — pointer events disabled so the card link wins */}
+        <div className="pointer-events-none flex min-h-0 flex-1 flex-col">
+          <CalcQuestionStage
+            padKey={sample.key}
+            question={question}
+            isChallenge={question.isChallenge}
+            disabled={false}
+            input=""
+            onInputChange={noop}
+            onNumberSubmit={noop}
+            onFractionSubmit={noop}
+            onRemainderSubmit={noop}
+            onVerticalSubmit={noop}
+          />
+        </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
@@ -213,7 +107,7 @@ export default function CalcDemoPage() {
               口算题型预览
             </h1>
             <p className="mt-0.5 text-[12px]" style={{ color: 'rgba(196,181,253,0.5)' }}>
-              {SAMPLES.length} 种作答形态 · 每张卡片即一屏 · 可直接作答微调
+              {SAMPLES.length} 种作答形态 · 点卡片进入与练习一致的单题全屏页作答
             </p>
           </div>
           <Link

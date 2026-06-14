@@ -631,8 +631,11 @@ export default function CalcSessionPage() {
       <main
         // Fill the viewport below the sticky CalcAppHeader (h-14 = 56px) so the
         // CalcQuestionStage can center the equation and pin the keypad to the bottom.
+        // A *definite* height (not min-height) is required so the 竖式's
+        // `container-type: size` answer area resolves its cqh units instead of
+        // collapsing — otherwise the grid shrinks to its clamp-min and overlaps the keypad.
         className="relative mx-auto flex w-full max-w-[640px] flex-col px-4 pt-3 pb-6"
-        style={{ minHeight: 'calc(100svh - 56px)' }}
+        style={{ height: 'calc(100svh - 56px)' }}
       >
         {/* Top status */}
         <div
