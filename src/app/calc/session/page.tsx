@@ -15,6 +15,7 @@ import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
 import { checkAnswer, formatAnswer, isReducibleFraction } from '@/utils/calc-answer'
+import { diagnose } from '@/utils/calc-diagnose'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
 import { timeLimitFromSettings } from '@/utils/calc-time-limits'
@@ -405,6 +406,7 @@ export default function CalcSessionPage() {
       elapsedMs: number,
       withinLimit: boolean,
       wasMistake: boolean,
+      userAnswer: string,
     ) => {
       const goNext = () => {
         setFeedback(null)
@@ -466,7 +468,8 @@ export default function CalcSessionPage() {
       setRevealAnswer(formatAnswer(q.answer))
       setStreak(0)
       playSfx('wrong', settings.soundEnabled)
-      void addMistake(q, settings.sessionCounter + 1)
+      const errorTag = diagnose(q, userAnswer)
+      void addMistake(q, settings.sessionCounter + 1, userAnswer, errorTag)
       attemptsLogRef.current.push({
         signature: q.signature,
         level: q.level,
@@ -507,7 +510,7 @@ export default function CalcSessionPage() {
       const limitMs = timeLimitFromSettings(q.level, settings)
       const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
       questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake)
+      settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake, '')
     },
     [questions, done, feedback, idx, mistakes, settings, settleQuestion],
   )
@@ -523,7 +526,7 @@ export default function CalcSessionPage() {
       const limitMs = timeLimitFromSettings(q.level, settings)
       const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
       questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, checkAnswer(combined, q.answer), true, elapsedMs, withinLimit, wasMistake)
+      settleQuestion(q, checkAnswer(combined, q.answer), true, elapsedMs, withinLimit, wasMistake, combined)
     },
     [questions, done, feedback, idx, mistakes, settings, settleQuestion],
   )
@@ -542,7 +545,7 @@ export default function CalcSessionPage() {
       const limitMs = timeLimitFromSettings(q.level, settings)
       const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
       questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, correct, true, elapsedMs, withinLimit, wasMistake)
+      settleQuestion(q, correct, true, elapsedMs, withinLimit, wasMistake, combined)
     },
     [questions, done, feedback, idx, mistakes, settings, settleQuestion],
   )
@@ -562,7 +565,7 @@ export default function CalcSessionPage() {
     if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
 
     if (isCorrect) {
-      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake)
+      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, input)
       return
     }
 
@@ -577,7 +580,7 @@ export default function CalcSessionPage() {
         setAttemptsForCurrent(1)
       }, 700)
     } else {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake)
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)
     }
   }, [
     questions,
