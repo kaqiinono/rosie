@@ -13,7 +13,7 @@ Phase 1  大整数 + 逆运算挖空     ✅ 已完成
 Phase 2  竖式                    ✅ 已完成
 Phase 3  答案模型 + 余数 + 小数  ✅ 已完成
 Phase 4  分数                    ✅ 已完成
-Phase 5  错误诊断 + 报告         ⏳ 进行中（Task 4–6）
+Phase 5  错误诊断 + 报告         ⏳ 进行中（Task 1–5 已完成代码，待 Task 6 用户验证）
 Phase 6  下线 /calculate         📋 待做（仅有 spec，无逐步 plan）
 ```
 
@@ -45,16 +45,9 @@ Phase 6 细节：docs/superpowers/specs/2026-06-12-calc-calculate-fusion-design.
 
 ---
 
-## 🔴 优先级 0 — 分支当前 build 失败（应先修）
+## ✅ 优先级 0 — build 阻塞已解除
 
-**问题：** `src/components/admin/words/WordManagerPage.tsx` 引用了 `./WordPreviewModal`，但该文件 **未纳入 git**（commit `37b66ea` 只提交了预览按钮，没提交组件文件）。`pnpm build` 会报 `Can't resolve './WordPreviewModal'`。
-
-**任选其一修复（与 Phase 5 无关，但会阻塞 build）：**
-
-- [ ] **A. 补全组件** — 新建 `src/components/admin/words/WordPreviewModal.tsx`（词库表格「预览」弹窗，复用 `FlashCard` + `PhonicsLegend`），单独 commit。
-- [ ] **B. 回滚引用** — 从 `WordManagerPage.tsx` 去掉 `WordPreviewModal` 相关 import / state / JSX，恢复可 build 状态。
-
-> commit `37b66ea` 的 message 写的是 Phase 5，实际内容是词库/onboarding 改动，与 Phase 5 无关；修完后可考虑 amend 或另开 commit 澄清。
+`src/components/admin/words/WordPreviewModal.tsx` 已补全并纳入 git（commit `4ba1b23` "refactor: add preview in word manage"），不再阻塞 build。
 
 ---
 
@@ -75,6 +68,8 @@ Phase 6 细节：docs/superpowers/specs/2026-06-12-calc-calculate-fusion-design.
 | 1 | `ErrorTag` + `src/utils/calc-diagnose.ts` | `9358ed0` |
 | 2 | 迁移 SQL 文件 `docs/sql/calc-phase5-error-tags-migration.sql` | `f4edf77` |
 | 3 | `useCalcMistakes` 支持 `userAnswer` + `errorTag` | `1d5ea3f` |
+| 4 | 会话写入诊断结果（`settleQuestion` 加 `userAnswer` 参数 + 5 个 caller） | `0fb9637` |
+| 5 | 报告页「错误类型分布」section | `318b0f8` |
 
 **Task 2 用户步骤（Supabase，手动）：** 在 SQL Editor 执行：
 
@@ -89,34 +84,9 @@ alter table calc_mistakes
 
 ### 待做 ❌
 
-#### Task 4 — 会话写入诊断结果
-
-**文件：** `src/app/calc/session/page.tsx`（仅此文件）
-
-- [ ] import `{ diagnose } from '@/utils/calc-diagnose'`
-- [ ] `settleQuestion` 增加最后一个参数 `userAnswer: string`
-- [ ] final-wrong 分支：`diagnose(q, userAnswer)` → `addMistake(q, sessionNo, userAnswer, errorTag)`
-- [ ] 所有 caller 传入 `userAnswer`：
-  - `handleSubmit` → `input`
-  - `handleVerticalSubmit` → `''`
-  - `handleRemainderSubmit` → `combined`
-  - `handleFractionSubmit` → `combined`
-- [ ] `pnpm lint`
-- [ ] commit: `feat(calc): diagnose + store the user's wrong answer per mistake`
-
-**验收：** 故意答错几题，Supabase `calc_mistakes` 新行应有 `user_answer`、`error_tag`（可为 null）。
-
-#### Task 5 — 报告页「错误类型分布」
-
-**文件：** `src/app/calc/report/page.tsx`（仅此文件）
-
-- [ ] 查询未 resolved 且 `error_tag` 非空的 `calc_mistakes`，聚合计数
-- [ ] 在「最弱 10 题」与「最近练习」之间渲染 **错误类型分布**（样式与现有 section 一致）
-- [ ] 使用 `ERROR_TAG_LABELS`（`@/utils/calc-diagnose`）
-- [ ] `pnpm lint` + `pnpm build`
-- [ ] commit: `feat(calc): add 错误类型分布 section to the report`
-
-**验收：** 制造可诊断错题后打开 `/calc/report`，应看到分布条；掌握度 / 最弱题 / 最近练习不受影响。
+> Task 4、5 已写完并提交（见上表）。剩 Task 6 端到端验证（用户手动）。
+>
+> **用户待办：** ① 在 Supabase 跑 `docs/sql/calc-phase5-error-tags-migration.sql`（若同项目已跑可跳过）；② `pnpm lint` + `pnpm build`；③ 按下面手动 case 验证。
 
 #### Task 6 — 端到端验证（用户 + AI 协助）
 

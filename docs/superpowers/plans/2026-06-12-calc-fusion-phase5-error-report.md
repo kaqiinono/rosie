@@ -240,19 +240,19 @@ git commit -m "feat(calc): persist user_answer + error_tag on mistakes"
 
 **Files:** `src/app/calc/session/page.tsx`
 
-- [ ] **Step 1: Import the diagnoser** — near the other `@/utils` imports:
+- [x] **Step 1: Import the diagnoser** — near the other `@/utils` imports:
 ```ts
 import { diagnose } from '@/utils/calc-diagnose'
 ```
 
-- [ ] **Step 2: `settleQuestion` gains a `userAnswer` param** — add `userAnswer: string` as the LAST parameter of the `settleQuestion` useCallback. In its **final-wrong branch**, the line `void addMistake(q, settings.sessionCounter + 1)` becomes:
+- [x] **Step 2: `settleQuestion` gains a `userAnswer` param** — add `userAnswer: string` as the LAST parameter of the `settleQuestion` useCallback. In its **final-wrong branch**, the line `void addMistake(q, settings.sessionCounter + 1)` becomes:
 ```ts
       const errorTag = diagnose(q, userAnswer)
       void addMistake(q, settings.sessionCounter + 1, userAnswer, errorTag)
 ```
 (No new dep needed — `diagnose` is a pure import. `addMistake` is already a dep.)
 
-- [ ] **Step 3: Pass `userAnswer` from every caller:**
+- [x] **Step 3: Pass `userAnswer` from every caller:**
   - In `handleSubmit`, BOTH `settleQuestion(...)` calls get `input` as the final arg: `settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, input)` and `settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)`.
   - In `handleVerticalSubmit`, pass `''` (the vertical component grades internally; no raw string): `settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake, '')`.
   - In `handleRemainderSubmit`, pass `combined`: `settleQuestion(q, checkAnswer(combined, q.answer), true, elapsedMs, withinLimit, wasMistake, combined)`.
@@ -262,7 +262,7 @@ import { diagnose } from '@/utils/calc-diagnose'
 
 - [ ] **Step 5: Manual checkpoint (user runs)** — practice and miss some questions (with the Task 2 migration run); confirm wrong answers still record mistakes and behave as before. (The tag is stored silently; it surfaces in Task 5.)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add src/app/calc/session/page.tsx
 git commit -m "feat(calc): diagnose + store the user's wrong answer per mistake"
@@ -276,7 +276,7 @@ git commit -m "feat(calc): diagnose + store the user's wrong answer per mistake"
 
 > Adds one section to the existing report. **Invoke `frontend-design:frontend-design` first**, but match the report's EXISTING section style (the 薄弱点-style horizontal bars + `BLOCK_GROUPS` sections already in this file) — consistency over novelty.
 
-- [ ] **Step 1: Load error tags** — add a state + effect that queries `calc_mistakes` for the user and aggregates `error_tag` counts among UNRESOLVED rows:
+- [x] **Step 1: Load error tags** — add a state + effect that queries `calc_mistakes` for the user and aggregates `error_tag` counts among UNRESOLVED rows:
 ```ts
   const [errorCounts, setErrorCounts] = useState<{ tag: ErrorTag; count: number }[]>([])
 ```
@@ -296,7 +296,7 @@ In the existing data-loading effect (or a new one keyed on `user`), after loadin
 ```
 Add imports: `import { ERROR_TAG_LABELS } from '@/utils/calc-diagnose'` and `import type { ErrorTag } from '@/utils/type'`.
 
-- [ ] **Step 2: Render the section** — add a new `<section>` (place it after 「最弱 10 题」, before 「最近练习」), rendered only when `errorCounts.length > 0`, matching the file's existing section heading + bar style:
+- [x] **Step 2: Render the section** — add a new `<section>` (place it after 「最弱 10 题」, before 「最近练习」), rendered only when `errorCounts.length > 0`, matching the file's existing section heading + bar style:
 ```tsx
             {errorCounts.length > 0 && (
               <section>
@@ -339,7 +339,7 @@ Add imports: `import { ERROR_TAG_LABELS } from '@/utils/calc-diagnose'` and `imp
 
 - [ ] **Step 4: Manual checkpoint (user runs)** — make a few diagnosable mistakes (e.g. answer `48 + 57` as `95` → 进位遗漏; `3 + 4 × 2` as `14` → 运算顺序混淆; `2/5 + 1/5` as `3/10` → 分子分母混淆), then open `/calc/report` and confirm the 「错误类型分布」 section lists those tags with counts; the existing mastery/weakest/recent sections are unchanged.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add src/app/calc/report/page.tsx
 git commit -m "feat(calc): add 错误类型分布 section to the report"
