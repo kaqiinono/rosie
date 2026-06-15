@@ -190,8 +190,8 @@ export default function CalcSettingsPage() {
               onChange={(v) => update({ includeInverse: v })}
             />
             <ToggleRow
-              label="大数题用竖式作答"
-              description="1000以内 / 万以内加减、两位数×一位数、多位数÷一位数 用竖式格子作答"
+              label="多位数题用竖式作答"
+              description="百以内 / 千以内 / 万以内加减、两位数×一·两位数、多位数÷一位数 用竖式格子作答"
               value={settings.verticalForBigNumbers}
               onChange={(v) => update({ verticalForBigNumbers: v })}
             />

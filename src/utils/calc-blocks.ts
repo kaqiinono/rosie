@@ -349,11 +349,13 @@ export const BLOCK_GROUPS: { group: CalcBlock['group']; label: string }[] = [
 ]
 
 /** Block ids whose questions can be answered in a column ("竖式") layout.
- *  add/sub: multi-digit; mul: two-digit × one-digit; div: multi-digit ÷ one-digit. */
+ *  add/sub: two-digit (百以内) and up; mul: two-digit × one/two-digit;
+ *  div: multi-digit ÷ one-digit. VerticalCalc only grades the final result row
+ *  (carry scaffolding is optional/ungraded), so two-digit operands work fine. */
 export const VERTICAL_BLOCK_IDS = new Set<string>([
-  'add:1000', 'add:10000',
-  'sub:1000', 'sub:10000',
-  'mul:2d1d',
+  'add:100a', 'add:100b', 'add:1000', 'add:10000',
+  'sub:100a', 'sub:100b', 'sub:1000', 'sub:10000',
+  'mul:2d1d', 'mul:2d',
   'div:multi',
 ])
 
