@@ -11,41 +11,47 @@
  * so the preview and the real thing can't drift.
  */
 
+import { useState } from 'react'
 import Link from 'next/link'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
 import { SAMPLES, type Sample } from './samples'
 
 const noop = () => {}
 
-// ── One clickable phone-frame preview (links to the detail page) ────────────
+// ── One phone-frame preview — playable in place; 「打开」links to the detail page ──
 
 function DemoCard({ sample }: { sample: Sample }) {
   const { question } = sample
+  // Local input state so the number pad echoes; self-grading pads (竖式/分数/余数)
+  // drive their own internal state, so they're fully interactive on the card too.
+  const [input, setInput] = useState('')
 
   return (
-    <Link
-      href={`/calc/demo/${sample.key}`}
-      className="group flex flex-col gap-2 no-underline"
-    >
+    <div className="group flex flex-col gap-2">
       {/* Label */}
       <div className="flex items-baseline justify-between gap-2 px-1">
         <h3 className="text-[14px] font-black" style={{ color: '#e9d5ff' }}>
           {sample.title}
         </h3>
-        <span
-          className="shrink-0 text-[11px] font-bold opacity-70 transition-opacity group-hover:opacity-100"
-          style={{ color: '#c4b5fd' }}
+        <Link
+          href={`/calc/demo/${sample.key}`}
+          className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold no-underline transition-colors"
+          style={{
+            background: 'rgba(139,92,246,0.15)',
+            border: '1px solid rgba(139,92,246,0.3)',
+            color: '#c4b5fd',
+          }}
         >
           打开 ↗
-        </span>
+        </Link>
       </div>
       <p className="px-1 text-[11px] leading-snug" style={{ color: 'rgba(196,181,253,0.45)' }}>
         {sample.note}
       </p>
 
-      {/* Phone frame — preview only; clicks fall through to the card link */}
+      {/* Phone frame — playable preview */}
       <div
-        className="relative mx-auto flex w-full max-w-[400px] flex-col overflow-hidden rounded-[2rem] transition-transform group-hover:-translate-y-1"
+        className="relative mx-auto flex w-full max-w-[400px] flex-col overflow-hidden rounded-[2rem]"
         style={{
           height: 'min(720px, 78svh)',
           minHeight: 560,
@@ -74,15 +80,15 @@ function DemoCard({ sample }: { sample: Sample }) {
         {/* Banner slot spacer (parity with the session's feedback row) */}
         <div className="h-7 shrink-0" />
 
-        {/* Non-interactive stage — pointer events disabled so the card link wins */}
-        <div className="pointer-events-none flex min-h-0 flex-1 flex-col">
+        {/* Playable stage — local input only; submit/grade lives on the detail page */}
+        <div className="flex min-h-0 flex-1 flex-col">
           <CalcQuestionStage
             padKey={sample.key}
             question={question}
             isChallenge={question.isChallenge}
             disabled={false}
-            input=""
-            onInputChange={noop}
+            input={input}
+            onInputChange={setInput}
             onNumberSubmit={noop}
             onFractionSubmit={noop}
             onRemainderSubmit={noop}
@@ -90,7 +96,7 @@ function DemoCard({ sample }: { sample: Sample }) {
           />
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 

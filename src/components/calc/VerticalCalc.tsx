@@ -24,7 +24,13 @@ type VerticalCalcProps = {
 // In `fill` mode sizes are expressed in `cqh` (container-query height) so the whole
 // 竖式 scales to the height the answer area is actually given — fitting without a
 // scrollbar and without overlapping the keypad. Compact mode keeps fixed pixels.
-type Geo = { cell: { width: string | number; height: string | number }; lead: string | number; digitFont: string | number; carryH: string | number; carryFont: string | number }
+type Geo = {
+  cell: { width: string | number; height: string | number }
+  lead: string | number
+  digitFont: string | number
+  carryH: string | number
+  carryFont: string | number
+}
 const FILL_GEO: Geo = {
   cell: { width: 'clamp(26px, 13cqh, 52px)', height: 'clamp(30px, 16cqh, 60px)' },
   lead: 'clamp(22px, 11cqh, 46px)',
@@ -54,7 +60,9 @@ function getDigits(n: number): number[] {
 /** Right-align `arr` into a `len`-wide row, padding the left with nulls (blanks). */
 function padLeft<T>(arr: readonly T[], len: number): (T | null)[] {
   const pad = Math.max(0, len - arr.length)
-  return Array<T | null>(pad).fill(null).concat(arr as T[])
+  return Array<T | null>(pad)
+    .fill(null)
+    .concat(arr as T[])
 }
 
 function computeAddition(a: number, b: number) {
@@ -62,8 +70,12 @@ function computeAddition(a: number, b: number) {
   const aDigits = getDigits(a)
   const bDigits = getDigits(b)
   const maxLen = Math.max(aDigits.length, bDigits.length)
-  const aPad = Array(maxLen - aDigits.length).fill(0).concat(aDigits)
-  const bPad = Array(maxLen - bDigits.length).fill(0).concat(bDigits)
+  const aPad = Array(maxLen - aDigits.length)
+    .fill(0)
+    .concat(aDigits)
+  const bPad = Array(maxLen - bDigits.length)
+    .fill(0)
+    .concat(bDigits)
 
   const carries: number[] = Array(maxLen).fill(0)
   let carry = 0
@@ -81,7 +93,9 @@ function computeSubtraction(a: number, b: number) {
   const aDigits = getDigits(a)
   const bDigits = getDigits(b)
   const maxLen = aDigits.length
-  const bPad = Array(maxLen - bDigits.length).fill(0).concat(bDigits)
+  const bPad = Array(maxLen - bDigits.length)
+    .fill(0)
+    .concat(bDigits)
 
   const borrows: number[] = Array(maxLen).fill(0)
   let borrow = 0
@@ -132,13 +146,12 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
   const [userCarries, setUserCarries] = useState<(number | null)[]>(() =>
     Array(totalCols).fill(null),
   )
-  const [userResult, setUserResult] = useState<(number | null)[]>(() =>
-    Array(totalCols).fill(null),
-  )
+  const [userResult, setUserResult] = useState<(number | null)[]>(() => Array(totalCols).fill(null))
   // Start on the rightmost result cell so typing works immediately (right→left).
-  const [activeCell, setActiveCell] = useState<{ type: 'carry' | 'result'; idx: number }>(
-    () => ({ type: 'result', idx: totalCols - 1 }),
-  )
+  const [activeCell, setActiveCell] = useState<{ type: 'carry' | 'result'; idx: number }>(() => ({
+    type: 'result',
+    idx: totalCols - 1,
+  }))
   const [checked, setChecked] = useState(false)
   // 进位/退位 row is optional scaffolding (never graded); hidden by default.
   const [showCarry, setShowCarry] = useState(false)
@@ -236,6 +249,12 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
 
   const geo = fill ? FILL_GEO : COMPACT_GEO
 
+  // 加/乘是「进位」(carry, +)，减是「退位」(borrow, −)。符号只是固定的视觉提示，
+  // 不参与输入、不可点选——孩子只在格子里填数字。
+  const isSub = op === '-'
+  const carryLabel = isSub ? '退位格' : '进位格'
+  const carrySign = isSub ? '−' : '+'
+
   return (
     <div className={fill ? 'flex h-full w-full flex-col' : 'flex w-full flex-col'}>
       {/* Answer area — grows to fill, vertically centered above the keypad. In fill
@@ -248,140 +267,175 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
         }
         style={fill ? { containerType: 'size' } : undefined}
       >
-      {/* 进位格 toggle — auxiliary scaffolding, off by default, never graded */}
-      <button
-        type="button"
-        onClick={() => setShowCarry((v) => !v)}
-        disabled={checked}
-        className="rounded-full px-3 py-1 text-[11px] font-extrabold transition-all select-none"
-        style={{
-          background: showCarry ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${showCarry ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.1)'}`,
-          color: showCarry ? '#c4b5fd' : 'rgba(196,181,253,0.55)',
-        }}
-      >
-        {showCarry ? '✓ 进位格' : '＋ 进位格'}
-      </button>
+        {/* 进位格 toggle — auxiliary scaffolding, off by default, never graded */}
+        <button
+          type="button"
+          onClick={() => setShowCarry((v) => !v)}
+          disabled={checked}
+          className="rounded-full px-3 py-1 text-[11px] font-extrabold transition-all select-none"
+          style={{
+            background: showCarry ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${showCarry ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.1)'}`,
+            color: showCarry ? '#c4b5fd' : 'rgba(196,181,253,0.55)',
+          }}
+        >
+          {showCarry ? `✓ ${carryLabel}` : `＋ ${carryLabel}`}
+        </button>
 
-      {/* Vertical layout */}
-      <div
-        className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
-        style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        {/* 进位/退位 row — optional scaffolding; every column, never graded/colored */}
-        {showCarry && (
-          <div className="mb-0.5 flex justify-end gap-1">
+        {/* Vertical layout */}
+        <div
+          className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          {/* 进位/退位 row — optional scaffolding; every column, never graded/colored */}
+          {showCarry && (
+            <div className="mb-0.5 flex justify-end gap-1">
+              <div style={{ width: geo.lead }} />
+              {userCarries.map((val, i) => {
+                const isActive = activeCell.type === 'carry' && activeCell.idx === i
+                return (
+                  <button
+                    key={`c${i}`}
+                    type="button"
+                    onClick={() =>
+                      !disabled && !checked && setActiveCell({ type: 'carry', idx: i })
+                    }
+                    className="flex items-center justify-center rounded leading-none font-black transition-all select-none active:scale-[0.93]"
+                    style={{
+                      width: geo.cell.width,
+                      height: geo.carryH,
+                      fontSize: geo.carryFont,
+                      border: isActive
+                        ? '1px solid rgba(139,92,246,0.6)'
+                        : '1px dashed rgba(196,181,253,0.4)',
+                      background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
+                      color: isActive
+                        ? '#c4b5fd'
+                        : val !== null
+                          ? '#c4b5fd'
+                          : 'rgba(196,181,253,0.4)',
+                    }}
+                  >
+                    {val !== null ? (
+                      <>
+                        <span style={{ opacity: 0.5, marginRight: '2px', marginBottom: '2px' }}>
+                          {carrySign}
+                        </span>
+                        {val}
+                      </>
+                    ) : (
+                      '·'
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* First operand row */}
+          <div className="flex justify-end gap-1">
             <div style={{ width: geo.lead }} />
-            {userCarries.map((val, i) => {
-              const isActive = activeCell.type === 'carry' && activeCell.idx === i
+            {aPad.map((d, i) => (
+              <div
+                key={`a${i}`}
+                className="flex items-center justify-center font-black"
+                style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}
+              >
+                {d !== null ? d : ''}
+              </div>
+            ))}
+          </div>
+
+          {/* Operator + second operand */}
+          <div className="flex justify-end gap-1">
+            <div
+              className="flex items-center justify-center font-black"
+              style={{
+                width: geo.lead,
+                height: geo.cell.height,
+                fontSize: geo.digitFont,
+                color: 'rgba(196,181,253,0.6)',
+              }}
+            >
+              {op}
+            </div>
+            {bPad.map((d, i) => (
+              <div
+                key={`b${i}`}
+                className="flex items-center justify-center font-black"
+                style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}
+              >
+                {d !== null ? d : ''}
+              </div>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
+
+          {/* Result row */}
+          <div className="flex justify-end gap-1">
+            <div style={{ width: geo.lead }} />
+            {userResult.map((val, i) => {
+              // The result occupies only the rightmost `resultLen` columns; leading
+              // columns (e.g. above the minuend's extra digit) are blank spacers.
+              const editable = i >= totalCols - resultLen
+              if (!editable) {
+                return <div key={`r${i}`} style={geo.cell} />
+              }
+              const correctVal = correctResultPad[i] ?? 0
+              const isActive = activeCell?.type === 'result' && activeCell.idx === i
+              const showError = checked && val !== null && val !== correctVal
+              const showCorrect = checked && val !== null && val === correctVal
+
               return (
                 <button
-                  key={`c${i}`}
+                  key={`r${i}`}
                   type="button"
-                  onClick={() => !disabled && !checked && setActiveCell({ type: 'carry', idx: i })}
-                  className="flex items-center justify-center rounded leading-none font-black transition-all select-none active:scale-[0.93]"
+                  onClick={() => !disabled && !checked && setActiveCell({ type: 'result', idx: i })}
+                  className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
                   style={{
-                    width: geo.cell.width,
-                    height: geo.carryH,
-                    fontSize: geo.carryFont,
-                    border: isActive ? '1px solid rgba(139,92,246,0.6)' : '1px dashed rgba(196,181,253,0.4)',
-                    background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
-                    color: isActive ? '#c4b5fd' : val !== null ? '#c4b5fd' : 'rgba(196,181,253,0.4)',
+                    ...geo.cell,
+                    fontSize: geo.digitFont,
+                    borderColor: isActive
+                      ? 'rgba(139,92,246,0.5)'
+                      : showCorrect
+                        ? 'rgba(74,222,128,0.5)'
+                        : showError
+                          ? 'rgba(248,113,113,0.5)'
+                          : 'rgba(255,255,255,0.08)',
+                    background: isActive
+                      ? 'rgba(139,92,246,0.2)'
+                      : showCorrect
+                        ? 'rgba(74,222,128,0.15)'
+                        : showError
+                          ? 'rgba(248,113,113,0.15)'
+                          : 'rgba(255,255,255,0.05)',
+                    color: isActive
+                      ? '#c4b5fd'
+                      : showCorrect
+                        ? '#4ade80'
+                        : showError
+                          ? '#f87171'
+                          : '#f5f3ff',
                   }}
                 >
-                  {val !== null ? val : '·'}
+                  {val !== null ? val : ''}
                 </button>
               )
             })}
           </div>
-        )}
-
-        {/* First operand row */}
-        <div className="flex justify-end gap-1">
-          <div style={{ width: geo.lead }} />
-          {aPad.map((d, i) => (
-            <div key={`a${i}`} className="flex items-center justify-center font-black" style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}>
-              {d !== null ? d : ''}
-            </div>
-          ))}
         </div>
-
-        {/* Operator + second operand */}
-        <div className="flex justify-end gap-1">
-          <div className="flex items-center justify-center font-black" style={{ width: geo.lead, height: geo.cell.height, fontSize: geo.digitFont, color: 'rgba(196,181,253,0.6)' }}>
-            {op}
-          </div>
-          {bPad.map((d, i) => (
-            <div key={`b${i}`} className="flex items-center justify-center font-black" style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}>
-              {d !== null ? d : ''}
-            </div>
-          ))}
-        </div>
-
-        {/* Divider */}
-        <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
-
-        {/* Result row */}
-        <div className="flex justify-end gap-1">
-          <div style={{ width: geo.lead }} />
-          {userResult.map((val, i) => {
-            // The result occupies only the rightmost `resultLen` columns; leading
-            // columns (e.g. above the minuend's extra digit) are blank spacers.
-            const editable = i >= totalCols - resultLen
-            if (!editable) {
-              return <div key={`r${i}`} style={geo.cell} />
-            }
-            const correctVal = correctResultPad[i] ?? 0
-            const isActive = activeCell?.type === 'result' && activeCell.idx === i
-            const showError = checked && val !== null && val !== correctVal
-            const showCorrect = checked && val !== null && val === correctVal
-
-            return (
-              <button
-                key={`r${i}`}
-                type="button"
-                onClick={() => !disabled && !checked && setActiveCell({ type: 'result', idx: i })}
-                className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
-                style={{
-                  ...geo.cell,
-                  fontSize: geo.digitFont,
-                  borderColor: isActive
-                    ? 'rgba(139,92,246,0.5)'
-                    : showCorrect
-                      ? 'rgba(74,222,128,0.5)'
-                      : showError
-                        ? 'rgba(248,113,113,0.5)'
-                        : 'rgba(255,255,255,0.08)',
-                  background: isActive
-                    ? 'rgba(139,92,246,0.2)'
-                    : showCorrect
-                      ? 'rgba(74,222,128,0.15)'
-                      : showError
-                        ? 'rgba(248,113,113,0.15)'
-                        : 'rgba(255,255,255,0.05)',
-                  color: isActive
-                    ? '#c4b5fd'
-                    : showCorrect
-                      ? '#4ade80'
-                      : showError
-                        ? '#f87171'
-                        : '#f5f3ff',
-                }}
-              >
-                {val !== null ? val : ''}
-              </button>
-            )
-          })}
-        </div>
-      </div>
       </div>
 
       {/* Number pad — pinned to the bottom, full width (matches NumberPad) */}
       {!checked && (
-        <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}>
+        <div
+          className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}
+        >
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
             <button
               key={d}
