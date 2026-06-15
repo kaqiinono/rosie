@@ -15,6 +15,7 @@ import FractionPad from './FractionPad'
 import FractionPie from './FractionPie'
 import VerticalCalc from './VerticalCalc'
 import DivisionVertical from './DivisionVertical'
+import MultiplicationVertical from './MultiplicationVertical'
 import { fractionPieSpec } from '@/utils/calc-helpers'
 import { parseSignature } from '@/utils/calc-ast'
 import type { CalcQuestion } from '@/utils/type'
@@ -125,6 +126,20 @@ export default function CalcAnswerInput({
           disabled={disabled}
           fill={fill}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.quotient.join(''))}
+        />
+      )
+    }
+    // Multi-digit multiplier (e.g. 47 × 38): use the partial-product 竖式 so each
+    // a × digit step is shown and graded, then summed. Single-digit multipliers
+    // (47 × 8) stay on VerticalCalc — one row IS the answer, no sum step.
+    if (ast.op === 'mul' && ast.right >= 10) {
+      return (
+        <MultiplicationVertical
+          a={ast.left}
+          b={ast.right}
+          disabled={disabled}
+          fill={fill}
+          onSubmit={(r) => onVerticalSubmit(r.correct, r.userResult.join(''))}
         />
       )
     }
