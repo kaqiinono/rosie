@@ -395,6 +395,8 @@ export interface CalcSettings {
   soundEnabled: boolean
   includeInverse: boolean
   verticalForBigNumbers: boolean
+  timedAnswerEnabled: boolean // 总开关：关闭时不限时、设置页不显示每题型限时
+  immersiveMode: boolean     // 沉浸：无答题反馈，提交后直接下一题（错题仍进补练）
   lastCount: number          // auto 模式的全局总题量 (10/20/30/50/100)
   sessionCounter: number     // 每次 session 完成自增
 }

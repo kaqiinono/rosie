@@ -1,6 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import QuestionFeedbackHint from './QuestionFeedbackHint'
+import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
+import { type FeedbackKind } from './FeedbackOverlay'
 
 type MultiplicationVerticalProps = {
   /** Top factor (multiplicand). */
@@ -14,6 +17,10 @@ type MultiplicationVerticalProps = {
     userResult: number[]
   }) => void
   disabled?: boolean
+  attempt?: number
+  feedback?: FeedbackKind
+  revealAnswer?: string | null
+  immersive?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
 }
@@ -62,7 +69,7 @@ function placeDigits(value: number, endCol: number, totalCols: number): (number 
 
 type ActiveCell = { row: number; idx: number }
 
-function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false }: MultiplicationVerticalProps) {
+function MultiplicationVertical({ a, b, onSubmit, disabled = false, attempt = 0, feedback = null, revealAnswer = null, immersive = false, fill = false }: MultiplicationVerticalProps) {
   // ── Correct layout (memoised) ────────────────────────────────────────────
   const layout = useMemo(() => {
     const result = a * b
@@ -107,7 +114,8 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false
     Array<number | null>(totalCols).fill(null),
   )
   const [active, setActive] = useState<ActiveCell>(() => cellOrder[0] ?? { row: 0, idx: totalCols - 1 })
-  const [checked, setChecked] = useState(false)
+  const [graded, setGraded] = useState(false)
+  const [locked, setLocked] = useState(false)
 
   const getVal = (c: ActiveCell): number | null =>
     c.row === resultRowIdx ? userResult[c.idx] : userPartials[c.row]?.[c.idx] ?? null
@@ -131,22 +139,21 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false
   const orderIndex = (c: ActiveCell) => cellOrder.findIndex((o) => o.row === c.row && o.idx === c.idx)
 
   const handleDigitInput = (digit: number) => {
-    if (disabled || checked) return
+    if (disabled || locked) return
     setVal(active, digit)
     const i = orderIndex(active)
     if (i >= 0 && i + 1 < cellOrder.length) setActive(cellOrder[i + 1])
   }
 
   const handleDelete = () => {
-    if (disabled || checked) return
+    if (disabled || locked) return
     setVal(active, null)
   }
 
   const allFilled = cellOrder.every((c) => getVal(c) !== null)
 
   const handleCheck = () => {
-    if (checked) return
-    setChecked(true)
+    if (locked) return
     const partialsCorrect = partials.every((row, r) =>
       row.every((d, col) => (d === null ? true : userPartials[r][col] === d)),
     )
@@ -154,12 +161,28 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false
       ? resultRow.every((d, col) => (d === null ? true : userResult[col] === d))
       : partialsCorrect // single-partial: the lone row IS the answer
     const finalDigits = (hasSumRow ? userResult : userPartials[0]).map((v) => v ?? 0)
+    const allCorrect = resultCorrect && partialsCorrect
     onSubmit({
-      correct: resultCorrect && partialsCorrect,
+      correct: allCorrect,
       resultCorrect,
       partialsCorrect,
       userResult: finalDigits,
     })
+    if (immersive) {
+      setLocked(true)
+      return
+    }
+    setGraded(true)
+    if (allCorrect || attempt >= 1) setLocked(true)
+    if (!allCorrect) {
+      const wrong = cellOrder.find((c) => {
+        const correctDigit =
+          c.row === resultRowIdx ? resultRow[c.idx] : partials[c.row]?.[c.idx] ?? null
+        if (correctDigit === null) return false
+        return getVal(c) !== correctDigit
+      })
+      if (wrong) setActive(wrong)
+    }
   }
 
   const handleAction = () => {
@@ -184,38 +207,17 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false
   ) => {
     if (correctDigit === null) return <div key={col} style={geo.cell} />
     const isActive = active.row === rowIdx && active.idx === col
-    const showError = checked && val !== null && val !== correctDigit
-    const showCorrect = checked && val !== null && val === correctDigit
+    const cellStyle = editableCellStyle({ isActive, graded: graded && !immersive, val, correctVal: correctDigit })
     return (
       <button
         key={col}
         type="button"
-        onClick={() => !disabled && !checked && setActive({ row: rowIdx, idx: col })}
+        onClick={() => !disabled && !locked && setActive({ row: rowIdx, idx: col })}
         className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
         style={{
           ...geo.cell,
           fontSize: geo.digitFont,
-          borderColor: isActive
-            ? 'rgba(139,92,246,0.5)'
-            : showCorrect
-              ? 'rgba(74,222,128,0.5)'
-              : showError
-                ? 'rgba(248,113,113,0.5)'
-                : 'rgba(255,255,255,0.08)',
-          background: isActive
-            ? 'rgba(139,92,246,0.2)'
-            : showCorrect
-              ? 'rgba(74,222,128,0.15)'
-              : showError
-                ? 'rgba(248,113,113,0.15)'
-                : 'rgba(255,255,255,0.05)',
-          color: isActive
-            ? '#c4b5fd'
-            : showCorrect
-              ? '#4ade80'
-              : showError
-                ? '#f87171'
-                : '#f5f3ff',
+          ...cellStyle,
         }}
       >
         {val !== null ? val : ''}
@@ -294,9 +296,10 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false
         </div>
       </div>
 
-      {/* Number pad — pinned to the bottom, full width (matches VerticalCalc) */}
-      {!checked && (
-        <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}>
+      <QuestionFeedbackHint feedback={immersive ? null : feedback} revealAnswer={revealAnswer} />
+
+      {/* Number pad — keep slot when locked so the layout does not jump */}
+      <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
             <button
               key={d}
@@ -366,7 +369,6 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, fill = false
             {!allFilled ? 'Enter' : '✓'}
           </button>
         </div>
-      )}
     </div>
   )
 }

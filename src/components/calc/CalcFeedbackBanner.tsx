@@ -3,8 +3,8 @@
 /**
  * Shared inline feedback banner (答对 / 挑战答对 / 再想想 / 答案揭晓).
  *
- * Reserves a fixed-height row above the question stage so the layout never jumps
- * when feedback appears. Single source of truth shared by the real session
+ * Reserves height only while wrong/retry feedback is visible so the layout
+ * does not jump. Correct answers advance immediately with no banner.
  * (`/calc/session`) and the type preview (`/calc/demo`).
  */
 
@@ -33,7 +33,7 @@ export default function CalcFeedbackBanner({
   secondTry,
 }: Props) {
   return (
-    <div className="mb-2 shrink-0" style={{ minHeight: 26 }}>
+    <div className="mb-2 shrink-0" style={{ minHeight: feedback ? 26 : 0 }}>
       {feedback === 'correct' && (
         <div
           className="rounded-xl py-3 text-center text-[15px] font-extrabold"

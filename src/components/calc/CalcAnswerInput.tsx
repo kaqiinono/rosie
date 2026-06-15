@@ -19,6 +19,7 @@ import MultiplicationVertical from './MultiplicationVertical'
 import { fractionPieSpec } from '@/utils/calc-helpers'
 import { parseSignature } from '@/utils/calc-ast'
 import type { CalcQuestion } from '@/utils/type'
+import type { FeedbackKind } from './FeedbackOverlay'
 
 type Variant = 'full' | 'compact'
 
@@ -80,6 +81,10 @@ type Props = {
   onRemainderSubmit: (raw: string) => void
   /** Single-shot grade for self-checking 竖式 components (true = correct, plus the child's typed answer for diagnosis). */
   onVerticalSubmit: (correct: boolean, userAnswer: string) => void
+  attempt?: number
+  feedback?: FeedbackKind
+  revealAnswer?: string | null
+  immersive?: boolean
 }
 
 export default function CalcAnswerInput({
@@ -93,6 +98,10 @@ export default function CalcAnswerInput({
   onFractionSubmit,
   onRemainderSubmit,
   onVerticalSubmit,
+  attempt = 0,
+  feedback = null,
+  revealAnswer = null,
+  immersive = false,
 }: Props) {
   if (question.answer.kind === 'fraction') {
     const spec = fractionPieSpec(question)
@@ -124,7 +133,11 @@ export default function CalcAnswerInput({
           dividend={ast.left}
           divisor={ast.right}
           disabled={disabled}
+          attempt={attempt}
           fill={fill}
+          feedback={feedback}
+          revealAnswer={revealAnswer}
+          immersive={immersive}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.quotient.join(''))}
         />
       )
@@ -138,7 +151,11 @@ export default function CalcAnswerInput({
           a={ast.left}
           b={ast.right}
           disabled={disabled}
+          attempt={attempt}
           fill={fill}
+          feedback={feedback}
+          revealAnswer={revealAnswer}
+          immersive={immersive}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.userResult.join(''))}
         />
       )
@@ -150,7 +167,11 @@ export default function CalcAnswerInput({
         b={ast.right}
         op={opSym}
         disabled={disabled}
+        attempt={attempt}
         fill={fill}
+        feedback={feedback}
+        revealAnswer={revealAnswer}
+        immersive={immersive}
         onSubmit={(r) => onVerticalSubmit(r.resultCorrect, r.userResult.join(''))}
       />
     )

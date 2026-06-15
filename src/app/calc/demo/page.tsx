@@ -15,7 +15,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
 import CalcSessionStatusBar from '@/components/calc/CalcSessionStatusBar'
-import CalcFeedbackBanner from '@/components/calc/CalcFeedbackBanner'
 import { SAMPLES, type Sample } from './samples'
 
 const noop = () => {}
@@ -71,7 +70,6 @@ function DemoCard({ sample }: { sample: Sample }) {
             coinsTotal={0}
             lastResult={null}
           />
-          <CalcFeedbackBanner feedback={null} reduceHint={false} lastResult={null} revealAnswer={null} secondTry={false} />
         </div>
 
         {/* Playable stage — local input only; submit/grade lives on the detail page */}

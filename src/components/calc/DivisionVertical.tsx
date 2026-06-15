@@ -1,12 +1,19 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import QuestionFeedbackHint from './QuestionFeedbackHint'
+import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
+import { type FeedbackKind } from './FeedbackOverlay'
 
 type DivisionVerticalProps = {
   dividend: number
   divisor: number
   onSubmit: (result: { correct: boolean; quotient: number[]; remainder: number }) => void
   disabled?: boolean
+  attempt?: number
+  feedback?: FeedbackKind
+  revealAnswer?: string | null
+  immersive?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
 }
@@ -65,7 +72,7 @@ const BORDER = 'rgba(196,181,253,0.55)'
 // mode keeps fixed pixels for the settings preview.
 const CELL_BASE = 'flex items-center justify-center font-black'
 
-function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill = false }: DivisionVerticalProps) {
+function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, attempt = 0, feedback = null, revealAnswer = null, immersive = false, fill = false }: DivisionVerticalProps) {
   const { digits, n, quotient, steps, remainder } = useMemo(
     () => longDivision(dividend, divisor),
     [dividend, divisor],
@@ -77,7 +84,9 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
 
   const [userQuotient, setUserQuotient] = useState<(number | null)[]>(() => new Array(n).fill(null))
   const [activeIdx, setActiveIdx] = useState(0)
-  const [checked, setChecked] = useState(false)
+  const [graded, setGraded] = useState(false)
+  const [locked, setLocked] = useState(false)
+  const [lastCorrect, setLastCorrect] = useState(false)
 
   const activeCol = quotientCols[activeIdx]
 
@@ -90,7 +99,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
   // Plain handlers — React Compiler memoizes these; hand-tuned useCallback deps
   // here disagreed with its inference and forced it to skip the whole component.
   const handleDigit = (d: number) => {
-    if (disabled || checked) return
+    if (disabled || locked) return
     setUserQuotient((prev) => {
       const next = [...prev]
       next[activeCol] = d
@@ -100,7 +109,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
   }
 
   const handleDelete = () => {
-    if (disabled || checked) return
+    if (disabled || locked) return
     setUserQuotient((prev) => {
       const next = [...prev]
       next[activeCol] = null
@@ -110,14 +119,27 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
   }
 
   const handleCheck = () => {
-    if (checked) return
-    setChecked(true)
+    if (locked) return
     const allCorrect = quotientCols.every((c) => userQuotient[c] === quotient[c])
     onSubmit({
       correct: allCorrect,
       quotient: quotientCols.map((c) => userQuotient[c] ?? 0),
       remainder,
     })
+    if (immersive) {
+      setLocked(true)
+      return
+    }
+    setGraded(true)
+    setLastCorrect(allCorrect)
+    if (allCorrect || attempt >= 1) setLocked(true)
+    if (!allCorrect) {
+      const wrongCol = quotientCols.find((c) => userQuotient[c] !== quotient[c])
+      if (wrongCol !== undefined) {
+        const wrongIdx = quotientCols.indexOf(wrongCol)
+        if (wrongIdx >= 0) setActiveIdx(wrongIdx)
+      }
+    }
   }
 
   // Action key is value-based: 'Enter' jumps to the next empty 商 cell and only
@@ -181,33 +203,25 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
               {Array.from({ length: n }, (_, c) => {
                 if (quotient[c] === null) return <div key={`q${c}`} style={cellSize} />
                 const idx = quotientCols.indexOf(c)
-                const isActive = !checked && idx === activeIdx
+                const isActive = !locked && idx === activeIdx
                 const val = userQuotient[c]
-                const ok = checked && val === quotient[c]
+                const correctVal = quotient[c] ?? 0
+                const cellStyle = editableCellStyle({
+                  isActive,
+                  graded: graded && !immersive,
+                  val,
+                  correctVal,
+                })
                 return (
                   <button
                     key={`q${c}`}
                     type="button"
-                    onClick={() => !disabled && !checked && setActiveIdx(idx)}
+                    onClick={() => !disabled && !locked && setActiveIdx(idx)}
                     className={`${CELL_BASE} rounded-lg border-2 transition-all select-none active:scale-[0.93] ml-1`}
                     style={{
                       ...cellSize,
                       fontSize: cellFont,
-                      borderColor: isActive
-                        ? 'rgba(139,92,246,0.6)'
-                        : checked
-                          ? ok ? 'rgba(74,222,128,0.5)' : 'rgba(248,113,113,0.5)'
-                          : 'rgba(255,255,255,0.1)',
-                      background: isActive
-                        ? 'rgba(139,92,246,0.2)'
-                        : checked
-                          ? ok ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)'
-                          : 'rgba(255,255,255,0.05)',
-                      color: isActive
-                        ? '#c4b5fd'
-                        : checked
-                          ? ok ? '#4ade80' : '#f87171'
-                          : '#f5f3ff',
+                      ...cellStyle,
                     }}
                   >
                     {val !== null ? val : ''}
@@ -227,8 +241,8 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
                 ))}
               </div>
 
-              {/* subtraction work — revealed after 检查 */}
-              {checked && (
+              {/* subtraction work — only after a correct answer */}
+              {locked && lastCorrect && (
                 <div className="flex flex-col">
                   {workRows.map((row, ri) =>
                     row.kind === 'digits' ? (
@@ -263,9 +277,10 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
       </div>
       </div>
 
-      {/* keypad — pinned to the bottom, full width (matches NumberPad) */}
-      {!checked && (
-        <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}>
+      <QuestionFeedbackHint feedback={immersive ? null : feedback} revealAnswer={revealAnswer} />
+
+      {/* keypad — keep slot when locked so the layout does not jump */}
+      <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
               <button
                 key={d}
@@ -310,7 +325,6 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, fill 
               {!quotientComplete ? 'Enter' : '✓'}
             </button>
         </div>
-      )}
     </div>
   )
 }

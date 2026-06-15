@@ -20,6 +20,7 @@
 
 import CalcAnswerInput from './CalcAnswerInput'
 import NumberPad from './NumberPad'
+import { type FeedbackKind } from './FeedbackOverlay'
 import type { CalcQuestion } from '@/utils/type'
 
 // ── Expression header (used by 余数 / 分数) ─────────────────────────────────────
@@ -112,6 +113,51 @@ export function EquationLine({ display, input }: { display: string; input: strin
   )
 }
 
+// ── Inline feedback (overlay — no layout shift) ───────────────────────────────
+
+function InlineQuestionFeedback({
+  feedback,
+  revealAnswer,
+}: {
+  feedback: FeedbackKind
+  revealAnswer: string | null
+}) {
+  if (!feedback || feedback === 'correct' || feedback === 'challenge-correct') return null
+
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex justify-center px-3">
+      {feedback === 'retry' && (
+        <span
+          className="rounded-lg px-3 py-1.5 text-[13px] font-extrabold"
+          style={{
+            background: 'rgba(251,191,36,0.14)',
+            border: '1px solid rgba(251,191,36,0.28)',
+            color: '#fbbf24',
+          }}
+        >
+          🤔 再想想～
+        </span>
+      )}
+      {feedback === 'wrong' && (
+        <span
+          className="rounded-lg px-3 py-1.5 text-[13px] font-extrabold"
+          style={{
+            background: 'rgba(239,68,68,0.12)',
+            border: '1px solid rgba(239,68,68,0.25)',
+            color: '#f87171',
+          }}
+        >
+          答案是{' '}
+          <span className="font-fredoka text-[18px]" style={{ color: '#fca5a5' }}>
+            {revealAnswer}
+          </span>
+          ，下次加油！
+        </span>
+      )}
+    </div>
+  )
+}
+
 // ── Challenge badge (optional, above the equation) ─────────────────────────────
 
 function ChallengeBadge() {
@@ -149,6 +195,12 @@ type Props = {
   onRemainderSubmit: (raw: string) => void
   /** Single-shot grade for self-checking 竖式 components (true = correct, plus the child's typed answer for diagnosis). */
   onVerticalSubmit: (correct: boolean, userAnswer: string) => void
+  /** Inline retry/wrong hint — rendered over the question area without shifting layout. */
+  feedback?: FeedbackKind
+  revealAnswer?: string | null
+  attempt?: number
+  /** 沉浸模式：竖式不显示对错着色，无文字反馈。 */
+  immersive?: boolean
 }
 
 export default function CalcQuestionStage({
@@ -163,6 +215,10 @@ export default function CalcQuestionStage({
   onFractionSubmit,
   onRemainderSubmit,
   onVerticalSubmit,
+  feedback = null,
+  revealAnswer = null,
+  attempt = 0,
+  immersive = false,
 }: Props) {
   const outer = `flex min-h-0 flex-1 flex-col ${className}`
 
@@ -183,6 +239,10 @@ export default function CalcQuestionStage({
       onFractionSubmit={onFractionSubmit}
       onRemainderSubmit={onRemainderSubmit}
       onVerticalSubmit={onVerticalSubmit}
+      attempt={attempt}
+      feedback={immersive ? null : feedback}
+      revealAnswer={immersive ? null : revealAnswer}
+      immersive={immersive}
     />
   )
 
@@ -190,9 +250,10 @@ export default function CalcQuestionStage({
   if (isNumberPad) {
     return (
       <div className={outer}>
-        <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="relative flex flex-1 flex-col items-center justify-center">
           {isChallenge && <ChallengeBadge />}
           <EquationLine display={question.display} input={input} />
+          <InlineQuestionFeedback feedback={feedback} revealAnswer={revealAnswer} />
         </div>
         <div className="mx-auto w-full max-w-[320px]">
           <NumberPad
@@ -216,9 +277,10 @@ export default function CalcQuestionStage({
   // 余数 / 分数: equation centered above, answer surface at the bottom.
   return (
     <div className={`${outer} overflow-y-auto`}>
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-3">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center py-3">
         {isChallenge && <ChallengeBadge />}
         <EquationHeader display={question.display} size="lg" />
+        <InlineQuestionFeedback feedback={feedback} revealAnswer={revealAnswer} />
       </div>
       <div className="shrink-0">{answerInput}</div>
     </div>

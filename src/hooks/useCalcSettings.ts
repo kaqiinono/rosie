@@ -14,6 +14,8 @@ const DEFAULT_SETTINGS: CalcSettings = {
   soundEnabled: true,
   includeInverse: false,
   verticalForBigNumbers: true,
+  timedAnswerEnabled: false,
+  immersiveMode: false,
   lastCount: 20,
   sessionCounter: 0,
 }
@@ -25,6 +27,8 @@ interface RawRow {
   sound_enabled: boolean
   include_inverse: boolean | null
   vertical_for_big_numbers: boolean | null
+  timed_answer_enabled: boolean | null
+  immersive_mode: boolean | null
   last_count: number
   session_counter: number | null
 }
@@ -55,6 +59,8 @@ function rowToSettings(row: RawRow): CalcSettings {
     soundEnabled: row.sound_enabled,
     includeInverse: row.include_inverse ?? false,
     verticalForBigNumbers: row.vertical_for_big_numbers ?? true,
+    timedAnswerEnabled: row.timed_answer_enabled ?? false,
+    immersiveMode: row.immersive_mode ?? false,
     lastCount: row.last_count,
     sessionCounter: row.session_counter ?? 0,
   }
@@ -69,6 +75,8 @@ function settingsToRow(s: CalcSettings, userId: string) {
     sound_enabled: s.soundEnabled,
     include_inverse: s.includeInverse,
     vertical_for_big_numbers: s.verticalForBigNumbers,
+    timed_answer_enabled: s.timedAnswerEnabled,
+    immersive_mode: s.immersiveMode,
     last_count: s.lastCount,
     session_counter: s.sessionCounter,
     updated_at: new Date().toISOString(),
@@ -86,7 +94,7 @@ export function useCalcSettings(user: User | null) {
       const { data } = await supabase
         .from('calc_settings')
         .select(
-          'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers',
+          'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers,timed_answer_enabled,immersive_mode',
         )
         .eq('user_id', user.id)
         .maybeSingle()

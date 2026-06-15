@@ -23,18 +23,47 @@ interface PerTypeCardProps {
   seconds: number | null
   /** 显示题量行（仅精准设置模式；自动分配时题量由系统分配，只显示限时）。 */
   showCount: boolean
+  /** 显示限时行（仅限时答题总开关打开时）。 */
+  showSeconds: boolean
+  /** 显示删除按钮（仅精准设置模式）。 */
+  showDelete?: boolean
   onCount: (n: number) => void
   onSeconds: (s: number) => void
+  onDelete?: () => void
 }
 
-// 每个选中题型一张卡：限时始终可设；题量仅在精准设置模式显示。默认 限时不限 / 题量 20。
-function PerTypeConfigCard({ label, targetId, count, seconds, showCount, onCount, onSeconds }: PerTypeCardProps) {
+// 每个选中题型一张卡：限时仅总开关打开时可设；题量仅在精准设置模式显示。默认 限时不限 / 题量 20。
+function PerTypeConfigCard({
+  label,
+  targetId,
+  count,
+  seconds,
+  showCount,
+  showSeconds,
+  showDelete,
+  onCount,
+  onSeconds,
+  onDelete,
+}: PerTypeCardProps) {
   return (
     <div
       className="space-y-2 rounded-xl px-3 py-2.5"
       style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}
     >
-      <div className="text-[13px] font-extrabold" style={{ color: '#e9d5ff' }}>{label}</div>
+      <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1 text-[13px] font-extrabold" style={{ color: '#e9d5ff' }}>{label}</div>
+        {showDelete && onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label={`移除 ${label}`}
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] transition-all active:scale-90"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(248,113,113,0.75)' }}
+          >
+            🗑️
+          </button>
+        )}
+      </div>
       {showCount && (
         <div className="flex flex-wrap items-center gap-1">
           <span className="mr-1 w-7 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
@@ -58,12 +87,14 @@ function PerTypeConfigCard({ label, targetId, count, seconds, showCount, onCount
           })}
         </div>
       )}
-      <div className="flex items-start gap-1">
-        <span className="mr-1 w-7 shrink-0 pt-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>限时</span>
-        <div className="min-w-0 flex-1">
-          <PerTypeTimeChips targetId={targetId} value={seconds} onChange={onSeconds} />
+      {showSeconds && (
+        <div className="flex items-start gap-1">
+          <span className="mr-1 w-7 shrink-0 pt-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>限时</span>
+          <div className="min-w-0 flex-1">
+            <PerTypeTimeChips targetId={targetId} value={seconds} onChange={onSeconds} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -172,6 +203,14 @@ export default function CalcSettingsPage() {
     update({ mixedOps: settings.mixedOps.map((m) => (m.id === id ? { ...m, ...patch } : m)) })
   }
 
+  const removeBlock = (id: string) => {
+    update({ selectedBlocks: settings.selectedBlocks.filter((b) => b.id !== id) })
+  }
+
+  const disableMixed = (id: string) => {
+    patchMixed(id, { enabled: false })
+  }
+
   if (isLoading) {
     return (
       <>
@@ -257,6 +296,18 @@ export default function CalcSettingsPage() {
               value={settings.verticalForBigNumbers}
               onChange={(v) => update({ verticalForBigNumbers: v })}
             />
+            <ToggleRow
+              label="限时答题"
+              description="开启后可按题型设置每题目标秒数；关闭后不限时"
+              value={settings.timedAnswerEnabled}
+              onChange={(v) => update({ timedAnswerEnabled: v })}
+            />
+            <ToggleRow
+              label="沉浸模式"
+              description="无答题反馈，提交后直接下一题；错题仍会在本轮末尾补练"
+              value={settings.immersiveMode}
+              onChange={(v) => update({ immersiveMode: v })}
+            />
           </div>
         </section>
 
@@ -295,13 +346,18 @@ export default function CalcSettingsPage() {
             <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
           )}
 
-          {/* 每个题型的设置：限时两种模式都可设；题量仅精准设置（自动模式下题量由系统分配）。 */}
+          {/* 每个题型的设置：限时仅总开关打开时可设；题量仅精准设置（自动模式下题量由系统分配）。 */}
+          {(settings.timedAnswerEnabled || settings.countMode === 'manual') && (
           <div className="mt-3">
             <div
               className="mb-1.5 text-[10px] font-extrabold uppercase tracking-wider"
               style={{ color: 'rgba(196,181,253,0.45)' }}
             >
-              {settings.countMode === 'manual' ? '每个题型的题量 · 限时' : '每个题型的限时'}
+              {settings.countMode === 'manual'
+                ? settings.timedAnswerEnabled
+                  ? '每个题型的题量 · 限时'
+                  : '每个题型的题量'
+                : '每个题型的限时'}
             </div>
             {settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
               <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
@@ -317,8 +373,11 @@ export default function CalcSettingsPage() {
                     count={b.count}
                     seconds={b.seconds}
                     showCount={settings.countMode === 'manual'}
+                    showSeconds={settings.timedAnswerEnabled}
+                    showDelete={settings.countMode === 'manual'}
                     onCount={(n) => patchBlock(b.id, { count: n })}
                     onSeconds={(s) => patchBlock(b.id, { seconds: s })}
+                    onDelete={() => removeBlock(b.id)}
                   />
                 ))}
                 {enabledMixed.map((m) => (
@@ -329,13 +388,17 @@ export default function CalcSettingsPage() {
                     count={m.count}
                     seconds={m.seconds}
                     showCount={settings.countMode === 'manual'}
+                    showSeconds={settings.timedAnswerEnabled}
+                    showDelete={settings.countMode === 'manual'}
                     onCount={(n) => patchMixed(m.id, { count: n })}
                     onSeconds={(s) => patchMixed(m.id, { seconds: s })}
+                    onDelete={() => disableMixed(m.id)}
                   />
                 ))}
               </div>
             )}
           </div>
+          )}
         </section>
 
         {/* 音效 */}
@@ -350,11 +413,11 @@ export default function CalcSettingsPage() {
         </section>
 
         {/* Actions */}
-        <div className="space-y-2.5">
+        <div className="flex gap-2.5">
           <button
             type="button"
             onClick={handleStart}
-            className="w-full rounded-2xl px-5 py-4 text-[17px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
+            className="min-w-0 flex-[2] rounded-2xl px-4 py-3.5 text-[16px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
             style={{
               background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
               boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
@@ -366,7 +429,7 @@ export default function CalcSettingsPage() {
           <button
             type="button"
             onClick={handleSave}
-            className="w-full rounded-2xl px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
+            className="min-w-0 flex-1 rounded-2xl px-3 py-3.5 text-[13px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
             style={{
               background: saved ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
               border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,

@@ -15,7 +15,6 @@ import { useState, type ReactNode } from 'react'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
 import CalcSessionStatusBar from '@/components/calc/CalcSessionStatusBar'
-import CalcFeedbackBanner from '@/components/calc/CalcFeedbackBanner'
 import { checkAnswer, formatAnswer } from '@/utils/calc-answer'
 import type { Sample } from './samples'
 
@@ -26,16 +25,17 @@ export default function DemoQuestion({ sample, headerExtra }: { sample: Sample; 
   const [round, setRound] = useState(0) // bump to remount the pad/竖式 for a fresh try
 
   const grade = (ok: boolean) => {
-    setResult(ok ? 'correct' : 'wrong')
-    // Briefly show the result, then reset so the (self-locking) pads re-enable.
-    window.setTimeout(
-      () => {
-        setResult(null)
-        setInput('')
-        setRound((r) => r + 1)
-      },
-      ok ? 750 : 1400,
-    )
+    if (ok) {
+      setInput('')
+      setRound((r) => r + 1)
+      return
+    }
+    setResult('wrong')
+    window.setTimeout(() => {
+      setResult(null)
+      setInput('')
+      setRound((r) => r + 1)
+    }, 1200)
   }
   const gradeRaw = (raw: string) => grade(checkAnswer(raw, question.answer))
   const reset = () => {
@@ -84,14 +84,6 @@ export default function DemoQuestion({ sample, headerExtra }: { sample: Sample; 
           lastResult={null}
         />
 
-        <CalcFeedbackBanner
-          feedback={result}
-          reduceHint={false}
-          lastResult={null}
-          revealAnswer={formatAnswer(question.answer)}
-          secondTry={false}
-        />
-
         <CalcQuestionStage
           padKey={`${sample.key}-${round}`}
           question={question}
@@ -104,6 +96,8 @@ export default function DemoQuestion({ sample, headerExtra }: { sample: Sample; 
           onFractionSubmit={gradeRaw}
           onRemainderSubmit={gradeRaw}
           onVerticalSubmit={grade}
+          feedback={result}
+          revealAnswer={formatAnswer(question.answer)}
         />
       </main>
     </>

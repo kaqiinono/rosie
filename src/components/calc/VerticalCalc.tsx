@@ -1,6 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import QuestionFeedbackHint from './QuestionFeedbackHint'
+import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
+import { type FeedbackKind } from './FeedbackOverlay'
 
 type Op = '+' | '-' | '×'
 
@@ -16,6 +19,11 @@ type VerticalCalcProps = {
     userResult: number[]
   }) => void
   disabled?: boolean
+  /** 0 = first try, 1 = second try — wrong on first try keeps the pad unlocked. */
+  attempt?: number
+  feedback?: FeedbackKind
+  revealAnswer?: string | null
+  immersive?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
 }
@@ -127,7 +135,7 @@ function computeMultiplication(a: number, b: number) {
   return { result, carries, resultDigits: getDigits(result) }
 }
 
-function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: VerticalCalcProps) {
+function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedback = null, revealAnswer = null, immersive = false, fill = false }: VerticalCalcProps) {
   const { carries: correctCarries, resultDigits: correctResult } = useMemo(() => {
     if (op === '+') return computeAddition(a, b)
     if (op === '-') return computeSubtraction(a, b)
@@ -152,14 +160,15 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
     type: 'result',
     idx: totalCols - 1,
   }))
-  const [checked, setChecked] = useState(false)
+  const [graded, setGraded] = useState(false)
+  const [locked, setLocked] = useState(false)
   // 进位/退位 row is optional scaffolding (never graded); hidden by default.
   const [showCarry, setShowCarry] = useState(false)
 
   // Plain handlers — React Compiler memoizes these; hand-tuned useCallback deps
   // here disagreed with its inference and forced it to skip the whole component.
   const handleDigitInput = (digit: number) => {
-    if (disabled || checked) return
+    if (disabled || locked) return
     if (activeCell.type === 'carry') {
       setUserCarries((prev) => {
         const next = [...prev]
@@ -184,7 +193,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
   }
 
   const handleDelete = () => {
-    if (disabled || checked) return
+    if (disabled || locked) return
     if (activeCell.type === 'carry') {
       setUserCarries((prev) => {
         const next = [...prev]
@@ -201,8 +210,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
   }
 
   const handleCheck = () => {
-    if (checked) return
-    setChecked(true)
+    if (locked) return
 
     const correctCarryFull = padLeft(correctCarries, totalCols)
     const correctResultFull = padLeft(correctResult, totalCols)
@@ -219,6 +227,18 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
       userCarries: uc,
       userResult: ur,
     })
+    if (immersive) {
+      setLocked(true)
+      return
+    }
+    setGraded(true)
+    if (resultCorrect || attempt >= 1) {
+      setLocked(true)
+    }
+    if (!resultCorrect) {
+      const wrongCol = resultCols.find((c) => ur[c] !== (correctResultPad[c] ?? 0))
+      if (wrongCol !== undefined) setActiveCell({ type: 'result', idx: wrongCol })
+    }
   }
 
   // Editable result columns, right→left (个位 first). The answer is complete once
@@ -271,7 +291,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
         <button
           type="button"
           onClick={() => setShowCarry((v) => !v)}
-          disabled={checked}
+          disabled={locked}
           className="rounded-full px-3 py-1 text-[11px] font-extrabold transition-all select-none"
           style={{
             background: showCarry ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
@@ -301,7 +321,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
                     key={`c${i}`}
                     type="button"
                     onClick={() =>
-                      !disabled && !checked && setActiveCell({ type: 'carry', idx: i })
+                      !disabled && !locked && setActiveCell({ type: 'carry', idx: i })
                     }
                     className="flex items-center justify-center rounded leading-none font-black transition-all select-none active:scale-[0.93]"
                     style={{
@@ -388,39 +408,18 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
               }
               const correctVal = correctResultPad[i] ?? 0
               const isActive = activeCell?.type === 'result' && activeCell.idx === i
-              const showError = checked && val !== null && val !== correctVal
-              const showCorrect = checked && val !== null && val === correctVal
+              const cellStyle = editableCellStyle({ isActive, graded: graded && !immersive, val, correctVal })
 
               return (
                 <button
                   key={`r${i}`}
                   type="button"
-                  onClick={() => !disabled && !checked && setActiveCell({ type: 'result', idx: i })}
+                  onClick={() => !disabled && !locked && setActiveCell({ type: 'result', idx: i })}
                   className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
                   style={{
                     ...geo.cell,
                     fontSize: geo.digitFont,
-                    borderColor: isActive
-                      ? 'rgba(139,92,246,0.5)'
-                      : showCorrect
-                        ? 'rgba(74,222,128,0.5)'
-                        : showError
-                          ? 'rgba(248,113,113,0.5)'
-                          : 'rgba(255,255,255,0.08)',
-                    background: isActive
-                      ? 'rgba(139,92,246,0.2)'
-                      : showCorrect
-                        ? 'rgba(74,222,128,0.15)'
-                        : showError
-                          ? 'rgba(248,113,113,0.15)'
-                          : 'rgba(255,255,255,0.05)',
-                    color: isActive
-                      ? '#c4b5fd'
-                      : showCorrect
-                        ? '#4ade80'
-                        : showError
-                          ? '#f87171'
-                          : '#f5f3ff',
+                    ...cellStyle,
                   }}
                 >
                   {val !== null ? val : ''}
@@ -431,11 +430,12 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
         </div>
       </div>
 
-      {/* Number pad — pinned to the bottom, full width (matches NumberPad) */}
-      {!checked && (
-        <div
-          className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'}`}
-        >
+      <QuestionFeedbackHint feedback={immersive ? null : feedback} revealAnswer={revealAnswer} />
+
+      {/* Number pad — keep slot when locked so the layout does not jump */}
+      <div
+        className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}
+      >
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
             <button
               key={d}
@@ -505,7 +505,6 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, fill = false }: Ve
             {!resultComplete ? 'Enter' : '✓'}
           </button>
         </div>
-      )}
     </div>
   )
 }

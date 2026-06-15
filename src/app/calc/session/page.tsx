@@ -11,12 +11,11 @@ import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
 import CalcSessionStatusBar from '@/components/calc/CalcSessionStatusBar'
-import CalcFeedbackBanner from '@/components/calc/CalcFeedbackBanner'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
 import { buildSession, coinReward } from '@/utils/calc-helpers'
-import { checkAnswer, formatAnswer, isReducibleFraction } from '@/utils/calc-answer'
+import { checkAnswer, formatAnswer } from '@/utils/calc-answer'
 import { diagnose } from '@/utils/calc-diagnose'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
@@ -68,11 +67,12 @@ export default function CalcSessionPage() {
   // Per-question target seconds for the current question's source (null/0 → no countdown).
   const secondsForQuestion = useCallback(
     (q: CalcQuestion): number | null => {
+      if (!settings.timedAnswerEnabled) return null
       if (q.sourceBlockId) return settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds ?? null
       if (q.sourceMixedOpId) return settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)?.seconds ?? null
       return null
     },
-    [settings.selectedBlocks, settings.mixedOps],
+    [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
   )
 
   const sourceKeyForLog = (q: CalcQuestion): string =>
@@ -91,7 +91,6 @@ export default function CalcSessionPage() {
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
   const [revealAnswer, setRevealAnswer] = useState<string | null>(null)
-  const [reduceHint, setReduceHint] = useState(false)
 
   const [showChallengeBanner, setShowChallengeBanner] = useState(false)
 
@@ -101,8 +100,6 @@ export default function CalcSessionPage() {
   const [maxStreak, setMaxStreak] = useState(0)
   const maxStreakRef = useRef(0)
   const [lastResult, setLastResult] = useState<{ stars: number; bonus: number } | null>(null)
-  // Whether the current 'correct' feedback came on the second try (no stars).
-  const [secondTryCorrect, setSecondTryCorrect] = useState(false)
 
   const attemptsLogRef = useRef<AttemptStat[]>([])
   // First-attempt solve time (ms) per question, in order — persisted for timing analysis.
@@ -181,7 +178,6 @@ export default function CalcSessionPage() {
       questionStartRef.current = performance.now()
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuestionStartWall(Date.now())
-      setReduceHint(false)
     }
   }, [idx, questions])
 
@@ -309,10 +305,11 @@ export default function CalcSessionPage() {
       const agg = logByKey.get(logKey)
       const avgSec = agg && agg.n > 0 ? +(agg.sumMs / agg.n / 1000).toFixed(1) : 0
       const perMinute = agg && agg.sumMs > 0 ? +(agg.n / (agg.sumMs / 60000)).toFixed(1) : 0
-      const targetSec =
-        kind === 'block'
+      const targetSec = settings.timedAnswerEnabled
+        ? kind === 'block'
           ? settings.selectedBlocks.find((b) => b.id === id)?.seconds ?? null
           : settings.mixedOps.find((m) => m.id === id)?.seconds ?? null
+        : null
       return {
         label: sourceLabelOf(key),
         total: attempts.length,
@@ -385,6 +382,7 @@ export default function CalcSessionPage() {
     refreshStarHud,
     mode,
     settings.soundEnabled,
+    settings.timedAnswerEnabled,
     settings.sessionCounter,
     settings.mixedOps,
     settings.selectedBlocks,
@@ -412,7 +410,6 @@ export default function CalcSessionPage() {
         setInput('')
         setAttemptsForCurrent(0)
         setLastResult(null)
-        setSecondTryCorrect(false)
         setRevealAnswer(null)
         if (!questions) return
         if (idx + 1 < questions.length) {
@@ -436,11 +433,8 @@ export default function CalcSessionPage() {
         const isChallengeCorrect = q.isChallenge && isFirstTry
         const bonus = isFirstTry ? (streak >= 10 ? 2 : streak >= 5 ? 1 : 0) : 0
         if (isFirstTry && reward > 0) setLastResult({ stars: reward, bonus })
-        setSecondTryCorrect(!isFirstTry)
-        setFeedback(isChallengeCorrect ? 'challenge-correct' : 'correct')
         playSfx(isChallengeCorrect ? 'streak' : 'correct', settings.soundEnabled)
         if (reward > 0) playSfx('coin', settings.soundEnabled)
-        if (isChallengeCorrect) launchConfetti(20)
         coinsTotalRef.current += reward
         setCoinsTotal((c) => c + reward)
         const nextStreak = isFirstTry ? streak + 1 : 0
@@ -462,15 +456,17 @@ export default function CalcSessionPage() {
           sourceMixedOpId: q.sourceMixedOpId,
         })
         if (wasMistake) void recordCorrect(q.signature, settings.sessionCounter + 1)
-        window.setTimeout(goNext, isChallengeCorrect ? 1100 : 750)
+        goNext()
         return
       }
 
       // final wrong
-      setFeedback('wrong')
-      setRevealAnswer(formatAnswer(q.answer))
+      if (!settings.immersiveMode) {
+        setFeedback('wrong')
+        setRevealAnswer(formatAnswer(q.answer))
+        playSfx('wrong', settings.soundEnabled)
+      }
       setStreak(0)
-      playSfx('wrong', settings.soundEnabled)
       const errorTag = diagnose(q, userAnswer)
       void addMistake(q, settings.sessionCounter + 1, userAnswer, errorTag)
       attemptsLogRef.current.push({
@@ -487,7 +483,11 @@ export default function CalcSessionPage() {
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
       if (!q.isChallenge && mode !== 'mistakes') wrongQueueRef.current.push({ ...q })
-      window.setTimeout(goNext, 1700)
+      if (settings.immersiveMode) {
+        goNext()
+      } else {
+        window.setTimeout(goNext, 1200)
+      }
     },
     [
       questions,
@@ -496,6 +496,7 @@ export default function CalcSessionPage() {
       mode,
       settings.soundEnabled,
       settings.sessionCounter,
+      settings.immersiveMode,
       addMistake,
       recordCorrect,
       finishSession,
@@ -504,9 +505,8 @@ export default function CalcSessionPage() {
   )
 
   // Self-grading pads (竖式 / 余数 / 分数) lock + show inline 红/绿 on submit. They
-  // run the SAME two-try loop as the number pad: first wrong → 「再想想」 + remount
-  // the pad (padKey carries attemptsForCurrent, so 0→1 clears the locked cells);
-  // second wrong → settle as final wrong. First-try correctness still drives reward.
+  // run the SAME two-try loop as the number pad: first wrong → retry (竖式 keeps the
+  // current grid + keypad; other pads remount via padKey); second wrong → final wrong.
   const settleSelfGraded = useCallback(
     (q: CalcQuestion, isCorrect: boolean, userAnswer: string) => {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
@@ -522,15 +522,17 @@ export default function CalcSessionPage() {
         settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, userAnswer)
         return
       }
-      // first miss → keep the red cells visible briefly, then remount for a retry.
+      if (settings.immersiveMode) {
+        settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
+        return
+      }
+      // first miss → 竖式: wrong cells in place + inline hint; others: brief retry banner.
       if (attemptsForCurrent === 0) {
-        setFeedback('retry')
         setStreak(0)
         playSfx('retry', settings.soundEnabled)
-        window.setTimeout(() => {
-          setFeedback(null)
-          setAttemptsForCurrent(1)
-        }, 900)
+        setFeedback('retry')
+        setAttemptsForCurrent(1)
+        window.setTimeout(() => setFeedback(null), 900)
       } else {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
@@ -541,7 +543,7 @@ export default function CalcSessionPage() {
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
   const handleVerticalSubmit = useCallback(
     (isCorrect: boolean, userAnswer: string) => {
-      if (!questions || done || feedback) return
+      if (!questions || done || feedback === 'wrong') return
       settleSelfGraded(questions[idx], isCorrect, userAnswer)
     },
     [questions, done, feedback, idx, settleSelfGraded],
@@ -557,14 +559,12 @@ export default function CalcSessionPage() {
     [questions, done, feedback, idx, settleSelfGraded],
   )
 
-  // 分数: FractionPad submits "num/den". checkAnswer accepts any equivalent fraction;
-  // a correct-but-reducible answer gets a gentle 约分 hint (still counts as correct).
+  // 分数: FractionPad submits "num/den". checkAnswer accepts any equivalent fraction.
   const handleFractionSubmit = useCallback(
     (combined: string) => {
       if (!questions || done || feedback) return
       const q = questions[idx]
       const correct = checkAnswer(combined, q.answer)
-      if (correct && isReducibleFraction(combined)) setReduceHint(true)
       settleSelfGraded(q, correct, combined)
     },
     [questions, done, feedback, idx, settleSelfGraded],
@@ -589,6 +589,11 @@ export default function CalcSessionPage() {
 
     if (isCorrect) {
       settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, input)
+      return
+    }
+
+    if (settings.immersiveMode) {
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)
       return
     }
 
@@ -641,6 +646,10 @@ export default function CalcSessionPage() {
 
   const currentQ = questions[idx]
   const planned = plannedCount || questions.length
+  const stageDisabled = done || (!settings.immersiveMode && (currentQ.answerMode === 'vertical' ? feedback === 'wrong' : !!feedback))
+  const padKey = settings.immersiveMode || currentQ.answerMode === 'vertical'
+    ? String(idx)
+    : `${idx}:${attemptsForCurrent}`
 
   return (
     <>
@@ -672,19 +681,12 @@ export default function CalcSessionPage() {
           lastResult={lastResult}
         />
 
-        <CalcFeedbackBanner
-          feedback={feedback}
-          reduceHint={reduceHint}
-          lastResult={lastResult}
-          revealAnswer={revealAnswer}
-          secondTry={secondTryCorrect}
-        />
-
         <CalcQuestionStage
-          padKey={`${idx}:${attemptsForCurrent}`}
+          padKey={padKey}
           question={currentQ}
           isChallenge={currentQ.isChallenge}
-          disabled={!!feedback || done}
+          disabled={stageDisabled}
+          immersive={settings.immersiveMode}
           className=""
           input={input}
           onInputChange={setInput}
@@ -692,6 +694,9 @@ export default function CalcSessionPage() {
           onFractionSubmit={handleFractionSubmit}
           onRemainderSubmit={handleRemainderSubmit}
           onVerticalSubmit={handleVerticalSubmit}
+          feedback={feedback}
+          revealAnswer={revealAnswer}
+          attempt={attemptsForCurrent}
         />
       </main>
 
