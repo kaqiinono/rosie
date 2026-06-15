@@ -21,39 +21,43 @@ interface PerTypeCardProps {
   targetId: string
   count: number
   seconds: number | null
+  /** 显示题量行（仅精准设置模式；自动分配时题量由系统分配，只显示限时）。 */
+  showCount: boolean
   onCount: (n: number) => void
   onSeconds: (s: number) => void
 }
 
-// 精准设置下，每个选中题型一张卡：题量 + 限时（限时默认不限，题量默认 20）。
-function PerTypeConfigCard({ label, targetId, count, seconds, onCount, onSeconds }: PerTypeCardProps) {
+// 每个选中题型一张卡：限时始终可设；题量仅在精准设置模式显示。默认 限时不限 / 题量 20。
+function PerTypeConfigCard({ label, targetId, count, seconds, showCount, onCount, onSeconds }: PerTypeCardProps) {
   return (
     <div
       className="space-y-2 rounded-xl px-3 py-2.5"
       style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}
     >
       <div className="text-[13px] font-extrabold" style={{ color: '#e9d5ff' }}>{label}</div>
-      <div className="flex flex-wrap items-center gap-1">
-        <span className="mr-1 w-7 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
-        {COUNT_OPTIONS.map((n) => {
-          const on = count === n
-          return (
-            <button
-              key={n}
-              type="button"
-              onClick={() => onCount(n)}
-              className="rounded-md px-2 py-0.5 text-[11px] font-extrabold tabular-nums transition-all active:scale-95"
-              style={{
-                background: on ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${on ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
-                color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
-              }}
-            >
-              {n}
-            </button>
-          )
-        })}
-      </div>
+      {showCount && (
+        <div className="flex flex-wrap items-center gap-1">
+          <span className="mr-1 w-7 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
+          {COUNT_OPTIONS.map((n) => {
+            const on = count === n
+            return (
+              <button
+                key={n}
+                type="button"
+                onClick={() => onCount(n)}
+                className="rounded-md px-2 py-0.5 text-[11px] font-extrabold tabular-nums transition-all active:scale-95"
+                style={{
+                  background: on ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${on ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                  color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
+                }}
+              >
+                {n}
+              </button>
+            )
+          })}
+        </div>
+      )}
       <div className="flex items-start gap-1">
         <span className="mr-1 w-7 shrink-0 pt-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>限时</span>
         <div className="min-w-0 flex-1">
@@ -290,10 +294,18 @@ export default function CalcSettingsPage() {
           {settings.countMode === 'auto' && (
             <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
           )}
-          {settings.countMode === 'manual' && (
-            settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
+
+          {/* 每个题型的设置：限时两种模式都可设；题量仅精准设置（自动模式下题量由系统分配）。 */}
+          <div className="mt-3">
+            <div
+              className="mb-1.5 text-[10px] font-extrabold uppercase tracking-wider"
+              style={{ color: 'rgba(196,181,253,0.45)' }}
+            >
+              {settings.countMode === 'manual' ? '每个题型的题量 · 限时' : '每个题型的限时'}
+            </div>
+            {settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
               <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
-                先在上方选择题型，这里会出现每个题型的题量与限时设置。
+                先在上方选择题型，这里会出现每个题型的设置。
               </div>
             ) : (
               <div className="space-y-2">
@@ -304,6 +316,7 @@ export default function CalcSettingsPage() {
                     targetId={b.id}
                     count={b.count}
                     seconds={b.seconds}
+                    showCount={settings.countMode === 'manual'}
                     onCount={(n) => patchBlock(b.id, { count: n })}
                     onSeconds={(s) => patchBlock(b.id, { seconds: s })}
                   />
@@ -315,13 +328,14 @@ export default function CalcSettingsPage() {
                     targetId={m.skeleton}
                     count={m.count}
                     seconds={m.seconds}
+                    showCount={settings.countMode === 'manual'}
                     onCount={(n) => patchMixed(m.id, { count: n })}
                     onSeconds={(s) => patchMixed(m.id, { seconds: s })}
                   />
                 ))}
               </div>
-            )
-          )}
+            )}
+          </div>
         </section>
 
         {/* 音效 */}
