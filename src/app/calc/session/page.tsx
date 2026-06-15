@@ -499,55 +499,68 @@ export default function CalcSessionPage() {
     ],
   )
 
-  // Single-attempt grading for vertical (竖式) questions: the component self-checks
-  // and locks, so there is no two-try retry — settle directly on first submit.
-  const handleVerticalSubmit = useCallback(
-    (isCorrect: boolean, userAnswer: string) => {
-      if (!questions || done || feedback) return
-      const q = questions[idx]
-      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+  // Self-grading pads (竖式 / 余数 / 分数) lock + show inline 红/绿 on submit. They
+  // run the SAME two-try loop as the number pad: first wrong → 「再想想」 + remount
+  // the pad (padKey carries attemptsForCurrent, so 0→1 clears the locked cells);
+  // second wrong → settle as final wrong. First-try correctness still drives reward.
+  const settleSelfGraded = useCallback(
+    (q: CalcQuestion, isCorrect: boolean, userAnswer: string) => {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
       const limitMs = timeLimitFromSettings(q.level, settings)
       const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
-      questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake, userAnswer)
+      if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
+      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+
+      if (isCorrect) {
+        settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, userAnswer)
+        return
+      }
+      // first miss → keep the red cells visible briefly, then remount for a retry.
+      if (attemptsForCurrent === 0) {
+        setFeedback('retry')
+        setStreak(0)
+        playSfx('retry', settings.soundEnabled)
+        window.setTimeout(() => {
+          setFeedback(null)
+          setAttemptsForCurrent(1)
+        }, 900)
+      } else {
+        settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
+      }
     },
-    [questions, done, feedback, idx, mistakes, settings, settleQuestion],
+    [attemptsForCurrent, mistakes, settings, settleQuestion],
   )
 
-  // Single-attempt grading for remainder (有余数) questions: RemainderPad collects
-  // 商/余 and submits a "q…r" string, graded by checkAnswer.
+  // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
+  const handleVerticalSubmit = useCallback(
+    (isCorrect: boolean, userAnswer: string) => {
+      if (!questions || done || feedback) return
+      settleSelfGraded(questions[idx], isCorrect, userAnswer)
+    },
+    [questions, done, feedback, idx, settleSelfGraded],
+  )
+
+  // 余数: RemainderPad collects 商/余 and submits a "q…r" string, graded by checkAnswer.
   const handleRemainderSubmit = useCallback(
     (combined: string) => {
       if (!questions || done || feedback) return
       const q = questions[idx]
-      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
-      const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-      const limitMs = timeLimitFromSettings(q.level, settings)
-      const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
-      questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, checkAnswer(combined, q.answer), true, elapsedMs, withinLimit, wasMistake, combined)
+      settleSelfGraded(q, checkAnswer(combined, q.answer), combined)
     },
-    [questions, done, feedback, idx, mistakes, settings, settleQuestion],
+    [questions, done, feedback, idx, settleSelfGraded],
   )
 
-  // Single-attempt grading for fraction questions: FractionPad submits "num/den".
-  // checkAnswer accepts any equivalent fraction; a correct-but-reducible answer
-  // gets a gentle 约分 hint (still counts as correct).
+  // 分数: FractionPad submits "num/den". checkAnswer accepts any equivalent fraction;
+  // a correct-but-reducible answer gets a gentle 约分 hint (still counts as correct).
   const handleFractionSubmit = useCallback(
     (combined: string) => {
       if (!questions || done || feedback) return
       const q = questions[idx]
       const correct = checkAnswer(combined, q.answer)
       if (correct && isReducibleFraction(combined)) setReduceHint(true)
-      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
-      const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-      const limitMs = timeLimitFromSettings(q.level, settings)
-      const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
-      questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, correct, true, elapsedMs, withinLimit, wasMistake, combined)
+      settleSelfGraded(q, correct, combined)
     },
-    [questions, done, feedback, idx, mistakes, settings, settleQuestion],
+    [questions, done, feedback, idx, settleSelfGraded],
   )
 
   const handleSubmit = useCallback(() => {
@@ -788,7 +801,7 @@ export default function CalcSessionPage() {
         </div>
 
         <CalcQuestionStage
-          padKey={idx}
+          padKey={`${idx}:${attemptsForCurrent}`}
           question={currentQ}
           isChallenge={currentQ.isChallenge}
           disabled={!!feedback || done}
