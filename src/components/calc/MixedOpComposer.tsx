@@ -76,6 +76,8 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
       blockIds,
       enabled: initial?.enabled ?? true,
       label: buildLabel(),
+      count: initial?.count ?? 20,
+      seconds: initial?.seconds ?? null,
     })
   }
 
