@@ -375,20 +375,28 @@ export interface MixedOp {
   blockIds: string[]    // 选中的积木块 ID
   enabled: boolean
   label?: string
+  count: number         // 精准模式下的题量
+  seconds: number | null // 每题目标秒数；null=未确认 · 0=不限 · >0=限时
 }
 
+/** 单运算选择项：题型内联自己的题量与目标秒数。 */
+export interface BlockSel {
+  id: string
+  count: number
+  seconds: number | null // null=未确认 · 0=不限 · >0=限时
+}
+
+export type CalcCountMode = 'auto' | 'manual'
+
 export interface CalcSettings {
-  selectedBlocks: string[]   // 单运算练习选中的积木块 ID
+  countMode: CalcCountMode   // 'auto' 全局总量加权 / 'manual' 按题型
+  selectedBlocks: BlockSel[] // 单运算练习选中的积木块（内联 count/seconds）
   mixedOps: MixedOp[]        // 编排出的混合运算
   soundEnabled: boolean
-  /** When true, ~30% of single-op questions render as an inverse blank form (48 + □ = 105). */
   includeInverse: boolean
-  /** When true, questions from vertical-capable blocks are answered in 竖式 layout. */
   verticalForBigNumbers: boolean
-  lastCount: number          // 20/30/50/100
-  lastTimeLimit: number       // seconds, 0=unlimited
-  sessionCounter: number      // 每次 session 完成自增
-  timeLimitOverrides: Record<string, number>
+  lastCount: number          // auto 模式的全局总题量 (10/20/30/50/100)
+  sessionCounter: number     // 每次 session 完成自增
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -485,6 +493,13 @@ export interface Voucher {
 
 export type CalcMode = 'daily' | 'free' | 'mistakes'
 
+/** One question's atomic record. key = "block:<id>" | "mixed:<id>". */
+export interface QuestionLogEntry {
+  key: string
+  ms: number
+  ok: boolean
+}
+
 export interface CalcSession {
   id?: string
   date: string // YYYY-MM-DD
@@ -508,6 +523,8 @@ export interface CalcSession {
   topLevel: CalcLevel
   /** First-attempt solve time (ms) per question, in order. Empty for legacy rows. */
   questionTimesMs?: number[]
+  /** Per-question tagged log: source key, first-attempt ms, first-try correctness. */
+  questionLog?: QuestionLogEntry[]
 }
 
 export interface CalcMistake {
