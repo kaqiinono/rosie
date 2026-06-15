@@ -502,7 +502,7 @@ export default function CalcSessionPage() {
   // Single-attempt grading for vertical (竖式) questions: the component self-checks
   // and locks, so there is no two-try retry — settle directly on first submit.
   const handleVerticalSubmit = useCallback(
-    (isCorrect: boolean) => {
+    (isCorrect: boolean, userAnswer: string) => {
       if (!questions || done || feedback) return
       const q = questions[idx]
       const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
@@ -510,7 +510,7 @@ export default function CalcSessionPage() {
       const limitMs = timeLimitFromSettings(q.level, settings)
       const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
       questionTimesRef.current.push(elapsedMs)
-      settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake, '')
+      settleQuestion(q, isCorrect, true, elapsedMs, withinLimit, wasMistake, userAnswer)
     },
     [questions, done, feedback, idx, mistakes, settings, settleQuestion],
   )

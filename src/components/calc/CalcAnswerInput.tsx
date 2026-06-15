@@ -77,8 +77,8 @@ type Props = {
   onFractionSubmit: (raw: string) => void
   /** Single-shot grade for a "商…余" string. */
   onRemainderSubmit: (raw: string) => void
-  /** Single-shot grade for self-checking 竖式 components (true = correct). */
-  onVerticalSubmit: (correct: boolean) => void
+  /** Single-shot grade for self-checking 竖式 components (true = correct, plus the child's typed answer for diagnosis). */
+  onVerticalSubmit: (correct: boolean, userAnswer: string) => void
 }
 
 export default function CalcAnswerInput({
@@ -124,7 +124,7 @@ export default function CalcAnswerInput({
           divisor={ast.right}
           disabled={disabled}
           fill={fill}
-          onSubmit={(r) => onVerticalSubmit(r.correct)}
+          onSubmit={(r) => onVerticalSubmit(r.correct, r.quotient.join(''))}
         />
       )
     }
@@ -136,7 +136,7 @@ export default function CalcAnswerInput({
         op={opSym}
         disabled={disabled}
         fill={fill}
-        onSubmit={(r) => onVerticalSubmit(r.resultCorrect)}
+        onSubmit={(r) => onVerticalSubmit(r.resultCorrect, r.userResult.join(''))}
       />
     )
   }

@@ -147,8 +147,8 @@ type Props = {
   onFractionSubmit: (raw: string) => void
   /** Single-shot grade for a "商…余" string. */
   onRemainderSubmit: (raw: string) => void
-  /** Single-shot grade for self-checking 竖式 components (true = correct). */
-  onVerticalSubmit: (correct: boolean) => void
+  /** Single-shot grade for self-checking 竖式 components (true = correct, plus the child's typed answer for diagnosis). */
+  onVerticalSubmit: (correct: boolean, userAnswer: string) => void
 }
 
 export default function CalcQuestionStage({
