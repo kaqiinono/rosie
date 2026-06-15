@@ -9,7 +9,6 @@ import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import BlockPicker from '@/components/calc/BlockPicker'
 import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
-import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
 import { playSfx } from '@/components/calc/audio'
 import { blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
 
@@ -89,27 +88,28 @@ export default function CalcSettingsPage() {
   // Mirror /calc 「开始口算」: jump straight into a real, persisted session.
   const handleStart = () => {
     playSfx('coin', settings.soundEnabled)
-    const params = new URLSearchParams({
-      count: String(settings.lastCount),
-      time: String(settings.lastTimeLimit),
-      mode: 'daily',
-    })
-    router.push(`/calc/session?${params.toString()}`)
+    router.push('/calc/session?mode=daily')
   }
 
   const toggleBlock = (id: string) => {
-    const next = new Set(settings.selectedBlocks)
-    if (next.has(id)) next.delete(id)
-    else next.add(id)
-    update({ selectedBlocks: [...next] })
+    const exists = settings.selectedBlocks.some((b) => b.id === id)
+    update({
+      selectedBlocks: exists
+        ? settings.selectedBlocks.filter((b) => b.id !== id)
+        : [...settings.selectedBlocks, { id, count: 20, seconds: null }],
+    })
   }
 
   const toggleGroup = (group: CalcBlock['group'], on: boolean) => {
     const ids = blocksByGroup(group).map((b) => b.id)
-    const next = new Set(settings.selectedBlocks)
-    if (on) ids.forEach((i) => next.add(i))
-    else ids.forEach((i) => next.delete(i))
-    update({ selectedBlocks: [...next] })
+    const have = new Map(settings.selectedBlocks.map((b) => [b.id, b]))
+    if (on) ids.forEach((i) => { if (!have.has(i)) have.set(i, { id: i, count: 20, seconds: null }) })
+    else ids.forEach((i) => have.delete(i))
+    update({ selectedBlocks: [...have.values()] })
+  }
+
+  const patchBlock = (id: string, patch: Partial<typeof settings.selectedBlocks[number]>) => {
+    update({ selectedBlocks: settings.selectedBlocks.map((b) => (b.id === id ? { ...b, ...patch } : b)) })
   }
 
   if (isLoading) {
@@ -134,6 +134,11 @@ export default function CalcSettingsPage() {
   }
 
   const blockCount = settings.selectedBlocks.length
+
+  const manualTotal =
+    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
+    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
+  const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
 
   return (
     <>
@@ -161,8 +166,10 @@ export default function CalcSettingsPage() {
           </SectionHeading>
           <BlockPicker
             selected={settings.selectedBlocks}
+            countMode={settings.countMode}
             onToggle={toggleBlock}
             onToggleGroup={toggleGroup}
+            onPatch={patchBlock}
           />
         </section>
 
@@ -171,6 +178,7 @@ export default function CalcSettingsPage() {
           <SectionHeading>混合运算</SectionHeading>
           <MixedOpList
             mixedOps={settings.mixedOps}
+            countMode={settings.countMode}
             onChange={(next) => update({ mixedOps: next })}
           />
         </section>
@@ -194,20 +202,45 @@ export default function CalcSettingsPage() {
           </div>
         </section>
 
-        {/* 题量 / 限时 */}
+        {/* 题量模式 */}
         <section>
-          <SectionHeading>题量 · 限时</SectionHeading>
-          <CalcConfigBar
-            count={settings.lastCount}
-            timeLimit={settings.lastTimeLimit}
-            onChange={(patch) =>
-              update(
-                patch.count !== undefined
-                  ? { lastCount: patch.count }
-                  : { lastTimeLimit: patch.timeLimit },
-              )
+          <SectionHeading
+            suffix={
+              <span className="ml-2 normal-case tracking-normal" style={{ color: 'rgba(196,181,253,0.3)' }}>
+                · 共 {totalQuestions} 题
+              </span>
             }
-          />
+          >
+            题量
+          </SectionHeading>
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            {(['auto', 'manual'] as const).map((m) => {
+              const on = settings.countMode === m
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => update({ countMode: m })}
+                  className="rounded-xl px-3 py-2.5 text-[12px] font-extrabold transition-all active:scale-[0.98]"
+                  style={{
+                    background: on ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.04)',
+                    border: `1.5px solid ${on ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                    color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
+                  }}
+                >
+                  {m === 'auto' ? '自动分配（往难处倾斜）' : '精准设置（按题型）'}
+                </button>
+              )
+            })}
+          </div>
+          {settings.countMode === 'auto' && (
+            <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
+          )}
+          {settings.countMode === 'manual' && (
+            <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+              每个题型在上方各自设置题量；总题量 = 各题型之和。
+            </div>
+          )}
         </section>
 
         {/* 音效 */}
@@ -220,12 +253,6 @@ export default function CalcSettingsPage() {
             onChange={(v) => update({ soundEnabled: v })}
           />
         </section>
-
-        {/* 限时细则 */}
-        <TimeLimitsSection
-          overrides={settings.timeLimitOverrides}
-          onChange={(next) => update({ timeLimitOverrides: next })}
-        />
 
         {/* Actions */}
         <div className="space-y-2.5">

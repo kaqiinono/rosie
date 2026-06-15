@@ -55,7 +55,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
   const meta = skeleton ? skeletonMeta(skeleton) : null
   const groups = meta ? groupsForNeeds(meta.needs) : []
 
-  const valid = skeleton !== null && isMixedOpValid({ id: '_', skeleton, blockIds, enabled: true })
+  const valid = skeleton !== null && isMixedOpValid({ id: '_', skeleton, blockIds, enabled: true, count: 20, seconds: null })
 
   const toggleBlock = (id: string) => {
     setBlockIds((prev) => (prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]))
