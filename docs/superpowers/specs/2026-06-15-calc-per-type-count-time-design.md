@@ -114,14 +114,43 @@ export interface CalcSettings {
 - **分组 / 汇总**：按 group 或全部 求和。
 - `calc_problem_state`（含 `block_id`/`mixed_op_id`、proficiency）继续承载**按 signature 的掌握度**（更细的钻取）；session log 承载**按题型的时间+数量**（吞吐趋势）。两者各司其职，不重复。
 
-### 6.3 展示
+### 6.3 四档目标 + 档位模型
 
-- **报告页**新增「答题速度」区：按题型显示 **题/分钟**（标题指标）+ **平均每题 X 秒（目标 Y 秒）**，并提供 单题型 / 分组 / 汇总 三种粒度；目标值取该题型 `seconds`。
-- **SessionSummary**：本次每题型的 题/分钟 与 平均秒/题（vs 目标），替换原先无时间的 `bySource` 仅计数展示。
+参考 `docs/calc-per-type-time-targets.md`，把每个题型的「入门 / 进阶 / 高级⭐ / 超高级」秒数区间落到代码：
+
+```ts
+// src/utils/calc-time-targets.ts —— 唯一真相表
+export interface TimeTarget { entry: [number, number]; stable: [number, number]; fluent: [number, number]; auto: [number, number] } // 秒
+export const TIME_TARGETS: Record<string /* blockId | skeletonId */, TimeTarget>
+export type Tier = 'entry' | 'stable' | 'fluent' | 'auto'
+```
+
+- 该表**同时**作为 `defaultSecondsForBlock` 的来源：题型默认 `限时 seconds = 高级⭐ 上界`（对齐 doc §1/§8「推荐目标」），per-题型 chips 即从同一张表预填。
+- **档位判定**（读报告时，基于 §6.1 的 `question_log`）：
+  - 取该题型**滚动最近 20 道首答题**（跨 session），算 `平均秒/题` 与 `首答正确率`。
+  - 档位 = 满足 `avg ≤ band.hi` 的最高档；但 **进阶及以上要求正确率达标**（默认 ≥ 80%，doc §2/§5 稳定性优先，防止赶时间猜答案）——正确率不足则压到 **入门**。
+  - **离下一档还差** = `avg − 更高一档.hi`（秒），配进度条。
+- 样本不足（< ~8 题）时档位显示「数据不足」，不下结论。
+
+### 6.4 进步 / 退步
+
+- **本次 session 速览**：本次 vs 上次，整体 `平均秒/题` 的 Δ + 升档/降档题型数 → 一句判语（`📈 本次进步！较上次平均每题快 0.4s · 2 个题型升档` / `持平` / `📉 退步`）。
+- **每题型行**：当前滚动窗口 `平均秒/题` vs 上一窗口 → `↑/↓ Δ秒`。
+
+### 6.5 报告页重构（精简，只留核心）
+
+替换现有 5 块。保留并重组为 4 块（用户确认）：
+
+1. **本次速览** — 进步/退步判语 + 整体 `题/分钟` 及 Δ。
+2. **各题型一行**（合并 time + accuracy 两视角，取代「掌握度总览树 + 最弱 10 题」）：`题型名 · 档位徽章(入门/进阶/高级⭐/超高级) · 平均秒/题(↑↓Δ) · 离下一档进度条 · 正确率`；点开该行才展开其弱题（沿用现有展开交互）。
+3. **需加强 Top 3** — 档位最低 / 退步最多 / 错最多，给出可执行重点。
+4. **次要（精简版）** — 错误类型分布 + 最近练习列表（保留，但收短）。
+
+- **SessionSummary**：本次每题型 `题/分钟` 与 `平均秒/题(vs 目标档)`，并标注升档/降档，替换原先无时间的 `bySource` 仅计数展示。
 
 ## 7. 默认值与迁移
 
-- 新选中题型默认：`count: 20`、`seconds:` 按类型默认（10以内 3s · 20以内 3s · 100以内 5s · 乘 3s · 除 5s · 混合 10s）。提供 `defaultSecondsForBlock(blockId)`（替代 bucket 默认）。
+- 新选中题型默认：`count: 20`、`seconds = 该题型 高级⭐ 上界`（取自 `TIME_TARGETS`）。`defaultSecondsForBlock(id)` 读 `TIME_TARGETS`，缺失题型回退到一个保守默认（如 6s）。
 - `countMode` 默认 `'auto'`。
 - `rowToSettings` 向后兼容：旧 `selected_blocks: ["add:10"]` → `[{ id:"add:10", count:20, seconds:3 }]`；旧 `mixed_ops` 缺 `count/seconds` 时补默认。
 - **SQL 迁移**（手动执行）：`docs/sql/calc-per-type-stats-migration.sql`
@@ -134,7 +163,8 @@ export interface CalcSettings {
 | --- | --- |
 | `src/utils/type.ts` | `BlockSel`、`MixedOp(+count,+seconds)`、`CalcSettings(countMode/selectedBlocks 改型/移除字段)`、`CalcSession.questionLog` |
 | `src/hooks/useCalcSettings.ts` | `DEFAULT_SETTINGS`、`rowToSettings/settingsToRow` 升级与回退、移除 time 字段 |
-| `src/utils/calc-time-limits.ts` | 移除 bucket override 系统；新增 `defaultSecondsForBlock` |
+| `src/utils/calc-time-limits.ts` | 移除 bucket override 系统 |
+| `src/utils/calc-time-targets.ts` | **新增**：`TIME_TARGETS` 四档表（转录 doc）、`Tier`、`defaultSecondsForBlock`、`tierOf(avg, acc, target)`、`nextTierGap` |
 | `src/utils/calc-helpers.ts` | `buildSession` 支持 auto/manual；保留 `allocate`；移除 `calcTimeBonus`/`timeLimitBonusPreview` |
 | `src/components/calc/CalcConfigBar.tsx` | 收敛为仅题量 chips（用于 auto 全局总题量 / 首页） |
 | `src/components/calc/BlockPicker.tsx` | 选中行内联 题量(manual)+限时 chips |
@@ -144,8 +174,8 @@ export interface CalcSettings {
 | `src/app/calc/page.tsx` | 移除限时；显示共 N 题 / auto 快速总题量；`handleStart` 去掉 time 参数 |
 | `src/app/calc/session/page.tsx` | 按题倒计时(软性)、速度星、`withinLimit` 改源、移除全局倒计时/自动结束/timeBonus、写 `question_log`、按题型采集 |
 | `src/hooks/useCalcWallet.ts` | `recordSession` 写 `question_log`；`CalcSession` 映射 |
-| `src/app/calc/report/page.tsx` | 新增「答题速度」区（题/分钟、秒/题 vs 目标、单/分组/汇总） |
-| `src/components/calc/SessionSummary.tsx` | 每题型 题/分钟 + 秒/题(vs 目标) |
+| `src/app/calc/report/page.tsx` | 重构为 4 块（本次速览 / 各题型一行档位 / 需加强 Top3 / 精简次要）；读 sessions 的 `question_log` 算滚动 20 题档位与进退 |
+| `src/components/calc/SessionSummary.tsx` | 每题型 题/分钟 + 秒/题(vs 目标档) + 升/降档标注 |
 | `docs/sql/calc-per-type-stats-migration.sql` | **新增** 迁移（question_log 列） |
 
 ## 9. 非目标 / 不做
@@ -162,3 +192,6 @@ export interface CalcSettings {
 - 倒计时：保留，但改为**按题、软性**。
 - 奖励：速度星 + 熟练度 都要。
 - 统计：题型为原子单位，逐题打标，`question_log` 三元粒度，读时聚合；吞吐单位 = 题/分钟（辅以 平均秒/题 vs 目标）。
+- 四档目标来自 `docs/calc-per-type-time-targets.md` → `TIME_TARGETS`，同时作为题型默认 `seconds`（高级⭐ 上界）。
+- 档位/进退窗口 = **滚动最近 20 道首答题/题型**；进阶+ 需正确率 ≥ 80%。
+- 报告精简为 4 块：本次速览 / 各题型一行 / 需加强 Top3 / 精简次要（错误分布 + 最近练习）。
