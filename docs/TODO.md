@@ -13,8 +13,8 @@ Phase 1  大整数 + 逆运算挖空     ✅ 已完成
 Phase 2  竖式                    ✅ 已完成
 Phase 3  答案模型 + 余数 + 小数  ✅ 已完成
 Phase 4  分数                    ✅ 已完成
-Phase 5  错误诊断 + 报告         ⏳ 进行中（Task 1–5 已完成代码，待 Task 6 用户验证）
-Phase 6  下线 /calculate         📋 待做（仅有 spec，无逐步 plan）
+Phase 5  错误诊断 + 报告         ✅ 已完成（用户验证通过）
+Phase 6  下线 /calculate         ⏳ 代码已删，待用户跑 DB drop SQL + build 验证
 ```
 
 **Phase 6 做完 = calc-fusion 设计 spec 里的 6 个阶段全部结束。** 见文末「Phase 6 之后还有什么」。
@@ -117,34 +117,29 @@ alter table calc_mistakes
 
 ### 待做 ❌
 
-#### 1. 删应用代码
+#### 1. 删应用代码 ✅（commit 见 git log）
 
-- [ ] 删除 `src/app/calculate/**`（含 onboarding / session / report / mistakes / tree / level / settings）
-- [ ] 删除 `src/utils/calculate-*.ts`（9 个文件：`calculate-types`、`calculate-trees`、`calculate-generator` 等）
-- [ ] 删除 `src/hooks/useCalculateSettings.ts`、`useCalculateLevelState.ts`
-- [ ] 删除仅被 `/calculate` 使用的 `src/components/calculate/**`（**不要**删已港到 `components/calc/` 的竖式/分数等组件）
-- [ ] 全库搜索并清理残留引用：
-  ```bash
-  rg '/calculate|calculate_|from.*calculate-' src
-  ```
-  首页已只链 `/calc`；确认无外链、manifest、文档仍指向 `/calculate`
+- [x] 删除 `src/app/calculate/**`（onboarding / session / report / mistakes / tree / level / settings）
+- [x] 删除 `src/utils/calculate-*.ts`（9 个文件）
+- [x] 删除 `src/hooks/useCalculateSettings.ts`、`useCalculateLevelState.ts`
+- [x] 删除 `src/components/calculate/**`（仅旧模块使用，已确认无外部 import；新 calc 组件在 `components/calc/`）
+- [x] 全库零残留：`grep -rni "calculate" src` = 0；`grep -rE "calculate_[a-z_]+" src` = 0
 
-#### 2. 更新文档
+#### 2. 更新文档 ✅
 
-- [ ] 更新 `CLAUDE.md`：移除 `/calculate` 模块说明，口算只保留 `/calc`
-- [ ] 在 `docs/TODO.md` 或 plan 里标记 Phase 6 完成
+- [x] `CLAUDE.md`：本就只记录 `/calc`，无 `/calculate` 表述，无需改动
+- [x] 在 `docs/TODO.md` 标记 Phase 6 代码部分完成
 
-#### 3. 删数据库（用户手动，不可逆）
+#### 3. 删数据库（用户手动，不可逆）❌ 待你执行
 
 - [ ] **先备份** Supabase
-- [ ] 确认 `grep -rE "calculate_[a-z_]+" src` 无结果
-- [ ] 在 Supabase SQL Editor 执行 `docs/sql/calculate-decommission.sql`
+- [x] 确认 `grep -rE "calculate_[a-z_]+" src` 无结果
+- [ ] 在 Supabase SQL Editor 执行 `docs/sql/calculate-decommission.sql`（drop `calculate_*` 表；不碰 `calc_*`）
 
 #### 4. 验证
 
-- [ ] `pnpm lint` + `pnpm build` 通过
+- [ ] `pnpm lint` + `pnpm build` 通过（用户手动）
 - [ ] 手动：首页 → `/calc` 全流程可用；访问 `/calculate` 应 404
-- [ ] commit 建议：`chore(calc): decommission legacy /calculate module`
 
 ### Phase 6 明确不在范围
 
