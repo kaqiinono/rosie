@@ -1,30 +1,30 @@
 'use client'
 
 import { BLOCK_GROUPS, blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
+import PerTypeTimeChips from './PerTypeTimeChips'
+import type { BlockSel } from '@/utils/type'
 
 interface Props {
-  selected: string[]
+  selected: BlockSel[]
+  countMode: 'auto' | 'manual'
   onToggle: (id: string) => void
   onToggleGroup: (group: CalcBlock['group'], on: boolean) => void
+  onPatch: (id: string, patch: Partial<BlockSel>) => void
 }
 
 const GROUP_ICONS: Record<CalcBlock['group'], string> = {
-  add: '➕',
-  sub: '➖',
-  mul: '✖️',
-  div: '➗',
-  decimal: '🔢',
-  fraction: '½',
+  add: '➕', sub: '➖', mul: '✖️', div: '➗', decimal: '🔢', fraction: '½',
 }
+const COUNT_OPTIONS = [10, 20, 30, 50, 100]
 
-export default function BlockPicker({ selected, onToggle, onToggleGroup }: Props) {
-  const set = new Set(selected)
+export default function BlockPicker({ selected, countMode, onToggle, onToggleGroup, onPatch }: Props) {
+  const byId = new Map(selected.map((s) => [s.id, s]))
 
   return (
     <div className="space-y-3">
       {BLOCK_GROUPS.map(({ group, label }) => {
         const blocks = blocksByGroup(group)
-        const allOn = blocks.length > 0 && blocks.every((b) => set.has(b.id))
+        const allOn = blocks.length > 0 && blocks.every((b) => byId.has(b.id))
         return (
           <div key={group}>
             <div className="mb-1.5 flex items-center justify-between">
@@ -48,24 +48,61 @@ export default function BlockPicker({ selected, onToggle, onToggleGroup }: Props
                 {allOn ? '取消' : '全选'}
               </button>
             </div>
-            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+            <div className="space-y-1.5">
               {blocks.map((b) => {
-                const on = set.has(b.id)
+                const sel = byId.get(b.id)
+                const on = !!sel
                 return (
-                  <button
-                    key={b.id}
-                    type="button"
-                    onClick={() => onToggle(b.id)}
-                    aria-pressed={on}
-                    className="rounded-lg px-2.5 py-2.5 text-left text-[11px] font-extrabold leading-tight transition-all active:scale-95"
-                    style={{
-                      background: on ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
-                      border: `1px solid ${on ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                      color: on ? '#c4b5fd' : 'rgba(245,243,255,0.5)',
-                    }}
-                  >
-                    {b.label}
-                  </button>
+                  <div key={b.id}>
+                    <button
+                      type="button"
+                      onClick={() => onToggle(b.id)}
+                      aria-pressed={on}
+                      className="w-full rounded-lg px-3 py-2 text-left text-[12px] font-extrabold leading-tight transition-all active:scale-[0.99]"
+                      style={{
+                        background: on ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${on ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                        color: on ? '#c4b5fd' : 'rgba(245,243,255,0.5)',
+                      }}
+                    >
+                      {b.label}
+                    </button>
+                    {on && sel && (
+                      <div
+                        className="mt-1 space-y-2 rounded-lg px-3 py-2"
+                        style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)' }}
+                      >
+                        {countMode === 'manual' && (
+                          <div className="flex flex-wrap items-center gap-1">
+                            <span className="mr-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
+                            {COUNT_OPTIONS.map((n) => {
+                              const co = sel.count === n
+                              return (
+                                <button
+                                  key={n}
+                                  type="button"
+                                  onClick={() => onPatch(b.id, { count: n })}
+                                  className="rounded-md px-2 py-0.5 text-[11px] font-extrabold tabular-nums transition-all active:scale-95"
+                                  style={{
+                                    background: co ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
+                                    border: `1px solid ${co ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                                    color: co ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
+                                  }}
+                                >
+                                  {n}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                        <PerTypeTimeChips
+                          targetId={b.id}
+                          value={sel.seconds}
+                          onChange={(v) => onPatch(b.id, { seconds: v })}
+                        />
+                      </div>
+                    )}
+                  </div>
                 )
               })}
             </div>
