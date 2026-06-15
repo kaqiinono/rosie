@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
@@ -14,7 +14,6 @@ import { playSfx } from '@/components/calc/audio'
 export default function CalcHomePage() {
   const { user } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { mistakes } = useCalcMistakes(user)
@@ -24,10 +23,14 @@ export default function CalcHomePage() {
     [mistakes],
   )
 
-  const todayTarget = useMemo(() => {
-    const fromQuery = Number(searchParams.get('count'))
-    return Number.isFinite(fromQuery) && fromQuery > 0 ? fromQuery : settings.lastCount
-  }, [searchParams, settings.lastCount])
+  const blockCount = settings.selectedBlocks.length
+  const mixedCount = settings.mixedOps.filter((m) => m.enabled).length
+  const manualTotal =
+    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
+    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
+  const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
+
+  const todayTarget = totalQuestions
 
   const todayProgressPct = todayTarget > 0
     ? Math.min(100, Math.round((wallet.todayQuestionsDone / todayTarget) * 100))
@@ -35,12 +38,7 @@ export default function CalcHomePage() {
 
   const handleStart = () => {
     playSfx('coin', settings.soundEnabled)
-    const params = new URLSearchParams({
-      count: String(settings.lastCount),
-      time: String(settings.lastTimeLimit),
-      mode: 'daily',
-    })
-    router.push(`/calc/session?${params.toString()}`)
+    router.push('/calc/session?mode=daily')
   }
 
   if (settingsLoading || wallet.isLoading) {
@@ -58,8 +56,6 @@ export default function CalcHomePage() {
     )
   }
 
-  const blockCount = settings.selectedBlocks.length
-  const mixedCount = settings.mixedOps.filter((m) => m.enabled).length
   const todayAccuracy = wallet.todayQuestionsDone > 0
     ? Math.round((wallet.todayCorrect / wallet.todayQuestionsDone) * 100)
     : 0
@@ -193,25 +189,17 @@ export default function CalcHomePage() {
 
         {/* Config */}
         <section>
-          <div
-            className="mb-2 flex items-center gap-2 text-[11px] font-extrabold tracking-widest uppercase"
-            style={{ color: 'rgba(196,181,253,0.5)' }}
-          >
-            <span
-              className="inline-flex h-5 w-5 items-center justify-center rounded-md text-[11px]"
-              style={{ background: 'rgba(139,92,246,0.25)' }}
-            >
-              📐
-            </span>
-            选择练习
+          <div className="mb-2 flex items-center gap-2 text-[11px] font-extrabold tracking-widest uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-md text-[11px]" style={{ background: 'rgba(139,92,246,0.25)' }}>📐</span>
+            练习题量 · 共 {totalQuestions} 题
           </div>
-          <CalcConfigBar
-            count={settings.lastCount}
-            timeLimit={settings.lastTimeLimit}
-            onChange={(patch) => update(patch.count !== undefined
-              ? { lastCount: patch.count }
-              : { lastTimeLimit: patch.timeLimit })}
-          />
+          {settings.countMode === 'auto' ? (
+            <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
+          ) : (
+            <Link href="/calc/settings" className="block rounded-2xl px-4 py-3 text-[12px] font-bold no-underline" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.12)', color: 'rgba(196,181,253,0.6)' }}>
+              精准模式：各题型题量在设置里调整 →
+            </Link>
+          )}
         </section>
 
         {/* CTA */}
