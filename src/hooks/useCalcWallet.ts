@@ -29,6 +29,7 @@ interface SessionRow {
   max_streak: number
   top_level: string
   question_times_ms: number[] | null
+  question_log: { key: string; ms: number; ok: boolean }[] | null
 }
 
 function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {
@@ -48,6 +49,7 @@ function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {
     maxStreak: r.max_streak,
     topLevel: r.top_level === 'C' ? 'C' : Number(r.top_level),
     questionTimesMs: r.question_times_ms ?? [],
+    questionLog: r.question_log ?? [],
   }
 }
 
@@ -67,7 +69,7 @@ async function fetchWalletData(userId: string) {
   ] = await Promise.all([
     supabase
       .from('calc_sessions')
-      .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms')
+      .select('id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms,question_log')
       .eq('user_id', userId)
       .order('finished_at', { ascending: false })
       .limit(200),
@@ -234,6 +236,7 @@ export function useCalcWallet(user: User | null) {
         max_streak: session.maxStreak,
         top_level: levelKey(session.topLevel as CalcLevel),
         question_times_ms: session.questionTimesMs ?? [],
+        question_log: session.questionLog ?? [],
       }
       try {
         const { error: sessionErr } = await supabase.from('calc_sessions').insert(sessionRow)
