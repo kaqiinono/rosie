@@ -3,17 +3,19 @@
 /**
  * 口算题型预览 Demo — `/calc/demo`
  *
- * A non-persisted gallery of every answer surface the calc module can produce,
- * each shown inside a phone-sized frame laid out the way the session screen looks.
- * The frames here are NON-interactive previews — the whole card links to the
- * per-type detail page (`/calc/demo/[key]`), where the question is fully playable
- * in the exact session frame. Both render through the shared `CalcQuestionStage`,
- * so the preview and the real thing can't drift.
+ * A gallery of every answer surface the calc module can produce, each rendered
+ * through the shared `CalcQuestionStage` — the SAME component the real session
+ * uses — so a preview can never drift from the real thing. Cards are playable in
+ * place (real input echo + the pads' own self-check); full grading/scoring lives
+ * only in the real session, reached via each card's 「打开」link to
+ * `/calc/demo/[key]`. This page adds NO custom styling or logic of its own.
  */
 
 import { useState } from 'react'
 import Link from 'next/link'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
+import CalcSessionStatusBar from '@/components/calc/CalcSessionStatusBar'
+import CalcFeedbackBanner from '@/components/calc/CalcFeedbackBanner'
 import { SAMPLES, type Sample } from './samples'
 
 const noop = () => {}
@@ -27,7 +29,7 @@ function DemoCard({ sample }: { sample: Sample }) {
   const [input, setInput] = useState('')
 
   return (
-    <div className="group flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       {/* Label */}
       <div className="flex items-baseline justify-between gap-2 px-1">
         <h3 className="text-[14px] font-black" style={{ color: '#e9d5ff' }}>
@@ -35,12 +37,8 @@ function DemoCard({ sample }: { sample: Sample }) {
         </h3>
         <Link
           href={`/calc/demo/${sample.key}`}
-          className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold no-underline transition-colors"
-          style={{
-            background: 'rgba(139,92,246,0.15)',
-            border: '1px solid rgba(139,92,246,0.3)',
-            color: '#c4b5fd',
-          }}
+          className="shrink-0 text-[11px] font-bold no-underline"
+          style={{ color: '#c4b5fd' }}
         >
           打开 ↗
         </Link>
@@ -60,25 +58,21 @@ function DemoCard({ sample }: { sample: Sample }) {
           boxShadow: '0 12px 40px rgba(0,0,0,0.45)',
         }}
       >
-        {/* Top bar — collapsed to a single row */}
-        <div className="shrink-0 px-4 pt-4">
-          <div className="flex items-center justify-between text-[12px] font-bold">
-            <span style={{ color: 'rgba(196,181,253,0.55)' }}>⏱ ∞</span>
-            <span style={{ color: 'rgba(245,243,255,0.55)' }}>1 / 10</span>
-            <span
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5"
-              style={{ background: 'rgba(251,191,36,0.12)', color: '#fbbf24' }}
-            >
-              ⭐ 0
-            </span>
-          </div>
-          <div className="mt-2 h-1 overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.07)' }}>
-            <div className="h-full w-[10%] rounded-full" style={{ background: 'linear-gradient(90deg,#7c3aed,#a855f7)' }} />
-          </div>
+        {/* Session chrome — the SAME shared components the real session renders,
+            so the demo can't drift. Static idle props (untimed, question 1, no
+            coins/feedback) reflect the real first-question state. */}
+        <div className="shrink-0 px-4 pt-3">
+          <CalcSessionStatusBar
+            remainingSec={null}
+            idx={0}
+            planned={10}
+            total={10}
+            streak={0}
+            coinsTotal={0}
+            lastResult={null}
+          />
+          <CalcFeedbackBanner feedback={null} reduceHint={false} lastResult={null} revealAnswer={null} secondTry={false} />
         </div>
-
-        {/* Banner slot spacer (parity with the session's feedback row) */}
-        <div className="h-7 shrink-0" />
 
         {/* Playable stage — local input only; submit/grade lives on the detail page */}
         <div className="flex min-h-0 flex-1 flex-col">
@@ -113,7 +107,7 @@ export default function CalcDemoPage() {
               口算题型预览
             </h1>
             <p className="mt-0.5 text-[12px]" style={{ color: 'rgba(196,181,253,0.5)' }}>
-              {SAMPLES.length} 种作答形态 · 点卡片进入与练习一致的单题全屏页作答
+              {SAMPLES.length} 种作答形态 · 卡片可直接试玩，点「打开」进入与练习一致的单题全屏页
             </p>
           </div>
           <Link

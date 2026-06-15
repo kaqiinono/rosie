@@ -9,7 +9,6 @@ import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import BlockPicker from '@/components/calc/BlockPicker'
 import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
-import QuickPracticeModal from '@/components/calc/QuickPracticeModal'
 import TimeLimitsSection from '@/components/calc/TimeLimitsSection'
 import { playSfx } from '@/components/calc/audio'
 import { blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
@@ -77,7 +76,6 @@ export default function CalcSettingsPage() {
   const router = useRouter()
   const { settings, update, setSettings, isLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
-  const [practiceOpen, setPracticeOpen] = useState(false)
   const [saved, setSaved] = useState(false)
 
   // Settings already persist on every `update()`; this button is an explicit
@@ -136,8 +134,6 @@ export default function CalcSettingsPage() {
   }
 
   const blockCount = settings.selectedBlocks.length
-  const mixedCount = settings.mixedOps.filter((m) => m.enabled).length
-  const practiceSubtitle = `已选 ${blockCount} 种单运算 · ${mixedCount} 种混合`
 
   return (
     <>
@@ -245,46 +241,20 @@ export default function CalcSettingsPage() {
             🚀 开始练习 →
           </button>
 
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={() => setPracticeOpen(true)}
-              className="rounded-2xl px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
-              style={{
-                background: 'rgba(139,92,246,0.12)',
-                border: '1px solid rgba(139,92,246,0.3)',
-                color: '#c4b5fd',
-              }}
-            >
-              ✨ 预览
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="rounded-2xl px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
-              style={{
-                background: saved ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
-                color: saved ? '#4ade80' : 'rgba(245,243,255,0.7)',
-              }}
-            >
-              {saved ? '已保存 ✓' : '💾 保存设置'}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="w-full rounded-2xl px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
+            style={{
+              background: saved ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
+              color: saved ? '#4ade80' : 'rgba(245,243,255,0.7)',
+            }}
+          >
+            {saved ? '已保存 ✓' : '💾 保存设置'}
+          </button>
         </div>
       </main>
-
-      {practiceOpen && (
-        <QuickPracticeModal
-          title="预览当前设置"
-          subtitle={practiceSubtitle}
-          settings={settings}
-          buildCount={settings.lastCount}
-          soundEnabled={settings.soundEnabled}
-          onClose={() => setPracticeOpen(false)}
-          doneLabel="完成，回到设置 →"
-        />
-      )}
     </>
   )
 }

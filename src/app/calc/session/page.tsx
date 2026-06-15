@@ -10,6 +10,8 @@ import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import CalcQuestionStage from '@/components/calc/CalcQuestionStage'
+import CalcSessionStatusBar from '@/components/calc/CalcSessionStatusBar'
+import CalcFeedbackBanner from '@/components/calc/CalcFeedbackBanner'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
@@ -43,12 +45,6 @@ interface AttemptStat {
   display?: string
 }
 
-function formatTimer(s: number) {
-  if (s < 0) s = 0
-  const m = Math.floor(s / 60)
-  const r = s % 60
-  return `${m}:${String(r).padStart(2, '0')}`
-}
 
 export default function CalcSessionPage() {
   const params = useSearchParams()
@@ -103,6 +99,8 @@ export default function CalcSessionPage() {
   const [maxStreak, setMaxStreak] = useState(0)
   const maxStreakRef = useRef(0)
   const [lastResult, setLastResult] = useState<{ stars: number; bonus: number } | null>(null)
+  // Whether the current 'correct' feedback came on the second try (no stars).
+  const [secondTryCorrect, setSecondTryCorrect] = useState(false)
 
   const attemptsLogRef = useRef<AttemptStat[]>([])
   // First-attempt solve time (ms) per question, in order — persisted for timing analysis.
@@ -413,6 +411,7 @@ export default function CalcSessionPage() {
         setInput('')
         setAttemptsForCurrent(0)
         setLastResult(null)
+        setSecondTryCorrect(false)
         setRevealAnswer(null)
         if (!questions) return
         if (idx + 1 < questions.length) {
@@ -434,6 +433,7 @@ export default function CalcSessionPage() {
         const isChallengeCorrect = q.isChallenge && isFirstTry
         const bonus = isFirstTry ? (streak >= 10 ? 2 : streak >= 5 ? 1 : 0) : 0
         if (isFirstTry && reward > 0) setLastResult({ stars: reward, bonus })
+        setSecondTryCorrect(!isFirstTry)
         setFeedback(isChallengeCorrect ? 'challenge-correct' : 'correct')
         playSfx(isChallengeCorrect ? 'streak' : 'correct', settings.soundEnabled)
         if (reward > 0) playSfx('coin', settings.soundEnabled)
@@ -630,8 +630,6 @@ export default function CalcSessionPage() {
 
   const currentQ = questions[idx]
   const planned = plannedCount || questions.length
-  const progress = Math.min(100, Math.round((Math.min(idx, planned) / planned) * 100))
-  const inMakeupTail = idx >= planned
 
   return (
     <>
@@ -653,152 +651,23 @@ export default function CalcSessionPage() {
         className="relative mx-auto flex w-full max-w-[640px] flex-col px-4 pt-3 pb-6"
         style={{ height: 'calc(100svh - 56px)' }}
       >
-        {/* Top status */}
-        <div
-          className="mb-2 flex items-center justify-between text-[12px] font-bold tabular-nums"
-          style={{ color: 'rgba(196,181,253,0.6)' }}
-        >
-          <div>{remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}</div>
-          {inMakeupTail ? (
-            <div style={{ color: 'rgba(251,191,36,0.7)' }}>
-              💪 错题补做 {idx - planned + 1} / {questions.length - planned}
-            </div>
-          ) : (
-            <div style={{ color: 'rgba(245,243,255,0.5)' }}>
-              {idx + 1} / {planned}
-            </div>
-          )}
-          <div style={{ color: '#fb923c' }}>{streak >= 2 ? `🔥 ${streak}` : ' '}</div>
-        </div>
+        <CalcSessionStatusBar
+          remainingSec={remainingSec}
+          idx={idx}
+          planned={planned}
+          total={questions.length}
+          streak={streak}
+          coinsTotal={coinsTotal}
+          lastResult={lastResult}
+        />
 
-        {/* Real-time star bar */}
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <div
-            className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1"
-            style={{
-              background: 'rgba(251,191,36,0.12)',
-              border: '1px solid rgba(251,191,36,0.22)',
-            }}
-          >
-            <span className="text-[13px]">⭐</span>
-            <span
-              className="font-fredoka text-[14px] font-black tabular-nums"
-              style={{ color: '#fbbf24' }}
-            >
-              {coinsTotal}
-            </span>
-          </div>
-          {streak >= 5 && (
-            <div
-              className="flex items-center gap-1 rounded-full px-2.5 py-1"
-              style={{
-                background: 'rgba(251,146,60,0.15)',
-                border: '1px solid rgba(251,146,60,0.3)',
-              }}
-            >
-              <span className="text-[11px]">🔥</span>
-              <span className="text-[10px] font-extrabold" style={{ color: '#fb923c' }}>
-                {streak >= 10 ? '+2加成' : '+1加成'}
-              </span>
-            </div>
-          )}
-          {lastResult && lastResult.stars > 0 && (
-            <div
-              className="flex items-center gap-1 rounded-full px-2.5 py-1"
-              style={{
-                background: 'rgba(34,197,94,0.15)',
-                border: '1px solid rgba(34,197,94,0.28)',
-                animation: 'float-up 0.7s ease-out forwards',
-              }}
-            >
-              <span className="text-[10px] font-extrabold" style={{ color: '#4ade80' }}>
-                +{lastResult.stars} ⭐
-                {lastResult.bonus > 0 && (
-                  <span style={{ color: '#fb923c' }}> 含+{lastResult.bonus}加成</span>
-                )}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div
-          className="mb-5 h-1.5 overflow-hidden rounded-full"
-          style={{ background: 'rgba(255,255,255,0.07)' }}
-        >
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progress}%`,
-              background: 'linear-gradient(90deg, #7c3aed, #d946ef)',
-              boxShadow: '0 0 8px rgba(139,92,246,0.5)',
-            }}
-          />
-        </div>
-
-        {/* Inline feedback banner */}
-        <div className="mb-2 shrink-0" style={{ minHeight: 26 }}>
-          {feedback === 'correct' && (
-            <div
-              className="rounded-xl py-3 text-center text-[15px] font-extrabold"
-              style={{
-                background: 'rgba(34,197,94,0.15)',
-                border: '1px solid rgba(34,197,94,0.3)',
-                color: '#4ade80',
-                animation: 'pop-in 0.25s ease',
-              }}
-            >
-              ✓ 答对啦！
-              {reduceHint
-                ? '还能再约一约哦～'
-                : lastResult && lastResult.stars > 0
-                  ? `本题 +${lastResult.stars} ⭐`
-                  : '（第二次）'}
-            </div>
-          )}
-          {feedback === 'challenge-correct' && (
-            <div
-              className="rounded-xl py-3 text-center text-[15px] font-extrabold"
-              style={{
-                background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(236,72,153,0.15))',
-                border: '1px solid rgba(245,158,11,0.4)',
-                color: '#fbbf24',
-                animation: 'pop-in 0.3s cubic-bezier(.34,1.56,.64,1)',
-              }}
-            >
-              🌟 挑战题答对！{lastResult && lastResult.stars > 0 ? `+${lastResult.stars} ⭐` : ''}
-            </div>
-          )}
-          {feedback === 'retry' && (
-            <div
-              className="rounded-xl py-3 text-center text-[15px] font-extrabold"
-              style={{
-                background: 'rgba(251,191,36,0.12)',
-                border: '1px solid rgba(251,191,36,0.25)',
-                color: '#fbbf24',
-                animation: 'wiggle 0.4s ease',
-              }}
-            >
-              🤔 再想想～
-            </div>
-          )}
-          {feedback === 'wrong' && (
-            <div
-              className="rounded-xl py-3 text-center text-[14px] font-extrabold"
-              style={{
-                background: 'rgba(239,68,68,0.12)',
-                border: '1px solid rgba(239,68,68,0.28)',
-                color: '#f87171',
-                animation: 'pop-in 0.25s ease',
-              }}
-            >
-              答案是{' '}
-              <span className="font-fredoka text-[22px]" style={{ color: '#fca5a5' }}>
-                {revealAnswer}
-              </span>
-              ，下次加油！
-            </div>
-          )}
-        </div>
+        <CalcFeedbackBanner
+          feedback={feedback}
+          reduceHint={reduceHint}
+          lastResult={lastResult}
+          revealAnswer={revealAnswer}
+          secondTry={secondTryCorrect}
+        />
 
         <CalcQuestionStage
           padKey={`${idx}:${attemptsForCurrent}`}
