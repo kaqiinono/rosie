@@ -28,8 +28,8 @@
 // 单运算选择项（原来仅是 string id）
 export interface BlockSel {
   id: string
-  count: number      // 精准模式下使用
-  seconds: number    // 每题目标秒数；0 = 不限
+  count: number             // 精准模式下使用
+  seconds: number | null    // 每题目标秒数；null=未确认 · 0=不限 · >0=限时
 }
 
 export interface MixedOp {
@@ -38,8 +38,8 @@ export interface MixedOp {
   blockIds: string[]
   enabled: boolean
   label?: string
-  count: number      // 新增
-  seconds: number    // 新增；0 = 不限
+  count: number             // 新增
+  seconds: number | null    // 新增；null=未确认 · 0=不限 · >0=限时
 }
 
 export interface CalcSettings {
@@ -72,6 +72,8 @@ export interface CalcSettings {
 
 - **题量**（仅 manual 模式）：现有 chips `10·20·30·50·100`。
 - **限时**（始终）：chips `不限 · 1秒 · 3秒 · 5秒 · 10秒 · 自定义`；选「自定义」展开秒数数字输入框；非预设值自动选中「自定义」并回填。
+  - 新选中题型 `seconds = null`（**未确认**），不预选任何 chip；显示醒目「待确认」标记催家长设置。
+  - 该题型若有 `TIME_TARGETS`，行内展示**四档建议**（入门/进阶/高级⭐/超高级 秒区间）作直观提示，辅助家长选定；若**缺失**则显示 `⚠️ 暂无建议耗时`，家长仍可手动设。
 
 页面级：
 
@@ -85,7 +87,7 @@ export interface CalcSettings {
 
 ### 5.1 每题倒计时（软性）
 
-- header 显示**按题**倒计时，初值取当前题 source 的 `seconds`（每题重置）。`seconds === 0`（不限）→ 不显示倒计时。
+- header 显示**按题**倒计时，初值取当前题 source 的 `seconds`（每题重置）。`seconds === 0`（不限）**或 `null`（未确认）** → 不显示倒计时、无速度星。
 - **软性**：到 0 **不**自动跳题、**不**判错——只是关闭「速度窗口」，并切换为温和提示（如 `⏰ 慢慢来～`，非红色告警），孩子按自己节奏完成。
 - `CalcSessionStatusBar` 已接收 `remainingSec`，改为喂入按题剩余值；demo 仍传 `null`。
 
@@ -93,8 +95,8 @@ export interface CalcSettings {
 
 - 首次作答 **在该题型 `seconds` 内答对** → **+1 ⭐ 速度星**（叠加在基础 `coinReward` 上），且 `withinLimit = true` 计入熟练度。
 - 超时但答对 → 答对、基础星，**无**速度星、**不**计入「限时熟练」。
-- `seconds === 0`（不限）→ 无倒计时、无速度星；答对照常按 `withinLimit = true` 计入熟练度。
-- `withinLimit` 的计算由 `timeLimitFromSettings(level)` 改为 `elapsedMs ≤ source.seconds * 1000`（`seconds>0` 时）。
+- `seconds === 0`（不限）或 `null`（未确认）→ 无倒计时、无速度星；答对照常按 `withinLimit = true` 计入熟练度。
+- `withinLimit` 的计算由 `timeLimitFromSettings(level)` 改为：`seconds>0` 时 `elapsedMs ≤ seconds*1000`，否则恒 `true`。
 
 ### 5.3 移除
 
@@ -119,13 +121,17 @@ export interface CalcSettings {
 参考 `docs/calc-per-type-time-targets.md`，把每个题型的「入门 / 进阶 / 高级⭐ / 超高级」秒数区间落到代码：
 
 ```ts
-// src/utils/calc-time-targets.ts —— 唯一真相表
+// src/utils/calc-time-targets.ts —— 唯一真相表（转录 docs/calc-per-type-time-targets.md）
 export interface TimeTarget { entry: [number, number]; stable: [number, number]; fluent: [number, number]; auto: [number, number] } // 秒
 export const TIME_TARGETS: Record<string /* blockId | skeletonId */, TimeTarget>
 export type Tier = 'entry' | 'stable' | 'fluent' | 'auto'
+export function suggestedTiers(id: string): TimeTarget | null  // 缺失返回 null
+export function missingTargetIds(): string[]  // 所有 BLOCKS/SKELETONS 中缺 TIME_TARGETS 的 id
 ```
 
-- 该表**同时**作为 `defaultSecondsForBlock` 的来源：题型默认 `限时 seconds = 高级⭐ 上界`（对齐 doc §1/§8「推荐目标」），per-题型 chips 即从同一张表预填。
+- **不设默认值。** 该表只提供**建议**供家长确认，绝不自动写入 `seconds`。
+- `seconds: number | null` 三态：`null` = **未确认**（家长尚未设置）、`0` = **明确不限**、`>0` = 限时秒数。未确认在练习中按「不限」处理（无倒计时/速度星），但 UI 必须标注「待确认」催促设置。
+- **覆盖审计**：`missingTargetIds()` 校验每个 BLOCKS/SKELETONS id 都有 TIME_TARGETS 条目；缺失 → 设置页该题型显示 `⚠️ 暂无建议耗时`、报告显示「未设目标」，并 dev 模式 `console.warn`。当前审计：43 blocks + 7 skeletons **全覆盖**，无缺失。
 - **档位判定**（读报告时，基于 §6.1 的 `question_log`）：
   - 取该题型**滚动最近 20 道首答题**（跨 session），算 `平均秒/题` 与 `首答正确率`。
   - 档位 = 满足 `avg ≤ band.hi` 的最高档；但 **进阶及以上要求正确率达标**（默认 ≥ 80%，doc §2/§5 稳定性优先，防止赶时间猜答案）——正确率不足则压到 **入门**。
@@ -150,9 +156,10 @@ export type Tier = 'entry' | 'stable' | 'fluent' | 'auto'
 
 ## 7. 默认值与迁移
 
-- 新选中题型默认：`count: 20`、`seconds = 该题型 高级⭐ 上界`（取自 `TIME_TARGETS`）。`defaultSecondsForBlock(id)` 读 `TIME_TARGETS`，缺失题型回退到一个保守默认（如 6s）。
+- 新选中题型：`count: 20`（沿用题量 chip 习惯），`seconds: null`（**未确认，不预填**）。`TIME_TARGETS` 只用于行内**建议展示**，由家长确认后写入 `seconds`。
+- **不提供** `defaultSecondsForBlock`（已弃用）；以 `suggestedTiers(id)` 提供建议、`missingTargetIds()` 暴露缺口。
 - `countMode` 默认 `'auto'`。
-- `rowToSettings` 向后兼容：旧 `selected_blocks: ["add:10"]` → `[{ id:"add:10", count:20, seconds:3 }]`；旧 `mixed_ops` 缺 `count/seconds` 时补默认。
+- `rowToSettings` 向后兼容：旧 `selected_blocks: ["add:10"]` → `[{ id:"add:10", count:20, seconds:null }]`（升级后家长会看到「待确认」提示）；旧 `mixed_ops` 缺字段补 `count:20, seconds:null`。
 - **SQL 迁移**（手动执行）：`docs/sql/calc-per-type-stats-migration.sql`
   - `alter table calc_sessions add column if not exists question_log jsonb not null default '[]'::jsonb;`
   - `selected_blocks` 形状变更走 jsonb，无 DDL；`last_time_limit` / `time_limit_overrides` 列保留但停用（不读写）。
@@ -164,11 +171,11 @@ export type Tier = 'entry' | 'stable' | 'fluent' | 'auto'
 | `src/utils/type.ts` | `BlockSel`、`MixedOp(+count,+seconds)`、`CalcSettings(countMode/selectedBlocks 改型/移除字段)`、`CalcSession.questionLog` |
 | `src/hooks/useCalcSettings.ts` | `DEFAULT_SETTINGS`、`rowToSettings/settingsToRow` 升级与回退、移除 time 字段 |
 | `src/utils/calc-time-limits.ts` | 移除 bucket override 系统 |
-| `src/utils/calc-time-targets.ts` | **新增**：`TIME_TARGETS` 四档表（转录 doc）、`Tier`、`defaultSecondsForBlock`、`tierOf(avg, acc, target)`、`nextTierGap` |
+| `src/utils/calc-time-targets.ts` | **新增**：`TIME_TARGETS` 四档表（转录 doc）、`Tier`、`suggestedTiers(id)`、`missingTargetIds()`、`tierOf(avg, acc, target)`、`nextTierGap`（**无** default 生成器） |
 | `src/utils/calc-helpers.ts` | `buildSession` 支持 auto/manual；保留 `allocate`；移除 `calcTimeBonus`/`timeLimitBonusPreview` |
 | `src/components/calc/CalcConfigBar.tsx` | 收敛为仅题量 chips（用于 auto 全局总题量 / 首页） |
-| `src/components/calc/BlockPicker.tsx` | 选中行内联 题量(manual)+限时 chips |
-| `src/components/calc/MixedOpList.tsx` / `MixedOpComposer.tsx` | 每个 mixed op 加 题量+限时 |
+| `src/components/calc/BlockPicker.tsx` | 选中行内联 题量(manual)+限时 chips；四档建议提示 / 「待确认」/「⚠️暂无建议」标记 |
+| `src/components/calc/MixedOpList.tsx` / `MixedOpComposer.tsx` | 每个 mixed op 加 题量+限时（同样的建议/待确认/缺失标记） |
 | `src/components/calc/TimeLimitsSection.tsx` | **删除** |
 | `src/app/calc/settings/page.tsx` | 题量模式开关、删除旧两节、共 N 题合计 |
 | `src/app/calc/page.tsx` | 移除限时；显示共 N 题 / auto 快速总题量；`handleStart` 去掉 time 参数 |
@@ -192,6 +199,6 @@ export type Tier = 'entry' | 'stable' | 'fluent' | 'auto'
 - 倒计时：保留，但改为**按题、软性**。
 - 奖励：速度星 + 熟练度 都要。
 - 统计：题型为原子单位，逐题打标，`question_log` 三元粒度，读时聚合；吞吐单位 = 题/分钟（辅以 平均秒/题 vs 目标）。
-- 四档目标来自 `docs/calc-per-type-time-targets.md` → `TIME_TARGETS`，同时作为题型默认 `seconds`（高级⭐ 上界）。
+- 四档目标来自 `docs/calc-per-type-time-targets.md` → `TIME_TARGETS`，**仅作建议**；`seconds` 三态（null 未确认 / 0 不限 / >0 限时），**不设默认**，由家长确认。缺 TIME_TARGETS 的题型在设置页/报告显式标「缺失/未设目标」（当前全覆盖）。
 - 档位/进退窗口 = **滚动最近 20 道首答题/题型**；进阶+ 需正确率 ≥ 80%。
 - 报告精简为 4 块：本次速览 / 各题型一行 / 需加强 Top3 / 精简次要（错误分布 + 最近练习）。
