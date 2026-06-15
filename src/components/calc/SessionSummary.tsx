@@ -8,7 +8,6 @@ interface Props {
   wrongCount: number
   total: number
   coinsEarned: number
-  timeBonusEarned?: number
   timeSpentSec: number
   /** Mean first-attempt solve time this session, in ms (null if no data). */
   avgMs?: number | null
@@ -22,19 +21,12 @@ interface Props {
   /** Optional caption shown when a level transitioned to abc_passed / review_r1 / review_r2 etc. */
   reviewMilestone?: string | null
   /** Per-source (building block / mixed op) performance breakdown for this session. */
-  bySource?: { label: string; total: number; firstTryCorrect: number; proficiency: number }[]
+  bySource?: { label: string; total: number; firstTryCorrect: number; perMinute: number; avgSec: number; targetSec: number | null }[]
   /** Distinct wrong-final question displays exposed this session (already stripped of "= ?"). */
   newWeak?: string[]
   /** Source labels the next session will focus on, weakest-first. */
   nextFocus?: string[]
   onAgain: () => void
-}
-
-/** 熟练度 pill color: red ≤1, amber 2-3, green ≥4. */
-function proficiencyColor(p: number) {
-  if (p <= 1) return { color: '#fca5a5', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.28)' }
-  if (p <= 3) return { color: '#fbbf24', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)' }
-  return { color: '#4ade80', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.25)' }
 }
 
 function formatTime(s: number) {
@@ -62,7 +54,6 @@ export default function SessionSummary({
   wrongCount,
   total,
   coinsEarned,
-  timeBonusEarned = 0,
   timeSpentSec,
   avgMs = null,
   prevAvgMs = null,
@@ -79,7 +70,7 @@ export default function SessionSummary({
 }: Props) {
   const accuracy = total > 0 ? Math.round(((correctCount + retryCount) / total) * 100) : 0
   const trophy = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🌟' : '💪'
-  const totalCoins = coinsEarned + timeBonusEarned
+  const totalCoins = coinsEarned
 
   return (
     <div
@@ -208,16 +199,11 @@ export default function SessionSummary({
             }}
           >
             <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(251,191,36,0.5)' }}>
-              {timeBonusEarned > 0 ? '合计星星' : '星星'}
+              星星
             </div>
             <div className="font-fredoka text-[20px] font-black" style={{ color: '#fbbf24' }}>
               +{totalCoins} ⭐
             </div>
-            {timeBonusEarned > 0 && (
-              <div className="text-[9px] font-semibold mt-0.5" style={{ color: 'rgba(251,191,36,0.5)' }}>
-                基础{coinsEarned} + 限时{timeBonusEarned}
-              </div>
-            )}
           </div>
         </div>
 
@@ -278,62 +264,6 @@ export default function SessionSummary({
           )
         })()}
 
-        {/* Time bonus celebration card */}
-        {timeBonusEarned > 0 && (
-          <div
-            className="mt-3 rounded-xl px-4 py-3 text-left"
-            style={{
-              background: 'linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(251,113,133,0.1) 100%)',
-              border: '1px solid rgba(245,158,11,0.4)',
-              boxShadow: '0 0 20px rgba(245,158,11,0.12)',
-              animation: 'pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.25s both',
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <div
-                  className="text-[11px] font-extrabold uppercase tracking-widest"
-                  style={{ color: 'rgba(251,191,36,0.7)' }}
-                >
-                  ⚡ 限时挑战加成
-                </div>
-                <div
-                  className="font-fredoka text-[28px] font-black leading-tight"
-                  style={{
-                    background: 'linear-gradient(90deg, #fbbf24, #f97316)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  +{timeBonusEarned} ⭐
-                </div>
-                <div className="text-[10px] font-semibold mt-0.5" style={{ color: 'rgba(251,191,36,0.55)' }}>
-                  {formatTimeChinese(timeSpentSec)} 内完成 · 速度奖励
-                </div>
-              </div>
-              <div
-                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-[28px]"
-                style={{
-                  background: 'rgba(245,158,11,0.15)',
-                  border: '2px solid rgba(245,158,11,0.3)',
-                }}
-              >
-                ⚡
-              </div>
-            </div>
-            <div
-              className="mt-2 rounded-lg px-3 py-1.5 text-[11px] font-bold text-center"
-              style={{
-                background: 'rgba(245,158,11,0.12)',
-                border: '1px solid rgba(245,158,11,0.2)',
-                color: '#fbbf24',
-              }}
-            >
-              太厉害了！继续挑战更短时间赢更多星星！
-            </div>
-          </div>
-        )}
-
         {(maxStreak >= 3 || challengeCorrect > 0) && (
           <div className="mt-3 flex justify-center gap-3 text-[11px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
             {maxStreak >= 3 && <span>🔥 最长连对 {maxStreak}</span>}
@@ -357,25 +287,22 @@ export default function SessionSummary({
               📊 本次各项表现
             </div>
             <div className="mt-2 flex flex-col gap-1.5">
-              {bySource.map((s) => {
-                const pc = proficiencyColor(s.proficiency)
-                return (
-                  <div key={s.label} className="flex items-center justify-between gap-2">
-                    <div className="min-w-0 flex-1 truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>
-                      {s.label}
-                    </div>
-                    <div className="shrink-0 text-[11px] font-semibold tabular-nums" style={{ color: 'rgba(245,243,255,0.5)' }}>
-                      {s.firstTryCorrect}/{s.total} 对
-                    </div>
-                    <div
-                      className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold"
-                      style={{ color: pc.color, background: pc.bg, border: `1px solid ${pc.border}` }}
-                    >
-                      熟练 {s.proficiency}/5
-                    </div>
+              {bySource.map((s) => (
+                <div key={s.label} className="flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1 truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>
+                    {s.label}
                   </div>
-                )
-              })}
+                  <div className="shrink-0 text-[11px] font-semibold tabular-nums" style={{ color: 'rgba(245,243,255,0.5)' }}>
+                    {s.firstTryCorrect}/{s.total} 对
+                  </div>
+                  <div className="shrink-0 text-[11px] font-extrabold tabular-nums" style={{ color: '#7dd3fc' }}>
+                    {s.perMinute} 题/分
+                  </div>
+                  <div className="shrink-0 text-[10px] tabular-nums" style={{ color: 'rgba(245,243,255,0.45)' }}>
+                    {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

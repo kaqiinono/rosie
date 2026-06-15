@@ -116,7 +116,6 @@ export default function CalcSessionPage() {
   const [now, setNow] = useState<number>(() => Date.now())
   const [questionStartWall, setQuestionStartWall] = useState<number>(0)
   const [done, setDone] = useState(false)
-  const [timeBonusEarned, setTimeBonusEarned] = useState(0)
   const [finalStats, setFinalStats] = useState<{
     correct: number
     retry: number
@@ -129,7 +128,7 @@ export default function CalcSessionPage() {
     /** Mean per-question time of the PREVIOUS session, in ms (null if none). */
     prevAvgMs: number | null
     /** Per-source performance breakdown for this session. */
-    bySource: { label: string; total: number; firstTryCorrect: number; proficiency: number }[]
+    bySource: { label: string; total: number; firstTryCorrect: number; perMinute: number; avgSec: number; targetSec: number | null }[]
     /** Distinct wrong-question displays from this session (final answer wrong), capped. */
     newWeak: string[]
     /** Source labels to focus on next time, weakest-first. */
@@ -224,8 +223,6 @@ export default function CalcSessionPage() {
     const wrongCount = log.filter((a) => !a.finallyCorrect).length
     const challengeCorrect = log.filter((a) => a.isChallenge && a.finallyCorrect).length
 
-    setTimeBonusEarned(0)
-
     // ── Timing analysis: this session's avg per-question time vs the previous session ──
     const qTimes = questionTimesRef.current
     const avgMs =
@@ -300,22 +297,29 @@ export default function CalcSessionPage() {
       if (arr) arr.push(a)
       else sourceGroups.set(key, [a])
     }
+    const logByKey = new Map<string, { sumMs: number; n: number; ok: number }>()
+    for (const e of questionLogRef.current) {
+      const a = logByKey.get(e.key) ?? { sumMs: 0, n: 0, ok: 0 }
+      a.sumMs += e.ms; a.n += 1; if (e.ok) a.ok += 1
+      logByKey.set(e.key, a)
+    }
     const bySource = Array.from(sourceGroups.entries()).map(([key, attempts]) => {
       const [kind, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
-      const relevantStates = nextStates.filter((s) =>
-        kind === 'block' ? s.blockId === id : s.mixedOpId === id,
-      )
-      const proficiency =
-        relevantStates.length > 0
-          ? Math.round(
-              relevantStates.reduce((sum, s) => sum + s.proficiency, 0) / relevantStates.length,
-            )
-          : 0
+      const logKey = `${kind}:${id}`
+      const agg = logByKey.get(logKey)
+      const avgSec = agg && agg.n > 0 ? +(agg.sumMs / agg.n / 1000).toFixed(1) : 0
+      const perMinute = agg && agg.sumMs > 0 ? +(agg.n / (agg.sumMs / 60000)).toFixed(1) : 0
+      const targetSec =
+        kind === 'block'
+          ? settings.selectedBlocks.find((b) => b.id === id)?.seconds ?? null
+          : settings.mixedOps.find((m) => m.id === id)?.seconds ?? null
       return {
         label: sourceLabelOf(key),
         total: attempts.length,
         firstTryCorrect: attempts.filter((a) => a.firstTryCorrect).length,
-        proficiency,
+        perMinute,
+        avgSec,
+        targetSec: targetSec && targetSec > 0 ? targetSec : null,
       }
     })
 
@@ -329,9 +333,9 @@ export default function CalcSessionPage() {
       ),
     ).slice(0, 8)
 
-    // ── Next-focus preview: weakest-proficiency sources, ascending ──
+    // ── Next-focus preview: weakest-accuracy sources, ascending ──
     const nextFocus = [...bySource]
-      .sort((a, b) => a.proficiency - b.proficiency)
+      .sort((a, b) => a.firstTryCorrect / Math.max(1, a.total) - b.firstTryCorrect / Math.max(1, b.total))
       .slice(0, 5)
       .map((s) => s.label)
 
@@ -383,6 +387,7 @@ export default function CalcSessionPage() {
     settings.soundEnabled,
     settings.sessionCounter,
     settings.mixedOps,
+    settings.selectedBlocks,
     update,
     startedTsMs,
     startedAtIso,
@@ -699,7 +704,6 @@ export default function CalcSessionPage() {
           wrongCount={finalStats.wrong}
           total={finalStats.total}
           coinsEarned={coinsTotal}
-          timeBonusEarned={timeBonusEarned}
           timeSpentSec={finalStats.timeSec}
           avgMs={finalStats.avgMs}
           prevAvgMs={finalStats.prevAvgMs}
@@ -736,7 +740,6 @@ export default function CalcSessionPage() {
             setStartedTsMs(0)
             setStartedAtIso('')
             setDone(false)
-            setTimeBonusEarned(0)
             setFinalStats(null)
             initRef.current = false
             setSessionKey((k) => k + 1)
