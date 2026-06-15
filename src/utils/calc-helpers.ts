@@ -46,14 +46,13 @@ type Source =
  */
 export function buildSession(
   settings: CalcSettings,
-  count: number,
   ctx: BuildCtx,
   carried: CalcMistake[] = [],
 ): CalcQuestion[] {
-  // 1. Sources
+  // 1. Sources (blocks first, then enabled+valid mixed ops)
   const sources: Source[] = []
-  for (const id of settings.selectedBlocks) {
-    const block = blockById(id)
+  for (const sel of settings.selectedBlocks) {
+    const block = blockById(sel.id)
     if (block) sources.push({ kind: 'block', block })
   }
   for (const op of settings.mixedOps) {
@@ -63,21 +62,31 @@ export function buildSession(
 
   const states = [...ctx.problemStates.values()]
 
-  // 2. Per-source proficiency → weight
-  const weights = sources.map((src) => {
-    const matching = src.kind === 'block'
-      ? states.filter((s) => s.blockId === src.block.id)
-      : states.filter((s) => s.mixedOpId === src.op.id)
-    const p = matching.length > 0
-      ? matching.reduce((acc, s) => acc + s.proficiency, 0) / matching.length
-      : 0
-    return Math.max(0.05, 1 - p / 5)
-  })
+  // 2. Allocate counts per source.
+  //    auto  → weakness-weighted allocate() of the global lastCount (原逻辑)
+  //    manual→ each source's own configured count
+  let alloc: number[]
+  if (settings.countMode === 'manual') {
+    alloc = sources.map((src) =>
+      src.kind === 'block'
+        ? settings.selectedBlocks.find((b) => b.id === src.block.id)?.count ?? 0
+        : src.op.count,
+    )
+  } else {
+    const weights = sources.map((src) => {
+      const matching = src.kind === 'block'
+        ? states.filter((s) => s.blockId === src.block.id)
+        : states.filter((s) => s.mixedOpId === src.op.id)
+      const p = matching.length > 0
+        ? matching.reduce((acc, s) => acc + s.proficiency, 0) / matching.length
+        : 0
+      return Math.max(0.05, 1 - p / 5)
+    })
+    alloc = allocate(settings.lastCount, weights)
+  }
+  const count = alloc.reduce((a, b) => a + b, 0)
 
-  // 3. Allocate `count` across sources
-  const alloc = allocate(count, weights)
-
-  // 4. Generate per source
+  // 3. Generate per source
   const out: CalcQuestion[] = []
   sources.forEach((src, i) => {
     const n = alloc[i]
@@ -200,27 +209,6 @@ function generateBlock(block: CalcBlock, n: number, states: CalcProblemState[]):
   }
 
   return out.map((q) => ({ ...q, sourceBlockId: block.id }))
-}
-
-/**
- * Time-limit bonus stars earned at session end (unchanged).
- *   ≤1 min  → ×1.0 per question
- *   ≤3 min  → ×0.6
- *   ≤5 min  → ×0.5
- *   ≤10 min → ×0.3
- *   > 10 min → 0
- */
-export function calcTimeBonus(count: number, timeLimitSec: number, timeSpentSec: number): number {
-  if (timeLimitSec <= 0) return 0
-  if (timeSpentSec <= 60) return count
-  if (timeSpentSec <= 180) return Math.round(count * 0.6)
-  if (timeSpentSec <= 300) return Math.round(count * 0.5)
-  if (timeSpentSec <= 600) return Math.round(count * 0.3)
-  return 0
-}
-
-export function timeLimitBonusPreview(count: number, timeLimitSec: number): number {
-  return calcTimeBonus(count, timeLimitSec, timeLimitSec)
 }
 
 // Voucher prices, labels and gradients live in the `voucher_templates` DB table
