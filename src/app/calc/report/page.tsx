@@ -6,97 +6,23 @@ import { useCalcWallet } from '@/hooks/useCalcWallet'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { supabase } from '@/lib/supabase'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
-import { BLOCK_GROUPS, blocksByGroup } from '@/utils/calc-blocks'
-import { skeletonMeta } from '@/utils/calc-mixed'
 import { ERROR_TAG_LABELS } from '@/utils/calc-diagnose'
-import type { CalcProblemStatus, ErrorTag } from '@/utils/type'
-
-interface ProblemStateLite {
-  signature: string
-  proficiency: number
-  attempt_count: number
-  status: CalcProblemStatus
-  consecutive_wrong: number
-  block_id: string | null
-  mixed_op_id: string | null
-}
-
-// ── Mastery helpers ────────────────────────────────────────────────────────
-
-interface MasteryStat {
-  /** 0..100, computed over answered rows only */
-  pct: number
-  /** number of rows with attempt_count > 0 */
-  answered: number
-  /** total attempts across rows */
-  attempts: number
-}
-
-/** mastery% = round( avgProficiency / 5 * 100 ) over rows with attempt_count > 0 */
-function masteryOf(rows: ProblemStateLite[]): MasteryStat {
-  const answered = rows.filter((r) => r.attempt_count > 0)
-  const attempts = rows.reduce((s, r) => s + r.attempt_count, 0)
-  if (answered.length === 0) return { pct: 0, answered: 0, attempts }
-  const avg = answered.reduce((s, r) => s + r.proficiency, 0) / answered.length
-  return { pct: Math.round((avg / 5) * 100), answered: answered.length, attempts }
-}
-
-function masteryColor(pct: number, answered: number): string {
-  if (answered === 0) return 'rgba(196,181,253,0.4)'
-  if (pct >= 80) return '#4ade80'
-  if (pct >= 50) return '#fbbf24'
-  return '#f87171'
-}
-
-function statusLabel(stat: MasteryStat): string {
-  if (stat.answered === 0) return '未练'
-  if (stat.pct >= 80) return '已掌握'
-  return '练习中'
-}
-
-/** Prettify a raw signature: add(a,b)→a+b, sub→−, mul→×, div→÷. Falls back to raw. */
-function prettySignature(sig: string): string {
-  const fm = sig.match(/^frac:(add|sub|mul|div)\(([^,]+),([^,]+)\)$/)
-  if (fm) {
-    const opSym = { add: '+', sub: '−', mul: '×', div: '÷' }[fm[1]] ?? '?'
-    return `${fm[2]} ${opSym} ${fm[3]}`
-  }
-  const m = sig.match(/^(add|sub|mul|div)\((-?\d+),(-?\d+)\)$/)
-  if (m) {
-    const opSym = { add: '+', sub: '−', mul: '×', div: '÷' }[m[1]] ?? '?'
-    return `${m[2]} ${opSym} ${m[3]}`
-  }
-  return sig
-}
-
-function sortWeakest(rows: ProblemStateLite[]): ProblemStateLite[] {
-  return [...rows].sort((a, b) => {
-    if (a.proficiency !== b.proficiency) return a.proficiency - b.proficiency
-    return b.consecutive_wrong - a.consecutive_wrong
-  })
-}
+import { sourceStats, sessionVerdict, type SourceStat } from '@/utils/calc-report-stats'
+import { TIER_LABEL } from '@/utils/calc-time-targets'
+import type { ErrorTag } from '@/utils/type'
 
 export default function CalcReportPage() {
   const { user } = useAuth()
   const { settings, update } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
 
-  const [problemStates, setProblemStates] = useState<ProblemStateLite[]>([])
   const [errorCounts, setErrorCounts] = useState<{ tag: ErrorTag; count: number }[]>([])
   const [loading, setLoading] = useState(true)
-  const [expandedBlock, setExpandedBlock] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
     let cancelled = false
     const load = async () => {
-      const { data } = await supabase
-        .from('calc_problem_state')
-        .select('signature,proficiency,attempt_count,status,consecutive_wrong,block_id,mixed_op_id')
-        .eq('user_id', user.id)
-      if (cancelled) return
-      setProblemStates((data ?? []) as ProblemStateLite[])
-
       // Aggregate error-tag distribution across still-unresolved mistakes.
       const { data: mistakeRows } = await supabase
         .from('calc_mistakes')
@@ -121,38 +47,29 @@ export default function CalcReportPage() {
     return () => { cancelled = true }
   }, [user])
 
-  // Index rows by block_id and mixed_op_id for cheap grouping.
-  const rowsByBlock = useMemo(() => {
-    const map = new Map<string, ProblemStateLite[]>()
-    for (const r of problemStates) {
-      if (!r.block_id) continue
-      const arr = map.get(r.block_id)
-      if (arr) arr.push(r)
-      else map.set(r.block_id, [r])
-    }
-    return map
-  }, [problemStates])
-
-  const rowsByMixedOp = useMemo(() => {
-    const map = new Map<string, ProblemStateLite[]>()
-    for (const r of problemStates) {
-      if (!r.mixed_op_id) continue
-      const arr = map.get(r.mixed_op_id)
-      if (arr) arr.push(r)
-      else map.set(r.mixed_op_id, [r])
-    }
-    return map
-  }, [problemStates])
-
-  // Weakest 10 across all rows (not mastered).
-  const weakest = useMemo(
-    () => sortWeakest(problemStates.filter((p) => p.status !== 'mastered')).slice(0, 10),
-    [problemStates],
-  )
-
   const recentSessions = wallet.sessions.slice(0, 5)
-  const mixedOps = settings.mixedOps
-  const hasData = problemStates.length > 0 || wallet.sessions.length > 0
+
+  const mixedLabels = useMemo(
+    () => new Map(settings.mixedOps.map((m) => [m.id, m.label ?? ''] as const)),
+    [settings.mixedOps],
+  )
+  const mixedSkeletons = useMemo(
+    () => new Map(settings.mixedOps.map((m) => [m.id, m.skeleton] as const)),
+    [settings.mixedOps],
+  )
+  const stats = useMemo(
+    () => sourceStats(wallet.sessions, mixedLabels, mixedSkeletons).sort((a, b) => a.accuracy - b.accuracy || a.avgSec - b.avgSec),
+    [wallet.sessions, mixedLabels, mixedSkeletons],
+  )
+  const verdict = useMemo(() => sessionVerdict(wallet.sessions), [wallet.sessions])
+  const needWork = useMemo(() => {
+    const rank = { entry: 0, stable: 1, fluent: 2, auto: 3 } as const
+    return [...stats]
+      .sort((a, b) => (rank[a.tier ?? 'entry'] - rank[b.tier ?? 'entry']) || (a.deltaSec ?? 0) - (b.deltaSec ?? 0))
+      .slice(0, 3)
+  }, [stats])
+
+  const hasData = stats.length > 0 || wallet.sessions.length > 0
 
   return (
     <>
@@ -187,196 +104,49 @@ export default function CalcReportPage() {
 
         {!loading && hasData && (
           <>
-            {/* 1. 掌握度总览 — grouped by block group */}
+            {/* 1. 本次速览 */}
             <section>
-              <h2
-                className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-                style={{ color: 'rgba(196,181,253,0.45)' }}
-              >
-                掌握度总览
+              <h2 className="mb-2 text-[11px] font-extrabold tracking-widest uppercase" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                本次速览
               </h2>
-              <div className="space-y-4">
-                {BLOCK_GROUPS.map(({ group, label }) => (
-                  <div key={group}>
-                    <div
-                      className="mb-1.5 text-[12px] font-extrabold"
-                      style={{ color: '#c4b5fd' }}
-                    >
-                      {label}
+              <div className="rounded-2xl px-4 py-4" style={{ background: 'rgba(125,211,252,0.07)', border: '1px solid rgba(125,211,252,0.2)' }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-fredoka text-[22px] font-black leading-none" style={{ color: '#7dd3fc' }}>
+                      {verdict.perMinute}<span className="ml-1 text-[12px] font-bold" style={{ color: 'rgba(125,211,252,0.6)' }}>题/分钟</span>
                     </div>
-                    <div className="space-y-1.5">
-                      {blocksByGroup(group).map((block) => {
-                        const rows = rowsByBlock.get(block.id) ?? []
-                        const stat = masteryOf(rows)
-                        const expanded = expandedBlock === block.id
-                        const weak = sortWeakest(
-                          rows.filter((r) => r.status !== 'mastered'),
-                        )
-                        return (
-                          <div key={block.id}>
-                            <button
-                              type="button"
-                              onClick={() => setExpandedBlock(expanded ? null : block.id)}
-                              className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left transition-all"
-                              style={{
-                                background: expanded ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
-                                border: expanded ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(255,255,255,0.07)',
-                              }}
-                            >
-                              <div className="min-w-0 flex-1">
-                                <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
-                                  {block.label}
-                                </div>
-                                <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
-                                  <span style={{ color: masteryColor(stat.pct, stat.answered) }}>
-                                    {statusLabel(stat)}
-                                  </span>
-                                  {' · 作答 '}{stat.attempts}{' 次'}
-                                </div>
-                              </div>
-                              <div
-                                className="text-[13px] font-black tabular-nums shrink-0"
-                                style={{ color: masteryColor(stat.pct, stat.answered) }}
-                              >
-                                {stat.answered === 0 ? '—' : `${stat.pct}%`}
-                              </div>
-                              <span className="text-[10px] shrink-0" style={{ color: 'rgba(196,181,253,0.4)' }}>
-                                {expanded ? '▲' : '▼'}
-                              </span>
-                            </button>
-
-                            {expanded && (
-                              <div
-                                className="mt-1 rounded-xl overflow-hidden"
-                                style={{ border: '1px solid rgba(139,92,246,0.15)' }}
-                              >
-                                {weak.length === 0 ? (
-                                  <div
-                                    className="px-3 py-2 text-[11px]"
-                                    style={{ color: 'rgba(196,181,253,0.45)' }}
-                                  >
-                                    {stat.answered === 0 ? '这一块还没练过～' : '都掌握了 🎉'}
-                                  </div>
-                                ) : (
-                                  weak.map((item) => (
-                                    <div
-                                      key={item.signature}
-                                      className="grid items-center px-3 py-1.5 text-[11px]"
-                                      style={{
-                                        gridTemplateColumns: '1fr auto auto',
-                                        borderTop: '1px solid rgba(255,255,255,0.04)',
-                                      }}
-                                    >
-                                      <span className="font-mono font-semibold" style={{ color: '#e9d5ff' }}>
-                                        {prettySignature(item.signature)}
-                                      </span>
-                                      <span
-                                        className="font-extrabold tabular-nums pr-3"
-                                        style={{ color: item.proficiency <= 1 ? '#f87171' : '#fbbf24' }}
-                                      >
-                                        熟练 {item.proficiency}/5
-                                      </span>
-                                      <span
-                                        className="text-right font-extrabold tabular-nums w-12"
-                                        style={{ color: item.consecutive_wrong > 0 ? '#f87171' : 'rgba(196,181,253,0.3)' }}
-                                      >
-                                        {item.consecutive_wrong > 0 ? `×${item.consecutive_wrong}` : '·'}
-                                      </span>
-                                    </div>
-                                  ))
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
+                    {verdict.trend === 'up' && <div className="mt-1 text-[12px] font-extrabold" style={{ color: '#4ade80' }}>📈 本次进步！平均每题快 {Math.abs(verdict.deltaSec ?? 0)}秒 · {verdict.improved} 个题型变快</div>}
+                    {verdict.trend === 'down' && <div className="mt-1 text-[12px] font-extrabold" style={{ color: '#fbbf24' }}>📉 略有退步 · 平均每题慢 {Math.abs(verdict.deltaSec ?? 0)}秒</div>}
+                    {verdict.trend === 'flat' && <div className="mt-1 text-[12px] font-bold" style={{ color: 'rgba(125,211,252,0.6)' }}>≈ 与上次持平</div>}
+                    {verdict.trend === null && <div className="mt-1 text-[12px] font-bold" style={{ color: 'rgba(125,211,252,0.5)' }}>首场基准，继续加油～</div>}
                   </div>
-                ))}
+                </div>
               </div>
             </section>
 
-            {/* 2. 混合运算 */}
-            {mixedOps.length > 0 && (
+            {/* 2. 各题型一行 */}
+            {stats.length > 0 && (
               <section>
-                <h2
-                  className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-                  style={{ color: 'rgba(196,181,253,0.45)' }}
-                >
-                  混合运算
+                <h2 className="mb-2 text-[11px] font-extrabold tracking-widest uppercase" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                  各题型速度
                 </h2>
                 <div className="space-y-1.5">
-                  {mixedOps.map((op) => {
-                    const rows = rowsByMixedOp.get(op.id) ?? []
-                    const stat = masteryOf(rows)
-                    const label = op.label ?? skeletonMeta(op.skeleton).label
-                    return (
-                      <div
-                        key={op.id}
-                        className="flex items-center gap-3 rounded-xl px-3 py-2"
-                        style={{
-                          background: 'rgba(255,255,255,0.03)',
-                          border: '1px solid rgba(255,255,255,0.07)',
-                        }}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[12px] font-bold truncate" style={{ color: '#e9d5ff' }}>
-                            {label}
-                          </div>
-                          <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
-                            <span style={{ color: masteryColor(stat.pct, stat.answered) }}>
-                              {statusLabel(stat)}
-                            </span>
-                            {' · 作答 '}{stat.attempts}{' 次'}
-                          </div>
-                        </div>
-                        <div
-                          className="text-[13px] font-black tabular-nums shrink-0"
-                          style={{ color: masteryColor(stat.pct, stat.answered) }}
-                        >
-                          {stat.answered === 0 ? '—' : `${stat.pct}%`}
-                        </div>
-                      </div>
-                    )
-                  })}
+                  {stats.map((s) => <SourceRow key={s.key} s={s} />)}
                 </div>
               </section>
             )}
 
-            {/* 3. 最弱 10 题 */}
-            {weakest.length > 0 && (
+            {/* 3. 需加强 Top 3 */}
+            {needWork.length > 0 && (
               <section>
-                <h2
-                  className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-                  style={{ color: 'rgba(196,181,253,0.45)' }}
-                >
-                  最弱 10 题
+                <h2 className="mb-2 text-[11px] font-extrabold tracking-widest uppercase" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                  需加强
                 </h2>
-                <div className="space-y-1">
-                  {weakest.map((p) => (
-                    <div
-                      key={p.signature}
-                      className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px]"
-                      style={{
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid rgba(255,255,255,0.07)',
-                      }}
-                    >
-                      <span className="font-mono text-[11px] flex-1 truncate" style={{ color: '#e9d5ff' }}>
-                        {prettySignature(p.signature)}
-                      </span>
-                      <span
-                        className="text-[10px] font-extrabold tabular-nums shrink-0"
-                        style={{ color: p.proficiency <= 1 ? '#f87171' : '#fbbf24' }}
-                      >
-                        熟练 {p.proficiency}/5
-                      </span>
-                      {p.consecutive_wrong > 0 && (
-                        <span className="text-[10px] font-extrabold shrink-0" style={{ color: '#f87171' }}>
-                          ×{p.consecutive_wrong} 错
-                        </span>
-                      )}
-                    </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {needWork.map((s) => (
+                    <span key={s.key} className="rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ color: '#fbbf24', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)' }}>
+                      🎯 {s.label} · {s.tier ? TIER_LABEL[s.tier] : '未设目标'}
+                    </span>
                   ))}
                 </div>
               </section>
@@ -471,5 +241,36 @@ export default function CalcReportPage() {
         )}
       </main>
     </>
+  )
+}
+
+function tierColor(tier: SourceStat['tier']): string {
+  if (tier === 'auto') return '#22d3ee'
+  if (tier === 'fluent') return '#4ade80'
+  if (tier === 'stable') return '#fbbf24'
+  if (tier === 'entry') return '#f87171'
+  return 'rgba(196,181,253,0.4)'
+}
+
+function SourceRow({ s }: { s: SourceStat }) {
+  const color = tierColor(s.tier)
+  return (
+    <div className="flex items-center gap-2 rounded-xl px-3 py-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>{s.label}</div>
+        <div className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+          {s.avgSec}s/题 · 正确率 {Math.round(s.accuracy * 100)}%
+          {s.deltaSec !== null && s.deltaSec !== 0 && (
+            <span style={{ color: s.deltaSec > 0 ? '#4ade80' : '#fbbf24' }}> · {s.deltaSec > 0 ? '↑快' : '↓慢'}{Math.abs(s.deltaSec)}s</span>
+          )}
+          {s.tier && s.tier !== 'auto' && s.gapSec > 0 && (
+            <span style={{ color: 'rgba(196,181,253,0.5)' }}> · 再快{s.gapSec}s升档</span>
+          )}
+        </div>
+      </div>
+      <div className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold" style={{ color, background: 'rgba(255,255,255,0.04)', border: `1px solid ${color}55` }}>
+        {s.tier ? TIER_LABEL[s.tier] : '未设目标'}
+      </div>
+    </div>
   )
 }
