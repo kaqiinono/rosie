@@ -5,6 +5,7 @@ import { skeletonMeta } from './calc-mixed'
 import { suggestedTiers, tierOf, nextTierGap, type Tier } from './calc-time-targets'
 
 const WINDOW = 20
+const MIN_SAMPLE = 8
 
 export interface SourceStat {
   key: string            // "block:<id>" | "mixed:<id>"
@@ -16,6 +17,7 @@ export interface SourceStat {
   perMinute: number      // 题/分钟
   tier: Tier | null
   gapSec: number         // 离下一档还差
+  insufficient: boolean  // 首做样本 < MIN_SAMPLE，不下结论
   /** +ve = faster than the prior window (进步); null if no prior window. */
   deltaSec: number | null
 }
@@ -61,8 +63,9 @@ export function sourceStats(
         : mixedLabels.get(id) ?? (mixedSkeletons.has(id) ? skeletonMeta(mixedSkeletons.get(id)! as never).label : id)
 
     const target = suggestedTiers(targetId)
-    const tier = tierOf(avgSec, accuracy, target)
-    const gapSec = nextTierGap(avgSec, tier, target)
+    const insufficient = recent.length < MIN_SAMPLE
+    const tier = insufficient ? null : tierOf(avgSec, accuracy, target)
+    const gapSec = insufficient ? 0 : nextTierGap(avgSec, tier, target)
 
     let deltaSec: number | null = null
     if (prior.length >= 5) {
@@ -70,7 +73,7 @@ export function sourceStats(
       deltaSec = +(priorAvg - avgSec).toFixed(1) // +ve = faster now
     }
 
-    out.push({ key, label, targetId, count: recent.length, avgSec: +avgSec.toFixed(1), accuracy, perMinute, tier, gapSec, deltaSec })
+    out.push({ key, label, targetId, count: recent.length, avgSec: +avgSec.toFixed(1), accuracy, perMinute, tier, gapSec, deltaSec, insufficient })
   }
   return out
 }

@@ -618,7 +618,7 @@ export default function CalcSessionPage() {
     secondsForQuestion,
   ])
 
-  if (settingsLoading || !questions) {
+  if (settingsLoading || !questions || questions.length === 0) {
     return (
       <>
         <CalcAppHeader

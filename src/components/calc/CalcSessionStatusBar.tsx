@@ -41,7 +41,7 @@ export default function CalcSessionStatusBar({
   lastResult,
 }: Props) {
   const inMakeupTail = idx >= planned
-  const progress = Math.min(100, Math.round((Math.min(idx, planned) / planned) * 100))
+  const progress = planned > 0 ? Math.min(100, Math.round((Math.min(idx, planned) / planned) * 100)) : 0
 
   return (
     <>

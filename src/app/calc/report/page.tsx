@@ -65,6 +65,7 @@ export default function CalcReportPage() {
   const needWork = useMemo(() => {
     const rank = { entry: 0, stable: 1, fluent: 2, auto: 3 } as const
     return [...stats]
+      .filter((s) => !s.insufficient)
       .sort((a, b) => (rank[a.tier ?? 'entry'] - rank[b.tier ?? 'entry']) || (a.deltaSec ?? 0) - (b.deltaSec ?? 0))
       .slice(0, 3)
   }, [stats])
@@ -145,7 +146,7 @@ export default function CalcReportPage() {
                 <div className="flex flex-wrap gap-1.5">
                   {needWork.map((s) => (
                     <span key={s.key} className="rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ color: '#fbbf24', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)' }}>
-                      🎯 {s.label} · {s.tier ? TIER_LABEL[s.tier] : '未设目标'}
+                      🎯 {s.label} · {s.insufficient ? '数据不足' : s.tier ? TIER_LABEL[s.tier] : '未设目标'}
                     </span>
                   ))}
                 </div>
@@ -269,7 +270,7 @@ function SourceRow({ s }: { s: SourceStat }) {
         </div>
       </div>
       <div className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold" style={{ color, background: 'rgba(255,255,255,0.04)', border: `1px solid ${color}55` }}>
-        {s.tier ? TIER_LABEL[s.tier] : '未设目标'}
+        {s.insufficient ? '数据不足' : s.tier ? TIER_LABEL[s.tier] : '未设目标'}
       </div>
     </div>
   )

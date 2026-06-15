@@ -84,7 +84,13 @@ export function buildSession(
     })
     alloc = allocate(settings.lastCount, weights)
   }
-  const count = alloc.reduce((a, b) => a + b, 0)
+  // Never produce an empty session (e.g. manual mode with all-zero counts, or no
+  // sources selected → only the 兜底 block with count 0). Fall back to lastCount.
+  let count = alloc.reduce((a, b) => a + b, 0)
+  if (count === 0) {
+    alloc[0] = settings.lastCount > 0 ? settings.lastCount : 20
+    count = alloc[0]
+  }
 
   // 3. Generate per source
   const out: CalcQuestion[] = []

@@ -69,7 +69,7 @@ export default function PerTypeTimeChips({ targetId, value, onChange }: Props) {
               value={isCustom ? value! : ''}
               onChange={(e) => {
                 const v = Number(e.target.value)
-                if (Number.isFinite(v) && v >= 1) onChange(v)
+                if (Number.isFinite(v) && v >= 1) onChange(Math.min(v, 120))
               }}
               className="w-14 rounded-md px-2 py-1 text-right text-[12px] font-extrabold tabular-nums"
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.4)', color: '#c4b5fd', outline: 'none' }}
