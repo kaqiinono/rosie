@@ -3,58 +3,74 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import type { CalcSettings, MixedOp } from '@/utils/type'
+import type { BlockSel, CalcSettings, MixedOp } from '@/utils/type'
+
+const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: null }
 
 const DEFAULT_SETTINGS: CalcSettings = {
-  selectedBlocks: ['add:10'],
+  countMode: 'auto',
+  selectedBlocks: [DEFAULT_BLOCK],
   mixedOps: [],
   soundEnabled: true,
   includeInverse: false,
   verticalForBigNumbers: true,
   lastCount: 20,
-  lastTimeLimit: 0,
   sessionCounter: 0,
-  timeLimitOverrides: {},
 }
 
 interface RawRow {
-  selected_blocks: string[] | null
-  mixed_ops: MixedOp[] | null
+  count_mode: 'auto' | 'manual' | null
+  selected_blocks: (string | BlockSel)[] | null
+  mixed_ops: Partial<MixedOp>[] | null
   sound_enabled: boolean
   include_inverse: boolean | null
   vertical_for_big_numbers: boolean | null
   last_count: number
-  last_time_limit: number
   session_counter: number | null
-  time_limit_overrides: Record<string, number> | null
+}
+
+/** Accept both legacy string ids and the new object shape. */
+function toBlockSel(v: string | BlockSel): BlockSel {
+  if (typeof v === 'string') return { id: v, count: 20, seconds: null }
+  return { id: v.id, count: v.count ?? 20, seconds: v.seconds ?? null }
+}
+
+function toMixedOp(v: Partial<MixedOp>): MixedOp {
+  return {
+    id: v.id ?? crypto.randomUUID(),
+    skeleton: v.skeleton!,
+    blockIds: v.blockIds ?? [],
+    enabled: v.enabled ?? true,
+    label: v.label,
+    count: v.count ?? 20,
+    seconds: v.seconds ?? null,
+  }
 }
 
 function rowToSettings(row: RawRow): CalcSettings {
   return {
-    selectedBlocks: row.selected_blocks ?? ['add:10'],
-    mixedOps: row.mixed_ops ?? [],
+    countMode: row.count_mode ?? 'auto',
+    selectedBlocks: (row.selected_blocks ?? ['add:10']).map(toBlockSel),
+    mixedOps: (row.mixed_ops ?? []).map(toMixedOp),
     soundEnabled: row.sound_enabled,
     includeInverse: row.include_inverse ?? false,
     verticalForBigNumbers: row.vertical_for_big_numbers ?? true,
     lastCount: row.last_count,
-    lastTimeLimit: row.last_time_limit,
     sessionCounter: row.session_counter ?? 0,
-    timeLimitOverrides: row.time_limit_overrides ?? {},
   }
 }
 
 function settingsToRow(s: CalcSettings, userId: string) {
   return {
     user_id: userId,
+    count_mode: s.countMode,
     selected_blocks: s.selectedBlocks,
     mixed_ops: s.mixedOps,
     sound_enabled: s.soundEnabled,
     include_inverse: s.includeInverse,
     vertical_for_big_numbers: s.verticalForBigNumbers,
     last_count: s.lastCount,
-    last_time_limit: s.lastTimeLimit,
     session_counter: s.sessionCounter,
-    time_limit_overrides: s.timeLimitOverrides,
     updated_at: new Date().toISOString(),
   }
 }
@@ -70,7 +86,7 @@ export function useCalcSettings(user: User | null) {
       const { data } = await supabase
         .from('calc_settings')
         .select(
-          'selected_blocks,mixed_ops,sound_enabled,last_count,last_time_limit,session_counter,time_limit_overrides,include_inverse,vertical_for_big_numbers',
+          'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers',
         )
         .eq('user_id', user.id)
         .maybeSingle()
