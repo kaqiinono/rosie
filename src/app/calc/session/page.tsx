@@ -15,16 +15,15 @@ import CalcFeedbackBanner from '@/components/calc/CalcFeedbackBanner'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
-import { buildSession, calcTimeBonus, coinReward } from '@/utils/calc-helpers'
+import { buildSession, coinReward } from '@/utils/calc-helpers'
 import { checkAnswer, formatAnswer, isReducibleFraction } from '@/utils/calc-answer'
 import { diagnose } from '@/utils/calc-diagnose'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
-import { timeLimitFromSettings } from '@/utils/calc-time-limits'
 import { playSfx } from '@/components/calc/audio'
 import { launchConfetti } from '@/utils/confetti'
 import { todayStr } from '@/utils/constant'
-import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion } from '@/utils/type'
+import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, QuestionLogEntry } from '@/utils/type'
 
 interface AttemptStat {
   signature: string
@@ -61,20 +60,23 @@ export default function CalcSessionPage() {
   } = useCalcMistakes(user)
   const problemState = useCalcProblemState(user)
 
-  const requestedCount = useMemo(() => {
-    const n = Number(params.get('count'))
-    return Number.isFinite(n) && n > 0 ? n : settings.lastCount
-  }, [params, settings.lastCount])
-
-  const requestedTimeLimit = useMemo(() => {
-    const n = Number(params.get('time'))
-    return Number.isFinite(n) && n >= 0 ? n : settings.lastTimeLimit
-  }, [params, settings.lastTimeLimit])
-
   const mode: CalcMode = useMemo(() => {
     const m = params.get('mode')
     return m === 'free' || m === 'mistakes' ? m : 'daily'
   }, [params])
+
+  // Per-question target seconds for the current question's source (null/0 → no countdown).
+  const secondsForQuestion = useCallback(
+    (q: CalcQuestion): number | null => {
+      if (q.sourceBlockId) return settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds ?? null
+      if (q.sourceMixedOpId) return settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)?.seconds ?? null
+      return null
+    },
+    [settings.selectedBlocks, settings.mixedOps],
+  )
+
+  const sourceKeyForLog = (q: CalcQuestion): string =>
+    q.sourceBlockId ? `block:${q.sourceBlockId}` : q.sourceMixedOpId ? `mixed:${q.sourceMixedOpId}` : 'unknown'
 
   // ── Session state ────────────────────────────────────────────────
   const [questions, setQuestions] = useState<CalcQuestion[] | null>(null)
@@ -105,11 +107,14 @@ export default function CalcSessionPage() {
   const attemptsLogRef = useRef<AttemptStat[]>([])
   // First-attempt solve time (ms) per question, in order — persisted for timing analysis.
   const questionTimesRef = useRef<number[]>([])
+  // Tagged per-question first-attempt log (atomic per-题型 records).
+  const questionLogRef = useRef<QuestionLogEntry[]>([])
   const questionStartRef = useRef<number>(0)
   const [startedTsMs, setStartedTsMs] = useState<number>(0)
   const [startedAtIso, setStartedAtIso] = useState<string>('')
 
   const [now, setNow] = useState<number>(() => Date.now())
+  const [questionStartWall, setQuestionStartWall] = useState<number>(0)
   const [done, setDone] = useState(false)
   const [timeBonusEarned, setTimeBonusEarned] = useState(0)
   const [finalStats, setFinalStats] = useState<{
@@ -149,26 +154,21 @@ export default function CalcSessionPage() {
       // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
       // Previous session number == current sessionCounter (it bumps after finish).
       const carried = lastSessionUnresolved(settings.sessionCounter)
-      const session = buildSession(
-        settings,
-        requestedCount,
-        {
-          problemStates: loadedStates,
-        },
-        carried,
-      )
+      const session = buildSession(settings, { problemStates: loadedStates }, carried)
       setQuestions(session)
       plannedCountRef.current = session.length
       setPlannedCount(session.length)
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
       questionStartRef.current = performance.now()
+      questionTimesRef.current = []
+      questionLogRef.current = []
+      attemptsLogRef.current = []
     }
     void init()
   }, [
     settings,
     settingsLoading,
-    requestedCount,
     mode,
     user,
     sessionKey,
@@ -181,6 +181,7 @@ export default function CalcSessionPage() {
     if (questions && idx < questions.length) {
       questionStartRef.current = performance.now()
       // eslint-disable-next-line react-hooks/set-state-in-effect
+      setQuestionStartWall(Date.now())
       setReduceHint(false)
     }
   }, [idx, questions])
@@ -204,8 +205,13 @@ export default function CalcSessionPage() {
     }
   }, [questions, idx, settings.soundEnabled])
 
-  const elapsedSec = startedTsMs > 0 ? Math.floor((now - startedTsMs) / 1000) : 0
-  const remainingSec = requestedTimeLimit > 0 ? Math.max(0, requestedTimeLimit - elapsedSec) : null
+  const currentSeconds = questions && idx < questions.length ? secondsForQuestion(questions[idx]) : null
+  const remainingSec =
+    currentSeconds && currentSeconds > 0
+      ? feedback || questionStartWall === 0
+        ? currentSeconds
+        : Math.max(0, currentSeconds - Math.floor((now - questionStartWall) / 1000))
+      : null
 
   // ── Finish handler ───────────────────────────────────────────────
   const finishSession = useCallback(async () => {
@@ -218,8 +224,7 @@ export default function CalcSessionPage() {
     const wrongCount = log.filter((a) => !a.finallyCorrect).length
     const challengeCorrect = log.filter((a) => a.isChallenge && a.finallyCorrect).length
 
-    const timeBonus = calcTimeBonus(log.length, requestedTimeLimit, finalElapsed)
-    setTimeBonusEarned(timeBonus)
+    setTimeBonusEarned(0)
 
     // ── Timing analysis: this session's avg per-question time vs the previous session ──
     const qTimes = questionTimesRef.current
@@ -355,11 +360,12 @@ export default function CalcSessionPage() {
       wrongCount,
       challengeCorrect,
       timeSpentSec: finalElapsed,
-      coinsEarned: coinsTotalRef.current + timeBonus,
+      coinsEarned: coinsTotalRef.current,
       mode,
       maxStreak: maxStreakRef.current,
       topLevel,
       questionTimesMs: qTimes,
+      questionLog: questionLogRef.current,
     })
     // Sync the global StarHud balance so the top-left chip updates immediately.
     void refreshStarHud()
@@ -380,18 +386,8 @@ export default function CalcSessionPage() {
     update,
     startedTsMs,
     startedAtIso,
-    requestedTimeLimit,
     problemState,
   ])
-
-  // time-up
-  useEffect(() => {
-    if (remainingSec !== null && remainingSec <= 0 && !done && questions) {
-      // finishSession internally calls setDone — lint can't trace through the promise
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      void finishSession()
-    }
-  }, [remainingSec, done, questions, finishSession])
 
   // ── Submit answer ────────────────────────────────────────────────
   // Shared outcome bookkeeping for a settled question (correct, or final-wrong with
@@ -429,7 +425,9 @@ export default function CalcSessionPage() {
       }
 
       if (isCorrect) {
-        const reward = isFirstTry ? coinReward(q, streak) : 0
+        const sec = secondsForQuestion(q)
+        const speedBonus = isFirstTry && sec && sec > 0 && withinLimit ? 1 : 0
+        const reward = (isFirstTry ? coinReward(q, streak) : 0) + speedBonus
         const isChallengeCorrect = q.isChallenge && isFirstTry
         const bonus = isFirstTry ? (streak >= 10 ? 2 : streak >= 5 ? 1 : 0) : 0
         if (isFirstTry && reward > 0) setLastResult({ stars: reward, bonus })
@@ -496,6 +494,7 @@ export default function CalcSessionPage() {
       addMistake,
       recordCorrect,
       finishSession,
+      secondsForQuestion,
     ],
   )
 
@@ -506,9 +505,12 @@ export default function CalcSessionPage() {
   const settleSelfGraded = useCallback(
     (q: CalcQuestion, isCorrect: boolean, userAnswer: string) => {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-      const limitMs = timeLimitFromSettings(q.level, settings)
-      const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
-      if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
+      const sec = secondsForQuestion(q)
+      const withinLimit = sec && sec > 0 ? elapsedMs <= sec * 1000 : true
+      if (attemptsForCurrent === 0) {
+        questionTimesRef.current.push(elapsedMs)
+        questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
+      }
       const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
 
       if (isCorrect) {
@@ -528,7 +530,7 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [attemptsForCurrent, mistakes, settings, settleQuestion],
+    [attemptsForCurrent, mistakes, settings, settleQuestion, secondsForQuestion],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -573,9 +575,12 @@ export default function CalcSessionPage() {
     const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
 
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-    const limitMs = timeLimitFromSettings(q.level, settings)
-    const withinLimit = limitMs > 0 ? elapsedMs <= limitMs : true
-    if (attemptsForCurrent === 0) questionTimesRef.current.push(elapsedMs)
+    const sec = secondsForQuestion(q)
+    const withinLimit = sec && sec > 0 ? elapsedMs <= sec * 1000 : true
+    if (attemptsForCurrent === 0) {
+      questionTimesRef.current.push(elapsedMs)
+      questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
+    }
 
     if (isCorrect) {
       settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, input)
@@ -605,6 +610,7 @@ export default function CalcSessionPage() {
     mistakes,
     settings,
     settleQuestion,
+    secondsForQuestion,
   ])
 
   if (settingsLoading || !questions) {
@@ -719,6 +725,7 @@ export default function CalcSessionPage() {
             setRevealAnswer(null)
             setShowChallengeBanner(false)
             questionTimesRef.current = []
+            questionLogRef.current = []
             coinsTotalRef.current = 0
             setCoinsTotal(0)
             setStreak(0)
