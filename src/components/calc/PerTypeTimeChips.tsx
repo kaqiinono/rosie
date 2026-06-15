@@ -6,9 +6,9 @@ import { suggestedTiers, TIER_LABEL } from '@/utils/calc-time-targets'
 interface Props {
   /** 题型 id（block id 或 skeleton id），用于查四档建议。 */
   targetId: string
-  /** null=未确认 · 0=不限 · >0=秒数 */
+  /** 0=不限（默认）· >0=秒数。legacy null 视作 0。 */
   value: number | null
-  onChange: (v: number | null) => void
+  onChange: (v: number) => void
 }
 
 const PRESETS = [0, 1, 3, 5, 10] // 0 = 不限
@@ -16,22 +16,15 @@ const PRESET_LABEL = (v: number) => (v === 0 ? '不限' : `${v}秒`)
 
 export default function PerTypeTimeChips({ targetId, value, onChange }: Props) {
   const tiers = suggestedTiers(targetId)
-  const isCustom = value !== null && !PRESETS.includes(value)
+  const eff = value ?? 0 // 未设(null) 视为 不限
+  const isCustom = !PRESETS.includes(eff)
   const [customOpen, setCustomOpen] = useState(isCustom)
 
   return (
     <div className="space-y-1.5">
       <div className="flex flex-wrap items-center gap-1">
-        {value === null && (
-          <span
-            className="rounded-full px-2 py-0.5 text-[10px] font-extrabold"
-            style={{ background: 'rgba(251,191,36,0.14)', border: '1px solid rgba(251,191,36,0.35)', color: '#fbbf24' }}
-          >
-            待确认
-          </span>
-        )}
         {PRESETS.map((p) => {
-          const on = value === p
+          const on = eff === p
           return (
             <button
               key={p}
@@ -66,7 +59,7 @@ export default function PerTypeTimeChips({ targetId, value, onChange }: Props) {
               type="number"
               min={1}
               max={120}
-              value={isCustom ? value! : ''}
+              value={isCustom ? eff : ''}
               onChange={(e) => {
                 const v = Number(e.target.value)
                 if (Number.isFinite(v) && v >= 1) onChange(Math.min(v, 120))

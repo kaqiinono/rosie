@@ -9,8 +9,60 @@ import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import BlockPicker from '@/components/calc/BlockPicker'
 import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
+import PerTypeTimeChips from '@/components/calc/PerTypeTimeChips'
 import { playSfx } from '@/components/calc/audio'
-import { blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
+import { blocksByGroup, blockById, type CalcBlock } from '@/utils/calc-blocks'
+import { skeletonMeta } from '@/utils/calc-mixed'
+
+const COUNT_OPTIONS = [10, 20, 30, 50, 100]
+
+interface PerTypeCardProps {
+  label: string
+  targetId: string
+  count: number
+  seconds: number | null
+  onCount: (n: number) => void
+  onSeconds: (s: number) => void
+}
+
+// 精准设置下，每个选中题型一张卡：题量 + 限时（限时默认不限，题量默认 20）。
+function PerTypeConfigCard({ label, targetId, count, seconds, onCount, onSeconds }: PerTypeCardProps) {
+  return (
+    <div
+      className="space-y-2 rounded-xl px-3 py-2.5"
+      style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}
+    >
+      <div className="text-[13px] font-extrabold" style={{ color: '#e9d5ff' }}>{label}</div>
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="mr-1 w-7 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
+        {COUNT_OPTIONS.map((n) => {
+          const on = count === n
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onCount(n)}
+              className="rounded-md px-2 py-0.5 text-[11px] font-extrabold tabular-nums transition-all active:scale-95"
+              style={{
+                background: on ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${on ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
+              }}
+            >
+              {n}
+            </button>
+          )
+        })}
+      </div>
+      <div className="flex items-start gap-1">
+        <span className="mr-1 w-7 shrink-0 pt-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>限时</span>
+        <div className="min-w-0 flex-1">
+          <PerTypeTimeChips targetId={targetId} value={seconds} onChange={onSeconds} />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface ToggleRowProps {
   label: string
@@ -96,20 +148,24 @@ export default function CalcSettingsPage() {
     update({
       selectedBlocks: exists
         ? settings.selectedBlocks.filter((b) => b.id !== id)
-        : [...settings.selectedBlocks, { id, count: 20, seconds: null }],
+        : [...settings.selectedBlocks, { id, count: 20, seconds: 0 }],
     })
   }
 
   const toggleGroup = (group: CalcBlock['group'], on: boolean) => {
     const ids = blocksByGroup(group).map((b) => b.id)
     const have = new Map(settings.selectedBlocks.map((b) => [b.id, b]))
-    if (on) ids.forEach((i) => { if (!have.has(i)) have.set(i, { id: i, count: 20, seconds: null }) })
+    if (on) ids.forEach((i) => { if (!have.has(i)) have.set(i, { id: i, count: 20, seconds: 0 }) })
     else ids.forEach((i) => have.delete(i))
     update({ selectedBlocks: [...have.values()] })
   }
 
   const patchBlock = (id: string, patch: Partial<typeof settings.selectedBlocks[number]>) => {
     update({ selectedBlocks: settings.selectedBlocks.map((b) => (b.id === id ? { ...b, ...patch } : b)) })
+  }
+
+  const patchMixed = (id: string, patch: Partial<typeof settings.mixedOps[number]>) => {
+    update({ mixedOps: settings.mixedOps.map((m) => (m.id === id ? { ...m, ...patch } : m)) })
   }
 
   if (isLoading) {
@@ -135,9 +191,10 @@ export default function CalcSettingsPage() {
 
   const blockCount = settings.selectedBlocks.length
 
+  const enabledMixed = settings.mixedOps.filter((m) => m.enabled)
   const manualTotal =
     settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
-    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
+    enabledMixed.reduce((s, m) => s + m.count, 0)
   const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
 
   return (
@@ -165,11 +222,9 @@ export default function CalcSettingsPage() {
             单运算
           </SectionHeading>
           <BlockPicker
-            selected={settings.selectedBlocks}
-            countMode={settings.countMode}
+            selected={settings.selectedBlocks.map((b) => b.id)}
             onToggle={toggleBlock}
             onToggleGroup={toggleGroup}
-            onPatch={patchBlock}
           />
         </section>
 
@@ -178,7 +233,6 @@ export default function CalcSettingsPage() {
           <SectionHeading>混合运算</SectionHeading>
           <MixedOpList
             mixedOps={settings.mixedOps}
-            countMode={settings.countMode}
             onChange={(next) => update({ mixedOps: next })}
           />
         </section>
@@ -237,9 +291,36 @@ export default function CalcSettingsPage() {
             <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
           )}
           {settings.countMode === 'manual' && (
-            <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
-              每个题型在上方各自设置题量；总题量 = 各题型之和。
-            </div>
+            settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
+              <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                先在上方选择题型，这里会出现每个题型的题量与限时设置。
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {settings.selectedBlocks.map((b) => (
+                  <PerTypeConfigCard
+                    key={b.id}
+                    label={blockById(b.id)?.label ?? b.id}
+                    targetId={b.id}
+                    count={b.count}
+                    seconds={b.seconds}
+                    onCount={(n) => patchBlock(b.id, { count: n })}
+                    onSeconds={(s) => patchBlock(b.id, { seconds: s })}
+                  />
+                ))}
+                {enabledMixed.map((m) => (
+                  <PerTypeConfigCard
+                    key={m.id}
+                    label={m.label ?? skeletonMeta(m.skeleton).label}
+                    targetId={m.skeleton}
+                    count={m.count}
+                    seconds={m.seconds}
+                    onCount={(n) => patchMixed(m.id, { count: n })}
+                    onSeconds={(s) => patchMixed(m.id, { seconds: s })}
+                  />
+                ))}
+              </div>
+            )
           )}
         </section>
 

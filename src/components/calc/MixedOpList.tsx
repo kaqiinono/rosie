@@ -2,27 +2,20 @@
 
 import { useState } from 'react'
 import MixedOpComposer from './MixedOpComposer'
-import PerTypeTimeChips from './PerTypeTimeChips'
 import { skeletonMeta, isMixedOpValid } from '@/utils/calc-mixed'
 import type { MixedOp } from '@/utils/type'
 
 interface Props {
   mixedOps: MixedOp[]
-  countMode: 'auto' | 'manual'
   onChange: (next: MixedOp[]) => void
 }
 
-export default function MixedOpList({ mixedOps, countMode, onChange }: Props) {
+export default function MixedOpList({ mixedOps, onChange }: Props) {
   const [editing, setEditing] = useState<MixedOp | 'new' | null>(null)
 
   const toggleEnabled = (id: string) => {
     onChange(mixedOps.map((op) => (op.id === id ? { ...op, enabled: !op.enabled } : op)))
   }
-
-  const patch = (id: string, p: Partial<MixedOp>) => {
-    onChange(mixedOps.map((op) => (op.id === id ? { ...op, ...p } : op)))
-  }
-  const COUNT_OPTIONS = [10, 20, 30, 50, 100]
 
   const remove = (id: string) => {
     onChange(mixedOps.filter((op) => op.id !== id))
@@ -56,13 +49,12 @@ export default function MixedOpList({ mixedOps, countMode, onChange }: Props) {
         return (
           <div
             key={op.id}
-            className="rounded-xl px-3 py-2.5"
+            className="flex items-center gap-2 rounded-xl px-3 py-2.5"
             style={{
               background: op.enabled ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.04)',
               border: `1px solid ${op.enabled ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)'}`,
             }}
           >
-            <div className="flex items-center gap-2">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5">
                 <span
@@ -131,39 +123,6 @@ export default function MixedOpList({ mixedOps, countMode, onChange }: Props) {
                 style={{ transform: op.enabled ? 'translateX(22px)' : 'translateX(4px)' }}
               />
             </button>
-            </div>
-            {op.enabled && (
-              <div className="mt-2 space-y-2">
-                {countMode === 'manual' && (
-                  <div className="flex flex-wrap items-center gap-1">
-                    <span className="mr-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
-                    {COUNT_OPTIONS.map((n) => {
-                      const co = op.count === n
-                      return (
-                        <button
-                          key={n}
-                          type="button"
-                          onClick={() => patch(op.id, { count: n })}
-                          className="rounded-md px-2 py-0.5 text-[11px] font-extrabold tabular-nums transition-all active:scale-95"
-                          style={{
-                            background: co ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
-                            border: `1px solid ${co ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
-                            color: co ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
-                          }}
-                        >
-                          {n}
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
-                <PerTypeTimeChips
-                  targetId={op.skeleton}
-                  value={op.seconds}
-                  onChange={(v) => patch(op.id, { seconds: v })}
-                />
-              </div>
-            )}
           </div>
         )
       })}

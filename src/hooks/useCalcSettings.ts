@@ -5,7 +5,7 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { BlockSel, CalcSettings, MixedOp } from '@/utils/type'
 
-const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: null }
+const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: 0 }
 
 const DEFAULT_SETTINGS: CalcSettings = {
   countMode: 'auto',
@@ -29,10 +29,10 @@ interface RawRow {
   session_counter: number | null
 }
 
-/** Accept both legacy string ids and the new object shape. */
+/** Accept both legacy string ids and the new object shape. seconds 默认 0(不限). */
 function toBlockSel(v: string | BlockSel): BlockSel {
-  if (typeof v === 'string') return { id: v, count: 20, seconds: null }
-  return { id: v.id, count: v.count ?? 20, seconds: v.seconds ?? null }
+  if (typeof v === 'string') return { id: v, count: 20, seconds: 0 }
+  return { id: v.id, count: v.count ?? 20, seconds: v.seconds ?? 0 }
 }
 
 function toMixedOp(v: Partial<MixedOp>): MixedOp {
@@ -43,7 +43,7 @@ function toMixedOp(v: Partial<MixedOp>): MixedOp {
     enabled: v.enabled ?? true,
     label: v.label,
     count: v.count ?? 20,
-    seconds: v.seconds ?? null,
+    seconds: v.seconds ?? 0,
   }
 }
 
