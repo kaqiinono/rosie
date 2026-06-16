@@ -1,5 +1,5 @@
 // src/utils/calc-report-stats.ts
-import type { CalcSession } from './type'
+import type { CalcSession, CalcProblemState } from './type'
 import { blockById } from './calc-blocks'
 import { skeletonMeta } from './calc-mixed'
 import { suggestedTiers, tierOf, nextTierGap, type Tier } from './calc-time-targets'
@@ -339,4 +339,20 @@ export function opGroupStats(
   // Sort slowest first
   result.sort((a, b) => b.avgSec - a.avgSec)
   return result
+}
+
+/**
+ * Estimate how many questions are needed to get all weak targets to proficiency >= targetProficiency.
+ * Each signature needs max(1, targetProficiency - current) correct answers, buffered by 1.5x.
+ * Result is clamped to [10, 60].
+ */
+export function estimateDrillCount(
+  targets: CalcProblemState[],
+  targetProficiency: number,
+): number {
+  if (targets.length === 0) return 10
+  const raw = targets.reduce((acc, t) => {
+    return acc + Math.max(1, targetProficiency - t.proficiency) * 1.5
+  }, 0)
+  return Math.min(60, Math.max(10, Math.round(raw)))
 }
