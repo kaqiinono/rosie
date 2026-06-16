@@ -592,7 +592,7 @@ function Section6({ sessions }: { sessions: CalcSession[] }) {
               const accuracy = logs.length > 0 ? Math.round(logs.filter((e) => e.ok).length / logs.length * 100) : 0
               return (
                 <button
-                  key={s.sessionNo ?? `${s.date}-${i}`}
+                  key={s.id ?? `${s.date}-${i}`}
                   onClick={() => setSelectedIdx(selectedIdx === i ? null : i)}
                   className={`w-full text-left rounded-xl p-3 border transition-colors ${selectedIdx === i ? 'border-blue-300 bg-blue-50' : 'border-gray-100 bg-gray-50'}`}
                 >
