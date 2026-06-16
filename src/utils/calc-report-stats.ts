@@ -262,15 +262,16 @@ export function weeklyAggregates(sessions: CalcSession[]): PeriodData {
   return { week: weeks, day: days, month: months }
 }
 
-const TIER_ORDER: (Tier | null)[] = [null, 'entry', 'stable', 'fluent', 'auto']
+const WORST_TIER_RANK: (Tier | null)[] = [null, 'entry', 'stable', 'fluent', 'auto']
 
 function worstTier(tiers: (Tier | null)[]): Tier | null {
-  let worst = TIER_ORDER.length - 1
+  if (tiers.length === 0) return null
+  let worst = WORST_TIER_RANK.length - 1
   for (const t of tiers) {
-    const idx = TIER_ORDER.indexOf(t)
+    const idx = WORST_TIER_RANK.indexOf(t)
     if (idx < worst) worst = idx
   }
-  return TIER_ORDER[worst] ?? null
+  return WORST_TIER_RANK[worst] ?? null
 }
 
 const OP_LABEL: Record<OpGroup, string> = {
