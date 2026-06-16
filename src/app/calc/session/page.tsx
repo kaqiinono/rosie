@@ -201,7 +201,7 @@ export default function CalcSessionPage() {
     }
     void init()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, settingsLoading, drillParams])
+  }, [user, settingsLoading, drillParams, sessionKey])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -302,7 +302,13 @@ export default function CalcSessionPage() {
       if (first.sourceMixedOpId) state.mixedOpId = first.sourceMixedOpId
       nextStates.push(state)
     }
-    if (nextStates.length) await problemState.upsertStates(nextStates)
+    if (nextStates.length) {
+      await problemState.upsertStates(nextStates)
+      // Refresh loadedStatesRef so DrillSummary reads updated proficiency (not pre-drill snapshot).
+      for (const state of nextStates) {
+        loadedStatesRef.current.set(state.signature, state)
+      }
+    }
 
     // ── Per-source breakdown for this session's summary ──
     const sourceKeyOf = (a: AttemptStat): string | null => {
@@ -402,13 +408,16 @@ export default function CalcSessionPage() {
     // Sync the global StarHud balance so the top-left chip updates immediately.
     void refreshStarHud()
 
-    // 2. Bump global session counter
-    update({ sessionCounter: settings.sessionCounter + 1 })
+    // 2. Bump global session counter (skip in drill mode — drills must not pollute carry-over queue)
+    if (!drillParams) {
+      update({ sessionCounter: settings.sessionCounter + 1 })
+    }
 
     playSfx('complete', settings.soundEnabled)
     launchConfetti(30)
   }, [
     done,
+    drillParams,
     wallet,
     refreshStarHud,
     mode,
@@ -499,7 +508,11 @@ export default function CalcSessionPage() {
       }
       setStreak(0)
       const errorTag = diagnose(q, userAnswer)
-      void addMistake(q, settings.sessionCounter + 1, userAnswer, errorTag)
+      // Gate DB mistake write behind !drillParams — drill wrong answers must not pollute the
+      // carry-over queue that normal sessions pick up on the next launch.
+      if (!drillParams) {
+        void addMistake(q, settings.sessionCounter + 1, userAnswer, errorTag)
+      }
       attemptsLogRef.current.push({
         signature: q.signature,
         level: q.level,
@@ -525,6 +538,7 @@ export default function CalcSessionPage() {
       idx,
       streak,
       mode,
+      drillParams,
       settings.soundEnabled,
       settings.sessionCounter,
       settings.immersiveMode,
@@ -769,6 +783,11 @@ export default function CalcSessionPage() {
               targetSignatures: drillTargetSignatures,
               round: drillRound,
               onContinue: () => {
+                // Reset session state so the init useEffect re-runs for the next round.
+                initRef.current = false
+                setQuestions(null)
+                setIdx(0)
+                setDone(false)
                 const next = new URLSearchParams({ drill: 'weak-formulas', round: String(drillRound + 1) })
                 router.replace(`/calc/session?${next.toString()}`)
               },
@@ -780,8 +799,17 @@ export default function CalcSessionPage() {
               targetSec: btTargetSec,
               tierLabel: btTierLabel,
               onRetry: () => {
-                if (drillParams.blockId)
+                if (drillParams.blockId) {
+                  // Reset session state so the init useEffect re-runs.
+                  // sessionKey bump is required here because URL doesn't change (same blockId),
+                  // so drillParams won't change and the useEffect won't re-fire without it.
+                  initRef.current = false
+                  setQuestions(null)
+                  setIdx(0)
+                  setDone(false)
+                  setSessionKey((k) => k + 1)
                   router.replace(`/calc/session?drill=breakthrough&blockId=${drillParams.blockId}`)
+                }
               },
               onExit: () => router.push('/calc/report'),
             })}
