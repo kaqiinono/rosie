@@ -84,7 +84,7 @@ function Section1({
 
   // fill% = how far through the current tier toward the next
   // gapSec = avgSec - nextTier.hi (how many seconds to shave off to hit next tier)
-  // fill = 1 when gap ≈ 0 (about to level up), ~0 when just entered tier
+  // Approximate fill: 0 when far from next tier, 1 when gap is nearly closed
   const fill = Math.min(0.95, Math.max(0.05, 1 - breakthroughSource.gapSec / Math.max(breakthroughSource.avgSec, 0.1)))
 
   const bid = breakthroughSource.key.split(':')[1] ?? ''
@@ -592,7 +592,7 @@ function Section6({ sessions }: { sessions: CalcSession[] }) {
               const accuracy = logs.length > 0 ? Math.round(logs.filter((e) => e.ok).length / logs.length * 100) : 0
               return (
                 <button
-                  key={i}
+                  key={s.sessionNo ?? `${s.date}-${i}`}
                   onClick={() => setSelectedIdx(selectedIdx === i ? null : i)}
                   className={`w-full text-left rounded-xl p-3 border transition-colors ${selectedIdx === i ? 'border-blue-300 bg-blue-50' : 'border-gray-100 bg-gray-50'}`}
                 >
@@ -635,6 +635,7 @@ export default function CalcReportPage() {
   const [problemStates, setProblemStates] = useState<Map<string, CalcProblemState>>(new Map())
   const [mistakeRows, setMistakeRows] = useState<MistakeRow[]>([])
 
+  // loadAll is stable (wrapped in useCallback internally); user change is the only meaningful re-trigger
   useEffect(() => {
     if (!user) return
     void problemState.loadAll().then(setProblemStates)
