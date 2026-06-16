@@ -17,6 +17,20 @@ export interface PeriodData {
   month: PeriodPoint[]  // 最近 12 个月
 }
 
+export type OpGroup = 'add' | 'sub' | 'mul' | 'div' | 'mixed'
+
+export interface OpGroupStat {
+  op: OpGroup
+  label: string          // 加 / 减 / 乘 / 除 / 混合
+  avgSec: number
+  /** Worst tier in the group (entry < stable < fluent < auto). null if all insufficient. */
+  tier: Tier | null
+  /** Weighted avg deltaSec across blocks. +ve = faster. null if no prior data. */
+  deltaSec: number | null
+  blocks: SourceStat[]
+  insufficient: boolean  // true when ALL blocks are insufficient
+}
+
 function padTwo(n: number) { return String(n).padStart(2, '0') }
 
 /** Returns ISO date string (YYYY-MM-DD) of the Thursday that starts the week containing `date`. Uses local time. */
@@ -246,4 +260,82 @@ export function weeklyAggregates(sessions: CalcSession[]): PeriodData {
   }
 
   return { week: weeks, day: days, month: months }
+}
+
+const TIER_ORDER: (Tier | null)[] = [null, 'entry', 'stable', 'fluent', 'auto']
+
+function worstTier(tiers: (Tier | null)[]): Tier | null {
+  let worst = TIER_ORDER.length - 1
+  for (const t of tiers) {
+    const idx = TIER_ORDER.indexOf(t)
+    if (idx < worst) worst = idx
+  }
+  return TIER_ORDER[worst] ?? null
+}
+
+const OP_LABEL: Record<OpGroup, string> = {
+  add: '加', sub: '减', mul: '乘', div: '除', mixed: '混合',
+}
+
+/**
+ * Groups SourceStat[] by operation type.
+ * Block sources: group derived from CalcBlock.group.
+ * Mixed sources: always 'mixed'.
+ * Returns only groups that have at least one source.
+ * Sorted by avgSec descending (slowest first).
+ */
+export function opGroupStats(
+  stats: SourceStat[],
+): OpGroupStat[] {
+  const groups = new Map<OpGroup, SourceStat[]>()
+
+  for (const s of stats) {
+    const colonIdx = s.key.indexOf(':')
+    const kind = s.key.slice(0, colonIdx)
+    const id = s.key.slice(colonIdx + 1)
+    let op: OpGroup
+    if (kind === 'mixed') {
+      op = 'mixed'
+    } else {
+      const block = blockById(id)
+      if (!block) continue
+      const g = block.group
+      op = g === 'add' ? 'add'
+         : g === 'sub' ? 'sub'
+         : g === 'mul' || g === 'decimal' || g === 'fraction' ? 'mul'
+         : 'div'
+    }
+    const arr = groups.get(op) ?? []
+    arr.push(s)
+    groups.set(op, arr)
+  }
+
+  const result: OpGroupStat[] = []
+  for (const [op, blocks] of groups) {
+    const sufficient = blocks.filter((b) => !b.insufficient)
+    const insufficient = sufficient.length === 0
+
+    const totalCount = blocks.reduce((a, b) => a + b.count, 0)
+    const avgSec = totalCount > 0
+      ? +(blocks.reduce((a, b) => a + b.avgSec * b.count, 0) / totalCount).toFixed(1)
+      : 0
+
+    const tier = insufficient ? null : worstTier(sufficient.map((b) => b.tier))
+
+    // Weighted avg deltaSec (only blocks with prior data)
+    const withDelta = blocks.filter((b) => b.deltaSec !== null)
+    let deltaSec: number | null = null
+    if (withDelta.length > 0) {
+      const dCount = withDelta.reduce((a, b) => a + b.count, 0)
+      deltaSec = dCount > 0
+        ? +(withDelta.reduce((a, b) => a + (b.deltaSec ?? 0) * b.count, 0) / dCount).toFixed(1)
+        : null
+    }
+
+    result.push({ op, label: OP_LABEL[op], avgSec, tier, deltaSec, blocks, insufficient })
+  }
+
+  // Sort slowest first
+  result.sort((a, b) => b.avgSec - a.avgSec)
+  return result
 }
