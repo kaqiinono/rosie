@@ -4,6 +4,37 @@ import { blockById } from './calc-blocks'
 import { skeletonMeta } from './calc-mixed'
 import { suggestedTiers, tierOf, nextTierGap, type Tier } from './calc-time-targets'
 
+export interface PeriodPoint {
+  label: string           // "6/W2" | "6/15" | "6月"
+  avgSec: number | null   // null = no practice in this period
+  totalCount: number
+  daysActive: number
+}
+
+export interface PeriodData {
+  week: PeriodPoint[]   // 最近 12 周
+  day: PeriodPoint[]    // 最近 30 天
+  month: PeriodPoint[]  // 最近 12 个月
+}
+
+/** Returns ISO date string (YYYY-MM-DD) of the Thursday that starts the week containing `date`. */
+function thursdayWeekStart(date: Date): string {
+  const d = new Date(date)
+  // days back to Thursday: (day - 4 + 7) % 7
+  // Sun=0→6, Mon=1→5, Tue=2→4, Wed=3→3, Thu=4→0, Fri=5→1, Sat=6→2
+  const backToThu = (d.getDay() - 4 + 7) % 7
+  d.setDate(d.getDate() - backToThu)
+  return d.toISOString().slice(0, 10)
+}
+
+function isoMonth(date: Date): string {
+  return date.toISOString().slice(0, 7)
+}
+
+function isoDay(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
 const WINDOW = 20
 const MIN_SAMPLE = 8
 
@@ -128,4 +159,89 @@ export function sessionVerdict(sessions: CalcSession[]): SessionVerdict {
 
   const trend = Math.abs(deltaSec) < 0.1 ? 'flat' : deltaSec > 0 ? 'up' : 'down'
   return { trend, deltaSec, perMinute, improved, regressed }
+}
+
+/**
+ * Aggregates session data by week (Thu-start), day, and month.
+ * Returns the most recent 12 weeks, 30 days, and 12 months.
+ * Periods with no sessions get avgSec: null.
+ */
+export function weeklyAggregates(sessions: CalcSession[]): PeriodData {
+  type Acc = { msSum: number; count: number; days: Set<string> }
+
+  const byWeek = new Map<string, Acc>()
+  const byDay  = new Map<string, Acc>()
+  const byMonth= new Map<string, Acc>()
+
+  for (const s of sessions) {
+    if (!s.date) continue
+    const d = new Date(s.date + 'T00:00:00')
+    const wKey = thursdayWeekStart(d)
+    const dKey = isoDay(d)
+    const mKey = isoMonth(d)
+
+    const logs = s.questionLog ?? []
+    const ms = logs.reduce((a, e) => a + e.ms, 0)
+    const n  = logs.length
+
+    const add = (map: Map<string, Acc>, key: string) => {
+      const acc = map.get(key) ?? { msSum: 0, count: 0, days: new Set<string>() }
+      acc.msSum  += ms
+      acc.count  += n
+      acc.days.add(dKey)
+      map.set(key, acc)
+    }
+    add(byWeek,  wKey)
+    add(byDay,   dKey)
+    add(byMonth, mKey)
+  }
+
+  const today = new Date()
+
+  // 12 weeks back (Thu-start)
+  const weeks: PeriodPoint[] = []
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i * 7)
+    const key = thursdayWeekStart(d)
+    const acc = byWeek.get(key)
+    const dt = new Date(key + 'T00:00:00')
+    weeks.push({
+      label: `${dt.getMonth() + 1}/W${Math.ceil(dt.getDate() / 7)}`,
+      avgSec: acc && acc.count > 0 ? +(acc.msSum / acc.count / 1000).toFixed(1) : null,
+      totalCount: acc?.count ?? 0,
+      daysActive: acc?.days.size ?? 0,
+    })
+  }
+
+  // 30 days back
+  const days: PeriodPoint[] = []
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const key = isoDay(d)
+    const acc = byDay.get(key)
+    days.push({
+      label: `${d.getMonth() + 1}/${d.getDate()}`,
+      avgSec: acc && acc.count > 0 ? +(acc.msSum / acc.count / 1000).toFixed(1) : null,
+      totalCount: acc?.count ?? 0,
+      daysActive: acc ? 1 : 0,
+    })
+  }
+
+  // 12 months back
+  const months: PeriodPoint[] = []
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1)
+    const key = isoMonth(d)
+    const acc = byMonth.get(key)
+    months.push({
+      label: `${d.getMonth() + 1}月`,
+      avgSec: acc && acc.count > 0 ? +(acc.msSum / acc.count / 1000).toFixed(1) : null,
+      totalCount: acc?.count ?? 0,
+      daysActive: acc?.days.size ?? 0,
+    })
+  }
+
+  return { week: weeks, day: days, month: months }
 }
