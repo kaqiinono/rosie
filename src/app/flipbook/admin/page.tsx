@@ -9,9 +9,11 @@ import FlipbookUploadGuide from '@/components/flipbook/FlipbookUploadGuide'
 import FlipbookUploader from '@/components/flipbook/FlipbookUploader'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useFlipbookDuplicatePrompt } from '@/hooks/useFlipbookDuplicatePrompt'
+import { useWordData } from '@/hooks/useWordData'
 
 export default function FlipbookAdminPage() {
   const { user, loading: authLoading } = useAuth()
+  const { vocab } = useWordData(user)
   const { createBook } = useFlipbookBooks(user)
   const { ask, resetPolicy, dialog } = useFlipbookDuplicatePrompt()
 
@@ -60,8 +62,8 @@ export default function FlipbookAdminPage() {
       <FlipbookUploadGuide />
 
       <div className="mt-6 flex flex-col gap-8">
-        <FlipbookUploader onSubmit={submitBook} onSessionStart={resetPolicy} />
-        <FlipbookBatchUploader onSubmit={submitBook} onSessionStart={resetPolicy} />
+        <FlipbookUploader vocab={vocab} onSubmit={submitBook} onSessionStart={resetPolicy} />
+        <FlipbookBatchUploader vocab={vocab} onSubmit={submitBook} onSessionStart={resetPolicy} />
       </div>
 
       {dialog}

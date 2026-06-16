@@ -208,7 +208,7 @@ export default function FlipbookAudioBar({
       <audio
         ref={audioRef}
         src={src}
-        preload="metadata"
+        preload="auto"
         className="hidden"
         aria-hidden
         onLoadedMetadata={() => {

@@ -189,12 +189,16 @@ export default function WordManagerPage({ user }: Props) {
         ? `确定删除词库「${stage || NO_STAGE_LABEL}」？将永久删除其中 ${count} 个单词，无法撤销。`
         : `确定删除空词库「${stage || NO_STAGE_LABEL}」？`
     if (!window.confirm(msg)) return
-    await deleteStage(stage)
-    persistDrafts(draftStages.filter((d) => d.stage !== stage))
-    setActiveStage(null)
-    setSelUnit('')
-    setSelLesson('')
-    triggerFlash(`已删除词库「${stage || NO_STAGE_LABEL}」`)
+    try {
+      await deleteStage(stage)
+      persistDrafts(draftStages.filter((d) => d.stage !== stage))
+      setActiveStage(null)
+      setSelUnit('')
+      setSelLesson('')
+      triggerFlash(`已删除词库「${stage || NO_STAGE_LABEL}」`)
+    } catch {
+      triggerFlash(`删除词库失败，请重试`)
+    }
   }
 
   // 表单内联创建 stage / unit / lesson → 持久化到草稿结构，级联选项即时可见且刷新不丢
@@ -217,8 +221,17 @@ export default function WordManagerPage({ user }: Props) {
 
   const handleDeleteWord = async (w: WordEntry) => {
     if (!window.confirm(`删除单词「${w.word}」（${w.unit} · ${w.lesson}）？`)) return
-    await deleteWord(w)
-    triggerFlash(`已删除「${w.word}」`)
+    const stage = w.stage
+    const willEmptyStage = !!stage && stageWords.length === 1
+    try {
+      await deleteWord(w)
+      if (willEmptyStage && stage) {
+        persistDrafts(draftStages.filter((d) => d.stage !== stage))
+      }
+      triggerFlash(`已删除「${w.word}」`)
+    } catch {
+      triggerFlash(`删除「${w.word}」失败，请重试`)
+    }
   }
 
   const handleBatchConfirm = async (words: WordEntry[]) => {

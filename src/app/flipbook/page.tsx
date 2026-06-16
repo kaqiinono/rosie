@@ -8,20 +8,31 @@ import { useImmersive } from '@/contexts/ImmersiveContext'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useAudioCollections } from '@/hooks/useAudioCollections'
 import { usePlaylistPlayer } from '@/hooks/usePlaylistPlayer'
+import { useWordData } from '@/hooks/useWordData'
+import { useWordMastery } from '@/hooks/useWordMastery'
 import PlayerDock from '@/components/audio/PlayerDock'
+import FlipbookWordCarouselModal, {
+  flipbookPreviewWords,
+} from '@/components/flipbook/FlipbookWordCarouselModal'
 import { trackKey, type PlayerTrack } from '@/utils/audio-manager-types'
+import {
+  bookHasVocabularyData,
+  getBookMatchedWordKeys,
+} from '@/utils/flipbook-word-match'
 import type { FlipbookBook } from '@/utils/flipbook-types'
 
 export default function FlipbookShelfPage() {
   const { user, loading: authLoading } = useAuth()
   const { setIsImmersive } = useImmersive()
   const { books, isLoading, deleteBook } = useFlipbookBooks(user)
+  const { vocab } = useWordData(user)
+  const { masteryMap } = useWordMastery(user)
   const col = useAudioCollections(user)
   const player = usePlaylistPlayer()
 
   const [queueIds, setQueueIds] = useState<string[]>([])
+  const [previewBook, setPreviewBook] = useState<FlipbookBook | null>(null)
 
-  // 从「绘本」虚拟收藏夹拿到带 source 的曲目，按 book id 建索引
   const trackByBookId = useMemo(() => {
     const fbCol = col.collections.find((c) => c.kind === 'flipbook')
     const map = new Map<string, PlayerTrack>()
@@ -31,6 +42,11 @@ export default function FlipbookShelfPage() {
     }
     return map
   }, [col.collections])
+
+  const previewWords = useMemo(
+    () => (previewBook ? flipbookPreviewWords(previewBook, vocab) : []),
+    [previewBook, vocab],
+  )
 
   const toggleQueueMember = useCallback((id: string) => {
     setQueueIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -99,6 +115,10 @@ export default function FlipbookShelfPage() {
         </Link>
       </header>
 
+      <p className="mb-4 text-xs leading-relaxed text-white/45">
+        点书名进入阅读（讲解与翻页并行）；也可在书架只听讲解，或加入连播队列。
+      </p>
+
       <div className="mb-4 flex items-center gap-2">
         <button
           type="button"
@@ -129,6 +149,12 @@ export default function FlipbookShelfPage() {
       ) : books.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/15 py-12 text-center">
           <p className="text-white/50">还没有书籍</p>
+          <Link
+            href="/flipbook/admin"
+            className="mt-3 inline-block text-sm text-orange-300 hover:text-orange-200"
+          >
+            去上传 →
+          </Link>
         </div>
       ) : (
         <ul className="flex flex-col gap-2.5">
@@ -140,11 +166,13 @@ export default function FlipbookShelfPage() {
               <ShelfBookRow
                 key={book.id}
                 book={book}
+                vocabSize={getBookMatchedWordKeys(book.syncManifest, vocab).length}
                 isPlaying={isPlaying}
                 queuePosition={pos === -1 ? null : pos + 1}
                 onPlayAudio={() => track && player.play([track])}
                 onDelete={() => handleDelete(book)}
                 onToggleQueue={() => toggleQueueMember(book.id)}
+                onPreviewWords={() => setPreviewBook(book)}
                 onRead={() => {
                   player.stop()
                   setIsImmersive(true)
@@ -163,30 +191,44 @@ export default function FlipbookShelfPage() {
           if (player.current) void col.toggleFavorite(player.current)
         }}
       />
+
+      {previewBook && (
+        <FlipbookWordCarouselModal
+          book={previewBook}
+          words={previewWords}
+          masteryMap={masteryMap}
+          onClose={() => setPreviewBook(null)}
+        />
+      )}
     </Shell>
   )
 }
 
 type ShelfBookRowProps = {
   book: FlipbookBook
+  vocabSize: number
   isPlaying: boolean
   queuePosition: number | null
   onPlayAudio: () => void
   onRead: () => void
   onDelete: () => void
   onToggleQueue: () => void
+  onPreviewWords: () => void
 }
 
 function ShelfBookRow({
   book,
+  vocabSize,
   isPlaying,
   queuePosition,
   onPlayAudio,
   onRead,
   onDelete,
   onToggleQueue,
+  onPreviewWords,
 }: ShelfBookRowProps) {
   const hasAudio = Boolean(book.audioPath)
+  const hasWords = bookHasVocabularyData(book.syncManifest) && vocabSize > 0
   const inQueue = queuePosition !== null
 
   const handleAction = (fn: () => void) => (e: React.MouseEvent) => {
@@ -238,13 +280,21 @@ function ShelfBookRow({
             <MetaRow
               pageCount={book.pageCount ?? null}
               hasAudio={hasAudio}
-              hasSync={Boolean(book.syncManifest)}
+              wordCount={hasWords ? vocabSize : null}
               isPlaying={isPlaying}
             />
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1 self-center pr-1.5">
+          {hasWords && (
+            <IconButton
+              label={`词汇预览（${vocabSize} 词）`}
+              onClick={handleAction(onPreviewWords)}
+            >
+              <WordsIcon />
+            </IconButton>
+          )}
           {hasAudio && (
             <IconButton
               label={inQueue ? `从队列移除 (#${queuePosition})` : '加入连播队列'}
@@ -275,36 +325,33 @@ function ShelfBookRow({
 function MetaRow({
   pageCount,
   hasAudio,
-  hasSync,
+  wordCount,
   isPlaying,
 }: {
   pageCount: number | null
   hasAudio: boolean
-  hasSync: boolean
+  wordCount: number | null
   isPlaying: boolean
 }) {
-  const items: { key: string; label: string; tone?: 'accent' | 'live' }[] = []
+  const items: { key: string; label: string; tone?: 'live' }[] = []
   items.push({ key: 'pages', label: pageCount != null ? `${pageCount} 页` : '—' })
+  if (wordCount != null && wordCount > 0) {
+    items.push({ key: 'words', label: `${wordCount} 词` })
+  }
   if (hasAudio) {
     items.push({
       key: 'audio',
-      label: isPlaying ? '播放中' : '有音频',
+      label: isPlaying ? '播放中' : '有讲解',
       tone: isPlaying ? 'live' : undefined,
     })
   }
-  if (hasSync) items.push({ key: 'sync', label: '已同步', tone: 'accent' })
 
   return (
     <div className="mt-1 flex items-center gap-1.5 text-[11px] text-white/45">
       {items.map((item, i) => (
         <span key={item.key} className="flex items-center gap-1.5">
           {i > 0 && <span aria-hidden className="h-0.5 w-0.5 rounded-full bg-white/30" />}
-          <span
-            className={clsx(
-              item.tone === 'accent' && 'text-orange-300/80',
-              item.tone === 'live' && 'text-orange-300',
-            )}
-          >
+          <span className={clsx(item.tone === 'live' && 'text-orange-300')}>
             {item.tone === 'live' && (
               <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400 align-middle" />
             )}
@@ -452,6 +499,25 @@ function CheckIcon() {
       strokeLinejoin="round"
     >
       <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </svg>
+  )
+}
+
+function WordsIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 19.5A1.5 1.5 0 0 1 5.5 18H18" />
+      <path d="M6 4h11a2 2 0 0 1 2 2v12" />
+      <path d="M6 8h8M6 12h6" />
     </svg>
   )
 }

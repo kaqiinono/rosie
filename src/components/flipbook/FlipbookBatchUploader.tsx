@@ -9,16 +9,19 @@ import FlipbookUploadProgress, {
 import type { FlipbookCreateBookInput } from '@/components/flipbook/FlipbookUploader'
 import type { FlipbookCreateBookResult } from '@/hooks/useFlipbookBooks'
 import { countPdfPages } from '@/utils/flipbook-pdf'
-import { flipbookTitleFromFiles } from '@/utils/flipbook-naming'
+import { flipbookFileDisplayPath, flipbookTitleFromFiles, isFlipbookSyncCandidate } from '@/utils/flipbook-naming'
 import {
   isFlipbookRasterImageFile,
   isValidCloudPageImageFilename,
 } from '@/utils/flipbook-page-images'
 import { matchFlipbookBatchFiles } from '@/utils/flipbook-batch-match'
-import { parseSyncManifest, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
+import { parseSyncFileText, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
+import { enrichManifestWithWordMatches } from '@/utils/flipbook-word-match'
 import type { FlipbookSyncManifest } from '@/utils/flipbook-types'
+import type { WordEntry } from '@/utils/type'
 
 type FlipbookBatchUploaderProps = {
+  vocab: WordEntry[]
   onSubmit: (input: FlipbookCreateBookInput) => Promise<FlipbookCreateBookResult>
   onSessionStart?: () => void
 }
@@ -33,7 +36,11 @@ type PairRow = {
   sync: File | null
 }
 
-export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: FlipbookBatchUploaderProps) {
+export default function FlipbookBatchUploader({
+  vocab,
+  onSubmit,
+  onSessionStart,
+}: FlipbookBatchUploaderProps) {
   const [allFiles, setAllFiles] = useState<File[]>([])
   const [rows, setRows] = useState<PairRow[]>([])
   const [busy, setBusy] = useState(false)
@@ -77,7 +84,11 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
       ) {
         audios.push(file)
       } else if (name.endsWith('.sync.json') || name.endsWith('.json')) {
-        syncs.push(file)
+        if (isFlipbookSyncCandidate(file.name)) {
+          syncs.push(file)
+        } else {
+          ignored.push(file)
+        }
       } else {
         ignored.push(file)
       }
@@ -206,13 +217,13 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
           let syncManifest: FlipbookSyncManifest | null = null
           if (row.sync) {
             const text = await row.sync.text()
-            const parsed = parseSyncManifest(JSON.parse(text) as unknown)
+            const parsed = parseSyncFileText(text)
             if (!parsed) {
               throw new Error('sync.json 格式无效')
             }
             const err = validateManifestAgainstPageCount(parsed, pageCount)
             if (err) throw new Error(err)
-            syncManifest = parsed
+            syncManifest = enrichManifestWithWordMatches(parsed, vocab)
           }
 
           setRenderProgress({ current: 0, total: pageCount })
@@ -279,7 +290,7 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
       resetBookProgress()
       setBusy(false)
     },
-    [rows, failedStems, onSubmit, onSessionStart],
+    [rows, failedStems, vocab, onSubmit, onSessionStart],
   )
 
   const previewCount = matchPreview.pairs.length
@@ -289,23 +300,26 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
       <div>
         <h2 className="text-base font-bold text-white">批量上传</h2>
         <p className="mt-2 text-xs leading-relaxed text-white/45">
-          页图命名为 <code className="text-orange-300/90">0001.png</code>（与云端一致）；书名取自音频或
-          sync 文件名。多本书请用子文件夹或见上方说明。
+          选择资料根目录：每本书一个子文件夹，页图在{' '}
+          <code className="text-orange-300/90">pages/0001.webp</code>，目录内任意文件名的{' '}
+          <code className="text-orange-300/90">*.mp3</code> /{' '}
+          <code className="text-orange-300/90">*.json</code> 自动归属该书（不要求与目录同名）。书名默认取目录名，可在预览中修改。
         </p>
       </div>
 
       <MultiFileField
-        label="选择文件（PDF / 页图 / 音频 / sync 混选）"
-        accept="application/pdf,image/png,image/jpeg,image/webp,audio/*,.pdf,.png,.jpg,.jpeg,.webp,.mp3,.m4a,.wav,.aac,.ogg,.json"
+        label="选择文件（PDF / 页图 / 音频混选）"
+        accept="application/pdf,image/png,image/jpeg,image/webp,audio/*,application/json,.pdf,.png,.jpg,.jpeg,.webp,.mp3,.m4a,.wav,.aac,.ogg,.json,.sync.json"
         files={allFiles}
         onFiles={setAllFiles}
       />
       <MultiFileField
         label="或：选择文件夹（保留子目录，适合多本书）"
-        accept="application/pdf,image/png,image/jpeg,image/webp,audio/*,.pdf,.png,.jpg,.jpeg,.webp,.mp3,.m4a,.wav,.aac,.ogg,.json"
+        accept="application/pdf,image/png,image/jpeg,image/webp,audio/*,application/json,.pdf,.png,.jpg,.jpeg,.webp,.mp3,.m4a,.wav,.aac,.ogg,.json,.sync.json"
         files={allFiles}
         onFiles={(picked) => setAllFiles((prev) => mergeFileLists(prev, picked))}
         directory
+        hint="选择含多本书的根目录（如 flipbook/files），系统按子文件夹名配对"
       />
       {allFiles.length > 0 && (
         <p className="text-xs text-white/45">
@@ -338,16 +352,14 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
         </div>
       )}
 
-      {(matchPreview.unmatchedAudios.length > 0 || matchPreview.unmatchedSyncs.length > 0) && (
+      {matchPreview.unmatchedAudios.length > 0 && (
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100/90">
-          {matchPreview.unmatchedAudios.length > 0 && (
-            <p>未配对的音频：{matchPreview.unmatchedAudios.map((f) => f.name).join('、')}</p>
-          )}
-          {matchPreview.unmatchedSyncs.length > 0 && (
-            <p className="mt-1">
-              未配对的 sync：{matchPreview.unmatchedSyncs.map((f) => f.name).join('、')}
-            </p>
-          )}
+          未配对的音频：{matchPreview.unmatchedAudios.map((f) => flipbookFileDisplayPath(f)).join('、')}
+        </div>
+      )}
+      {matchPreview.unmatchedSyncs.length > 0 && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100/90">
+          未配对的 sync：{matchPreview.unmatchedSyncs.map((f) => flipbookFileDisplayPath(f)).join('、')}
         </div>
       )}
 
@@ -368,9 +380,7 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
                 value={row.title}
                 onChange={(e) => updateTitle(row.stem, e.target.value)}
                 className="mb-2 w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-sm text-white"
-                placeholder={
-                  row.audio || row.sync ? '默认来自音频/sync，可改' : '无音频/sync 时请填写书名'
-                }
+                placeholder={row.audio ? '默认来自音频，可改' : '无音频时请填写书名'}
               />
               <div className="text-white/50">
                 {row.source === 'pdf' && row.pdf ? (
@@ -384,8 +394,8 @@ export default function FlipbookBatchUploader({ onSubmit, onSessionStart }: Flip
                 <div className={clsx('truncate', !row.audio && 'text-amber-300/80')}>
                   {row.audio ? `🎧 ${row.audio.name}` : '🎧 （无音频）'}
                 </div>
-                <div className="truncate">
-                  {row.sync ? `⏱ ${row.sync.name}` : '⏱ （无 sync）'}
+                <div className={clsx('truncate', !row.sync && 'text-white/35')}>
+                  {row.sync ? `📋 ${row.sync.name}` : '📋 （无 sync）'}
                 </div>
               </div>
             </li>
@@ -475,16 +485,19 @@ function MultiFileField({
   files,
   onFiles,
   directory = false,
+  hint,
 }: {
   label: string
   accept: string
   files: File[]
   onFiles: (files: File[]) => void
   directory?: boolean
+  hint?: string
 }) {
   return (
     <div>
       <label className="mb-1 block text-xs font-semibold text-white/50">{label}</label>
+      {hint && <p className="mb-1 text-[11px] text-white/35">{hint}</p>}
       <input
         type="file"
         accept={accept}

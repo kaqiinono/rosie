@@ -17,613 +17,658 @@ import {
   type PeriodData,
   type OpGroupStat,
 } from '@/utils/calc-report-stats'
-import { TIER_LABEL, type Tier } from '@/utils/calc-time-targets'
+import { TIER_LABEL, TIER_ORDER, suggestedTiers, type Tier } from '@/utils/calc-time-targets'
 import type { CalcProblemState, CalcSession } from '@/utils/type'
 import { todayStr } from '@/utils/constant'
 
-// ── constants ────────────────────────────────────────────────────────────────
+// ── CSS animations ─────────────────────────────────────────────────────────────
 
-const TIER_BADGE_BG: Record<Tier, string> = {
-  entry: 'bg-red-100 text-red-700',
-  stable: 'bg-yellow-100 text-yellow-700',
-  fluent: 'bg-green-100 text-green-700',
-  auto: 'bg-cyan-100 text-cyan-700',
+const ANIMATIONS = `
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
+`
+
+// ── design tokens ──────────────────────────────────────────────────────────────
+
+const C = {
+  violet: '#c4b5fd',
+  violetGlass: 'rgba(196,181,253,0.08)',
+  violetBorder: 'rgba(196,181,253,0.2)',
+  blue: '#7dd3fc',
+  blueGlass: 'rgba(125,211,252,0.07)',
+  blueBorder: 'rgba(125,211,252,0.2)',
+  yellow: '#fbbf24',
+  yellowGlass: 'rgba(251,191,36,0.06)',
+  yellowBorder: 'rgba(251,191,36,0.22)',
+  green: '#4ade80',
+  red: '#f87171',
+  text: 'rgba(245,243,255,0.92)',
+  textDim: 'rgba(245,243,255,0.45)',
+  textFaint: 'rgba(245,243,255,0.2)',
+  surface: 'rgba(255,255,255,0.04)',
+  border: 'rgba(255,255,255,0.09)',
+} as const
+
+const baseCard: React.CSSProperties = {
+  background: C.surface,
+  border: `1px solid ${C.border}`,
+  borderRadius: 16,
+  padding: 18,
 }
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+const SH: React.CSSProperties = {
+  display: 'block',
+  fontSize: 10,
+  fontWeight: 800,
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase',
+  color: 'rgba(196,181,253,0.38)',
+  marginBottom: 8,
+}
+
+// ── helpers ────────────────────────────────────────────────────────────────────
 
 function padTwo(n: number) { return String(n).padStart(2, '0') }
 
 function thursdayWeekStart(date: Date): string {
   const d = new Date(date)
-  const backToThu = (d.getDay() - 4 + 7) % 7
-  d.setDate(d.getDate() - backToThu)
+  d.setDate(d.getDate() - (d.getDay() - 4 + 7) % 7)
   return `${d.getFullYear()}-${padTwo(d.getMonth() + 1)}-${padTwo(d.getDate())}`
 }
 
-interface MistakeRow {
-  error_tag: string | null
-  resolved: boolean
-  created_at: string
-}
+interface MistakeRow { error_tag: string | null; resolved: boolean; created_at: string }
 
-// ── DeltaChip ────────────────────────────────────────────────────────────────
+// ── Section 1 · 推荐练习 ───────────────────────────────────────────────────────
 
-function DeltaChip({ d, unit = '', invert = false }: { d: number | null; unit?: string; invert?: boolean }) {
-  if (d === null) return null
-  const delta = invert ? -d : d
-  const pos = delta > 0
-  return <span className={`text-xs font-medium ${pos ? 'text-green-600' : 'text-red-500'}`}>{pos ? '↑' : '↓'}{Math.abs(d)}{unit}</span>
-}
-
-// ── Section 1 ────────────────────────────────────────────────────────────────
-
-function Section1({
-  breakthroughSource,
-  slowestGroup,
-  onDrill,
-}: {
+function Section1({ breakthroughSource, slowestGroup, onDrill }: {
   breakthroughSource: SourceStat | null
   slowestGroup: OpGroupStat | null
   onDrill: (url: string) => void
 }) {
+  const cardStyle: React.CSSProperties = {
+    background: C.yellowGlass,
+    border: `1px solid ${C.yellowBorder}`,
+    borderRadius: 16,
+    padding: 18,
+    position: 'relative',
+    overflow: 'hidden',
+  }
+
   if (!breakthroughSource || !slowestGroup || slowestGroup.insufficient) {
     return (
-      <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5">
-        <h2 className="font-bold text-amber-800 text-base mb-2">本周重点</h2>
-        <p className="text-amber-700 text-sm text-center py-2">还没有足够数据，先去练几次吧～</p>
+      <div>
+        <span style={SH}>推荐练习</span>
+        <div style={cardStyle}>
+          <div style={{ color: C.yellow, fontSize: 13, opacity: 0.7 }}>还没有足够数据，先去练几次吧～</div>
+        </div>
       </div>
     )
   }
 
-  const currentTier = breakthroughSource.tier
-  const tierKeys: Tier[] = ['entry', 'stable', 'fluent', 'auto']
-  const curIdx = currentTier ? tierKeys.indexOf(currentTier) : 0
-  const nextTier = tierKeys[curIdx + 1] as Tier | undefined
-  const nextTierLabel = nextTier ? TIER_LABEL[nextTier] : TIER_LABEL['auto']
-
-  // fill% = how far through the current tier toward the next
-  // gapSec = avgSec - nextTier.hi (how many seconds to shave off to hit next tier)
-  // Approximate fill: 0 when far from next tier, 1 when gap is nearly closed
-  const fill = Math.min(0.95, Math.max(0.05, 1 - breakthroughSource.gapSec / Math.max(breakthroughSource.avgSec, 0.1)))
-
+  const curIdx = breakthroughSource.tier ? TIER_ORDER.indexOf(breakthroughSource.tier) : 0
+  const nextTier = TIER_ORDER[curIdx + 1] as Tier | undefined
+  const nextTierLabel = nextTier ? TIER_LABEL[nextTier] : TIER_LABEL.auto
   const bid = breakthroughSource.key.split(':')[1] ?? ''
 
   return (
-    <div className="rounded-2xl bg-amber-50 border-2 border-amber-300 p-5 space-y-4">
-      <div className="flex items-center gap-2">
-        <span className="text-2xl">⭐</span>
-        <h2 className="font-bold text-amber-800 text-lg">本周重点</h2>
-      </div>
-
-      <p className="text-amber-900 text-sm leading-relaxed">
-        <strong>{slowestGroup.label}法</strong>是当前最慢（{slowestGroup.avgSec}s/题
-        {slowestGroup.tier ? `，${TIER_LABEL[slowestGroup.tier]}档` : ''}）。
-        {' '}<strong>{breakthroughSource.label}</strong> 再快 {breakthroughSource.gapSec}s 就升到
-        {nextTierLabel}档了！
-      </p>
-
-      <div>
-        <div className="h-3 bg-amber-200 rounded-full overflow-hidden mb-1">
-          <div
-            className="h-full bg-blue-500 rounded-full transition-all duration-500"
-            style={{ width: `${Math.round(fill * 100)}%` }}
-          />
+    <div>
+      <span style={SH}>推荐练习</span>
+      <div style={cardStyle}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 100% at 0% 50%,rgba(251,191,36,0.09) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 9, fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.yellow, marginBottom: 8 }}>
+          🎯 本周重点
         </div>
-        <div className="flex justify-between text-xs text-amber-700">
-          <span>{currentTier ? TIER_LABEL[currentTier] : '入门'}档</span>
-          <span className="font-bold text-blue-600">还差 {breakthroughSource.gapSec}s ✦</span>
-          <span>{nextTierLabel}档</span>
+        <div style={{ fontSize: 13.5, fontWeight: 500, lineHeight: 1.65, color: 'rgba(245,243,255,0.85)', marginBottom: 14 }}>
+          <span style={{ color: C.yellow, fontWeight: 700 }}>{slowestGroup.label}法</span>是当前最慢（{slowestGroup.avgSec}s/题
+          {slowestGroup.tier ? `，${TIER_LABEL[slowestGroup.tier]}档` : ''}）。{' '}
+          <span style={{ color: C.yellow, fontWeight: 700 }}>{breakthroughSource.label}</span>再快{' '}
+          <span style={{ color: C.yellow, fontWeight: 700 }}>{breakthroughSource.gapSec}s</span> 就升到{nextTierLabel}档了！
         </div>
+        <button
+          onClick={() => onDrill(`/calc/session?drill=breakthrough&blockId=${bid}`)}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: C.yellow, background: 'rgba(251,191,36,0.12)', border: `1px solid rgba(251,191,36,0.28)`, borderRadius: 20, padding: '6px 16px', cursor: 'pointer' }}
+        >
+          去练习 →
+        </button>
       </div>
-
-      <button
-        onClick={() => onDrill(`/calc/session?drill=breakthrough&blockId=${bid}`)}
-        className="w-full py-3 rounded-xl bg-amber-500 text-white font-bold text-base active:scale-95 transition-transform"
-      >
-        突破练习 →
-      </button>
     </div>
   )
 }
 
-// ── SVG Trend Chart ───────────────────────────────────────────────────────────
+// ── TrendChart · dark SVG with draw animation ──────────────────────────────────
 
 type ChartTab = 'day' | 'week' | 'month'
-
-const CHART_W = 320
-const CHART_H = 120
-const CHART_PAD = { top: 16, right: 24, bottom: 24, left: 36 }
+const CW = 320, CH = 108, CP = { top: 10, r: 8, bot: 22, l: 8 }
 
 function TrendChart({ periodData }: { periodData: PeriodData }) {
   const [tab, setTab] = useState<ChartTab>('week')
   const svgRef = useRef<SVGSVGElement>(null)
-
   const points = periodData[tab]
-  const valid = useMemo(() => points.filter((p) => p.avgSec !== null), [points])
+  const valid = useMemo(() => points.filter(p => p.avgSec !== null), [points])
 
   useEffect(() => {
     const svg = svgRef.current
     if (!svg) return
-    if (valid.length < 2) {
-      while (svg.firstChild) svg.removeChild(svg.firstChild)
-      return
-    }
+    while (svg.firstChild) svg.removeChild(svg.firstChild)
+    if (valid.length < 2) return
 
-    const maxY = Math.max(...valid.map((p) => p.avgSec!))
-    const minY = Math.min(...valid.map((p) => p.avgSec!))
-    const rangeY = maxY - minY || 1
+    const vals = valid.map(p => p.avgSec!)
+    const mn = Math.min(...vals) * 0.92, mx = Math.max(...vals) * 1.08
+    const iW = CW - CP.l - CP.r, iH = CH - CP.top - CP.bot
+    const xOf = (i: number) => CP.l + (i / Math.max(points.length - 1, 1)) * iW
+    const yOf = (v: number) => CP.top + (1 - (v - mn) / (mx - mn)) * iH
 
-    const xOf = (i: number) =>
-      CHART_PAD.left + (i / Math.max(points.length - 1, 1)) * (CHART_W - CHART_PAD.left - CHART_PAD.right)
-    const yOf = (v: number) =>
-      CHART_PAD.top + (1 - (v - minY) / rangeY) * (CHART_H - CHART_PAD.top - CHART_PAD.bottom)
-
-    const segments: string[][] = []
-    let cur: string[] = []
+    let line = '', area = '', inSeg = false
     for (let i = 0; i < points.length; i++) {
-      if (points[i].avgSec === null) {
-        if (cur.length > 0) { segments.push(cur); cur = [] }
-      } else {
-        cur.push(`${xOf(i).toFixed(1)},${yOf(points[i].avgSec!).toFixed(1)}`)
+      const v = points[i].avgSec
+      const x = xOf(i).toFixed(1)
+      if (v !== null) {
+        const y = yOf(v).toFixed(1)
+        if (!inSeg) { line += `M${x} ${y} `; area += `M${x} ${(CH - CP.bot).toFixed(1)} L${x} ${y} `; inSeg = true }
+        else { line += `L${x} ${y} `; area += `L${x} ${y} ` }
+      } else if (inSeg) {
+        const pv = points[i - 1].avgSec
+        if (pv !== null) area += `L${xOf(i - 1).toFixed(1)} ${(CH - CP.bot).toFixed(1)} Z `
+        inSeg = false
       }
     }
-    if (cur.length > 0) segments.push(cur)
+    if (inSeg) {
+      const pv = points[points.length - 1].avgSec
+      if (pv !== null) area += `L${xOf(points.length - 1).toFixed(1)} ${(CH - CP.bot).toFixed(1)} Z`
+    }
 
     const ns = 'http://www.w3.org/2000/svg'
-    while (svg.firstChild) svg.removeChild(svg.firstChild)
+    const gid = `g${tab}`
 
-    // Gridlines
+    const defs = document.createElementNS(ns, 'defs')
+    const grad = document.createElementNS(ns, 'linearGradient')
+    grad.setAttribute('id', gid); grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0'); grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1')
+    ;[['0%', 'rgba(196,181,253,0.25)'], ['100%', 'rgba(196,181,253,0)']].forEach(([off, col]) => {
+      const s = document.createElementNS(ns, 'stop'); s.setAttribute('offset', off); s.setAttribute('stop-color', col); grad.appendChild(s)
+    })
+    defs.appendChild(grad); svg.appendChild(defs)
+
+    const aPath = document.createElementNS(ns, 'path')
+    aPath.setAttribute('d', area); aPath.setAttribute('fill', `url(#${gid})`); svg.appendChild(aPath)
+
     for (let k = 0; k < 3; k++) {
-      const y = CHART_PAD.top + (k / 2) * (CHART_H - CHART_PAD.top - CHART_PAD.bottom)
-      const line = document.createElementNS(ns, 'line')
-      line.setAttribute('x1', String(CHART_PAD.left)); line.setAttribute('x2', String(CHART_W - CHART_PAD.right))
-      line.setAttribute('y1', String(y)); line.setAttribute('y2', String(y))
-      line.setAttribute('stroke', '#e5e7eb'); line.setAttribute('stroke-width', '1')
-      svg.appendChild(line)
-      const val = (maxY - (k / 2) * rangeY).toFixed(1)
-      const text = document.createElementNS(ns, 'text')
-      text.setAttribute('x', String(CHART_PAD.left - 4)); text.setAttribute('y', String(y + 4))
-      text.setAttribute('text-anchor', 'end'); text.setAttribute('font-size', '9')
-      text.setAttribute('fill', '#9ca3af'); text.textContent = val
-      svg.appendChild(text)
+      const y = (CP.top + (k / 2) * iH).toFixed(1)
+      const gl = document.createElementNS(ns, 'line')
+      gl.setAttribute('x1', String(CP.l)); gl.setAttribute('x2', String(CW - CP.r))
+      gl.setAttribute('y1', y); gl.setAttribute('y2', y)
+      gl.setAttribute('stroke', 'rgba(255,255,255,0.045)'); gl.setAttribute('stroke-width', '1')
+      svg.appendChild(gl)
     }
 
-    // Polylines
-    for (const seg of segments) {
-      if (seg.length < 2) continue
-      const poly = document.createElementNS(ns, 'polyline')
-      poly.setAttribute('points', seg.join(' '))
-      poly.setAttribute('fill', 'none'); poly.setAttribute('stroke', '#3b82f6')
-      poly.setAttribute('stroke-width', '2'); poly.setAttribute('stroke-linecap', 'round')
-      poly.setAttribute('stroke-linejoin', 'round')
-      svg.appendChild(poly)
-    }
+    const dash = String(line.length * 6)
+    const lPath = document.createElementNS(ns, 'path')
+    lPath.setAttribute('d', line); lPath.setAttribute('fill', 'none'); lPath.setAttribute('stroke', C.violet)
+    lPath.setAttribute('stroke-width', '2.2'); lPath.setAttribute('stroke-linecap', 'round'); lPath.setAttribute('stroke-linejoin', 'round')
+    lPath.setAttribute('style', `stroke-dasharray:${dash};stroke-dashoffset:${dash};animation:drawLine 0.9s ease forwards;filter:drop-shadow(0 0 4px rgba(196,181,253,0.4))`)
+    svg.appendChild(lPath)
 
-    // Dots
     for (let i = 0; i < points.length; i++) {
-      if (points[i].avgSec === null) continue
+      const v = points[i].avgSec
+      if (v === null) continue
+      const isLast = !points.slice(i + 1).some(p => p.avgSec !== null)
       const c = document.createElementNS(ns, 'circle')
-      c.setAttribute('cx', xOf(i).toFixed(1)); c.setAttribute('cy', yOf(points[i].avgSec!).toFixed(1))
-      c.setAttribute('r', '3'); c.setAttribute('fill', '#3b82f6')
+      c.setAttribute('cx', xOf(i).toFixed(1)); c.setAttribute('cy', yOf(v).toFixed(1))
+      c.setAttribute('r', isLast ? '4.5' : '2.5')
+      c.setAttribute('fill', isLast ? C.violet : 'rgba(196,181,253,0.55)')
+      if (isLast) { c.setAttribute('stroke', 'rgba(196,181,253,0.25)'); c.setAttribute('stroke-width', '5') }
       svg.appendChild(c)
     }
 
-    // Last point label
     for (let i = points.length - 1; i >= 0; i--) {
-      if (points[i].avgSec === null) continue
-      const text = document.createElementNS(ns, 'text')
-      text.setAttribute('x', xOf(i).toFixed(1)); text.setAttribute('y', String(yOf(points[i].avgSec!) - 6))
-      text.setAttribute('text-anchor', 'middle'); text.setAttribute('font-size', '10')
-      text.setAttribute('fill', '#1d4ed8'); text.setAttribute('font-weight', 'bold')
-      text.textContent = `${points[i].avgSec}s`
-      svg.appendChild(text)
+      const v = points[i].avgSec
+      if (v === null) continue
+      const lx = xOf(i), ly = yOf(v)
+      const rect = document.createElementNS(ns, 'rect')
+      rect.setAttribute('x', (lx + 7).toFixed(1)); rect.setAttribute('y', (ly - 8).toFixed(1))
+      rect.setAttribute('width', '26'); rect.setAttribute('height', '14'); rect.setAttribute('rx', '4')
+      rect.setAttribute('fill', 'rgba(196,181,253,0.15)'); rect.setAttribute('stroke', 'rgba(196,181,253,0.3)'); rect.setAttribute('stroke-width', '1')
+      svg.appendChild(rect)
+      const lt = document.createElementNS(ns, 'text')
+      lt.setAttribute('x', (lx + 20).toFixed(1)); lt.setAttribute('y', (ly + 3.5).toFixed(1))
+      lt.setAttribute('text-anchor', 'middle'); lt.setAttribute('font-size', '9'); lt.setAttribute('font-weight', '700')
+      lt.setAttribute('fill', C.violet); lt.textContent = `${v}s`
+      svg.appendChild(lt)
       break
     }
 
-    // X axis labels (first, middle, last)
-    const labelIdxs = [0, Math.floor(points.length / 2), points.length - 1]
-    for (const li of labelIdxs) {
-      const text = document.createElementNS(ns, 'text')
-      text.setAttribute('x', xOf(li).toFixed(1)); text.setAttribute('y', String(CHART_H - 4))
-      text.setAttribute('text-anchor', 'middle'); text.setAttribute('font-size', '9')
-      text.setAttribute('fill', '#9ca3af'); text.textContent = points[li].label
-      svg.appendChild(text)
+    const li = [0, Math.floor((points.length - 1) / 2), points.length - 1]
+    for (const idx of li) {
+      const t = document.createElementNS(ns, 'text')
+      t.setAttribute('x', xOf(idx).toFixed(1)); t.setAttribute('y', String(CH - 5))
+      t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '8'); t.setAttribute('fill', C.textFaint)
+      t.textContent = points[idx].label; svg.appendChild(t)
     }
   }, [tab, points, valid])
 
   return (
     <div>
-      <div className="flex gap-1 mb-3">
-        {(['day', 'week', 'month'] as ChartTab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              tab === t ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500'
-            }`}
-          >
+      <div style={{ display: 'flex', gap: 4, marginBottom: 10 }}>
+        {(['day', 'week', 'month'] as ChartTab[]).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.14s', background: tab === t ? 'rgba(196,181,253,0.12)' : 'transparent', border: `1px solid ${tab === t ? 'rgba(196,181,253,0.28)' : 'transparent'}`, color: tab === t ? C.violet : C.textDim }}>
             {t === 'day' ? '日' : t === 'week' ? '周' : '月'}
           </button>
         ))}
       </div>
-      {valid.length < 2 ? (
-        <div className="h-[120px] flex items-center justify-center text-gray-400 text-sm bg-gray-50 rounded-xl">
-          数据不足，多练几次就有趋势图啦
-        </div>
-      ) : (
-        <svg ref={svgRef} viewBox={`0 0 ${CHART_W} ${CHART_H}`} className="w-full h-auto" style={{ maxHeight: 120 }} />
-      )}
+      {valid.length < 2
+        ? <div style={{ height: 108, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.textFaint, fontSize: 12 }}>数据不足，多练几次就有趋势图啦</div>
+        : <svg ref={svgRef} viewBox={`0 0 ${CW} ${CH}`} style={{ width: '100%', maxHeight: 108, display: 'block' }} />
+      }
     </div>
   )
 }
 
-// ── Section 2 ────────────────────────────────────────────────────────────────
+// ── Section 2 · 整体成长 ───────────────────────────────────────────────────────
 
 function aggDay(sessions: CalcSession[], dateStr: string) {
-  const logs = sessions.filter((s) => s.date === dateStr).flatMap((s) => s.questionLog ?? [])
-  if (logs.length === 0) return null
+  const logs = sessions.filter(s => s.date === dateStr).flatMap(s => s.questionLog ?? [])
+  if (!logs.length) return null
   const ms = logs.reduce((a, e) => a + e.ms, 0)
-  return {
-    count: logs.length,
-    avgSec: +(ms / logs.length / 1000).toFixed(1),
-    accuracy: Math.round(logs.filter((e) => e.ok).length / logs.length * 100),
-  }
+  return { count: logs.length, avgSec: +(ms / logs.length / 1000).toFixed(1), accuracy: Math.round(logs.filter(e => e.ok).length / logs.length * 100) }
 }
 
 function aggWeek(sessions: CalcSession[], from: Date) {
   const to = new Date(from); to.setDate(to.getDate() + 7)
-  const wSessions = sessions.filter((s) => {
-    const d = new Date(s.date + 'T00:00:00')
-    return d >= from && d < to
-  })
-  const logs = wSessions.flatMap((s) => s.questionLog ?? [])
-  const days = new Set(wSessions.map((s) => s.date)).size
-  if (logs.length === 0) return null
+  const ws = sessions.filter(s => { const d = new Date(s.date + 'T00:00:00'); return d >= from && d < to })
+  const logs = ws.flatMap(s => s.questionLog ?? [])
+  if (!logs.length) return null
   const ms = logs.reduce((a, e) => a + e.ms, 0)
-  return {
-    count: logs.length,
-    avgSec: +(ms / logs.length / 1000).toFixed(1),
-    accuracy: Math.round(logs.filter((e) => e.ok).length / logs.length * 100),
-    days,
-  }
+  return { count: logs.length, avgSec: +(ms / logs.length / 1000).toFixed(1), accuracy: Math.round(logs.filter(e => e.ok).length / logs.length * 100), days: new Set(ws.map(s => s.date)).size }
 }
 
-function Section2({
-  sessions,
-  periodData,
-  weekStart,
-}: {
-  sessions: CalcSession[]
-  periodData: PeriodData
-  weekStart: string
-}) {
+const DOT_LABELS = ['四', '五', '六', '日', '一', '二', '三']
+
+function Section2({ sessions, periodData, weekStart }: { sessions: CalcSession[]; periodData: PeriodData; weekStart: string }) {
   const today = todayStr()
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1)
   const yStr = `${yesterday.getFullYear()}-${padTwo(yesterday.getMonth() + 1)}-${padTwo(yesterday.getDate())}`
 
   const todayData = useMemo(() => aggDay(sessions, today), [sessions, today])
   const yestData = useMemo(() => aggDay(sessions, yStr), [sessions, yStr])
-
   const weekStartDate = useMemo(() => new Date(weekStart + 'T00:00:00'), [weekStart])
   const prevWeekStart = useMemo(() => { const d = new Date(weekStart + 'T00:00:00'); d.setDate(d.getDate() - 7); return d }, [weekStart])
-
   const curWeek = useMemo(() => aggWeek(sessions, weekStartDate), [sessions, weekStartDate])
   const prevWeek = useMemo(() => aggWeek(sessions, prevWeekStart), [sessions, prevWeekStart])
-
   const dotDays = useMemo(() => Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekStart + 'T00:00:00'); d.setDate(d.getDate() + i)
-    const dateStr = `${d.getFullYear()}-${padTwo(d.getMonth() + 1)}-${padTwo(d.getDate())}`
-    return { dateStr, practiced: sessions.some((s) => s.date === dateStr), future: dateStr > today, day: d.getDate() }
+    const ds = `${d.getFullYear()}-${padTwo(d.getMonth() + 1)}-${padTwo(d.getDate())}`
+    return { ds, practiced: sessions.some(s => s.date === ds), future: ds > today }
   }), [weekStart, sessions, today])
 
+  const todaySpeedDelta = todayData && yestData ? +(yestData.avgSec - todayData.avgSec).toFixed(1) : null
+
   return (
-    <div className="rounded-2xl border border-gray-200 p-5 space-y-5">
-      <h2 className="font-bold text-gray-800 text-base">整体成长</h2>
-
-      {todayData && (
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-blue-50 rounded-xl p-3">
-            <div className="text-xs text-blue-500 font-medium mb-1">今天</div>
-            <div className="text-2xl font-bold text-blue-700">{todayData.avgSec}s</div>
-            <div className="text-xs text-blue-400">{todayData.count}题 · {todayData.accuracy}%</div>
-          </div>
-          <div className="bg-gray-50 rounded-xl p-3">
-            <div className="text-xs text-gray-400 font-medium mb-1">昨天</div>
-            <div className="text-2xl font-bold text-gray-400">{yestData?.avgSec ?? '-'}s</div>
-            <div className="text-xs text-gray-300">{yestData ? `${yestData.count}题 · ${yestData.accuracy}%` : '无记录'}</div>
-          </div>
-        </div>
-      )}
-
-      <TrendChart periodData={periodData} />
-
-      <div className="grid grid-cols-2 gap-3">
-        {([
-          { label: '题数', cur: curWeek?.count, prev: prevWeek?.count, unit: '题', invert: false },
-          { label: '正确率', cur: curWeek?.accuracy, prev: prevWeek?.accuracy, unit: '%', invert: false },
-          { label: '速度', cur: curWeek?.avgSec, prev: prevWeek?.avgSec, unit: 's', invert: true },
-          { label: '练习天', cur: curWeek?.days, prev: prevWeek?.days, unit: '天', invert: false },
-        ] as const).map(({ label, cur, prev, unit, invert }) => (
-          <div key={label} className="bg-gray-50 rounded-xl p-3">
-            <div className="text-xs text-gray-400 mb-1">{label}</div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-gray-800">{cur ?? '-'}{unit}</span>
-              <DeltaChip
-                d={cur != null && prev != null ? +(cur - prev).toFixed(1) : null}
-                unit={unit}
-                invert={invert}
-              />
+    <div>
+      <span style={SH}>整体成长</span>
+      <div style={baseCard}>
+        {todayData && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+            <div style={{ background: 'rgba(196,181,253,0.05)', border: '1px solid rgba(196,181,253,0.18)', borderRadius: 12, padding: '10px 12px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(196,181,253,0.6)', marginBottom: 4 }}>今天</div>
+              <div style={{ fontSize: 23, fontWeight: 700, color: C.violet, lineHeight: 1 }}>
+                {todayData.avgSec}<span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(196,181,253,0.4)' }}> s/题</span>
+              </div>
+              <div style={{ fontSize: 11, color: C.textDim, marginTop: 3 }}>
+                {todayData.count}题 · {todayData.accuracy}%
+                {todaySpeedDelta !== null && todaySpeedDelta !== 0 && (
+                  <span style={{ marginLeft: 4, fontSize: 9, fontWeight: 700, color: todaySpeedDelta > 0 ? C.green : C.red, background: todaySpeedDelta > 0 ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)', borderRadius: 5, padding: '1px 5px' }}>
+                    {todaySpeedDelta > 0 ? `↑快${todaySpeedDelta}s` : `↓慢${Math.abs(todaySpeedDelta)}s`}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="text-xs text-gray-300">上周 {prev ?? '-'}{unit}</div>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: '10px 12px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, marginBottom: 4 }}>昨天</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(245,243,255,0.35)', lineHeight: 1 }}>
+                {yestData?.avgSec ?? '-'}<span style={{ fontSize: 12, color: 'rgba(245,243,255,0.2)' }}> s/题</span>
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(245,243,255,0.28)', marginTop: 3 }}>
+                {yestData ? `${yestData.count}题 · ${yestData.accuracy}%` : '无记录'}
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
+        )}
 
-      <div className="flex items-center gap-2">
-        <div className="flex gap-1">
-          {dotDays.map(({ dateStr, practiced, future, day }) => (
-            <div
-              key={dateStr}
-              className={`w-7 h-7 rounded-md text-xs flex items-center justify-center font-medium ${
-                practiced ? 'bg-blue-500 text-white'
-                : future ? 'border border-dashed border-gray-200 text-gray-200'
-                : 'border border-dashed border-gray-300 text-gray-300'
-              }`}
-            >
-              {day}
+        <TrendChart periodData={periodData} />
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, marginTop: 14 }}>
+          {([
+            { label: '题数', cur: curWeek?.count, prev: prevWeek?.count, unit: '题', invert: false },
+            { label: '正确率', cur: curWeek?.accuracy, prev: prevWeek?.accuracy, unit: '%', invert: false },
+            { label: '速度', cur: curWeek?.avgSec, prev: prevWeek?.avgSec, unit: 's', invert: true },
+            { label: '练习天', cur: curWeek?.days, prev: prevWeek?.days, unit: '天', invert: false },
+          ] as const).map(({ label, cur, prev, unit, invert }) => {
+            const d = cur != null && prev != null ? +(cur - prev).toFixed(1) : null
+            const pos = d !== null ? (invert ? d < 0 : d > 0) : null
+            return (
+              <div key={label} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '8px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: 9, color: C.textDim, marginBottom: 3, letterSpacing: '0.04em' }}>{label}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: C.text, lineHeight: 1 }}>{cur ?? '-'}{unit}</div>
+                {d !== null && pos !== null && (
+                  <div style={{ fontSize: 9, fontWeight: 600, marginTop: 2, color: pos ? C.green : C.red }}>
+                    {pos ? '↑' : '↓'}{Math.abs(d)}{unit}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+          <span style={{ fontSize: 11, color: C.textDim, whiteSpace: 'nowrap' }}>本周</span>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {dotDays.map(({ ds, practiced, future }, i) => (
+              <div key={ds} style={{ width: 22, height: 22, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, background: practiced ? 'rgba(196,181,253,0.18)' : 'transparent', border: practiced ? '1px solid rgba(196,181,253,0.35)' : future ? '1px dashed rgba(255,255,255,0.1)' : '1px dashed rgba(255,255,255,0.18)', color: practiced ? C.violet : C.textFaint }}>
+                {DOT_LABELS[i]}
+              </div>
+            ))}
+          </div>
+          <span style={{ fontSize: 11, color: 'rgba(245,243,255,0.3)' }}>{dotDays.filter(d => d.practiced).length}/7天</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Section 3 · 题型进展 ───────────────────────────────────────────────────────
+
+const TIER_DARK: Record<Tier, { color: string; bg: string; border: string }> = {
+  entry:  { color: '#f87171', bg: 'rgba(248,113,113,0.1)',  border: 'rgba(248,113,113,0.18)' },
+  stable: { color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.18)'  },
+  fluent: { color: '#4ade80', bg: 'rgba(74,222,128,0.1)',   border: 'rgba(74,222,128,0.18)'  },
+  auto:   { color: '#22d3ee', bg: 'rgba(34,211,238,0.1)',   border: 'rgba(34,211,238,0.18)'  },
+}
+
+const BAR_COLOR: Record<Tier, string> = {
+  entry: 'rgba(248,113,113,0.7)',
+  stable: 'rgba(251,191,36,0.55)',
+  fluent: 'rgba(74,222,128,0.55)',
+  auto: 'rgba(34,211,238,0.55)',
+}
+
+function TierBadge({ tier, small = false }: { tier: Tier; small?: boolean }) {
+  const t = TIER_DARK[tier]
+  return (
+    <span style={{ fontSize: small ? 8 : 9, fontWeight: 800, borderRadius: 6, padding: small ? '1px 5px' : '2px 6px', textAlign: 'center', color: t.color, background: t.bg, border: `1px solid ${t.border}`, whiteSpace: 'nowrap' }}>
+      {TIER_LABEL[tier]}
+    </span>
+  )
+}
+
+function Section3({ groupStats, stats }: { groupStats: OpGroupStat[]; stats: SourceStat[] }) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  if (!groupStats.some(g => !g.insufficient)) return null
+
+  const maxAvg = Math.max(...groupStats.map(g => g.avgSec), 0.1)
+  const toggle = (op: string) => setExpanded(prev => {
+    const n = new Set(prev); if (n.has(op)) n.delete(op); else n.add(op); return n
+  })
+
+  const withDelta = stats.filter(s => s.deltaSec !== null && !s.insufficient)
+  const improved = [...withDelta].sort((a, b) => (b.deltaSec ?? 0) - (a.deltaSec ?? 0)).slice(0, 3).filter(s => (s.deltaSec ?? 0) > 0)
+  const regressed = [...withDelta].sort((a, b) => (a.deltaSec ?? 0) - (b.deltaSec ?? 0)).slice(0, 3).filter(s => (s.deltaSec ?? 0) < 0)
+
+  return (
+    <div>
+      <span style={SH}>题型进展</span>
+      <div style={baseCard}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {groupStats.map(g => (
+            <div key={g.op}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 11, padding: '9px 11px', background: C.surface, border: `1px solid ${C.border}` }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: C.text, minWidth: 28 }}>{g.label}法</span>
+                <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.round((g.avgSec / maxAvg) * 100)}%`, height: '100%', background: g.tier ? BAR_COLOR[g.tier] : 'rgba(255,255,255,0.2)', borderRadius: 3 }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim, minWidth: 34, textAlign: 'right' }}>{g.avgSec}s</span>
+                {g.tier && <TierBadge tier={g.tier} />}
+                <button onClick={() => toggle(g.op)} style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 7, color: expanded.has(g.op) ? 'rgba(196,181,253,0.7)' : 'rgba(196,181,253,0.4)', background: expanded.has(g.op) ? 'rgba(196,181,253,0.14)' : 'rgba(196,181,253,0.06)', border: '1px solid rgba(196,181,253,0.12)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  {expanded.has(g.op) ? '▴' : '▾'} 详情
+                </button>
+              </div>
+              {expanded.has(g.op) && (
+                <div style={{ marginTop: 2 }}>
+                  {g.blocks.map(b => (
+                    <div key={b.key} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px 6px 18px', borderRadius: 8, marginTop: 3, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', fontSize: 11 }}>
+                      <span style={{ flex: 1, color: 'rgba(196,181,253,0.72)', fontWeight: 500 }}>{b.label}</span>
+                      <span style={{ color: C.textFaint, fontSize: 10 }}>{b.avgSec}s</span>
+                      {b.tier && <TierBadge tier={b.tier} small />}
+                      {b.deltaSec !== null && (
+                        <span style={{ color: b.deltaSec > 0 ? C.green : C.red, fontSize: 10, fontWeight: 700 }}>
+                          {b.deltaSec > 0 ? '↑' : '↓'}{Math.abs(b.deltaSec)}s
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
-        <span className="text-xs text-gray-400">{dotDays.filter((d) => d.practiced).length}/7天</span>
-      </div>
-    </div>
-  )
-}
 
-// ── Section 3 ────────────────────────────────────────────────────────────────
-
-function Section3({
-  groupStats,
-  stats,
-}: {
-  groupStats: OpGroupStat[]
-  stats: SourceStat[]
-}) {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set())
-  const hasData = groupStats.some((g) => !g.insufficient)
-  if (!hasData) return null
-
-  const maxAvg = Math.max(...groupStats.map((g) => g.avgSec), 0.1)
-
-  const toggle = (op: string) => setExpanded((prev) => {
-    const next = new Set(prev)
-    if (next.has(op)) { next.delete(op) } else { next.add(op) }
-    return next
-  })
-
-  const withDelta = stats.filter((s) => s.deltaSec !== null && !s.insufficient)
-  const improved = [...withDelta].sort((a, b) => (b.deltaSec ?? 0) - (a.deltaSec ?? 0)).slice(0, 3).filter((s) => (s.deltaSec ?? 0) > 0)
-  const regressed = [...withDelta].sort((a, b) => (a.deltaSec ?? 0) - (b.deltaSec ?? 0)).slice(0, 3).filter((s) => (s.deltaSec ?? 0) < 0)
-
-  return (
-    <div className="rounded-2xl border border-gray-200 p-5 space-y-4">
-      <h2 className="font-bold text-gray-800 text-base">题型进展</h2>
-      <div className="space-y-3">
-        {groupStats.map((g) => (
-          <div key={g.op}>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm font-medium text-gray-700 w-8">{g.label}法</span>
-              <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{
-                    width: `${Math.round((g.avgSec / maxAvg) * 100)}%`,
-                    background: g.tier === 'entry' ? '#ef4444' : g.tier === 'stable' ? '#eab308' : g.tier === 'fluent' ? '#22c55e' : '#06b6d4',
-                  }}
-                />
-              </div>
-              <span className="text-sm text-gray-500 w-12 text-right">{g.avgSec}s</span>
-              {g.tier && <span className={`text-xs px-2 py-0.5 rounded-full ${TIER_BADGE_BG[g.tier]}`}>{TIER_LABEL[g.tier]}</span>}
-              <button onClick={() => toggle(g.op)} className="text-xs text-gray-400 w-4">{expanded.has(g.op) ? '▲' : '▾'}</button>
-            </div>
-            {expanded.has(g.op) && (
-              <div className="ml-8 mt-1 space-y-1">
-                {g.blocks.map((b) => (
-                  <div key={b.key} className="flex items-center gap-2 text-xs text-gray-600">
-                    <span className="w-32 truncate">{b.label}</span>
-                    <span>{b.avgSec}s</span>
-                    {b.tier && <span className={`px-1.5 py-0.5 rounded text-xs ${TIER_BADGE_BG[b.tier]}`}>{TIER_LABEL[b.tier]}</span>}
-                    {b.deltaSec !== null && (
-                      <span className={b.deltaSec > 0 ? 'text-green-600' : 'text-red-500'}>
-                        {b.deltaSec > 0 ? '↑' : '↓'}{Math.abs(b.deltaSec)}s
-                      </span>
-                    )}
+        {(improved.length > 0 || regressed.length > 0) && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 10 }}>
+            {[
+              { items: improved, label: '📈 进步最快', color: C.green, bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.12)', sign: '↑' },
+              { items: regressed, label: '📉 需关注', color: C.red, bg: 'rgba(248,113,113,0.06)', border: 'rgba(248,113,113,0.12)', sign: '↓' },
+            ].map(({ items, label, color, bg, border, sign }) => (
+              <div key={label}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color, marginBottom: 6 }}>{label}</div>
+                {items.map(s => (
+                  <div key={s.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, padding: '5px 8px', borderRadius: 8, marginBottom: 4, background: bg, border: `1px solid ${border}` }}>
+                    <span style={{ color: C.text, fontWeight: 500 }}>{s.label}</span>
+                    <span style={{ color, fontWeight: 700, fontSize: 10 }}>{sign}{Math.abs(s.deltaSec ?? 0)}s</span>
                   </div>
                 ))}
               </div>
-            )}
+            ))}
           </div>
-        ))}
+        )}
       </div>
+    </div>
+  )
+}
 
-      {(improved.length > 0 || regressed.length > 0) && (
-        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
-          <div>
-            <div className="text-xs text-green-600 font-medium mb-1">进步最快</div>
-            {improved.map((s) => (
-              <div key={s.key} className="text-xs text-gray-600 flex gap-1 items-center">
-                <span className="text-green-500">↑{s.deltaSec}s</span>
-                <span className="truncate">{s.label}</span>
-              </div>
-            ))}
-          </div>
-          <div>
-            <div className="text-xs text-red-500 font-medium mb-1">需要关注</div>
-            {regressed.map((s) => (
-              <div key={s.key} className="text-xs text-gray-600 flex gap-1 items-center">
-                <span className="text-red-400">↓{Math.abs(s.deltaSec ?? 0)}s</span>
-                <span className="truncate">{s.label}</span>
-              </div>
-            ))}
+// ── Section 4 · 薄弱算式 ───────────────────────────────────────────────────────
+
+function Section4({ weakStates, recentMastered, onDrill }: { weakStates: CalcProblemState[]; recentMastered: CalcProblemState[]; onDrill: () => void }) {
+  return (
+    <div>
+      <span style={SH}>薄弱算式</span>
+      <div style={baseCard}>
+        {weakStates.length === 0 && recentMastered.length === 0 ? (
+          <p style={{ color: C.green, fontSize: 13 }}>太棒了，暂时没有薄弱算式！继续保持 🎉</p>
+        ) : (
+          <>
+            {weakStates.length > 0 && <div style={{ fontSize: 11, color: C.textDim, marginBottom: 10 }}>这些算式出错率高，多练几次就熟了～</div>}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {weakStates.map(s => (
+                <span key={s.signature} style={{ fontSize: 14, fontWeight: 600, padding: '5px 12px', borderRadius: 10, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.22)', color: 'rgba(248,113,113,0.9)', fontFamily: 'monospace' }}>
+                  {s.signature}
+                </span>
+              ))}
+              {recentMastered.map(s => (
+                <span key={s.signature} style={{ fontSize: 14, fontWeight: 600, padding: '5px 12px', borderRadius: 10, background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.18)', color: 'rgba(74,222,128,0.65)', fontFamily: 'monospace' }}>
+                  ✓ {s.signature}
+                </span>
+              ))}
+            </div>
+            <div style={{ fontSize: 10, color: C.textDim, marginTop: 6 }}>红色 = 还需多练 · 绿色 = 最近已掌握</div>
+            {weakStates.length > 0 && (
+              <button onClick={onDrill} style={{ marginTop: 12, width: '100%', padding: '11px 0', borderRadius: 14, background: C.violetGlass, border: `1px solid ${C.violetBorder}`, color: C.violet, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                针对练习 →
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Section Breakthrough · 下一个突破口 ───────────────────────────────────────
+
+function SectionBreakthrough({ breakthroughSource }: { breakthroughSource: SourceStat | null }) {
+  if (!breakthroughSource || breakthroughSource.gapSec <= 0 || !breakthroughSource.tier) return null
+
+  const curIdx = TIER_ORDER.indexOf(breakthroughSource.tier)
+  const nextTier = TIER_ORDER[curIdx + 1] as Tier | undefined
+  if (!nextTier) return null
+
+  const targets = suggestedTiers(breakthroughSource.targetId)
+  const currentTierHi = targets ? targets[breakthroughSource.tier][1] : breakthroughSource.avgSec + 2
+  const nextTierHi = targets ? targets[nextTier][1] : +(breakthroughSource.avgSec - breakthroughSource.gapSec).toFixed(1)
+  const range = currentTierHi - nextTierHi
+  const fill = Math.max(0.05, Math.min(0.95, range > 0 ? (currentTierHi - breakthroughSource.avgSec) / range : 0.5))
+
+  return (
+    <div>
+      <span style={SH}>下一个突破口</span>
+      <div style={{ ...baseCard, background: C.blueGlass, border: `1px solid ${C.blueBorder}` }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ fontSize: 26, flexShrink: 0, marginTop: 1 }}>🎯</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 2 }}>{breakthroughSource.label}</div>
+            <div style={{ fontSize: 11, color: C.textDim, marginBottom: 10 }}>
+              当前平均 {breakthroughSource.avgSec}s · 目标 {nextTierHi}s → {TIER_LABEL[nextTier]}档
+            </div>
+            <div style={{ height: 8, background: 'rgba(255,255,255,0.07)', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ width: `${Math.round(fill * 100)}%`, height: '100%', borderRadius: 4, background: 'linear-gradient(90deg,rgba(125,211,252,0.55),#7dd3fc)', transition: 'width 0.5s ease' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: C.textFaint, marginTop: 3 }}>
+              <span>{TIER_LABEL[breakthroughSource.tier]} {currentTierHi}s</span>
+              <span style={{ color: C.blue, fontWeight: 600 }}>还差 {breakthroughSource.gapSec}s ✦</span>
+              <span>{TIER_LABEL[nextTier]} {nextTierHi}s</span>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
-// ── Section 4 ────────────────────────────────────────────────────────────────
+// ── Section 5 · 错题追踪 ───────────────────────────────────────────────────────
 
-function Section4({
-  weakStates,
-  recentMastered,
-  onDrill,
-}: {
-  weakStates: CalcProblemState[]
-  recentMastered: CalcProblemState[]
-  onDrill: () => void
-}) {
-  return (
-    <div className="rounded-2xl border border-gray-200 p-5 space-y-4">
-      <h2 className="font-bold text-gray-800 text-base">薄弱算式</h2>
-      {weakStates.length === 0 && recentMastered.length === 0 ? (
-        <p className="text-green-600 text-sm">太棒了，暂时没有薄弱算式！继续保持 🎉</p>
-      ) : (
-        <>
-          {weakStates.length > 0 && (
-            <p className="text-gray-500 text-sm">这些算式出错率高，多练几次就熟了～</p>
-          )}
-          <div className="flex flex-wrap gap-2">
-            {weakStates.map((s) => (
-              <span key={s.signature} className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm font-mono">
-                {s.signature}
-              </span>
-            ))}
-            {recentMastered.map((s) => (
-              <span key={s.signature} className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-mono">
-                ✓ {s.signature}
-              </span>
-            ))}
-          </div>
-          {weakStates.length > 0 && (
-            <button
-              onClick={onDrill}
-              className="w-full py-3 rounded-xl bg-blue-500 text-white font-bold active:scale-95 transition-transform"
-            >
-              针对练习
-            </button>
-          )}
-        </>
-      )}
-    </div>
-  )
-}
-
-// ── Section 5 ────────────────────────────────────────────────────────────────
-
-function Section5({
-  mistakeStats,
-}: {
-  mistakeStats: { netResolved: number; totalResolved: number; total: number; topTags: string[] }
-}) {
+function Section5({ mistakeStats }: { mistakeStats: { netResolved: number; totalResolved: number; total: number; topTags: string[] } }) {
   const { netResolved, totalResolved, total, topTags } = mistakeStats
   const rate = total > 0 ? Math.round((totalResolved / total) * 100) : 0
-
   const verdict = netResolved > 0
-    ? { cls: 'text-green-700 bg-green-50', icon: '✓', text: `错题复习在生效，本周净解决 ${netResolved} 个` }
+    ? { color: C.green, bg: 'rgba(74,222,128,0.05)', border: 'rgba(74,222,128,0.14)', icon: '✓', text: `错题复习在生效，本周净解决 ${netResolved} 个` }
     : netResolved === 0
-    ? { cls: 'text-blue-700 bg-blue-50', icon: '→', text: '本周错题持平，继续保持' }
-    : { cls: 'text-yellow-700 bg-yellow-50', icon: '!', text: '本周错题有增加，多练补题' }
+    ? { color: C.blue, bg: 'rgba(125,211,252,0.05)', border: 'rgba(125,211,252,0.14)', icon: '→', text: '本周错题持平，继续保持' }
+    : { color: C.yellow, bg: 'rgba(251,191,36,0.05)', border: 'rgba(251,191,36,0.14)', icon: '!', text: '本周错题有增加，多练补题' }
 
   return (
-    <div className="rounded-2xl border border-gray-200 p-5 space-y-4">
-      <h2 className="font-bold text-gray-800 text-base">错题追踪</h2>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gray-50 rounded-xl p-3">
-          <div className="text-xs text-gray-400 mb-1">本周净解决</div>
-          <div className={`text-2xl font-bold ${netResolved > 0 ? 'text-green-600' : netResolved < 0 ? 'text-red-500' : 'text-gray-700'}`}>
-            {netResolved > 0 ? `+${netResolved}` : netResolved}
+    <div>
+      <span style={SH}>错题追踪</span>
+      <div style={baseCard}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 24, fontWeight: 700, lineHeight: 1, color: netResolved > 0 ? C.green : netResolved < 0 ? C.red : C.text }}>
+              {netResolved > 0 ? `+${netResolved}` : netResolved}
+            </div>
+            <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>本周净解决</div>
+          </div>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 24, fontWeight: 700, lineHeight: 1, color: C.text }}>{totalResolved}/{total}</div>
+            <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>累计已解决</div>
           </div>
         </div>
-        <div className="bg-gray-50 rounded-xl p-3">
-          <div className="text-xs text-gray-400 mb-1">累计已解决</div>
-          <div className="text-2xl font-bold text-gray-700">{totalResolved}/{total}</div>
+        {total > 0 && (
+          <>
+            <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden', margin: '4px 0 5px' }}>
+              <div style={{ width: `${rate}%`, height: '100%', borderRadius: 3, background: 'linear-gradient(90deg,#4ade80,rgba(74,222,128,0.45))' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: C.textDim }}>
+              <span>解决率 {rate}%</span>
+              <span>还剩 {total - totalResolved} 题待攻克</span>
+            </div>
+          </>
+        )}
+        {topTags.length > 0 && (
+          <div style={{ marginTop: 10 }}>
+            <div style={{ fontSize: 10, color: C.textDim, marginBottom: 6 }}>常见错误类型</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {topTags.map(tag => (
+                <span key={tag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 8, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.15)', color: C.red }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 10, fontSize: 12, fontWeight: 600, color: verdict.color, padding: '8px 10px', background: verdict.bg, border: `1px solid ${verdict.border}`, borderRadius: 10 }}>
+          <span>{verdict.icon}</span><span>{verdict.text}</span>
         </div>
       </div>
-      {total > 0 && (
-        <div>
-          <div className="flex justify-between text-xs text-gray-400 mb-1"><span>解决率</span><span>{rate}%</span></div>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all" style={{ width: `${rate}%` }} />
-          </div>
-        </div>
-      )}
-      {topTags.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {topTags.map((tag) => <span key={tag} className="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs">{tag}</span>)}
-        </div>
-      )}
-      <div className={`rounded-xl px-4 py-3 text-sm font-medium ${verdict.cls}`}>{verdict.icon} {verdict.text}</div>
     </div>
   )
 }
 
-// ── Section 6 ────────────────────────────────────────────────────────────────
+// ── Section 6 · 最近练习 ───────────────────────────────────────────────────────
 
 function Section6({ sessions }: { sessions: CalcSession[] }) {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <div className="rounded-2xl border border-gray-200 p-5 space-y-3">
-      <button onClick={() => setCollapsed((c) => !c)} className="flex items-center justify-between w-full">
-        <h2 className="font-bold text-gray-800 text-base">最近练习</h2>
-        <span className="text-gray-400 text-sm">{collapsed ? '▾' : '▲'}</span>
-      </button>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span style={{ ...SH, marginBottom: 0 }}>最近练习</span>
+        <button onClick={() => setCollapsed(c => !c)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textDim, fontSize: 13, lineHeight: 1 }}>
+          {collapsed ? '▾' : '▲'}
+        </button>
+      </div>
       {!collapsed && (
-        <>
-          {sessions.length === 0 && <p className="text-gray-400 text-sm text-center py-4">还没有练习记录</p>}
-          <div className="space-y-2">
-            {sessions.slice(0, 10).map((s, i) => {
-              const logs = s.questionLog ?? []
-              const ms = logs.reduce((a, e) => a + e.ms, 0)
-              const avgSec = logs.length > 0 ? +(ms / logs.length / 1000).toFixed(1) : 0
-              const accuracy = logs.length > 0 ? Math.round(logs.filter((e) => e.ok).length / logs.length * 100) : 0
-              return (
-                <button
-                  key={s.id ?? `${s.date}-${i}`}
-                  onClick={() => setSelectedIdx(selectedIdx === i ? null : i)}
-                  className={`w-full text-left rounded-xl p-3 border transition-colors ${selectedIdx === i ? 'border-blue-300 bg-blue-50' : 'border-gray-100 bg-gray-50'}`}
-                >
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">{s.date}</span>
-                    <span className="text-gray-800 font-medium">{avgSec}s/题 · {accuracy}%</span>
-                  </div>
-                  <div className="text-xs text-gray-400 mt-0.5">{logs.length}题</div>
-                  {selectedIdx === i && logs.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-blue-200">
-                      <div className="flex flex-wrap gap-1">
-                        {logs.slice(0, 20).map((e, j) => (
-                          <span key={j} className={`px-1.5 py-0.5 rounded text-xs ${e.ok ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                            {e.key.split(':').pop()}
-                          </span>
-                        ))}
-                        {logs.length > 20 && <span className="text-xs text-gray-400">+{logs.length - 20}</span>}
-                      </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {sessions.length === 0 && <p style={{ color: C.textFaint, fontSize: 12, textAlign: 'center', padding: '16px 0' }}>还没有练习记录</p>}
+          {sessions.slice(0, 10).map((s, i) => {
+            const logs = s.questionLog ?? []
+            const ms = logs.reduce((a, e) => a + e.ms, 0)
+            const avgSec = logs.length > 0 ? +(ms / logs.length / 1000).toFixed(1) : 0
+            const accuracy = logs.length > 0 ? Math.round(logs.filter(e => e.ok).length / logs.length * 100) : 0
+            const sel = selectedIdx === i
+            const accColor = accuracy >= 90 ? C.green : accuracy >= 70 ? C.yellow : C.red
+            return (
+              <button
+                key={s.id ?? `${s.date}-${i}`}
+                onClick={() => setSelectedIdx(sel ? null : i)}
+                style={{ width: '100%', textAlign: 'left', borderRadius: 12, padding: '9px 12px', fontSize: 12, cursor: 'pointer', transition: 'all 0.13s', border: `1px solid ${sel ? 'rgba(196,181,253,0.3)' : C.border}`, background: sel ? 'rgba(196,181,253,0.08)' : C.surface }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  {i === 0 && <span style={{ fontSize: 9, fontWeight: 900, padding: '2px 6px', borderRadius: 6, background: 'rgba(196,181,253,0.15)', color: C.violet }}>最新</span>}
+                  <span style={{ fontSize: 11, color: sel ? 'rgba(196,181,253,0.65)' : C.textDim, minWidth: 36 }}>{s.date}</span>
+                  <span style={{ color: C.text, fontWeight: 500 }}>{logs.length} 题</span>
+                  <span style={{ fontWeight: 700, color: accColor }}>{accuracy}%</span>
+                  <span style={{ color: 'rgba(196,181,253,0.65)', fontSize: 11 }}>{avgSec}s/题</span>
+                </div>
+                {sel && logs.length > 0 && (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(196,181,253,0.15)' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {logs.slice(0, 20).map((e, j) => (
+                        <span key={j} style={{ padding: '2px 6px', borderRadius: 6, fontSize: 11, background: e.ok ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)', color: e.ok ? C.green : C.red, border: `1px solid ${e.ok ? 'rgba(74,222,128,0.2)' : 'rgba(248,113,113,0.2)'}` }}>
+                          {e.key.split(':').pop()}
+                        </span>
+                      ))}
+                      {logs.length > 20 && <span style={{ fontSize: 11, color: C.textFaint }}>+{logs.length - 20}</span>}
                     </div>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </>
+                  </div>
+                )}
+              </button>
+            )
+          })}
+        </div>
       )}
     </div>
   )
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
+// ── Main Page ──────────────────────────────────────────────────────────────────
 
 export default function CalcReportPage() {
   const router = useRouter()
@@ -635,7 +680,6 @@ export default function CalcReportPage() {
   const [problemStates, setProblemStates] = useState<Map<string, CalcProblemState>>(new Map())
   const [mistakeRows, setMistakeRows] = useState<MistakeRow[]>([])
 
-  // loadAll is stable (wrapped in useCallback internally); user change is the only meaningful re-trigger
   useEffect(() => {
     if (!user) return
     void problemState.loadAll().then(setProblemStates)
@@ -654,82 +698,55 @@ export default function CalcReportPage() {
   const mixedLabels = useMemo(() => {
     const m = new Map<string, string>()
     for (const op of settings.mixedOps) {
-      if (op.label) {
-        m.set(op.id, op.label)
-      } else {
-        try {
-          const meta = skeletonMeta(op.skeleton)
-          m.set(op.id, meta?.label ?? op.id)
-        } catch {
-          m.set(op.id, op.id)
-        }
-      }
+      if (op.label) { m.set(op.id, op.label); continue }
+      try { m.set(op.id, skeletonMeta(op.skeleton)?.label ?? op.id) } catch { m.set(op.id, op.id) }
     }
     return m
   }, [settings.mixedOps])
 
   const mixedSkeletons = useMemo(() => {
     const m = new Map<string, string>()
-    for (const op of settings.mixedOps) { m.set(op.id, op.skeleton) }
+    for (const op of settings.mixedOps) m.set(op.id, op.skeleton)
     return m
   }, [settings.mixedOps])
 
-  const stats = useMemo(
-    () => sourceStats(wallet.sessions, mixedLabels, mixedSkeletons),
-    [wallet.sessions, mixedLabels, mixedSkeletons],
-  )
-
+  const stats = useMemo(() => sourceStats(wallet.sessions, mixedLabels, mixedSkeletons), [wallet.sessions, mixedLabels, mixedSkeletons])
   const periodData = useMemo(() => weeklyAggregates(wallet.sessions), [wallet.sessions])
   const groupStats = useMemo(() => opGroupStats(stats), [stats])
   const weekStart = useMemo(() => thursdayWeekStart(new Date()), [])
 
-  const weakStates = useMemo(
-    () => [...problemStates.values()].filter((s) => s.proficiency <= 2 && s.attemptCount >= 3),
-    [problemStates],
-  )
-
+  const weakStates = useMemo(() => [...problemStates.values()].filter(s => s.proficiency <= 2 && s.attemptCount >= 3), [problemStates])
   const recentMastered = useMemo(() => {
     const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7)
-    return [...problemStates.values()].filter(
-      (s) => s.status === 'mastered' && s.updatedAt && new Date(s.updatedAt) >= cutoff,
-    )
+    return [...problemStates.values()].filter(s => s.status === 'mastered' && s.updatedAt && new Date(s.updatedAt) >= cutoff)
   }, [problemStates])
 
   const mistakeStats = useMemo(() => {
     const weekCutoff = new Date(weekStart + 'T00:00:00')
-    const thisWeekResolved = mistakeRows.filter((r) => r.resolved && new Date(r.created_at) >= weekCutoff).length
-    const thisWeekNew = mistakeRows.filter((r) => !r.resolved && new Date(r.created_at) >= weekCutoff).length
-    const netResolved = thisWeekResolved - thisWeekNew
-    const totalResolved = mistakeRows.filter((r) => r.resolved).length
-    const total = mistakeRows.length
+    const resolved = mistakeRows.filter(r => r.resolved && new Date(r.created_at) >= weekCutoff).length
+    const added = mistakeRows.filter(r => !r.resolved && new Date(r.created_at) >= weekCutoff).length
     const tagCounts = new Map<string, number>()
-    for (const r of mistakeRows) {
-      if (!r.error_tag) continue
-      tagCounts.set(r.error_tag, (tagCounts.get(r.error_tag) ?? 0) + 1)
-    }
+    for (const r of mistakeRows) { if (!r.error_tag) continue; tagCounts.set(r.error_tag, (tagCounts.get(r.error_tag) ?? 0) + 1) }
     const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([tag]) => tag)
-    return { netResolved, totalResolved, total, topTags }
+    return { netResolved: resolved - added, totalResolved: mistakeRows.filter(r => r.resolved).length, total: mistakeRows.length, topTags }
   }, [mistakeRows, weekStart])
 
   const breakthroughSource = useMemo(
-    () => stats.filter((s) => !s.insufficient && s.tier !== 'auto' && s.gapSec > 0).sort((a, b) => a.gapSec - b.gapSec)[0] ?? null,
+    () => stats.filter(s => !s.insufficient && s.tier !== 'auto' && s.gapSec > 0).sort((a, b) => a.gapSec - b.gapSec)[0] ?? null,
     [stats],
   )
-
   const slowestGroup = useMemo(() => groupStats[0] ?? null, [groupStats])
-
   const handleDrill = useCallback((url: string) => router.push(url), [router])
 
   if (wallet.isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <span className="text-gray-400 text-sm">加载中…</span>
-      </div>
-    )
+    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', color: C.textFaint, fontSize: 14 }}>加载中…</div>
   }
 
+  const ani = (delay: number): React.CSSProperties => ({ animation: `fadeUp 0.42s ease ${delay}s both` })
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <style>{ANIMATIONS}</style>
       <CalcAppHeader
         balance={wallet.balance}
         soundEnabled={settings.soundEnabled}
@@ -738,22 +755,15 @@ export default function CalcReportPage() {
         backHref="/calc"
         backLabel="口算"
       />
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4 pb-12">
-        <Section1
-          breakthroughSource={breakthroughSource}
-          slowestGroup={slowestGroup}
-          onDrill={handleDrill}
-        />
-        <Section2 sessions={wallet.sessions} periodData={periodData} weekStart={weekStart} />
-        <Section3 groupStats={groupStats} stats={stats} />
-        <Section4
-          weakStates={weakStates}
-          recentMastered={recentMastered}
-          onDrill={() => router.push('/calc/session?drill=weak-formulas')}
-        />
-        <Section5 mistakeStats={mistakeStats} />
-        <Section6 sessions={wallet.sessions} />
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '20px 16px 80px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={ani(0.04)}><Section1 breakthroughSource={breakthroughSource} slowestGroup={slowestGroup} onDrill={handleDrill} /></div>
+        <div style={ani(0.11)}><Section2 sessions={wallet.sessions} periodData={periodData} weekStart={weekStart} /></div>
+        <div style={ani(0.18)}><Section3 groupStats={groupStats} stats={stats} /></div>
+        <div style={ani(0.25)}><Section4 weakStates={weakStates} recentMastered={recentMastered} onDrill={() => router.push('/calc/session?drill=weak-formulas')} /></div>
+        <div style={ani(0.32)}><SectionBreakthrough breakthroughSource={breakthroughSource} /></div>
+        <div style={ani(0.39)}><Section5 mistakeStats={mistakeStats} /></div>
+        <div style={ani(0.46)}><Section6 sessions={wallet.sessions} /></div>
       </div>
-    </div>
+    </>
   )
 }

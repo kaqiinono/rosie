@@ -1,5 +1,5 @@
-/** Pages per lazy-load batch (on page 1 → load 1–3; on page 2 → load 4–6 only; on page 3 → 7–9 only). */
-export const FLIPBOOK_PAGE_CHUNK = 3
+/** Pages per lazy-load batch (on page 1 → load 1–6; on page 7 → load 7–12). */
+export const FLIPBOOK_PAGE_CHUNK = 6
 
 /** Page range fetched when user reaches `triggerPage` (1-based). */
 export function flipbookChunkRange(
@@ -20,11 +20,22 @@ export function flipbookPagesInChunk(triggerPage: number, totalPages: number): n
   return pages
 }
 
-/** Which trigger's batch contains `page` (e.g. page 5 → trigger 2 → pages 4–6). */
+/** Which trigger's batch contains `page` (e.g. page 7 → trigger 2 → pages 7–12 when chunk=6). */
 export function flipbookChunkTriggerContainingPage(page: number, totalPages: number): number {
   for (let t = 1; t <= totalPages; t++) {
     const { start, end } = flipbookChunkRange(t, totalPages)
     if (page >= start && page <= end) return t
   }
   return Math.max(1, page)
+}
+
+/** Warm browser image cache before the page enters the flipbook DOM. */
+export function preloadFlipbookPageImages(pageNums: number[], urls: string[]): void {
+  for (const p of pageNums) {
+    const url = urls[p - 1]
+    if (!url) continue
+    const img = new Image()
+    img.decoding = 'async'
+    img.src = url
+  }
 }

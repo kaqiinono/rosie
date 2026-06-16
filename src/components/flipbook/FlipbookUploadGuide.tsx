@@ -43,20 +43,35 @@ export default function FlipbookUploadGuide() {
         </section>
 
         <section>
-          <h3 className="font-semibold text-white/70">书名</h3>
+          <h3 className="font-semibold text-white/70">讲解音频</h3>
           <ul className="mt-1 list-inside list-disc space-y-1">
             <li>
-              <strong className="text-white/65">优先</strong>：讲解音频文件名（去扩展名），如{' '}
+              可选；阅读时与翻页并行播放，翻页由孩子手动控制。
+            </li>
+            <li>
+              文件名用于自动填书名，如{' '}
               <code className="text-orange-300/90">第43讲-课前测.mp3</code> → 书名「第43讲 课前测」。
             </li>
-            <li>
-              <strong className="text-white/65">其次</strong>：sync 文件名，如{' '}
-              <code className="text-orange-300/90">第43讲-课前测.sync.json</code>。
-            </li>
-            <li>
-              <strong className="text-white/65">否则</strong>：在表单中手动填写书名（无音频且无 sync 时必填）。
-            </li>
+            <li>无音频时请在表单中手动填写书名。</li>
             <li>PDF 文件名不用于自动填书名。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 className="font-semibold text-white/70">词汇 sync.json（可选）</h3>
+          <ul className="mt-1 list-inside list-disc space-y-1">
+            <li>
+              与 PDF/音频<strong className="text-white/65">同名主干</strong>配对，如{' '}
+              <code className="text-orange-300/90">书名.sync.json</code>。
+            </li>
+            <li>
+              格式：<code className="text-orange-300/90">{'{ "version": 1, "pages": [...] }'}</code>
+              ，每页含 <code className="text-orange-300/90">page</code>、
+              <code className="text-orange-300/90">content</code>、
+              <code className="text-orange-300/90">words</code>（无时间轴）。
+            </li>
+            <li>上传时自动匹配词库，书架可预览词汇卡片。</li>
+            <li>无音频时可用 sync 文件名推断书名。</li>
           </ul>
         </section>
 
@@ -64,17 +79,18 @@ export default function FlipbookUploadGuide() {
           <h3 className="font-semibold text-white/70">批量上传 · 多本书</h3>
           <ul className="mt-1 list-inside list-disc space-y-1">
             <li>
-              每本书一个子文件夹，<strong className="text-white/65">文件夹名与音频/sync 文件名主干一致</strong>
-              。
+              <strong className="text-white/65">推荐目录结构</strong>：每本书一个子文件夹；页图在{' '}
+              <code className="text-orange-300/90">pages/0001.webp</code>；目录内任意文件名的 mp3 / json
+              均自动配对（不要求与文件夹同名）。书名默认取文件夹名。
             </li>
             <li>
-              示例：
+              <strong className="text-white/65">旧版扁平结构</strong>：子文件夹名与音频/sync 文件名主干一致，页图直接在子文件夹内（无{' '}
+              <code className="text-orange-300/90">pages/</code>）。
+            </li>
+            <li>
+              示例（扁平）：
               <code className="text-orange-300/90">第43讲-课前测/0001.png</code> +{' '}
-              <code className="text-orange-300/90">第43讲-课前测.mp3</code>（可选用「选择文件夹」一次选中）。
-            </li>
-            <li>
-              仅一本书且页图在根目录：须同时有<strong className="text-white/65">唯一</strong>一份音频或
-              sync，页图为 <code className="text-orange-300/90">0001.png</code> 等。
+              <code className="text-orange-300/90">第43讲-课前测.mp3</code>
             </li>
             <li>同一本书不能同时上传 PDF 与页图。</li>
           </ul>
@@ -84,13 +100,6 @@ export default function FlipbookUploadGuide() {
           <h3 className="font-semibold text-white/70">注意事项</h3>
           <ul className="mt-1 list-inside list-disc space-y-1">
             <li>单本书最多 {FLIPBOOK_MAX_PAGES} 页；各页宽高建议一致。</li>
-            <li>
-              sync.json 页数须与实际页数一致；推荐使用 Python{' '}
-              <code className="text-orange-300/90">generate_sync.py</code> 的 align 输出（含{' '}
-              <code className="text-orange-300/90">_pageKind</code>、
-              <code className="text-orange-300/90">_stats.narrationEndSec</code>）。无 sync
-              时可阅读，但不会自动按时间翻页。
-            </li>
             <li>
               检测到重复（书架同名或页码多张图）时会弹窗：覆盖 / 跳过 / 放弃上传；批量可勾选「对后续重复项执行相同操作」。
             </li>

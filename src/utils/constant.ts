@@ -29,6 +29,10 @@ export const STORAGE_KEYS = {
   RESCUE_QUEUE: 'rescue_queue_v1',
   /** 管理后台「草稿词库」：新建但还没写入单词的 stage 名（按 user.id 分 key 持久化） */
   ADMIN_DRAFT_STAGES: 'admin-draft-stages',
+  /** 打开绘本详情后是否自动播放讲解音频（默认开） */
+  FLIPBOOK_AUTO_PLAY: 'flipbook-auto-play',
+  /** 阅读时右上角显示当前页词汇释义（默认开） */
+  FLIPBOOK_WORD_OVERLAY: 'flipbook-word-overlay',
 } as const
 
 export const NAV_PAGES = [

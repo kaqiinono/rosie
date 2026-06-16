@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import clsx from 'clsx'
 import { useParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import FlipbookReader from '@/components/flipbook/FlipbookReader'
 import { FLIPBOOK_READER_SHELL_CLASS } from '@/components/flipbook/flipbook-reader-shell'
@@ -57,6 +57,13 @@ export default function FlipbookReadPage() {
     }
   }, [book, getSignedAudioUrl, getSignedPageImageUrls])
 
+  const handleProgress = useCallback(
+    (lastPage: number, audioPositionSec: number) => {
+      saveProgress({ lastPage, audioPositionSec })
+    },
+    [saveProgress],
+  )
+
   if (authLoading || booksLoading) {
     return <ReaderLoading message="加载书籍…" />
   }
@@ -92,7 +99,7 @@ export default function FlipbookReadPage() {
       audioUrl={audioUrl}
       initialPage={progress?.lastPage ?? 1}
       initialAudioSec={progress?.audioPositionSec ?? 0}
-      onProgress={(lastPage, audioPositionSec) => saveProgress({ lastPage, audioPositionSec })}
+      onProgress={handleProgress}
       backHref="/flipbook"
     />
   )

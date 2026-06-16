@@ -51,6 +51,15 @@ function writeCacheByStage(userId: string, words: WordEntry[]) {
       byStage.get(k)!.push(w)
     }
     const stages = [...byStage.keys()]
+    const indexJson = localStorage.getItem(cacheIndexKey(userId))
+    if (indexJson) {
+      const oldStages: string[] = JSON.parse(indexJson)
+      for (const s of oldStages) {
+        if (!stages.includes(s)) {
+          localStorage.removeItem(cacheDataKey(userId, s))
+        }
+      }
+    }
     localStorage.setItem(cacheIndexKey(userId), JSON.stringify(stages))
     for (const [stage, stageWords] of byStage) {
       localStorage.setItem(cacheDataKey(userId, stage), JSON.stringify({ data: stageWords }))
@@ -76,7 +85,30 @@ const UPSERT_OPTS = { onConflict: 'unit,lesson,word,stage', ignoreDuplicates: fa
 const FETCH_PAGE_SIZE = 1000
 const UPSERT_CHUNK = 500
 
-let initLock: string | null = null
+/** 并发 fetch 代数：仅最新一次 refresh/初始加载可写回 vocab，避免删除后被旧请求覆盖。 */
+let loadGen = 0
+
+function isSameWordEntry(a: WordEntry, b: WordEntry): boolean {
+  return (
+    (a.stage ?? '') === (b.stage ?? '') &&
+    a.unit === b.unit &&
+    a.lesson === b.lesson &&
+    a.word === b.word
+  )
+}
+
+async function deleteWordRow(w: WordEntry): Promise<void> {
+  let q = supabase
+    .from('word_entries')
+    .delete()
+    .eq('unit', w.unit)
+    .eq('lesson', w.lesson)
+    .eq('word', w.word)
+  if (w.stage) q = q.eq('stage', w.stage)
+  else q = q.is('stage', null)
+  const { error } = await q
+  if (error) throw error
+}
 
 /** Supabase/PostgREST 默认最多返回 1000 行，必须分页拉全量。 */
 async function fetchAllWordEntries(): Promise<WordEntry[]> {
@@ -144,28 +176,25 @@ function fromRow(row: Record<string, unknown>): WordEntry {
 export function useWordData(user: User | null) {
   const [vocab, setVocabState] = useState<WordEntry[]>([])
 
-  useEffect(() => {
-    if (!user) return
-    if (initLock === user.id) return
-    initLock = user.id
-    void (async () => {
-      const cached = readCachedVocab(user.id)
-      if (cached) setVocabState(cached)
-
-      const words = await fetchAllWordEntries()
-      setVocabState(words)
-      if (words.length > 0) writeCacheByStage(user.id, words)
-    })()
-    return () => { initLock = null }
-  }, [user])
-
   // 从 DB 重新读取全量词库并刷新本地状态 + 缓存。空结果也会写入（用于删空场景）。
   const refresh = useCallback(async () => {
     if (!user) return
+    const gen = ++loadGen
     const words = await fetchAllWordEntries()
+    if (gen !== loadGen) return
     setVocabState(words)
     writeCacheByStage(user.id, words)
   }, [user])
+
+  useEffect(() => {
+    if (!user) {
+      setVocabState([])
+      return
+    }
+    const cached = readCachedVocab(user.id)
+    if (cached) setVocabState(cached)
+    void refresh()
+  }, [user, refresh])
 
   const upsertByStage = useCallback(async (words: WordEntry[]) => {
     if (!user || !words.length) return
@@ -208,23 +237,30 @@ export function useWordData(user: User | null) {
   /** 按复合键删除单个单词。 */
   const deleteWord = useCallback(async (w: WordEntry) => {
     if (!user) return
-    const base = supabase
-      .from('word_entries')
-      .delete()
-      .eq('unit', w.unit)
-      .eq('lesson', w.lesson)
-      .eq('word', w.word)
-    await (w.stage ? base.eq('stage', w.stage) : base.is('stage', null))
-    clearCacheForStages(user.id, [stageKey(w.stage)])
-    await refresh()
+    setVocabState((prev) => prev.filter((x) => !isSameWordEntry(x, w)))
+    try {
+      await deleteWordRow(w)
+      clearCacheForStages(user.id, [stageKey(w.stage)])
+      await refresh()
+    } catch (err) {
+      await refresh()
+      throw err
+    }
   }, [user, refresh])
 
   /** 删除整个词库（stage 下全部单词）。UI 层需二次确认。 */
   const deleteStage = useCallback(async (stage: string) => {
     if (!user || !stage) return
-    await supabase.from('word_entries').delete().eq('stage', stage)
-    clearCacheForStages(user.id, [stageKey(stage)])
-    await refresh()
+    setVocabState((prev) => prev.filter((x) => (x.stage ?? '') !== stage))
+    try {
+      const { error } = await supabase.from('word_entries').delete().eq('stage', stage)
+      if (error) throw error
+      clearCacheForStages(user.id, [stageKey(stage)])
+      await refresh()
+    } catch (err) {
+      await refresh()
+      throw err
+    }
   }, [user, refresh])
 
   /** 重命名词库：批量把 oldStage 的单词改到 newStage。 */

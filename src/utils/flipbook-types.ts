@@ -4,42 +4,18 @@ export const FLIPBOOK_MAX_PAGES = 120
 
 export type FlipbookStatus = 'uploading' | 'processing' | 'ready' | 'error'
 
-export type FlipbookSyncMode = 'auto_turn' | 'highlight_only'
-
-/** 与 flipbook/page_classify.py 一致 */
-export type FlipbookPageKind = 'cover' | 'content' | 'skip'
-
-export type FlipbookPageCue = {
+/** Per-page vocabulary index from sync.json (no audio timing). */
+export type FlipbookPageSync = {
   page: number
-  start: number
-  end: number
-  pageKind?: FlipbookPageKind
-  fallback?: boolean
-  score?: number
-  intro?: boolean
-  tailAudio?: boolean
-  /** 讲解已结束后的页面（无口播） */
-  noAudio?: boolean
-}
-
-export type FlipbookSyncStats = {
-  fallbackPages?: number
-  alignedPages?: number
-  coverPages?: number
-  contentPages?: number
-  skipPages?: number
-  narrationEndSec?: number
+  content?: string
+  words?: string[]
 }
 
 export type FlipbookSyncManifest = {
   version: 1
-  mode: FlipbookSyncMode
-  pages: FlipbookPageCue[]
-  /** 口播实际结束时间（generate_sync narration_end） */
-  narrationEndSec?: number
-  audioDurationSec?: number
-  stats?: FlipbookSyncStats
-  generatedBy?: string
+  pages: FlipbookPageSync[]
+  /** Populated at upload after matching word_entries. */
+  matchedWordKeys?: string[]
 }
 
 export type FlipbookBook = {

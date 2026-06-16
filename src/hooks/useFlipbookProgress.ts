@@ -59,12 +59,6 @@ export function useFlipbookProgress(user: User | null, bookId: string | null) {
         return
       }
       lastSavedRef.current = { page: patch.lastPage, sec: patch.audioPositionSec }
-      setProgress({
-        bookId,
-        lastPage: patch.lastPage,
-        audioPositionSec: patch.audioPositionSec,
-        updatedAt: new Date().toISOString(),
-      })
 
       if (saveTimer.current) clearTimeout(saveTimer.current)
       saveTimer.current = setTimeout(() => {

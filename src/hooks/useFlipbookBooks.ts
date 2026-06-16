@@ -13,7 +13,7 @@ import {
   type FlipbookSyncManifest,
 } from '@/utils/flipbook-types'
 import { compressAudioToMp3 } from '@/utils/audio-compress'
-import { parseSyncManifest } from '@/utils/flipbook-sync'
+import { parseSyncManifest, serializeSyncManifest } from '@/utils/flipbook-sync'
 import type {
   FlipbookCreateOutcome,
   FlipbookDuplicateAction,
@@ -327,7 +327,7 @@ export function useFlipbookBooks(user: User | null) {
         page_count: pageBlobs.length,
         pdf_path: pagesPath,
         audio_path: audioPath,
-        sync_manifest: input.syncManifest ?? null,
+        sync_manifest: input.syncManifest ? serializeSyncManifest(input.syncManifest) : null,
         status: 'ready',
         updated_at: new Date().toISOString(),
       })

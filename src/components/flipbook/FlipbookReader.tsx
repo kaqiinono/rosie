@@ -7,21 +7,19 @@ import clsx from 'clsx'
 import { FLIPBOOK_READER_SHELL_CLASS } from '@/components/flipbook/flipbook-reader-shell'
 import FlipbookPage from '@/components/flipbook/FlipbookPage'
 import FlipbookAudioBar from '@/components/flipbook/FlipbookAudioBar'
-import type { FlipbookBook, FlipbookSyncManifest } from '@/utils/flipbook-types'
-import {
-  audioStartForPage,
-  findNextPlayablePage,
-  getNarrationEndSec,
-  getPlaybackWindow,
-  pageForAudioTime,
-  shouldSyncFlipFromAudio,
-} from '@/utils/flipbook-sync'
+import FlipbookPageWordsOverlay from '@/components/flipbook/FlipbookPageWordsOverlay'
+import type { FlipbookBook } from '@/utils/flipbook-types'
 import { FLIPBOOK_BASE_PROPS } from '@/utils/flipbook-flip-props'
 import {
   flipbookChunkTriggerContainingPage,
   flipbookPagesInChunk,
+  preloadFlipbookPageImages,
 } from '@/utils/flipbook-page-load'
 import { computeFlipbookViewportSize } from '@/utils/flipbook-viewport'
+import { STORAGE_KEYS } from '@/utils/constant'
+import { useAuth } from '@/contexts/AuthContext'
+import { useWordData } from '@/hooks/useWordData'
+import { getPageWordEntries } from '@/utils/flipbook-word-match'
 
 /** Chrome overlays the stage — these are only breathing-room paddings. */
 const STAGE_TOP_PAD = 8
@@ -51,6 +49,20 @@ type FlipbookReaderProps = {
   backHref?: string
 }
 
+function readAutoPlayPref(): boolean {
+  if (typeof window === 'undefined') return true
+  const raw = localStorage.getItem(STORAGE_KEYS.FLIPBOOK_AUTO_PLAY)
+  if (raw === '0' || raw === 'false') return false
+  return true
+}
+
+function readWordOverlayPref(): boolean {
+  if (typeof window === 'undefined') return true
+  const raw = localStorage.getItem(STORAGE_KEYS.FLIPBOOK_WORD_OVERLAY)
+  if (raw === '0' || raw === 'false') return false
+  return true
+}
+
 export default function FlipbookReader({
   book,
   pageImageUrls,
@@ -60,6 +72,8 @@ export default function FlipbookReader({
   onProgress,
   backHref = '/flipbook',
 }: FlipbookReaderProps) {
+  const { user } = useAuth()
+  const { vocab } = useWordData(user)
   const totalPages = pageImageUrls.length
   const stageRef = useRef<HTMLDivElement>(null)
   const bookRef = useRef<PageFlipHandle>(null)
@@ -70,29 +84,35 @@ export default function FlipbookReader({
   } | null>(null)
   const lastAudioSecRef = useRef(initialAudioSec ?? 0)
   const loadedTriggersRef = useRef(new Set<number>())
-  const syncLock = useRef<'audio' | 'page' | null>(null)
+  const autoPlayAppliedRef = useRef(false)
 
   const resolvedStart = Math.max(1, initialPage ?? 1)
+  const currentPageRef = useRef(resolvedStart)
   const [currentPage, setCurrentPage] = useState(resolvedStart)
+
+  useEffect(() => {
+    currentPageRef.current = currentPage
+  })
   const [loadedPages, setLoadedPages] = useState<Set<number>>(() => new Set())
   const [bookSize, setBookSize] = useState<{ width: number; height: number } | null>(null)
-  const [autoPlayOnFlip, setAutoPlayOnFlip] = useState(true)
+  const [autoPlayOnOpen, setAutoPlayOnOpen] = useState(() => readAutoPlayPref())
+  const [wordOverlayOn, setWordOverlayOn] = useState(() => readWordOverlayPref())
   const [chromeVisible, setChromeVisible] = useState(true)
   const [audioReady, setAudioReady] = useState(!audioUrl)
   const [isMobile, setIsMobile] = useState(false)
   const [orientation, setOrientation] = useState<Orientation>('portrait')
 
-  const manifest: FlipbookSyncManifest | null = book.syncManifest
-  const currentCue = manifest?.pages.find((p) => p.page === currentPage) ?? null
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.FLIPBOOK_AUTO_PLAY, autoPlayOnOpen ? '1' : '0')
+  }, [autoPlayOnOpen])
 
-  const playbackWindow = useMemo(() => {
-    if (!manifest || !currentCue) return null
-    return getPlaybackWindow(currentCue, manifest)
-  }, [manifest, currentCue])
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.FLIPBOOK_WORD_OVERLAY, wordOverlayOn ? '1' : '0')
+  }, [wordOverlayOn])
 
-  const narrEndSec = useMemo(
-    () => (manifest ? getNarrationEndSec(manifest) : undefined),
-    [manifest],
+  const currentPageWords = useMemo(
+    () => getPageWordEntries(book.syncManifest, currentPage, vocab),
+    [book.syncManifest, currentPage, vocab],
   )
 
   useEffect(() => {
@@ -104,13 +124,15 @@ export default function FlipbookReader({
   }, [])
 
   const ensureChunkLoaded = useCallback(
-    async (triggerPage: number, _priorityPage?: number) => {
+    (triggerPage: number) => {
       if (triggerPage < 1 || totalPages === 0) return
       if (loadedTriggersRef.current.has(triggerPage)) return
       loadedTriggersRef.current.add(triggerPage)
 
       const pageNums = flipbookPagesInChunk(triggerPage, totalPages)
       if (pageNums.length === 0) return
+
+      preloadFlipbookPageImages(pageNums, pageImageUrls)
 
       setLoadedPages((prev) => {
         let next: Set<number> | null = null
@@ -121,17 +143,19 @@ export default function FlipbookReader({
         }
         return next ?? prev
       })
+
+      const nextPageNums = flipbookPagesInChunk(triggerPage + 1, totalPages)
+      if (nextPageNums.length > 0) {
+        preloadFlipbookPageImages(nextPageNums, pageImageUrls)
+      }
     },
-    [totalPages],
+    [totalPages, pageImageUrls],
   )
 
   const ensureChunksForViewing = useCallback(
-    async (page: number) => {
+    (page: number) => {
       const containing = flipbookChunkTriggerContainingPage(page, totalPages)
-      await ensureChunkLoaded(containing, page)
-      if (page !== containing) {
-        void ensureChunkLoaded(page, page)
-      }
+      ensureChunkLoaded(containing)
     },
     [ensureChunkLoaded, totalPages],
   )
@@ -149,9 +173,6 @@ export default function FlipbookReader({
 
     let locked = false
     const update = () => {
-      // offsetWidth/Height returns layout dims (pre-CSS-transform), which is what
-      // we need inside the rotated landscape wrapper. getBoundingClientRect would
-      // return the post-rotation visual bbox and mis-size the page.
       const w = el.offsetWidth
       const h = el.offsetHeight
       if (w < 80 || h < 80) return
@@ -197,114 +218,41 @@ export default function FlipbookReader({
     (e: { data: number }) => {
       const page = e.data + 1
       setCurrentPage(page)
-      void ensureChunkLoaded(page, page)
-
-      if (syncLock.current === 'audio') {
-        syncLock.current = null
-        reportProgress(page, lastAudioSecRef.current)
-        return
-      }
-      if (syncLock.current === 'page') {
-        syncLock.current = null
-        reportProgress(page, lastAudioSecRef.current)
-        return
-      }
-
-      if (manifest && audioUrl && audioControlRef.current) {
-        const cue = manifest.pages.find((p) => p.page === page)
-        const win = cue ? getPlaybackWindow(cue, manifest) : null
-        if (win?.playable) {
-          audioControlRef.current.pause()
-          audioControlRef.current.seek(win.start)
-          if (autoPlayOnFlip) {
-            window.requestAnimationFrame(() => {
-              audioControlRef.current?.play()
-            })
-          }
-          reportProgress(page, win.start)
-        } else {
-          audioControlRef.current.pause()
-          reportProgress(page, lastAudioSecRef.current)
-        }
-      } else {
-        reportProgress(page, lastAudioSecRef.current)
-      }
+      ensureChunkLoaded(flipbookChunkTriggerContainingPage(page, totalPages))
+      reportProgress(page, lastAudioSecRef.current)
     },
-    [manifest, audioUrl, reportProgress, autoPlayOnFlip, ensureChunkLoaded],
+    [reportProgress, ensureChunkLoaded, totalPages],
   )
 
   const handleAudioTime = useCallback(
     (timeSec: number) => {
       lastAudioSecRef.current = timeSec
-      reportProgress(currentPage, timeSec)
-
-      if (!manifest || manifest.mode !== 'auto_turn') return
-      const targetPage = pageForAudioTime(manifest, timeSec)
-      if (targetPage === currentPage) return
-      if (!shouldSyncFlipFromAudio(manifest, targetPage)) return
-
-      syncLock.current = 'audio'
-      turnToPageIndex(targetPage - 1)
-      setCurrentPage(targetPage)
-      void ensureChunkLoaded(targetPage, targetPage)
+      reportProgress(currentPageRef.current, timeSec)
     },
-    [currentPage, manifest, reportProgress, turnToPageIndex, ensureChunkLoaded],
+    [reportProgress],
   )
 
-  const handleSegmentEnd = useCallback(() => {
-    if (!manifest || !audioUrl || !audioControlRef.current) return
-    const next = findNextPlayablePage(manifest, currentPage)
-    if (!next) return
-    const cue = manifest.pages.find((p) => p.page === next)
-    if (!cue) return
-    const win = getPlaybackWindow(cue, manifest)
-    if (!win.playable) return
-
-    syncLock.current = 'page'
-    turnToPageIndex(next - 1)
-    setCurrentPage(next)
-    void ensureChunkLoaded(next, next)
-    audioControlRef.current.pause()
-    audioControlRef.current.seek(win.start)
-    if (autoPlayOnFlip) {
-      window.requestAnimationFrame(() => {
-        audioControlRef.current?.play()
-      })
-    }
-    reportProgress(next, win.start)
-  }, [
-    manifest,
-    audioUrl,
-    currentPage,
-    autoPlayOnFlip,
-    reportProgress,
-    turnToPageIndex,
-    ensureChunkLoaded,
-  ])
+  const handleAudioReady = useCallback(() => {
+    setAudioReady(true)
+    if (!audioUrl || autoPlayAppliedRef.current || !autoPlayOnOpen) return
+    autoPlayAppliedRef.current = true
+    window.requestAnimationFrame(() => {
+      audioControlRef.current?.play()
+    })
+  }, [audioUrl, autoPlayOnOpen])
 
   const restartFromFirst = useCallback(() => {
-    const firstCue = manifest?.pages.find((p) => p.page === 1)
-    const firstWin =
-      manifest && firstCue ? getPlaybackWindow(firstCue, manifest) : null
-    const firstStart = firstWin?.playable
-      ? firstWin.start
-      : manifest
-        ? audioStartForPage(manifest, 1)
-        : 0
     turnToPageIndex(0)
     setCurrentPage(1)
-    void ensureChunkLoaded(1, 1)
+    ensureChunkLoaded(1)
     if (audioControlRef.current) {
       audioControlRef.current.pause()
-      audioControlRef.current.seek(firstStart)
-      if (firstWin?.playable ?? true) {
-        window.requestAnimationFrame(() => audioControlRef.current?.play())
-      }
+      audioControlRef.current.seek(0)
+      window.requestAnimationFrame(() => audioControlRef.current?.play())
     }
-    reportProgress(1, firstStart)
-  }, [manifest, reportProgress, turnToPageIndex, ensureChunkLoaded])
+    reportProgress(1, 0)
+  }, [reportProgress, turnToPageIndex, ensureChunkLoaded])
 
-  // Keyboard: arrow keys flip, space toggles chrome.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -326,7 +274,6 @@ export default function FlipbookReader({
   const toggleOrientation = useCallback(() => {
     setOrientation((prev) => {
       const next = prev === 'portrait' ? 'landscape' : 'portrait'
-      // Best-effort native orientation lock (Android/Chrome in fullscreen).
       const so = (window.screen as Screen & { orientation?: { lock?: (o: string) => Promise<void>; unlock?: () => void } }).orientation
       try {
         if (next === 'landscape') {
@@ -343,15 +290,21 @@ export default function FlipbookReader({
     })
   }, [])
 
-  const durationHintSec = useMemo(() => {
-    if (narrEndSec != null) return narrEndSec
-    if (!manifest?.pages.length) return undefined
-    const last = manifest.pages[manifest.pages.length - 1]
-    if (!last) return undefined
-    return getPlaybackWindow(last, manifest).end
-  }, [manifest, narrEndSec])
-
   const rotated = isMobile && orientation === 'landscape'
+
+  const flipProps = useMemo(
+    () =>
+      isMobile
+        ? {
+            ...FLIPBOOK_BASE_PROPS,
+            drawShadow: false,
+            showPageCorners: false,
+            flippingTime: 520,
+            maxShadowOpacity: 0.25,
+          }
+        : FLIPBOOK_BASE_PROPS,
+    [isMobile],
+  )
 
   return (
     <div className={FLIPBOOK_READER_SHELL_CLASS}>
@@ -398,19 +351,36 @@ export default function FlipbookReader({
               <RotateIcon rotated={orientation === 'landscape'} />
             </button>
           )}
-          <button
-            type="button"
-            role="switch"
-            onClick={() => setAutoPlayOnFlip((v) => !v)}
-            className={clsx('flipbook-switch', autoPlayOnFlip && 'flipbook-switch--on')}
-            aria-checked={autoPlayOnFlip}
-            title={autoPlayOnFlip ? '翻页自动播放：开' : '翻页自动播放：关'}
-          >
-            <span className="flipbook-switch__label">AUTO</span>
-            <span className="flipbook-switch__track" aria-hidden>
-              <span className="flipbook-switch__knob" />
-            </span>
-          </button>
+          {audioUrl && (
+            <button
+              type="button"
+              role="switch"
+              onClick={() => setAutoPlayOnOpen((v) => !v)}
+              className={clsx('flipbook-switch', autoPlayOnOpen && 'flipbook-switch--on')}
+              aria-checked={autoPlayOnOpen}
+              title={autoPlayOnOpen ? '打开自动播放：开' : '打开自动播放：关'}
+            >
+              <span className="flipbook-switch__label">AUTO</span>
+              <span className="flipbook-switch__track" aria-hidden>
+                <span className="flipbook-switch__knob" />
+              </span>
+            </button>
+          )}
+          {book.syncManifest && (
+            <button
+              type="button"
+              role="switch"
+              onClick={() => setWordOverlayOn((v) => !v)}
+              className={clsx('flipbook-switch', wordOverlayOn && 'flipbook-switch--on')}
+              aria-checked={wordOverlayOn}
+              title={wordOverlayOn ? '本页词汇释义：开' : '本页词汇释义：关'}
+            >
+              <span className="flipbook-switch__label">词</span>
+              <span className="flipbook-switch__track" aria-hidden>
+                <span className="flipbook-switch__knob" />
+              </span>
+            </button>
+          )}
           <button
             type="button"
             onClick={restartFromFirst}
@@ -428,6 +398,11 @@ export default function FlipbookReader({
           onClick={() => setChromeVisible((v) => !v)}
           role="presentation"
         >
+          <FlipbookPageWordsOverlay
+            page={currentPage}
+            words={currentPageWords}
+            visible={wordOverlayOn && chromeVisible}
+          />
           <div
             className="flipbook-stage pointer-events-auto"
             onClick={(e) => e.stopPropagation()}
@@ -435,7 +410,7 @@ export default function FlipbookReader({
           >
             {totalPages > 0 && bookSize ? (
               <HTMLFlipBook
-                {...FLIPBOOK_BASE_PROPS}
+                {...flipProps}
                 ref={bookRef}
                 startPage={flipStartIndex}
                 width={bookSize.width}
@@ -470,7 +445,6 @@ export default function FlipbookReader({
             )}
           </div>
 
-          {/* Edge tap hints — visible briefly, fade after */}
           <div
             className={clsx(
               'flipbook-edge-hint flipbook-edge-hint--left pointer-events-none',
@@ -507,12 +481,8 @@ export default function FlipbookReader({
               key={audioUrl}
               src={audioUrl}
               initialTimeSec={initialAudioSec ?? 0}
-              durationHintSec={durationHintSec}
-              segmentStartSec={playbackWindow?.playable ? playbackWindow.start : undefined}
-              segmentEndSec={playbackWindow?.playable ? playbackWindow.end : undefined}
               onTimeUpdate={handleAudioTime}
-              onSegmentEnd={handleSegmentEnd}
-              onReady={() => setAudioReady(true)}
+              onReady={handleAudioReady}
               controlRef={audioControlRef}
             />
           </div>

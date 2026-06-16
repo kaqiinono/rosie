@@ -9,9 +9,11 @@ import FlipbookUploadProgress, {
 import { flipbookTitleFromFiles } from '@/utils/flipbook-naming'
 import { countPdfPages } from '@/utils/flipbook-pdf'
 import { sortFlipbookPageImageFiles } from '@/utils/flipbook-page-images'
-import { parseSyncManifest, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
+import { parseSyncFileText, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
+import { enrichManifestWithWordMatches } from '@/utils/flipbook-word-match'
 import type { FlipbookCreateBookResult } from '@/hooks/useFlipbookBooks'
 import type { FlipbookSyncManifest } from '@/utils/flipbook-types'
+import type { WordEntry } from '@/utils/type'
 
 export type FlipbookCreateBookInput = {
   title: string
@@ -28,13 +30,14 @@ export type FlipbookCreateBookInput = {
 }
 
 type FlipbookUploaderProps = {
+  vocab: WordEntry[]
   onSubmit: (input: FlipbookCreateBookInput) => Promise<FlipbookCreateBookResult>
   onSessionStart?: () => void
 }
 
 type SourceMode = 'pdf' | 'images'
 
-export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookUploaderProps) {
+export default function FlipbookUploader({ vocab, onSubmit, onSessionStart }: FlipbookUploaderProps) {
   const [sourceMode, setSourceMode] = useState<SourceMode>('pdf')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -42,6 +45,7 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
   const [pageImageFiles, setPageImageFiles] = useState<File[]>([])
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [syncFile, setSyncFile] = useState<File | null>(null)
+  const [syncMatchCount, setSyncMatchCount] = useState<number | null>(null)
   const [status, setStatus] = useState<{ type: 'info' | 'success' | 'error'; text: string } | null>(
     null,
   )
@@ -62,6 +66,27 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
     if (titleTouched) return
     if (autoTitle) setTitle(autoTitle)
   }, [autoTitle, titleTouched])
+
+  useEffect(() => {
+    if (!syncFile) {
+      setSyncMatchCount(null)
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      const text = await syncFile.text()
+      const parsed = parseSyncFileText(text)
+      if (cancelled || !parsed) {
+        if (!cancelled) setSyncMatchCount(null)
+        return
+      }
+      const enriched = enrichManifestWithWordMatches(parsed, vocab)
+      setSyncMatchCount(enriched.matchedWordKeys?.length ?? 0)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [syncFile, vocab])
 
   const sortedPreview = useMemo(
     () => (pageImageFiles.length > 0 ? sortFlipbookPageImageFiles(pageImageFiles) : []),
@@ -140,7 +165,7 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
       if (syncFile) {
         setStatus({ type: 'info', text: '正在校验 sync.json…' })
         const text = await syncFile.text()
-        const parsed = parseSyncManifest(JSON.parse(text) as unknown)
+        const parsed = parseSyncFileText(text)
         if (!parsed) {
           setStatus({ type: 'error', text: 'sync.json 格式无效' })
           resetProgress()
@@ -154,7 +179,7 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
           setBusy(false)
           return
         }
-        syncManifest = parsed
+        syncManifest = enrichManifestWithWordMatches(parsed, vocab)
       }
 
       setRenderProgress({ current: 0, total: pageCount })
@@ -219,7 +244,11 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
         resetProgress()
       } else {
         setSaving(true)
-        setStatus({ type: 'success', text: `上传成功（${pageCount} 页）` })
+        const matchNote =
+          syncManifest?.matchedWordKeys?.length != null
+            ? `，匹配 ${syncManifest.matchedWordKeys.length} 词`
+            : ''
+        setStatus({ type: 'success', text: `上传成功（${pageCount} 页${matchNote}）` })
         setTitle('')
         setTitleTouched(false)
         setDescription('')
@@ -227,6 +256,7 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
         setPageImageFiles([])
         setAudioFile(null)
         setSyncFile(null)
+        setSyncMatchCount(null)
         resetProgress()
       }
     } catch (err) {
@@ -239,7 +269,18 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
       setBusy(false)
       setSaving(false)
     }
-  }, [title, description, sourceMode, pdfFile, pageImageFiles, audioFile, syncFile, onSubmit, onSessionStart])
+  }, [
+    title,
+    description,
+    sourceMode,
+    pdfFile,
+    pageImageFiles,
+    audioFile,
+    syncFile,
+    vocab,
+    onSubmit,
+    onSessionStart,
+  ])
 
   const progressHeadline = busy
     ? status?.type === 'info'
@@ -282,7 +323,7 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
       </div>
 
       <FileField
-        label="讲解音频（可选，用于自动填书名）"
+        label="讲解音频（可选，用于自动填书名；阅读时可与翻页并行播放）"
         accept="audio/mpeg,audio/mp4,audio/*,.mp3,.m4a"
         multiple={false}
         file={audioFile}
@@ -294,7 +335,7 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
         onFiles={() => {}}
       />
       <FileField
-        label="同步配置 sync.json（可选，无音频时用于书名）"
+        label="词汇同步 sync.json（可选，含每页 words/content）"
         accept="application/json,.json"
         multiple={false}
         file={syncFile}
@@ -304,7 +345,11 @@ export default function FlipbookUploader({ onSubmit, onSessionStart }: FlipbookU
           if (!f) setTitleTouched(false)
         }}
         onFiles={() => {}}
-        hint='格式：{ "version": 1, "mode": "auto_turn", "pages": [{ "page": 1, "start": 0, "end": 8.2 }] }'
+        hint={
+          syncMatchCount != null
+            ? `已匹配词库 ${syncMatchCount} 个单词`
+            : '格式：{ "version": 1, "pages": [{ "page": 1, "content": "...", "words": [...] }] }'
+        }
       />
 
       <div>
