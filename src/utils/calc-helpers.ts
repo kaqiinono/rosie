@@ -260,3 +260,62 @@ export function fractionPieSpec(
   if (d1 !== d2) return null
   return { operands: [Number(m[1]), Number(m[4])], den: d1, op: m[3] === '+' ? '+' : '−' }
 }
+
+export type DrillType = 'weak-formulas' | 'breakthrough'
+
+export interface DrillParams {
+  type: DrillType
+  blockId?: string // for 'breakthrough'
+}
+
+/**
+ * Build a drill session from URL params, WITHOUT reading calc_settings.
+ *
+ * - 'weak-formulas': generate questions from weak signatures (proficiency <= 2, attemptCount >= 3)
+ *   via parseSignature -> makeQuestion. Skips blocks where noResurface = true.
+ * - 'breakthrough': generate `count` questions from a single block via generateSingle().
+ *   Default count = 20.
+ */
+export function buildDrillSession(
+  params: DrillParams,
+  problemStates: Map<string, CalcProblemState>,
+  count = 20,
+): CalcQuestion[] {
+  if (params.type === 'weak-formulas') {
+    const weak = [...problemStates.values()].filter(
+      (s) => s.proficiency <= 2 && s.attemptCount >= 3,
+    )
+    if (weak.length === 0) return []
+
+    const out: CalcQuestion[] = []
+    for (const state of weak) {
+      if (!state.blockId) continue
+      const block = blockById(state.blockId)
+      if (!block || block.noResurface) continue
+      const ast = parseSignature(state.signature)
+      const category: CalcCategory = (block.group === 'add' || block.group === 'sub') ? 'addsub' : 'muldiv'
+      const q = makeQuestion(ast, state.level as CalcLevel, category, 1, false)
+      out.push({ ...q, sourceBlockId: block.id })
+    }
+
+    // Fisher-Yates shuffle
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[out[i], out[j]] = [out[j], out[i]]
+    }
+    return out
+  }
+
+  if (params.type === 'breakthrough' && params.blockId) {
+    const block = blockById(params.blockId)
+    if (!block) return []
+    const out: CalcQuestion[] = []
+    for (let i = 0; i < count; i++) {
+      const q = block.generateSingle()
+      out.push({ ...q, sourceBlockId: block.id })
+    }
+    return out
+  }
+
+  return []
+}
