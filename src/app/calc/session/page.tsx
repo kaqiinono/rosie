@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import { useCalcWallet } from '@/hooks/useCalcWallet'
@@ -14,7 +14,9 @@ import CalcSessionStatusBar from '@/components/calc/CalcSessionStatusBar'
 import { type FeedbackKind } from '@/components/calc/FeedbackOverlay'
 import ChallengeBanner from '@/components/calc/ChallengeBanner'
 import SessionSummary from '@/components/calc/SessionSummary'
-import { buildSession, coinReward } from '@/utils/calc-helpers'
+import DrillSummary from '@/components/calc/DrillSummary'
+import { buildSession, buildDrillSession, coinReward, type DrillParams } from '@/utils/calc-helpers'
+import { tierOf, nextTierGap, suggestedTiers } from '@/utils/calc-time-targets'
 import { checkAnswer, formatAnswer } from '@/utils/calc-answer'
 import { diagnose } from '@/utils/calc-diagnose'
 import { blockById } from '@/utils/calc-blocks'
@@ -46,6 +48,7 @@ interface AttemptStat {
 
 export default function CalcSessionPage() {
   const params = useSearchParams()
+  const router = useRouter()
   const { user } = useAuth()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
@@ -63,6 +66,25 @@ export default function CalcSessionPage() {
     const m = params.get('mode')
     return m === 'free' || m === 'mistakes' ? m : 'daily'
   }, [params])
+
+  const drillParams = useMemo<DrillParams | null>(() => {
+    const d = params.get('drill')
+    if (!d) return null
+    if (d === 'weak-formulas') return { type: 'weak-formulas' }
+    if (d === 'breakthrough') {
+      const blockId = params.get('blockId')
+      if (blockId) return { type: 'breakthrough', blockId }
+    }
+    return null
+  }, [params])
+
+  const drillRound = useMemo(() => {
+    const r = params.get('round')
+    return r ? parseInt(r, 10) : 1
+  }, [params])
+
+  const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
+  const loadedStatesRef = useRef<Map<string, CalcProblemState>>(new Map())
 
   // Per-question target seconds for the current question's source (null/0 → no countdown).
   const secondsForQuestion = useCallback(
@@ -147,13 +169,29 @@ export default function CalcSessionPage() {
       // Use the returned map directly — `problemState.states` is still the stale
       // pre-load value within this same closure (React state updates async).
       const loadedStates = await problemState.loadAll()
-      // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
-      // Previous session number == current sessionCounter (it bumps after finish).
-      const carried = lastSessionUnresolved(settings.sessionCounter)
-      const session = buildSession(settings, { problemStates: loadedStates }, carried)
-      setQuestions(session)
-      plannedCountRef.current = session.length
-      setPlannedCount(session.length)
+      loadedStatesRef.current = loadedStates
+
+      if (drillParams) {
+        const session = buildDrillSession(drillParams, loadedStates)
+        if (session.length === 0) {
+          router.replace('/calc/report')
+          return
+        }
+        if (drillParams.type === 'weak-formulas') {
+          setDrillTargetSignatures(session.map((q) => q.signature))
+        }
+        plannedCountRef.current = session.length
+        setPlannedCount(session.length)
+        setQuestions(session)
+      } else {
+        // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
+        // Previous session number == current sessionCounter (it bumps after finish).
+        const carried = lastSessionUnresolved(settings.sessionCounter)
+        const session = buildSession(settings, { problemStates: loadedStates }, carried)
+        setQuestions(session)
+        plannedCountRef.current = session.length
+        setPlannedCount(session.length)
+      }
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
       questionStartRef.current = performance.now()
@@ -162,15 +200,8 @@ export default function CalcSessionPage() {
       attemptsLogRef.current = []
     }
     void init()
-  }, [
-    settings,
-    settingsLoading,
-    mode,
-    user,
-    sessionKey,
-    problemState,
-    lastSessionUnresolved,
-  ])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, settingsLoading, drillParams])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -703,53 +734,101 @@ export default function CalcSessionPage() {
       {showChallengeBanner && <ChallengeBanner coins={currentQ.coinBase} />}
 
       {done && finalStats && (
-        <SessionSummary
-          correctCount={finalStats.correct}
-          retryCount={finalStats.retry}
-          wrongCount={finalStats.wrong}
-          total={finalStats.total}
-          coinsEarned={coinsTotal}
-          timeSpentSec={finalStats.timeSec}
-          avgMs={finalStats.avgMs}
-          prevAvgMs={finalStats.prevAvgMs}
-          maxStreak={maxStreak}
-          challengeCorrect={finalStats.challenge}
-          bySource={finalStats.bySource}
-          newWeak={finalStats.newWeak}
-          nextFocus={finalStats.nextFocus}
-          levelUpTo={null}
-          levelDownTo={null}
-          reviewMilestone={null}
-          nextSessionAssault={false}
-          onAgain={() => {
-            void refreshMistakes()
-            setQuestions(null)
-            setIdx(0)
-            wrongQueueRef.current = []
-            plannedCountRef.current = 0
-            setPlannedCount(0)
-            setInput('')
-            setAttemptsForCurrent(0)
-            setFeedback(null)
-            setRevealAnswer(null)
-            setShowChallengeBanner(false)
-            questionTimesRef.current = []
-            questionLogRef.current = []
-            coinsTotalRef.current = 0
-            setCoinsTotal(0)
-            setStreak(0)
-            maxStreakRef.current = 0
-            setMaxStreak(0)
-            setLastResult(null)
-            attemptsLogRef.current = []
-            setStartedTsMs(0)
-            setStartedAtIso('')
-            setDone(false)
-            setFinalStats(null)
-            initRef.current = false
-            setSessionKey((k) => k + 1)
-          }}
-        />
+        drillParams ? (
+          <DrillSummary
+            {...(drillParams.type === 'weak-formulas' ? {
+              type: 'weak-formulas' as const,
+              problemStates: loadedStatesRef.current,
+              targetSignatures: drillTargetSignatures,
+              round: drillRound,
+              onContinue: () => {
+                const next = new URLSearchParams({ drill: 'weak-formulas', round: String(drillRound + 1) })
+                router.replace(`/calc/session?${next.toString()}`)
+              },
+              onExit: () => router.push('/calc/report'),
+            } : {
+              type: 'breakthrough' as const,
+              blockLabel: drillParams.blockId ? (blockById(drillParams.blockId)?.label ?? '') : '',
+              avgSec: (() => {
+                const log = wallet.sessions[0]?.questionLog ?? []
+                return log.length > 0 ? +(log.reduce((a, e) => a + e.ms, 0) / log.length / 1000).toFixed(1) : 0
+              })(),
+              targetSec: (() => {
+                if (!drillParams.blockId) return 99
+                const tiers = suggestedTiers(drillParams.blockId)
+                const log = wallet.sessions[0]?.questionLog ?? []
+                const avgSecVal = log.length > 0 ? log.reduce((a, e) => a + e.ms, 0) / log.length / 1000 : 99
+                const accuracy = log.length > 0 ? log.filter((e) => e.ok).length / log.length : 0
+                const currentTier = tierOf(avgSecVal, accuracy, tiers)
+                const gap = nextTierGap(avgSecVal, currentTier, tiers)
+                return +(avgSecVal - gap).toFixed(1)
+              })(),
+              tierLabel: (() => {
+                if (!drillParams.blockId) return '进阶'
+                const tiers = suggestedTiers(drillParams.blockId)
+                const log = wallet.sessions[0]?.questionLog ?? []
+                const avgSecVal = log.length > 0 ? log.reduce((a, e) => a + e.ms, 0) / log.length / 1000 : 99
+                const accuracy = log.length > 0 ? log.filter((e) => e.ok).length / log.length : 0
+                const currentTier = tierOf(avgSecVal, accuracy, tiers)
+                const nextT: Record<string, string> = { entry: '进阶', stable: '高级', fluent: '超高级', auto: '超高级' }
+                return nextT[currentTier ?? 'entry'] ?? '进阶'
+              })(),
+              onRetry: () => {
+                if (drillParams.blockId)
+                  router.replace(`/calc/session?drill=breakthrough&blockId=${drillParams.blockId}`)
+              },
+              onExit: () => router.push('/calc/report'),
+            })}
+          />
+        ) : (
+          <SessionSummary
+            correctCount={finalStats.correct}
+            retryCount={finalStats.retry}
+            wrongCount={finalStats.wrong}
+            total={finalStats.total}
+            coinsEarned={coinsTotal}
+            timeSpentSec={finalStats.timeSec}
+            avgMs={finalStats.avgMs}
+            prevAvgMs={finalStats.prevAvgMs}
+            maxStreak={maxStreak}
+            challengeCorrect={finalStats.challenge}
+            bySource={finalStats.bySource}
+            newWeak={finalStats.newWeak}
+            nextFocus={finalStats.nextFocus}
+            levelUpTo={null}
+            levelDownTo={null}
+            reviewMilestone={null}
+            nextSessionAssault={false}
+            onAgain={() => {
+              void refreshMistakes()
+              setQuestions(null)
+              setIdx(0)
+              wrongQueueRef.current = []
+              plannedCountRef.current = 0
+              setPlannedCount(0)
+              setInput('')
+              setAttemptsForCurrent(0)
+              setFeedback(null)
+              setRevealAnswer(null)
+              setShowChallengeBanner(false)
+              questionTimesRef.current = []
+              questionLogRef.current = []
+              coinsTotalRef.current = 0
+              setCoinsTotal(0)
+              setStreak(0)
+              maxStreakRef.current = 0
+              setMaxStreak(0)
+              setLastResult(null)
+              attemptsLogRef.current = []
+              setStartedTsMs(0)
+              setStartedAtIso('')
+              setDone(false)
+              setFinalStats(null)
+              initRef.current = false
+              setSessionKey((k) => k + 1)
+            }}
+          />
+        )
       )}
     </>
   )
