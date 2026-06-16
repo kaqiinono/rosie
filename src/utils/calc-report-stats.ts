@@ -17,22 +17,24 @@ export interface PeriodData {
   month: PeriodPoint[]  // 最近 12 个月
 }
 
-/** Returns ISO date string (YYYY-MM-DD) of the Thursday that starts the week containing `date`. */
+function padTwo(n: number) { return String(n).padStart(2, '0') }
+
+/** Returns ISO date string (YYYY-MM-DD) of the Thursday that starts the week containing `date`. Uses local time. */
 function thursdayWeekStart(date: Date): string {
   const d = new Date(date)
   // days back to Thursday: (day - 4 + 7) % 7
   // Sun=0→6, Mon=1→5, Tue=2→4, Wed=3→3, Thu=4→0, Fri=5→1, Sat=6→2
   const backToThu = (d.getDay() - 4 + 7) % 7
   d.setDate(d.getDate() - backToThu)
-  return d.toISOString().slice(0, 10)
+  return `${d.getFullYear()}-${padTwo(d.getMonth() + 1)}-${padTwo(d.getDate())}`
 }
 
 function isoMonth(date: Date): string {
-  return date.toISOString().slice(0, 7)
+  return `${date.getFullYear()}-${padTwo(date.getMonth() + 1)}`
 }
 
 function isoDay(date: Date): string {
-  return date.toISOString().slice(0, 10)
+  return `${date.getFullYear()}-${padTwo(date.getMonth() + 1)}-${padTwo(date.getDate())}`
 }
 
 const WINDOW = 20
@@ -188,7 +190,7 @@ export function weeklyAggregates(sessions: CalcSession[]): PeriodData {
       const acc = map.get(key) ?? { msSum: 0, count: 0, days: new Set<string>() }
       acc.msSum  += ms
       acc.count  += n
-      acc.days.add(dKey)
+      if (n > 0) acc.days.add(dKey)
       map.set(key, acc)
     }
     add(byWeek,  wKey)
