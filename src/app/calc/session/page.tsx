@@ -654,6 +654,33 @@ export default function CalcSessionPage() {
     secondsForQuestion,
   ])
 
+  // Compute breakthrough drill summary values from the just-completed session's log.
+  // Must use questionLogRef.current — wallet.sessions[0] is stale at this point because
+  // recordSession() is async and wallet hasn't re-fetched yet when DrillSummary renders.
+  const breakthroughLog = (done && drillParams?.type === 'breakthrough') ? questionLogRef.current : []
+  const btAvgSec =
+    breakthroughLog.length > 0
+      ? +(breakthroughLog.reduce((a, e) => a + e.ms, 0) / breakthroughLog.length / 1000).toFixed(1)
+      : 0
+  const btTargetSec = (() => {
+    if (!drillParams?.blockId || breakthroughLog.length === 0) return 99
+    const tiers = suggestedTiers(drillParams.blockId)
+    const avgSecVal = breakthroughLog.reduce((a, e) => a + e.ms, 0) / breakthroughLog.length / 1000
+    const accuracy = breakthroughLog.filter((e) => e.ok).length / breakthroughLog.length
+    const currentTier = tierOf(avgSecVal, accuracy, tiers)
+    const gap = nextTierGap(avgSecVal, currentTier, tiers)
+    return +(avgSecVal - gap).toFixed(1)
+  })()
+  const btTierLabel = (() => {
+    if (!drillParams?.blockId || breakthroughLog.length === 0) return '进阶'
+    const tiers = suggestedTiers(drillParams.blockId)
+    const avgSecVal = breakthroughLog.reduce((a, e) => a + e.ms, 0) / breakthroughLog.length / 1000
+    const accuracy = breakthroughLog.filter((e) => e.ok).length / breakthroughLog.length
+    const currentTier = tierOf(avgSecVal, accuracy, tiers)
+    const nextT: Record<string, string> = { entry: '进阶', stable: '高级', fluent: '超高级', auto: '超高级' }
+    return nextT[currentTier ?? 'entry'] ?? '进阶'
+  })()
+
   if (settingsLoading || !questions || questions.length === 0) {
     return (
       <>
@@ -749,30 +776,9 @@ export default function CalcSessionPage() {
             } : {
               type: 'breakthrough' as const,
               blockLabel: drillParams.blockId ? (blockById(drillParams.blockId)?.label ?? '') : '',
-              avgSec: (() => {
-                const log = wallet.sessions[0]?.questionLog ?? []
-                return log.length > 0 ? +(log.reduce((a, e) => a + e.ms, 0) / log.length / 1000).toFixed(1) : 0
-              })(),
-              targetSec: (() => {
-                if (!drillParams.blockId) return 99
-                const tiers = suggestedTiers(drillParams.blockId)
-                const log = wallet.sessions[0]?.questionLog ?? []
-                const avgSecVal = log.length > 0 ? log.reduce((a, e) => a + e.ms, 0) / log.length / 1000 : 99
-                const accuracy = log.length > 0 ? log.filter((e) => e.ok).length / log.length : 0
-                const currentTier = tierOf(avgSecVal, accuracy, tiers)
-                const gap = nextTierGap(avgSecVal, currentTier, tiers)
-                return +(avgSecVal - gap).toFixed(1)
-              })(),
-              tierLabel: (() => {
-                if (!drillParams.blockId) return '进阶'
-                const tiers = suggestedTiers(drillParams.blockId)
-                const log = wallet.sessions[0]?.questionLog ?? []
-                const avgSecVal = log.length > 0 ? log.reduce((a, e) => a + e.ms, 0) / log.length / 1000 : 99
-                const accuracy = log.length > 0 ? log.filter((e) => e.ok).length / log.length : 0
-                const currentTier = tierOf(avgSecVal, accuracy, tiers)
-                const nextT: Record<string, string> = { entry: '进阶', stable: '高级', fluent: '超高级', auto: '超高级' }
-                return nextT[currentTier ?? 'entry'] ?? '进阶'
-              })(),
+              avgSec: btAvgSec,
+              targetSec: btTargetSec,
+              tierLabel: btTierLabel,
               onRetry: () => {
                 if (drillParams.blockId)
                   router.replace(`/calc/session?drill=breakthrough&blockId=${drillParams.blockId}`)
