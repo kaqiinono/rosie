@@ -6,6 +6,7 @@ import CourseCard from '@/components/math/CourseCard'
 import MathDailyCard from '@/components/math/MathDailyCard'
 import MathSeaCard from '@/components/math/MathSeaCard'
 import MathQuizCard from '@/components/math/MathQuizCard'
+import MathCatalogCard from '@/components/math/MathCatalogCard'
 import { useAuth } from '@/contexts/AuthContext'
 import type { CourseCardData } from '@/utils/type'
 
@@ -201,12 +202,13 @@ export default function MathPage() {
         </section>
 
         <section className="flex w-full max-w-[680px] flex-col gap-4">
-          <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-[1fr_120px_120px]">
+          <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-[1fr_120px_120px_120px]">
             <div className="col-span-2 h-full min-[501px]:col-span-1">
               <MathDailyCard />
             </div>
             <MathSeaCard />
             <MathQuizCard />
+            <MathCatalogCard />
           </div>
           {courses.map((course) => (
             <CourseCard key={course.href} data={course} />
