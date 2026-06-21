@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@/utils/type'
-import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords } from '@/utils/english-helpers'
+import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getAllStages, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords, lessonChipTag } from '@/utils/english-helpers'
 import { CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import OldReviewSession from './OldReviewSession'
@@ -42,6 +42,16 @@ const ALL_DAY_OPTIONS = [
 
 function lessonKey(l: { unit: string; lesson: string }): string {
   return `${l.unit}::${l.lesson}`
+}
+
+/** Natural (numeric-aware) ascending compare, so "Lesson 2" < "Lesson 10". */
+function cmpNatural(a: string, b: string): number {
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+}
+
+/** Ascending by unit then lesson. */
+function cmpLesson(a: { unit: string; lesson: string }, b: { unit: string; lesson: string }): number {
+  return cmpNatural(a.unit, b.unit) || cmpNatural(a.lesson, b.lesson)
 }
 
 /** Reverse `unit` / `lesson` comma lists saved on `WeeklyPlan`. */
@@ -117,13 +127,41 @@ function hydrateLessonKindOverridesFromPlan(
   return out
 }
 
+/** Max number of 必记 (consolidate) words assigned to any single day of a saved plan. */
+function inferConsolidateDailyQuota(
+  plan: WeeklyPlan,
+  vocab: WordEntry[],
+  kinds: Record<string, 'consolidate' | 'preview'>,
+): number {
+  let maxPerDay = 0
+  for (const day of plan.days) {
+    let n = 0
+    for (const k of day.newWordKeys) {
+      const e = vocab.find(w => wordKey(w) === k)
+      if (!e) continue
+      const kind = kinds[`${e.unit}::${e.lesson}`] ?? 'consolidate'
+      if (kind === 'consolidate') n += 1
+    }
+    maxPerDay = Math.max(maxPerDay, n)
+  }
+  return maxPerDay > 0 ? maxPerDay : 3
+}
+
 function buildArrangeBaselineKey(
   weekStart: string,
   lessons: { unit: string; lesson: string }[],
-  quotas: Record<string, number>,
+  kinds: Record<string, 'consolidate' | 'preview'>,
+  previewQuotas: Record<string, number>,
+  consolidatePerDay: number,
 ): string {
   const sorted = [...lessons].sort((a, b) => lessonKey(a).localeCompare(lessonKey(b)))
-  return `${weekStart}|${sorted.map(lessonKey).join('|')}|${sorted.map(l => String(quotas[lessonKey(l)] ?? 3)).join(',')}`
+  const parts = sorted.map(l => {
+    const lk = lessonKey(l)
+    const kind = kinds[lk] ?? 'consolidate'
+    const q = kind === 'preview' ? String(previewQuotas[lk] ?? 3) : 'c'
+    return `${lk}:${kind}:${q}`
+  })
+  return `${weekStart}|c${consolidatePerDay}|${parts.join('|')}`
 }
 
 function getWeekEnd(weekStart: string): string {
@@ -153,6 +191,28 @@ function saveCachedLessons(lessons: { unit: string; lesson: string }[]): void {
   try {
     const slim = lessons.map(l => ({ unit: l.unit, lesson: l.lesson }))
     window.localStorage.setItem(STORAGE_KEYS.WEEKLY_PLAN_LAST_LESSONS, JSON.stringify(slim))
+  } catch {
+    // localStorage may be unavailable (private mode, quota, etc.) — silently skip.
+  }
+}
+
+function loadCachedStages(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEYS.WEEKLY_PLAN_LAST_STAGES)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((x): x is string => typeof x === 'string')
+  } catch {
+    return []
+  }
+}
+
+function saveCachedStages(stages: string[]): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(STORAGE_KEYS.WEEKLY_PLAN_LAST_STAGES, JSON.stringify(stages))
   } catch {
     // localStorage may be unavailable (private mode, quota, etc.) — silently skip.
   }
@@ -203,6 +263,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const [editArrangeBaselineKey, setEditArrangeBaselineKey] = useState<string | null>(null)
   const [showLessonPicker, setShowLessonPicker] = useState(false)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
+  /** Selected vocab libraries (stage) that filter the lesson picker. Multi-select, cached. */
+  const [selectedStages, setSelectedStages] = useState<Set<string>>(new Set())
   // per-lesson daily quota: key = "unit::lesson"
   const [lessonQuotas, setLessonQuotas] = useState<Record<string, number>>({})
   /** User picks 必记/预习 per lesson; keys may include deselected lessons (ignored below). */
@@ -213,12 +275,15 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
    *  must be a 必记 lesson; auto-clears when the lesson is removed or flipped to 预习. */
   const [focusLessonOverride, setFocusLessonOverride] = useState<string | null>(null)
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
+  /** Single daily quota for 必记 words across all 必记 lessons (auto-allocated). */
+  const [consolidatePerDay, setConsolidatePerDay] = useState<number>(3)
   const [pendingDate, setPendingDate] = useState<string>(todayStr())
   const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
   if (syncedDefaultParams !== defaultParams) {
     setSyncedDefaultParams(defaultParams)
     if (defaultParams) {
       setWeekStartDay(defaultParams.weekStartDay)
+      setConsolidatePerDay(defaultParams.newWordsPerDay)
     }
   }
 
@@ -237,46 +302,105 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
   const suggestedLesson = useMemo(() => orderedLessons[0] ?? null, [orderedLessons])
 
+  const allStages = useMemo(() => getAllStages(vocab), [vocab])
+
+  // Unique (unit, lesson) pairs carrying their vocab library (stage), sorted ascending
+  // by unit then lesson. Drives the lesson picker; also used to look up a lesson's stage.
+  const orderedLessonsFull = useMemo(() => {
+    const seen = new Map<string, { unit: string; lesson: string; stage: string }>()
+    for (const w of vocab) {
+      const k = `${w.unit}::${w.lesson}`
+      if (!seen.has(k)) seen.set(k, { unit: w.unit, lesson: w.lesson, stage: w.stage ?? '' })
+    }
+    return [...seen.values()].sort(cmpLesson)
+  }, [vocab])
+
+  const lessonStageMap = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const l of orderedLessonsFull) map.set(lessonKey(l), l.stage)
+    return map
+  }, [orderedLessonsFull])
+
+  // Lessons shown in the picker: filtered by the selected stages (all when none selected).
+  const pickerLessons = useMemo(() => {
+    if (selectedStages.size === 0) return orderedLessonsFull
+    return orderedLessonsFull.filter(l => selectedStages.has(l.stage))
+  }, [orderedLessonsFull, selectedStages])
+
+  const baseLessons = useMemo(
+    () => (pendingLessons.length > 0 ? pendingLessons : suggestedLesson ? [suggestedLesson] : []),
+    [pendingLessons, suggestedLesson],
+  )
+
+  // Active lessons in *display* order: 必记 first, then 预习, each ascending by
+  // unit/lesson. Drives the params dialog summary/pickers only.
   const activeLessons = useMemo(() => {
-    return pendingLessons.length > 0 ? pendingLessons : suggestedLesson ? [suggestedLesson] : []
-  }, [pendingLessons, suggestedLesson])
+    return [...baseLessons].sort((a, b) => {
+      const ra = (lessonKindOverrides[lessonKey(a)] ?? 'consolidate') === 'preview' ? 1 : 0
+      const rb = (lessonKindOverrides[lessonKey(b)] ?? 'consolidate') === 'preview' ? 1 : 0
+      return ra - rb || cmpLesson(a, b)
+    })
+  }, [baseLessons, lessonKindOverrides])
   const activeLesson = activeLessons[0] ?? null
 
   const lessonKinds = useMemo(() => {
     const out: Record<string, 'consolidate' | 'preview'> = {}
-    for (const l of activeLessons) {
+    for (const l of baseLessons) {
       const k = lessonKey(l)
       out[k] = lessonKindOverrides[k] ?? 'consolidate'
     }
     return out
-  }, [activeLessons, lessonKindOverrides])
+  }, [baseLessons, lessonKindOverrides])
 
-  // Per-lesson word groups.
-  //
-  // For 必记 (consolidate) lessons, order each group ascending by mastery stage
-  // so the least-familiar words land in the earliest days of the week — initial
-  // assignment only; the edit-existing-plan path reuses the saved layout.
-  // 预习 (preview) lessons keep their natural vocab order.
-  const lessonGroups = useMemo(() => {
-    if (!activeLessons.length) return []
-    return activeLessons.map(l => {
+  // 必记 lessons in *selection order* (earlier-selected = higher priority); 预习
+  // lessons keep unit/lesson order so preview behavior stays unchanged.
+  const consolidateLessons = useMemo(
+    () => baseLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'consolidate'),
+    [baseLessons, lessonKinds],
+  )
+  const previewLessons = useMemo(
+    () => activeLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview'),
+    [activeLessons, lessonKinds],
+  )
+
+  // 必记 words: a single stream across all 必记 lessons (selection order). Each
+  // lesson is ordered ascending by mastery stage so the least-familiar words land
+  // in the earliest days — initial assignment only; edit path reuses saved layout.
+  const consolidateWords = useMemo(() => {
+    return consolidateLessons.flatMap(l => {
       const group = vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson)
-      if ((lessonKinds[lessonKey(l)] ?? 'consolidate') !== 'consolidate') return group
       return group
         .map((w, i) => ({ w, i, stage: masteryMap[wordKey(w)]?.stage ?? 0 }))
         .sort((a, b) => a.stage - b.stage || a.i - b.i)
         .map(({ w }) => w)
     })
-  }, [vocab, activeLessons, lessonKinds, masteryMap])
+  }, [consolidateLessons, vocab, masteryMap])
 
-  const lessonWords = useMemo(() => lessonGroups.flat(), [lessonGroups])
+  // 预习 words: one group per 预习 lesson, natural vocab order (unchanged).
+  const previewGroups = useMemo(
+    () => previewLessons.map(l => vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson)),
+    [previewLessons, vocab],
+  )
 
-  // Resolved quotas for display (default 3 if not set)
-  const resolvedQuotas = useMemo(() => {
-    return activeLessons.map(l => lessonQuotas[`${l.unit}::${l.lesson}`] ?? 3)
-  }, [activeLessons, lessonQuotas])
+  // Groups + per-group daily quotas fed to buildWeeklyPlan: 必记 is one merged
+  // group with a single daily quota; each 预习 lesson keeps its own quota.
+  const planGroups = useMemo(() => {
+    const g: WordEntry[][] = []
+    if (consolidateWords.length > 0) g.push(consolidateWords)
+    for (const grp of previewGroups) g.push(grp)
+    return g
+  }, [consolidateWords, previewGroups])
 
-  const totalPerDay = useMemo(() => resolvedQuotas.reduce((s, q) => s + q, 0), [resolvedQuotas])
+  const planQuotas = useMemo(() => {
+    const q: number[] = []
+    if (consolidateWords.length > 0) q.push(consolidatePerDay)
+    for (const l of previewLessons) q.push(lessonQuotas[lessonKey(l)] ?? 3)
+    return q
+  }, [consolidateWords, consolidatePerDay, previewLessons, lessonQuotas])
+
+  const lessonWords = useMemo(() => planGroups.flat(), [planGroups])
+
+  const totalPerDay = useMemo(() => planQuotas.reduce((s, q) => s + q, 0), [planQuotas])
 
   const sortedAllPlans = useMemo(
     () => [...allPlans].sort((a, b) => b.weekStart.localeCompare(a.weekStart)),
@@ -332,11 +456,17 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   const openEditPlan = useCallback((plan: WeeklyPlan) => {
     if (plan.weekCompletion) return
     const parsed = parsePlanLessons(plan)
-    const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
     const lkinds = hydrateLessonKindOverridesFromPlan(plan, parsed, vocab)
-    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, quotas)
+    const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
+    const cPerDay = inferConsolidateDailyQuota(plan, vocab, lkinds)
+    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas, cPerDay)
+    const planStages = new Set(
+      parsed.map(l => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean),
+    )
     setPendingDate(plan.weekStart)
     setWeekStartDay(plan.weekStartDay)
+    setConsolidatePerDay(cPerDay)
+    setSelectedStages(planStages)
     setPendingLessons(parsed)
     setLessonQuotas(quotas)
     setLessonKindOverrides(lkinds)
@@ -346,11 +476,11 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     setIsEditingPlan(true)
     setShowLessonPicker(true)
     setStep('params')
-  }, [vocab])
+  }, [vocab, lessonStageMap])
 
   const handleGoToArrange = useCallback(() => {
     if (!activeLesson) return
-    const snap = buildArrangeBaselineKey(dialogWeekStart, activeLessons, lessonQuotas)
+    const snap = buildArrangeBaselineKey(dialogWeekStart, activeLessons, lessonKinds, lessonQuotas, consolidatePerDay)
     if (isEditingPlan && editingPlan && snap === editArrangeBaselineKey) {
       setDraftDays(editingPlan.days.map(d => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
       const wordSet = new Set(lessonWords.map(w => wordKey(w)))
@@ -367,8 +497,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       lessonWords,
       dialogWeekStart,
       totalPerDay,
-      lessonGroups,
-      resolvedQuotas,
+      planGroups,
+      planQuotas,
     )
 
     // Carryover: previous-week plan's consolidate words with stage < CONSOLIDATE_PASS_STAGE (§3.7)
@@ -405,13 +535,15 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   }, [
     activeLesson,
     activeLessons,
+    lessonKinds,
     lessonQuotas,
+    consolidatePerDay,
     editArrangeBaselineKey,
     editingPlan,
     isEditingPlan,
     lessonWords,
-    lessonGroups,
-    resolvedQuotas,
+    planGroups,
+    planQuotas,
     totalPerDay,
     dialogWeekStart,
     allPlans,
@@ -473,6 +605,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     }
     const saved = await savePlan(plan)
     saveCachedLessons(activeLessons)
+    saveCachedStages([...selectedStages])
     setStep('list')
     setCarryoverCount(0)
     setIsEditingPlan(false)
@@ -495,6 +628,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     vocab,
     isEditingPlan,
     editingPlan,
+    selectedStages,
   ])
 
   // ── OLD REVIEW SESSION ───────────────────────────────────────────────────
@@ -510,7 +644,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
   // ── PARAMS DIALOG ────────────────────────────────────────────────────────
   if (step === 'params') {
-    const multiLesson = activeLessons.length > 1
+    const sourceCount = (consolidateWords.length > 0 ? 1 : 0) + previewLessons.length
 
     return (
       <div
@@ -551,6 +685,41 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
             {activeLesson ? (
               <>
+                {/* Stage (词库) selector — pick libraries first, then units/lessons below */}
+                {allStages.length > 0 && (
+                  <div className="mb-3">
+                    <div className="mb-1.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                      选择词库（可多选）
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {allStages.map((s) => {
+                        const on = selectedStages.has(s)
+                        return (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() =>
+                              setSelectedStages((prev) => {
+                                const next = new Set(prev)
+                                if (next.has(s)) next.delete(s)
+                                else next.add(s)
+                                return next
+                              })
+                            }
+                            className={`cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.78rem] font-bold transition-all ${
+                              on
+                                ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+                                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Lesson picker toggle */}
                 <div className="mb-3">
                   <button
@@ -569,7 +738,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
                 {showLessonPicker && (
                   <div className="mb-4 max-h-[280px] overflow-hidden overflow-y-auto rounded-xl border border-[var(--wm-border)]">
-                    {orderedLessons.map((l) => {
+                    {pickerLessons.length === 0 && (
+                      <div className="px-4 py-3 text-[.8rem] text-[var(--wm-text-dim)]">
+                        该词库下暂无课程
+                      </div>
+                    )}
+                    {pickerLessons.map((l) => {
                       const lk = lessonKey(l)
                       const isActive = activeLessons.some(
                         (al) => al.unit === l.unit && al.lesson === l.lesson,
@@ -747,50 +921,68 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   </div>
                 )}
 
-                {/* Per-lesson quota pickers */}
-                <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-4">
-                  <div className="mb-3 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                    每天新词数量{multiLesson ? '（每课程）' : ''}
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    {activeLessons.map((l, gi) => {
-                      const lkey = `${l.unit}::${l.lesson}`
-                      const q = lessonQuotas[lkey] ?? 3
-                      const groupSize = lessonGroups[gi]?.length ?? 0
-                      const totalAssigned = Math.min(q * 7, groupSize)
-                      return (
-                        <div key={lkey}>
-                          {multiLesson && (
-                            <div className="mb-1.5 flex items-center gap-2">
-                              <span className="text-[.82rem] font-bold text-[var(--wm-text)]">
-                                {l.unit} · {l.lesson}
-                              </span>
-                              <span className="text-[.68rem] text-[var(--wm-text-dim)]">
-                                共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
-                              </span>
-                            </div>
-                          )}
-                          {!multiLesson && (
-                            <div className="mb-1.5 text-[.72rem] text-[var(--wm-text-dim)]">
-                              共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
-                            </div>
-                          )}
-                          <QuotaPicker
-                            value={q}
-                            onChange={(n) =>
-                              setLessonQuotas(prev => ({ ...prev, [lkey]: n }))
-                            }
-                          />
-                        </div>
-                      )
-                    })}
-                  </div>
-                  {multiLesson && (
-                    <div className="mt-3 border-t border-[var(--wm-border)] pt-2 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
-                      合计每天 {totalPerDay} 个新词
+                {/* 必记: single daily quota auto-allocated across lessons (selection order) */}
+                {consolidateWords.length > 0 && (
+                  <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-4">
+                    <div className="mb-1.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                      每天必记新词数量
                     </div>
-                  )}
-                </div>
+                    <div className="mb-3 text-[.68rem] text-[var(--wm-text-dim)]">
+                      共 {consolidateWords.length} 个必记词 · 7天可分配{' '}
+                      {Math.min(consolidatePerDay * 7, consolidateWords.length)} 词
+                      {consolidateLessons.length > 1 && '（按选择顺序自动分配到各课程）'}
+                    </div>
+                    <QuotaPicker value={consolidatePerDay} onChange={setConsolidatePerDay} />
+                  </div>
+                )}
+
+                {/* 预习: per-lesson daily quota (unchanged) */}
+                {previewLessons.length > 0 && (
+                  <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-4">
+                    <div className="mb-3 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                      每天预习新词数量{previewLessons.length > 1 ? '（每课程）' : ''}
+                    </div>
+                    <div className="flex flex-col gap-4">
+                      {previewLessons.map((l, gi) => {
+                        const lkey = `${l.unit}::${l.lesson}`
+                        const q = lessonQuotas[lkey] ?? 3
+                        const groupSize = previewGroups[gi]?.length ?? 0
+                        const totalAssigned = Math.min(q * 7, groupSize)
+                        return (
+                          <div key={lkey}>
+                            {previewLessons.length > 1 && (
+                              <div className="mb-1.5 flex items-center gap-2">
+                                <span className="text-[.82rem] font-bold text-[var(--wm-text)]">
+                                  {l.unit} · {l.lesson}
+                                </span>
+                                <span className="text-[.68rem] text-[var(--wm-text-dim)]">
+                                  共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                                </span>
+                              </div>
+                            )}
+                            {previewLessons.length === 1 && (
+                              <div className="mb-1.5 text-[.72rem] text-[var(--wm-text-dim)]">
+                                共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                              </div>
+                            )}
+                            <QuotaPicker
+                              value={q}
+                              onChange={(n) =>
+                                setLessonQuotas(prev => ({ ...prev, [lkey]: n }))
+                              }
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {sourceCount > 1 && (
+                  <div className="mb-4 -mt-1 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+                    合计每天 {totalPerDay} 个新词
+                  </div>
+                )}
 
                 {/* Week start day */}
                 <div className="mb-4">
@@ -910,6 +1102,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
       const wordKind: 'consolidate' | 'preview' = entry
         ? (lessonKinds[`${entry.unit}::${entry.lesson}`] ?? 'consolidate')
         : 'consolidate'
+      const lessonTag = entry ? lessonChipTag(entry.unit, entry.lesson) : ''
       return (
         <button
           key={key}
@@ -939,6 +1132,11 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
         >
           {isRollover && <span className="mr-1 text-[.6rem]">↻</span>}
           {word}
+          {lessonTag && (
+            <span className="ml-1 rounded-[3px] bg-[rgba(255,255,255,.08)] px-1 py-px text-[.5rem] font-extrabold leading-none tracking-tight opacity-60 align-middle">
+              {lessonTag}
+            </span>
+          )}
         </button>
       )
     }
@@ -1144,8 +1342,11 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   const cached = loadCachedLessons().filter(c =>
                     orderedLessons.some(o => o.unit === c.unit && o.lesson === c.lesson),
                   )
+                  const cachedStages = loadCachedStages().filter(s => allStages.includes(s))
+                  setSelectedStages(new Set(cachedStages))
                   setPendingLessons(cached)
                   setLessonKindOverrides({})
+                  setConsolidatePerDay(defaultParams?.newWordsPerDay ?? 3)
                   setFocusLessonOverride(null)
                   setPendingDate(todayStr())
                   setIsEditingPlan(false)

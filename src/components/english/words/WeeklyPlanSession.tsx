@@ -15,6 +15,7 @@ import {
   ALL_CN_DAYS,
   fmtDate,
   fmtWeekRange,
+  lessonChipTag,
 } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import { findPassage, findSentenceForWord } from '@/utils/reading-data'
@@ -125,8 +126,14 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   )
   if (plan.id !== syncedPlanId) {
     setSyncedPlanId(plan.id)
+    // Default to today's practice when today falls within the plan week; otherwise
+    // fall back to the first unfinished day, then the last day.
+    const today = todayStr()
+    const todayDay = plan.days.find((d) => d.date === today)
     const firstUnfinished = plan.days.find((d) => !plan.progress[d.date]?.quizDone)
-    setSelectedDate(firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null)
+    setSelectedDate(
+      todayDay?.date ?? firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null,
+    )
   }
 
   const [consolidateTypes, setConsolidateTypes] = useState<Set<'A' | 'B' | 'C' | 'D'>>(
@@ -733,16 +740,21 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                           return (
                             <span
                               key={wordKey(s.entry)}
-                              className={`rounded-full border-[1.5px] px-2.5 py-1 text-[0.875rem] font-bold ${
+                              className={`inline-flex flex-col items-center rounded-2xl border-[1.5px] px-2.5 py-1 ${
                                 s.met
                                   ? 'border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] text-[#86efac]'
                                   : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] text-[#93c5fd]'
                               }`}
                             >
-                              {level > 0 && (
-                                <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
-                              )}
-                              {s.entry.word}
+                              <span className="inline-flex items-center text-[0.875rem] font-bold leading-tight">
+                                {level > 0 && (
+                                  <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
+                                )}
+                                {s.entry.word}
+                              </span>
+                              <span className="text-[.5rem] font-extrabold leading-none tracking-tight opacity-55">
+                                {lessonChipTag(s.entry.unit, s.entry.lesson)}
+                              </span>
                             </span>
                           )
                         })}
@@ -761,12 +773,17 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                           return (
                             <span
                               key={wordKey(s.entry)}
-                              className="rounded-full border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] px-2.5 py-1 text-[0.875rem] font-bold text-[#fb923c]"
+                              className="inline-flex flex-col items-center rounded-2xl border-[1.5px] border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] px-2.5 py-1 text-[#fb923c]"
                             >
-                              {level > 0 && (
-                                <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
-                              )}
-                              {s.entry.word}
+                              <span className="inline-flex items-center text-[0.875rem] font-bold leading-tight">
+                                {level > 0 && (
+                                  <span className="mr-1 text-[.65rem]">{MASTERY_ICON[level]}</span>
+                                )}
+                                {s.entry.word}
+                              </span>
+                              <span className="text-[.5rem] font-extrabold leading-none tracking-tight opacity-55">
+                                {lessonChipTag(s.entry.unit, s.entry.lesson)}
+                              </span>
                             </span>
                           )
                         })}

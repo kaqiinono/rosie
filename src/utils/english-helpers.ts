@@ -621,6 +621,24 @@ export function getOldReviewWords(
 
 export type WordKind = 'consolidate' | 'preview'
 
+/** Abbreviate a lesson label to "L<n>" (first number found); fall back to raw label. */
+export function lessonAbbr(lesson: string): string {
+  const m = lesson.match(/\d+/)
+  return m ? `L${m[0]}` : lesson
+}
+
+/** Abbreviate a unit to its first+last char, uppercased: "Application"→"AN", "unit2"→"U2". */
+export function unitAbbr(unit: string): string {
+  const u = unit.trim()
+  if (!u) return ''
+  return (u[0] + u[u.length - 1]).toUpperCase()
+}
+
+/** Combined word-chip sub-label: unit abbr + lesson abbr, e.g. "ANL1" / "U2L1". */
+export function lessonChipTag(unit: string, lesson: string): string {
+  return `${unitAbbr(unit)}${lessonAbbr(lesson)}`
+}
+
 export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: string }[] {
   const seen = new Set<string>()
   const result: { unit: string; lesson: string }[] = []
