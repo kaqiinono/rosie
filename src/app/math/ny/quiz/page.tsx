@@ -142,11 +142,16 @@ export default function QuizPage() {
   const router = useRouter()
   const { user } = useAuth()
   const { solveCount } = useMathSolved(user)
-  const { papers, savePaper, deletePaper } = useMathQuiz(user)
+  const { papers, savePaper, deletePaper, renamePaper } = useMathQuiz(user)
 
   // Builder state
   const [quizItems, setQuizItems] = useState<QuizItem[]>([])
+  const [draftTitle, setDraftTitle] = useState('')
   const [saving, setSaving] = useState(false)
+
+  // Inline rename state for saved papers
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingTitle, setEditingTitle] = useState('')
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false)
@@ -357,7 +362,7 @@ export default function QuizPage() {
   async function handleSave() {
     if (quizItems.length === 0 || !user) return
     setSaving(true)
-    const title = `综合测试卷${todayDateStr()}`
+    const title = draftTitle.trim() || `综合测试卷${todayDateStr()}`
     const problems: QuizProblemItem[] = quizItems.map((item) => ({
       lessonId: item.lessonId,
       section: ALL_ENTRIES_MAP.get(item.problemId)?.section ?? '',
@@ -369,8 +374,22 @@ export default function QuizPage() {
     setSaving(false)
     if (id) {
       setQuizItems([])
+      setDraftTitle('')
       router.push(`/math/ny/quiz/${id}`)
     }
+  }
+
+  function startRename(id: string, title: string) {
+    setEditingId(id)
+    setEditingTitle(title)
+  }
+
+  async function commitRename() {
+    if (!editingId) return
+    const id = editingId
+    const title = editingTitle
+    setEditingId(null)
+    await renamePaper(id, title)
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -497,6 +516,15 @@ export default function QuizPage() {
                 </div>
               </div>
 
+              <input
+                type="text"
+                value={draftTitle}
+                onChange={(e) => setDraftTitle(e.target.value)}
+                placeholder={`综合测试卷${todayDateStr()}`}
+                className="mb-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 outline-none transition-colors focus:border-indigo-400 focus:bg-white"
+                aria-label="试卷标题"
+              />
+
               <div className="flex flex-col gap-2">
                 {quizEntries.map(({ item, entry }, i) => {
                   if (!entry) return null
@@ -599,7 +627,24 @@ export default function QuizPage() {
                     onClick={() => router.push(`/math/ny/quiz/${paper.id}`)}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold text-slate-800">{paper.title}</p>
+                      {editingId === paper.id ? (
+                        <input
+                          autoFocus
+                          type="text"
+                          value={editingTitle}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onBlur={() => void commitRename()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') void commitRename()
+                            else if (e.key === 'Escape') setEditingId(null)
+                          }}
+                          className="w-full rounded-lg border border-indigo-300 bg-white px-2 py-1 text-sm font-bold text-slate-800 outline-none"
+                          aria-label="修改试卷标题"
+                        />
+                      ) : (
+                        <p className="truncate text-sm font-bold text-slate-800">{paper.title}</p>
+                      )}
                       <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
                         <span className="text-slate-400">{paper.problems.length} 题</span>
                         <span className="text-slate-300">·</span>
@@ -614,6 +659,30 @@ export default function QuizPage() {
                         )}
                       </div>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        startRename(paper.id, paper.title)
+                      }}
+                      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
+                      title="重命名"
+                      aria-label="重命名试卷"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z" />
+                      </svg>
+                    </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation()

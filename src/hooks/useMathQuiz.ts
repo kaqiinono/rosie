@@ -110,6 +110,18 @@ export function useMathQuiz(user: User | null) {
     )
   }, [user])
 
+  const renamePaper = useCallback(async (id: string, title: string) => {
+    if (!user) return
+    const trimmed = title.trim()
+    if (!trimmed) return
+    await supabase
+      .from('math_quiz_papers')
+      .update({ title: trimmed })
+      .eq('id', id)
+      .eq('user_id', user.id)
+    setPapers(prev => prev.map(p => p.id === id ? { ...p, title: trimmed } : p))
+  }, [user])
+
   const deletePaper = useCallback(async (id: string) => {
     if (!user) return
     await supabase
@@ -120,5 +132,5 @@ export function useMathQuiz(user: User | null) {
     setPapers(prev => prev.filter(p => p.id !== id))
   }, [user])
 
-  return { papers, loading, savePaper, completePaper, deletePaper }
+  return { papers, loading, savePaper, completePaper, deletePaper, renamePaper }
 }
