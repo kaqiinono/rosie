@@ -39,6 +39,7 @@ type QuizItem = {
   sections: Section[]
   types: string[]
   problemId: string
+  origin: 'random' | 'precise'
 }
 
 let uidCounter = 0
@@ -103,21 +104,6 @@ function buildPool(lessonId: string, sections: Section[], types: string[]): Quiz
   return entries
 }
 
-function pickBest(
-  pool: QuizEntry[],
-  solveCount: Record<string, number>,
-  exclude?: Set<string>,
-): QuizEntry | null {
-  const candidates = exclude ? pool.filter((e) => !exclude.has(e.problem.id)) : pool
-  if (candidates.length === 0) return null
-  const sorted = [...candidates].sort(
-    (a, b) => (solveCount[a.problem.id] ?? 0) - (solveCount[b.problem.id] ?? 0),
-  )
-  const minCount = solveCount[sorted[0].problem.id] ?? 0
-  const minGroup = sorted.filter((e) => (solveCount[e.problem.id] ?? 0) === minCount)
-  return minGroup[Math.floor(Math.random() * minGroup.length)]
-}
-
 function pickRandom(pool: QuizEntry[], exclude: Set<string>): QuizEntry | null {
   const candidates = pool.filter((e) => !exclude.has(e.problem.id))
   if (candidates.length === 0) return null
@@ -164,16 +150,53 @@ export default function QuizPage() {
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'random' | 'precise'>('random')
+  const [preciseStep, setPreciseStep] = useState<1 | 2>(1)
+  // When set, the draft is swapping the problem of this precise item via a picker.
+  const [swapUid, setSwapUid] = useState<string | null>(null)
+  const [preciseSelected, setPreciseSelected] = useState<Set<string>>(new Set())
   const [modalLessons, setModalLessons] = useState<string[]>([])
   const [modalSections, setModalSections] = useState<Section[]>([])
   const [modalTypes, setModalTypes] = useState<Record<string, string[]>>({})
   const [modalCounts, setModalCounts] = useState<Record<string, number>>({})
 
   const existingIds = useMemo(() => new Set(quizItems.map((i) => i.lessonId)), [quizItems])
+  const draftProblemIds = useMemo(() => new Set(quizItems.map((i) => i.problemId)), [quizItems])
 
   const modalTotal = useMemo(
     () => modalLessons.reduce((sum, id) => sum + Math.max(1, modalCounts[id] ?? 1), 0),
     [modalLessons, modalCounts],
+  )
+
+  // Lessons that can be picked in the current modal mode. In random mode lessons
+  // already in the draft are excluded; in precise mode every lesson is selectable
+  // because individual problems are de-duplicated against the draft.
+  const selectableLessons = useMemo(
+    () => (modalMode === 'random' ? LESSON_META.filter((l) => !existingIds.has(l.id)) : LESSON_META),
+    [modalMode, existingIds],
+  )
+
+  // Step 2 of precise mode: filtered problems grouped per lesson.
+  const preciseGroups = useMemo(() => {
+    if (modalMode !== 'precise') return []
+    return modalLessons
+      .map((lessonId) => {
+        const meta = LESSON_META.find((l) => l.id === lessonId)
+        const types = modalTypes[lessonId] ?? []
+        const entries = buildPool(lessonId, modalSections, types)
+        return { lessonId, name: meta?.name ?? '', entries }
+      })
+      .filter((g) => g.entries.length > 0)
+  }, [modalMode, modalLessons, modalSections, modalTypes])
+
+  // The precise item currently being swapped, plus its filtered candidate pool.
+  const swapItem = useMemo(
+    () => (swapUid ? quizItems.find((i) => i.uid === swapUid) ?? null : null),
+    [swapUid, quizItems],
+  )
+  const swapPool = useMemo(
+    () => (swapItem ? buildPool(swapItem.lessonId, swapItem.sections, swapItem.types) : []),
+    [swapItem],
   )
 
   const quizEntries = useMemo(
@@ -183,7 +206,10 @@ export default function QuizPage() {
 
   // ── Modal handlers ────────────────────────────────────────────────────────
 
-  function openModal() {
+  function openModal(mode: 'random' | 'precise') {
+    setModalMode(mode)
+    setPreciseStep(1)
+    setPreciseSelected(new Set())
     setModalLessons(LESSON_META.filter((l) => !existingIds.has(l.id)).map((l) => l.id))
     setModalSections([])
     setModalTypes({})
@@ -227,7 +253,8 @@ export default function QuizPage() {
     })
   }
 
-  function handleConfirm() {
+  // Random mode: pick N distinct problems per lesson at random from the filtered pool.
+  function handleRandomConfirm() {
     const newItems: QuizItem[] = []
     for (const lessonId of modalLessons) {
       if (existingIds.has(lessonId)) continue
@@ -236,7 +263,7 @@ export default function QuizPage() {
       const count = Math.max(1, modalCounts[lessonId] ?? 1)
       const chosen = new Set<string>()
       for (let k = 0; k < count; k++) {
-        const picked = pickBest(pool, solveCount, chosen)
+        const picked = pickRandom(pool, chosen)
         if (!picked) break // pool exhausted — fewer distinct problems than requested
         chosen.add(picked.problem.id)
         newItems.push({
@@ -245,6 +272,7 @@ export default function QuizPage() {
           sections: modalSections,
           types,
           problemId: picked.problem.id,
+          origin: 'random',
         })
       }
     }
@@ -252,11 +280,58 @@ export default function QuizPage() {
     setModalOpen(false)
   }
 
+  // Precise mode: add exactly the manually selected problems (skipping any already in the draft).
+  function handlePreciseConfirm() {
+    const newItems: QuizItem[] = []
+    for (const group of preciseGroups) {
+      const types = modalTypes[group.lessonId] ?? []
+      for (const entry of group.entries) {
+        if (!preciseSelected.has(entry.problem.id)) continue
+        if (draftProblemIds.has(entry.problem.id)) continue
+        newItems.push({
+          uid: makeUid(),
+          lessonId: group.lessonId,
+          sections: modalSections,
+          types,
+          problemId: entry.problem.id,
+          origin: 'precise',
+        })
+      }
+    }
+    setQuizItems((prev) => [...prev, ...newItems])
+    setModalOpen(false)
+  }
+
+  function togglePrecise(problemId: string) {
+    setPreciseSelected((prev) => {
+      const n = new Set(prev)
+      if (n.has(problemId)) n.delete(problemId)
+      else n.add(problemId)
+      return n
+    })
+  }
+
+  function toggleGroupAll(entries: QuizEntry[]) {
+    setPreciseSelected((prev) => {
+      const n = new Set(prev)
+      const selectable = entries.filter((e) => !draftProblemIds.has(e.problem.id))
+      const allSel = selectable.length > 0 && selectable.every((e) => n.has(e.problem.id))
+      if (allSel) selectable.forEach((e) => n.delete(e.problem.id))
+      else selectable.forEach((e) => n.add(e.problem.id))
+      return n
+    })
+  }
+
   // ── Quiz builder handlers ─────────────────────────────────────────────────
 
   function handleSwap(uid: string) {
     const item = quizItems.find((i) => i.uid === uid)
     if (!item) return
+    // Precise items: let the user pick the replacement from the filtered list.
+    if (item.origin === 'precise') {
+      setSwapUid(uid)
+      return
+    }
     const pool = buildPool(item.lessonId, item.sections, item.types)
     // Avoid duplicating any problem already in the draft (including this one).
     const used = new Set(quizItems.map((i) => i.problemId))
@@ -265,6 +340,14 @@ export default function QuizPage() {
     setQuizItems((prev) =>
       prev.map((i) => (i.uid === uid ? { ...i, problemId: picked.problem.id } : i)),
     )
+  }
+
+  function handleSwapPick(problemId: string) {
+    if (!swapUid) return
+    setQuizItems((prev) =>
+      prev.map((i) => (i.uid === swapUid ? { ...i, problemId } : i)),
+    )
+    setSwapUid(null)
   }
 
   function handleRemove(uid: string) {
@@ -328,10 +411,16 @@ export default function QuizPage() {
                   错题本
                 </Link>
                 <button
-                  onClick={openModal}
-                  className="max-w-30 cursor-pointer rounded-full bg-indigo-500 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-600"
+                  onClick={() => openModal('precise')}
+                  className="cursor-pointer rounded-full bg-violet-100 px-3.5 py-1.5 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-200"
                 >
-                  + 新增题目
+                  精准出题
+                </button>
+                <button
+                  onClick={() => openModal('random')}
+                  className="cursor-pointer rounded-full bg-indigo-500 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-600"
+                >
+                  随机出题
                 </button>
               </div>
             </div>
@@ -340,7 +429,7 @@ export default function QuizPage() {
             <div className="flex items-center justify-between gap-2 px-4 pb-3 lg:hidden">
               <Link
                 href="/math/mistakes"
-                className="flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3.5 py-2 text-sm font-semibold text-rose-500 no-underline transition-colors hover:bg-rose-100"
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-500 no-underline transition-colors hover:bg-rose-100"
               >
                 <svg
                   width="14"
@@ -358,26 +447,21 @@ export default function QuizPage() {
                 </svg>
                 错题本
               </Link>
-              <button
-                onClick={openModal}
-                className="flex max-w-30 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-600"
-                style={{ boxShadow: '0 4px 12px rgba(99,102,241,.25)' }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+              <div className="flex flex-1 items-center justify-end gap-2">
+                <button
+                  onClick={() => openModal('precise')}
+                  className="flex cursor-pointer items-center justify-center gap-1.5 rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-200"
                 >
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                新增题目
-              </button>
+                  精准出题
+                </button>
+                <button
+                  onClick={() => openModal('random')}
+                  className="flex cursor-pointer items-center justify-center gap-1.5 rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-600"
+                  style={{ boxShadow: '0 4px 12px rgba(99,102,241,.25)' }}
+                >
+                  随机出题
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -503,7 +587,7 @@ export default function QuizPage() {
                   </svg>
                 </div>
                 <p className="text-sm font-semibold text-slate-500">还没有保存过试卷</p>
-                <p className="mt-1 text-xs text-slate-400">点击「新增题目」开始组卷</p>
+                <p className="mt-1 text-xs text-slate-400">点击「随机出题」或「精准出题」开始组卷</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
@@ -602,7 +686,13 @@ export default function QuizPage() {
             style={{ boxShadow: '0 24px 60px rgba(0,0,0,.2)' }}
           >
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-4">
-              <h2 className="font-black text-slate-800">新增题目</h2>
+              <h2 className="font-black text-slate-800">
+                {modalMode === 'random'
+                  ? '随机出题'
+                  : preciseStep === 1
+                    ? '精准出题 · 筛选'
+                    : '精准出题 · 选题'}
+              </h2>
               <button
                 onClick={() => setModalOpen(false)}
                 className="text-lg leading-none text-slate-400 hover:text-slate-600"
@@ -612,6 +702,99 @@ export default function QuizPage() {
             </div>
 
             <div className="flex flex-col gap-5 px-5 py-4">
+              {modalMode === 'precise' && preciseStep === 2 ? (
+                /* ── Precise step 2: per-lesson problem picker ───────────────── */
+                <section className="flex flex-col gap-4">
+                  {preciseGroups.length === 0 ? (
+                    <p className="py-10 text-center text-sm text-slate-400">
+                      没有符合筛选条件的题目
+                    </p>
+                  ) : (
+                    preciseGroups.map((group) => {
+                      const selectable = group.entries.filter(
+                        (e) => !draftProblemIds.has(e.problem.id),
+                      )
+                      const allSel =
+                        selectable.length > 0 &&
+                        selectable.every((e) => preciseSelected.has(e.problem.id))
+                      return (
+                        <div key={group.lessonId}>
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <p className="min-w-0 truncate text-xs font-bold text-slate-600">
+                              第{group.lessonId}讲 · {group.name}
+                              <span className="ml-1 font-normal text-slate-400">
+                                ({group.entries.length})
+                              </span>
+                            </p>
+                            <button
+                              onClick={() => toggleGroupAll(group.entries)}
+                              disabled={selectable.length === 0}
+                              className="shrink-0 text-[11px] text-indigo-500 hover:text-indigo-700 disabled:opacity-40"
+                            >
+                              {allSel ? '取消全选' : '全选'}
+                            </button>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            {group.entries.map((entry) => {
+                              const inDraft = draftProblemIds.has(entry.problem.id)
+                              const sel = preciseSelected.has(entry.problem.id)
+                              return (
+                                <button
+                                  key={entry.problem.id}
+                                  disabled={inDraft}
+                                  onClick={() => togglePrecise(entry.problem.id)}
+                                  className={`flex items-start gap-2.5 rounded-xl p-2.5 text-left transition-all ${
+                                    inDraft
+                                      ? 'cursor-not-allowed bg-slate-50 opacity-60'
+                                      : sel
+                                        ? 'bg-indigo-50'
+                                        : 'bg-slate-50 hover:bg-slate-100'
+                                  }`}
+                                  style={
+                                    sel && !inDraft
+                                      ? { boxShadow: 'inset 0 0 0 1.5px rgb(165 180 252)' }
+                                      : undefined
+                                  }
+                                >
+                                  <span
+                                    className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] font-bold ${
+                                      sel
+                                        ? 'border-indigo-500 bg-indigo-500 text-white'
+                                        : 'border-slate-300 bg-white text-transparent'
+                                    }`}
+                                  >
+                                    ✓
+                                  </span>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="mb-1 flex flex-wrap items-center gap-1">
+                                      <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">
+                                        {SECTION_INFO[entry.section].icon}
+                                        {SECTION_INFO[entry.section].label}
+                                      </span>
+                                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                                        {entry.problem.tagLabel}
+                                      </span>
+                                      {inDraft && (
+                                        <span className="text-[10px] font-semibold text-emerald-600">
+                                          已在试卷
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="text-xs leading-relaxed text-slate-700">
+                                      {stripHtml(entry.problem.text)}
+                                    </p>
+                                  </div>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })
+                  )}
+                </section>
+              ) : (
+                <>
               {/* Lesson selector */}
               <section>
                 <div className="mb-2.5 flex items-center gap-2">
@@ -620,24 +803,23 @@ export default function QuizPage() {
                   </p>
                   <button
                     onClick={() => {
-                      const available = LESSON_META.filter(l => !existingIds.has(l.id))
-                      const allSel = available.every(l => modalLessons.includes(l.id))
+                      const allSel = selectableLessons.every((l) => modalLessons.includes(l.id))
                       if (allSel) {
                         setModalLessons([])
                         setModalTypes({})
                       } else {
-                        setModalLessons(available.map(l => l.id))
+                        setModalLessons(selectableLessons.map((l) => l.id))
                         setModalTypes({})
                       }
                     }}
                     className="text-[11px] text-indigo-500 hover:text-indigo-700"
                   >
-                    {LESSON_META.filter(l => !existingIds.has(l.id)).every(l => modalLessons.includes(l.id)) ? '取消全选' : '全选'}
+                    {selectableLessons.every((l) => modalLessons.includes(l.id)) ? '取消全选' : '全选'}
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {LESSON_META.map(({ id, name }) => {
-                    const alreadyIn = existingIds.has(id)
+                    const alreadyIn = modalMode === 'random' && existingIds.has(id)
                     const selected = modalLessons.includes(id)
                     return (
                       <button
@@ -706,7 +888,8 @@ export default function QuizPage() {
               {modalLessons.length > 0 && (
                 <section>
                   <p className="mb-2.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                    数量与题型 <span className="font-normal normal-case">(题型可选)</span>
+                    {modalMode === 'random' ? '数量与题型' : '题型筛选'}{' '}
+                    <span className="font-normal normal-case">(题型可选)</span>
                   </p>
                   <div className="flex flex-col gap-3">
                     {modalLessons.map((lessonId) => {
@@ -720,29 +903,31 @@ export default function QuizPage() {
                             <p className="min-w-0 truncate text-xs font-semibold text-slate-600">
                               第{lessonId}讲 · {meta.name}
                             </p>
-                            <div className="flex shrink-0 items-center gap-1">
-                              <button
-                                type="button"
-                                onClick={() => setModalCount(lessonId, count - 1)}
-                                disabled={count <= 1}
-                                aria-label="减少数量"
-                                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-                              >
-                                −
-                              </button>
-                              <span className="w-5 text-center text-xs font-bold tabular-nums text-slate-700">
-                                {count}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setModalCount(lessonId, count + 1)}
-                                aria-label="增加数量"
-                                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100"
-                              >
-                                +
-                              </button>
-                              <span className="ml-0.5 text-[11px] text-slate-400">道</span>
-                            </div>
+                            {modalMode === 'random' && (
+                              <div className="flex shrink-0 items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setModalCount(lessonId, count - 1)}
+                                  disabled={count <= 1}
+                                  aria-label="减少数量"
+                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                  −
+                                </button>
+                                <span className="w-5 text-center text-xs font-bold tabular-nums text-slate-700">
+                                  {count}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setModalCount(lessonId, count + 1)}
+                                  aria-label="增加数量"
+                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100"
+                                >
+                                  +
+                                </button>
+                                <span className="ml-0.5 text-[11px] text-slate-400">道</span>
+                              </div>
+                            )}
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {meta.types.map(({ tag, label }) => {
@@ -768,19 +953,135 @@ export default function QuizPage() {
                   </div>
                 </section>
               )}
+                </>
+              )}
             </div>
 
-            <div className="sticky bottom-0 flex items-center justify-between border-t border-slate-100 bg-white px-5 py-4">
-              <span className="text-xs text-slate-400">
-                已选 {modalLessons.length} 个课题 · 共 {modalTotal} 题
-              </span>
+            <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-slate-100 bg-white px-5 py-4">
+              {modalMode === 'random' ? (
+                <>
+                  <span className="text-xs text-slate-400">
+                    已选 {modalLessons.length} 个课题 · 共 {modalTotal} 题
+                  </span>
+                  <button
+                    disabled={modalLessons.length === 0}
+                    onClick={handleRandomConfirm}
+                    className="rounded-full bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    确认组卷
+                  </button>
+                </>
+              ) : preciseStep === 1 ? (
+                <>
+                  <span className="text-xs text-slate-400">
+                    已选 {modalLessons.length} 个课题
+                  </span>
+                  <button
+                    disabled={modalLessons.length === 0}
+                    onClick={() => setPreciseStep(2)}
+                    className="rounded-full bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    下一步
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setPreciseStep(1)}
+                    className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-500 transition-colors hover:bg-slate-200"
+                  >
+                    上一步
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-400">已选 {preciseSelected.size} 题</span>
+                    <button
+                      disabled={preciseSelected.size === 0}
+                      onClick={handlePreciseConfirm}
+                      className="rounded-full bg-emerald-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      完成出卷
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Swap picker (precise items) ───────────────────────────────────── */}
+      {swapItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+          style={{ background: 'rgba(15,23,42,.5)', backdropFilter: 'blur(4px)' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSwapUid(null)
+          }}
+        >
+          <div
+            className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-white sm:max-w-[560px] sm:rounded-2xl"
+            style={{ boxShadow: '0 24px 60px rgba(0,0,0,.2)' }}
+          >
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-4">
+              <h2 className="font-black text-slate-800">
+                换题 · 第{swapItem.lessonId}讲
+              </h2>
               <button
-                disabled={modalLessons.length === 0}
-                onClick={handleConfirm}
-                className="rounded-full bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={() => setSwapUid(null)}
+                className="text-lg leading-none text-slate-400 hover:text-slate-600"
               >
-                确认组卷
+                ✕
               </button>
+            </div>
+
+            <div className="flex flex-col gap-1.5 px-5 py-4">
+              {swapPool.length === 0 ? (
+                <p className="py-10 text-center text-sm text-slate-400">没有可选题目</p>
+              ) : (
+                swapPool.map((entry) => {
+                  const isCurrent = entry.problem.id === swapItem.problemId
+                  // Disable problems already used by other draft items.
+                  const usedElsewhere =
+                    !isCurrent && draftProblemIds.has(entry.problem.id)
+                  return (
+                    <button
+                      key={entry.problem.id}
+                      disabled={usedElsewhere}
+                      onClick={() => handleSwapPick(entry.problem.id)}
+                      className={`flex items-start gap-2.5 rounded-xl p-2.5 text-left transition-all ${
+                        usedElsewhere
+                          ? 'cursor-not-allowed bg-slate-50 opacity-60'
+                          : isCurrent
+                            ? 'bg-indigo-50'
+                            : 'bg-slate-50 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex flex-wrap items-center gap-1">
+                          <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">
+                            {SECTION_INFO[entry.section].icon}
+                            {SECTION_INFO[entry.section].label}
+                          </span>
+                          <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                            {entry.problem.tagLabel}
+                          </span>
+                          {isCurrent && (
+                            <span className="text-[10px] font-semibold text-indigo-600">当前</span>
+                          )}
+                          {usedElsewhere && (
+                            <span className="text-[10px] font-semibold text-emerald-600">
+                              已选用
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs leading-relaxed text-slate-700">
+                          {stripHtml(entry.problem.text)}
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })
+              )}
             </div>
           </div>
         </div>
