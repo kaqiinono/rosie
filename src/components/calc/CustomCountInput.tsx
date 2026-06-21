@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 /** Shared preset choices for both the total and per-type question counts. */
 export const COUNT_OPTIONS = [10, 20, 30, 50, 100]
@@ -23,9 +23,12 @@ export default function CustomCountInput({ count, onChange, size = 'sm' }: Props
 
   // Keep the field in sync when the count changes elsewhere (e.g. a chip click):
   // empty (placeholder) for presets, the number itself for a custom value.
-  useEffect(() => {
+  // Adjusting state during render (the documented pattern) avoids an effect.
+  const [prevCount, setPrevCount] = useState(count)
+  if (count !== prevCount) {
+    setPrevCount(count)
     setDraft(COUNT_OPTIONS.includes(count) ? '' : String(count))
-  }, [count])
+  }
 
   const sizeCls =
     size === 'md' ? 'w-20 rounded-xl px-3 py-2 text-[13px]' : 'w-14 rounded-md px-2 py-0.5 text-[11px]'
