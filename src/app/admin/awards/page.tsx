@@ -43,7 +43,7 @@ export default function AwardsAdminPage() {
   const { grantFree } = useCalcVouchers(user)
   const catalog = useVoucherCatalog(user)
 
-  const [amounts, setAmounts] = useState<Record<StarColor, number>>({
+  const [amounts, setAmounts] = useState<Record<StarColor, number | ''>>({
     yellow: 10,
     red: 10,
     blue: 10,
@@ -98,7 +98,7 @@ export default function AwardsAdminPage() {
         await wallet.refresh()
         await loadToday()
         const hex = STAR_COLOR_HEX[color]
-        triggerFlash(`已添加 ${amount} 颗${hex.cnLabel}${hex.shapeLabel}`)
+        triggerFlash(`已添加 ${amount} 颗${hex.shapeLabel}`)
       } finally {
         setBusy(null)
       }
@@ -281,8 +281,15 @@ export default function AwardsAdminPage() {
                     type="number"
                     min={1}
                     value={amounts[c]}
-                    onChange={(e) =>
-                      setAmounts((prev) => ({ ...prev, [c]: Math.max(1, Number(e.target.value) || 1) }))
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setAmounts((prev) => ({
+                        ...prev,
+                        [c]: raw === '' ? '' : Math.max(1, Number(raw) || 1),
+                      }))
+                    }}
+                    onBlur={() =>
+                      setAmounts((prev) => ({ ...prev, [c]: prev[c] === '' ? 1 : prev[c] }))
                     }
                     className="font-fredoka mb-2 w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-center text-[18px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
                     style={{ color: hex.outline }}
@@ -311,14 +318,16 @@ export default function AwardsAdminPage() {
                   <button
                     type="button"
                     disabled={!!busy}
-                    onClick={() => handleAddStars(c, amounts[c])}
+                    onClick={() => handleAddStars(c, Number(amounts[c]) || 1)}
                     className="w-full cursor-pointer rounded-lg py-2 text-[13px] font-extrabold text-white shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
                     style={{
                       background: `linear-gradient(135deg,${hex.primary},${hex.outline})`,
                       boxShadow: `0 3px 12px ${hex.glow}`,
                     }}
                   >
-                    {busy === `star:${c}:${amounts[c]}` ? '添加中…' : `添加 ${amounts[c]} 颗${hex.shapeLabel}`}
+                    {busy === `star:${c}:${Number(amounts[c]) || 1}`
+                      ? '添加中…'
+                      : `添加 ${Number(amounts[c]) || 1} 颗${hex.shapeLabel}`}
                   </button>
                 </div>
               )
