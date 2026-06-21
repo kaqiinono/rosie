@@ -10,11 +10,10 @@ import BlockPicker from '@/components/calc/BlockPicker'
 import MixedOpList from '@/components/calc/MixedOpList'
 import CalcConfigBar from '@/components/calc/CalcConfigBar'
 import PerTypeTimeChips from '@/components/calc/PerTypeTimeChips'
+import CustomCountInput, { COUNT_OPTIONS } from '@/components/calc/CustomCountInput'
 import { playSfx } from '@/components/calc/audio'
 import { blocksByGroup, blockById, type CalcBlock } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
-
-const COUNT_OPTIONS = [10, 20, 30, 50, 100]
 
 interface PerTypeCardProps {
   label: string
@@ -85,6 +84,7 @@ function PerTypeConfigCard({
               </button>
             )
           })}
+          <CustomCountInput count={count} onChange={onCount} size="sm" />
         </div>
       )}
       {showSeconds && (

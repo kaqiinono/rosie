@@ -34,10 +34,17 @@ type Section = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
 type QuizEntry = { problem: Problem; lessonId: string; section: Section }
 
 type QuizItem = {
+  uid: string
   lessonId: string
   sections: Section[]
   types: string[]
   problemId: string
+}
+
+let uidCounter = 0
+function makeUid() {
+  uidCounter += 1
+  return `q${Date.now().toString(36)}${uidCounter.toString(36)}`
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -99,9 +106,9 @@ function buildPool(lessonId: string, sections: Section[], types: string[]): Quiz
 function pickBest(
   pool: QuizEntry[],
   solveCount: Record<string, number>,
-  excludeId?: string,
+  exclude?: Set<string>,
 ): QuizEntry | null {
-  const candidates = excludeId ? pool.filter((e) => e.problem.id !== excludeId) : pool
+  const candidates = exclude ? pool.filter((e) => !exclude.has(e.problem.id)) : pool
   if (candidates.length === 0) return null
   const sorted = [...candidates].sort(
     (a, b) => (solveCount[a.problem.id] ?? 0) - (solveCount[b.problem.id] ?? 0),
@@ -111,8 +118,8 @@ function pickBest(
   return minGroup[Math.floor(Math.random() * minGroup.length)]
 }
 
-function pickRandom(pool: QuizEntry[], excludeId: string): QuizEntry | null {
-  const candidates = pool.filter((e) => e.problem.id !== excludeId)
+function pickRandom(pool: QuizEntry[], exclude: Set<string>): QuizEntry | null {
+  const candidates = pool.filter((e) => !exclude.has(e.problem.id))
   if (candidates.length === 0) return null
   return candidates[Math.floor(Math.random() * candidates.length)]
 }
@@ -160,8 +167,14 @@ export default function QuizPage() {
   const [modalLessons, setModalLessons] = useState<string[]>([])
   const [modalSections, setModalSections] = useState<Section[]>([])
   const [modalTypes, setModalTypes] = useState<Record<string, string[]>>({})
+  const [modalCounts, setModalCounts] = useState<Record<string, number>>({})
 
   const existingIds = useMemo(() => new Set(quizItems.map((i) => i.lessonId)), [quizItems])
+
+  const modalTotal = useMemo(
+    () => modalLessons.reduce((sum, id) => sum + Math.max(1, modalCounts[id] ?? 1), 0),
+    [modalLessons, modalCounts],
+  )
 
   const quizEntries = useMemo(
     () => quizItems.map((item) => ({ item, entry: ALL_ENTRIES_MAP.get(item.problemId) })),
@@ -174,6 +187,7 @@ export default function QuizPage() {
     setModalLessons(LESSON_META.filter((l) => !existingIds.has(l.id)).map((l) => l.id))
     setModalSections([])
     setModalTypes({})
+    setModalCounts({})
     setModalOpen(true)
   }
 
@@ -187,6 +201,18 @@ export default function QuizPage() {
       }
       return prev
     })
+    setModalCounts((prev) => {
+      if (prev[id]) {
+        const n = { ...prev }
+        delete n[id]
+        return n
+      }
+      return prev
+    })
+  }
+
+  function setModalCount(lessonId: string, n: number) {
+    setModalCounts((prev) => ({ ...prev, [lessonId]: Math.max(1, n) }))
   }
 
   function toggleModalSection(s: Section) {
@@ -207,9 +233,20 @@ export default function QuizPage() {
       if (existingIds.has(lessonId)) continue
       const types = modalTypes[lessonId] ?? []
       const pool = buildPool(lessonId, modalSections, types)
-      const picked = pickBest(pool, solveCount)
-      if (!picked) continue
-      newItems.push({ lessonId, sections: modalSections, types, problemId: picked.problem.id })
+      const count = Math.max(1, modalCounts[lessonId] ?? 1)
+      const chosen = new Set<string>()
+      for (let k = 0; k < count; k++) {
+        const picked = pickBest(pool, solveCount, chosen)
+        if (!picked) break // pool exhausted — fewer distinct problems than requested
+        chosen.add(picked.problem.id)
+        newItems.push({
+          uid: makeUid(),
+          lessonId,
+          sections: modalSections,
+          types,
+          problemId: picked.problem.id,
+        })
+      }
     }
     setQuizItems((prev) => [...prev, ...newItems])
     setModalOpen(false)
@@ -217,19 +254,21 @@ export default function QuizPage() {
 
   // ── Quiz builder handlers ─────────────────────────────────────────────────
 
-  function handleSwap(lessonId: string) {
-    const item = quizItems.find((i) => i.lessonId === lessonId)
+  function handleSwap(uid: string) {
+    const item = quizItems.find((i) => i.uid === uid)
     if (!item) return
-    const pool = buildPool(lessonId, item.sections, item.types)
-    const picked = pickRandom(pool, item.problemId)
+    const pool = buildPool(item.lessonId, item.sections, item.types)
+    // Avoid duplicating any problem already in the draft (including this one).
+    const used = new Set(quizItems.map((i) => i.problemId))
+    const picked = pickRandom(pool, used) ?? pickRandom(pool, new Set([item.problemId]))
     if (!picked) return
     setQuizItems((prev) =>
-      prev.map((i) => (i.lessonId === lessonId ? { ...i, problemId: picked.problem.id } : i)),
+      prev.map((i) => (i.uid === uid ? { ...i, problemId: picked.problem.id } : i)),
     )
   }
 
-  function handleRemove(lessonId: string) {
-    setQuizItems((prev) => prev.filter((i) => i.lessonId !== lessonId))
+  function handleRemove(uid: string) {
+    setQuizItems((prev) => prev.filter((i) => i.uid !== uid))
   }
 
   async function handleSave() {
@@ -388,7 +427,7 @@ export default function QuizPage() {
 
                   return (
                     <div
-                      key={item.lessonId}
+                      key={item.uid}
                       className="flex items-start gap-3 rounded-xl bg-slate-50 p-3"
                     >
                       <span className="mt-0.5 w-4 shrink-0 text-xs font-bold text-slate-400">
@@ -416,13 +455,13 @@ export default function QuizPage() {
                       </div>
                       <div className="flex shrink-0 gap-1.5">
                         <button
-                          onClick={() => handleSwap(item.lessonId)}
+                          onClick={() => handleSwap(item.uid)}
                           className="rounded-full bg-violet-100 px-2.5 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-200"
                         >
                           换题
                         </button>
                         <button
-                          onClick={() => handleRemove(item.lessonId)}
+                          onClick={() => handleRemove(item.uid)}
                           className="rounded-full bg-rose-50 px-2.5 py-1 text-[11px] text-rose-500 hover:bg-rose-100"
                         >
                           ✕
@@ -667,18 +706,44 @@ export default function QuizPage() {
               {modalLessons.length > 0 && (
                 <section>
                   <p className="mb-2.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                    题型筛选 <span className="font-normal normal-case">(可选)</span>
+                    数量与题型 <span className="font-normal normal-case">(题型可选)</span>
                   </p>
                   <div className="flex flex-col gap-3">
                     {modalLessons.map((lessonId) => {
                       const meta = LESSON_META.find((l) => l.id === lessonId)
                       if (!meta) return null
                       const selectedTypes = modalTypes[lessonId] ?? []
+                      const count = Math.max(1, modalCounts[lessonId] ?? 1)
                       return (
                         <div key={lessonId} className="rounded-xl bg-slate-50 p-3">
-                          <p className="mb-2 text-xs font-semibold text-slate-600">
-                            第{lessonId}讲 · {meta.name}
-                          </p>
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <p className="min-w-0 truncate text-xs font-semibold text-slate-600">
+                              第{lessonId}讲 · {meta.name}
+                            </p>
+                            <div className="flex shrink-0 items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => setModalCount(lessonId, count - 1)}
+                                disabled={count <= 1}
+                                aria-label="减少数量"
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                              >
+                                −
+                              </button>
+                              <span className="w-5 text-center text-xs font-bold tabular-nums text-slate-700">
+                                {count}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setModalCount(lessonId, count + 1)}
+                                aria-label="增加数量"
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100"
+                              >
+                                +
+                              </button>
+                              <span className="ml-0.5 text-[11px] text-slate-400">道</span>
+                            </div>
+                          </div>
                           <div className="flex flex-wrap gap-1.5">
                             {meta.types.map(({ tag, label }) => {
                               const sel = selectedTypes.includes(tag)
@@ -706,7 +771,9 @@ export default function QuizPage() {
             </div>
 
             <div className="sticky bottom-0 flex items-center justify-between border-t border-slate-100 bg-white px-5 py-4">
-              <span className="text-xs text-slate-400">已选 {modalLessons.length} 个课题</span>
+              <span className="text-xs text-slate-400">
+                已选 {modalLessons.length} 个课题 · 共 {modalTotal} 题
+              </span>
               <button
                 disabled={modalLessons.length === 0}
                 onClick={handleConfirm}

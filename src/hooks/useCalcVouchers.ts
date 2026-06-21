@@ -65,14 +65,19 @@ export function useCalcVouchers(user: User | null) {
             user_id: user.id,
             category: template.category,
             coins_spent: templateTotalPrice(template),
+            free: false,
           })
           .select('id,category,redeemed_at,used_at,coins_spent')
           .single()
-        if (error || !data) return null
+        if (error || !data) {
+          console.error('[calc_vouchers] redeem failed', { category: template.category, error })
+          return null
+        }
         const v = rowToVoucher(data as VoucherRow)
         setVouchers(prev => [v, ...prev])
         return v
-      } catch {
+      } catch (err) {
+        console.error('[calc_vouchers] redeem threw', err)
         return null
       }
     },

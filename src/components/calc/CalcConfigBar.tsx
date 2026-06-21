@@ -1,6 +1,6 @@
 'use client'
 
-const COUNT_OPTIONS = [10, 20, 30, 50, 100]
+import CustomCountInput, { COUNT_OPTIONS } from './CustomCountInput'
 
 interface Props {
   count: number
@@ -38,6 +38,7 @@ export default function CalcConfigBar({ count, onChange }: Props) {
             </button>
           )
         })}
+        <CustomCountInput count={count} onChange={onChange} size="md" />
       </div>
     </div>
   )
