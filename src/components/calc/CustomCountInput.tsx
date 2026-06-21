@@ -19,16 +19,11 @@ interface Props {
  */
 export default function CustomCountInput({ count, onChange, size = 'sm' }: Props) {
   const isCustom = count > 0 && !COUNT_OPTIONS.includes(count)
+  // `draft` only drives what the user is actively typing. The displayed value is
+  // derived: when the count is a preset (e.g. a chip was clicked) we show an empty
+  // field regardless of any stale draft, so a preset selection isn't double-shown.
   const [draft, setDraft] = useState(isCustom ? String(count) : '')
-
-  // Keep the field in sync when the count changes elsewhere (e.g. a chip click):
-  // empty (placeholder) for presets, the number itself for a custom value.
-  // Adjusting state during render (the documented pattern) avoids an effect.
-  const [prevCount, setPrevCount] = useState(count)
-  if (count !== prevCount) {
-    setPrevCount(count)
-    setDraft(COUNT_OPTIONS.includes(count) ? '' : String(count))
-  }
+  const value = isCustom ? draft : ''
 
   const sizeCls =
     size === 'md' ? 'w-20 rounded-xl px-3 py-2 text-[13px]' : 'w-14 rounded-md px-2 py-0.5 text-[11px]'
@@ -38,7 +33,7 @@ export default function CustomCountInput({ count, onChange, size = 'sm' }: Props
       type="number"
       inputMode="numeric"
       min={1}
-      value={draft}
+      value={value}
       placeholder="自定义"
       aria-label="自定义题量"
       onChange={(e) => {
@@ -48,8 +43,8 @@ export default function CustomCountInput({ count, onChange, size = 'sm' }: Props
         if (Number.isFinite(v) && v > 0) onChange(v)
       }}
       onBlur={() => {
-        // Revert an empty / invalid field back to the current count.
-        if (!(Number(draft) > 0)) setDraft(COUNT_OPTIONS.includes(count) ? '' : String(count))
+        // If left empty/invalid while a custom count is active, show it again.
+        if (isCustom && !(Number(draft) > 0)) setDraft(String(count))
       }}
       className={`font-extrabold tabular-nums outline-none transition-all ${sizeCls}`}
       style={{
