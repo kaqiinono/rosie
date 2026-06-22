@@ -68,7 +68,7 @@ export default function ReadingIndexPage() {
       map.set(p.key, {
         url: data.publicUrl,
         label: p.title,
-        refLink: `reading/${p.key}`,
+        refLink: `/english/words/reading/${p.key}`,
         mediaType: 'audio',
         source: null,
       })

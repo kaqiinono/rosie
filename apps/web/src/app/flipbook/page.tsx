@@ -3,10 +3,9 @@
 import Link from 'next/link'
 import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { useAuth } from '@rosie/core'
+import { useAuth, supabase } from '@rosie/core'
 import { useImmersive } from '@rosie/core'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
-import { useAudioCollections } from '@/hooks/useAudioCollections'
 import { usePlaylistPlayer } from '@rosie/player'
 import { useWordData } from '@rosie/english'
 import { useWordMastery } from '@rosie/english'
@@ -14,12 +13,12 @@ import { PlayerDock } from '@rosie/player'
 import FlipbookWordCarouselModal, {
   flipbookPreviewWords,
 } from '@/components/flipbook/FlipbookWordCarouselModal'
-import { trackKey, type PlayerTrack } from '@rosie/player'
+import { type PlayerTrack } from '@rosie/player'
 import {
   bookHasVocabularyData,
   getBookMatchedWordKeys,
 } from '@/utils/flipbook-word-match'
-import type { FlipbookBook } from '@/utils/flipbook-types'
+import { FLIPBOOK_BUCKET, type FlipbookBook } from '@/utils/flipbook-types'
 
 export default function FlipbookShelfPage() {
   const { user, loading: authLoading } = useAuth()
@@ -27,21 +26,29 @@ export default function FlipbookShelfPage() {
   const { books, isLoading, deleteBook } = useFlipbookBooks(user)
   const { vocab } = useWordData(user)
   const { masteryMap } = useWordMastery(user)
-  const col = useAudioCollections(user)
   const player = usePlaylistPlayer()
 
   const [queueIds, setQueueIds] = useState<string[]>([])
   const [previewBook, setPreviewBook] = useState<FlipbookBook | null>(null)
 
+  // 直接从 flipbook 书目构建播放曲目（FLIPBOOK_BUCKET），不依赖 audio 模块的收藏夹聚合，
+  // 连播留在 flipbook 自己范围内。
   const trackByBookId = useMemo(() => {
-    const fbCol = col.collections.find((c) => c.kind === 'flipbook')
     const map = new Map<string, PlayerTrack>()
-    for (const t of fbCol?.tracks ?? []) {
-      const id = t.refLink?.split('/').pop()
-      if (id) map.set(id, t)
+    for (const b of books) {
+      if (!b.audioPath) continue
+      const url = supabase.storage.from(FLIPBOOK_BUCKET).getPublicUrl(b.audioPath).data.publicUrl
+      if (!url) continue
+      map.set(b.id, {
+        url,
+        label: b.title,
+        refLink: `/flipbook/${b.id}`,
+        mediaType: 'audio',
+        source: null,
+      })
     }
     return map
-  }, [col.collections])
+  }, [books])
 
   const previewWords = useMemo(
     () => (previewBook ? flipbookPreviewWords(previewBook, vocab) : []),
@@ -62,11 +69,6 @@ export default function FlipbookShelfPage() {
     },
     [deleteBook, trackByBookId, player],
   )
-
-  const current = player.current
-  const currentIsFavorite =
-    !!current?.source &&
-    col.favoriteKeySet.has(trackKey(current.source.storageBucket, current.source.storagePath))
 
   if (authLoading) {
     return <Shell>加载中…</Shell>
@@ -183,14 +185,7 @@ export default function FlipbookShelfPage() {
         </ul>
       )}
 
-      <PlayerDock
-        player={player}
-        theme="dark"
-        isFavorite={currentIsFavorite}
-        onToggleFavorite={() => {
-          if (player.current) void col.toggleFavorite(player.current)
-        }}
-      />
+      <PlayerDock player={player} theme="dark" />
 
       {previewBook && (
         <FlipbookWordCarouselModal
