@@ -4,10 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 import type { User } from '@supabase/supabase-js'
-import { useAudioCollections } from '@/hooks/useAudioCollections'
+import { useAudioCollections } from '../hooks/useAudioCollections'
 import { usePlaylistPlayer } from '@rosie/player'
 import { PlayerDock } from '@rosie/player'
-import CollectionPills from '@/components/audio/CollectionPills'
+import CollectionPills from './CollectionPills'
 import { trackKey, type AudioCollection, type AudioCollectionKind } from '@rosie/player'
 
 const KIND_ICON: Record<AudioCollectionKind, string> = {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@rosie/core'
-import AudioManagerPage from '@/components/admin/audio/AudioManagerPage'
+import { AudioManagerPage } from '@rosie/audio'
 
 export default function AdminAudioPage() {
   const { user } = useAuth()

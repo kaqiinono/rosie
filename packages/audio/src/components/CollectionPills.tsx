@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import type { CollectionMembership } from '@/hooks/useAudioCollections'
+import type { CollectionMembership } from '../hooks/useAudioCollections'
 import type { AudioPlaylistItem } from '@rosie/player'
 
 type Props = {

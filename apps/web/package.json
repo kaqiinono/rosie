@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
+    "@rosie/audio": "workspace:*",
     "@rosie/calc": "workspace:*",
     "@rosie/core": "workspace:*",
     "@rosie/english": "workspace:*",

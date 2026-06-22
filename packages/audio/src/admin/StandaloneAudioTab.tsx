@@ -1,8 +1,8 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import CollectionPills from '@/components/audio/CollectionPills'
-import type { CollectionMembership } from '@/hooks/useAudioCollections'
+import CollectionPills from '../components/CollectionPills'
+import type { CollectionMembership } from '../hooks/useAudioCollections'
 import { AUDIO_MEDIA_BUCKET, type AudioAsset, type AudioPlaylistItem } from '@rosie/player'
 
 type Props = {
