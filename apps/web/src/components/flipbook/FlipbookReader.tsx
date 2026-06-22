@@ -16,8 +16,8 @@ import {
   preloadFlipbookPageImages,
 } from '@/utils/flipbook-page-load'
 import { computeFlipbookViewportSize } from '@/utils/flipbook-viewport'
-import { STORAGE_KEYS } from '@/utils/constant'
-import { useAuth } from '@/contexts/AuthContext'
+import { STORAGE_KEYS } from '@rosie/core'
+import { useAuth } from '@rosie/core'
 import { useWordData } from '@/hooks/useWordData'
 import { getPageWordEntries } from '@/utils/flipbook-word-match'
 

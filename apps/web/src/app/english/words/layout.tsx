@@ -7,7 +7,7 @@ import { useImmersive } from '@/contexts/ImmersiveContext'
 import AppHeader from '@/components/english/words/AppHeader'
 import ImportModal from '@/components/english/words/ImportModal'
 import ImmersiveMode from '@/components/english/words/ImmersiveMode'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

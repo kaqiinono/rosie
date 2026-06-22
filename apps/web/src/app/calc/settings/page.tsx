@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
-import { useCalcWallet } from '@/hooks/useCalcWallet'
+import { useCalcWallet } from '@rosie/rewards'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import BlockPicker from '@/components/calc/BlockPicker'
 import MixedOpList from '@/components/calc/MixedOpList'

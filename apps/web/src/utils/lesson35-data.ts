@@ -1,4 +1,4 @@
-import type {Problem, ProblemSet} from './type'
+import type {Problem, ProblemSet} from '@rosie/core'
 
 function numOf(s: string | object): number {
     if (typeof s !== 'string') {

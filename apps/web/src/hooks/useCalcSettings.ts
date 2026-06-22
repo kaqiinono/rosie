@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import type { BlockSel, CalcSettings, MixedOp } from '@/utils/type'
+import { supabase } from '@rosie/core'
+import type { BlockSel, CalcSettings, MixedOp } from '@rosie/core'
 
 const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: 0 }
 

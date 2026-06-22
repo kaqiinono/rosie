@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import type { ProblemSet, Problem } from '@/utils/type'
+import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson18-data'
 
 const BASE = '/math/ny/18'

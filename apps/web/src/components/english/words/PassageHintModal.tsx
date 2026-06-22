@@ -1,6 +1,6 @@
 'use client'
 
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { blankWordInSentence } from '@/utils/reading-data'
 
 interface PassageHintModalProps {

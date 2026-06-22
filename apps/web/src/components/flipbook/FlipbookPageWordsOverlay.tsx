@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { briefChineseDef } from '@/utils/flipbook-word-match'
 
 type FlipbookPageWordsOverlayProps = {

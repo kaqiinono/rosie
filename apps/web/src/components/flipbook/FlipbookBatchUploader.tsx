@@ -18,7 +18,7 @@ import { matchFlipbookBatchFiles } from '@/utils/flipbook-batch-match'
 import { parseSyncFileText, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
 import { enrichManifestWithWordMatches } from '@/utils/flipbook-word-match'
 import type { FlipbookSyncManifest } from '@/utils/flipbook-types'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 type FlipbookBatchUploaderProps = {
   vocab: WordEntry[]

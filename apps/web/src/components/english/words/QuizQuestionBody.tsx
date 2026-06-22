@@ -1,16 +1,16 @@
 'use client'
 
 import { useMemo, type ReactNode } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { findPassage, findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
-import { pickMessage, RETRY_MC_MESSAGES } from '@/utils/constant'
+import { pickMessage, RETRY_MC_MESSAGES } from '@rosie/core'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
 import SpellTiles, { type SpellButtonStyle } from './SpellTiles'
 import PassageHintModal from './PassageHintModal'
 import WordHelpModal from './WordHelpModal'
 import { letterCount } from '@/utils/english-helpers'
-import type { QuizQuestion } from '@/utils/type'
+import type { QuizQuestion } from '@rosie/core'
 import type { QuizRunnerState } from './useQuizRunner'
 
 interface QuizQuestionBodyProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Problem } from '@/utils/type'
+import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@/utils/lesson37-data'
 import { useLesson37 } from './Lesson37Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'

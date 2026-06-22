@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import { todayStr } from '@/utils/constant'
+import { supabase } from '@rosie/core'
+import { todayStr } from '@rosie/core'
 
 interface DailySummary {
   todayDone: number          // questions answered today (correct + retry + wrong)

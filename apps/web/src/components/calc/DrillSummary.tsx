@@ -1,6 +1,6 @@
 'use client'
 
-import type { CalcProblemState } from '@/utils/type'
+import type { CalcProblemState } from '@rosie/core'
 
 interface DrillSummaryWeakProps {
   type: 'weak-formulas'

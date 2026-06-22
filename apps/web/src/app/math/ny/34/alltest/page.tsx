@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PROBLEMS } from '@/utils/lesson34-data'
 import { useLesson34 } from '@/components/math/lesson34/Lesson34Provider'
-import type { ProblemDifficulty } from '@/utils/difficulty'
+import type { ProblemDifficulty } from '@rosie/core'
 import FilterPanel from '@/components/math/lesson34/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'

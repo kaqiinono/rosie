@@ -5,7 +5,7 @@ import {
   DIFFICULTY_FILTER_BTNS,
   allDifficultiesSelected,
   type ProblemDifficulty,
-} from '@/utils/difficulty'
+} from '@rosie/core'
 
 type Props = {
   selected: Set<ProblemDifficulty>

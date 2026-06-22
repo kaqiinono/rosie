@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 import { useReadingPassageMedia } from '@/hooks/useReadingPassageMedia'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useAudioPlaylists } from '@/hooks/useAudioPlaylists'

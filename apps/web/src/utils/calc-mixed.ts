@@ -1,4 +1,4 @@
-import type { CalcSkeletonId, MixedOp, CalcQuestion } from './type'
+import type { CalcSkeletonId, MixedOp, CalcQuestion } from '@rosie/core'
 import { AstNode, evalAst, makeQuestion, pickOne, randInt } from './calc-ast'
 import { blockById, type CalcBlock } from './calc-blocks'
 

@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useWordData } from '@/hooks/useWordData'
 import { useCalcDaily } from '@/hooks/useCalcDaily'
-import { todayStr } from '@/utils/constant'
+import { todayStr } from '@rosie/core'
 import { findPassage, parseFocusLessonKey } from '@/utils/reading-data'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 function wordKeyStr(e: WordEntry): string {
   return `${e.unit}::${e.lesson}::${e.word}`

@@ -1,4 +1,4 @@
-import type { WordEntry } from './type'
+import type { WordEntry } from '@rosie/core'
 
 const _RAW_WORDS: WordEntry[] = [{
   "stage": "4A",

@@ -1,6 +1,6 @@
 'use client'
 
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import FlashCard from '@/components/english/words/FlashCard'
 import PhonicsLegend from '@/components/english/words/PhonicsLegend'
 

@@ -1,5 +1,5 @@
 import type { FlipbookPageSync, FlipbookSyncManifest } from '@/utils/flipbook-types'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { buildWordMatchRegex, resolveMatchedWord } from '@/utils/reading-data'
 
 export function flipbookWordKey(entry: WordEntry): string {

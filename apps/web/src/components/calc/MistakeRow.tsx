@@ -1,6 +1,6 @@
 'use client'
 
-import type { CalcMistake } from '@/utils/type'
+import type { CalcMistake } from '@rosie/core'
 import { formatAnswer } from '@/utils/calc-answer'
 
 interface Props {

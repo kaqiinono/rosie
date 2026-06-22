@@ -1,4 +1,4 @@
-import type { WordEntry } from './type'
+import type { WordEntry } from '@rosie/core'
 
 /**
  * Auxiliary reading-only vocabulary. Distinct from `lessonWords` (which feed

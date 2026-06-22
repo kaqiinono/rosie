@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole } from '@/utils/type'
+import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole } from '@rosie/core'
 import { encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
@@ -30,13 +30,13 @@ import RescueCompletionView from './RescueCompletionView'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
-import { useStarHud } from '@/components/stars/StarHudProvider'
-import StarProgressBar from '@/components/stars/StarProgressBar'
-import { supabase } from '@/lib/supabase'
-import { todayStr } from '@/utils/constant'
+import { useStarHud } from '@rosie/rewards'
+import { StarProgressBar } from '@rosie/rewards'
+import { supabase } from '@rosie/core'
+import { todayStr } from '@rosie/core'
 
 interface WeeklyPlanSessionProps {
   initialPlan: WeeklyPlan

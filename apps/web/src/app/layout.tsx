@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import ServiceWorkerRegistrar from '@/components/shared/ServiceWorkerRegistrar'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider } from '@rosie/core'
 import { ImmersiveProvider } from '@/contexts/ImmersiveContext'
 import TopRightBar from '@/components/shared/TopRightBar'
 import AuthGuard from '@/components/shared/AuthGuard'
-import { StarHudProvider } from '@/components/stars/StarHudProvider'
-import StarBurstOverlay from '@/components/stars/StarBurst'
+import { StarHudProvider } from '@rosie/rewards'
+import { StarBurst as StarBurstOverlay } from '@rosie/rewards'
 import './globals.css'
 
 export const metadata: Metadata = {

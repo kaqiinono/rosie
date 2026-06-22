@@ -1,6 +1,6 @@
 'use client'
 
-import type { ProblemSet } from './type'
+import type { ProblemSet } from '@rosie/core'
 
 export const LESSON_TIP =
   '剪切法：剪后周长和 = 原周长 + 2×所有切割线总长\n平移法：阶梯形周长 = 2×(最大宽 + 最大高)\n标向法：给每条边标方向，水平、竖直各自成对'

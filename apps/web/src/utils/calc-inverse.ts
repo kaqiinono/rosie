@@ -1,5 +1,5 @@
 import { parseSignature, OP_SYMBOL } from './calc-ast'
-import type { CalcQuestion, CalcAnswer } from './type'
+import type { CalcQuestion, CalcAnswer } from '@rosie/core'
 
 /** Glyph used for the hidden operand. Matches the blank form QuestionDisplay already supports. */
 const BLANK = '□'

@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 
 function toEmail(username: string) {
   return `${username.trim().toLowerCase()}@rosie.app`

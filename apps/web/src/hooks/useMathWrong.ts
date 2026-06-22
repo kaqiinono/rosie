@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 
 export function useMathWrong(user: User | null) {
   const [wrongIds, setWrongIds] = useState<Set<string>>(new Set())

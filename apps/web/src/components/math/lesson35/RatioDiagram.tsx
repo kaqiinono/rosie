@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { Problem, RatioInput, OpInput, RatioColValue } from '@/utils/type'
+import type { Problem, RatioInput, OpInput, RatioColValue } from '@rosie/core'
 
 interface RatioDiagramProps {
   problem: Problem

@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
-import { useCalcWallet } from '@/hooks/useCalcWallet'
+import { useCalcWallet } from '@rosie/rewards'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import MistakeRow from '@/components/calc/MistakeRow'
 import { categoryLabel } from '@/utils/calc-helpers'
-import type { CalcCategory, CalcMistake } from '@/utils/type'
+import type { CalcCategory, CalcMistake } from '@rosie/core'
 
 export default function CalcMistakesPage() {
   const router = useRouter()

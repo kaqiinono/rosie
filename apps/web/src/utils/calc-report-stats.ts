@@ -1,5 +1,5 @@
 // src/utils/calc-report-stats.ts
-import type { CalcSession, CalcProblemState } from './type'
+import type { CalcSession, CalcProblemState } from '@rosie/core'
 import { blockById } from './calc-blocks'
 import { skeletonMeta } from './calc-mixed'
 import { suggestedTiers, tierOf, nextTierGap, type Tier } from './calc-time-targets'

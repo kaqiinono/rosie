@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import type { CalcSession, CalcMode, CalcLevel, VoucherCategory } from '@/utils/type'
-import { levelKey } from '@/utils/calc-helpers'
-import { todayStr } from '@/utils/constant'
+import { supabase } from '@rosie/core'
+import type { CalcSession, CalcMode, CalcLevel, VoucherCategory } from '@rosie/core'
+import { todayStr } from '@rosie/core'
+
+// Inlined from calc-helpers to keep the shared rewards package independent of the calc engine.
+const levelKey = (level: CalcLevel): string =>
+  typeof level === 'number' ? String(level) : level
 
 interface TemplatePriceRow {
   category: string

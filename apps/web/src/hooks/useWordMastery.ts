@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 import { getWordMasteryLevel, advanceStage, regressStage } from '@/utils/masteryUtils'
 import { wordKey } from '@/utils/english-helpers'
-import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord } from '@/utils/type'
+import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord } from '@rosie/core'
 
 export function useWordMastery(user: User | null) {
   const [masteryMap, setMasteryMap] = useState<WordMasteryMap>({})

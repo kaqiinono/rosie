@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import type { VoucherTemplate } from '@/utils/type'
+import { supabase } from '@rosie/core'
+import type { VoucherTemplate } from '@rosie/core'
 
 interface TemplateRow {
   category: string

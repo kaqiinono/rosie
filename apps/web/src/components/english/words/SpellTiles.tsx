@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { pickMessage, RETRY_SPELL_MESSAGES } from '@/utils/constant'
+import { pickMessage, RETRY_SPELL_MESSAGES } from '@rosie/core'
 import CandyButton, {
   CANDY_PRESETS,
   DEFAULT_PRESET_ORDER,

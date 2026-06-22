@@ -1,7 +1,7 @@
 'use client'
 
-import type { Voucher, VoucherTemplate } from '@/utils/type'
-import ColoredStar from '@/components/stars/ColoredStar'
+import type { Voucher, VoucherTemplate } from '@rosie/core'
+import { ColoredStar } from '@rosie/rewards'
 
 interface Props {
   voucher: Voucher

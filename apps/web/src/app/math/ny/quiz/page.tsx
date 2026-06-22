@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { useMathQuiz } from '@/hooks/useMathQuiz'
 import { PROBLEMS as P12, PROBLEM_TYPES as PT12 } from '@/utils/lesson12-data'
@@ -24,7 +24,7 @@ import { PROBLEMS as P41, PROBLEM_TYPES as PT41 } from '@/utils/lesson41-data'
 import { PROBLEMS as P42, PROBLEM_TYPES as PT42 } from '@/utils/lesson42-data'
 import { PROBLEMS as P43, PROBLEM_TYPES as PT43 } from '@/utils/lesson43-data'
 import { PROBLEMS as P44, PROBLEM_TYPES as PT44 } from '@/utils/lesson44-data'
-import type { Problem, ProblemSet } from '@/utils/type'
+import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizProblemItem } from '@/hooks/useMathQuiz'
 
 // ── Types ─────────────────────────────────────────────────────────────────────

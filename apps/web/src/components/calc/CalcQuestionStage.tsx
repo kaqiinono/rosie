@@ -21,7 +21,7 @@
 import CalcAnswerInput from './CalcAnswerInput'
 import NumberPad from './NumberPad'
 import { type FeedbackKind } from './FeedbackOverlay'
-import type { CalcQuestion } from '@/utils/type'
+import type { CalcQuestion } from '@rosie/core'
 
 // ── Expression header (used by 余数 / 分数) ─────────────────────────────────────
 // Pad-less types render the answer surface below, so the header ends with "=" —

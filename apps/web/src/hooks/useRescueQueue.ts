@@ -6,10 +6,10 @@ import type {
   RescueQueueItem,
   WordEntry,
   QuizType,
-} from '@/utils/type'
+} from '@rosie/core'
 import { interleaveOrderedQuizSlots } from '@/utils/english-helpers'
 import { MONSTERS } from '@/components/english/words/monsters'
-import { STORAGE_KEYS } from '@/utils/constant'
+import { STORAGE_KEYS } from '@rosie/core'
 
 export interface RescueBatches {
   /** Eaten words to review (manual carousel) before practice begins. */

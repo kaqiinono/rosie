@@ -10,7 +10,7 @@ import type {
   CalcQuestion,
   CalcSettings,
   MixedOp,
-} from './type'
+} from '@rosie/core'
 
 /** Coin reward including streak bonus. coinBase already accounts for ×2 on challenge questions. */
 export function coinReward(question: CalcQuestion, streak: number): number {

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useWordsContext } from '@/contexts/WordsContext'
-import type { WeeklyPlan } from '@/utils/type'
+import type { WeeklyPlan } from '@rosie/core'
 import WeeklyPlanSession from '@/components/english/words/WeeklyPlanSession'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 

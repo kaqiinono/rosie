@@ -1,4 +1,4 @@
-import type { Problem, ProblemSet } from './type'
+import type { Problem, ProblemSet } from '@rosie/core'
 import PretestFig4 from '@/components/math/lesson44/Figure/PretestFig4'
 import LessonFig6 from '@/components/math/lesson44/Figure/LessonFig6'
 import LessonFig12 from '@/components/math/lesson44/Figure/LessonFig12'

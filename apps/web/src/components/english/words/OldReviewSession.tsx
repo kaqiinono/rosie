@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import {
   buildQuizOptions,
   buildQuizQuestions,
@@ -19,7 +19,7 @@ import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useImmersive } from '@/contexts/ImmersiveContext'
-import { useStarHud } from '@/components/stars/StarHudProvider'
+import { useStarHud } from '@rosie/rewards'
 
 interface OldReviewSessionProps {
   words: WordEntry[]          // pre-computed due words, ordered by urgency

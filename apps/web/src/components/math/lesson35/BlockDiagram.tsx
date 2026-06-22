@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { BlockScene } from '@/utils/type'
+import type { BlockScene } from '@rosie/core'
 
 interface BlockDiagramProps {
   scene: BlockScene

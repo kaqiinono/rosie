@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useReadingPassageMedia } from '@/hooks/useReadingPassageMedia'
 import { useAudioCollections } from '@/hooks/useAudioCollections'

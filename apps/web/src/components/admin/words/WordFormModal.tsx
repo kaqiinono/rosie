@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { enrichWord, type EnrichResult } from '@/utils/word-enrich'
 import { hilite } from '@/utils/english-helpers'
 import { KW_COLORS, DEFAULT_KW_COLOR, type StageTree } from './types'

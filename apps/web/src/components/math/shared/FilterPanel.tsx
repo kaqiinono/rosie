@@ -2,10 +2,10 @@
 
 import { memo, useCallback, useState, type ComponentType } from 'react'
 import Link from 'next/link'
-import type { Problem, ProblemSet } from '@/utils/type'
-import { SOURCE_LABELS } from '@/utils/constant'
+import type { Problem, ProblemSet } from '@rosie/core'
+import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
-import type { ProblemDifficulty } from '@/utils/difficulty'
+import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@/components/math/shared/DifficultyFilterRow'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'

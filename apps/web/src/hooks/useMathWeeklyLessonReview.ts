@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import type { MathPlanProblem, MathWeeklyLessonReviewState } from '@/utils/type'
+import { supabase } from '@rosie/core'
+import type { MathPlanProblem, MathWeeklyLessonReviewState } from '@rosie/core'
 import { pickWeeklyLessonProblem } from '@/utils/math-helpers'
 
 function initialState(planLessonId: string): MathWeeklyLessonReviewState {

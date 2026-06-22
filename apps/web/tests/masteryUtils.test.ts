@@ -12,7 +12,7 @@ import {
   NORMAL_INTERVALS,
   HARD_INTERVALS,
 } from '@/utils/masteryUtils'
-import type { WordMasteryInfo } from '@/utils/type'
+import type { WordMasteryInfo } from '@rosie/core'
 
 const TODAY = '2026-05-29'
 

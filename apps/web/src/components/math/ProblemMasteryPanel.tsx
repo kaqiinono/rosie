@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { MathPlanProblem, ProblemMasteryMap } from '@/utils/type'
+import type { MathPlanProblem, ProblemMasteryMap } from '@rosie/core'
 import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@/utils/masteryUtils'
 
 interface Props {

@@ -1,6 +1,6 @@
 'use client'
 
-import type { Problem } from '@/utils/type'
+import type { Problem } from '@rosie/core'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

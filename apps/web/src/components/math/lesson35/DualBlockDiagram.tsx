@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { DualSceneConfig } from '@/utils/type'
+import type { DualSceneConfig } from '@rosie/core'
 
 interface DualBlockDiagramProps {
   config: DualSceneConfig

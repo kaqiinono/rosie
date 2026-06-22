@@ -1,6 +1,6 @@
 'use client'
 
-import type { RescueQueueItem } from '@/utils/type'
+import type { RescueQueueItem } from '@rosie/core'
 
 type Props = {
   eatenList: RescueQueueItem[]

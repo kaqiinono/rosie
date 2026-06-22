@@ -1,8 +1,8 @@
-import type { EnglishWeeklyReport } from '@/utils/type'
-import type { WordEntry, WeeklyPlan, WordMasteryMap } from '@/utils/type'
+import type { EnglishWeeklyReport } from '@rosie/core'
+import type { WordEntry, WeeklyPlan, WordMasteryMap } from '@rosie/core'
 import { ALL_CN_DAYS, classifyPlanWords, fmtDate, fmtWeekRange, wordKey } from '@/utils/english-helpers'
 import { ensureStageInit, getWordMasteryLevel } from '@/utils/masteryUtils'
-import { todayStr } from '@/utils/constant'
+import { todayStr } from '@rosie/core'
 
 function formatUnitLesson(plan: WeeklyPlan): string {
   const units = plan.unit.split(', ')

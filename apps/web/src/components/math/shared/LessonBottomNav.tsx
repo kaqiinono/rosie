@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { NAV_PAGES } from '@/utils/constant'
+import { NAV_PAGES } from '@rosie/core'
 import type { LessonContextType } from './createLessonProvider'
 
 const BOTTOM_KEYS = new Set(['home', 'lesson', 'homework', 'alltest', 'mistakes'])

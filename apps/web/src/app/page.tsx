@@ -4,8 +4,8 @@ import Link from 'next/link'
 import OrbBackground from '@/components/shared/OrbBackground'
 import ModuleCard from '@/components/shared/ModuleCard'
 import { useGreeting } from '@/hooks/useGreeting'
-import { useAuth } from '@/contexts/AuthContext'
-import type { ModuleCardData } from '@/utils/type'
+import { useAuth } from '@rosie/core'
+import type { ModuleCardData } from '@rosie/core'
 
 const modules: ModuleCardData[] = [
   {

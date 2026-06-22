@@ -1,6 +1,6 @@
 'use client'
 
-import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import { wordKey } from '@/utils/english-helpers'
 import FlashCard from './FlashCard'
 

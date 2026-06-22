@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type CSSProperties } from 'react'
-import type { WordEntry, WordMasteryInfo } from '@/utils/type'
+import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import { getWordSizeClass } from '@/utils/phonics'
 import { hilite } from '@/utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@/utils/masteryUtils'

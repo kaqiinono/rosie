@@ -1,4 +1,4 @@
-import type { FruitItem, Lesson34Mode } from './type'
+import type { FruitItem, Lesson34Mode } from '@rosie/core'
 
 export interface MergeStep {
   story: string

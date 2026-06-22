@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { WordEntry, WordMasteryInfo, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryInfo, WordMasteryMap } from '@rosie/core'
 import { wordKey } from '@/utils/english-helpers'
 import { ensureStageInit, isGraduated, MASTERY_ICON, getWordMasteryLevel } from '@/utils/masteryUtils'
 

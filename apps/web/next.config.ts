@@ -3,6 +3,8 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  transpilePackages: ['@rosie/core', '@rosie/rewards'],
+
   headers: async () => [
     {
       source: '/sw.js',

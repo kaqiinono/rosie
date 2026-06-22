@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import type { WordEntry, QuizQuestion, QuizType } from '@/utils/type'
+import type { WordEntry, QuizQuestion, QuizType } from '@rosie/core'
 import {
   hilite,
   highlightExample,
@@ -15,8 +15,8 @@ import {
 import { getWordSizeClass } from '@/utils/phonics'
 import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import PhonicsWord from './PhonicsWord'
-import { useStarHud } from '@/components/stars/StarHudProvider'
-import ColoredStar from '@/components/stars/ColoredStar'
+import { useStarHud } from '@rosie/rewards'
+import { ColoredStar } from '@rosie/rewards'
 import { useQuizRunner } from './useQuizRunner'
 import type { QuizCommitInfo } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'

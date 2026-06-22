@@ -1,4 +1,4 @@
-import type { WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@/utils/type'
+import type { WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
 import { classifyPlanWords, getDailySessionWords, wordKey } from '@/utils/english-helpers'
 import {
   getWordMasteryLevel,
@@ -6,7 +6,7 @@ import {
   ensureStageInit,
   isGraduated,
 } from '@/utils/masteryUtils'
-import { todayStr } from '@/utils/constant'
+import { todayStr } from '@rosie/core'
 
 export type WeeklyReportWordRow = {
   key: string

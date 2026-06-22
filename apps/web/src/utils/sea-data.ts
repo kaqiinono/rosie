@@ -16,7 +16,7 @@ import { PROBLEMS as PROBLEMS41, PROBLEM_TYPES as PT41, TAG_STYLE as TS41 } from
 import { PROBLEMS as PROBLEMS42, PROBLEM_TYPES as PT42, TAG_STYLE as TS42 } from './lesson42-data'
 import { PROBLEMS as PROBLEMS43, PROBLEM_TYPES as PT43, TAG_STYLE as TS43 } from './lesson43-data'
 import { PROBLEMS as PROBLEMS44, PROBLEM_TYPES as PT44, TAG_STYLE as TS44 } from './lesson44-data'
-import type { Problem, ProblemSet } from './type'
+import type { Problem, ProblemSet } from '@rosie/core'
 
 export interface SeaLessonMeta {
   id: string

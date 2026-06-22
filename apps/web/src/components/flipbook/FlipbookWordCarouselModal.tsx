@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import FlashCard from '@/components/english/words/FlashCard'
 import type { FlipbookBook } from '@/utils/flipbook-types'
-import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import { wordKey } from '@/utils/english-helpers'
 import { getBookWordEntries } from '@/utils/flipbook-word-match'
 

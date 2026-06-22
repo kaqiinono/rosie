@@ -1,10 +1,10 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@/hooks/useMathSolved'
-import { useStarHud } from '@/components/stars/StarHudProvider'
-import { supabase } from '@/lib/supabase'
+import { useStarHud } from '@rosie/rewards'
+import { supabase } from '@rosie/core'
 
 interface LessonContextType {
   solveCount: Record<string, number>

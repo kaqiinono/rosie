@@ -3,20 +3,20 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@/utils/sea-data'
-import { SOURCE_LABELS } from '@/utils/constant'
+import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel } from '@/utils/masteryUtils'
 import {
   ALL_DIFFICULTY_LEVELS,
   DIFFICULTY_FILTER_BTNS,
   allDifficultiesSelected,
   type ProblemDifficulty,
-} from '@/utils/difficulty'
+} from '@rosie/core'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
-import { useStarHud } from '@/components/stars/StarHudProvider'
-import StarProgressBar from '@/components/stars/StarProgressBar'
+import { useStarHud } from '@rosie/rewards'
+import { StarProgressBar } from '@rosie/rewards'
 
 // ── Ocean animation styles ─────────────────────────────────────────────────────
 

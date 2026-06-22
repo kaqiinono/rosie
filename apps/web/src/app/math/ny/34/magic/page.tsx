@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { FruitItem, Lesson34Mode } from '@/utils/type'
-import { FRUIT_ITEMS, PRICES, SMALL_NUMS } from '@/utils/constant'
+import type { FruitItem, Lesson34Mode } from '@rosie/core'
+import { FRUIT_ITEMS, PRICES, SMALL_NUMS } from '@rosie/core'
 import { getSteps } from '@/utils/lesson34'
-import { launchConfetti, pickDifferent } from '@/utils/confetti'
+import { launchConfetti, pickDifferent } from '@rosie/core'
 import ModeBar from '@/components/math/lesson34/ModeBar'
 import StoryBox from '@/components/math/lesson34/StoryBox'
 import StageArea from '@/components/math/lesson34/StageArea'

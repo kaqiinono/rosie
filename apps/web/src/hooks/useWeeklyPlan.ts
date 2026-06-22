@@ -2,11 +2,11 @@
 
 import {useState, useCallback, useEffect, useMemo, useRef} from 'react'
 import type {User} from '@supabase/supabase-js'
-import {supabase} from '@/lib/supabase'
+import {supabase} from '@rosie/core'
 import {getWeekStart} from '@/utils/english-helpers'
 import { decodeWeeklyPlanProgress, encodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import { parsePlanDataFromSupabase, serializePlanDataForSupabase } from '@/utils/weeklyPlanPayload'
-import type {WeeklyPlan, WeekDayProgress} from '@/utils/type'
+import type {WeeklyPlan, WeekDayProgress} from '@rosie/core'
 
 const SYSTEM_DEFAULTS = {weekStartDay: 4, newWordsPerDay: 3}
 

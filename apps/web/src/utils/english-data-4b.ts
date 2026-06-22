@@ -1,4 +1,4 @@
-import type { WordEntry } from './type'
+import type { WordEntry } from '@rosie/core'
 
 /**
  * 4B vocabulary backup — 223 words across Units 7–12.

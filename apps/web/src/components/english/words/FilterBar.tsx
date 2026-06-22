@@ -1,6 +1,6 @@
 'use client'
 
-import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { MasteryLevel } from '@/utils/masteryUtils'
 import { MASTERY_ICON } from '@/utils/masteryUtils'
 import { getAllUnits, getAllStages } from '@/utils/english-helpers'

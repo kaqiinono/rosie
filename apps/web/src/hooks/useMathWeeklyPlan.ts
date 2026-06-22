@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 import { getWeekStart } from '@/utils/english-helpers'
-import { todayStr } from '@/utils/constant'
-import type { MathWeeklyPlan, MathDayProgress } from '@/utils/type'
+import { todayStr } from '@rosie/core'
+import type { MathWeeklyPlan, MathDayProgress } from '@rosie/core'
 
 const SYSTEM_DEFAULTS = { weekStartDay: 4, problemsPerDay: 3 }
 

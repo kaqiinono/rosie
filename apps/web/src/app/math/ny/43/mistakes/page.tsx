@@ -3,9 +3,9 @@
 import Link from 'next/link'
 import { useLesson43 } from '@/components/math/lesson43/Lesson43Provider'
 import { PROBLEMS, TAG_STYLE } from '@/utils/lesson43-data'
-import { SOURCE_LABELS } from '@/utils/constant'
+import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
-import type { Problem } from '@/utils/type'
+import type { Problem } from '@rosie/core'
 
 const ALL_PROBLEMS = new Map<string, { p: Problem; setName: string; idx: number }>()
 ;(Object.entries(PROBLEMS) as [string, Problem[]][]).forEach(([setName, list]) => {

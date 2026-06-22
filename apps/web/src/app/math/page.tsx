@@ -7,8 +7,8 @@ import MathDailyCard from '@/components/math/MathDailyCard'
 import MathSeaCard from '@/components/math/MathSeaCard'
 import MathQuizCard from '@/components/math/MathQuizCard'
 import MathCatalogCard from '@/components/math/MathCatalogCard'
-import { useAuth } from '@/contexts/AuthContext'
-import type { CourseCardData } from '@/utils/type'
+import { useAuth } from '@rosie/core'
+import type { CourseCardData } from '@rosie/core'
 
 const courses: CourseCardData[] = [
   {

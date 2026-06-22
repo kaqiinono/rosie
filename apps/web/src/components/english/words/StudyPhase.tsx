@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type ReactNode } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { hilite, highlightExample } from '@/utils/english-helpers'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'

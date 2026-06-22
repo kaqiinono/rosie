@@ -1,7 +1,7 @@
 'use client'
 
 import LessonSidebar from '@/components/math/shared/LessonSidebar'
-import type { ProblemSet } from '@/utils/type'
+import type { ProblemSet } from '@rosie/core'
 import { useLesson44 } from './Lesson44Provider'
 
 const BASE = '/math/ny/44'

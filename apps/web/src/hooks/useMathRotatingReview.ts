@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import type { MathPlanProblem, ProblemMasteryMap, MathRotatingReviewState } from '@/utils/type'
+import { supabase } from '@rosie/core'
+import type { MathPlanProblem, ProblemMasteryMap, MathRotatingReviewState } from '@rosie/core'
 import { assignRotatingReviewForDay } from '@/utils/math-helpers'
 
 function computeLessonOrder(priorLessonProbs: Record<string, MathPlanProblem[]>): string[] {

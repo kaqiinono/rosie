@@ -1,4 +1,4 @@
-import type { WeekDayProgress, WeekCompletion, EnglishWeeklyReport } from '@/utils/type'
+import type { WeekDayProgress, WeekCompletion, EnglishWeeklyReport } from '@rosie/core'
 
 /** Embedded in `weekly_plans.progress_data` JSON; never a valid YYYY-MM-DD date. */
 export const WEEKLY_PLAN_STORAGE_META_KEY = '__rosie_wk' as const

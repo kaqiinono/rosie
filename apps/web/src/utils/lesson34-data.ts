@@ -1,4 +1,4 @@
-import type { Problem, ProblemSet } from './type'
+import type { Problem, ProblemSet } from '@rosie/core'
 
 export const LESSON_TIP = '凑整：2×5=10，4×25=100，8×125=1000，16×625=10000。分配律：N×(A±B)=N×A±N×B'
 

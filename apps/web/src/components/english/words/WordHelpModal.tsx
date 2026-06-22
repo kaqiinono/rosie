@@ -1,6 +1,6 @@
 'use client'
 
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { letterCount } from '@/utils/english-helpers'
 import { JellyTile, DEFAULT_JELLY_ORDER } from '@/components/shared/JellyButton'
 

@@ -2,9 +2,9 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 import { advanceStage, regressStage } from '@/utils/masteryUtils'
-import type { ProblemMasteryMap, WordMasteryInfo } from '@/utils/type'
+import type { ProblemMasteryMap, WordMasteryInfo } from '@rosie/core'
 
 export function useProblemMastery(user: User | null) {
   const [masteryMap, setMasteryMap] = useState<ProblemMasteryMap>({})

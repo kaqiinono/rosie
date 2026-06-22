@@ -3,9 +3,9 @@
 import Link from 'next/link'
 import { useLesson35 } from '@/components/math/lesson35/Lesson35Provider'
 import { PROBLEMS, TAG_STYLE } from '@/utils/lesson35-data'
-import { SOURCE_LABELS } from '@/utils/constant'
+import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
-import type { Problem } from '@/utils/type'
+import type { Problem } from '@rosie/core'
 
 // Build a flat map: id → { problem, setName, idx }
 const ALL_PROBLEMS = new Map<string, { p: Problem; setName: string; idx: number }>()

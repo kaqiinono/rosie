@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import type { WordEntry } from '@/utils/type'
+import { supabase } from '@rosie/core'
+import type { WordEntry } from '@rosie/core'
 
 const SELECT_COLS = 'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
 

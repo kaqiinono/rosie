@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { MONSTERS } from './monsters'
-import { EATEN_TITLE_MESSAGES, EATEN_SUB_MESSAGES, pickMessage } from '@/utils/constant'
+import { EATEN_TITLE_MESSAGES, EATEN_SUB_MESSAGES, pickMessage } from '@rosie/core'
 
 function escapeHtml(s: string): string {
   return s.replace(

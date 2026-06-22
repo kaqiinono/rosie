@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, type ReactNode } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import type { ReadingPassage } from '@/utils/reading-data'
 import { findSentenceForWord, blankWordInSentence } from '@/utils/reading-data'
 import { buildQuizOptions, wordKey } from '@/utils/english-helpers'
 import SpeakButton from '@/components/english/words/SpeakButton'
-import { READING_RETRY_MESSAGE, READING_SECOND_WRONG_TEMPLATE } from '@/utils/constant'
+import { READING_RETRY_MESSAGE, READING_SECOND_WRONG_TEMPLATE } from '@rosie/core'
 
 function highlightedSentence(sentence: string, word: string): ReactNode {
   const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}s?\\b`, 'i')

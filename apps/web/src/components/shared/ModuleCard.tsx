@@ -2,7 +2,7 @@
 
 import NavigationLink from './NavigationLink'
 import ArrowIcon from './ArrowIcon'
-import type { ModuleCardData } from '@/utils/type'
+import type { ModuleCardData } from '@rosie/core'
 
 const variantStyles = {
   math: {

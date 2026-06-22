@@ -1,7 +1,7 @@
 import {
   AstNode, CalcOp, makeQuestion, OP_SYMBOL, randInt, pickOne,
 } from './calc-ast'
-import type { CalcCategory, CalcQuestion } from './type'
+import type { CalcCategory, CalcQuestion } from '@rosie/core'
 import { decimalAnswer, fractionAnswer, remainderAnswer } from './calc-answer'
 
 export interface CalcBlock {

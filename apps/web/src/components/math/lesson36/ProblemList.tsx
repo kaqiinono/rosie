@@ -1,7 +1,7 @@
 'use client'
 
 import LessonProblemList from '@/components/math/shared/LessonProblemList'
-import type { Problem } from '@/utils/type'
+import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@/utils/lesson36-data'
 
 type Props = {

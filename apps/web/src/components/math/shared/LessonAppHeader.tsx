@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import type { ProblemSet, Problem } from '@/utils/type'
-import { NAV_PAGES } from '@/utils/constant'
+import type { ProblemSet, Problem } from '@rosie/core'
+import { NAV_PAGES } from '@rosie/core'
 import type { LessonContextType } from './createLessonProvider'
 
 type LessonHeaderConfig = {

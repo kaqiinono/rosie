@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import type { WordEntry, WordMasteryInfo } from '@/utils/type'
+import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import type { ReadingPassage } from '@/utils/reading-data'
 import { findSentenceForWord } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'

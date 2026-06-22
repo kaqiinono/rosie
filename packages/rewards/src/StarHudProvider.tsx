@@ -1,9 +1,9 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
-import { useStarEarning } from '@/hooks/useStarEarning'
-import { useCalcWallet } from '@/hooks/useCalcWallet'
+import { useAuth } from '@rosie/core'
+import { useStarEarning } from './useStarEarning'
+import { useCalcWallet } from './useCalcWallet'
 import { playStarEarn } from './star-audio'
 import type { BurstEvent, StarColor } from './star-types'
 

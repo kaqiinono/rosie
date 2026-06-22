@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import FlipbookBatchUploader from '@/components/flipbook/FlipbookBatchUploader'
 import type { FlipbookCreateBookInput } from '@/components/flipbook/FlipbookUploader'
 import FlipbookUploadGuide from '@/components/flipbook/FlipbookUploadGuide'

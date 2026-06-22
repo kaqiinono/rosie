@@ -1,4 +1,4 @@
-import type { CalcCategory, CalcLevel, CalcOp, CalcQuestion, CalcAnswer } from './type'
+import type { CalcCategory, CalcLevel, CalcOp, CalcQuestion, CalcAnswer } from '@rosie/core'
 
 export type { CalcOp }
 

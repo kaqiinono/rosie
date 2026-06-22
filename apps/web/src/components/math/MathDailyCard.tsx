@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
-import { todayStr } from '@/utils/constant'
+import { todayStr } from '@rosie/core'
 
 const LESSON_INFO: Record<string, { emoji: string; short: string }> = {
   '35': { emoji: '🐦', short: '归一问题' },

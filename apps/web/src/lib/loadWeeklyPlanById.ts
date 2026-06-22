@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import type { WeeklyPlan } from '@/utils/type'
+import { supabase } from '@rosie/core'
+import type { WeeklyPlan } from '@rosie/core'
 import { decodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
 import { parsePlanDataFromSupabase } from '@/utils/weeklyPlanPayload'
 

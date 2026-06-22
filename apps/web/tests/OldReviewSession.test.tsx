@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 // ── Context mocks ────────────────────────────────────────────────────────────
 const mockRecordBatch = vi.fn()

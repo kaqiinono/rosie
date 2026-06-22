@@ -1,6 +1,6 @@
 'use client'
 
-import type { Lesson34Mode } from '@/utils/type'
+import type { Lesson34Mode } from '@rosie/core'
 
 interface ModeBarProps {
   mode: Lesson34Mode

@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { VoucherTemplate } from '@/utils/type'
-import type { VoucherTemplateDraft } from '@/hooks/useVoucherCatalog'
+import type { VoucherTemplate } from '@rosie/core'
+import type { VoucherTemplateDraft } from '@rosie/rewards'
 import { GRADIENT_PRESETS, DEFAULT_GRADIENT } from '@/utils/voucher-gradients'
-import ColoredStar from '@/components/stars/ColoredStar'
+import { ColoredStar } from '@rosie/rewards'
 
 interface Props {
   /** When provided, modal is in "edit" mode; otherwise "create". */

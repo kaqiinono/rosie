@@ -2,16 +2,16 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
-import { useCalcWallet } from '@/hooks/useCalcWallet'
-import { useCalcVouchers } from '@/hooks/useCalcVouchers'
-import { templateTotalPrice, useVoucherCatalog } from '@/hooks/useVoucherCatalog'
+import { useAuth } from '@rosie/core'
+import { useCalcWallet } from '@rosie/rewards'
+import { useCalcVouchers } from '@rosie/rewards'
+import { templateTotalPrice, useVoucherCatalog } from '@rosie/rewards'
 import VoucherCard from '@/components/calc/VoucherCard'
 import { playSfx } from '@/components/calc/audio'
-import { launchConfetti } from '@/utils/confetti'
-import type { VoucherCategory, VoucherTemplate } from '@/utils/type'
-import ColoredStar from '@/components/stars/ColoredStar'
-import { STAR_COLOR_HEX } from '@/components/stars/star-types'
+import { launchConfetti } from '@rosie/core'
+import type { VoucherCategory, VoucherTemplate } from '@rosie/core'
+import { ColoredStar } from '@rosie/rewards'
+import { STAR_COLOR_HEX } from '@rosie/rewards'
 
 export default function VouchersPage() {
   const { user } = useAuth()

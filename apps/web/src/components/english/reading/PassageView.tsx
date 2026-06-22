@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '@/utils/reading-data'
 import {
   buildGlossaryRegex,

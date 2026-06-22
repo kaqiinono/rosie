@@ -9,7 +9,7 @@ import {
   shuffle,
   wordKey,
 } from '@/utils/english-helpers'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 const w = (overrides: Partial<WordEntry>): WordEntry => ({
   unit: 'U1',

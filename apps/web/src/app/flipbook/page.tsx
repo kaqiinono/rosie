@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useImmersive } from '@/contexts/ImmersiveContext'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useAudioCollections } from '@/hooks/useAudioCollections'

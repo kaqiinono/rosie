@@ -1,4 +1,4 @@
-import type { WeeklyPlan, WeeklyPlanDay } from '@/utils/type'
+import type { WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
 
 /**
  * Supabase `plan_data` is either a legacy JSON array of `WeeklyPlanDay`,

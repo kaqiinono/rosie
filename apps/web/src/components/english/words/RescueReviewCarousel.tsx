@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import SpeakButton from './SpeakButton'
 
 interface Props {

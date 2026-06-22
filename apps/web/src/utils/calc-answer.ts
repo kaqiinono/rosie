@@ -1,4 +1,4 @@
-import type { CalcAnswer } from './type'
+import type { CalcAnswer } from '@rosie/core'
 
 /** Constructors. */
 export function intAnswer(value: number): CalcAnswer {

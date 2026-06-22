@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { CONGRATS_MESSAGES } from '@/utils/constant'
-import { launchConfetti } from '@/utils/confetti'
+import { CONGRATS_MESSAGES } from '@rosie/core'
+import { launchConfetti } from '@rosie/core'
 
 interface CongratsModalProps {
   visible: boolean

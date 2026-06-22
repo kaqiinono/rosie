@@ -1,7 +1,7 @@
 'use client'
 
 import LessonAppHeader from '@/components/math/shared/LessonAppHeader'
-import type { ProblemSet } from '@/utils/type'
+import type { ProblemSet } from '@rosie/core'
 import { useLesson38 } from './Lesson38Provider'
 
 const CONFIG = {

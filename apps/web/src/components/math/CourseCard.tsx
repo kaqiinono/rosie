@@ -2,7 +2,7 @@
 
 import NavigationLink from '@/components/shared/NavigationLink'
 import ArrowIcon from '@/components/shared/ArrowIcon'
-import type { CourseCardData } from '@/utils/type'
+import type { CourseCardData } from '@rosie/core'
 
 const variantStyles = {
   blue: {

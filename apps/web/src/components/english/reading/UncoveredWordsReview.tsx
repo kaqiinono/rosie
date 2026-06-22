@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import type { ReadingPassage } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
 import RecallQuizStack from './RecallQuizStack'

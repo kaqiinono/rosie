@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 
 export type DailyProgressRecord = Record<string, { quizDone?: boolean; lastScore?: number; lastDate?: string }>
 

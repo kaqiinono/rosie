@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
-import { useCalcWallet } from '@/hooks/useCalcWallet'
+import { useAuth } from '@rosie/core'
+import { useCalcWallet } from '@rosie/rewards'
 import { useCalcProblemState } from '@/hooks/useCalcProblemState'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
 import { skeletonMeta } from '@/utils/calc-mixed'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@rosie/core'
 import {
   sourceStats,
   weeklyAggregates,
@@ -18,8 +18,8 @@ import {
   type OpGroupStat,
 } from '@/utils/calc-report-stats'
 import { TIER_LABEL, TIER_ORDER, suggestedTiers, type Tier } from '@/utils/calc-time-targets'
-import type { CalcProblemState, CalcSession } from '@/utils/type'
-import { todayStr } from '@/utils/constant'
+import type { CalcProblemState, CalcSession } from '@rosie/core'
+import { todayStr } from '@rosie/core'
 
 // ── CSS animations ─────────────────────────────────────────────────────────────
 

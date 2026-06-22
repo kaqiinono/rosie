@@ -18,7 +18,7 @@ import DivisionVertical from './DivisionVertical'
 import MultiplicationVertical from './MultiplicationVertical'
 import { fractionPieSpec } from '@/utils/calc-helpers'
 import { parseSignature } from '@/utils/calc-ast'
-import type { CalcQuestion } from '@/utils/type'
+import type { CalcQuestion } from '@rosie/core'
 import type { FeedbackKind } from './FeedbackOverlay'
 
 type Variant = 'full' | 'compact'

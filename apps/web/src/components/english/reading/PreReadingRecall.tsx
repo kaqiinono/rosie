@@ -1,6 +1,6 @@
 'use client'
 
-import type { WordEntry, WordMasteryMap } from '@/utils/type'
+import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { ReadingPassage } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
 import { getWordMasteryLevel, type MasteryLevel } from '@/utils/masteryUtils'

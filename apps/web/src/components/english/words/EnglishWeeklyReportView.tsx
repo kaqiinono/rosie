@@ -1,4 +1,4 @@
-import type { EnglishWeeklyReport } from '@/utils/type'
+import type { EnglishWeeklyReport } from '@rosie/core'
 
 const LEVEL_LABEL: Record<0 | 1 | 2 | 3, string> = {
   0: '新接触',

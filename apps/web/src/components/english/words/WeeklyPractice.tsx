@@ -3,15 +3,15 @@
 import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@/utils/type'
+import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
 import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getAllStages, getWeekStart, fmtDate, fmtWeekRange, wordKey, getOldReviewWords, lessonChipTag } from '@/utils/english-helpers'
 import { CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import OldReviewSession from './OldReviewSession'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useWordsContext } from '@/contexts/WordsContext'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { todayStr, STORAGE_KEYS } from '@/utils/constant'
+import { todayStr, STORAGE_KEYS } from '@rosie/core'
 import { buildEnglishWeeklyReport } from '@/utils/buildEnglishWeeklyReport'
 
 interface WeeklyPracticeProps {

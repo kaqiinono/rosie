@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useImmersive } from '@/contexts/ImmersiveContext'
 
 export default function AccountBar() {

@@ -1,7 +1,7 @@
 'use client'
 
-import type { ProblemDifficulty } from '@/utils/difficulty'
-import { DIFFICULTY_LABELS } from '@/utils/difficulty'
+import type { ProblemDifficulty } from '@rosie/core'
+import { DIFFICULTY_LABELS } from '@rosie/core'
 
 type Props = {
   level: ProblemDifficulty

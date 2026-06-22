@@ -2,8 +2,8 @@
 
 import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import { todayStr } from '@/utils/constant'
+import { supabase } from '@rosie/core'
+import { todayStr } from '@rosie/core'
 
 /** Lightweight write-only hook for English / Math / Calc modules to award stars. */
 export function useStarEarning(user: User | null) {

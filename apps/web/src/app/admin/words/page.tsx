@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import WordManagerPage from '@/components/admin/words/WordManagerPage'
 
 export default function AdminWordsPage() {

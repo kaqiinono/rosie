@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useCalcSettings } from '@/hooks/useCalcSettings'
-import { useCalcWallet } from '@/hooks/useCalcWallet'
-import { useStarHud } from '@/components/stars/StarHudProvider'
+import { useCalcWallet } from '@rosie/rewards'
+import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '@/hooks/useCalcMistakes'
 import { useCalcProblemState, applyAttempt } from '@/hooks/useCalcProblemState'
 import CalcAppHeader from '@/components/calc/CalcAppHeader'
@@ -22,9 +22,9 @@ import { diagnose } from '@/utils/calc-diagnose'
 import { blockById } from '@/utils/calc-blocks'
 import { skeletonMeta } from '@/utils/calc-mixed'
 import { playSfx } from '@/components/calc/audio'
-import { launchConfetti } from '@/utils/confetti'
-import { todayStr } from '@/utils/constant'
-import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, QuestionLogEntry } from '@/utils/type'
+import { launchConfetti } from '@rosie/core'
+import { todayStr } from '@rosie/core'
+import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, QuestionLogEntry } from '@rosie/core'
 
 interface AttemptStat {
   signature: string

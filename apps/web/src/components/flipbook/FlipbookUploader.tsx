@@ -13,7 +13,7 @@ import { parseSyncFileText, validateManifestAgainstPageCount } from '@/utils/fli
 import { enrichManifestWithWordMatches } from '@/utils/flipbook-word-match'
 import type { FlipbookCreateBookResult } from '@/hooks/useFlipbookBooks'
 import type { FlipbookSyncManifest } from '@/utils/flipbook-types'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 export type FlipbookCreateBookInput = {
   title: string

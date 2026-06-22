@@ -2,8 +2,8 @@
 
 import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabase'
+import { useAuth } from '@rosie/core'
+import { supabase } from '@rosie/core'
 import { PROBLEMS as P12 } from '@/utils/lesson12-data'
 import { PROBLEMS as P13 } from '@/utils/lesson13-data'
 import { PROBLEMS as P15 } from '@/utils/lesson15-data'
@@ -22,7 +22,7 @@ import { PROBLEMS as P41 } from '@/utils/lesson41-data'
 import { PROBLEMS as P42 } from '@/utils/lesson42-data'
 import { PROBLEMS as P43 } from '@/utils/lesson43-data'
 import { PROBLEMS as P44 } from '@/utils/lesson44-data'
-import type { Problem, ProblemSet } from '@/utils/type'
+import type { Problem, ProblemSet } from '@rosie/core'
 import { computeQuizPoints, type QuizPaper } from '@/hooks/useMathQuiz'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────

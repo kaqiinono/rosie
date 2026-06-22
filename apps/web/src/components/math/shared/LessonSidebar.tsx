@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { STORAGE_KEYS } from '@/utils/constant'
-import type { ProblemSet } from '@/utils/type'
+import { STORAGE_KEYS } from '@rosie/core'
+import type { ProblemSet } from '@rosie/core'
 import type { LessonContextType } from './createLessonProvider'
 
 type SidebarSection = {

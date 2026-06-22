@@ -1,5 +1,5 @@
 import { parseSignature } from './calc-ast'
-import type { CalcQuestion, ErrorTag } from './type'
+import type { CalcQuestion, ErrorTag } from '@rosie/core'
 
 export const ERROR_TAG_LABELS: Record<ErrorTag, string> = {
   carry_miss: '进位遗漏',

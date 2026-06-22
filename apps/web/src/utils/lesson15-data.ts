@@ -1,4 +1,4 @@
-import type { Problem, ProblemSet } from './type'
+import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {

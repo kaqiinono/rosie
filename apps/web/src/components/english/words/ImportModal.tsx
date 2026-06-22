@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 import { parseWordRows, WORD_TEMPLATE_HEADERS } from '@/utils/english-helpers'
 
 interface ImportModalProps {

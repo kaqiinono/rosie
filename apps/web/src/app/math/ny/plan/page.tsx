@@ -19,7 +19,7 @@ import { PROBLEMS as PROBLEMS41 } from '@/utils/lesson41-data'
 import { PROBLEMS as PROBLEMS42 } from '@/utils/lesson42-data'
 import { PROBLEMS as PROBLEMS43 } from '@/utils/lesson43-data'
 import { PROBLEMS as PROBLEMS44 } from '@/utils/lesson44-data'
-import type { ProblemSet } from '@/utils/type'
+import type { ProblemSet } from '@rosie/core'
 import Link from 'next/link'
 
 const PROBLEM_SETS: Record<string, ProblemSet> = {

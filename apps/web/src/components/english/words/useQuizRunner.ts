@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { QuizQuestion } from '@/utils/type'
+import type { QuizQuestion } from '@rosie/core'
 
 export type QuizAttempt = 'first' | 'retry' | 'done'
 

@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@rosie/core'
+import { useAuth } from '@rosie/core'
 import { SAMPLE_WORDS, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@/utils/english-data'
-import type { WordEntry } from '@/utils/type'
+import type { WordEntry } from '@rosie/core'
 
 type DbRow = {
   stage: string | null

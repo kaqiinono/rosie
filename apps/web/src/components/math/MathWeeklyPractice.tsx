@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
 import { useProblemMastery } from '@/hooks/useProblemMastery'
 import { useMathSolved } from '@/hooks/useMathSolved'
@@ -11,8 +11,8 @@ import { getWeekStart } from '@/utils/english-helpers'
 import { useMathRotatingReview } from '@/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@/hooks/useMathWeeklyLessonReview'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
-import { todayStr } from '@/utils/constant'
-import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@/utils/type'
+import { todayStr } from '@rosie/core'
+import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 

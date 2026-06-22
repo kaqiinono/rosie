@@ -1,4 +1,4 @@
-import type { WordMasteryInfo } from './type'
+import type { WordMasteryInfo } from '@rosie/core'
 
 // --- Ebbinghaus spaced repetition intervals ---
 
