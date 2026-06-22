@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
-import { getWordMasteryLevel, advanceStage, regressStage } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, advanceStage, regressStage } from '@rosie/core'
 import { wordKey } from '@/utils/english-helpers'
 import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord } from '@rosie/core'
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { MathPlanProblem, ProblemMasteryMap } from '@rosie/core'
-import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@/utils/masteryUtils'
+import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@rosie/core'
 
 interface Props {
   problems: MathPlanProblem[]

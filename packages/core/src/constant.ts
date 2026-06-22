@@ -61,6 +61,15 @@ export function todayStr(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+// Shared Thursday-start (startDay=4) week convention used by both the math and
+// English weekly-plan systems. Returns the local YYYY-MM-DD of the week's start.
+export function getWeekStart(date?: Date, startDay = 4): string {
+  const d = date ? new Date(date) : new Date()
+  const daysBack = (d.getDay() - startDay + 7) % 7
+  d.setDate(d.getDate() - daysBack)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 export const PRICES = [5, 8, 10, 12, 15, 20, 25, 30, 50]
 export const SMALL_NUMS = [2, 3, 4, 5, 6, 7, 8, 9]
 

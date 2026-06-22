@@ -15,7 +15,7 @@ import {
   readingPassages,
 } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
-import type { MasteryLevel } from '@/utils/masteryUtils'
+import type { MasteryLevel } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import type { WordEntry, WeekDayProgress } from '@rosie/core'
 import PassageView from '@/components/english/reading/PassageView'

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import { buildQuizOptions, wordKey } from '@/utils/english-helpers'
 import { blankWordInSentence } from '@/utils/reading-data'
-import { getWordMasteryLevel } from '@/utils/masteryUtils'
+import { getWordMasteryLevel } from '@rosie/core'
 import SpeakButton from '@/components/english/words/SpeakButton'
 import { READING_RETRY_MESSAGE } from '@rosie/core'
 

@@ -1,8 +1,8 @@
 'use client'
 
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
-import type { MasteryLevel } from '@/utils/masteryUtils'
-import { MASTERY_ICON } from '@/utils/masteryUtils'
+import type { MasteryLevel } from '@rosie/core'
+import { MASTERY_ICON } from '@rosie/core'
 import { getAllUnits, getAllStages } from '@/utils/english-helpers'
 
 interface FilterBarProps {

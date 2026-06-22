@@ -10,7 +10,7 @@ import {
   normalizeQuizTypes,
   wordKey,
 } from '@/utils/english-helpers'
-import { getWordMasteryLevel } from '@/utils/masteryUtils'
+import { getWordMasteryLevel } from '@rosie/core'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'
 import type { QuizCommitInfo } from './useQuizRunner'

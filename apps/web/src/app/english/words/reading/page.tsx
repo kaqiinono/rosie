@@ -13,7 +13,7 @@ import ReadingAudioUploadButton from '@/components/english/reading/ReadingAudioU
 import { PlayerDock } from '@rosie/player'
 import { parseFocusLessonKey, readingPassages } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
-import { getWordMasteryLevel } from '@/utils/masteryUtils'
+import { getWordMasteryLevel } from '@rosie/core'
 import { trackKey, type PlayerTrack } from '@rosie/player'
 
 export default function ReadingIndexPage() {

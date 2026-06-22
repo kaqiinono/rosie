@@ -1,5 +1,5 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from '@rosie/core'
-import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from './masteryUtils'
+import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 
 export function escHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -503,12 +503,9 @@ export function fmtWeekRange(weekStart: string, startDay: number): string {
   return `${fmtDate(weekStart)} ${ALL_CN_DAYS[startDay]} – ${fmtDate(endStr)} ${ALL_CN_DAYS[(startDay + 6) % 7]}`
 }
 
-export function getWeekStart(date?: Date, startDay = 4): string {
-  const d = date ? new Date(date) : new Date()
-  const daysBack = (d.getDay() - startDay + 7) % 7
-  d.setDate(d.getDate() - daysBack)
-  return toLocalDateStr(d)
-}
+// Moved to @rosie/core (shared by math + English); re-exported here so existing
+// `@/utils/english-helpers` importers keep working.
+export { getWeekStart } from '@rosie/core'
 
 /**
  * Distributes words across 7 days in parallel across lessons.

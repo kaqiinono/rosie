@@ -11,7 +11,7 @@ import {
   GRADUATED_STAGE_HARD,
   NORMAL_INTERVALS,
   HARD_INTERVALS,
-} from '@/utils/masteryUtils'
+} from '@rosie/core'
 import type { WordMasteryInfo } from '@rosie/core'
 
 const TODAY = '2026-05-29'

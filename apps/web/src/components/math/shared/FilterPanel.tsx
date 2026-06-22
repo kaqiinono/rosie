@@ -4,7 +4,7 @@ import { memo, useCallback, useState, type ComponentType } from 'react'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
 import { SOURCE_LABELS } from '@rosie/core'
-import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
+import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@/components/math/shared/DifficultyFilterRow'
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useLocalStorage } from '@rosie/core'
 import { STORAGE_KEYS } from '@rosie/core'
 import type { ProblemSet } from '@rosie/core'
 import type { LessonContextType } from './createLessonProvider'

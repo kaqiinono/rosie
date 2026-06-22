@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
-import { getWeekStart } from '@/utils/english-helpers'
+import { getWeekStart } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import type { MathWeeklyPlan, MathDayProgress } from '@rosie/core'
 

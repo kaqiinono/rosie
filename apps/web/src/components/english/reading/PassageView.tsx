@@ -10,7 +10,7 @@ import {
   resolveMatchedWord,
 } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
-import { getWordMasteryLevel, type MasteryLevel } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, type MasteryLevel } from '@rosie/core'
 import WordPopup from './WordPopup'
 import GlossaryPopup from './GlossaryPopup'
 

@@ -1,5 +1,5 @@
 import type { ProblemSet, Problem, MathPlanProblem, MathWeeklyPlanDay, ProblemMasteryMap, MathRotatingReviewState, PerLessonRotationState, MathWeeklyLessonReviewState } from '@rosie/core'
-import { ensureStageInit, isGraduated } from './masteryUtils'
+import { ensureStageInit, isGraduated } from '@rosie/core'
 
 export function problemKey(lessonId: string, problemId: string): string {
   return `${lessonId}::${problemId}`

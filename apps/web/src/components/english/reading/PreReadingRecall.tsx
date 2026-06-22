@@ -3,7 +3,7 @@
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { ReadingPassage } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
-import { getWordMasteryLevel, type MasteryLevel } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, type MasteryLevel } from '@rosie/core'
 import RecallQuizStack from './RecallQuizStack'
 
 interface Props {

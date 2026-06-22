@@ -1,7 +1,7 @@
 import type { EnglishWeeklyReport } from '@rosie/core'
 import type { WordEntry, WeeklyPlan, WordMasteryMap } from '@rosie/core'
 import { ALL_CN_DAYS, classifyPlanWords, fmtDate, fmtWeekRange, wordKey } from '@/utils/english-helpers'
-import { ensureStageInit, getWordMasteryLevel } from '@/utils/masteryUtils'
+import { ensureStageInit, getWordMasteryLevel } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
 function formatUnitLesson(plan: WeeklyPlan): string {

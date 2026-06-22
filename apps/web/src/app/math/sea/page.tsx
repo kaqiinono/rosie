@@ -7,7 +7,7 @@ import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@/utils/sea-data'
 import { SOURCE_LABELS } from '@rosie/core'
-import { getMasteryLevel } from '@/utils/masteryUtils'
+import { getMasteryLevel } from '@rosie/core'
 import {
   ALL_DIFFICULTY_LEVELS,
   DIFFICULTY_FILTER_BTNS,

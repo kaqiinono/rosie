@@ -17,7 +17,7 @@ import {
   fmtWeekRange,
   lessonChipTag,
 } from '@/utils/english-helpers'
-import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@/utils/masteryUtils'
+import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 import { findPassage, findSentenceForWord } from '@/utils/reading-data'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'

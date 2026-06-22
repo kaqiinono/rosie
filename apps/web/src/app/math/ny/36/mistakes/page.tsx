@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useLesson36 } from '@/components/math/lesson36/Lesson36Provider'
 import { PROBLEMS, TAG_STYLE } from '@/utils/lesson36-data'
 import { SOURCE_LABELS } from '@rosie/core'
-import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
+import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { Problem } from '@rosie/core'
 
 const ALL_PROBLEMS = new Map<string, { p: Problem; setName: string; idx: number }>()

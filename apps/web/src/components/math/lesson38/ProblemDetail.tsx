@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@/utils/lesson38-data'
 import { useLesson38 } from './Lesson38Provider'
-import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
+import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
 import QuestionLayout from '@/components/math/shared/QuestionLayout'
 import DifficultyStars from '@/components/math/shared/DifficultyStars'
 

@@ -11,7 +11,7 @@ import {
   GRADUATED_STAGE_NORMAL,
   MASTERY_ICON,
   type MasteryLevel,
-} from '@/utils/masteryUtils'
+} from '@rosie/core'
 import SpeakButton from '@/components/english/words/SpeakButton'
 
 interface WordPopupProps {

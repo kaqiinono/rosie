@@ -5,7 +5,7 @@ import {
   MASTERY_ICON,
   ensureStageInit,
   isGraduated,
-} from '@/utils/masteryUtils'
+} from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
 export type WeeklyReportWordRow = {
