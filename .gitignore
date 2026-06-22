@@ -7,6 +7,9 @@ node_modules/
 .next/
 out/
 
+# turborepo
+.turbo/
+
 # production
 build/
 
