@@ -4,27 +4,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Monorepo layout
 
-This repo is a **pnpm workspace + Turborepo**. There is still exactly one deployable
-Next.js app (single Vercel project / single domain); subject modules are being extracted into
-packages so each can be worked on and type-checked in isolation.
+This repo is a **pnpm workspace + Turborepo**. There is exactly one deployable Next.js app
+(single Vercel project / single domain); every subject module is its own package so it can be
+worked on and type-checked in isolation. Each package has its own `CLAUDE.md`.
 
 ```
-apps/web/         # the Next.js app — routes live here; Vercel Root Directory = apps/web
-packages/core/    # @rosie/core    — Supabase client, AuthContext, shared type.ts/difficulty.ts,
-                  #                   constant.ts, confetti.ts
-packages/rewards/ # @rosie/rewards — shared gamification: stars HUD, coin wallet, vouchers
-                  #                   (used by admin/vouchers/today/math/english)
-packages/calc/    # @rosie/calc    — 口算 module (pilot extraction; has its own CLAUDE.md)
+apps/web/          # the Next.js app — ALL routes live here; Vercel Root Directory = apps/web
+packages/
+  core/      @rosie/core    — Supabase client, AuthContext, ImmersiveContext, shared types,
+                              constants, masteryUtils, getWeekStart, confetti, nav/SW hooks
+  ui/        @rosie/ui      — shared presentational components (buttons, chrome, backgrounds)
+  rewards/   @rosie/rewards — gamification: stars HUD, coin wallet, vouchers
+  player/    @rosie/player  — content-agnostic playback engine + PlayerDock + media types
+  calc/      @rosie/calc    — 口算
+  math/      @rosie/math    — 人教版 lessons 12–44 + sea + catalog + quiz + weekly plan
+  english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
+  flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
+  audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
 ```
 
-Modules still inside `apps/web/src` (math, english, flipbook, audio, admin, …) will be
-extracted the same way over time. Each package depends only on `@rosie/core` (+ `@rosie/rewards`
-where it uses gamification); `core`/`rewards` never depend on a subject module. The app imports
-packages via barrel (`@rosie/calc`) and route page bodies via subpath
-(`@rosie/calc/pages/<name>`); routes under `apps/web/src/app/**` that have moved are thin
-`export { default } from '@rosie/<pkg>/pages/<name>'` shells. Packages are wired into the app
-via `transpilePackages` in `apps/web/next.config.ts`. Inside a package, cross-file imports are
-**relative** (package tsconfig path aliases are not honored by the app bundler).
+**Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
+`math`→ui,rewards; `english`→player,ui,rewards; `flipbook`→english,player; `audio`→flipbook,
+english,player. A package must never import another subject module outside this DAG, and
+`core`/`ui`/`rewards`/`player` never import a subject module.
+
+**Imports & routes:** routes stay in `apps/web/src/app/**` and import the packages. Most
+packages expose a **barrel** (`@rosie/english`, named exports). `@rosie/calc` page bodies are
+imported by thin route shells via subpath (`@rosie/calc/pages/<name>`, exports map with
+explicit `.tsx`). `@rosie/math` uses **deep subpaths** (`@rosie/math/components/lessonNN/...`)
+because every lesson shares export names — this needs extensionless `exports` `"./*":"./src/*"`
+plus a `paths` alias in BOTH `apps/web/tsconfig.json` and `packages/math/tsconfig.json` (see
+`packages/math/CLAUDE.md`). Inside a package, cross-file imports are **relative**. Packages are
+wired into the app via `transpilePackages` in `apps/web/next.config.ts`.
+
+**Media note:** the reading and flipbook pages build their own play queues via `@rosie/player`
+directly (连播 within their own scope, no ❤️favorites) so they don't depend on `@rosie/audio`;
+`@rosie/audio` aggregates reading/flipbook content one-way.
 
 ## Commands
 
