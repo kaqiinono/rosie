@@ -21,7 +21,7 @@ vi.mock('@/contexts/AuthContext', () => ({
 }))
 
 const mockRecordBatch = vi.fn()
-vi.mock('@/contexts/WordsContext', () => ({
+vi.mock('@rosie/english', () => ({
   useWordsContext: () => ({ masteryMap: {}, recordBatch: mockRecordBatch }),
 }))
 
@@ -107,8 +107,8 @@ vi.mock('@/components/english/words/MasteryStatusPanel', () => ({
 }))
 
 // Import after mocks
-import WeeklyPlanSession from '@/components/english/words/WeeklyPlanSession'
-import { wordKey } from '@/utils/english-helpers'
+import { WeeklyPlanSession } from '@rosie/english'
+import { wordKey } from '@rosie/english'
 
 function makeWord(word: string): WordEntry {
   return { unit: 'U1', lesson: 'L1', word, explanation: `def of ${word}` }

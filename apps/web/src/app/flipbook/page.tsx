@@ -8,8 +8,8 @@ import { useImmersive } from '@rosie/core'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useAudioCollections } from '@/hooks/useAudioCollections'
 import { usePlaylistPlayer } from '@rosie/player'
-import { useWordData } from '@/hooks/useWordData'
-import { useWordMastery } from '@/hooks/useWordMastery'
+import { useWordData } from '@rosie/english'
+import { useWordMastery } from '@rosie/english'
 import { PlayerDock } from '@rosie/player'
 import FlipbookWordCarouselModal, {
   flipbookPreviewWords,

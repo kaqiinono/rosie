@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
-import { parseWordRows, WORD_TEMPLATE_HEADERS } from '@/utils/english-helpers'
+import { parseWordRows, WORD_TEMPLATE_HEADERS } from '@rosie/english'
 
 type Props = {
   /** Current active 词库; pasted rows without a stage are backfilled with it. */

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import SpellTiles from '@/components/english/words/SpellTiles'
+import { SpellTiles } from '@rosie/english'
 
 function setup(word: string) {
   const onSubmit = vi.fn<(val: string) => void>()

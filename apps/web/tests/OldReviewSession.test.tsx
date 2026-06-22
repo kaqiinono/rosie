@@ -5,7 +5,7 @@ import type { WordEntry } from '@rosie/core'
 
 // ── Context mocks ────────────────────────────────────────────────────────────
 const mockRecordBatch = vi.fn()
-vi.mock('@/contexts/WordsContext', () => ({
+vi.mock('@rosie/english', () => ({
   useWordsContext: () => ({ masteryMap: {}, recordBatch: mockRecordBatch }),
 }))
 
@@ -73,8 +73,8 @@ vi.mock('@/components/english/words/MasteryStatusPanel', () => ({
 }))
 
 // Import after mocks so the module graph picks them up
-import OldReviewSession from '@/components/english/words/OldReviewSession'
-import { wordKey } from '@/utils/english-helpers'
+import { OldReviewSession } from '@rosie/english'
+import { wordKey } from '@rosie/english'
 
 const STORAGE_KEY = 'old_review_session'
 

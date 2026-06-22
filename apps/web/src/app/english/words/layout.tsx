@@ -2,11 +2,11 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { WordsProvider, useWordsContext } from '@/contexts/WordsContext'
+import { WordsProvider, useWordsContext } from '@rosie/english'
 import { useImmersive } from '@rosie/core'
-import AppHeader from '@/components/english/words/AppHeader'
-import ImportModal from '@/components/english/words/ImportModal'
-import ImmersiveMode from '@/components/english/words/ImmersiveMode'
+import { AppHeader } from '@rosie/english'
+import { ImportModal } from '@rosie/english'
+import { ImmersiveMode } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {

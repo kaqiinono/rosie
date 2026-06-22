@@ -1,6 +1,6 @@
 import type { FlipbookPageSync, FlipbookSyncManifest } from '@/utils/flipbook-types'
 import type { WordEntry } from '@rosie/core'
-import { buildWordMatchRegex, resolveMatchedWord } from '@/utils/reading-data'
+import { buildWordMatchRegex, resolveMatchedWord } from '@rosie/english'
 
 export function flipbookWordKey(entry: WordEntry): string {
   return `${entry.stage ?? ''}::${entry.unit}::${entry.lesson}::${entry.word}`

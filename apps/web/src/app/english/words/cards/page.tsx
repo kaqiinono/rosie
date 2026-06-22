@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { useWordsContext } from '@/contexts/WordsContext'
-import { shuffle, wordKey } from '@/utils/english-helpers'
+import { useWordsContext } from '@rosie/english'
+import { shuffle, wordKey } from '@rosie/english'
 
-import FilterBar from '@/components/english/words/FilterBar'
-import PhonicsLegend from '@/components/english/words/PhonicsLegend'
-import CardsGrid from '@/components/english/words/CardsGrid'
+import { FilterBar } from '@rosie/english'
+import { PhonicsLegend } from '@rosie/english'
+import { CardsGrid } from '@rosie/english'
 
 export default function CardsPage() {
   const {

@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
-import FlashCard from '@/components/english/words/FlashCard'
+import { FlashCard } from '@rosie/english'
 import type { FlipbookBook } from '@/utils/flipbook-types'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
-import { wordKey } from '@/utils/english-helpers'
+import { wordKey } from '@rosie/english'
 import { getBookWordEntries } from '@/utils/flipbook-word-match'
 
 type FlipbookWordCarouselModalProps = {

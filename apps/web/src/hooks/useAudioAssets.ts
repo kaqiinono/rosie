@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
-import { compressAudioToMp3 } from '@/utils/audio-compress'
+import { compressAudioToMp3 } from '@rosie/player'
 import {
   AUDIO_MEDIA_BUCKET,
   mediaAssetStoragePath,

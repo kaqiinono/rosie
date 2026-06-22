@@ -12,7 +12,7 @@ import {
   type FlipbookBook,
   type FlipbookSyncManifest,
 } from '@/utils/flipbook-types'
-import { compressAudioToMp3 } from '@/utils/audio-compress'
+import { compressAudioToMp3 } from '@rosie/player'
 import { parseSyncManifest, serializeSyncManifest } from '@/utils/flipbook-sync'
 import type {
   FlipbookCreateOutcome,

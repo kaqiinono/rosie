@@ -1,7 +1,7 @@
 import { supabase } from '@rosie/core'
 import type { WeeklyPlan } from '@rosie/core'
-import { decodeWeeklyPlanProgress } from '@/utils/weeklyPlanProgress'
-import { parsePlanDataFromSupabase } from '@/utils/weeklyPlanPayload'
+import { decodeWeeklyPlanProgress } from '@rosie/english'
+import { parsePlanDataFromSupabase } from '@rosie/english'
 
 export async function loadWeeklyPlanById(
   userId: string,

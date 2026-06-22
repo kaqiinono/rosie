@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
+import { useWeeklyPlan } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
-import { useWordData } from '@/hooks/useWordData'
+import { useWordData } from '@rosie/english'
 import { useCalcDaily } from '@rosie/calc'
 import { todayStr } from '@rosie/core'
-import { findPassage, parseFocusLessonKey } from '@/utils/reading-data'
+import { findPassage, parseFocusLessonKey } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
 
 function wordKeyStr(e: WordEntry): string {

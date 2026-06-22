@@ -9,7 +9,7 @@ import FlipbookUploadGuide from '@/components/flipbook/FlipbookUploadGuide'
 import FlipbookUploader from '@/components/flipbook/FlipbookUploader'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useFlipbookDuplicatePrompt } from '@/hooks/useFlipbookDuplicatePrompt'
-import { useWordData } from '@/hooks/useWordData'
+import { useWordData } from '@rosie/english'
 
 export default function FlipbookAdminPage() {
   const { user, loading: authLoading } = useAuth()

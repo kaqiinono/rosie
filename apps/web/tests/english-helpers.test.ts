@@ -8,7 +8,7 @@ import {
   getFilteredWords,
   shuffle,
   wordKey,
-} from '@/utils/english-helpers'
+} from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
 
 const w = (overrides: Partial<WordEntry>): WordEntry => ({

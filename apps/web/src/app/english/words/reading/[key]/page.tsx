@@ -3,27 +3,27 @@
 import { use, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useWordsContext } from '@/contexts/WordsContext'
+import { useWordsContext } from '@rosie/english'
 import { useAuth } from '@rosie/core'
-import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { useReadingPassageAudio } from '@/hooks/useReadingPassageAudio'
-import ReadingAudioButton from '@/components/english/reading/ReadingAudioButton'
+import { useWeeklyPlan } from '@rosie/english'
+import { useReadingPassageAudio } from '@rosie/english'
+import { ReadingAudioButton } from '@rosie/english'
 import {
   findPassageByKey,
   findSentenceForWord,
   parseFocusLessonKey,
   readingPassages,
-} from '@/utils/reading-data'
-import { wordKey } from '@/utils/english-helpers'
+} from '@rosie/english'
+import { wordKey } from '@rosie/english'
 import type { MasteryLevel } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import type { WordEntry, WeekDayProgress } from '@rosie/core'
-import PassageView from '@/components/english/reading/PassageView'
-import WordPopup from '@/components/english/reading/WordPopup'
-import ParagraphRecallQuiz from '@/components/english/reading/ParagraphRecallQuiz'
-import UncoveredWordsReview from '@/components/english/reading/UncoveredWordsReview'
-import PreReadingRecall from '@/components/english/reading/PreReadingRecall'
-import GlossaryPanel from '@/components/english/reading/GlossaryPanel'
+import { PassageView } from '@rosie/english'
+import { WordPopup } from '@rosie/english'
+import { ParagraphRecallQuiz } from '@rosie/english'
+import { UncoveredWordsReview } from '@rosie/english'
+import { PreReadingRecall } from '@rosie/english'
+import { GlossaryPanel } from '@rosie/english'
 
 const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 0, label: '未掌握', dot: 'bg-amber-400' },

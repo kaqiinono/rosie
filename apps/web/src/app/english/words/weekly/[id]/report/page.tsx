@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useWordsContext } from '@/contexts/WordsContext'
+import { useWordsContext } from '@rosie/english'
 import type { WeeklyPlan } from '@rosie/core'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
-import EnglishWeeklyReportView from '@/components/english/words/EnglishWeeklyReportView'
-import EnglishWeeklyReportWordTable from '@/components/english/words/EnglishWeeklyReportWordTable'
-import { buildWeeklyReportWordRows } from '@/utils/weeklyReportWordRows'
+import { EnglishWeeklyReportView } from '@rosie/english'
+import { EnglishWeeklyReportWordTable } from '@rosie/english'
+import { buildWeeklyReportWordRows } from '@rosie/english'
 
 export default function WeeklyPlanReportPage() {
   const router = useRouter()

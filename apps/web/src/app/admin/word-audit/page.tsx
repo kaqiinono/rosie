@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import { SAMPLE_WORDS, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@/utils/english-data'
+import { SAMPLE_WORDS, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
 
 type DbRow = {

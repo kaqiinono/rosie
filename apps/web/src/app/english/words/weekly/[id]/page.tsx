@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useWordsContext } from '@/contexts/WordsContext'
+import { useWordsContext } from '@rosie/english'
 import type { WeeklyPlan } from '@rosie/core'
-import WeeklyPlanSession from '@/components/english/words/WeeklyPlanSession'
+import { WeeklyPlanSession } from '@rosie/english'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 
 export default function WeeklyPlanPage({ params }: { params: Promise<{ id: string }> }) {

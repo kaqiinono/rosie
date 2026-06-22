@@ -1,8 +1,8 @@
 'use client'
 
 import type { WordEntry } from '@rosie/core'
-import FlashCard from '@/components/english/words/FlashCard'
-import PhonicsLegend from '@/components/english/words/PhonicsLegend'
+import { FlashCard } from '@rosie/english'
+import { PhonicsLegend } from '@rosie/english'
 
 interface Props {
   word: WordEntry

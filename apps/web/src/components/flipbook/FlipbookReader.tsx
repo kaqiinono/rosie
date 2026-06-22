@@ -18,7 +18,7 @@ import {
 import { computeFlipbookViewportSize } from '@/utils/flipbook-viewport'
 import { STORAGE_KEYS } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import { useWordData } from '@/hooks/useWordData'
+import { useWordData } from '@rosie/english'
 import { getPageWordEntries } from '@/utils/flipbook-word-match'
 
 /** Chrome overlays the stage — these are only breathing-room paddings. */

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
-import { enrichWord, type EnrichResult } from '@/utils/word-enrich'
-import { hilite } from '@/utils/english-helpers'
+import { enrichWord, type EnrichResult } from '@rosie/english'
+import { hilite } from '@rosie/english'
 import { KW_COLORS, DEFAULT_KW_COLOR, type StageTree } from './types'
 
 type Props = {

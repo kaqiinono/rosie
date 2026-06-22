@@ -2,12 +2,12 @@
 
 import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useWordsContext } from '@/contexts/WordsContext'
+import { useWordsContext } from '@rosie/english'
 import { useImmersive } from '@rosie/core'
-import { findPassage, findPassageByKey, findSentenceForWord } from '@/utils/reading-data'
-import FilterBar from '@/components/english/words/FilterBar'
-import PracticeSetup from '@/components/english/words/PracticeSetup'
-import type { SpellButtonStyle } from '@/components/english/words/SpellTiles'
+import { findPassage, findPassageByKey, findSentenceForWord } from '@rosie/english'
+import { FilterBar } from '@rosie/english'
+import { PracticeSetup } from '@rosie/english'
+import type { SpellButtonStyle } from '@rosie/english'
 
 export default function PracticePage() {
   const {
