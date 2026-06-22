@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useLesson40 } from '@/components/math/lesson40/Lesson40Provider'
-import { PROBLEMS, TAG_STYLE } from '@/utils/lesson40-data'
+import { useLesson40 } from '@rosie/math/components/lesson40/Lesson40Provider'
+import { PROBLEMS, TAG_STYLE } from '@rosie/math/utils/lesson40-data'
 import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { Problem } from '@rosie/core'

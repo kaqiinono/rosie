@@ -29,6 +29,9 @@ importers:
       '@rosie/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@rosie/math':
+        specifier: workspace:*
+        version: link:../../packages/math
       '@rosie/player':
         specifier: workspace:*
         version: link:../../packages/player
@@ -167,6 +170,46 @@ importers:
       react:
         specifier: ^19.0.0
         version: 19.2.4
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
+  packages/math:
+    dependencies:
+      '@rosie/core':
+        specifier: workspace:*
+        version: link:../core
+      '@rosie/rewards':
+        specifier: workspace:*
+        version: link:../rewards
+      '@rosie/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@supabase/supabase-js':
+        specifier: ^2.99.2
+        version: 2.99.2
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.14
+        version: 22.19.15
+      '@types/react':
+        specifier: ^19.0.12
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.2.3(@types/react@19.2.14)
+      next:
+        specifier: ^15.2.4
+        version: 15.5.13(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
-import { useMathWeeklyPlan } from '@/hooks/useMathWeeklyPlan'
+import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useWordData } from '@/hooks/useWordData'
 import { useCalcDaily } from '@rosie/calc'
 import { todayStr } from '@rosie/core'

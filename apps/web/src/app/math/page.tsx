@@ -2,11 +2,11 @@
 
 import { OrbBackground } from '@rosie/ui'
 import { BackLink } from '@rosie/ui'
-import CourseCard from '@/components/math/CourseCard'
-import MathDailyCard from '@/components/math/MathDailyCard'
-import MathSeaCard from '@/components/math/MathSeaCard'
-import MathQuizCard from '@/components/math/MathQuizCard'
-import MathCatalogCard from '@/components/math/MathCatalogCard'
+import CourseCard from '@rosie/math/components/CourseCard'
+import MathDailyCard from '@rosie/math/components/MathDailyCard'
+import MathSeaCard from '@rosie/math/components/MathSeaCard'
+import MathQuizCard from '@rosie/math/components/MathQuizCard'
+import MathCatalogCard from '@rosie/math/components/MathCatalogCard'
 import { useAuth } from '@rosie/core'
 import type { CourseCardData } from '@rosie/core'
 

@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react'
 import { BackLink } from '@rosie/ui'
-import CatalogTree from '@/components/math/catalog/CatalogTree'
+import CatalogTree from '@rosie/math/components/catalog/CatalogTree'
 import {
   BOOKS,
   bookOrder,
@@ -18,7 +18,7 @@ import {
   tcolor,
   TOPIC,
   topicBookCount,
-} from '@/utils/catalog-data'
+} from '@rosie/math/utils/catalog-data'
 
 type Tab = 'list' | 'graph' | 'advice'
 

@@ -17,6 +17,7 @@
     "@breezystack/lamejs": "^1.2.7",
     "@rosie/calc": "workspace:*",
     "@rosie/core": "workspace:*",
+    "@rosie/math": "workspace:*",
     "@rosie/player": "workspace:*",
     "@rosie/rewards": "workspace:*",
     "@rosie/ui": "workspace:*",

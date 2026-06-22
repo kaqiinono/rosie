@@ -1,4 +1,4 @@
-import WeekdayMagic from '@/components/math/lesson36/WeekdayMagic'
+import WeekdayMagic from '@rosie/math/components/lesson36/WeekdayMagic'
 
 export const metadata = {
   title: '星期魔法书 🌈',

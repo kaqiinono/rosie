@@ -2,8 +2,8 @@
 
 import { use } from 'react'
 import { notFound } from 'next/navigation'
-import { PROBLEMS } from '@/utils/lesson43-data'
-import ProblemDetail from '@/components/math/lesson43/ProblemDetail'
+import { PROBLEMS } from '@rosie/math/utils/lesson43-data'
+import ProblemDetail from '@rosie/math/components/lesson43/ProblemDetail'
 
 export default function PretestProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

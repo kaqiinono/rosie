@@ -1,13 +1,13 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { PROBLEMS } from '@/utils/lesson44-data'
-import Lesson44Provider, { useLesson44 } from '@/components/math/lesson44/Lesson44Provider'
-import AppHeader from '@/components/math/lesson44/AppHeader'
-import Sidebar from '@/components/math/lesson44/Sidebar'
-import BottomNav from '@/components/math/lesson44/BottomNav'
-import CongratsModal from '@/components/math/lesson35/CongratsModal'
-import Toast from '@/components/math/lesson35/Toast'
+import { PROBLEMS } from '@rosie/math/utils/lesson44-data'
+import Lesson44Provider, { useLesson44 } from '@rosie/math/components/lesson44/Lesson44Provider'
+import AppHeader from '@rosie/math/components/lesson44/AppHeader'
+import Sidebar from '@rosie/math/components/lesson44/Sidebar'
+import BottomNav from '@rosie/math/components/lesson44/BottomNav'
+import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'
+import Toast from '@rosie/math/components/lesson35/Toast'
 
 const SECTION_COUNTS: Record<string, number> = {
   pretest: PROBLEMS.pretest.length,

@@ -4,8 +4,8 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@/hooks/useMathSolved'
-import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@/utils/sea-data'
+import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel } from '@rosie/core'
 import {
@@ -14,7 +14,7 @@ import {
   allDifficultiesSelected,
   type ProblemDifficulty,
 } from '@rosie/core'
-import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import { useStarHud } from '@rosie/rewards'
 import { StarProgressBar } from '@rosie/rewards'
 

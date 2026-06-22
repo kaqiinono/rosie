@@ -1,8 +1,8 @@
 'use client'
 
-import { PROBLEMS } from '@/utils/lesson37-data'
-import { useLesson37 } from '@/components/math/lesson37/Lesson37Provider'
-import ProblemList from '@/components/math/lesson37/ProblemList'
+import { PROBLEMS } from '@rosie/math/utils/lesson37-data'
+import { useLesson37 } from '@rosie/math/components/lesson37/Lesson37Provider'
+import ProblemList from '@rosie/math/components/lesson37/ProblemList'
 
 export default function PretestPage() {
   const { solveCount } = useLesson37()

@@ -2,10 +2,10 @@
 
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { PROBLEMS } from '@/utils/lesson35-data'
-import { useLesson35 } from '@/components/math/lesson35/Lesson35Provider'
+import { PROBLEMS } from '@rosie/math/utils/lesson35-data'
+import { useLesson35 } from '@rosie/math/components/lesson35/Lesson35Provider'
 import type { ProblemDifficulty } from '@rosie/core'
-import FilterPanel from '@/components/math/lesson35/FilterPanel'
+import FilterPanel from '@rosie/math/components/lesson35/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 
