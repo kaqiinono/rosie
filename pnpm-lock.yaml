@@ -32,6 +32,9 @@ importers:
       '@rosie/english':
         specifier: workspace:*
         version: link:../../packages/english
+      '@rosie/flipbook':
+        specifier: workspace:*
+        version: link:../../packages/flipbook
       '@rosie/math':
         specifier: workspace:*
         version: link:../../packages/math
@@ -203,6 +206,52 @@ importers:
       xlsx:
         specifier: ^0.18.5
         version: 0.18.5
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.12
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.2.3(@types/react@19.2.14)
+      next:
+        specifier: ^15.2.4
+        version: 15.5.13(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      styled-jsx:
+        specifier: ^5.1.6
+        version: 5.1.6(@babel/core@7.29.0)(react@19.2.4)
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
+  packages/flipbook:
+    dependencies:
+      '@rosie/core':
+        specifier: workspace:*
+        version: link:../core
+      '@rosie/english':
+        specifier: workspace:*
+        version: link:../english
+      '@rosie/player':
+        specifier: workspace:*
+        version: link:../player
+      '@supabase/supabase-js':
+        specifier: ^2.99.2
+        version: 2.99.2
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      pdfjs-dist:
+        specifier: ^4.10.38
+        version: 4.10.38
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
+      react-pageflip:
+        specifier: ^2.0.3
+        version: 2.0.3
     devDependencies:
       '@types/react':
         specifier: ^19.0.12

@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { useCallback } from 'react'
 import { useAuth } from '@rosie/core'
-import FlipbookBatchUploader from '@/components/flipbook/FlipbookBatchUploader'
-import type { FlipbookCreateBookInput } from '@/components/flipbook/FlipbookUploader'
-import FlipbookUploadGuide from '@/components/flipbook/FlipbookUploadGuide'
-import FlipbookUploader from '@/components/flipbook/FlipbookUploader'
-import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
-import { useFlipbookDuplicatePrompt } from '@/hooks/useFlipbookDuplicatePrompt'
+import { FlipbookBatchUploader } from '@rosie/flipbook'
+import type { FlipbookCreateBookInput } from '@rosie/flipbook'
+import { FlipbookUploadGuide } from '@rosie/flipbook'
+import { FlipbookUploader } from '@rosie/flipbook'
+import { useFlipbookBooks } from '@rosie/flipbook'
+import { useFlipbookDuplicatePrompt } from '@rosie/flipbook'
 import { useWordData } from '@rosie/english'
 
 export default function FlipbookAdminPage() {

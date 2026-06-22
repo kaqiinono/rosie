@@ -4,22 +4,22 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { FLIPBOOK_READER_SHELL_CLASS } from '@/components/flipbook/flipbook-reader-shell'
-import FlipbookPage from '@/components/flipbook/FlipbookPage'
-import FlipbookAudioBar from '@/components/flipbook/FlipbookAudioBar'
-import FlipbookPageWordsOverlay from '@/components/flipbook/FlipbookPageWordsOverlay'
-import type { FlipbookBook } from '@/utils/flipbook-types'
-import { FLIPBOOK_BASE_PROPS } from '@/utils/flipbook-flip-props'
+import { FLIPBOOK_READER_SHELL_CLASS } from './flipbook-reader-shell'
+import FlipbookPage from './FlipbookPage'
+import FlipbookAudioBar from './FlipbookAudioBar'
+import FlipbookPageWordsOverlay from './FlipbookPageWordsOverlay'
+import type { FlipbookBook } from '../utils/flipbook-types'
+import { FLIPBOOK_BASE_PROPS } from '../utils/flipbook-flip-props'
 import {
   flipbookChunkTriggerContainingPage,
   flipbookPagesInChunk,
   preloadFlipbookPageImages,
-} from '@/utils/flipbook-page-load'
-import { computeFlipbookViewportSize } from '@/utils/flipbook-viewport'
+} from '../utils/flipbook-page-load'
+import { computeFlipbookViewportSize } from '../utils/flipbook-viewport'
 import { STORAGE_KEYS } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useWordData } from '@rosie/english'
-import { getPageWordEntries } from '@/utils/flipbook-word-match'
+import { getPageWordEntries } from '../utils/flipbook-word-match'
 
 /** Chrome overlays the stage — these are only breathing-room paddings. */
 const STAGE_TOP_PAD = 8

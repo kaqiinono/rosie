@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import type {
   FlipbookDuplicateAction,
   FlipbookDuplicatePrompt,
-} from '@/utils/flipbook-duplicate'
+} from '../utils/flipbook-duplicate'
 
 type FlipbookDuplicateDialogProps = {
   prompt: FlipbookDuplicatePrompt

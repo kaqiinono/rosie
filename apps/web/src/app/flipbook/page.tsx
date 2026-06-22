@@ -5,20 +5,15 @@ import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useAuth, supabase } from '@rosie/core'
 import { useImmersive } from '@rosie/core'
-import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
+import { useFlipbookBooks } from '@rosie/flipbook'
 import { usePlaylistPlayer } from '@rosie/player'
 import { useWordData } from '@rosie/english'
 import { useWordMastery } from '@rosie/english'
 import { PlayerDock } from '@rosie/player'
-import FlipbookWordCarouselModal, {
-  flipbookPreviewWords,
-} from '@/components/flipbook/FlipbookWordCarouselModal'
+import { FlipbookWordCarouselModal, flipbookPreviewWords } from '@rosie/flipbook'
 import { type PlayerTrack } from '@rosie/player'
-import {
-  bookHasVocabularyData,
-  getBookMatchedWordKeys,
-} from '@/utils/flipbook-word-match'
-import { FLIPBOOK_BUCKET, type FlipbookBook } from '@/utils/flipbook-types'
+import { bookHasVocabularyData, getBookMatchedWordKeys } from '@rosie/flipbook'
+import { FLIPBOOK_BUCKET, type FlipbookBook } from '@rosie/flipbook'
 
 export default function FlipbookShelfPage() {
   const { user, loading: authLoading } = useAuth()

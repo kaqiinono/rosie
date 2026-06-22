@@ -1,4 +1,4 @@
-import type { FlipbookPageSync, FlipbookSyncManifest } from '@/utils/flipbook-types'
+import type { FlipbookPageSync, FlipbookSyncManifest } from './flipbook-types'
 import type { WordEntry } from '@rosie/core'
 import { buildWordMatchRegex, resolveMatchedWord } from '@rosie/english'
 

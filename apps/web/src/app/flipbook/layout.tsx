@@ -1,4 +1,4 @@
-import FlipbookLayoutEffects from '@/components/flipbook/FlipbookLayoutEffects'
+import { FlipbookLayoutEffects } from '@rosie/flipbook'
 
 export default function FlipbookLayout({ children }: { children: React.ReactNode }) {
   return (

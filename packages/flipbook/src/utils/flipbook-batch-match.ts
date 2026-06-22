@@ -11,14 +11,14 @@ import {
   isFlipbookSyncCandidate,
   isGenericSyncFilename,
   titleLabelFromStem,
-} from '@/utils/flipbook-naming'
+} from './flipbook-naming'
 import {
   flipbookImageGroupStem,
   groupFlipbookPageImagesByFolder,
   sortFlipbookPageImageFiles,
-} from '@/utils/flipbook-page-images'
+} from './flipbook-page-images'
 
-export { flipbookFileStem, flipbookTitleFromFiles, titleLabelFromStem } from '@/utils/flipbook-naming'
+export { flipbookFileStem, flipbookTitleFromFiles, titleLabelFromStem } from './flipbook-naming'
 
 export type FlipbookBatchPair = {
   stem: string

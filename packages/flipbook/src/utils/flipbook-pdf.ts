@@ -1,4 +1,4 @@
-import { FLIPBOOK_MAX_PAGES } from '@/utils/flipbook-types'
+import { FLIPBOOK_MAX_PAGES } from './flipbook-types'
 
 let pdfWorkerReady = false
 

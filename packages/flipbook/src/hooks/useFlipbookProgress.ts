@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
-import type { FlipbookProgress } from '@/utils/flipbook-types'
+import type { FlipbookProgress } from '../utils/flipbook-types'
 
 interface RawProgressRow {
   book_id: string

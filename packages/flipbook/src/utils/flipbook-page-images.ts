@@ -1,13 +1,13 @@
-import { FLIPBOOK_MAX_PAGES } from '@/utils/flipbook-types'
+import { FLIPBOOK_MAX_PAGES } from './flipbook-types'
 import {
   FLIPBOOK_CLOUD_PAGE_BASENAME_RE,
   FLIPBOOK_FLAT_IMAGE_GROUP,
   flipbookBasename,
   flipbookPageImageGroupKey,
   flipbookStemFromImageGroupKey,
-} from '@/utils/flipbook-naming'
+} from './flipbook-naming'
 
-export { FLIPBOOK_FLAT_IMAGE_GROUP } from '@/utils/flipbook-naming'
+export { FLIPBOOK_FLAT_IMAGE_GROUP } from './flipbook-naming'
 
 const PAGE_IMAGE_EXT = /\.(png|jpe?g|webp)$/i
 

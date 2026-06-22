@@ -1,4 +1,4 @@
-import type { FlipbookPageSync, FlipbookSyncManifest } from '@/utils/flipbook-types'
+import type { FlipbookPageSync, FlipbookSyncManifest } from './flipbook-types'
 
 function parsePage(item: unknown): FlipbookPageSync | null {
   if (!item || typeof item !== 'object') return null

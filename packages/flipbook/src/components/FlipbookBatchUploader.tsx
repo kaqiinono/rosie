@@ -5,19 +5,19 @@ import clsx from 'clsx'
 import FlipbookUploadProgress, {
   flipbookOverallUploadPercent,
   type FlipbookProgressStep,
-} from '@/components/flipbook/FlipbookUploadProgress'
-import type { FlipbookCreateBookInput } from '@/components/flipbook/FlipbookUploader'
-import type { FlipbookCreateBookResult } from '@/hooks/useFlipbookBooks'
-import { countPdfPages } from '@/utils/flipbook-pdf'
-import { flipbookFileDisplayPath, flipbookTitleFromFiles, isFlipbookSyncCandidate } from '@/utils/flipbook-naming'
+} from './FlipbookUploadProgress'
+import type { FlipbookCreateBookInput } from './FlipbookUploader'
+import type { FlipbookCreateBookResult } from '../hooks/useFlipbookBooks'
+import { countPdfPages } from '../utils/flipbook-pdf'
+import { flipbookFileDisplayPath, flipbookTitleFromFiles, isFlipbookSyncCandidate } from '../utils/flipbook-naming'
 import {
   isFlipbookRasterImageFile,
   isValidCloudPageImageFilename,
-} from '@/utils/flipbook-page-images'
-import { matchFlipbookBatchFiles } from '@/utils/flipbook-batch-match'
-import { parseSyncFileText, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
-import { enrichManifestWithWordMatches } from '@/utils/flipbook-word-match'
-import type { FlipbookSyncManifest } from '@/utils/flipbook-types'
+} from '../utils/flipbook-page-images'
+import { matchFlipbookBatchFiles } from '../utils/flipbook-batch-match'
+import { parseSyncFileText, validateManifestAgainstPageCount } from '../utils/flipbook-sync'
+import { enrichManifestWithWordMatches } from '../utils/flipbook-word-match'
+import type { FlipbookSyncManifest } from '../utils/flipbook-types'
 import type { WordEntry } from '@rosie/core'
 
 type FlipbookBatchUploaderProps = {

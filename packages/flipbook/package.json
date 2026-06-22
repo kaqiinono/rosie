@@ -1,0 +1,36 @@
+{
+  "name": "@rosie/flipbook",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rosie/core": "workspace:*",
+    "@rosie/english": "workspace:*",
+    "@rosie/player": "workspace:*",
+    "@supabase/supabase-js": "^2.99.2",
+    "clsx": "^2.1.1",
+    "pdfjs-dist": "^4.10.38",
+    "react-pageflip": "^2.0.3"
+  },
+  "peerDependencies": {
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "styled-jsx": "^5.1.6",
+    "typescript": "^5.8.2"
+  }
+}

@@ -5,14 +5,14 @@ import clsx from 'clsx'
 import FlipbookUploadProgress, {
   flipbookOverallUploadPercent,
   type FlipbookProgressStep,
-} from '@/components/flipbook/FlipbookUploadProgress'
-import { flipbookTitleFromFiles } from '@/utils/flipbook-naming'
-import { countPdfPages } from '@/utils/flipbook-pdf'
-import { sortFlipbookPageImageFiles } from '@/utils/flipbook-page-images'
-import { parseSyncFileText, validateManifestAgainstPageCount } from '@/utils/flipbook-sync'
-import { enrichManifestWithWordMatches } from '@/utils/flipbook-word-match'
-import type { FlipbookCreateBookResult } from '@/hooks/useFlipbookBooks'
-import type { FlipbookSyncManifest } from '@/utils/flipbook-types'
+} from './FlipbookUploadProgress'
+import { flipbookTitleFromFiles } from '../utils/flipbook-naming'
+import { countPdfPages } from '../utils/flipbook-pdf'
+import { sortFlipbookPageImageFiles } from '../utils/flipbook-page-images'
+import { parseSyncFileText, validateManifestAgainstPageCount } from '../utils/flipbook-sync'
+import { enrichManifestWithWordMatches } from '../utils/flipbook-word-match'
+import type { FlipbookCreateBookResult } from '../hooks/useFlipbookBooks'
+import type { FlipbookSyncManifest } from '../utils/flipbook-types'
 import type { WordEntry } from '@rosie/core'
 
 export type FlipbookCreateBookInput = {

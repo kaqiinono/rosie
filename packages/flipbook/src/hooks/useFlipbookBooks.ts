@@ -11,21 +11,21 @@ import {
   normalizeFlipbookSlug,
   type FlipbookBook,
   type FlipbookSyncManifest,
-} from '@/utils/flipbook-types'
+} from '../utils/flipbook-types'
 import { compressAudioToMp3 } from '@rosie/player'
-import { parseSyncManifest, serializeSyncManifest } from '@/utils/flipbook-sync'
+import { parseSyncManifest, serializeSyncManifest } from '../utils/flipbook-sync'
 import type {
   FlipbookCreateOutcome,
   FlipbookDuplicateAction,
   FlipbookDuplicatePrompt,
-} from '@/utils/flipbook-duplicate'
+} from '../utils/flipbook-duplicate'
 import {
   dedupePageImageFilesByPage,
   duplicatePageNumbers,
   formatDuplicatePageList,
-} from '@/utils/flipbook-duplicate'
-import { flipbookPageImageFilesToWebpBlobs } from '@/utils/flipbook-page-images'
-import { renderPdfFileToPageBlobs } from '@/utils/flipbook-pdf'
+} from '../utils/flipbook-duplicate'
+import { flipbookPageImageFilesToWebpBlobs } from '../utils/flipbook-page-images'
+import { renderPdfFileToPageBlobs } from '../utils/flipbook-pdf'
 
 export type FlipbookCreateBookResult = {
   error: string | null

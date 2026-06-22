@@ -2,7 +2,7 @@
 
 import clsx from 'clsx'
 import type { WordEntry } from '@rosie/core'
-import { briefChineseDef } from '@/utils/flipbook-word-match'
+import { briefChineseDef } from '../utils/flipbook-word-match'
 
 type FlipbookPageWordsOverlayProps = {
   page: number

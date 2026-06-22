@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
 import { useReadingPassageMedia } from '@rosie/english'
-import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
+import { useFlipbookBooks } from '@rosie/flipbook'
 import { useAudioPlaylists } from '@/hooks/useAudioPlaylists'
 import { readingPassages } from '@rosie/english'
 import { READING_AUDIO_BUCKET } from '@rosie/english'
-import { FLIPBOOK_BUCKET } from '@/utils/flipbook-types'
+import { FLIPBOOK_BUCKET } from '@rosie/flipbook'
 import {
   AUDIO_MEDIA_BUCKET,
   trackKey,

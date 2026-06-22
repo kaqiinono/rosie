@@ -1,4 +1,4 @@
-import { parseCloudPageImageFilename } from '@/utils/flipbook-page-images'
+import { parseCloudPageImageFilename } from './flipbook-page-images'
 
 export type FlipbookDuplicateKind = 'existing_book' | 'duplicate_page'
 

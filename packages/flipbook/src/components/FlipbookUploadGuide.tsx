@@ -1,5 +1,5 @@
-import { FLIPBOOK_MAX_PAGES } from '@/utils/flipbook-types'
-import { formatCloudPageBasename } from '@/utils/flipbook-naming'
+import { FLIPBOOK_MAX_PAGES } from '../utils/flipbook-types'
+import { formatCloudPageBasename } from '../utils/flipbook-naming'
 
 export default function FlipbookUploadGuide() {
   const sample = formatCloudPageBasename(1, 'png')

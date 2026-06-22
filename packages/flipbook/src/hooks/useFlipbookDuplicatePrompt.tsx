@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import FlipbookDuplicateDialog from '@/components/flipbook/FlipbookDuplicateDialog'
+import FlipbookDuplicateDialog from '../components/FlipbookDuplicateDialog'
 import type {
   FlipbookDuplicateAction,
   FlipbookDuplicatePrompt,
-} from '@/utils/flipbook-duplicate'
+} from '../utils/flipbook-duplicate'
 
 type Pending = {
   prompt: FlipbookDuplicatePrompt

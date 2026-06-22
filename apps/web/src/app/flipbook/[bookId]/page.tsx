@@ -5,12 +5,12 @@ import clsx from 'clsx'
 import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
-import FlipbookReader from '@/components/flipbook/FlipbookReader'
-import { FLIPBOOK_READER_SHELL_CLASS } from '@/components/flipbook/flipbook-reader-shell'
-import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
-import { useFlipbookProgress } from '@/hooks/useFlipbookProgress'
-import { useFlipbookReaderImmersive } from '@/hooks/useFlipbookReaderImmersive'
-import type { FlipbookBook } from '@/utils/flipbook-types'
+import { FlipbookReader } from '@rosie/flipbook'
+import { FLIPBOOK_READER_SHELL_CLASS } from '@rosie/flipbook'
+import { useFlipbookBooks } from '@rosie/flipbook'
+import { useFlipbookProgress } from '@rosie/flipbook'
+import { useFlipbookReaderImmersive } from '@rosie/flipbook'
+import type { FlipbookBook } from '@rosie/flipbook'
 
 export default function FlipbookReadPage() {
   useFlipbookReaderImmersive()
