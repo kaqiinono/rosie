@@ -2,7 +2,7 @@
 
 import clsx from 'clsx'
 import type { CollectionMembership } from '@/hooks/useAudioCollections'
-import type { AudioPlaylistItem } from '@/utils/audio-manager-types'
+import type { AudioPlaylistItem } from '@rosie/player'
 
 type Props = {
   entries: CollectionMembership[] // 来自 collections.membership(bucket, path)

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import type { PlaylistPlayer } from '@/hooks/usePlaylistPlayer'
-import type { LoopMode } from '@/utils/audio-manager-types'
+import type { PlaylistPlayer } from './usePlaylistPlayer'
+import type { LoopMode } from './audio-manager-types'
 
 const LOOP_MODE_LABEL: Record<LoopMode, string> = { order: '顺序', one: '单曲', all: '列表' }
 

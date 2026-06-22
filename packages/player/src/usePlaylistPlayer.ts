@@ -7,7 +7,7 @@ import {
   type LoopCount,
   type LoopMode,
   type PlayerTrack,
-} from '@/utils/audio-manager-types'
+} from './audio-manager-types'
 
 export interface PlaylistPlayer {
   // 用 <video> 作唯一媒体元素（纯音频隐藏画面、视频弹浮层），故 ref 为 HTMLVideoElement。

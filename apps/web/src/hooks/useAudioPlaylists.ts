@@ -8,7 +8,7 @@ import type {
   AudioPlaylist,
   AudioPlaylistItem,
   MediaType,
-} from '@/utils/audio-manager-types'
+} from '@rosie/player'
 
 type RawPlaylist = {
   id: string

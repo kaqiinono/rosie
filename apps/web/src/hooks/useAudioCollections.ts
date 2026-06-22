@@ -16,7 +16,7 @@ import {
   type AudioCollection,
   type AudioPlaylistItem,
   type PlayerTrack,
-} from '@/utils/audio-manager-types'
+} from '@rosie/player'
 
 const FAVORITES_NAME = '我的最爱'
 

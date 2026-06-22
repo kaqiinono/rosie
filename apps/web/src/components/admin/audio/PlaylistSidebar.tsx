@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { AudioCollection, AudioCollectionKind } from '@/utils/audio-manager-types'
+import type { AudioCollection, AudioCollectionKind } from '@rosie/player'
 
 type Props = {
   collections: AudioCollection[]

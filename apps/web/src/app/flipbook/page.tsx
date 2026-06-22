@@ -7,14 +7,14 @@ import { useAuth } from '@rosie/core'
 import { useImmersive } from '@rosie/core'
 import { useFlipbookBooks } from '@/hooks/useFlipbookBooks'
 import { useAudioCollections } from '@/hooks/useAudioCollections'
-import { usePlaylistPlayer } from '@/hooks/usePlaylistPlayer'
+import { usePlaylistPlayer } from '@rosie/player'
 import { useWordData } from '@/hooks/useWordData'
 import { useWordMastery } from '@/hooks/useWordMastery'
-import PlayerDock from '@/components/audio/PlayerDock'
+import { PlayerDock } from '@rosie/player'
 import FlipbookWordCarouselModal, {
   flipbookPreviewWords,
 } from '@/components/flipbook/FlipbookWordCarouselModal'
-import { trackKey, type PlayerTrack } from '@/utils/audio-manager-types'
+import { trackKey, type PlayerTrack } from '@rosie/player'
 import {
   bookHasVocabularyData,
   getBookMatchedWordKeys,

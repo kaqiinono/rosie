@@ -7,14 +7,14 @@ import { useAuth } from '@rosie/core'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useReadingPassageMedia } from '@/hooks/useReadingPassageMedia'
 import { useAudioCollections } from '@/hooks/useAudioCollections'
-import { usePlaylistPlayer } from '@/hooks/usePlaylistPlayer'
+import { usePlaylistPlayer } from '@rosie/player'
 import { useWordsContext } from '@/contexts/WordsContext'
 import ReadingAudioUploadButton from '@/components/english/reading/ReadingAudioUploadButton'
-import PlayerDock from '@/components/audio/PlayerDock'
+import { PlayerDock } from '@rosie/player'
 import { parseFocusLessonKey, readingPassages } from '@/utils/reading-data'
 import { wordKey } from '@/utils/english-helpers'
 import { getWordMasteryLevel } from '@/utils/masteryUtils'
-import { trackKey, type PlayerTrack } from '@/utils/audio-manager-types'
+import { trackKey, type PlayerTrack } from '@rosie/player'
 
 export default function ReadingIndexPage() {
   const { user } = useAuth()

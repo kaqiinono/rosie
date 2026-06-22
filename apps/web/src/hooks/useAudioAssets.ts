@@ -9,7 +9,7 @@ import {
   mediaAssetStoragePath,
   type AudioAsset,
   type MediaType,
-} from '@/utils/audio-manager-types'
+} from '@rosie/player'
 
 type RawRow = {
   id: string

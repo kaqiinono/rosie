@@ -5,11 +5,11 @@ import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import { useAudioAssets } from '@/hooks/useAudioAssets'
 import { useAudioCollections } from '@/hooks/useAudioCollections'
-import { usePlaylistPlayer } from '@/hooks/usePlaylistPlayer'
+import { usePlaylistPlayer } from '@rosie/player'
 import StandaloneAudioTab from './StandaloneAudioTab'
 import PlaylistSidebar from './PlaylistSidebar'
 import CollectionView from './CollectionView'
-import PlayerDock from '@/components/audio/PlayerDock'
+import { PlayerDock } from '@rosie/player'
 import {
   AUDIO_MEDIA_BUCKET,
   trackKey,
@@ -18,7 +18,7 @@ import {
   type AudioCollection,
   type AudioPlaylistItem,
   type PlayerTrack,
-} from '@/utils/audio-manager-types'
+} from '@rosie/player'
 
 type Props = { user: User | null }
 

@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import type { AudioCollection, AudioPlaylistItem, PlayerTrack } from '@/utils/audio-manager-types'
+import type { AudioCollection, AudioPlaylistItem, PlayerTrack } from '@rosie/player'
 
 const MAX_FILE_MB = 500
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
