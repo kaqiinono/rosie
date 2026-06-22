@@ -3,25 +3,24 @@
 import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { useAuth } from '@rosie/core'
+import { useAuth, supabase } from '@rosie/core'
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan'
 import { useReadingPassageMedia } from '@/hooks/useReadingPassageMedia'
-import { useAudioCollections } from '@/hooks/useAudioCollections'
 import { usePlaylistPlayer } from '@rosie/player'
 import { useWordsContext } from '@/contexts/WordsContext'
 import ReadingAudioUploadButton from '@/components/english/reading/ReadingAudioUploadButton'
 import { PlayerDock } from '@rosie/player'
 import { parseFocusLessonKey, readingPassages } from '@/utils/reading-data'
+import { READING_AUDIO_BUCKET, readingPassageAudioPath } from '@/utils/reading-audio-types'
 import { wordKey } from '@/utils/english-helpers'
 import { getWordMasteryLevel } from '@rosie/core'
-import { trackKey, type PlayerTrack } from '@rosie/player'
+import { type PlayerTrack } from '@rosie/player'
 
 export default function ReadingIndexPage() {
   const { user } = useAuth()
   const { weeklyPlan, isLoading } = useWeeklyPlan(user)
   const { vocab, masteryMap } = useWordsContext()
   const { hasAudio, uploadPassageAudio } = useReadingPassageMedia(user)
-  const col = useAudioCollections(user)
   const player = usePlaylistPlayer()
 
   // 选中集（用于"播放选中"）
@@ -56,16 +55,26 @@ export default function ReadingIndexPage() {
     })
   }, [vocab, masteryMap, parsedFocus])
 
-  // 从「阅读」虚拟收藏夹拿到带 source 的曲目，按 passage key 建索引
+  // 直接从 reading 自己的课文构建播放曲目（reading_passage_media / 'reading' bucket），
+  // 按 passage key 建索引。不依赖 audio 模块的收藏夹聚合，连播留在 reading 自己范围内。
   const trackByKey = useMemo(() => {
-    const readingCol = col.collections.find((c) => c.kind === 'reading')
     const map = new Map<string, PlayerTrack>()
-    for (const t of readingCol?.tracks ?? []) {
-      const key = t.refLink?.split('/').pop()
-      if (key) map.set(key, t)
+    for (const p of readingPassages) {
+      if (!hasAudio(p.key)) continue
+      const { data } = supabase.storage
+        .from(READING_AUDIO_BUCKET)
+        .getPublicUrl(readingPassageAudioPath(p.key))
+      if (!data?.publicUrl) continue
+      map.set(p.key, {
+        url: data.publicUrl,
+        label: p.title,
+        refLink: `reading/${p.key}`,
+        mediaType: 'audio',
+        source: null,
+      })
     }
     return map
-  }, [col.collections])
+  }, [hasAudio])
 
   const audiobookKeys = useMemo(
     () => readingPassages.filter((p) => hasAudio(p.key)).map((p) => p.key),
@@ -90,9 +99,6 @@ export default function ReadingIndexPage() {
   )
 
   const current = player.current
-  const currentIsFavorite =
-    !!current?.source &&
-    col.favoriteKeySet.has(trackKey(current.source.storageBucket, current.source.storagePath))
 
   return (
     <main
@@ -243,14 +249,7 @@ export default function ReadingIndexPage() {
         </ul>
       )}
 
-      <PlayerDock
-        player={player}
-        theme="light"
-        isFavorite={currentIsFavorite}
-        onToggleFavorite={() => {
-          if (player.current) void col.toggleFavorite(player.current)
-        }}
-      />
+      <PlayerDock player={player} theme="light" />
     </main>
   )
 }
