@@ -1,7 +1,7 @@
 'use client'
 
-import OrbBackground from '@/components/shared/OrbBackground'
-import BackLink from '@/components/shared/BackLink'
+import { OrbBackground } from '@rosie/ui'
+import { BackLink } from '@rosie/ui'
 import CourseCard from '@/components/math/CourseCard'
 import MathDailyCard from '@/components/math/MathDailyCard'
 import MathSeaCard from '@/components/math/MathSeaCard'

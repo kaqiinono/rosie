@@ -1,7 +1,7 @@
 'use client'
 
-import NavigationLink from '@/components/shared/NavigationLink'
-import ArrowIcon from '@/components/shared/ArrowIcon'
+import { NavigationLink } from '@rosie/ui'
+import { ArrowIcon } from '@rosie/ui'
 import type { CourseCardData } from '@rosie/core'
 
 const variantStyles = {

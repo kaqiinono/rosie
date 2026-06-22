@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 
 type BlankToken = { type: 'text'; value: string } | { type: 'blank' }
 

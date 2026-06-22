@@ -1,6 +1,6 @@
 'use client'
 
-import { useNavigationLoading } from '@/hooks/useNavigationLoading'
+import { useNavigationLoading } from '@rosie/core'
 import LoadingOverlay from './LoadingOverlay'
 import type { ReactNode } from 'react'
 

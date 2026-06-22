@@ -1,3 +1,4 @@
+'use client'
 /**
  * Jelly 系列组件 — 圆角果冻砖视觉语言
  *
@@ -12,7 +13,7 @@
  *     JELLY_PRESETS,
  *     DEFAULT_JELLY_ORDER,
  *     pickNonAdjacentJellyPresets,
- *   } from '@/components/shared/JellyButton'
+ *   } from '@rosie/ui'
  *
  *   // 按钮
  *   <JellyButton preset="grape" onClick={() => {}}>A</JellyButton>

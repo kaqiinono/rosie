@@ -3,7 +3,7 @@
 import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useWordsContext } from '@/contexts/WordsContext'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 import { findPassage, findPassageByKey, findSentenceForWord } from '@/utils/reading-data'
 import FilterBar from '@/components/english/words/FilterBar'
 import PracticeSetup from '@/components/english/words/PracticeSetup'

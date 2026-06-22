@@ -18,7 +18,7 @@ import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
 import { useWordsContext } from '@/contexts/WordsContext'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 import { useStarHud } from '@rosie/rewards'
 
 interface OldReviewSessionProps {

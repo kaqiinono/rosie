@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 
 export default function AccountBar() {
   const { user, signOut, loading } = useAuth()

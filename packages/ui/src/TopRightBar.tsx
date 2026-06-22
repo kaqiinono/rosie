@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import AccountBar from './AccountBar'
 import { StarHud } from '@rosie/rewards'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 
 const HOME_PAGES = ['/', '/math', '/today', '/vouchers']
 

@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { WordsProvider, useWordsContext } from '@/contexts/WordsContext'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 import AppHeader from '@/components/english/words/AppHeader'
 import ImportModal from '@/components/english/words/ImportModal'
 import ImmersiveMode from '@/components/english/words/ImmersiveMode'

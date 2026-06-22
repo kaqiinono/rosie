@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import OrbBackground from '@/components/shared/OrbBackground'
-import ModuleCard from '@/components/shared/ModuleCard'
+import { OrbBackground } from '@rosie/ui'
+import { ModuleCard } from '@rosie/ui'
 import { useGreeting } from '@/hooks/useGreeting'
 import { useAuth } from '@rosie/core'
 import type { ModuleCardData } from '@rosie/core'

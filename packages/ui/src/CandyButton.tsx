@@ -1,3 +1,4 @@
+'use client'
 /* eslint-disable react-hooks/rules-of-hooks */
 /**
  * CandyButton — 糖果风格按钮组件

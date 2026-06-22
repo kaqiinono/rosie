@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useImmersive } from '@/contexts/ImmersiveContext'
+import { useImmersive } from '@rosie/core'
 
 /** Hide global chrome and lock document scroll while on a flipbook reader route. */
 export function useFlipbookReaderImmersive(active = true) {

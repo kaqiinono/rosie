@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useMemo, useState } from 'react'
-import BackLink from '@/components/shared/BackLink'
+import { BackLink } from '@rosie/ui'
 import CatalogTree from '@/components/math/catalog/CatalogTree'
 import {
   BOOKS,

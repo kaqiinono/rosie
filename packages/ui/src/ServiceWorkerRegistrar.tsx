@@ -1,6 +1,6 @@
 'use client'
 
-import { useServiceWorker } from '@/hooks/useServiceWorker'
+import { useServiceWorker } from '@rosie/core'
 
 export default function ServiceWorkerRegistrar() {
   useServiceWorker()

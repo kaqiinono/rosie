@@ -2,14 +2,16 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { pickMessage, RETRY_SPELL_MESSAGES } from '@rosie/core'
-import CandyButton, {
+import {
+  CandyButton,
   CANDY_PRESETS,
   DEFAULT_PRESET_ORDER,
-} from '@/components/shared/CandyButton'
-import JellyButton, {
+} from '@rosie/ui'
+import {
+  JellyButton,
   pickNonAdjacentJellyPresets,
   type JellyPresetKey,
-} from '@/components/shared/JellyButton'
+} from '@rosie/ui'
 
 export type SpellButtonStyle = 'candy' | 'jelly'
 

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import OrbBackground from '@/components/shared/OrbBackground'
-import BackLink from '@/components/shared/BackLink'
+import { OrbBackground } from '@rosie/ui'
+import { BackLink } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@/hooks/useMathSolved'
 import { useMathWrong } from '@/hooks/useMathWrong'
