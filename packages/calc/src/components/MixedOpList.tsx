@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import MixedOpComposer from './MixedOpComposer'
-import { skeletonMeta, isMixedOpValid } from '@/utils/calc-mixed'
+import { skeletonMeta, isMixedOpValid } from '../utils/calc-mixed'
 import type { MixedOp } from '@rosie/core'
 
 interface Props {

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
 import type { CalcAnswer, CalcCategory, CalcLevel, CalcMistake, CalcQuestion, ErrorTag } from '@rosie/core'
-import { levelKey, parseLevelKey } from '@/utils/calc-helpers'
-import { answerFromRow, answerToNumeric } from '@/utils/calc-answer'
+import { levelKey, parseLevelKey } from '../utils/calc-helpers'
+import { answerFromRow, answerToNumeric } from '../utils/calc-answer'
 
 interface MistakeRow {
   id: string

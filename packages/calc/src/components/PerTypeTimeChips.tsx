@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { suggestedTiers, TIER_LABEL } from '@/utils/calc-time-targets'
+import { suggestedTiers, TIER_LABEL } from '../utils/calc-time-targets'
 
 interface Props {
   /** 题型 id（block id 或 skeleton id），用于查四档建议。 */

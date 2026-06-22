@@ -23,6 +23,9 @@ importers:
       '@breezystack/lamejs':
         specifier: ^1.2.7
         version: 1.2.7
+      '@rosie/calc':
+        specifier: workspace:*
+        version: link:../../packages/calc
       '@rosie/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -102,6 +105,37 @@ importers:
       vitest:
         specifier: ^4.1.7
         version: 4.1.7(@types/node@22.19.15)(jsdom@29.1.1)(vite@8.0.14(@types/node@22.19.15)(jiti@2.6.1))
+
+  packages/calc:
+    dependencies:
+      '@rosie/core':
+        specifier: workspace:*
+        version: link:../core
+      '@rosie/rewards':
+        specifier: workspace:*
+        version: link:../rewards
+      '@supabase/supabase-js':
+        specifier: ^2.99.2
+        version: 2.99.2
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.12
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.2.3(@types/react@19.2.14)
+      next:
+        specifier: ^15.2.4
+        version: 15.5.13(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
 
   packages/core:
     dependencies:

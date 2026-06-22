@@ -2,31 +2,52 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Commands
+## Monorepo layout
 
-```bash
-# Install dependencies (uses pnpm)
-pnpm install
+This repo is a **pnpm workspace + Turborepo**. There is still exactly one deployable
+Next.js app (single Vercel project / single domain); subject modules are being extracted into
+packages so each can be worked on and type-checked in isolation.
 
-# Dev server with Turbopack
-pnpm dev
-
-# Clear build cache and restart
-pnpm fresh
-
-# Production build
-pnpm build
-
-# Preview production build
-pnpm start
-
-# Lint
-pnpm lint
+```
+apps/web/         # the Next.js app — routes live here; Vercel Root Directory = apps/web
+packages/core/    # @rosie/core    — Supabase client, AuthContext, shared type.ts/difficulty.ts,
+                  #                   constant.ts, confetti.ts
+packages/rewards/ # @rosie/rewards — shared gamification: stars HUD, coin wallet, vouchers
+                  #                   (used by admin/vouchers/today/math/english)
+packages/calc/    # @rosie/calc    — 口算 module (pilot extraction; has its own CLAUDE.md)
 ```
 
-No test suite is configured. After any logic change, run `pnpm lint` to catch type errors. Before merging UI changes, run `pnpm build` to confirm no TypeScript errors.
+Modules still inside `apps/web/src` (math, english, flipbook, audio, admin, …) will be
+extracted the same way over time. Each package depends only on `@rosie/core` (+ `@rosie/rewards`
+where it uses gamification); `core`/`rewards` never depend on a subject module. The app imports
+packages via barrel (`@rosie/calc`) and route page bodies via subpath
+(`@rosie/calc/pages/<name>`); routes under `apps/web/src/app/**` that have moved are thin
+`export { default } from '@rosie/<pkg>/pages/<name>'` shells. Packages are wired into the app
+via `transpilePackages` in `apps/web/next.config.ts`. Inside a package, cross-file imports are
+**relative** (package tsconfig path aliases are not honored by the app bundler).
 
-> **Keeping this file up to date:** When architecture, data flow, conventions, or tooling change, update CLAUDE.md in the same commit.
+## Commands
+
+All commands run from the repo root; Turborepo fans them out across workspaces.
+
+```bash
+pnpm install                              # install all workspaces
+pnpm dev                                  # dev server (turbo → web, Turbopack)
+pnpm build                                # production build (turbo)
+pnpm start                                # preview production build
+pnpm lint                                 # lint all packages
+pnpm typecheck                            # type-check all packages
+
+# scoped to one module (the AI-context / fast-feedback win):
+pnpm --filter @rosie/calc typecheck
+pnpm --filter web build
+```
+
+No test suite gate is configured (Vitest exists under `apps/web/tests`). After any logic
+change, run `pnpm lint`/`pnpm typecheck` to catch type errors. Before merging UI changes, run
+`pnpm build` to confirm no TypeScript errors.
+
+> **Keeping this file up to date:** When architecture, data flow, conventions, or tooling change, update CLAUDE.md in the same commit. Module-specific guidance lives in that package's own CLAUDE.md (e.g. `packages/calc/CLAUDE.md`).
 
 ## Environment Variables
 
@@ -130,7 +151,13 @@ Both math and English have a weekly plan system with the same Thursday-start wee
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
 - `/today` — unified dashboard showing both English and math daily tasks
 
-### 口算 Module (`/calc`)
+### 口算 Module (`/calc`) — now `@rosie/calc`
+
+> This module has been extracted into `packages/calc` (see `packages/calc/CLAUDE.md` for the
+> authoritative, in-package guide). Routes under `apps/web/src/app/calc/**` are thin shells
+> re-exporting `@rosie/calc/pages/<name>`; `layout.tsx` and the `/calc/vouchers` redirect stay
+> in the app. Calc types remain in `@rosie/core` (the rewards subsystem references them);
+> wallet/voucher/stars live in `@rosie/rewards`. The architecture below is unchanged.
 
 Mental-arithmetic practice. Question generation is **composable**, not a fixed level ladder:
 

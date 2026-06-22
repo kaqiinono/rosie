@@ -1,6 +1,6 @@
 'use client'
 
-import { BLOCK_GROUPS, blocksByGroup, type CalcBlock } from '@/utils/calc-blocks'
+import { BLOCK_GROUPS, blocksByGroup, type CalcBlock } from '../utils/calc-blocks'
 
 interface Props {
   selected: string[]

@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { SKELETONS, skeletonMeta, isMixedOpValid } from '@/utils/calc-mixed'
-import { blocksByGroup, blockById, BLOCK_GROUPS } from '@/utils/calc-blocks'
+import { SKELETONS, skeletonMeta, isMixedOpValid } from '../utils/calc-mixed'
+import { blocksByGroup, blockById, BLOCK_GROUPS } from '../utils/calc-blocks'
 import type { MixedOp, CalcSkeletonId } from '@rosie/core'
 
 interface Props {
