@@ -84,6 +84,24 @@ ANTHROPIC_MODEL=   # optional, defaults to claude-haiku-4-5-20251001
 
 If `ANTHROPIC_API_KEY` is unset, the `/api/word-enrich` route returns 503 and the client auto-fill falls back to the free dictionary API (dictionaryapi.dev).
 
+Locally, env lives in `apps/web/.env.local` (moved there with the app in the monorepo migration).
+
+## Deploying to Vercel
+
+One Vercel project, one domain. Because the Next.js app lives in `apps/web` (not the repo
+root), the project's **Root Directory must be set to `apps/web`** (Settings → General → Root
+Directory). Keep **"Include files outside of the Root Directory in the Build Step"** enabled
+(default) so the build can reach `packages/*` and the workspace root (`pnpm-workspace.yaml`,
+`pnpm-lock.yaml`). That's the only manual setting.
+
+Everything else is handled in-repo: `apps/web/vercel.json` (read from the Root Directory) pins
+`framework: nextjs`, `installCommand: pnpm install`, `buildCommand: next build`, plus the SW/PWA
+cache headers and rewrites; Vercel auto-detects pnpm from the root lockfile + `packageManager`.
+The `@rosie/*` packages compile via `transpilePackages` in `apps/web/next.config.ts`. Production
+env vars (`NEXT_PUBLIC_SUPABASE_*`, optional `ANTHROPIC_API_KEY`) live in Vercel and are
+unaffected by the migration. Optional: enable Turborepo Remote Caching (Vercel detects
+`turbo.json`) to skip unchanged-package rebuilds.
+
 ## Architecture
 
 This is a Next.js 15 App Router PWA for elementary school math and English learning, targeting a single child (Rosie). **Login is required** — Supabase is the sole data store. The app is almost entirely client-side with SSG; the only server code is a single Route Handler, `src/app/api/word-enrich/route.ts`, which proxies the Claude API for word auto-fill so the API key stays server-side.

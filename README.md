@@ -132,12 +132,26 @@ npm start
 
 ## 部署到 Vercel
 
+> **⚠️ Monorepo 注意（2026-06 迁移后必读）**：本仓库已是 pnpm/Turborepo monorepo，Next.js
+> 应用在 `apps/web`，不在仓库根目录。Vercel 仍是**单个项目、单个域名**，但项目设置里必须：
+>
+> 1. **Settings → General → Root Directory 设为 `apps/web`**（这是关键，不设会构建失败）。
+> 2. 确认其下 **"Include files outside of the Root Directory in the Build Step" 勾选**（默认开）
+>    ——构建才能访问 `packages/*` 与根目录的 `pnpm-workspace.yaml` / `pnpm-lock.yaml`。
+> 3. 包管理器、framework、build/install 命令无需手动设置：Vercel 从根 `pnpm-lock.yaml` +
+>    `package.json` 的 `packageManager` 自动识别 pnpm；`framework`/`buildCommand`/`installCommand`
+>    已写在 `apps/web/vercel.json`（Vercel 从 Root Directory 读取它）。
+> 4. **环境变量不受迁移影响**（它们存在 Vercel 里，不是文件）。本地 `.env.local` 现在在
+>    `apps/web/.env.local`；线上的 `NEXT_PUBLIC_SUPABASE_*` 等保持原样即可。
+>
+> 改完 Root Directory 后，**Deployments → Redeploy** 或 `git push` 触发一次部署即可。
+
 ### 方式一：Git 集成（推荐）
 
 1. 将代码推送到 GitHub / GitLab / Bitbucket
 2. 登录 [Vercel](https://vercel.com)，点击 **New Project**
-3. 导入仓库，Vercel 会自动检测 Next.js 框架
-4. 点击 **Deploy** — 完成
+3. 导入仓库；**把 Root Directory 设为 `apps/web`**（见上方注意），Vercel 会自动检测 Next.js
+4. 配置环境变量（见下方「环境变量」），点击 **Deploy** — 完成
 
 后续每次 `git push` 都会自动触发部署。
 
