@@ -41,7 +41,7 @@ wired into the app via `transpilePackages` in `apps/web/next.config.ts`.
 directly (连播 within their own scope, no ❤️favorites) so they don't depend on `@rosie/audio`;
 `@rosie/audio` aggregates reading/flipbook content one-way.
 
-**Before extracting the next module, read [`docs/monorepo-migration-postmortem.md`](docs/monorepo-migration-postmortem.md)**
+**Before extracting the next module, read [`docs/bug-report.md`](docs/bug-report.md)**
 — the bugs/gotchas from this migration + a per-module extraction checklist. The most common
 miss: every new `packages/<x>/src` with JSX needs an `@source` line in `globals.css`, or its
 Tailwind classes won't be generated (a styling break that the build does NOT catch).
