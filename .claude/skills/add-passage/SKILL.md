@@ -1,3 +1,12 @@
+---
+name: add-passage
+description: Append a new reading passage to the Rosie English reading module — adds one entry to the readingPassages array in packages/english/src/utils/reading-data.ts (data only; all reading components read from it by (unit, lesson)). Use when the user provides passage text + a lesson key to add a 课文.
+version: 1.0.0
+trigger: /add-passage
+---
+
+# /add-passage — 新增阅读课文
+
 在 `packages/english/src/utils/reading-data.ts` 的 `readingPassages` 数组里追加一篇新的课文。**所有阅读相关组件**（PassageView、WordPopup、ParagraphRecallQuiz、GlossaryPopup、Type D 题型）都从这个文件按 `(unit, lesson)` 取数据，**只改数据、不动组件**。
 
 ## 前置条件
