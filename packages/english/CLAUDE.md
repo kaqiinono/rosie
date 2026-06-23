@@ -24,6 +24,15 @@ audio, flipbook).
   (`readingPassages`/`buildWordMatchRegex`/`resolveMatchedWord`/`findPassage`/`parseFocusLessonKey`),
   `reading-audio-types`, weekly-plan payload/progress/report builders, `word-enrich`, `speak`.
 
+## Adding phonics rules
+
+Phonics rules live in `utils/phonics.ts` in `PH_RULES_RAW`. They're auto-sorted longest-first
+(longer patterns beat shorter prefixes — add 3-letter rules before their 2-letter subsets for
+readability). Categories: `ph-r` (R-controlled), `ph-digraph` (vowel combo), `ph-cluster`
+(consonant combo), `ph-blend` (consonant blend), `ph-suffix`, `ph-long`, `ph-vowel`. Each
+category's color is a CSS variable in `apps/web/src/app/globals.css` (`--ph-digraph`, …) mirrored
+in `PHONICS_LEGEND` in `phonics.ts`.
+
 ## Dependencies (the only things English imports from outside)
 
 - **`@rosie/core`** — Supabase client, `useAuth`, shared types, constants, `masteryUtils`,
