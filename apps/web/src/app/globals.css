@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+/* Monorepo: the subject modules live in sibling workspace packages, which Tailwind v4's
+   automatic content detection does NOT scan. Without these, utility classes used only in
+   package components (OrbBackground, ModuleCard, the per-module UI, …) are never generated
+   and those components render unstyled. Paths are relative to this CSS file. */
+@source "../../../../packages/core/src";
+@source "../../../../packages/ui/src";
+@source "../../../../packages/rewards/src";
+@source "../../../../packages/player/src";
+@source "../../../../packages/calc/src";
+@source "../../../../packages/math/src";
+@source "../../../../packages/english/src";
+@source "../../../../packages/flipbook/src";
+@source "../../../../packages/audio/src";
+
 /* This app is a fixed light theme (the genuinely-dark modules use their own
    scoped CSS). Rebind `dark:` to be class-based so accidental dark variants
    don't fire on phones set to system dark mode — which would turn cards dark
