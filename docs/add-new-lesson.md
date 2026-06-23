@@ -1,6 +1,6 @@
 # 新增讲次操作指引
 
-> 适用场景：在 `src/app/math/ny/` 下新增一个讲次（如第36讲、第37讲），复用第35讲的完整页面结构，只替换题目内容。
+> 适用场景：在 `apps/web/src/app/math/ny/` 下新增一个讲次（如第36讲、第37讲），复用第35讲的完整页面结构，只替换题目内容。
 
 ---
 
@@ -57,8 +57,8 @@
 
 **新讲次有流程图**（示例）：
 ```tsx
-// src/app/math/ny/36/lesson/[id]/page.tsx
-import Lesson36Flowchart from '@/components/math/lesson36/Lesson36Flowchart'
+// apps/web/src/app/math/ny/36/lesson/[id]/page.tsx
+import Lesson36Flowchart from '@rosie/math/components/lesson36/Lesson36Flowchart'
 
 return (
   <ProblemDetail
@@ -81,7 +81,7 @@ return (
 )
 ```
 
-**新建图表组件的规范**：在 `src/components/math/lessonN/` 下新建 `LessonNXxxDiagram.tsx`，接收 `problem: Problem` 作为 prop，返回图表 JSX。图表组件内部不依赖任何特定 Provider，只读取 `problem` 数据。
+**新建图表组件的规范**：在 `packages/math/src/components/lessonN/` 下新建 `LessonNXxxDiagram.tsx`，接收 `problem: Problem` 作为 prop，返回图表 JSX。图表组件内部不依赖任何特定 Provider，只读取 `problem` 数据。
 
 **口诀提示框**通过 `tip` prop 控制：
 - 每个讲次在数据文件中导出 `export const LESSON_TIP = '...'`
@@ -207,8 +207,8 @@ source: new Set(['lesson', 'homework', 'workbook', 'supplement', 'pretest']),
 ```
 
 **6. 新增路由页面**：
-- `src/app/math/ny/N/supplement/page.tsx`（列表页，同 homework/page.tsx 结构）
-- `src/app/math/ny/N/supplement/[id]/page.tsx`（详情页，同 homework/[id]/page.tsx 结构）
+- `apps/web/src/app/math/ny/N/supplement/page.tsx`（列表页，同 homework/page.tsx 结构）
+- `apps/web/src/app/math/ny/N/supplement/[id]/page.tsx`（详情页，同 homework/[id]/page.tsx 结构）
 
 ---
 
@@ -217,16 +217,16 @@ source: new Set(['lesson', 'homework', 'workbook', 'supplement', 'pretest']),
 **当题目需要配套 SVG 图形时，使用 `figureNode` 字段。**
 
 - `figureNode?: ReactNode` — 题目中的图形插图（SVG React 组件），显示在题目卡片内
-- 图形组件放在 `src/components/math/lessonN/Figure/` 目录，每个组件对应一道题的图
+- 图形组件放在 `packages/math/src/components/lessonN/Figure/` 目录，每个组件对应一道题的图
 - 命名规范：`LessonFigN.tsx`、`HomeworkFigN.tsx`、`WorkbookFigN.tsx`、`PretestFigN.tsx` 等
 
 **⚠️ 重要：** 若数据文件中任何题目使用了 `figureNode: <SomeComponent />`（JSX 语法），数据文件**必须使用 `.tsx` 扩展名**，而非 `.ts`。例：
-- 有 figureNode → `src/utils/lesson38-data.tsx`（JSX 扩展名必须）
-- 无 figureNode → `src/utils/lesson36-data.ts`（普通 TypeScript 文件）
+- 有 figureNode → `packages/math/src/utils/lesson38-data.tsx`（JSX 扩展名必须）
+- 无 figureNode → `packages/math/src/utils/lesson36-data.ts`（普通 TypeScript 文件）
 
 典型的图形组件结构（以一笔画 SVG 图为例）：
 ```tsx
-// src/components/math/lesson38/Figure/LessonFig2.tsx
+// packages/math/src/components/lesson38/Figure/LessonFig2.tsx
 const stroke = '#0891b2'
 export default function LessonFig2() {
   return (
@@ -245,7 +245,7 @@ export default function LessonFig2() {
 
 - `analysisImg?: string` — 题解配图，**只是字符串路径**，无需 JSX，因此 `.ts` 数据文件无需改名为 `.tsx`
 - 图片放到 `public/img/math/` 下，命名建议为 `{讲次}-{题号}.png`（例 `41-P5.png`）
-- 渲染位置：题解面板（🔍 题型分析）下方，由共享组件 `AnalysisImage`（`src/components/math/shared/AnalysisImage.tsx`）统一渲染样式
+- 渲染位置：题解面板（🔍 题型分析）下方，由共享组件 `AnalysisImage`（`packages/math/src/components/shared/AnalysisImage.tsx`）统一渲染样式
 - 仅当字段存在时才显示，未设置时不影响任何题目
 
 ### 使用步骤
@@ -268,7 +268,7 @@ public/img/math/41-P5.png
 
 **3. 确保 `ProblemDetail.tsx` 已渲染该字段**（lesson41 已接入；新讲次复制 lesson41 的 ProblemDetail 时自动具备此能力）：
 ```tsx
-import AnalysisImage from '@/components/math/shared/AnalysisImage'
+import AnalysisImage from '@rosie/math/components/shared/AnalysisImage'
 
 const solution = (
   <div className="...">
@@ -294,9 +294,9 @@ const solution = (
 
 > **分工说明：你只需提供题目文件（PDF / TXT / MD 均可），Claude 从文件中读取所有题目内容并生成该文件，不需要你手动填写。**
 
-**新建文件：** `src/utils/lesson36-data.ts`（若有 figureNode 则用 `.tsx`）
+**新建文件：** `packages/math/src/utils/lesson36-data.ts`（若有 figureNode 则用 `.tsx`）
 
-完整复制 `src/utils/lesson35-data.ts`，然后：
+完整复制 `packages/math/src/utils/lesson35-data.ts`，然后：
 
 1. 把题目内容全部替换为新讲次的内容
 2. 如有新题型，修改 `PROBLEM_TYPES` / `TYPE_STYLE` / `TAG_STYLE`
@@ -455,7 +455,7 @@ export const TAG_STYLE = {...}
 
 提取完信息后，写入以下位置：
 
-**`src/utils/lesson36-data.ts`**（题型定义部分）：
+**`packages/math/src/utils/lesson36-data.ts`**（题型定义部分）：
 
 ```typescript
 export const PROBLEM_TYPES = [
@@ -482,7 +482,7 @@ export const TAG_STYLE: Record<string, string> = {
 }
 ```
 
-**`src/components/math/lesson36/HomePage.tsx`**（文案部分）：
+**`packages/math/src/components/lesson36/HomePage.tsx`**（文案部分）：
 
 ```tsx
 // Hero 区域（第56-64行区域）
@@ -516,16 +516,16 @@ export const TAG_STYLE: Record<string, string> = {
 
 ## 第三步：新建组件目录
 
-新建目录：`src/components/math/lesson{N}/`
+新建目录：`packages/math/src/components/lesson{N}/`
 
-所有讲次共享 `src/components/math/shared/` 中的基础组件，每个讲次只需创建轻量 wrapper。共 6 个文件，其中 5 个是极简 wrapper（含 `FilterPanel` 使用 `createFilterPanel` 工厂），1 个（`ProblemDetail`、`HomePage`）有实质内容。
+所有讲次共享 `packages/math/src/components/shared/` 中的基础组件，每个讲次只需创建轻量 wrapper。共 6 个文件，其中 5 个是极简 wrapper（含 `FilterPanel` 使用 `createFilterPanel` 工厂），1 个（`ProblemDetail`、`HomePage`）有实质内容。
 
 ### `Lesson{N}Provider.tsx`（5 行）
 
 ```typescript
 'use client'
 
-import { createLessonProvider } from '@/components/math/shared/createLessonProvider'
+import { createLessonProvider } from '@rosie/math/components/shared/createLessonProvider'
 
 const { Provider, useLessonContext } = createLessonProvider('Lesson{N}')
 
@@ -538,8 +538,8 @@ export { useLessonContext as useLesson{N} }
 ```typescript
 'use client'
 
-import LessonAppHeader from '@/components/math/shared/LessonAppHeader'
-import type { ProblemSet } from '@/utils/type'
+import LessonAppHeader from '@rosie/math/components/shared/LessonAppHeader'
+import type { ProblemSet } from '@rosie/core'
 import { useLesson{N} } from './Lesson{N}Provider'
 
 const CONFIG = {
@@ -562,8 +562,8 @@ export default function AppHeader({ problems }: { problems: ProblemSet }) {
 ```typescript
 'use client'
 
-import LessonSidebar from '@/components/math/shared/LessonSidebar'
-import type { ProblemSet } from '@/utils/type'
+import LessonSidebar from '@rosie/math/components/shared/LessonSidebar'
+import type { ProblemSet } from '@rosie/core'
 import { useLesson{N} } from './Lesson{N}Provider'
 
 const BASE = '/math/ny/{N}'
@@ -594,7 +594,7 @@ export default function Sidebar({ problems }: { problems: ProblemSet }) {
 ```typescript
 'use client'
 
-import LessonBottomNav from '@/components/math/shared/LessonBottomNav'
+import LessonBottomNav from '@rosie/math/components/shared/LessonBottomNav'
 import { useLesson{N} } from './Lesson{N}Provider'
 
 const CONFIG = {
@@ -612,9 +612,9 @@ export default function BottomNav() {
 ```typescript
 'use client'
 
-import LessonProblemList from '@/components/math/shared/LessonProblemList'
-import type { Problem } from '@/utils/type'
-import { TAG_STYLE } from '@/utils/lesson{N}-data'
+import LessonProblemList from '@rosie/math/components/shared/LessonProblemList'
+import type { Problem } from '@rosie/core'
+import { TAG_STYLE } from '@rosie/math/utils/lesson{N}-data'
 
 type Props = {
   problems: Problem[]
@@ -648,11 +648,11 @@ export default function ProblemList({ problems, solveCount, basePath, showSource
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Problem } from '@/utils/type'
-import { TAG_STYLE } from '@/utils/lesson{N}-data'
+import type { Problem } from '@rosie/core'
+import { TAG_STYLE } from '@rosie/math/utils/lesson{N}-data'
 import { useLesson{N} } from './Lesson{N}Provider'
-import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@/utils/masteryUtils'
-import QuestionLayout from '@/components/math/shared/QuestionLayout'
+import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
+import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 
 interface ProblemDetailProps {
   problem: Problem
@@ -772,8 +772,8 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
 'use client'
 
 import Link from 'next/link'
-import type { ProblemSet, Problem } from '@/utils/type'
-import { PROBLEM_TYPES, TYPE_STYLE } from '@/utils/lesson{N}-data'
+import type { ProblemSet, Problem } from '@rosie/core'
+import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson{N}-data'
 
 const BASE = '/math/ny/{N}'
 
@@ -928,7 +928,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
 
 ## 第三步（路由）：新建路由目录（12-14 个页面文件）
 
-新建目录：`src/app/math/ny/36/`
+新建目录：`apps/web/src/app/math/ny/36/`
 
 ### `layout.tsx`
 
@@ -936,13 +936,13 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { PROBLEMS } from '@/utils/lesson{N}-data'
-import Lesson{N}Provider, { useLesson{N} } from '@/components/math/lesson{N}/Lesson{N}Provider'
-import AppHeader from '@/components/math/lesson{N}/AppHeader'
-import Sidebar from '@/components/math/lesson{N}/Sidebar'
-import BottomNav from '@/components/math/lesson{N}/BottomNav'
-import CongratsModal from '@/components/math/lesson35/CongratsModal'
-import Toast from '@/components/math/lesson35/Toast'
+import { PROBLEMS } from '@rosie/math/utils/lesson{N}-data'
+import Lesson{N}Provider, { useLesson{N} } from '@rosie/math/components/lesson{N}/Lesson{N}Provider'
+import AppHeader from '@rosie/math/components/lesson{N}/AppHeader'
+import Sidebar from '@rosie/math/components/lesson{N}/Sidebar'
+import BottomNav from '@rosie/math/components/lesson{N}/BottomNav'
+import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'
+import Toast from '@rosie/math/components/lesson35/Toast'
 
 const SECTION_COUNTS: Record<string, number> = {
   pretest: PROBLEMS.pretest.length,
@@ -1003,9 +1003,9 @@ export default function Lesson{N}Layout({ children }: { children: React.ReactNod
 ```tsx
 'use client'
 
-import { PROBLEMS } from '@/utils/lesson{N}-data'
-import { useLesson{N} } from '@/components/math/lesson{N}/Lesson{N}Provider'
-import HomePage from '@/components/math/lesson{N}/HomePage'
+import { PROBLEMS } from '@rosie/math/utils/lesson{N}-data'
+import { useLesson{N} } from '@rosie/math/components/lesson{N}/Lesson{N}Provider'
+import HomePage from '@rosie/math/components/lesson{N}/HomePage'
 
 export default function Lesson{N}Page() {
   const { solveCount } = useLesson{N}()
@@ -1020,9 +1020,9 @@ export default function Lesson{N}Page() {
 ```tsx
 'use client'
 
-import { PROBLEMS } from '@/utils/lesson{N}-data'
-import { useLesson{N} } from '@/components/math/lesson{N}/Lesson{N}Provider'
-import ProblemList from '@/components/math/lesson{N}/ProblemList'
+import { PROBLEMS } from '@rosie/math/utils/lesson{N}-data'
+import { useLesson{N} } from '@rosie/math/components/lesson{N}/Lesson{N}Provider'
+import ProblemList from '@rosie/math/components/lesson{N}/ProblemList'
 
 export default function LessonPage() {
   const { solveCount } = useLesson{N}()
@@ -1072,8 +1072,8 @@ export default function LessonPage() {
 
 import { use } from 'react'
 import { notFound } from 'next/navigation'
-import { PROBLEMS } from '@/utils/lesson{N}-data'
-import ProblemDetail from '@/components/math/lesson{N}/ProblemDetail'
+import { PROBLEMS } from '@rosie/math/utils/lesson{N}-data'
+import ProblemDetail from '@rosie/math/components/lesson{N}/ProblemDetail'
 
 export default function LessonProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -1125,10 +1125,10 @@ export default function SupplementPage() {
 
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { PROBLEMS } from '@/utils/lessonN-data'
-import { useLessonN } from '@/components/math/lessonN/LessonNProvider'
-import type { ProblemDifficulty } from '@/utils/difficulty'
-import FilterPanel from '@/components/math/lessonN/FilterPanel'
+import { PROBLEMS } from '@rosie/math/utils/lessonN-data'
+import { useLessonN } from '@rosie/math/components/lessonN/LessonNProvider'
+import type { ProblemDifficulty } from '@rosie/core'
+import FilterPanel from '@rosie/math/components/lessonN/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 
@@ -1197,11 +1197,11 @@ export default function AlltestPage() {
 'use client'
 
 import Link from 'next/link'
-import { useLessonN } from '@/components/math/lessonN/LessonNProvider'
-import { PROBLEMS, TAG_STYLE } from '@/utils/lessonN-data'
-import { SOURCE_LABELS } from '@/utils/constant'
-import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@/utils/masteryUtils'
-import type { Problem } from '@/utils/type'
+import { useLessonN } from '@rosie/math/components/lessonN/LessonNProvider'
+import { PROBLEMS, TAG_STYLE } from '@rosie/math/utils/lessonN-data'
+import { SOURCE_LABELS } from '@rosie/core'
+import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
+import type { Problem } from '@rosie/core'
 
 const ALL_PROBLEMS = new Map<string, { p: Problem; setName: string; idx: number }>()
 ;(Object.entries(PROBLEMS) as [string, Problem[]][]).forEach(([setName, list]) => {
@@ -1316,17 +1316,17 @@ export default function MistakesPage() {
 }
 ```
 
-### `FilterPanel.tsx`（`src/components/math/lessonN/FilterPanel.tsx`）
+### `FilterPanel.tsx`（`packages/math/src/components/lessonN/FilterPanel.tsx`）
 
 使用共享工厂 `createFilterPanel`，只需传入配置和 `ProblemDetail` 组件：
 
 ```tsx
 'use client'
 
-import { createFilterPanel } from '@/components/math/shared/FilterPanel'
+import { createFilterPanel } from '@rosie/math/components/shared/FilterPanel'
 import ProblemDetail from './ProblemDetail'
 
-export type { Filters, MasteryFilter, FilterPanelProps } from '@/components/math/shared/FilterPanel'
+export type { Filters, MasteryFilter, FilterPanelProps } from '@rosie/math/components/shared/FilterPanel'
 
 export default createFilterPanel({
   base: '/math/ny/N',
@@ -1368,7 +1368,7 @@ export default createFilterPanel({
 }, ProblemDetail)
 ```
 
-共享工厂 `createFilterPanel`（`src/components/math/shared/FilterPanel.tsx`）内置了来源/题型/难度/掌握度四维筛选、题解自动展开开关、展开/收起详情卡片等全部功能。新讲次无需编写任何 JSX。
+共享工厂 `createFilterPanel`（`packages/math/src/components/shared/FilterPanel.tsx`）内置了来源/题型/难度/掌握度四维筛选、题解自动展开开关、展开/收起详情卡片等全部功能。新讲次无需编写任何 JSX。
 
 `theme` 颜色参考（已有讲次）：
 
@@ -1386,7 +1386,7 @@ export default createFilterPanel({
 
 ## 第四步：在数学入口页注册卡片
 
-**文件：** `src/app/math/page.tsx`
+**文件：** `apps/web/src/app/math/page.tsx`
 
 在 `courses` 数组中**最前面**追加一个新讲次的卡片对象：
 
@@ -1410,7 +1410,7 @@ export default createFilterPanel({
 
 ## 第五步：在题海中注册新讲次
 
-**文件：** `src/utils/sea-data.ts`
+**文件：** `packages/math/src/utils/sea-data.ts`
 
 `/math/sea` 是跨讲次综合题库页面，所有课程的题目汇总来自 `SEA_LESSONS` 数组。每新增一讲，**必须**在此文件中手动注册，否则该讲次的题目不会出现在题海搜索、筛选和随机练中。
 
@@ -1458,12 +1458,12 @@ import { PROBLEMS as PROBLEMSN, PROBLEM_TYPES as PTN, TAG_STYLE as TSN } from '.
 
 `/math/ny/plan` 是按周安排的"数学每日一练"页面。该页面的可选讲次列表是**两份硬编码清单**，每新增一讲必须**同时**更新两个文件，否则用户在每日一练里看不到新讲次的题目。
 
-### 6-A 在 `src/app/math/ny/plan/page.tsx` 中注册数据源
+### 6-A 在 `apps/web/src/app/math/ny/plan/page.tsx` 中注册数据源
 
 在文件顶部已有 import 行之后追加：
 
 ```typescript
-import { PROBLEMS as PROBLEMSN } from '@/utils/lessonN-data'
+import { PROBLEMS as PROBLEMSN } from '@rosie/math/utils/lessonN-data'
 ```
 
 并在 `PROBLEM_SETS` 对象中追加一项：
@@ -1475,7 +1475,7 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
 }
 ```
 
-### 6-B 在 `src/components/math/MathWeeklyPractice.tsx` 中追加讲次选项
+### 6-B 在 `packages/math/src/components/MathWeeklyPractice.tsx` 中追加讲次选项
 
 在文件顶部的 `LESSONS` 数组**末尾**追加：
 
@@ -1518,12 +1518,12 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
 - 用户在「新增题目」弹窗里看不到该讲次
 - 已保存的试卷如果包含该讲次的题目，详情页与打印页会渲染为空
 
-### 7-A 在 `src/app/math/ny/quiz/page.tsx`
+### 7-A 在 `apps/web/src/app/math/ny/quiz/page.tsx`
 
 顶部追加 import（注意**同时**导入 `PROBLEMS` 与 `PROBLEM_TYPES`）：
 
 ```typescript
-import { PROBLEMS as PN, PROBLEM_TYPES as PTN } from '@/utils/lessonN-data'
+import { PROBLEMS as PN, PROBLEM_TYPES as PTN } from '@rosie/math/utils/lessonN-data'
 ```
 
 在 `LESSON_META` 数组末尾追加：
@@ -1532,9 +1532,9 @@ import { PROBLEMS as PN, PROBLEM_TYPES as PTN } from '@/utils/lessonN-data'
 { id: 'N', name: '[主题名称]', data: PN, types: PTN },
 ```
 
-### 7-B 在 `src/app/math/ny/quiz/[id]/page.tsx`
+### 7-B 在 `apps/web/src/app/math/ny/quiz/[id]/page.tsx`
 
-顶部追加 `import { PROBLEMS as PN } from '@/utils/lessonN-data'`，然后在两个映射中加入新讲次：
+顶部追加 `import { PROBLEMS as PN } from '@rosie/math/utils/lessonN-data'`，然后在两个映射中加入新讲次：
 
 ```typescript
 const LESSON_DATA: Record<string, ProblemSet> = {
@@ -1548,12 +1548,12 @@ const LESSON_NAMES: Record<string, string> = {
 }
 ```
 
-### 7-C 在 `src/app/math/ny/quiz/[id]/print/page.tsx`
+### 7-C 在 `apps/web/src/app/math/ny/quiz/[id]/print/page.tsx`
 
 同样顶部 import + 更新 `LESSON_DATA` 映射（该文件没有 `LESSON_NAMES`）：
 
 ```typescript
-import { PROBLEMS as PN } from '@/utils/lessonN-data'
+import { PROBLEMS as PN } from '@rosie/math/utils/lessonN-data'
 
 const LESSON_DATA: Record<string, ProblemSet> = {
   // ...已有讲次
@@ -1570,11 +1570,11 @@ const LESSON_DATA: Record<string, ProblemSet> = {
 添加第 N 讲时，逐项确认：
 
 ```
-src/utils/
+packages/math/src/utils/
   [ ] lessonN-data.ts                    — 数据文件（题目内容，ID 必须加 N- 前缀；每题含 difficulty 1–5）
   [ ] sea-data.ts                        — 在 SEA_LESSONS 末尾注册新讲次（第五步）
 
-src/components/math/lessonN/
+packages/math/src/components/lessonN/
   [ ] LessonNProvider.tsx
   [ ] AppHeader.tsx
   [ ] Sidebar.tsx
@@ -1583,7 +1583,7 @@ src/components/math/lessonN/
   [ ] FilterPanel.tsx                    — 使用 createFilterPanel 工厂，只需配置颜色/按钮
   [ ] ProblemList.tsx                    — 仅当新讲次 TAG_STYLE 与 35 不同时需要复制
 
-src/app/math/ny/N/
+apps/web/src/app/math/ny/N/
   [ ] layout.tsx
   [ ] page.tsx
   [ ] lesson/page.tsx
@@ -1599,17 +1599,17 @@ src/app/math/ny/N/
   [ ] alltest/page.tsx
   [ ] mistakes/page.tsx
 
-src/app/math/
+apps/web/src/app/math/
   [ ] page.tsx                             — 在 courses 数组最前面追加新讲次卡片（第四步）
 
 每日计划页（第六步，两个文件必须同步更新）：
-  [ ] src/app/math/ny/plan/page.tsx              — 添加 import 并在 PROBLEM_SETS 中注册新讲次
-  [ ] src/components/math/MathWeeklyPractice.tsx — 在 LESSONS 数组末尾追加新讲次配置
+  [ ] apps/web/src/app/math/ny/plan/page.tsx              — 添加 import 并在 PROBLEM_SETS 中注册新讲次
+  [ ] packages/math/src/components/MathWeeklyPractice.tsx — 在 LESSONS 数组末尾追加新讲次配置
 
 综合组卷页（第七步，三个文件必须同步更新）：
-  [ ] src/app/math/ny/quiz/page.tsx              — 添加 import (含 PROBLEM_TYPES) 并在 LESSON_META 末尾追加
-  [ ] src/app/math/ny/quiz/[id]/page.tsx         — 添加 import 并更新 LESSON_DATA + LESSON_NAMES
-  [ ] src/app/math/ny/quiz/[id]/print/page.tsx   — 添加 import 并更新 LESSON_DATA
+  [ ] apps/web/src/app/math/ny/quiz/page.tsx              — 添加 import (含 PROBLEM_TYPES) 并在 LESSON_META 末尾追加
+  [ ] apps/web/src/app/math/ny/quiz/[id]/page.tsx         — 添加 import 并更新 LESSON_DATA + LESSON_NAMES
+  [ ] apps/web/src/app/math/ny/quiz/[id]/print/page.tsx   — 添加 import 并更新 LESSON_DATA
 ```
 
 ---

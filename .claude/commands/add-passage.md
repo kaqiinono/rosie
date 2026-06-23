@@ -1,4 +1,4 @@
-在 `src/utils/reading-data.ts` 的 `readingPassages` 数组里追加一篇新的课文。**所有阅读相关组件**（PassageView、WordPopup、ParagraphRecallQuiz、GlossaryPopup、Type D 题型）都从这个文件按 `(unit, lesson)` 取数据，**只改数据、不动组件**。
+在 `packages/english/src/utils/reading-data.ts` 的 `readingPassages` 数组里追加一篇新的课文。**所有阅读相关组件**（PassageView、WordPopup、ParagraphRecallQuiz、GlossaryPopup、Type D 题型）都从这个文件按 `(unit, lesson)` 取数据，**只改数据、不动组件**。
 
 ## 前置条件
 
@@ -36,7 +36,7 @@ ProperName2：中文释义
 
 ### 1. 找到这一课的全部单词
 ```
-grep -n '"unit": "Unit X"' src/utils/english-data.ts  # 替换 X 为实际数字
+grep -n '"unit": "Unit X"' packages/english/src/utils/english-data.ts  # 替换 X 为实际数字
 ```
 列出所有 lesson 对应的 `word` 值。**特别标注多词短语**（如 `nature reserve` / `boarding school` / `in the wild` / `time off`）—— 这些需要在课文里逐字出现才能高亮。
 
@@ -88,11 +88,11 @@ grep -n '"unit": "Unit X"' src/utils/english-data.ts  # 替换 X 为实际数字
 },
 ```
 
-如果用户引入了**新的 category 字符串**（比如 "动植物与自然"、"户外活动与地理计量"），同时**也要去更新** `src/components/english/reading/GlossaryPanel.tsx` 顶部的 `CATEGORY_EMOJI` 映射，给新 category 配一个 emoji，否则会 fallback 到 `📁`。
+如果用户引入了**新的 category 字符串**（比如 "动植物与自然"、"户外活动与地理计量"），同时**也要去更新** `packages/english/src/components/reading/GlossaryPanel.tsx` 顶部的 `CATEGORY_EMOJI` 映射，给新 category 配一个 emoji，否则会 fallback 到 `📁`。
 
 ### 5. 追加到 readingPassages
 
-在 `src/utils/reading-data.ts` 的 `readingPassages` 数组里加一项：
+在 `packages/english/src/utils/reading-data.ts` 的 `readingPassages` 数组里加一项：
 
 ```ts
 {

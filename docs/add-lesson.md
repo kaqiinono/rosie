@@ -1,4 +1,4 @@
-按照 `docs/add-new-lesson.md` 的完整指引，在 `src/app/math/ny/` 下新增一个讲次。
+按照 `docs/add-new-lesson.md` 的完整指引，在 `apps/web/src/app/math/ny/` 下新增一个讲次。
 
 ## 第零步：自动读取题目文件
 
@@ -22,12 +22,12 @@
 
 严格按照 `docs/add-new-lesson.md` 中的步骤顺序执行：
 
-1. **第一步：新建数据文件** — `src/utils/lessonN-data.ts`（有 figureNode 则用 `.tsx`）
+1. **第一步：新建数据文件** — `packages/math/src/utils/lessonN-data.ts`（有 figureNode 则用 `.tsx`）
 2. **第二步：解析首页内容** — 从 `summary.md` 提取讲次基本信息、核心公式、万能口诀、题型列表、各模块题数
-3. **第三步：新建组件目录** — `src/components/math/lessonN/` 下的 7 个组件文件
-4. **第三步（路由）：新建路由目录** — `src/app/math/ny/N/` 下的全部页面文件
-5. **第四步：在数学入口页注册卡片** — `src/app/math/page.tsx` 的 `courses` 数组最前面
-6. **第五步：在题海中注册新讲次** — `src/utils/sea-data.ts`
+3. **第三步：新建组件目录** — `packages/math/src/components/lessonN/` 下的 7 个组件文件
+4. **第三步（路由）：新建路由目录** — `apps/web/src/app/math/ny/N/` 下的全部页面文件
+5. **第四步：在数学入口页注册卡片** — `apps/web/src/app/math/page.tsx` 的 `courses` 数组最前面
+6. **第五步：在题海中注册新讲次** — `packages/math/src/utils/sea-data.ts`
 7. **第六步：在每日计划页注册新讲次** — 两个文件必须同步更新
 8. **第七步：在综合组卷页注册新讲次** — 三个文件必须同步更新
 
