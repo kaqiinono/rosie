@@ -83,50 +83,61 @@ export default function LessonFig2() {
 
 ## 交互式组件题（自带校验的图形组件，如方格谜题）
 
-**当 `docs/math/new-lesson.md` 的题目正文里内联了 tsx 组件代码块**（例如数连/数桥/数方、各类变型数独的
+**当 `docs/math/lessons/N.md` 的题目正文里内联了 tsx 组件代码块**（例如数连/数桥/数方、各类变型数独的
 `<ShulianGrid .../>`、`<ChuangkouSudokuGrid .../>` 等），这些组件是**可交互、自带「检查/重置」与结果反馈**的
-完整题目载体，处理方式与普通 `figureNode` 不同。第47讲是第一个这样的讲次，可作范例。
+完整题目载体，处理方式与普通 `figureNode` 不同。**第47讲是范例，直接复制其 `gong/` 目录与 `create-gong-problem.tsx`
+模式最快最稳。**
 
 ### 铁律：严格按代码块使用组件与入参
 
 - 组件已经预先放在 `packages/math/src/components/lesson{N}/<子目录>/`（第47讲是 `lesson47/gong/`），
   **入参类型定义在该目录的 `utils/types.ts`**。录入时**逐字照搬代码块里的组件名与 props**
   （`rows` / `cells` / `hIneq` / `vIneq` / `window` / `hLine` / `vLine` …），**不得自己发明 prop、改名或改值**。
-- 组件用**具名导出**：`import { ShulianGrid } from '@rosie/math/components/lesson{N}/gong/ShulianGrid'`。
-  **逐个组件按其自身文件深子路径导入**，不要图省事去 import 该目录的 `index.ts`——桶文件可能 re-export
-  仅 demo 用、实际不存在的文件（第47讲的 `gong/index.ts` 原本 re-export `../demo/*`，会直接编译失败，已删除）。
-- 数据文件含 JSX，**必须用 `.tsx`** 后缀（`lesson{N}-data.tsx`）。`figureNode` 写成内联 JSX
-  `figureNode: <ShulianGrid rows={[5]} cells={[[1,1,3], …]} />` 时，TS 会用 props 类型做**上下文推断**，
-  因此 `[[1,1,3]]` 会被正确收窄成 `CellCoord[]`、`'<'` 收窄成 `InequalityOp`，无需手动 `as` 断言。
+- 组件用**具名导出**。不要去 import 该目录的 `index.ts`——桶文件可能 re-export 仅 demo 用、实际不存在的文件
+  （第47讲的 `gong/index.ts` 原本 re-export `../demo/*`，会直接编译失败，已删除）。
+- 数据文件含 JSX，**必须用 `.tsx`** 后缀（`lesson{N}-data.tsx`）。
 - **修正明显笔误**：代码块偶有手误（如第47讲无马数独里 `[,4,2]` 这种缺首元素的稀疏数组），照搬会破坏
   tuple 类型且渲染异常——按上下文（所在行号）补成 `[6,4,2]`，并在交付说明里指出。
 
-### 这类题没有数字答案 → ProblemDetail 要改造
+### 用 `create-gong-problem` 工厂封装组件 + 自动判分（第47讲已落地，照抄）
 
-组件自己负责答题与判分，**没有 `finalAns` 数字答案**。因此：
+这类题**没有 `finalAns` 数字答案**，而是**靠组件自己判对错**。第47讲把"建元素 + 接判分器"收敛进一个工厂
+`packages/math/src/components/lesson{N}/gong/create-gong-problem.tsx`，数据文件只调工厂、不写 JSX：
 
-- 每题数据里 `type: 'none'`，`finalQ: ''`、`finalUnit: ''`、`finalAns: 0`（占位，满足 `Problem` 必填字段）。
-- 该讲的 `ProblemDetail.tsx` **不要渲染数字答题框**。改为：把 `figureNode`（交互组件）放在题面下方作为答题区，
-  题解区放玩法规则（`analysis`），答案区放一个「✅ 我做出来啦！」按钮 → 调用 `handleSolve(problem.id)` 记录一次
-  掌握；**不调用 `addWrong`**（探索类谜题不进错题本）。
+- 工厂为每种谜题导出一个 `gongXxx(config)`，内部 `<XxxGrid {...config} />` 建元素、`makeXxxChecker(config)`（在
+  同目录 `checkers.ts`）造判分函数，返回一组 `Problem` 字段：`type:'none'`、`finalQ/finalUnit:''`、`finalAns:0`、
+  `figureNode`（组件）、**`checkAnswer`**（核心：组件提交时按谜题规则判对错）。
+- 数据文件里**用展开语法**填进每道题，props 由 `config` 上下文收窄（`[[1,1,3]]`→`CellCoord[]`、`'<'`→`InequalityOp`，无需 `as`）：
+  ```tsx
+  { id: '47-L1', title: '例题1 · 数连', tag: 'type1', tagLabel: '数连', difficulty: 2,
+    text: RULE_SHULIAN, analysis: ['先点数字格选颜色再连线', …],
+    ...gongShulian({ rows: [5], cells: [[1,1,3], [1,3,2], …] }) }
+  ```
+- **答题/判分链路（勿重复造轮子）**：`Problem.checkAnswer`（`@rosie/core`）+ 共享
+  `utils/check-problem-answer.ts` + `hooks/useProblemAnswer.ts` + `components/shared/injectFigureSubmit.tsx`
+  （`injectFigureGridCallbacks` 把组件的 `onCheck/onComplete` 接到提交逻辑）。该讲 `ProblemDetail` 用
+  `useProblemAnswer(problem, …)` + `QuestionLayout`，把 `figureNode` 作答题区，答对自动 `handleSolve`、答错记错题
+  ——**lesson46/47 的 ProblemDetail 都已走这套，直接复制改色即可**。
 - `pretest` 没有就 `pretest: []`，侧边栏 / HomePage 模块 / FilterPanel sourceBtns / alltest 的 source Set
   里都**不要**列 `pretest`、`supplement`（按该讲真实存在的 section 来配）。
 - `PROBLEM_TYPES` 按**谜题种类**分（第47讲 9 种：数连/数桥/数方/不等号/无马/窗口/常规/对角线/锯齿），
   每题 `tag` 对应其谜题类型，难度按棋盘规模/复杂度评（4×4≈1–2，5×5≈2–3，6×6≈3–4，9×9≈4–5）。
 
-### ⚠️ 组件依赖的 CSS 必须落地（green build ≠ 渲染正常）
+### ⚠️ 组件依赖的 CSS 跟组件走（green build ≠ 渲染正常）
 
 这类组件常引用一组 **CSS 变量 + 结构类**（第47讲是 `--gong-*` 变量与 `.gong-table` / `.gong-cell` /
-`.gong-cell-sm` / `.gong-box-r` / `.gong-box-b`）。这些**不是 Tailwind 工具类**，如果没在全局样式里定义，
-组件会渲染成无边框、无尺寸的一坨——而且 `pnpm build` **不会报错**。处理步骤：
+`.gong-cell-sm` / `.gong-box-r` / `.gong-box-b`）。这些**不是 Tailwind 工具类**，未定义则组件渲染成
+无边框无尺寸的一坨——且 `pnpm build` **不会报错**。**正确做法是让样式随包走，不要塞进 app 的 `globals.css`：**
 
 1. 枚举组件用到的所有 token：
    ```bash
    grep -rho "var(--xxx-[a-z0-9-]*)" packages/math/src/components/lesson{N}/<子目录>/ | sort -u
    grep -rho "xxx-[a-z0-9-]*"        packages/math/src/components/lesson{N}/<子目录>/ | sort -u
    ```
-2. 在 `apps/web/src/app/globals.css` 末尾补 `:root { --xxx-*: … }` 变量与各结构类的实际样式
-   （宽高、`border-collapse`、单元格边框、宫界粗线等）。第47讲的 `gong` 样式块即此范例，可参考其取值。
+2. 在**组件子目录内**新建 `<子目录>.css`（第47讲是 `gong/gong.css`），写 `:root { --xxx-*: … }` 变量与各结构类
+   样式（宽高、`border-collapse`、单元格边框、宫界粗线等），并在该子目录**被所有组件共用的文件**（第47讲是
+   `gong/shared.tsx`，9 个 Grid 都 import 它）顶部 `import './xxx.css'`——样式随组件打包、按需加载，不污染全局。
+   组件里用到的 Tailwind 工具类（flex/justify-center…）仍由 app `globals.css` 的 `@source` 扫描自动生成，无需另配。
 3. 跑 `pnpm dev` **真机打开新讲次页面**确认组件能正常显示、能点选、能「检查」。
 
 ---
