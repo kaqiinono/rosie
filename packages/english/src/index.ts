@@ -1,6 +1,11 @@
 // @rosie/english — vocabulary (cards/quiz/spelling/daily/weekly-plan/mastery) + reading
 // (passages with their own audio). Public API for apps/web routes & external consumers.
 
+// Package-private styles (phonics / keyword / word-monster + rescue vars, reading-recall
+// decorations). Bundled here so any route importing @rosie/english gets them — keeps the
+// app's globals.css free of module-specific CSS.
+import './english.css'
+
 // Context
 export { WordsProvider, useWordsContext } from './WordsContext'
 

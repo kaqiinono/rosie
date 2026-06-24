@@ -1,0 +1,157 @@
+/* ───────────────────────────────────────────────────────────
+   @rosie/english — 包内私有样式（单词记忆 + 阅读）。
+   由 ./index.ts 引入，随包打包，不污染 app 的全局样式表；任何
+   引用 @rosie/english 的路由（含 apps/web 的 /admin/words）都会
+   自动加载这些样式。组件用到的 Tailwind 工具类仍由 app 的
+   globals.css 通过 @source 扫描 packages/english/src 生成。
+   ─────────────────────────────────────────────────────────── */
+:root {
+  --wm-bg: #0f0f1a;
+  --wm-surface: #1a1a2e;
+  --wm-surface2: #16213e;
+  --wm-surface3: #0f3460;
+  --wm-accent: #e94560;
+  --wm-accent2: #f5a623;
+  --wm-accent3: #4ade80;
+  --wm-accent4: #60a5fa;
+  --wm-text: #f0f0ff;
+  --wm-text-dim: #9090b0;
+  --wm-border: rgba(255, 255, 255, .08);
+  --wm-radius: 16px;
+  --ph-vowel: #ff6b6b;
+  --ph-long: #f1948a;
+  --ph-digraph: #45b7d1;
+  --ph-cluster: #ff9f43;
+  --ph-blend: #f0b27a;
+  --ph-r: #bb8fce;
+  --ph-magic: #f7dc6f;
+  --ph-suffix: #82e0aa;
+  --ph-silent: #888;
+  --ph-plain: #f0f0ff;
+
+  /* 去挫败感配色 (spec §9.1) */
+  --rescue-half: #60a5fa;        /* 同 --wm-accent4，独立 semantic 角色 */
+  --rescue-eaten: #fb923c;
+  --rescue-saved: #34d399;
+  --rescue-flash-warn: #fbbf24;
+  --rescue-monster-veil: rgba(20, 12, 50, 0.78);
+}
+
+.ph-vowel { color: var(--ph-vowel); font-weight: 900; }
+.ph-long { color: var(--ph-long); font-weight: 900; }
+.ph-digraph { color: var(--ph-digraph); font-weight: 900; }
+.ph-cluster { color: var(--ph-cluster); font-weight: 900; }
+.ph-blend { color: var(--ph-blend); font-weight: 900; }
+.ph-r { color: var(--ph-r); font-weight: 900; }
+.ph-magic { color: var(--ph-magic); font-weight: 900; }
+.ph-suffix { color: var(--ph-suffix); font-weight: 900; }
+.ph-silent { color: var(--ph-silent); font-weight: 900; opacity: .65; }
+.ph-plain { color: var(--ph-plain); }
+
+.kw-red { color: #ff6b8a; font-weight: 900; letter-spacing: .01em; }
+.kw-gold { color: #ffd166; font-weight: 900; letter-spacing: .01em; }
+.kw-blue { color: #74c2f7; font-weight: 900; letter-spacing: .01em; }
+
+/* Belly pouch pop — used by MonsterEatScene when the swallowed word card appears */
+@keyframes belly-pop {
+  0% { opacity: 0; transform: scale(0.5) translateY(10px) }
+  100% { opacity: 1; transform: scale(1) translateY(0) }
+}
+
+/* Reading passage focus flash — applied via DOM class from PassageView */
+@keyframes reading-flash-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.55); }
+}
+.reading-flash {
+  animation: reading-flash-pulse 0.7s ease-in-out 3;
+  outline: 3px solid rgba(251, 191, 36, 0.85);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Recall-quiz outcome decorations on words inside reading passages.
+   All decorations live INSIDE the capsule box — no floating emojis that
+   spill into neighbouring lines or kiss adjacent capsules.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@keyframes recall-bloom {
+  0%, 100% { transform: translateY(-50%) rotate(-8deg) scale(1); }
+  50%      { transform: translateY(-50%) rotate(10deg) scale(1.18); }
+}
+@keyframes recall-wobble {
+  0%, 100% { transform: translateY(-50%) rotate(-6deg); }
+  50%      { transform: translateY(-52%) rotate(8deg); }
+}
+
+/* Common: convert to inline-block so absolute decorations + margins behave
+   reliably, and adjacent capsules don't visually touch each other. */
+.recall-mark-correct,
+.recall-mark-wrong {
+  display: inline-block !important;
+  position: relative;
+  margin: 0 4px !important;
+  vertical-align: baseline;
+}
+
+/* Correct — floral capsule: pink + lavender gradient with hot-pink ring and
+   a 🌸 anchored inside the right edge (rotates gently). */
+.recall-mark-correct {
+  background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 55%, #ede9fe 100%) !important;
+  color: #be185d !important;
+  border: none !important;
+  box-shadow:
+    0 0 0 2px #f9a8d4,
+    0 2px 0 #ec4899,
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  padding: 2px 22px 2px 8px !important;  /* right-pad reserves room for 🌸 */
+}
+.recall-mark-correct::after {
+  content: '🌸';
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  transform-origin: center;
+  animation: recall-bloom 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 1px 1px rgba(236, 72, 153, 0.3));
+}
+
+/* Wrong — rose+amber capsule with red ring, 💩 wobbling inside right edge. */
+.recall-mark-wrong {
+  background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%) !important;
+  color: #b45309 !important;
+  border: none !important;
+  box-shadow:
+    0 0 0 2px #fca5a5,
+    0 2px 0 #ef4444;
+  padding: 2px 22px 2px 8px !important;
+  text-decoration: wavy underline #fb7185 1px;
+  text-underline-offset: 4px;
+}
+.recall-mark-wrong::after {
+  content: '💩';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+  transform-origin: center;
+  animation: recall-wobble 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+/* Tighter on mobile so capsules don't dominate narrow passage columns. */
+@media (max-width: 640px) {
+  .recall-mark-correct,
+  .recall-mark-wrong {
+    margin: 0 3px !important;
+    padding: 1px 18px 1px 6px !important;
+  }
+  .recall-mark-correct::after { right: 4px; font-size: 10px; }
+  .recall-mark-wrong::after { right: 3px; font-size: 11px; }
+}

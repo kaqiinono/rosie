@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math/utils/lesson34-data'
 import { useLesson34 } from './Lesson34Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
+import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
+import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 
@@ -22,29 +23,10 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
   const count = solveCount[problem.id] ?? 0
   const level = getMasteryLevel(count)
 
-  const [answer, setAnswer] = useState('')
-  const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
-  const [prevProbId, setPrevProbId] = useState(problem.id)
-  if (prevProbId !== problem.id) {
-    setPrevProbId(problem.id)
-    setAnswer('')
-    setFeedback(null)
-  }
-
-  function checkAnswer() {
-    if (!answer) return
-    const v = Number(answer)
-    if (v === problem.finalAns) {
-      setFeedback({ text: '🎉 完全正确！你真棒！', ok: true })
-      handleSolve(problem.id)
-    } else {
-      setFeedback({
-        text: `❌ 不对哦，再想想？提示：答案是${problem.finalAns}以内的数。`,
-        ok: false,
-      })
-      addWrong(problem.id)
-    }
-  }
+  const { answer, setAnswer, feedback, check } = useProblemAnswer(problem, {
+    handleSolve,
+    addWrong,
+  })
 
   const question = (
     <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
@@ -66,39 +48,14 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
 
   const answerDom = (
     <div className="min-w-0 flex-1">
-      <div className="mb-3 flex items-center gap-2">
-        <div className="bg-border-light h-px flex-1" />
-        <div className="text-text-muted text-xs font-semibold whitespace-nowrap">✏️ 写出答案</div>
-        <div className="bg-border-light h-px flex-1" />
-      </div>
-
-      <div className="border-border-light mb-3 rounded-lg border border-dashed bg-[#f9fafb] p-3.5">
-        <div className="text-text-secondary text-[13px]">{problem.finalQ}</div>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-          <input
-            type="number"
-            className="border-border-light w-[72px] rounded-lg border px-2 py-1.5 text-center text-sm"
-            placeholder="？"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-          />
-          <span>{problem.finalUnit}</span>
-          <button
-            onClick={checkAnswer}
-            className="cursor-pointer rounded-full bg-amber-500 px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(245,158,11,0.3)] transition-all active:translate-y-px"
-          >
-            检查答案
-          </button>
-        </div>
-        {feedback && (
-          <div
-            className={`mt-2 text-[13px] ${feedback.ok ? 'text-app-green-dark' : 'text-app-red'}`}
-          >
-            {feedback.text}
-          </div>
-        )}
-      </div>
+      <NumericAnswerPanel
+        problem={problem}
+        answer={answer}
+        onAnswerChange={setAnswer}
+        onCheck={check}
+        feedback={feedback}
+        buttonClassName="bg-amber-500 shadow-[0_3px_10px_rgba(245,158,11,0.3)]"
+      />
 
       {tip && (
         <div className="rounded-lg bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-800">

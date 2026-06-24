@@ -46,6 +46,15 @@ directly (连播 within their own scope, no ❤️favorites) so they don't depen
 miss: every new `packages/<x>/src` with JSX needs an `@source` line in `globals.css`, or its
 Tailwind classes won't be generated (a styling break that the build does NOT catch).
 
+**Styling ownership:** `apps/web/src/app/globals.css` holds ONLY global/shared styles — the Tailwind
+import + `@source` scan list, theme tokens (`@theme`, design-token `:root`), shared `@keyframes`
+exposed as `animate-*` utilities, and cross-package animations. **Module-specific CSS (custom
+classes, module-scoped CSS vars, single-module keyframes) lives inside its own package** as a plain
+`.css` file imported once from within the package (e.g. `packages/english/src/english.css` via
+`index.ts`, `packages/flipbook/src/flipbook.css` via `FlipbookLayoutEffects`,
+`packages/math/.../gong/gong.css` via `shared.tsx`). These plain CSS files are NOT Tailwind-processed
+— Tailwind utility classes used by the components are still generated from `globals.css`'s `@source`.
+
 ## Commands
 
 All commands run from the repo root; Turborepo fans them out across workspaces.
@@ -119,94 +128,40 @@ This is a Next.js 15 App Router PWA for elementary school math and English learn
 - `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
 - `/admin/word-audit` — read-only data audit
 
-### Audio System
+### Subject modules — read the package CLAUDE.md, not here
 
-Unified audio playback across the app:
-- **`useAudioCollections(user)`** (`src/hooks/`) aggregates four kinds of "collection" (`AudioCollection`): `favorites`(我的最爱, DB-persistent via `audio_playlists.is_favorite`), `reading`/`flipbook`(virtual, derived from passages/books with audio), and user playlists. Exposes `toggleFavorite`, `membership(bucket,path)`, `favoriteKeySet`, and playlist CRUD. Auto-creates the favorites playlist.
-- **`usePlaylistPlayer()`** (`src/hooks/`) is the single playback engine (one `<video>` media element app-wide). Loop modes 顺序/单曲/列表 (`order`/`one`/`all`) + loop count (count applies to current mode), `play`/`enqueue`/`prev`/`next`/`stop`.
-- **`<PlayerDock>`** (`src/components/audio/`) is the shared bottom player UI (transport, loop mode, loop count, favorite heart). Used by `/audio`, `/flipbook`, reading index, and `/admin/audio`.
-- **`<CollectionPills>`** shows which collections a track belongs to, with × to remove.
-- **`/audio`** — kid-facing (dark) listening page: switch collections, build a transient play queue from cards or whole collections.
-- Tables: `audio_assets`, `audio_playlists`(+`is_favorite`), `audio_playlist_items`. Migration: `docs/sql/audio-favorites-migration.sql` (run manually in Supabase).
+Each subject module is its own package with an authoritative in-package `CLAUDE.md`. To work on a
+module, **read that package's CLAUDE.md** (scoped, up to date) instead of relying on this file:
+
+| Module | Package | Routes | Guide |
+|--------|---------|--------|-------|
+| 口算 | `@rosie/calc` | `apps/web/src/app/calc/**` (thin shells) | `packages/calc/CLAUDE.md` |
+| 数学 | `@rosie/math` | `apps/web/src/app/math/**` | `packages/math/CLAUDE.md` |
+| 英语 | `@rosie/english` | `apps/web/src/app/english/**` | `packages/english/CLAUDE.md` |
+| 绘本 | `@rosie/flipbook` | `apps/web/src/app/flipbook/**` | `packages/flipbook/CLAUDE.md` |
+| 音频 | `@rosie/audio` | `apps/web/src/app/audio/**`, `/admin/audio` | `packages/audio/CLAUDE.md` |
+
+Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils), `@rosie/ui`,
+`@rosie/rewards` (stars/wallet/vouchers), `@rosie/player` (playback engine + `PlayerDock`).
+Adding a new math lesson is a guided flow — see `.claude/skills/add-lesson` + `docs/add-new-lesson.md`.
 
 ### Data Flow
 
 All data hooks (`useWordMastery`, `useMathSolved`, `useWordData`, `useWeeklyPlan`, etc.) read and write Supabase directly. Each hook receives `user: User | null` from `AuthContext` and does nothing when `user` is null.
 
-`localStorage` is used only for UI preferences — never for user data. The only remaining key is `MATH_SIDEBAR_COLLAPSED` (sidebar collapse state) in `STORAGE_KEYS` (`src/utils/constant.ts`). All other user configuration (including plan generation parameters) is stored in Supabase.
+`localStorage` is used only for UI preferences — never for user data. The only remaining key is `MATH_SIDEBAR_COLLAPSED` (sidebar collapse state) in `STORAGE_KEYS` (`@rosie/core` constants). All other user configuration (including plan generation parameters) is stored in Supabase.
 
-The `AuthContext` (`src/contexts/AuthContext.tsx`) wraps the entire app and exposes `user`.
+`AuthContext` (in `@rosie/core`) wraps the entire app and exposes `user`. Per-subject state lives in
+its own context (e.g. `WordsContext` for English; per-lesson `LessonNProvider` for math, built by the
+`createLessonProvider` factory in `@rosie/math`). Module-specific details live in each package's CLAUDE.md.
 
-### Context Architecture
+### Weekly Planning System (cross-cutting)
 
-- `AuthContext` — Supabase auth session, sign in/up/out
-- `WordsContext` — aggregates vocab (`useWordData`), mastery (`useWordMastery`), and filter state for the English module. All English sub-pages consume this context via `useWords()`.
-- `Lesson34Provider` / `Lesson35Provider` / `Lesson36Provider` — per-lesson context for math problem solving state (solved set, wrong-answer set, toast, congrats modal). All three are created via `createLessonProvider` factory in `src/components/math/shared/createLessonProvider.tsx`
-
-### Math Module
-
-Each lesson (`34`, `35`, `36`) follows the same structure:
-
-```
-/math/ny/{lessonId}/                     # lesson hub (HomePage component)
-/math/ny/{lessonId}/lesson/              # problem list
-/math/ny/{lessonId}/lesson/[id]/         # problem detail
-/math/ny/{lessonId}/homework/[id]/       # same for homework
-/math/ny/{lessonId}/workbook/[id]/       # same for workbook
-/math/ny/{lessonId}/pretest/[id]/        # same for pretest
-/math/ny/{lessonId}/alltest/             # full problem bank
-/math/ny/{lessonId}/mistakes/            # wrong-answer review
-/math/ny/{lessonId}/magic/               # weekday drill (lesson 36 only)
-```
-
-Problem data lives in `src/utils/lesson34-data.ts`, `src/utils/lesson35-data.ts`, and `src/utils/lesson36-data.ts` as `ProblemSet` objects (`pretest`, `lesson`, `homework`, `workbook` arrays of `Problem`).
-
-The `Problem` type (`src/utils/type.ts`) supports interactive diagrams via `type: 'ratio3' | 'ratio3b' | 'none'`, `blockScene`, and `dualSc` fields — these drive `RatioDiagram`, `BlockDiagram`, and `DualBlockDiagram` components (lesson 35 only).
-
-**Shared math components** (`src/components/math/shared/`) eliminate duplication across lessons:
-- `createLessonProvider.tsx` — factory that creates context + provider + hook for each lesson
-- `LessonAppHeader.tsx` — configurable header with back button, logo, progress chip, nav links
-- `LessonBottomNav.tsx` — configurable mobile bottom navigation
-- `LessonSidebar.tsx` — configurable sidebar with sections, collapse state, and optional extra links
-- `LessonProblemList.tsx` — configurable problem list grid with mastery indicators and tag filtering
-
-Each lesson directory (`lesson34/`, `lesson35/`, `lesson36/`) re-exports thin wrappers around these shared components, passing lesson-specific config (colors, labels, paths). Only `ProblemDetail` and `HomePage` remain per-lesson since they have significantly different visual content.
-
-### English Module
-
-All English pages share `WordsContext` via the layout at `src/app/english/words/layout.tsx`.
-
-- Vocab is stored as `WordEntry[]` (unit, lesson, word, explanation, IPA, example, phonics fields)
-- Words can be imported from Excel (`.xlsx`) using the `xlsx` package
-- Mastery tracking uses a spaced-repetition stage system (0–8 stages, `WordMasteryInfo` in `src/utils/type.ts`, logic in `src/utils/masteryUtils.ts`)
-- Weekly plans (`WeeklyPlan`) assign new words per day starting Thursday; `useWeeklyPlan` manages creation and progress
-
-### Weekly Planning System
-
-Both math and English have a weekly plan system with the same Thursday-start week convention:
+Both math and English share a weekly plan system with the same Thursday-start week convention:
 
 - `WeeklyPlan` / `MathWeeklyPlan` — stored in Supabase (`weekly_plans` / `math_weekly_plans` tables); each plan includes `weekStartDay` and `newWordsPerDay`/`problemsPerDay` as dedicated integer columns
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
 - `/today` — unified dashboard showing both English and math daily tasks
-
-### 口算 Module (`/calc`) — now `@rosie/calc`
-
-> This module has been extracted into `packages/calc` (see `packages/calc/CLAUDE.md` for the
-> authoritative, in-package guide). Routes under `apps/web/src/app/calc/**` are thin shells
-> re-exporting `@rosie/calc/pages/<name>`; `layout.tsx` and the `/calc/vouchers` redirect stay
-> in the app. Calc types remain in `@rosie/core` (the rewards subsystem references them);
-> wallet/voucher/stars live in `@rosie/rewards`. The architecture below is unchanged.
-
-Mental-arithmetic practice. Question generation is **composable**, not a fixed level ladder:
-
-- **Building blocks** (`src/utils/calc-blocks.ts`) — `BLOCKS` is a catalog of pure single-operation generators, each with a difficulty range and an `op`/`group` tag (加 `add` / 减 `sub` / 乘 `mul` / 除 `div`). Each block exposes `generateSingle()` (a standalone `CalcQuestion`) and `sampleTerm()` (a sub-term for mixed composition). Difficulty ordering is inherent: 加 < 减 < 乘 < 除 < 混合.
-- **Mixed operations** (`src/utils/calc-mixed.ts`) — 7 fixed skeletons (`SKELETONS`: 加减/乘除 同级、加减与乘法、加减乘除全混合、3 个带括号变体). A `MixedOp` = `{ skeleton, blockIds, enabled }`; `assembleMixed()` builds a multi-operator `CalcQuestion` whose parts are drawn from the chosen blocks (guarantees non-negative integer answers + integer division). Parents compose these in `/calc/settings` via `MixedOpComposer`/`MixedOpList`.
-- **AST primitives** live in `src/utils/calc-ast.ts` (`evalAst`/`renderAst`/`signatureOf`/`parseSignature`/`makeQuestion`). `signature` is the canonical key used for proficiency tracking.
-- **Session building** (`buildSession` in `src/utils/calc-helpers.ts`) — sources = selected blocks ∪ enabled+valid mixed ops; question count is allocated across sources weighted toward weak ones (`w = 1 − proficiency/5`, with a per-source floor); block sources resurface ~35% weakest specific facts (via `parseSignature`) and generate the rest fresh; carried mistakes are appended. Each question is tagged with `sourceBlockId`/`sourceMixedOpId`.
-- **Proficiency** (`useCalcProblemState`, `calc_problem_state` table) — lightweight 0–5 per `signature` (no spaced-repetition/adaptive ladder; that machinery was removed). Rows carry `block_id`/`mixed_op_id` attribution.
-- **Mistakes** — wrong questions are appended to the **end** of the current session for make-up (redo until correct), and unresolved ones carry into the **next** session: next total = configured count + last session's unresolved count (`calc_mistakes.session_no`, `lastSessionUnresolved`). Resolved after 3 consecutive correct.
-- **Reports** — `SessionSummary` shows per-source results + next-focus preview; `/calc/report` shows per-block / per-mixed mastery (avg proficiency) + weakest problems. Both share the same `calc_problem_state` proficiency.
-- **State** is in `CalcSettings` (`selectedBlocks: string[]`, `mixedOps: MixedOp[]`, plus sound/count/time-limit). Tables: `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`. Migration: `docs/sql/calc-redesign-migration.sql` (run manually). The old `calc_level_state`/`calc_event_log` tables are no longer written.
 
 ### PWA
 
@@ -252,10 +207,10 @@ Mental-arithmetic practice. Question generation is **composable**, not a fixed l
 
 - **No `any`** — all props and state must have explicit types
 - Use `type` for component props; use `interface` for API/Supabase response shapes
-- All shared types live in `src/utils/type.ts`
+- Shared types live in `@rosie/core` (re-exported per package as needed); a package keeps its own narrow types local
 
 ### Naming
 
 - Components: `PascalCase.tsx` (e.g. `FlashCard.tsx`)
 - Hooks and utilities: `camelCase.ts` (e.g. `useWordMastery.ts`, `english-helpers.ts`)
-- All shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `src/utils/constant.ts`
+- Shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `@rosie/core`

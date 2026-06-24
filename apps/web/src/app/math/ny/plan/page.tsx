@@ -19,6 +19,8 @@ import { PROBLEMS as PROBLEMS41 } from '@rosie/math/utils/lesson41-data'
 import { PROBLEMS as PROBLEMS42 } from '@rosie/math/utils/lesson42-data'
 import { PROBLEMS as PROBLEMS43 } from '@rosie/math/utils/lesson43-data'
 import { PROBLEMS as PROBLEMS44 } from '@rosie/math/utils/lesson44-data'
+import { PROBLEMS as PROBLEMS46 } from '@rosie/math/utils/lesson46-data'
+import { PROBLEMS as PROBLEMS47 } from '@rosie/math/utils/lesson47-data'
 import type { ProblemSet } from '@rosie/core'
 import Link from 'next/link'
 
@@ -41,6 +43,8 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
   '42': PROBLEMS42,
   '43': PROBLEMS43,
   '44': PROBLEMS44,
+  '46': PROBLEMS46,
+  '47': PROBLEMS47,
 }
 
 export default function MathDailyPage() {
