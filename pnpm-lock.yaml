@@ -47,6 +47,9 @@ importers:
       '@rosie/rewards':
         specifier: workspace:*
         version: link:../../packages/rewards
+      '@rosie/robot':
+        specifier: workspace:*
+        version: link:../../packages/robot
       '@rosie/ui':
         specifier: workspace:*
         version: link:../../packages/ui
