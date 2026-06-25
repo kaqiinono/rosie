@@ -42,8 +42,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
   const handleSubmit = async () => {
     if (!valid || saving) return
     setSaving(true)
-    await onSubmit({ ...form, title: form.title.trim() })
-    setSaving(false)
+    try {
+      await onSubmit({ ...form, title: form.title.trim() })
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -71,10 +74,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
           <div className="space-y-4">
             {/* Title */}
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <label htmlFor="robot-task-title" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                 任务标题 <span className="text-rose-400">*</span>
               </label>
               <input
+                id="robot-task-title"
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100"
                 value={form.title}
                 onChange={(e) => set('title', e.target.value)}
@@ -84,10 +88,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
 
             {/* Content */}
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <label htmlFor="robot-task-content" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                 任务内容
               </label>
               <textarea
+                id="robot-task-content"
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100"
                 rows={2}
                 value={form.content}
@@ -99,10 +104,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
             {/* Time row */}
             <div className="flex gap-3">
               <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <label htmlFor="robot-task-start-time" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                   开始时间 <span className="text-rose-400">*</span>
                 </label>
                 <input
+                  id="robot-task-start-time"
                   type="time"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100"
                   value={form.startTime}
@@ -110,10 +116,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
                 />
               </div>
               <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <label htmlFor="robot-task-end-time" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                   结束时间 <span className="text-rose-400">*</span>
                 </label>
                 <input
+                  id="robot-task-end-time"
                   type="time"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100"
                   value={form.endTime}
@@ -125,10 +132,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
             {/* Coins + link row */}
             <div className="flex gap-3">
               <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <label htmlFor="robot-task-reward-coins" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                   奖励金币 🪙
                 </label>
                 <input
+                  id="robot-task-reward-coins"
                   type="number"
                   min={0}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100"
@@ -137,10 +145,11 @@ export default function RobotTaskForm({ initial, onSubmit, onCancel }: RobotTask
                 />
               </div>
               <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <label htmlFor="robot-task-quick-link" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                   打卡页路径 🔗
                 </label>
                 <input
+                  id="robot-task-quick-link"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100"
                   value={form.quickLink}
                   onChange={(e) => set('quickLink', e.target.value)}
