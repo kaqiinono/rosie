@@ -47,7 +47,7 @@ function nextTaskId(tasks: RobotTask[]): string {
 
 export function useRobotTasks(user: User | null) {
   const [tasks, setTasks] = useState<RobotTask[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<boolean>(user !== null)
 
   const refresh = useCallback(async () => {
     if (!user) {
@@ -65,13 +65,34 @@ export function useRobotTasks(user: User | null) {
     setLoading(false)
   }, [user])
 
+  // Initial / user-change load, guarded against setState after unmount.
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    if (!user) {
+      setTasks([])
+      return
+    }
+    let cancelled = false
+    setLoading(true)
+    ;(async () => {
+      const { data, error } = await supabase
+        .from(TABLE)
+        .select(SELECT_COLS)
+        .eq('user_id', user.id)
+        .order('sort_order', { ascending: true })
+      if (cancelled) return
+      if (error) console.error('[robot] fetch failed', error)
+      else setTasks((data as RobotTaskRow[]).map(rowToTask))
+      setLoading(false)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [user])
 
   const addTask = useCallback(
     async (input: RobotTaskInput) => {
       if (!user) return
+      // id & sort_order derived from local state; acceptable for single-user admin use.
       const id = nextTaskId(tasks)
       const sortOrder = tasks.reduce((max, t) => Math.max(max, t.sortOrder), -1) + 1
       const { error } = await supabase.from(TABLE).insert({
@@ -134,11 +155,16 @@ export function useRobotTasks(user: User | null) {
   const reorderTasks = useCallback(
     async (orderedIds: string[]) => {
       if (!user) return
-      await Promise.all(
+      const results = await Promise.all(
         orderedIds.map((id, i) =>
           supabase.from(TABLE).update({ sort_order: i }).eq('id', id).eq('user_id', user.id),
         ),
       )
+      const failed = results.filter((r) => r.error)
+      if (failed.length) {
+        console.error('[robot] reorder partial failure', failed)
+        return
+      }
       await refresh()
     },
     [user, refresh],
