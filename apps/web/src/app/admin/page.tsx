@@ -51,6 +51,15 @@ const TOOLS: AdminTool[] = [
     to: 'rgba(59,130,246,0.08)',
     ring: 'rgba(20,184,166,0.28)',
   },
+  {
+    href: '/admin/robot',
+    emoji: '🤖',
+    title: '机器人任务',
+    description: '管理果果的机器人学习任务：按时间段自动判定状态，配置标题、时段、奖励金币与打卡页路径。',
+    from: 'rgba(99,102,241,0.14)',
+    to: 'rgba(168,85,247,0.10)',
+    ring: 'rgba(99,102,241,0.28)',
+  },
 ]
 
 export default function AdminHomePage() {
