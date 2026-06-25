@@ -66,7 +66,7 @@ const LESSON_META: Array<{
   id: string
   name: string
   data: ProblemSet
-  types: Array<{ tag: string; label: string }>
+  types: ReadonlyArray<{ tag: string; label: string }>
 }> = [
   { id: '12', name: '巧算加减法进阶', data: P12, types: PT12 },
   { id: '13', name: '植树问题', data: P13, types: PT13 },
