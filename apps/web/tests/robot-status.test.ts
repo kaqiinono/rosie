@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { deriveStatus } from '@rosie/robot'
-import type { RobotTask } from '@rosie/robot'
+// Import the pure helper + type directly (not via the @rosie/robot barrel): the
+// barrel re-exports useRobotTasks → @rosie/core's supabase, whose createClient
+// runs at import and throws without Supabase env. deriveStatus is Supabase-free.
+import { deriveStatus } from '../../../packages/robot/src/robot-status'
+import type { RobotTask } from '../../../packages/robot/src/robot-types'
 
 const task = (o: Partial<RobotTask> = {}): RobotTask => ({
   id: 'task_001',
