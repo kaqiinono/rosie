@@ -34,4 +34,12 @@ describe('deriveStatus', () => {
   it('NOT_STARTED when times are malformed', () => {
     expect(deriveStatus(task({ startTime: '', endTime: '' }), at(12, 0))).toBe('NOT_STARTED')
   })
+  it('NOT_STARTED when times are out of range (e.g. 25:00)', () => {
+    expect(deriveStatus(task({ startTime: '25:00', endTime: '26:00' }), at(12, 0))).toBe('NOT_STARTED')
+  })
+  it('inverted window (start > end) never yields IN_PROGRESS — NOT_STARTED by design', () => {
+    // Documents the same-day assumption: 10:00–09:00 is not supported.
+    // With start=600, end=540, at 09:30 (cur=570): cur<start (570<600) → NOT_STARTED.
+    expect(deriveStatus(task({ startTime: '10:00', endTime: '09:00' }), at(9, 30))).toBe('NOT_STARTED')
+  })
 })

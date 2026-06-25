@@ -7,17 +7,24 @@ export const STATUS_LABELS: Record<RobotTaskStatus, string> = {
   COMPLETED: '已完成',
 }
 
-/** Parse "HH:MM" to minutes since midnight; returns NaN on malformed input. */
+/** Parse "HH:MM" to minutes since midnight; returns NaN on malformed/out-of-range input. */
 function toMinutes(hhmm: string): number {
   const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim())
   if (!m) return NaN
-  return Number(m[1]) * 60 + Number(m[2])
+  const h = Number(m[1])
+  const min = Number(m[2])
+  if (h > 23 || min > 59) return NaN
+  return h * 60 + min
 }
 
 /**
  * Time-derived status. Completion is the only persisted state (completedAt);
  * the other three are a pure function of the clock vs the HH:MM window.
- * Window is inclusive of both start and end. Malformed times → NOT_STARTED.
+ * Window is inclusive of both start and end. Malformed/out-of-range times → NOT_STARTED.
+ *
+ * Assumes a same-day window (startTime <= endTime). An inverted window
+ * (startTime > endTime, e.g. an overnight task) is out of scope and yields
+ * no IN_PROGRESS state by design.
  */
 export function deriveStatus(task: RobotTask, now: Date = new Date()): RobotTaskStatus {
   if (task.completedAt) return 'COMPLETED'
