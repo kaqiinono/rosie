@@ -21,6 +21,7 @@ packages/
   english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
   flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
+  robot/     @rosie/robot   — 机器人任务（Dify 对话机器人）+ /admin/robot 管理页
 ```
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
@@ -140,6 +141,7 @@ module, **read that package's CLAUDE.md** (scoped, up to date) instead of relyin
 | 英语 | `@rosie/english` | `apps/web/src/app/english/**` | `packages/english/CLAUDE.md` |
 | 绘本 | `@rosie/flipbook` | `apps/web/src/app/flipbook/**` | `packages/flipbook/CLAUDE.md` |
 | 音频 | `@rosie/audio` | `apps/web/src/app/audio/**`, `/admin/audio` | `packages/audio/CLAUDE.md` |
+| 机器人 | `@rosie/robot` | `apps/web/src/app/admin/robot/**` | `packages/robot/CLAUDE.md` |
 
 Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils), `@rosie/ui`,
 `@rosie/rewards` (stars/wallet/vouchers), `@rosie/player` (playback engine + `PlayerDock`).
