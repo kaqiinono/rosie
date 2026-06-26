@@ -127,41 +127,19 @@ function hydrateLessonKindOverridesFromPlan(
   return out
 }
 
-/** Max number of 预习 (preview) words assigned to any single day of a saved plan. */
-function inferPreviewDailyQuota(
-  plan: WeeklyPlan,
-  vocab: WordEntry[],
-  kinds: Record<string, 'consolidate' | 'preview'>,
-): number {
-  let maxPerDay = 0
-  for (const day of plan.days) {
-    let n = 0
-    for (const k of day.newWordKeys) {
-      const e = vocab.find(w => wordKey(w) === k)
-      if (!e) continue
-      const kind = kinds[`${e.unit}::${e.lesson}`] ?? 'consolidate'
-      if (kind === 'preview') n += 1
-    }
-    maxPerDay = Math.max(maxPerDay, n)
-  }
-  return maxPerDay > 0 ? maxPerDay : 3
-}
-
 function buildArrangeBaselineKey(
   weekStart: string,
   lessons: { unit: string; lesson: string }[],
   kinds: Record<string, 'consolidate' | 'preview'>,
-  consolidateQuotas: Record<string, number>,
-  previewPerDay: number,
+  quotas: Record<string, number>,
 ): string {
   const sorted = [...lessons].sort((a, b) => lessonKey(a).localeCompare(lessonKey(b)))
   const parts = sorted.map(l => {
     const lk = lessonKey(l)
     const kind = kinds[lk] ?? 'consolidate'
-    const q = kind === 'consolidate' ? String(consolidateQuotas[lk] ?? 3) : 'p'
-    return `${lk}:${kind}:${q}`
+    return `${lk}:${kind}:${quotas[lk] ?? 3}`
   })
-  return `${weekStart}|p${previewPerDay}|${parts.join('|')}`
+  return `${weekStart}|${parts.join('|')}`
 }
 
 function getWeekEnd(weekStart: string): string {
@@ -275,15 +253,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
    *  must be a 必记 lesson; auto-clears when the lesson is removed or flipped to 预习. */
   const [focusLessonOverride, setFocusLessonOverride] = useState<string | null>(null)
   const [weekStartDay, setWeekStartDay] = useState<number>(4)
-  /** Single daily quota for 预习 words across all 预习 lessons (auto-allocated). */
-  const [previewPerDay, setPreviewPerDay] = useState<number>(3)
   const [pendingDate, setPendingDate] = useState<string>(todayStr())
   const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
   if (syncedDefaultParams !== defaultParams) {
     setSyncedDefaultParams(defaultParams)
     if (defaultParams) {
       setWeekStartDay(defaultParams.weekStartDay)
-      setPreviewPerDay(defaultParams.newWordsPerDay)
     }
   }
 
@@ -376,10 +351,11 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     })
   }, [consolidateLessons, vocab, masteryMap])
 
-  // 预习 words: a single stream across all 预习 lessons, ordered ascending by mastery
-  // stage so the least-familiar words land in the earliest days.
-  const previewWords = useMemo(() => {
-    return previewLessons.flatMap(l => {
+  // 预习 words: one group per 预习 lesson (display order). Each lesson is ordered
+  // ascending by mastery stage so the least-familiar words land in the earliest days
+  // — mirrors the per-lesson 必记 model so preview is also allocated per-lesson.
+  const previewGroups = useMemo(() => {
+    return previewLessons.map(l => {
       const group = vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson)
       return group
         .map((w, i) => ({ w, i, stage: masteryMap[wordKey(w)]?.stage ?? 0 }))
@@ -388,26 +364,29 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     })
   }, [previewLessons, vocab, masteryMap])
 
-  // Groups + per-group daily quotas fed to buildWeeklyPlan (index-aligned): each 必记
-  // lesson is its own group with its own daily quota; 预习 is one merged group with a
-  // single daily quota.
+  // Groups + per-group daily quotas fed to buildWeeklyPlan (index-aligned): every
+  // lesson — 必记 and 预习 alike — is its own group with its own per-lesson daily quota.
   const planGroups = useMemo(() => {
     const g: WordEntry[][] = []
     consolidateGroups.forEach(grp => {
       if (grp.length > 0) g.push(grp)
     })
-    if (previewWords.length > 0) g.push(previewWords)
+    previewGroups.forEach(grp => {
+      if (grp.length > 0) g.push(grp)
+    })
     return g
-  }, [consolidateGroups, previewWords])
+  }, [consolidateGroups, previewGroups])
 
   const planQuotas = useMemo(() => {
     const q: number[] = []
     consolidateLessons.forEach((l, i) => {
       if ((consolidateGroups[i]?.length ?? 0) > 0) q.push(lessonQuotas[lessonKey(l)] ?? 3)
     })
-    if (previewWords.length > 0) q.push(previewPerDay)
+    previewLessons.forEach((l, i) => {
+      if ((previewGroups[i]?.length ?? 0) > 0) q.push(lessonQuotas[lessonKey(l)] ?? 3)
+    })
     return q
-  }, [consolidateLessons, consolidateGroups, previewWords, lessonQuotas, previewPerDay])
+  }, [consolidateLessons, consolidateGroups, previewLessons, previewGroups, lessonQuotas])
 
   const lessonWords = useMemo(() => planGroups.flat(), [planGroups])
 
@@ -469,14 +448,12 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     const parsed = parsePlanLessons(plan)
     const lkinds = hydrateLessonKindOverridesFromPlan(plan, parsed, vocab)
     const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
-    const pPerDay = inferPreviewDailyQuota(plan, vocab, lkinds)
-    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas, pPerDay)
+    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas)
     const planStages = new Set(
       parsed.map(l => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean),
     )
     setPendingDate(plan.weekStart)
     setWeekStartDay(plan.weekStartDay)
-    setPreviewPerDay(pPerDay)
     setSelectedStages(planStages)
     setPendingLessons(parsed)
     setLessonQuotas(quotas)
@@ -491,7 +468,7 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
 
   const handleGoToArrange = useCallback(() => {
     if (!activeLesson) return
-    const snap = buildArrangeBaselineKey(dialogWeekStart, activeLessons, lessonKinds, lessonQuotas, previewPerDay)
+    const snap = buildArrangeBaselineKey(dialogWeekStart, activeLessons, lessonKinds, lessonQuotas)
     if (isEditingPlan && editingPlan && snap === editArrangeBaselineKey) {
       setDraftDays(editingPlan.days.map(d => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
       const wordSet = new Set(lessonWords.map(w => wordKey(w)))
@@ -548,7 +525,6 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
     activeLessons,
     lessonKinds,
     lessonQuotas,
-    previewPerDay,
     editArrangeBaselineKey,
     editingPlan,
     isEditingPlan,
@@ -656,7 +632,8 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
   // ── PARAMS DIALOG ────────────────────────────────────────────────────────
   if (step === 'params') {
     const sourceCount =
-      consolidateGroups.filter(g => g.length > 0).length + (previewWords.length > 0 ? 1 : 0)
+      consolidateGroups.filter(g => g.length > 0).length +
+      previewGroups.filter(g => g.length > 0).length
 
     return (
       <div
@@ -975,18 +952,45 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   </div>
                 )}
 
-                {/* 预习: single daily quota across all 预习 lessons (familiarity-sorted) */}
-                {previewWords.length > 0 && (
+                {/* 预习: per-lesson daily quota (same per-lesson model as 必记) */}
+                {previewLessons.length > 0 && (
                   <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-4">
-                    <div className="mb-1.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                      每天预习新词数量
+                    <div className="mb-3 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                      每天预习新词数量{previewLessons.length > 1 ? '（每课程）' : ''}
                     </div>
-                    <div className="mb-3 text-[.68rem] text-[var(--wm-text-dim)]">
-                      共 {previewWords.length} 个预习词 · 7天可分配{' '}
-                      {Math.min(previewPerDay * 7, previewWords.length)} 词
-                      {previewLessons.length > 1 && '（按熟悉度自动分配到各课程）'}
+                    <div className="flex flex-col gap-4">
+                      {previewLessons.map((l, gi) => {
+                        const lkey = `${l.unit}::${l.lesson}`
+                        const q = lessonQuotas[lkey] ?? 3
+                        const groupSize = previewGroups[gi]?.length ?? 0
+                        const totalAssigned = Math.min(q * 7, groupSize)
+                        return (
+                          <div key={lkey}>
+                            {previewLessons.length > 1 && (
+                              <div className="mb-1.5 flex items-center gap-2">
+                                <span className="text-[.82rem] font-bold text-[var(--wm-text)]">
+                                  {l.unit} · {l.lesson}
+                                </span>
+                                <span className="text-[.68rem] text-[var(--wm-text-dim)]">
+                                  共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                                </span>
+                              </div>
+                            )}
+                            {previewLessons.length === 1 && (
+                              <div className="mb-1.5 text-[.72rem] text-[var(--wm-text-dim)]">
+                                共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                              </div>
+                            )}
+                            <QuotaPicker
+                              value={q}
+                              onChange={(n) =>
+                                setLessonQuotas(prev => ({ ...prev, [lkey]: n }))
+                              }
+                            />
+                          </div>
+                        )
+                      })}
                     </div>
-                    <QuotaPicker value={previewPerDay} onChange={setPreviewPerDay} />
                   </div>
                 )}
 
@@ -1359,7 +1363,6 @@ export default function WeeklyPractice({ vocab }: WeeklyPracticeProps) {
                   setPendingLessons(cached)
                   setLessonKindOverrides({})
                   setLessonQuotas({})
-                  setPreviewPerDay(defaultParams?.newWordsPerDay ?? 3)
                   setFocusLessonOverride(null)
                   setPendingDate(todayStr())
                   setIsEditingPlan(false)
