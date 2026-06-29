@@ -7,6 +7,9 @@ import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@rosie/math/components/shared/DifficultyFilterRow'
+import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 
@@ -91,9 +94,11 @@ function createExpandedCard(
             <div className="mt-0.5 flex flex-wrap gap-1">
               <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
               <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${srcBadge}`}>{srcLabel}</span>
+              <PracticeCountBadge count={count} />
             </div>
           </div>
           <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
+          <FavoriteHeart problemId={p.id} size="sm" />
           <span className={`shrink-0 text-[13px] font-bold text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
         </button>
         {isOpen && (
@@ -118,6 +123,8 @@ export function createFilterPanel(
   }
 
   return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
+    const { favorites } = useMathFavoritesContext()
+    const [favOnly, setFavOnly] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
     const [autoExpand, setAutoExpand] = useState(false)
     const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
@@ -132,7 +139,8 @@ export function createFilterPanel(
         filters.source.has(setName) &&
         filters.type.has(p.tag) &&
         filters.difficulty.has(p.difficulty) &&
-        matchesMastery(solveCount[p.id] ?? 0, filters.mastery),
+        matchesMastery(solveCount[p.id] ?? 0, filters.mastery) &&
+        (!favOnly || favorites.has(p.id)),
     )
     const total = filtered.length
     const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
@@ -202,6 +210,16 @@ export function createFilterPanel(
           </div>
 
           <div className="mb-2">
+            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>⭐ 收藏</div>
+            <div className="flex flex-wrap gap-1.5">
+              <button onClick={() => setFavOnly(v => !v)}
+                className={`${btnBase} ${favOnly ? btnOn : btnOff}`}>
+                {favOnly ? '❤️ 只看收藏' : '🤍 只看收藏'}
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-2">
             <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📖 题解显示</div>
             <div className="flex flex-wrap gap-1.5">
               <button onClick={toggleAutoExpand}
@@ -259,9 +277,13 @@ export function createFilterPanel(
                     <div className="mt-0.5 flex flex-wrap gap-1">
                       <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
                       <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${theme.srcBadge}`}>{SOURCE_LABELS[setName] || setName}</span>
+                      <PracticeCountBadge count={count} />
                     </div>
                   </div>
-                  <div className="shrink-0 text-base">{MASTERY_ICON[level]}</div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <div className="text-base">{MASTERY_ICON[level]}</div>
+                    <FavoriteHeart problemId={p.id} size="sm" />
+                  </div>
                 </Link>
               )
             })}
