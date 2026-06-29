@@ -18,6 +18,7 @@ import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
+import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import { useStarHud } from '@rosie/rewards'
 import { StarProgressBar } from '@rosie/rewards'
 
@@ -309,6 +310,7 @@ function SeaGrid({
                   </div>
                 )}
               </div>
+              <FavoriteHeart problemId={problem.id} size="sm" />
               <span
                 className="shrink-0 self-center text-[12px] opacity-0 transition-opacity group-hover:opacity-100"
                 style={{ color: count >= 3 ? 'rgba(255,209,102,0.7)' : 'rgba(0,229,255,0.5)' }}
