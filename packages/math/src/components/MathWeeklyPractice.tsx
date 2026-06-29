@@ -11,6 +11,7 @@ import { getWeekStart } from '@rosie/core'
 import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
+import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import { todayStr } from '@rosie/core'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 
@@ -1334,6 +1335,7 @@ function ProblemCard({
         </Link>
       )}
       {done && <span className="animate-star-pop inline-block shrink-0 text-[20px]">⭐</span>}
+      <FavoriteHeart problemId={prob.problemId} size="sm" />
     </div>
   )
 }
