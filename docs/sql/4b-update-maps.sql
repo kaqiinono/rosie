@@ -1,15 +1,21 @@
 -- =========================================================================
--- 4B Syllables + Keywords sync to Supabase word_entries
+-- Units 7–12 Syllables + Keywords sync to Supabase word_entries (stage 4A)
 -- 222 unique words. DELETE-free UPDATE wrapped in a single transaction.
+--
+-- NOTE: these words were originally stage '4B' by mistake; they are stage '4A'
+-- (Units 1–12). The UPDATE is scoped to stage='4A' AND Units 7–12 so it cannot
+-- accidentally touch same-spelled words in the earlier Units 1–6.
 --
 -- Regenerated per docs/rules/phonics_rules.md (syllable splits) and
 -- docs/rules/VOCABULARY_KEYWORD_GUIDE_1.md (keyword extraction rules).
 --
 -- HOW TO USE
 --   1. Open Supabase SQL Editor -> New query -> paste -> Run
---   2. Verify:
---      SELECT COUNT(*) FROM word_entries WHERE stage='4B' AND syllables IS NOT NULL;  -- 223
---      SELECT COUNT(*) FROM word_entries WHERE stage='4B' AND keywords IS NOT NULL;   -- 223
+--   2. Verify (Units 7–12 only):
+--      SELECT COUNT(*) FROM word_entries WHERE stage='4A'
+--        AND unit IN ('Unit 7','Unit 8','Unit 9','Unit 10','Unit 11','Unit 12') AND syllables IS NOT NULL;  -- 223
+--      SELECT COUNT(*) FROM word_entries WHERE stage='4A'
+--        AND unit IN ('Unit 7','Unit 8','Unit 9','Unit 10','Unit 11','Unit 12') AND keywords IS NOT NULL;   -- 223
 --   3. (Optional) Delete this file after success -- one-time script.
 --
 -- COLUMN TYPES
@@ -245,6 +251,8 @@ FROM (VALUES
   ($$wildlife$$, '["wild", "life"]'::jsonb, '[["animals living in nature", "kw-red"]]'::jsonb),
   ($$worry$$, '["wor", "ry"]'::jsonb, '[["what worries you", "kw-red"]]'::jsonb)
 ) AS d(word, syl, kw)
-WHERE w.stage = '4B' AND w.word = d.word;
+WHERE w.stage = '4A'
+  AND w.unit IN ('Unit 7','Unit 8','Unit 9','Unit 10','Unit 11','Unit 12')
+  AND w.word = d.word;
 
 COMMIT;
