@@ -31,7 +31,7 @@ export default function QuestionLayout({ question, solution, answer, defaultSolu
         <div className="ql-question-body">{question}</div>
 
         {/* Toggle 按钮 */}
-        <div style={{ width: '100%', textAlign: 'right' }}>
+        <div className="ql-toggle-row">
           <button
             className={`ql-toggle-btn ${solutionOpen ? 'ql-toggle-btn--open' : ''}`}
             onClick={() => setSolutionOpen((v) => !v)}
@@ -111,6 +111,9 @@ export default function QuestionLayout({ question, solution, answer, defaultSolu
 
         /* ─── 题目区 ─── */
         .ql-question {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
           background: #fafaf9;
           border-bottom: 1.5px solid #f0ede8;
         }
@@ -118,6 +121,11 @@ export default function QuestionLayout({ question, solution, answer, defaultSolu
           font-size: 17px;
           line-height: 1.75;
           color: #1a1a1a;
+        }
+        .ql-toggle-row {
+          width: 100%;
+          text-align: right;
+          flex-shrink: 0;
         }
 
         /* ─── Toggle 按钮 ─── */
@@ -212,6 +220,7 @@ export default function QuestionLayout({ question, solution, answer, defaultSolu
         /* ─── 移动端 ─── */
         @media (max-width: 480px) {
           .ql-question, .ql-answer { padding: 18px 18px 16px; }
+          .ql-question { gap: 16px; }
           .ql-solution-inner { padding: 16px 18px 14px; }
           .ql-question-body { font-size: 15px; }
           .ql-solution-body { font-size: 14px; }

@@ -30,8 +30,11 @@ Phonics rules live in `utils/phonics.ts` in `PH_RULES_RAW`. They're auto-sorted 
 (longer patterns beat shorter prefixes — add 3-letter rules before their 2-letter subsets for
 readability). Categories: `ph-r` (R-controlled), `ph-digraph` (vowel combo), `ph-cluster`
 (consonant combo), `ph-blend` (consonant blend), `ph-suffix`, `ph-long`, `ph-vowel`. Each
-category's color is a CSS variable in `apps/web/src/app/globals.css` (`--ph-digraph`, …) mirrored
-in `PHONICS_LEGEND` in `phonics.ts`.
+category's color is a CSS variable in this package's own `src/english.css` (`--ph-digraph`, …)
+mirrored in `PHONICS_LEGEND` in `phonics.ts`. `english.css` is package-private (imported once from
+`src/index.ts`) and also holds the `.ph-*`/`.kw-*` classes, the word-monster (`--wm-*`) + rescue
+(`--rescue-*`) vars, the `belly-pop` keyframe, and the reading recall-quiz decorations — none of
+this lives in the app's `globals.css`.
 
 ## Dependencies (the only things English imports from outside)
 

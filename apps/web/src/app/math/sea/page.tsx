@@ -15,6 +15,9 @@ import {
   type ProblemDifficulty,
 } from '@rosie/core'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
+import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
+import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
 import { useStarHud } from '@rosie/rewards'
 import { StarProgressBar } from '@rosie/rewards'
 
@@ -385,30 +388,56 @@ function PracticeProblem({
   const lesson = SEA_LESSON_MAP[lessonId]
   const count = solveCount[problem.id] ?? 0
   const tagStyle = lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'
-
-  const [answer, setAnswer] = useState('')
-  const [feedback, setFeedback] = useState<{ text: string; ok: boolean } | null>(null)
+  const interactive = isInteractiveProblem(problem)
   const { awardStars } = useStarHud()
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setAnswer(''); setFeedback(null)
-  }, [problem.id])
+  const awardSeaStar = useCallback((origin?: HTMLElement) => {
+    const rect = origin?.getBoundingClientRect()
+    void awardStars(
+      'blue',
+      1,
+      rect ? { origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } } : undefined,
+    )
+  }, [awardStars])
+
+  const { answer, setAnswer, feedback, submit, check, clearFeedback } = useProblemAnswer(
+    problem,
+    {
+      handleSolve: (id) => {
+        void onSolve(id)
+      },
+      addWrong: () => {},
+    },
+    {
+      onCorrect: () => {
+        if (interactive) awardSeaStar()
+      },
+    },
+  )
+
+  const figure = useMemo(
+    () =>
+      interactive
+        ? injectFigureGridCallbacks(problem.figureNode, {
+            onSubmit: submit,
+            onStateChange: clearFeedback,
+          })
+        : problem.figureNode,
+    [interactive, problem.figureNode, submit, clearFeedback],
+  )
+
+  const displayFeedback = feedback
+    ? {
+        ok: feedback.ok,
+        text: feedback.ok ? '🎉 完全正确！+1 ☀️ 蓝太阳' : feedback.message,
+      }
+    : null
 
   function checkAnswer(e?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>) {
-    if (!answer.trim()) return
-    const v = Number(answer)
-    if (v === problem.finalAns) {
-      setFeedback({ text: '🎉 完全正确！+1 ☀️ 蓝太阳', ok: true })
-      onSolve(problem.id)
-      const target = e && 'currentTarget' in e ? (e.currentTarget as HTMLElement) : null
-      const rect = target?.getBoundingClientRect()
-      void awardStars('blue', 1, rect ? { origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } } : undefined)
-    } else {
-      setFeedback({
-        text: `❌ 不对哦，再想想？提示：答案是 ${problem.finalAns} 以内的数。`,
-        ok: false,
-      })
+    const result = check()
+    if (result.ok && !interactive) {
+      const target = e && 'currentTarget' in e ? (e.currentTarget as HTMLElement) : undefined
+      awardSeaStar(target)
     }
   }
 
@@ -429,7 +458,12 @@ function PracticeProblem({
         className="mb-3.5 rounded-lg border-l-4 border-cyan-300 bg-cyan-50/60 px-3.5 py-3 text-sm leading-relaxed text-slate-700 [&>strong]:font-bold [&>strong]:text-slate-900"
         dangerouslySetInnerHTML={{ __html: problem.text }}
       />
-      {problem.figureNode && <div>{problem.figureNode}</div>}
+      {figure && <div>{figure}</div>}
+      {interactive && displayFeedback?.text && (
+        <div className={`text-[13px] font-medium ${displayFeedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
+          {displayFeedback.text}
+        </div>
+      )}
     </div>
   )
 
@@ -449,7 +483,18 @@ function PracticeProblem({
     </div>
   )
 
-  const answerDom = (
+  const answerDom = interactive ? (
+    <div className="flex items-center gap-2 text-xs text-gray-400">
+      <span style={getBadgeStyle(count)} className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
+        {getMasteryLabel(count)}
+      </span>
+      <span>练过 {count} 次</span>
+      {solvedAt[problem.id] && <span>· 上次 {formatDate(solvedAt[problem.id])}</span>}
+      <Link href={sp.href} className="ml-auto text-cyan-500 no-underline hover:text-cyan-300 transition-colors">
+        查看原题 →
+      </Link>
+    </div>
+  ) : (
     <>
       <div className="mb-3 flex items-center gap-2">
         <div className="h-px flex-1 bg-gray-200" />
@@ -476,9 +521,9 @@ function PracticeProblem({
             检查答案
           </button>
         </div>
-        {feedback && (
-          <div className={`mt-2 text-[13px] font-medium ${feedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
-            {feedback.text}
+        {displayFeedback && (
+          <div className={`mt-2 text-[13px] font-medium ${displayFeedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
+            {displayFeedback.text}
           </div>
         )}
       </div>

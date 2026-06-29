@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { useImmersive } from '@rosie/core'
+import '../flipbook.css'
 
 function isFlipbookReaderPath(pathname: string): boolean {
   const parts = pathname.split('/').filter(Boolean)

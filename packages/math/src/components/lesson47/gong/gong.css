@@ -1,0 +1,54 @@
+/* ───────────────────────────────────────────────────────────
+   方格谜题（gong）组件样式 —— 数连/数桥/数方/各类变型数独
+   与组件同处一个包内，由 ./shared.tsx 引入（所有 Grid 都依赖
+   shared），随组件一起打包，不污染 app 的全局样式表。
+   注：组件里用到的 Tailwind 工具类（flex/justify-center…）仍由
+   app 的 globals.css 通过 @source 扫描 packages/math/src 生成。
+   ─────────────────────────────────────────────────────────── */
+:root {
+  --gong-bg: #ffffff;
+  --gong-bg3: #f1f5f9;
+  --gong-border2: #cbd5e1;
+  --gong-text: #1e293b;
+  --gong-text2: #475569;
+  --gong-text3: #64748b;
+  --gong-blue: #0c447c;
+  --gong-accent: #1d9e75;
+  --gong-accent-l: #e1f5ee;
+  --gong-coral: #d85a30;
+  --gong-purple: #534ab7;
+  --gong-purple-l: #eeedfe;
+  --gong-warn: #ba7517;
+  --gong-warn-l: #faeeda;
+}
+
+.gong-table {
+  border-collapse: collapse;
+}
+
+.gong-cell {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--gong-border2);
+  text-align: center;
+  vertical-align: middle;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--gong-text);
+  background: var(--gong-bg);
+}
+
+.gong-cell-sm {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+.gong-box-r {
+  border-right: 2.5px solid var(--gong-text);
+}
+
+.gong-box-b {
+  border-bottom: 2.5px solid var(--gong-text);
+}

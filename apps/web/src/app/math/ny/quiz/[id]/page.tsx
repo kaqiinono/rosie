@@ -26,14 +26,19 @@ import { PROBLEMS as P41 } from '@rosie/math/utils/lesson41-data'
 import { PROBLEMS as P42 } from '@rosie/math/utils/lesson42-data'
 import { PROBLEMS as P43 } from '@rosie/math/utils/lesson43-data'
 import { PROBLEMS as P44 } from '@rosie/math/utils/lesson44-data'
+import { PROBLEMS as P46 } from '@rosie/math/utils/lesson46-data'
+import { PROBLEMS as P47 } from '@rosie/math/utils/lesson47-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizPaper, QuizAnswerRecord } from '@rosie/math/hooks/useMathQuiz'
+import { checkProblemAnswer, isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
+import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
 const LESSON_DATA: Record<string, ProblemSet> = {
   '12': P12, '13': P13, '15': P15, '18': P18, '23': P23, '29': P29, '30': P30,
   '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
+  '46': P46, '47': P47,
 }
 
 const LESSON_NAMES: Record<string, string> = {
@@ -42,6 +47,7 @@ const LESSON_NAMES: Record<string, string> = {
   '34': '乘法分配律', '35': '归一问题', '36': '星期几问题',
   '37': '鸡兔同笼', '38': '一笔画', '39': '盈亏问题',
   '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识', '44': '统筹优化',
+  '46': '抽屉原理与最不利', '47': '方格中的秘密',
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
@@ -77,6 +83,8 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   const [paper, setPaper] = useState<QuizPaper | null>(null)
   const [loading, setLoading] = useState(true)
   const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [interactiveStates, setInteractiveStates] = useState<Record<string, unknown>>({})
+  const [interactiveTouched, setInteractiveTouched] = useState<Record<string, boolean>>({})
   const [submitted, setSubmitted] = useState(false)
   const [results, setResults] = useState<Record<string, boolean>>({})
   const [submitting, setSubmitting] = useState(false)
@@ -123,6 +131,18 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   const pointsArr = paper ? computeQuizPoints(paper.problems.length) : []
   const totalScore = paper ? pointsArr.reduce((s, p) => s + p, 0) : 100
 
+  function isProblemAnswered(problemId: string, problem: Problem): boolean {
+    if (isInteractiveProblem(problem)) {
+      return interactiveTouched[problemId] === true
+    }
+    return (answers[problemId] ?? '').trim() !== ''
+  }
+
+  function recordInteractiveState(problemId: string, state: unknown) {
+    setInteractiveStates((prev) => ({ ...prev, [problemId]: state }))
+    setInteractiveTouched((prev) => ({ ...prev, [problemId]: true }))
+  }
+
   async function handleSubmit() {
     if (!paper || !user) return
     setSubmitting(true)
@@ -133,9 +153,20 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
     for (const item of paper.problems) {
       const entry = PROBLEM_MAP.get(item.problemId)
       if (!entry) continue
+      const { problem } = entry
+
+      if (isInteractiveProblem(problem)) {
+        const result = checkProblemAnswer(problem, interactiveStates[item.problemId])
+        const correct = result.ok
+        newResults[item.problemId] = correct
+        answerRecords[item.problemId] = { userAnswer: null, correct }
+        continue
+      }
+
       const raw = answers[item.problemId] ?? ''
       const userAnswer = raw === '' ? null : parseFloat(raw)
-      const correct = userAnswer !== null && userAnswer === entry.problem.finalAns
+      const result = checkProblemAnswer(entry.problem, userAnswer)
+      const correct = result.ok
       newResults[item.problemId] = correct
       answerRecords[item.problemId] = { userAnswer, correct }
     }
@@ -183,7 +214,11 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   const allAnswered = paper?.problems.every(
-    item => (answers[item.problemId] ?? '').trim() !== '',
+    (item) => {
+      const entry = PROBLEM_MAP.get(item.problemId)
+      if (!entry) return false
+      return isProblemAnswered(item.problemId, entry.problem)
+    },
   ) ?? false
 
   const correctCount = submitted ? Object.values(results).filter(Boolean).length : 0
@@ -214,7 +249,11 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
     )
   }
 
-  const unansweredCount = paper.problems.filter(item => !(answers[item.problemId] ?? '').trim()).length
+  const unansweredCount = paper.problems.filter((item) => {
+    const entry = PROBLEM_MAP.get(item.problemId)
+    if (!entry) return true
+    return !isProblemAnswered(item.problemId, entry.problem)
+  }).length
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -397,11 +436,55 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                   style={{ lineHeight: '1.75' }}
                   dangerouslySetInnerHTML={{ __html: problem.text }}
                 />
-                {problem.figureNode && (
+                {problem.figureNode && !isInteractiveProblem(problem) && (
                   <div className="mb-4 flex justify-center">{problem.figureNode}</div>
                 )}
 
                 {/* ── Answer area ── */}
+                {isInteractiveProblem(problem) ? (
+                  <div
+                    className="rounded-xl p-3"
+                    style={{
+                      background: submitted ? 'transparent' : '#f8fafc',
+                      border: submitted
+                        ? isCorrect
+                          ? '1.5px solid #6ee7b7'
+                          : '1.5px solid #fca5a5'
+                        : '1px solid #e2e8f0',
+                    }}
+                  >
+                    <p className="mb-3 text-sm text-slate-600">
+                      在下方宫格中完成作答即可交卷；点「检查答案」可提前看对错提示。
+                    </p>
+                    <div className={submitted ? 'pointer-events-none opacity-90' : undefined}>
+                      {injectFigureGridCallbacks(problem.figureNode, {
+                        onStateChange: (state) => recordInteractiveState(item.problemId, state),
+                        onSubmit: (state) => recordInteractiveState(item.problemId, state),
+                      })}
+                    </div>
+                    {submitted && (
+                      <div className="mt-3 flex items-center gap-2">
+                        {isCorrect ? (
+                          <span className="text-emerald-500 text-lg">✓</span>
+                        ) : (
+                          <span className="text-rose-400 text-lg">✗</span>
+                        )}
+                        <span
+                          className="text-xs font-semibold"
+                          style={{ color: isCorrect ? '#065f46' : '#b91c1c' }}
+                        >
+                          {isCorrect ? '作答正确' : '作答有误，请回顾题解'}
+                        </span>
+                      </div>
+                    )}
+                    {!submitted && !interactiveTouched[item.problemId] && (
+                      <p className="mt-2 text-xs text-amber-600">尚未开始作答</p>
+                    )}
+                    {!submitted && interactiveTouched[item.problemId] && (
+                      <p className="mt-2 text-xs font-medium text-indigo-600">已记录作答，可交卷</p>
+                    )}
+                  </div>
+                ) : (
                 <div className="rounded-xl p-3" style={{ background: submitted ? 'transparent' : '#f8fafc', border: submitted ? 'none' : '1px solid #e2e8f0' }}>
                   {/* Question prompt */}
                   {problem.finalQ && (
@@ -450,6 +533,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     </p>
                   )}
                 </div>
+                )}
               </div>
             )
           })}

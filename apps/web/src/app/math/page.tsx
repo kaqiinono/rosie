@@ -12,6 +12,24 @@ import type { CourseCardData } from '@rosie/core'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/47',
+    title: '方格中的秘密探险',
+    description: '数连、数桥、数方，再加上不等号、无马、窗口、对角线、锯齿等变型数独 —— 动手在格子里拼出答案。',
+    icon: '🧩',
+    lectureNum: '第 47 讲',
+    tags: ['方格谜题', '数连·数桥·数方·变型数独', '30 道互动题'],
+    variant: 'blue',
+  },
+  {
+    href: '/math/ny/46',
+    title: '抽屉原理与最不利探险',
+    description: '用抽屉原理和最不利原则，解决各种"至少……才能保证"的难题。',
+    icon: '🗄️',
+    lectureNum: '第 46 讲',
+    tags: ['抽屉原理', '最不利原则·保证问题', '49 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/44',
     title: '统筹优化探险',
     description: '合理安排时间、减少等候、过河过桥、烙饼刷漆与最短路径 —— 生活中的统筹问题。',
