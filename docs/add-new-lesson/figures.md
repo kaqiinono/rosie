@@ -85,31 +85,43 @@ export default function LessonFig2() {
 
 **当 `docs/math/lessons/N.md` 的题目正文里内联了 tsx 组件代码块**（例如数连/数桥/数方、各类变型数独的
 `<ShulianGrid .../>`、`<ChuangkouSudokuGrid .../>` 等），这些组件是**可交互、自带「检查/重置」与结果反馈**的
-完整题目载体，处理方式与普通 `figureNode` 不同。**按下列步骤从 N.md 代码块新建，不要打开旧讲次目录对照。**
+完整题目载体，处理方式与普通 `figureNode` 不同。
+
+### 目录与文件命名（通用约定）
+
+交互组件**不要**硬编码叫 `gong/`——那是第 47 讲「宫格谜题」的历史目录名。新讲次按**题型语义**自建子目录：
+
+| 占位符 | 含义 | 示例 |
+|--------|------|------|
+| `<子目录>/` | 该讲所有交互组件的根目录 | 47 讲：`gong/`；新宫格讲次可用 `grids/`；其它题型用 `puzzle/`、`shapes/` 等 |
+| `create-interactive-problem.tsx` | 工厂文件（把 Grid + checker 收成 `Problem` 字段） | 47 讲历史文件叫 `create-gong-problem.tsx`，新讲次用通用名即可 |
+| `makeXxxProblem(config)` | 每种组件导出一个工厂函数 | 47 讲历史叫 `gongShulian`，新讲次用 `makeShulianProblem` 等 |
+| `<子目录>.css` | 组件专用 CSS（变量 + 结构类） | 47 讲：`gong/gong.css`（`--gong-*`、`.gong-table`）；新讲次可用 `grids/grids.css`（`--grid-*`） |
+
+> **复制骨架（可选）：** 若新讲次也是方格/数独类谜题，可复制 `lesson47/gong/` **整目录**为起点，复制后**重命名子目录**为你的 `<子目录>/`，并批量替换 CSS 前缀（`gong` → `grids` 等）。`ProblemDetail` 仍用 `components.md` **模板 B**，不必读 lesson47 的题面数据。
 
 ### 铁律：严格按代码块使用组件与入参
 
-- 组件放在 `packages/math/src/components/lesson{N}/<子目录>/`（子目录名自定，如 `gong/`），
+- 组件放在 `packages/math/src/components/lesson{N}/<子目录>/`，
   **入参类型定义在该目录的 `utils/types.ts`**。录入时**逐字照搬 N.md 代码块里的组件名与 props**
   （`rows` / `cells` / `hIneq` / `vIneq` / `window` / `hLine` / `vLine` …），**不得自己发明 prop、改名或改值**。
 - 组件用**具名导出**。不要去 import 该目录的 `index.ts` 桶文件——桶文件可能 re-export 仅 demo 用、实际不存在的文件。
 - 数据文件含 JSX，**必须用 `.tsx`** 后缀（`lesson{N}-data.tsx`）。
-- **修正明显笔误**：代码块偶有手误（如第47讲无马数独里 `[,4,2]` 这种缺首元素的稀疏数组），照搬会破坏
-  tuple 类型且渲染异常——按上下文（所在行号）补成 `[6,4,2]`，并在交付说明里指出。
+- **修正明显笔误**：代码块偶有手误（如稀疏数组缺首元素 `[,4,2]`），按上下文补全并在交付说明里指出。
 
-### 用 `create-gong-problem` 工厂封装组件 + 自动判分
+### 用工厂封装组件 + 自动判分
 
 这类题**没有 `finalAns` 数字答案**，而是**靠组件自己判对错**。在
-`packages/math/src/components/lesson{N}/<子目录>/create-gong-problem.tsx`（文件名可自定）里为每种谜题导出一个工厂函数，数据文件只调工厂、不写 JSX：
+`packages/math/src/components/lesson{N}/<子目录>/create-interactive-problem.tsx` 里为每种谜题导出一个工厂函数，数据文件只调工厂、不写 JSX：
 
-- 工厂为每种谜题导出一个 `gongXxx(config)`，内部 `<XxxGrid {...config} />` 建元素、`makeXxxChecker(config)`（在
+- 工厂为每种谜题导出一个 `makeXxxProblem(config)`，内部 `<XxxGrid {...config} />` 建元素、`makeXxxChecker(config)`（在
   同目录 `checkers.ts`）造判分函数，返回一组 `Problem` 字段：`type:'none'`、`finalQ/finalUnit:''`、`finalAns:0`、
   `figureNode`（组件）、**`checkAnswer`**（核心：组件提交时按谜题规则判对错）。
 - 数据文件里**用展开语法**填进每道题，props 由 `config` 上下文收窄（`[[1,1,3]]`→`CellCoord[]`、`'<'`→`InequalityOp`，无需 `as`）：
   ```tsx
-  { id: '47-L1', title: '例题1 · 数连', tag: 'type1', tagLabel: '数连', difficulty: 2,
+  { id: '48-L1', title: '例题1 · 数连', tag: 'type1', tagLabel: '数连', difficulty: 2,
     text: RULE_SHULIAN, analysis: ['先点数字格选颜色再连线', …],
-    ...gongShulian({ rows: [5], cells: [[1,1,3], [1,3,2], …] }) }
+    ...makeShulianProblem({ rows: [5], cells: [[1,1,3], [1,3,2], …] }) }
   ```
 - **答题/判分链路（勿重复造轮子）**：`Problem.checkAnswer`（`@rosie/core`）+ 共享
   `utils/check-problem-answer.ts` + `hooks/useProblemAnswer.ts` + `components/shared/injectFigureSubmit.tsx`
@@ -117,21 +129,20 @@ export default function LessonFig2() {
   **`components.md` 模板 B**（`useProblemAnswer` + `QuestionLayout` + `injectFigureGridCallbacks`），答对自动 `handleSolve`、答错记错题。
 - `pretest` 没有就 `pretest: []`，侧边栏 / HomePage 模块 / FilterPanel sourceBtns / alltest 的 source Set
   里都**不要**列 `pretest`、`supplement`（按该讲真实存在的 section 来配）。
-- `PROBLEM_TYPES` 按**谜题种类**分（例如数连/数桥/数方/不等号/无马/窗口/常规/对角线/锯齿），
-  每题 `tag` 对应其谜题类型，难度按棋盘规模/复杂度评（4×4≈1–2，5×5≈2–3，6×6≈3–4，9×9≈4–5）。
+- `PROBLEM_TYPES` 按**谜题种类**分，每题 `tag` 对应其谜题类型，难度按棋盘规模/复杂度评（4×4≈1–2，5×5≈2–3，6×6≈3–4，9×9≈4–5）。
 
 ### ⚠️ 组件依赖的 CSS 跟组件走（green build ≠ 渲染正常）
 
-这类组件常引用一组 **CSS 变量 + 结构类**（如 `--gong-*` 变量与 `.gong-table` / `.gong-cell` 等）。这些**不是 Tailwind 工具类**，未定义则组件渲染成
+这类组件常引用一组 **CSS 变量 + 结构类**（如 `--grid-*` 变量与 `.grid-table` / `.grid-cell` 等；47 讲历史实现为 `--gong-*` / `.gong-*`）。这些**不是 Tailwind 工具类**，未定义则组件渲染成
 无边框无尺寸的一坨——且 `pnpm build` **不会报错**。**正确做法是让样式随包走，不要塞进 app 的 `globals.css`：**
 
 1. 枚举组件用到的所有 token：
    ```bash
-   grep -rho "var(--xxx-[a-z0-9-]*)" packages/math/src/components/lesson{N}/<子目录>/ | sort -u
-   grep -rho "xxx-[a-z0-9-]*"        packages/math/src/components/lesson{N}/<子目录>/ | sort -u
+   grep -rho "var(--[a-z0-9-]*)" packages/math/src/components/lesson{N}/<子目录>/ | sort -u
+   grep -rho "\.[a-z][a-z0-9-]*"      packages/math/src/components/lesson{N}/<子目录>/ | sort -u
    ```
-2. 在**组件子目录内**新建 `<子目录>.css`，写 `:root { --xxx-*: … }` 变量与各结构类
-   样式（宽高、`border-collapse`、单元格边框、宫界粗线等），并在该子目录**被所有组件共用的文件**（如 `shared.tsx`）顶部 `import './xxx.css'`。
+2. 在**组件子目录内**新建 `<子目录>.css`，写 `:root { --<前缀>-*: … }` 变量与各结构类
+   样式，并在该子目录**被所有组件共用的文件**（如 `shared.tsx`）顶部 `import './<子目录>.css'`。
 3. 跑 `pnpm dev` **真机打开新讲次页面**确认组件能正常显示、能点选、能「检查」。
 
 ---

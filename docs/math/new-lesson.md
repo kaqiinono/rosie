@@ -20,4 +20,5 @@
 | 47 | [`lessons/47.md`](lessons/47.md) | 方格中的秘密（二） |
 
 > 新增一讲：在 `docs/math/lessons/` 下新建 `N.md`，按模板填入题目，然后跑 `/add-lesson N`。
-> 完整生成流程见 [`docs/add-new-lesson.md`](../add-new-lesson.md)。
+> **操作说明（准备什么、文字题/图片题怎么交）：** [`how-to-add-lesson.md`](how-to-add-lesson.md)  
+> 完整生成流程（技术索引）：[`docs/add-new-lesson.md`](../add-new-lesson.md)。

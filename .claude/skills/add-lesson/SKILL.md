@@ -78,17 +78,26 @@ trigger: /add-lesson
 
 ### 操作指引（勿读历史讲次）
 
-**禁止**为找模板而去读 `packages/math/src/components/lesson*/` 或其它 `lesson*-data.ts`。
-题目内容**只**来自 `docs/math/lessons/N.md`；代码结构**只**来自 `docs/add-new-lesson/` 详情文件内嵌模板。
+**禁止**为找模板而去读 `packages/math/src/components/lesson*/`（组件有完整内嵌模板，见 `components.md`）。
+题目内容**只**来自 `docs/math/lessons/N.md`；代码结构**只**来自 `docs/add-new-lesson/` 详情文件。
+
+**唯一例外 — 允许复制的骨架：**
+
+| 场景 | 复制什么 | 注意 |
+|------|----------|------|
+| 数据文件 | `lesson35-data.ts` 一个文件 | 只替换题目，不抄 lesson35 的题（见 `data.md`） |
+| 方格/数独类交互题 | `lesson47/gong/` 整目录 | 复制后**重命名**为你的 `<子目录>/`（如 `grids/`），CSS 前缀一并替换；`ProblemDetail` 用模板 B |
+
+其它组件/路由：**不要**读历史讲次目录，用 `components.md` / `routes.md` 内嵌模板。
 
 | 步骤 | 生成什么 | 只改什么（详见对应 md） |
 |------|----------|------------------------|
-| 1 数据 | `utils/lessonN-data.ts(x)` | 按 `data.md` 结构录入题目；替换 `PROBLEM_TYPES` / `TAG_STYLE`；有 JSX 则 `.tsx` |
+| 1 数据 | `utils/lessonN-data.ts(x)` | **复制 lesson35-data.ts** → 替换题目、PROBLEM_TYPES、TAG_STYLE；有 JSX 则 `.tsx` |
 | 2 组件 ×8 | `components/lessonN/*` | 全局替换 `{N}`、`/math/ny/{N}`、`useLesson{N}`；CONFIG 改 emoji/文案/**主题色** |
 | 2 重点 | `ProblemDetail.tsx` | 数字答案 → `components.md` **模板 A**；交互谜题 → **模板 B** + `figures.md` |
 | 3 路由 | `apps/web/.../ny/N/**` | 按 `routes.md` 替换 `{N}`；`[id]` 页一律 `LessonProblemRoutePage` |
 | 3 重点 | `alltest/page.tsx` | `filters` 含 `practice`；`FilterPanel` 传 `onSetPractice` |
-| 4 图形 | 仅 N.md 有 tsx 时 | 按 `figures.md` 新建组件子目录 + CSS，**不要**打开旧讲次目录对照 |
+| 4 图形 | 仅 N.md 有 tsx 时 | 按 `figures.md` 建 `<子目录>/`；方格谜题可复制 `lesson47/gong/` 后重命名 |
 | 5 注册 | 7 处硬编码 | 按 `registration.md` 逐项追加 `{N}` 条目 |
 
 **主题色**：在 AppHeader / Sidebar / BottomNav / ProblemDetail / FilterPanel.theme 五处用**同一套** Tailwind 色系（如 `sky`、`amber`、`fuchsia`）。

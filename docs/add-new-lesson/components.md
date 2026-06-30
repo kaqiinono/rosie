@@ -25,7 +25,7 @@
 | `Sidebar.tsx` | CONFIG | `basePath`、`[主题色]`；有 supplement 时加 section |
 | `BottomNav.tsx` | CONFIG | `basePath`、`[主题色]` |
 | `ProblemList.tsx` | wrapper | import 里的 `{N}`（收藏/练习次数已内置） |
-| **`ProblemDetail.tsx`** | **是** | 选模板 A 或 B（见下）；改 `[主题色]`、题解区文案色 |
+| `ProblemDetail.tsx` | **是** | 数字答案 → **模板 A**；交互组件 → **模板 B** + `figures.md`（子目录名自定，勿硬编码 `gong/`） |
 | **`HomePage.tsx`** | **是** | Hero 文案、`MODULES` 描述、题型卡片 |
 | `FilterPanel.tsx` | CONFIG | `theme` 色系、`sourceBtns`、`typeBtns`、`tagColors` |
 
@@ -34,7 +34,7 @@
 | N.md 题目特征 | 用哪个模板 |
 |---------------|-----------|
 | 有 `finalAns` / `finalQ` 数字填空 | **模板 A**（下文） |
-| 内联 tsx 组件 + `checkAnswer` 判分 | **模板 B**（下文）+ 必读 `figures.md` |
+| N.md 内联 tsx 组件 + `checkAnswer` 判分 | **模板 B**（下文）+ 必读 `figures.md`（交互组件放 `lesson{N}/<子目录>/`，名称按题型自定） |
 | 有 `rows`/`rcols` 倍比图 | **模板 A** + `figures.md` 图表插槽说明 |
 
 ---
@@ -346,7 +346,7 @@ export default function ProblemDetail({
 
 ### 模板 B — 交互组件题（无数字答案）
 
-当 N.md 题目内联 tsx 且数据里带 `checkAnswer` 时使用。组件目录与工厂写法见 `figures.md`。
+当 N.md 题目内联 tsx 且数据里带 `checkAnswer` 时使用。组件目录与工厂写法见 `figures.md`（子目录名按题型语义命名，不必叫 `gong/`）。
 
 ```tsx
 'use client'
