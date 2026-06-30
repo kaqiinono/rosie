@@ -33,7 +33,13 @@ export default function ReadingIndexPage() {
   )
 
   const cards = useMemo(() => {
-    return readingPassages.map((p) => {
+    const num = (s: string) => parseInt(s.match(/\d+/)?.[0] ?? '0', 10)
+    const sorted = [...readingPassages].sort((a, b) => {
+      if (a.stage !== b.stage) return b.stage.localeCompare(a.stage)
+      if (a.unit !== b.unit) return num(b.unit) - num(a.unit)
+      return num(b.lesson) - num(a.lesson)
+    })
+    return sorted.map((p) => {
       const lessonWords = vocab.filter((w) => w.unit === p.unit && w.lesson === p.lesson)
       const mastered = lessonWords.reduce((n, w) => {
         const info = masteryMap[wordKey(w)]

@@ -18,6 +18,7 @@
 |------|------|------|
 | 46 | [`lessons/46.md`](lessons/46.md) | 抽屉原理与最不利原则 |
 | 47 | [`lessons/47.md`](lessons/47.md) | 方格中的秘密（二） |
+| 49 | [`lessons/49.md`](lessons/49.md) | 加减法的速算与巧算 |
 
 > 新增一讲：在 `docs/math/lessons/` 下新建 `N.md`，按模板填入题目，然后跑 `/add-lesson N`。
 > 完整生成流程见 [`docs/add-new-lesson.md`](../add-new-lesson.md)。

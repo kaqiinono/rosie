@@ -193,6 +193,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
   const [lastStarsEarned, setLastStarsEarned] = useState(0)
+  // Actual ⭐ awarded during the current quiz run (main pass + reinforcement/rescue + 连对加成).
+  // The done-screen "获得 N 颗星星" must equal this, NOT a base-point recompute — otherwise it
+  // is silently capped at the main-round target and never reflects the bonus rounds.
+  const starsAwardedThisRunRef = useRef(0)
   const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
   // 🎈 帮助按钮：每揭一个字母 helpClicks[wordKey] += 1；练习结束后按计数追加 Type-C 巩固题。
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
@@ -337,6 +341,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setCurQ(0)
     setScore(0)
     setLastStarsEarned(0)
+    starsAwardedThisRunRef.current = 0
     setHelpClicks({})
     setReinforcementAppended(false)
     setMainPassSnapshot(null)
@@ -367,6 +372,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       }
       if (info.finalCorrect) {
         const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
+        starsAwardedThisRunRef.current += amount
         void awardStars('red', amount)
       }
     },
@@ -477,14 +483,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       }
     }
     recordBatch(masteryBatch)
-    // Stars are already awarded per-question via handleAnswer above.
-    // We only surface a tally here for the "done" screen.
-    const starsFromThisRun = quizResultBuffer.current.reduce((sum, r, idx) => {
-      if (!r.correct) return sum
-      const t = quizQs[idx]?.type
-      return sum + (t === 'C' || t === 'D' ? 2 : 1)
-    }, 0)
-    setLastStarsEarned(starsFromThisRun)
+    // Stars are already awarded per-question via handleAnswer above. Surface the REAL running
+    // total here (main pass + reinforcement/rescue + 连对加成) so "获得 N 颗星星" matches
+    // "本次已得". A base-point recompute would miss the bonus rounds and cap at the target.
+    setLastStarsEarned(starsAwardedThisRunRef.current)
     quizResultBuffer.current = []
     setPhase('done')
   }, [curQ, quizQs, helpClicks, reinforcementAppended, mainPassSnapshot, selectedDate, currentSubTask, vocab, masteryMap, updateDayProgress, recordBatch, rescue])

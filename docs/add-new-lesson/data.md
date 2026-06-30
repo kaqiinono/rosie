@@ -21,9 +21,12 @@ export const PROBLEMS: ProblemSet = {
 export const PROBLEM_TYPES = [...]
 export const TYPE_STYLE = {...}
 export const TAG_STYLE = {...}
+export const TYPE_TIP = {...}   // 可选：按题型(tag)的贴题口诀，详情页底部显示，见 components.md「tip 口诀框」
 ```
 
 > `PROBLEM_TYPES` / `TYPE_STYLE` / `TAG_STYLE` 的字段含义与首页文案提取，见 `components.md`「HomePage 内容提取」。
+> 想在详情页底部显示口诀时，再导出 `TYPE_TIP: Record<string, string>`（key 与 `PROBLEM_TYPES` 的 `tag`
+> 对应，每个题型一句贴题口诀）；不需要就不导出。`LESSON_TIP` 则是整讲一句话总结（首页/summary 用），别混用。
 
 ---
 
