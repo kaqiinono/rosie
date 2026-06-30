@@ -20,31 +20,31 @@
 
 **lesson35（倍比图 + 拆解图）**：无需传这两个 prop，默认渲染。
 
-**新讲次有流程图**（示例）：
+**新讲次有流程图**（示例）：图表 props 挂在**该讲**的 `ProblemDetail` 上；路由仍用 `LessonProblemRoutePage`，静态 props 走 `detailProps`：
+
 ```tsx
 // apps/web/src/app/math/ny/36/lesson/[id]/page.tsx
-import Lesson36Flowchart from '@rosie/math/components/lesson36/Lesson36Flowchart'
+import LessonProblemRoutePage from '@rosie/math/components/shared/LessonProblemRoutePage'
+import { PROBLEMS, LESSON_TIP } from '@rosie/math/utils/lesson36-data'
+import ProblemDetail from '@rosie/math/components/lesson36/ProblemDetail'
 
-return (
-  <ProblemDetail
-    problem={problem}
-    tip={LESSON_TIP}
-    rightDiagram={<Lesson36Flowchart problem={problem} />}
-    leftDiagram={null}   // 明确不显示左列图表
-  />
-)
+export default function LessonProblemPage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <LessonProblemRoutePage
+      params={params}
+      basePath="/math/ny/36"
+      section="lesson"
+      problems={PROBLEMS.lesson}
+      Detail={ProblemDetail}
+      detailProps={{ tip: LESSON_TIP }}
+    />
+  )
+}
 ```
 
-**新讲次无任何图表**：
-```tsx
-return (
-  <ProblemDetail
-    problem={problem}
-    leftDiagram={null}
-    rightDiagram={null}
-  />
-)
-```
+在 `lesson36/ProblemDetail.tsx` 内按 `problem` 渲染 `rightDiagram` / `leftDiagram`（见该文件现有实现）。
+
+**新讲次无任何图表**：在 `ProblemDetail` 内不传图表插槽，或显式 `leftDiagram={null}`、`rightDiagram={null}`。
 
 **新建图表组件的规范**：在 `packages/math/src/components/lessonN/` 下新建 `LessonNXxxDiagram.tsx`，接收 `problem: Problem` 作为 prop，返回图表 JSX。图表组件内部不依赖任何特定 Provider，只读取 `problem` 数据。
 

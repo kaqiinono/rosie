@@ -72,16 +72,18 @@ packages/math/src/components/lessonN/
   [ ] HomePage.tsx
   [ ] FilterPanel.tsx                    — createFilterPanel 工厂
   [ ] ProblemList.tsx
-  [ ] ProblemDetail.tsx
+  [ ] ProblemDetail.tsx                  — 含 LessonProblemDetailHeader + LessonProblemNavBar + 导航 props
   [ ] Figure/ 或 <子目录>/               — 仅有图形/交互题时
 
 apps/web/src/app/math/ny/N/
   [ ] layout.tsx   page.tsx
-  [ ] lesson/page.tsx       lesson/[id]/page.tsx
+  [ ] lesson/page.tsx
+  [ ] lesson/[id]/page.tsx 等            — 使用 LessonProblemRoutePage（勿手写 parseInt）
   [ ] homework/page.tsx     homework/[id]/page.tsx
   [ ] workbook/page.tsx     workbook/[id]/page.tsx
   [ ] pretest/page.tsx      pretest/[id]/page.tsx
-  [ ] alltest/page.tsx      mistakes/page.tsx
+  [ ] alltest/page.tsx                   — filters 含 practice + onSetPractice
+  [ ] mistakes/page.tsx
   [ ] supplement/page.tsx   supplement/[id]/page.tsx   — 仅有补充题时
 
 入口注册（最易遗漏，逐项核对 registration.md）：

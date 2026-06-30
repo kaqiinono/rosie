@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
@@ -14,13 +14,14 @@ import {
   allDifficultiesSelected,
   type ProblemDifficulty,
 } from '@rosie/core'
-import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
-import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
-import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
-import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
-import { useStarHud } from '@rosie/rewards'
-import { StarProgressBar } from '@rosie/rewards'
+import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import ProblemPracticeSession, {
+  SEA_SKIN,
+  getBadgeStyle,
+  getMasteryLabel,
+  formatDate,
+} from '@rosie/math/components/shared/ProblemPracticeSession'
 
 // ── Ocean animation styles ─────────────────────────────────────────────────────
 
@@ -180,50 +181,6 @@ function getCardStyle(count: number): React.CSSProperties {
   return { ...base, border: '1.5px solid rgba(255,209,102,0.82)', boxShadow: '0 0 24px rgba(255,209,102,0.28), 0 0 50px rgba(255,185,50,0.12), 0 2px 12px rgba(0,0,0,0.25)' }
 }
 
-function getBadgeStyle(count: number): React.CSSProperties {
-  if (count === 0) return { background: 'rgba(0,229,255,0.07)', color: 'rgba(90,142,176,0.8)', border: '1.5px solid rgba(0,229,255,0.15)', boxShadow: 'none' }
-  if (count === 1) return { background: 'rgba(0,212,180,0.12)', color: '#00d4b4', border: '1.5px solid rgba(0,212,180,0.4)', boxShadow: '0 0 6px rgba(0,212,180,0.15)' }
-  if (count === 2) return { background: 'rgba(0,229,255,0.13)', color: '#00e5ff', border: '1.5px solid rgba(0,229,255,0.55)', boxShadow: '0 0 8px rgba(0,229,255,0.2)' }
-  return { background: 'rgba(255,209,102,0.14)', color: '#ffd166', border: '1.5px solid rgba(255,209,102,0.6)', boxShadow: '0 0 10px rgba(255,185,50,0.25)' }
-}
-
-function getMasteryLabel(count: number): string {
-  if (count === 0) return '·'
-  if (count === 1) return '🥚'
-  if (count === 2) return '🐛'
-  return '🦋'
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatDate(iso: string): string {
-  const d = new Date(iso)
-  const diffDays = Math.floor((Date.now() - d.getTime()) / 86400000)
-  if (diffDays === 0) return '今天'
-  if (diffDays === 1) return '昨天'
-  if (diffDays < 7) return `${diffDays}天前`
-  return `${d.getMonth() + 1}/${d.getDate()}`
-}
-
-// Section weights for random practice (higher = more likely to be picked)
-// supplement is excluded entirely; lesson has highest priority
-const SECTION_WEIGHT: Record<string, number> = {
-  lesson: 4,
-  pretest: 3,
-  homework: 2,
-  workbook: 1,
-}
-
-function pickWeighted(items: SeaProblem[]): SeaProblem {
-  const total = items.reduce((s, sp) => s + (SECTION_WEIGHT[sp.section] ?? 1), 0)
-  let r = Math.random() * total
-  for (const sp of items) {
-    r -= SECTION_WEIGHT[sp.section] ?? 1
-    if (r <= 0) return sp
-  }
-  return items[items.length - 1]
-}
-
 // ── Paginated problem grid ────────────────────────────────────────────────────
 
 function SeaGrid({
@@ -303,10 +260,11 @@ function SeaGrid({
                   >
                     {SOURCE_LABELS[section] ?? section}
                   </span>
+                  <PracticeCountBadge count={count} />
                 </div>
-                {count > 0 && (
+                {count > 0 && lastSolved && (
                   <div className="mt-1.5 text-[10px]" style={{ color: 'rgba(90,142,176,0.6)' }}>
-                    练过 {count} 次{lastSolved ? ` · ${formatDate(lastSolved)}` : ''}
+                    上次 {formatDate(lastSolved)}
                   </div>
                 )}
               </div>
@@ -370,386 +328,6 @@ function SeaGrid({
         </div>
       )}
     </>
-  )
-}
-
-// ── Practice Problem Renderer ─────────────────────────────────────────────────
-
-function PracticeProblem({
-  sp,
-  solveCount,
-  solvedAt,
-  onSolve,
-}: {
-  sp: SeaProblem
-  solveCount: Record<string, number>
-  solvedAt: Record<string, string>
-  onSolve: (id: string) => Promise<number>
-}) {
-  const { problem, lessonId, section } = sp
-  const lesson = SEA_LESSON_MAP[lessonId]
-  const count = solveCount[problem.id] ?? 0
-  const tagStyle = lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'
-  const interactive = isInteractiveProblem(problem)
-  const { awardStars } = useStarHud()
-
-  const awardSeaStar = useCallback((origin?: HTMLElement) => {
-    const rect = origin?.getBoundingClientRect()
-    void awardStars(
-      'blue',
-      1,
-      rect ? { origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } } : undefined,
-    )
-  }, [awardStars])
-
-  const { answer, setAnswer, feedback, submit, check, clearFeedback } = useProblemAnswer(
-    problem,
-    {
-      handleSolve: (id) => {
-        void onSolve(id)
-      },
-      addWrong: () => {},
-    },
-    {
-      onCorrect: () => {
-        if (interactive) awardSeaStar()
-      },
-    },
-  )
-
-  const figure = useMemo(
-    () =>
-      interactive
-        ? injectFigureGridCallbacks(problem.figureNode, {
-            onSubmit: submit,
-            onStateChange: clearFeedback,
-          })
-        : problem.figureNode,
-    [interactive, problem.figureNode, submit, clearFeedback],
-  )
-
-  const displayFeedback = feedback
-    ? {
-        ok: feedback.ok,
-        text: feedback.ok ? '🎉 完全正确！+1 ☀️ 蓝太阳' : feedback.message,
-      }
-    : null
-
-  function checkAnswer(e?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>) {
-    const result = check()
-    if (result.ok && !interactive) {
-      const target = e && 'currentTarget' in e ? (e.currentTarget as HTMLElement) : undefined
-      awardSeaStar(target)
-    }
-  }
-
-  const question = (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex flex-wrap gap-1.5 mb-2">
-        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${tagStyle}`}>
-          {problem.tagLabel}
-        </span>
-        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.badgeClass ?? 'bg-gray-100 text-gray-600'}`}>
-          {lesson?.icon} {lesson?.shortTitle}
-        </span>
-        <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-500">
-          {SOURCE_LABELS[section] ?? section}
-        </span>
-      </div>
-      <div
-        className="mb-3.5 rounded-lg border-l-4 border-cyan-300 bg-cyan-50/60 px-3.5 py-3 text-sm leading-relaxed text-slate-700 [&>strong]:font-bold [&>strong]:text-slate-900"
-        dangerouslySetInnerHTML={{ __html: problem.text }}
-      />
-      {figure && <div>{figure}</div>}
-      {interactive && displayFeedback?.text && (
-        <div className={`text-[13px] font-medium ${displayFeedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
-          {displayFeedback.text}
-        </div>
-      )}
-    </div>
-  )
-
-  const solution = (
-    <div className="mb-3.5 rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50 p-3.5">
-      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-amber-700">
-        🔍 题型分析
-      </div>
-      <ul className="flex flex-col gap-1.5">
-        {problem.analysis.map((a, i) => (
-          <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-amber-900">
-            <span className="shrink-0">💡</span>
-            {a}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-
-  const answerDom = interactive ? (
-    <div className="flex items-center gap-2 text-xs text-gray-400">
-      <span style={getBadgeStyle(count)} className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
-        {getMasteryLabel(count)}
-      </span>
-      <span>练过 {count} 次</span>
-      {solvedAt[problem.id] && <span>· 上次 {formatDate(solvedAt[problem.id])}</span>}
-      <Link href={sp.href} className="ml-auto text-cyan-500 no-underline hover:text-cyan-300 transition-colors">
-        查看原题 →
-      </Link>
-    </div>
-  ) : (
-    <>
-      <div className="mb-3 flex items-center gap-2">
-        <div className="h-px flex-1 bg-gray-200" />
-        <div className="whitespace-nowrap text-xs font-semibold text-gray-400">✏️ 写出答案</div>
-        <div className="h-px flex-1 bg-gray-200" />
-      </div>
-      <div className="mb-3 rounded-lg border border-dashed border-gray-200 bg-gray-50 p-3.5">
-        <div className="text-[13px] text-gray-600">{problem.finalQ}</div>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-          <input
-            type="number"
-            className="w-[72px] rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-center text-sm text-gray-800 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
-            placeholder="？"
-            value={answer}
-            onChange={e => setAnswer(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && checkAnswer(e)}
-          />
-          <span className="text-gray-600">{problem.finalUnit}</span>
-          <button
-            onClick={e => checkAnswer(e)}
-            className="cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-semibold text-white transition-all active:scale-95"
-            style={{ background: 'linear-gradient(135deg, #0891b2, #0284c7)', boxShadow: '0 3px 10px rgba(8,145,178,0.35)' }}
-          >
-            检查答案
-          </button>
-        </div>
-        {displayFeedback && (
-          <div className={`mt-2 text-[13px] font-medium ${displayFeedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
-            {displayFeedback.text}
-          </div>
-        )}
-      </div>
-      <div className="flex items-center gap-2 text-xs text-gray-400">
-        <span style={getBadgeStyle(count)} className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
-          {getMasteryLabel(count)}
-        </span>
-        <span>练过 {count} 次</span>
-        {solvedAt[problem.id] && <span>· 上次 {formatDate(solvedAt[problem.id])}</span>}
-        <Link href={sp.href} className="ml-auto text-cyan-500 no-underline hover:text-cyan-300 transition-colors">
-          查看原题 →
-        </Link>
-      </div>
-    </>
-  )
-
-  return (
-    <div className="practice-overlay-enter">
-      <div className="mb-3 text-[15px] font-bold text-gray-800">{problem.title}</div>
-      <QuestionLayout question={question} solution={solution} answer={answerDom} />
-    </div>
-  )
-}
-
-// ── Practice Overlay ──────────────────────────────────────────────────────────
-
-function PracticeOverlay({
-  pool,
-  solveCount,
-  solvedAt,
-  onSolve,
-  onEnd,
-}: {
-  pool: SeaProblem[]
-  solveCount: Record<string, number>
-  solvedAt: Record<string, string>
-  onSolve: (id: string) => Promise<number>
-  onEnd: () => void
-}) {
-  const pickNext = useCallback(() => {
-    if (pool.length === 0) return null
-    const eligible = pool
-
-    // Group problems by type key (lessonId::tag)
-    const byType = new Map<string, SeaProblem[]>()
-    for (const sp of eligible) {
-      const key = `${sp.lessonId}::${sp.problem.tag}`
-      const arr = byType.get(key)
-      if (arr) arr.push(sp)
-      else byType.set(key, [sp])
-    }
-
-    // Classify: fresh types (zero practiced) vs partially-practiced types
-    const freshUntried: SeaProblem[] = []
-    const partialUntried: SeaProblem[] = []
-    for (const problems of byType.values()) {
-      const untried = problems.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0)
-      if (untried.length === 0) continue
-      const anyPracticed = problems.some(sp => (solveCount[sp.problem.id] ?? 0) > 0)
-      if (anyPracticed) partialUntried.push(...untried)
-      else freshUntried.push(...untried)
-    }
-
-    // Priority 1: unpracticed from fresh types (section-weighted)
-    if (freshUntried.length > 0) return pickWeighted(freshUntried)
-    // Priority 2: unpracticed from partially-practiced types
-    if (partialUntried.length > 0) return pickWeighted(partialUntried)
-    // Priority 3: all done — any eligible problem, section-weighted
-    return pickWeighted(eligible)
-  }, [pool, solveCount])
-
-  const [current, setCurrent] = useState<SeaProblem | null>(() => pickNext())
-  const [count, setCount] = useState(0)
-
-  function nextProblem() {
-    setCurrent(pickNext())
-    setCount(c => c + 1)
-  }
-
-  if (!current) {
-    return (
-      <div className="sea-root fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(2,16,30,0.96)', backdropFilter: 'blur(16px)' }}>
-        <div className="practice-overlay-enter mx-4 rounded-3xl p-10 text-center" style={{ background: 'rgba(5,27,55,0.95)', border: '1px solid rgba(0,229,255,0.25)', boxShadow: '0 0 40px rgba(0,229,255,0.15)' }}>
-          <div className="mb-3 text-5xl">🌊</div>
-          <div className="text-lg font-bold text-[#c8e6f5]">没有符合条件的题目</div>
-          <div className="mt-1 text-sm" style={{ color: 'rgba(90,142,176,0.8)' }}>调整筛选条件再试试</div>
-          <button onClick={onEnd} className="lure-btn mt-6 cursor-pointer rounded-full border-none px-6 py-2.5 text-sm font-bold" style={{ background: 'rgba(0,229,255,0.12)', color: '#00e5ff' }}>
-            返回题海
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className="sea-root fixed inset-0 z-50 flex flex-col"
-      style={{ background: 'linear-gradient(180deg, #020b1c 0%, #041630 50%, #051a3a 100%)', minHeight: '100dvh' }}
-    >
-      {/* Ocean particles — absolute so they stay inside the overlay stacking context */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {PARTICLES.slice(0, 6).map(p => (
-          <div
-            key={p.id}
-            className="absolute bottom-0 rounded-full"
-            style={{
-              left: p.x,
-              width: p.size,
-              height: p.size,
-              background: 'rgba(0,229,255,0.4)',
-              animationName: p.alt ? 'drift-up-alt' : 'drift-up',
-              animationDuration: `${p.dur}s`,
-              animationDelay: `${p.delay}s`,
-              animationTimingFunction: 'linear',
-              animationIterationCount: 'infinite',
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Header */}
-      <div
-        className="relative z-10 flex shrink-0 items-center gap-3 px-4 py-3"
-        style={{
-          background: 'rgba(2,11,28,0.88)',
-          backdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(0,229,255,0.15)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-        }}
-      >
-        <button
-          onClick={onEnd}
-          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-none text-lg font-bold transition-all hover:scale-105"
-          style={{ background: 'rgba(0,229,255,0.08)', color: 'rgba(0,229,255,0.7)', border: '1px solid rgba(0,229,255,0.2)' }}
-        >
-          ×
-        </button>
-        <div className="flex items-center gap-2">
-          <span
-            className="text-[17px] font-extrabold tracking-wide"
-            style={{ color: '#00e5ff', textShadow: '0 0 12px rgba(0,229,255,0.5)' }}
-          >
-            深海随机练
-          </span>
-          {count > 0 && (
-            <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: 'rgba(0,229,255,0.12)', color: 'rgba(0,229,255,0.7)', border: '1px solid rgba(0,229,255,0.2)' }}>
-              已做 {count} 题
-            </span>
-          )}
-        </div>
-        <span className="ml-auto text-[11px] font-medium" style={{ color: 'rgba(90,142,176,0.7)' }}>
-          未做题型优先 ·{' '}
-          {pool.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0).length} 题待探索
-        </span>
-      </div>
-
-      {/* Session star progress */}
-      <div
-        className="relative z-10 shrink-0 px-4 py-2"
-        style={{
-          background: 'rgba(2,11,28,0.7)',
-          borderBottom: '1px solid rgba(0,229,255,0.1)',
-        }}
-      >
-        <div className="mx-auto max-w-[700px]">
-          <StarProgressBar color="blue" target={10} label="本次海上探索" compact />
-        </div>
-      </div>
-
-      {/* Problem — light card floating in the dark */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-4 py-6">
-        <div className="mx-auto max-w-[700px]">
-          {/* depth indicator */}
-          <div className="mb-4 flex items-center gap-2">
-            <div className="flex-1 h-px" style={{ background: 'rgba(0,229,255,0.1)' }} />
-            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: 'rgba(0,229,255,0.35)' }}>
-              ≋ surfaced problem ≋
-            </span>
-            <div className="flex-1 h-px" style={{ background: 'rgba(0,229,255,0.1)' }} />
-          </div>
-          <PracticeProblem
-            sp={current}
-            solveCount={solveCount}
-            solvedAt={solvedAt}
-            onSolve={onSolve}
-          />
-        </div>
-      </div>
-
-      {/* Action bar — extra bottom padding for iOS home indicator */}
-      <div
-        className="relative z-10 flex shrink-0 items-center gap-3 px-4 py-4"
-        style={{
-          background: 'rgba(2,11,28,0.92)',
-          backdropFilter: 'blur(16px)',
-          borderTop: '1px solid rgba(0,229,255,0.12)',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.3)',
-          paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
-        }}
-      >
-        <button
-          onClick={onEnd}
-          className="cursor-pointer rounded-full px-5 py-3 text-[13px] font-semibold transition-all active:scale-95 hover:scale-105"
-          style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1.5px solid rgba(255,255,255,0.15)',
-            color: 'rgba(200,230,245,0.8)',
-          }}
-        >
-          结束
-        </button>
-        <button
-          onClick={nextProblem}
-          className="lure-btn flex-1 cursor-pointer rounded-full py-3 text-[14px] font-extrabold tracking-wide transition-all active:scale-95 hover:scale-[1.02]"
-          style={{
-            background: 'rgba(0,229,255,0.10)',
-            border: '1.5px solid rgba(0,229,255,0.6)',
-            color: '#00e5ff',
-          }}
-        >
-          下一题  →
-        </button>
-      </div>
-    </div>
   )
 }
 
@@ -953,12 +531,13 @@ export default function MathSeaPage() {
       <style dangerouslySetInnerHTML={{ __html: OCEAN_CSS }} />
 
       {practiceMode && (
-        <PracticeOverlay
+        <ProblemPracticeSession
           pool={filtered}
           solveCount={solveCount}
           solvedAt={solvedAt}
           onSolve={handleSolve}
           onEnd={() => setPracticeMode(false)}
+          skin={SEA_SKIN}
         />
       )}
 

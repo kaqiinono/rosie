@@ -1,7 +1,7 @@
 ---
 name: add-lesson
 description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/N.md (template docs/math/new-lesson-template.md), confirms problem counts before entering data, and generates all required files following the on-demand specs under docs/add-new-lesson/.
-version: 3.1.0
+version: 3.2.0
 trigger: /add-lesson
 ---
 
@@ -76,7 +76,8 @@ trigger: /add-lesson
 5. **注册到入口** → 读 [`docs/add-new-lesson/registration.md`](../../../docs/add-new-lesson/registration.md)
    更新 7 处硬编码清单（数学入口/题海/每日计划×2/组卷×3）。**最易遗漏，必逐项核对。**
 
-> 复制结构相近的已有讲次（纯文字参考 lesson41，交互谜题参考 lesson47）再按详情改色/改文案，最快最稳。
+> 复制结构相近的已有讲次（纯文字/数字答案参考 **lesson41**，交互谜题参考 **lesson47**）再按详情改色/改文案，最快最稳。
+> 新讲次的 `ProblemDetail` 必须接入共享 **`LessonProblemDetailHeader`**（收藏 + 练习次数 + 掌握度）与 **`LessonProblemNavBar`**（上一题/下一题）；详情路由用 **`LessonProblemRoutePage`** 壳，勿手写 `parseInt(id)`。
 
 ---
 

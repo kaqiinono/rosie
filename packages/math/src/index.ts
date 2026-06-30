@@ -8,6 +8,7 @@
 export { default as CourseCard } from './components/CourseCard'
 export { default as MathDailyCard } from './components/MathDailyCard'
 export { default as MathSeaCard } from './components/MathSeaCard'
+export { default as MathFavoritesCard } from './components/MathFavoritesCard'
 export { MathFavoritesProvider } from './components/MathFavoritesProvider'
 export { default as MathQuizCard } from './components/MathQuizCard'
 export { default as MathCatalogCard } from './components/MathCatalogCard'

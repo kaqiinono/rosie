@@ -12,11 +12,13 @@ import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge
 import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+export type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
 
 export interface Filters {
   source: Set<string>
   type: Set<string>
   mastery: MasteryFilter
+  practice: PracticeFilter
   difficulty: Set<ProblemDifficulty>
 }
 
@@ -26,6 +28,7 @@ export interface FilterPanelProps {
   filters: Filters
   onToggleFilter: (axis: 'source' | 'type' | 'difficulty', value: string) => void
   onSetMastery: (value: MasteryFilter) => void
+  onSetPractice: (value: PracticeFilter) => void
 }
 
 interface FilterPanelTheme {
@@ -61,11 +64,24 @@ const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
   { key: 'mastered',  label: '✅ 已掌握' },
 ]
 
+const PRACTICE_BTNS: { key: PracticeFilter; label: string }[] = [
+  { key: 'all',         label: '全部' },
+  { key: 'unpracticed', label: '✨ 未练习' },
+  { key: 'practiced',   label: '练过' },
+]
+
 function matchesMastery(count: number, mastery: MasteryFilter): boolean {
   if (mastery === 'all') return true
   if (mastery === 'unstarted') return count === 0
   if (mastery === 'reinforce') return count >= 1 && count < 3
   if (mastery === 'mastered') return count >= 3
+  return true
+}
+
+function matchesPractice(count: number, practice: PracticeFilter): boolean {
+  if (practice === 'all') return true
+  if (practice === 'unpracticed') return count === 0
+  if (practice === 'practiced') return count > 0
   return true
 }
 
@@ -122,7 +138,7 @@ export function createFilterPanel(
     return `${base}/${setName}/${indexInSet + 1}`
   }
 
-  return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
+  return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery, onSetPractice }: FilterPanelProps) {
     const { favorites } = useMathFavoritesContext()
     const [favOnly, setFavOnly] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
@@ -140,6 +156,7 @@ export function createFilterPanel(
         filters.type.has(p.tag) &&
         filters.difficulty.has(p.difficulty) &&
         matchesMastery(solveCount[p.id] ?? 0, filters.mastery) &&
+        matchesPractice(solveCount[p.id] ?? 0, filters.practice) &&
         (!favOnly || favorites.has(p.id)),
     )
     const total = filtered.length
@@ -198,6 +215,16 @@ export function createFilterPanel(
             btnOff={btnOff}
             accentClass={theme.accentClass}
           />
+
+          <div className="mb-2">
+            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📊 练习</div>
+            <div className="flex flex-wrap gap-1.5">
+              {PRACTICE_BTNS.map(b => (
+                <button key={b.key} onClick={() => onSetPractice(b.key)}
+                  className={`${btnBase} ${filters.practice === b.key ? btnOn : btnOff}`}>{b.label}</button>
+              ))}
+            </div>
+          </div>
 
           <div className="mb-2">
             <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>🎯 掌握度</div>

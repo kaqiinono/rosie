@@ -12,6 +12,7 @@ import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import { todayStr } from '@rosie/core'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 
@@ -1267,6 +1268,9 @@ function ProblemCard({
   isReview?: boolean
   onCheck?: () => void
 }) {
+  const { user } = useAuth()
+  const { solveCount } = useMathSolved(user)
+  const practiceCount = solveCount[prob.problemId] ?? 0
   const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
 
   return (
@@ -1321,6 +1325,7 @@ function ProblemCard({
               复习
             </span>
           )}
+          <PracticeCountBadge count={practiceCount} />
         </div>
       </div>
 

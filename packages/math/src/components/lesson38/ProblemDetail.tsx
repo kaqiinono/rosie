@@ -3,22 +3,25 @@
 import { useState, useEffect } from 'react'
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
-import { useRouter } from 'next/navigation'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math/utils/lesson38-data'
 import { useLesson38 } from './Lesson38Provider'
-import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
+import { getMasteryLevel } from '@rosie/core'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
+import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
+import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
 
 interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
   defaultSolutionOpen?: boolean
+  prevHref?: string | null
+  nextHref?: string | null
+  positionLabel?: string
 }
 
-export default function ProblemDetail({ problem, mode = 'full', defaultSolutionOpen = false }: ProblemDetailProps) {
-  const router = useRouter()
+export default function ProblemDetail({ problem, mode = 'full', defaultSolutionOpen = false, prevHref = null, nextHref = null, positionLabel }: ProblemDetailProps) {
   const { solveCount, handleSolve, addWrong } = useLesson38()
   const count = solveCount[problem.id] ?? 0
   const level = getMasteryLevel(count)
@@ -76,22 +79,12 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
   return (
     <div>
       {mode === 'full' && (
-        <div className="border-border-light mb-4 flex items-center gap-2.5 border-b pb-3.5">
-          <button
-            onClick={() => router.back()}
-            className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-gray-100 text-lg transition-colors hover:bg-gray-200"
-          >
-            ‹
-          </button>
-          <div className="flex-1 text-[17px] font-bold">{problem.title}</div>
-          <div
-            className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[level]}`}
-          >
-            {MASTERY_ICON[level]}
-          </div>
-        </div>
+        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} />
       )}
       <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
+      {mode === 'full' && positionLabel && (
+        <LessonProblemNavBar prevHref={prevHref} nextHref={nextHref} positionLabel={positionLabel} />
+      )}
     </div>
   )
 }

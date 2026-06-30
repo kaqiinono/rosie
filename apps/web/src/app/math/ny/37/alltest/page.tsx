@@ -9,6 +9,7 @@ import { ALL_DIFFICULTY_LEVELS } from '@rosie/core'
 import FilterPanel from '@rosie/math/components/lesson37/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
 
 function AlltestContent() {
   const { solveCount } = useLesson37()
@@ -20,6 +21,7 @@ function AlltestContent() {
     type: new Set(['type1', 'type2', 'type3', 'type4', 'type5']),
     difficulty: new Set<ProblemDifficulty>(ALL_DIFFICULTY_LEVELS),
     mastery: 'all' as MasteryFilter,
+    practice: 'all' as PracticeFilter,
   })
 
   useEffect(() => {
@@ -52,6 +54,10 @@ function AlltestContent() {
     setFilters(f => ({ ...f, mastery: value }))
   }
 
+  const setPractice = (value: PracticeFilter) => {
+    setFilters(f => ({ ...f, practice: value }))
+  }
+
   return (
     <FilterPanel
       problems={PROBLEMS}
@@ -59,6 +65,7 @@ function AlltestContent() {
       filters={filters}
       onToggleFilter={toggleFilter}
       onSetMastery={setMastery}
+      onSetPractice={setPractice}
     />
   )
 }

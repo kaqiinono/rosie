@@ -3,7 +3,7 @@
 import { createFilterPanel } from '@rosie/math/components/shared/FilterPanel'
 import ProblemDetail from './ProblemDetail'
 
-export type { Filters, MasteryFilter, FilterPanelProps } from '@rosie/math/components/shared/FilterPanel'
+export type { Filters, MasteryFilter, PracticeFilter, FilterPanelProps } from '@rosie/math/components/shared/FilterPanel'
 
 export default createFilterPanel({
   base: '/math/ny/37',
