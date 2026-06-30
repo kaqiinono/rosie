@@ -143,6 +143,29 @@ const LESSON_DATA: Record<string, ProblemSet> = { /* ...已有 */ 'N': PN }  // 
 
 ---
 
+## 增量补题：给已生成的讲次补一个原本为空的模块
+
+某讲常分多次录入（先给课堂题，后补课后/拓展，再补 summary）。当一个**原本 `[]` 的模块后来有了内容**，
+除了在数据文件里把该模块从 `[]` 换成真正的数组，还要回头更新这些**展示面**（漏了不会报错，
+但模块会在界面「静默消失」）：
+
+| 文件 | 改动 |
+|------|------|
+| `packages/math/src/utils/lessonN-data.ts` | 新增该模块数组，`PROBLEMS.<mod>` 指向它 |
+| `components/lessonN/Sidebar.tsx` | `sections` 加入该模块条目 |
+| `components/lessonN/HomePage.tsx` | `MODULES` 加入该模块卡片 |
+| `components/lessonN/FilterPanel.tsx` | `sourceBtns` 加入该模块来源按钮 |
+| `apps/web/src/app/math/ny/N/alltest/page.tsx` | `source` 初始 `Set` 加入该 section key |
+| `apps/web/src/app/math/page.tsx` | 入口卡片 `tags` 里的总题数（如 `'31 道互动题'`）改成新的合计 |
+
+> 该模块的路由文件（`<mod>/page.tsx` + `<mod>/[id]/page.tsx`）若按「空模块照样生成路由」已存在，
+> 就**不用新建**，它们读 `PROBLEMS.<mod>` 自动显示新题。题海/每日计划/组卷（第五~七步）读的是整个
+> `PROBLEMS`，也会自动包含新题，无需再改。
+> **summary 是非题目模块**：改 summary 时更新 `docs/math/lessons/N.md` 的 `## summary` 和 HomePage 文案
+> （及可选的 `LESSON_TIP`）即可，不涉及上表。
+
+---
+
 ## 第八步：验证
 
 ```bash

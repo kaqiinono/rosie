@@ -18,6 +18,7 @@ import { PROBLEMS as PROBLEMS43, PROBLEM_TYPES as PT43, TAG_STYLE as TS43 } from
 import { PROBLEMS as PROBLEMS44, PROBLEM_TYPES as PT44, TAG_STYLE as TS44 } from './lesson44-data'
 import { PROBLEMS as PROBLEMS46, PROBLEM_TYPES as PT46, TAG_STYLE as TS46 } from './lesson46-data'
 import { PROBLEMS as PROBLEMS47, PROBLEM_TYPES as PT47, TAG_STYLE as TS47 } from './lesson47-data'
+import { PROBLEMS as PROBLEMS49, PROBLEM_TYPES as PT49, TAG_STYLE as TS49 } from './lesson49-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 
 export interface SeaLessonMeta {
@@ -231,6 +232,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: TS47,
     types: PT47.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
     problems: PROBLEMS47,
+  },
+  {
+    id: '49',
+    title: '第49讲·加减法速算与巧算',
+    shortTitle: '49·速算巧算',
+    icon: '🧮',
+    badgeClass: 'bg-rose-100 text-rose-700',
+    tagStyle: TS49,
+    types: PT49.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS49,
   },
 ]
 

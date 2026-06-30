@@ -153,6 +153,20 @@ export default function Sidebar({ problems }: { problems: ProblemSet }) {
 
 > **补充题时**：在 sections 中 workbook 后面加入 `{ key: 'supplement', ... }` 条目。
 
+> ### ⚠️ 空模块的处理（某些讲次缺 pretest / homework / workbook）
+> 数据文件里把空模块设为 `[]` 只是第一步。这些组件按 config 渲染、**不会自动隐藏 0 题模块**，
+> 所以要把空模块从展示面**裁掉**，保持界面干净：
+> - **Sidebar** `sections`：删掉空模块条目（只留有题的 + `alltest`）。
+> - **HomePage** `MODULES`：删掉空模块卡片。
+> - **FilterPanel** `sourceBtns`：删掉空模块来源按钮（见下文 FilterPanel）。
+> - **alltest/page.tsx** 的 `source` 初始 `Set`：只放有题的 section key（见 `routes.md`）。
+>
+> **但 BottomNav 是陷阱**：`LessonBottomNav` 的 tab 写死为 `home/lesson/homework/alltest/mistakes`
+> （`packages/math/src/components/shared/LessonBottomNav.tsx`），**移动端底栏永远显示 lesson 和
+> homework**，无法按讲次裁剪。因此即便 homework 为空，对应的 `homework/page.tsx` 和
+> `homework/[id]/page.tsx` 路由**仍必须生成**（空列表页能正常渲染），否则底栏点进去会 404。
+> 同理 `lesson`/`alltest`/`mistakes` 路由始终要有。
+
 ## `BottomNav.tsx`
 
 ```typescript
@@ -213,7 +227,7 @@ export default function ProblemList({ problems, solveCount, basePath, showSource
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Problem } from '@rosie/core'
-import { TAG_STYLE } from '@rosie/math/utils/lesson{N}-data'
+import { TAG_STYLE, TYPE_TIP } from '@rosie/math/utils/lesson{N}-data'
 import { useLesson{N} } from './Lesson{N}Provider'
 import { getMasteryLevel, MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
@@ -221,10 +235,13 @@ import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
+  tip?: string                  // 可选：覆盖按题型自动选的口诀（见文末「tip 口诀框」）
   defaultSolutionOpen?: boolean
 }
 
-export default function ProblemDetail({ problem, mode = 'full', defaultSolutionOpen = false }: ProblemDetailProps) {
+export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolutionOpen = false }: ProblemDetailProps) {
+  // 口诀按题型走：优先用传入的 tip，否则按 problem.tag 取 TYPE_TIP（见文末「tip 口诀框」）
+  const tipText = tip ?? TYPE_TIP[problem.tag]
   const router = useRouter()
   const { solveCount, handleSolve, addWrong } = useLesson{N}()
   const count = solveCount[problem.id] ?? 0
@@ -305,6 +322,12 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
           </div>
         )}
       </div>
+      {tipText && (
+        <div className="mb-3 rounded-lg bg-[主题色]-50 px-3 py-2.5 text-xs leading-relaxed text-[主题色]-800">
+          💡 <strong>巧算口诀：</strong>
+          {tipText}
+        </div>
+      )}
     </>
   )
 
@@ -330,6 +353,24 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
 
 > **主题色**：每讲替换为对应的 Tailwind 颜色名（如 `amber`、`sky`、`green`），与 AppHeader / Sidebar 的颜色保持一致。
 > **交互组件题（无数字答案）**：`ProblemDetail` 改造方式见 `figures.md`「交互式组件题」。
+
+> **tip 口诀框（可选）· 口诀要贴题，按题型显示**：详情页底部的口诀**应与当前题目的题型相关**，
+> 不要所有题都显示同一段全量口诀。做法是在数据文件里**按题型导出 `TYPE_TIP` 映射**（key = `tag`），
+> `ProblemDetail` 内部用 `const tipText = tip ?? TYPE_TIP[problem.tag]` 自动取对应那一句：
+> ```typescript
+> // lessonN-data.ts —— 每个 type 一句贴题口诀
+> export const TYPE_TIP: Record<string, string> = {
+>   type1: '凑整优先找朋友——把和为整十、整百的数搬到一起先算。',
+>   type2: '去括号看符号——前是「+」里面不变，是「−」里面每个数都变号。',
+>   // ...与 PROBLEM_TYPES 的 tag 一一对应
+> }
+> ```
+> 这样各 `[id]/page.tsx` **无需传 tip**（`<ProblemDetail problem={problem} />` 即可），口诀随题型自动切换
+> （参考 lesson49）。`tip` 入参仅作个别题的覆盖用。`alltest` 走 `createFilterPanel` 工厂——其内部的
+> `ProblemDetail` 同样按 `problem.tag` 取 `TYPE_TIP`，所以综合题库里**也会**按题型显示口诀。
+> 不需要口诀的讲次：不导出 `TYPE_TIP`、不传 `tip`，`{tipText && ...}` 不渲染即可。
+>
+> （注：`LESSON_TIP` 是「整讲一句话总结」，用于首页/summary 文案，不要塞进详情页当每题口诀。）
 
 ## `HomePage.tsx`
 

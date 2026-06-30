@@ -160,6 +160,14 @@ export default function LessonProblemPage({ params }: { params: Promise<{ id: st
 }
 ```
 
+> **可选 · tip 口诀框**：若数据文件按题型导出了 `TYPE_TIP`，详情页**无需改动**——`ProblemDetail`
+> 内部按 `problem.tag` 自动取贴题口诀，`<ProblemDetail problem={problem} />` 原样即可。只有要给个别题
+> **覆盖**口诀时才传 `tip={...}`。口诀务必贴合题型，别用整讲全量口诀。详见 `components.md`「tip 口诀框」。
+
+> **⚠️ 空模块照样生成路由**：即使某讲 `homework`/`workbook`/`pretest` 为空（`[]`），其
+> `page.tsx` + `[id]/page.tsx` **仍要生成**——`LessonBottomNav` 的 tab 写死含 lesson/homework，
+> 移动端底栏会跳转过去，缺文件就 404。空列表页能正常渲染。`lesson`/`alltest`/`mistakes` 始终要有。
+
 ## `alltest/page.tsx`
 
 完整模板（直接复制，替换 `N` 为讲次编号、`lessonN` 为对应标识符）：
@@ -182,7 +190,7 @@ function AlltestContent() {
   const typeParam = searchParams.get('type')
 
   const [filters, setFilters] = useState(() => ({
-    // source: 列出所有实际存在的 section key（pretest/lesson/homework/workbook/supplement）
+    // source: 只列「有题」的 section key（空模块不要放，要和 Sidebar/HomePage/FilterPanel 一致）
     source: new Set(['pretest', 'lesson', 'homework', 'workbook']),
     // type: 列出数据文件中所有 PROBLEM_TYPES 的 tag（type1, type2, ...）
     type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5', 'type6']),

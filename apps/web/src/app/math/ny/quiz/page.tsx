@@ -26,6 +26,7 @@ import { PROBLEMS as P43, PROBLEM_TYPES as PT43 } from '@rosie/math/utils/lesson
 import { PROBLEMS as P44, PROBLEM_TYPES as PT44 } from '@rosie/math/utils/lesson44-data'
 import { PROBLEMS as P46, PROBLEM_TYPES as PT46 } from '@rosie/math/utils/lesson46-data'
 import { PROBLEMS as P47, PROBLEM_TYPES as PT47 } from '@rosie/math/utils/lesson47-data'
+import { PROBLEMS as P49, PROBLEM_TYPES as PT49 } from '@rosie/math/utils/lesson49-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizProblemItem } from '@rosie/math/hooks/useMathQuiz'
 
@@ -88,6 +89,7 @@ const LESSON_META: Array<{
   { id: '44', name: '统筹优化', data: P44, types: PT44 },
   { id: '46', name: '抽屉原理与最不利', data: P46, types: PT46 },
   { id: '47', name: '方格中的秘密', data: P47, types: PT47 },
+  { id: '49', name: '加减法速算与巧算', data: P49, types: PT49 },
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

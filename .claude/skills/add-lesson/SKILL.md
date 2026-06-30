@@ -1,7 +1,7 @@
 ---
 name: add-lesson
-description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/N.md (template docs/math/new-lesson-template.md), confirms problem counts before entering data, and generates all required files following the on-demand specs under docs/add-new-lesson/.
-version: 3.1.0
+description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/N.md (template docs/math/new-lesson-template.md) — creating it from image sources (e.g. docs/math/img/*.HEIC) when only photos are provided — confirms problem counts before entering data, and generates all required files following the on-demand specs under docs/add-new-lesson/.
+version: 3.2.0
 trigger: /add-lesson
 ---
 
@@ -38,6 +38,17 @@ trigger: /add-lesson
 ## 第一步：读取题目并确认总数
 
 读取要处理讲次的 `docs/math/lessons/N.md`（单讲只读这一个文件；不带编号时遍历 `docs/math/lessons/` 全部文件）。
+
+> **题目源不是 markdown，或目录不存在时（常见）：**
+> - **源是图片**（HEIC/JPG/PNG，常放在 `docs/math/img/`）：先转码再读，HEIC 用
+>   `sips -s format jpeg X.HEIC --out /tmp/X.jpg`，然后用 Read 逐张读图提取题目（图片可能旋转，
+>   照常识别）。把提取到的题目**先写成 `docs/math/lessons/N.md`**（结构见 `new-lesson-template.md`），
+>   再继续后续步骤——保证有一份可复核的文字源。
+> - **`docs/math/lessons/` 目录不存在**：直接创建。该目录的历史文件可能被清理过，
+>   `docs/math/new-lesson.md` 索引里登记的 46/47.md 不一定还在——这正常，按需新建 `N.md` 即可，
+>   并在 `new-lesson.md` 索引表追加一行登记本讲。
+> - **某讲分多次补题**（如先给课堂、后给课后/summary）：见「增量补题」——`registration.md` 末尾。
+
 章节 → 数据模块映射：
 
 | 章节 | 模块 | 缺失/为空时 |
