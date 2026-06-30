@@ -70,7 +70,7 @@ export default function BatchAddModal({ defaultStage, onCancel, onConfirm }: Pro
     const xlsx = await import('xlsx')
     const { utils, writeFile } = xlsx.default || xlsx
     const sample = [
-      [defaultStage || '4B', 'Unit 1', 'Lesson 1', 'apple', 'a round fruit', '苹果', '/ˈæpəl/', 'I eat an apple.', 'a-pp-le', 'ap, ple', 'round|red; fruit|gold'],
+      [defaultStage || '4A', 'Unit 1', 'Lesson 1', 'apple', 'a round fruit', '苹果', '/ˈæpəl/', 'I eat an apple.', 'a-pp-le', 'ap, ple', 'round|red; fruit|gold'],
     ]
     const ws = utils.aoa_to_sheet([WORD_TEMPLATE_HEADERS, ...sample])
     ws['!cols'] = [

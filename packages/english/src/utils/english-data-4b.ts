@@ -1,16 +1,19 @@
 import type { WordEntry } from '@rosie/core'
 
 /**
- * 4B vocabulary backup — 223 words across Units 7–12.
- * Generated 2026-06-05 from docs/4B.pdf.
+ * Units 7–12 vocabulary backup — 223 words. Generated 2026-06-05 from docs/4B.pdf.
+ *
+ * NOTE: these words were originally mislabelled stage "4B"; they actually belong
+ * to stage "4A" (which spans Units 1–12). The `stage` field was corrected to "4A".
+ * The file/export names keep the historical `4b` suffix for simplicity.
  *
  * NOT imported by runtime code. The canonical data lives in Supabase
- * `word_entries` table (see docs/4b-upsert.sql for the load script).
+ * `word_entries` table (see docs/sql/4b-upsert.sql for the load script).
  * This file exists for version-control / disaster-recovery / re-seeding.
  */
 const _RAW_WORDS_4B: WordEntry[] = [
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "national park",
@@ -19,7 +22,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Last summer we visited a national park and saw three iguanas."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "iguana",
@@ -28,7 +31,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad showed me a green iguana sitting on a warm rock."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "branch",
@@ -37,7 +40,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "A little bird was singing on a branch of the apple tree."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "jungle",
@@ -46,7 +49,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We saw colourful parrots flying high above the green jungle."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "lay eggs",
@@ -55,7 +58,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our hens lay eggs every morning in the little wooden box."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "sand",
@@ -64,7 +67,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie built a tall sand castle on the sunny beach."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "leaf",
@@ -73,7 +76,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "A tiny caterpillar was eating a green leaf in the garden."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "volcano",
@@ -82,7 +85,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The huge volcano on the island sent smoke high into the sky."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "nest",
@@ -91,7 +94,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Three baby birds were chirping happily in their cosy nest."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "wildlife",
@@ -100,7 +103,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The national park is home to lots of amazing wildlife."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "soil",
@@ -109,7 +112,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We dug holes in the soft soil to plant our sunflower seeds."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "erupt",
@@ -118,7 +121,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The old volcano can still erupt and send out red lava."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "stone",
@@ -127,7 +130,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie picked up a smooth grey stone beside the river."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 1",
     "word": "active",
@@ -136,7 +139,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The active volcano on the island sometimes shoots out hot lava."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "humid",
@@ -145,7 +148,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The jungle air felt very humid and sticky in the afternoon."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "smell",
@@ -154,7 +157,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I love the sweet smell of Mum's freshly baked cookies."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "alive",
@@ -163,7 +166,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The little fish we found in the pond was still alive."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "creature",
@@ -172,7 +175,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "A tiny furry creature was hiding under the garden bench."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "curious",
@@ -181,7 +184,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie is very curious about how baby chicks hatch from eggs."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "liquid",
@@ -190,7 +193,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Hot lava is a red liquid that flows down the volcano."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "massive",
@@ -199,7 +202,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We saw a massive elephant drinking water at the zoo."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "stem",
@@ -208,7 +211,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The sunflower has a long green stem and bright yellow petals."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "slippery",
@@ -217,7 +220,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Be careful, the kitchen floor is very slippery when it's wet."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "trap",
@@ -226,7 +229,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The clever plant can trap little flies inside its leaves."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "sticky",
@@ -235,7 +238,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My fingers got really sticky after eating the honey toast."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "climate",
@@ -244,7 +247,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The jungle has a warm and wet climate all year round."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 2",
     "word": "variety",
@@ -253,7 +256,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The park has a wide variety of beautiful flowers and trees."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 3",
     "word": "sanctuary",
@@ -262,7 +265,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We visited a bird sanctuary and saw many baby pandas being cared for."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 3",
     "word": "success",
@@ -271,7 +274,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie's first school play was a huge success with her parents."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 3",
     "word": "endangered",
@@ -280,7 +283,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Giant pandas are endangered animals that need our care and love."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 3",
     "word": "cause",
@@ -289,7 +292,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Heavy rain can cause the little river to flood the fields."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 7",
     "lesson": "Lesson 3",
     "word": "ocean",
@@ -298,7 +301,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Lots of amazing creatures live deep down in the blue ocean."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "cover",
@@ -307,7 +310,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "She used a blanket to cover the puppy when it was cold."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "battery",
@@ -316,7 +319,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad put a new battery into my noisy toy robot."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "dump",
@@ -325,7 +328,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Don't dump your wet socks on the clean kitchen floor."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "can",
@@ -334,7 +337,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum opened a can of tomato soup for our quick lunch."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "landfill",
@@ -343,7 +346,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Too much plastic from our city ends up in the landfill."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "cardboard",
@@ -352,7 +355,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We built a cool spaceship from an old cardboard box."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "environmental",
@@ -361,7 +364,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our class joined an environmental project to clean the park."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "electronics",
@@ -370,7 +373,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Please don't throw old electronics into the rubbish bin."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "improve",
@@ -379,7 +382,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie practises every day to improve her English reading."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "newspaper",
@@ -388,7 +391,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Grandpa reads the newspaper at breakfast every Sunday morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "system",
@@ -397,7 +400,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our school has a new system for sorting paper and plastic."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "plastic bag",
@@ -406,7 +409,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "She carried the apples home in a small plastic bag."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "recreation",
@@ -415,7 +418,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Riding bikes in the park is my favourite weekend recreation."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "rubber",
@@ -424,7 +427,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My new rain boots are made of soft yellow rubber."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "association",
@@ -433,7 +436,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our parents joined an association to plant trees near the school."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 1",
     "word": "handle",
@@ -442,7 +445,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie can handle her homework all by herself now."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "petrol",
@@ -451,7 +454,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad stopped the car to buy some petrol before our trip."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "pollute",
@@ -460,7 +463,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Cars and factories pollute the air in many big cities."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "recycle",
@@ -469,7 +472,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We recycle paper and bottles in the green bin at home."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "tap water",
@@ -478,7 +481,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I filled my bottle with cold tap water from the kitchen."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "throw away",
@@ -487,7 +490,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Please don't throw away the box; we can paint it."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "destroy",
@@ -496,7 +499,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The big storm nearly destroyed our wooden treehouse last night."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "oil",
@@ -505,7 +508,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Big ships carry oil across the ocean to many countries."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "air conditioning",
@@ -514,7 +517,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The air conditioning kept our classroom cool on the hot day."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "fan",
@@ -523,7 +526,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum turned on the fan because the kitchen was too warm."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "free",
@@ -532,7 +535,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The zoo gives kids a free balloon on their birthday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "green",
@@ -541,7 +544,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our school is very green and saves water every day."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "product",
@@ -550,7 +553,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "This shampoo is a new product made from natural plants."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "waste",
@@ -559,7 +562,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our family puts all food waste into a small brown bin."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "by mistake",
@@ -568,7 +571,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I put salt in my tea by mistake this morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 2",
     "word": "ecosystem",
@@ -577,7 +580,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Frogs and fish share the same pond ecosystem in our garden."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "shade",
@@ -586,7 +589,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We had our picnic in the shade of a tall tree."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "oxygen",
@@ -595,7 +598,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Trees give us the oxygen we breathe every day."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "drip",
@@ -604,7 +607,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rain began to drip from the leaves onto my hat."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "global warming",
@@ -613,7 +616,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Planting more trees can help slow down global warming."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "explorer",
@@ -622,7 +625,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Rosie dreams of becoming a brave explorer in the jungle."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "tool",
@@ -631,7 +634,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad picked the right tool to fix my broken bicycle."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 8",
     "lesson": "Lesson 3",
     "word": "generation",
@@ -640,7 +643,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our generation must care for the planet for future kids."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "design",
@@ -649,7 +652,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The children helped design the new playground at our school."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "cross the road",
@@ -658,7 +661,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Always look both ways before you cross the road."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "follow (the) directions",
@@ -667,7 +670,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Follow the directions on the map to find the park."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "go past (the traffic lights)",
@@ -676,7 +679,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Go past the traffic lights and you will see my house."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "information",
@@ -685,7 +688,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our teacher gave us information about the school trip."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "go straight on",
@@ -694,7 +697,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Go straight on until you reach the big bookshop."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "sight",
@@ -703,7 +706,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We visited many famous sights on our holiday in London."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "turn left/right",
@@ -712,7 +715,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Turn left at the corner to find the playground."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "location",
@@ -721,7 +724,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The new playground has a sunny location near our school."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "scavenger hunt",
@@ -730,7 +733,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We played a fun scavenger hunt in the garden on Saturday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "treasure",
@@ -739,7 +742,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The pirates buried their treasure on a tiny island."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "go around the corner",
@@ -748,7 +751,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Go around the corner and you will see the ice cream shop."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 1",
     "word": "mark",
@@ -757,7 +760,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My teacher will mark our spelling test tonight at home."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "cheap",
@@ -766,7 +769,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The little toy car was very cheap at the shop."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "expensive",
@@ -775,7 +778,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "That shiny new bike is too expensive for my pocket money."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "collection",
@@ -784,7 +787,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My sister has a big collection of pretty seashells."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "bank",
@@ -793,7 +796,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad went to the bank to get some cash today."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "fish",
@@ -802,7 +805,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We like to fish in the little pond on weekends."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "ferry",
@@ -811,7 +814,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We took a ferry across the river on our holiday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "spend",
@@ -820,7 +823,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I want to spend my pocket money on a new book."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "shopping centre (AmE shopping center)",
@@ -829,7 +832,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum took us to the shopping centre on Saturday morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "ticket",
@@ -838,7 +841,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad bought a ticket for the puppet show this weekend."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "skyscraper",
@@ -847,7 +850,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The shiny skyscraper in the city touches the fluffy clouds."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "try",
@@ -856,7 +859,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I will try to finish my homework before dinner tonight."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "square",
@@ -865,7 +868,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Children played with balloons in the town square on Sunday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "steps",
@@ -874,7 +877,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We sat on the steps in front of our house."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "outer space",
@@ -883,7 +886,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Astronauts travel to outer space inside very fast rockets."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "bagel",
@@ -892,7 +895,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I ate a warm bagel with cream cheese for breakfast."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 2",
     "word": "chewy",
@@ -901,7 +904,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The toffee sweets in my lunchbox are very chewy."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 3",
     "word": "opinion",
@@ -910,7 +913,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My opinion is that puppies make the very best pets."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 3",
     "word": "origin",
@@ -919,7 +922,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our teacher told us about the origin of the pizza."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 3",
     "word": "material",
@@ -928,7 +931,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We used soft material to make a cosy dog bed."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 3",
     "word": "local",
@@ -937,7 +940,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We buy fresh apples from the local farm every weekend."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 9",
     "lesson": "Lesson 3",
     "word": "jog",
@@ -946,7 +949,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad and I jog around the park every Saturday morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "social media",
@@ -955,7 +958,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum says I'm too young to use social media yet."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "album",
@@ -964,7 +967,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Grandma showed me an old album full of family photos."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "app",
@@ -973,7 +976,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad downloaded a new maths app for my tablet."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "print",
@@ -982,7 +985,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My teacher asked me to print the homework on white paper."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "digital",
@@ -991,7 +994,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I keep all my holiday photos in a digital album."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "show",
@@ -1000,7 +1003,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Please show me your new puppy after school today."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "download",
@@ -1009,7 +1012,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Can I download this game onto your phone, Dad?"
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "comment",
@@ -1018,7 +1021,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My friend left a kind comment under my drawing online."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "internet",
@@ -1027,7 +1030,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We use the internet to find fun science facts at home."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "post",
@@ -1036,7 +1039,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum likes to post photos of our dog online."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "upload",
@@ -1045,7 +1048,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I'll upload my school project to the class website tonight."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "share",
@@ -1054,7 +1057,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I always share my cookies with my little sister."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "film",
@@ -1063,7 +1066,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Grandpa's old camera still needs a roll of film."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "rugby",
@@ -1072,7 +1075,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My brother plays rugby with his friends every Saturday morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "selfie",
@@ -1081,7 +1084,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We took a funny selfie with the puppy at the park."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 1",
     "word": "sticker",
@@ -1090,7 +1093,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I sent Mum a smiling cat sticker after lunch."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "invent",
@@ -1099,7 +1102,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "One day I want to invent a robot that cleans rooms."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "programme (AmE program)",
@@ -1108,7 +1111,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My favourite programme about animals starts at seven tonight."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "quality",
@@ -1117,7 +1120,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The quality of this new cartoon is really wonderful."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "record",
@@ -1126,7 +1129,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad will record the football match for me to watch later."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "technology",
@@ -1135,7 +1138,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "New technology helps farmers grow tastier fruit and vegetables."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "entertain",
@@ -1144,7 +1147,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad tells funny stories to entertain us during long car trips."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "imagine",
@@ -1153,7 +1156,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I like to imagine flying over the mountains with my dog."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "cartoon",
@@ -1162,7 +1165,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My little brother watches a cartoon about rabbits every morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "documentary",
@@ -1171,7 +1174,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We watched a documentary about pandas in the bamboo forest."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "news",
@@ -1180,7 +1183,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Grandpa watches the evening news while eating his dinner."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "reality show",
@@ -1189,7 +1192,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum loves a cooking reality show with real families competing."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "series",
@@ -1198,7 +1201,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My favourite series about magic ponies has a new episode tonight."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "sitcom",
@@ -1207,7 +1210,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We laugh together at our favourite family sitcom every Friday night."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 2",
     "word": "virtual reality",
@@ -1216,7 +1219,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My cousin tried virtual reality and swam with friendly cartoon dolphins."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "follower",
@@ -1225,7 +1228,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My aunt has a new follower on her cooking page today."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "channel",
@@ -1234,7 +1237,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "There is a channel that shows cartoons all day long."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "review",
@@ -1243,7 +1246,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I read a great review of that new dinosaur film online."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "review (verb)",
@@ -1252,7 +1255,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My sister loves to review her favourite story books online."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "voice",
@@ -1261,7 +1264,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My grandma has a soft, kind voice when she sings."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "generous",
@@ -1270,7 +1273,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My generous uncle always brings sweets for all the children."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 10",
     "lesson": "Lesson 3",
     "word": "neighbourhood (AmE neighborhood)",
@@ -1279,7 +1282,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Lots of friendly cats live in our quiet neighbourhood."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "destination",
@@ -1288,7 +1291,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our holiday destination this summer is a sunny beach in Spain."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "bus stop",
@@ -1297,7 +1300,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum waits with me at the bus stop every school morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "get on",
@@ -1306,7 +1309,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We get on the school bus right after breakfast each day."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "driver",
@@ -1315,7 +1318,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our bus driver smiled and waved at every child this morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "get off",
@@ -1324,7 +1327,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We get off the train at the next stop near grandma's house."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "bike lane",
@@ -1333,7 +1336,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad and I rode safely along the new bike lane on Sunday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "parking",
@@ -1342,7 +1345,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The parking near the playground was full on Saturday afternoon."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "tram",
@@ -1351,7 +1354,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We took a bright yellow tram to the museum in the city."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "pedestrian",
@@ -1360,7 +1363,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "A kind pedestrian helped my little brother cross the busy road."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "motorbike",
@@ -1369,7 +1372,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My uncle rides his shiny red motorbike to work every day."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "traffic",
@@ -1378,7 +1381,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The traffic was very heavy on our way home from school."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "scooter",
@@ -1387,7 +1390,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My cousin rides a little blue scooter to the corner shop."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "resident",
@@ -1396,7 +1399,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Every resident on our street came to the weekend garden party."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "transport (AmE transportation)",
@@ -1405,7 +1408,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Buses and trains are the main transport in our small town."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 1",
     "word": "planner",
@@ -1414,7 +1417,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The town planner showed us a map of the new playground."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "passenger",
@@ -1423,7 +1426,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Every passenger on the bus smiled at the cute little puppy."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "track",
@@ -1432,7 +1435,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We watched the long train rumble loudly along the shiny track."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "billion",
@@ -1441,7 +1444,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "More than a billion people around the world love football."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "display",
@@ -1450,7 +1453,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our teacher will display our paintings on the classroom wall today."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "inspector",
@@ -1459,7 +1462,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The friendly inspector checked our tickets on the train to London."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "escalator",
@@ -1468,7 +1471,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We rode the long escalator up to the toy shop floor."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "lift",
@@ -1477,7 +1480,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We took the lift up to the tenth floor of the hotel."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "gallery",
@@ -1486,7 +1489,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Our class visited a bright art gallery on Friday afternoon."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "loudspeaker",
@@ -1495,7 +1498,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The loudspeaker at the station told us our train was late."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "ticket machine",
@@ -1504,7 +1507,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad bought our train tickets from the shiny ticket machine quickly."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "timetable",
@@ -1513,7 +1516,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We checked the timetable to find the next train to grandma's."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "the planet",
@@ -1522,7 +1525,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We must take care of the planet by recycling our rubbish."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "chandelier",
@@ -1531,7 +1534,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "A huge sparkling chandelier hung above the dining table at grandma's."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "mosaic",
@@ -1540,7 +1543,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We made a beautiful mosaic of a fish in art class today."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 2",
     "word": "sculpture",
@@ -1549,7 +1552,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "A tall stone sculpture of a lion stood near the museum door."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "pass",
@@ -1558,7 +1561,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "I showed my bus pass to the driver before sitting down."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "gondola",
@@ -1567,7 +1570,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We rode a black gondola along a quiet canal in Venice."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "romantic",
@@ -1576,7 +1579,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum says a sunset boat ride is very romantic and sweet."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "cable car",
@@ -1585,7 +1588,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We rode a swinging cable car up the snowy mountain yesterday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "means",
@@ -1594,7 +1597,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Riding bikes is a fun means of getting to school quickly."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "aquarium",
@@ -1603,7 +1606,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We saw a giant turtle at the aquarium on Saturday morning."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "entire",
@@ -1612,7 +1615,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My entire family went to the park for a big picnic."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 11",
     "lesson": "Lesson 3",
     "word": "distance",
@@ -1621,7 +1624,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The distance from our house to school is about one kilometre."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "check",
@@ -1630,7 +1633,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Please check your homework before you put it in your bag."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "artist",
@@ -1639,7 +1642,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My sister wants to be an artist when she grows up."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "patient",
@@ -1648,7 +1651,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Be patient and wait for your turn on the slide."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "chef",
@@ -1657,7 +1660,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The chef made us a delicious pizza for dinner."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "customer",
@@ -1666,7 +1669,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The shop owner smiled kindly at every customer who came in."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "detective",
@@ -1675,7 +1678,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The detective found important clues at the playground."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "queue",
@@ -1684,7 +1687,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We stood in a long queue to buy ice cream."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "mechanic",
@@ -1693,7 +1696,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The mechanic fixed our car after it broke down on holiday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "opinion",
@@ -1702,7 +1705,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "In my opinion, chocolate ice cream is the best flavour."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "reporter",
@@ -1711,7 +1714,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The reporter asked the children about their school sports day."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "skill",
@@ -1720,7 +1723,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Riding a bike is a useful skill to learn."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "sailor",
@@ -1729,7 +1732,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The brave sailor waved to us from the big ship."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "tax",
@@ -1738,7 +1741,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dad said we pay tax to help build new schools and roads."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "desire",
@@ -1747,7 +1750,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "She had a strong desire to visit the zoo on Saturday."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "sense",
@@ -1756,7 +1759,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Dogs have a much better sense of smell than people."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "taste",
@@ -1765,7 +1768,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My sense of taste is weaker when I have a cold."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 1",
     "word": "taste (verb)",
@@ -1774,7 +1777,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Please taste the soup and tell me if it needs more salt."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "designer",
@@ -1783,7 +1786,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The designer drew a pretty dress for the school play."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "day off",
@@ -1792,7 +1795,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Mum took a day off so we could go to the park."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "focus on",
@@ -1801,7 +1804,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Try to focus on your reading and ignore the noise outside."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "full-time",
@@ -1810,7 +1813,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My dad has a full-time job at the hospital."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "part-time",
@@ -1819,7 +1822,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My aunt has a part-time job at the small bakery."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "job",
@@ -1828,7 +1831,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My mum has a job at a busy children's hospital."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "author",
@@ -1837,7 +1840,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The author of my favourite story book visited our school."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "career",
@@ -1846,7 +1849,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "She wants a career as a doctor when she grows up."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "employee",
@@ -1855,7 +1858,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Every employee at the toy shop wore a bright red shirt."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "experience",
@@ -1864,7 +1867,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Grandma has lots of experience baking yummy birthday cakes."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "manager",
@@ -1873,7 +1876,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The manager of the bookshop helped us find a fun story."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "staff",
@@ -1882,7 +1885,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The staff at our school are kind and very helpful."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "organisation (AmE organization)",
@@ -1891,7 +1894,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We joined an organisation that helps look after stray puppies."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "the Arctic",
@@ -1900,7 +1903,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Polar bears and seals live in the Arctic all year round."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "surface",
@@ -1909,7 +1912,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Tiny ants crawled across the surface of the picnic table."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "rover",
@@ -1918,7 +1921,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The rover sent back amazing photos from the surface of Mars."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "greenhouse",
@@ -1927,7 +1930,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Grandpa grows juicy tomatoes inside his little greenhouse."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "shelter",
@@ -1936,7 +1939,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "We built a shelter from branches to hide from the rain."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "planetary",
@@ -1945,7 +1948,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The museum had a cool planetary display about Jupiter and Mars."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "toxic",
@@ -1954,7 +1957,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Never touch toxic plants or berries you find in the woods."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 2",
     "word": "dust",
@@ -1963,7 +1966,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "There was a thick layer of dust on the old toy box."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 3",
     "word": "submarine",
@@ -1972,7 +1975,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "The yellow submarine dived deep to see colourful fish."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 3",
     "word": "attract",
@@ -1981,7 +1984,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "Sweet flowers attract bees and butterflies to our garden."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 3",
     "word": "brave",
@@ -1990,7 +1993,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My little brother was very brave at the dentist today."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 3",
     "word": "professional",
@@ -1999,7 +2002,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My cousin is a professional football player on a big team."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 3",
     "word": "worry",
@@ -2008,7 +2011,7 @@ const _RAW_WORDS_4B: WordEntry[] = [
     "example": "My biggest worry is forgetting my lines in the school play."
   },
   {
-    "stage": "4B",
+    "stage": "4A",
     "unit": "Unit 12",
     "lesson": "Lesson 3",
     "word": "seriously",

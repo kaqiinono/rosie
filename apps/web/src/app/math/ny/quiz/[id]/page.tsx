@@ -28,6 +28,7 @@ import { PROBLEMS as P43 } from '@rosie/math/utils/lesson43-data'
 import { PROBLEMS as P44 } from '@rosie/math/utils/lesson44-data'
 import { PROBLEMS as P46 } from '@rosie/math/utils/lesson46-data'
 import { PROBLEMS as P47 } from '@rosie/math/utils/lesson47-data'
+import { PROBLEMS as P49 } from '@rosie/math/utils/lesson49-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizPaper, QuizAnswerRecord } from '@rosie/math/hooks/useMathQuiz'
 import { checkProblemAnswer, isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
@@ -38,7 +39,7 @@ import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectF
 const LESSON_DATA: Record<string, ProblemSet> = {
   '12': P12, '13': P13, '15': P15, '18': P18, '23': P23, '29': P29, '30': P30,
   '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
-  '46': P46, '47': P47,
+  '46': P46, '47': P47, '49': P49,
 }
 
 const LESSON_NAMES: Record<string, string> = {
@@ -47,7 +48,7 @@ const LESSON_NAMES: Record<string, string> = {
   '34': '乘法分配律', '35': '归一问题', '36': '星期几问题',
   '37': '鸡兔同笼', '38': '一笔画', '39': '盈亏问题',
   '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识', '44': '统筹优化',
-  '46': '抽屉原理与最不利', '47': '方格中的秘密',
+  '46': '抽屉原理与最不利', '47': '方格中的秘密', '49': '加减法速算与巧算',
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'

@@ -13,6 +13,15 @@ import type { CourseCardData } from '@rosie/core'
 
 const courses: CourseCardData[] = [
   {
+    href: '/math/ny/49',
+    title: '加减法速算与巧算探险',
+    description: '凑整、去括号、按位相加、基准数 —— 学会用运算定律让加减法又快又准，还有终极挑战附加题。',
+    icon: '🧮',
+    lectureNum: '第 49 讲',
+    tags: ['速算巧算', '交换律·结合律·去括号·基准数', '48 道互动题'],
+    variant: 'violet',
+  },
+  {
     href: '/math/ny/47',
     title: '方格中的秘密探险',
     description: '数连、数桥、数方，再加上不等号、无马、窗口、对角线、锯齿等变型数独 —— 动手在格子里拼出答案。',
