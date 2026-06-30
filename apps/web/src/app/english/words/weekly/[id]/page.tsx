@@ -1,35 +1,35 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '@rosie/english'
 import type { WeeklyPlan } from '@rosie/core'
 import { WeeklyPlanSession } from '@rosie/english'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 
-export default function WeeklyPlanPage({ params }: { params: Promise<{ id: string }> }) {
+export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
+  const routeParams = useParams()
+  const planId = typeof routeParams.id === 'string' ? routeParams.id : ''
   const { user } = useAuth()
   const { vocab } = useWordsContext()
   const [plan, setPlan] = useState<WeeklyPlan | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!user) return
+    if (!user || !planId) return
     let cancelled = false
     void (async () => {
-      const { id } = await params
-      if (cancelled) return
       setIsLoading(true)
-      const loaded = await loadWeeklyPlanById(user.id, id)
+      const loaded = await loadWeeklyPlanById(user.id, planId)
       if (!cancelled) {
         setPlan(loaded)
         setIsLoading(false)
       }
     })()
     return () => { cancelled = true }
-  }, [user, params])
+  }, [user, planId])
 
   if (isLoading) {
     return (

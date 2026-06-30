@@ -16,7 +16,7 @@ export async function loadWeeklyPlanById(
       .single()
     if (error || !data) return null
     const row = data as Record<string, unknown>
-    const { progress, weekCompletion } = decodeWeeklyPlanProgress(row.progress_data)
+    const { progress, weekCompletion, pendingSession } = decodeWeeklyPlanProgress(row.progress_data)
     const { days, previewLessonKeys, wordKinds } = parsePlanDataFromSupabase(row.plan_data)
     return {
       id: row.id as string,
@@ -30,6 +30,7 @@ export async function loadWeeklyPlanById(
       ...(wordKinds !== undefined ? { wordKinds } : {}),
       progress,
       weekCompletion,
+      ...(pendingSession !== undefined ? { pendingSession } : {}),
     }
   } catch {
     return null

@@ -25,7 +25,7 @@ export default function WordPreviewModal({ word, onClose }: Props) {
           <div>
             <h3 className="text-[16px] font-extrabold text-[var(--wm-text)]">卡片预览</h3>
             <p className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">
-              与闪卡页双面模式一致 · {word.word}
+              双面预览 · {word.word}
             </p>
           </div>
           <button

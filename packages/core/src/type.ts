@@ -236,6 +236,26 @@ export interface WeekCompletion {
   report: EnglishWeeklyReport
 }
 
+/** In-progress weekly-plan practice; stored in `progress_data.__rosie_session`. */
+export interface WeeklyPlanSessionStash {
+  version: 3
+  savedAt: string
+  phase: 'study' | 'quiz'
+  selectedDate: string
+  subTask: 'all' | 'consolidate' | 'preview'
+  studyIdx: number
+  words: { key: string; kind: 'consolidate' | 'preview' }[]
+  quizQs: {
+    key: string
+    type: 'A' | 'B' | 'C' | 'D'
+    kind: 'consolidate' | 'preview'
+    revealedHalf?: number
+    rescueRole?: string
+  }[]
+  curQ: number
+  quizResults: { key: string; correct: boolean }[]
+}
+
 export interface WeeklyPlan {
   id?: string // Supabase UUID primary key; undefined until first save
   weekStart: string // ISO date of the Thursday starting this week
@@ -264,6 +284,8 @@ export interface WeeklyPlan {
    * passage sentence on word cards. Must be a 必记 lesson (not preview).
    */
   focusLessonKey?: string
+  /** Active practice stash from cloud (`progress_data`); undefined when none saved. */
+  pendingSession?: WeeklyPlanSessionStash
 }
 
 // Math weekly plan types

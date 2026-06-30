@@ -59,7 +59,7 @@ add a path alias — Next compiles this package via `transpilePackages`.
 
 ## How it plugs into the app
 
-Routes stay in `apps/web/src/app/english/**` (cards/daily/flash/practice/reading/weekly + layout)
+Routes stay in `apps/web/src/app/english/**` (cards/daily/practice/reading/weekly + layout)
 and import everything from the `@rosie/english` barrel. `reading-data` is **English-owned**; the
 audio and flipbook modules consume it from `@rosie/english`.
 

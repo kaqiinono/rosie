@@ -1,8 +1,12 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole } from '@rosie/core'
-import { encodeWeeklyPlanProgress } from '../../utils/weeklyPlanProgress'
+import { useState, useMemo, useCallback, useRef, useEffect, type MutableRefObject } from 'react'
+import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole, WeeklyPlanSessionStash } from '@rosie/core'
+import {
+  encodeWeeklyPlanProgress,
+  pickBestPendingSnapshot,
+  weeklySessionStorageKey,
+} from '../../utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
   buildReinforcementQuestions,
@@ -56,41 +60,61 @@ interface DpQuizQ {
   rescueRole?: RescueRole
 }
 
-interface SessionSnapshot {
-  version: 3
-  phase: 'study' | 'quiz'
-  selectedDate: string
-  subTask: 'all' | 'consolidate' | 'preview'
-  studyIdx: number
-  words: { key: string; kind: WordKind }[]
-  quizQs: { key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind }[]
-  curQ: number
-  quizResults: { key: string; correct: boolean }[]
-}
-
 function getWeekDayLabels(startDay: number): string[] {
   return Array.from({ length: 7 }, (_, i) => ALL_CN_DAYS[(startDay + i) % 7])
 }
 
-function loadSessionSnapshot(planId: string | undefined): SessionSnapshot | null {
-  if (!planId || typeof window === 'undefined') return null
-  try {
-    const raw = sessionStorage.getItem(`weekly_session_${planId}`)
-    if (!raw) return null
-    const snap = JSON.parse(raw) as Partial<SessionSnapshot>
-    if (snap.version !== 3) return null
-    if (snap.phase !== 'study' && snap.phase !== 'quiz') return null
-    return snap as SessionSnapshot
-  } catch { return null }
+function applySnapshotToState(
+  snap: WeeklyPlanSessionStash,
+  vocab: WordEntry[],
+  handlers: {
+    setSelectedDate: (d: string | null) => void
+    setCurrentSubTask: (t: 'all' | 'consolidate' | 'preview') => void
+    setWordKeys: (w: { key: string; kind: WordKind }[]) => void
+    setStudyIdx: (n: number) => void
+    setQuizQKeys: (q: { key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind; revealedHalf?: number; rescueRole?: RescueRole }[]) => void
+    setCurQ: (n: number) => void
+    setScore: (n: number) => void
+    setPhase: (p: Phase) => void
+    quizResultBuffer: MutableRefObject<{ entry: WordEntry; correct: boolean }[]>
+  },
+): void {
+  handlers.setSelectedDate(snap.selectedDate || null)
+  handlers.setCurrentSubTask(snap.subTask)
+  handlers.setWordKeys(snap.words)
+  handlers.setStudyIdx(snap.studyIdx)
+  handlers.setQuizQKeys(
+    snap.quizQs.map((q) => ({
+      ...q,
+      rescueRole: q.rescueRole as RescueRole | undefined,
+    })),
+  )
+  handlers.setCurQ(snap.curQ)
+  handlers.setScore(snap.quizResults.filter((r) => r.correct).length)
+  handlers.quizResultBuffer.current = snap.quizResults
+    .map(({ key, correct }) => {
+      const entry = vocab.find((w) => wordKey(w) === key)
+      return entry ? { entry, correct } : null
+    })
+    .filter((r): r is { entry: WordEntry; correct: boolean } => r !== null)
+  handlers.setPhase(snap.phase)
 }
 
-async function saveProgressToCloud(userId: string, plan: WeeklyPlan): Promise<void> {
+async function saveProgressToCloud(
+  userId: string,
+  plan: WeeklyPlan,
+  pendingSession?: WeeklyPlanSessionStash | null,
+): Promise<void> {
   if (!plan.id) return
   try {
     await supabase
       .from('weekly_plans')
       .update({
-        progress_data: encodeWeeklyPlanProgress(plan.progress, plan.weekCompletion),
+        progress_data: encodeWeeklyPlanProgress(
+          plan.progress,
+          plan.weekCompletion,
+          pendingSession ?? plan.pendingSession ?? null,
+        ),
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', userId)
@@ -115,8 +139,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   }, [plan])
 
   // Read sessionStorage exactly once via a lazy-init state (immutable after mount, not a ref)
-  const [snap0] = useState(() => loadSessionSnapshot(initialPlan.id))
+  const [snap0] = useState(() =>
+    pickBestPendingSnapshot(initialPlan.id, initialPlan.pendingSession),
+  )
   const hydrationDone = useRef(false)
+  const [isStashing, setIsStashing] = useState(false)
+  const [stashToast, setStashToast] = useState<string | null>(null)
 
   const [phase, setPhase] = useState<Phase>(() => snap0?.phase ?? 'week-view')
   const [selectedDate, setSelectedDate] = useState<string | null>(() => snap0?.selectedDate ?? null)
@@ -126,14 +154,16 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   )
   if (plan.id !== syncedPlanId) {
     setSyncedPlanId(plan.id)
-    // Default to today's practice when today falls within the plan week; otherwise
-    // fall back to the first unfinished day, then the last day.
-    const today = todayStr()
-    const todayDay = plan.days.find((d) => d.date === today)
-    const firstUnfinished = plan.days.find((d) => !plan.progress[d.date]?.quizDone)
-    setSelectedDate(
-      todayDay?.date ?? firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null,
-    )
+    // When restoring an in-progress session, keep the snapshotted day — don't
+    // overwrite with "today / first unfinished".
+    if (!snap0) {
+      const today = todayStr()
+      const todayDay = plan.days.find((d) => d.date === today)
+      const firstUnfinished = plan.days.find((d) => !plan.progress[d.date]?.quizDone)
+      setSelectedDate(
+        todayDay?.date ?? firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null,
+      )
+    }
   }
 
   const [consolidateTypes, setConsolidateTypes] = useState<Set<'A' | 'B' | 'C' | 'D'>>(
@@ -177,7 +207,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
   )
 
   const [quizQKeys, setQuizQKeys] = useState<{ key: string; type: 'A' | 'B' | 'C' | 'D'; kind: WordKind; revealedHalf?: number; rescueRole?: RescueRole }[]>(
-    () => snap0?.quizQs ?? [],
+    () =>
+      snap0?.quizQs.map((q) => ({
+        ...q,
+        rescueRole: q.rescueRole as RescueRole | undefined,
+      })) ?? [],
   )
   const quizQs = useMemo(
     () =>
@@ -222,31 +256,34 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setIsImmersive(true)
   }, [snap0, vocab, setIsImmersive])
 
-  // Persist active session to sessionStorage on every relevant state change
+  // Persist active session to sessionStorage on every relevant state change.
+  // Only clear on completion — returning to week-view (e.g. study ← 返回) must
+  // keep the snapshot so leaving the page and coming back resumes progress.
   useEffect(() => {
     if (!plan.id) return
-    const key = `weekly_session_${plan.id}`
-    if (phase === 'week-view' || phase === 'done') {
+    const key = weeklySessionStorageKey(plan.id)
+    if (phase === 'done') {
       try { sessionStorage.removeItem(key) } catch { /* noop */ }
       return
     }
+    if (phase === 'week-view') return
+    if (phase !== 'study' && phase !== 'quiz') return
     try {
-      sessionStorage.setItem(
-        key,
-        JSON.stringify({
-          version: 3,
-          phase,
-          selectedDate: selectedDate ?? '',
-          subTask: currentSubTask,
-          studyIdx,
-          words: wordKeys,
-          quizQs: quizQKeys,
-          curQ,
-          quizResults: quizResultBuffer.current
-            .slice(0, curQ)
-            .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
-        } satisfies SessionSnapshot),
-      )
+      const stash: WeeklyPlanSessionStash = {
+        version: 3,
+        savedAt: new Date().toISOString(),
+        phase,
+        selectedDate: selectedDate ?? '',
+        subTask: currentSubTask,
+        studyIdx,
+        words: wordKeys,
+        quizQs: quizQKeys,
+        curQ,
+        quizResults: quizResultBuffer.current
+          .slice(0, curQ)
+          .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+      }
+      sessionStorage.setItem(key, JSON.stringify(stash))
     } catch { /* noop */ }
   }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
 
@@ -291,6 +328,67 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     [plan, vocab, masteryMap],
   )
 
+  const clearPendingSession = useCallback(async () => {
+    if (!plan.id) return
+    try { sessionStorage.removeItem(weeklySessionStorageKey(plan.id)) } catch { /* noop */ }
+    if (!planRef.current.pendingSession) return
+    const updated: WeeklyPlan = { ...planRef.current, pendingSession: undefined }
+    planRef.current = updated
+    setPlan(updated)
+    if (user) await saveProgressToCloud(user.id, updated, null)
+  }, [user, plan.id])
+
+  const buildCurrentStash = useCallback((): WeeklyPlanSessionStash | null => {
+    if (phase !== 'study' && phase !== 'quiz') return null
+    return {
+      version: 3,
+      savedAt: new Date().toISOString(),
+      phase,
+      selectedDate: selectedDate ?? '',
+      subTask: currentSubTask,
+      studyIdx,
+      words: wordKeys,
+      quizQs: quizQKeys,
+      curQ,
+      quizResults: quizResultBuffer.current
+        .slice(0, curQ)
+        .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+    }
+  }, [phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
+
+  const stashSession = useCallback(async () => {
+    if (!user || !plan.id) return
+    const stash = buildCurrentStash()
+    if (!stash) return
+    setIsStashing(true)
+    try {
+      sessionStorage.setItem(weeklySessionStorageKey(plan.id), JSON.stringify(stash))
+      const updated: WeeklyPlan = { ...planRef.current, pendingSession: stash }
+      planRef.current = updated
+      setPlan(updated)
+      await saveProgressToCloud(user.id, updated, stash)
+      setStashToast('已暂存到云端，换设备也可继续')
+      setPhase('week-view')
+      exitImmersive()
+    } finally {
+      setIsStashing(false)
+    }
+  }, [user, plan.id, buildCurrentStash, exitImmersive])
+
+  useEffect(() => {
+    if (!stashToast) return
+    const timer = window.setTimeout(() => setStashToast(null), 3500)
+    return () => window.clearTimeout(timer)
+  }, [stashToast])
+
+  useEffect(() => {
+    if (phase !== 'done' || !plan.id || !planRef.current.pendingSession) return
+    const updated: WeeklyPlan = { ...planRef.current, pendingSession: undefined }
+    planRef.current = updated
+    setPlan(updated)
+    if (user) void saveProgressToCloud(user.id, updated, null)
+  }, [phase, plan.id, user])
+
   const startStudy = useCallback(
     (dateStr: string, subTask: 'all' | 'consolidate' | 'preview' = 'all') => {
       const relevantTypes = subTask === 'preview' ? previewTypes : consolidateTypes
@@ -306,6 +404,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       const filtered =
         subTask === 'all' ? session : session.filter((s) => s.kind === subTask)
       if (filtered.length === 0) return
+      void clearPendingSession()
       setCurrentSubTask(subTask)
       setWordKeys(filtered.map(({ entry, kind }) => ({ key: wordKey(entry), kind })))
       setStudyIdx(0)
@@ -318,8 +417,25 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       setScore(0)
       quizResultBuffer.current = []
     },
-    [consolidateTypes, previewTypes, buildSessionWords, setIsImmersive],
+    [consolidateTypes, previewTypes, buildSessionWords, setIsImmersive, clearPendingSession],
   )
+
+  const resumePendingSession = useCallback(() => {
+    const snap = pickBestPendingSnapshot(plan.id, plan.pendingSession)
+    if (!snap) return
+    applySnapshotToState(snap, vocab, {
+      setSelectedDate,
+      setCurrentSubTask,
+      setWordKeys,
+      setStudyIdx,
+      setQuizQKeys,
+      setCurQ,
+      setScore,
+      setPhase,
+      quizResultBuffer,
+    })
+    setIsImmersive(true)
+  }, [plan.id, plan.pendingSession, vocab])
 
   const startQuiz = useCallback(() => {
     const seed = Date.now()
@@ -546,6 +662,30 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     // Sunday fallback: unmastered consolidate words
     const unmasteredConsolidate = consolidateTotal - consolidateDone
 
+    const pendingSessionSnap = pickBestPendingSnapshot(plan.id, plan.pendingSession)
+    const hasPendingResume = pendingSessionSnap !== null
+    const pendingDate = pendingSessionSnap?.selectedDate ?? selectedDate
+    const pendingDayIndex = pendingDate
+      ? plan.days.findIndex((d) => d.date === pendingDate)
+      : -1
+    const pendingProgressLine = (() => {
+      if (pendingSessionSnap?.phase === 'quiz') {
+        const total = pendingSessionSnap.quizQs.length
+        return `测试阶段 · 第 ${pendingSessionSnap.curQ + 1}/${total} 题`
+      }
+      if (pendingSessionSnap?.phase === 'study') {
+        const total = pendingSessionSnap.words.length
+        return `记忆阶段 · 第 ${pendingSessionSnap.studyIdx + 1}/${total} 个词`
+      }
+      if (quizQKeys.length > 0) {
+        return `测试阶段 · 第 ${curQ + 1}/${quizQKeys.length} 题`
+      }
+      if (wordKeys.length > 0) {
+        return `记忆阶段 · 第 ${studyIdx + 1}/${wordKeys.length} 个词`
+      }
+      return ''
+    })()
+
     return (
       <>
         <div className="mx-auto max-w-[1280px] px-4 py-5">
@@ -584,6 +724,35 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 )}
               </div>
             </div>
+
+            {stashToast && (
+              <div className="mt-4 rounded-[12px] border border-[rgba(74,222,128,.45)] bg-[rgba(74,222,128,.1)] px-4 py-2.5 text-[.8rem] font-bold text-[#86efac]">
+                ✓ {stashToast}
+              </div>
+            )}
+
+            {hasPendingResume && (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.1)] px-4 py-3">
+                <div className="min-w-0">
+                  <div className="text-[.85rem] font-extrabold text-[#fbbf24]">你有未完成的练习</div>
+                  <div className="mt-0.5 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+                    {pendingDate && pendingDayIndex >= 0
+                      ? `${fmtDate(pendingDate)} ${cnDays[pendingDayIndex]}`
+                      : pendingDate
+                        ? fmtDate(pendingDate)
+                        : '本周练习'}
+                    {pendingProgressLine ? ` · ${pendingProgressLine}` : ''}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={resumePendingSession}
+                  className="font-nunito shrink-0 cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2 text-[.82rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px"
+                >
+                  ▶ 继续练习
+                </button>
+              </div>
+            )}
 
             {consolidateTotal > 0 && (
               <div className="mt-3 rounded-[12px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-2.5">
@@ -1015,6 +1184,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
           </span>
         }
         onBack={() => setPhase('week-view')}
+        onStash={() => void stashSession()}
+        isStashing={isStashing}
         onPrev={() => setStudyIdx(studyIdx - 1)}
         onNext={() => setStudyIdx(studyIdx + 1)}
         onComplete={startQuiz}
@@ -1042,6 +1213,14 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
           >
             ← 回到记忆
+          </button>
+          <button
+            type="button"
+            onClick={() => void stashSession()}
+            disabled={isStashing}
+            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
+          >
+            {isStashing ? '暂存中…' : '💾 暂存'}
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">✏️ 单词测试</div>
           {inReinforcement && (

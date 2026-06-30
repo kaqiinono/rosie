@@ -25,7 +25,6 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const isPracticePage = pathname.includes('/practice')
   const isDaily = pathname.includes('/daily')
   const isWeeklyPage = pathname.includes('/weekly/')
-  const isFlash = pathname.includes('/flash')
   const isReading = pathname.includes('/reading')
   // When previewCards is true on the practice page, show vocab cards first; then switch to quiz
   const immersiveMode = isPracticePage && !previewCards ? 'practice' : 'vocab'
@@ -80,7 +79,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       />
       {/* ImmersiveMode opens when immersive is active on non-daily pages */}
       <ImmersiveMode
-        open={isImmersive && !isDaily && !isWeeklyPage && !isFlash && !isReading}
+        open={isImmersive && !isDaily && !isWeeklyPage && !isReading}
         words={filteredWords}
         allWords={vocab}
         mode={immersiveMode}

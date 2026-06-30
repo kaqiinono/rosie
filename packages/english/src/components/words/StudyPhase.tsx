@@ -31,6 +31,8 @@ interface StudyPhaseProps {
   onNext: () => void
   onComplete: () => void
   completeButtonText: string
+  onStash?: () => void
+  isStashing?: boolean
 }
 
 export default function StudyPhase({
@@ -51,6 +53,8 @@ export default function StudyPhase({
   onNext,
   onComplete,
   completeButtonText,
+  onStash,
+  isStashing = false,
 }: StudyPhaseProps) {
   // Reset word visibility when the word or "definition only" toggle changes.
   // Uses the in-render "adjusting state from props" pattern to avoid an extra
@@ -79,6 +83,16 @@ export default function StudyPhase({
           >
             ← 返回
           </button>
+          {onStash && (
+            <button
+              type="button"
+              onClick={onStash}
+              disabled={isStashing}
+              className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3 py-1.5 text-[.75rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
+            >
+              {isStashing ? '暂存中…' : '💾 暂存'}
+            </button>
+          )}
           <div className="font-fredoka truncate text-[1rem] text-[var(--wm-text)]">
             {title}
           </div>

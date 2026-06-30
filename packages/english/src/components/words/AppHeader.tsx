@@ -18,7 +18,6 @@ const TABS = [
   { id: 'practice', path: `${BASE}/practice`, icon: '✏️', label: '练习' },
   { id: 'daily', path: `${BASE}/daily`, icon: '📅', label: '计划' },
   { id: 'reading', path: `${BASE}/reading`, icon: '📖', label: '阅读' },
-  { id: 'flash', path: `${BASE}/flash`, icon: '🗂️', label: '闪卡' },
 ]
 
 export default function AppHeader({ onImport, onExport, onImmersive }: AppHeaderProps) {
@@ -70,7 +69,7 @@ export default function AppHeader({ onImport, onExport, onImmersive }: AppHeader
         </nav>
 
         {/* 词库管理 + 沉浸模式 仅在 /cards 路由下显示 —— 这两个动作都强绑定词卡视图,
-            放在其他路由(/practice / /daily / /flash / /reading)上只是视觉噪音。 */}
+            放在其他路由(/practice / /daily / /reading)上只是视觉噪音。 */}
         {pathname.startsWith(`${BASE}/cards`) && (
         <div className="flex shrink-0 items-center gap-2">
           <div ref={ddRef} className="relative">

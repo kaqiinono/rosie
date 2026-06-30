@@ -19,7 +19,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
             .order('week_start', {ascending: false})
         if (error || !data) return []
         return data.map(row => {
-            const { progress, weekCompletion } = decodeWeeklyPlanProgress(row.progress_data)
+            const { progress, weekCompletion, pendingSession } = decodeWeeklyPlanProgress(row.progress_data)
             const { days, previewLessonKeys, wordKinds, focusLessonKey } = parsePlanDataFromSupabase(row.plan_data)
             return {
                 id: row.id as string,
@@ -34,6 +34,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
                 ...(focusLessonKey !== undefined ? { focusLessonKey } : {}),
                 progress,
                 weekCompletion,
+                ...(pendingSession !== undefined ? { pendingSession } : {}),
             }
         })
     } catch {
@@ -54,7 +55,11 @@ async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<string | n
                     week_start_day: plan.weekStartDay,
                     new_words_per_day: plan.newWordsPerDay,
                     plan_data: serializePlanDataForSupabase(plan),
-                    progress_data: encodeWeeklyPlanProgress(plan.progress, plan.weekCompletion),
+                    progress_data: encodeWeeklyPlanProgress(
+                        plan.progress,
+                        plan.weekCompletion,
+                        plan.pendingSession ?? null,
+                    ),
                     updated_at: new Date().toISOString(),
                 },
                 {onConflict: 'user_id,week_start'},
