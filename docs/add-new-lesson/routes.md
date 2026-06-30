@@ -16,8 +16,8 @@ import Lesson{N}Provider, { useLesson{N} } from '@rosie/math/components/lesson{N
 import AppHeader from '@rosie/math/components/lesson{N}/AppHeader'
 import Sidebar from '@rosie/math/components/lesson{N}/Sidebar'
 import BottomNav from '@rosie/math/components/lesson{N}/BottomNav'
-import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'
-import Toast from '@rosie/math/components/lesson35/Toast'
+import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'  // 全讲次共用，路径固定
+import Toast from '@rosie/math/components/lesson35/Toast'                  // 全讲次共用，路径固定
 
 const SECTION_COUNTS: Record<string, number> = {
   pretest: PROBLEMS.pretest.length,
@@ -168,7 +168,7 @@ export default function LessonProblemPage({ params }: { params: Promise<{ id: st
 
 ## `alltest/page.tsx`
 
-完整模板（直接复制，替换 `N` 为讲次编号、`lessonN` 为对应标识符）：
+完整模板（替换 `{N}`、`lesson{N}`、`useLesson{N}`、`[主题色]`、`[主题背景色]`）：
 
 ```tsx
 'use client'
@@ -248,7 +248,7 @@ export default function AlltestPage() {
 
 ## `mistakes/page.tsx`
 
-完整模板（直接复制，替换 `N` 为讲次编号、`lessonN` 为对应标识符）：
+完整模板（替换 `{N}`、`lesson{N}`、`useLesson{N}`、`[主题色]`、`[主题背景色]`）：
 
 ```tsx
 'use client'
