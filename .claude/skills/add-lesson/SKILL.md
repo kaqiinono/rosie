@@ -1,7 +1,7 @@
 ---
 name: add-lesson
 description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/N.md (template docs/math/new-lesson-template.md), confirms problem counts before entering data, and generates all required files following the on-demand specs under docs/add-new-lesson/.
-version: 3.2.0
+version: 3.3.0
 trigger: /add-lesson
 ---
 
@@ -76,8 +76,24 @@ trigger: /add-lesson
 5. **注册到入口** → 读 [`docs/add-new-lesson/registration.md`](../../../docs/add-new-lesson/registration.md)
    更新 7 处硬编码清单（数学入口/题海/每日计划×2/组卷×3）。**最易遗漏，必逐项核对。**
 
-> 复制结构相近的已有讲次（纯文字/数字答案参考 **lesson41**，交互谜题参考 **lesson47**）再按详情改色/改文案，最快最稳。
-> 新讲次的 `ProblemDetail` 必须接入共享 **`LessonProblemDetailHeader`**（收藏 + 练习次数 + 掌握度）与 **`LessonProblemNavBar`**（上一题/下一题）；详情路由用 **`LessonProblemRoutePage`** 壳，勿手写 `parseInt(id)`。
+### 操作指引（勿读历史讲次）
+
+**禁止**为找模板而去读 `packages/math/src/components/lesson*/` 或其它 `lesson*-data.ts`。
+题目内容**只**来自 `docs/math/lessons/N.md`；代码结构**只**来自 `docs/add-new-lesson/` 详情文件内嵌模板。
+
+| 步骤 | 生成什么 | 只改什么（详见对应 md） |
+|------|----------|------------------------|
+| 1 数据 | `utils/lessonN-data.ts(x)` | 按 `data.md` 结构录入题目；替换 `PROBLEM_TYPES` / `TAG_STYLE`；有 JSX 则 `.tsx` |
+| 2 组件 ×8 | `components/lessonN/*` | 全局替换 `{N}`、`/math/ny/{N}`、`useLesson{N}`；CONFIG 改 emoji/文案/**主题色** |
+| 2 重点 | `ProblemDetail.tsx` | 数字答案 → `components.md` **模板 A**；交互谜题 → **模板 B** + `figures.md` |
+| 3 路由 | `apps/web/.../ny/N/**` | 按 `routes.md` 替换 `{N}`；`[id]` 页一律 `LessonProblemRoutePage` |
+| 3 重点 | `alltest/page.tsx` | `filters` 含 `practice`；`FilterPanel` 传 `onSetPractice` |
+| 4 图形 | 仅 N.md 有 tsx 时 | 按 `figures.md` 新建组件子目录 + CSS，**不要**打开旧讲次目录对照 |
+| 5 注册 | 7 处硬编码 | 按 `registration.md` 逐项追加 `{N}` 条目 |
+
+**主题色**：在 AppHeader / Sidebar / BottomNav / ProblemDetail / FilterPanel.theme 五处用**同一套** Tailwind 色系（如 `sky`、`amber`、`fuchsia`）。
+
+**收藏 / 练习次数 / 上一题下一题**：已由共享组件自动提供（`LessonProblemList`、`LessonProblemDetailHeader`、`LessonProblemNavBar`、`LessonProblemRoutePage`），新讲次无需额外实现。
 
 ---
 

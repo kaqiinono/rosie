@@ -4,8 +4,38 @@
 
 所有讲次共享 `packages/math/src/components/shared/` 中的基础组件，每个讲次只需创建轻量 wrapper。共 8 个文件，其中 6 个是极简 wrapper（含 `FilterPanel` 使用 `createFilterPanel` 工厂），`ProblemDetail` 与 `HomePage` 有实质内容。
 
-> 最省事的做法：复制一个**结构相近的已有讲次**（如纯文字题参考 lesson41，有交互组件参考 lesson47），
-> 然后按本文件替换颜色/文案/标识符。下面给出每个文件的模板。
+> **勿读历史讲次：** 不要打开 `lesson41/`、`lesson47/` 等已有目录「找参考」。本文已给出每个文件的完整模板；题目正文只读 `docs/math/lessons/N.md`。
+
+### 全局占位符（每个文件都要替换）
+
+| 占位符 | 换成 | 出现位置 |
+|--------|------|----------|
+| `{N}` | 讲次编号，如 `46` | 目录名、Provider、`lessonId` |
+| `lesson{N}` | 如 `lesson46` | import 路径 |
+| `useLesson{N}` | 如 `useLesson46` | Provider hook |
+| `[主题色]` | Tailwind 色系：`sky` / `amber` / `fuchsia` / … | AppHeader、Sidebar、ProblemDetail、FilterPanel |
+| `/math/ny/{N}` | 如 `/math/ny/46` | 所有 `basePath`、`BASE` |
+
+### 8 个文件分工
+
+| 文件 | 实质内容？ | 你必须改什么 |
+|------|-----------|--------------|
+| `Lesson{N}Provider.tsx` | 否 | 仅 `{N}` |
+| `AppHeader.tsx` | CONFIG | emoji、`titleShort`、`titleFull`、`[主题色]` |
+| `Sidebar.tsx` | CONFIG | `basePath`、`[主题色]`；有 supplement 时加 section |
+| `BottomNav.tsx` | CONFIG | `basePath`、`[主题色]` |
+| `ProblemList.tsx` | wrapper | import 里的 `{N}`（收藏/练习次数已内置） |
+| **`ProblemDetail.tsx`** | **是** | 选模板 A 或 B（见下）；改 `[主题色]`、题解区文案色 |
+| **`HomePage.tsx`** | **是** | Hero 文案、`MODULES` 描述、题型卡片 |
+| `FilterPanel.tsx` | CONFIG | `theme` 色系、`sourceBtns`、`typeBtns`、`tagColors` |
+
+### `ProblemDetail.tsx` 选型（看 N.md，不读旧讲次）
+
+| N.md 题目特征 | 用哪个模板 |
+|---------------|-----------|
+| 有 `finalAns` / `finalQ` 数字填空 | **模板 A**（下文） |
+| 内联 tsx 组件 + `checkAnswer` 判分 | **模板 B**（下文）+ 必读 `figures.md` |
+| 有 `rows`/`rcols` 倍比图 | **模板 A** + `figures.md` 图表插槽说明 |
 
 ---
 
@@ -207,53 +237,226 @@ export default function ProblemList({ problems, solveCount, basePath, showSource
 
 ## `ProblemDetail.tsx`
 
-每讲独立。**不要从零写大段模板**——复制 **lesson41**（数字答案 + `NumericAnswerPanel` + `useProblemAnswer`）或 **lesson47**（交互组件 + `injectFigureGridCallbacks`），只改主题色与题型 UI。
+每讲独立。按上文选型使用 **模板 A** 或 **模板 B**，全文替换 `{N}`、`useLesson{N}`、`[主题色]` 即可。
 
-### 必须接入的共享组件（`mode === 'full'` 时）
+共享能力（**不要自己实现**）：
+- 详情顶栏：`LessonProblemDetailHeader`（返回、标题、练习次数、收藏 ❤️、掌握度）
+- 翻页：`LessonProblemNavBar`（`prevHref` / `nextHref` / `positionLabel` 由 `LessonProblemRoutePage` 注入）
+- 数字答题：`useProblemAnswer` + `NumericAnswerPanel`
+- 交互答题：`injectFigureGridCallbacks` + `InteractiveAnswerFeedback`
 
-| 组件 | 作用 |
-|------|------|
-| `LessonProblemDetailHeader` | 返回、标题、**练习次数徽章**、**收藏 ❤️**、掌握度 |
-| `LessonProblemNavBar` | **上一题 / 下一题**（同 section 内翻页）+ `N / 总数` |
+### 模板 A — 数字答案题（默认）
 
-`ProblemDetailProps` **必须**包含导航 props（由路由壳注入，inline 模式不传）：
+```tsx
+'use client'
 
-```typescript
+import type { Problem } from '@rosie/core'
+import { getMasteryLevel } from '@rosie/core'
+import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
+import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
+import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
+import AnalysisImage from '@rosie/math/components/shared/AnalysisImage'
+import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
+import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
+import { TAG_STYLE } from '@rosie/math/utils/lesson{N}-data'
+import { useLesson{N} } from './Lesson{N}Provider'
+
 interface ProblemDetailProps {
   problem: Problem
   mode?: 'full' | 'inline'
-  tip?: string                    // 部分讲次有口诀
+  tip?: string
   defaultSolutionOpen?: boolean
   prevHref?: string | null
   nextHref?: string | null
   positionLabel?: string
 }
+
+export default function ProblemDetail({
+  problem,
+  mode = 'full',
+  tip,
+  defaultSolutionOpen = false,
+  prevHref = null,
+  nextHref = null,
+  positionLabel,
+}: ProblemDetailProps) {
+  const { solveCount, handleSolve, addWrong } = useLesson{N}()
+  const count = solveCount[problem.id] ?? 0
+  const level = getMasteryLevel(count)
+  const { answer, setAnswer, feedback, check } = useProblemAnswer(problem, { handleSolve, addWrong })
+
+  const solution = (
+    <div className="mb-3.5 rounded-lg border border-[主题色]-200 bg-gradient-to-br from-[主题色]-50 to-[主题色]-100 p-3.5">
+      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-[主题色]-700">🔍 题型分析</div>
+      <ul className="flex flex-col gap-1.5">
+        {problem.analysis.map((a, i) => (
+          <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-[主题色]-900">
+            <span className="shrink-0">💡</span>{a}
+          </li>
+        ))}
+      </ul>
+      {problem.analysisImg && <AnalysisImage src={problem.analysisImg} alt={problem.title} />}
+    </div>
+  )
+
+  const question = (
+    <div className="flex flex-col gap-1.5">
+      <div className="min-w-0 flex-1">
+        <span className={`mb-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] ?? 'bg-gray-100 text-gray-600'}`}>
+          {problem.tagLabel}
+        </span>
+        <DifficultyStars level={problem.difficulty} size="md" />
+        <div
+          className="mb-3.5 rounded-lg border-l-3 border-[主题色]-300 bg-[主题色]-50 px-3.5 py-3 text-sm leading-relaxed text-text-secondary [&>strong]:font-bold [&>strong]:text-text-primary"
+          dangerouslySetInnerHTML={{ __html: problem.text }}
+        />
+      </div>
+      <div>{problem.figureNode}</div>
+    </div>
+  )
+
+  const answerDom = (
+    <NumericAnswerPanel
+      problem={problem}
+      answer={answer}
+      onAnswerChange={setAnswer}
+      onCheck={check}
+      feedback={feedback}
+      buttonClassName="bg-[主题色]-600 shadow-[0_3px_10px_rgba(0,0,0,0.15)]"
+    />
+  )
+
+  return (
+    <div>
+      {mode === 'full' && (
+        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} />
+      )}
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
+      {mode === 'full' && positionLabel && (
+        <LessonProblemNavBar prevHref={prevHref} nextHref={nextHref} positionLabel={positionLabel} />
+      )}
+    </div>
+  )
+}
 ```
 
-`return` 骨架（与 lesson41 一致）：
+> `[主题色]` 示例：`sky` → `border-sky-200`、`text-sky-700`、`bg-sky-600` 等。与 AppHeader / FilterPanel 保持一致。
+> 有 `LESSON_TIP` 的讲次：在 `question` 区题目前插入口诀框（文案来自 N.md `## summary`）。
+
+### 模板 B — 交互组件题（无数字答案）
+
+当 N.md 题目内联 tsx 且数据里带 `checkAnswer` 时使用。组件目录与工厂写法见 `figures.md`。
 
 ```tsx
-return (
-  <div>
-    {mode === 'full' && (
-      <LessonProblemDetailHeader
-        problemId={problem.id}
-        title={problem.title}
-        masteryLevel={level}
-        practiceCount={count}
-      />
-    )}
-    <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
-    {mode === 'full' && positionLabel && (
-      <LessonProblemNavBar prevHref={prevHref} nextHref={nextHref} positionLabel={positionLabel} />
-    )}
-  </div>
-)
-```
+'use client'
 
-> **主题色**：每讲替换为对应的 Tailwind 颜色名，与 AppHeader / Sidebar 保持一致。
-> **交互组件题（无数字答案）**：见 `figures.md`「交互式组件题」；参考 lesson47 的 `ProblemDetail`。
-> **题解配图**：`problem.analysisImg` + `AnalysisImage`（lesson41/42 已接入）。
+import { useMemo } from 'react'
+import type { Problem } from '@rosie/core'
+import { getMasteryLevel } from '@rosie/core'
+import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
+import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
+import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
+import InteractiveAnswerFeedback from '@rosie/math/components/shared/InteractiveAnswerFeedback'
+import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
+import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
+import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
+import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
+import { TAG_STYLE } from '@rosie/math/utils/lesson{N}-data'
+import { useLesson{N} } from './Lesson{N}Provider'
+
+interface ProblemDetailProps {
+  problem: Problem
+  mode?: 'full' | 'inline'
+  defaultSolutionOpen?: boolean
+  prevHref?: string | null
+  nextHref?: string | null
+  positionLabel?: string
+}
+
+export default function ProblemDetail({
+  problem,
+  mode = 'full',
+  defaultSolutionOpen = false,
+  prevHref = null,
+  nextHref = null,
+  positionLabel,
+}: ProblemDetailProps) {
+  const { solveCount, handleSolve, addWrong } = useLesson{N}()
+  const count = solveCount[problem.id] ?? 0
+  const level = getMasteryLevel(count)
+  const interactive = isInteractiveProblem(problem)
+
+  const { answer, setAnswer, feedback, submit, check, clearFeedback } = useProblemAnswer(problem, {
+    handleSolve,
+    addWrong,
+  })
+
+  const figure = useMemo(
+    () =>
+      interactive
+        ? injectFigureGridCallbacks(problem.figureNode, { onSubmit: submit, onStateChange: clearFeedback })
+        : problem.figureNode,
+    [interactive, problem.figureNode, submit, clearFeedback],
+  )
+
+  const solution = (
+    <div className="mb-3.5 rounded-lg border border-[主题色]-200 bg-gradient-to-br from-[主题色]-50 to-[主题色]-100 p-3.5">
+      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-[主题色]-700">🧠 玩法详解</div>
+      <ul className="flex flex-col gap-1.5">
+        {problem.analysis.map((a, i) => (
+          <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-[主题色]-900 [&_strong]:font-bold">
+            <span className="shrink-0">💡</span>
+            <span dangerouslySetInnerHTML={{ __html: a }} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+
+  const question = (
+    <div className="flex flex-col gap-2">
+      <div className="min-w-0 flex-1">
+        <span className={`mb-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] ?? 'bg-gray-100 text-gray-600'}`}>
+          {problem.tagLabel}
+        </span>
+        <DifficultyStars level={problem.difficulty} size="md" />
+        <div
+          className="mb-3.5 rounded-lg border-l-3 border-[主题色]-300 bg-[主题色]-50 px-3.5 py-3 text-sm leading-relaxed text-text-secondary [&>strong]:font-bold [&>strong]:text-text-primary"
+          dangerouslySetInnerHTML={{ __html: problem.text }}
+        />
+      </div>
+      <div className="rounded-xl border border-[主题色]-100 bg-white p-3 sm:p-4">{figure}</div>
+    </div>
+  )
+
+  const answerDom = interactive ? (
+    <InteractiveAnswerFeedback feedback={feedback} />
+  ) : (
+    <NumericAnswerPanel
+      problem={problem}
+      answer={answer}
+      onAnswerChange={setAnswer}
+      onCheck={check}
+      feedback={feedback}
+      buttonClassName="bg-[主题色]-600 shadow-[0_3px_10px_rgba(0,0,0,0.15)]"
+    />
+  )
+
+  return (
+    <div>
+      {mode === 'full' && (
+        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} />
+      )}
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
+      {mode === 'full' && positionLabel && (
+        <LessonProblemNavBar prevHref={prevHref} nextHref={nextHref} positionLabel={positionLabel} />
+      )}
+    </div>
+  )
+}
+```
 
 ## `HomePage.tsx`
 

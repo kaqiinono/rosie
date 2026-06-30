@@ -2,11 +2,12 @@
 
 > 文件落点：`packages/math/src/utils/lesson{N}-data.ts`（若有 `figureNode` 内联 JSX 则用 `.tsx`，见 `figures.md`）。
 
-完整复制 `packages/math/src/utils/lesson35-data.ts`，然后：
+**按本文下方结构与导出清单从零编写**（不要打开其它 `lesson*-data.ts` 当模板）。录入内容只来自 `docs/math/lessons/N.md`：
 
-1. 把题目内容全部替换为新讲次的内容
-2. 如有新题型，修改 `PROBLEM_TYPES` / `TYPE_STYLE` / `TAG_STYLE`
-3. 如有图形题目，创建 `Figure/` 目录并在数据文件中 import（文件须改为 `.tsx`，见 `figures.md`）
+1. 创建文件，写入下方 `PROBLEMS` / `PROBLEM_TYPES` / `TYPE_STYLE` / `TAG_STYLE` 导出结构
+2. 把 N.md 各章节题目填入对应数组（`pretest` / `lesson` / `homework` / `workbook` / `supplement`）
+3. 按 N.md 题型定义修改 `PROBLEM_TYPES`；颜色按 `components.md`「HomePage 内容提取」表
+4. 有内联 JSX 或 `figureNode` → 改 `.tsx` 并读 `figures.md`
 
 数据文件导出结构保持不变：
 

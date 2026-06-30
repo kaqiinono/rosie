@@ -16,9 +16,9 @@
 | `leftDiagram` | 左列（题目下方） | 传入时替换默认拆解图；传 `null` 则不显示任何内容 |
 | `rightDiagram` | 右列（答题框上方） | 传入时替换默认倍比图；传 `null` 则不显示任何内容 |
 
-两个 prop 都不传时，回退到 `type` 字段驱动的默认渲染（lesson35 现有行为）。
+两个 prop 都不传时，回退到 `type` 字段驱动的默认渲染（`type` 为 `ratio3` / `ratio3b` 等时）。
 
-**lesson35（倍比图 + 拆解图）**：无需传这两个 prop，默认渲染。
+**有倍比图/拆解图字段（`rows`/`rcols`/`ops`）的题**：`ProblemDetail` 无需传这两个 prop，由 `type` 默认渲染。
 
 **新讲次有流程图**（示例）：图表 props 挂在**该讲**的 `ProblemDetail` 上；路由仍用 `LessonProblemRoutePage`，静态 props 走 `detailProps`：
 
@@ -85,24 +85,22 @@ export default function LessonFig2() {
 
 **当 `docs/math/lessons/N.md` 的题目正文里内联了 tsx 组件代码块**（例如数连/数桥/数方、各类变型数独的
 `<ShulianGrid .../>`、`<ChuangkouSudokuGrid .../>` 等），这些组件是**可交互、自带「检查/重置」与结果反馈**的
-完整题目载体，处理方式与普通 `figureNode` 不同。**第47讲是范例，直接复制其 `gong/` 目录与 `create-gong-problem.tsx`
-模式最快最稳。**
+完整题目载体，处理方式与普通 `figureNode` 不同。**按下列步骤从 N.md 代码块新建，不要打开旧讲次目录对照。**
 
 ### 铁律：严格按代码块使用组件与入参
 
-- 组件已经预先放在 `packages/math/src/components/lesson{N}/<子目录>/`（第47讲是 `lesson47/gong/`），
-  **入参类型定义在该目录的 `utils/types.ts`**。录入时**逐字照搬代码块里的组件名与 props**
+- 组件放在 `packages/math/src/components/lesson{N}/<子目录>/`（子目录名自定，如 `gong/`），
+  **入参类型定义在该目录的 `utils/types.ts`**。录入时**逐字照搬 N.md 代码块里的组件名与 props**
   （`rows` / `cells` / `hIneq` / `vIneq` / `window` / `hLine` / `vLine` …），**不得自己发明 prop、改名或改值**。
-- 组件用**具名导出**。不要去 import 该目录的 `index.ts`——桶文件可能 re-export 仅 demo 用、实际不存在的文件
-  （第47讲的 `gong/index.ts` 原本 re-export `../demo/*`，会直接编译失败，已删除）。
+- 组件用**具名导出**。不要去 import 该目录的 `index.ts` 桶文件——桶文件可能 re-export 仅 demo 用、实际不存在的文件。
 - 数据文件含 JSX，**必须用 `.tsx`** 后缀（`lesson{N}-data.tsx`）。
 - **修正明显笔误**：代码块偶有手误（如第47讲无马数独里 `[,4,2]` 这种缺首元素的稀疏数组），照搬会破坏
   tuple 类型且渲染异常——按上下文（所在行号）补成 `[6,4,2]`，并在交付说明里指出。
 
-### 用 `create-gong-problem` 工厂封装组件 + 自动判分（第47讲已落地，照抄）
+### 用 `create-gong-problem` 工厂封装组件 + 自动判分
 
-这类题**没有 `finalAns` 数字答案**，而是**靠组件自己判对错**。第47讲把"建元素 + 接判分器"收敛进一个工厂
-`packages/math/src/components/lesson{N}/gong/create-gong-problem.tsx`，数据文件只调工厂、不写 JSX：
+这类题**没有 `finalAns` 数字答案**，而是**靠组件自己判对错**。在
+`packages/math/src/components/lesson{N}/<子目录>/create-gong-problem.tsx`（文件名可自定）里为每种谜题导出一个工厂函数，数据文件只调工厂、不写 JSX：
 
 - 工厂为每种谜题导出一个 `gongXxx(config)`，内部 `<XxxGrid {...config} />` 建元素、`makeXxxChecker(config)`（在
   同目录 `checkers.ts`）造判分函数，返回一组 `Problem` 字段：`type:'none'`、`finalQ/finalUnit:''`、`finalAns:0`、
@@ -115,18 +113,16 @@ export default function LessonFig2() {
   ```
 - **答题/判分链路（勿重复造轮子）**：`Problem.checkAnswer`（`@rosie/core`）+ 共享
   `utils/check-problem-answer.ts` + `hooks/useProblemAnswer.ts` + `components/shared/injectFigureSubmit.tsx`
-  （`injectFigureGridCallbacks` 把组件的 `onCheck/onComplete` 接到提交逻辑）。该讲 `ProblemDetail` 用
-  `useProblemAnswer(problem, …)` + `QuestionLayout`，把 `figureNode` 作答题区，答对自动 `handleSolve`、答错记错题
-  ——**lesson46/47 的 ProblemDetail 都已走这套，直接复制改色即可**。
+  （`injectFigureGridCallbacks` 把组件的 `onCheck/onComplete` 接到提交逻辑）。`ProblemDetail` 用
+  **`components.md` 模板 B**（`useProblemAnswer` + `QuestionLayout` + `injectFigureGridCallbacks`），答对自动 `handleSolve`、答错记错题。
 - `pretest` 没有就 `pretest: []`，侧边栏 / HomePage 模块 / FilterPanel sourceBtns / alltest 的 source Set
   里都**不要**列 `pretest`、`supplement`（按该讲真实存在的 section 来配）。
-- `PROBLEM_TYPES` 按**谜题种类**分（第47讲 9 种：数连/数桥/数方/不等号/无马/窗口/常规/对角线/锯齿），
+- `PROBLEM_TYPES` 按**谜题种类**分（例如数连/数桥/数方/不等号/无马/窗口/常规/对角线/锯齿），
   每题 `tag` 对应其谜题类型，难度按棋盘规模/复杂度评（4×4≈1–2，5×5≈2–3，6×6≈3–4，9×9≈4–5）。
 
 ### ⚠️ 组件依赖的 CSS 跟组件走（green build ≠ 渲染正常）
 
-这类组件常引用一组 **CSS 变量 + 结构类**（第47讲是 `--gong-*` 变量与 `.gong-table` / `.gong-cell` /
-`.gong-cell-sm` / `.gong-box-r` / `.gong-box-b`）。这些**不是 Tailwind 工具类**，未定义则组件渲染成
+这类组件常引用一组 **CSS 变量 + 结构类**（如 `--gong-*` 变量与 `.gong-table` / `.gong-cell` 等）。这些**不是 Tailwind 工具类**，未定义则组件渲染成
 无边框无尺寸的一坨——且 `pnpm build` **不会报错**。**正确做法是让样式随包走，不要塞进 app 的 `globals.css`：**
 
 1. 枚举组件用到的所有 token：
@@ -134,10 +130,8 @@ export default function LessonFig2() {
    grep -rho "var(--xxx-[a-z0-9-]*)" packages/math/src/components/lesson{N}/<子目录>/ | sort -u
    grep -rho "xxx-[a-z0-9-]*"        packages/math/src/components/lesson{N}/<子目录>/ | sort -u
    ```
-2. 在**组件子目录内**新建 `<子目录>.css`（第47讲是 `gong/gong.css`），写 `:root { --xxx-*: … }` 变量与各结构类
-   样式（宽高、`border-collapse`、单元格边框、宫界粗线等），并在该子目录**被所有组件共用的文件**（第47讲是
-   `gong/shared.tsx`，9 个 Grid 都 import 它）顶部 `import './xxx.css'`——样式随组件打包、按需加载，不污染全局。
-   组件里用到的 Tailwind 工具类（flex/justify-center…）仍由 app `globals.css` 的 `@source` 扫描自动生成，无需另配。
+2. 在**组件子目录内**新建 `<子目录>.css`，写 `:root { --xxx-*: … }` 变量与各结构类
+   样式（宽高、`border-collapse`、单元格边框、宫界粗线等），并在该子目录**被所有组件共用的文件**（如 `shared.tsx`）顶部 `import './xxx.css'`。
 3. 跑 `pnpm dev` **真机打开新讲次页面**确认组件能正常显示、能点选、能「检查」。
 
 ---
@@ -169,7 +163,7 @@ public/img/math/41-P5.png
 }
 ```
 
-**3. 确保 `ProblemDetail.tsx` 已渲染该字段**（lesson41 已接入；新讲次复制 lesson41 的 ProblemDetail 时自动具备此能力）：
+**3. 在 `ProblemDetail.tsx` 题解区渲染该字段**（模板 A 已包含）：
 ```tsx
 import AnalysisImage from '@rosie/math/components/shared/AnalysisImage'
 
