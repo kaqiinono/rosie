@@ -1,7 +1,7 @@
 ---
 name: add-lesson
-description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/N.md (template docs/math/new-lesson-template.md) — creating it from image sources (e.g. docs/math/img/*.HEIC) when only photos are provided — confirms problem counts before entering data, and generates all required files following the on-demand specs under docs/add-new-lesson/.
-version: 3.2.0
+description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/N.md (template docs/math/new-lesson-template.md) — creating it from image sources (e.g. docs/math/img/*.HEIC) when only photos are provided — confirms problem counts and grade before entering data, and generates all required files following the on-demand specs under docs/add-new-lesson/.
+version: 3.3.0
 trigger: /add-lesson
 ---
 
@@ -62,9 +62,11 @@ trigger: /add-lesson
 
 **确认总数（在录入任何题目之前，对每个讲次）：**
 1. 通读该讲**全部章节**（不得只读开头——这是题目遗漏的根本原因）
-2. 逐题列出编号/关键数字
-3. 写出：「第N讲 共 X 题：课前测 a + 课堂(例题 b + 练一练 c) + 课后 d + 拓展 e + 附加 f」
-4. 确认无误后再录入
+2. **确认年级**：读 `lessons/N.md` 标题下的 `年级：` 说明；**未写则 `gradeForNewLesson()`（= 当前最高年级 `highestGrade()`）**。据此决定 `LESSON_GRADE['N']`、
+   `lectureNum` 用真实讲次号还是年级内「第 1 讲」起（规则见 `registration.md` 年级登记表）
+3. 逐题列出编号/关键数字
+4. 写出：「第N讲（X年级）共 Y 题：课前测 a + 课堂(例题 b + 练一练 c) + 课后 d + 拓展 e + 附加 f」
+5. 确认无误后再录入
 
 > 题目正文若内联了图形/交互组件 tsx（`<ShulianGrid .../>`、`<ChuangkouSudokuGrid .../>` 等），
 > 按需读 `docs/add-new-lesson/figures.md` 处理（数据文件改 `.tsx`；交互题无数字答案、要补 CSS）。
@@ -73,7 +75,7 @@ trigger: /add-lesson
 
 ## 第二步：逐讲生成文件（按需读详情）
 
-> **多讲次：对每个讲次各执行一遍。** 修改类文件（math 入口/题海/每日计划/组卷）每讲都要追加条目。
+> **多讲次：对每个讲次各执行一遍。** 修改类文件（courses-data / lesson-grade / 题海 / 每日计划 / 组卷）每讲都要追加条目。
 
 按顺序生成，每步**只读对应详情文件**：
 
@@ -85,7 +87,7 @@ trigger: /add-lesson
    生成 `apps/web/src/app/math/ny/N/` 下 12~14 个页面。
 4. **图表/图形/配图** → **仅当需要**时读 [`docs/add-new-lesson/figures.md`](../../../docs/add-new-lesson/figures.md)。
 5. **注册到入口** → 读 [`docs/add-new-lesson/registration.md`](../../../docs/add-new-lesson/registration.md)
-   更新 7 处硬编码清单（数学入口/题海/每日计划×2/组卷×3）。**最易遗漏，必逐项核对。**
+   更新 **8 处**硬编码清单（**courses-data + lesson-grade**〔新年级另加 gN 薄壳〕/ 题海 / 每日计划×2 / 组卷×3）。**最易遗漏，必逐项核对。**
 
 > 复制结构相近的已有讲次（纯文字参考 lesson41，交互谜题参考 lesson47）再按详情改色/改文案，最快最稳。
 

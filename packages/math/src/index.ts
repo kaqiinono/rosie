@@ -10,3 +10,17 @@ export { default as MathDailyCard } from './components/MathDailyCard'
 export { default as MathSeaCard } from './components/MathSeaCard'
 export { default as MathQuizCard } from './components/MathQuizCard'
 export { default as MathCatalogCard } from './components/MathCatalogCard'
+export { default as GradeCard } from './components/GradeCard'
+export {
+  LESSON_GRADE,
+  GRADE_LABEL,
+  gradesInOrder,
+  gradesForLanding,
+  highestGrade,
+  gradeForNewLesson,
+  lessonsForGrade,
+  gradeOf,
+  lessonIdFromHref,
+  lessonDisplayNum,
+  lessonDisplayLabel,
+} from './utils/lesson-grade'

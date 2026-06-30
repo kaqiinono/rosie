@@ -3,11 +3,52 @@
 > 第四~七步只是往若干硬编码清单里追加条目。**任何一处遗漏都不会报错**，
 > 但新讲次会在对应入口「静默消失」。完成后逐项核对本文件。
 
+---
+
+## 年级登记（第四步 · 必先确认）
+
+每新增一讲须写入 `lesson-grade.ts` 登记年级（首页年级卡、年级页、题海/组卷/计划分组、进度统计均由此派生）。
+
+### 默认年级
+
+`lessons/N.md` **未写明年级**时 → 使用 `gradeForNewLesson()`，即 **`highestGrade()`**（`LESSON_GRADE` 中已有讲次的最高年级；无讲次时为 `1`）。  
+例：当前已有一年级 + 二年级讲次时，新讲默认归入**二年级**。
+
+### 决策规则
+
+| 情况 | 内部 id | `LESSON_GRADE` | `lectureNum`（courses-data） | 题海 shortTitle | 每日计划 label |
+|------|---------|----------------|------------------------------|-----------------|----------------|
+| 继续一年级 | 沿用教材讲次号（如 50 若教材有） | `'50': 1` | `第 50 讲` | `50·简称` | `第50讲 · 主题` |
+| 升入二年级等新年级 | **全局最大值 +1**（如 49→50） | `'50': 2` | `第 2 讲`（年级内序号） | `2·简称` | `第2讲 · 主题` |
+| 同年级后续讲 | 全局 +1 | `'51': 2` | `第 3 讲` | `3·简称` | `第3讲 · 主题` |
+
+**铁律：**
+- 内部 id（路由 `/math/ny/N`）**全局唯一**，不复用低年级号。
+- 年级**只**在 `LESSON_GRADE` 定义一次；`CourseCardData` **不加** `grade` 字段。
+- 一年级保留真实教材讲次号；**二年级起**用户可见编号从「第 1 讲」起（用 `lessonDisplayLabel()` 辅助组卷等 UI）。
+- 题目源 `docs/math/lessons/N.md` 标题下**建议**写 `年级：N`；未写则默认最高年级（见上）
+
+### 自动派生（登记后无需手改）
+
+| 功能 | 数据来源 |
+|------|----------|
+| 首页年级卡片 / 讲数 | `gradesForLanding()` + `lessonsForGrade()` |
+| 年级卡课程简介 | `gradeCourseSummary()` ← `COURSES` |
+| 年级卡 已练/总题数 | `gradeProblemStats()` ← `SEA_POOL` + `math_solved` |
+| 题海/组卷/计划年级分组 | `gradesInOrder()` + `gradeOf(id)` |
+
+### 新年级首讲额外一步
+
+若 `LESSON_GRADE` 中该年级**尚无**其他讲次 → 新建 `apps/web/src/app/math/ny/g<N>/page.tsx` 薄壳（见第四步 C）。
+
+---
+
 涉及文件总览：
 
 | 步骤 | 文件 | 作用 | 遗漏后果 |
 |------|------|------|----------|
-| 四 | `apps/web/src/app/math/page.tsx` | 数学入口卡片 | 入口页看不到该讲 |
+| 四-A | `packages/math/src/utils/courses-data.ts` | 数学讲次卡片数据 | 年级页看不到该讲 |
+| 四-B | `packages/math/src/utils/lesson-grade.ts` | 讲次 → 年级映射 | 讲次归错年级 / 年级卡不出现 |
 | 五 | `packages/math/src/utils/sea-data.ts` | 题海汇总 | 题海搜索/筛选/随机练无该讲 |
 | 六-A | `apps/web/src/app/math/ny/plan/page.tsx` | 每日计划数据源 | 每日一练无该讲 |
 | 六-B | `packages/math/src/components/MathWeeklyPractice.tsx` | 每日计划选项 | 每日一练选不到该讲 |
@@ -17,11 +58,13 @@
 
 ---
 
-## 第四步：数学入口页注册卡片
+## 第四步：数学入口注册（卡片 + 年级）
 
-**文件：** `apps/web/src/app/math/page.tsx`
+数学首页 `/math` 显示**年级卡片**；讲次卡片在 `/math/ny/gN` 年级页列出。新增讲次需改两处：
 
-在 `courses` 数组**最前面**追加一个新讲次卡片对象：
+### 4-A `packages/math/src/utils/courses-data.ts`
+
+在 `COURSES` 数组**最前面**追加一个新讲次卡片对象：
 
 ```typescript
 {
@@ -29,14 +72,41 @@
   title: '星期几问题探险',       // 讲次主题 + "探险"
   description: '一句话描述：覆盖哪些题型，学完能做什么。',
   icon: '📅',                    // 与 Hero 区域相同的 emoji
-  lectureNum: '第 36 讲',
+  lectureNum: '第 36 讲',        // 一年级：真实教材讲次号；二年级起：年级内从「第 1 讲」计
   tags: ['核心知识点', '题型关键词', 'N 道互动题'],
   variant: 'blue',               // 颜色主题：'blue' | 'amber' | 'violet'
 },
 ```
 
 > **排列规则：** 新讲次放在数组**最前面**，保持最新讲次置顶。
-> **`variant` 颜色选择：** 依次轮换，避免相邻两张卡片同色（35讲=`blue`，36讲=`amber`，34讲=`violet`）。
+> **`variant` 颜色选择：** 依次轮换，避免相邻两张卡片同色。
+
+### 4-B `packages/math/src/utils/lesson-grade.ts`
+
+在 `LESSON_GRADE` 增加一行，指定该讲属于哪个年级（未在题目源说明时用 `highestGrade()`）：
+
+```typescript
+'36': 1,   // 一年级
+// 或
+'50': gradeForNewLesson(),   // 未说明时 = 当前最高年级（现为 2）
+```
+
+### 4-C 新年级首讲（可选）
+
+若该讲是某年级的**第一讲**（如二年级首讲 id=49）：
+
+1. `lectureNum` 用「第 1 讲」起（不是全局 id）；
+2. 新增薄壳 `apps/web/src/app/math/ny/g<N>/page.tsx`：
+
+```tsx
+import GradeLessonList from '@rosie/math/components/GradeLessonList'
+
+export default function GradeNPage() {
+  return <GradeLessonList grade={N} />
+}
+```
+
+首页会自动出现该年级卡片；题海/组卷/计划的年级分组自动派生，无需额外登记。
 
 ---
 
@@ -57,8 +127,8 @@ import { PROBLEMS as PROBLEMSN, PROBLEM_TYPES as PTN, TAG_STYLE as TSN } from '.
 ```typescript
 {
   id: 'N',
-  title: '第N讲·[主题名称]',
-  shortTitle: 'N·[主题简称]',
+  title: '第N讲·[主题名称]',      // 一年级：N = 内部 id；二年级起：N = 年级内讲次号
+  shortTitle: 'N·[主题简称]',   // 同上
   icon: '[emoji]',                                       // 与首页卡片相同
   badgeClass: 'bg-[color]-100 text-[color]-700',        // 选一个区分其他讲次的颜色
   tagStyle: TSN,
@@ -66,6 +136,8 @@ import { PROBLEMS as PROBLEMSN, PROBLEM_TYPES as PTN, TAG_STYLE as TSN } from '.
   problems: PROBLEMSN,
 },
 ```
+
+**二年级示例（内部 id=50，年级内第 2 讲）：** `title: '第2讲·…'`，`shortTitle: '2·…'`（不是 `50·…`）。
 
 `badgeClass` 颜色参考：34=violet, 35=blue, 36=amber, 37=orange, 38=purple, 39=teal。新讲次选未用的（rose/green/cyan/sky）。
 
@@ -93,7 +165,7 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
 ```typescript
 {
   id: 'N',
-  label: '第N讲 · [主题名称]',
+  label: '第N讲 · [主题名称]',   // 一年级：N = 内部 id；二年级起：年级内讲次号
   short: '[主题简称]',           // 用于卡片标题
   emoji: '[emoji]',              // 与首页卡片相同
   color: 'rgba(R,G,B,1)',        // 主色，与下方 bg/border 同色
@@ -102,6 +174,8 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
   desc: '一句话描述题型重点',     // 卡片副标题
 },
 ```
+
+**二年级示例：** `id: '50'`，`label: '第2讲 · 主题'`（不是 `第50讲`）。组件内已按 `gradeOf(id)` 分组显示。
 
 颜色参考：34 紫 `159,130,246`；35 蓝 `#3b82f6`；36 琥珀 `245,158,11`；37 黄绿 `133,200,11`；
 38 玫红 `236,72,153`；39 翠绿 `16,185,129`；40 靛蓝 `99,102,241`；41 橙 `249,115,22`。
@@ -156,7 +230,7 @@ const LESSON_DATA: Record<string, ProblemSet> = { /* ...已有 */ 'N': PN }  // 
 | `components/lessonN/HomePage.tsx` | `MODULES` 加入该模块卡片 |
 | `components/lessonN/FilterPanel.tsx` | `sourceBtns` 加入该模块来源按钮 |
 | `apps/web/src/app/math/ny/N/alltest/page.tsx` | `source` 初始 `Set` 加入该 section key |
-| `apps/web/src/app/math/page.tsx` | 入口卡片 `tags` 里的总题数（如 `'31 道互动题'`）改成新的合计 |
+| `packages/math/src/utils/courses-data.ts` | 入口卡片 `tags` 里的总题数（如 `'31 道互动题'`）改成新的合计 |
 
 > 该模块的路由文件（`<mod>/page.tsx` + `<mod>/[id]/page.tsx`）若按「空模块照样生成路由」已存在，
 > 就**不用新建**，它们读 `PROBLEMS.<mod>` 自动显示新题。题海/每日计划/组卷（第五~七步）读的是整个

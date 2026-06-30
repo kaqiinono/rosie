@@ -12,6 +12,7 @@ import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import { todayStr } from '@rosie/core'
+import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -219,7 +220,7 @@ const LESSONS = [
   },
   {
     id: '49',
-    label: '第49讲 · 加减法速算与巧算',
+    label: '第1讲 · 加减法速算与巧算',
     short: '速算巧算',
     emoji: '🧮',
     color: 'rgba(99,102,241,1)',
@@ -607,47 +608,60 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
               </span>
               <div className="h-px flex-1 bg-orange-100" />
             </div>
-            <div className="flex flex-col gap-3">
-              {LESSONS.map((l) => {
-                const isSelected = selectedLesson === l.id
+            <div className="flex flex-col gap-5">
+              {gradesInOrder().map((g) => {
+                const gradeLessons = LESSONS.filter((l) => gradeOf(l.id) === g)
+                if (gradeLessons.length === 0) return null
                 return (
-                  <button
-                    key={l.id}
-                    type="button"
-                    onClick={() => setSelectedLesson(l.id)}
-                    className="group relative flex cursor-pointer items-center gap-4 rounded-xl px-4 py-4 text-left transition-all duration-200"
-                    style={{
-                      background: isSelected ? l.bg : 'rgba(255,255,255,.7)',
-                      border: `2px solid ${isSelected ? l.border : 'rgba(0,0,0,.06)'}`,
-                      boxShadow: isSelected
-                        ? `0 4px 20px ${l.color}20`
-                        : '0 2px 8px rgba(0,0,0,.04)',
-                      transform: isSelected ? 'scale(1.01)' : 'scale(1)',
-                    }}
-                  >
-                    <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-2xl transition-transform group-hover:scale-110"
-                      style={{ background: l.bg, border: `1.5px solid ${l.border}` }}
-                    >
-                      {l.emoji}
+                  <div key={g}>
+                    <div className="mb-2 text-[11px] font-extrabold tracking-wide text-orange-500/80">
+                      {GRADE_LABEL[g] ?? `${g} 年级`}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[14px] leading-tight font-extrabold text-gray-800">
-                        {l.label}
-                      </div>
-                      <div className="mt-0.5 text-[11px] text-gray-500">{l.desc}</div>
+                    <div className="flex flex-col gap-3">
+                      {gradeLessons.map((l) => {
+                        const isSelected = selectedLesson === l.id
+                        return (
+                          <button
+                            key={l.id}
+                            type="button"
+                            onClick={() => setSelectedLesson(l.id)}
+                            className="group relative flex cursor-pointer items-center gap-4 rounded-xl px-4 py-4 text-left transition-all duration-200"
+                            style={{
+                              background: isSelected ? l.bg : 'rgba(255,255,255,.7)',
+                              border: `2px solid ${isSelected ? l.border : 'rgba(0,0,0,.06)'}`,
+                              boxShadow: isSelected
+                                ? `0 4px 20px ${l.color}20`
+                                : '0 2px 8px rgba(0,0,0,.04)',
+                              transform: isSelected ? 'scale(1.01)' : 'scale(1)',
+                            }}
+                          >
+                            <div
+                              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-2xl transition-transform group-hover:scale-110"
+                              style={{ background: l.bg, border: `1.5px solid ${l.border}` }}
+                            >
+                              {l.emoji}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="text-[14px] leading-tight font-extrabold text-gray-800">
+                                {l.label}
+                              </div>
+                              <div className="mt-0.5 text-[11px] text-gray-500">{l.desc}</div>
+                            </div>
+                            <div
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold transition-all"
+                              style={{
+                                background: isSelected ? l.color : 'rgba(0,0,0,.06)',
+                                color: isSelected ? 'white' : 'transparent',
+                                transform: isSelected ? 'scale(1.1)' : 'scale(0.8)',
+                              }}
+                            >
+                              ✓
+                            </div>
+                          </button>
+                        )
+                      })}
                     </div>
-                    <div
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold transition-all"
-                      style={{
-                        background: isSelected ? l.color : 'rgba(0,0,0,.06)',
-                        color: isSelected ? 'white' : 'transparent',
-                        transform: isSelected ? 'scale(1.1)' : 'scale(0.8)',
-                      }}
-                    >
-                      ✓
-                    </div>
-                  </button>
+                  </div>
                 )
               })}
             </div>

@@ -11,7 +11,10 @@
 
 每新增一个讲次，需要：
 - **新建** 数据文件 + 8 个组件 wrapper + 12~14 个路由页面
-- **修改** 7 处入口注册清单（数学入口 / 题海 / 每日计划×2 / 组卷×3）
+- **修改** 8 处入口注册清单（**年级×2** / 题海 / 每日计划×2 / 组卷×3）
+
+数学首页已改为**年级卡片** → `/math/ny/gN` 年级讲次列表。新增讲次**必须**在 `lesson-grade.ts` 登记年级，
+并在 `courses-data.ts` 注册卡片（不再改 `apps/web/src/app/math/page.tsx`）。
 
 `constant.ts` **无需改动**：所有讲次共享 3 个通用本地缓存 key。
 
@@ -32,8 +35,9 @@
 索引见 `docs/math/new-lesson.md`）。处理单讲时**只读 `docs/math/lessons/N.md` 这一个文件**。
 
 1. **先通读目标讲次的全部章节**，逐题列出标题/关键数字
-2. 明确写出该讲总题数（例：「第46讲 共 X 题：课前测 a + 课堂(例题 b + 练一练 c) + 课后 d + 拓展 e + 附加 f」）
-3. 确认无误后再逐题录入
+2. **确认年级**（见 `lessons/N.md` 标题下说明）：有写明则用该值；**未写明则默认 `highestGrade()`（当前最高年级）**。据此决定 `LESSON_GRADE['N']`、`lectureNum` 等（规则见 `registration.md`）
+3. 明确写出该讲总题数（例：「第46讲 共 X 题：课前测 a + 课堂(例题 b + 练一练 c) + 课后 d + 拓展 e + 附加 f」）
+4. 确认无误后再逐题录入
 
 > **绝对不允许只读开头就开始录入**——这是题目遗漏的根本原因。
 > 缺失/为空的模块设为 `[]`（如 `pretest: []`），不影响页面生成。
@@ -85,7 +89,9 @@ apps/web/src/app/math/ny/N/
   [ ] supplement/page.tsx   supplement/[id]/page.tsx   — 仅有补充题时
 
 入口注册（最易遗漏，逐项核对 registration.md）：
-  [ ] apps/web/src/app/math/page.tsx                      — courses 数组最前面（第四步）
+  [ ] packages/math/src/utils/courses-data.ts           — COURSES 最前面（第四步 A）
+  [ ] packages/math/src/utils/lesson-grade.ts             — LESSON_GRADE 登记年级（第四步 B）
+  [ ] apps/web/src/app/math/ny/gN/page.tsx                — 仅新年级首讲时新建薄壳（第四步 C）
   [ ] packages/math/src/utils/sea-data.ts                 — SEA_LESSONS（第五步）
   [ ] apps/web/src/app/math/ny/plan/page.tsx              — PROBLEM_SETS（第六步 A）
   [ ] packages/math/src/components/MathWeeklyPractice.tsx — LESSONS 数组（第六步 B）

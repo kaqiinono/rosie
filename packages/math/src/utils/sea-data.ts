@@ -235,8 +235,8 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
   },
   {
     id: '49',
-    title: '第49讲·加减法速算与巧算',
-    shortTitle: '49·速算巧算',
+    title: '第1讲·加减法速算与巧算',
+    shortTitle: '1·速算巧算',
     icon: '🧮',
     badgeClass: 'bg-rose-100 text-rose-700',
     tagStyle: TS49,

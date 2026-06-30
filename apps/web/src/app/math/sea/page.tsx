@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
+import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
 import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel } from '@rosie/core'
 import {
@@ -810,6 +811,18 @@ export default function MathSeaPage() {
     return result
   }, [selectedLessons])
 
+  const lessonsByGrade = useMemo(
+    () =>
+      gradesInOrder()
+        .map((g) => ({
+          grade: g,
+          label: GRADE_LABEL[g] ?? `${g} 年级`,
+          lessons: SEA_LESSONS.filter((l) => gradeOf(l.id) === g),
+        }))
+        .filter((grp) => grp.lessons.length > 0),
+    [],
+  )
+
   const toggleLesson = useCallback((id: string) => {
     setPage(1)
     setSelectedLessons(prev => {
@@ -828,6 +841,31 @@ export default function MathSeaPage() {
           SEA_LESSON_MAP[id]?.types.forEach(tp => t.add(`${id}::${tp.tag}`))
           return t
         })
+      }
+      return next
+    })
+  }, [])
+
+  const toggleGrade = useCallback((lessonIds: string[], on: boolean) => {
+    setPage(1)
+    setSelectedLessons((prev) => {
+      const next = new Set(prev)
+      for (const id of lessonIds) {
+        if (on) {
+          next.add(id)
+          setSelectedTypes((pt) => {
+            const t = new Set(pt)
+            SEA_LESSON_MAP[id]?.types.forEach((tp) => t.add(`${id}::${tp.tag}`))
+            return t
+          })
+        } else {
+          next.delete(id)
+          setSelectedTypes((pt) => {
+            const t = new Set(pt)
+            SEA_LESSON_MAP[id]?.types.forEach((tp) => t.delete(`${id}::${tp.tag}`))
+            return t
+          })
+        }
       }
       return next
     })
@@ -1087,16 +1125,35 @@ export default function MathSeaPage() {
                     <span className="sea-section-label">课程</span>
                     <button onClick={toggleAllLessons} className="cursor-pointer text-[10px] transition-colors" style={{ color: 'rgba(0,229,255,0.5)' }}>{allLessonsSelected ? '全不选' : '全选'}</button>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[...SEA_LESSONS].sort((a, b) => Number(b.id) - Number(a.id)).map(l => (
-                      <button
-                        key={l.id}
-                        onClick={() => toggleLesson(l.id)}
-                        className={`sea-chip-${selectedLessons.has(l.id) ? 'on' : 'off'} cursor-pointer rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all active:scale-95`}
-                      >
-                        {l.icon} {l.shortTitle}
-                      </button>
-                    ))}
+                  <div className="space-y-3">
+                    {lessonsByGrade.map((grp) => {
+                      const allOn = grp.lessons.every((l) => selectedLessons.has(l.id))
+                      return (
+                        <div key={grp.grade}>
+                          <div className="mb-1.5 flex items-center justify-between">
+                            <span className="text-[10px] font-bold tracking-wide" style={{ color: 'rgba(0,229,255,0.55)' }}>{grp.label}</span>
+                            <button
+                              onClick={() => toggleGrade(grp.lessons.map((l) => l.id), !allOn)}
+                              className="cursor-pointer text-[10px] transition-colors"
+                              style={{ color: 'rgba(0,229,255,0.45)' }}
+                            >
+                              {allOn ? '全不选' : '全选'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[...grp.lessons].sort((a, b) => Number(b.id) - Number(a.id)).map((l) => (
+                              <button
+                                key={l.id}
+                                onClick={() => toggleLesson(l.id)}
+                                className={`sea-chip-${selectedLessons.has(l.id) ? 'on' : 'off'} cursor-pointer rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all active:scale-95`}
+                              >
+                                {l.icon} {l.shortTitle}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
 

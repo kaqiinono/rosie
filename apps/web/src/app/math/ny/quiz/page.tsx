@@ -27,6 +27,7 @@ import { PROBLEMS as P44, PROBLEM_TYPES as PT44 } from '@rosie/math/utils/lesson
 import { PROBLEMS as P46, PROBLEM_TYPES as PT46 } from '@rosie/math/utils/lesson46-data'
 import { PROBLEMS as P47, PROBLEM_TYPES as PT47 } from '@rosie/math/utils/lesson47-data'
 import { PROBLEMS as P49, PROBLEM_TYPES as PT49 } from '@rosie/math/utils/lesson49-data'
+import { gradeOf, GRADE_LABEL, gradesInOrder, lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizProblemItem } from '@rosie/math/hooks/useMathQuiz'
 
@@ -247,6 +248,42 @@ export default function QuizPage() {
       return prev
     })
   }
+
+  function toggleGradeGroup(
+    gradeLessons: typeof LESSON_META,
+    on: boolean,
+  ) {
+    const ids = gradeLessons
+      .filter((l) => modalMode !== 'random' || !existingIds.has(l.id))
+      .map((l) => l.id)
+    if (on) {
+      setModalLessons((prev) => [...new Set([...prev, ...ids])])
+    } else {
+      setModalLessons((prev) => prev.filter((id) => !ids.includes(id)))
+      setModalTypes((prev) => {
+        const next = { ...prev }
+        for (const id of ids) delete next[id]
+        return next
+      })
+      setModalCounts((prev) => {
+        const next = { ...prev }
+        for (const id of ids) delete next[id]
+        return next
+      })
+    }
+  }
+
+  const lessonsByGrade = useMemo(
+    () =>
+      gradesInOrder()
+        .map((g) => ({
+          grade: g,
+          label: GRADE_LABEL[g] ?? `${g} 年级`,
+          lessons: LESSON_META.filter((l) => gradeOf(l.id) === g),
+        }))
+        .filter((grp) => grp.lessons.length > 0),
+    [],
+  )
 
   function setModalCount(lessonId: string, n: number) {
     setModalCounts((prev) => ({ ...prev, [lessonId]: Math.max(1, n) }))
@@ -892,26 +929,49 @@ export default function QuizPage() {
                     {selectableLessons.every((l) => modalLessons.includes(l.id)) ? '取消全选' : '全选'}
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {LESSON_META.map(({ id, name }) => {
-                    const alreadyIn = modalMode === 'random' && existingIds.has(id)
-                    const selected = modalLessons.includes(id)
+                <div className="space-y-4">
+                  {lessonsByGrade.map((grp) => {
+                    const selectable = grp.lessons.filter(
+                      (l) => modalMode !== 'random' || !existingIds.has(l.id),
+                    )
+                    const allSel =
+                      selectable.length > 0 &&
+                      selectable.every((l) => modalLessons.includes(l.id))
                     return (
-                      <button
-                        key={id}
-                        disabled={alreadyIn}
-                        onClick={() => toggleModalLesson(id)}
-                        className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                          alreadyIn
-                            ? 'cursor-not-allowed bg-slate-50 text-slate-300'
-                            : selected
-                              ? 'bg-indigo-500 text-white shadow-sm'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }`}
-                      >
-                        第{id}讲 · {name}
-                        {alreadyIn ? ' ✓' : ''}
-                      </button>
+                      <div key={grp.grade}>
+                        <div className="mb-2 flex items-center justify-between">
+                          <p className="text-[11px] font-bold text-slate-500">{grp.label}</p>
+                          <button
+                            onClick={() => toggleGradeGroup(grp.lessons, !allSel)}
+                            className="text-[11px] text-indigo-500 hover:text-indigo-700"
+                          >
+                            {allSel ? '取消全选' : '全选'}
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {grp.lessons.map(({ id, name }) => {
+                            const alreadyIn = modalMode === 'random' && existingIds.has(id)
+                            const selected = modalLessons.includes(id)
+                            return (
+                              <button
+                                key={id}
+                                disabled={alreadyIn}
+                                onClick={() => toggleModalLesson(id)}
+                                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                                  alreadyIn
+                                    ? 'cursor-not-allowed bg-slate-50 text-slate-300'
+                                    : selected
+                                      ? 'bg-indigo-500 text-white shadow-sm'
+                                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                              >
+                                {lessonDisplayLabel(id, true)} · {name}
+                                {alreadyIn ? ' ✓' : ''}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
                     )
                   })}
                 </div>
