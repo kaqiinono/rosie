@@ -16,8 +16,8 @@ import Lesson{N}Provider, { useLesson{N} } from '@rosie/math/components/lesson{N
 import AppHeader from '@rosie/math/components/lesson{N}/AppHeader'
 import Sidebar from '@rosie/math/components/lesson{N}/Sidebar'
 import BottomNav from '@rosie/math/components/lesson{N}/BottomNav'
-import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'
-import Toast from '@rosie/math/components/lesson35/Toast'
+import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'  // 全讲次共用，路径固定
+import Toast from '@rosie/math/components/lesson35/Toast'                  // 全讲次共用，路径固定
 
 const SECTION_COUNTS: Record<string, number> = {
   pretest: PROBLEMS.pretest.length,
@@ -140,29 +140,33 @@ export default function LessonPage() {
 
 ## `lesson/[id]/page.tsx`、`homework/[id]/page.tsx`、`workbook/[id]/page.tsx`、`pretest/[id]/page.tsx`
 
-所有详情页结构完全相同，只替换 section 名：
+所有详情页使用共享壳 **`LessonProblemRoutePage`**（自动解析 id、计算上一题/下一题链接并传给 `ProblemDetail`）。只替换 `basePath`、`section`、`problems` 与可选 `detailProps`：
 
 ```tsx
 'use client'
 
-import { use } from 'react'
-import { notFound } from 'next/navigation'
+import LessonProblemRoutePage from '@rosie/math/components/shared/LessonProblemRoutePage'
 import { PROBLEMS } from '@rosie/math/utils/lesson{N}-data'
 import ProblemDetail from '@rosie/math/components/lesson{N}/ProblemDetail'
 
 export default function LessonProblemPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const index = parseInt(id) - 1
-  const list = PROBLEMS.lesson   // ✏️ 改为对应 section：lesson/homework/workbook/pretest
-  const problem = list[index]
-  if (!problem) notFound()
-  return <ProblemDetail problem={problem} />
+  return (
+    <LessonProblemRoutePage
+      params={params}
+      basePath="/math/ny/{N}"
+      section="lesson"              // ✏️ lesson | homework | workbook | pretest | supplement
+      problems={PROBLEMS.lesson}    // ✏️ 对应 PROBLEMS 字段
+      Detail={ProblemDetail}
+    />
+  )
 }
 ```
 
-> **可选 · tip 口诀框**：若数据文件按题型导出了 `TYPE_TIP`，详情页**无需改动**——`ProblemDetail`
-> 内部按 `problem.tag` 自动取贴题口诀，`<ProblemDetail problem={problem} />` 原样即可。只有要给个别题
-> **覆盖**口诀时才传 `tip={...}`。口诀务必贴合题型，别用整讲全量口诀。详见 `components.md`「tip 口诀框」。
+> **可选 · tip 口诀框**：若数据文件按题型导出了 `TYPE_TIP`，`LessonProblemRoutePage` **无需传 tip**——
+> `ProblemDetail` 内部按 `problem.tag` 自动取贴题口诀。只有要给个别题**覆盖**口诀时才传
+> `detailProps={{ tip: '...' }}`。详见 `components.md`「tip 口诀框」（参考 lesson49）。
+
+> **不要**再手写 `parseInt(id)` + `notFound()` + 直接 `<ProblemDetail problem={...} />`。
 
 > **⚠️ 空模块照样生成路由**：即使某讲 `homework`/`workbook`/`pretest` 为空（`[]`），其
 > `page.tsx` + `[id]/page.tsx` **仍要生成**——`LessonBottomNav` 的 tab 写死含 lesson/homework，
@@ -170,7 +174,7 @@ export default function LessonProblemPage({ params }: { params: Promise<{ id: st
 
 ## `alltest/page.tsx`
 
-完整模板（直接复制，替换 `N` 为讲次编号、`lessonN` 为对应标识符）：
+完整模板（替换 `{N}`、`lesson{N}`、`useLesson{N}`、`[主题色]`、`[主题背景色]`）：
 
 ```tsx
 'use client'
@@ -183,6 +187,7 @@ import type { ProblemDifficulty } from '@rosie/core'
 import FilterPanel from '@rosie/math/components/lessonN/FilterPanel'
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
 
 function AlltestContent() {
   const { solveCount } = useLessonN()
@@ -195,6 +200,7 @@ function AlltestContent() {
     // type: 列出数据文件中所有 PROBLEM_TYPES 的 tag（type1, type2, ...）
     type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5', 'type6']),
     mastery: 'all' as MasteryFilter,
+    practice: 'all' as PracticeFilter,
     difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
   }))
 
@@ -221,6 +227,10 @@ function AlltestContent() {
     setFilters(f => ({ ...f, mastery: value }))
   }
 
+  const setPractice = (value: PracticeFilter) => {
+    setFilters(f => ({ ...f, practice: value }))
+  }
+
   return (
     <FilterPanel
       problems={PROBLEMS}
@@ -228,6 +238,7 @@ function AlltestContent() {
       filters={filters}
       onToggleFilter={toggleFilter}
       onSetMastery={setMastery}
+      onSetPractice={setPractice}
     />
   )
 }
@@ -243,7 +254,7 @@ export default function AlltestPage() {
 
 ## `mistakes/page.tsx`
 
-完整模板（直接复制，替换 `N` 为讲次编号、`lessonN` 为对应标识符）：
+完整模板（替换 `{N}`、`lesson{N}`、`useLesson{N}`、`[主题色]`、`[主题背景色]`）：
 
 ```tsx
 'use client'
@@ -397,6 +408,24 @@ export default function SupplementPage() {
 
 ### `supplement/[id]/page.tsx`
 
-参考 `homework/[id]/page.tsx`，主要区别：
-- `const list = PROBLEMS.supplement ?? []`
-- `const problem = list[index]`
+与 `homework/[id]/page.tsx` 相同，使用 `LessonProblemRoutePage`：
+
+```tsx
+'use client'
+
+import LessonProblemRoutePage from '@rosie/math/components/shared/LessonProblemRoutePage'
+import { PROBLEMS } from '@rosie/math/utils/lesson{N}-data'
+import ProblemDetail from '@rosie/math/components/lesson{N}/ProblemDetail'
+
+export default function SupplementProblemPage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <LessonProblemRoutePage
+      params={params}
+      basePath="/math/ny/{N}"
+      section="supplement"
+      problems={PROBLEMS.supplement ?? []}
+      Detail={ProblemDetail}
+    />
+  )
+}
+```

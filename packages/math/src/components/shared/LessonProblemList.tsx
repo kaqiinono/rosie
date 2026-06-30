@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import type { Problem } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
+import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 
 type Props = {
   problems: Problem[]
@@ -59,6 +61,7 @@ export default function LessonProblemList({
                   {p.tagLabel} 🔍
                 </span>
                 <DifficultyStars level={p.difficulty} />
+                <PracticeCountBadge count={count} />
                 {showSource && sourceLabel && (
                   <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
                     {sourceLabel}
@@ -66,8 +69,11 @@ export default function LessonProblemList({
                 )}
               </div>
             </div>
-            <div className={`shrink-0 text-xl ${level === 0 ? 'text-text-muted' : ''}`}>
-              {MASTERY_ICON[level]}
+            <div className="flex shrink-0 items-center gap-1">
+              <div className={`text-xl ${level === 0 ? 'text-text-muted' : ''}`}>
+                {MASTERY_ICON[level]}
+              </div>
+              <FavoriteHeart problemId={p.id} size="sm" />
             </div>
           </Link>
         )

@@ -2,11 +2,14 @@
 
 > 文件落点：`packages/math/src/utils/lesson{N}-data.ts`（若有 `figureNode` 内联 JSX 则用 `.tsx`，见 `figures.md`）。
 
-完整复制 `packages/math/src/utils/lesson35-data.ts`，然后：
+**复制 `packages/math/src/utils/lesson35-data.ts` 为骨架**（只读这一个文件，不要浏览其它讲次数据），另存为 `lesson{N}-data.ts`，然后按 `docs/math/lessons/N.md` 替换内容：
 
-1. 把题目内容全部替换为新讲次的内容
-2. 如有新题型，修改 `PROBLEM_TYPES` / `TYPE_STYLE` / `TAG_STYLE`
-3. 如有图形题目，创建 `Figure/` 目录并在数据文件中 import（文件须改为 `.tsx`，见 `figures.md`）
+1. **复制并重命名** → `lesson{N}-data.ts`（有内联 JSX / `figureNode` 则 `.tsx`，见 `figures.md`）
+2. **清空并替换** `PROBLEMS` 各数组中的题目（保留导出结构不变）
+3. **修改** `PROBLEM_TYPES` / `TYPE_STYLE` / `TAG_STYLE`（题型与颜色按 N.md + `components.md`「HomePage 内容提取」）
+4. **逐题检查** ID 前缀（`{N}-L1` 等）、`difficulty`、字段完整性
+
+> 为什么用 lesson35 当骨架：导出结构最全（含倍比图 `rows`/`rcols` 等可选字段示例），比对照文档从零拼更不易漏字段。题目正文仍**只**来自 N.md，不抄 lesson35 的题。
 
 数据文件导出结构保持不变：
 

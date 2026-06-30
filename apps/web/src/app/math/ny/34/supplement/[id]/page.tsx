@@ -1,15 +1,16 @@
 'use client'
-
-import { use } from 'react'
-import { notFound } from 'next/navigation'
+import LessonProblemRoutePage from '@rosie/math/components/shared/LessonProblemRoutePage'
 import { PROBLEMS, LESSON_TIP } from '@rosie/math/utils/lesson34-data'
 import ProblemDetail from '@rosie/math/components/lesson34/ProblemDetail'
-
 export default function SupplementProblemPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const index = parseInt(id) - 1
-  const list = PROBLEMS.supplement ?? []
-  const problem = list[index]
-  if (!problem) notFound()
-  return <ProblemDetail problem={problem} tip={LESSON_TIP} />
+  return (
+    <LessonProblemRoutePage
+      params={params}
+      basePath="/math/ny/34"
+      section="supplement"
+      problems={PROBLEMS.supplement ?? []}
+      Detail={ProblemDetail}
+      detailProps={{ tip: LESSON_TIP }}
+    />
+  )
 }

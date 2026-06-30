@@ -1,19 +1,27 @@
 'use client'
 
-import { memo, useCallback, useState, type ComponentType } from 'react'
+import { memo, useCallback, useMemo, useState, type ComponentType } from 'react'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
-import { SOURCE_LABELS } from '@rosie/core'
+import { SOURCE_LABELS, useAuth } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@rosie/math/components/shared/DifficultyFilterRow'
+import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import ProblemPracticeSession, { MATH_SKIN } from '@rosie/math/components/shared/ProblemPracticeSession'
+import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
+import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import type { SeaProblem } from '@rosie/math/utils/sea-data'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+export type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
 
 export interface Filters {
   source: Set<string>
   type: Set<string>
   mastery: MasteryFilter
+  practice: PracticeFilter
   difficulty: Set<ProblemDifficulty>
 }
 
@@ -23,6 +31,7 @@ export interface FilterPanelProps {
   filters: Filters
   onToggleFilter: (axis: 'source' | 'type' | 'difficulty', value: string) => void
   onSetMastery: (value: MasteryFilter) => void
+  onSetPractice: (value: PracticeFilter) => void
 }
 
 interface FilterPanelTheme {
@@ -58,11 +67,24 @@ const MASTERY_BTNS: { key: MasteryFilter; label: string }[] = [
   { key: 'mastered',  label: '✅ 已掌握' },
 ]
 
+const PRACTICE_BTNS: { key: PracticeFilter; label: string }[] = [
+  { key: 'all',         label: '全部' },
+  { key: 'unpracticed', label: '✨ 未练习' },
+  { key: 'practiced',   label: '练过' },
+]
+
 function matchesMastery(count: number, mastery: MasteryFilter): boolean {
   if (mastery === 'all') return true
   if (mastery === 'unstarted') return count === 0
   if (mastery === 'reinforce') return count >= 1 && count < 3
   if (mastery === 'mastered') return count >= 3
+  return true
+}
+
+function matchesPractice(count: number, practice: PracticeFilter): boolean {
+  if (practice === 'all') return true
+  if (practice === 'unpracticed') return count === 0
+  if (practice === 'practiced') return count > 0
   return true
 }
 
@@ -91,9 +113,11 @@ function createExpandedCard(
             <div className="mt-0.5 flex flex-wrap gap-1">
               <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
               <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${srcBadge}`}>{srcLabel}</span>
+              <PracticeCountBadge count={count} />
             </div>
           </div>
           <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
+          <FavoriteHeart problemId={p.id} size="sm" />
           <span className={`shrink-0 text-[13px] font-bold text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
         </button>
         {isOpen && (
@@ -111,15 +135,21 @@ export function createFilterPanel(
   ProblemDetailComponent: ComponentType<{ problem: Problem; mode: 'inline' | 'full'; defaultSolutionOpen?: boolean }>,
 ) {
   const { base, title, theme, sourceBtns, typeBtns, tagColors } = config
+  const lessonId = base.split('/').pop() ?? ''
   const ExpandedCard = createExpandedCard(tagColors, theme.srcBadge, ProblemDetailComponent)
 
   function getProblemHref(setName: string, indexInSet: number): string {
     return `${base}/${setName}/${indexInSet + 1}`
   }
 
-  return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery }: FilterPanelProps) {
+  return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery, onSetPractice }: FilterPanelProps) {
+    const { user } = useAuth()
+    const { solvedAt, handleSolve } = useMathSolved(user)
+    const { favorites } = useMathFavoritesContext()
+    const [favOnly, setFavOnly] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
     const [autoExpand, setAutoExpand] = useState(false)
+    const [practiceMode, setPracticeMode] = useState(false)
     const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
 
     const all: { p: Problem; setName: string; idx: number }[] = []
@@ -132,7 +162,9 @@ export function createFilterPanel(
         filters.source.has(setName) &&
         filters.type.has(p.tag) &&
         filters.difficulty.has(p.difficulty) &&
-        matchesMastery(solveCount[p.id] ?? 0, filters.mastery),
+        matchesMastery(solveCount[p.id] ?? 0, filters.mastery) &&
+        matchesPractice(solveCount[p.id] ?? 0, filters.practice) &&
+        (!favOnly || favorites.has(p.id)),
     )
     const total = filtered.length
     const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
@@ -140,6 +172,15 @@ export function createFilterPanel(
     const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
     const allSourceSelected = sourceBtns.every(b => filters.source.has(b.key))
     const allTypeSelected = typeBtns.every(b => filters.type.has(b.key))
+
+    const practicePool = useMemo((): SeaProblem[] =>
+      filtered.map(({ p, setName, idx }) => ({
+        problem: p,
+        lessonId,
+        section: setName,
+        href: getProblemHref(setName, idx),
+      })),
+    [filtered, lessonId])
 
     const toggleDetailMode = useCallback(() => { setShowDetail(v => !v); setCollapsedIds(new Set()) }, [])
     const toggleAutoExpand = useCallback(() => { setAutoExpand(v => !v) }, [])
@@ -152,6 +193,17 @@ export function createFilterPanel(
 
     return (
       <div>
+        {practiceMode && (
+          <ProblemPracticeSession
+            pool={practicePool}
+            solveCount={solveCount}
+            solvedAt={solvedAt}
+            onSolve={handleSolve}
+            onEnd={() => setPracticeMode(false)}
+            skin={MATH_SKIN}
+          />
+        )}
+
         <div className={`mb-3 rounded-[14px] border ${theme.containerBorder} ${theme.containerGradient} p-4`}>
           <div className={`mb-1.5 text-[15px] font-extrabold ${theme.titleColor}`}>{title}</div>
           <div className={`mb-2.5 text-xs ${theme.labelColor}`}>全部{total}道题 · 多选筛选 · 按题型/来源练习</div>
@@ -192,12 +244,32 @@ export function createFilterPanel(
           />
 
           <div className="mb-2">
+            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📊 练习</div>
+            <div className="flex flex-wrap gap-1.5">
+              {PRACTICE_BTNS.map(b => (
+                <button key={b.key} onClick={() => onSetPractice(b.key)}
+                  className={`${btnBase} ${filters.practice === b.key ? btnOn : btnOff}`}>{b.label}</button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-2">
             <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>🎯 掌握度</div>
             <div className="flex flex-wrap gap-1.5">
               {MASTERY_BTNS.map(b => (
                 <button key={b.key} onClick={() => onSetMastery(b.key)}
                   className={`${btnBase} ${filters.mastery === b.key ? btnOn : btnOff}`}>{b.label}</button>
               ))}
+            </div>
+          </div>
+
+          <div className="mb-2">
+            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>⭐ 收藏</div>
+            <div className="flex flex-wrap gap-1.5">
+              <button onClick={() => setFavOnly(v => !v)}
+                className={`${btnBase} ${favOnly ? btnOn : btnOff}`}>
+                {favOnly ? '❤️ 只看收藏' : '🤍 只看收藏'}
+              </button>
             </div>
           </div>
 
@@ -226,6 +298,13 @@ export function createFilterPanel(
                 <div className={`absolute inset-y-0 left-0 rounded-full ${theme.progressMastered} transition-[width] duration-400`}
                   style={{ width: `${pct}%` }} />
               </div>
+              <button
+                onClick={() => total > 0 && setPracticeMode(true)}
+                disabled={total === 0}
+                className={`shrink-0 ${btnBase} ${btnOn} disabled:cursor-not-allowed disabled:opacity-40`}
+              >
+                随机练
+              </button>
               <button onClick={toggleDetailMode}
                 className={`shrink-0 ${btnBase} ${showDetail ? btnOn : `${btnOff} bg-white`}`}>
                 {showDetail ? '收起 ↑' : '展开 ↓'}
@@ -259,9 +338,13 @@ export function createFilterPanel(
                     <div className="mt-0.5 flex flex-wrap gap-1">
                       <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
                       <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${theme.srcBadge}`}>{SOURCE_LABELS[setName] || setName}</span>
+                      <PracticeCountBadge count={count} />
                     </div>
                   </div>
-                  <div className="shrink-0 text-base">{MASTERY_ICON[level]}</div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <div className="text-base">{MASTERY_ICON[level]}</div>
+                    <FavoriteHeart problemId={p.id} size="sm" />
+                  </div>
                 </Link>
               )
             })}

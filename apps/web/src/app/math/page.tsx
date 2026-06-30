@@ -4,6 +4,7 @@ import { OrbBackground, BackLink } from '@rosie/ui'
 import GradeCard from '@rosie/math/components/GradeCard'
 import MathDailyCard from '@rosie/math/components/MathDailyCard'
 import MathSeaCard from '@rosie/math/components/MathSeaCard'
+import { MathFavoritesCard } from '@rosie/math'
 import MathQuizCard from '@rosie/math/components/MathQuizCard'
 import MathCatalogCard from '@rosie/math/components/MathCatalogCard'
 import { gradesForLanding, GRADE_LABEL, lessonsForGrade } from '@rosie/math/utils/lesson-grade'
@@ -34,11 +35,12 @@ export default function MathPage() {
         </section>
 
         <section className="flex w-full max-w-[680px] flex-col gap-4">
-          <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-[1fr_120px_120px_120px]">
-            <div className="h-full">
+          <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-[1fr_120px_120px_120px_120px]">
+            <div className="h-full min-[501px]:col-span-1 col-span-2">
               <MathDailyCard />
             </div>
             <MathSeaCard />
+            <MathFavoritesCard />
             <MathQuizCard />
             <MathCatalogCard />
           </div>

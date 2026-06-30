@@ -16,6 +16,8 @@ import { PROBLEMS as P37, TAG_STYLE as TS37 } from '@rosie/math/utils/lesson37-d
 import { PROBLEMS as P38, TAG_STYLE as TS38 } from '@rosie/math/utils/lesson38-data'
 import { PROBLEMS as P39, TAG_STYLE as TS39 } from '@rosie/math/utils/lesson39-data'
 import type { Problem, ProblemSet } from '@rosie/core'
+import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 
 // ── Data setup ─────────────────────────────────────────────────────────────────
 
@@ -181,15 +183,12 @@ export default function GlobalMistakesPage() {
                       <span className="rounded-full bg-[#f3e8ff] px-2 py-px text-[10px] font-semibold text-[#7e22ce]">
                         {srcLabel}
                       </span>
-                      {count > 0 && (
-                        <span className="rounded-full bg-gray-100 px-2 py-px text-[10px] text-text-muted">
-                          已练 {count} 次
-                        </span>
-                      )}
+                      <PracticeCountBadge count={count} />
                     </div>
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1.5">
+                    <FavoriteHeart problemId={problem.id} size="sm" />
                     <Link
                       href={href}
                       className="rounded-full bg-app-blue px-3 py-1.5 text-[11px] font-semibold text-white no-underline"

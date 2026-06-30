@@ -56,8 +56,9 @@
 | 图表/图形/配图 | [`docs/add-new-lesson/figures.md`](add-new-lesson/figures.md) | **仅当**有图表插槽、SVG、交互组件或题解配图时 |
 | 第四~七步 注册 | [`docs/add-new-lesson/registration.md`](add-new-lesson/registration.md) | 总是（最易遗漏，必核对） |
 
-> **省 token 的关键**：纯文字题可完全跳过 `figures.md`；复制结构相近的已有讲次
-> （纯文字参考 lesson41，交互谜题参考 lesson47）再按详情文件改色/改文案，比从零写更快更稳。
+> **省 token 的关键**：纯文字题可完全跳过 `figures.md`。**组件/路由**不要读历史讲次目录——用 `components.md` / `routes.md` 内嵌模板。
+> **数据文件**可复制 `lesson35-data.ts` 当骨架（只读这一个文件），再按 N.md 替换题目。
+> 数字答案题用 `components.md` **模板 A**，交互谜题用 **模板 B** + `figures.md`。
 
 ---
 
@@ -65,7 +66,7 @@
 
 ```
 packages/math/src/utils/
-  [ ] lessonN-data.ts(.tsx)              — 数据文件（ID 加 N- 前缀；每题含 difficulty 1–5）
+  [ ] lessonN-data.ts(.tsx)              — 复制 lesson35-data.ts 为骨架，再按 N.md 替换
   [ ] sea-data.ts                        — SEA_LESSONS 末尾注册（第五步）
 
 packages/math/src/components/lessonN/
@@ -76,16 +77,18 @@ packages/math/src/components/lessonN/
   [ ] HomePage.tsx
   [ ] FilterPanel.tsx                    — createFilterPanel 工厂
   [ ] ProblemList.tsx
-  [ ] ProblemDetail.tsx
+  [ ] ProblemDetail.tsx                  — 含 LessonProblemDetailHeader + LessonProblemNavBar + 导航 props
   [ ] Figure/ 或 <子目录>/               — 仅有图形/交互题时
 
 apps/web/src/app/math/ny/N/
   [ ] layout.tsx   page.tsx
-  [ ] lesson/page.tsx       lesson/[id]/page.tsx
+  [ ] lesson/page.tsx
+  [ ] lesson/[id]/page.tsx 等            — 使用 LessonProblemRoutePage（勿手写 parseInt）
   [ ] homework/page.tsx     homework/[id]/page.tsx
   [ ] workbook/page.tsx     workbook/[id]/page.tsx
   [ ] pretest/page.tsx      pretest/[id]/page.tsx
-  [ ] alltest/page.tsx      mistakes/page.tsx
+  [ ] alltest/page.tsx                   — filters 含 practice + onSetPractice
+  [ ] mistakes/page.tsx
   [ ] supplement/page.tsx   supplement/[id]/page.tsx   — 仅有补充题时
 
 入口注册（最易遗漏，逐项核对 registration.md）：
