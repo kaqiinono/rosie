@@ -10,7 +10,7 @@ export default function MathFavoritesCard() {
   return (
     <Link
       href="/math/favorites"
-      className="group relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(244,63,94,.25)]"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(244,63,94,.25)]"
       style={{
         background: 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 50%, #fce7f3 100%)',
         border: '2px solid rgba(244,63,94,.3)',

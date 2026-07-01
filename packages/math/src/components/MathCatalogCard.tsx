@@ -7,7 +7,7 @@ export default function MathCatalogCard() {
   return (
     <Link
       href="/math/catalog"
-      className="group relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(59,130,246,.25)]"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(59,130,246,.25)]"
       style={{
         background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%)',
         border: '2px solid rgba(59,130,246,.3)',

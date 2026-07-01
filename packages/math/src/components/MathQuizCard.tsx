@@ -4,7 +4,7 @@ export default function MathQuizCard() {
   return (
     <Link
       href="/math/ny/quiz"
-      className="group relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(99,102,241,.25)]"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(99,102,241,.25)]"
       style={{
         background: 'linear-gradient(135deg, #fdf4ff 0%, #fae8ff 50%, #ede9fe 100%)',
         border: '2px solid rgba(168,85,247,.3)',

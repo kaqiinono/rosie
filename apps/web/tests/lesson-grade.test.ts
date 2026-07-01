@@ -19,12 +19,16 @@ describe('lesson-grade', () => {
     expect(ids.every((id) => Object.keys(LESSON_GRADE).includes(id))).toBe(true)
   })
 
-  it('第 49 讲属于二年级', () => {
+  it('第 49、50 讲属于二年级', () => {
     expect(LESSON_GRADE['49']).toBe(2)
+    expect(LESSON_GRADE['50']).toBe(2)
     expect(gradeOf('49')).toBe(2)
-    expect(lessonsForGrade(2)).toEqual(['49'])
+    expect(gradeOf('50')).toBe(2)
+    expect(lessonsForGrade(2)).toEqual(['49', '50'])
     expect(lessonDisplayNum('49')).toBe(1)
+    expect(lessonDisplayNum('50')).toBe(2)
     expect(lessonDisplayLabel('49')).toBe('第 1 讲')
+    expect(lessonDisplayLabel('50')).toBe('第 2 讲')
   })
 
   it('gradesInOrder 返回升序去重的年级', () => {

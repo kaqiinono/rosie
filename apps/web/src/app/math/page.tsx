@@ -36,20 +36,32 @@ export default function MathPage() {
 
         <section className="flex w-full max-w-[680px] flex-col gap-4">
           <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-[1fr_120px_120px_120px_120px]">
-            <div className="h-full min-[501px]:col-span-1 col-span-2">
+            <div className="col-span-2 h-full min-[501px]:col-span-1">
               <MathDailyCard />
             </div>
-            <MathSeaCard />
-            <MathFavoritesCard />
-            <MathQuizCard />
-            <MathCatalogCard />
+            <div className="h-full">
+              <MathSeaCard />
+            </div>
+            <div className="h-full">
+              <MathFavoritesCard />
+            </div>
+            <div className="h-full">
+              <MathQuizCard />
+            </div>
+            <div className="h-full">
+              <MathCatalogCard />
+            </div>
           </div>
-          <section className="grid w-full grid-cols-1 gap-4 min-[501px]:grid-cols-2">
+          <section className="flex w-full flex-col gap-3">
+            <h2 className="px-1 text-[13px] font-extrabold tracking-wide text-text-secondary">
+              选择年级
+            </h2>
+            <div className="grid w-full grid-cols-1 items-stretch gap-3 min-[501px]:grid-cols-2">
             {gradesForLanding().map((g) => {
               const { total, practiced } = gradeProblemStats(g, solveCount)
               return (
+              <div key={g} className="h-full">
               <GradeCard
-                key={g}
                 grade={g}
                 label={GRADE_LABEL[g] ?? `${g} 年级`}
                 lessonCount={lessonsForGrade(g).length}
@@ -57,8 +69,10 @@ export default function MathPage() {
                 totalProblems={total}
                 practicedProblems={practiced}
               />
+              </div>
               )
             })}
+            </div>
           </section>
         </section>
 

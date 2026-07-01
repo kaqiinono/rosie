@@ -711,23 +711,6 @@ const HOMEWORK: Problem[] = [
     finalUnit: '',
     finalAns: 2086,
   },
-  {
-    id: '49-H17',
-    title: '附加作业1 · 正负交替',
-    tag: 'type5',
-    tagLabel: '综合挑战',
-    difficulty: 4,
-    text: '<strong>1 − 2 + 3 − 4 + 5 − 6 + …… + 99 − 100 + 101</strong>',
-    analysis: [
-      '两两配对：(1−2)+(3−4)+…+(99−100) 共 50 组，每组 = −1',
-      '50 个 −1 = −50，再加最后的 +101',
-      '101 − 50 = <strong>51</strong>',
-    ],
-    type: 'none',
-    finalQ: '结果是多少？',
-    finalUnit: '',
-    finalAns: 51,
-  },
 ]
 
 const SUPPLEMENT: Problem[] = [
@@ -735,7 +718,7 @@ const SUPPLEMENT: Problem[] = [
     id: '49-S1',
     title: '附加题1 · 连减凑整',
     tag: 'type5',
-    tagLabel: '综合挑战',
+    tagLabel: '附加题',
     difficulty: 4,
     text: '<strong>1000 − 91 − 1 − 92 − 2 − 93 − 3 − 94 − 4 − 95 − 5 − 96 − 6 − 97 − 7 − 98 − 8 − 99 − 9</strong>',
     analysis: [
@@ -752,7 +735,7 @@ const SUPPLEMENT: Problem[] = [
     id: '49-S2',
     title: '附加题2 · 奇偶数列相减',
     tag: 'type5',
-    tagLabel: '综合挑战',
+    tagLabel: '附加题',
     difficulty: 5,
     text: '<strong>(1 + 3 + 5 + 7 + …… + 2025) − (2 + 4 + 6 + 8 + …… + 2024)</strong>',
     analysis: [
@@ -769,7 +752,7 @@ const SUPPLEMENT: Problem[] = [
     id: '49-S3',
     title: '附加题3 · 交换律巧算',
     tag: 'type5',
-    tagLabel: '综合挑战',
+    tagLabel: '附加题',
     difficulty: 3,
     text: '<strong>2266 + 4411 + 9977 − 9911 − 2277 − 4466</strong>',
     analysis: [
@@ -785,7 +768,7 @@ const SUPPLEMENT: Problem[] = [
     id: '49-S4',
     title: '附加题4 · 反复加减第几次为0',
     tag: 'type5',
-    tagLabel: '综合挑战',
+    tagLabel: '附加题',
     difficulty: 5,
     text: '从 <strong>2025</strong> 这个数减去 258 以后，再加上 255，然后再减去 258，再加上 255，……这样一直计算下去，到<strong>第几次运算</strong>后第一次等于 0？',
     analysis: [
@@ -802,7 +785,7 @@ const SUPPLEMENT: Problem[] = [
     id: '49-S5',
     title: '附加题5 · 百位数字之和',
     tag: 'type5',
-    tagLabel: '综合挑战',
+    tagLabel: '附加题',
     difficulty: 5,
     text: '在 <strong>134+7, 134+14, 134+21, ……, 134+210</strong> 这 30 个算式中，每个算式的计算结果都是三位数，求这些三位数的<strong>百位数字之和</strong>。',
     analysis: [
@@ -814,6 +797,23 @@ const SUPPLEMENT: Problem[] = [
     finalQ: '百位数字之和是多少？',
     finalUnit: '',
     finalAns: 58,
+  },
+  {
+    id: '49-S6',
+    title: '附加作业1 · 正负交替',
+    tag: 'type5',
+    tagLabel: '附加题',
+    difficulty: 4,
+    text: '<strong>1 − 2 + 3 − 4 + 5 − 6 + …… + 99 − 100 + 101</strong>',
+    analysis: [
+      '两两配对：(1−2)+(3−4)+…+(99−100) 共 50 组，每组 = −1',
+      '50 个 −1 = −50，再加最后的 +101',
+      '101 − 50 = <strong>51</strong>',
+    ],
+    type: 'none',
+    finalQ: '结果是多少？',
+    finalUnit: '',
+    finalAns: 51,
   },
 ]
 

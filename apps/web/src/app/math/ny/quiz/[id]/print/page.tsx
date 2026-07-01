@@ -25,6 +25,7 @@ import { PROBLEMS as P44 } from '@rosie/math/utils/lesson44-data'
 import { PROBLEMS as P46 } from '@rosie/math/utils/lesson46-data'
 import { PROBLEMS as P47 } from '@rosie/math/utils/lesson47-data'
 import { PROBLEMS as P49 } from '@rosie/math/utils/lesson49-data'
+import { PROBLEMS as P50 } from '@rosie/math/utils/lesson50-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 import { computeQuizPoints, type QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 
@@ -33,7 +34,7 @@ import { computeQuizPoints, type QuizPaper } from '@rosie/math/hooks/useMathQuiz
 const LESSON_DATA: Record<string, ProblemSet> = {
   '12': P12, '13': P13, '15': P15, '18': P18, '23': P23, '29': P29, '30': P30,
   '34': P34, '35': P35, '36': P36, '37': P37, '38': P38, '39': P39, '40': P40, '41': P41, '42': P42, '43': P43, '44': P44,
-  '46': P46, '47': P47, '49': P49,
+  '46': P46, '47': P47, '49': P49, '50': P50,
 }
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'

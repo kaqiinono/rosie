@@ -4,6 +4,15 @@ import { gradeOf, lessonIdFromHref } from './lesson-grade'
 
 export const COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/50',
+    title: '等量代换与归一问题探险',
+    description: '先归一再求解 —— 用等量关系和分组统计破解应用题，含逻辑推理综合挑战。',
+    icon: '⚖️',
+    lectureNum: '第 2 讲',
+    tags: ['应用题', '归一·等量代换·分组统计', '27 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/49',
     title: '加减法速算与巧算探险',
     description: '凑整、去括号、按位相加、基准数 —— 学会用运算定律让加减法又快又准，还有终极挑战附加题。',

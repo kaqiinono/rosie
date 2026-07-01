@@ -20,6 +20,7 @@
 | 46 | 一 | [`lessons/46.md`](lessons/46.md) | 抽屉原理与最不利原则 |
 | 47 | 一 | [`lessons/47.md`](lessons/47.md) | 方格中的秘密（二） |
 | 49 | 二（年级内第 1 讲） | [`lessons/49.md`](lessons/49.md) | 加减法的速算与巧算 |
+| 50 | 二（年级内第 2 讲） | [`lessons/50.md`](lessons/50.md) | 等量代换与归一问题 |
 
 > 新增一讲：在 `docs/math/lessons/` 下新建 `N.md`，按模板填入题目（建议写明年级），然后跑 `/add-lesson N`。
 > **操作说明（准备什么、文字题/图片题怎么交）：** [`how-to-add-lesson.md`](how-to-add-lesson.md)  

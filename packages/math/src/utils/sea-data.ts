@@ -19,6 +19,7 @@ import { PROBLEMS as PROBLEMS44, PROBLEM_TYPES as PT44, TAG_STYLE as TS44 } from
 import { PROBLEMS as PROBLEMS46, PROBLEM_TYPES as PT46, TAG_STYLE as TS46 } from './lesson46-data'
 import { PROBLEMS as PROBLEMS47, PROBLEM_TYPES as PT47, TAG_STYLE as TS47 } from './lesson47-data'
 import { PROBLEMS as PROBLEMS49, PROBLEM_TYPES as PT49, TAG_STYLE as TS49 } from './lesson49-data'
+import { PROBLEMS as PROBLEMS50, PROBLEM_TYPES as PT50, TAG_STYLE as TS50 } from './lesson50-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 
 export interface SeaLessonMeta {
@@ -232,6 +233,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: TS47,
     types: PT47.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
     problems: PROBLEMS47,
+  },
+  {
+    id: '50',
+    title: '第2讲·等量代换与归一问题',
+    shortTitle: '2·归一问题',
+    icon: '⚖️',
+    badgeClass: 'bg-teal-100 text-teal-700',
+    tagStyle: TS50,
+    types: PT50.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS50,
   },
   {
     id: '49',
