@@ -1,9 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+const supabaseAuthOptions = {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -11,6 +8,29 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     // Single-tab app — bypass Web Locks to prevent "Lock broken by steal" AbortErrors
     // when multiple hooks issue concurrent Supabase requests on the same page.
     lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn(),
+  },
+} as const
+
+let supabaseClient: SupabaseClient | null = null
+
+function getSupabaseClient(): SupabaseClient {
+  if (!supabaseClient) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required')
+    }
+    supabaseClient = createClient(supabaseUrl, supabaseAnonKey, supabaseAuthOptions)
+  }
+  return supabaseClient
+}
+
+/** Lazy singleton — avoids createClient at import time so `next build` succeeds without env vars. */
+export const supabase: SupabaseClient = new Proxy({} as SupabaseClient, {
+  get(_target, prop, receiver) {
+    const client = getSupabaseClient()
+    const value = Reflect.get(client, prop, receiver)
+    return typeof value === 'function' ? value.bind(client) : value
   },
 })
 

@@ -6,13 +6,32 @@ import { supabase } from '@rosie/core'
 import { getWeekStart } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import type { MathWeeklyPlan, MathDayProgress } from '@rosie/core'
+import { planEndDate } from '@rosie/math/utils/math-helpers'
 
 const SYSTEM_DEFAULTS = { weekStartDay: 4, problemsPerDay: 3 }
 
-function weekEndDateOf(weekStart: string): string {
-  const [y, m, d] = weekStart.split('-').map(Number)
-  const end = new Date(y, m - 1, d + 6)
-  return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
+type PlanMeta = Pick<MathWeeklyPlan, 'planEnd' | 'lessonIds' | 'sectionFilters' | 'tagFilters'>
+
+type ProgressPayload = Record<string, MathDayProgress | PlanMeta | undefined> & {
+  __planMeta?: PlanMeta
+}
+
+function stripPlanMeta(raw: ProgressPayload): { progress: MathWeeklyPlan['progress']; meta?: PlanMeta } {
+  const entries = Object.entries(raw ?? {}).filter(([k]) => k !== '__planMeta')
+  const progress = Object.fromEntries(entries) as MathWeeklyPlan['progress']
+  return { progress, meta: raw?.__planMeta }
+}
+
+function withPlanMeta(plan: MathWeeklyPlan): ProgressPayload {
+  return {
+    ...plan.progress,
+    __planMeta: {
+      planEnd: plan.planEnd,
+      lessonIds: plan.lessonIds,
+      sectionFilters: plan.sectionFilters,
+      tagFilters: plan.tagFilters,
+    },
+  }
 }
 
 async function loadAllPlansFromCloud(userId: string): Promise<MathWeeklyPlan[]> {
@@ -22,14 +41,22 @@ async function loadAllPlansFromCloud(userId: string): Promise<MathWeeklyPlan[]> 
       .select('lesson_id, week_start, week_start_day, problems_per_day, plan_data, progress_data')
       .eq('user_id', userId)
     if (!data) return []
-    return data.map(row => ({
-      weekStart: row.week_start,
-      lessonId: row.lesson_id,
-      weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
-      problemsPerDay: row.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
-      days: row.plan_data as MathWeeklyPlan['days'],
-      progress: (row.progress_data as MathWeeklyPlan['progress']) ?? {},
-    }))
+    return data.map(row => {
+      const days = row.plan_data as MathWeeklyPlan['days']
+      const { progress, meta } = stripPlanMeta((row.progress_data as ProgressPayload) ?? {})
+      return {
+        weekStart: row.week_start,
+        planEnd: meta?.planEnd,
+        lessonId: row.lesson_id,
+        lessonIds: meta?.lessonIds,
+        sectionFilters: meta?.sectionFilters,
+        tagFilters: meta?.tagFilters,
+        weekStartDay: row.week_start_day ?? SYSTEM_DEFAULTS.weekStartDay,
+        problemsPerDay: row.problems_per_day ?? SYSTEM_DEFAULTS.problemsPerDay,
+        days,
+        progress,
+      }
+    })
   } catch {
     return []
   }
@@ -47,7 +74,7 @@ async function saveToCloud(userId: string, plan: MathWeeklyPlan): Promise<void> 
           week_start_day: plan.weekStartDay,
           problems_per_day: plan.problemsPerDay,
           plan_data: plan.days,
-          progress_data: plan.progress,
+          progress_data: withPlanMeta(plan),
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'user_id,week_start' },
@@ -70,11 +97,10 @@ export function useMathWeeklyPlan(user: User | null) {
     void init()
   }, [user])
 
-  // The "current week plan" is whichever plan's 7-day range covers today,
-  // regardless of weekStartDay — this avoids mismatches when users change start day.
+  // Active plan = whichever plan's date range covers today.
   const weeklyPlan = useMemo(() => {
     const t = todayStr()
-    return plansState.find(plan => plan.weekStart <= t && t <= weekEndDateOf(plan.weekStart)) ?? null
+    return plansState.find(plan => plan.weekStart <= t && t <= planEndDate(plan)) ?? null
   }, [plansState])
 
   const priorPlans = useMemo(
