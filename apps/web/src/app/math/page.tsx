@@ -7,6 +7,8 @@ import MathSeaCard from '@rosie/math/components/MathSeaCard'
 import { MathFavoritesCard } from '@rosie/math'
 import MathQuizCard from '@rosie/math/components/MathQuizCard'
 import MathCatalogCard from '@rosie/math/components/MathCatalogCard'
+import MathPriorityCard from '@rosie/math/components/MathPriorityCard'
+import MathMistakesCard from '@rosie/math/components/MathMistakesCard'
 import { gradesForLanding, GRADE_LABEL, lessonsForGrade } from '@rosie/math/utils/lesson-grade'
 import { gradeCourseSummary } from '@rosie/math/utils/courses-data'
 import { gradeProblemStats } from '@rosie/math/utils/grade-stats'
@@ -35,14 +37,14 @@ export default function MathPage() {
         </section>
 
         <section className="flex w-full max-w-[680px] flex-col gap-4">
-          <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-[1fr_120px_120px_120px_120px]">
-            <div className="h-full min-[501px]:col-span-1 col-span-2">
-              <MathDailyCard />
-            </div>
+          <MathDailyCard />
+          <div className="grid grid-cols-3 items-stretch gap-3">
             <MathSeaCard />
             <MathFavoritesCard />
             <MathQuizCard />
             <MathCatalogCard />
+            <MathPriorityCard />
+            <MathMistakesCard />
           </div>
           <section className="grid w-full grid-cols-1 gap-4 min-[501px]:grid-cols-2">
             {gradesForLanding().map((g) => {

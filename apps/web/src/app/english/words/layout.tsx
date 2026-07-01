@@ -1,22 +1,17 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { WordsProvider, useWordsContext } from '@rosie/english'
 import { useImmersive } from '@rosie/core'
 import { AppHeader } from '@rosie/english'
-import { ImportModal } from '@rosie/english'
 import { ImmersiveMode } from '@rosie/english'
-import type { WordEntry } from '@rosie/core'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, upsertByStage, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
+  const { vocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
-  const [importOpen, setImportOpen] = useState(false)
-
-  // Reset immersive when navigating away
   useEffect(() => {
     setIsImmersive(false)
     setPreviewCards(false)
@@ -26,31 +21,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const isDaily = pathname.includes('/daily')
   const isWeeklyPage = pathname.includes('/weekly/')
   const isReading = pathname.includes('/reading')
-  // When previewCards is true on the practice page, show vocab cards first; then switch to quiz
   const immersiveMode = isPracticePage && !previewCards ? 'practice' : 'vocab'
 
-  const handleAppend = useCallback((words: WordEntry[]) => {
-    void upsertByStage(words)
-    setSelUnits(new Set())
-    setSelLessons(new Set())
-    setSelWords(new Set())
-  }, [upsertByStage, setSelUnits, setSelLessons, setSelWords])
-
-  const handleExport = useCallback(async () => {
-    const xlsx = await import('xlsx')
-    const { utils, writeFile } = xlsx.default || xlsx
-    const wb = utils.book_new()
-    const headers = ['Stage', 'Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
-    const rows = [headers, ...vocab.map(v => [v.stage || '', v.unit, v.lesson, v.word, v.explanation, v.ipa || '', v.example || ''])]
-    const ws = utils.aoa_to_sheet(rows)
-    ws['!cols'] = [{ wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
-    utils.book_append_sheet(wb, ws, '单词数据')
-    writeFile(wb, 'RosieFun_词库.xlsx')
-  }, [vocab])
-
   const enterImmersive = useCallback(() => {
-    // 沉浸模式入口仅出现在 /cards 上,这里是防御性兜底:其他路由意外触发时直接 return,
-    // 避免 AppHeader 被隐藏但 ImmersiveMode 又不渲染,导致用户无返回出口。
     if (!filteredWords.length) {
       alert('请先筛选单词！')
       return
@@ -65,19 +38,9 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         style={{ background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)' }}
       />
       {(!isImmersive || isReading) && (
-        <AppHeader
-          onImport={() => setImportOpen(true)}
-          onExport={handleExport}
-          onImmersive={enterImmersive}
-        />
+        <AppHeader onImmersive={enterImmersive} />
       )}
       {children}
-      <ImportModal
-        open={importOpen}
-        onClose={() => setImportOpen(false)}
-        onAppend={handleAppend}
-      />
-      {/* ImmersiveMode opens when immersive is active on non-daily pages */}
       <ImmersiveMode
         open={isImmersive && !isDaily && !isWeeklyPage && !isReading}
         words={filteredWords}
@@ -87,7 +50,6 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         spellButtonStyle={practiceButtonStyle}
         onClose={() => {
           if (isPracticePage && previewCards) {
-            // Preview done — stay immersive but switch to quiz mode
             setPreviewCards(false)
           } else {
             setIsImmersive(false)

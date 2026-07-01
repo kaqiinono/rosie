@@ -47,13 +47,18 @@ export function createLessonProvider(displayName: string): {
 
     useEffect(() => {
       if (!user) return
-      supabase
-        .from('math_wrong')
-        .select('problem_id')
-        .eq('user_id', user.id)
-        .then(({ data }) => {
-          if (data) setWrongIds(new Set(data.map(r => r.problem_id)))
-        })
+      void (async () => {
+        const res = await supabase
+          .from('math_wrong')
+          .select('problem_id, resolved')
+          .eq('user_id', user.id)
+        if (res.error || !res.data) {
+          const fb = await supabase.from('math_wrong').select('problem_id').eq('user_id', user.id)
+          if (fb.data) setWrongIds(new Set(fb.data.map(r => r.problem_id)))
+          return
+        }
+        setWrongIds(new Set(res.data.filter(r => !r.resolved).map(r => r.problem_id)))
+      })()
     }, [user])
 
     const solved: Record<string, boolean> = {}
@@ -69,7 +74,17 @@ export function createLessonProvider(displayName: string): {
         const next = new Set(prev)
         next.delete(id)
         if (user) {
-          supabase.from('math_wrong').delete().eq('user_id', user.id).eq('problem_id', id)
+          const now = new Date().toISOString()
+          void supabase
+            .from('math_wrong')
+            .update({ resolved: true, resolved_at: now })
+            .eq('user_id', user.id)
+            .eq('problem_id', id)
+            .then(({ error }) => {
+              if (error) {
+                void supabase.from('math_wrong').delete().eq('user_id', user.id).eq('problem_id', id)
+              }
+            })
         }
         return next
       })
@@ -95,7 +110,7 @@ export function createLessonProvider(displayName: string): {
         next.add(id)
         if (user) {
           supabase.from('math_wrong').upsert(
-            { user_id: user.id, problem_id: id },
+            { user_id: user.id, problem_id: id, resolved: false, resolved_at: null },
             { onConflict: 'user_id,problem_id' },
           )
         }

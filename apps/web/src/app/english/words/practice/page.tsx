@@ -4,7 +4,7 @@ import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useWordsContext } from '@rosie/english'
 import { useImmersive } from '@rosie/core'
-import { findPassage, findPassageByKey, findSentenceForWord } from '@rosie/english'
+import { findPassage, findPassageByKey, findSentenceForWord, findWordByKey, wordKey } from '@rosie/english'
 import { FilterBar } from '@rosie/english'
 import { PracticeSetup } from '@rosie/english'
 import type { SpellButtonStyle } from '@rosie/english'
@@ -31,7 +31,39 @@ export default function PracticePage() {
   // `?context=<passageKey>`, auto-filter to that lesson and launch immersive
   // Type-D practice without going through the manual PracticeSetup step.
   const contextPassageKey = searchParams.get('context')
+  const focusWordKey = searchParams.get('focus')
   const autoLaunchedRef = useRef(false)
+  const focusLaunchedRef = useRef(false)
+
+  // Hard-word book: ?focus=<wordKey> → filter to one word and launch quiz.
+  useEffect(() => {
+    if (!focusWordKey || focusLaunchedRef.current || vocab.length === 0) return
+    const entry = findWordByKey(vocab, focusWordKey)
+    if (!entry) return
+    focusLaunchedRef.current = true
+    if (entry.stage) setSelStage(entry.stage)
+    setSelUnits(new Set([entry.unit]))
+    setSelLessons(new Set([`${entry.unit}::${entry.lesson}`]))
+    setSelWords(new Set([wordKey(entry)]))
+    setMasteryFilter(null)
+    setPracticeTypes(['A', 'B', 'C'])
+    setPreviewCards(false)
+    setIsImmersive(true)
+    router.replace('/english/words/practice')
+  }, [
+    focusWordKey,
+    vocab,
+    setSelStage,
+    setSelUnits,
+    setSelLessons,
+    setSelWords,
+    setMasteryFilter,
+    setPracticeTypes,
+    setPreviewCards,
+    setIsImmersive,
+    router,
+  ])
+
   useEffect(() => {
     if (!contextPassageKey || autoLaunchedRef.current || vocab.length === 0) return
     const passage = findPassageByKey(contextPassageKey)

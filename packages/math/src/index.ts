@@ -12,6 +12,8 @@ export { default as MathFavoritesCard } from './components/MathFavoritesCard'
 export { MathFavoritesProvider } from './components/MathFavoritesProvider'
 export { default as MathQuizCard } from './components/MathQuizCard'
 export { default as MathCatalogCard } from './components/MathCatalogCard'
+export { default as MathPriorityCard } from './components/MathPriorityCard'
+export { default as MathMistakesCard } from './components/MathMistakesCard'
 export { default as GradeCard } from './components/GradeCard'
 export {
   LESSON_GRADE,

@@ -42,8 +42,8 @@ export type Database = {
         Insert: { user_id: string; problem_id: string; solved_at?: string; solve_count?: number }
       }
       math_wrong: {
-        Row: { user_id: string; problem_id: string; added_at: string }
-        Insert: { user_id: string; problem_id: string; added_at?: string }
+        Row: { user_id: string; problem_id: string; added_at: string; resolved: boolean; resolved_at: string | null }
+        Insert: { user_id: string; problem_id: string; added_at?: string; resolved?: boolean; resolved_at?: string | null }
       }
       math_quiz_papers: {
         Row: {
@@ -125,6 +125,10 @@ export type Database = {
           last_seen?: string | null
           updated_at?: string
         }
+      }
+      english_wrong: {
+        Row: { user_id: string; word_key: string; added_at: string; resolved: boolean; resolved_at: string | null }
+        Insert: { user_id: string; word_key: string; added_at?: string; resolved?: boolean; resolved_at?: string | null }
       }
       weekly_plans: {
         Row: {

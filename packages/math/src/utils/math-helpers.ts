@@ -35,6 +35,26 @@ export const MATH_PLAN_SECTIONS: { key: MathPlanSectionKey; label: string }[] = 
   { key: 'supplement', label: '附加题' },
 ]
 
+const ALL_PLAN_SECTIONS: MathPlanSectionKey[] = ['lesson', 'homework', 'pretest', 'workbook', 'supplement']
+
+/** Map problemId → MathPlanProblem for wrong-answer / lookup UIs. */
+export function buildProblemIdMap(
+  problemSets: Record<string, ProblemSet>,
+  lessonIds?: string[],
+): Map<string, MathPlanProblem> {
+  const map = new Map<string, MathPlanProblem>()
+  const ids = lessonIds ?? Object.keys(problemSets)
+  for (const lessonId of ids) {
+    const ps = problemSets[lessonId]
+    if (!ps) continue
+    for (const section of ALL_PLAN_SECTIONS) {
+      const problems = getSectionProblems(ps, section)
+      problems.forEach((p, i) => map.set(p.id, makeProblem(lessonId, section, p, i + 1)))
+    }
+  }
+  return map
+}
+
 const DEFAULT_SECTIONS: MathPlanSectionKey[] = ['lesson', 'homework', 'pretest']
 
 function parseTypeOrder(tag: string): number {

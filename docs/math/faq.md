@@ -67,6 +67,7 @@
 | **本周旧讲** | 每天 1 题，按覆盖次数轮转旧讲 | 所有计划 |
 | **旧讲复习** | 基于掌握度 / 到期日的间隔复习（`getMathReviewProblemsForDay`） | 非第 36 讲计划 |
 | **知识点复习** | 第 36 讲专用，按讲次轮转多题（`useMathRotatingReview`） | 仅 `lessonId === '36'` |
+| **错题巩固** | 计划范围内错题本中的题，答对后自动消失 | 计划包含的讲次 |
 
 ### 切换计划时
 
@@ -187,3 +188,44 @@ UI 预览区的「每天约 N 题」即此值；**用户不能手动改每天题
 | `packages/math/src/utils/math-helpers.ts` → `countFilteredPlanProblems` | 预览「共 N 道题」 |
 | `packages/math/src/components/MathWeeklyPractice.tsx` | 创建页 UI、调用分配、保存计划 |
 | `packages/math/src/hooks/useMathWeeklyPlan.ts` | 计划持久化（含 `sectionFilters` / `tagFilters` 元数据） |
+
+---
+
+## 「错题巩固」的逻辑是什么？
+
+**「错题巩固」** 是每日计划页里、必做题下方的额外区块，展示当前计划范围内仍在**错题本**（Supabase 表 `math_wrong`）中的题目，方便在计划日一并复习。
+
+### 它做什么
+
+- 每个计划日都会列出**当前仍标记为错题**、且属于本计划讲次（`lessonIds`）的题目
+- 与必做题**去重**：若某错题已出现在当天必做题里，只在必做题区展示一次
+- 答对后从错题本移除（与关卡内做题逻辑一致），返回计划页后自动不再显示
+
+### 题目从哪来
+
+| 规则 | 说明 |
+|------|------|
+| 错题来源 | 任意关卡做错时写入 `math_wrong`（`createLessonProvider` → `addWrong`） |
+| 讲次范围 | 仅当前计划的 `lessonIds`（多讲计划包含全部选中讲次） |
+| 题目来源 | 该讲全部 section（课堂讲解、课后巩固、课前测、练习册、附加题） |
+| 排序 | 讲次编号升序，同讲内按题目 key 稳定排序 |
+
+### 完成与进度
+
+- **不计入**必做题进度条与 `doneKeys`；独立展示，无手动勾选
+- **视为完成**：该题已不在 `math_wrong` 中（在关卡页答对后会自动删除错题记录）
+- 返回计划页时 hook 会在页面重新可见时刷新错题列表
+
+### 与全局错题本的关系
+
+- `/math/mistakes` 展示**所有讲次**的错题；计划页「错题巩固」只展示**本计划讲次**的子集
+- 同一道题两处逻辑一致：答对即移出错题本
+
+### 相关代码
+
+| 文件 | 职责 |
+|------|------|
+| `packages/math/src/hooks/useMathWrong.ts` | 加载 / 刷新错题 ID |
+| `packages/math/src/utils/math-helpers.ts` → `buildProblemIdMap` | problemId → 做题链接 |
+| `packages/math/src/components/MathWeeklyPractice.tsx` | UI（`wrongByDay`、错题区块） |
+| `packages/math/src/components/shared/createLessonProvider.tsx` | 做错写入、答对删除错题 |

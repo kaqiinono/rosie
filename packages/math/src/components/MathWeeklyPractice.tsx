@@ -20,10 +20,12 @@ import {
   suggestAvailablePlanRange,
   getLessonTagStats,
   getLessonSectionStats,
+  buildProblemIdMap,
 } from '@rosie/math/utils/math-helpers'
 import PlanDateRangePicker from './PlanDateRangePicker'
 import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
@@ -333,6 +335,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   } = useMathWeeklyPlan(user)
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
   const { solveCount } = useMathSolved(user)
+  const { wrongIds } = useMathWrong(user)
 
   const today = todayStr()
   const [showParamsDialog, setShowParamsDialog] = useState(false)
@@ -653,6 +656,34 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     }
     return map
   }, [weeklyPlan, priorProblemMap])
+
+  const activePlanLessonIds = useMemo(
+    () => (weeklyPlan ? (weeklyPlan.lessonIds ?? [weeklyPlan.lessonId]) : []),
+    [weeklyPlan],
+  )
+
+  const problemIdMap = useMemo(
+    () => buildProblemIdMap(problemSets, activePlanLessonIds),
+    [problemSets, activePlanLessonIds],
+  )
+
+  /** Wrong problems in plan scope, excluding same-day 必做题 to avoid duplicate cards. */
+  const wrongByDay = useMemo(() => {
+    if (!weeklyPlan) return {} as Record<string, MathPlanProblem[]>
+    const result: Record<string, MathPlanProblem[]> = {}
+    for (const day of weeklyPlan.days) {
+      const requiredIds = new Set(day.problems.map(p => p.problemId))
+      result[day.date] = [...wrongIds]
+        .map(id => problemIdMap.get(id))
+        .filter((p): p is MathPlanProblem => p != null && !requiredIds.has(p.problemId))
+        .sort((a, b) => {
+          const lc = Number(a.lessonId) - Number(b.lessonId)
+          if (lc !== 0) return lc
+          return a.key.localeCompare(b.key)
+        })
+    }
+    return result
+  }, [weeklyPlan, wrongIds, problemIdMap])
 
   // All prior lesson problems (lessonId < current), skipping lessons with no problems (e.g. pure animation)
   const priorLessonProbs = useMemo(() => {
@@ -1143,7 +1174,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   }
 
   // ── Week View ───────────────────────────────────────────────────────────────
-  const planLessonIds = weeklyPlan.lessonIds ?? [weeklyPlan.lessonId]
+  const planLessonIds = activePlanLessonIds
   const lessonInfo = LESSONS.find(l => l.id === weeklyPlan.lessonId) ?? LESSONS[0]
   const headerTitle =
     planLessonIds.length === 1
@@ -1392,6 +1423,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                       key={prob.key}
                       prob={prob}
                       done={doneKeys.has(prob.key)}
+                      isWrong={wrongIds.has(prob.problemId)}
                       onCheck={
                         doneKeys.has(prob.key)
                           ? undefined
@@ -1404,6 +1436,39 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                 <EmptyDay />
               )}
             </div>
+
+            {/* Wrong-answer reinforcement */}
+            {(() => {
+              const extraWrong = wrongByDay[selectedDate!] ?? []
+              const wrongInRequired = dayPlan.problems.filter(p => wrongIds.has(p.problemId)).length
+              if (extraWrong.length === 0 && wrongInRequired === 0) return null
+              return (
+                <div>
+                  <SectionHeader
+                    icon="📕"
+                    label="错题巩固"
+                    count={extraWrong.length + wrongInRequired}
+                    accent="#ef4444"
+                  />
+                  {extraWrong.length > 0 ? (
+                    <div className="space-y-2.5">
+                      {extraWrong.map((prob) => (
+                        <ProblemCard
+                          key={prob.key}
+                          prob={prob}
+                          done={!wrongIds.has(prob.problemId)}
+                          isWrong
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="px-1 text-[12px] leading-relaxed font-medium text-gray-500">
+                      今日 {wrongInRequired} 道错题已在必做题中，请优先完成标注「错题」的题目。
+                    </p>
+                  )}
+                </div>
+              )
+            })()}
 
             {/* Review problems */}
             {weeklyPlan?.lessonId === '36'
@@ -1551,11 +1616,13 @@ function ProblemCard({
   prob,
   done,
   isReview,
+  isWrong,
   onCheck,
 }: {
   prob: MathPlanProblem
   done: boolean
   isReview?: boolean
+  isWrong?: boolean
   onCheck?: () => void
 }) {
   const { user } = useAuth()
@@ -1613,6 +1680,14 @@ function ProblemCard({
               style={{ background: 'rgba(245,158,11,.12)', color: '#b45309' }}
             >
               复习
+            </span>
+          )}
+          {isWrong && (
+            <span
+              className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+              style={{ background: 'rgba(239,68,68,.12)', color: '#dc2626' }}
+            >
+              错题
             </span>
           )}
           <PracticeCountBadge count={practiceCount} />
