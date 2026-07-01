@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
 import { allMathProblemStats } from '@rosie/math/utils/grade-stats'
+import { G1_DOWN_RECOGNIZE_TOTAL } from '@rosie/chinese'
 
 export type HomeStats = {
   mathPracticed: number
   mathTotal: number
   englishPracticed: number
   englishTotal: number
+  chineseRecognized: number
+  chineseRecognizeTotal: number
   calcTotal: number
   calcPracticeDays: number
   mistakesUnresolved: number
@@ -20,6 +23,8 @@ const EMPTY_STATS: HomeStats = {
   mathTotal: 0,
   englishPracticed: 0,
   englishTotal: 0,
+  chineseRecognized: 0,
+  chineseRecognizeTotal: 0,
   calcTotal: 0,
   calcPracticeDays: 0,
   mistakesUnresolved: 0,
@@ -44,6 +49,8 @@ export function useHomeStats(user: User | null) {
         { data: mathRows },
         { data: masteryRows },
         { count: vocabTotal },
+        { data: chineseMasteryRows },
+        { count: chineseRecognizeTotal },
         { data: calcRows },
         { data: mathWrongRows },
         { data: calcWrongRows },
@@ -52,6 +59,15 @@ export function useHomeStats(user: User | null) {
         supabase.from('math_solved').select('problem_id, solve_count').eq('user_id', userId),
         supabase.from('word_mastery').select('correct, incorrect, last_seen').eq('user_id', userId),
         supabase.from('word_entries').select('id', { count: 'exact', head: true }),
+        supabase
+          .from('chinese_char_mastery')
+          .select('correct, incorrect, last_seen')
+          .eq('user_id', userId)
+          .eq('track', 'recognize'),
+        supabase
+          .from('chinese_char_entries')
+          .select('char_key', { count: 'exact', head: true })
+          .contains('tiers', ['recognize']),
         supabase.from('calc_sessions').select('date, correct_count, retry_count, wrong_count').eq('user_id', userId),
         supabase.from('math_wrong').select('resolved').eq('user_id', userId),
         supabase.from('calc_mistakes').select('resolved').eq('user_id', userId),
@@ -71,6 +87,12 @@ export function useHomeStats(user: User | null) {
         if (attempts > 0 || row.last_seen) englishPracticed++
       }
 
+      let chineseRecognized = 0
+      for (const row of chineseMasteryRows ?? []) {
+        const attempts = (row.correct ?? 0) + (row.incorrect ?? 0)
+        if (attempts > 0 || row.last_seen) chineseRecognized++
+      }
+
       const calcDays = new Set<string>()
       let calcTotal = 0
       for (const row of calcRows ?? []) {
@@ -85,6 +107,11 @@ export function useHomeStats(user: User | null) {
           mathTotal,
           englishPracticed,
           englishTotal: vocabTotal ?? 0,
+          chineseRecognized,
+          chineseRecognizeTotal:
+            chineseRecognizeTotal && chineseRecognizeTotal > 0
+              ? chineseRecognizeTotal
+              : G1_DOWN_RECOGNIZE_TOTAL,
           calcTotal,
           calcPracticeDays: calcDays.size,
           mistakesUnresolved:

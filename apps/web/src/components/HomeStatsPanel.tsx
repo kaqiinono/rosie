@@ -34,6 +34,18 @@ function buildItems(stats: HomeStats): StatItem[] {
       accentBg: 'from-emerald-50 to-cyan-50 border-emerald-100',
     },
     {
+      href: '/chinese',
+      icon: '📜',
+      label: '语文',
+      value:
+        stats.chineseRecognizeTotal > 0
+          ? `${stats.chineseRecognized}/${stats.chineseRecognizeTotal}`
+          : String(stats.chineseRecognized),
+      hint: stats.chineseRecognizeTotal > 0 ? '已认 / 会认' : '已认字',
+      accent: 'text-orange-700',
+      accentBg: 'from-orange-50 to-rose-50 border-orange-100',
+    },
+    {
       href: '/calc',
       icon: '🧮',
       label: '口算',
@@ -63,7 +75,7 @@ export default function HomeStatsPanel({ stats, isLoading }: HomeStatsPanelProps
   const items = buildItems(stats)
 
   return (
-    <section className="w-full max-w-[760px]">
+    <section className="w-full max-w-[1040px]">
       <div className="mb-3 flex items-center justify-between px-0.5">
         <h2 className="text-text-primary text-[13px] font-extrabold tracking-wide">
           📊 学习概览
@@ -72,7 +84,7 @@ export default function HomeStatsPanel({ stats, isLoading }: HomeStatsPanelProps
           <span className="text-text-muted text-[11px] font-semibold">同步中…</span>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {items.map((item) => (
           <Link
             key={item.href}

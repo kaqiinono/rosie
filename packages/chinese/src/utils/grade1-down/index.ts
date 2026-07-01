@@ -1,0 +1,11 @@
+// 一年级下册语文教材数据（TS 备份 — 仅用于 generate-sql / verify-data，运行时读 Supabase）
+export * from './types'
+export { UNITS } from './units'
+export { CHARS } from './chars'
+export { LESSON_CHARS } from './lesson-chars'
+export { PHRASES } from './phrases'
+export { POEMS } from './poems'
+export { ACCUMULATION } from './accumulation'
+export { LESSON_PASSAGES } from './lesson-passages'
+export { RADICALS } from './radicals'
+export { STROKE_RULES } from './stroke-rules'

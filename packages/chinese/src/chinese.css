@@ -1,0 +1,189 @@
+/* @rosie/chinese — module-private styles (田字格 etc.) */
+
+:root {
+  --cn-ink: #1c1917;
+  --cn-paper: #fffbeb;
+  --cn-paper-deep: #fef3c7;
+  --cn-cinnabar: #c2410c;
+  --cn-cinnabar-soft: #fed7aa;
+  --cn-indigo: #4338ca;
+  --cn-indigo-soft: #e0e7ff;
+  --cn-jade: #047857;
+  --cn-border: rgba(180, 83, 9, 0.18);
+  --cn-shadow: 0 4px 24px rgba(28, 25, 23, 0.08);
+}
+
+.cn-filter-bar {
+  border-bottom: 1px solid var(--cn-border);
+  background: linear-gradient(180deg, #fffdf7 0%, var(--cn-paper) 100%);
+}
+
+.cn-speak-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(180, 83, 9, 0.25);
+  background: rgba(255, 251, 235, 0.9);
+  color: var(--cn-cinnabar);
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+
+.cn-speak-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(194, 65, 12, 0.2);
+}
+
+.cn-speak-btn:active {
+  transform: scale(0.95);
+}
+
+.cn-start-btn {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 55%, #9a3412 100%);
+  box-shadow: 0 4px 18px rgba(194, 65, 12, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.cn-start-btn:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.cn-content-section {
+  border: 1px solid var(--cn-border);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--cn-shadow);
+}
+
+.cn-content-section-compact {
+  box-shadow: 0 1px 8px rgba(28, 25, 23, 0.05);
+}
+
+.cn-immersive-bg {
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(251, 191, 36, 0.14) 0, transparent 52%),
+    radial-gradient(ellipse at 88% 92%, rgba(67, 56, 202, 0.1) 0, transparent 50%),
+    linear-gradient(180deg, #fffdf7 0%, #fff7ed 100%);
+}
+
+@keyframes cn-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cn-card-rise {
+  animation: cn-card-rise 0.35s ease backwards;
+}
+
+.cn-char-recognize {
+  background: rgba(186, 230, 253, 0.65);
+  border-bottom: 2px solid rgba(14, 165, 233, 0.45);
+}
+
+.cn-char-write {
+  background: rgba(254, 205, 211, 0.7);
+  border-bottom: 2px solid rgba(244, 63, 94, 0.5);
+}
+
+.cn-char-both {
+  background: linear-gradient(135deg, rgba(186, 230, 253, 0.55), rgba(254, 205, 211, 0.55));
+  border-bottom: 2px solid rgba(139, 92, 246, 0.45);
+}
+
+.cn-grid-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  background:
+    linear-gradient(to right, rgba(148, 163, 184, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.45) 1px, transparent 1px),
+    linear-gradient(45deg, transparent 49.5%, rgba(148, 163, 184, 0.25) 49.5%, rgba(148, 163, 184, 0.25) 50.5%, transparent 50.5%),
+    linear-gradient(-45deg, transparent 49.5%, rgba(148, 163, 184, 0.25) 49.5%, rgba(148, 163, 184, 0.25) 50.5%, transparent 50.5%);
+  background-size: 50% 50%, 50% 50%, 100% 100%, 100% 100%;
+  background-position: center, center, center, center;
+  border: 2px solid rgba(148, 163, 184, 0.55);
+  border-radius: 0.375rem;
+}
+
+/* 生字卡片用紧凑田字格 */
+.cn-grid-cell-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1e293b;
+  background:
+    linear-gradient(to right, rgba(148, 163, 184, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.4) 1px, transparent 1px),
+    linear-gradient(45deg, transparent 49.5%, rgba(148, 163, 184, 0.22) 49.5%, rgba(148, 163, 184, 0.22) 50.5%, transparent 50.5%),
+    linear-gradient(-45deg, transparent 49.5%, rgba(148, 163, 184, 0.22) 49.5%, rgba(148, 163, 184, 0.22) 50.5%, transparent 50.5%);
+  background-size: 50% 50%, 50% 50%, 100% 100%, 100% 100%;
+  background-position: center, center, center, center;
+  border: 1.5px solid rgba(148, 163, 184, 0.5);
+  border-radius: 0.3rem;
+}
+
+/* 生字卡片翻转面：中间大字区占满剩余空间 */
+.cn-flash-face {
+  container-type: size;
+}
+
+.cn-flash-char-stage {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+  padding: 0.125rem 0;
+}
+
+.cn-grid-cell-flash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1e293b;
+  background:
+    linear-gradient(to right, rgba(148, 163, 184, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.4) 1px, transparent 1px),
+    linear-gradient(45deg, transparent 49.5%, rgba(148, 163, 184, 0.22) 49.5%, rgba(148, 163, 184, 0.22) 50.5%, transparent 50.5%),
+    linear-gradient(-45deg, transparent 49.5%, rgba(148, 163, 184, 0.22) 49.5%, rgba(148, 163, 184, 0.22) 50.5%, transparent 50.5%);
+  background-size: 50% 50%, 50% 50%, 100% 100%, 100% 100%;
+  background-position: center, center, center, center;
+  border: 2px solid rgba(148, 163, 184, 0.5);
+  border-radius: 0.375rem;
+  width: min(88cqw, 88cqh, 7rem);
+  height: min(88cqw, 88cqh, 7rem);
+  font-size: min(48cqmin, 4rem);
+}
+
+.cn-speak-btn-sm {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
+.cn-speak-btn-sm svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}

@@ -1,0 +1,3 @@
+-- 此文件已拆分为 docs/sql/chinese-g1-down/ 目录下的多个小文件。
+-- Supabase SQL Editor 无法运行 ~1.3MB 的单条灌库脚本。
+-- 请阅读 docs/sql/chinese-g1-down/README.md 并按顺序执行各分片。

@@ -1,6 +1,103 @@
-# 数学模块 FAQ
+# FAQ
 
-> 记录数学每日计划、复习机制等常见疑问。实现代码主要在 `packages/math/`。
+> 常见疑问与操作指引。词库 / 数学讲次录入见「运维指引」；数学每日计划、复习机制见「数学模块机制」。
+
+---
+
+## 运维指引
+
+### 如何添加词库？
+
+英语词库存储在 Supabase **`word_entries` 表**，App 运行时只读数据库（不写本地词库文件）。根据规模有两种做法：
+
+#### 方式 A：管理后台（少量单词 / 日常维护）
+
+适合补几个词、改释义、新建一个小词库。
+
+1. 打开 **`/admin/words`**（管理后台 → 词库管理）
+2. **新建词库**：点击「新建词库」，输入 stage 名（如 `4C`）
+3. **维护结构**：在左侧选好 stage → Unit → Lesson
+4. **添加单词**：
+   - **单个添加**：填写单词、释义、音标、例句等；可点 AI 自动填充（需配置 `ANTHROPIC_API_KEY`）
+   - **批量添加**：上传 xlsx 或粘贴表格（列：Stage / Unit / Lesson / 单词 / 释义 / 音标 / 例句）
+5. **导出备份**：可按当前筛选条件导出 xlsx
+6. **核对**：`/admin/word-audit` 对比数据库与备份文件，检查缺漏
+
+| 注意 | 说明 |
+|------|------|
+| 唯一键 | 同一 `(stage, unit, lesson, word)` 不能重复 |
+| 空词库 | 新建 stage 后若尚未加词，结构暂存在浏览器 localStorage，刷新后仍在；**至少添加 1 个单词**后才会写入数据库 |
+
+#### 方式 B：整库导入（新 stage、上百词）
+
+适合从牛津词卡 PDF、教研 xlsx 一次性导入整个 stage（如 4B、4C）。
+
+1. 准备源文件（PDF 词卡 / xlsx / md）
+2. 在 Cursor 对话执行 **`/add-stage <STAGE> <源文件路径>`**  
+   例：`/add-stage 4C docs/4C.pdf`
+3. Skill 会生成：
+   - `docs/<STAGE>-upsert.sql` — 灌入基础字段
+   - `docs/<STAGE>-update-maps.sql` — 更新音节、关键字等 jsonb 字段
+   - `packages/english/src/utils/english-data-<STAGE>.ts` — 离线备份（runtime 不引用）
+4. **在 Supabase SQL Editor 依次执行** upsert → update-maps，每步后核对词数
+5. 刷新 App，`/english` 词库筛选中应出现新 stage
+
+详细流程与校验规则见仓库内 `.claude/skills/add-stage/SKILL.md`。
+
+---
+
+### 如何添加数学讲次（课程）？
+
+数学每一「讲」= 一个关卡目录 `apps/web/src/app/math/ny/N/`，题目数据在 `packages/math/src/utils/lessonN-data.ts(x)`。推荐用 AI 按规范生成，避免漏注册入口。
+
+#### 推荐流程（`/add-lesson`）
+
+1. **写题目源稿**  
+   复制 `docs/math/new-lesson-template.md` → `docs/math/lessons/N.md`（N = 讲次号，如 `48`）  
+   填入 summary、课前测、课堂讲解、课后巩固、拓展、附加题等**全部**题目；录入前自己数清总题数。
+
+2. **准备配图（如有）**  
+   - 题解配图 → `public/img/math/48-P3.png` 等  
+   - 交互题 / 题面 SVG → 在 N.md 中写清组件说明（见 `docs/math/how-to-add-lesson.md`）
+
+3. **触发录入**  
+   在 Cursor 对话：`/add-lesson 48`  
+   或说明：「按 add-lesson 规范录入第 48 讲，题目在 docs/math/lessons/48.md」
+
+4. **本地验收**（`pnpm dev`）
+
+   | 检查项 | 地址 |
+   |--------|------|
+   | 年级讲次列表 | `/math` → 对应年级 |
+   | 讲次首页与题数 | `/math/ny/48` |
+   | 各模块做题 | `/math/ny/48/lesson`、`homework`、`pretest` 等 |
+   | 综合题库 | `/math/ny/48/alltest` |
+   | 题海 | `/math/sea` |
+   | 每日计划可选讲次 | `/math/ny/plan` |
+
+5. **合并前** 运行 `pnpm typecheck` / `pnpm build`
+
+#### 铁律（易踩坑）
+
+| 规则 | 说明 |
+|------|------|
+| **题目 ID 加讲次前缀** | 如 `48-L1`、`48-H3`，避免跨讲次 ID 碰撞 |
+| **8 处入口注册** | 除数据与路由外，还须登记 `courses-data`、`lesson-grade`、`sea-data`、每日计划、组卷等（skill 会处理；手动改代码见 `docs/add-new-lesson/registration.md`） |
+| **build 通过 ≠ 页面正常** | 新增 UI 后真机打开看一眼；包内 Tailwind 需在 `globals.css` `@source` 扫描 |
+
+#### 延伸阅读
+
+| 文档 | 内容 |
+|------|------|
+| [`docs/math/how-to-add-lesson.md`](how-to-add-lesson.md) | 面向家长的图文操作说明 |
+| [`docs/add-new-lesson.md`](../add-new-lesson.md) | 技术索引与文件清单 |
+| `.claude/skills/add-lesson/SKILL.md` | AI 录入 skill 完整规范 |
+
+---
+
+## 数学模块机制
+
+> 实现代码主要在 `packages/math/`。
 
 ---
 

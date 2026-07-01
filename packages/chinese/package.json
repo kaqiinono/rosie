@@ -1,0 +1,38 @@
+{
+  "name": "@rosie/chinese",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "verify-data": "python3 scripts/verify-grade1-down-data.py",
+    "generate-sql": "python3 scripts/generate-g1-down-upsert.py"
+  },
+  "dependencies": {
+    "@rosie/core": "workspace:*",
+    "@rosie/rewards": "workspace:*",
+    "@rosie/ui": "workspace:*",
+    "@supabase/supabase-js": "^2.99.2",
+    "clsx": "^2.1.1",
+    "hanzi-writer": "^3.7.3"
+  },
+  "peerDependencies": {
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "hanzi-writer-data": "^2.0.1",
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "styled-jsx": "^5.1.6",
+    "typescript": "^5.8.2"
+  }
+}

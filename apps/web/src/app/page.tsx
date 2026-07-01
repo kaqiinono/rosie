@@ -31,14 +31,14 @@ const baseModules: ModuleCardData[] = [
     icon: '📖',
   },
   {
-    href: '/today',
-    title: '今日计划',
-    description: '一键查看今天的数学题目和英语单词，高效完成每日任务。',
-    tag: 'TODAY',
-    variant: 'today',
-    stats: ['数学每日一练', '英语每日一练', '进度追踪'],
-    enterText: '查看今日计划',
-    icon: '🗓️',
+    href: '/chinese',
+    title: '语文园地',
+    description: '认字、会写、古诗背诵，按一年级下册课本进度学习。',
+    tag: 'CHINESE',
+    variant: 'reading',
+    stats: ['生字认读', '拼音测验', '古诗背诵'],
+    enterText: '开始语文学习',
+    icon: '📜',
   },
   {
     href: '/calc',
@@ -49,6 +49,16 @@ const baseModules: ModuleCardData[] = [
     stats: ['加减乘除闯关', '金币兑换奖券', '错题本'],
     enterText: '开始口算',
     icon: '🧮',
+  },
+  {
+    href: '/today',
+    title: '今日计划',
+    description: '一键查看今天的数学题目和英语单词，高效完成每日任务。',
+    tag: 'TODAY',
+    variant: 'today',
+    stats: ['数学每日一练', '英语每日一练', '进度追踪'],
+    enterText: '查看今日计划',
+    icon: '🗓️',
   },
   {
     href: '/mistakes',
@@ -116,11 +126,9 @@ export default function HomePage() {
           </h1>
         </section>
 
-        {user && (
-          <HomeStatsPanel stats={stats} isLoading={statsLoading} />
-        )}
+        {user && <HomeStatsPanel stats={stats} isLoading={statsLoading} />}
 
-        <section className="grid w-full max-w-[760px] grid-cols-1 gap-5 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+        <section className="grid w-full max-w-[1040px] grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((mod) => (
             <ModuleCard key={mod.href} data={mod} />
           ))}

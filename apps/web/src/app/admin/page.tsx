@@ -34,6 +34,15 @@ const TOOLS: AdminTool[] = [
     ring: 'rgba(59,130,246,0.28)',
   },
   {
+    href: '/admin/chinese',
+    emoji: '字',
+    title: '语文字词',
+    description: '维护生字拼音、部首、组词与课文「读一读记一记」词语；笔顺数据仍通过 SQL 脚本更新。',
+    from: 'rgba(244,63,94,0.12)',
+    to: 'rgba(251,191,36,0.10)',
+    ring: 'rgba(244,63,94,0.28)',
+  },
+  {
     href: '/admin/audio',
     emoji: '🎬',
     title: '媒体管理',
