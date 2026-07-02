@@ -22,9 +22,16 @@ describe('lesson-grade', () => {
   it('第 49 讲属于二年级', () => {
     expect(LESSON_GRADE['49']).toBe(2)
     expect(gradeOf('49')).toBe(2)
-    expect(lessonsForGrade(2)).toEqual(['49'])
+    expect(lessonsForGrade(2)).toEqual(['49', '51'])
     expect(lessonDisplayNum('49')).toBe(1)
     expect(lessonDisplayLabel('49')).toBe('第 1 讲')
+  })
+
+  it('第 51 讲属于二年级第 3 讲', () => {
+    expect(LESSON_GRADE['51']).toBe(2)
+    expect(gradeOf('51')).toBe(2)
+    expect(lessonDisplayNum('51')).toBe(2)
+    expect(lessonDisplayLabel('51')).toBe('第 2 讲')
   })
 
   it('gradesInOrder 返回升序去重的年级', () => {

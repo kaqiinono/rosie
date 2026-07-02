@@ -4,6 +4,15 @@ import { gradeOf, lessonIdFromHref } from './lesson-grade'
 
 export const COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/51',
+    title: '等量代换与归一问题探险',
+    description: '等量代换统一数量、消元求单价、直接归一与反比例归一 —— 学会先求每份再算总量。',
+    icon: '⚖️',
+    lectureNum: '第 3 讲',
+    tags: ['等量代换', '归一问题·消元', '24 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/49',
     title: '加减法速算与巧算探险',
     description: '凑整、去括号、按位相加、基准数 —— 学会用运算定律让加减法又快又准，还有终极挑战附加题。',
