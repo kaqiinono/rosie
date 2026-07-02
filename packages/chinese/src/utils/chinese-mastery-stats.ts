@@ -1,12 +1,16 @@
 import type { WordMasteryInfo } from '@rosie/core'
 import { ensureStageInit, isGraduated } from '@rosie/core'
 import type { CharMasteryMap } from '../hooks/useCharMastery'
-import type { LessonCharGroup } from './grade1-down/types'
+import type { LessonCharGroup } from './g1b/types'
 import type { CharTrack } from './chinese-helpers'
-import g1DownStats from './grade1-down/stats.json'
+import g1bStats from './g1b/stats.json'
 
-export const G1_DOWN_RECOGNIZE_TOTAL = g1DownStats.targetRecognizeTable
-export const G1_DOWN_WRITE_TOTAL = g1DownStats.targetWriteTable
+export const G1B_RECOGNIZE_TOTAL = g1bStats.targetRecognizeTable
+export const G1B_WRITE_TOTAL = g1bStats.targetWriteTable
+/** @deprecated use G1B_RECOGNIZE_TOTAL */
+export const G1_DOWN_RECOGNIZE_TOTAL = G1B_RECOGNIZE_TOTAL
+/** @deprecated use G1B_WRITE_TOTAL */
+export const G1_DOWN_WRITE_TOTAL = G1B_WRITE_TOTAL
 
 export type ChineseMasteryStats = {
   recognizePracticed: number
@@ -69,7 +73,7 @@ export function computeChineseMasteryStats(
   const totals =
     lessonGroups.length > 0
       ? countLessonCharTotals(lessonGroups)
-      : { recognizeTotal: G1_DOWN_RECOGNIZE_TOTAL, writeTotal: G1_DOWN_WRITE_TOTAL }
+      : { recognizeTotal: G1B_RECOGNIZE_TOTAL, writeTotal: G1B_WRITE_TOTAL }
 
   return {
     recognizePracticed,

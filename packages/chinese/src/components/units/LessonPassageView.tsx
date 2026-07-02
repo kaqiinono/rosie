@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 import clsx from 'clsx'
-import type { LessonCharGroup } from '../../utils/grade1-down/types'
+import type { LessonCharGroup } from '../../utils/g1b/types'
+import { useChineseContext } from '../../context/ChineseContext'
 import {
   annotatePassageParagraph,
   getLessonPassage,
@@ -22,7 +23,8 @@ const MARK_CLASS: Record<CharMarkKind, string> = {
 }
 
 export default function LessonPassageView({ lessonKey, group }: Props) {
-  const passage = getLessonPassage(lessonKey)
+  const { bookSlug } = useChineseContext()
+  const passage = getLessonPassage(lessonKey, bookSlug)
   const recognize = useMemo(() => new Set(group?.recognize ?? []), [group])
   const write = useMemo(() => new Set(group?.write ?? []), [group])
 

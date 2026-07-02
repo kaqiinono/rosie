@@ -25,11 +25,9 @@ interface CharFlashCardProps {
   flipped: boolean
   onFlip: () => void
   index?: number
-  dualMode?: boolean
 }
 
 const CARD_MIN_H = 200
-const DUAL_CARD_MIN_H = 220
 
 const FRONT_BG: CSSProperties = { background: 'linear-gradient(160deg, #fff7ed 0%, #ffedd5 100%)' }
 const BACK_BG: CSSProperties = { background: 'linear-gradient(160deg, #eef2ff 0%, #e0e7ff 100%)' }
@@ -39,7 +37,6 @@ export default function CharFlashCard({
   flipped,
   onFlip,
   index = 0,
-  dualMode = false,
 }: CharFlashCardProps) {
   const {
     char,
@@ -68,11 +65,11 @@ export default function CharFlashCard({
 
   const infoBadges: ReactNode = (
     <>
-      <span className="rounded-full border border-amber-300/50 bg-amber-100/80 px-2 py-0.5 text-[9.5px] font-extrabold tracking-wide whitespace-nowrap text-amber-800">
+      <span className="min-w-0 rounded-full border border-amber-300/50 bg-amber-100/80 px-2 py-0.5 text-[9.5px] leading-tight font-extrabold tracking-wide text-amber-800">
         {infoLabel}
       </span>
       {isReview && (
-        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9.5px] font-bold whitespace-nowrap text-violet-700">
+        <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[9.5px] font-bold whitespace-nowrap text-violet-700">
           复习
         </span>
       )}
@@ -128,48 +125,6 @@ export default function CharFlashCard({
       {lessonTitle}
     </p>
   ) : null
-
-  if (dualMode) {
-    return (
-      <div
-        className="flex flex-col overflow-hidden rounded-2xl border border-amber-200/70 bg-white"
-        style={{
-          minHeight: DUAL_CARD_MIN_H,
-          boxShadow: '0 2px 10px rgba(28,25,23,0.05)',
-          animation: `cn-card-rise 0.35s ease ${delay}s backwards`,
-        }}
-      >
-        <div className="flex flex-wrap items-center gap-1 border-b border-amber-100 bg-amber-50/60 px-2.5 py-1.5">
-          {infoBadges}
-        </div>
-
-        <div className="flex flex-1 min-h-0">
-          <div
-            className="cn-flash-face flex w-[38%] shrink-0 flex-col border-r border-amber-100 px-1.5 py-2"
-            style={FRONT_BG}
-          >
-            {charStage(false)}
-          </div>
-          <div
-            className="flex min-w-0 flex-1 flex-col gap-1 px-2 py-2"
-            style={BACK_BG}
-          >
-            <div className="shrink-0 space-y-0.5 text-center">
-              <p className="text-lg leading-none font-black text-indigo-900">{pinyin}</p>
-              {metaLine}
-              {phraseBlock}
-            </div>
-          </div>
-        </div>
-
-        {lessonTitle && (
-          <p className="truncate border-t border-amber-100 bg-white px-2.5 py-1 text-center text-[10px] font-medium text-amber-900/40">
-            {lessonTitle}
-          </p>
-        )}
-      </div>
-    )
-  }
 
   const frontFace = (
     <div

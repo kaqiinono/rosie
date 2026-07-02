@@ -3,20 +3,23 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ACCUMULATION, POEMS } from '../utils/grade1-down'
+import { getBookPoems, getBookAccumulation } from '../utils/chinese-book-content'
 import { ACCUMULATION_KIND_LABEL, buildAccumulationQuizItems } from '../utils/chinese-accumulation-helpers'
 import AccumulationQuizRunner from './accumulation/AccumulationQuizRunner'
 import PoemList from './poems/PoemList'
 import { getGardenLessonGroups } from '../utils/chinese-garden-helpers'
 import { useChineseContext } from '../context/ChineseContext'
 
-const GARDEN_POEMS = POEMS.filter((p) => p.source === 'garden')
-
 export default function ChineseAccumulationPage() {
   const searchParams = useSearchParams()
   const unitParam = searchParams.get('unit')
   const unitFilter = unitParam ? Number(unitParam) : undefined
-  const { addWrong, markWrongResolved, lessonGroups } = useChineseContext()
+  const { addWrong, markWrongResolved, lessonGroups, bookSlug } = useChineseContext()
+  const accumulation = useMemo(() => getBookAccumulation(bookSlug), [bookSlug])
+  const gardenPoems = useMemo(
+    () => getBookPoems(bookSlug).filter((p) => p.source === 'garden'),
+    [bookSlug],
+  )
   const gardenGroups = useMemo(() => getGardenLessonGroups(lessonGroups), [lessonGroups])
 
   const [activeUnit, setActiveUnit] = useState<number | 'all'>(unitFilter ?? 'all')
@@ -25,10 +28,10 @@ export default function ChineseAccumulationPage() {
   const items = useMemo(
     () =>
       buildAccumulationQuizItems(
-        ACCUMULATION,
+        accumulation,
         activeUnit === 'all' ? undefined : activeUnit,
       ),
-    [activeUnit],
+    [activeUnit, accumulation],
   )
 
   const handleComplete = (results: { id: string; correct: boolean }[]) => {
@@ -62,7 +65,7 @@ export default function ChineseAccumulationPage() {
       </header>
 
       <section className="mt-6 space-y-3">
-        {ACCUMULATION.map((block) => (
+        {accumulation.map((block) => (
           <div
             key={`${block.unit}-${block.kind}`}
             className="rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50 to-cyan-50 p-4"
@@ -123,7 +126,7 @@ export default function ChineseAccumulationPage() {
         <h2 className="mb-3 text-sm font-bold tracking-wide text-violet-600 uppercase">
           园地古诗
         </h2>
-        <PoemList poems={GARDEN_POEMS} />
+        <PoemList poems={gardenPoems} />
       </section>
 
       <button
@@ -134,7 +137,7 @@ export default function ChineseAccumulationPage() {
         }}
         className="mt-6 w-full rounded-xl border-2 border-teal-400 py-3 text-sm font-bold text-teal-800"
       >
-        全部练习（{buildAccumulationQuizItems(ACCUMULATION).length} 题）
+        全部练习（{buildAccumulationQuizItems(accumulation).length} 题）
       </button>
 
       <Link

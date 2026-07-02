@@ -1,4 +1,4 @@
-import type { LessonCharGroup } from './grade1-down/types'
+import type { LessonCharGroup } from './g1b/types'
 import { charKey, getWeekStart } from '../utils/chinese-helpers'
 
 export interface ChineseWeeklyPlanDay {
@@ -12,6 +12,8 @@ export interface ChineseWeekDayProgress {
   quizDone: boolean
   lastScore?: number
   completedAt?: string
+  practiceCount?: number
+  lastPracticedAt?: string
 }
 
 export interface ChineseWeeklyPlan {
@@ -48,6 +50,7 @@ export function buildChineseWeeklyPlan(
   newRecognizePerDay = CHINESE_PLAN_DEFAULTS.newRecognizePerDay,
   newWritePerDay = CHINESE_PLAN_DEFAULTS.newWritePerDay,
   weekStart?: string,
+  bookSlug = 'g1b',
 ): ChineseWeeklyPlan {
   const start = weekStart ?? getWeekStart(undefined, weekStartDay)
   const lessonIdx = Math.max(0, lessonGroups.findIndex((g) => g.lessonKey === lessonKey))
@@ -57,8 +60,8 @@ export function buildChineseWeeklyPlan(
   const writeQueue: string[] = []
   for (let i = lessonIdx; i < lessonGroups.length; i++) {
     const group = lessonGroups[i]
-    for (const ch of group.recognize) recognizeQueue.push(charKey(ch))
-    for (const ch of group.write) writeQueue.push(charKey(ch))
+    for (const ch of group.recognize) recognizeQueue.push(charKey(ch, bookSlug))
+    for (const ch of group.write) writeQueue.push(charKey(ch, bookSlug))
   }
 
   const days: ChineseWeeklyPlanDay[] = []

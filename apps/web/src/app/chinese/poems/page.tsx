@@ -1,5 +1,5 @@
-import { PoemList } from '@rosie/chinese'
+import { ChinesePoemsPage } from '@rosie/chinese'
 
-export default function ChinesePoemsPage() {
-  return <PoemList />
+export default function ChinesePoemsRoutePage() {
+  return <ChinesePoemsPage />
 }

@@ -12,7 +12,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from curated_passages_data import CURATED_PASSAGES, LESSON_ORDER  # noqa: E402
 
-OUT = SCRIPT_DIR.parent / "src/utils/grade1-down/lesson-passages.ts"
+OUT = SCRIPT_DIR.parent / "src/utils/g1b/lesson-passages.ts"
 
 
 def main() -> None:

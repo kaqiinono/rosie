@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
 import { allMathProblemStats } from '@rosie/math/utils/grade-stats'
-import { G1_DOWN_RECOGNIZE_TOTAL } from '@rosie/chinese'
+import { G1B_RECOGNIZE_TOTAL } from '@rosie/chinese'
 
 export type HomeStats = {
   mathPracticed: number
@@ -111,7 +111,7 @@ export function useHomeStats(user: User | null) {
           chineseRecognizeTotal:
             chineseRecognizeTotal && chineseRecognizeTotal > 0
               ? chineseRecognizeTotal
-              : G1_DOWN_RECOGNIZE_TOTAL,
+              : G1B_RECOGNIZE_TOTAL,
           calcTotal,
           calcPracticeDays: calcDays.size,
           mistakesUnresolved:

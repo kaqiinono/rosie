@@ -9,7 +9,6 @@ interface ChineseCharsCardsGridProps {
   charByKey: Map<string, ChineseCharProfile>
   flippedSet: Set<number>
   onFlip: (index: number) => void
-  dualMode?: boolean
 }
 
 function toFlashData(
@@ -36,7 +35,6 @@ export default function ChineseCharsCardsGrid({
   charByKey,
   flippedSet,
   onFlip,
-  dualMode = false,
 }: ChineseCharsCardsGridProps) {
   if (cards.length === 0) {
     return (
@@ -44,12 +42,8 @@ export default function ChineseCharsCardsGrid({
     )
   }
 
-  const gridColsClass = dualMode
-    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-    : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-
   return (
-    <div className={`grid gap-3 ${gridColsClass}`}>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {cards.map((card, index) => (
         <CharFlashCard
           key={`${card.lessonKey}::${card.charKey}`}
@@ -57,7 +51,6 @@ export default function ChineseCharsCardsGrid({
           flipped={flippedSet.has(index)}
           onFlip={() => onFlip(index)}
           index={index}
-          dualMode={dualMode}
         />
       ))}
     </div>

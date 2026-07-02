@@ -1,0 +1,14 @@
+{
+  "recognizeListEntries": 480,
+  "recognizeListUnique": 476,
+  "writeListUnique": 250,
+  "catalogUnique": 609,
+  "catalogWriteTier": 250,
+  "catalogRecognizeOnly": 359,
+  "phraseEntries": 52,
+  "poems": 7,
+  "targetRecognizeTable": 460,
+  "targetWriteTable": 250,
+  "lessonKeysRecognize": 35,
+  "lessonKeysWrite": 35
+}

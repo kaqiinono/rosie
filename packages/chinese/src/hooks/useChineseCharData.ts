@@ -10,9 +10,9 @@ import type {
   LessonCharGroup,
   StrokeOrderData,
 } from '../types/chineseCharData'
-import type { CharTier } from '../utils/grade1-down/types'
+import type { CharTier } from '../utils/g1b/types'
 
-const CACHE_VER = 'chinese_char_data_v2'
+const CACHE_VER = 'chinese_char_data_v3'
 const FETCH_PAGE_SIZE = 1000
 
 function cacheKey(userId: string) {
@@ -97,12 +97,13 @@ async function fetchAllRows<T>(
 ): Promise<T[]> {
   const all: T[] = []
   let from = 0
+  const orderCols = order.split(',').map((col) => col.trim()).filter(Boolean)
   while (true) {
-    const { data, error } = await supabase
-      .from(table)
-      .select(select)
-      .order(order.split(',')[0], { ascending: true })
-      .range(from, from + FETCH_PAGE_SIZE - 1)
+    let query = supabase.from(table).select(select)
+    for (const col of orderCols) {
+      query = query.order(col, { ascending: true })
+    }
+    const { data, error } = await query.range(from, from + FETCH_PAGE_SIZE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
     all.push(...(data as T[]))

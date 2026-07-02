@@ -7,13 +7,14 @@ import {
   CharQuizRunner,
   buildGardenQuizItems,
   getGardenLessonGroups,
+  lessonKeysMatch,
   useChineseContext,
 } from '@rosie/chinese'
 
 export default function ChineseGardenQuizPage() {
   const searchParams = useSearchParams()
   const lessonParam = searchParams.get('lesson')
-  const { lessonGroups, charByKey, recordBatch, isCharDataReady } = useChineseContext()
+  const { lessonGroups, charByKey, recordBatch, isCharDataReady, bookSlug } = useChineseContext()
 
   const gardenGroups = useMemo(() => getGardenLessonGroups(lessonGroups), [lessonGroups])
   const defaultKey = gardenGroups[0]?.lessonKey ?? 'u1-garden'
@@ -22,13 +23,13 @@ export default function ChineseGardenQuizPage() {
 
   const items = useMemo(
     () =>
-      isCharDataReady ? buildGardenQuizItems(lessonGroups, charByKey, resolvedKey) : [],
-    [lessonGroups, charByKey, resolvedKey, isCharDataReady],
+      isCharDataReady ? buildGardenQuizItems(lessonGroups, charByKey, resolvedKey, bookSlug) : [],
+    [lessonGroups, charByKey, resolvedKey, isCharDataReady, bookSlug],
   )
 
   const pinyinPool = useMemo(() => [...new Set(items.map((i) => i.pinyin))], [items])
 
-  const group = gardenGroups.find((g) => g.lessonKey === resolvedKey)
+  const group = gardenGroups.find((g) => lessonKeysMatch(g.lessonKey, resolvedKey, bookSlug))
 
   if (!isCharDataReady) {
     return <p className="p-6 text-center text-sm text-slate-500">字库未就绪</p>

@@ -1,5 +1,5 @@
 -- Chinese curriculum content (字表 + 课文 + 课内生字编排)
--- Run in Supabase SQL editor before docs/sql/chinese-g1-down/*.sql (see README in that folder)
+-- Run in Supabase SQL editor before docs/sql/chinese-g1b/*.sql (see README in that folder)
 --
 -- Runtime: app reads via useChineseCharData (authenticated SELECT).
 -- Content maintenance: pnpm --filter @rosie/chinese generate-sql

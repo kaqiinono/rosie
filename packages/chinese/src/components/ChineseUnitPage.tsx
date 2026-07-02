@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import type { ChineseLessonMeta, ChineseUnitEntry } from '../utils/grade1-down/types'
+import type { ChineseLessonMeta, ChineseUnitEntry } from '../utils/g1b/types'
 import type { ChineseLessonRow, LessonCharGroup } from '../types/chineseCharData'
-import { getLessonGroup } from '../utils/chinese-helpers'
+import { getLessonGroup, findLessonRow } from '../utils/chinese-helpers'
+import { chineseRoute } from '../utils/chinese-routes'
 import { getLessonPassage } from '../utils/chinese-lesson-passage-helpers'
+import { useChineseContext } from '../context/ChineseContext'
 import LessonPassageView from './units/LessonPassageView'
 
 function lessonKeyFor(unit: number, lesson: ChineseLessonMeta): string {
@@ -16,8 +18,9 @@ function lessonKeyFor(unit: number, lesson: ChineseLessonMeta): string {
 function resolveLessonRow(
   lessons: ChineseLessonRow[],
   key: string,
+  bookSlug: string,
 ): ChineseLessonRow | undefined {
-  return lessons.find((l) => l.lessonKey === key)
+  return findLessonRow(lessons, key, bookSlug)
 }
 
 type LessonCardProps = {
@@ -28,10 +31,11 @@ type LessonCardProps = {
 }
 
 function LessonCard({ unit, lesson, lessonGroups, lessons }: LessonCardProps) {
+  const { bookSlug } = useChineseContext()
   const key = lessonKeyFor(unit.unit, lesson)
-  const group = getLessonGroup(lessonGroups, key)
-  const row = resolveLessonRow(lessons, key)
-  const passage = getLessonPassage(key)
+  const group = getLessonGroup(lessonGroups, key, bookSlug)
+  const row = resolveLessonRow(lessons, key, bookSlug)
+  const passage = getLessonPassage(key, bookSlug)
   const isGarden = lesson.kind === 'garden'
   const isHappyReading = lesson.kind === 'happy_reading'
 
@@ -48,7 +52,7 @@ function LessonCard({ unit, lesson, lessonGroups, lessons }: LessonCardProps) {
           <div className="flex flex-wrap gap-1.5">
             {isGarden ? (
               <Link
-                href={`/chinese/garden?lesson=${key}`}
+                href={`${chineseRoute(bookSlug, 'garden')}?lesson=${key}`}
                 className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white no-underline"
               >
                 识字加油站
@@ -56,17 +60,19 @@ function LessonCard({ unit, lesson, lessonGroups, lessons }: LessonCardProps) {
             ) : (
               <>
                 <Link
-                  href={`/chinese/chars?lesson=${key}`}
+                  href={`${chineseRoute(bookSlug, 'chars')}?lesson=${key}`}
                   className="rounded-lg bg-sky-100 px-2.5 py-1 text-[10px] font-bold text-sky-800 no-underline"
                 >
                   生字
                 </Link>
-                <Link
-                  href={`/chinese/phrases?lesson=${key}`}
-                  className="rounded-lg bg-violet-100 px-2.5 py-1 text-[10px] font-bold text-violet-800 no-underline"
-                >
-                  词语
-                </Link>
+                {passage?.paragraphs.length ? (
+                  <Link
+                    href={chineseRoute(bookSlug, 'reading', key)}
+                    className="rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800 no-underline"
+                  >
+                    阅读
+                  </Link>
+                ) : null}
               </>
             )}
           </div>

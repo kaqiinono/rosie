@@ -1,5 +1,5 @@
 import type { ChineseLessonRow } from '../types/chineseCharData'
-import type { LessonKind } from './grade1-down/types'
+import type { LessonKind } from './g1b/types'
 
 const KIND_ORDER: Record<LessonKind, number> = {
   lesson: 0,
@@ -21,9 +21,10 @@ export function sortLessonsInUnit(lessons: ChineseLessonRow[]): ChineseLessonRow
   })
 }
 
-/** 全册正课编号，来自 lesson_key（如 u4-l7 → 7） */
+/** 全册正课编号，来自 lesson_key（如 u4-l7 或 g2a::u4-l7 → 7） */
 export function parseBookLessonNumber(lessonKey: string): number | null {
-  const match = lessonKey.match(/^u\d+-l(\d+)$/)
+  const local = lessonKey.includes('::') ? lessonKey.slice(lessonKey.indexOf('::') + 2) : lessonKey
+  const match = local.match(/^u\d+-l(\d+)$/)
   return match ? parseInt(match[1], 10) : null
 }
 

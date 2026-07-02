@@ -50,7 +50,11 @@ async function saveToCloud(userId: string, plan: ChineseWeeklyPlan): Promise<str
   }
 }
 
-export function useChineseWeeklyPlan(user: User | null, lessonGroups: LessonCharGroup[]) {
+export function useChineseWeeklyPlan(
+  user: User | null,
+  lessonGroups: LessonCharGroup[],
+  bookSlug = 'g1b',
+) {
   const defaultLessonKey = lessonGroups[0]?.lessonKey ?? 'u1-l1'
 
   const [defaultParams, setDefaultParams] = useState<{
@@ -129,10 +133,11 @@ export function useChineseWeeklyPlan(user: User | null, lessonGroups: LessonChar
         params.newRecognizePerDay,
         params.newWritePerDay,
         currentWeekStart ?? undefined,
+        bookSlug,
       )
       return savePlan(plan)
     },
-    [currentWeekStart, defaultLessonKey, defaultParams, lessonGroups, savePlan],
+    [currentWeekStart, defaultLessonKey, defaultParams, lessonGroups, savePlan, bookSlug],
   )
 
   const updateDayProgress = useCallback(

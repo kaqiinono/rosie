@@ -63,7 +63,7 @@ export default function ChineseWrongPage() {
                 )}
                 {row.itemType === 'phrase' && (
                   <Link
-                    href="/chinese/phrases"
+                    href="/chinese/chars"
                     className="text-xs font-bold text-rose-700 no-underline"
                   >
                     再练

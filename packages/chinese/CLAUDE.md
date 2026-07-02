@@ -11,7 +11,7 @@ workspace package.
 - **Chars (`components/chars/`)** — flash cards, pinyin quiz, **hanzi-writer 笔顺书写** (`CharWriter`).
 - **Poems (`components/poems/`)** — poem list + fill-in-blank recite flow.
 - **`ChineseContext`** — aggregates `useCharMastery`, `useChineseCharData`, `useChineseWeeklyPlan`.
-- **`utils/grade1-down/`** — **backup only** (一年级下册 TS); used to generate SQL upserts, not runtime.
+- **`utils/g1b/`** — **backup only** (一年级下册 TS); used to generate SQL upserts, not runtime.
 - **`utils/chinese-helpers.ts`** — `charKey`, lesson char lookups, shuffle; re-exports `getWeekStart`.
 
 ## Data model (DB-first)
@@ -31,9 +31,10 @@ Runtime reads Supabase (like English `word_entries`):
 1. `docs/sql/chinese-char-mastery.sql`
 2. `docs/sql/chinese-weekly-plans.sql`
 3. `docs/sql/chinese-char-entries.sql`
-4. `docs/sql/chinese-g1-down/` — 按 README 顺序灌库，完成后跑 `99-verify.sql` 校验
-5. `docs/sql/chinese-wrong-items.sql` — 错题本（可选，未建则错题不落库）
-6. `docs/sql/chinese-char-entries-admin-rls.sql` — 字词维护页写权限（`/admin/chinese`）
+4. `docs/sql/chinese-g1b/` — 按 README 顺序灌库，完成后跑 `99-verify.sql` 校验
+5. 若库内仍有旧前缀 `g1-下::`，执行 `docs/sql/chinese-migrate-char-key-g1b.sql`（增量，不删数据）
+6. `docs/sql/chinese-wrong-items.sql` — 错题本（可选，未建则错题不落库）
+7. `docs/sql/chinese-char-entries-admin-rls.sql` — 字词维护页写权限（`/admin/chinese`）
 
 Regenerate upsert after editing TS backup:
 

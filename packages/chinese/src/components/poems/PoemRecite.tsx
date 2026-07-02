@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react'
 import clsx from 'clsx'
-import type { PoemEntry } from '../../utils/grade1-down/types'
+import type { PoemEntry } from '../../utils/g1b/types'
 
 interface PoemReciteProps {
   poem: PoemEntry

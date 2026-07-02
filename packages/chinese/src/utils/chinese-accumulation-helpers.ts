@@ -1,4 +1,4 @@
-import type { AccumulationKind, AccumulationUnit } from './grade1-down/types'
+import type { AccumulationKind, AccumulationUnit } from './g1b/types'
 import { shuffle } from './chinese-helpers'
 
 export const ACCUMULATION_KIND_LABEL: Record<AccumulationKind, string> = {

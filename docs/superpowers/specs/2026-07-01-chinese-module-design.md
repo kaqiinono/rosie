@@ -2,7 +2,7 @@
 
 - 日期：2026-07-01
 - 教材首批范围：**一年级下册**（部编版 2022 修订）
-- 数据草稿：`docs/chinese/grade1-down/`（待 review）
+- 数据草稿：`docs/chinese/g1b/`（待 review）
 - 状态：**Phase 1 MVP + DB 字表已接入**（需在 Supabase 执行建表 + upsert SQL 后联调）
 
 ## 背景与目标
@@ -101,7 +101,7 @@ packages/chinese/
 │   ├── context/
 │   │   └── ChineseContext.tsx
 │   └── utils/
-│       ├── grade1-down/      # 从 docs/chinese/grade1-down 迁入或 re-export
+│       ├── g1b/      # 从 docs/chinese/g1b 迁入或 re-export
 │       └── chinese-helpers.ts
 
 apps/web/src/app/chinese/**     # 薄路由壳
@@ -195,7 +195,7 @@ apps/web/src/app/chinese/**     # 薄路由壳
 ### 静态内容（DB-first，与英语 `word_entries` 同模式）
 
 - **运行时：** `useChineseCharData` 读三张内容表；`localStorage` 缓存。
-- **维护：** `packages/chinese/src/utils/grade1-down/*.ts` 为备份；改数据后跑 `pnpm --filter @rosie/chinese generate-sql` → 在 Supabase **按顺序**执行 `docs/sql/chinese-g1-down/*.sql`（见该目录 README）。
+- **维护：** `packages/chinese/src/utils/g1b/*.ts` 为备份；改数据后跑 `pnpm --filter @rosie/chinese generate-sql` → 在 Supabase **按顺序**执行 `docs/sql/chinese-g1b/*.sql`（见该目录 README）。
 - **笔顺来源：** `hanzi-writer-data`；**部首来源：** Make Me A Hanzi + 教材偏旁名称表。灌库时部首/笔顺不得为空。
 
 ```sql
@@ -227,7 +227,7 @@ chinese_lesson_chars (
 ```sql
 -- docs/sql/chinese-char-mastery.sql（待建）
 chinese_char_mastery (
-  user_id, char_key,           -- e.g. 'g1-下::春'
+  user_id, char_key,           -- e.g. 'g1b::春'
   track,                       -- 'recognize' | 'write'
   correct, incorrect, last_seen,
   stage, next_review_date, is_hard,
@@ -272,14 +272,14 @@ chinese_wrong_items (
 
 ### Phase 0 — 数据 review（当前）
 
-- [x] PDF 提取草稿：`docs/chinese/grade1-down/`
+- [x] PDF 提取草稿：`docs/chinese/g1b/`
 - [ ] 人工校对拼音、识字表 410 字、补全 phrases
 - [ ] 本设计稿 review
 
 ### Phase 1 — MVP（字词 + 古诗 + 周计划）
 
 1. `packages/chinese` 脚手架 + `transpilePackages` + `@source`
-2. 迁入 review 后的 grade1-down 数据
+2. 迁入 review 后的 g1b 数据
 3. `useCharMastery`（recognize / write 分轨）
 4. 认字卡 + 拼音测验 + 错题记录
 5. 古诗列表 + 填空背诵
@@ -336,7 +336,7 @@ chinese_wrong_items (
 ## 参考文件
 
 - 教材 PDF：`docs/tmp/语文一年级下册.pdf`
-- 提取脚本：`docs/tmp/extract-chinese-g1-down.py`
-- 数据草稿：`docs/chinese/grade1-down/`
+- 提取脚本：`docs/tmp/extract-chinese-g1b.py`
+- 数据草稿：`docs/chinese/g1b/`
 - 英语模块参考：`packages/english/CLAUDE.md`
 - 掌握度：`packages/core/src/masteryUtils.ts`

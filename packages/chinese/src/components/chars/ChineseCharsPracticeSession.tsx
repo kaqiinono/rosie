@@ -81,7 +81,7 @@ export default function ChineseCharsPracticeSession() {
   const [poemIdx, setPoemIdx] = useState(0)
   const [accIdx, setAccIdx] = useState(0)
   const [passageIdx, setPassageIdx] = useState(0)
-  const [flipped, setFlipped] = useState(false)
+  const [flipped, setFlipped] = useState(true)
   const [selected, setSelected] = useState<string | null>(null)
   const [earnedMoons, setEarnedMoons] = useState(0)
   const [correctCounts, setCorrectCounts] = useState({ total: 0, correct: 0 })
@@ -254,7 +254,7 @@ export default function ChineseCharsPracticeSession() {
                 disabled={cardIdx === 0}
                 onClick={() => {
                   setCardIdx((i) => i - 1)
-                  setFlipped(false)
+                  setFlipped(true)
                 }}
                 className="rounded-xl border border-amber-200 px-4 py-2 text-sm font-bold disabled:opacity-40"
               >
@@ -266,10 +266,10 @@ export default function ChineseCharsPracticeSession() {
                   if (cardIdx + 1 >= plan.cards.length) {
                     goNextPhase('cards')
                     setCardIdx(0)
-                    setFlipped(false)
+                    setFlipped(true)
                   } else {
                     setCardIdx((i) => i + 1)
-                    setFlipped(false)
+                    setFlipped(true)
                   }
                 }}
                 className="cn-start-btn rounded-xl border-0 px-5 py-2 text-sm font-bold text-white"

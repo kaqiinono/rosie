@@ -1,4 +1,4 @@
-import type { CharTier, LessonCharGroup, LessonKind, UnitType } from '../utils/grade1-down/types'
+import type { CharTier, LessonCharGroup, LessonKind, UnitType } from '../utils/g1b/types'
 
 export interface StrokeOrderData {
   strokes: string[]

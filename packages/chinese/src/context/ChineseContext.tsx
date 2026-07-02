@@ -1,12 +1,13 @@
 'use client'
 
-import React, { createContext, useContext, useCallback } from 'react'
+import React, { createContext, useContext, useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { WordMasteryInfo } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useCharMastery, type CharMasteryMap, type CharMasteryResult } from '../hooks/useCharMastery'
 import { useChineseCharData } from '../hooks/useChineseCharData'
 import { useChineseWeeklyPlan } from '../hooks/useChineseWeeklyPlan'
+import { useActiveChineseBook } from '../hooks/useActiveChineseBook'
 import {
   useChineseWrong,
   type ChineseWrongItemType,
@@ -15,10 +16,15 @@ import {
 } from '../hooks/useChineseWrong'
 import type { ChineseCharProfile, ChineseLessonRow, LessonCharGroup } from '../types/chineseCharData'
 import type { CharTrack } from '../utils/chinese-helpers'
-import { masteryKey } from '../utils/chinese-helpers'
+import { charKey, masteryKey, parseBookSlug } from '../utils/chinese-helpers'
+import type { ChineseBookSlug } from '../utils/chinese-books'
+import { getChineseBook } from '../utils/chinese-books'
 import type { ChineseWeeklyPlan, ChineseWeekDayProgress } from '../utils/chineseWeeklyPlan'
 
 interface ChineseContextValue {
+  bookSlug: ChineseBookSlug
+  bookLabel: string
+  charKeyForBook: (ch: string) => string
   user: User | null
   masteryMap: CharMasteryMap
   recordBatch: (results: CharMasteryResult[]) => void
@@ -53,6 +59,8 @@ const ChineseContext = createContext<ChineseContextValue | null>(null)
 
 export function ChineseProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
+  const bookSlug = useActiveChineseBook()
+  const bookMeta = getChineseBook(bookSlug)
   const { masteryMap, recordBatch: recordBatchRaw, getMastery } = useCharMastery(user)
   const {
     rows: wrongRows,
@@ -64,6 +72,7 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
     chars,
     charByKey,
     lessons,
+    lessonChars,
     lessonGroups,
     getCharProfile,
     isLoading: isCharDataLoading,
@@ -79,7 +88,49 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
     generatePlan,
     updateDayProgress,
     isLoading: isPlanLoading,
-  } = useChineseWeeklyPlan(user, lessonGroups)
+  } = useChineseWeeklyPlan(user, lessonGroups, bookSlug)
+
+  const bookFilter = useMemo(() => parseBookSlug(bookSlug), [bookSlug])
+
+  const filteredLessons = useMemo(() => {
+    if (!bookFilter) return lessons
+    return lessons.filter(
+      (l) => l.grade === bookFilter.grade && l.semester === bookFilter.semester,
+    )
+  }, [lessons, bookFilter])
+
+  const filteredLessonKeys = useMemo(
+    () => new Set(filteredLessons.map((l) => l.lessonKey)),
+    [filteredLessons],
+  )
+
+  const filteredChars = useMemo(() => {
+    const prefix = `${bookSlug}::`
+    return chars.filter((c) => c.charKey.startsWith(prefix))
+  }, [chars, bookSlug])
+
+  const filteredLessonChars = useMemo(
+    () => lessonChars.filter((lc) => filteredLessonKeys.has(lc.lessonKey)),
+    [lessonChars, filteredLessonKeys],
+  )
+
+  const filteredLessonGroups = useMemo(
+    () =>
+      lessonGroups.filter((g) => filteredLessonKeys.has(g.lessonKey)),
+    [lessonGroups, filteredLessonKeys],
+  )
+
+  const filteredCharByKey = useMemo(
+    () => new Map(filteredChars.map((c) => [c.charKey, c])),
+    [filteredChars],
+  )
+
+  const charKeyForBook = useCallback((ch: string) => charKey(ch, bookSlug), [bookSlug])
+
+  const getFilteredCharProfile = useCallback(
+    (charKeyValue: string) => filteredCharByKey.get(charKeyValue),
+    [filteredCharByKey],
+  )
 
   const recordBatch = useCallback(
     (results: CharMasteryResult[]) => {
@@ -96,6 +147,9 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
   return (
     <ChineseContext.Provider
       value={{
+        bookSlug,
+        bookLabel: bookMeta?.label ?? bookSlug,
+        charKeyForBook,
         user,
         masteryMap,
         recordBatch,
@@ -108,14 +162,14 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
         generatePlan,
         updateDayProgress,
         isPlanLoading,
-        chars,
-        charByKey,
-        lessons,
-        lessonGroups,
-        getCharProfile,
+        chars: filteredChars,
+        charByKey: filteredCharByKey,
+        lessons: filteredLessons,
+        lessonGroups: filteredLessonGroups,
+        getCharProfile: getFilteredCharProfile,
         isCharDataLoading,
         charDataError,
-        isCharDataReady,
+        isCharDataReady: filteredChars.length > 0 && filteredLessonGroups.length > 0,
         wrongRows,
         unresolvedWrong,
         addWrong,

@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
 import type { ChineseCharProfile, ChineseLessonRow } from '../types/chineseCharData'
-import type { CharTier } from '../utils/grade1-down/types'
+import type { CharTier } from '../utils/g1b/types'
 
 export interface CharEntryPatch {
   pinyin?: string

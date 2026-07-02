@@ -7,6 +7,7 @@ import {
   buildDayQuizItems,
   buildTodayQuizItems,
   getLessonGroup,
+  findLessonRow,
   getLessonDisplayInfo,
   useChineseContext,
 } from '@rosie/chinese'
@@ -15,7 +16,7 @@ import { todayStr } from '@rosie/core'
 export default function ChineseCharCardsPage() {
   const searchParams = useSearchParams()
   const lessonParam = searchParams.get('lesson')
-  const { weeklyPlan, lessonGroups, lessons, charByKey, getCharProfile, masteryMap, isCharDataReady } =
+  const { weeklyPlan, lessonGroups, lessons, charByKey, getCharProfile, masteryMap, isCharDataReady, charKeyForBook, bookSlug } =
     useChineseContext()
   const today = todayStr()
   const todayPlan = weeklyPlan?.days.find((d) => d.date === today)
@@ -23,31 +24,34 @@ export default function ChineseCharCardsPage() {
   const items = useMemo(() => {
     if (!isCharDataReady) return []
     if (lessonParam) {
-      const group = getLessonGroup(lessonGroups, lessonParam)
+      const group = getLessonGroup(lessonGroups, lessonParam, bookSlug)
       if (!group) return []
-      const recognizeKeys = group.recognize.map((ch) => `g1-下::${ch}`)
-      const writeKeys = group.write.map((ch) => `g1-下::${ch}`)
+      const recognizeKeys = group.recognize.map((ch) => charKeyForBook(ch))
+      const writeKeys = group.write.map((ch) => charKeyForBook(ch))
       return buildDayQuizItems(
         lessonGroups,
         charByKey,
         lessonParam,
         recognizeKeys,
         writeKeys,
+        [],
+        [],
+        bookSlug,
       )
     }
     if (todayPlan) {
       return buildTodayQuizItems(lessonGroups, charByKey, masteryMap, todayPlan, today)
     }
     return []
-  }, [lessonParam, todayPlan, lessonGroups, charByKey, masteryMap, isCharDataReady, today])
+  }, [lessonParam, todayPlan, lessonGroups, charByKey, masteryMap, isCharDataReady, today, charKeyForBook, bookSlug])
 
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
 
   const current = items[idx]
   const profile = current ? getCharProfile(current.charKey) : undefined
-  const group = lessonParam ? getLessonGroup(lessonGroups, lessonParam) : undefined
-  const lessonRow = lessonParam ? lessons.find((l) => l.lessonKey === lessonParam) : undefined
+  const group = lessonParam ? getLessonGroup(lessonGroups, lessonParam, bookSlug) : undefined
+  const lessonRow = lessonParam ? findLessonRow(lessons, lessonParam, bookSlug) : undefined
   const unitLessons = lessonRow ? lessons.filter((l) => l.unit === lessonRow.unit) : []
   const display = lessonRow ? getLessonDisplayInfo(lessonRow, unitLessons) : null
 

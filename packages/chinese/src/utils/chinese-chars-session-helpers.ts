@@ -1,8 +1,8 @@
 import type { ChineseCharProfile, ChineseLessonRow } from '../types/chineseCharData'
-import type { LessonCharGroup, PoemEntry } from './grade1-down/types'
-import { POEMS } from './grade1-down/poems'
-import { ACCUMULATION } from './grade1-down/accumulation'
-import { UNITS } from './grade1-down/units'
+import type { LessonCharGroup, PoemEntry } from './g1b/types'
+import type { ChineseBookSlug } from './chinese-books'
+import { getBookAccumulation, getBookPoems } from './chinese-book-content'
+import type { ChineseUnitEntry } from './g1b/types'
 import {
   buildAccumulationQuizItems,
   type AccumulationQuizItem,
@@ -117,8 +117,8 @@ export interface PracticeSessionPlan {
   possibleMoons: number
 }
 
-export function getUnitOptions(): UnitOption[] {
-  return UNITS.map((u) => ({ unit: u.unit, title: u.title }))
+export function getUnitOptions(units: ChineseUnitEntry[]): UnitOption[] {
+  return units.map((u) => ({ unit: u.unit, title: u.title }))
 }
 
 export function getLessonsForUnits(
@@ -158,10 +158,11 @@ function poemMatchesLesson(poem: PoemEntry, lesson: ChineseLessonRow): boolean {
   return lesson.lesson === poem.lesson
 }
 
-function poemsForLessons(filtered: FilteredLesson[]): PoemEntry[] {
+function poemsForLessons(filtered: FilteredLesson[], bookSlug: ChineseBookSlug = 'g1b'): PoemEntry[] {
+  const poems = getBookPoems(bookSlug)
   const seen = new Set<string>()
   const out: PoemEntry[] = []
-  for (const poem of POEMS) {
+  for (const poem of poems) {
     if (seen.has(poem.id)) continue
     if (filtered.some(({ lesson }) => poemMatchesLesson(poem, lesson))) {
       seen.add(poem.id)
@@ -171,9 +172,9 @@ function poemsForLessons(filtered: FilteredLesson[]): PoemEntry[] {
   return out
 }
 
-function accumulationLabelsForUnits(units: Set<number>): string[] {
+function accumulationLabelsForUnits(units: Set<number>, bookSlug: ChineseBookSlug = 'g1b'): string[] {
   const labels: string[] = []
-  for (const block of ACCUMULATION) {
+  for (const block of getBookAccumulation(bookSlug)) {
     if (units.size > 0 && !units.has(block.unit)) continue
     for (const item of block.items) {
       labels.push(item.text)
@@ -186,12 +187,13 @@ export function buildLessonContentBlocks(
   filtered: FilteredLesson[],
   charByKey: Map<string, ChineseCharProfile>,
   allLessons: ChineseLessonRow[],
+  bookSlug: ChineseBookSlug = 'g1b',
 ): LessonContentBlock[] {
   const displayMap = buildLessonDisplayMap(allLessons)
   return filtered.map(({ lesson, group }) => {
-    const phraseItems = buildLessonPhraseItems(lesson, group, charByKey)
-    const poems = poemsForLessons([{ lesson, group }])
-    const passage = getLessonPassage(lesson.lessonKey)
+    const phraseItems = buildLessonPhraseItems(lesson, group, charByKey, bookSlug)
+    const poems = poemsForLessons([{ lesson, group }], bookSlug)
+    const passage = getLessonPassage(lesson.lessonKey, bookSlug)
     const display = displayMap.get(lesson.lessonKey)
     return {
       lessonKey: lesson.lessonKey,
@@ -206,7 +208,7 @@ export function buildLessonContentBlocks(
       poems,
       accumulationLabels:
         lesson.lessonKind === 'garden'
-          ? accumulationLabelsForUnits(new Set([lesson.unit]))
+          ? accumulationLabelsForUnits(new Set([lesson.unit]), bookSlug)
           : [],
       hasPassage: Boolean(passage?.paragraphs.length),
     }
@@ -216,6 +218,7 @@ export function buildLessonContentBlocks(
 export function buildCharCardItems(
   filtered: FilteredLesson[],
   allLessons: ChineseLessonRow[],
+  bookSlug = 'g1b',
 ): CharCardItem[] {
   const items: CharCardItem[] = []
   const seen = new Set<string>()
@@ -224,7 +227,7 @@ export function buildCharCardItems(
   for (const { lesson, group } of filtered) {
     const display = displayMap.get(lesson.lessonKey)
     const push = (ch: string, pinyin: string, track: 'recognize' | 'write') => {
-      const key = charKey(ch)
+      const key = charKey(ch, bookSlug)
       const dedupe = `${key}::${lesson.lessonKey}`
       if (seen.has(dedupe)) return
       seen.add(dedupe)
@@ -272,11 +275,14 @@ function buildPassageOptions(answer: string, pool: string[], seed: number): stri
   return shuffle([answer, ...distractors.slice(0, 3)], seed + 1)
 }
 
-export function buildPassageQuizItems(filtered: FilteredLesson[]): PassageQuizItem[] {
+export function buildPassageQuizItems(
+  filtered: FilteredLesson[],
+  bookSlug: ChineseBookSlug = 'g1b',
+): PassageQuizItem[] {
   const items: PassageQuizItem[] = []
 
   for (const { lesson, group } of filtered) {
-    const passage = getLessonPassage(lesson.lessonKey)
+    const passage = getLessonPassage(lesson.lessonKey, bookSlug)
     if (!passage?.paragraphs.length) continue
 
     const charPool = [...new Set([...group.recognize, ...group.write])]
@@ -314,11 +320,12 @@ export function buildCharPracticeQuestions(
   charByKey: Map<string, ChineseCharProfile>,
   quizTypes: Set<CharQuizType>,
   allLessons: ChineseLessonRow[],
+  bookSlug = 'g1b',
 ): CharPracticeQuestion[] {
   const questions: CharPracticeQuestion[] = []
-  const cards = buildCharCardItems(filtered, allLessons)
+  const cards = buildCharCardItems(filtered, allLessons, bookSlug)
   const phraseItems = filtered.flatMap(({ lesson, group }) =>
-    buildLessonPhraseItems(lesson, group, charByKey),
+    buildLessonPhraseItems(lesson, group, charByKey, bookSlug),
   )
 
   for (const card of cards) {
@@ -364,18 +371,19 @@ export function buildPracticeSessionPlan(
   charByKey: Map<string, ChineseCharProfile>,
   quizTypes: Set<CharQuizType>,
   allLessons: ChineseLessonRow[],
+  bookSlug: ChineseBookSlug = 'g1b',
 ): PracticeSessionPlan {
-  const cards = buildCharCardItems(filtered, allLessons)
-  const charQuestions = buildCharPracticeQuestions(filtered, charByKey, quizTypes, allLessons)
+  const cards = buildCharCardItems(filtered, allLessons, bookSlug)
+  const charQuestions = buildCharPracticeQuestions(filtered, charByKey, quizTypes, allLessons, bookSlug)
   const phraseItems = filtered.flatMap(({ lesson, group }) =>
-    buildLessonPhraseItems(lesson, group, charByKey),
+    buildLessonPhraseItems(lesson, group, charByKey, bookSlug),
   )
-  const poems = poemsForLessons(filtered)
+  const poems = poemsForLessons(filtered, bookSlug)
   const units = new Set(filtered.map((f) => f.lesson.unit))
-  const accumulationItems = buildAccumulationQuizItems(ACCUMULATION).filter((item) =>
+  const accumulationItems = buildAccumulationQuizItems(getBookAccumulation(bookSlug)).filter((item) =>
     units.has(item.unit),
   )
-  const passageItems = buildPassageQuizItems(filtered)
+  const passageItems = buildPassageQuizItems(filtered, bookSlug)
 
   const possibleMoons =
     charQuestions.length * MOON_REWARDS.char +

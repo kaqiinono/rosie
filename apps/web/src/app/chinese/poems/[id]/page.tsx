@@ -1,8 +1,8 @@
 'use client'
 
-import { use } from 'react'
+import { use, useMemo } from 'react'
 import Link from 'next/link'
-import { POEMS, PoemRecite } from '@rosie/chinese'
+import { PoemRecite, getBookPoems, useChineseContext } from '@rosie/chinese'
 
 export default function ChinesePoemDetailPage({
   params,
@@ -10,7 +10,11 @@ export default function ChinesePoemDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const poem = POEMS.find((p) => p.id === id)
+  const { bookSlug } = useChineseContext()
+  const poem = useMemo(
+    () => getBookPoems(bookSlug).find((p) => p.id === id),
+    [bookSlug, id],
+  )
 
   if (!poem) {
     return (

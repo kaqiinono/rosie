@@ -2,95 +2,101 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { todayStr } from '@rosie/core'
 import {
   useChineseContext,
   CharFlashCard,
-  buildTodayQuizItems,
-  buildLessonPhraseItems,
-  pickDailyPhraseItems,
-  getLessonGroup,
+  buildChineseRoadmap,
   getLessonDisplayInfo,
+  masteryKey,
 } from '@rosie/chinese'
+import type { CharTrack } from '../utils/chinese-helpers'
+
+interface LessonChar {
+  char: string
+  pinyin: string
+  charKey: string
+  track: CharTrack
+  done: boolean
+}
 
 export default function ChineseDailyPage() {
+  const router = useRouter()
   const {
-    weeklyPlan,
-    generatePlan,
-    isPlanLoading,
-    lessonGroups,
-    charByKey,
     lessons,
+    lessonGroups,
     getCharProfile,
     masteryMap,
     isCharDataReady,
     isCharDataLoading,
     unresolvedWrong,
+    bookSlug,
+    charKeyForBook,
   } = useChineseContext()
   const today = todayStr()
   const [flipped, setFlipped] = useState(false)
   const [previewIdx, setPreviewIdx] = useState(0)
 
-  const todayPlan = useMemo(
-    () => weeklyPlan?.days.find((d) => d.date === today),
-    [weeklyPlan, today],
+  const roadmap = useMemo(
+    () => (isCharDataReady ? buildChineseRoadmap(lessons, lessonGroups, masteryMap, bookSlug) : null),
+    [isCharDataReady, lessons, lessonGroups, masteryMap, bookSlug],
   )
+  const currentNode = roadmap?.nodes.find((n) => n.state === 'current') ?? null
 
-  const quizItems = useMemo(
-    () =>
-      todayPlan && isCharDataReady
-        ? buildTodayQuizItems(lessonGroups, charByKey, masteryMap, todayPlan, today)
-        : [],
-    [todayPlan, lessonGroups, charByKey, masteryMap, isCharDataReady, today],
-  )
-
-  const newItems = useMemo(() => quizItems.filter((i) => !i.isReview), [quizItems])
-  const reviewItems = useMemo(() => quizItems.filter((i) => i.isReview), [quizItems])
-  const writeItems = useMemo(() => quizItems.filter((i) => i.track === 'write'), [quizItems])
-
-  const phraseItemCount = useMemo(() => {
-    if (!todayPlan || !isCharDataReady) return 0
-    const group = getLessonGroup(lessonGroups, todayPlan.lessonKey)
-    const lesson = lessons.find((l) => l.lessonKey === todayPlan.lessonKey)
-    if (!group || !lesson) return 0
-    return pickDailyPhraseItems(buildLessonPhraseItems(lesson, group, charByKey), 6).length
-  }, [todayPlan, lessonGroups, lessons, charByKey, isCharDataReady])
-  const preview = quizItems[previewIdx] ?? quizItems[0]
-  const previewProfile = preview ? getCharProfile(preview.charKey) : undefined
-  const previewGroup = todayPlan ? getLessonGroup(lessonGroups, todayPlan.lessonKey) : undefined
-  const previewLessonRow = todayPlan
-    ? lessons.find((l) => l.lessonKey === todayPlan.lessonKey)
+  const lessonRow = currentNode
+    ? lessons.find((l) => l.lessonKey === currentNode.lessonKey)
     : undefined
-  const previewUnitLessons = previewLessonRow
-    ? lessons.filter((l) => l.unit === previewLessonRow.unit)
-    : []
-  const previewDisplay = previewLessonRow
-    ? getLessonDisplayInfo(previewLessonRow, previewUnitLessons)
+  const display = lessonRow
+    ? getLessonDisplayInfo(lessonRow, lessons.filter((l) => l.unit === lessonRow.unit))
     : null
 
-  if (isPlanLoading || (isCharDataLoading && !isCharDataReady)) {
+  const lessonChars = useMemo<LessonChar[]>(() => {
+    const group = currentNode?.group
+    if (!group) return []
+    const out: LessonChar[] = []
+    const push = (ch: string, pinyin: string, track: CharTrack) => {
+      const key = charKeyForBook(ch)
+      out.push({
+        char: ch,
+        pinyin: pinyin || getCharProfile(key)?.pinyin || '',
+        charKey: key,
+        track,
+        done: (masteryMap[masteryKey(key, track)]?.correct ?? 0) > 0,
+      })
+    }
+    group.recognize.forEach((ch, i) => push(ch, group.recognizePinyin[i] ?? '', 'recognize'))
+    group.write.forEach((ch, i) => push(ch, group.writePinyin[i] ?? '', 'write'))
+    return out
+  }, [currentNode, getCharProfile, masteryMap, charKeyForBook])
+
+  const preview = lessonChars[previewIdx] ?? lessonChars[0]
+  const previewProfile = preview ? getCharProfile(preview.charKey) : undefined
+
+  if (isCharDataLoading && !isCharDataReady) {
     return <p className="p-6 text-center text-sm text-slate-500">加载中…</p>
   }
 
   if (!isCharDataReady) {
     return (
       <p className="p-6 text-center text-sm text-slate-500">
-        字库未就绪。请在 Supabase 执行 chinese-char-entries.sql，再按 docs/sql/chinese-g1-down/README.md 灌库。
+        字库未就绪。请在 Supabase 执行 chinese-char-entries.sql，再按 docs/sql/chinese-g1b/README.md 灌库。
       </p>
     )
   }
 
-  if (!weeklyPlan) {
+  if (!currentNode) {
     return (
       <div className="mx-auto max-w-md p-6 text-center">
-        <p className="text-sm text-slate-600">本周还没有学习计划</p>
-        <button
-          type="button"
-          onClick={() => void generatePlan()}
-          className="mt-4 rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-amber-700"
+        <p className="text-4xl">🎉</p>
+        <p className="mt-3 text-lg font-extrabold text-slate-900">全部课程已通关！</p>
+        <p className="mt-1 text-sm text-slate-500">可以回到路线图复习任意一课。</p>
+        <Link
+          href="/chinese/weekly"
+          className="mt-6 inline-block rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-emerald-700"
         >
-          生成本周计划
-        </button>
+          查看学习路线 →
+        </Link>
       </div>
     )
   }
@@ -100,136 +106,127 @@ export default function ChineseDailyPage() {
       <header>
         <h1 className="text-xl font-extrabold text-slate-900">今日语文</h1>
         <p className="mt-1 text-sm text-slate-500">{today}</p>
-        {preview && <p className="mt-1 text-xs text-amber-700">{preview.lessonTitle}</p>}
       </header>
 
-      {!todayPlan || quizItems.length === 0 ? (
-        <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-600">
-          今天没有安排新字，可以去复习已学内容。
+      <section className="rounded-2xl border border-amber-200 bg-white/85 p-5 shadow-sm">
+        <p className="text-xs font-semibold tracking-wide text-amber-700">
+          第{currentNode.unit}单元 · {display?.label ?? currentNode.lessonTitle}
         </p>
-      ) : (
-        <>
-          {newItems.length > 0 && (
-            <section>
-              <h2 className="mb-2 text-sm font-bold text-slate-500">今日新字</h2>
-              <ul className="mb-4 flex flex-wrap gap-2">
-                {newItems.map((item) => (
-                  <li
-                    key={`${item.charKey}-${item.track}`}
-                    className="rounded-lg border border-amber-200 bg-white px-3 py-1.5 text-lg font-bold text-slate-800"
-                    title={item.pinyin}
-                  >
-                    {item.char}
-                    {item.track === 'write' && (
-                      <span className="ml-1 text-[10px] font-semibold text-rose-500">写</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+        <h2 className="mt-1 text-lg font-extrabold text-slate-900">{currentNode.lessonTitle}</h2>
 
-          {reviewItems.length > 0 && (
-            <section>
-              <h2 className="mb-2 text-sm font-bold text-violet-600">到期复习</h2>
-              <ul className="mb-4 flex flex-wrap gap-2">
-                {reviewItems.map((item) => (
-                  <li
-                    key={`rev-${item.charKey}-${item.track}`}
-                    className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-lg font-bold text-violet-900"
-                    title={item.pinyin}
-                  >
-                    {item.char}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+        <div className="mt-3 flex items-center gap-3">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-amber-100">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all"
+              style={{
+                width: `${
+                  currentNode.status.total > 0
+                    ? Math.round((currentNode.status.correct / currentNode.status.total) * 100)
+                    : 0
+                }%`,
+              }}
+            />
+          </div>
+          <span className="text-xs font-bold text-slate-500">
+            {currentNode.status.correct}/{currentNode.status.total}
+          </span>
+        </div>
 
-          {preview && (
-            <section>
-              <CharFlashCard
-                data={{
-                  char: preview.char,
-                  pinyin: preview.pinyin,
-                  unit: previewGroup?.unit ?? 0,
-                  unitLessonNo: previewDisplay?.unitLessonNo,
-                  bookLessonNo: previewDisplay?.bookLessonNo,
-                  lessonTitle: preview.lessonTitle,
-                  radical: previewProfile?.radical,
-                  radicalName: previewProfile?.radicalName,
-                  structure: previewProfile?.structure,
-                  phrases: previewProfile?.phrases,
-                  strokeCount: previewProfile?.strokeCount,
-                  isReview: preview.isReview,
+        {lessonChars.length > 0 && (
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {lessonChars.map((item) => (
+              <li
+                key={`${item.charKey}-${item.track}`}
+                className={`relative rounded-lg border px-3 py-1.5 text-lg font-bold ${
+                  item.done
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                    : 'border-amber-200 bg-white text-slate-800'
+                }`}
+                title={item.pinyin}
+              >
+                {item.char}
+                {item.track === 'write' && (
+                  <span className="ml-1 text-[10px] font-semibold text-rose-500">写</span>
+                )}
+                {item.done && (
+                  <span className="absolute -right-1 -top-1 text-xs text-emerald-500">✓</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <button
+          type="button"
+          onClick={() =>
+            router.push(`/chinese/chars/practice?lessons=${currentNode.lessonKey}`)
+          }
+          className="mt-5 block w-full rounded-xl bg-amber-600 py-3 text-center text-sm font-bold text-white transition hover:bg-amber-700"
+        >
+          开始练习本课
+        </button>
+        <p className="mt-2 text-center text-[11px] text-slate-400">
+          本课生字全部答对后，将自动解锁下一课
+        </p>
+      </section>
+
+      {preview && (
+        <section>
+          <h2 className="mb-2 text-sm font-bold text-slate-500">本课生字预览</h2>
+          <CharFlashCard
+            data={{
+              char: preview.char,
+              pinyin: preview.pinyin,
+              unit: currentNode.unit,
+              unitLessonNo: display?.unitLessonNo ?? undefined,
+              bookLessonNo: display?.bookLessonNo ?? undefined,
+              lessonTitle: currentNode.lessonTitle,
+              radical: previewProfile?.radical,
+              radicalName: previewProfile?.radicalName,
+              structure: previewProfile?.structure,
+              phrases: previewProfile?.phrases,
+              strokeCount: previewProfile?.strokeCount,
+            }}
+            flipped={flipped}
+            onFlip={() => setFlipped((f) => !f)}
+          />
+          {lessonChars.length > 1 && (
+            <div className="mt-3 flex justify-center gap-2">
+              <button
+                type="button"
+                disabled={previewIdx === 0}
+                onClick={() => {
+                  setPreviewIdx((i) => i - 1)
+                  setFlipped(false)
                 }}
-                flipped={flipped}
-                onFlip={() => setFlipped((f) => !f)}
-              />
-              {quizItems.length > 1 && (
-                <div className="mt-3 flex justify-center gap-2">
-                  <button
-                    type="button"
-                    disabled={previewIdx === 0}
-                    onClick={() => {
-                      setPreviewIdx((i) => i - 1)
-                      setFlipped(false)
-                    }}
-                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold disabled:opacity-40"
-                  >
-                    上一字
-                  </button>
-                  <span className="self-center text-xs text-slate-400">
-                    {previewIdx + 1} / {quizItems.length}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={previewIdx >= quizItems.length - 1}
-                    onClick={() => {
-                      setPreviewIdx((i) => i + 1)
-                      setFlipped(false)
-                    }}
-                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold disabled:opacity-40"
-                  >
-                    下一字
-                  </button>
-                </div>
-              )}
-            </section>
+                className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold disabled:opacity-40"
+              >
+                上一字
+              </button>
+              <span className="self-center text-xs text-slate-400">
+                {previewIdx + 1} / {lessonChars.length}
+              </span>
+              <button
+                type="button"
+                disabled={previewIdx >= lessonChars.length - 1}
+                onClick={() => {
+                  setPreviewIdx((i) => i + 1)
+                  setFlipped(false)
+                }}
+                className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold disabled:opacity-40"
+              >
+                下一字
+              </button>
+            </div>
           )}
-
-          <Link
-            href="/chinese/chars/quiz"
-            className="block rounded-xl bg-emerald-600 py-3 text-center text-sm font-bold text-white no-underline hover:bg-emerald-700"
-          >
-            开始拼音测验（{quizItems.length} 字）
-          </Link>
-
-          {writeItems.length > 0 && (
-            <Link
-              href="/chinese/chars/writing"
-              className="block rounded-xl border-2 border-rose-300 bg-rose-50 py-3 text-center text-sm font-bold text-rose-800 no-underline"
-            >
-              笔顺书写（{writeItems.length} 会写字）
-            </Link>
-          )}
-
-          {phraseItemCount > 0 && (
-            <Link
-              href="/chinese/phrases"
-              className="block rounded-xl border-2 border-violet-300 bg-violet-50 py-3 text-center text-sm font-bold text-violet-800 no-underline"
-            >
-              词语测验（{phraseItemCount} 题）
-            </Link>
-          )}
-        </>
+        </section>
       )}
 
       <Link
         href="/chinese/weekly"
         className="text-center text-xs font-semibold text-amber-700 no-underline"
       >
-        周计划设置 →
+        查看学习路线 →
       </Link>
 
       {unresolvedWrong.length > 0 && (

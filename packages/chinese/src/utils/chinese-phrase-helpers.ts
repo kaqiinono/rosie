@@ -1,7 +1,7 @@
 import type { ChineseCharProfile } from '../types/chineseCharData'
 import type { ChineseLessonRow } from '../types/chineseCharData'
-import type { LessonCharGroup } from './grade1-down/types'
-import { shuffle } from './chinese-helpers'
+import type { LessonCharGroup } from './g1b/types'
+import { charKey, shuffle } from './chinese-helpers'
 
 export type PhraseSource = 'compound' | 'recall'
 
@@ -25,11 +25,12 @@ function lessonCharPool(group: LessonCharGroup): string[] {
 function collectCompoundPhrases(
   group: LessonCharGroup,
   charByKey: Map<string, ChineseCharProfile>,
+  bookSlug = 'g1b',
 ): string[] {
   const pool = lessonCharPool(group)
   const phrases = new Set<string>()
   for (const ch of pool) {
-    const profile = charByKey.get(`g1-下::${ch}`)
+    const profile = charByKey.get(charKey(ch, bookSlug))
     for (const p of profile?.phrases ?? []) {
       if (p.length === 2) phrases.add(p)
     }
@@ -78,13 +79,14 @@ export function buildLessonPhraseItems(
   lesson: ChineseLessonRow | undefined,
   group: LessonCharGroup | undefined,
   charByKey: Map<string, ChineseCharProfile>,
+  bookSlug = 'g1b',
 ): PhraseQuizItem[] {
   if (!lesson || !group) return []
 
   const items: PhraseQuizItem[] = []
   const seen = new Set<string>()
 
-  for (const phrase of collectCompoundPhrases(group, charByKey)) {
+  for (const phrase of collectCompoundPhrases(group, charByKey, bookSlug)) {
     if (seen.has(phrase)) continue
     seen.add(phrase)
     const item = makeQuizItem(phrase, lesson.lessonKey, lesson.lessonTitle, 'compound', items.length)

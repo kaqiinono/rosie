@@ -67,7 +67,15 @@ export default function ChineseCharQuizPage() {
               }
             }),
           )
-          void updateDayProgress(today, { quizDone: true, lastScore: score })
+          const prev = weeklyPlan?.progress[today]
+          const now = new Date().toISOString()
+          void updateDayProgress(today, {
+            quizDone: true,
+            lastScore: score,
+            completedAt: now,
+            practiceCount: Math.max(1, prev?.practiceCount ?? 1),
+            lastPracticedAt: now,
+          })
         }}
       />
     </div>

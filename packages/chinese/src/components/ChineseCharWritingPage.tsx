@@ -25,6 +25,8 @@ export default function ChineseCharWritingPage() {
     masteryMap,
     recordBatch,
     isCharDataReady,
+    charKeyForBook,
+    bookSlug,
   } = useChineseContext()
   const today = todayStr()
   const todayPlan = weeklyPlan?.days.find((d) => d.date === today)
@@ -32,11 +34,11 @@ export default function ChineseCharWritingPage() {
   const items = useMemo(() => {
     if (!isCharDataReady) return []
     const all =
-      lessonParam && getLessonGroup(lessonGroups, lessonParam)
+      lessonParam && getLessonGroup(lessonGroups, lessonParam, bookSlug)
         ? (() => {
-            const group = getLessonGroup(lessonGroups, lessonParam)!
-            const writeKeys = group.write.map((ch) => `g1-下::${ch}`)
-            return buildDayQuizItems(lessonGroups, charByKey, lessonParam, [], writeKeys)
+            const group = getLessonGroup(lessonGroups, lessonParam, bookSlug)!
+            const writeKeys = group.write.map((ch) => charKeyForBook(ch))
+            return buildDayQuizItems(lessonGroups, charByKey, lessonParam, [], writeKeys, [], [], bookSlug)
           })()
         : todayPlan
           ? buildTodayQuizItems(lessonGroups, charByKey, masteryMap, todayPlan, today)
@@ -50,6 +52,8 @@ export default function ChineseCharWritingPage() {
     masteryMap,
     isCharDataReady,
     today,
+    charKeyForBook,
+    bookSlug,
   ])
 
   const [idx, setIdx] = useState(0)

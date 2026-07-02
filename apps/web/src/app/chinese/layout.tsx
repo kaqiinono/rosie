@@ -2,17 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChineseProvider } from '@rosie/chinese'
+import { ChineseProvider, chineseRoute, useChineseContext } from '@rosie/chinese'
 import { useImmersive } from '@rosie/core'
 
-function ChineseNav() {
+function ChineseNavInner() {
   const pathname = usePathname()
+  const { bookSlug } = useChineseContext()
   const tabs = [
-    { href: '/chinese', label: '首页', match: (p: string) => p === '/chinese' },
-    { href: '/chinese/daily', label: '今日', match: (p: string) => p.startsWith('/chinese/daily') },
-    { href: '/chinese/chars', label: '字', match: (p: string) => p.startsWith('/chinese/chars') },
-    { href: '/chinese/phrases', label: '词', match: (p: string) => p.startsWith('/chinese/phrases') },
-    { href: '/chinese/poems', label: '古诗', match: (p: string) => p.startsWith('/chinese/poems') },
+    { href: chineseRoute(bookSlug), label: '首页', match: (p: string) => p === chineseRoute(bookSlug) },
+    { href: chineseRoute(bookSlug, 'daily'), label: '今日', match: (p: string) => p.startsWith(chineseRoute(bookSlug, 'daily')) },
+    { href: chineseRoute(bookSlug, 'chars'), label: '字', match: (p: string) => p.startsWith(chineseRoute(bookSlug, 'chars')) },
+    { href: chineseRoute(bookSlug, 'reading'), label: '阅读', match: (p: string) => p.startsWith(chineseRoute(bookSlug, 'reading')) },
+    { href: chineseRoute(bookSlug, 'poems'), label: '古诗', match: (p: string) => p.startsWith(chineseRoute(bookSlug, 'poems')) },
   ]
   return (
     <nav className="sticky top-0 z-20 border-b border-amber-100/80 bg-white/90 backdrop-blur-md">
@@ -34,14 +35,24 @@ function ChineseNav() {
           )
         })}
         <Link
-          href="/"
+          href="/chinese"
           className="ml-auto shrink-0 text-xs font-semibold text-slate-400 no-underline hover:text-slate-600"
+        >
+          换册
+        </Link>
+        <Link
+          href="/"
+          className="shrink-0 text-xs font-semibold text-slate-400 no-underline hover:text-slate-600"
         >
           ← 乐园
         </Link>
       </div>
     </nav>
   )
+}
+
+function ChineseNav() {
+  return <ChineseNavInner />
 }
 
 export default function ChineseLayout({ children }: { children: React.ReactNode }) {

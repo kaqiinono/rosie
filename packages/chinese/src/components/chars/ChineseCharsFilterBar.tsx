@@ -18,10 +18,12 @@ interface ChineseCharsFilterBarProps {
   lessons: ChineseLessonRow[]
   selUnits: Set<number>
   selLessons: Set<string>
+  selDisplayType: 'library' | 'cards' | 'all'
   quizTypes: Set<CharQuizType>
   contentCount: number
   onToggleUnit: (unit: number) => void
   onToggleLesson: (lessonKey: string) => void
+  onSelectDisplayType: (type: 'library' | 'cards' | 'all') => void
   onToggleQuizType: (type: CharQuizType) => void
   onStartPractice: () => void
   canStart: boolean
@@ -66,10 +68,12 @@ export default function ChineseCharsFilterBar({
   lessons,
   selUnits,
   selLessons,
+  selDisplayType,
   quizTypes,
   contentCount,
   onToggleUnit,
   onToggleLesson,
+  onSelectDisplayType,
   onToggleQuizType,
   onStartPractice,
   canStart,
@@ -134,6 +138,31 @@ export default function ChineseCharsFilterBar({
         </div>
 
         <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-amber-900/[0.06] pt-2.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <FilterLabel>展示</FilterLabel>
+            <PillButton
+              active={selDisplayType === 'cards'}
+              onClick={() => onSelectDisplayType('cards')}
+              activeClass="border-amber-500 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-[0_2px_8px_rgba(245,158,11,.28)]"
+            >
+              生字卡
+            </PillButton>
+            <PillButton
+              active={selDisplayType === 'library'}
+              onClick={() => onSelectDisplayType('library')}
+              activeClass="border-indigo-500 bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,.28)]"
+            >
+              生字库
+            </PillButton>
+            <PillButton
+              active={selDisplayType === 'all'}
+              onClick={() => onSelectDisplayType('all')}
+              activeClass="border-emerald-500 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_2px_8px_rgba(16,185,129,.25)]"
+            >
+              全部
+            </PillButton>
+          </div>
+
           <div className="flex flex-wrap items-center gap-1.5">
             <FilterLabel>题型</FilterLabel>
             {ALL_CHAR_QUIZ_TYPES.map((type) => (

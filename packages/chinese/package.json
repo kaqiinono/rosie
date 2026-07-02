@@ -10,8 +10,8 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "verify-data": "python3 scripts/verify-grade1-down-data.py",
-    "generate-sql": "python3 scripts/generate-g1-down-upsert.py"
+    "verify-data": "python3 scripts/verify-chinese-data.py g1b g2a g2b",
+    "generate-sql": "python3 scripts/generate-chinese-upsert.py g1b g2a g2b"
   },
   "dependencies": {
     "@rosie/core": "workspace:*",

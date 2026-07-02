@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { POEMS } from '../../utils/grade1-down'
-import type { PoemEntry } from '../../utils/grade1-down/types'
+import { POEMS } from '../../utils/g1b'
+import type { PoemEntry } from '../../utils/g1b/types'
 
 interface PoemListProps {
   basePath?: string

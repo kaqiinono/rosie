@@ -1,5 +1,5 @@
-import type { LessonCharGroup } from './grade1-down/types'
-import type { ChineseCharProfile } from '../types/chineseCharData'
+import type { LessonCharGroup } from './g1b/types'
+import type { ChineseCharProfile, ChineseLessonRow } from '../types/chineseCharData'
 import type { CharMasteryMap } from '../hooks/useCharMastery'
 import type { ChineseWeeklyPlanDay } from './chineseWeeklyPlan'
 import { ensureStageInit, isGraduated } from '@rosie/core'
@@ -11,8 +11,57 @@ export const CHINESE_REVIEW_LIMITS = {
   write: 2,
 } as const
 
-export function charKey(char: string, semesterKey = 'g1-下'): string {
-  return `${semesterKey}::${char}`
+/** book slug: g1a = 一年级上册, g1b = 一年级下册, g2a = 二年级上册, … */
+export function bookSlug(grade: number, semester: '上' | '下'): string {
+  return `g${grade}${semester === '上' ? 'a' : 'b'}`
+}
+
+export function parseBookSlug(slug: string): { grade: number; semester: '上' | '下' } | null {
+  const m = /^g(\d+)([ab])$/.exec(slug)
+  if (!m) return null
+  return { grade: Number(m[1]), semester: m[2] === 'a' ? '上' : '下' }
+}
+
+export function charKey(char: string, slug = 'g1b'): string {
+  return `${slug}::${char}`
+}
+
+/** DB primary key for chinese_lessons; g1b legacy rows use unprefixed keys. */
+export function lessonKey(localKey: string, slug = 'g1b'): string {
+  if (slug === 'g1b') return localKey
+  return `${slug}::${localKey}`
+}
+
+export function localLessonKey(lessonKeyValue: string): string {
+  const idx = lessonKeyValue.indexOf('::')
+  return idx >= 0 ? lessonKeyValue.slice(idx + 2) : lessonKeyValue
+}
+
+/** Match DB lesson_key against URL/query local key (g1b unprefixed, g2a+ prefixed). */
+export function lessonKeysMatch(
+  storedKey: string,
+  queryKey: string,
+  bookSlug?: string,
+): boolean {
+  if (storedKey === queryKey) return true
+  if (!bookSlug) return localLessonKey(storedKey) === localLessonKey(queryKey)
+  return storedKey === lessonKey(localLessonKey(queryKey), bookSlug)
+}
+
+export function getLessonGroup(
+  lessonGroups: LessonCharGroup[],
+  lessonKeyOrLocal: string,
+  bookSlug?: string,
+): LessonCharGroup | undefined {
+  return lessonGroups.find((g) => lessonKeysMatch(g.lessonKey, lessonKeyOrLocal, bookSlug))
+}
+
+export function findLessonRow(
+  lessons: ChineseLessonRow[],
+  lessonKeyOrLocal: string,
+  bookSlug?: string,
+): ChineseLessonRow | undefined {
+  return lessons.find((l) => lessonKeysMatch(l.lessonKey, lessonKeyOrLocal, bookSlug))
 }
 
 export function masteryKey(charKeyValue: string, track: CharTrack): string {
@@ -39,13 +88,6 @@ export function shuffle<T>(arr: T[], seed?: number): T[] {
     [a[i], a[j]] = [a[j], a[i]]
   }
   return a
-}
-
-export function getLessonGroup(
-  lessonGroups: LessonCharGroup[],
-  lessonKey: string,
-): LessonCharGroup | undefined {
-  return lessonGroups.find((g) => g.lessonKey === lessonKey)
 }
 
 export function getLessonPinyin(
@@ -146,8 +188,9 @@ export function buildDayQuizItems(
   newWriteKeys: string[],
   reviewRecognizeKeys: string[] = [],
   reviewWriteKeys: string[] = [],
+  bookSlug?: string,
 ): DayQuizItem[] {
-  const group = getLessonGroup(lessonGroups, lessonKey)
+  const group = getLessonGroup(lessonGroups, lessonKey, bookSlug)
   const lessonTitle = group?.lessonTitle ?? lessonKey
   const items: DayQuizItem[] = []
   const seen = new Set<string>()

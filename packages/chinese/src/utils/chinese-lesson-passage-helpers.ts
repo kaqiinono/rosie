@@ -1,10 +1,13 @@
-import type { LessonPassageEntry } from '../utils/grade1-down/types'
-import { LESSON_PASSAGES } from '../utils/grade1-down/lesson-passages'
+import type { LessonPassageEntry } from './g1b/types'
+import { getLessonPassageForBook } from './chinese-book-content'
+import type { ChineseBookSlug } from './chinese-books'
+import { localLessonKey } from './chinese-helpers'
 
-const passageMap = new Map(LESSON_PASSAGES.map((p) => [p.lessonKey, p]))
-
-export function getLessonPassage(lessonKey: string): LessonPassageEntry | undefined {
-  return passageMap.get(lessonKey)
+export function getLessonPassage(
+  lessonKey: string,
+  bookSlug: ChineseBookSlug = 'g1b',
+): LessonPassageEntry | undefined {
+  return getLessonPassageForBook(bookSlug, localLessonKey(lessonKey))
 }
 
 export type CharMarkKind = 'plain' | 'recognize' | 'write' | 'both'
