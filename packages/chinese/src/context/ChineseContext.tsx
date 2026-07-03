@@ -16,7 +16,14 @@ import {
 } from '../hooks/useChineseWrong'
 import type { ChineseCharProfile, ChineseLessonRow, LessonCharGroup } from '../types/chineseCharData'
 import type { CharTrack } from '../utils/chinese-helpers'
-import { charKey, masteryKey, parseBookSlug } from '../utils/chinese-helpers'
+import {
+  buildCharProfileMap,
+  charKey,
+  charKeyLookupAliases,
+  masteryKey,
+  normalizeMasteryMapForBook,
+  parseBookSlug,
+} from '../utils/chinese-helpers'
 import type { ChineseBookSlug } from '../utils/chinese-books'
 import { getChineseBook } from '../utils/chinese-books'
 import type { ChineseWeeklyPlan, ChineseWeekDayProgress } from '../utils/chineseWeeklyPlan'
@@ -105,9 +112,11 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
   )
 
   const filteredChars = useMemo(() => {
-    const prefix = `${bookSlug}::`
-    return chars.filter((c) => c.charKey.startsWith(prefix))
-  }, [chars, bookSlug])
+    if (!bookFilter) return chars
+    return chars.filter(
+      (c) => c.grade === bookFilter.grade && c.semester === bookFilter.semester,
+    )
+  }, [chars, bookFilter])
 
   const filteredLessonChars = useMemo(
     () => lessonChars.filter((lc) => filteredLessonKeys.has(lc.lessonKey)),
@@ -121,15 +130,26 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
   )
 
   const filteredCharByKey = useMemo(
-    () => new Map(filteredChars.map((c) => [c.charKey, c])),
-    [filteredChars],
+    () => buildCharProfileMap(filteredChars, bookSlug),
+    [filteredChars, bookSlug],
+  )
+
+  const masteryMapForBook = useMemo(
+    () => normalizeMasteryMapForBook(masteryMap, bookSlug),
+    [masteryMap, bookSlug],
   )
 
   const charKeyForBook = useCallback((ch: string) => charKey(ch, bookSlug), [bookSlug])
 
   const getFilteredCharProfile = useCallback(
-    (charKeyValue: string) => filteredCharByKey.get(charKeyValue),
-    [filteredCharByKey],
+    (charKeyValue: string) => {
+      for (const alias of charKeyLookupAliases(charKeyValue, bookSlug)) {
+        const profile = filteredCharByKey.get(alias)
+        if (profile) return profile
+      }
+      return undefined
+    },
+    [filteredCharByKey, bookSlug],
   )
 
   const recordBatch = useCallback(
@@ -151,7 +171,7 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
         bookLabel: bookMeta?.label ?? bookSlug,
         charKeyForBook,
         user,
-        masteryMap,
+        masteryMap: masteryMapForBook,
         recordBatch,
         getMastery,
         weeklyPlan,

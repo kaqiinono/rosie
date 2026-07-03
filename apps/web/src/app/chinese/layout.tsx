@@ -55,10 +55,19 @@ function ChineseNav() {
   return <ChineseNavInner />
 }
 
+function isChineseHomePath(pathname: string): boolean {
+  if (pathname === '/chinese') return true
+  return /^\/chinese\/g\d[ab]$/.test(pathname)
+}
+
 export default function ChineseLayout({ children }: { children: React.ReactNode }) {
   const { isImmersive } = useImmersive()
   const pathname = usePathname()
-  const hideNav = isImmersive || pathname.startsWith('/chinese/chars/practice')
+  const hideNav =
+    isImmersive ||
+    pathname.startsWith('/chinese/chars/practice') ||
+    pathname.includes('/chars/print') ||
+    isChineseHomePath(pathname)
 
   return (
     <ChineseProvider>

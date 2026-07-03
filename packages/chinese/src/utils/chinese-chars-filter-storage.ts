@@ -6,6 +6,8 @@ import { sortLessonsInUnit } from './chinese-lesson-display'
 export interface ChineseCharsFilterSaved {
   units: number[]
   lessons: string[]
+  /** 练习前是否先浏览生字卡片；默认 true */
+  cardPreview?: boolean
 }
 
 function storageKey(bookSlug: ChineseBookSlug): string {
@@ -28,11 +30,28 @@ export function writeCharsFilter(
   bookSlug: ChineseBookSlug,
   units: Set<number>,
   lessons: Set<string>,
+  cardPreview?: boolean,
 ): void {
   try {
+    const existing = readCharsFilter(bookSlug)
     const payload: ChineseCharsFilterSaved = {
       units: [...units].sort((a, b) => a - b),
       lessons: [...lessons],
+      cardPreview: cardPreview ?? existing?.cardPreview,
+    }
+    localStorage.setItem(storageKey(bookSlug), JSON.stringify(payload))
+  } catch {
+    /* ignore */
+  }
+}
+
+export function writeCharsCardPreview(bookSlug: ChineseBookSlug, cardPreview: boolean): void {
+  try {
+    const existing = readCharsFilter(bookSlug)
+    const payload: ChineseCharsFilterSaved = {
+      units: existing?.units ?? [],
+      lessons: existing?.lessons ?? [],
+      cardPreview,
     }
     localStorage.setItem(storageKey(bookSlug), JSON.stringify(payload))
   } catch {

@@ -42,6 +42,7 @@ function LessonBlock({ block }: { block: LessonContentBlock }) {
     block.recognize.length > 0 ||
     block.write.length > 0 ||
     block.phrases.length > 0 ||
+    block.pinyinWriteWords.length > 0 ||
     block.poems.length > 0 ||
     block.accumulationLabels.length > 0
 
@@ -89,6 +90,14 @@ function LessonBlock({ block }: { block: LessonContentBlock }) {
             <ContentRow label="词" labelClass="bg-violet-100 text-violet-700">
               {block.phrases.map((p) => (
                 <TextItem key={p} text={p} className="text-violet-800" />
+              ))}
+            </ContentRow>
+          )}
+
+          {block.pinyinWriteWords.length > 0 && (
+            <ContentRow label="写词" labelClass="bg-teal-100 text-teal-700">
+              {block.pinyinWriteWords.map((w) => (
+                <TextItem key={w} text={w} className="text-teal-800" />
               ))}
             </ContentRow>
           )}

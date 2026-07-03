@@ -5,6 +5,7 @@ import type { ChineseLessonMeta, ChineseUnitEntry } from '../utils/g1b/types'
 import { getChineseBook, type ChineseBookSlug } from '../utils/chinese-books'
 import { chineseRoute } from '../utils/chinese-routes'
 import { useChineseContext } from '../context/ChineseContext'
+import ChineseDailyCard from './ChineseDailyCard'
 import ChineseMasteryStatsBar from './ChineseMasteryStatsBar'
 
 function bookQuickLinks(bookSlug: ChineseBookSlug) {
@@ -55,10 +56,22 @@ export default function ChineseHomePage({ bookSlug: bookSlugProp }: ChineseHomeP
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-6">
-      <header>
-        <h1 className="text-2xl font-extrabold text-slate-900">语文 · {book?.label ?? bookSlug}</h1>
-        <p className="mt-1 text-sm text-slate-500">部编版 · 生字与古诗</p>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-extrabold text-slate-900">语文 · {book?.label ?? bookSlug}</h1>
+          <p className="mt-1 text-sm text-slate-500">部编版 · 生字与古诗</p>
+        </div>
+        <div className="flex shrink-0 gap-3 pt-1 text-xs font-semibold">
+          <Link href="/chinese" className="text-slate-400 no-underline hover:text-slate-600">
+            换册
+          </Link>
+          <Link href="/" className="text-slate-400 no-underline hover:text-slate-600">
+            ← 乐园
+          </Link>
+        </div>
       </header>
+
+      <ChineseDailyCard />
 
       <ChineseMasteryStatsBar />
 

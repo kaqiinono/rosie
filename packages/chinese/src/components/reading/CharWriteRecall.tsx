@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import clsx from 'clsx'
-import type { StrokeOrderData } from '../../types/chineseCharData'
 import CharWriter from '../chars/CharWriter'
 import CharSpeakButton from '../chars/CharSpeakButton'
 
@@ -10,7 +9,6 @@ export interface WriteRecallChar {
   char: string
   charKey: string
   pinyin: string
-  strokeOrder: StrokeOrderData
 }
 
 interface CharWriteRecallProps {
@@ -31,7 +29,6 @@ function WriteCard({
 }) {
   const [active, setActive] = useState(false)
   const [attempt, setAttempt] = useState(0)
-  const hasStroke = item.strokeOrder.strokes.length > 0
 
   const handleComplete = ({ totalMistakes }: { totalMistakes: number }) => {
     onAnswer(item.charKey, totalMistakes === 0)
@@ -86,23 +83,16 @@ function WriteCard({
 
       {active && (
         <div className="mt-3 flex flex-col items-center gap-2">
-          {hasStroke ? (
-            <CharWriter
-              key={`${item.charKey}-${attempt}`}
-              char={item.char}
-              strokeOrder={item.strokeOrder}
-              mode="quiz"
-              size={190}
-              onQuizComplete={(summary) => {
-                handleComplete(summary)
-                setActive(false)
-              }}
-            />
-          ) : (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-center text-[12px] text-amber-700">
-              该字暂无笔顺数据
-            </p>
-          )}
+          <CharWriter
+            key={`${item.charKey}-${attempt}`}
+            char={item.char}
+            mode="quiz"
+            size={190}
+            onQuizComplete={(summary) => {
+              handleComplete(summary)
+              setActive(false)
+            }}
+          />
           <button
             type="button"
             onClick={() => setActive(false)}

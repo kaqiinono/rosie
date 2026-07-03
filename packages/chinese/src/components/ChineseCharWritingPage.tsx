@@ -104,11 +104,9 @@ export default function ChineseCharWritingPage() {
     )
   }
 
-  if (!current || !profile?.strokeOrder?.strokes?.length) {
+  if (!current) {
     return (
-      <p className="p-6 text-center text-sm text-rose-600">
-        无法加载「{current?.char ?? ''}」的笔顺数据。
-      </p>
+      <p className="p-6 text-center text-sm text-rose-600">无法加载当前生字。</p>
     )
   }
 
@@ -124,10 +122,10 @@ export default function ChineseCharWritingPage() {
           {current.char}
           <span className="ml-2 text-slate-500 font-normal">{current.pinyin}</span>
         </p>
-        {profile.radicalName && (
+        {profile?.radicalName && (
           <p className="mt-0.5 text-xs text-indigo-700">部首：{profile.radicalName}</p>
         )}
-        {profile.structure && (
+        {profile?.structure && (
           <p className="mt-0.5 text-xs text-slate-500">结构：{profile.structure}</p>
         )}
       </header>
@@ -135,7 +133,6 @@ export default function ChineseCharWritingPage() {
       <div className="mt-4" key={`${current.charKey}-${modeKey}`}>
         <CharWriter
           char={current.char}
-          strokeOrder={profile.strokeOrder}
           mode={mode}
           onQuizComplete={mode === 'quiz' ? handleQuizComplete : undefined}
         />

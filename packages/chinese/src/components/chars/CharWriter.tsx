@@ -2,19 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import type HanziWriter from 'hanzi-writer'
-import type { StrokeOrderData } from '../../types/chineseCharData'
-
-function toHanziCharData(strokeOrder: StrokeOrderData) {
-  return {
-    strokes: strokeOrder.strokes,
-    medians: strokeOrder.medians,
-    radStrokes: strokeOrder.radStrokes ?? [],
-  }
-}
 
 export interface CharWriterProps {
   char: string
-  strokeOrder: StrokeOrderData
   /** animate = demo stroke order; quiz = trace practice */
   mode: 'animate' | 'quiz'
   size?: number
@@ -23,7 +13,6 @@ export interface CharWriterProps {
 
 export default function CharWriter({
   char,
-  strokeOrder,
   mode,
   size = 220,
   onQuizComplete,
@@ -43,7 +32,6 @@ export default function CharWriter({
     void import('hanzi-writer').then(({ default: HanziWriterLib }) => {
       if (cancelled || !targetRef.current) return
 
-      const charData = toHanziCharData(strokeOrder)
       const writer = HanziWriterLib.create(targetRef.current, char, {
         width: size,
         height: size,
@@ -56,9 +44,6 @@ export default function CharWriter({
         drawingWidth: 5,
         showHintAfterMisses: 3,
         highlightOnComplete: true,
-        charDataLoader: (_c, onComplete) => {
-          onComplete(charData)
-        },
       })
       writerRef.current = writer
 
@@ -79,7 +64,7 @@ export default function CharWriter({
       writerRef.current = null
       if (targetRef.current) targetRef.current.innerHTML = ''
     }
-  }, [char, strokeOrder, mode, size])
+  }, [char, mode, size])
 
   return (
     <div className="flex justify-center">

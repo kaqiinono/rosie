@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import type { PhraseQuizItem } from '../../utils/chinese-phrase-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
+import QuizBlankSentence from '../chars/QuizBlankSentence'
 
 interface PhraseQuizRunnerProps {
   items: PhraseQuizItem[]
@@ -13,7 +14,10 @@ interface PhraseQuizRunnerProps {
 
 export default function PhraseQuizRunner({ items, charPool, onComplete }: PhraseQuizRunnerProps) {
   const [idx, setIdx] = useState(0)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [wrongFeedback, setWrongFeedback] = useState<{
+    selected: string
+    correct: string
+  } | null>(null)
   const [results, setResults] = useState<{ id: string; correct: boolean }[]>([])
 
   const current = items[idx]
@@ -23,27 +27,29 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
     return buildPhraseOptions(current, charPool, seed)
   }, [current, charPool])
 
-  const answered = selected !== null
+  const locked = wrongFeedback !== null
   const finished = idx >= items.length
 
   const handleSelect = useCallback(
     (choice: string) => {
-      if (!current || answered) return
-      setSelected(choice)
-      setResults((prev) => [...prev, { id: current.id, correct: choice === current.answer }])
+      if (!current || locked) return
+      const correct = choice === current.answer
+      const nextResults = [...results, { id: current.id, correct }]
+      setResults(nextResults)
+      if (correct) {
+        setWrongFeedback(null)
+        if (idx + 1 >= items.length) {
+          onComplete?.(nextResults)
+          setIdx(items.length)
+        } else {
+          setIdx((i) => i + 1)
+        }
+      } else {
+        setWrongFeedback({ selected: choice, correct: current.answer })
+      }
     },
-    [answered, current],
+    [current, idx, items.length, locked, onComplete, results],
   )
-
-  const handleNext = useCallback(() => {
-    if (idx + 1 >= items.length) {
-      onComplete?.(results)
-      setIdx(items.length)
-      return
-    }
-    setIdx((i) => i + 1)
-    setSelected(null)
-  }, [idx, items.length, onComplete, results])
 
   if (items.length === 0) {
     return <p className="text-center text-sm text-slate-500">暂无词语题目</p>
@@ -72,27 +78,31 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
             {current.source === 'recall' ? '读一读记一记' : '组词'}
           </span>
         </p>
-        <p className="mt-3 text-sm text-slate-500">选出□里应该填的字</p>
-        <p className="mt-4 text-3xl font-bold tracking-widest text-slate-900">{current.display}</p>
+        <p className="mt-3 text-sm font-semibold text-violet-700/80">
+          选出彩色小空格里应该填的字
+        </p>
+        <div className="mt-4">
+          <QuizBlankSentence display={current.display} size="lg" />
+        </div>
         <p className="mt-2 text-xs text-slate-400">{current.lessonTitle}</p>
       </div>
 
       <div className="grid grid-cols-4 gap-3">
         {options.map((opt) => {
           const isCorrect = opt === current.answer
-          const isChosen = selected === opt
+          const isChosen = wrongFeedback?.selected === opt
           return (
             <button
               key={opt}
               type="button"
-              disabled={answered}
+              disabled={locked}
               onClick={() => handleSelect(opt)}
               className={clsx(
                 'rounded-xl border-2 py-4 text-2xl font-bold transition-colors',
-                !answered && 'border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50',
-                answered && isCorrect && 'border-emerald-400 bg-emerald-50 text-emerald-800',
-                answered && isChosen && !isCorrect && 'border-rose-400 bg-rose-50 text-rose-700',
-                answered && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
+                !locked && 'border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50',
+                locked && isCorrect && 'border-emerald-400 bg-emerald-50 text-emerald-800',
+                locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50 text-rose-700',
+                locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
               )}
             >
               {opt}
@@ -101,14 +111,27 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
         })}
       </div>
 
-      {answered && (
-        <button
-          type="button"
-          onClick={handleNext}
-          className="rounded-xl bg-violet-600 px-4 py-3 text-sm font-bold text-white hover:bg-violet-700"
-        >
-          {idx + 1 >= items.length ? '查看结果' : '下一题'}
-        </button>
+      {wrongFeedback && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-center">
+          <p className="text-sm font-bold text-rose-700">
+            再想想看～正确答案是「{wrongFeedback.correct}」
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setWrongFeedback(null)
+              if (idx + 1 >= items.length) {
+                onComplete?.(results)
+                setIdx(items.length)
+              } else {
+                setIdx((i) => i + 1)
+              }
+            }}
+            className="mt-3 rounded-xl bg-violet-600 px-4 py-3 text-sm font-bold text-white hover:bg-violet-700"
+          >
+            {idx + 1 >= items.length ? '查看结果' : '下一题'}
+          </button>
+        </div>
       )}
     </div>
   )

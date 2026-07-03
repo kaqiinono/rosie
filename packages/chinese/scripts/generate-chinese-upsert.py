@@ -429,15 +429,10 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
         strokes = hw.get("strokes")
         medians = hw.get("medians")
         if not strokes or not medians:
-            errors.append(f"empty stroke_order for {ch}")
+            errors.append(f"empty hanzi-writer-data for {ch}")
             continue
         radical = (mm or {}).get("radical") or ch
         rname = radical_name_for(radical, radical_names)
-        stroke_order = {
-            "strokes": strokes,
-            "medians": medians,
-            "radStrokes": hw.get("radStrokes", []),
-        }
         tiers = sorted(char_tiers.get(ck, set()))
         pinyin = char_pinyin.get(ck, "")
         if not pinyin:
@@ -462,7 +457,6 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
                     sql_str(rname),
                     sql_str(structure),
                     str(len(strokes)),
-                    sql_json(stroke_order),
                     sql_text_array(phrases_list),
                     sql_text_array(tiers),
                 ]
@@ -551,7 +545,7 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
 
     char_cols = (
         "  char_key, char, grade, semester, pinyin, pinyin_alt, radical, radical_name,\n"
-        "  structure, stroke_count, stroke_order, phrases, tiers"
+        "  structure, stroke_count, phrases, tiers"
     )
     char_batch_size = max(1, (len(char_rows) + CHAR_BATCH_COUNT - 1) // CHAR_BATCH_COUNT)
     char_paths = write_batched_inserts(

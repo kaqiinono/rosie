@@ -20,7 +20,7 @@ Runtime reads Supabase (like English `word_entries`):
 
 | Table | Role |
 |-------|------|
-| `chinese_char_entries` | 一字一档：拼音、部首、笔顺、组词（`phrases[]`）— 部首/笔顺 NOT NULL |
+| `chinese_char_entries` | 一字一档：拼音、部首、笔画数、组词（`phrases[]`）— 笔顺由 hanzi-writer 客户端加载 |
 | `chinese_lessons` | 课文元数据 + `recall_phrases[]`（读一读记一记整句） |
 | `chinese_lesson_chars` | 课 ↔ 字编排：认读/会写、顺序、课内拼音 |
 | `chinese_char_mastery` | 用户掌握度（认读/会写分轨） |
@@ -33,8 +33,9 @@ Runtime reads Supabase (like English `word_entries`):
 3. `docs/sql/chinese-char-entries.sql`
 4. `docs/sql/chinese-g1b/` — 按 README 顺序灌库，完成后跑 `99-verify.sql` 校验
 5. 若库内仍有旧前缀 `g1-下::`，执行 `docs/sql/chinese-migrate-char-key-g1b.sql`（增量，不删数据）
-6. `docs/sql/chinese-wrong-items.sql` — 错题本（可选，未建则错题不落库）
-7. `docs/sql/chinese-char-entries-admin-rls.sql` — 字词维护页写权限（`/admin/chinese`）
+6. `docs/sql/chinese-drop-stroke-order.sql` — 删除 `stroke_order` 列以减小字表体积（可选，与新版 app 配套）
+7. `docs/sql/chinese-wrong-items.sql` — 错题本（可选，未建则错题不落库）
+8. `docs/sql/chinese-char-entries-admin-rls.sql` — 字词维护页写权限（`/admin/chinese`）
 
 Regenerate upsert after editing TS backup:
 

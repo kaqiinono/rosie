@@ -18,6 +18,8 @@ import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
 import { shuffle } from '../../utils/chinese-helpers'
 import CharFlashCard from './CharFlashCard'
 import CharWriter from './CharWriter'
+import PinyinWriteRunner from './PinyinWriteRunner'
+import QuizBlankSentence from './QuizBlankSentence'
 import PoemRecite from '../poems/PoemRecite'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'
 
@@ -27,7 +29,8 @@ const PHASE_LABEL: Record<PracticePhase, string> = {
   phrases: '词汇练习',
   poems: '古诗词',
   accumulation: '日积月累',
-  passage: '文章阅读',
+  passage: '阅读题',
+  'pinyin-write': '看拼写字',
   done: '练习结算',
 }
 
@@ -46,12 +49,33 @@ function parseLessons(raw: string | null): Set<string> {
   return new Set(raw.split(',').filter(Boolean))
 }
 
+function WrongAnswerPanel({
+  correct,
+  onNext,
+}: {
+  correct: string
+  onNext: () => void
+}) {
+  return (
+    <div className="rounded-2xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-center">
+      <p className="text-sm font-bold text-rose-700">再想想看～正确答案是「{correct}」</p>
+      <button
+        type="button"
+        onClick={onNext}
+        className="cn-start-btn mt-3 cursor-pointer rounded-xl border-0 px-5 py-2 text-sm font-bold text-white"
+      >
+        下一题
+      </button>
+    </div>
+  )
+}
+
 export default function ChineseCharsPracticeSession() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setIsImmersive } = useImmersive()
   const { awardStars, session: starSession } = useStarHud()
-  const { lessons, lessonGroups, charByKey, getCharProfile, recordBatch, isCharDataReady } =
+  const { lessons, lessonGroups, charByKey, getCharProfile, recordBatch, isCharDataReady, bookSlug } =
     useChineseContext()
 
   const selUnits = useMemo(() => parseUnits(searchParams.get('units')), [searchParams])
@@ -60,6 +84,7 @@ export default function ChineseCharsPracticeSession() {
     () => parseQuizTypesParam(searchParams.get('types')),
     [searchParams],
   )
+  const cardPreviewEnabled = searchParams.get('cardPreview') !== '0'
 
   const filtered = useMemo(
     () =>
@@ -70,19 +95,26 @@ export default function ChineseCharsPracticeSession() {
   )
 
   const plan = useMemo(
-    () => buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons),
-    [filtered, charByKey, quizTypes, lessons],
+    () => buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug),
+    [filtered, charByKey, quizTypes, lessons, bookSlug],
   )
 
-  const [phase, setPhase] = useState<PracticePhase>('cards')
+  const [phase, setPhase] = useState<PracticePhase>(() =>
+    cardPreviewEnabled ? 'cards' : 'chars',
+  )
   const [cardIdx, setCardIdx] = useState(0)
   const [charQIdx, setCharQIdx] = useState(0)
   const [phraseIdx, setPhraseIdx] = useState(0)
   const [poemIdx, setPoemIdx] = useState(0)
   const [accIdx, setAccIdx] = useState(0)
   const [passageIdx, setPassageIdx] = useState(0)
+  const [pinyinWriteIdx, setPinyinWriteIdx] = useState(0)
   const [flipped, setFlipped] = useState(true)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [wrongFeedback, setWrongFeedback] = useState<{
+    selected: string
+    correct: string
+  } | null>(null)
+  const [strokeWrongMistakes, setStrokeWrongMistakes] = useState<number | null>(null)
   const [earnedMoons, setEarnedMoons] = useState(0)
   const [correctCounts, setCorrectCounts] = useState({ total: 0, correct: 0 })
 
@@ -119,29 +151,44 @@ export default function ChineseCharsPracticeSession() {
         'poems',
         'accumulation',
         'passage',
+        'pinyin-write',
         'done',
       ]
       const start = order.indexOf(from) + 1
       for (let i = start; i < order.length; i++) {
         const next = order[i]
+        if (next === 'cards' && (!cardPreviewEnabled || plan.cards.length === 0)) continue
         if (next === 'chars' && plan.charQuestions.length === 0) continue
         if (next === 'phrases' && plan.phraseItems.length === 0) continue
         if (next === 'poems' && plan.poems.length === 0) continue
         if (next === 'accumulation' && plan.accumulationItems.length === 0) continue
         if (next === 'passage' && plan.passageItems.length === 0) continue
+        if (next === 'pinyin-write' && plan.pinyinWriteItems.length === 0) continue
         setPhase(next)
         return
       }
       setPhase('done')
     },
-    [plan],
+    [plan, cardPreviewEnabled],
   )
 
   useEffect(() => {
-    if (plan.cards.length === 0 && phase === 'cards') {
+    if (!isCharDataReady) return
+    if (phase === 'cards' && (!cardPreviewEnabled || plan.cards.length === 0)) {
       goNextPhase('cards')
+      return
     }
-  }, [plan.cards.length, phase, goNextPhase])
+    if (!cardPreviewEnabled && phase === 'chars' && plan.charQuestions.length === 0) {
+      goNextPhase('chars')
+    }
+  }, [
+    isCharDataReady,
+    plan.cards.length,
+    plan.charQuestions.length,
+    phase,
+    goNextPhase,
+    cardPreviewEnabled,
+  ])
 
   const currentCard = plan.cards[cardIdx]
   const currentCharQ = plan.charQuestions[charQIdx] as CharPracticeQuestion | undefined
@@ -149,6 +196,7 @@ export default function ChineseCharsPracticeSession() {
   const currentPoem = plan.poems[poemIdx]
   const currentAcc = plan.accumulationItems[accIdx]
   const currentPassage = plan.passageItems[passageIdx]
+  const currentPinyinWrite = plan.pinyinWriteItems[pinyinWriteIdx]
 
   const phraseOptions = useMemo(() => {
     if (!currentPhrase) return []
@@ -159,23 +207,95 @@ export default function ChineseCharsPracticeSession() {
 
   const passageOptions = currentPassage?.options ?? []
 
+  const phraseCharOptions = useMemo(() => {
+    if (!currentCharQ || currentCharQ.kind !== 'phrase-char') return []
+    const pool = filtered.flatMap((f) => [...f.group.recognize, ...f.group.write])
+    const seed =
+      currentCharQ.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 11) >>> 0
+    return buildPhraseOptions(currentCharQ.item, [...new Set(pool)], seed)
+  }, [currentCharQ, filtered])
+
+  const clearQuestionFeedback = useCallback(() => {
+    setWrongFeedback(null)
+    setStrokeWrongMistakes(null)
+  }, [])
+
+  const advanceCharQuestion = useCallback(() => {
+    clearQuestionFeedback()
+    if (charQIdx + 1 >= plan.charQuestions.length) {
+      goNextPhase('chars')
+      setCharQIdx(0)
+    } else {
+      setCharQIdx((i) => i + 1)
+    }
+  }, [charQIdx, clearQuestionFeedback, goNextPhase, plan.charQuestions.length])
+
+  const advancePhraseQuestion = useCallback(() => {
+    clearQuestionFeedback()
+    if (phraseIdx + 1 >= plan.phraseItems.length) {
+      goNextPhase('phrases')
+      setPhraseIdx(0)
+    } else {
+      setPhraseIdx((i) => i + 1)
+    }
+  }, [clearQuestionFeedback, goNextPhase, phraseIdx, plan.phraseItems.length])
+
+  const advancePassageQuestion = useCallback(() => {
+    clearQuestionFeedback()
+    if (passageIdx + 1 >= plan.passageItems.length) {
+      goNextPhase('passage')
+      setPassageIdx(0)
+    } else {
+      setPassageIdx((i) => i + 1)
+    }
+  }, [clearQuestionFeedback, goNextPhase, passageIdx, plan.passageItems.length])
+
+  const advanceAccQuestion = useCallback(() => {
+    clearQuestionFeedback()
+    if (accIdx + 1 >= plan.accumulationItems.length) {
+      goNextPhase('accumulation')
+      setAccIdx(0)
+    } else {
+      setAccIdx((i) => i + 1)
+    }
+  }, [accIdx, clearQuestionFeedback, goNextPhase, plan.accumulationItems.length])
+
+  const handleChoiceAnswer = useCallback(
+    async (
+      correct: boolean,
+      reward: number,
+      advance: () => void,
+      wrong?: { selected: string; correct: string },
+    ) => {
+      await awardMoon(reward, correct)
+      if (correct) {
+        advance()
+      } else if (wrong) {
+        setWrongFeedback(wrong)
+      }
+    },
+    [awardMoon],
+  )
+
   const handleCharAnswer = useCallback(
-    async (correct: boolean, q: CharPracticeQuestion) => {
+    async (
+      correct: boolean,
+      q: CharPracticeQuestion,
+      wrong?: { selected: string; correct: string },
+    ) => {
       if (q.kind === 'recognize') {
         recordBatch([{ charKey: q.charKey, track: 'recognize', correct }])
       } else if (q.kind === 'stroke') {
         recordBatch([{ charKey: q.charKey, track: 'write', correct }])
       }
       await awardMoon(MOON_REWARDS.char, correct)
-      if (charQIdx + 1 >= plan.charQuestions.length) {
-        goNextPhase('chars')
-        setCharQIdx(0)
-      } else {
-        setCharQIdx((i) => i + 1)
-        setSelected(null)
+      if (correct) {
+        advanceCharQuestion()
+      } else if (wrong) {
+        setWrongFeedback(wrong)
       }
     },
-    [awardMoon, charQIdx, goNextPhase, plan.charQuestions.length, recordBatch],
+    [advanceCharQuestion, awardMoon, recordBatch],
   )
 
   if (!isCharDataReady) {
@@ -306,23 +426,28 @@ export default function ChineseCharsPracticeSession() {
                     while (distractors.length < 3) distractors.push(currentCharQ.pinyin)
                     const opts = shuffle([currentCharQ.pinyin, ...distractors.slice(0, 3)], seed + 1)
                     return opts.map((opt) => {
-                      const answered = selected !== null
+                      const locked = wrongFeedback !== null
                       const isCorrect = opt === currentCharQ.pinyin
-                      const isChosen = selected === opt
+                      const isChosen = wrongFeedback?.selected === opt
                       return (
                         <button
                           key={opt}
                           type="button"
-                          disabled={answered}
+                          disabled={locked}
                           onClick={() => {
-                            setSelected(opt)
-                            void handleCharAnswer(opt === currentCharQ.pinyin, currentCharQ)
+                            const correct = opt === currentCharQ.pinyin
+                            void handleCharAnswer(
+                              correct,
+                              currentCharQ,
+                              correct ? undefined : { selected: opt, correct: currentCharQ.pinyin },
+                            )
                           }}
                           className={clsx(
                             'rounded-xl border-2 px-4 py-3 text-lg font-semibold',
-                            !answered && 'border-amber-200 bg-white hover:border-sky-300',
-                            answered && isCorrect && 'border-emerald-400 bg-emerald-50',
-                            answered && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                            !locked && 'border-amber-200 bg-white hover:border-sky-300',
+                            locked && isCorrect && 'border-emerald-400 bg-emerald-50',
+                            locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                            locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
                           )}
                         >
                           {opt}
@@ -331,59 +456,96 @@ export default function ChineseCharsPracticeSession() {
                     })
                   })()}
                 </div>
+                {wrongFeedback && currentCharQ.kind === 'recognize' && (
+                  <WrongAnswerPanel
+                    correct={wrongFeedback.correct}
+                    onNext={advanceCharQuestion}
+                  />
+                )}
               </>
             )}
 
             {currentCharQ.kind === 'stroke' && (
               <div className="flex flex-col items-center gap-3">
                 <p className="text-sm font-semibold text-stone-600">按笔顺书写「{currentCharQ.char}」</p>
-                <CharWriter
-                  char={currentCharQ.char}
-                  strokeOrder={getCharProfile(currentCharQ.charKey)?.strokeOrder ?? { strokes: [], medians: [] }}
-                  mode="quiz"
-                  onQuizComplete={({ totalMistakes }) => {
-                    void handleCharAnswer(totalMistakes === 0, currentCharQ)
-                  }}
-                />
+                {strokeWrongMistakes === null ? (
+                  <CharWriter
+                    char={currentCharQ.char}
+                    mode="quiz"
+                    onQuizComplete={({ totalMistakes }) => {
+                      if (totalMistakes === 0) {
+                        void handleCharAnswer(true, currentCharQ)
+                      } else {
+                        void (async () => {
+                          if (currentCharQ.kind === 'stroke') {
+                            recordBatch([
+                              { charKey: currentCharQ.charKey, track: 'write', correct: false },
+                            ])
+                          }
+                          await awardMoon(MOON_REWARDS.char, false)
+                          setStrokeWrongMistakes(totalMistakes)
+                        })()
+                      }
+                    }}
+                  />
+                ) : (
+                  <>
+                    <p className="text-sm font-bold text-rose-700">
+                      有 {strokeWrongMistakes} 处笔误，再练练「{currentCharQ.char}」
+                    </p>
+                    <WrongAnswerPanel correct={currentCharQ.char} onNext={advanceCharQuestion} />
+                  </>
+                )}
               </div>
             )}
 
             {currentCharQ.kind === 'phrase-char' && (
               <>
                 <div className="text-center">
-                  <p className="text-sm text-stone-500">词语检测 · 选出□里应该填的字</p>
-                  <p className="mt-4 text-3xl font-bold tracking-widest">
-                    {currentCharQ.item.display}
+                  <p className="text-sm font-semibold text-amber-800/70">
+                    词语检测 · 选出彩色小空格里应该填的字
                   </p>
+                  <div className="mt-4">
+                    <QuizBlankSentence display={currentCharQ.item.display} size="lg" />
+                  </div>
                 </div>
                 <div className="grid grid-cols-4 gap-3">
-                  {buildPhraseOptions(
-                    currentCharQ.item,
-                    filtered.flatMap((f) => [...f.group.recognize, ...f.group.write]),
-                  ).map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      disabled={selected !== null}
-                      onClick={() => {
-                        setSelected(opt)
-                        void handleCharAnswer(opt === currentCharQ.item.answer, currentCharQ)
-                      }}
-                      className={clsx(
-                        'rounded-xl border-2 py-3 text-xl font-bold',
-                        selected === null && 'border-amber-200 bg-white',
-                        selected === opt &&
-                          opt === currentCharQ.item.answer &&
-                          'border-emerald-400 bg-emerald-50',
-                        selected === opt &&
-                          opt !== currentCharQ.item.answer &&
-                          'border-rose-400 bg-rose-50',
-                      )}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+                  {phraseCharOptions.map((opt) => {
+                    const locked = wrongFeedback !== null
+                    const isCorrect = opt === currentCharQ.item.answer
+                    const isChosen = wrongFeedback?.selected === opt
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        disabled={locked}
+                        onClick={() => {
+                          const correct = opt === currentCharQ.item.answer
+                          void handleCharAnswer(
+                            correct,
+                            currentCharQ,
+                            correct ? undefined : { selected: opt, correct: currentCharQ.item.answer },
+                          )
+                        }}
+                        className={clsx(
+                          'rounded-xl border-2 py-3 text-xl font-bold',
+                          !locked && 'border-amber-200 bg-white',
+                          locked && isCorrect && 'border-emerald-400 bg-emerald-50',
+                          locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                          locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
+                        )}
+                      >
+                        {opt}
+                      </button>
+                    )
+                  })}
                 </div>
+                {wrongFeedback && currentCharQ.kind === 'phrase-char' && (
+                  <WrongAnswerPanel
+                    correct={wrongFeedback.correct}
+                    onNext={advanceCharQuestion}
+                  />
+                )}
               </>
             )}
           </div>
@@ -394,36 +556,46 @@ export default function ChineseCharsPracticeSession() {
             <p className="text-center text-xs font-semibold text-amber-900/45">
               词汇练习 {phraseIdx + 1} / {plan.phraseItems.length}
             </p>
-            <p className="text-center text-3xl font-bold tracking-widest">{currentPhrase.display}</p>
+            <QuizBlankSentence display={currentPhrase.display} size="lg" />
             <div className="grid grid-cols-4 gap-3">
-              {phraseOptions.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  disabled={selected !== null}
-                  onClick={async () => {
-                    setSelected(opt)
-                    const correct = opt === currentPhrase.answer
-                    await awardMoon(MOON_REWARDS.phrase, correct)
-                    setTimeout(() => {
-                      if (phraseIdx + 1 >= plan.phraseItems.length) {
-                        goNextPhase('phrases')
-                        setPhraseIdx(0)
-                      } else {
-                        setPhraseIdx((i) => i + 1)
-                      }
-                      setSelected(null)
-                    }, 400)
-                  }}
-                  className={clsx(
-                    'rounded-xl border-2 py-3 text-xl font-bold',
-                    selected === null && 'border-violet-200 bg-white',
-                  )}
-                >
-                  {opt}
-                </button>
-              ))}
+              {phraseOptions.map((opt) => {
+                const locked = wrongFeedback !== null
+                const isCorrect = opt === currentPhrase.answer
+                const isChosen = wrongFeedback?.selected === opt
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    disabled={locked}
+                    onClick={() => {
+                      void handleChoiceAnswer(
+                        opt === currentPhrase.answer,
+                        MOON_REWARDS.phrase,
+                        advancePhraseQuestion,
+                        opt === currentPhrase.answer
+                          ? undefined
+                          : { selected: opt, correct: currentPhrase.answer },
+                      )
+                    }}
+                    className={clsx(
+                      'rounded-xl border-2 py-3 text-xl font-bold',
+                      !locked && 'border-violet-200 bg-white',
+                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
+                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
+                    )}
+                  >
+                    {opt}
+                  </button>
+                )
+              })}
             </div>
+            {wrongFeedback && (
+              <WrongAnswerPanel
+                correct={wrongFeedback.correct}
+                onNext={advancePhraseQuestion}
+              />
+            )}
           </div>
         )}
 
@@ -455,69 +627,123 @@ export default function ChineseCharsPracticeSession() {
             </p>
             <p className="text-center text-2xl font-bold">{currentAcc.prompt}</p>
             <div className="grid grid-cols-2 gap-3">
-              {currentAcc.options.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  disabled={selected !== null}
-                  onClick={async () => {
-                    setSelected(opt)
-                    const correct = opt === currentAcc.answer
-                    await awardMoon(MOON_REWARDS.accumulation, correct)
-                    setTimeout(() => {
-                      if (accIdx + 1 >= plan.accumulationItems.length) {
-                        goNextPhase('accumulation')
-                        setAccIdx(0)
-                      } else {
-                        setAccIdx((i) => i + 1)
-                      }
-                      setSelected(null)
-                    }, 400)
-                  }}
-                  className="rounded-xl border-2 border-emerald-200 bg-white px-3 py-3 text-sm font-bold"
-                >
-                  {opt}
-                </button>
-              ))}
+              {currentAcc.options.map((opt) => {
+                const locked = wrongFeedback !== null
+                const isCorrect = opt === currentAcc.answer
+                const isChosen = wrongFeedback?.selected === opt
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    disabled={locked}
+                    onClick={() => {
+                      void handleChoiceAnswer(
+                        opt === currentAcc.answer,
+                        MOON_REWARDS.accumulation,
+                        advanceAccQuestion,
+                        opt === currentAcc.answer
+                          ? undefined
+                          : { selected: opt, correct: currentAcc.answer },
+                      )
+                    }}
+                    className={clsx(
+                      'rounded-xl border-2 px-3 py-3 text-sm font-bold',
+                      !locked && 'border-emerald-200 bg-white',
+                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
+                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
+                    )}
+                  >
+                    {opt}
+                  </button>
+                )
+              })}
             </div>
+            {wrongFeedback && (
+              <WrongAnswerPanel
+                correct={wrongFeedback.correct}
+                onNext={advanceAccQuestion}
+              />
+            )}
           </div>
         )}
 
         {phase === 'passage' && currentPassage && (
           <div className="flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
-              文章阅读 {passageIdx + 1} / {plan.passageItems.length}
+              阅读题 {passageIdx + 1} / {plan.passageItems.length}
             </p>
-            <p className="text-sm font-semibold text-stone-500">{currentPassage.lessonTitle}</p>
-            <p className="rounded-2xl border border-amber-200/70 bg-white/80 p-4 text-lg leading-loose">
-              {currentPassage.prompt}
+            <p className="text-center text-sm font-semibold text-amber-800/70">
+              {currentPassage.blankKind === 'word'
+                ? '选出句子里彩色小空格里应该填的词语'
+                : '选出句子里彩色小空格里应该填的字'}
+              {' · '}
+              {currentPassage.lessonTitle}
             </p>
-            <div className="grid grid-cols-4 gap-3">
-              {passageOptions.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  disabled={selected !== null}
-                  onClick={async () => {
-                    setSelected(opt)
-                    const correct = opt === currentPassage.answer
-                    await awardMoon(MOON_REWARDS.passage, correct)
-                    setTimeout(() => {
-                      if (passageIdx + 1 >= plan.passageItems.length) {
-                        goNextPhase('passage')
-                        setPassageIdx(0)
-                      } else {
-                        setPassageIdx((i) => i + 1)
-                      }
-                      setSelected(null)
-                    }, 400)
-                  }}
-                  className="rounded-xl border-2 border-amber-300 bg-white py-3 text-xl font-bold"
-                >
-                  {opt}
-                </button>
-              ))}
+            <div className="rounded-2xl border border-amber-200/70 bg-white/85 p-4 shadow-sm">
+              <QuizBlankSentence display={currentPassage.prompt} size="md" align="start" />
             </div>
+            <div className="grid grid-cols-4 gap-3">
+              {passageOptions.map((opt) => {
+                const locked = wrongFeedback !== null
+                const isCorrect = opt === currentPassage.answer
+                const isChosen = wrongFeedback?.selected === opt
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    disabled={locked}
+                    onClick={() => {
+                      void handleChoiceAnswer(
+                        opt === currentPassage.answer,
+                        MOON_REWARDS.passage,
+                        advancePassageQuestion,
+                        opt === currentPassage.answer
+                          ? undefined
+                          : { selected: opt, correct: currentPassage.answer },
+                      )
+                    }}
+                    className={clsx(
+                      'rounded-xl border-2 py-3 text-xl font-bold',
+                      !locked && 'border-amber-300 bg-white',
+                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
+                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
+                    )}
+                  >
+                    {opt}
+                  </button>
+                )
+              })}
+            </div>
+            {wrongFeedback && (
+              <WrongAnswerPanel
+                correct={wrongFeedback.correct}
+                onNext={advancePassageQuestion}
+              />
+            )}
+          </div>
+        )}
+
+        {phase === 'pinyin-write' && currentPinyinWrite && (
+          <div className="flex flex-1 flex-col">
+            <p className="mb-3 text-center text-xs font-semibold text-amber-900/45">
+              看拼写字 {pinyinWriteIdx + 1} / {plan.pinyinWriteItems.length} ·{' '}
+              {currentPinyinWrite.lessonTitle}
+            </p>
+            <PinyinWriteRunner
+              key={currentPinyinWrite.id}
+              item={currentPinyinWrite}
+              onComplete={async (correct) => {
+                await awardMoon(MOON_REWARDS.pinyinWrite, correct)
+                if (pinyinWriteIdx + 1 >= plan.pinyinWriteItems.length) {
+                  goNextPhase('pinyin-write')
+                  setPinyinWriteIdx(0)
+                } else {
+                  setPinyinWriteIdx((i) => i + 1)
+                }
+              }}
+            />
           </div>
         )}
 

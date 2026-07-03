@@ -19,7 +19,6 @@ export type {
   ChineseCharProfile,
   ChineseLessonRow,
   ChineseLessonCharRow,
-  StrokeOrderData,
 } from './types/chineseCharData'
 
 // Utils
@@ -40,6 +39,7 @@ export {
   getBookLessonPassages,
   getBookPoems,
   getLessonPassageForBook,
+  getBookPinyinWriteWords,
 } from './utils/chinese-book-content'
 export { default as ChinesePoemsPage } from './components/ChinesePoemsPage'
 
@@ -61,6 +61,7 @@ export { default as ChineseReadingIndexPage } from './components/reading/Chinese
 export { default as ChineseReadingPassagePage } from './components/reading/ChineseReadingPassagePage'
 export { default as ChineseWrongPage } from './components/ChineseWrongPage'
 export { default as ChineseHomePage } from './components/ChineseHomePage'
+export { default as ChineseDailyCard } from './components/ChineseDailyCard'
 export { default as ChineseMasteryStatsBar } from './components/ChineseMasteryStatsBar'
 export { default as ChineseDailyPage } from './components/ChineseDailyPage'
 export { default as ChineseCharQuizPage } from './components/ChineseCharQuizPage'
@@ -68,5 +69,8 @@ export { default as ChineseCharWritingPage } from './components/ChineseCharWriti
 export { default as ChineseCharsPage } from './components/ChineseCharsPage'
 export { default as ChineseCharCardsPage } from './components/ChineseCharCardsPage'
 export { default as ChineseCharsPracticeSession } from './components/chars/ChineseCharsPracticeSession'
+export { default as ChinesePinyinWritePrintPage } from './components/chars/ChinesePinyinWritePrintPage'
 export { default as ChineseWeeklyPage } from './components/ChineseWeeklyPage'
 export * from './utils/chinese-chars-session-helpers'
+export * from './utils/chinese-pinyin-write-helpers'
+export * from './utils/chinese-pinyin-write-print-helpers'

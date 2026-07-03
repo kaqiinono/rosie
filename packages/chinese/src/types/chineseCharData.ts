@@ -1,11 +1,5 @@
 import type { CharTier, LessonCharGroup, LessonKind, UnitType } from '../utils/g1b/types'
 
-export interface StrokeOrderData {
-  strokes: string[]
-  medians: number[][][]
-  radStrokes?: number[]
-}
-
 export interface ChineseCharProfile {
   charKey: string
   char: string
@@ -17,7 +11,6 @@ export interface ChineseCharProfile {
   radicalName: string
   structure: string
   strokeCount: number
-  strokeOrder: StrokeOrderData
   phrases: string[]
   tiers: CharTier[]
 }

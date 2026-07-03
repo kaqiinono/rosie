@@ -187,3 +187,72 @@
   width: 0.875rem;
   height: 0.875rem;
 }
+
+/* 挖空题：糖果色小空格（替代 □ 字符，避免像「口」） */
+.cn-blank-sentence {
+  line-height: 2;
+  word-break: keep-all;
+}
+
+.cn-blank-sentence-text {
+  white-space: pre-wrap;
+}
+
+.cn-blank-sentence--lg {
+  font-size: 1.875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.cn-blank-sentence--md {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 2.25;
+}
+
+.cn-blank-slot {
+  --cn-blank-chars: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.12em;
+  margin: 0 0.1em;
+  min-width: calc(var(--cn-blank-chars) * 1.28em + 0.55rem);
+  height: calc(1.28em + 0.45rem);
+  padding: 0 0.3em;
+  border-radius: 0.7em;
+  border: 2.5px dashed transparent;
+  background:
+    linear-gradient(165deg, #fff9f0 0%, #fff0f8 55%, #f0f7ff 100%) padding-box,
+    linear-gradient(125deg, #fb923c 0%, #f472b6 45%, #a78bfa 100%) border-box;
+  box-shadow:
+    0 3px 12px rgba(251, 146, 60, 0.16),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95);
+  animation: cn-blank-float 2.6s ease-in-out infinite;
+}
+
+.cn-blank-slot-mark {
+  font-family: ui-rounded, 'Hiragino Maru Gothic ProN', 'Yuanti SC', 'PingFang SC', sans-serif;
+  font-size: 0.58em;
+  font-weight: 900;
+  line-height: 1;
+  color: #f97316;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+@keyframes cn-blank-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cn-blank-slot {
+    animation: none;
+  }
+}

@@ -78,7 +78,6 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
         char: ch,
         charKey: charKeyForBook(ch),
         pinyin: group.writePinyin[i] || profile?.pinyin || '',
-        strokeOrder: profile?.strokeOrder ?? { strokes: [], medians: [] },
       }
     })
   }, [group, getCharProfile, charKeyForBook])

@@ -22,8 +22,35 @@ export function parseBookSlug(slug: string): { grade: number; semester: '上' | 
   return { grade: Number(m[1]), semester: m[2] === 'a' ? '上' : '下' }
 }
 
+/** DB/runtime char_key; g1b legacy rows use unprefixed single-char keys. */
 export function charKey(char: string, slug = 'g1b'): string {
+  if (slug === 'g1b') return char
   return `${slug}::${char}`
+}
+
+/** All char_key forms that may appear in DB or runtime for one character in a book. */
+export function charKeyLookupAliases(charOrKey: string, slug = 'g1b'): string[] {
+  const ch = charFromKey(charOrKey)
+  const canonical = charKey(ch, slug)
+  const keys = new Set([charOrKey, canonical, ch])
+  if (slug === 'g1b') {
+    keys.add(`g1b::${ch}`)
+    keys.add(`g1-下::${ch}`)
+  }
+  return [...keys]
+}
+
+export function buildCharProfileMap(
+  entries: ChineseCharProfile[],
+  slug: string,
+): Map<string, ChineseCharProfile> {
+  const map = new Map<string, ChineseCharProfile>()
+  for (const entry of entries) {
+    for (const alias of charKeyLookupAliases(entry.charKey, slug)) {
+      if (!map.has(alias)) map.set(alias, entry)
+    }
+  }
+  return map
 }
 
 /** DB primary key for chinese_lessons; g1b legacy rows use unprefixed keys. */
@@ -68,12 +95,24 @@ export function masteryKey(charKeyValue: string, track: CharTrack): string {
   return `${charKeyValue}::${track}`
 }
 
-function parseMasteryKey(mapKey: string): { charKey: string; track: CharTrack } | null {
+export function parseMasteryKey(mapKey: string): { charKey: string; track: CharTrack } | null {
   const idx = mapKey.lastIndexOf('::')
   if (idx < 0) return null
   const track = mapKey.slice(idx + 2)
   if (track !== 'recognize' && track !== 'write') return null
   return { charKey: mapKey.slice(0, idx), track }
+}
+
+/** Map legacy g1b:: / g1-下:: mastery keys onto canonical unprefixed keys. */
+export function normalizeMasteryMapForBook(map: CharMasteryMap, slug: string): CharMasteryMap {
+  const next: CharMasteryMap = { ...map }
+  for (const [k, v] of Object.entries(map)) {
+    const parsed = parseMasteryKey(k)
+    if (!parsed) continue
+    const canonical = masteryKey(charKey(charFromKey(parsed.charKey), slug), parsed.track)
+    if (canonical !== k && !next[canonical]) next[canonical] = v
+  }
+  return next
 }
 
 export function shuffle<T>(arr: T[], seed?: number): T[] {

@@ -8,11 +8,10 @@ import type {
   ChineseLessonCharRow,
   ChineseLessonRow,
   LessonCharGroup,
-  StrokeOrderData,
 } from '../types/chineseCharData'
 import type { CharTier } from '../utils/g1b/types'
 
-const CACHE_VER = 'chinese_char_data_v3'
+const CACHE_VER = 'chinese_char_data_v4'
 const FETCH_PAGE_SIZE = 1000
 
 function cacheKey(userId: string) {
@@ -57,7 +56,6 @@ function fromCharRow(row: Record<string, unknown>): ChineseCharProfile {
     radicalName: row.radical_name as string,
     structure: (row.structure as string) ?? '',
     strokeCount: row.stroke_count as number,
-    strokeOrder: row.stroke_order as StrokeOrderData,
     phrases: (row.phrases as string[]) ?? [],
     tiers: (row.tiers as CharTier[]) ?? [],
   }
@@ -167,7 +165,7 @@ export function useChineseCharData(user: User | null) {
       const [charRows, lessonRows, lcRows] = await Promise.all([
         fetchAllRows<Record<string, unknown>>(
           'chinese_char_entries',
-          'char_key,char,grade,semester,pinyin,pinyin_alt,radical,radical_name,structure,stroke_count,stroke_order,phrases,tiers',
+          'char_key,char,grade,semester,pinyin,pinyin_alt,radical,radical_name,structure,stroke_count,phrases,tiers',
           'char_key',
         ),
         fetchAllRows<Record<string, unknown>>(

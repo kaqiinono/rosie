@@ -108,14 +108,17 @@ export function buildPhraseOptions(
   charPool: string[],
   seed?: number,
 ): string[] {
+  const baseSeed =
+    seed ??
+    (item.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 0) >>> 0)
   const distractors = shuffle(
     charPool.filter((c) => c !== item.answer),
-    seed,
+    baseSeed,
   ).slice(0, 3)
   while (distractors.length < 3) {
     distractors.push(item.answer)
   }
-  return shuffle([item.answer, ...distractors.slice(0, 3)], (seed ?? 0) + 1)
+  return shuffle([item.answer, ...distractors.slice(0, 3)], baseSeed + 1)
 }
 
 export function getLessonPhraseCharPool(group: LessonCharGroup): string[] {
