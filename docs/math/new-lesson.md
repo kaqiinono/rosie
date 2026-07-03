@@ -22,6 +22,7 @@
 | 49 | 二（年级内第 1 讲） | [`lessons/49.md`](lessons/49.md) | 加减法的速算与巧算 |
 | 50 | 二（年级内第 2 讲） | [`lessons/50.md`](lessons/50.md) | 基本应用题 |
 | 51 | 二（年级内第 3 讲） | [`lessons/51.md`](lessons/51.md) | 等量代换与归一问题 |
+| 52 | 二（年级内第 4 讲） | [`lessons/52.md`](lessons/52.md) | 差倍问题 |
 
 > 新增一讲：在 `docs/math/lessons/` 下新建 `N.md`，按模板填入题目（建议写明年级），然后跑 `/add-lesson N`。
 > **操作说明（准备什么、文字题/图片题怎么交）：** [`how-to-add-lesson.md`](how-to-add-lesson.md)  

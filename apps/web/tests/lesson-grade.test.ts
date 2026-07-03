@@ -19,23 +19,20 @@ describe('lesson-grade', () => {
     expect(ids.every((id) => Object.keys(LESSON_GRADE).includes(id))).toBe(true)
   })
 
-  it('第 49、50 讲属于二年级', () => {
+  it('二年级讲次 49–52 登记正确', () => {
     expect(LESSON_GRADE['49']).toBe(2)
     expect(LESSON_GRADE['50']).toBe(2)
-    expect(gradeOf('49')).toBe(2)
-    expect(gradeOf('50')).toBe(2)
-    expect(lessonsForGrade(2)).toEqual(['49', '50'])
+    expect(LESSON_GRADE['51']).toBe(2)
+    expect(LESSON_GRADE['52']).toBe(2)
+    expect(lessonsForGrade(2)).toEqual(['49', '50', '51', '52'])
     expect(lessonDisplayNum('49')).toBe(1)
     expect(lessonDisplayNum('50')).toBe(2)
+    expect(lessonDisplayNum('51')).toBe(3)
+    expect(lessonDisplayNum('52')).toBe(4)
     expect(lessonDisplayLabel('49')).toBe('第 1 讲')
     expect(lessonDisplayLabel('50')).toBe('第 2 讲')
-  })
-
-  it('第 51 讲属于二年级第 3 讲', () => {
-    expect(LESSON_GRADE['51']).toBe(2)
-    expect(gradeOf('51')).toBe(2)
-    expect(lessonDisplayNum('51')).toBe(2)
-    expect(lessonDisplayLabel('51')).toBe('第 2 讲')
+    expect(lessonDisplayLabel('51')).toBe('第 3 讲')
+    expect(lessonDisplayLabel('52')).toBe('第 4 讲')
   })
 
   it('gradesInOrder 返回升序去重的年级', () => {
@@ -50,11 +47,13 @@ describe('lesson-grade', () => {
 
   it('gradeOf 取讲次年级，未登记返回 undefined', () => {
     expect(gradeOf('35')).toBe(1)
+    expect(gradeOf('52')).toBe(2)
     expect(gradeOf('999')).toBeUndefined()
   })
 
   it('lessonIdFromHref 从路由取讲次 id', () => {
     expect(lessonIdFromHref('/math/ny/35')).toBe('35')
+    expect(lessonIdFromHref('/math/ny/52')).toBe('52')
     expect(lessonIdFromHref('/math/ny/g1')).toBeUndefined()
     expect(lessonIdFromHref('/foo')).toBeUndefined()
   })

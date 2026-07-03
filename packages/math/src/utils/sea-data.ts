@@ -19,6 +19,7 @@ import { PROBLEMS as PROBLEMS44, PROBLEM_TYPES as PT44, TAG_STYLE as TS44 } from
 import { PROBLEMS as PROBLEMS46, PROBLEM_TYPES as PT46, TAG_STYLE as TS46 } from './lesson46-data'
 import { PROBLEMS as PROBLEMS47, PROBLEM_TYPES as PT47, TAG_STYLE as TS47 } from './lesson47-data'
 import { PROBLEMS as PROBLEMS49, PROBLEM_TYPES as PT49, TAG_STYLE as TS49 } from './lesson49-data'
+import { PROBLEMS as PROBLEMS52, PROBLEM_TYPES as PT52, TAG_STYLE as TS52 } from './lesson52-data'
 import { PROBLEMS as PROBLEMS51, PROBLEM_TYPES as PT51, TAG_STYLE as TS51 } from './lesson51-data'
 import { PROBLEMS as PROBLEMS50, PROBLEM_TYPES as PT50, TAG_STYLE as TS50 } from './lesson50-data'
 import type { Problem, ProblemSet } from '@rosie/core'
@@ -254,6 +255,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: TS49,
     types: PT49.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
     problems: PROBLEMS49,
+  },
+  {
+    id: '52',
+    title: '第4讲·差倍问题',
+    shortTitle: '4·差倍问题',
+    icon: '📊',
+    badgeClass: 'bg-sky-100 text-sky-700',
+    tagStyle: TS52,
+    types: PT52.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS52,
   },
   {
     id: '51',

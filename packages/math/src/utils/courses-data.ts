@@ -3,8 +3,16 @@ import type {CourseCardData} from '@rosie/core'
 import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 export const COURSES: CourseCardData[] = [
-
-    {
+  {
+    href: '/math/ny/52',
+    title: '差倍问题探险',
+    description: '找差找倍画线段图 —— 基本差倍、移多补少、年龄问题与和倍应用，含综合挑战附加题。',
+    icon: '📊',
+    lectureNum: '第 4 讲',
+    tags: ['差倍问题', '移多补少·年龄·和倍', '50 道互动题'],
+    variant: 'violet',
+  },
+  {
         href: '/math/ny/51',
         title: '等量代换与归一问题探险',
         description: '等量代换统一数量、消元求单价、直接归一与反比例归一 —— 学会先求每份再算总量。',

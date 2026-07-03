@@ -8,6 +8,7 @@ export const LESSON_GRADE: Record<string, number> = {
   '49': 2,
   '50': 2,
   '51': 2,
+  '52': 2,
 }
 
 /** 年级数字 → 中文名。 */
