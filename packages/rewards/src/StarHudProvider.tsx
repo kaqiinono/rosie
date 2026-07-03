@@ -20,6 +20,8 @@ interface AwardOptions {
   bonus?: number
   /** Human-readable bonus tag, e.g. "全对加成 +20%". */
   bonusLabel?: string
+  /** Skip burst animation and earn sound — still updates balance and session. */
+  silent?: boolean
 }
 
 interface StarHudContextValue {
@@ -98,18 +100,20 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
             : wallet.blueBalance) +
         optimisticRef.current[color] +
         total
-      const ev: BurstEvent = {
-        id: ++burstIdSeq,
-        color,
-        amount: safeAmount,
-        bonus: bonus > 0 ? bonus : undefined,
-        bonusLabel: opts?.bonusLabel,
-        sessionTotal: sessionRef.current[color] + total,
-        total: nextTotalBalance,
-        origin: opts?.origin,
+      if (!opts?.silent) {
+        const ev: BurstEvent = {
+          id: ++burstIdSeq,
+          color,
+          amount: safeAmount,
+          bonus: bonus > 0 ? bonus : undefined,
+          bonusLabel: opts?.bonusLabel,
+          sessionTotal: sessionRef.current[color] + total,
+          total: nextTotalBalance,
+          origin: opts?.origin,
+        }
+        setBursts(prev => [...prev, ev])
+        playStarEarn(color, total, bonus)
       }
-      setBursts(prev => [...prev, ev])
-      playStarEarn(color, total, bonus)
 
       // Persist
       await earnStars(COLOR_TO_SOURCE[color], total)

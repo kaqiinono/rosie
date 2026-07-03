@@ -136,7 +136,7 @@ export default function ChineseCharsPracticeSession() {
       }))
       if (correct && amount > 0) {
         setEarnedMoons((m) => m + amount)
-        await awardStars('red', amount)
+        await awardStars('red', amount, { silent: true })
       }
     },
     [awardStars],
