@@ -461,6 +461,14 @@ export function wordKey(e: WordEntry): string {
   return `${e.unit}::${e.lesson}::${e.word}`
 }
 
+export function findWordByKey(vocab: WordEntry[], key: string): WordEntry | undefined {
+  return vocab.find(w => wordKey(w) === key)
+}
+
+export function practiceHrefForWord(key: string): string {
+  return `/english/words/practice?focus=${encodeURIComponent(key)}`
+}
+
 export function prioritizeReviews(
   reviewIndices: number[],
   vocab: WordEntry[],

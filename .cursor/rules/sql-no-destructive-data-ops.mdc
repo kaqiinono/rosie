@@ -1,0 +1,29 @@
+---
+description: Never clear or wipe DB table data unless the user explicitly requests it
+alwaysApply: true
+---
+
+# SQL / 数据迁移：禁止非必要清空
+
+**清空、删除整表/整批业务数据是危险操作。** 除非用户明确要求，否则不得建议或生成会 wipe 现有数据的步骤。
+
+## 默认做法（schema / 字段变更）
+
+1. **加列**：`ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...`
+2. **改数据**：`UPDATE ... WHERE ...` 或 targeted migration（如 `docs/sql/chinese-char-entries-update-structure-g1-down.sql`）
+3. **新装空库**：才用 `CREATE TABLE` + `INSERT` 灌库脚本
+
+## 禁止作为「改字段」的默认路径
+
+- `DELETE FROM ...` 清整表或按 grade/semester 批量删
+- `TRUNCATE`
+- 让用户先跑 `00-delete.sql` 再全量重灌，**仅**当：用户明确要重建、或数据已损坏无法增量修复
+
+## 说明迁移方案时
+
+- 先说**增量**方案（ALTER + UPDATE），再说全量重灌是可选、且有数据丢失风险
+- 若仓库里存在 delete/重灌脚本，注明其用途是「从零导入 / 全量替换」，不是日常 schema 变更
+
+## 用户已确认才可执行
+
+只有用户**明确说出**要清空、重建、重灌、跑 delete 脚本时，才引导使用 `00-delete.sql` 等破坏性流程。

@@ -82,3 +82,37 @@ export const STAR_COLOR_HEX: Record<StarColor, StarTheme> = {
     shapeLabel: '太阳',
   },
 }
+
+/** Face value in yuan (CNY) per unit — 星星 1毛, 月亮 2毛, 太阳 1元. */
+export const STAR_UNIT_PRICE_YUAN: Record<StarColor, number> = {
+  yellow: 0.1,
+  red: 0.2,
+  blue: 1,
+}
+
+/** Human-readable unit price label for admin / parent UI. */
+export const STAR_UNIT_PRICE_LABEL: Record<StarColor, string> = {
+  yellow: '1 毛/颗',
+  red: '2 毛/颗',
+  blue: '1 元/颗',
+}
+
+export function starBalanceValueYuan(color: StarColor, balance: number): number {
+  return balance * STAR_UNIT_PRICE_YUAN[color]
+}
+
+export function formatYuan(amount: number): string {
+  return `¥${amount.toFixed(2)}`
+}
+
+export function templatePriceYuan(prices: {
+  priceYellow: number
+  priceRed: number
+  priceBlue: number
+}): number {
+  return (
+    prices.priceYellow * STAR_UNIT_PRICE_YUAN.yellow
+    + prices.priceRed * STAR_UNIT_PRICE_YUAN.red
+    + prices.priceBlue * STAR_UNIT_PRICE_YUAN.blue
+  )
+}

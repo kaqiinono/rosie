@@ -311,11 +311,15 @@ export interface MathDayProgress {
 }
 
 export interface MathWeeklyPlan {
-  weekStart: string // ISO date (same Thursday start as English)
-  lessonId: string // "35" | "36"
-  weekStartDay: number // 0–6, 4 = Thursday
-  problemsPerDay: number // default 3
-  days: MathWeeklyPlanDay[] // 7 days
+  weekStart: string // plan start date (ISO)
+  planEnd?: string // plan end date (ISO); falls back to last day in `days`
+  lessonId: string // primary lesson for display / legacy single-lesson plans
+  lessonIds?: string[] // multi-lesson selection
+  sectionFilters?: Record<string, string[]> // lessonId → enabled sections
+  tagFilters?: Record<string, string[]> // lessonId → enabled problem tags (type1, type2, …)
+  weekStartDay: number // 0–6, 4 = Thursday (legacy / display)
+  problemsPerDay: number // auto-calculated from total ÷ days
+  days: MathWeeklyPlanDay[]
   progress: Record<string, MathDayProgress> // key = date string
 }
 

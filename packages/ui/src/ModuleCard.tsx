@@ -62,8 +62,7 @@ export default function ModuleCard({ data }: { data: ModuleCardData }) {
     >
       <div className={`h-[5px] transition-all duration-300 group-hover:h-1.5 ${s.accent}`} />
 
-      <div className={`absolute -top-8 -right-5 h-30 w-30 rounded-full opacity-6 ${s.deco}`} />
-      <div className={`absolute -bottom-5 -left-4 h-20 w-20 rounded-full opacity-6 ${s.deco}`} />
+      <div className={`absolute -top-8 -right-5 h-30 w-30 rounded-full opacity-[0.07] ${s.deco}`} />
 
       <div className="relative flex flex-col gap-3.5 p-6">
         <div className="flex items-center justify-between">

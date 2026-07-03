@@ -37,11 +37,11 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
     <div>
       <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-teal-50 via-teal-100 to-emerald-100 p-6">
         <div className="pointer-events-none absolute -right-2.5 -top-2.5 text-[90px] opacity-[0.12] rotate-[15deg]">
-          ⚖️
+          📝
         </div>
-        <h1 className="mb-1.5 text-2xl font-extrabold text-teal-900">等量代换与归一问题 ⚖️</h1>
+        <h1 className="mb-1.5 text-2xl font-extrabold text-teal-900">基本应用题 📝</h1>
         <p className="text-[13px] leading-relaxed text-teal-800">
-          第50讲 · 二年级目标班<br />学会先归一再求解，用等量关系破解应用题！
+          第50讲 · 二年级目标班 · 第2讲<br />读题找关系，先归一再求解！
         </p>
       </div>
 

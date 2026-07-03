@@ -4,10 +4,12 @@ import Link from 'next/link'
 import { OrbBackground } from '@rosie/ui'
 import { ModuleCard } from '@rosie/ui'
 import { useGreeting } from '@/hooks/useGreeting'
+import { useHomeStats } from '@/hooks/useHomeStats'
+import HomeStatsPanel from '@/components/HomeStatsPanel'
 import { useAuth } from '@rosie/core'
 import type { ModuleCardData } from '@rosie/core'
 
-const modules: ModuleCardData[] = [
+const baseModules: ModuleCardData[] = [
   {
     href: '/math',
     title: '数学乐园',
@@ -19,7 +21,7 @@ const modules: ModuleCardData[] = [
     icon: '🔢',
   },
   {
-    href: '/english/words',
+    href: '/english',
     title: '英语天地',
     description: '背单词、拼写练习、沉浸模式，轻松记住每个单词。',
     tag: 'ENGLISH',
@@ -27,6 +29,26 @@ const modules: ModuleCardData[] = [
     stats: ['单词卡片', '拼写练习', '每日一练'],
     enterText: '开始英语学习',
     icon: '📖',
+  },
+  {
+    href: '/chinese',
+    title: '语文园地',
+    description: '认字、会写、古诗背诵，按一年级下册课本进度学习。',
+    tag: 'CHINESE',
+    variant: 'reading',
+    stats: ['生字认读', '拼音测验', '古诗背诵'],
+    enterText: '开始语文学习',
+    icon: '📜',
+  },
+  {
+    href: '/calc',
+    title: '口算天地',
+    description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',
+    tag: 'CALC',
+    variant: 'calc',
+    stats: ['加减乘除闯关', '金币兑换奖券', '错题本'],
+    enterText: '开始口算',
+    icon: '🧮',
   },
   {
     href: '/today',
@@ -39,24 +61,14 @@ const modules: ModuleCardData[] = [
     icon: '🗓️',
   },
   {
-    href: '/calc',
-    title: '口算天地',
-    description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',
-    tag: 'CALC',
-    variant: 'calc',
-    stats: ['12 关闯关', '错题持久化', '金币兑换'],
-    enterText: '开始口算',
-    icon: '🧮',
-  },
-  {
-    href: '/math/priority',
-    title: '数学大纲',
-    description: '数学大纲知识点分析与复习计划。',
-    tag: 'MATH',
-    variant: 'math',
-    stats: ['数学大纲', '模块优先级'],
-    enterText: '开始数学复习计划',
-    icon: '🧄',
+    href: '/mistakes',
+    title: '错题本',
+    description: '汇总数学、口算等各模块错题，点击进入对应练习，答对后自动标记已改正。',
+    tag: 'MISTAKES',
+    variant: 'today',
+    stats: ['跨模块汇总', '状态筛选', '一键练习'],
+    enterText: '打开错题本',
+    icon: '📕',
   },
   {
     href: '/flipbook',
@@ -92,9 +104,12 @@ const modules: ModuleCardData[] = [
 
 export default function HomePage() {
   const greeting = useGreeting()
-  const { user, loading } = useAuth()
+  const { user } = useAuth()
+  const { stats, isLoading: statsLoading } = useHomeStats(user)
   const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
+
+  const modules = baseModules
 
   return (
     <>
@@ -109,55 +124,11 @@ export default function HomePage() {
           <h1 className="mt-1.5 bg-gradient-to-br from-slate-800 via-indigo-500 to-emerald-500 bg-clip-text text-[clamp(28px,5vw,38px)] leading-tight font-black text-transparent">
             {username ?? 'Rosie'} 的学习乐园
           </h1>
-          <p className="text-text-secondary mt-2 text-[15px] leading-relaxed">
-            选一个模块开始今天的学习吧
-          </p>
-
-          {/* Login status */}
-          {!loading && (
-            <div className="mt-4 flex items-center justify-center">
-              {user ? (
-                <div
-                  className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.8rem] text-green-700"
-                  style={{
-                    background: 'rgba(34,197,94,0.08)',
-                    border: '1px solid rgba(34,197,94,0.2)',
-                  }}
-                >
-                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-green-500" />
-                  已登录：{username} · 进度云端同步中
-                </div>
-              ) : (
-                <Link
-                  href="/auth"
-                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[0.8rem] transition-all hover:scale-105"
-                  style={{
-                    background: 'rgba(99,102,241,0.07)',
-                    border: '1px solid rgba(99,102,241,0.22)',
-                    color: '#6366f1',
-                  }}
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                  未登录 · 点击登录同步进度
-                </Link>
-              )}
-            </div>
-          )}
         </section>
 
-        <section className="grid w-full max-w-[760px] grid-cols-1 gap-5 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+        {user && <HomeStatsPanel stats={stats} isLoading={statsLoading} />}
+
+        <section className="grid w-full max-w-[1040px] grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((mod) => (
             <ModuleCard key={mod.href} data={mod} />
           ))}

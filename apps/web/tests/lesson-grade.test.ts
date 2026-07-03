@@ -31,6 +31,13 @@ describe('lesson-grade', () => {
     expect(lessonDisplayLabel('50')).toBe('第 2 讲')
   })
 
+  it('第 51 讲属于二年级第 3 讲', () => {
+    expect(LESSON_GRADE['51']).toBe(2)
+    expect(gradeOf('51')).toBe(2)
+    expect(lessonDisplayNum('51')).toBe(2)
+    expect(lessonDisplayLabel('51')).toBe('第 2 讲')
+  })
+
   it('gradesInOrder 返回升序去重的年级', () => {
     expect(gradesInOrder()).toEqual([1, 2])
   })

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react'
+import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
@@ -11,6 +11,7 @@ import { useAuth } from '@rosie/core'
 import { STORAGE_KEYS } from '@rosie/core'
 import { useWordData } from './hooks/useWordData'
 import { useWordMastery } from './hooks/useWordMastery'
+import { useEnglishWrong } from './hooks/useEnglishWrong'
 import { getFilteredWords, getAllUnits, wordKey } from './utils/english-helpers'
 
 interface WordsContextValue {
@@ -47,7 +48,24 @@ const WordsContext = createContext<WordsContextValue | null>(null)
 export function WordsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
   const { vocab, upsertByStage } = useWordData(user)
-  const { masteryMap, recordBatch, recordRecallAttempt } = useWordMastery(user)
+  const { masteryMap, recordBatch: recordBatchRaw, recordRecallAttempt: recordRecallRaw } = useWordMastery(user)
+  const { addWrong, markResolved } = useEnglishWrong(user)
+
+  const syncWrongWord = useCallback((entry: WordEntry, correct: boolean) => {
+    const k = wordKey(entry)
+    if (correct) void markResolved(k)
+    else void addWrong(k)
+  }, [addWrong, markResolved])
+
+  const recordBatch = useCallback((results: { entry: WordEntry; correct: boolean }[]) => {
+    recordBatchRaw(results)
+    for (const r of results) syncWrongWord(r.entry, r.correct)
+  }, [recordBatchRaw, syncWrongWord])
+
+  const recordRecallAttempt = useCallback((entry: WordEntry, correct: boolean) => {
+    recordRecallRaw(entry, correct)
+    syncWrongWord(entry, correct)
+  }, [recordRecallRaw, syncWrongWord])
 
   const [selStage, setSelStageState] = useState<string>(() => {
     try {

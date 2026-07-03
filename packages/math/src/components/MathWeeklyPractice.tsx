@@ -2,20 +2,37 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useProblemMastery } from '@rosie/math/hooks/useProblemMastery'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { buildMathWeeklyPlan, getMathReviewProblemsForDay, makeProblem } from '@rosie/math/utils/math-helpers'
-import { getWeekStart } from '@rosie/core'
+import {
+  buildMathFlexiblePlan,
+  countFilteredPlanProblems,
+  getMathReviewProblemsForDay,
+  makeProblem,
+  planEndDate,
+  MATH_PLAN_SECTIONS,
+  addPlanDays,
+  getOccupiedPlanDates,
+  planRangeOverlapsOccupied,
+  suggestAvailablePlanRange,
+  getLessonTagStats,
+  getLessonSectionStats,
+  buildProblemIdMap,
+} from '@rosie/math/utils/math-helpers'
+import PlanDateRangePicker from './PlanDateRangePicker'
 import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import { todayStr } from '@rosie/core'
 import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
+import type { MathPlanSectionKey } from '@rosie/math/utils/math-helpers'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -240,30 +257,32 @@ const LESSONS = [
     border: 'rgba(99,102,241,.3)',
     desc: '凑整·去括号·按位相加·基准数',
   },
+  {
+    id: '51',
+    label: '第3讲 · 等量代换与归一问题',
+    short: '代换归一',
+    emoji: '⚖️',
+    color: 'rgba(16,185,129,1)',
+    bg: 'rgba(16,185,129,.08)',
+    border: 'rgba(16,185,129,.3)',
+    desc: '等量代换·消元·归一·反比例',
+  },
 ]
 
 const CN_DAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-const ALL_DAY_OPTIONS = [
-  { value: 1, label: '周一' },
-  { value: 2, label: '周二' },
-  { value: 3, label: '周三' },
-  { value: 4, label: '周四' },
-  { value: 5, label: '周五' },
-  { value: 6, label: '周六' },
-  { value: 0, label: '周日' },
-]
-
 const SECTION_EMOJI: Record<string, string> = {
   lesson: '📖',
   homework: '✏️',
   workbook: '📚',
   pretest: '📝',
+  supplement: '📒',
 }
 const SECTION_COLOR: Record<string, { bg: string; text: string; border: string }> = {
   lesson: { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
   homework: { bg: '#fefce8', text: '#854d0e', border: '#fde68a' },
   workbook: { bg: '#f0fdf4', text: '#166534', border: '#bbf7d0' },
   pretest: { bg: '#fdf4ff', text: '#6b21a8', border: '#e9d5ff' },
+  supplement: { bg: '#fffbeb', text: '#92400e', border: '#fde68a' },
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -273,15 +292,40 @@ function fmtDate(dateStr: string): string {
   return `${Number(m)}/${Number(d)}`
 }
 
-function weekEndDate(weekStart: string): string {
-  const [y, m, d] = weekStart.split('-').map(Number)
-  const end = new Date(y, m - 1, d + 6)
-  return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
+function countPlanDays(start: string, end: string): number {
+  if (!start || !end || end < start) return 0
+  const [y, m, d] = start.split('-').map(Number)
+  const [ey, em, ed] = end.split('-').map(Number)
+  const cur = new Date(y, m - 1, d)
+  const endDt = new Date(ey, em - 1, ed)
+  let n = 0
+  while (cur <= endDt) {
+    n += 1
+    cur.setDate(cur.getDate() + 1)
+  }
+  return n
 }
 
-function fmtWeekRange(weekStart: string, startDay: number): string {
-  const endStr = weekEndDate(weekStart)
-  return `${fmtDate(weekStart)} ${CN_DAYS[startDay]} — ${fmtDate(endStr)} ${CN_DAYS[(startDay + 6) % 7]}`
+function availableSections(ps: ProblemSet): string[] {
+  return MATH_PLAN_SECTIONS.filter(({ key }) => {
+    if (key === 'supplement') return (ps.supplement?.length ?? 0) > 0
+    if (key === 'workbook') return ps.workbook.length > 0
+    if (key === 'lesson') return ps.lesson.length > 0
+    if (key === 'homework') return ps.homework.length > 0
+    if (key === 'pretest') return ps.pretest.length > 0
+    return false
+  }).map(s => s.key)
+}
+
+function defaultSectionsForLesson(ps: ProblemSet | undefined): string[] {
+  if (!ps) return ['lesson', 'homework', 'pretest']
+  const avail = availableSections(ps)
+  const preferred = ['lesson', 'homework', 'pretest'].filter(s => avail.includes(s))
+  return preferred.length > 0 ? preferred : avail
+}
+
+function fmtPlanRange(start: string, end: string): string {
+  return `${fmtDate(start)} — ${fmtDate(end)}`
 }
 
 function dayLabel(dateStr: string): string {
@@ -295,6 +339,7 @@ interface Props {
 }
 
 export default function MathWeeklyPractice({ problemSets }: Props) {
+  const router = useRouter()
   const { user } = useAuth()
   const {
     weeklyPlan,
@@ -310,49 +355,67 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   } = useMathWeeklyPlan(user)
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
   const { solveCount } = useMathSolved(user)
+  const { wrongIds } = useMathWrong(user)
 
-  const [weekStartDay, setWeekStartDay] = useState<number>(4)
-  const [problemsPerDay, setProblemsPerDay] = useState<number>(3)
-  const [showParamsDialog, setShowParamsDialog] = useState(false)
-  const [selectedLesson, setSelectedLesson] = useState(LESSONS?.slice(-1)[0].id || '37')
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [selectedWeekStart, setSelectedWeekStart] = useState<string>('')
   const today = todayStr()
+  const [showParamsDialog, setShowParamsDialog] = useState(false)
+  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(
+    () => new Set([LESSONS.slice(-1)[0]?.id ?? '37']),
+  )
+  const [sectionFilters, setSectionFilters] = useState<Record<string, string[]>>({})
+  const [tagFilters, setTagFilters] = useState<Record<string, string[]>>({})
+  const [planStartDate, setPlanStartDate] = useState(today)
+  const [planEndDateStr, setPlanEndDateStr] = useState(() => addPlanDays(today, 6))
+  const [editingPlanStart, setEditingPlanStart] = useState<string | null>(null)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [collapsedGrades, setCollapsedGrades] = useState<Set<number>>(() => new Set())
 
-  // Generate week options around today based on weekStartDay
-  const weekOptions = useMemo(() => {
-    const options: { value: string; label: string }[] = []
-    const seen = new Set<string>()
-    for (let offset = -1; offset <= 4; offset++) {
-      const base = new Date()
-      base.setDate(base.getDate() + offset * 7)
-      const ws = getWeekStart(base, weekStartDay)
-      if (!seen.has(ws)) {
-        seen.add(ws)
-        options.push({ value: ws, label: fmtWeekRange(ws, weekStartDay) })
+  const toggleGradeCollapsed = useCallback((grade: number) => {
+    setCollapsedGrades(prev => {
+      const next = new Set(prev)
+      if (next.has(grade)) next.delete(grade)
+      else next.add(grade)
+      return next
+    })
+  }, [])
+
+  const selectedLessonIds = useMemo(() => [...selectedLessons].sort((a, b) => Number(a) - Number(b)), [selectedLessons])
+
+  const previewTotal = useMemo(
+    () => countFilteredPlanProblems(selectedLessonIds, sectionFilters, problemSets, tagFilters),
+    [selectedLessonIds, sectionFilters, problemSets, tagFilters],
+  )
+  const previewDays = useMemo(() => countPlanDays(planStartDate, planEndDateStr), [planStartDate, planEndDateStr])
+  const previewProblemsPerDay = previewDays > 0 ? Math.max(1, Math.ceil(previewTotal / previewDays)) : 0
+
+  const occupiedDatesInForm = useMemo(
+    () => getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined),
+    [allPlans, editingPlanStart],
+  )
+
+  const rangeHasOverlap = useMemo(
+    () => planRangeOverlapsOccupied(planStartDate, planEndDateStr, occupiedDatesInForm),
+    [planStartDate, planEndDateStr, occupiedDatesInForm],
+  )
+
+  const applySuggestedDateRange = useCallback(
+    (fromDate: string) => {
+      const occupied = getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined)
+      const suggested = suggestAvailablePlanRange(occupied, fromDate, 7)
+      if (suggested) {
+        setPlanStartDate(suggested.start)
+        setPlanEndDateStr(suggested.end)
       }
-    }
-    return options
-  }, [weekStartDay])
-
-  // Sync local params from defaultParams once loaded (during-render)
-  const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
-  if (syncedDefaultParams !== defaultParams) {
-    setSyncedDefaultParams(defaultParams)
-    if (defaultParams) {
-      setWeekStartDay(defaultParams.weekStartDay)
-      setProblemsPerDay(defaultParams.problemsPerDay)
-    }
-  }
+    },
+    [allPlans, editingPlanStart],
+  )
   // Auto-open dialog only for first-time users with zero plans (during-render).
-  // If the user already has prior plans, let them choose from the list instead
-  // of forcing the dialog open every visit.
   const [autoOpenKey, setAutoOpenKey] = useState('')
   const newOpenKey = `${isLoading}|${allPlans.length}|${!!defaultParams}`
   if (autoOpenKey !== newOpenKey) {
     setAutoOpenKey(newOpenKey)
     if (!isLoading && allPlans.length === 0 && defaultParams) {
-      setSelectedWeekStart(currentWeekStart ?? '')
+      applySuggestedDateRange(today)
       setShowParamsDialog(true)
     }
   }
@@ -415,36 +478,156 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     }
   }, [weeklyPlan, solveCount, isLoading, addDoneKey, recordProblemResult])
 
+  const syncTagsForLesson = useCallback(
+    (lessonId: string, sections: string[]) => {
+      const ps = problemSets[lessonId]
+      if (!ps) return
+      const available = getLessonTagStats(ps, sections as MathPlanSectionKey[], solveCount).map(t => t.tag)
+      setTagFilters(prev => {
+        const current = prev[lessonId] ?? available
+        const kept = current.filter(t => available.includes(t))
+        return { ...prev, [lessonId]: kept.length > 0 ? kept : available }
+      })
+    },
+    [problemSets, solveCount],
+  )
+
+  const toggleLesson = useCallback(
+    (lessonId: string) => {
+      setSelectedLessons(prev => {
+        const next = new Set(prev)
+        if (next.has(lessonId)) {
+          if (next.size > 1) next.delete(lessonId)
+        } else {
+          next.add(lessonId)
+          const sections = sectionFilters[lessonId] ?? defaultSectionsForLesson(problemSets[lessonId])
+          setSectionFilters(sf => ({
+            ...sf,
+            [lessonId]: sf[lessonId] ?? defaultSectionsForLesson(problemSets[lessonId]),
+          }))
+          syncTagsForLesson(lessonId, sections)
+        }
+        return next
+      })
+    },
+    [problemSets, sectionFilters, syncTagsForLesson],
+  )
+
+  const toggleSection = useCallback((lessonId: string, section: string) => {
+    setSectionFilters(prev => {
+      const current = prev[lessonId] ?? defaultSectionsForLesson(problemSets[lessonId])
+      const next = current.includes(section)
+        ? current.filter(s => s !== section)
+        : [...current, section]
+      const resolved = next.length > 0 ? next : current
+      syncTagsForLesson(lessonId, resolved)
+      return { ...prev, [lessonId]: resolved }
+    })
+  }, [problemSets, syncTagsForLesson])
+
+  const toggleTag = useCallback((lessonId: string, tag: string) => {
+    setTagFilters(prev => {
+      const ps = problemSets[lessonId]
+      if (!ps) return prev
+      const sections = sectionFilters[lessonId] ?? defaultSectionsForLesson(ps)
+      const allTags = getLessonTagStats(ps, sections as MathPlanSectionKey[], solveCount).map(t => t.tag)
+      const current = prev[lessonId] ?? allTags
+      const next = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag]
+      return { ...prev, [lessonId]: next.length > 0 ? next : current }
+    })
+  }, [problemSets, sectionFilters, solveCount])
+
   const handleCreatePlan = useCallback(async () => {
-    const targetWeek = selectedWeekStart || currentWeekStart
-    if (!targetWeek) return
-    const ps = problemSets[selectedLesson]
-    if (!ps) return
-    // Preserve existing progress when editing the same week
-    const existingPlan = allPlans.find((p) => p.weekStart === targetWeek)
-    const plan: MathWeeklyPlan = {
-      weekStart: targetWeek,
-      lessonId: selectedLesson,
-      weekStartDay,
-      problemsPerDay,
-      days: buildMathWeeklyPlan(selectedLesson, ps, targetWeek, problemsPerDay),
-      progress: existingPlan?.lessonId === selectedLesson ? (existingPlan.progress ?? {}) : {},
+    if (selectedLessonIds.length === 0 || previewDays <= 0 || previewTotal <= 0) return
+    if (planEndDateStr < planStartDate) return
+    if (planRangeOverlapsOccupied(planStartDate, planEndDateStr, getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined))) {
+      return
     }
+
+    const { days, problemsPerDay } = buildMathFlexiblePlan(
+      selectedLessonIds,
+      sectionFilters,
+      problemSets,
+      planStartDate,
+      planEndDateStr,
+      tagFilters,
+      solveCount,
+    )
+
+    const targetStart = editingPlanStart ?? planStartDate
+    const existingPlan = allPlans.find(p => p.weekStart === targetStart)
+    const primaryLesson = selectedLessonIds[selectedLessonIds.length - 1] ?? selectedLessonIds[0]!
+
+    const plan: MathWeeklyPlan = {
+      weekStart: planStartDate,
+      planEnd: planEndDateStr,
+      lessonId: primaryLesson,
+      lessonIds: selectedLessonIds,
+      sectionFilters,
+      tagFilters,
+      weekStartDay: existingPlan?.weekStartDay ?? defaultParams.weekStartDay,
+      problemsPerDay,
+      days,
+      progress:
+        existingPlan &&
+        JSON.stringify(existingPlan.lessonIds ?? [existingPlan.lessonId]) === JSON.stringify(selectedLessonIds)
+          ? (existingPlan.progress ?? {})
+          : {},
+    }
+
+    if (editingPlanStart && editingPlanStart !== planStartDate) {
+      await deletePlan(editingPlanStart)
+    }
+
     await savePlan(plan)
+    setEditingPlanStart(null)
     setShowParamsDialog(false)
-    // If the new plan's range covers today, jump to today.
-    if (plan.days.some((d) => d.date === today)) setSelectedDate(today)
+    if (plan.days.some(d => d.date === today)) setSelectedDate(today)
   }, [
+    selectedLessonIds,
+    sectionFilters,
+    tagFilters,
     problemSets,
-    selectedLesson,
-    selectedWeekStart,
-    currentWeekStart,
-    problemsPerDay,
-    weekStartDay,
-    savePlan,
-    today,
+    planStartDate,
+    planEndDateStr,
+    previewDays,
+    previewTotal,
+    editingPlanStart,
     allPlans,
+    defaultParams.weekStartDay,
+    savePlan,
+    deletePlan,
+    today,
+    solveCount,
   ])
+
+  const handleGoBack = useCallback(() => {
+    if (weeklyPlan && showParamsDialog) {
+      setShowParamsDialog(false)
+      setEditingPlanStart(null)
+      return
+    }
+    router.back()
+  }, [weeklyPlan, showParamsDialog, router])
+
+  const loadPlanIntoForm = useCallback(
+    (plan: MathWeeklyPlan) => {
+      const ids = plan.lessonIds ?? [plan.lessonId]
+      setSelectedLessons(new Set(ids))
+      setSectionFilters(plan.sectionFilters ?? Object.fromEntries(
+        ids.map(id => [id, defaultSectionsForLesson(problemSets[id])]),
+      ))
+      setTagFilters(plan.tagFilters ?? {})
+      for (const id of ids) {
+        const sections = plan.sectionFilters?.[id] ?? defaultSectionsForLesson(problemSets[id])
+        if (!plan.tagFilters?.[id]) syncTagsForLesson(id, sections)
+      }
+      setPlanStartDate(plan.weekStart)
+      setPlanEndDateStr(planEndDate(plan))
+      setEditingPlanStart(plan.weekStart)
+    },
+    [problemSets, syncTagsForLesson],
+  )
 
   const handleCheckProblem = useCallback(
     async (date: string, key: string) => {
@@ -455,19 +638,18 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   )
 
   const openCreateDialog = useCallback(() => {
-    setSelectedWeekStart(currentWeekStart ?? '')
+    setEditingPlanStart(null)
+    applySuggestedDateRange(today)
+    setSelectedLessons(new Set([LESSONS.slice(-1)[0]?.id ?? '37']))
+    setSectionFilters({})
+    setTagFilters({})
     setShowParamsDialog(true)
-  }, [currentWeekStart])
+  }, [today, applySuggestedDateRange])
 
   const openEditDialog = useCallback(() => {
-    if (weeklyPlan) {
-      setSelectedLesson(weeklyPlan.lessonId)
-      setWeekStartDay(weeklyPlan.weekStartDay)
-      setProblemsPerDay(weeklyPlan.problemsPerDay)
-      setSelectedWeekStart(weeklyPlan.weekStart)
-    }
+    if (weeklyPlan) loadPlanIntoForm(weeklyPlan)
     setShowParamsDialog(true)
-  }, [weeklyPlan])
+  }, [weeklyPlan, loadPlanIntoForm])
 
   const allPlanProblems: MathPlanProblem[] = useMemo(() => {
     const cur = weeklyPlan
@@ -494,6 +676,34 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     }
     return map
   }, [weeklyPlan, priorProblemMap])
+
+  const activePlanLessonIds = useMemo(
+    () => (weeklyPlan ? (weeklyPlan.lessonIds ?? [weeklyPlan.lessonId]) : []),
+    [weeklyPlan],
+  )
+
+  const problemIdMap = useMemo(
+    () => buildProblemIdMap(problemSets, activePlanLessonIds),
+    [problemSets, activePlanLessonIds],
+  )
+
+  /** Wrong problems in plan scope, excluding same-day 必做题 to avoid duplicate cards. */
+  const wrongByDay = useMemo(() => {
+    if (!weeklyPlan) return {} as Record<string, MathPlanProblem[]>
+    const result: Record<string, MathPlanProblem[]> = {}
+    for (const day of weeklyPlan.days) {
+      const requiredIds = new Set(day.problems.map(p => p.problemId))
+      result[day.date] = [...wrongIds]
+        .map(id => problemIdMap.get(id))
+        .filter((p): p is MathPlanProblem => p != null && !requiredIds.has(p.problemId))
+        .sort((a, b) => {
+          const lc = Number(a.lessonId) - Number(b.lessonId)
+          if (lc !== 0) return lc
+          return a.key.localeCompare(b.key)
+        })
+    }
+    return result
+  }, [weeklyPlan, wrongIds, problemIdMap])
 
   // All prior lesson problems (lessonId < current), skipping lessons with no problems (e.g. pure animation)
   const priorLessonProbs = useMemo(() => {
@@ -528,7 +738,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
     priorLessonProbs,
     masteryMap,
     dailyRequiredCounts,
-    problemsPerDay,
+    weeklyPlan?.problemsPerDay ?? 3,
   )
 
   // Detect rotating review completions
@@ -585,14 +795,13 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
 
   // ── Setup ───────────────────────────────────────────────────────────────────
   if (showParamsDialog) {
-    const totalRequired = [
-      ...(problemSets[selectedLesson]?.lesson ?? []),
-      ...(problemSets[selectedLesson]?.homework ?? []),
-      ...(problemSets[selectedLesson]?.workbook.slice(0, 6) ?? []),
-      ...(problemSets[selectedLesson]?.pretest ?? []),
-    ].length
-    const days = Math.ceil(totalRequired / problemsPerDay)
-    const isEditing = !!allPlans.find((p) => p.weekStart === selectedWeekStart)
+    const isEditing = !!editingPlanStart
+    const canCreate =
+      selectedLessonIds.length > 0 &&
+      previewDays > 0 &&
+      previewTotal > 0 &&
+      planEndDateStr >= planStartDate &&
+      !rangeHasOverlap
 
     return (
       <div
@@ -600,79 +809,275 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
         style={{ background: 'rgba(243, 221, 222, 0.45)', backdropFilter: 'blur(4px)' }}
       >
         <div className="mx-auto max-w-130 px-4 py-8">
-          {/* Fun header */}
+          {/* Top nav */}
+          <div className="mb-5 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-bold text-orange-700 transition-all hover:scale-105"
+              style={{ background: 'rgba(251,146,60,.12)', border: '1.5px solid rgba(251,146,60,.3)' }}
+            >
+              <span>←</span>
+              <span>返回</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="cursor-pointer rounded-full px-3 py-2 text-[13px] font-bold text-gray-400 transition-all hover:text-gray-600"
+              style={{ background: 'rgba(0,0,0,.05)', border: '1.5px solid rgba(0,0,0,.06)' }}
+            >
+              取消
+            </button>
+          </div>
+
           <div className="mb-6 text-center">
             <div className="mb-2 inline-flex items-center gap-3">
               <span className="animate-wiggle inline-block text-4xl">🚀</span>
-              <div>
-                <div className="text-[22px] leading-tight font-extrabold text-orange-800">
-                  {isEditing ? '修改周计划' : '创建周计划'}
-                </div>
+              <div className="text-[22px] leading-tight font-extrabold text-orange-800">
+                {isEditing ? '修改计划' : '创建计划'}
               </div>
             </div>
           </div>
 
-          {/* Lesson selector */}
+          {/* Date range */}
+          <div
+            className="mb-5 rounded-xl px-4 py-4"
+            style={{ background: 'rgba(255,255,255,.7)', border: '1.5px solid rgba(0,0,0,.06)' }}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">
+                计划时间段
+              </span>
+              <span className="text-[12px] font-bold text-orange-600">
+                {fmtPlanRange(planStartDate, planEndDateStr)} · {previewDays} 天
+              </span>
+            </div>
+            <PlanDateRangePicker
+              key={editingPlanStart ?? 'new'}
+              startDate={planStartDate}
+              endDate={planEndDateStr}
+              occupiedDates={occupiedDatesInForm}
+              onRangeChange={(start, end) => {
+                setPlanStartDate(start)
+                setPlanEndDateStr(end)
+              }}
+            />
+            {rangeHasOverlap && (
+              <div className="mt-3 text-[12px] font-medium text-red-500">
+                所选时间段与已有计划重叠，请选择空闲日期
+              </div>
+            )}
+            {occupiedDatesInForm.size > 0 && !rangeHasOverlap && !isEditing && (
+              <div className="mt-3 text-[11px] font-medium text-gray-400">
+                灰色划线的日期已有计划，不可选择
+              </div>
+            )}
+          </div>
+
+          {/* Lesson multi-select */}
           <div className="mb-5">
             <div className="mb-3 flex items-center gap-2">
               <span className="text-[11px] font-extrabold tracking-widest text-orange-400 uppercase">
-                选择本周关卡
+                选择关卡（可多选）
               </span>
               <div className="h-px flex-1 bg-orange-100" />
             </div>
             <div className="flex flex-col gap-5">
-              {gradesInOrder().map((g) => {
-                const gradeLessons = LESSONS.filter((l) => gradeOf(l.id) === g)
+              {gradesInOrder().map(g => {
+                const gradeLessons = LESSONS.filter(l => gradeOf(l.id) === g)
                 if (gradeLessons.length === 0) return null
+                const isCollapsed = collapsedGrades.has(g)
+                const selectedInGrade = gradeLessons.filter(l => selectedLessons.has(l.id)).length
                 return (
                   <div key={g}>
-                    <div className="mb-2 text-[11px] font-extrabold tracking-wide text-orange-500/80">
-                      {GRADE_LABEL[g] ?? `${g} 年级`}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleGradeCollapsed(g)}
+                      className="mb-2 flex w-full cursor-pointer items-center gap-2 rounded-lg px-1 py-1 text-left transition-all hover:bg-orange-50/80"
+                    >
+                      <span
+                        className="text-[12px] text-orange-400 transition-transform"
+                        style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
+                      >
+                        ▾
+                      </span>
+                      <span className="text-[11px] font-extrabold tracking-wide text-orange-500/80">
+                        {GRADE_LABEL[g] ?? `${g} 年级`}
+                      </span>
+                      <span className="text-[10px] font-bold text-gray-400">
+                        {gradeLessons.length} 讲
+                      </span>
+                      {selectedInGrade > 0 && (
+                        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-extrabold text-orange-600">
+                          已选 {selectedInGrade}
+                        </span>
+                      )}
+                      <span className="ml-auto text-[10px] font-bold text-gray-400">
+                        {isCollapsed ? '展开' : '收起'}
+                      </span>
+                    </button>
+                    {!isCollapsed && (
                     <div className="flex flex-col gap-3">
-                      {gradeLessons.map((l) => {
-                        const isSelected = selectedLesson === l.id
+                      {gradeLessons.map(l => {
+                        const isSelected = selectedLessons.has(l.id)
+                        const ps = problemSets[l.id]
+                        const availSections = ps ? availableSections(ps) : []
+                        const enabledSections = sectionFilters[l.id] ?? (isSelected ? defaultSectionsForLesson(ps) : [])
+                        const tagStats = ps && isSelected
+                          ? getLessonTagStats(ps, enabledSections as MathPlanSectionKey[], solveCount)
+                          : []
+                        const sectionStats = ps
+                          ? getLessonSectionStats(ps, availSections as MathPlanSectionKey[], solveCount)
+                          : []
+                        const sectionStatMap = Object.fromEntries(sectionStats.map(s => [s.section, s]))
+                        const enabledTags = tagFilters[l.id] ?? tagStats.map(t => t.tag)
+                        const lessonPracticeTotal = sectionStats.reduce((n, s) => n + s.total, 0)
+                        const lessonPracticeDone = sectionStats.reduce((n, s) => n + s.practiced, 0)
                         return (
-                          <button
-                            key={l.id}
-                            type="button"
-                            onClick={() => setSelectedLesson(l.id)}
-                            className="group relative flex cursor-pointer items-center gap-4 rounded-xl px-4 py-4 text-left transition-all duration-200"
-                            style={{
-                              background: isSelected ? l.bg : 'rgba(255,255,255,.7)',
-                              border: `2px solid ${isSelected ? l.border : 'rgba(0,0,0,.06)'}`,
-                              boxShadow: isSelected
-                                ? `0 4px 20px ${l.color}20`
-                                : '0 2px 8px rgba(0,0,0,.04)',
-                              transform: isSelected ? 'scale(1.01)' : 'scale(1)',
-                            }}
-                          >
-                            <div
-                              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-2xl transition-transform group-hover:scale-110"
-                              style={{ background: l.bg, border: `1.5px solid ${l.border}` }}
-                            >
-                              {l.emoji}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[14px] leading-tight font-extrabold text-gray-800">
-                                {l.label}
-                              </div>
-                              <div className="mt-0.5 text-[11px] text-gray-500">{l.desc}</div>
-                            </div>
-                            <div
-                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold transition-all"
+                          <div key={l.id}>
+                            <button
+                              type="button"
+                              onClick={() => toggleLesson(l.id)}
+                              className="group relative flex w-full cursor-pointer items-center gap-4 rounded-xl px-4 py-4 text-left transition-all duration-200"
                               style={{
-                                background: isSelected ? l.color : 'rgba(0,0,0,.06)',
-                                color: isSelected ? 'white' : 'transparent',
-                                transform: isSelected ? 'scale(1.1)' : 'scale(0.8)',
+                                background: isSelected ? l.bg : 'rgba(255,255,255,.7)',
+                                border: `2px solid ${isSelected ? l.border : 'rgba(0,0,0,.06)'}`,
+                                boxShadow: isSelected ? `0 4px 20px ${l.color}20` : '0 2px 8px rgba(0,0,0,.04)',
                               }}
                             >
-                              ✓
-                            </div>
-                          </button>
+                              <div
+                                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-2xl"
+                                style={{ background: l.bg, border: `1.5px solid ${l.border}` }}
+                              >
+                                {l.emoji}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[14px] leading-tight font-extrabold text-gray-800">{l.label}</div>
+                                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-500">
+                                  <span>{l.desc}</span>
+                                  {lessonPracticeTotal > 0 && (
+                                    <span
+                                      className="font-extrabold"
+                                      style={{
+                                        color:
+                                          lessonPracticeDone >= lessonPracticeTotal
+                                            ? '#16a34a'
+                                            : lessonPracticeDone > 0
+                                              ? '#ea580c'
+                                              : '#9ca3af',
+                                      }}
+                                    >
+                                      已练 {lessonPracticeDone}/{lessonPracticeTotal}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div
+                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[13px] font-extrabold"
+                                style={{
+                                  background: isSelected ? l.color : 'rgba(0,0,0,.06)',
+                                  color: isSelected ? 'white' : 'transparent',
+                                }}
+                              >
+                                {isSelected ? '✓' : ''}
+                              </div>
+                            </button>
+                            {isSelected && availSections.length > 0 && (
+                              <div
+                                className="mt-2 ml-2 rounded-lg px-3 py-2.5"
+                                style={{ background: 'rgba(255,255,255,.85)', border: '1px solid rgba(0,0,0,.06)' }}
+                              >
+                                <div className="mb-2 text-[10px] font-extrabold tracking-wide text-gray-400 uppercase">
+                                  📂 题目来源
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                {MATH_PLAN_SECTIONS.filter(s => availSections.includes(s.key)).map(s => {
+                                  const on = enabledSections.includes(s.key)
+                                  const stat = sectionStatMap[s.key]
+                                  const allDone = stat && stat.total > 0 && stat.practiced >= stat.total
+                                  const noneDone = !stat || stat.practiced === 0
+                                  return (
+                                    <button
+                                      key={s.key}
+                                      type="button"
+                                      onClick={() => toggleSection(l.id, s.key)}
+                                      className="cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-all hover:scale-[1.02]"
+                                      style={{
+                                        background: on
+                                          ? allDone
+                                            ? 'linear-gradient(135deg, #22c55e, #4ade80)'
+                                            : 'linear-gradient(135deg, #f97316, #fbbf24)'
+                                          : 'rgba(0,0,0,.05)',
+                                        color: on ? 'white' : '#9ca3af',
+                                        border: on ? 'none' : '1px solid rgba(0,0,0,.08)',
+                                        opacity: on ? 1 : 0.85,
+                                      }}
+                                    >
+                                      <div className="text-[11px] font-bold leading-tight">
+                                        {SECTION_EMOJI[s.key]} {s.label}
+                                      </div>
+                                      {stat && (
+                                        <div
+                                          className="mt-0.5 text-[10px] font-extrabold"
+                                          style={{ color: on ? 'rgba(255,255,255,.92)' : noneDone ? '#9ca3af' : '#ea580c' }}
+                                        >
+                                          已练 {stat.practiced}/{stat.total}
+                                        </div>
+                                      )}
+                                    </button>
+                                  )
+                                })}
+                                </div>
+                              </div>
+                            )}
+                            {isSelected && tagStats.length > 0 && (
+                              <div
+                                className="mt-2 ml-2 rounded-lg px-3 py-2.5"
+                                style={{ background: 'rgba(255,255,255,.85)', border: '1px solid rgba(0,0,0,.06)' }}
+                              >
+                                <div className="mb-2 text-[10px] font-extrabold tracking-wide text-gray-400 uppercase">
+                                  🏷️ 题型筛选
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {tagStats.map(stat => {
+                                    const on = enabledTags.includes(stat.tag)
+                                    const allDone = stat.total > 0 && stat.practiced >= stat.total
+                                    const noneDone = stat.practiced === 0
+                                    return (
+                                      <button
+                                        key={stat.tag}
+                                        type="button"
+                                        onClick={() => toggleTag(l.id, stat.tag)}
+                                        className="cursor-pointer rounded-lg px-2.5 py-1.5 text-left transition-all hover:scale-[1.02]"
+                                        style={{
+                                          background: on
+                                            ? allDone
+                                              ? 'linear-gradient(135deg, #22c55e, #4ade80)'
+                                              : 'linear-gradient(135deg, #f97316, #fbbf24)'
+                                            : 'rgba(0,0,0,.05)',
+                                          color: on ? 'white' : '#9ca3af',
+                                          border: on ? 'none' : '1px solid rgba(0,0,0,.08)',
+                                          opacity: on ? 1 : 0.85,
+                                        }}
+                                      >
+                                        <div className="text-[11px] font-bold leading-tight">{stat.tagLabel}</div>
+                                        <div
+                                          className="mt-0.5 text-[10px] font-extrabold"
+                                          style={{ color: on ? 'rgba(255,255,255,.92)' : noneDone ? '#9ca3af' : '#ea580c' }}
+                                        >
+                                          已练 {stat.practiced}/{stat.total}
+                                        </div>
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         )
                       })}
                     </div>
+                    )}
                   </div>
                 )
               })}
@@ -690,120 +1095,24 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
             <div className="mb-1 flex items-center gap-2">
               <span className="text-[14px]">🗺️</span>
               <span className="text-[11px] font-extrabold tracking-wider text-orange-600 uppercase">
-                冒险预览
+                计划预览
               </span>
             </div>
-            <div className="mb-4">
-              <div className="mb-2.5 text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">
-                每天几道题？
-              </div>
-              <div className="flex gap-2">
-                {[2, 3, 4, 5, 6].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => setProblemsPerDay(n)}
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[15px] font-extrabold transition-all hover:scale-105"
-                    style={{
-                      background:
-                        problemsPerDay === n
-                          ? 'linear-gradient(135deg, #f97316, #fbbf24)'
-                          : 'rgba(0,0,0,.05)',
-                      color: problemsPerDay === n ? 'white' : '#9ca3af',
-                      boxShadow: problemsPerDay === n ? '0 3px 10px rgba(249,115,22,.4)' : 'none',
-                    }}
-                  >
-                    {n}
-                  </button>
-                ))}
-              </div>
-            </div>
             <div className="text-[13px] font-medium text-orange-800">
-              共 <span className="text-[15px] font-extrabold">{totalRequired}</span> 道必做题
+              共 <span className="text-[15px] font-extrabold">{previewTotal}</span> 道题
               <span className="mx-1.5 text-orange-300">·</span>
-              每天 <span className="text-[15px] font-extrabold">{problemsPerDay}</span> 题
-              <span className="mx-1.5 text-orange-300">·</span>约{' '}
-              <span className="text-[15px] font-extrabold">{days}</span> 天完成 🎉
+              <span className="text-[15px] font-extrabold">{previewDays}</span> 天
+              <span className="mx-1.5 text-orange-300">·</span>
+              每天约 <span className="text-[15px] font-extrabold">{previewProblemsPerDay}</span> 题
+              <span className="mx-1.5 text-orange-300">·</span>
+              按题型均衡分配（易→难）
             </div>
-          </div>
-
-          {/* Settings */}
-          <div
-            className="mb-6 rounded-xl px-4 py-4"
-            style={{ background: 'rgba(255,255,255,.7)', border: '1.5px solid rgba(0,0,0,.06)' }}
-          >
-            <div>
-              <div className="mb-2.5 text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">
-                每周从哪天开始？
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {ALL_DAY_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setWeekStartDay(opt.value)}
-                    className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-bold transition-all hover:scale-105"
-                    style={{
-                      background:
-                        weekStartDay === opt.value
-                          ? 'linear-gradient(135deg, #f97316, #fbbf24)'
-                          : 'rgba(0,0,0,.05)',
-                      color: weekStartDay === opt.value ? 'white' : '#9ca3af',
-                      boxShadow:
-                        weekStartDay === opt.value ? '0 3px 10px rgba(249,115,22,.4)' : 'none',
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mb-5">
-                <div className="mt-2.5 mb-2.5 text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">
-                  选择周次
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  {weekOptions.map((opt) => {
-                    const isSel = selectedWeekStart === opt.value
-                    const isCurrent = opt.value === currentWeekStart
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setSelectedWeekStart(opt.value)}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2.5 text-left transition-all hover:scale-[1.01]"
-                        style={{
-                          background: isSel
-                            ? 'linear-gradient(135deg, rgba(249,115,22,.12), rgba(251,191,36,.12))'
-                            : 'rgba(255,255,255,.7)',
-                          border: `1.5px solid ${isSel ? '#f97316' : 'rgba(0,0,0,.07)'}`,
-                          boxShadow: isSel ? '0 2px 10px rgba(249,115,22,.18)' : 'none',
-                        }}
-                      >
-                        <div
-                          className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
-                          style={{
-                            background: isSel ? '#f97316' : 'rgba(0,0,0,.08)',
-                          }}
-                        >
-                          {isSel && <span className="text-[9px] font-extrabold text-white">✓</span>}
-                        </div>
-                        <span
-                          className={`text-[12px] font-bold ${isSel ? 'text-orange-700' : 'text-gray-600'}`}
-                        >
-                          {opt.label}
-                        </span>
-                        {isCurrent && (
-                          <span className="ml-auto rounded-full bg-orange-100 px-2 py-0.5 text-[9px] font-extrabold text-orange-600">
-                            本周
-                          </span>
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
+            {previewTotal === 0 && (
+              <div className="mt-2 text-[12px] font-medium text-red-400">请至少选择一个关卡并勾选题目来源</div>
+            )}
+            {planEndDateStr < planStartDate && (
+              <div className="mt-2 text-[12px] font-medium text-red-400">结束日期不能早于开始日期</div>
+            )}
           </div>
 
           {/* CTA */}
@@ -811,28 +1120,15 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
             <button
               type="button"
               onClick={handleCreatePlan}
-              className="group relative flex-1 cursor-pointer overflow-hidden rounded-xl py-4 text-[15px] font-extrabold text-white transition-all hover:scale-[1.02] hover:shadow-[0_8px_28px_rgba(249,115,22,.45)] active:scale-[.98]"
+              disabled={!canCreate}
+              className="group relative flex-1 cursor-pointer overflow-hidden rounded-xl py-4 text-[15px] font-extrabold text-white transition-all hover:scale-[1.02] hover:shadow-[0_8px_28px_rgba(249,115,22,.45)] active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)' }}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 <span className="group-hover:animate-wiggle inline-block text-xl">🚀</span>
-                {isEditing ? '保存修改' : '创建周计划'}
+                {isEditing ? '保存修改' : '创建计划'}
               </span>
-              <div
-                className="absolute inset-0 rounded-xl opacity-0 transition-opacity group-hover:opacity-100"
-                style={{ background: 'linear-gradient(135deg, #ea580c 0%, #f59e0b 100%)' }}
-              />
             </button>
-            {weeklyPlan && (
-              <button
-                type="button"
-                onClick={() => setShowParamsDialog(false)}
-                className="cursor-pointer rounded-xl px-5 text-[14px] font-bold text-gray-400 transition-all hover:text-gray-600"
-                style={{ background: 'rgba(0,0,0,.05)', border: '1.5px solid rgba(0,0,0,.06)' }}
-              >
-                取消
-              </button>
-            )}
           </div>
         </div>
 
@@ -857,10 +1153,10 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
           >
             <div className="mb-3 text-5xl">📅</div>
             <div className="mb-2 text-[16px] font-extrabold text-orange-800">
-              本周还没有计划
+              当前还没有进行中的计划
             </div>
             <div className="mb-5 text-[12px] text-gray-500">
-              创建一个本周的计划，开始今天的数学冒险吧 🚀
+              创建一个计划，开始今天的数学冒险吧 🚀
             </div>
             <button
               type="button"
@@ -871,7 +1167,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                 boxShadow: '0 6px 18px rgba(249,115,22,.4)',
               }}
             >
-              🚀 创建本周计划
+              🚀 创建计划
             </button>
           </div>
 
@@ -880,11 +1176,8 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
               plans={allPlans}
               currentWeekStart={currentWeekStart ?? ''}
               onDelete={deletePlan}
-              onEdit={(plan) => {
-                setSelectedLesson(plan.lessonId)
-                setWeekStartDay(plan.weekStartDay)
-                setProblemsPerDay(plan.problemsPerDay)
-                setSelectedWeekStart(plan.weekStart)
+              onEdit={plan => {
+                loadPlanIntoForm(plan)
                 setShowParamsDialog(true)
               }}
             />
@@ -901,7 +1194,13 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   }
 
   // ── Week View ───────────────────────────────────────────────────────────────
-  const lessonInfo = LESSONS.find((l) => l.id === weeklyPlan.lessonId) ?? LESSONS[0]
+  const planLessonIds = activePlanLessonIds
+  const lessonInfo = LESSONS.find(l => l.id === weeklyPlan.lessonId) ?? LESSONS[0]
+  const headerTitle =
+    planLessonIds.length === 1
+      ? (LESSONS.find(l => l.id === planLessonIds[0])?.short ?? lessonInfo.short)
+      : `${planLessonIds.length} 个关卡`
+  const headerEmoji = planLessonIds.length === 1 ? lessonInfo.emoji : '📚'
   const dayPlan = selectedDate ? weeklyPlan.days.find((d) => d.date === selectedDate) : null
   const dayProgress = weeklyPlan.progress[selectedDate ?? ''] ?? { doneKeys: [] }
   const doneKeys = new Set(dayProgress.doneKeys)
@@ -923,11 +1222,13 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">{lessonInfo.emoji}</span>
+              <span className="text-3xl">{headerEmoji}</span>
               <div>
-                <div className="text-[16px] font-extrabold text-gray-800">{lessonInfo.short}</div>
+                <div className="text-[16px] font-extrabold text-gray-800">{headerTitle}</div>
                 <div className="mt-0.5 text-[11px] font-medium text-gray-500">
-                  {fmtWeekRange(weeklyPlan.weekStart, weeklyPlan.weekStartDay)}
+                  {fmtPlanRange(weeklyPlan.weekStart, planEndDate(weeklyPlan))}
+                  <span className="mx-1 text-gray-300">·</span>
+                  每天约 {weeklyPlan.problemsPerDay} 题
                 </div>
               </div>
             </div>
@@ -941,7 +1242,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                   border: '1.5px solid rgba(0,0,0,.08)',
                 }}
               >
-                换课 ✏️
+                修改 ✏️
               </button>
               <button
                 type="button"
@@ -961,9 +1262,17 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
         {/* 7-day stepping stones */}
         <div className="mb-5">
           <div className="mb-3 flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-orange-400 uppercase">
-            <span>🗺️</span> 本周地图
+            <span>🗺️</span> 计划地图
           </div>
-          <div className="grid grid-cols-7 gap-1.5">
+          <div className={weeklyPlan.days.length > 7 ? 'overflow-x-auto pb-1' : ''}>
+          <div
+            className={`grid gap-1.5 ${weeklyPlan.days.length <= 7 ? 'grid-cols-7' : ''}`}
+            style={
+              weeklyPlan.days.length > 7
+                ? { gridTemplateColumns: `repeat(${weeklyPlan.days.length}, minmax(44px, 1fr))`, minWidth: `${weeklyPlan.days.length * 52}px` }
+                : undefined
+            }
+          >
             {weeklyPlan.days.map((day) => {
               const prog = weeklyPlan.progress[day.date] ?? { doneKeys: [] }
               const total = day.problems.length
@@ -1022,6 +1331,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                 </button>
               )
             })}
+          </div>
           </div>
         </div>
 
@@ -1133,6 +1443,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                       key={prob.key}
                       prob={prob}
                       done={doneKeys.has(prob.key)}
+                      isWrong={wrongIds.has(prob.problemId)}
                       onCheck={
                         doneKeys.has(prob.key)
                           ? undefined
@@ -1145,6 +1456,39 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
                 <EmptyDay />
               )}
             </div>
+
+            {/* Wrong-answer reinforcement */}
+            {(() => {
+              const extraWrong = wrongByDay[selectedDate!] ?? []
+              const wrongInRequired = dayPlan.problems.filter(p => wrongIds.has(p.problemId)).length
+              if (extraWrong.length === 0 && wrongInRequired === 0) return null
+              return (
+                <div>
+                  <SectionHeader
+                    icon="📕"
+                    label="错题巩固"
+                    count={extraWrong.length + wrongInRequired}
+                    accent="#ef4444"
+                  />
+                  {extraWrong.length > 0 ? (
+                    <div className="space-y-2.5">
+                      {extraWrong.map((prob) => (
+                        <ProblemCard
+                          key={prob.key}
+                          prob={prob}
+                          done={!wrongIds.has(prob.problemId)}
+                          isWrong
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="px-1 text-[12px] leading-relaxed font-medium text-gray-500">
+                      今日 {wrongInRequired} 道错题已在必做题中，请优先完成标注「错题」的题目。
+                    </p>
+                  )}
+                </div>
+              )
+            })()}
 
             {/* Review problems */}
             {weeklyPlan?.lessonId === '36'
@@ -1224,11 +1568,8 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
               plans={allPlans}
               currentWeekStart={currentWeekStart ?? ''}
               onDelete={deletePlan}
-              onEdit={(plan) => {
-                setSelectedLesson(plan.lessonId)
-                setWeekStartDay(plan.weekStartDay)
-                setProblemsPerDay(plan.problemsPerDay)
-                setSelectedWeekStart(plan.weekStart)
+              onEdit={plan => {
+                loadPlanIntoForm(plan)
                 setShowParamsDialog(true)
               }}
             />
@@ -1295,11 +1636,13 @@ function ProblemCard({
   prob,
   done,
   isReview,
+  isWrong,
   onCheck,
 }: {
   prob: MathPlanProblem
   done: boolean
   isReview?: boolean
+  isWrong?: boolean
   onCheck?: () => void
 }) {
   const { user } = useAuth()
@@ -1357,6 +1700,14 @@ function ProblemCard({
               style={{ background: 'rgba(245,158,11,.12)', color: '#b45309' }}
             >
               复习
+            </span>
+          )}
+          {isWrong && (
+            <span
+              className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+              style={{ background: 'rgba(239,68,68,.12)', color: '#dc2626' }}
+            >
+              错题
             </span>
           )}
           <PracticeCountBadge count={practiceCount} />
@@ -1576,7 +1927,7 @@ function AllPlansList({
       >
         <span className="text-base">📋</span>
         <span className="text-[12px] font-extrabold tracking-wider text-gray-400 uppercase">
-          周计划列表 · {plans.length} 个
+          计划列表 · {plans.length} 个
         </span>
         <span
           className="ml-auto text-[12px] text-gray-300 transition-transform"
@@ -1588,9 +1939,15 @@ function AllPlansList({
       {expanded && (
         <div className="mt-2 space-y-2">
           {plans.map((plan) => {
-            const lessonInfo = LESSONS.find((l) => l.id === plan.lessonId) ?? LESSONS[0]
-            const isCurrent = plan.weekStart === currentWeekStart
-            const endDate = weekEndDate(plan.weekStart)
+            const ids = plan.lessonIds ?? [plan.lessonId]
+            const lessonInfo = LESSONS.find(l => l.id === plan.lessonId) ?? LESSONS[0]
+            const label =
+              ids.length === 1
+                ? (LESSONS.find(l => l.id === ids[0])?.short ?? lessonInfo.short)
+                : `${ids.length} 个关卡`
+            const t = todayStr()
+            const isCurrent = plan.weekStart <= t && t <= planEndDate(plan)
+            const endDate = planEndDate(plan)
             const isPast = endDate < new Date().toISOString().slice(0, 10)
             return (
               <div
@@ -1607,10 +1964,10 @@ function AllPlansList({
                 <span className="shrink-0 text-xl">{lessonInfo.emoji}</span>
                 <div className="min-w-0 flex-1">
                   <div className="text-[12px] font-bold text-gray-700">
-                    {lessonInfo.short}
+                    {label}
                     {isCurrent && (
                       <span className="ml-1.5 rounded-full bg-orange-100 px-1.5 py-px text-[9px] font-extrabold text-orange-600">
-                        本周
+                        进行中
                       </span>
                     )}
                     {isPast && !isCurrent && (

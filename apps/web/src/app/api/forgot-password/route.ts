@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+let adminClient: SupabaseClient | null = null
+
+function getAdminClient(): SupabaseClient {
+  if (!adminClient) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!url || !key) {
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required')
+    }
+    adminClient = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
+  }
+  return adminClient
+}
 
 export async function POST(req: NextRequest) {
   const { username, recoveryEmail } = await req.json()
@@ -17,7 +25,7 @@ export async function POST(req: NextRequest) {
   const fakeEmail = `${username.trim().toLowerCase()}@rosie.app`
 
   // Find the user by fake email
-  const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers()
+  const { data: { users }, error: listError } = await getAdminClient().auth.admin.listUsers()
   if (listError) {
     return NextResponse.json({ error: '服务器错误' }, { status: 500 })
   }
@@ -35,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   // Generate a password reset link
   const origin = req.headers.get('origin') ?? ''
-  const { data, error: linkError } = await adminClient.auth.admin.generateLink({
+  const { data, error: linkError } = await getAdminClient().auth.admin.generateLink({
     type: 'recovery',
     email: fakeEmail,
     options: { redirectTo: `${origin}/auth/reset` },

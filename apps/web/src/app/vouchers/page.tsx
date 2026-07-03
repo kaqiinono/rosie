@@ -11,7 +11,14 @@ import { playSfx } from '@rosie/calc'
 import { launchConfetti } from '@rosie/core'
 import type { VoucherCategory, VoucherTemplate } from '@rosie/core'
 import { ColoredStar } from '@rosie/rewards'
-import { STAR_COLOR_HEX } from '@rosie/rewards'
+import {
+  STAR_COLOR_HEX,
+  STAR_UNIT_PRICE_LABEL,
+  formatYuan,
+  starBalanceValueYuan,
+  templatePriceYuan,
+  type StarColor,
+} from '@rosie/rewards'
 
 export default function VouchersPage() {
   const { user } = useAuth()
@@ -42,11 +49,35 @@ export default function VouchersPage() {
 
   const affordableCount = shopTemplates.filter(canAffordTemplate).length
 
+  const balancesByColor = useMemo(
+    (): Record<StarColor, number> => ({
+      yellow: wallet.yellowBalance,
+      red: wallet.redBalance,
+      blue: wallet.blueBalance,
+    }),
+    [wallet.yellowBalance, wallet.redBalance, wallet.blueBalance],
+  )
+
+  const valueByColor = useMemo(
+    (): Record<StarColor, number> => ({
+      yellow: starBalanceValueYuan('yellow', balancesByColor.yellow),
+      red: starBalanceValueYuan('red', balancesByColor.red),
+      blue: starBalanceValueYuan('blue', balancesByColor.blue),
+    }),
+    [balancesByColor],
+  )
+
+  const totalValueYuan = useMemo(
+    () => valueByColor.yellow + valueByColor.red + valueByColor.blue,
+    [valueByColor],
+  )
+
   const handleRedeem = async (t: VoucherTemplate) => {
     if (redeeming) return
     if (!canAffordTemplate(t)) return
     const costStr = `口算 ${t.priceYellow}⭐ · 英语 ${t.priceRed}⭐ · 数学 ${t.priceBlue}⭐`
-    if (!window.confirm(`确定花 ${costStr} 兑换【${t.label}】？`)) return
+    const yuanStr = formatYuan(templatePriceYuan(t))
+    if (!window.confirm(`确定花 ${costStr}（${yuanStr}）兑换【${t.label}】？`)) return
     setRedeeming(t.category)
     try {
       const v = await redeem(t)
@@ -141,11 +172,24 @@ export default function VouchersPage() {
           />
 
           <div className="relative text-center">
-            <div
-              className="text-[11px] font-extrabold tracking-[0.22em] uppercase"
-              style={{ color: '#92400e' }}
-            >
-              我的星星余额
+            <div className="flex items-end justify-between gap-3">
+              <div className="text-left">
+                <div
+                  className="text-[11px] font-extrabold tracking-[0.22em] uppercase"
+                  style={{ color: '#92400e' }}
+                >
+                  我的星星余额
+                </div>
+                <div className="mt-1 text-[10px] font-bold text-slate-500">
+                  星星 1 毛 · 月亮 2 毛 · 太阳 1 元
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-[10px] font-bold text-slate-500">合计面值</div>
+                <div className="font-fredoka text-[24px] leading-none font-black tabular-nums sm:text-[28px]" style={{ color: '#92400e' }}>
+                  {formatYuan(totalValueYuan)}
+                </div>
+              </div>
             </div>
 
             <div className="mt-3 grid grid-cols-3 gap-2">
@@ -207,6 +251,18 @@ export default function VouchersPage() {
                       style={{ color: hex.outline }}
                     >
                       {c.value}
+                    </div>
+                    <div
+                      className="mx-auto mt-1 inline-flex rounded-full px-1.5 py-0.5 text-[9px] font-extrabold tabular-nums sm:text-[10px]"
+                      style={{ background: `${hex.primary}18`, color: hex.outline, border: `1px solid ${hex.border}` }}
+                    >
+                      {STAR_UNIT_PRICE_LABEL[c.color]}
+                    </div>
+                    <div
+                      className="font-fredoka mt-1 text-center text-[13px] font-black tabular-nums sm:text-[14px]"
+                      style={{ color: hex.outline }}
+                    >
+                      {formatYuan(valueByColor[c.color])}
                     </div>
                     <div className="mt-1.5 flex justify-center">
                       <span
@@ -275,6 +331,7 @@ export default function VouchersPage() {
                 { color: 'red' as const, value: pr },
                 { color: 'blue' as const, value: pb },
               ].filter((c) => c.value > 0)
+              const priceYuan = templatePriceYuan(t)
               const missList = [
                 { color: 'yellow' as const, miss: missY },
                 { color: 'red' as const, miss: missR },
@@ -347,39 +404,49 @@ export default function VouchersPage() {
                         兑换中…
                       </div>
                     ) : canAfford ? (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {priceList.map((c) => {
-                          const hex = STAR_COLOR_HEX[c.color]
-                          return (
-                            <span
-                              key={c.color}
-                              className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-black tabular-nums sm:text-[12px]"
-                              style={{
-                                background: `${hex.primary}2a`,
-                                color: hex.outline,
-                                border: `1.5px solid ${hex.primary}99`,
-                              }}
-                            >
-                              <ColoredStar color={c.color} size={12} glow={5} />
+                      <>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {priceList.map((c) => {
+                            const hex = STAR_COLOR_HEX[c.color]
+                            return (
+                              <span
+                                key={c.color}
+                                className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-black tabular-nums sm:text-[12px]"
+                                style={{
+                                  background: `${hex.primary}2a`,
+                                  color: hex.outline,
+                                  border: `1.5px solid ${hex.primary}99`,
+                                }}
+                              >
+                                <ColoredStar color={c.color} size={12} glow={5} />
+                                {c.value}
+                              </span>
+                            )
+                          })}
+                        </div>
+                        <div className="mt-1 text-[11px] font-extrabold tabular-nums" style={{ color: '#047857' }}>
+                          ≈ {formatYuan(priceYuan)}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10.5px] font-bold tabular-nums"
+                          style={{ color: '#94a3b8' }}
+                        >
+                          <span className="text-[10px] tracking-wider uppercase">需要</span>
+                          {priceList.map((c, i) => (
+                            <span key={c.color} className="inline-flex items-center gap-0.5">
+                              {i > 0 && <span className="opacity-60">·</span>}
+                              <ColoredStar color={c.color} size={10} glow={0} />
                               {c.value}
                             </span>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <div
-                        className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10.5px] font-bold tabular-nums"
-                        style={{ color: '#94a3b8' }}
-                      >
-                        <span className="text-[10px] tracking-wider uppercase">需要</span>
-                        {priceList.map((c, i) => (
-                          <span key={c.color} className="inline-flex items-center gap-0.5">
-                            {i > 0 && <span className="opacity-60">·</span>}
-                            <ColoredStar color={c.color} size={10} glow={0} />
-                            {c.value}
-                          </span>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                        <div className="mt-0.5 text-[10px] font-bold tabular-nums text-slate-400">
+                          ≈ {formatYuan(priceYuan)}
+                        </div>
+                      </>
                     )}
 
                     {/* spacer pushes the "还差" focal callout to the bottom */}

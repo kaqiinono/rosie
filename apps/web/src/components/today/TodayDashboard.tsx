@@ -6,6 +6,7 @@ import { useWeeklyPlan } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useWordData } from '@rosie/english'
 import { useCalcDaily } from '@rosie/calc'
+import { useChineseWeeklyPlan, useChineseCharData, buildTodayQuizItems, useCharMastery } from '@rosie/chinese'
 import { todayStr } from '@rosie/core'
 import { findPassage, parseFocusLessonKey } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
@@ -212,6 +213,12 @@ export default function TodayDashboard() {
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
   const calcDaily = useCalcDaily(user)
+  const { lessonGroups, charByKey, isLoading: chineseDataLoading } = useChineseCharData(user)
+  const { masteryMap } = useCharMastery(user)
+  const { weeklyPlan: chinesePlan, isLoading: chineseLoading } = useChineseWeeklyPlan(
+    user,
+    lessonGroups,
+  )
 
   const today = todayStr()
 
@@ -274,12 +281,20 @@ export default function TodayDashboard() {
   const mathDoneCount = mathProblems.filter(p => mathProgress.doneKeys.includes(p.key)).length
   const mathAllDone = mathProblems.length > 0 && mathDoneCount >= mathProblems.length
 
-  const isLoading = englishLoading || mathLoading
+  const chineseToday = chinesePlan?.days.find((d) => d.date === today)
+  const chineseProgress = chinesePlan?.progress[today]
+  const chineseQuizItems = chineseToday
+    ? buildTodayQuizItems(lessonGroups, charByKey, masteryMap, chineseToday, today)
+    : []
+  const chineseDone = !!chineseProgress?.quizDone
+
+  const isLoading = englishLoading || mathLoading || chineseLoading || chineseDataLoading
 
   if (isLoading) return <LoadingState />
 
   const hasMath = mathPlan && mathProblems.length > 0
   const hasEnglish = englishPlan && newWordKeys.length > 0
+  const hasChinese = chinesePlan && chineseQuizItems.length > 0
   const calcDoneCount = calcDaily.todayDone
   const calcTargetCount = calcDaily.todayTarget
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
@@ -289,8 +304,8 @@ export default function TodayDashboard() {
     <div className="mx-auto max-w-[640px] px-4 pb-12">
 
       {/* Stats cards row */}
-      {(hasMath || hasEnglish) && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+      {(hasMath || hasEnglish || hasChinese) && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {/* Math card */}
           <div
             className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
@@ -355,6 +370,43 @@ export default function TodayDashboard() {
               />
             </div>
           </div>
+
+          {/* Chinese card */}
+          {hasChinese && (
+            <div
+              className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
+              style={{
+                background: chineseDone
+                  ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
+                  : 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+                border: `1.5px solid ${chineseDone ? 'rgba(34,197,94,.3)' : 'rgba(245,158,11,.25)'}`,
+                boxShadow: chineseDone ? '0 4px 16px rgba(34,197,94,.12)' : '0 4px 16px rgba(245,158,11,.1)',
+              }}
+            >
+              <div className="absolute -right-2 -top-2 text-3xl opacity-15">📜</div>
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: chineseDone ? '#16a34a' : '#b45309' }}>
+                语文
+              </div>
+              <div className="text-[26px] font-black leading-none" style={{ color: chineseDone ? '#15803d' : '#d97706' }}>
+                {chineseDone ? chineseQuizItems.length : 0}
+                <span className="text-[16px] font-semibold opacity-60">/{chineseQuizItems.length}</span>
+              </div>
+              <div className="text-[10px] mt-1 font-medium" style={{ color: chineseDone ? '#16a34a' : '#92400e' }}>
+                {chineseDone
+                  ? `得分 ${chineseProgress?.lastScore ?? 0}% 🎉`
+                  : `${chineseQuizItems.length} 个新字待学`}
+              </div>
+              <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,.08)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: chineseDone ? '100%' : '0%',
+                    background: '#f59e0b',
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Calc card */}
           <div
@@ -488,6 +540,53 @@ export default function TodayDashboard() {
               style={{ background: 'linear-gradient(135deg, #0d9488, #10b981)', boxShadow: '0 4px 12px rgba(13,148,136,.3)' }}
             >
               创建英语计划
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* Chinese section */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-amber-500 to-orange-400 shadow-[0_3px_10px_rgba(245,158,11,.3)]">
+              📜
+            </span>
+            今日语文
+          </h2>
+          <Link
+            href="/chinese/daily"
+            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-amber-700"
+          >
+            前往学习 →
+          </Link>
+        </div>
+
+        {hasChinese ? (
+          <div className="flex flex-wrap gap-2">
+            {chineseQuizItems.map((item) => (
+              <span
+                key={`${item.charKey}-${item.track}`}
+                className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-lg font-bold text-amber-950"
+                title={item.pinyin}
+              >
+                {item.char}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
+            style={{ borderColor: 'rgba(245,158,11,.2)', background: 'rgba(255,251,235,.5)' }}
+          >
+            <div className="text-3xl mb-2">📜</div>
+            <div className="text-[13px] text-text-muted mb-3">还没有本周语文计划</div>
+            <Link
+              href="/chinese/weekly"
+              className="inline-block rounded-xl px-4 py-2 text-[13px] font-bold text-white no-underline"
+              style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}
+            >
+              创建语文计划
             </Link>
           </div>
         )}

@@ -3,8 +3,9 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@rosie/core'
+import { getWeekStart, useAuth } from '@rosie/core'
 import { useCalcSettings } from '../hooks/useCalcSettings'
+import { useCalcPracticeStats } from '../hooks/useCalcPracticeStats'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import CalcAppHeader from '../components/CalcAppHeader'
@@ -16,6 +17,7 @@ export default function CalcHomePage() {
   const router = useRouter()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
+  const { totalProblems, practiceDays, weekProblems, monthProblems, yearProblems, isLoading: practiceStatsLoading } = useCalcPracticeStats(user)
   const { mistakes } = useCalcMistakes(user)
 
   const unresolvedMistakes = useMemo(
@@ -41,7 +43,7 @@ export default function CalcHomePage() {
     router.push('/calc/session?mode=daily')
   }
 
-  if (settingsLoading || wallet.isLoading) {
+  if (settingsLoading || wallet.isLoading || practiceStatsLoading) {
     return (
       <>
         <CalcAppHeader
@@ -60,18 +62,10 @@ export default function CalcHomePage() {
     ? Math.round((wallet.todayCorrect / wallet.todayQuestionsDone) * 100)
     : 0
 
-  const weekly = wallet.sessions.slice(0, 30).reduce(
-    (acc, s) => {
-      const d = new Date(s.date + 'T00:00:00')
-      const now = new Date()
-      const diff = (now.getTime() - d.getTime()) / 86400000
-      if (diff <= 7) {
-        acc.questions += s.correctCount + s.retryCount + s.wrongCount
-        acc.coins += s.coinsEarned
-      }
-      return acc
-    },
-    { questions: 0, coins: 0 },
+  const weekStart = getWeekStart()
+  const weeklyCoins = wallet.sessions.reduce(
+    (sum, s) => (s.date >= weekStart ? sum + s.coinsEarned : sum),
+    0,
   )
 
   return (
@@ -177,11 +171,57 @@ export default function CalcHomePage() {
                 本周
               </div>
               <div className="font-fredoka text-[22px] font-black leading-none" style={{ color: '#f5f3ff' }}>
-                {weekly.questions}
+                {weekProblems}
                 <span className="text-[13px] font-semibold ml-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>题</span>
               </div>
               <div className="text-[10px] font-medium mt-1" style={{ color: 'rgba(245,158,11,0.7)' }}>
-                ⭐ {weekly.coins} 星星
+                ⭐ {weeklyCoins} 星星
+              </div>
+            </div>
+
+            <div
+              className="rounded-xl px-3 py-3"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
+            >
+              <div
+                className="text-[10px] font-bold uppercase tracking-wider mb-1"
+                style={{ color: 'rgba(196,181,253,0.45)' }}
+              >
+                本月
+              </div>
+              <div className="font-fredoka text-[22px] font-black leading-none" style={{ color: '#f5f3ff' }}>
+                {monthProblems}
+                <span className="text-[12px] font-semibold ml-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>
+                  /{yearProblems}
+                </span>
+              </div>
+              <div className="text-[10px] font-medium mt-1" style={{ color: 'rgba(196,181,253,0.5)' }}>
+                月 / 年
+              </div>
+            </div>
+
+            <div
+              className="rounded-xl px-3 py-3"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
+            >
+              <div
+                className="text-[10px] font-bold uppercase tracking-wider mb-1"
+                style={{ color: 'rgba(196,181,253,0.45)' }}
+              >
+                累计
+              </div>
+              <div className="font-fredoka text-[22px] font-black leading-none" style={{ color: '#f5f3ff' }}>
+                {totalProblems}
+                <span className="text-[13px] font-semibold ml-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>题</span>
+              </div>
+              <div className="text-[10px] font-medium mt-1" style={{ color: 'rgba(196,181,253,0.5)' }}>
+                练习 {practiceDays} 天
               </div>
             </div>
           </div>

@@ -10,7 +10,7 @@ import { useVoucherCatalog } from '@rosie/rewards'
 import { supabase } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import { ColoredStar } from '@rosie/rewards'
-import { STAR_COLOR_HEX, type StarColor } from '@rosie/rewards'
+import { STAR_COLOR_HEX, STAR_UNIT_PRICE_LABEL, STAR_UNIT_PRICE_YUAN, formatYuan, starBalanceValueYuan, type StarColor } from '@rosie/rewards'
 import type { VoucherCategory, VoucherTemplate } from '@rosie/core'
 import VoucherTemplateModal from '@/components/admin/VoucherTemplateModal'
 
@@ -20,7 +20,6 @@ const COLOR_TO_SOURCE: Record<StarColor, 'calc' | 'english' | 'math'> = {
   blue: 'math',
 }
 const COLORS: StarColor[] = ['yellow', 'red', 'blue']
-const QUICK_AMOUNTS = [1, 5, 10, 50]
 
 interface TodayStarRow {
   id: string
@@ -88,22 +87,50 @@ export default function AwardsAdminPage() {
     window.setTimeout(() => setFlash(null), 1500)
   }
 
-  const handleAddStars = useCallback(
-    async (color: StarColor, amount: number) => {
+  const getBalance = useCallback(
+    (color: StarColor) =>
+      color === 'yellow' ? wallet.yellowBalance : color === 'red' ? wallet.redBalance : wallet.blueBalance,
+    [wallet.yellowBalance, wallet.redBalance, wallet.blueBalance],
+  )
+
+  const handleAdjustStars = useCallback(
+    async (color: StarColor, amount: number, mode: 'add' | 'spend') => {
       if (busy || amount <= 0) return
-      const key = `star:${color}:${amount}`
+      const hex = STAR_COLOR_HEX[color]
+      if (mode === 'spend' && amount > getBalance(color)) {
+        triggerFlash(`余额不足，当前 ${getBalance(color)} 颗${hex.shapeLabel}`)
+        return
+      }
+      const key = `star:${mode}:${color}:${amount}`
       setBusy(key)
       try {
-        await earnStars(COLOR_TO_SOURCE[color], amount)
+        if (mode === 'add') {
+          await earnStars(COLOR_TO_SOURCE[color], amount)
+        } else {
+          const { error } = await supabase.from('star_sessions').insert({
+            user_id: user!.id,
+            date: todayStr(),
+            source: COLOR_TO_SOURCE[color],
+            coins_earned: -amount,
+          })
+          if (error) {
+            console.error('[star_sessions] spend failed', { color, amount, error })
+            triggerFlash('消费失败，请重试')
+            return
+          }
+        }
         await wallet.refresh()
         await loadToday()
-        const hex = STAR_COLOR_HEX[color]
-        triggerFlash(`已添加 ${amount} 颗${hex.shapeLabel}`)
+        triggerFlash(
+          mode === 'add'
+            ? `已添加 ${amount} 颗${hex.shapeLabel}`
+            : `已消费 ${amount} 颗${hex.shapeLabel}`,
+        )
       } finally {
         setBusy(null)
       }
     },
-    [busy, earnStars, wallet, loadToday],
+    [busy, earnStars, wallet, loadToday, getBalance, user],
   )
 
   const handleGrantVoucher = useCallback(
@@ -171,6 +198,29 @@ export default function AwardsAdminPage() {
     [catalog.archived],
   )
 
+  const balancesByColor = useMemo(
+    (): Record<StarColor, number> => ({
+      yellow: wallet.yellowBalance,
+      red: wallet.redBalance,
+      blue: wallet.blueBalance,
+    }),
+    [wallet.yellowBalance, wallet.redBalance, wallet.blueBalance],
+  )
+
+  const valueByColor = useMemo(
+    (): Record<StarColor, number> => ({
+      yellow: starBalanceValueYuan('yellow', balancesByColor.yellow),
+      red: starBalanceValueYuan('red', balancesByColor.red),
+      blue: starBalanceValueYuan('blue', balancesByColor.blue),
+    }),
+    [balancesByColor],
+  )
+
+  const totalValueYuan = useMemo(
+    () => valueByColor.yellow + valueByColor.red + valueByColor.blue,
+    [valueByColor],
+  )
+
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
@@ -211,7 +261,7 @@ export default function AwardsAdminPage() {
       </header>
 
       <main className="mx-auto max-w-[760px] space-y-6 px-4 py-6 pb-20">
-        {/* Current balances */}
+        {/* Current balances + face value */}
         <section
           className="rounded-3xl p-5"
           style={{
@@ -219,15 +269,24 @@ export default function AwardsAdminPage() {
             border: '1.5px solid rgba(245,158,11,0.22)',
           }}
         >
-          <div className="mb-3 text-[11px] font-extrabold tracking-[0.22em] text-amber-800/80 uppercase">
-            当前余额
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <div className="text-[11px] font-extrabold tracking-[0.22em] text-amber-800/80 uppercase">
+              当前余额
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] font-bold text-slate-500">合计面值</div>
+              <div className="font-fredoka text-[28px] leading-none font-black tabular-nums text-amber-900">
+                {formatYuan(totalValueYuan)}
+              </div>
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             {COLORS.map((c) => {
               const hex = STAR_COLOR_HEX[c]
-              const balance = c === 'yellow' ? wallet.yellowBalance : c === 'red' ? wallet.redBalance : wallet.blueBalance
+              const balance = balancesByColor[c]
               const earned = c === 'yellow' ? wallet.yellowEarnedTotal : c === 'red' ? wallet.redEarned : wallet.blueEarned
               const spent = c === 'yellow' ? wallet.yellowSpent : c === 'red' ? wallet.redSpent : wallet.blueSpent
+              const faceValue = valueByColor[c]
               return (
                 <div
                   key={c}
@@ -246,6 +305,18 @@ export default function AwardsAdminPage() {
                   >
                     {balance}
                   </div>
+                  <div
+                    className="mx-auto mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-extrabold tabular-nums"
+                    style={{ background: `${hex.primary}18`, color: hex.outline, border: `1px solid ${hex.border}` }}
+                  >
+                    {STAR_UNIT_PRICE_LABEL[c]}
+                  </div>
+                  <div
+                    className="font-fredoka mt-1.5 text-[15px] font-black tabular-nums"
+                    style={{ color: hex.outline }}
+                  >
+                    {formatYuan(faceValue)}
+                  </div>
                   <div className="mt-1 text-[10px] font-bold text-slate-500">
                     赚 {earned} · 花 {spent}
                   </div>
@@ -253,28 +324,55 @@ export default function AwardsAdminPage() {
               )
             })}
           </div>
+          <div
+            className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl px-3 py-2 text-[11px] font-bold text-slate-600"
+            style={{ background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(245,158,11,0.18)' }}
+          >
+            {COLORS.map((c, i) => {
+              const hex = STAR_COLOR_HEX[c]
+              return (
+                <span key={c} className="inline-flex items-center gap-1 tabular-nums">
+                  {i > 0 && <span className="text-slate-300">+</span>}
+                  <ColoredStar color={c} size={11} glow={0} />
+                  <span style={{ color: hex.outline }}>
+                    {balancesByColor[c]}×{STAR_UNIT_PRICE_LABEL[c]}
+                  </span>
+                  <span className="text-slate-400">= {formatYuan(valueByColor[c])}</span>
+                </span>
+              )
+            })}
+          </div>
         </section>
 
-        {/* Add stars */}
+        {/* Add or spend stars */}
         <section>
           <div className="mb-3 flex items-baseline gap-2">
-            <h2 className="text-[15px] font-extrabold text-slate-800">添加星星</h2>
-            <span className="text-[11px] text-slate-500">每次点击插入一条记录，当天可多次添加</span>
+            <h2 className="text-[15px] font-extrabold text-slate-800">添加或消费</h2>
+            <span className="text-[11px] text-slate-500">输入数量后点击添加或消费，当天可多次操作</span>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {COLORS.map((c) => {
               const hex = STAR_COLOR_HEX[c]
+              const amount = Number(amounts[c]) || 1
+              const draftValue = amount * STAR_UNIT_PRICE_YUAN[c]
               return (
                 <div
                   key={c}
                   className="rounded-2xl bg-white/85 p-4 shadow-sm"
                   style={{ border: `1.5px solid ${hex.border}` }}
                 >
-                  <div className="mb-2 flex items-center gap-2">
-                    <ColoredStar color={c} size={20} glow={6} />
-                    <span className="text-[14px] font-extrabold" style={{ color: hex.outline }}>
-                      {hex.cnLabel}
-                      {hex.shapeLabel}
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <ColoredStar color={c} size={20} glow={6} />
+                      <span className="text-[14px] font-extrabold" style={{ color: hex.outline }}>
+                        {hex.shapeLabel}
+                      </span>
+                    </div>
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[10px] font-extrabold tabular-nums"
+                      style={{ background: `${hex.primary}14`, color: hex.outline, border: `1px solid ${hex.border}` }}
+                    >
+                      {STAR_UNIT_PRICE_LABEL[c]}
                     </span>
                   </div>
                   <input
@@ -291,44 +389,43 @@ export default function AwardsAdminPage() {
                     onBlur={() =>
                       setAmounts((prev) => ({ ...prev, [c]: prev[c] === '' ? 1 : prev[c] }))
                     }
-                    className="font-fredoka mb-2 w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-center text-[18px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
+                    className="font-fredoka mb-1 w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-center text-[18px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
                     style={{ color: hex.outline }}
                   />
-                  <div className="mb-2 flex flex-wrap gap-1">
-                    {QUICK_AMOUNTS.map((q) => (
-                      <button
-                        key={q}
-                        type="button"
-                        onClick={() => setAmounts((prev) => ({ ...prev, [c]: q }))}
-                        className={`flex-1 cursor-pointer rounded-md px-1.5 py-1 text-[11px] font-extrabold tabular-nums transition ${
-                          amounts[c] === q
-                            ? 'text-white'
-                            : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
-                        }`}
-                        style={
-                          amounts[c] === q
-                            ? { background: hex.primary, border: `1px solid ${hex.outline}` }
-                            : { border: '1px solid #e2e8f0' }
-                        }
-                      >
-                        +{q}
-                      </button>
-                    ))}
+                  <div className="mb-2 text-center text-[11px] font-bold text-slate-500 tabular-nums">
+                    本次 {amount} 颗 ≈ {formatYuan(draftValue)}
                   </div>
-                  <button
-                    type="button"
-                    disabled={!!busy}
-                    onClick={() => handleAddStars(c, Number(amounts[c]) || 1)}
-                    className="w-full cursor-pointer rounded-lg py-2 text-[13px] font-extrabold text-white shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{
-                      background: `linear-gradient(135deg,${hex.primary},${hex.outline})`,
-                      boxShadow: `0 3px 12px ${hex.glow}`,
-                    }}
-                  >
-                    {busy === `star:${c}:${Number(amounts[c]) || 1}`
-                      ? '添加中…'
-                      : `添加 ${Number(amounts[c]) || 1} 颗${hex.shapeLabel}`}
-                  </button>
+                  <div className="flex gap-2">
+                    {(['add', 'spend'] as const).map((mode) => {
+                      const amount = Number(amounts[c]) || 1
+                      const busyKey = `star:${mode}:${c}:${amount}`
+                      const isBusy = busy === busyKey
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          disabled={!!busy}
+                          onClick={() => handleAdjustStars(c, amount, mode)}
+                          className="flex-1 cursor-pointer rounded-lg py-2 text-[13px] font-extrabold shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+                          style={
+                            mode === 'add'
+                              ? {
+                                  background: `linear-gradient(135deg,${hex.primary},${hex.outline})`,
+                                  boxShadow: `0 3px 12px ${hex.glow}`,
+                                  color: '#fff',
+                                }
+                              : {
+                                  background: 'rgba(255,255,255,0.9)',
+                                  border: `1.5px solid ${hex.outline}`,
+                                  color: hex.outline,
+                                }
+                          }
+                        >
+                          {isBusy ? (mode === 'add' ? '添加中…' : '消费中…') : mode === 'add' ? '添加' : '消费'}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               )
             })}
@@ -505,7 +602,8 @@ export default function AwardsAdminPage() {
                   >
                     <ColoredStar color={color} size={14} glow={4} />
                     <span className="font-extrabold" style={{ color: hex.outline }}>
-                      +{s.coins_earned} {hex.cnLabel}
+                      {s.coins_earned >= 0 ? '+' : ''}
+                      {s.coins_earned} {hex.cnLabel}
                       {hex.shapeLabel}
                     </span>
                     <span className="ml-auto font-mono text-[11px] text-slate-400 tabular-nums">

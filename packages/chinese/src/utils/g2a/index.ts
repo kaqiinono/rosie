@@ -1,0 +1,11 @@
+// 二年级上册语文教材数据（草稿）
+export * from './types'
+export { UNITS } from './units'
+export { CHARS } from './chars'
+export { LESSON_CHARS } from './lesson-chars'
+export { PHRASES } from './phrases'
+export { POEMS } from './poems'
+export { ACCUMULATION } from './accumulation'
+export { LESSON_PASSAGES } from './lesson-passages'
+export { RADICALS } from './radicals'
+export { STROKE_RULES } from './stroke-rules'

@@ -35,6 +35,8 @@ export const STORAGE_KEYS = {
   FLIPBOOK_AUTO_PLAY: 'flipbook-auto-play',
   /** 阅读时右上角显示当前页词汇释义（默认开） */
   FLIPBOOK_WORD_OVERLAY: 'flipbook-word-overlay',
+  /** 生字库页单元/课文筛选（实际 key 为 `${CHINESE_CHARS_FILTER}:${bookSlug}`） */
+  CHINESE_CHARS_FILTER: 'chinese-chars-filter',
 } as const
 
 export const NAV_PAGES = [

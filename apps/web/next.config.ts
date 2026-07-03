@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  transpilePackages: ['@rosie/core', '@rosie/rewards', '@rosie/player', '@rosie/ui', '@rosie/calc', '@rosie/math', '@rosie/english', '@rosie/flipbook', '@rosie/audio'],
+  transpilePackages: ['@rosie/core', '@rosie/rewards', '@rosie/player', '@rosie/ui', '@rosie/calc', '@rosie/math', '@rosie/english', '@rosie/flipbook', '@rosie/audio', '@rosie/chinese'],
 
   headers: async () => [
     {

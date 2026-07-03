@@ -71,6 +71,14 @@ export function useCalcMistakes(user: User | null) {
     setMistakes((data ?? []).map(r => rowToMistake(r as MistakeRow)))
   }, [user])
 
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') void refresh()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [refresh])
+
   /**
    * Add or re-set a mistake when the user answers wrong twice.
    * `sessionNo` is the running session's number; it is stored on both insert and

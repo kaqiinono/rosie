@@ -9,9 +9,14 @@ import './english.css'
 // Context
 export { WordsProvider, useWordsContext } from './WordsContext'
 
+// Module landing
+export { default as EnglishQuickLinkGrid } from './components/EnglishQuickLinkGrid'
+export { default as EnglishQuickLinkCard } from './components/EnglishQuickLinkCard'
+
 // Hooks
 export { useWordData } from './hooks/useWordData'
 export { useWordMastery } from './hooks/useWordMastery'
+export { useEnglishWrong } from './hooks/useEnglishWrong'
 export { useWeeklyPlan } from './hooks/useWeeklyPlan'
 export { useRescueQueue } from './hooks/useRescueQueue'
 export { useReadingPassageMedia } from './hooks/useReadingPassageMedia'
@@ -55,6 +60,7 @@ export { default as SpeakButton } from './components/words/SpeakButton'
 export { default as SpellTiles } from './components/words/SpellTiles'
 export type { SpellButtonStyle } from './components/words/SpellTiles'
 export { default as StudyPhase } from './components/words/StudyPhase'
+export { default as EnglishHardWordsPage } from './components/words/EnglishHardWordsPage'
 export { default as WeeklyPlanSession } from './components/words/WeeklyPlanSession'
 export { default as WeeklyPractice } from './components/words/WeeklyPractice'
 export { default as WordHelpModal } from './components/words/WordHelpModal'

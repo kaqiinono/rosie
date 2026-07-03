@@ -34,7 +34,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="flex min-h-screen flex-col bg-[#ecfdf5] text-[15px] text-text-primary"
+      className="flex min-h-screen flex-col bg-[#f0fdfa] text-[15px] text-text-primary"
       style={{ fontFamily: '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif' }}
     >
       <AppHeader problems={PROBLEMS} />

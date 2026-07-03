@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry } from '@rosie/core'
@@ -240,6 +240,31 @@ export default function WordManagerPage({ user }: Props) {
     triggerFlash(`已添加 ${words.length} 个单词`)
   }
 
+  const handleExportVocab = useCallback(async () => {
+    if (rows.length === 0) return
+    const xlsx = await import('xlsx')
+    const { utils, writeFile } = xlsx.default || xlsx
+    const wb = utils.book_new()
+    const headers = ['Stage', 'Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
+    const data = [
+      headers,
+      ...rows.map((v) => [
+        v.stage || '',
+        v.unit,
+        v.lesson,
+        v.word,
+        v.explanation,
+        v.ipa || '',
+        v.example || '',
+      ]),
+    ]
+    const ws = utils.aoa_to_sheet(data)
+    ws['!cols'] = [{ wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
+    utils.book_append_sheet(wb, ws, '单词数据')
+    writeFile(wb, 'RosieFun_词库.xlsx')
+    triggerFlash(`已导出 ${rows.length} 个单词`)
+  }, [rows])
+
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">请先登录</div>
@@ -355,6 +380,14 @@ export default function WordManagerPage({ user }: Props) {
               className="min-w-[140px] flex-1 rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-[13px] focus:border-amber-400 focus:outline-none"
             />
             <div className="ml-auto flex gap-2">
+              <button
+                type="button"
+                onClick={() => void handleExportVocab()}
+                disabled={rows.length === 0}
+                className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                导出词库
+              </button>
               <button
                 type="button"
                 onClick={() => setBatchOpen(true)}

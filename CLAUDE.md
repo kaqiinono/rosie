@@ -21,10 +21,11 @@ packages/
   english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
   flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
+  chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一年级下册首批）
 ```
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
-`math`→ui,rewards; `english`→player,ui,rewards; `flipbook`→english,player; `audio`→flipbook,
+`math`→ui,rewards; `english`→player,ui,rewards; `chinese`→ui,rewards; `flipbook`→english,player; `audio`→flipbook,
 english,player. A package must never import another subject module outside this DAG, and
 `core`/`ui`/`rewards`/`player` never import a subject module.
 
