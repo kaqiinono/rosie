@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { SOURCE_LABELS } from '@rosie/core'
 import { SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
 import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
@@ -302,21 +303,7 @@ function PracticeProblem({
     </div>
   )
 
-  const solution = (
-    <div className="mb-3.5 rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50 p-3.5">
-      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-amber-700">
-        🔍 题型分析
-      </div>
-      <ul className="flex flex-col gap-1.5">
-        {problem.analysis.map((a, i) => (
-          <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-amber-900">
-            <span className="shrink-0">💡</span>
-            {a}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+  const solution = <ProblemSolutionPanel problem={problem} variant="amber" />
 
   const masteryRow = (
     <div className="flex items-center gap-2 text-xs text-gray-400">

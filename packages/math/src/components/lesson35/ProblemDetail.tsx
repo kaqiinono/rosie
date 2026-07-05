@@ -10,7 +10,7 @@ import RatioDiagram from './RatioDiagram'
 import BlockDiagram from './BlockDiagram'
 import DualBlockDiagram from './DualBlockDiagram'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
-import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
@@ -58,55 +58,36 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
 
   const solution = (
     <div>
-      <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
-        <div className="to-yellow-light mb-3.5 rounded-lg border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] p-3.5">
-          <div className="text-yellow-dark mb-1.5 flex items-center gap-1 text-xs font-bold">
-            🔍 题型分析
-          </div>
-          <ul className="flex flex-col gap-1.5">
-            {problem.analysis.map((a, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]"
-              >
-                <span className="shrink-0">💡</span>
-                {a}
-              </li>
-            ))}
-          </ul>
-      <ProblemAnalysisImage problem={problem} />
-        </div>
-        {problem.type !== 'none' && (
-          <>
-            <div className="mb-3 flex items-center gap-2">
-              <div className="bg-border-light h-px flex-1" />
-              <div className="text-text-muted text-xs font-semibold whitespace-nowrap">
-                🧱 拆解图（直观理解）
-              </div>
-              <div className="bg-border-light h-px flex-1" />
+      <ProblemSolutionPanel problem={problem} variant="yellow" />
+      {problem.type !== 'none' && (
+        <>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="bg-border-light h-px flex-1" />
+            <div className="text-text-muted text-xs font-semibold whitespace-nowrap">
+              🧱 拆解图（直观理解）
             </div>
+            <div className="bg-border-light h-px flex-1" />
+          </div>
 
-            {problem.type === 'ratio3b' ? (
-              problem.dualSc ? (
-                <DualBlockDiagram config={problem.dualSc} probId={problem.id} />
-              ) : (
-                <div className="text-text-muted mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs">
-                  拆解图暂不支持此题型
-                </div>
-              )
-            ) : problem.blockScene ? (
-              <BlockDiagram scene={problem.blockScene} probId={problem.id} />
+          {problem.type === 'ratio3b' ? (
+            problem.dualSc ? (
+              <DualBlockDiagram config={problem.dualSc} probId={problem.id} />
             ) : (
               <div className="text-text-muted mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs">
                 拆解图暂不支持此题型
               </div>
-            )}
-          </>
-        )}
-      </div>
+            )
+          ) : problem.blockScene ? (
+            <BlockDiagram scene={problem.blockScene} probId={problem.id} />
+          ) : (
+            <div className="text-text-muted mb-3 rounded-lg border border-[#e0e4ff] bg-[#f8f9ff] p-3.5 text-xs">
+              拆解图暂不支持此题型
+            </div>
+          )}
+        </>
+      )}
 
       <div className="min-w-0 flex-1">
-        {/* Right-column diagram — custom prop takes priority; falls back to built-in 倍比图 */}
         {problem.type !== 'none' && (
           <>
             <div className="mb-3 flex items-center gap-2">

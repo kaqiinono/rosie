@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react'
 interface AnalysisImageProps {
   src: string
   alt?: string
+  onLoad?: () => void
 }
 
-export default function AnalysisImage({ src, alt = '题解图' }: AnalysisImageProps) {
+export default function AnalysisImage({ src, alt = '题解图', onLoad }: AnalysisImageProps) {
   const [open, setOpen] = useState(false)
   const [rotated, setRotated] = useState(false)
 
@@ -63,7 +64,8 @@ export default function AnalysisImage({ src, alt = '题解图' }: AnalysisImageP
           <img
             src={src}
             alt={alt}
-            className="w-full max-w-md rounded-lg border border-sky-200 bg-white transition-transform group-hover:scale-[1.01]"
+            onLoad={onLoad}
+            className="h-auto max-h-none max-w-full rounded-lg border border-sky-200 bg-white object-contain transition-transform group-hover:scale-[1.01]"
           />
           <span className="pointer-events-none absolute right-1.5 bottom-1.5 rounded-md bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
             点击放大 🔍

@@ -19,8 +19,23 @@ export default function QuestionLayout({ question, solution, answer, defaultSolu
   }, [defaultSolutionOpen])
 
   useEffect(() => {
-    if (solutionRef.current) {
-      setSolutionHeight(solutionRef.current.scrollHeight)
+    const el = solutionRef.current
+    if (!el || !solutionOpen) return
+
+    const measure = () => setSolutionHeight(el.scrollHeight)
+    measure()
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+
+    const onImageLoad = () => measure()
+    el.querySelectorAll('img').forEach((img) => {
+      if (!img.complete) img.addEventListener('load', onImageLoad)
+    })
+
+    return () => {
+      ro.disconnect()
+      el.querySelectorAll('img').forEach((img) => img.removeEventListener('load', onImageLoad))
     }
   }, [solution, solutionOpen])
 

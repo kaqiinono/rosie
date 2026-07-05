@@ -13,7 +13,7 @@ import MonthCalendarPuzzleSum from './WeekdayFlowChart/MonthCalendarPuzzleSum'
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
-import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
@@ -123,30 +123,9 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
   const autoLeftDiagram = buildFlowChart(problem, manualTotalDays, setManualTotalDays)
 
   const solution = (
-    <div className="flex flex-col gap-4 min-[900px]:flex-row min-[900px]:items-start">
-      <div>
-        {/* Analysis box */}
-        <div className="to-yellow-light mb-3.5 rounded-lg border border-[#fde68a] bg-gradient-to-br from-[#fffbeb] p-3.5">
-          <div className="text-yellow-dark mb-1.5 flex items-center gap-1 text-xs font-bold">
-            🔍 题型分析
-          </div>
-          <ul className="flex flex-col gap-1.5">
-            {problem.analysis.map((a, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-1.5 text-xs leading-relaxed text-[#92400e]"
-              >
-                <span className="shrink-0">💡</span>
-                {a}
-              </li>
-            ))}
-          </ul>
-      <ProblemAnalysisImage problem={problem} />
-        </div>
-
-        {autoLeftDiagram}
-      </div>
-    </div>
+    <ProblemSolutionPanel problem={problem} variant="yellow">
+      {autoLeftDiagram}
+    </ProblemSolutionPanel>
   )
 
   const question = (

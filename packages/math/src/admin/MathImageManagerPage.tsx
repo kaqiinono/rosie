@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import type { Problem } from '@rosie/core'
+import clsx from 'clsx'
 import {
   GRADE_LABEL,
   gradesInOrder,
@@ -21,8 +22,11 @@ import {
   type MathImageKind,
 } from '@rosie/math/constants'
 import { useMathProblemImagesAdmin } from '@rosie/math/hooks/useMathProblemImagesAdmin'
+import MathPdfSliceMatcher from '@rosie/math/admin/MathPdfSliceMatcher'
 
 type Props = { user: User | null }
+
+type AdminMode = 'single' | 'pdf-slice'
 
 const MAX_FILE_MB = 20
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
@@ -65,6 +69,7 @@ function imageStatus(
 }
 
 export default function MathImageManagerPage({ user }: Props) {
+  const [mode, setMode] = useState<AdminMode>('single')
   const grades = gradesInOrder()
   const defaultLesson = lessonsForGrade(grades[grades.length - 1] ?? 2)[0] ?? '55'
 
@@ -276,7 +281,29 @@ export default function MathImageManagerPage({ user }: Props) {
           </Link>
           <div className="min-w-0 flex-1">
             <div className="truncate text-[16px] font-extrabold text-teal-900">📐 数学题图</div>
-            <div className="truncate text-[11px] text-slate-500">上传题解图 / 题面图，线上即时生效</div>
+            <div className="truncate text-[11px] text-slate-500">单题上传或 PDF 分片匹配</div>
+          </div>
+          <div className="flex shrink-0 gap-1 rounded-xl bg-teal-50 p-1">
+            <button
+              type="button"
+              onClick={() => setMode('single')}
+              className={clsx(
+                'rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition',
+                mode === 'single' ? 'bg-white text-teal-800 shadow-sm' : 'text-teal-600',
+              )}
+            >
+              单题上传
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('pdf-slice')}
+              className={clsx(
+                'rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition',
+                mode === 'pdf-slice' ? 'bg-white text-teal-800 shadow-sm' : 'text-teal-600',
+              )}
+            >
+              PDF 分片
+            </button>
           </div>
         </div>
       </header>
@@ -287,7 +314,11 @@ export default function MathImageManagerPage({ user }: Props) {
         </div>
       )}
 
-      <main className="mx-auto grid max-w-[1100px] gap-4 px-4 py-5 lg:grid-cols-[240px_1fr_320px]">
+      <main className="mx-auto max-w-[1200px] px-4 py-5">
+        {mode === 'pdf-slice' ? (
+          <MathPdfSliceMatcher user={user} />
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-[240px_1fr_320px]">
         {/* Lesson picker */}
         <aside className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
           <div className="mb-2 text-[12px] font-bold text-slate-500">选择讲次</div>
@@ -562,6 +593,8 @@ export default function MathImageManagerPage({ user }: Props) {
             </div>
           )}
         </aside>
+          </div>
+        )}
       </main>
     </div>
   )

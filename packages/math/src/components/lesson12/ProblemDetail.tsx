@@ -9,7 +9,7 @@ import { useLesson12 } from './Lesson12Provider'
 import { getMasteryLevel } from '@rosie/core'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
-import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
@@ -34,20 +34,7 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
   })
 
   const solution = (
-    <div className="mb-3.5 rounded-lg border border-orange-200 bg-orange-50 p-3.5">
-      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-orange-700">
-        🔍 题型分析
-      </div>
-      <ul className="flex flex-col gap-1.5">
-        {problem.analysis.map((a, i) => (
-          <li key={i} className="flex items-start gap-1.5 text-xs leading-relaxed text-orange-900">
-            <span className="shrink-0">💡</span>
-            {a}
-          </li>
-        ))}
-      </ul>
-      <ProblemAnalysisImage problem={problem} />
-    </div>
+    <ProblemSolutionPanel problem={problem} variant="orange" />
   )
 
   const question = (

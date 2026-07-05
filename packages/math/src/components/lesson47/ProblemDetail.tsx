@@ -11,7 +11,7 @@ import InteractiveAnswerFeedback from '@rosie/math/components/shared/Interactive
 import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
 import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
-import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
@@ -49,23 +49,12 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
   )
 
   const solution = (
-    <div className="mb-3.5 rounded-lg border border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 to-[#fae8ff] p-3.5">
-      <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-fuchsia-700">
-        🧠 玩法详解
-      </div>
-      <ul className="flex flex-col gap-1.5">
-        {problem.analysis.map((a, i) => (
-          <li
-            key={i}
-            className="flex items-start gap-1.5 text-xs leading-relaxed text-fuchsia-900 [&_strong]:font-bold"
-          >
-            <span className="shrink-0">💡</span>
-            <span dangerouslySetInnerHTML={{ __html: a }} />
-          </li>
-        ))}
-      </ul>
-      <ProblemAnalysisImage problem={problem} />
-    </div>
+    <ProblemSolutionPanel
+      problem={problem}
+      variant="fuchsia"
+      headingIcon="🧠"
+      heading="玩法详解"
+    />
   )
 
   const question = (
