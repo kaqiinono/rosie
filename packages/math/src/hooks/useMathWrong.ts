@@ -20,31 +20,36 @@ function parseRows(data: { problem_id: string; added_at?: string; resolved?: boo
   }))
 }
 
+async function fetchWrongRows(userId: string): Promise<MathWrongRow[]> {
+  const { data, error } = await supabase
+    .from('math_wrong')
+    .select('problem_id, added_at, resolved, resolved_at')
+    .eq('user_id', userId)
+  if (error) {
+    const fallback = await supabase
+      .from('math_wrong')
+      .select('problem_id, added_at')
+      .eq('user_id', userId)
+    if (fallback.data) {
+      return parseRows(fallback.data.map(r => ({ ...r, resolved: false, resolved_at: null })))
+    }
+    return []
+  }
+  return data ? parseRows(data) : []
+}
+
 export function useMathWrong(user: User | null) {
   const [rows, setRows] = useState<MathWrongRow[]>([])
 
   const loadWrong = useCallback(async () => {
     if (!user) return
-    const { data, error } = await supabase
-      .from('math_wrong')
-      .select('problem_id, added_at, resolved, resolved_at')
-      .eq('user_id', user.id)
-    if (error) {
-      const fallback = await supabase
-        .from('math_wrong')
-        .select('problem_id, added_at')
-        .eq('user_id', user.id)
-      if (fallback.data) {
-        setRows(parseRows(fallback.data.map(r => ({ ...r, resolved: false, resolved_at: null }))))
-      }
-      return
-    }
-    if (data) setRows(parseRows(data))
+    setRows(await fetchWrongRows(user.id))
   }, [user])
 
   useEffect(() => {
-    void loadWrong()
-  }, [loadWrong])
+    if (!user) return
+    void fetchWrongRows(user.id).then(setRows)
+  }, [user])
 
   useEffect(() => {
     const onVis = () => {
