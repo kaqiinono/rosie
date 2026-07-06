@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import type { Problem } from '@rosie/core'
@@ -11,7 +11,11 @@ import {
   lessonsForGrade,
 } from '@rosie/math/utils/lesson-grade'
 import { SEA_LESSONS } from '@rosie/math/utils/sea-data'
-import { flattenProblemSet, problemSectionLabel } from '@rosie/math/utils/problem-set-helpers'
+import {
+  enumerateProblemSet,
+  problemSectionLabel,
+  problemSetSourceButtons,
+} from '@rosie/math/utils/problem-set-helpers'
 import {
   MATH_IMAGE_KIND_LABEL,
   type MathImageKind,
@@ -22,6 +26,33 @@ type Props = { user: User | null }
 
 const MAX_FILE_MB = 20
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
+const ACCEPTED_IMAGE_RE = /\.(png|jpe?g|webp|gif)$/i
+
+function isAcceptedImage(file: File): boolean {
+  const type = file.type.toLowerCase()
+  if (type.startsWith('image/')) {
+    const sub = type.split('/')[1]
+    return sub === 'png' || sub === 'jpeg' || sub === 'jpg' || sub === 'webp' || sub === 'gif'
+  }
+  return ACCEPTED_IMAGE_RE.test(file.name)
+}
+
+function pickImageFile(files: FileList | Iterable<File>): File | null {
+  for (const file of files) {
+    if (isAcceptedImage(file)) return file
+  }
+  return null
+}
+
+function pickImageFromClipboard(dt: DataTransfer): File | null {
+  for (const item of dt.items) {
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      const file = item.getAsFile()
+      if (file && isAcceptedImage(file)) return file
+    }
+  }
+  return pickImageFile(dt.files)
+}
 
 function imageStatus(
   problemId: string,
@@ -42,6 +73,9 @@ export default function MathImageManagerPage({ user }: Props) {
   const [imageKind, setImageKind] = useState<MathImageKind>('analysis')
   const [flash, setFlash] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
+  const [sourceFilter, setSourceFilter] = useState<Set<string>>(new Set())
+  const [typeFilter, setTypeFilter] = useState<Set<string>>(new Set())
+  const [isDragOver, setIsDragOver] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const admin = useMathProblemImagesAdmin(user, selectedLesson)
@@ -51,37 +85,140 @@ export default function MathImageManagerPage({ user }: Props) {
     [selectedLesson],
   )
 
+  const sourceBtns = useMemo(
+    () => (lessonMeta ? problemSetSourceButtons(lessonMeta.problems) : []),
+    [lessonMeta],
+  )
+
+  const typeBtns = useMemo(
+    () => (lessonMeta ? lessonMeta.types.map((t) => ({ key: t.tag, label: t.label })) : []),
+    [lessonMeta],
+  )
+
+  useEffect(() => {
+    setSourceFilter(new Set(sourceBtns.map((b) => b.key)))
+    setTypeFilter(new Set(typeBtns.map((b) => b.key)))
+  }, [selectedLesson, sourceBtns, typeBtns])
+
   const problems = useMemo(() => {
     if (!lessonMeta) return []
-    const all = flattenProblemSet(lessonMeta.problems)
     const q = filter.trim().toLowerCase()
-    if (!q) return all
-    return all.filter(
-      (p) =>
-        p.id.toLowerCase().includes(q) ||
-        p.title.toLowerCase().includes(q) ||
-        problemSectionLabel(p.id).includes(q),
-    )
-  }, [lessonMeta, filter])
+    return enumerateProblemSet(lessonMeta.problems)
+      .filter(
+        ({ problem: p, setName }) =>
+          sourceFilter.has(setName) &&
+          typeFilter.has(p.tag) &&
+          (!q ||
+            p.id.toLowerCase().includes(q) ||
+            p.title.toLowerCase().includes(q) ||
+            problemSectionLabel(p.id).includes(q) ||
+            p.tagLabel.toLowerCase().includes(q)),
+      )
+      .map(({ problem }) => problem)
+  }, [lessonMeta, filter, sourceFilter, typeFilter])
 
-  function showFlash(msg: string) {
+  useEffect(() => {
+    if (selectedProblem && !problems.some((p) => p.id === selectedProblem.id)) {
+      setSelectedProblem(null)
+    }
+  }, [problems, selectedProblem])
+
+  function toggleFilter(axis: 'source' | 'type', value: string) {
+    const setter = axis === 'source' ? setSourceFilter : setTypeFilter
+    setter((prev) => {
+      const next = new Set(prev)
+      if (next.has(value)) next.delete(value)
+      else next.add(value)
+      return next
+    })
+  }
+
+  function toggleAll(axis: 'source' | 'type') {
+    const btns = axis === 'source' ? sourceBtns : typeBtns
+    const setter = axis === 'source' ? setSourceFilter : setTypeFilter
+    const current = axis === 'source' ? sourceFilter : typeFilter
+    const allSelected = btns.every((b) => current.has(b.key))
+    setter(allSelected ? new Set() : new Set(btns.map((b) => b.key)))
+  }
+
+  const allSourceSelected = sourceBtns.length > 0 && sourceBtns.every((b) => sourceFilter.has(b.key))
+  const allTypeSelected = typeBtns.length > 0 && typeBtns.every((b) => typeFilter.has(b.key))
+  const filterBtnBase =
+    'rounded-full border px-2.5 py-1 text-[11px] font-semibold transition active:scale-95'
+  const filterBtnOn = 'border-teal-600 bg-teal-600 text-white'
+  const filterBtnOff = 'border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100'
+
+  const showFlash = useCallback((msg: string) => {
     setFlash(msg)
     window.setTimeout(() => setFlash(null), 2200)
-  }
+  }, [])
+
+  const uploadFile = useCallback(
+    async (file: File) => {
+      if (!selectedProblem || admin.isUploading) return
+      if (!isAcceptedImage(file)) {
+        showFlash('仅支持 PNG / JPG / WEBP / GIF')
+        return
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        showFlash(`文件过大（最大 ${MAX_FILE_MB} MB）`)
+        return
+      }
+
+      const { error } = await admin.uploadImage(selectedProblem.id, imageKind, file)
+      if (error) showFlash(`上传失败：${error}`)
+      else showFlash('上传成功')
+    },
+    [selectedProblem, imageKind, admin, showFlash],
+  )
+
+  useEffect(() => {
+    if (!selectedProblem) return
+
+    function onPaste(e: ClipboardEvent) {
+      const target = e.target
+      if (target instanceof HTMLElement && target.closest('input, textarea, [contenteditable="true"]')) {
+        return
+      }
+      const file = e.clipboardData ? pickImageFromClipboard(e.clipboardData) : null
+      if (!file) return
+      e.preventDefault()
+      void uploadFile(file)
+    }
+
+    document.addEventListener('paste', onPaste)
+    return () => document.removeEventListener('paste', onPaste)
+  }, [selectedProblem, uploadFile])
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     e.target.value = ''
-    if (!file || !selectedProblem) return
+    if (file) await uploadFile(file)
+  }
 
-    if (file.size > MAX_FILE_BYTES) {
-      showFlash(`文件过大（最大 ${MAX_FILE_MB} MB）`)
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (selectedProblem && !admin.isUploading) setIsDragOver(true)
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+    if (!selectedProblem || admin.isUploading) return
+    const file = pickImageFile(e.dataTransfer.files)
+    if (!file) {
+      showFlash('请拖入图片文件')
       return
     }
-
-    const { error } = await admin.uploadImage(selectedProblem.id, imageKind, file)
-    if (error) showFlash(`上传失败：${error}`)
-    else showFlash('上传成功')
+    void uploadFile(file)
   }
 
   async function handleDelete() {
@@ -166,6 +303,7 @@ export default function MathImageManagerPage({ user }: Props) {
                       onClick={() => {
                         setSelectedLesson(id)
                         setSelectedProblem(null)
+                        setIsDragOver(false)
                       }}
                       className={`rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition ${
                         selectedLesson === id
@@ -193,11 +331,67 @@ export default function MathImageManagerPage({ user }: Props) {
             </span>
           </div>
 
+          <div className="mb-3 space-y-2 rounded-xl border border-teal-100 bg-teal-50/40 p-2.5">
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <span className="text-[11px] font-bold text-teal-800">📂 来源</span>
+                {sourceBtns.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => toggleAll('source')}
+                    className="text-[10px] text-teal-600 transition hover:text-teal-800"
+                  >
+                    {allSourceSelected ? '全不选' : '全选'}
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {sourceBtns.map((b) => (
+                  <button
+                    key={b.key}
+                    type="button"
+                    onClick={() => toggleFilter('source', b.key)}
+                    className={`${filterBtnBase} ${sourceFilter.has(b.key) ? filterBtnOn : filterBtnOff}`}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <span className="text-[11px] font-bold text-teal-800">🏷️ 题型</span>
+                {typeBtns.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => toggleAll('type')}
+                    className="text-[10px] text-teal-600 transition hover:text-teal-800"
+                  >
+                    {allTypeSelected ? '全不选' : '全选'}
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {typeBtns.map((b) => (
+                  <button
+                    key={b.key}
+                    type="button"
+                    onClick={() => toggleFilter('type', b.key)}
+                    className={`${filterBtnBase} ${typeFilter.has(b.key) ? filterBtnOn : filterBtnOff}`}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <input
             type="search"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            placeholder="搜索题号或标题…"
+            placeholder="搜索题号、标题或题型…"
             className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-[13px] outline-none focus:border-teal-400"
           />
 
@@ -212,7 +406,10 @@ export default function MathImageManagerPage({ user }: Props) {
                   <li key={p.id}>
                     <button
                       type="button"
-                      onClick={() => setSelectedProblem(p)}
+                      onClick={() => {
+                        setSelectedProblem(p)
+                        setIsDragOver(false)
+                      }}
                       className={`flex w-full items-start gap-2 rounded-xl px-3 py-2.5 text-left transition ${
                         active ? 'bg-teal-50 ring-1 ring-teal-300' : 'hover:bg-slate-50'
                       }`}
@@ -275,7 +472,10 @@ export default function MathImageManagerPage({ user }: Props) {
                   <button
                     key={kind}
                     type="button"
-                    onClick={() => setImageKind(kind)}
+                    onClick={() => {
+                      setImageKind(kind)
+                      setIsDragOver(false)
+                    }}
                     className={`flex-1 rounded-lg py-2 text-[12px] font-bold transition ${
                       imageKind === kind ? 'bg-white text-teal-800 shadow-sm' : 'text-slate-500'
                     }`}
@@ -285,7 +485,16 @@ export default function MathImageManagerPage({ user }: Props) {
                 ))}
               </div>
 
-              <div className="rounded-xl border border-dashed border-teal-200 bg-teal-50/50 p-3">
+              <div
+                className={`relative rounded-xl border border-dashed p-3 transition ${
+                  isDragOver
+                    ? 'border-teal-500 bg-teal-100/80 ring-2 ring-teal-300'
+                    : 'border-teal-200 bg-teal-50/50'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 {currentUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -301,13 +510,22 @@ export default function MathImageManagerPage({ user }: Props) {
                     className="mx-auto max-h-48 w-full rounded-lg object-contain opacity-80"
                   />
                 ) : (
-                  <div className="py-10 text-center text-[12px] text-slate-400">暂无图片</div>
+                  <div className="py-10 text-center text-[12px] text-slate-400">
+                    暂无图片
+                    <div className="mt-1 text-[10px]">拖入图片或粘贴（⌘V / Ctrl+V）</div>
+                  </div>
                 )}
 
                 {imageKind === 'analysis' && !currentUrl && staticAnalysis && (
                   <p className="mt-2 text-center text-[10px] text-amber-600">
                     当前使用代码内置路径（上传后将覆盖）
                   </p>
+                )}
+
+                {isDragOver && (
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-teal-100/90 text-[12px] font-semibold text-teal-800">
+                    松开上传图片
+                  </div>
                 )}
               </div>
 
@@ -339,7 +557,7 @@ export default function MathImageManagerPage({ user }: Props) {
               )}
 
               <p className="text-[10px] leading-relaxed text-slate-400">
-                题解图显示在「查看题解」面板内；题面图显示在题目文字下方。支持 PNG / JPG / WEBP，最大 {MAX_FILE_MB} MB。
+                题解图显示在「查看题解」面板内；题面图显示在题目文字下方。支持点击上传、拖入预览区、或粘贴截图（⌘V / Ctrl+V）。格式 PNG / JPG / WEBP / GIF，最大 {MAX_FILE_MB} MB。
               </p>
             </div>
           )}
