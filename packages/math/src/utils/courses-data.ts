@@ -4,6 +4,15 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 export const COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/53',
+    title: '找规律探险',
+    description: '数列、数表与图形编码 —— 观察差比和、位置轮换与乘积关系，含终极挑战附加题。',
+    icon: '🔮',
+    lectureNum: '第 5 讲',
+    tags: ['找规律', '数列·数表·图形编码', '57 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/52',
     title: '差倍问题探险',
     description: '找差找倍画线段图 —— 基本差倍、移多补少、年龄问题与和倍应用，含综合挑战附加题。',
