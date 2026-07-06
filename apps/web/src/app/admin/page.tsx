@@ -56,8 +56,8 @@ const TOOLS: AdminTool[] = [
   {
     href: '/admin/math',
     emoji: '📐',
-    title: '数学题图',
-    description: '按讲次与题号上传题解图、题面图，Supabase 存储，孩子做题时即时显示。',
+    title: '数学题管理',
+    description: '按讲次与题号管理题解图、题面图与富文本笔记，支持 PDF 分片匹配上传。',
     from: 'rgba(13,148,136,0.14)',
     to: 'rgba(59,130,246,0.08)',
     ring: 'rgba(13,148,136,0.28)',

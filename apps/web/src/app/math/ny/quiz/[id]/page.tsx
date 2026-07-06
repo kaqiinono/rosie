@@ -217,10 +217,10 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
         setInteractiveTouched((prev) => ({...prev, [problemId]: true}))
     }
 
-    function buildDraftAnswers(
+    const buildDraftAnswers = useCallback((
         pads = scratchPads,
         embedded = scratchEmbedded,
-    ): Record<string, QuizAnswerRecord> {
+    ): Record<string, QuizAnswerRecord> => {
         if (!paper) return {}
         const records: Record<string, QuizAnswerRecord> = {}
         for (const item of paper.problems) {
@@ -271,7 +271,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
             if (hasData) records[item.problemId] = record
         }
         return records
-    }
+    }, [paper, scratchPads, scratchEmbedded, answers, interactiveTouched, interactiveStates])
 
     const persistAnswers = useCallback(async (
         records: Record<string, QuizAnswerRecord>,
@@ -298,7 +298,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
             if (Object.keys(records).length === 0) return
             void persistAnswers(records)
         }, 600)
-    }, [paper, persistAnswers]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [paper, persistAnswers, buildDraftAnswers])
 
     const handleScratchSave = useCallback((problemId: string, objects: ScratchObject[]) => {
         if (submitted) return
@@ -323,7 +323,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
             })
             return nextPads
         })
-    }, [submitted, paper, persistAnswers]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [submitted, paper, persistAnswers, buildDraftAnswers])
 
     const handleInlineScratchChange = useCallback((problemId: string, objects: ScratchObject[]) => {
         if (submitted) return
@@ -344,7 +344,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
             }
             return next
         })
-    }, [paper, scratchPads, persistAnswers]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [paper, scratchPads, persistAnswers, buildDraftAnswers])
 
     async function handleSaveDraft() {
         if (!paper || !user || submitted) return

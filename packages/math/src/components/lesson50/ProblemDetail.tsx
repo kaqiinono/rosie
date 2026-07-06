@@ -122,7 +122,7 @@ export default function ProblemDetail({
           problem={problem}
         />
       )}
-      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
+      <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} problemId={problem.id} problem={problem} />
       {mode === 'full' && positionLabel && (
         <LessonProblemNavBar prevHref={prevHref} nextHref={nextHref} positionLabel={positionLabel} />
       )}

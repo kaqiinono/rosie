@@ -1,6 +1,6 @@
 'use client'
 
-import {use, useEffect, useState} from 'react'
+import {use, useEffect, useMemo, useState} from 'react'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 import {useAuth} from '@rosie/core'
@@ -117,7 +117,7 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
 
     const [paper, setPaper] = useState<QuizPaper | null>(null)
     const [loading, setLoading] = useState(true)
-    const [printMode, setPrintMode] = useState<PrintMode>('blank')
+    const [userPrintMode, setUserPrintMode] = useState<{ paperId: string; mode: PrintMode } | null>(null)
 
     useEffect(() => {
         if (!user) return
@@ -144,18 +144,15 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
             })
     }, [user, id])
 
-    useEffect(() => {
-        if (!paper) return
-        if (searchParams.get('mode') === 'blank') {
-            setPrintMode('blank')
-            return
-        }
-        if (paper.completedAt || searchParams.get('mode') === 'complete') {
-            setPrintMode('complete')
-        } else {
-            setPrintMode('blank')
-        }
+    const autoPrintMode = useMemo((): PrintMode => {
+        if (!paper) return 'blank'
+        if (searchParams.get('mode') === 'blank') return 'blank'
+        if (paper.completedAt || searchParams.get('mode') === 'complete') return 'complete'
+        return 'blank'
     }, [paper, searchParams])
+
+    const printMode =
+        userPrintMode?.paperId === paper?.id ? userPrintMode?.mode : autoPrintMode
 
     if (loading) {
         return (
@@ -205,7 +202,7 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                     <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
                         <button
                             type="button"
-                            onClick={() => setPrintMode('blank')}
+                            onClick={() => paper && setUserPrintMode({paperId: paper.id, mode: 'blank'})}
                             className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
                                 printMode === 'blank'
                                     ? 'bg-white text-slate-800 shadow-sm'
@@ -216,7 +213,7 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                         </button>
                         <button
                             type="button"
-                            onClick={() => setPrintMode('complete')}
+                            onClick={() => paper && setUserPrintMode({paperId: paper.id, mode: 'complete'})}
                             disabled={!submitted}
                             title={submitted ? '含作答、草稿与题解' : '交卷后可打印完整答卷'}
                             className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${

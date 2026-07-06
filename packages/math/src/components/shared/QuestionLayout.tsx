@@ -1,15 +1,28 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import type { Problem } from '@rosie/core'
+import ProblemNotesPanel from '@rosie/math/components/shared/ProblemNotesPanel'
 
 interface QuestionLayoutProps {
   question: React.ReactNode
   solution: React.ReactNode
   answer: React.ReactNode
   defaultSolutionOpen?: boolean
+  /** When set, loads DB-backed notes for this problem below the answer area. */
+  problemId?: string
+  /** Enables in-place note editing on problem detail for logged-in users. */
+  problem?: Problem
 }
 
-export default function QuestionLayout({ question, solution, answer, defaultSolutionOpen = false }: QuestionLayoutProps) {
+export default function QuestionLayout({
+  question,
+  solution,
+  answer,
+  defaultSolutionOpen = false,
+  problemId,
+  problem,
+}: QuestionLayoutProps) {
   const [solutionOpen, setSolutionOpen] = useState(defaultSolutionOpen)
   const solutionRef = useRef<HTMLDivElement>(null)
   const [solutionHeight, setSolutionHeight] = useState(0)
@@ -77,6 +90,8 @@ export default function QuestionLayout({ question, solution, answer, defaultSolu
       <section className="ql-answer">
         <div className="ql-answer-body">{answer}</div>
       </section>
+
+      {problemId ? <ProblemNotesPanel problemId={problemId} problem={problem} /> : null}
 
       <style>{`
         /* ─── 容器 ─── */
