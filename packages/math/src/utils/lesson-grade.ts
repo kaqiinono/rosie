@@ -10,6 +10,7 @@ export const LESSON_GRADE: Record<string, number> = {
   '51': 2,
   '52': 2,
   '53': 2,
+  '55': 2,
 }
 
 /** 年级数字 → 中文名。 */

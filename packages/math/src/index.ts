@@ -28,3 +28,6 @@ export {
   lessonDisplayNum,
   lessonDisplayLabel,
 } from './utils/lesson-grade'
+
+// Admin
+export { default as MathImageManagerPage } from './admin/MathImageManagerPage'

@@ -426,8 +426,17 @@ const HOMEWORK: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  { id: '51-P1', title: '课前测1 · 猫狗鸡', tag: 'type1', tagLabel: '等量代换', difficulty: 2, text: '两只猫的重量等于三只狗，一只狗等于四只鸡。一只猫等于几只鸡？', analysis: ['1 狗=4 鸡，2 猫=3 狗=12 鸡', '1 猫 = <strong>6</strong> 只鸡'], type: 'none', finalQ: '一只猫等于', finalUnit: '只鸡', finalAns: 6 },
+  { id: '51-P2', title: '课前测2 · 大盘小盘', tag: 'type1', tagLabel: '等量代换', difficulty: 3, text: '<strong>8</strong> 个大盘和 <strong>13</strong> 个小盘共装 <strong>100</strong> 个苹果，<strong>2</strong> 个大盘与 <strong>3</strong> 个小盘一样多。每个大盘装多少个？', analysis: ['2 大=3 小，8 大=12 小', '25 小=100，大 = <strong>6</strong> 个'], type: 'none', finalQ: '每个大盘', finalUnit: '个', finalAns: 6 },
+  { id: '51-P3', title: '课前测3 · 租公寓', tag: 'type2', tagLabel: '消元求单价', difficulty: 3, text: '租 3 月普通房+5 月标准房=2810 元；租 3 月普通房+8 月标准房=3920 元。租半年标准房和半年普通房共花多少元？', analysis: ['标准 370 元/月，普通 320 元/月', '6×(320+370) = <strong>4140</strong> 元'], type: 'none', finalQ: '共花', finalUnit: '元', finalAns: 4140 },
+  { id: '51-P4', title: '课前测4 · 水果价', tag: 'type2', tagLabel: '消元求单价', difficulty: 3, text: '买 2 斤苹果+4 斤菠萝=14 元；买 3 斤苹果+2 斤菠萝=13 元。1 斤苹果+1 斤菠萝多少钱？', analysis: ['苹果 3 元/斤，菠萝 2 元/斤', '1+1 = <strong>5</strong> 元'], type: 'none', finalQ: '共', finalUnit: '元', finalAns: 5 },
+  { id: '51-P5', title: '课前测5 · 植树', tag: 'type3', tagLabel: '归一问题', difficulty: 2, text: '<strong>5</strong> 个人 <strong>2</strong> 小时植树 <strong>20</strong> 棵，<strong>6</strong> 个人 <strong>3</strong> 小时植树多少棵？', analysis: ['1 人 1 时 2 棵', '6×3×2 = <strong>36</strong> 棵'], type: 'none', finalQ: '植树', finalUnit: '棵', finalAns: 36 },
+  { id: '51-P6', title: '课前测6 · 加工零件', tag: 'type3', tagLabel: '归一问题', difficulty: 3, text: '<strong>3</strong> 名工人 <strong>5</strong> 小时加工 <strong>90</strong> 个零件，要在 <strong>10</strong> 小时完成 <strong>540</strong> 个，需要工人多少名？', analysis: ['1 人 1 时 6 个', '540÷(10×6) = <strong>9</strong> 名'], type: 'none', finalQ: '需要', finalUnit: '名', finalAns: 9 },
+]
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: [],

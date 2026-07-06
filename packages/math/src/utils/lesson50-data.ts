@@ -461,8 +461,21 @@ const HOMEWORK: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  { id: '50-P1', title: '课前测1 · 买排球', tag: 'type1', tagLabel: '归一问题', difficulty: 2, text: '学校计划买 <strong>20</strong> 个排球，要 <strong>360</strong> 元；现决定多买 <strong>15</strong> 个，一共需用多少元？', analysis: ['单价 18 元/个', '18×35 = <strong>630</strong> 元'], type: 'none', finalQ: '一共需用', finalUnit: '元', finalAns: 630 },
+  { id: '50-P2', title: '课前测2 · 移苹果', tag: 'type1', tagLabel: '归一问题', difficulty: 2, text: '甲筐 <strong>280</strong> 个苹果，乙筐 <strong>40</strong> 个。每次从甲筐拿出 <strong>8</strong> 个放入乙筐，取多少次后两筐相等？', analysis: ['280−8n=40+8n', 'n = <strong>15</strong> 次'], type: 'none', finalQ: '取', finalUnit: '次', finalAns: 15 },
+  { id: '50-P3', title: '课前测3 · 人民币', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '人民币有 1、2、5、10、20、50、100 元面值，共计 <strong>940</strong> 元，各面值张数相同。每种多少张？', analysis: ['一套 188 元', '940÷188 = <strong>5</strong> 张'], type: 'none', finalQ: '每种', finalUnit: '张', finalAns: 5 },
+  { id: '50-P4', title: '课前测4 · 扎花', tag: 'type3', tagLabel: '分组统计', difficulty: 4, text: '红、黄两种花共 <strong>300</strong> 朵，每 <strong>3</strong> 朵扎一束。只有 1 朵红花的 24 束，有 2 或 3 朵黄花的 50 束，3 朵红花与 3 朵黄花的束数相等。红花共多少朵？', analysis: ['3 红束=3 黄束=26 束', '红花 = <strong>150</strong> 朵'], type: 'none', finalQ: '红花共', finalUnit: '朵', finalAns: 150 },
+  { id: '50-P5', title: '课前测5 · 正方体点数', tag: 'type5', tagLabel: '逻辑综合', difficulty: 4, text: '正方体相对两面点数和为 <strong>13</strong>。上、左、前三面和为 <strong>16</strong>，上、右、后三面和为 <strong>24</strong>。贴着桌面的点数是几？', analysis: ['求得上=8，下=13−8 = <strong>5</strong>'], type: 'none', finalQ: '贴着桌面是', finalUnit: '', finalAns: 5 },
+  { id: '50-P6', title: '课前测6 · 挖沟', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>5</strong> 人挖 <strong>3</strong> 米沟要 <strong>3</strong> 小时，<strong>50</strong> 小时挖 <strong>50</strong> 米需多少名工人？', analysis: ['效率 1 米/时', '需 <strong>5</strong> 人'], type: 'none', finalQ: '需要', finalUnit: '名工人', finalAns: 5 },
+  { id: '50-P7', title: '课前测7-1 · 轧钢机', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>6</strong> 台 <strong>9</strong> 小时产 <strong>8</strong> 吨。再增 <strong>12</strong> 台，<strong>6</strong> 小时产多少吨？', analysis: ['18 台 6 小时 = <strong>16</strong> 吨'], type: 'none', finalQ: '产', finalUnit: '吨', finalAns: 16 },
+  { id: '50-P8', title: '课前测7-2 · 轧钢机', tag: 'type1', tagLabel: '归一问题', difficulty: 4, text: '<strong>18</strong> 小时内产 <strong>40</strong> 吨，原 6 台，需增加多少台？', analysis: ['需 15 台，增 <strong>9</strong> 台'], type: 'none', finalQ: '需增加', finalUnit: '台', finalAns: 9 },
+  { id: '50-P9', title: '课前测8 · 吃白菜', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>170</strong> 只兔日吃 <strong>51</strong> 斤，又买 <strong>30</strong> 只，<strong>840</strong> 斤够吃多少天？', analysis: ['200 只日吃 60 斤', '840÷60 = <strong>14</strong> 天'], type: 'none', finalQ: '够吃', finalUnit: '天', finalAns: 14 },
+  { id: '50-P10', title: '课前测9 · 粉笔', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>8</strong> 个班粉笔原计划 <strong>50</strong> 天，用 <strong>15</strong> 天后 3 班外出，剩余还够用多少天？', analysis: ['剩 280 班·天，5 班 → <strong>56</strong> 天'], type: 'none', finalQ: '还够用', finalUnit: '天', finalAns: 56 },
+]
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: [],

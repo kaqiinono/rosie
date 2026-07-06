@@ -12,6 +12,7 @@ interface HomePageProps {
 }
 
 const MODULES = [
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-[#fef9c3]', title: '课前测', desc: '6道摸底题 · 等量代换与归一' },
   { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-7 + 练一练 · 等量代换 / 消元 / 归一' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '练习1-14 · 连环代换与归一综合' },
 ]

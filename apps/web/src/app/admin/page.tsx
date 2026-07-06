@@ -52,6 +52,15 @@ const TOOLS: AdminTool[] = [
     ring: 'rgba(168,85,247,0.28)',
   },
   {
+    href: '/admin/math-images',
+    emoji: '📐',
+    title: '数学题图',
+    description: '按讲次与题号上传题解图、题面图，Supabase 存储，孩子做题时即时显示。',
+    from: 'rgba(13,148,136,0.14)',
+    to: 'rgba(59,130,246,0.08)',
+    ring: 'rgba(13,148,136,0.28)',
+  },
+  {
     href: '/admin/word-audit',
     emoji: '🔍',
     title: '单词审计',

@@ -12,6 +12,7 @@ interface HomePageProps {
 }
 
 const MODULES = [
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-[#fef9c3]', title: '课前测', desc: '14道摸底题 · 和差倍综合' },
   { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-23 · 和差·和倍·差倍·综合' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '练习1-23 · 差倍·移多补少·年龄' },
   { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '附加题', desc: '附加作业1-4 · 综合挑战' },

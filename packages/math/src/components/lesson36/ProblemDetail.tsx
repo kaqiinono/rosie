@@ -13,6 +13,8 @@ import MonthCalendarPuzzleSum from './WeekdayFlowChart/MonthCalendarPuzzleSum'
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
@@ -139,6 +141,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
               </li>
             ))}
           </ul>
+      <ProblemAnalysisImage problem={problem} />
         </div>
 
         {autoLeftDiagram}

@@ -12,6 +12,7 @@ interface HomePageProps {
 }
 
 const MODULES = [
+  { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-[#fef9c3]', title: '课前测', desc: '8道摸底题 · 巧算热身' },
   { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-12 · 交换律结合律 / 去括号 / 按位相加 / 基准数' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '练习1-13 · 巩固四类巧算' },
   { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '附加题', desc: '附加作业1 + 附加题1-5 · 配对·周期·规律巧算' },

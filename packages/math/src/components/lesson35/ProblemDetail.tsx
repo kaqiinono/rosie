@@ -10,6 +10,8 @@ import RatioDiagram from './RatioDiagram'
 import BlockDiagram from './BlockDiagram'
 import DualBlockDiagram from './DualBlockDiagram'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
@@ -72,6 +74,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
               </li>
             ))}
           </ul>
+      <ProblemAnalysisImage problem={problem} />
         </div>
         {problem.type !== 'none' && (
           <>

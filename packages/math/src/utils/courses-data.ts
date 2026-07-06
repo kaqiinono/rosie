@@ -4,6 +4,15 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 export const COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/55',
+    title: '简单枚举探险',
+    description: '有序列举、分类讨论 —— 简单枚举、无序分堆、数字排序与隔板分物，含终极挑战附加题。',
+    icon: '🔢',
+    lectureNum: '第 6 讲',
+    tags: ['简单枚举', '分堆·组数·隔板', '66 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/53',
     title: '找规律探险',
     description: '数列、数表与图形编码 —— 观察差比和、位置轮换与乘积关系，含终极挑战附加题。',
@@ -18,7 +27,7 @@ export const COURSES: CourseCardData[] = [
     description: '找差找倍画线段图 —— 基本差倍、移多补少、年龄问题与和倍应用，含综合挑战附加题。',
     icon: '📊',
     lectureNum: '第 4 讲',
-    tags: ['差倍问题', '移多补少·年龄·和倍', '50 道互动题'],
+        tags: ['差倍问题', '移多补少·年龄·和倍', '64 道互动题'],
     variant: 'violet',
   },
   {
@@ -27,7 +36,7 @@ export const COURSES: CourseCardData[] = [
         description: '等量代换统一数量、消元求单价、直接归一与反比例归一 —— 学会先求每份再算总量。',
         icon: '⚖️',
         lectureNum: '第 3 讲',
-        tags: ['等量代换', '归一问题·消元', '24 道互动题'],
+        tags: ['等量代换', '归一问题·消元', '30 道互动题'],
         variant: 'blue',
     },
     {
@@ -36,7 +45,7 @@ export const COURSES: CourseCardData[] = [
         description: '读题找关系、先归一再求解 —— 归一、等量代换、分组统计与位置推理，含逻辑综合挑战。',
         icon: '📝',
         lectureNum: '第 2 讲',
-        tags: ['基本应用题', '归一·等量代换·分组统计', '27 道互动题'],
+        tags: ['基本应用题', '归一·等量代换·分组统计', '37 道互动题'],
         variant: 'blue',
     },
     {
@@ -45,7 +54,7 @@ export const COURSES: CourseCardData[] = [
         description: '凑整、去括号、按位相加、基准数 —— 学会用运算定律让加减法又快又准，还有终极挑战附加题。',
         icon: '🧮',
         lectureNum: '第 1 讲',
-        tags: ['速算巧算', '交换律·结合律·去括号·基准数', '48 道互动题'],
+        tags: ['速算巧算', '交换律·结合律·去括号·基准数', '56 道互动题'],
         variant: 'violet',
     },
     {

@@ -817,8 +817,19 @@ const SUPPLEMENT: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  { id: '49-P1', title: '课前测1 · 凑整加法', tag: 'type1', tagLabel: '交换律结合律', difficulty: 2, text: '计算 <strong>164 + 133 + 136 + 73 + 119 + 381 + 67</strong>', analysis: ['164+136=300，133+67=200，119+381=500', '300+200+500+73 = <strong>1073</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 1073 },
+  { id: '49-P2', title: '课前测2 · 加减混合', tag: 'type1', tagLabel: '交换律结合律', difficulty: 1, text: '计算 <strong>117 + 56 + 83 − 156</strong>', analysis: ['117+56+83=256', '256−156 = <strong>100</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 100 },
+  { id: '49-P3', title: '课前测3 · 凑整', tag: 'type1', tagLabel: '交换律结合律', difficulty: 2, text: '计算 <strong>245 + 598 + 554 + 601</strong>', analysis: ['245+554=799，598+601=1199', '799+1199 = <strong>1998</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 1998 },
+  { id: '49-P4', title: '课前测4 · 大数相加', tag: 'type4', tagLabel: '基准数', difficulty: 3, text: '计算 <strong>39 + 398 + 3997 + 39996</strong>', analysis: ['分组相加 = <strong>44430</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 44430 },
+  { id: '49-P5', title: '课前测5 · 去括号', tag: 'type2', tagLabel: '去括号', difficulty: 2, text: '计算 <strong>(123 + 348 + 400) − (23 + 150 + 148)</strong>', analysis: ['871 − 321 = <strong>550</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 550 },
+  { id: '49-P6', title: '课前测6 · 基准数', tag: 'type4', tagLabel: '基准数', difficulty: 2, text: '计算 <strong>101 + 98 + 97 + 98 + 99 + 102</strong>', analysis: ['以 100 为基准，偏差 −5', '600−5 = <strong>595</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 595 },
+  { id: '49-P7', title: '课前测7 · 按位相加', tag: 'type3', tagLabel: '按位相加', difficulty: 3, text: '计算 <strong>1234 + 2341 + 3412 + 4123</strong>', analysis: ['各位和都是 10，四位 → <strong>11110</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 11110 },
+  { id: '49-P8', title: '课前测8 · 配对相减', tag: 'type5', tagLabel: '综合巧算', difficulty: 3, text: '计算 <strong>100 − 99 + 98 − 97 + … + 2 − 1</strong>', analysis: ['50 组每组得 1', '共 <strong>50</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 50 },
+]
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: [],

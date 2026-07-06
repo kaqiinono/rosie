@@ -866,8 +866,25 @@ const SUPPLEMENT: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  { id: '52-P1', title: '课前测1 · 移苹果', tag: 'type2', tagLabel: '移多补少', difficulty: 3, text: '甲筐比乙筐多 <strong>19</strong> 千克，从甲筐取出若干千克放入乙筐，可使乙筐比甲筐多 <strong>3</strong> 千克。应取出多少千克？', analysis: ['(B+x)−(A−x)=3，A−B=19', '2x=22，取出 <strong>11</strong> 千克'], type: 'none', finalQ: '应取出', finalUnit: '千克', finalAns: 11 },
+  { id: '52-P2', title: '课前测2 · 两校人数', tag: 'type1', tagLabel: '和差问题', difficulty: 3, text: '甲、乙两校共 <strong>1050</strong> 人，甲校转入乙校 <strong>20</strong> 人后甲校仍比乙校多 <strong>10</strong> 人。甲校原来有多少人？', analysis: ['A−B=50，A+B=1050', '甲 = <strong>550</strong> 人'], type: 'none', finalQ: '甲校原来有', finalUnit: '人', finalAns: 550 },
+  { id: '52-P3', title: '课前测3 · 开分店', tag: 'type1', tagLabel: '和差问题', difficulty: 2, text: '北京、上海共开 <strong>34</strong> 家分店，北京比上海多 <strong>8</strong> 家。北京计划开多少家？', analysis: ['(34+8)÷2 = <strong>21</strong> 家'], type: 'none', finalQ: '北京开', finalUnit: '家', finalAns: 21 },
+  { id: '52-P4', title: '课前测4 · 水果箱', tag: 'type1', tagLabel: '差倍问题', difficulty: 3, text: '葡萄比橘子多 <strong>100</strong> 箱，葡萄是橘子的 <strong>6</strong> 倍。葡萄多少箱？', analysis: ['5 份=100，葡萄 = <strong>120</strong> 箱'], type: 'none', finalQ: '葡萄', finalUnit: '箱', finalAns: 120 },
+  { id: '52-P5', title: '课前测5 · 三人书本', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '小明比小红多 <strong>13</strong> 本，比小华多 <strong>6</strong> 本，小红和小华共 <strong>47</strong> 本。小明有多少本？', analysis: ['2M−19=47', 'M = <strong>33</strong> 本'], type: 'none', finalQ: '小明有', finalUnit: '本', finalAns: 33 },
+  { id: '52-P6', title: '课前测6 · 水池', tag: 'type2', tagLabel: '移多补少', difficulty: 4, text: '甲池 <strong>2600</strong> m³，乙池 <strong>1200</strong> m³。甲流入乙多少 m³ 后，乙是甲的 <strong>4</strong> 倍？', analysis: ['1200+x=4(2600−x)', 'x = <strong>1840</strong> m³'], type: 'none', finalQ: '流入', finalUnit: '立方米', finalAns: 1840 },
+  { id: '52-P7', title: '课前测7 · 三种水果', tag: 'type4', tagLabel: '和倍应用', difficulty: 4, text: '西瓜、苹果、芒果共 <strong>78</strong> 斤，西瓜是苹果的 2 倍，芒果比苹果的 3 倍多 6 斤。芒果多少斤？', analysis: ['6 份+6=78，芒果 = <strong>42</strong> 斤'], type: 'none', finalQ: '芒果', finalUnit: '斤', finalAns: 42 },
+  { id: '52-P8', title: '课前测8 · 鸡鸭鹅', tag: 'type1', tagLabel: '差倍问题', difficulty: 4, text: '鸡比鸭的 4 倍多 132 只，鹅是鸭的 2 倍，鸡比鹅多 452 只。鸡多少只？', analysis: ['4D+132=2D+452，D=160', '鸡 = <strong>772</strong> 只'], type: 'none', finalQ: '鸡', finalUnit: '只', finalAns: 772 },
+  { id: '52-P9', title: '课前测9 · 三种水果重量', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '橘子、苹果、香蕉共 <strong>53</strong> 千克，橘子比苹果的 3 倍少 3 千克，香蕉比苹果的 2 倍多 2 千克。橘子重多少千克？', analysis: ['6a=54，橘子 = <strong>24</strong> 千克'], type: 'none', finalQ: '橘子重', finalUnit: '千克', finalAns: 24 },
+  { id: '52-P10', title: '课前测10 · 三数之和', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '甲、乙、丙三数之和 <strong>183</strong>，乙比丙的 2 倍少 4，甲比丙的 3 倍多 7。甲是多少？', analysis: ['6c=180，甲 = <strong>97</strong>'], type: 'none', finalQ: '甲是', finalUnit: '', finalAns: 97 },
+  { id: '52-P11', title: '课前测11 · 除法关系', tag: 'type5', tagLabel: '综合挑战', difficulty: 3, text: '被除数、除数、商之和 <strong>212</strong>，商是 <strong>2</strong>。被除数是多少？', analysis: ['被=2×除，被 = <strong>140</strong>'], type: 'none', finalQ: '被除数是', finalUnit: '', finalAns: 140 },
+  { id: '52-P12', title: '课前测12 · 两桶水', tag: 'type2', tagLabel: '移多补少', difficulty: 3, text: '大小两桶原来水一样多，从小桶倒 <strong>8</strong> 千克到大桶，则大桶是小桶的 3 倍。原来大桶有多少千克？', analysis: ['w+8=3(w−8)，w = <strong>16</strong> 千克'], type: 'none', finalQ: '原来大桶有', finalUnit: '千克', finalAns: 16 },
+  { id: '52-P13', title: '课前测13 · 三种花', tag: 'type4', tagLabel: '和倍应用', difficulty: 4, text: '黄花朵数是红花的 4 倍、也是蓝花的 3 倍，蓝花比红花多 <strong>20</strong> 盆。一共有多少盆花？', analysis: ['红 60，黄 240，蓝 80', '共 <strong>380</strong> 盆'], type: 'none', finalQ: '一共有', finalUnit: '盆', finalAns: 380 },
+  { id: '52-P14', title: '课前测14 · 三物重量', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '甲、乙、丙总重 <strong>93</strong> 千克，甲比乙丙之和轻 1 千克，乙比丙的 2 倍多 2 千克。甲重多少千克？', analysis: ['乙+丙=47，甲 = <strong>46</strong> 千克'], type: 'none', finalQ: '甲重', finalUnit: '千克', finalAns: 46 },
+]
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: [],

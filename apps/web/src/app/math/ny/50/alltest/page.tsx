@@ -16,7 +16,7 @@ function AlltestContent() {
   const typeParam = searchParams.get('type')
 
   const [filters, setFilters] = useState(() => ({
-    source: new Set(['lesson', 'homework', 'supplement']),
+    source: new Set(['pretest', 'lesson', 'homework', 'supplement']),
     type: typeParam ? new Set([typeParam]) : new Set(['type1', 'type2', 'type3', 'type4', 'type5']),
     mastery: 'all' as MasteryFilter,
     practice: 'all' as PracticeFilter,

@@ -38,6 +38,13 @@ export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange }: Wu
   const [knightMode, setKnightMode] = useState(false)
   const [knightFocus, setKnightFocus] = useState<{ r: number; c: number } | null>(null)
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setValues(emptyValues(rowCount, colCount, givenGrid))
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setKnightFocus(null)
+  }, [rowCount, colCount, givenGrid])
+
   const knightTargetKeys = useMemo(() => {
     if (!knightFocus) return new Set<string>()
     return new Set(
@@ -46,11 +53,6 @@ export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange }: Wu
       ),
     )
   }, [knightFocus, rowCount, colCount])
-
-  useEffect(() => {
-    setValues(emptyValues(rowCount, colCount, givenGrid))
-    setKnightFocus(null)
-  }, [rowCount, colCount, givenGrid])
 
   const setCell = (r: number, c: number, raw: string) => {
     if (knightMode) return

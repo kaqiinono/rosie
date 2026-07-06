@@ -10,13 +10,13 @@ const rows: (string | number | '?')[][] = [
 ]
 
 export default function LessonFig8Triangle() {
-  let y = 20
+  const rowYOffset = 20
+  const rowGap = 28
   return (
     <svg viewBox="0 0 320 200" className="mx-auto h-auto w-full max-w-md">
       {rows.map((row, ri) => {
         const startX = 160 - ((row.length - 1) * 36) / 2
-        const rowY = y
-        y += 28
+        const rowY = rowYOffset + ri * rowGap
         return row.map((n, ci) => (
           <CircleNum
             key={`${ri}-${ci}`}

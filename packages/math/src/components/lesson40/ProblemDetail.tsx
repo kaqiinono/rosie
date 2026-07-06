@@ -8,6 +8,8 @@ import { TAG_STYLE } from '@rosie/math/utils/lesson40-data'
 import { useLesson40 } from './Lesson40Provider'
 import { getMasteryLevel } from '@rosie/core'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
+import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
@@ -41,6 +43,7 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
           </li>
         ))}
       </ul>
+      <ProblemAnalysisImage problem={problem} />
     </div>
   )
 
@@ -56,7 +59,7 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
           dangerouslySetInnerHTML={{ __html: problem.text }}
         />
       </div>
-      {problem.figureNode && <div>{problem.figureNode}</div>}
+      {problem.figureNode && <ProblemFigureImage problem={problem} />}
     </div>
   )
 

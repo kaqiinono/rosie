@@ -9,7 +9,8 @@ import { useLesson46 } from './Lesson46Provider'
 import { getMasteryLevel } from '@rosie/core'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
-import AnalysisImage from '@rosie/math/components/shared/AnalysisImage'
+import ProblemAnalysisImage from '@rosie/math/components/shared/ProblemAnalysisImage'
+import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
 
@@ -50,7 +51,7 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
           </li>
         ))}
       </ul>
-      {problem.analysisImg && <AnalysisImage src={problem.analysisImg} alt={problem.title} />}
+      <ProblemAnalysisImage problem={problem} />
     </div>
   )
 
@@ -68,7 +69,7 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
           dangerouslySetInnerHTML={{ __html: problem.text }}
         />
       </div>
-      <div>{problem.figureNode}</div>
+      <ProblemFigureImage problem={problem} />
     </div>
   )
 
