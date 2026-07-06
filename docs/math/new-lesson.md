@@ -13,17 +13,6 @@
 - 无对应内容的章节：留空、删除，或写「（未找到对应文件）」——生成时该模块设为 `[]` 或不创建
 - 题目正文可内联图形/交互组件 tsx（`<ShulianGrid .../>` 等），处理规则见 `docs/add-new-lesson/figures.md`
 
-## 当前待录入 / 已录入
-
-| 讲次 id | 年级 | 文件 | 标题 |
-|---------|------|------|------|
-| 46 | 一 | [`lessons/46.md`](lessons/46.md) | 抽屉原理与最不利原则 |
-| 47 | 一 | [`lessons/47.md`](lessons/47.md) | 方格中的秘密（二） |
-| 49 | 二（年级内第 1 讲） | [`lessons/49.md`](lessons/49.md) | 加减法的速算与巧算 |
-| 50 | 二（年级内第 2 讲） | [`lessons/50.md`](lessons/50.md) | 基本应用题 |
-| 51 | 二（年级内第 3 讲） | [`lessons/51.md`](lessons/51.md) | 等量代换与归一问题 |
-| 52 | 二（年级内第 4 讲） | [`lessons/52.md`](lessons/52.md) | 差倍问题 |
-
 > 新增一讲：在 `docs/math/lessons/` 下新建 `N.md`，按模板填入题目（建议写明年级），然后跑 `/add-lesson N`。
 > **操作说明（准备什么、文字题/图片题怎么交）：** [`how-to-add-lesson.md`](how-to-add-lesson.md)  
 > 完整生成流程（技术索引）：[`docs/add-new-lesson.md`](../add-new-lesson.md)。
