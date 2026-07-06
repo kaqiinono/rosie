@@ -1,6 +1,6 @@
 'use client'
 
-import {use, useState, useEffect} from 'react'
+import {use, useState, useEffect, useRef, useCallback} from 'react'
 import Link from 'next/link'
 import {useAuth} from '@rosie/core'
 import {useMathSolved} from '@rosie/math/hooks/useMathSolved'
@@ -38,6 +38,10 @@ import type {Problem, ProblemSet} from '@rosie/core'
 import type {QuizPaper, QuizAnswerRecord} from '@rosie/math/hooks/useMathQuiz'
 import {checkProblemAnswer, isInteractiveProblem} from '@rosie/math/utils/check-problem-answer'
 import {injectFigureGridCallbacks} from '@rosie/math/components/shared/injectFigureSubmit'
+import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
+import ScratchPadInline from '@rosie/math/components/shared/ScratchPad/ScratchPadInline'
+import type {ScratchObject} from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
+import QuizProblemSolution from '@rosie/math/components/shared/QuizProblemSolution'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
@@ -103,13 +107,27 @@ const SECTION_LABELS: Record<SectionKey, string> = {
     supplement: '附加题', pretest: '课前测',
 }
 
+function loadScratchFromAnswers(answers: QuizPaper['answers']): {
+    pads: Record<string, ScratchObject[]>
+    embedded: Record<string, boolean>
+} {
+    const pads: Record<string, ScratchObject[]> = {}
+    const embedded: Record<string, boolean> = {}
+    if (!answers) return {pads, embedded}
+    for (const [k, v] of Object.entries(answers)) {
+        if (v.scratchObjects?.length) pads[k] = v.scratchObjects
+        if (v.scratchEmbedded) embedded[k] = true
+    }
+    return {pads, embedded}
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function QuizDetailPage({params}: { params: Promise<{ id: string }> }) {
     const {id} = use(params)
     const {user} = useAuth()
     const {handleSolve} = useMathSolved(user)
-    const {completePaper} = useMathQuiz(user)
+    const {completePaper, saveDraftPaper, savePaperProgress} = useMathQuiz(user)
     const {awardStars} = useStarHud()
     const [starBreakdown, setStarBreakdown] = useState<{ base: number; bonus: number } | null>(null)
 
@@ -121,6 +139,11 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
     const [submitted, setSubmitted] = useState(false)
     const [results, setResults] = useState<Record<string, boolean>>({})
     const [submitting, setSubmitting] = useState(false)
+    const [saving, setSaving] = useState(false)
+    const [saveMessage, setSaveMessage] = useState<string | null>(null)
+    const [scratchPads, setScratchPads] = useState<Record<string, ScratchObject[]>>({})
+    const [scratchEmbedded, setScratchEmbedded] = useState<Record<string, boolean>>({})
+    const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     useEffect(() => {
         if (!user) return
@@ -143,6 +166,9 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                         createdAt: data.created_at as string,
                     }
                     setPaper(p)
+                    const {pads, embedded} = loadScratchFromAnswers(p.answers)
+                    setScratchPads(pads)
+                    setScratchEmbedded(embedded)
                     if (p.completedAt && p.answers) {
                         setSubmitted(true)
                         const res: Record<string, boolean> = {}
@@ -155,6 +181,21 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                             savedAnswers[k] = v.userAnswer != null ? String(v.userAnswer) : ''
                         }
                         setAnswers(savedAnswers)
+                    } else if (p.answers) {
+                        const savedAnswers: Record<string, string> = {}
+                        const savedInteractive: Record<string, unknown> = {}
+                        const savedTouched: Record<string, boolean> = {}
+                        for (const [k, v] of Object.entries(p.answers)) {
+                            if (v.interactiveState != null) {
+                                savedInteractive[k] = v.interactiveState
+                                savedTouched[k] = true
+                            } else if (v.userAnswer != null) {
+                                savedAnswers[k] = String(v.userAnswer)
+                            }
+                        }
+                        setAnswers(savedAnswers)
+                        setInteractiveStates(savedInteractive)
+                        setInteractiveTouched(savedTouched)
                     }
                 }
                 setLoading(false)
@@ -176,6 +217,152 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
         setInteractiveTouched((prev) => ({...prev, [problemId]: true}))
     }
 
+    function buildDraftAnswers(
+        pads = scratchPads,
+        embedded = scratchEmbedded,
+    ): Record<string, QuizAnswerRecord> {
+        if (!paper) return {}
+        const records: Record<string, QuizAnswerRecord> = {}
+        for (const item of paper.problems) {
+            const entry = PROBLEM_MAP.get(item.problemId)
+            if (!entry) continue
+            const {problem} = entry
+            const existing = paper.answers?.[item.problemId]
+
+            let record: QuizAnswerRecord | null = null
+
+            if (isInteractiveProblem(problem)) {
+                if (interactiveTouched[item.problemId]) {
+                    record = {
+                        userAnswer: null,
+                        correct: existing?.correct ?? null,
+                        interactiveState: interactiveStates[item.problemId],
+                    }
+                }
+            } else {
+                const raw = answers[item.problemId] ?? ''
+                if (raw.trim() !== '') {
+                    const parsed = parseFloat(raw)
+                    record = {
+                        userAnswer: Number.isFinite(parsed) ? parsed : null,
+                        correct: existing?.correct ?? null,
+                    }
+                }
+            }
+
+            const scratch = pads[item.problemId] ?? existing?.scratchObjects
+            const showEmbedded = embedded[item.problemId] ?? existing?.scratchEmbedded
+            if (scratch?.length || showEmbedded) {
+                const base: QuizAnswerRecord = record ?? existing ?? {userAnswer: null, correct: null}
+                record = {
+                    ...base,
+                    ...(scratch?.length ? {scratchObjects: scratch} : {}),
+                    ...(showEmbedded ? {scratchEmbedded: true} : {}),
+                }
+            }
+
+            if (!record) continue
+            const hasData =
+                record.userAnswer != null ||
+                record.interactiveState != null ||
+                (record.scratchObjects?.length ?? 0) > 0 ||
+                record.scratchEmbedded ||
+                record.correct != null
+            if (hasData) records[item.problemId] = record
+        }
+        return records
+    }
+
+    const persistAnswers = useCallback(async (
+        records: Record<string, QuizAnswerRecord>,
+        isSubmitted = submitted,
+    ) => {
+        if (!paper || !user) return false
+        const ok = isSubmitted
+            ? await savePaperProgress(paper.id, records)
+            : await saveDraftPaper(paper.id, records)
+        if (ok) {
+            setPaper(prev => prev ? {...prev, answers: records} : prev)
+        }
+        return ok
+    }, [paper, user, submitted, savePaperProgress, saveDraftPaper])
+
+    const scheduleScratchPersist = useCallback((
+        nextPads: Record<string, ScratchObject[]>,
+        nextEmbedded: Record<string, boolean>,
+    ) => {
+        if (persistTimerRef.current) clearTimeout(persistTimerRef.current)
+        persistTimerRef.current = setTimeout(() => {
+            if (!paper) return
+            const records = buildDraftAnswers(nextPads, nextEmbedded)
+            if (Object.keys(records).length === 0) return
+            void persistAnswers(records)
+        }, 600)
+    }, [paper, persistAnswers]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleScratchSave = useCallback((problemId: string, objects: ScratchObject[]) => {
+        if (submitted) return
+        setScratchPads(prev => {
+            const next = {...prev, [problemId]: objects}
+            scheduleScratchPersist(next, scratchEmbedded)
+            return next
+        })
+    }, [submitted, scratchEmbedded, scheduleScratchPersist])
+
+    const handleScratchEmbed = useCallback((problemId: string, objects: ScratchObject[]) => {
+        if (submitted) return
+        setScratchPads(prev => {
+            const nextPads = {...prev, [problemId]: objects}
+            setScratchEmbedded(prevEmbedded => {
+                const nextEmbedded = {...prevEmbedded, [problemId]: true}
+                if (paper) {
+                    const records = buildDraftAnswers(nextPads, nextEmbedded)
+                    void persistAnswers(records)
+                }
+                return nextEmbedded
+            })
+            return nextPads
+        })
+    }, [submitted, paper, persistAnswers]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleInlineScratchChange = useCallback((problemId: string, objects: ScratchObject[]) => {
+        if (submitted) return
+        setScratchPads(prev => {
+            const next = {...prev, [problemId]: objects}
+            scheduleScratchPersist(next, scratchEmbedded)
+            return next
+        })
+    }, [submitted, scratchEmbedded, scheduleScratchPersist])
+
+    const handleCollapseScratch = useCallback((problemId: string) => {
+        setScratchEmbedded(prev => {
+            const next = {...prev}
+            delete next[problemId]
+            if (paper) {
+                const records = buildDraftAnswers(scratchPads, next)
+                void persistAnswers(records)
+            }
+            return next
+        })
+    }, [paper, scratchPads, persistAnswers]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    async function handleSaveDraft() {
+        if (!paper || !user || submitted) return
+        const draftAnswers = buildDraftAnswers()
+        if (Object.keys(draftAnswers).length === 0) return
+
+        setSaving(true)
+        setSaveMessage(null)
+        const ok = await persistAnswers(draftAnswers, false)
+        setSaving(false)
+        if (ok) {
+            setSaveMessage('已暂存，下次可继续作答')
+            window.setTimeout(() => setSaveMessage(null), 3000)
+        } else {
+            setSaveMessage('暂存失败，请稍后重试')
+        }
+    }
+
     async function handleSubmit() {
         if (!paper || !user) return
         setSubmitting(true)
@@ -192,7 +379,13 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                 const result = checkProblemAnswer(problem, interactiveStates[item.problemId])
                 const correct = result.ok
                 newResults[item.problemId] = correct
-                answerRecords[item.problemId] = {userAnswer: null, correct}
+                answerRecords[item.problemId] = {
+                    userAnswer: null,
+                    correct,
+                    interactiveState: interactiveStates[item.problemId],
+                    scratchObjects: scratchPads[item.problemId],
+                    scratchEmbedded: scratchEmbedded[item.problemId] || undefined,
+                }
                 continue
             }
 
@@ -201,7 +394,12 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
             const result = checkProblemAnswer(entry.problem, userAnswer)
             const correct = result.ok
             newResults[item.problemId] = correct
-            answerRecords[item.problemId] = {userAnswer, correct}
+            answerRecords[item.problemId] = {
+                userAnswer,
+                correct,
+                scratchObjects: scratchPads[item.problemId],
+                scratchEmbedded: scratchEmbedded[item.problemId] || undefined,
+            }
         }
 
         await Promise.all(
@@ -245,6 +443,13 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
             })
         }
     }
+
+    const hasProgress = paper?.problems.some((item) => {
+        const entry = PROBLEM_MAP.get(item.problemId)
+        if (!entry) return false
+        return isProblemAnswered(item.problemId, entry.problem)
+            || (scratchPads[item.problemId]?.length ?? 0) > 0
+    }) ?? false
 
     const allAnswered = paper?.problems.every(
         (item) => {
@@ -306,7 +511,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                     </Link>
                     <h1 className="text-sm font-bold text-slate-800 flex-1 min-w-0 truncate">{paper.title}</h1>
                     <Link
-                        href={`/math/ny/quiz/${id}/print`}
+                        href={`/math/ny/quiz/${id}/print${submitted ? '?mode=complete' : ''}`}
                         target="_blank"
                         className="shrink-0 flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors no-underline"
                         title="打印试卷"
@@ -405,6 +610,10 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                         const ans = answers[item.problemId] ?? ''
                         const isCorrect = submitted ? results[item.problemId] : undefined
                         const pts = pointsArr[i] ?? 0
+                        const scratchObjects = scratchPads[item.problemId] ?? []
+                        const showInlineScratch =
+                            scratchEmbedded[item.problemId] === true
+                            || (submitted && scratchObjects.length > 0)
 
                         let cardBorder = '1px solid #e2e8f0'
                         let cardBg = '#ffffff'
@@ -453,8 +662,17 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                       </span>
                                         )}
                                     </div>
-                                    {/* Score chip */}
-                                    {submitted ? (
+                                    <div className="flex shrink-0 items-center gap-1.5">
+                                        {!submitted && (
+                                            <ScratchPadTrigger
+                                                problem={problem}
+                                                variant="compact"
+                                                initialObjects={scratchObjects}
+                                                onSave={(objects) => handleScratchSave(item.problemId, objects)}
+                                                onEmbedBelow={(objects) => handleScratchEmbed(item.problemId, objects)}
+                                            />
+                                        )}
+                                        {submitted ? (
                                         <span
                                             className="shrink-0 text-xs font-bold rounded-full px-2.5 py-0.5"
                                             style={isCorrect
@@ -471,7 +689,8 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                                         >
                       {pts}分
                     </span>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* ── Problem text ── */}
@@ -502,6 +721,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                                         </p>
                                         <div className={submitted ? 'pointer-events-none opacity-90' : undefined}>
                                             {injectFigureGridCallbacks(problem.figureNode, {
+                                                initialState: interactiveStates[item.problemId],
                                                 onStateChange: (state) => recordInteractiveState(item.problemId, state),
                                                 onSubmit: (state) => recordInteractiveState(item.problemId, state),
                                             })}
@@ -585,33 +805,86 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                                         )}
                                     </div>
                                 )}
+
+                                {showInlineScratch && (
+                                    <div className={submitted ? 'mt-3' : 'mt-4'}>
+                                        <ScratchPadInline
+                                            problem={problem}
+                                            objects={scratchObjects}
+                                            readOnly={submitted}
+                                            onChange={submitted ? undefined : (objects) => handleInlineScratchChange(item.problemId, objects)}
+                                            onCollapse={submitted ? undefined : () => handleCollapseScratch(item.problemId)}
+                                        />
+                                    </div>
+                                )}
+
+                                {!showInlineScratch && !submitted && scratchObjects.length > 0 && (
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleScratchEmbed(item.problemId, scratchObjects)}
+                                            className="cursor-pointer rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[11px] font-semibold text-indigo-600 transition-colors hover:bg-indigo-100"
+                                        >
+                                            在题目下方显示草稿
+                                        </button>
+                                    </div>
+                                )}
+
+                                {submitted && (
+                                    <QuizProblemSolution problem={problem} className="mt-4" />
+                                )}
                             </div>
                         )
                     })}
                 </div>
 
-                {/* ── Submit button ─────────────────────────────────────────────── */}
+                {/* ── Save / Submit buttons ─────────────────────────────────────── */}
                 {!submitted && (
-                    <div className="sticky bottom-4">
-                        <button
-                            onClick={handleSubmit}
-                            disabled={!allAnswered || submitting}
-                            className="w-full rounded-2xl py-3.5 text-sm font-bold text-white transition-all"
-                            style={{
-                                background: allAnswered && !submitting
-                                    ? 'linear-gradient(135deg, #6366f1, #4f46e5)'
-                                    : '#cbd5e1',
-                                boxShadow: allAnswered && !submitting ? '0 4px 16px rgba(99,102,241,.35)' : 'none',
-                                cursor: allAnswered && !submitting ? 'pointer' : 'not-allowed',
-                            }}
-                        >
-                            {submitting
-                                ? '提交中…'
-                                : allAnswered
-                                    ? '交卷'
-                                    : `还有 ${unansweredCount} 题未填写`
-                            }
-                        </button>
+                    <div className="sticky bottom-4 flex flex-col gap-2">
+                        {saveMessage && (
+                            <p className="text-center text-xs font-semibold text-indigo-600">{saveMessage}</p>
+                        )}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => void handleSaveDraft()}
+                                disabled={!hasProgress || saving || submitting}
+                                className="flex-1 rounded-2xl py-3.5 text-sm font-bold transition-all"
+                                style={{
+                                    background: hasProgress && !saving && !submitting ? '#ffffff' : '#f1f5f9',
+                                    border: hasProgress && !saving && !submitting
+                                        ? '1.5px solid #a5b4fc'
+                                        : '1.5px solid #e2e8f0',
+                                    color: hasProgress && !saving && !submitting ? '#4f46e5' : '#94a3b8',
+                                    cursor: hasProgress && !saving && !submitting ? 'pointer' : 'not-allowed',
+                                }}
+                            >
+                                {saving ? '暂存中…' : '暂存'}
+                            </button>
+                            <button
+                                onClick={() => void handleSubmit()}
+                                disabled={!allAnswered || submitting || saving}
+                                className="flex-[1.4] rounded-2xl py-3.5 text-sm font-bold text-white transition-all"
+                                style={{
+                                    background: allAnswered && !submitting && !saving
+                                        ? 'linear-gradient(135deg, #6366f1, #4f46e5)'
+                                        : '#cbd5e1',
+                                    boxShadow: allAnswered && !submitting && !saving
+                                        ? '0 4px 16px rgba(99,102,241,.35)'
+                                        : 'none',
+                                    cursor: allAnswered && !submitting && !saving ? 'pointer' : 'not-allowed',
+                                }}
+                            >
+                                {submitting
+                                    ? '提交中…'
+                                    : allAnswered
+                                        ? '交卷'
+                                        : `还有 ${unansweredCount} 题未填写`
+                                }
+                            </button>
+                        </div>
+                        <p className="text-center text-[11px] text-slate-400">
+                            可先暂存进度，全部答完后再交卷判分
+                        </p>
                     </div>
                 )}
             </div>

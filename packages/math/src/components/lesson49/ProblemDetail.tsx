@@ -119,6 +119,7 @@ export default function ProblemDetail({
           title={problem.title}
           masteryLevel={level}
           practiceCount={count}
+          problem={problem}
         />
       )}
       <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />

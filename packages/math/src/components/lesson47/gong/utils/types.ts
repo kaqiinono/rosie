@@ -13,6 +13,8 @@ export interface CoordGridProps {
   onSubmit?: (state: unknown) => void;
   /** 宫格内容变化时同步 state（答卷等场景交卷时自动判分） */
   onStateChange?: (state: unknown) => void;
+  /** 恢复暂存作答（如组卷答卷） */
+  initialState?: unknown;
 }
 
 export interface ShulianProps extends CoordGridProps {}
@@ -44,6 +46,7 @@ export interface SudokuGridProps {
   cells?: CellCoord[];
   onSubmit?: (state: unknown) => void;
   onStateChange?: (state: unknown) => void;
+  initialState?: unknown;
 }
 
 export interface BudengSudokuProps extends SudokuGridProps {

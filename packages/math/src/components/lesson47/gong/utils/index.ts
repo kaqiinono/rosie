@@ -165,3 +165,35 @@ export function getKnightCells(
 export function cellCoordKey(r: number, c: number): string {
   return `${r}-${c}`;
 }
+
+export function readValuesDraft(initialState: unknown): string[][] | null {
+  if (!initialState || typeof initialState !== 'object' || !('values' in initialState)) return null
+  const values = (initialState as { values: unknown }).values
+  if (!Array.isArray(values)) return null
+  return values.map((row) => (Array.isArray(row) ? row.map(String) : []))
+}
+
+export function readPaintedStringDraft(initialState: unknown): (string | null)[][] | null {
+  if (!initialState || typeof initialState !== 'object' || !('painted' in initialState)) return null
+  const painted = (initialState as { painted: unknown }).painted
+  if (!Array.isArray(painted)) return null
+  return painted.map((row) =>
+    Array.isArray(row) ? row.map((cell) => (cell == null ? null : String(cell))) : [],
+  )
+}
+
+export function readPaintedNumberDraft(initialState: unknown): number[][] | null {
+  if (!initialState || typeof initialState !== 'object' || !('painted' in initialState)) return null
+  const painted = (initialState as { painted: unknown }).painted
+  if (!Array.isArray(painted)) return null
+  return painted.map((row) =>
+    Array.isArray(row) ? row.map((cell) => Number(cell) || 0) : [],
+  )
+}
+
+export function readBridgesDraft(initialState: unknown): Record<string, number> | null {
+  if (!initialState || typeof initialState !== 'object' || !('bridges' in initialState)) return null
+  const bridges = (initialState as { bridges: unknown }).bridges
+  if (!bridges || typeof bridges !== 'object') return null
+  return { ...(bridges as Record<string, number>) }
+}

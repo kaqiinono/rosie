@@ -711,6 +711,8 @@ export default function QuizPage() {
                                                     <span className="font-semibold text-emerald-600">
                             {paper.score ?? 0}/{paper.totalScore} 分
                           </span>
+                                                ) : paper.answers && Object.keys(paper.answers).length > 0 ? (
+                                                    <span className="font-semibold text-indigo-500">作答中</span>
                                                 ) : (
                                                     <span className="font-semibold text-amber-500">未作答</span>
                                                 )}
@@ -743,7 +745,10 @@ export default function QuizPage() {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                window.open(`/math/ny/quiz/${paper.id}/print`, '_blank')
+                                                window.open(
+                                                    `/math/ny/quiz/${paper.id}/print${paper.completedAt ? '?mode=complete' : ''}`,
+                                                    '_blank',
+                                                )
                                             }}
                                             className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
                                             title="打印"

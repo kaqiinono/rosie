@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { BRIDGE_CELL, BRIDGE_PAD, GONG_COLORS, ISLAND_RADIUS } from './utils/constants'
 import type { BridgeIsland, ShuqiaoProps } from './utils/types'
-import { bridgeKey, islandCoordKey, resolveGridSize } from './utils'
+import { bridgeKey, islandCoordKey, readBridgesDraft, resolveGridSize } from './utils'
 import { ActionButton } from './shared'
 
 function canConnect(islands: BridgeIsland[], ia: BridgeIsland, ib: BridgeIsland): boolean {
@@ -70,7 +70,7 @@ function getUsedBridges(island: BridgeIsland, current: Record<string, number>): 
     .reduce((s, [, v]) => s + v, 0)
 }
 
-export function ShuqiaoGrid({ rows, cells, onSubmit, onStateChange }: ShuqiaoProps) {
+export function ShuqiaoGrid({ rows, cells, onSubmit, onStateChange, initialState }: ShuqiaoProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const islands = useMemo(
     () =>
@@ -90,7 +90,7 @@ export function ShuqiaoGrid({ rows, cells, onSubmit, onStateChange }: ShuqiaoPro
     return map
   }, [islands])
 
-  const [bridges, setBridges] = useState<Record<string, number>>({})
+  const [bridges, setBridges] = useState<Record<string, number>>(() => readBridgesDraft(initialState) ?? {})
 
   const W = colCount * BRIDGE_CELL + BRIDGE_PAD * 2
   const H = rowCount * BRIDGE_CELL + BRIDGE_PAD * 2

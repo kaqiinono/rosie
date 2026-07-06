@@ -8,6 +8,7 @@ import {
   isSudokuBoxBorderBottom,
   isSudokuBoxBorderRight,
   parseChuangkouWindows,
+  readValuesDraft,
   resolveChuangkouWindow,
   resolveGridSize,
   sudokuBoxSize,
@@ -22,7 +23,7 @@ function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]):
   )
 }
 
-export function ChuangkouSudokuGrid({ rows, cells = [], window, onSubmit, onStateChange }: ChuangkouSudokuProps) {
+export function ChuangkouSudokuGrid({ rows, cells = [], window, onSubmit, onStateChange, initialState }: ChuangkouSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const boxSize = sudokuBoxSize(rowCount === colCount ? rowCount : 0)
   const digitPattern = useMemo(() => new RegExp(`[^1-${rowCount}]`, 'g'), [rowCount])
@@ -36,11 +37,15 @@ export function ChuangkouSudokuGrid({ rows, cells = [], window, onSubmit, onStat
     [rowCount, colCount, cells],
   )
 
-  const [values, setValues] = useState<string[][]>(() => emptyValues(rowCount, colCount, givenGrid))
+  const [values, setValues] = useState<string[][]>(() => {
+    const draft = readValuesDraft(initialState)
+    return draft ?? emptyValues(rowCount, colCount, givenGrid)
+  })
 
   useEffect(() => {
+    if (initialState) return
     setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid])
+  }, [rowCount, colCount, givenGrid, initialState])
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)

@@ -3,10 +3,10 @@
 import { useCallback, useMemo, useState } from 'react'
 import { GONG_COLORS } from './utils/constants'
 import type { ShulianProps } from './utils/types'
-import { coordsToGrid, resolveGridSize } from './utils'
+import { coordsToGrid, readPaintedNumberDraft, resolveGridSize } from './utils'
 import { ActionButton, ColorPalette } from './shared'
 
-export function ShulianGrid({ rows, cells, onSubmit, onStateChange }: ShulianProps) {
+export function ShulianGrid({ rows, cells, onSubmit, onStateChange, initialState }: ShulianProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const grid = useMemo(() => coordsToGrid(rowCount, colCount, cells), [rowCount, colCount, cells])
 
@@ -31,9 +31,10 @@ export function ShulianGrid({ rows, cells, onSubmit, onStateChange }: ShulianPro
     return { numbers: nums, numColor: colorMap }
   }, [grid, rowCount, colCount])
 
-  const [painted, setPainted] = useState<number[][]>(() =>
-    Array.from({ length: rowCount }, () => Array(colCount).fill(0)),
-  )
+  const [painted, setPainted] = useState<number[][]>(() => {
+    const draft = readPaintedNumberDraft(initialState)
+    return draft ?? Array.from({ length: rowCount }, () => Array(colCount).fill(0))
+  })
   const [selected, setSelected] = useState<number | null>(null)
 
   const paletteItems = useMemo(

@@ -3,6 +3,7 @@ import React from 'react'
 type FigureGridCallbacks = {
   onSubmit?: (state: unknown) => void
   onStateChange?: (state: unknown) => void
+  initialState?: unknown
 }
 
 export function injectFigureSubmit(

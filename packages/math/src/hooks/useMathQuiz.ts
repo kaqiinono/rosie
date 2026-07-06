@@ -12,9 +12,17 @@ export type QuizProblemItem = {
   types: string[]
 }
 
+import type { ScratchObject } from '../components/shared/ScratchPad/scratch-pad-types'
+
 export type QuizAnswerRecord = {
   userAnswer: number | null
   correct: boolean | null
+  /** Draft-only: serialized interactive grid state */
+  interactiveState?: unknown
+  /** Scratch-pad drawing objects for this problem */
+  scratchObjects?: ScratchObject[]
+  /** Show scratch pad inline below the problem card */
+  scratchEmbedded?: boolean
 }
 
 export type QuizPaper = {
@@ -93,6 +101,41 @@ export function useMathQuiz(user: User | null) {
     return paper.id
   }, [user])
 
+  const savePaperProgress = useCallback(async (
+    id: string,
+    answers: Record<string, QuizAnswerRecord>,
+  ): Promise<boolean> => {
+    if (!user) return false
+    const { error } = await supabase
+      .from('math_quiz_papers')
+      .update({ answers })
+      .eq('id', id)
+      .eq('user_id', user.id)
+    if (error) return false
+    setPapers(prev =>
+      prev.map(p => p.id === id ? { ...p, answers } : p),
+    )
+    return true
+  }, [user])
+
+  const saveDraftPaper = useCallback(async (
+    id: string,
+    answers: Record<string, QuizAnswerRecord>,
+  ): Promise<boolean> => {
+    if (!user) return false
+    const { error } = await supabase
+      .from('math_quiz_papers')
+      .update({ answers })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .is('completed_at', null)
+    if (error) return false
+    setPapers(prev =>
+      prev.map(p => p.id === id ? { ...p, answers } : p),
+    )
+    return true
+  }, [user])
+
   const completePaper = useCallback(async (
     id: string,
     score: number,
@@ -132,5 +175,5 @@ export function useMathQuiz(user: User | null) {
     setPapers(prev => prev.filter(p => p.id !== id))
   }, [user])
 
-  return { papers, loading, savePaper, completePaper, deletePaper, renamePaper }
+  return { papers, loading, savePaper, saveDraftPaper, savePaperProgress, completePaper, deletePaper, renamePaper }
 }

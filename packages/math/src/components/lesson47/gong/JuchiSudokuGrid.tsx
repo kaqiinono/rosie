@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { buildJuchiLineSets, getJuchiCellBorderStyle } from './utils/juchi'
 import type { JuchiSudokuProps } from './utils/types'
-import { coordsToGrid, resolveGridSize } from './utils'
+import { coordsToGrid, readValuesDraft, resolveGridSize } from './utils'
 import { ActionButton } from './shared'
 
 function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]): string[][] {
@@ -21,6 +21,7 @@ export function JuchiSudokuGrid({
   vLine = [],
   onSubmit,
   onStateChange,
+  initialState,
 }: JuchiSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const digitPattern = useMemo(() => new RegExp(`[^1-${rowCount}]`, 'g'), [rowCount])
@@ -34,11 +35,15 @@ export function JuchiSudokuGrid({
   )
   const cellClass = rowCount <= 4 ? 'gong-cell' : 'gong-cell gong-cell-sm'
 
-  const [values, setValues] = useState<string[][]>(() => emptyValues(rowCount, colCount, givenGrid))
+  const [values, setValues] = useState<string[][]>(() => {
+    const draft = readValuesDraft(initialState)
+    return draft ?? emptyValues(rowCount, colCount, givenGrid)
+  })
 
   useEffect(() => {
+    if (initialState) return
     setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid])
+  }, [rowCount, colCount, givenGrid, initialState])
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)

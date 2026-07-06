@@ -8,6 +8,7 @@ import {
   getKnightCells,
   isRectBoxBorderBottom,
   isRectBoxBorderRight,
+  readValuesDraft,
   resolveGridSize,
   resolveSudokuBoxDimensions,
 } from './utils'
@@ -21,7 +22,7 @@ function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]):
   )
 }
 
-export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange }: WumaSudokuProps) {
+export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange, initialState }: WumaSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const boxDims = useMemo(
     () => resolveSudokuBoxDimensions(rowCount, colCount),
@@ -34,16 +35,20 @@ export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange }: Wu
   )
   const cellClass = rowCount <= 4 ? 'gong-cell' : 'gong-cell gong-cell-sm'
 
-  const [values, setValues] = useState<string[][]>(() => emptyValues(rowCount, colCount, givenGrid))
+  const [values, setValues] = useState<string[][]>(() => {
+    const draft = readValuesDraft(initialState)
+    return draft ?? emptyValues(rowCount, colCount, givenGrid)
+  })
   const [knightMode, setKnightMode] = useState(false)
   const [knightFocus, setKnightFocus] = useState<{ r: number; c: number } | null>(null)
 
   useEffect(() => {
+    if (initialState) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setValues(emptyValues(rowCount, colCount, givenGrid))
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setKnightFocus(null)
-  }, [rowCount, colCount, givenGrid])
+  }, [rowCount, colCount, givenGrid, initialState])
 
   const knightTargetKeys = useMemo(() => {
     if (!knightFocus) return new Set<string>()

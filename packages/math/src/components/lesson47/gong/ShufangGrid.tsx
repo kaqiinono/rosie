@@ -3,14 +3,14 @@
 import { useCallback, useMemo, useState } from 'react'
 import { GONG_COLORS } from './utils/constants'
 import type { ShufangProps } from './utils/types'
-import { coordsToGrid, resolveGridSize } from './utils'
+import { coordsToGrid, readPaintedStringDraft, resolveGridSize } from './utils'
 import { ActionButton, ColorPalette } from './shared'
 
 function regionId(r: number, c: number): string {
   return `${r},${c}`
 }
 
-export function ShufangGrid({ rows, cells, onSubmit, onStateChange }: ShufangProps) {
+export function ShufangGrid({ rows, cells, onSubmit, onStateChange, initialState }: ShufangProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const grid = useMemo(() => coordsToGrid(rowCount, colCount, cells), [rowCount, colCount, cells])
 
@@ -31,9 +31,10 @@ export function ShufangGrid({ rows, cells, onSubmit, onStateChange }: ShufangPro
     return { regionColor: colorMap, paletteItems: clues }
   }, [grid, rowCount, colCount])
 
-  const [painted, setPainted] = useState<(string | null)[][]>(() =>
-    Array.from({ length: rowCount }, () => Array<string | null>(colCount).fill(null)),
-  )
+  const [painted, setPainted] = useState<(string | null)[][]>(() => {
+    const draft = readPaintedStringDraft(initialState)
+    return draft ?? Array.from({ length: rowCount }, () => Array<string | null>(colCount).fill(null))
+  })
   const [selected, setSelected] = useState<string | null>(null)
 
   const selectColor = (key: string) => {

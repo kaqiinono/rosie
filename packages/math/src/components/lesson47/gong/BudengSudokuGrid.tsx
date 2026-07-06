@@ -8,6 +8,7 @@ import {
   coordsToGrid,
   isRectBoxBorderBottom,
   isRectBoxBorderRight,
+  readValuesDraft,
   resolveSudokuBoxDimensions,
 } from './utils'
 import { ActionButton } from './shared'
@@ -63,6 +64,7 @@ export function BudengSudokuGrid({
   cells = [],
   onSubmit,
   onStateChange,
+  initialState,
 }: BudengSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveBudengGridSize(rows), [rows])
   const boxDims = useMemo(
@@ -80,11 +82,15 @@ export function BudengSudokuGrid({
     [rowCount, colCount, cells],
   )
 
-  const [values, setValues] = useState<string[][]>(() => emptyValues(rowCount, colCount, givenGrid))
+  const [values, setValues] = useState<string[][]>(() => {
+    const draft = readValuesDraft(initialState)
+    return draft ?? emptyValues(rowCount, colCount, givenGrid)
+  })
 
   useEffect(() => {
+    if (initialState) return
     setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid])
+  }, [rowCount, colCount, givenGrid, initialState])
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)

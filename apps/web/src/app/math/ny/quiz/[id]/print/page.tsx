@@ -2,8 +2,12 @@
 
 import {use, useEffect, useState} from 'react'
 import Link from 'next/link'
+import {useSearchParams} from 'next/navigation'
 import {useAuth} from '@rosie/core'
 import {supabase} from '@rosie/core'
+import QuizProblemSolution from '@rosie/math/components/shared/QuizProblemSolution'
+import ScratchPadPrintBlock from '@rosie/math/components/shared/ScratchPad/ScratchPadPrintBlock'
+import {isInteractiveProblem} from '@rosie/math/utils/check-problem-answer'
 import {PROBLEMS as P12} from '@rosie/math/utils/lesson12-data'
 import {PROBLEMS as P13} from '@rosie/math/utils/lesson13-data'
 import {PROBLEMS as P15} from '@rosie/math/utils/lesson15-data'
@@ -31,7 +35,13 @@ import {PROBLEMS as P53} from '@rosie/math/utils/lesson53-data'
 import {PROBLEMS as P52} from '@rosie/math/utils/lesson52-data'
 import {PROBLEMS as P51} from '@rosie/math/utils/lesson51-data'
 import type {Problem, ProblemSet} from '@rosie/core'
-import {computeQuizPoints, type QuizPaper} from '@rosie/math/hooks/useMathQuiz'
+import {
+    computeQuizPoints,
+    type QuizAnswerRecord,
+    type QuizPaper,
+} from '@rosie/math/hooks/useMathQuiz'
+
+type PrintMode = 'blank' | 'complete'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
@@ -84,14 +94,30 @@ function formatDate(iso: string) {
     return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
 }
 
+function formatUserAnswer(problem: Problem, record: QuizAnswerRecord | undefined): string {
+    if (!record) return '（未作答）'
+    if (isInteractiveProblem(problem)) {
+        return record.userAnswer != null || record.interactiveState != null ? '（已作答）' : '（未作答）'
+    }
+    if (record.userAnswer == null) return '（未作答）'
+    return `${record.userAnswer}${problem.finalUnit ?? ''}`
+}
+
+function formatCorrectAnswer(problem: Problem): string | null {
+    if (isInteractiveProblem(problem)) return null
+    return `${problem.finalAns}${problem.finalUnit ?? ''}`
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function QuizPrintPage({params}: { params: Promise<{ id: string }> }) {
     const {id} = use(params)
     const {user} = useAuth()
+    const searchParams = useSearchParams()
 
     const [paper, setPaper] = useState<QuizPaper | null>(null)
     const [loading, setLoading] = useState(true)
+    const [printMode, setPrintMode] = useState<PrintMode>('blank')
 
     useEffect(() => {
         if (!user) return
@@ -118,6 +144,19 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
             })
     }, [user, id])
 
+    useEffect(() => {
+        if (!paper) return
+        if (searchParams.get('mode') === 'blank') {
+            setPrintMode('blank')
+            return
+        }
+        if (paper.completedAt || searchParams.get('mode') === 'complete') {
+            setPrintMode('complete')
+        } else {
+            setPrintMode('blank')
+        }
+    }, [paper, searchParams])
+
     if (loading) {
         return (
             <div className="flex min-h-screen items-center justify-center">
@@ -141,6 +180,8 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
 
     const pointsArr = computeQuizPoints(paper.problems.length)
     const totalScore = pointsArr.reduce((s, p) => s + p, 0)
+    const submitted = Boolean(paper.completedAt)
+    const isComplete = printMode === 'complete' && submitted
 
     return (
         <div className="print-root min-h-screen bg-slate-100">
@@ -161,6 +202,32 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                         打印预览 · {paper.title}
                     </h1>
                     <div className="flex-1 sm:hidden"/>
+                    <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
+                        <button
+                            type="button"
+                            onClick={() => setPrintMode('blank')}
+                            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                                printMode === 'blank'
+                                    ? 'bg-white text-slate-800 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            空白卷
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setPrintMode('complete')}
+                            disabled={!submitted}
+                            title={submitted ? '含作答、草稿与题解' : '交卷后可打印完整答卷'}
+                            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                                printMode === 'complete'
+                                    ? 'bg-white text-slate-800 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            完整答卷
+                        </button>
+                    </div>
                     <button
                         onClick={() => window.print()}
                         className="shrink-0 rounded-full bg-indigo-500 px-3 sm:px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition-colors"
@@ -185,6 +252,11 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                         </div>
                         <p className="mt-3 text-xs text-slate-500">
                             共 {paper.problems.length} 题 · 满分 {totalScore} 分
+                            {isComplete && paper.score != null && (
+                                <span className="ml-3 font-semibold text-emerald-700">
+                                    得分 {paper.score}/{paper.totalScore}
+                                </span>
+                            )}
                         </p>
                     </div>
 
@@ -195,6 +267,12 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                             if (!entry) return null
                             const {problem} = entry
                             const pts = pointsArr[i] ?? 0
+                            const record = paper.answers?.[item.problemId]
+                            const scratchObjects = record?.scratchObjects ?? []
+                            const userAnswer = formatUserAnswer(problem, record)
+                            const correctAnswer = formatCorrectAnswer(problem)
+                            const showWrong = isComplete && record?.correct === false && correctAnswer
+
                             return (
                                 <li key={item.problemId} className="problem-item">
                                     <div
@@ -206,7 +284,50 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                                     {problem.figureNode && (
                                         <div className="problem-figure mt-2">{problem.figureNode}</div>
                                     )}
-                                    <div className="solution-space" aria-hidden="true"/>
+
+                                    {isComplete ? (
+                                        <>
+                                            <div className="answer-block mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                                                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                                                    <span className="font-semibold text-slate-700">作答：</span>
+                                                    <span
+                                                        className={
+                                                            record?.correct === true
+                                                                ? 'font-bold text-emerald-700'
+                                                                : record?.correct === false
+                                                                  ? 'font-bold text-rose-600'
+                                                                  : 'text-slate-800'
+                                                        }
+                                                    >
+                                                        {userAnswer}
+                                                        {record?.correct === true && ' ✓'}
+                                                        {record?.correct === false && ' ✗'}
+                                                    </span>
+                                                    {showWrong && (
+                                                        <span className="text-slate-500">
+                                                            正确答案：{correctAnswer}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {scratchObjects.length > 0 && (
+                                                <div className="scratch-print mt-3">
+                                                    <p className="mb-1 text-[11px] font-semibold text-slate-500">
+                                                        作答草稿
+                                                    </p>
+                                                    <ScratchPadPrintBlock objects={scratchObjects}/>
+                                                </div>
+                                            )}
+
+                                            <QuizProblemSolution
+                                                problem={problem}
+                                                className="print-solution mt-3"
+                                            />
+                                        </>
+                                    ) : (
+                                        <div className="solution-space" aria-hidden="true"/>
+                                    )}
                                 </li>
                             )
                         })}
@@ -244,6 +365,16 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
         .solution-space {
           height: 9em;
         }
+        .answer-block,
+        .scratch-print,
+        .print-solution {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .print-scratch-img {
+          max-height: 320px;
+          object-fit: contain;
+        }
 
         @media print {
           @page {
@@ -264,6 +395,9 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
           }
           .solution-space {
             height: 8em;
+          }
+          .print-scratch-img {
+            max-height: none;
           }
         }
       `}</style>

@@ -7,6 +7,7 @@ import {
   isOnSudokuDiagonal,
   isRectBoxBorderBottom,
   isRectBoxBorderRight,
+  readValuesDraft,
   resolveGridSize,
   resolveSudokuBoxDimensions,
 } from './utils'
@@ -20,7 +21,7 @@ function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]):
   )
 }
 
-export function DuijiaoxianSudokuGrid({ rows, cells = [], onSubmit, onStateChange }: DuijiaoxianSudokuProps) {
+export function DuijiaoxianSudokuGrid({ rows, cells = [], onSubmit, onStateChange, initialState }: DuijiaoxianSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const boxDims = useMemo(
     () => resolveSudokuBoxDimensions(rowCount, colCount),
@@ -34,11 +35,15 @@ export function DuijiaoxianSudokuGrid({ rows, cells = [], onSubmit, onStateChang
   const cellClass = rowCount <= 4 ? 'gong-cell' : 'gong-cell gong-cell-sm'
   const isSquare = rowCount === colCount
 
-  const [values, setValues] = useState<string[][]>(() => emptyValues(rowCount, colCount, givenGrid))
+  const [values, setValues] = useState<string[][]>(() => {
+    const draft = readValuesDraft(initialState)
+    return draft ?? emptyValues(rowCount, colCount, givenGrid)
+  })
 
   useEffect(() => {
+    if (initialState) return
     setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid])
+  }, [rowCount, colCount, givenGrid, initialState])
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)

@@ -10,6 +10,7 @@ import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectF
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
+import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 import { useStarHud, StarProgressBar } from '@rosie/rewards'
 
 // ── Shared mastery helpers (single source of truth; SeaGrid re-imports these) ───
@@ -537,8 +538,11 @@ export default function ProblemPracticeSession({
             </span>
           )}
         </div>
-        <span className="ml-auto text-[11px] font-medium" style={{ color: skin.mutedColor }}>
-          {skin.hintText(untriedCount, pool.length)}
+        <span className="ml-auto flex items-center gap-2">
+          {current && <ScratchPadTrigger problem={current.problem} variant="compact" />}
+          <span className="text-[11px] font-medium" style={{ color: skin.mutedColor }}>
+            {skin.hintText(untriedCount, pool.length)}
+          </span>
         </span>
       </div>
 

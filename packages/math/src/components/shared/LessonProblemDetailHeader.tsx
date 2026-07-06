@@ -6,6 +6,7 @@ import { MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import AnalysisGuideBadgeForProblem from '@rosie/math/components/shared/AnalysisGuideBadgeForProblem'
+import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 
 type LessonProblemDetailHeaderProps = {
   problemId: string
@@ -43,6 +44,7 @@ export default function LessonProblemDetailHeader({
         </div>
       </div>
       <FavoriteHeart problemId={problemId} size="md" />
+      {problem && <ScratchPadTrigger problem={problem} variant="compact" />}
       <div
         className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[masteryLevel]}`}
       >
