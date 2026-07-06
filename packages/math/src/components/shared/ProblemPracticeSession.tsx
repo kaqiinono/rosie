@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useCallback, type CSSProperties, type ReactNode } from 'react'
 import Link from 'next/link'
-import { SOURCE_LABELS } from '@rosie/core'
 import { SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
+import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
 import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
@@ -287,7 +287,7 @@ function PracticeProblem({
           {lesson?.icon} {lesson?.shortTitle}
         </span>
         <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-500">
-          {SOURCE_LABELS[section] ?? section}
+          {problemSetSectionLabel(section, lessonId)}
         </span>
       </div>
       <div

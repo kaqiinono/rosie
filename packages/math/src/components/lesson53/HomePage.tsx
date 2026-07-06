@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson53-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/53'
 
@@ -44,6 +45,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第53讲 · 二年级目标班 · 第5讲<br />观察差比和，破解数列、数表与图形密码！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 找规律 · 4大题型</div>

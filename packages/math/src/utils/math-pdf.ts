@@ -59,6 +59,54 @@ export type RenderPdfProgress = {
   onPageRendered?: (rendered: number, total: number) => void
 }
 
+export type PdfPageMeta = {
+  fileName: string
+  pageInFile: number
+}
+
+export type RenderMultiPdfProgress = {
+  onPageRendered?: (info: {
+    fileIndex: number
+    fileCount: number
+    pageInFile: number
+    pagesInFile: number
+    pageGlobal: number
+  }) => void
+}
+
+export async function renderPdfFilesToPageUrls(
+  pdfFiles: File[],
+  options?: { maxPages?: number; scale?: number } & RenderMultiPdfProgress,
+): Promise<{ urls: string[]; meta: PdfPageMeta[] }> {
+  const scale = options?.scale ?? 2
+  const urls: string[] = []
+  const meta: PdfPageMeta[] = []
+  let pageGlobal = 0
+
+  for (let fileIndex = 0; fileIndex < pdfFiles.length; fileIndex++) {
+    const file = pdfFiles[fileIndex]!
+    const { doc, numPages } = await openPdfFile(file, options?.maxPages)
+    try {
+      for (let pageInFile = 1; pageInFile <= numPages; pageInFile++) {
+        urls.push(await renderPdfPageUrl(doc, pageInFile, scale))
+        meta.push({ fileName: file.name, pageInFile })
+        pageGlobal++
+        options?.onPageRendered?.({
+          fileIndex: fileIndex + 1,
+          fileCount: pdfFiles.length,
+          pageInFile,
+          pagesInFile: numPages,
+          pageGlobal,
+        })
+      }
+    } finally {
+      await doc.destroy()
+    }
+  }
+
+  return { urls, meta }
+}
+
 export async function renderPdfFileToPageUrls(
   pdfFile: File,
   options?: { maxPages?: number; scale?: number } & RenderPdfProgress,

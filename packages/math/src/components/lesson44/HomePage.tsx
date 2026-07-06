@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson44-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/44'
 
@@ -47,6 +48,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           学会合理安排时间、减少等候、过河过桥与最短路径，做生活中的统筹小能手！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 统筹优化 · 6大题型</div>

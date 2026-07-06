@@ -37,7 +37,16 @@ function buildPathMap(base: string): Record<string, string> {
 }
 
 const defaultBackIcon = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="m15 18-6-6 6-6" />
   </svg>
 )
@@ -47,9 +56,11 @@ export default function LessonAppHeader({ config, problems, useLessonContext }: 
   const { solveCount } = useLessonContext()
   const pathMap = buildPathMap(config.basePath)
 
-  const allIds = new Set((Object.values(problems) as Problem[][]).flatMap(l => l.map(p => p.id)))
+  const allIds = new Set(
+    (Object.values(problems) as Problem[][]).flatMap((l) => l.map((p) => p.id)),
+  )
   const total = allIds.size
-  const mastered = [...allIds].filter(id => (solveCount[id] ?? 0) >= 3).length
+  const mastered = [...allIds].filter((id) => (solveCount[id] ?? 0) >= 3).length
 
   function isActive(key: string): boolean {
     if (key === 'home') return pathname === config.basePath
@@ -57,44 +68,41 @@ export default function LessonAppHeader({ config, problems, useLessonContext }: 
   }
 
   return (
-    <div className="sticky top-0 z-30 shrink-0 border-b border-border-light bg-white/95 backdrop-blur-sm shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
-      <div className="mx-auto flex h-12 max-w-[1400px] items-center gap-2 pl-3 pr-[168px] sm:h-14 sm:gap-3 sm:pl-5 sm:pr-5">
-
+    <div className="border-border-light sticky top-0 z-30 shrink-0 border-b bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.06)] backdrop-blur-sm">
+      <div className="mx-auto flex h-12 max-w-[1400px] items-center gap-2 pr-[168px] pl-3 sm:h-14 sm:gap-3 sm:pr-5 sm:pl-5">
         <Link
           href="/math"
-          className="flex shrink-0 items-center justify-center rounded-full border border-gray-200 text-text-muted no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 hover:text-text-secondary
-            h-8 w-8
-            sm:h-auto sm:w-auto sm:gap-1 sm:px-3 sm:py-1.5"
+          className="text-text-muted hover:text-text-secondary flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200 no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-auto sm:w-auto sm:gap-1 sm:px-3 sm:py-1.5"
         >
           {config.backIcon ?? defaultBackIcon}
-          <span className="hidden sm:inline text-[12px] font-medium">课程列表</span>
+          <span className="hidden text-[12px] font-medium sm:inline">课程列表</span>
         </Link>
 
         <Link href={config.basePath} className="shrink-0 no-underline">
-          <span className="text-[15px] font-bold text-text-primary sm:text-[17px]">
-            {config.emoji}{' '}
-            <span className={config.titleColor}>{config.titleShort}</span>
+          <span className="text-text-primary text-[15px] font-bold sm:text-[17px]">
+            {config.emoji} <span className={config.titleColor}>{config.titleShort}</span>
             <span className="hidden min-[480px]:inline">{config.titleFull}</span>
           </span>
         </Link>
 
-        <div className="flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[11px] font-semibold text-text-secondary sm:gap-1.5 sm:px-3 sm:text-[12px]">
-          🦋{' '}
-          <span className="text-app-green-dark">{mastered}</span>
+        <div className="text-text-secondary flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[11px] font-semibold sm:gap-1.5 sm:px-3 sm:text-[12px]">
+          🦋 <span className="text-app-green-dark">{mastered}</span>
           <span className="text-text-muted">/{total}</span>
         </div>
 
-        <div className="hidden gap-0 overflow-x-auto scrollbar-none lg:flex xl:hidden">
-          {NAV_PAGES.map(p => {
+        <div className="scrollbar-none hidden gap-0 overflow-x-auto lg:flex xl:hidden">
+          {NAV_PAGES.map((p) => {
             const active = isActive(p.key)
             return (
               <Link
                 key={p.key}
                 href={pathMap[p.key] || config.basePath}
-                className={`flex h-12 items-center whitespace-nowrap px-3 text-[13px] font-medium no-underline transition-all sm:h-14 ${
+                className={`flex h-12 items-center px-3 text-[13px] font-medium whitespace-nowrap no-underline transition-all sm:h-14 ${
                   active ? config.navActiveColor : 'text-text-muted hover:text-text-secondary'
                 }`}
-                style={{ borderBottom: `2px solid ${active ? config.navActiveBorderColor : 'transparent'}` }}
+                style={{
+                  borderBottom: `2px solid ${active ? config.navActiveBorderColor : 'transparent'}`,
+                }}
               >
                 {p.icon} {p.label}
               </Link>

@@ -150,6 +150,64 @@ export async function uploadMathProblemImage(
   return { error: null, image: rowToImage(data as RawRow) }
 }
 
+/** Move an uploaded image between analysis ↔ figure without re-cropping. */
+export async function changeMathProblemImageKind(
+  image: MathProblemImage,
+  targetKind: MathImageKind,
+): Promise<{ error: string | null; image: MathProblemImage | null }> {
+  if (image.imageKind === targetKind) return { error: null, image }
+
+  const ext = (image.storagePath.split('.').pop() ?? 'png').toLowerCase()
+  const newPath = mathImageStoragePath(targetKind, image.lessonId, image.problemId, ext)
+
+  const { data: blob, error: downloadErr } = await supabase.storage
+    .from(MATH_IMAGES_BUCKET)
+    .download(image.storagePath)
+
+  if (downloadErr || !blob) {
+    return { error: downloadErr?.message ?? '读取原图失败', image: null }
+  }
+
+  const { error: uploadErr } = await supabase.storage
+    .from(MATH_IMAGES_BUCKET)
+    .upload(newPath, blob, { upsert: true, contentType: blob.type || undefined })
+
+  if (uploadErr) return { error: uploadErr.message, image: null }
+
+  const updatedAt = new Date().toISOString()
+  const { data, error: upsertErr } = await supabase
+    .from('math_problem_images')
+    .upsert(
+      {
+        lesson_id: image.lessonId,
+        problem_id: image.problemId,
+        image_kind: targetKind,
+        storage_path: newPath,
+        user_id: image.userId,
+        updated_at: updatedAt,
+      },
+      { onConflict: 'lesson_id,problem_id,image_kind' },
+    )
+    .select()
+    .single()
+
+  if (upsertErr || !data) {
+    await supabase.storage.from(MATH_IMAGES_BUCKET).remove([newPath])
+    return { error: upsertErr?.message ?? '保存失败', image: null }
+  }
+
+  await supabase.storage.from(MATH_IMAGES_BUCKET).remove([image.storagePath])
+  await supabase
+    .from('math_problem_images')
+    .delete()
+    .eq('lesson_id', image.lessonId)
+    .eq('problem_id', image.problemId)
+    .eq('image_kind', image.imageKind)
+
+  invalidateLessonImageCache(image.lessonId)
+  return { error: null, image: rowToImage(data as RawRow) }
+}
+
 export async function deleteMathProblemImage(image: MathProblemImage): Promise<{ error: string | null }> {
   await supabase.storage.from(MATH_IMAGES_BUCKET).remove([image.storagePath])
 

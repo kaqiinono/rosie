@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson43-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/43'
 
@@ -47,6 +48,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           认识首项、公差、项数与求和公式，解决生活中的等差数列问题！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 等差数列初识 · 7大题型</div>

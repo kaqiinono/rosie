@@ -93,7 +93,7 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
   return (
     <div>
       {mode === 'full' && (
-        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} />
+        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} problem={problem} />
       )}
       <QuestionLayout
         question={question}

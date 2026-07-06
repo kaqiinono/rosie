@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson42-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/42'
 
@@ -47,6 +48,9 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第42讲 · 一年级目标班<br />天平称重、空瓶换水、绳子计时、量水标线、找假币 —— 用智慧解决生活中的真问题！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
+
 
       {/* Problem Types */}
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

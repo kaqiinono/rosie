@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson34-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/34'
 
@@ -50,6 +51,9 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第34讲 · 一年级目标班<br />掌握2大招式，轻松驾驭乘除法速算！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
+
 
       {/* Problem Types */}
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

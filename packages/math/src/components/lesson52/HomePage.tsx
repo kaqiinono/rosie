@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson52-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/52'
 
@@ -15,7 +16,7 @@ const MODULES = [
   { key: 'pretest', path: `${BASE}/pretest`, icon: '📝', bg: 'bg-[#fef9c3]', title: '课前测', desc: '14道摸底题 · 和差倍综合' },
   { key: 'lesson', path: `${BASE}/lesson`, icon: '📖', bg: 'bg-app-blue-light', title: '课堂讲解', desc: '例题1-23 · 和差·和倍·差倍·综合' },
   { key: 'homework', path: `${BASE}/homework`, icon: '✏️', bg: 'bg-app-green-light', title: '课后巩固', desc: '练习1-23 · 差倍·移多补少·年龄' },
-  { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '附加题', desc: '附加作业1-4 · 综合挑战' },
+  { key: 'supplement', path: `${BASE}/supplement`, icon: '📒', bg: 'bg-amber-50', title: '附加题', desc: '附加作业1-4 + 附加5-6 · 综合挑战' },
 ]
 
 export default function HomePage({ problems, solveCount }: HomePageProps) {
@@ -45,6 +46,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第52讲 · 二年级目标班 · 第4讲<br />找差找倍画线段，移多补少列方程！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 差倍问题 · 5大题型</div>

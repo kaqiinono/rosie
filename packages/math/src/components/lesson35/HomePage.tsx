@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson35-data'
+import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
 
 const BASE = '/math/ny/35'
 
@@ -62,6 +63,9 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第35讲 · 一年级目标班<br />学会用倍比图解决归一问题！
         </p>
       </div>
+
+      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
+
 
       {/* 5 Problem Types */}
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

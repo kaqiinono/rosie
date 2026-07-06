@@ -3,7 +3,7 @@
 import { memo, useCallback, useMemo, useState, type ComponentType } from 'react'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
-import { SOURCE_LABELS, useAuth } from '@rosie/core'
+import { useAuth } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@rosie/math/components/shared/DifficultyFilterRow'
@@ -13,6 +13,7 @@ import ProblemPracticeSession, { MATH_SKIN } from '@rosie/math/components/shared
 import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import type { SeaProblem } from '@rosie/math/utils/sea-data'
+import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 export type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
@@ -91,6 +92,7 @@ function matchesPractice(count: number, practice: PracticeFilter): boolean {
 function createExpandedCard(
   tagColors: Record<string, string>,
   srcBadge: string,
+  lessonId: string,
   ProblemDetailComponent: ComponentType<{ problem: Problem; mode: 'inline' | 'full'; defaultSolutionOpen?: boolean }>,
 ) {
   return memo(function ExpandedCard({
@@ -101,7 +103,7 @@ function createExpandedCard(
   }) {
     const count = solveCount[p.id] ?? 0
     const level = getMasteryLevel(count)
-    const srcLabel = SOURCE_LABELS[setName] || setName
+    const srcLabel = problemSetSectionLabel(setName, lessonId)
     return (
       <div className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${MASTERY_BORDER[level]}`}>
         <button onClick={() => onToggle(cardId)} className="flex w-full cursor-pointer items-center gap-2.5 rounded-[12px] p-3 text-left">
@@ -136,7 +138,7 @@ export function createFilterPanel(
 ) {
   const { base, title, theme, sourceBtns, typeBtns, tagColors } = config
   const lessonId = base.split('/').pop() ?? ''
-  const ExpandedCard = createExpandedCard(tagColors, theme.srcBadge, ProblemDetailComponent)
+  const ExpandedCard = createExpandedCard(tagColors, theme.srcBadge, lessonId, ProblemDetailComponent)
 
   function getProblemHref(setName: string, indexInSet: number): string {
     return `${base}/${setName}/${indexInSet + 1}`
@@ -337,7 +339,7 @@ export function createFilterPanel(
                     <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
                     <div className="mt-0.5 flex flex-wrap gap-1">
                       <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
-                      <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${theme.srcBadge}`}>{SOURCE_LABELS[setName] || setName}</span>
+                      <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${theme.srcBadge}`}>{problemSetSectionLabel(setName, lessonId)}</span>
                       <PracticeCountBadge count={count} />
                     </div>
                   </div>

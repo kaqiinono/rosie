@@ -98,7 +98,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
   return (
     <div>
       {mode === 'full' && (
-        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} />
+        <LessonProblemDetailHeader problemId={problem.id} title={problem.title} masteryLevel={level} practiceCount={count} problem={problem} />
       )}
       <QuestionLayout question={question} solution={solution} answer={answerDom} defaultSolutionOpen={defaultSolutionOpen} />
       {mode === 'full' && positionLabel && (

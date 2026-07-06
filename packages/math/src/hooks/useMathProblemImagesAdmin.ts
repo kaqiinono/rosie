@@ -5,6 +5,7 @@ import type { User } from '@supabase/supabase-js'
 import type { MathImageKind } from '@rosie/math/constants'
 import {
   deleteMathProblemImage,
+  changeMathProblemImageKind,
   fetchLessonProblemImages,
   getMathImagePublicUrl,
   invalidateLessonImageCache,
@@ -83,6 +84,30 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
     [],
   )
 
+  const moveImageKind = useCallback(
+    async (
+      image: MathProblemImage,
+      targetKind: MathImageKind,
+    ): Promise<{ error: string | null }> => {
+      const { error, image: moved } = await changeMathProblemImageKind(image, targetKind)
+      if (error || !moved) return { error: error ?? '移动失败' }
+      setImages((prev) => {
+        const without = prev.filter(
+          (row) =>
+            !(
+              row.problemId === image.problemId &&
+              row.lessonId === image.lessonId &&
+              (row.imageKind === image.imageKind || row.imageKind === targetKind)
+            ),
+        )
+        return [...without, moved]
+      })
+      invalidateLessonImageCache(image.lessonId)
+      return { error: null }
+    },
+    [],
+  )
+
   return {
     images,
     isLoading,
@@ -92,5 +117,6 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
     findImage,
     uploadImage,
     removeImage,
+    moveImageKind,
   }
 }

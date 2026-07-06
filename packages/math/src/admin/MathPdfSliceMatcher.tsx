@@ -11,23 +11,24 @@ import {
 } from '@rosie/math/utils/lesson-grade'
 import {
   MATH_IMAGE_KIND_LABEL,
+  MATH_IMAGE_KIND_HINT,
+  readPersistedImageKind,
+  persistImageKind,
   type MathImageKind,
   lessonIdFromProblemId,
 } from '@rosie/math/constants'
-import {
-  cropImageBlob,
-  rectIoU,
-  type NormalizedRect,
-} from '@rosie/math/utils/crop-image-blob'
-import {
-  renderPdfFileToPageUrls,
-  revokePageUrls,
-} from '@rosie/math/utils/math-pdf'
+import { cropImageBlob, rectIoU, type NormalizedRect } from '@rosie/math/utils/crop-image-blob'
+import { renderPdfFilesToPageUrls, revokePageUrls, type PdfPageMeta } from '@rosie/math/utils/math-pdf'
 import {
   buildProblemPool,
+  filterProblemPool,
+  aggregateSourceButtons,
+  aggregateTypeButtons,
   searchProblems,
   type SearchableProblem,
 } from '@rosie/math/utils/math-problem-search'
+import { problemHasAnalysisImage } from '@rosie/math/utils/problem-analysis-image'
+import AnalysisGuideBadge from '@rosie/math/components/shared/AnalysisGuideBadge'
 import {
   fetchLessonProblemImages,
   getMathImagePublicUrl,
@@ -67,6 +68,11 @@ const MIN_SLICE_PX = 24
 const OVERLAP_IOU = 0.25
 const MAX_PDF_MB = 40
 
+const FILTER_BTN_BASE =
+  'rounded-full border px-2 py-0.5 text-[10px] font-semibold transition active:scale-95'
+const FILTER_BTN_ON = 'border-teal-600 bg-teal-600 text-white'
+const FILTER_BTN_OFF = 'border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100'
+
 function newSliceId(): string {
   return `slice-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 }
@@ -95,13 +101,25 @@ function problemPreviewText(problem: SearchableProblem['problem']): string {
 
 export default function MathPdfSliceMatcher({ user }: Props) {
   const grades = gradesInOrder()
-  const defaultLessons = lessonsForGrade(grades[grades.length - 1] ?? 2).slice(0, 1)
+  const defaultGrade = grades[grades.length - 1] ?? 2
 
-  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(() => new Set(defaultLessons))
-  const [defaultKind, setDefaultKind] = useState<MathImageKind>('analysis')
+  const [selectedGrade, setSelectedGrade] = useState(defaultGrade)
+  const [selectedLessons, setSelectedLessons] = useState<string[]>(() =>
+    lessonsForGrade(defaultGrade),
+  )
+  const [sourceFilter, setSourceFilter] = useState<Set<string>>(() => new Set())
+  const [typeFilter, setTypeFilter] = useState<Set<string>>(() => new Set())
+  const [defaultKind, setDefaultKind] = useState<MathImageKind>(() => readPersistedImageKind())
   const [pageUrls, setPageUrls] = useState<string[]>([])
+  const [pageMeta, setPageMeta] = useState<PdfPageMeta[]>([])
   const [pdfLoading, setPdfLoading] = useState(false)
-  const [pdfProgress, setPdfProgress] = useState<{ done: number; total: number } | null>(null)
+  const [pdfProgress, setPdfProgress] = useState<{
+    fileIndex: number
+    fileCount: number
+    pageInFile: number
+    pagesInFile: number
+    pageGlobal: number
+  } | null>(null)
   const [slices, setSlices] = useState<PdfSlice[]>([])
   const [activeSliceId, setActiveSliceId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -110,6 +128,7 @@ export default function MathPdfSliceMatcher({ user }: Props) {
   const [existingImages, setExistingImages] = useState<Map<string, MathProblemImage>>(new Map())
   const [overlapPrompt, setOverlapPrompt] = useState<OverlapPrompt | null>(null)
   const [cloudOverwrite, setCloudOverwrite] = useState<CloudOverwritePrompt | null>(null)
+  const [onlyMissingAnalysis, setOnlyMissingAnalysis] = useState(true)
 
   const pdfInputRef = useRef<HTMLInputElement>(null)
   const drawState = useRef<{
@@ -119,17 +138,80 @@ export default function MathPdfSliceMatcher({ user }: Props) {
     containerW: number
     containerH: number
   } | null>(null)
-  const [draftRect, setDraftRect] = useState<{ pageIndex: number; rect: NormalizedRect } | null>(null)
+  const [draftRect, setDraftRect] = useState<{ pageIndex: number; rect: NormalizedRect } | null>(
+    null,
+  )
 
-  const problemPool = useMemo(
-    () => buildProblemPool([...selectedLessons]),
+  const gradeLessonIds = useMemo(() => lessonsForGrade(selectedGrade), [selectedGrade])
+
+  const selectedLessonsKey = useMemo(
+    () => [...selectedLessons].sort((a, b) => Number(a) - Number(b)).join(','),
     [selectedLessons],
   )
 
-  const searchResults = useMemo(
-    () => searchProblems(problemPool, searchQuery),
-    [problemPool, searchQuery],
+  const sourceFilterKey = useMemo(() => [...sourceFilter].sort().join(','), [sourceFilter])
+
+  const typeFilterKey = useMemo(() => [...typeFilter].sort().join(','), [typeFilter])
+
+  const selectedLessonSet = useMemo(
+    () => new Set(selectedLessons),
+    [selectedLessonsKey, selectedLessons],
   )
+
+  const sourceBtns = useMemo(
+    () => aggregateSourceButtons(selectedLessons),
+    [selectedLessonsKey, selectedLessons],
+  )
+
+  const typeBtns = useMemo(
+    () => aggregateTypeButtons(selectedLessons),
+    [selectedLessonsKey, selectedLessons],
+  )
+
+  useEffect(() => {
+    setSourceFilter(new Set(sourceBtns.map((b) => b.key)))
+    setTypeFilter(new Set(typeBtns.map((b) => b.key)))
+  }, [selectedLessonsKey, sourceBtns, typeBtns])
+
+  const problemPool = useMemo(() => {
+    const raw = buildProblemPool(selectedLessons)
+    return filterProblemPool(raw, sourceFilter, typeFilter)
+  }, [
+    selectedLessonsKey,
+    selectedLessons,
+    sourceFilterKey,
+    typeFilterKey,
+    sourceFilter,
+    typeFilter,
+  ])
+
+  const dbAnalysisIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const key of existingImages.keys()) {
+      if (key.endsWith(':analysis')) ids.add(key.slice(0, -':analysis'.length))
+    }
+    return ids
+  }, [existingImages])
+
+  const sessionMatchedAnalysisIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const slice of slices) {
+      if (slice.problemId && slice.imageKind === 'analysis') {
+        ids.add(slice.problemId)
+      }
+    }
+    return ids
+  }, [slices])
+
+  const searchResults = useMemo(() => {
+    const base = searchProblems(problemPool, searchQuery)
+    if (!onlyMissingAnalysis) return base
+    return base.filter(
+      (item) =>
+        !problemHasAnalysisImage(item.problem, dbAnalysisIds) &&
+        !sessionMatchedAnalysisIds.has(item.problem.id),
+    )
+  }, [problemPool, searchQuery, onlyMissingAnalysis, dbAnalysisIds, sessionMatchedAnalysisIds])
 
   const activeSlice = useMemo(
     () => slices.find((s) => s.id === activeSliceId) ?? null,
@@ -138,20 +220,38 @@ export default function MathPdfSliceMatcher({ user }: Props) {
 
   const matchedCount = slices.filter((s) => s.problemId).length
   const allMatched = slices.length > 0 && matchedCount === slices.length
-  const canSlice = selectedLessons.size > 0 && pageUrls.length > 0
+  const canSlice = selectedLessons.length > 0 && pageUrls.length > 0
 
   const showFlash = useCallback((msg: string) => {
     setFlash(msg)
     window.setTimeout(() => setFlash(null), 2600)
   }, [])
 
+  /** Keep default + localStorage in sync so the next划片 inherits the same kind. */
+  const applySessionImageKind = useCallback((kind: MathImageKind) => {
+    setDefaultKind(kind)
+    persistImageKind(kind)
+  }, [])
+
+  const setSliceImageKind = useCallback(
+    (sliceId: string, kind: MathImageKind) => {
+      applySessionImageKind(kind)
+      setSlices((prev) =>
+        prev.map((s) => (s.id === sliceId ? { ...s, imageKind: kind } : s)),
+      )
+    },
+    [applySessionImageKind],
+  )
+
   useEffect(() => {
-    if (selectedLessons.size === 0) {
+    if (selectedLessons.length === 0) {
       setExistingImages(new Map())
       return
     }
+    let cancelled = false
     void (async () => {
-      const rows = await Promise.all([...selectedLessons].map(fetchLessonProblemImages))
+      const rows = await Promise.all(selectedLessons.map(fetchLessonProblemImages))
+      if (cancelled) return
       const map = new Map<string, MathProblemImage>()
       for (const list of rows) {
         for (const row of list) {
@@ -160,7 +260,10 @@ export default function MathPdfSliceMatcher({ user }: Props) {
       }
       setExistingImages(map)
     })()
-  }, [selectedLessons])
+    return () => {
+      cancelled = true
+    }
+  }, [selectedLessonsKey, selectedLessons])
 
   useEffect(() => {
     return () => {
@@ -171,51 +274,77 @@ export default function MathPdfSliceMatcher({ user }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- cleanup on unmount only
   }, [])
 
+  function selectGrade(grade: number) {
+    if (grade === selectedGrade) return
+    setSelectedGrade(grade)
+    setSelectedLessons(lessonsForGrade(grade))
+  }
+
   function toggleLesson(id: string) {
-    setSelectedLessons((prev) => {
+    setSelectedLessons((prev) =>
+      prev.includes(id) ? prev.filter((lessonId) => lessonId !== id) : [...prev, id],
+    )
+  }
+
+  function toggleAllLessonsInGrade() {
+    const allOn = gradeLessonIds.every((id) => selectedLessonSet.has(id))
+    setSelectedLessons(allOn ? [] : [...gradeLessonIds])
+  }
+
+  function toggleFilter(axis: 'source' | 'type', value: string) {
+    const setter = axis === 'source' ? setSourceFilter : setTypeFilter
+    setter((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      if (next.has(value)) next.delete(value)
+      else next.add(value)
       return next
     })
   }
 
-  function toggleGradeLessons(grade: number) {
-    const ids = lessonsForGrade(grade)
-    setSelectedLessons((prev) => {
-      const allSelected = ids.every((id) => prev.has(id))
-      const next = new Set(prev)
-      if (allSelected) ids.forEach((id) => next.delete(id))
-      else ids.forEach((id) => next.add(id))
-      return next
-    })
+  function toggleAllFilters(axis: 'source' | 'type') {
+    const btns = axis === 'source' ? sourceBtns : typeBtns
+    const setter = axis === 'source' ? setSourceFilter : setTypeFilter
+    const current = axis === 'source' ? sourceFilter : typeFilter
+    const allSelected = btns.length > 0 && btns.every((b) => current.has(b.key))
+    setter(allSelected ? new Set() : new Set(btns.map((b) => b.key)))
   }
 
-  async function handlePdfUpload(file: File) {
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
+  async function handlePdfUpload(files: File[]) {
+    const pdfs = files.filter((f) => f.name.toLowerCase().endsWith('.pdf'))
+    if (pdfs.length === 0) {
       showFlash('请选择 PDF 文件')
       return
     }
-    if (file.size > MAX_PDF_MB * 1024 * 1024) {
-      showFlash(`PDF 过大（最大 ${MAX_PDF_MB} MB）`)
+    if (pdfs.length < files.length) {
+      showFlash(`已忽略 ${files.length - pdfs.length} 个非 PDF 文件`)
+    }
+    const tooLarge = pdfs.find((f) => f.size > MAX_PDF_MB * 1024 * 1024)
+    if (tooLarge) {
+      showFlash(`${tooLarge.name} 过大（最大 ${MAX_PDF_MB} MB）`)
       return
     }
 
     revokePageUrls(pageUrls)
     for (const s of slices) URL.revokeObjectURL(s.cropUrl)
     setPageUrls([])
+    setPageMeta([])
     setSlices([])
     setActiveSliceId(null)
     setPdfLoading(true)
     setPdfProgress(null)
 
     try {
-      const urls = await renderPdfFileToPageUrls(file, {
+      const { urls, meta } = await renderPdfFilesToPageUrls(pdfs, {
         scale: 2,
-        onPageRendered: (done, total) => setPdfProgress({ done, total }),
+        onPageRendered: (info) => setPdfProgress(info),
       })
       setPageUrls(urls)
-      showFlash(`已加载 ${urls.length} 页`)
+      setPageMeta(meta)
+      showFlash(
+        pdfs.length === 1
+          ? `已加载 ${urls.length} 页`
+          : `已加载 ${pdfs.length} 个 PDF，共 ${urls.length} 页`,
+      )
     } catch (err) {
       showFlash(err instanceof Error ? err.message : 'PDF 解析失败')
     } finally {
@@ -232,10 +361,7 @@ export default function MathPdfSliceMatcher({ user }: Props) {
       const { blob, url } = await cropImageBlob(pageUrl, rect)
 
       const overlapping = slices.find(
-        (s) =>
-          s.pageIndex === pageIndex &&
-          s.problemId &&
-          rectIoU(s.rect, rect) >= OVERLAP_IOU,
+        (s) => s.pageIndex === pageIndex && s.problemId && rectIoU(s.rect, rect) >= OVERLAP_IOU,
       )
 
       if (overlapping) {
@@ -364,6 +490,7 @@ export default function MathPdfSliceMatcher({ user }: Props) {
       revokePageUrls(pageUrls)
       for (const s of slices) URL.revokeObjectURL(s.cropUrl)
       setPageUrls([])
+      setPageMeta([])
       setSlices([])
       setActiveSliceId(null)
     } else {
@@ -371,10 +498,7 @@ export default function MathPdfSliceMatcher({ user }: Props) {
     }
   }
 
-  function onPagePointerDown(
-    e: React.PointerEvent<HTMLDivElement>,
-    pageIndex: number,
-  ) {
+  function onPagePointerDown(e: React.PointerEvent<HTMLDivElement>, pageIndex: number) {
     if (!canSlice || e.button !== 0) return
     const target = e.currentTarget
     const rect = target.getBoundingClientRect()
@@ -443,60 +567,139 @@ export default function MathPdfSliceMatcher({ user }: Props) {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[220px_1fr_300px]">
-        {/* Left: lessons + upload + slice list */}
+      <div className="grid gap-4 lg:grid-cols-[260px_1fr_300px]">
+        {/* Left: grade + lessons + filters + upload + slice list */}
         <aside className="space-y-3">
           <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <div className="text-[12px] font-bold text-slate-500">选择讲次（可多选）</div>
-              {selectedLessons.size === 0 && (
-                <span className="text-[10px] font-semibold text-amber-600">必选</span>
-              )}
-            </div>
-            <div className="max-h-[36vh] space-y-2 overflow-y-auto">
-              {grades.map((grade) => {
-                const ids = lessonsForGrade(grade)
-                const allOn = ids.every((id) => selectedLessons.has(id))
-                return (
-                  <div key={grade}>
-                    <button
-                      type="button"
-                      onClick={() => toggleGradeLessons(grade)}
-                      className="mb-1 px-1 text-[10px] font-bold text-teal-700 hover:underline"
-                    >
-                      {GRADE_LABEL[grade]} {allOn ? '全不选' : '全选'}
-                    </button>
-                    <div className="flex flex-wrap gap-1">
-                      {ids.map((id) => (
-                        <button
-                          key={id}
-                          type="button"
-                          onClick={() => toggleLesson(id)}
-                          className={clsx(
-                            'rounded-lg px-2 py-1 text-[11px] font-semibold transition',
-                            selectedLessons.has(id)
-                              ? 'bg-teal-600 text-white'
-                              : 'bg-teal-50 text-teal-800 hover:bg-teal-100',
-                          )}
-                        >
-                          {lessonDisplayLabel(id, true)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
+            <div className="mb-2 text-[12px] font-bold text-slate-500">年级（单选）</div>
+            <div className="flex flex-wrap gap-1.5">
+              {grades.map((grade) => (
+                <button
+                  key={grade}
+                  type="button"
+                  onClick={() => selectGrade(grade)}
+                  className={clsx(
+                    'rounded-lg px-3 py-1.5 text-[11px] font-semibold transition',
+                    selectedGrade === grade
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-teal-50 text-teal-800 hover:bg-teal-100',
+                  )}
+                >
+                  {GRADE_LABEL[grade]}
+                </button>
+              ))}
             </div>
           </section>
 
           <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
-            <div className="mb-2 text-[12px] font-bold text-slate-500">默认图片类型</div>
+            <div className="mb-2 flex items-center justify-between">
+              <div className="text-[12px] font-bold text-slate-500">
+                {GRADE_LABEL[selectedGrade]}讲次（可多选）
+              </div>
+              <button
+                type="button"
+                onClick={toggleAllLessonsInGrade}
+                className="text-[10px] font-semibold text-teal-600 hover:text-teal-800"
+              >
+                {gradeLessonIds.every((id) => selectedLessonSet.has(id)) ? '全不选' : '全选'}
+              </button>
+            </div>
+            <div className="flex max-h-[22vh] flex-wrap gap-1 overflow-y-auto">
+              {gradeLessonIds.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => toggleLesson(id)}
+                  className={clsx(
+                    'rounded-lg px-2 py-1 text-[11px] font-semibold transition',
+                    selectedLessonSet.has(id)
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-teal-50 text-teal-800 hover:bg-teal-100',
+                  )}
+                >
+                  {lessonDisplayLabel(id, true)}
+                </button>
+              ))}
+            </div>
+            {selectedLessons.length === 0 && (
+              <p className="mt-2 text-[10px] text-amber-600">请至少选择一个讲次</p>
+            )}
+          </section>
+
+          <section className="rounded-2xl border border-teal-100 bg-teal-50/40 p-2.5 shadow-sm">
+            <div className="mb-2 space-y-2">
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-teal-800">📂 来源</span>
+                  {sourceBtns.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleAllFilters('source')}
+                      className="text-[10px] text-teal-600 hover:text-teal-800"
+                    >
+                      {sourceBtns.every((b) => sourceFilter.has(b.key)) ? '全不选' : '全选'}
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {sourceBtns.map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => toggleFilter('source', b.key)}
+                      className={clsx(
+                        FILTER_BTN_BASE,
+                        sourceFilter.has(b.key) ? FILTER_BTN_ON : FILTER_BTN_OFF,
+                      )}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-teal-800">🏷️ 题型</span>
+                  {typeBtns.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleAllFilters('type')}
+                      className="text-[10px] text-teal-600 hover:text-teal-800"
+                    >
+                      {typeBtns.every((b) => typeFilter.has(b.key)) ? '全不选' : '全选'}
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {typeBtns.map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => toggleFilter('type', b.key)}
+                      className={clsx(
+                        FILTER_BTN_BASE,
+                        typeFilter.has(b.key) ? FILTER_BTN_ON : FILTER_BTN_OFF,
+                      )}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
+            <div className="mb-2 text-[12px] font-bold text-slate-500">默认图片类型（新划片沿用）</div>
             <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
               {(['analysis', 'figure'] as const).map((kind) => (
                 <button
                   key={kind}
                   type="button"
-                  onClick={() => setDefaultKind(kind)}
+                  onClick={() => {
+                    if (activeSliceId) setSliceImageKind(activeSliceId, kind)
+                    else applySessionImageKind(kind)
+                  }}
                   className={clsx(
                     'flex-1 rounded-lg py-1.5 text-[11px] font-bold transition',
                     defaultKind === kind ? 'bg-white text-teal-800 shadow-sm' : 'text-slate-500',
@@ -506,6 +709,9 @@ export default function MathPdfSliceMatcher({ user }: Props) {
                 </button>
               ))}
             </div>
+            <p className="mt-2 text-[10px] leading-relaxed text-teal-700">
+              {MATH_IMAGE_KIND_HINT[defaultKind]}。教材原题截图请选「题面图」，手写解析请选「题解图」。
+            </p>
           </section>
 
           <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
@@ -514,11 +720,12 @@ export default function MathPdfSliceMatcher({ user }: Props) {
               ref={pdfInputRef}
               type="file"
               accept="application/pdf"
+              multiple
               className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0]
+                const picked = Array.from(e.target.files ?? [])
                 e.target.value = ''
-                if (file) void handlePdfUpload(file)
+                if (picked.length > 0) void handlePdfUpload(picked)
               }}
             />
             <button
@@ -529,16 +736,18 @@ export default function MathPdfSliceMatcher({ user }: Props) {
             >
               {pdfLoading
                 ? pdfProgress
-                  ? `解析中 ${pdfProgress.done}/${pdfProgress.total}…`
+                  ? pdfProgress.fileCount > 1
+                    ? `解析中 ${pdfProgress.fileIndex}/${pdfProgress.fileCount} · ${pdfProgress.pageInFile}/${pdfProgress.pagesInFile} 页`
+                    : `解析中 ${pdfProgress.pageInFile}/${pdfProgress.pagesInFile} 页`
                   : '解析中…'
                 : pageUrls.length > 0
-                  ? '更换 PDF'
-                  : '选择 PDF'}
+                  ? '更换 PDF（可多选）'
+                  : '选择 PDF（可多选）'}
             </button>
-            {!canSlice && selectedLessons.size > 0 && pageUrls.length === 0 && (
+            {!canSlice && selectedLessons.length > 0 && pageUrls.length === 0 && (
               <p className="mt-2 text-[10px] text-slate-400">上传 PDF 后即可在页面上划片</p>
             )}
-            {selectedLessons.size === 0 && (
+            {selectedLessons.length === 0 && (
               <p className="mt-2 text-[10px] text-amber-600">请先选择至少一个讲次</p>
             )}
           </section>
@@ -572,11 +781,17 @@ export default function MathPdfSliceMatcher({ user }: Props) {
                       }}
                       className={clsx(
                         'flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-left transition',
-                        activeSliceId === s.id ? 'bg-teal-50 ring-1 ring-teal-300' : 'hover:bg-slate-50',
+                        activeSliceId === s.id
+                          ? 'bg-teal-50 ring-1 ring-teal-300'
+                          : 'hover:bg-slate-50',
                       )}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={s.cropUrl} alt="" className="h-10 w-10 shrink-0 rounded object-cover" />
+                      <img
+                        src={s.cropUrl}
+                        alt=""
+                        className="h-10 w-10 shrink-0 rounded object-cover"
+                      />
                       <div className="min-w-0 flex-1">
                         <div className="text-[10px] text-slate-400">
                           #{i + 1} · 第 {s.pageIndex + 1} 页 · {MATH_IMAGE_KIND_LABEL[s.imageKind]}
@@ -623,7 +838,9 @@ export default function MathPdfSliceMatcher({ user }: Props) {
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-[14px] font-extrabold text-slate-800">PDF 预览</h2>
             {pageUrls.length > 0 && (
-              <span className="text-[11px] text-slate-400">{pageUrls.length} 页 · 拖拽框选区域</span>
+              <span className="text-[11px] text-slate-400">
+                {pageUrls.length} 页 · 拖拽框选区域
+              </span>
             )}
           </div>
 
@@ -633,14 +850,24 @@ export default function MathPdfSliceMatcher({ user }: Props) {
               <p className="text-[13px] text-slate-500">上传 PDF 后在此预览并划片</p>
             </div>
           ) : (
-            <div className="max-h-[78vh] space-y-4 overflow-y-auto pr-1">
-              {pageUrls.map((url, pageIndex) => (
+            <div className="max-h-[89vh] space-y-4 overflow-y-auto pr-1">
+              {pageUrls.map((url, pageIndex) => {
+                const meta = pageMeta[pageIndex]
+                return (
                 <div key={url} className="relative">
-                  <div className="mb-1 text-[10px] font-bold text-slate-400">第 {pageIndex + 1} 页</div>
+                  <div className="mb-1 text-[10px] font-bold text-slate-400">
+                    第 {pageIndex + 1} 页
+                    {meta && (
+                      <span className="font-normal text-slate-400">
+                        {' '}
+                        · {meta.fileName} 第 {meta.pageInFile} 页
+                      </span>
+                    )}
+                  </div>
                   <div
                     data-page-index={pageIndex}
                     className={clsx(
-                      'relative select-none overflow-hidden rounded-lg border border-slate-200',
+                      'relative overflow-hidden rounded-lg border border-slate-200 select-none',
                       canSlice ? 'cursor-crosshair' : 'cursor-not-allowed opacity-80',
                     )}
                     onPointerDown={(e) => onPagePointerDown(e, pageIndex)}
@@ -649,7 +876,12 @@ export default function MathPdfSliceMatcher({ user }: Props) {
                     onPointerCancel={onPagePointerUp}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={url} alt={`PDF 第 ${pageIndex + 1} 页`} className="block w-full" draggable={false} />
+                    <img
+                      src={url}
+                      alt={`PDF 第 ${pageIndex + 1} 页`}
+                      className="block w-full"
+                      draggable={false}
+                    />
 
                     {slices
                       .filter((s) => s.pageIndex === pageIndex)
@@ -700,7 +932,7 @@ export default function MathPdfSliceMatcher({ user }: Props) {
                     )}
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </section>
@@ -726,16 +958,15 @@ export default function MathPdfSliceMatcher({ user }: Props) {
 
               <div>
                 <div className="mb-1 text-[11px] font-bold text-slate-500">图片类型</div>
+                <p className="mb-1.5 text-[10px] leading-relaxed text-teal-700">
+                  {MATH_IMAGE_KIND_HINT[activeSlice.imageKind]}
+                </p>
                 <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
                   {(['analysis', 'figure'] as const).map((kind) => (
                     <button
                       key={kind}
                       type="button"
-                      onClick={() =>
-                        setSlices((prev) =>
-                          prev.map((s) => (s.id === activeSlice.id ? { ...s, imageKind: kind } : s)),
-                        )
-                      }
+                      onClick={() => setSliceImageKind(activeSlice.id, kind)}
                       className={clsx(
                         'flex-1 rounded-lg py-1.5 text-[11px] font-bold transition',
                         activeSlice.imageKind === kind
@@ -750,7 +981,24 @@ export default function MathPdfSliceMatcher({ user }: Props) {
               </div>
 
               <div>
-                <div className="mb-1 text-[11px] font-bold text-slate-500">搜索题目</div>
+                <div className="mb-1 flex items-center justify-between">
+                  <div className="text-[11px] font-bold text-slate-500">
+                    搜索题目
+                    <span className="ml-1.5 font-normal text-slate-400">
+                      （{searchResults.length}
+                      {onlyMissingAnalysis ? ` / ${problemPool.length}` : ''} 题）
+                    </span>
+                  </div>
+                  <label className="flex cursor-pointer items-center gap-1 text-[10px] text-slate-500">
+                    <input
+                      type="checkbox"
+                      checked={onlyMissingAnalysis}
+                      onChange={(e) => setOnlyMissingAnalysis(e.target.checked)}
+                      className="rounded border-slate-300"
+                    />
+                    仅无题解图
+                  </label>
+                </div>
                 <input
                   type="search"
                   value={searchQuery}
@@ -760,32 +1008,49 @@ export default function MathPdfSliceMatcher({ user }: Props) {
                 />
               </div>
 
-              <ul className="max-h-[32vh] space-y-1 overflow-y-auto">
-                {searchResults.map((item) => {
-                  const matched = activeSlice.problemId === item.problem.id
-                  return (
-                    <li key={`${item.lessonId}-${item.problem.id}`}>
-                      <button
-                        type="button"
-                        onClick={() => applyMatch(activeSlice.id, item)}
-                        className={clsx(
-                          'w-full rounded-xl px-2.5 py-2 text-left transition',
-                          matched ? 'bg-teal-50 ring-1 ring-teal-300' : 'hover:bg-slate-50',
-                        )}
-                      >
-                        <div className="flex flex-wrap items-center gap-1">
-                          <span className="font-mono text-[10px] font-bold text-teal-700">
-                            {item.problem.id}
-                          </span>
-                          <span className="rounded bg-slate-100 px-1 text-[9px] text-slate-500">
-                            {item.lessonTitle} · {item.sectionLabel}
-                          </span>
-                        </div>
-                        <div className="line-clamp-2 text-[11px] text-slate-700">{item.problem.title}</div>
-                      </button>
-                    </li>
-                  )
-                })}
+              <ul
+                key={`${selectedLessonsKey}:${sourceFilterKey}:${typeFilterKey}`}
+                className="max-h-[32vh] space-y-1 overflow-y-auto"
+              >
+                {searchResults.length === 0 ? (
+                  <li className="py-6 text-center text-[11px] text-slate-400">
+                    {problemPool.length === 0
+                      ? '请先选择讲次'
+                      : onlyMissingAnalysis
+                        ? '暂无待补题解图的题目'
+                        : '无匹配题目，试试其他关键词'}
+                  </li>
+                ) : (
+                  searchResults.map((item) => {
+                    const matched = activeSlice.problemId === item.problem.id
+                    const hasAnalysis = problemHasAnalysisImage(item.problem, dbAnalysisIds)
+                    return (
+                      <li key={`${item.lessonId}-${item.problem.id}`}>
+                        <button
+                          type="button"
+                          onClick={() => applyMatch(activeSlice.id, item)}
+                          className={clsx(
+                            'w-full rounded-xl px-2.5 py-2 text-left transition',
+                            matched ? 'bg-teal-50 ring-1 ring-teal-300' : 'hover:bg-slate-50',
+                          )}
+                        >
+                          <div className="flex flex-wrap items-center gap-1">
+                            <span className="font-mono text-[10px] font-bold text-teal-700">
+                              {item.problem.id}
+                            </span>
+                            <span className="rounded bg-slate-100 px-1 text-[9px] text-slate-500">
+                              {item.lessonTitle} · {item.sectionLabel}
+                            </span>
+                            <AnalysisGuideBadge hasImage={hasAnalysis} showMissing size="sm" />
+                          </div>
+                          <div className="line-clamp-2 text-[11px] text-slate-700">
+                            {item.problem.title}
+                          </div>
+                        </button>
+                      </li>
+                    )
+                  })
+                )}
               </ul>
 
               {activeSlice.problemId && (
@@ -818,9 +1083,7 @@ export default function MathPdfSliceMatcher({ user }: Props) {
       {cloudOverwrite && (
         <CloudOverwriteDialog
           prompt={cloudOverwrite}
-          onConfirm={() =>
-            applyMatch(cloudOverwrite.slice.id, cloudOverwrite.candidate, true)
-          }
+          onConfirm={() => applyMatch(cloudOverwrite.slice.id, cloudOverwrite.candidate, true)}
           onCancel={() => setCloudOverwrite(null)}
         />
       )}
@@ -851,7 +1114,11 @@ function ComparisonPanel({
     <div className="rounded-xl border border-teal-100 bg-teal-50/40 p-2.5">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[11px] font-bold text-teal-800">比对</span>
-        <button type="button" onClick={onClear} className="text-[10px] text-red-500 hover:underline">
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-[10px] text-red-500 hover:underline"
+        >
           取消匹配
         </button>
       </div>
@@ -872,7 +1139,9 @@ function ComparisonPanel({
       </div>
       {(cloudUrl || (slice.imageKind === 'analysis' && staticImg)) && (
         <div className="mt-2 border-t border-teal-100 pt-2">
-          <div className="mb-1 text-[10px] font-semibold text-amber-700">线上已有图片（提交将覆盖）</div>
+          <div className="mb-1 text-[10px] font-semibold text-amber-700">
+            线上已有图片（提交将覆盖）
+          </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={cloudUrl ?? staticImg ?? ''}
@@ -970,21 +1239,31 @@ function CloudOverwriteDialog({
       style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
     >
       <div className="max-w-lg rounded-2xl bg-white p-5 shadow-xl">
-        <h3 className="mb-1 text-[15px] font-extrabold text-slate-800">题目已有图片 — 是否覆盖？</h3>
+        <h3 className="mb-1 text-[15px] font-extrabold text-slate-800">
+          题目已有图片 — 是否覆盖？
+        </h3>
         <p className="mb-4 text-[12px] text-slate-500">
-          <span className="font-mono font-bold text-teal-700">{candidate.problem.id}</span>{' '}
-          的{MATH_IMAGE_KIND_LABEL[slice.imageKind]}已存在，提交后将替换。
+          <span className="font-mono font-bold text-teal-700">{candidate.problem.id}</span> 的
+          {MATH_IMAGE_KIND_LABEL[slice.imageKind]}已存在，提交后将替换。
         </p>
         <div className="mb-4 grid grid-cols-2 gap-3">
           <div>
             <div className="mb-1 text-[11px] font-bold text-slate-500">线上现有</div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={existingUrl} alt="现有" className="w-full rounded-lg border border-slate-200 object-contain" />
+            <img
+              src={existingUrl}
+              alt="现有"
+              className="w-full rounded-lg border border-slate-200 object-contain"
+            />
           </div>
           <div>
             <div className="mb-1 text-[11px] font-bold text-slate-500">新划片</div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={slice.cropUrl} alt="新划片" className="w-full rounded-lg border border-teal-300 object-contain" />
+            <img
+              src={slice.cropUrl}
+              alt="新划片"
+              className="w-full rounded-lg border border-teal-300 object-contain"
+            />
           </div>
         </div>
         <div className="mb-3 rounded-lg bg-slate-50 p-2 text-[11px] text-slate-600">

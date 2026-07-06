@@ -28,6 +28,7 @@ export default createFilterPanel({
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
+    { key: 'supplement', label: '📒 附加' },
   ],
   typeBtns: [
     { key: 'type1', label: '题型1·等量代换' },

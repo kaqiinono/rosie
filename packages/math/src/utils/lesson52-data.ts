@@ -864,6 +864,40 @@ const SUPPLEMENT: Problem[] = [
     finalUnit: '人',
     finalAns: 405,
   },
+  {
+    id: '52-S5',
+    title: '附加5 · 甲乙两班人数',
+    tag: 'type5',
+    tagLabel: '附加题',
+    difficulty: 5,
+    text: '甲班的人数是乙班人数的 <strong>3</strong> 倍，乙班人数比甲班人数的 <strong>3</strong> 倍少 <strong>80</strong> 人。甲、乙两个班的人数各是多少？',
+    analysis: [
+      '设乙班为 1 份，则甲班为 3 份',
+      '乙 = 3×甲 − 80 = 9 份 − 80，即 1 份 = 9 份 − 80 → 8 份 = 80',
+      '乙班 <strong>10</strong> 人，甲班 3×10 = <strong>30</strong> 人',
+    ],
+    type: 'none',
+    finalQ: '甲班有',
+    finalUnit: '人',
+    finalAns: 30,
+  },
+  {
+    id: '52-S6',
+    title: '附加6 · 男女生人数',
+    tag: 'type5',
+    tagLabel: '附加题',
+    difficulty: 5,
+    text: '某校男生人数是女生人数的 <strong>2</strong> 倍少 <strong>20</strong> 人，女生人数是男生人数的 <strong>3</strong> 倍少 <strong>360</strong> 人。男、女生人数各是多少？',
+    analysis: [
+      '设女生为 1 份，男生 = 2 份 − 20',
+      '女生 = 3×男生 − 360 = 6 份 − 60 − 360 = 6 份 − 420',
+      '1 份 = 420 ÷ 5 = 84 → 女生 <strong>84</strong> 人，男生 2×84 − 20 = <strong>148</strong> 人',
+    ],
+    type: 'none',
+    finalQ: '男生有',
+    finalUnit: '人',
+    finalAns: 148,
+  },
 ]
 
 const PRETEST: Problem[] = [
