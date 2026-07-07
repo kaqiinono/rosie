@@ -41,7 +41,7 @@ export default function MathLessonSummariesPanel({ lessonIds, admin, onFlash }: 
 
   const withSummary = useMemo(
     () => sortedIds.filter((id) => lessonHasSummary(admin, id)),
-    [sortedIds, admin.notes],
+    [sortedIds, admin],
   )
 
   const [openIds, setOpenIds] = useState<Set<string>>(() => defaultOpenIds(sortedIds, withSummary))

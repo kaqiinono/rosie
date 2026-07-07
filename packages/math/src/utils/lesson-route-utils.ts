@@ -13,11 +13,11 @@ export type ResolvedLessonRoute = {
 export function resolveLessonRoute(grade: number, seq: number): ResolvedLessonRoute | undefined {
   const entry = lessonByRoute(grade, seq)
   if (!entry) return undefined
-  const module = lessonModuleBySlug(entry.slug)
-  if (!module) return undefined
+  const lessonModule = lessonModuleBySlug(entry.slug)
+  if (!lessonModule) return undefined
   return {
     entry,
-    module,
+    module: lessonModule,
     basePath: routeForLesson(entry),
     grade,
     seq,

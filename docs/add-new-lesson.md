@@ -3,6 +3,8 @@
 > 适用场景：新增一个数学讲次（legacyId = N，如第 52 讲），录入题目并注册到平台。
 >
 > **路由已统一为动态页** `apps/web/src/app/math/ny/[grade]/[seq]/`，新增讲次**不需要**再建 `apps/web/src/app/math/ny/N/` 目录。
+>
+> **ID 收尾（去掉 legacyId / slug）：** 见 [`docs/math/lesson-id-cleanup.md`](math/lesson-id-cleanup.md)。
 
 ---
 

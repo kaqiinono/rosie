@@ -190,7 +190,7 @@ export default function MathImageManagerPage({ user }: Props) {
           .getNotes(lessonSummaryProblemId(id))
           .some((n) => !isRichBodyEmpty(n.bodyHtml)),
       ).length,
-    [selectedLessons, selectedLessonsKey, notesAdmin.notes],
+    [selectedLessons, selectedLessonsKey, notesAdmin],
   )
 
   const hasSummary = summaryCount > 0

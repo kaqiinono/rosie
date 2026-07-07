@@ -48,7 +48,7 @@ export function useProblemAnswer(
         paperId: null,
       })
     },
-    [user, scratchCtx?.section, problem],
+    [user, scratchCtx, problem],
   )
 
   const submit = useCallback(

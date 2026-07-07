@@ -24,12 +24,10 @@ function initialAxisFilter(
 
 export function useMathLessonFilter() {
   const grades = gradesInOrder()
-  const initialRef = useRef<ReturnType<typeof resolveInitialGradeAndLessons> | null>(null)
-  if (!initialRef.current) initialRef.current = resolveInitialGradeAndLessons()
-  const initial = initialRef.current
+  const [initial] = useState(() => resolveInitialGradeAndLessons())
 
   const [selectedGrade, setSelectedGrade] = useState(initial.grade)
-  const [selectedLessons, setSelectedLessons] = useState<string[]>(() => initial.lessons)
+  const [selectedLessons, setSelectedLessons] = useState<string[]>(initial.lessons)
   const [sourceFilter, setSourceFilter] = useState<Set<string>>(() =>
     initialAxisFilter(initial.lessons, initial.saved?.sourceFilter, aggregateSourceButtons),
   )
