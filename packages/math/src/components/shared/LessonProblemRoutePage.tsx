@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation'
 import type { Problem } from '@rosie/core'
 import type { ComponentType } from 'react'
 import { getProblemNav } from '@rosie/math/utils/problem-nav'
+import { ProblemScratchProvider } from '@rosie/math/components/shared/ScratchPad/ProblemScratchContext'
+import { LessonScratchActionsProvider } from '@rosie/math/components/shared/ScratchPad/LessonScratchActionsContext'
 
 export type ProblemDetailComponentProps = {
   problem: Problem
@@ -14,6 +16,11 @@ export type ProblemDetailComponentProps = {
   prevHref?: string | null
   nextHref?: string | null
   positionLabel?: string
+  scratchActions?: {
+    onSolve: (problemId: string) => void | Promise<void>
+    onWrong: (problemId: string) => void
+    onResolved: (problemId: string) => void | Promise<void>
+  }
 }
 
 type LessonProblemRoutePageProps = {
@@ -22,7 +29,11 @@ type LessonProblemRoutePageProps = {
   section: string
   problems: Problem[]
   Detail: ComponentType<ProblemDetailComponentProps>
-  detailProps?: Omit<ProblemDetailComponentProps, 'problem' | 'prevHref' | 'nextHref' | 'positionLabel'>
+  detailProps?: Omit<
+    ProblemDetailComponentProps,
+    'problem' | 'prevHref' | 'nextHref' | 'positionLabel' | 'scratchActions'
+  >
+  scratchActions?: ProblemDetailComponentProps['scratchActions']
 }
 
 export default function LessonProblemRoutePage({
@@ -32,6 +43,7 @@ export default function LessonProblemRoutePage({
   problems,
   Detail,
   detailProps,
+  scratchActions,
 }: LessonProblemRoutePageProps) {
   const { id } = use(params)
   const id1 = parseInt(id, 10)
@@ -42,12 +54,32 @@ export default function LessonProblemRoutePage({
   const { prevHref, nextHref, positionLabel } = getProblemNav(basePath, section, id1, problems.length)
 
   return (
-    <Detail
-      problem={problem}
-      prevHref={prevHref}
-      nextHref={nextHref}
-      positionLabel={positionLabel}
-      {...detailProps}
-    />
+    <ProblemScratchProvider
+      value={{
+        sectionProblems: problems,
+        section,
+        problemIndex: id1 - 1,
+        basePath,
+      }}
+    >
+      <LessonScratchActionsProvider
+        value={
+          scratchActions ?? {
+            onSolve: async () => {},
+            onWrong: () => {},
+            onResolved: async () => {},
+          }
+        }
+      >
+        <Detail
+          problem={problem}
+          prevHref={prevHref}
+          nextHref={nextHref}
+          positionLabel={positionLabel}
+          scratchActions={scratchActions}
+          {...detailProps}
+        />
+      </LessonScratchActionsProvider>
+    </ProblemScratchProvider>
   )
 }

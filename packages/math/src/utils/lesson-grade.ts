@@ -46,6 +46,12 @@ export function lessonsForGrade(grade: number): string[] {
   return Object.keys(LESSON_GRADE).filter((id) => LESSON_GRADE[id] === grade)
 }
 
+/** 某年级默认选中的讲次：列表最后一讲（通常为该年级最高编号）。 */
+export function defaultLessonForGrade(grade: number): string | undefined {
+  const ids = lessonsForGrade(grade)
+  return ids[ids.length - 1]
+}
+
 /** 取某讲次的年级；未登记返回 undefined。 */
 export function gradeOf(lessonId: string): number | undefined {
   return LESSON_GRADE[lessonId]

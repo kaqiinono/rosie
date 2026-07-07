@@ -1,6 +1,6 @@
 'use client'
 
-import {use, useState, useEffect, useRef, useCallback} from 'react'
+import {use, useState, useEffect, useCallback} from 'react'
 import Link from 'next/link'
 import {useAuth} from '@rosie/core'
 import {useMathSolved} from '@rosie/math/hooks/useMathSolved'
@@ -39,9 +39,13 @@ import type {QuizPaper, QuizAnswerRecord} from '@rosie/math/hooks/useMathQuiz'
 import {checkProblemAnswer, isInteractiveProblem} from '@rosie/math/utils/check-problem-answer'
 import {injectFigureGridCallbacks} from '@rosie/math/components/shared/injectFigureSubmit'
 import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
-import ScratchPadInline from '@rosie/math/components/shared/ScratchPad/ScratchPadInline'
-import type {ScratchObject} from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
 import QuizProblemSolution from '@rosie/math/components/shared/QuizProblemSolution'
+import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
+import {
+  clearAllScratchWorkingForPaper,
+  fetchAllScratchWorkingForPaper,
+} from '@rosie/math/utils/math-scratch-db'
+import { mathWrongStore } from '@rosie/math/hooks/useMathWrong'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
@@ -107,18 +111,10 @@ const SECTION_LABELS: Record<SectionKey, string> = {
     supplement: '附加题', pretest: '课前测',
 }
 
-function loadScratchFromAnswers(answers: QuizPaper['answers']): {
-    pads: Record<string, ScratchObject[]>
-    embedded: Record<string, boolean>
-} {
-    const pads: Record<string, ScratchObject[]> = {}
-    const embedded: Record<string, boolean> = {}
-    if (!answers) return {pads, embedded}
-    for (const [k, v] of Object.entries(answers)) {
-        if (v.scratchObjects?.length) pads[k] = v.scratchObjects
-        if (v.scratchEmbedded) embedded[k] = true
-    }
-    return {pads, embedded}
+function paperProblemsList(paper: QuizPaper): Problem[] {
+    return paper.problems
+        .map((item) => PROBLEM_MAP.get(item.problemId)?.problem)
+        .filter((p): p is Problem => Boolean(p))
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -141,9 +137,6 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
     const [submitting, setSubmitting] = useState(false)
     const [saving, setSaving] = useState(false)
     const [saveMessage, setSaveMessage] = useState<string | null>(null)
-    const [scratchPads, setScratchPads] = useState<Record<string, ScratchObject[]>>({})
-    const [scratchEmbedded, setScratchEmbedded] = useState<Record<string, boolean>>({})
-    const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     useEffect(() => {
         if (!user) return
@@ -166,9 +159,6 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                         createdAt: data.created_at as string,
                     }
                     setPaper(p)
-                    const {pads, embedded} = loadScratchFromAnswers(p.answers)
-                    setScratchPads(pads)
-                    setScratchEmbedded(embedded)
                     if (p.completedAt && p.answers) {
                         setSubmitted(true)
                         const res: Record<string, boolean> = {}
@@ -217,10 +207,7 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
         setInteractiveTouched((prev) => ({...prev, [problemId]: true}))
     }
 
-    const buildDraftAnswers = useCallback((
-        pads = scratchPads,
-        embedded = scratchEmbedded,
-    ): Record<string, QuizAnswerRecord> => {
+    const buildDraftAnswers = useCallback((): Record<string, QuizAnswerRecord> => {
         if (!paper) return {}
         const records: Record<string, QuizAnswerRecord> = {}
         for (const item of paper.problems) {
@@ -250,28 +237,15 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                 }
             }
 
-            const scratch = pads[item.problemId] ?? existing?.scratchObjects
-            const showEmbedded = embedded[item.problemId] ?? existing?.scratchEmbedded
-            if (scratch?.length || showEmbedded) {
-                const base: QuizAnswerRecord = record ?? existing ?? {userAnswer: null, correct: null}
-                record = {
-                    ...base,
-                    ...(scratch?.length ? {scratchObjects: scratch} : {}),
-                    ...(showEmbedded ? {scratchEmbedded: true} : {}),
-                }
-            }
-
             if (!record) continue
             const hasData =
                 record.userAnswer != null ||
                 record.interactiveState != null ||
-                (record.scratchObjects?.length ?? 0) > 0 ||
-                record.scratchEmbedded ||
                 record.correct != null
             if (hasData) records[item.problemId] = record
         }
         return records
-    }, [paper, scratchPads, scratchEmbedded, answers, interactiveTouched, interactiveStates])
+    }, [paper, answers, interactiveTouched, interactiveStates])
 
     const persistAnswers = useCallback(async (
         records: Record<string, QuizAnswerRecord>,
@@ -286,65 +260,6 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
         }
         return ok
     }, [paper, user, submitted, savePaperProgress, saveDraftPaper])
-
-    const scheduleScratchPersist = useCallback((
-        nextPads: Record<string, ScratchObject[]>,
-        nextEmbedded: Record<string, boolean>,
-    ) => {
-        if (persistTimerRef.current) clearTimeout(persistTimerRef.current)
-        persistTimerRef.current = setTimeout(() => {
-            if (!paper) return
-            const records = buildDraftAnswers(nextPads, nextEmbedded)
-            if (Object.keys(records).length === 0) return
-            void persistAnswers(records)
-        }, 600)
-    }, [paper, persistAnswers, buildDraftAnswers])
-
-    const handleScratchSave = useCallback((problemId: string, objects: ScratchObject[]) => {
-        if (submitted) return
-        setScratchPads(prev => {
-            const next = {...prev, [problemId]: objects}
-            scheduleScratchPersist(next, scratchEmbedded)
-            return next
-        })
-    }, [submitted, scratchEmbedded, scheduleScratchPersist])
-
-    const handleScratchEmbed = useCallback((problemId: string, objects: ScratchObject[]) => {
-        if (submitted) return
-        setScratchPads(prev => {
-            const nextPads = {...prev, [problemId]: objects}
-            setScratchEmbedded(prevEmbedded => {
-                const nextEmbedded = {...prevEmbedded, [problemId]: true}
-                if (paper) {
-                    const records = buildDraftAnswers(nextPads, nextEmbedded)
-                    void persistAnswers(records)
-                }
-                return nextEmbedded
-            })
-            return nextPads
-        })
-    }, [submitted, paper, persistAnswers, buildDraftAnswers])
-
-    const handleInlineScratchChange = useCallback((problemId: string, objects: ScratchObject[]) => {
-        if (submitted) return
-        setScratchPads(prev => {
-            const next = {...prev, [problemId]: objects}
-            scheduleScratchPersist(next, scratchEmbedded)
-            return next
-        })
-    }, [submitted, scratchEmbedded, scheduleScratchPersist])
-
-    const handleCollapseScratch = useCallback((problemId: string) => {
-        setScratchEmbedded(prev => {
-            const next = {...prev}
-            delete next[problemId]
-            if (paper) {
-                const records = buildDraftAnswers(scratchPads, next)
-                void persistAnswers(records)
-            }
-            return next
-        })
-    }, [paper, scratchPads, persistAnswers, buildDraftAnswers])
 
     async function handleSaveDraft() {
         if (!paper || !user || submitted) return
@@ -367,58 +282,69 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
         if (!paper || !user) return
         setSubmitting(true)
 
+        const workingMap = await fetchAllScratchWorkingForPaper(user.id, paper.id)
         const newResults: Record<string, boolean> = {}
         const answerRecords: Record<string, QuizAnswerRecord> = {}
 
         for (const item of paper.problems) {
             const entry = PROBLEM_MAP.get(item.problemId)
             if (!entry) continue
-            const {problem} = entry
+            const {problem, section} = entry
+            const working = workingMap.get(item.problemId)
 
             if (isInteractiveProblem(problem)) {
-                const result = checkProblemAnswer(problem, interactiveStates[item.problemId])
+                const state = interactiveStates[item.problemId]
+                const result = checkProblemAnswer(problem, state)
                 const correct = result.ok
                 newResults[item.problemId] = correct
                 answerRecords[item.problemId] = {
                     userAnswer: null,
                     correct,
-                    interactiveState: interactiveStates[item.problemId],
-                    scratchObjects: scratchPads[item.problemId],
-                    scratchEmbedded: scratchEmbedded[item.problemId] || undefined,
+                    interactiveState: state,
+                }
+                await submitPracticeAttempt({
+                    userId: user.id,
+                    problem,
+                    section: 'quiz',
+                    correct,
+                    objects: working?.objects ?? [],
+                    answerSnapshot: state ?? null,
+                    paperId: paper.id,
+                })
+                if (correct) {
+                    await handleSolve(item.problemId)
+                } else {
+                    mathWrongStore.invalidate(user.id)
                 }
                 continue
             }
 
             const raw = answers[item.problemId] ?? ''
             const userAnswer = raw === '' ? null : parseFloat(raw)
-            const result = checkProblemAnswer(entry.problem, userAnswer)
+            const result = checkProblemAnswer(problem, userAnswer)
             const correct = result.ok
             newResults[item.problemId] = correct
             answerRecords[item.problemId] = {
                 userAnswer,
                 correct,
-                scratchObjects: scratchPads[item.problemId],
-                scratchEmbedded: scratchEmbedded[item.problemId] || undefined,
+            }
+            await submitPracticeAttempt({
+                userId: user.id,
+                problem,
+                section: 'quiz',
+                correct,
+                objects: working?.objects ?? [],
+                answerSnapshot: userAnswer,
+                paperId: paper.id,
+            })
+            if (correct) {
+                await handleSolve(item.problemId)
+            } else {
+                mathWrongStore.invalidate(user.id)
             }
         }
 
-        await Promise.all(
-            paper.problems.map(async item => {
-                const correct = newResults[item.problemId] ?? false
-                if (correct) {
-                    await handleSolve(item.problemId)
-                } else {
-                    if (user) {
-                        await supabase
-                            .from('math_wrong')
-                            .upsert(
-                                {user_id: user.id, problem_id: item.problemId},
-                                {onConflict: 'user_id,problem_id'},
-                            )
-                    }
-                }
-            }),
-        )
+        await clearAllScratchWorkingForPaper(user.id, paper.id)
 
         const score = paper.problems.reduce(
             (sum, item, idx) => sum + (newResults[item.problemId] ? pointsArr[idx] : 0),
@@ -448,7 +374,6 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
         const entry = PROBLEM_MAP.get(item.problemId)
         if (!entry) return false
         return isProblemAnswered(item.problemId, entry.problem)
-            || (scratchPads[item.problemId]?.length ?? 0) > 0
     }) ?? false
 
     const allAnswered = paper?.problems.every(
@@ -610,10 +535,8 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                         const ans = answers[item.problemId] ?? ''
                         const isCorrect = submitted ? results[item.problemId] : undefined
                         const pts = pointsArr[i] ?? 0
-                        const scratchObjects = scratchPads[item.problemId] ?? []
-                        const showInlineScratch =
-                            scratchEmbedded[item.problemId] === true
-                            || (submitted && scratchObjects.length > 0)
+                        const quizProblemList = paperProblemsList(paper)
+                        const quizProblemIndex = quizProblemList.findIndex((p) => p.id === item.problemId)
 
                         let cardBorder = '1px solid #e2e8f0'
                         let cardBg = '#ffffff'
@@ -667,9 +590,11 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                                             <ScratchPadTrigger
                                                 problem={problem}
                                                 variant="compact"
-                                                initialObjects={scratchObjects}
-                                                onSave={(objects) => handleScratchSave(item.problemId, objects)}
-                                                onEmbedBelow={(objects) => handleScratchEmbed(item.problemId, objects)}
+                                                problems={quizProblemList}
+                                                problemIndex={quizProblemIndex >= 0 ? quizProblemIndex : i}
+                                                section="quiz"
+                                                mode="quiz"
+                                                paperId={paper.id}
                                             />
                                         )}
                                         {submitted ? (
@@ -803,30 +728,6 @@ export default function QuizDetailPage({params}: { params: Promise<{ id: string 
                                                 正确答案：{problem.finalAns}{problem.finalUnit ? ` ${problem.finalUnit}` : ''}
                                             </p>
                                         )}
-                                    </div>
-                                )}
-
-                                {showInlineScratch && (
-                                    <div className={submitted ? 'mt-3' : 'mt-4'}>
-                                        <ScratchPadInline
-                                            problem={problem}
-                                            objects={scratchObjects}
-                                            readOnly={submitted}
-                                            onChange={submitted ? undefined : (objects) => handleInlineScratchChange(item.problemId, objects)}
-                                            onCollapse={submitted ? undefined : () => handleCollapseScratch(item.problemId)}
-                                        />
-                                    </div>
-                                )}
-
-                                {!showInlineScratch && !submitted && scratchObjects.length > 0 && (
-                                    <div className="mt-3 flex justify-end">
-                                        <button
-                                            type="button"
-                                            onClick={() => handleScratchEmbed(item.problemId, scratchObjects)}
-                                            className="cursor-pointer rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[11px] font-semibold text-indigo-600 transition-colors hover:bg-indigo-100"
-                                        >
-                                            在题目下方显示草稿
-                                        </button>
                                     </div>
                                 )}
 

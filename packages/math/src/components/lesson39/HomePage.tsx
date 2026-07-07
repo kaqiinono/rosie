@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson39-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/39'
 
@@ -47,9 +47,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-[#92400e]">
           第39讲 · 一年级目标班<br />掌握盈亏核心公式，轻松解决多余与不足的分配问题！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
 
       {/* Problem Types */}

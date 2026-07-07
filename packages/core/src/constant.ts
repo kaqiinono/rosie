@@ -37,6 +37,8 @@ export const STORAGE_KEYS = {
   FLIPBOOK_WORD_OVERLAY: 'flipbook-word-overlay',
   /** 生字库页单元/课文筛选（实际 key 为 `${CHINESE_CHARS_FILTER}:${bookSlug}`） */
   CHINESE_CHARS_FILTER: 'chinese-chars-filter',
+  /** 数学管理后台讲次/来源/题型筛选，下次进入恢复上次选择 */
+  ADMIN_MATH_LESSON_FILTER: 'admin-math-lesson-filter',
 } as const
 
 export const NAV_PAGES = [

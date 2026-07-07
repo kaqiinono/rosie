@@ -8,6 +8,7 @@ import { lessonIdFromProblemId } from '@rosie/math/constants'
 import MathProblemNotesPanel from '@rosie/math/admin/MathProblemNotesPanel'
 import { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
 import { useProblemNotes } from '@rosie/math/hooks/useProblemNotes'
+import { sanitizeRichHtml } from '@rosie/math/utils/sanitize-summary-html'
 
 type Props = {
   problemId: string
@@ -45,10 +46,9 @@ function ReadOnlyNotes({
         <div className="ql-notes-body">
           {notes.map((note, i) => (
             <article key={note.id} className="ql-note-item">
-              {note.title && <div className="ql-note-title">{note.title}</div>}
               <div
                 className="ql-note-content"
-                dangerouslySetInnerHTML={{ __html: note.bodyHtml }}
+                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.bodyHtml) }}
               />
               {i < notes.length - 1 && <hr className="ql-note-divider" />}
             </article>
@@ -118,6 +118,51 @@ function NotesPanelStyles() {
         .ql-note-content ol { list-style: decimal; padding-left: 1.25rem; margin: 0.25rem 0; }
         .ql-note-content p { margin: 0 0 0.35rem; }
         .ql-note-content p:last-child { margin-bottom: 0; }
+        .ql-note-content img.rich-inline-img {
+          display: block;
+          width: auto;
+          height: auto;
+          max-width: 100%;
+          max-height: none;
+          margin: 0.375rem 0;
+          border-radius: 0.375rem;
+        }
+        .ql-note-content img.rich-img-block { float: none; clear: both; }
+        .ql-note-content img.rich-img-left {
+          float: left;
+          margin: 0 0.75rem 0.5rem 0;
+          clear: none;
+        }
+        .ql-note-content img.rich-img-right {
+          float: right;
+          margin: 0 0 0.5rem 0.75rem;
+          clear: none;
+        }
+        .ql-note-content img.rich-img-pct-40 { width: 40%; min-width: 300px; }
+        .ql-note-content img.rich-img-pct-60 { width: 60%; min-width: 500px; }
+        .ql-note-content img.rich-img-pct-80 { width: 80%; min-width: 600px; }
+        .ql-note-content img.rich-img-pct-100 { width: 100%; min-width: 800px; }
+        .ql-note-content img.rich-img-left.rich-img-pct-100,
+        .ql-note-content img.rich-img-right.rich-img-pct-100 {
+          width: 50%;
+          min-width: 500px;
+        }
+        .ql-note-content::after {
+          content: '';
+          display: block;
+          clear: both;
+        }
+        @media (max-width: 767px) {
+          .ql-note-content img.rich-inline-img {
+            float: none !important;
+            clear: both !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+        }
         .ql-note-divider {
           border: none;
           border-top: 1px dashed #ddd6fe;

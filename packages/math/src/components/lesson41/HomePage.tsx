@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson41-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/41'
 
@@ -46,9 +46,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-sky-800">
           第41讲 · 一年级目标班<br />掌握间隔核心原理，解决锯木头、爬楼梯、敲钟 3 大经典题型！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
 
       {/* Problem Types */}

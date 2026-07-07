@@ -4,6 +4,8 @@ import { supabase } from '@rosie/core'
 import {
   MATH_IMAGES_BUCKET,
   type MathImageKind,
+  lessonSummaryContentImagePath,
+  problemNoteContentImagePath,
   mathImageStoragePath,
 } from '@rosie/math/constants'
 
@@ -231,4 +233,58 @@ export function resolveStoredImageUrl(
 ): string | null {
   const path = map.get(imageKey(problemId, kind))
   return path ? getMathImagePublicUrl(path) : null
+}
+
+const ACCEPTED_IMAGE_EXT = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif'])
+
+/** Upload an inline image for lesson summary rich text (storage only, no DB row). */
+export async function uploadLessonSummaryContentImage(
+  lessonId: string,
+  file: File,
+): Promise<{ error: string | null; url: string | null }> {
+  const ext = (file.name.split('.').pop() ?? 'png').toLowerCase()
+  if (!ACCEPTED_IMAGE_EXT.has(ext)) {
+    return { error: '仅支持 PNG / JPG / WEBP / GIF', url: null }
+  }
+
+  const imageId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const storagePath = lessonSummaryContentImagePath(
+    lessonId,
+    imageId,
+    ext === 'jpeg' ? 'jpg' : ext,
+  )
+
+  const { error } = await supabase.storage
+    .from(MATH_IMAGES_BUCKET)
+    .upload(storagePath, file, { upsert: false, contentType: file.type || undefined })
+
+  if (error) return { error: error.message, url: null }
+  return { error: null, url: getMathImagePublicUrl(storagePath) }
+}
+
+/** Upload an inline image for a problem note rich-text body (storage only). */
+export async function uploadProblemNoteContentImage(
+  lessonId: string,
+  problemId: string,
+  file: File,
+): Promise<{ error: string | null; url: string | null }> {
+  const ext = (file.name.split('.').pop() ?? 'png').toLowerCase()
+  if (!ACCEPTED_IMAGE_EXT.has(ext)) {
+    return { error: '仅支持 PNG / JPG / WEBP / GIF', url: null }
+  }
+
+  const imageId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const storagePath = problemNoteContentImagePath(
+    lessonId,
+    problemId,
+    imageId,
+    ext === 'jpeg' ? 'jpg' : ext,
+  )
+
+  const { error } = await supabase.storage
+    .from(MATH_IMAGES_BUCKET)
+    .upload(storagePath, file, { upsert: false, contentType: file.type || undefined })
+
+  if (error) return { error: error.message, url: null }
+  return { error: null, url: getMathImagePublicUrl(storagePath) }
 }

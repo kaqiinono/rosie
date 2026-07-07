@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 
 export type ChineseWrongKind = 'pinyin' | 'stroke' | 'phrase' | 'recite' | 'accumulation'
 export type ChineseWrongItemType = 'char' | 'phrase' | 'accumulation' | 'poem'
@@ -36,24 +36,31 @@ function parseRows(
   }))
 }
 
+async function fetchChineseWrong(userId: string): Promise<ChineseWrongRow[]> {
+  const { data, error } = await supabase
+    .from('chinese_wrong_items')
+    .select('item_key, item_type, wrong_kind, added_at, resolved, resolved_at')
+    .eq('user_id', userId)
+    .order('added_at', { ascending: false })
+  if (error || !data) return []
+  return parseRows(data)
+}
+
+export const chineseWrongStore = createUserSessionStore<ChineseWrongRow[]>('chinese_wrong', {
+  fetch: fetchChineseWrong,
+  empty: [],
+})
+
 export function useChineseWrong(user: User | null) {
-  const [rows, setRows] = useState<ChineseWrongRow[]>([])
+  const { data: rows } = chineseWrongStore.useSessionData(user)
+
+  const unresolved = useMemo(() => rows.filter((r) => !r.resolved), [rows])
 
   const load = useCallback(async () => {
     if (!user) return
-    const { data, error } = await supabase
-      .from('chinese_wrong_items')
-      .select('item_key, item_type, wrong_kind, added_at, resolved, resolved_at')
-      .eq('user_id', user.id)
-      .order('added_at', { ascending: false })
-    if (!error && data) setRows(parseRows(data))
+    chineseWrongStore.invalidate(user.id)
+    chineseWrongStore.ensureLoaded(user.id)
   }, [user])
-
-  useEffect(() => {
-    void load()
-  }, [load])
-
-  const unresolved = rows.filter((r) => !r.resolved)
 
   const addWrong = useCallback(
     async (
@@ -62,7 +69,7 @@ export function useChineseWrong(user: User | null) {
       wrongKind: ChineseWrongKind,
     ) => {
       if (!user) return
-      setRows((prev) => {
+      chineseWrongStore.patchSessionData(user.id, (prev) => {
         const existing = prev.find(
           (r) => r.itemKey === itemKey && r.wrongKind === wrongKind && !r.resolved,
         )
@@ -98,7 +105,7 @@ export function useChineseWrong(user: User | null) {
     async (itemKey: string, wrongKind: ChineseWrongKind) => {
       if (!user) return
       const now = new Date().toISOString()
-      setRows((prev) =>
+      chineseWrongStore.patchSessionData(user.id, (prev) =>
         prev.map((r) =>
           r.itemKey === itemKey && r.wrongKind === wrongKind
             ? { ...r, resolved: true, resolvedAt: now }
@@ -118,7 +125,9 @@ export function useChineseWrong(user: User | null) {
   const removeWrong = useCallback(
     async (itemKey: string, wrongKind: ChineseWrongKind) => {
       if (!user) return
-      setRows((prev) => prev.filter((r) => !(r.itemKey === itemKey && r.wrongKind === wrongKind)))
+      chineseWrongStore.patchSessionData(user.id, (prev) =>
+        prev.filter((r) => !(r.itemKey === itemKey && r.wrongKind === wrongKind)),
+      )
       await supabase
         .from('chinese_wrong_items')
         .delete()

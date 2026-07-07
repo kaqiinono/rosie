@@ -1,18 +1,14 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import type {
   CalcLevel,
   CalcProblemState,
   CalcProblemStatus,
   QuestionAttempt,
 } from '@rosie/core'
-
-// ─────────────────────────────────────────────────────────────────────
-// Row mapping
-// ─────────────────────────────────────────────────────────────────────
 
 interface ProblemStateRow {
   signature: string
@@ -68,10 +64,6 @@ function stateToRow(s: CalcProblemState, userId: string) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────
-
 function defaultState(signature: string, level: CalcLevel): CalcProblemState {
   return {
     signature,
@@ -88,16 +80,6 @@ function defaultState(signature: string, level: CalcLevel): CalcProblemState {
 
 const RECENT_CAP = 10
 
-/** Pure: applies one attempt outcome to a state, returning the next state.
- *
- *  Lightweight 0–5 proficiency model (no spaced-repetition scheduling):
- *    - correct within limit → proficiency +1 (cap 5)
- *    - correct over limit   → proficiency +0.5 (rounded, cap 5)
- *    - wrong                → proficiency -2 (floor 0); consecutiveWrong +1
- *    - status 'mastered' when proficiency ≥ 4 and attemptCount ≥ 3, else 'active'
- *
- *  `sessionNo` / `today` are accepted for caller-signature stability but unused.
- */
 export function applyAttempt(
   prev: CalcProblemState,
   attempt: QuestionAttempt,
@@ -136,32 +118,49 @@ export function applyAttempt(
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// Hook
-// ─────────────────────────────────────────────────────────────────────
+type ProblemStateRecord = Record<string, CalcProblemState>
+
+async function fetchAllProblemStates(userId: string): Promise<ProblemStateRecord> {
+  const { data } = await supabase
+    .from('calc_problem_state')
+    .select(SELECT_COLS)
+    .eq('user_id', userId)
+  const record: ProblemStateRecord = {}
+  for (const r of (data ?? []) as ProblemStateRow[]) {
+    record[r.signature] = rowToState(r)
+  }
+  return record
+}
+
+export const calcProblemStateStore = createUserSessionStore<ProblemStateRecord>(
+  'calc_problem_states',
+  {
+    fetch: fetchAllProblemStates,
+    empty: {},
+  },
+)
 
 export interface UseCalcProblemStateReturn {
   states: Map<string, CalcProblemState>
   isLoading: boolean
-  /** Load (or refresh) state for the given levels. */
   loadForLevels: (levels: CalcLevel[]) => Promise<void>
-  /** Load all problem states for the user (no level filter), into `states`. Returns the loaded map. */
   loadAll: () => Promise<Map<string, CalcProblemState>>
-  /** Returns a per-signature state, synthesizing a fresh default for unseen entries. */
   getState: (signature: string, level: CalcLevel) => CalcProblemState
-  /** Persist a batch of state mutations. Local map updates immediately. */
   upsertStates: (next: CalcProblemState[]) => Promise<void>
 }
 
 export function useCalcProblemState(user: User | null): UseCalcProblemStateReturn {
-  const [states, setStates] = useState<Map<string, CalcProblemState>>(new Map())
-  const [isLoading, setIsLoading] = useState(false)
   const userId = user?.id ?? null
+  const { data: stateRecord, isLoading } = calcProblemStateStore.useSessionData(user)
+
+  const states = useMemo(() => new Map(Object.entries(stateRecord)), [stateRecord])
 
   const loadForLevels = useCallback(
     async (levels: CalcLevel[]) => {
       if (!userId || levels.length === 0) return
-      setIsLoading(true)
+      if (calcProblemStateStore.getSessionData(userId)) {
+        return
+      }
       const intLevels = levels.map(levelToInt)
       const { data } = await supabase
         .from('calc_problem_state')
@@ -169,59 +168,46 @@ export function useCalcProblemState(user: User | null): UseCalcProblemStateRetur
         .eq('user_id', userId)
         .in('level', intLevels)
       const rows = (data ?? []) as ProblemStateRow[]
-      setStates((prev) => {
-        const next = new Map(prev)
-        for (const r of rows) next.set(r.signature, rowToState(r))
+      calcProblemStateStore.patchSessionData(userId, (prev) => {
+        const next = { ...prev }
+        for (const r of rows) next[r.signature] = rowToState(r)
         return next
       })
-      setIsLoading(false)
     },
     [userId],
   )
 
   const loadAll = useCallback(async (): Promise<Map<string, CalcProblemState>> => {
     if (!userId) return new Map()
-    setIsLoading(true)
-    const { data } = await supabase
-      .from('calc_problem_state')
-      .select(SELECT_COLS)
-      .eq('user_id', userId)
-    const rows = (data ?? []) as ProblemStateRow[]
-    const loaded = new Map<string, CalcProblemState>()
-    for (const r of rows) loaded.set(r.signature, rowToState(r))
-    setStates((prev) => {
-      const next = new Map(prev)
-      for (const [sig, st] of loaded) next.set(sig, st)
-      return next
-    })
-    setIsLoading(false)
-    return loaded
+    await calcProblemStateStore.ensureLoaded(userId)
+    const loaded = calcProblemStateStore.getSessionData(userId) ?? {}
+    return new Map(Object.entries(loaded))
   }, [userId])
 
   const getState = useCallback(
     (signature: string, level: CalcLevel): CalcProblemState => {
-      return states.get(signature) ?? defaultState(signature, level)
+      return stateRecord[signature] ?? defaultState(signature, level)
     },
-    [states],
+    [stateRecord],
   )
 
   const upsertStates = useCallback(
     async (nextStates: CalcProblemState[]) => {
       if (nextStates.length === 0) return
-      // optimistic local update
-      setStates((prev) => {
-        const next = new Map(prev)
-        for (const s of nextStates) next.set(s.signature, s)
-        return next
-      })
-      if (!userId) return
-      const rows = nextStates.map((s) => stateToRow(s, userId))
-      try {
-        await supabase
-          .from('calc_problem_state')
-          .upsert(rows, { onConflict: 'user_id,signature' })
-      } catch {
-        /* ignore */
+      if (userId) {
+        calcProblemStateStore.patchSessionData(userId, (prev) => {
+          const next = { ...prev }
+          for (const s of nextStates) next[s.signature] = s
+          return next
+        })
+        const rows = nextStates.map((s) => stateToRow(s, userId))
+        try {
+          await supabase
+            .from('calc_problem_state')
+            .upsert(rows, { onConflict: 'user_id,signature' })
+        } catch {
+          /* ignore */
+        }
       }
     },
     [userId],

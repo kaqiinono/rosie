@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson37-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/37'
 
@@ -50,9 +50,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-[#1e40af]">
           第37讲 · 一年级目标班<br />掌握假设法4大题型，轻松搞定鸡兔同笼！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
 
       {/* Problem Types */}

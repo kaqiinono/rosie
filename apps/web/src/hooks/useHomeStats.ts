@@ -1,10 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
 import { allMathProblemStats } from '@rosie/math/utils/grade-stats'
 import { G1B_RECOGNIZE_TOTAL } from '@rosie/chinese'
+import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import { useWordMastery } from '@rosie/english'
+import { useWordData } from '@rosie/english'
+import { useEnglishWrong } from '@rosie/english'
+import { useCharMastery } from '@rosie/chinese'
+import { useCalcMistakes } from '@rosie/calc'
+import { useCalcPracticeStats } from '@rosie/calc'
 
 export type HomeStats = {
   mathPracticed: number
@@ -30,103 +37,75 @@ const EMPTY_STATS: HomeStats = {
   mistakesUnresolved: 0,
 }
 
-function countUnresolved(rows: { resolved?: boolean | null }[] | null): number {
-  return (rows ?? []).filter(r => !(r.resolved ?? false)).length
+function countUnresolved(rows: { resolved?: boolean | null }[]): number {
+  return rows.filter((r) => !(r.resolved ?? false)).length
 }
 
-type StatsCache = { userId: string; stats: HomeStats }
-
 export function useHomeStats(user: User | null) {
-  const userId = user?.id ?? null
-  const [cache, setCache] = useState<StatsCache | null>(null)
+  const { solveCount, isLoading: mathLoading } = useMathSolved(user)
+  const { masteryMap, isLoading: wmLoading } = useWordMastery(user)
+  const { vocab, isLoading: vocabLoading } = useWordData(user)
+  const { masteryMap: chineseMastery, isLoading: cmLoading } = useCharMastery(user)
+  const { totalProblems, practiceDays, isLoading: calcLoading } = useCalcPracticeStats(user)
+  const { rows: mathWrong, isLoading: mwLoading } = useMathWrong(user)
+  const { mistakes: calcMistakes, isLoading: cmistLoading } = useCalcMistakes(user)
+  const { rows: englishWrong, isLoading: ewLoading } = useEnglishWrong(user)
 
-  useEffect(() => {
-    if (!userId) return
+  const isLoading =
+    user !== null &&
+    (mathLoading ||
+      wmLoading ||
+      vocabLoading ||
+      cmLoading ||
+      calcLoading ||
+      mwLoading ||
+      cmistLoading ||
+      ewLoading)
 
-    let cancelled = false
-    const load = async () => {
-      const [
-        { data: mathRows },
-        { data: masteryRows },
-        { count: vocabTotal },
-        { data: chineseMasteryRows },
-        { count: chineseRecognizeTotal },
-        { data: calcRows },
-        { data: mathWrongRows },
-        { data: calcWrongRows },
-        { data: englishWrongRows },
-      ] = await Promise.all([
-        supabase.from('math_solved').select('problem_id, solve_count').eq('user_id', userId),
-        supabase.from('word_mastery').select('correct, incorrect, last_seen').eq('user_id', userId),
-        supabase.from('word_entries').select('id', { count: 'exact', head: true }),
-        supabase
-          .from('chinese_char_mastery')
-          .select('correct, incorrect, last_seen')
-          .eq('user_id', userId)
-          .eq('track', 'recognize'),
-        supabase
-          .from('chinese_char_entries')
-          .select('char_key', { count: 'exact', head: true })
-          .contains('tiers', ['recognize']),
-        supabase.from('calc_sessions').select('date, correct_count, retry_count, wrong_count').eq('user_id', userId),
-        supabase.from('math_wrong').select('resolved').eq('user_id', userId),
-        supabase.from('calc_mistakes').select('resolved').eq('user_id', userId),
-        supabase.from('english_wrong').select('resolved').eq('user_id', userId),
-      ])
-      if (cancelled) return
+  const stats = useMemo((): HomeStats => {
+    if (!user) return EMPTY_STATS
 
-      const solveCount: Record<string, number> = {}
-      for (const row of mathRows ?? []) {
-        solveCount[row.problem_id] = row.solve_count ?? 1
-      }
-      const { practiced: mathPracticed, total: mathTotal } = allMathProblemStats(solveCount)
+    const { practiced: mathPracticed, total: mathTotal } = allMathProblemStats(solveCount)
 
-      let englishPracticed = 0
-      for (const row of masteryRows ?? []) {
-        const attempts = (row.correct ?? 0) + (row.incorrect ?? 0)
-        if (attempts > 0 || row.last_seen) englishPracticed++
-      }
-
-      let chineseRecognized = 0
-      for (const row of chineseMasteryRows ?? []) {
-        const attempts = (row.correct ?? 0) + (row.incorrect ?? 0)
-        if (attempts > 0 || row.last_seen) chineseRecognized++
-      }
-
-      const calcDays = new Set<string>()
-      let calcTotal = 0
-      for (const row of calcRows ?? []) {
-        calcDays.add(row.date)
-        calcTotal += (row.correct_count ?? 0) + (row.retry_count ?? 0) + (row.wrong_count ?? 0)
-      }
-
-      setCache({
-        userId,
-        stats: {
-          mathPracticed,
-          mathTotal,
-          englishPracticed,
-          englishTotal: vocabTotal ?? 0,
-          chineseRecognized,
-          chineseRecognizeTotal:
-            chineseRecognizeTotal && chineseRecognizeTotal > 0
-              ? chineseRecognizeTotal
-              : G1B_RECOGNIZE_TOTAL,
-          calcTotal,
-          calcPracticeDays: calcDays.size,
-          mistakesUnresolved:
-            countUnresolved(mathWrongRows) +
-            countUnresolved(calcWrongRows) +
-            countUnresolved(englishWrongRows),
-        },
-      })
+    let englishPracticed = 0
+    for (const row of Object.values(masteryMap)) {
+      const attempts = (row.correct ?? 0) + (row.incorrect ?? 0)
+      if (attempts > 0 || row.lastSeen) englishPracticed++
     }
-    void load()
-    return () => { cancelled = true }
-  }, [userId])
 
-  const stats = userId && cache?.userId === userId ? cache.stats : EMPTY_STATS
-  const isLoading = userId !== null && cache?.userId !== userId
+    let chineseRecognized = 0
+    for (const [key, row] of Object.entries(chineseMastery)) {
+      if (!key.endsWith('::recognize')) continue
+      const attempts = (row.correct ?? 0) + (row.incorrect ?? 0)
+      if (attempts > 0 || row.lastSeen) chineseRecognized++
+    }
+
+    return {
+      mathPracticed,
+      mathTotal,
+      englishPracticed,
+      englishTotal: vocab.length,
+      chineseRecognized,
+      chineseRecognizeTotal: G1B_RECOGNIZE_TOTAL,
+      calcTotal: totalProblems,
+      calcPracticeDays: practiceDays,
+      mistakesUnresolved:
+        countUnresolved(mathWrong) +
+        countUnresolved(calcMistakes) +
+        countUnresolved(englishWrong),
+    }
+  }, [
+    user,
+    solveCount,
+    masteryMap,
+    vocab.length,
+    chineseMastery,
+    totalProblems,
+    practiceDays,
+    mathWrong,
+    calcMistakes,
+    englishWrong,
+  ])
 
   return { stats, isLoading }
 }

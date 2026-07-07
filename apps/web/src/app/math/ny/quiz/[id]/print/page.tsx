@@ -40,6 +40,8 @@ import {
     type QuizAnswerRecord,
     type QuizPaper,
 } from '@rosie/math/hooks/useMathQuiz'
+import type { ScratchObject } from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
+import { fetchQuizScratchObjectsMap } from '@rosie/math/utils/math-scratch-db'
 
 type PrintMode = 'blank' | 'complete'
 
@@ -116,6 +118,7 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
     const searchParams = useSearchParams()
 
     const [paper, setPaper] = useState<QuizPaper | null>(null)
+    const [scratchByProblem, setScratchByProblem] = useState<Map<string, ScratchObject[]>>(new Map())
     const [loading, setLoading] = useState(true)
     const [userPrintMode, setUserPrintMode] = useState<{ paperId: string; mode: PrintMode } | null>(null)
 
@@ -127,9 +130,9 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
             .eq('id', id)
             .eq('user_id', user.id)
             .single()
-            .then(({data}) => {
+            .then(async ({data}) => {
                 if (data) {
-                    setPaper({
+                    const p: QuizPaper = {
                         id: data.id as string,
                         title: data.title as string,
                         problems: data.problems as QuizPaper['problems'],
@@ -138,7 +141,12 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                         answers: data.answers as QuizPaper['answers'],
                         completedAt: data.completed_at as string | null,
                         createdAt: data.created_at as string,
-                    })
+                    }
+                    setPaper(p)
+                    if (p.completedAt) {
+                        const scratchMap = await fetchQuizScratchObjectsMap(p.id)
+                        setScratchByProblem(scratchMap)
+                    }
                 }
                 setLoading(false)
             })
@@ -265,7 +273,7 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
                             const {problem} = entry
                             const pts = pointsArr[i] ?? 0
                             const record = paper.answers?.[item.problemId]
-                            const scratchObjects = record?.scratchObjects ?? []
+                            const scratchObjects = scratchByProblem.get(item.problemId) ?? []
                             const userAnswer = formatUserAnswer(problem, record)
                             const correctAnswer = formatCorrectAnswer(problem)
                             const showWrong = isComplete && record?.correct === false && correctAnswer

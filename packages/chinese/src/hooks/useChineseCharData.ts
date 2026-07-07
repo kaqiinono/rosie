@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
 import type {
   ChineseCharProfile,
   ChineseLessonCharRow,
@@ -14,35 +14,33 @@ import type { CharTier } from '../utils/g1b/types'
 const CACHE_VER = 'chinese_char_data_v4'
 const FETCH_PAGE_SIZE = 1000
 
-function cacheKey(userId: string) {
-  return `${CACHE_VER}_${userId}`
-}
-
-interface CachedPayload {
+export interface ChineseCharDataPayload {
   chars: ChineseCharProfile[]
   lessons: ChineseLessonRow[]
   lessonChars: ChineseLessonCharRow[]
 }
 
-function readCache(userId: string): CachedPayload | null {
+function cacheKey(userId: string) {
+  return `${CACHE_VER}_${userId}`
+}
+
+function readCache(userId: string): ChineseCharDataPayload | null {
   try {
     const json = localStorage.getItem(cacheKey(userId))
     if (!json) return null
-    return JSON.parse(json) as CachedPayload
+    return JSON.parse(json) as ChineseCharDataPayload
   } catch {
     return null
   }
 }
 
-function writeCache(userId: string, payload: CachedPayload) {
+function writeCache(userId: string, payload: ChineseCharDataPayload) {
   try {
     localStorage.setItem(cacheKey(userId), JSON.stringify(payload))
   } catch {
     /* ignore */
   }
 }
-
-let loadGen = 0
 
 function fromCharRow(row: Record<string, unknown>): ChineseCharProfile {
   return {
@@ -111,6 +109,42 @@ async function fetchAllRows<T>(
   return all
 }
 
+async function fetchChineseCharData(userId: string): Promise<ChineseCharDataPayload> {
+  const [charRows, lessonRows, lcRows] = await Promise.all([
+    fetchAllRows<Record<string, unknown>>(
+      'chinese_char_entries',
+      'char_key,char,grade,semester,pinyin,pinyin_alt,radical,radical_name,structure,stroke_count,phrases,tiers',
+      'char_key',
+    ),
+    fetchAllRows<Record<string, unknown>>(
+      'chinese_lessons',
+      'lesson_key,grade,semester,unit,lesson,lesson_title,lesson_kind,unit_type,sort_order,recall_phrases',
+      'sort_order',
+    ),
+    fetchAllRows<Record<string, unknown>>(
+      'chinese_lesson_chars',
+      'lesson_key,char_key,track,sort_order,pinyin_in_lesson',
+      'lesson_key,sort_order',
+    ),
+  ])
+
+  const payload: ChineseCharDataPayload = {
+    chars: charRows.map(fromCharRow),
+    lessons: lessonRows.map(fromLessonRow),
+    lessonChars: lcRows.map(fromLessonCharRow),
+  }
+  writeCache(userId, payload)
+  return payload
+}
+
+export const chineseCharDataStore = createUserSessionStore<ChineseCharDataPayload>(
+  'chinese_chars',
+  {
+    fetch: fetchChineseCharData,
+    empty: { chars: [], lessons: [], lessonChars: [] },
+  },
+)
+
 export function buildLessonGroups(
   lessons: ChineseLessonRow[],
   lessonChars: ChineseLessonCharRow[],
@@ -123,9 +157,7 @@ export function buildLessonGroups(
     byLesson.get(lc.lessonKey)!.push(lc)
   }
 
-  const keys = lessons.length
-    ? lessons.map((l) => l.lessonKey)
-    : [...byLesson.keys()]
+  const keys = lessons.length ? lessons.map((l) => l.lessonKey) : [...byLesson.keys()]
 
   const groups: LessonCharGroup[] = []
   for (const lessonKey of keys) {
@@ -150,79 +182,30 @@ export function buildLessonGroups(
 }
 
 export function useChineseCharData(user: User | null) {
-  const [chars, setChars] = useState<ChineseCharProfile[]>([])
-  const [lessons, setLessons] = useState<ChineseLessonRow[]>([])
-  const [lessonChars, setLessonChars] = useState<ChineseLessonCharRow[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const userId = user?.id ?? null
+
+  useEffect(() => {
+    if (!userId) return
+    const snapshot = chineseCharDataStore.getSnapshot(userId)
+    if (snapshot.status === 'idle') {
+      const cached = readCache(userId)
+      if (cached) chineseCharDataStore.replaceSessionData(userId, cached)
+    }
+  }, [userId])
+
+  const { data, isLoading, error } = chineseCharDataStore.useSessionData(user)
 
   const refresh = useCallback(async () => {
     if (!user) return
-    const gen = ++loadGen
-    setIsLoading(true)
-    setError(null)
-    try {
-      const [charRows, lessonRows, lcRows] = await Promise.all([
-        fetchAllRows<Record<string, unknown>>(
-          'chinese_char_entries',
-          'char_key,char,grade,semester,pinyin,pinyin_alt,radical,radical_name,structure,stroke_count,phrases,tiers',
-          'char_key',
-        ),
-        fetchAllRows<Record<string, unknown>>(
-          'chinese_lessons',
-          'lesson_key,grade,semester,unit,lesson,lesson_title,lesson_kind,unit_type,sort_order,recall_phrases',
-          'sort_order',
-        ),
-        fetchAllRows<Record<string, unknown>>(
-          'chinese_lesson_chars',
-          'lesson_key,char_key,track,sort_order,pinyin_in_lesson',
-          'lesson_key,sort_order',
-        ),
-      ])
-      if (gen !== loadGen) return
-
-      const nextChars = charRows.map(fromCharRow)
-      const nextLessons = lessonRows.map(fromLessonRow)
-      const nextLessonChars = lcRows.map(fromLessonCharRow)
-
-      setChars(nextChars)
-      setLessons(nextLessons)
-      setLessonChars(nextLessonChars)
-      writeCache(user.id, {
-        chars: nextChars,
-        lessons: nextLessons,
-        lessonChars: nextLessonChars,
-      })
-    } catch (err) {
-      if (gen !== loadGen) return
-      setError(err instanceof Error ? err.message : '加载字库失败')
-    } finally {
-      if (gen === loadGen) setIsLoading(false)
-    }
+    invalidateSessionStore('chinese_chars')
+    chineseCharDataStore.ensureLoaded(user.id)
   }, [user])
 
-  useEffect(() => {
-    if (!user) {
-      setChars([])
-      setLessons([])
-      setLessonChars([])
-      setError(null)
-      return
-    }
-    const cached = readCache(user.id)
-    if (cached) {
-      setChars(cached.chars)
-      setLessons(cached.lessons)
-      setLessonChars(cached.lessonChars)
-    }
-    void refresh()
-  }, [user, refresh])
-
-  const charByKey = useMemo(() => new Map(chars.map((c) => [c.charKey, c])), [chars])
+  const charByKey = useMemo(() => new Map(data.chars.map((c) => [c.charKey, c])), [data.chars])
 
   const lessonGroups = useMemo(
-    () => buildLessonGroups(lessons, lessonChars),
-    [lessons, lessonChars],
+    () => buildLessonGroups(data.lessons, data.lessonChars),
+    [data.lessons, data.lessonChars],
   )
 
   const getCharProfile = useCallback(
@@ -231,15 +214,15 @@ export function useChineseCharData(user: User | null) {
   )
 
   return {
-    chars,
+    chars: data.chars,
     charByKey,
-    lessons,
-    lessonChars,
+    lessons: data.lessons,
+    lessonChars: data.lessonChars,
     lessonGroups,
     getCharProfile,
     isLoading,
-    error,
+    error: error instanceof Error ? error.message : error ? String(error) : null,
     refresh,
-    isReady: chars.length > 0 && lessonGroups.length > 0,
+    isReady: data.chars.length > 0 && lessonGroups.length > 0,
   }
 }

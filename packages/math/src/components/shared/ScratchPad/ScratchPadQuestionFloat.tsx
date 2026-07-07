@@ -5,14 +5,37 @@ import type { Problem } from '@rosie/core'
 import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import { useProblemImageUrl } from '@rosie/math/hooks/useProblemImageUrl'
 import ScratchPadInsertFigureButton from './ScratchPadInsertFigureButton'
+import ScratchPadAnswerPanel from './ScratchPadAnswerPanel'
+import PracticeAttemptTimeline from './PracticeAttemptTimeline'
 
 type ScratchPadQuestionFloatProps = {
   problem: Problem
   onInsertFigure?: (src: string, naturalW: number, naturalH: number) => void
+  expandedDefault?: boolean
+  mistakeHint?: string
+  section?: string
+  attemptRefreshKey?: number
+  showAnswerPanel?: boolean
+  answerMode?: 'practice' | 'quiz'
+  initialAnswer?: unknown
+  onAnswerDraftChange?: (snapshot: unknown) => void
+  onSubmitResult?: (correct: boolean, snapshot: unknown) => void
 }
 
-export default function ScratchPadQuestionFloat({ problem, onInsertFigure }: ScratchPadQuestionFloatProps) {
-  const [expanded, setExpanded] = useState(false)
+export default function ScratchPadQuestionFloat({
+  problem,
+  onInsertFigure,
+  expandedDefault = false,
+  mistakeHint,
+  section = '',
+  attemptRefreshKey = 0,
+  showAnswerPanel = true,
+  answerMode = 'practice',
+  initialAnswer,
+  onAnswerDraftChange,
+  onSubmitResult,
+}: ScratchPadQuestionFloatProps) {
+  const [expanded, setExpanded] = useState(expandedDefault)
   const figureHostRef = useRef<HTMLDivElement>(null)
   const figureUrl = useProblemImageUrl(problem, 'figure')
   const hasFigure = Boolean(figureUrl || problem.figureNode)
@@ -34,12 +57,19 @@ export default function ScratchPadQuestionFloat({ problem, onInsertFigure }: Scr
 
   return (
     <div
-      className="absolute left-3 z-20 flex max-h-[min(52vh,420px)] w-[min(88vw,400px)] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/92 shadow-[0_12px_40px_rgba(15,23,42,0.16)] backdrop-blur-md"
-      style={{ top: 'max(12px, env(safe-area-inset-top))' }}
+      className={`absolute z-20 flex max-h-[min(58vh,480px)] w-[min(92vw,420px)] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/92 shadow-[0_12px_40px_rgba(15,23,42,0.16)] backdrop-blur-md ${
+        expandedDefault && !onInsertFigure ? 'relative left-auto top-auto mx-auto' : 'left-3'
+      }`}
+      style={onInsertFigure ? { top: 'max(12px, env(safe-area-inset-top))' } : undefined}
     >
       <div className="flex shrink-0 items-center gap-2 border-b border-slate-100 px-3.5 py-2.5">
         <span className="text-base">📋</span>
-        <div className="min-w-0 flex-1 truncate text-[14px] font-bold text-slate-800">{problem.title}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[14px] font-bold text-slate-800">{problem.title}</div>
+          {mistakeHint && (
+            <div className="truncate text-[10px] font-medium text-rose-500">{mistakeHint}</div>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => setExpanded(false)}
@@ -64,6 +94,21 @@ export default function ScratchPadQuestionFloat({ problem, onInsertFigure }: Scr
               />
             )}
           </div>
+        )}
+        {showAnswerPanel && onAnswerDraftChange && (
+          <ScratchPadAnswerPanel
+            problem={problem}
+            mode={answerMode}
+            initialAnswer={initialAnswer}
+            onAnswerDraftChange={onAnswerDraftChange}
+            onSubmitResult={onSubmitResult}
+          />
+        )}
+        {answerMode === 'practice' && (
+          <PracticeAttemptTimeline
+            problemId={problem.id}
+            refreshKey={attemptRefreshKey}
+          />
         )}
       </div>
     </div>

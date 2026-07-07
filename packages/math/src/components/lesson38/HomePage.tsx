@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson38-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/38'
 
@@ -50,9 +50,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-[#5b21b6]">
           第38讲 · 一年级目标班<br />掌握欧拉定理，判断一笔画、求最短路、解立体棱爬行！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
 
       {/* Problem Types */}

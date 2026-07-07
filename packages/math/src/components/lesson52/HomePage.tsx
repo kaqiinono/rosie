@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson52-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/52'
 
@@ -45,9 +45,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-sky-800">
           第52讲 · 二年级目标班 · 第4讲<br />找差找倍画线段，移多补少列方程！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 差倍问题 · 5大题型</div>

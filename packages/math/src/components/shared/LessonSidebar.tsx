@@ -27,8 +27,15 @@ type SidebarConfig = {
   sections: readonly SidebarSection[]
   /** Active-state class for sidebar links, e.g. 'bg-yellow-light font-bold text-yellow-dark' */
   activeClass: string
-  /** Extra links shown between home and sections (e.g. magic book) */
+  /** Extra links shown between home and utility links (e.g. magic book) */
   extraLinks?: readonly SidebarExtraLink[]
+}
+
+function lessonUtilityLinks(basePath: string): readonly SidebarSection[] {
+  return [
+    { key: 'notes', path: `${basePath}/notes`, icon: '📝', label: '题目笔记', noProgress: true },
+    { key: 'drafts', path: `${basePath}/drafts`, icon: '🗒️', label: '练习草稿', noProgress: true },
+  ]
 }
 
 type Props = {
@@ -41,6 +48,7 @@ export default function LessonSidebar({ config, problems, useLessonContext }: Pr
   const pathname = usePathname()
   const { solveCount, wrongIds } = useLessonContext()
   const [collapsed, setCollapsed] = useLocalStorage<boolean>(STORAGE_KEYS.MATH_SIDEBAR_COLLAPSED, false)
+  const utilityLinks = lessonUtilityLinks(config.basePath)
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
   const masteredAll = Object.values(solveCount).filter(c => c >= 3).length
 
@@ -63,12 +71,13 @@ export default function LessonSidebar({ config, problems, useLessonContext }: Pr
   const allIconLinks = [
     { key: 'home', path: config.basePath, icon: '🏠', label: '首页' },
     ...(config.extraLinks ?? []),
+    ...utilityLinks,
     ...config.sections,
   ]
 
   return (
     <div
-      className={`sticky top-14 hidden h-[calc(100vh-56px)] shrink-0 overflow-hidden border-r border-border-light bg-white transition-[width] duration-200 md:block lg:hidden xl:block ${
+      className={`sticky top-14 z-20 hidden h-[calc(100vh-56px)] shrink-0 self-start overflow-hidden border-r border-border-light bg-white transition-[width] duration-200 md:block lg:hidden xl:block ${
         collapsed ? 'w-[48px]' : 'w-[240px]'
       }`}
     >
@@ -104,6 +113,21 @@ export default function LessonSidebar({ config, problems, useLessonContext }: Pr
             </Link>
 
             {config.extraLinks?.map(link => (
+              <Link
+                key={link.key}
+                href={link.path}
+                className={`mb-1 flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-all ${
+                  isActive(link.key)
+                    ? config.activeClass
+                    : 'text-text-secondary hover:bg-gray-50'
+                }`}
+              >
+                <span className="w-5 shrink-0 text-center text-base">{link.icon}</span>
+                {link.label}
+              </Link>
+            ))}
+
+            {utilityLinks.map(link => (
               <Link
                 key={link.key}
                 href={link.path}

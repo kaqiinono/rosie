@@ -26,7 +26,7 @@ export default function GradeLessonList({ grade }: { grade: number }) {
             共 {courses.length} 讲，选一节开始吧
           </p>
         </section>
-        <section className="flex w-full max-w-[680px] flex-col gap-4">
+        <section className="grid w-full max-w-[680px] grid-cols-1 gap-4 min-[501px]:max-w-4xl min-[501px]:grid-cols-2 xl:max-w-6xl xl:grid-cols-3">
           {courses.map((course) => (
             <CourseCard key={course.href} data={course} />
           ))}

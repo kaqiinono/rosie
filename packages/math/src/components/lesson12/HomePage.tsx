@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson12-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/12'
 
@@ -46,9 +46,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第12讲 · 一年级目标班<br />
           掌握凑整、花减、括号、归整、等差求和5大技巧，让加减运算飞速提升！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 巧算加减法进阶 · 5大技巧</div>

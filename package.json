@@ -13,7 +13,8 @@
     "test": "turbo run test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "flipbook:sync": "node scripts/generate-flipbook-sync.mjs"
+    "flipbook:sync": "node scripts/generate-flipbook-sync.mjs",
+    "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

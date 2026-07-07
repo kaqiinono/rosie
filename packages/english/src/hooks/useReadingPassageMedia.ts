@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import { readingPassages } from '../utils/reading-data'
 import {
   READING_AUDIO_BUCKET,
@@ -25,7 +25,6 @@ function rowToMedia(row: RawMediaRow): ReadingPassageMediaRow {
   }
 }
 
-/** 仅 Storage 有文件、表里没有行时仍能播放（如控制台直传）。 */
 async function discoverStorageAudio(): Promise<Record<string, ReadingPassageMediaRow>> {
   const map: Record<string, ReadingPassageMediaRow> = {}
   await Promise.all(
@@ -53,47 +52,34 @@ function mergeMediaMaps(
   return { ...storageMap, ...dbMap }
 }
 
+async function fetchReadingPassageMedia(_userId: string): Promise<Record<string, ReadingPassageMediaRow>> {
+  const storageMap = await discoverStorageAudio()
+  const { data, error } = await supabase
+    .from('reading_passage_media')
+    .select('passage_key, audio_path, updated_at')
+  const dbMap: Record<string, ReadingPassageMediaRow> = {}
+  if (!error && data) {
+    for (const row of data as RawMediaRow[]) {
+      dbMap[row.passage_key] = rowToMedia(row)
+    }
+  }
+  return mergeMediaMaps(storageMap, dbMap)
+}
+
+export const readingPassageMediaStore = createUserSessionStore<
+  Record<string, ReadingPassageMediaRow>
+>('reading_passage_media', {
+  fetch: fetchReadingPassageMedia,
+  empty: {},
+})
+
 export function useReadingPassageMedia(user: User | null) {
-  const [mediaByKey, setMediaByKey] = useState<Record<string, ReadingPassageMediaRow>>({})
-  const [isLoading, setIsLoading] = useState(() => user !== null)
+  const { data: mediaByKey, isLoading } = readingPassageMediaStore.useSessionData(user)
 
   const reload = useCallback(async () => {
     if (!user) return
-    const storageMap = await discoverStorageAudio()
-    const { data, error } = await supabase
-      .from('reading_passage_media')
-      .select('passage_key, audio_path, updated_at')
-    const dbMap: Record<string, ReadingPassageMediaRow> = {}
-    if (!error && data) {
-      for (const row of data as RawMediaRow[]) {
-        dbMap[row.passage_key] = rowToMedia(row)
-      }
-    }
-    setMediaByKey(mergeMediaMaps(storageMap, dbMap))
-  }, [user])
-
-  useEffect(() => {
-    if (!user) return
-    let cancelled = false
-    void (async () => {
-      const storageMap = await discoverStorageAudio()
-      const { data, error } = await supabase
-        .from('reading_passage_media')
-        .select('passage_key, audio_path, updated_at')
-      if (!cancelled) {
-        const dbMap: Record<string, ReadingPassageMediaRow> = {}
-        if (!error && data) {
-          for (const row of data as RawMediaRow[]) {
-            dbMap[row.passage_key] = rowToMedia(row)
-          }
-        }
-        setMediaByKey(mergeMediaMaps(storageMap, dbMap))
-        setIsLoading(false)
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
+    readingPassageMediaStore.invalidate(user.id)
+    readingPassageMediaStore.ensureLoaded(user.id)
   }, [user])
 
   const getAudioUrl = useCallback((audioPath: string): string | null => {
@@ -136,7 +122,7 @@ export function useReadingPassageMedia(user: User | null) {
         },
         { onConflict: 'passage_key' },
       )
-      setMediaByKey((prev) => ({
+      readingPassageMediaStore.patchSessionData(user.id, (prev) => ({
         ...prev,
         [passageKey]: { passageKey, audioPath, updatedAt },
       }))

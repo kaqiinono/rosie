@@ -69,7 +69,7 @@ export default function LessonAppHeader({ config, problems, useLessonContext }: 
 
   return (
     <div className="border-border-light sticky top-0 z-30 shrink-0 border-b bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.06)] backdrop-blur-sm">
-      <div className="mx-auto flex h-12 max-w-[1400px] items-center gap-2 pr-[168px] pl-3 sm:h-14 sm:gap-3 sm:pr-5 sm:pl-5">
+      <div className="flex h-12 w-full items-center gap-2 pr-[168px] pl-3 sm:h-14 sm:gap-3 sm:pr-5 sm:pl-5">
         <Link
           href="/math"
           className="text-text-muted hover:text-text-secondary flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200 no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-auto sm:w-auto sm:gap-1 sm:px-3 sm:py-1.5"

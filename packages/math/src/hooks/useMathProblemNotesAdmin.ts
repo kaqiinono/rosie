@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
+import { lessonIdFromProblemId } from '@rosie/math/constants'
 import {
   createMathProblemNote,
   deleteMathProblemNote,
@@ -12,21 +13,29 @@ import {
   type MathProblemNote,
 } from '@rosie/math/hooks/useMathProblemNotes'
 
-export function useMathProblemNotesAdmin(user: User | null, lessonId: string | null) {
+function normalizeLessonIds(lessonId: string | string[] | null): string[] {
+  if (lessonId === null) return []
+  return Array.isArray(lessonId) ? lessonId : [lessonId]
+}
+
+export function useMathProblemNotesAdmin(user: User | null, lessonId: string | string[] | null) {
+  const lessonIds = normalizeLessonIds(lessonId)
+  const lessonIdsKey = lessonIds.join(',')
+
   const [notes, setNotes] = useState<MathProblemNote[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   const reload = useCallback(async () => {
-    if (!lessonId) {
+    if (lessonIds.length === 0) {
       setNotes([])
       return
     }
     setIsLoading(true)
-    const rows = await loadLessonNotes(lessonId)
-    setNotes(rows)
+    const rows = await Promise.all(lessonIds.map(loadLessonNotes))
+    setNotes(rows.flat())
     setIsLoading(false)
-  }, [lessonId])
+  }, [lessonIdsKey, lessonIds])
 
   useEffect(() => {
     void reload()
@@ -44,11 +53,12 @@ export function useMathProblemNotesAdmin(user: User | null, lessonId: string | n
       problemId: string,
       input: { title?: string | null; bodyHtml: string },
     ): Promise<{ error: string | null }> => {
-      if (!user || !lessonId) return { error: '请先登录并选择讲次' }
+      if (!user || lessonIds.length === 0) return { error: '请先登录并选择讲次' }
+      const targetLessonId = lessonIdFromProblemId(problemId)
       setIsSaving(true)
       const existing = notesForProblem(notes, problemId)
       const sortOrder = existing.length > 0 ? Math.max(...existing.map((n) => n.sortOrder)) + 1 : 0
-      const { error, note } = await createMathProblemNote(user.id, lessonId, problemId, {
+      const { error, note } = await createMathProblemNote(user.id, targetLessonId, problemId, {
         ...input,
         sortOrder,
       })
@@ -57,7 +67,7 @@ export function useMathProblemNotesAdmin(user: User | null, lessonId: string | n
       setNotes((prev) => [...prev, note])
       return { error: null }
     },
-    [user, lessonId, notes],
+    [user, lessonIdsKey, lessonIds.length, notes],
   )
 
   const saveNote = useCallback(

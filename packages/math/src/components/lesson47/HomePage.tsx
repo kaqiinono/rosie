@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson47-data'
-import LessonSummaryImage from '@rosie/math/components/shared/LessonSummaryImage'
+import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
 const BASE = '/math/ny/47'
 
@@ -45,9 +45,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第47讲 · 一年级目标班<br />
           数连、数桥、数方，再加上各种变型数独——动手在格子里拼出答案，点「检查」立刻知道对不对！
         </p>
+        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
       </div>
-
-      <LessonSummaryImage lessonId={BASE.split("/").pop()!} />
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">🧠 方格谜题 · 9大题型</div>

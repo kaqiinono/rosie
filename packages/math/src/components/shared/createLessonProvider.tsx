@@ -1,10 +1,11 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import { useStarHud } from '@rosie/rewards'
-import { supabase } from '@rosie/core'
+import { LessonScratchActionsProvider } from '@rosie/math/components/shared/ScratchPad/LessonScratchActionsContext'
 
 interface LessonContextType {
   solveCount: Record<string, number>
@@ -13,6 +14,7 @@ interface LessonContextType {
   wrongIds: Set<string>
   addWrong: (id: string) => void
   removeWrong: (id: string) => void
+  markResolved: (id: string) => void
   toast: string | null
   setToast: (msg: string | null) => void
   showCongrats: boolean
@@ -40,26 +42,11 @@ export function createLessonProvider(displayName: string): {
   function Provider({ children }: { children: ReactNode }): ReactNode {
     const { user } = useAuth()
     const { solveCount, handleSolve: solveAndSync } = useMathSolved(user)
+    const { wrongIds, addWrong: addWrongRow, removeWrong: removeWrongRow, markResolved: markResolvedRow } =
+      useMathWrong(user)
     const { awardStars } = useStarHud()
     const [toast, setToast] = useState<string | null>(null)
     const [showCongrats, setShowCongrats] = useState(false)
-    const [wrongIds, setWrongIds] = useState<Set<string>>(new Set())
-
-    useEffect(() => {
-      if (!user) return
-      void (async () => {
-        const res = await supabase
-          .from('math_wrong')
-          .select('problem_id, resolved')
-          .eq('user_id', user.id)
-        if (res.error || !res.data) {
-          const fb = await supabase.from('math_wrong').select('problem_id').eq('user_id', user.id)
-          if (fb.data) setWrongIds(new Set(fb.data.map(r => r.problem_id)))
-          return
-        }
-        setWrongIds(new Set(res.data.filter(r => !r.resolved).map(r => r.problem_id)))
-      })()
-    }, [user])
 
     const solved: Record<string, boolean> = {}
     for (const [k, v] of Object.entries(solveCount)) {
@@ -69,27 +56,10 @@ export function createLessonProvider(displayName: string): {
     const handleSolve = async (id: string) => {
       const newCount = await solveAndSync(id)
 
-      setWrongIds(prev => {
-        if (!prev.has(id)) return prev
-        const next = new Set(prev)
-        next.delete(id)
-        if (user) {
-          const now = new Date().toISOString()
-          void supabase
-            .from('math_wrong')
-            .update({ resolved: true, resolved_at: now })
-            .eq('user_id', user.id)
-            .eq('problem_id', id)
-            .then(({ error }) => {
-              if (error) {
-                void supabase.from('math_wrong').delete().eq('user_id', user.id).eq('problem_id', id)
-              }
-            })
-        }
-        return next
-      })
+      if (wrongIds.has(id)) {
+        void markResolvedRow(id)
+      }
 
-      // Award exactly 1 blue star per correct check (visible via StarHud + burst).
       void awardStars('blue', 1)
 
       if (newCount === 1) {
@@ -103,39 +73,55 @@ export function createLessonProvider(displayName: string): {
       }
     }
 
-    const addWrong = useCallback((id: string) => {
-      setWrongIds(prev => {
-        if (prev.has(id)) return prev
-        const next = new Set(prev)
-        next.add(id)
-        if (user) {
-          supabase.from('math_wrong').upsert(
-            { user_id: user.id, problem_id: id, resolved: false, resolved_at: null },
-            { onConflict: 'user_id,problem_id' },
-          )
-        }
-        return next
-      })
-    }, [user])
+    const addWrong = useCallback(
+      (id: string) => {
+        addWrongRow(id)
+      },
+      [addWrongRow],
+    )
 
-    const removeWrong = useCallback((id: string) => {
-      setWrongIds(prev => {
-        const next = new Set(prev)
-        next.delete(id)
-        if (user) {
-          supabase.from('math_wrong').delete().eq('user_id', user.id).eq('problem_id', id)
-        }
-        return next
-      })
-    }, [user])
+    const removeWrong = useCallback(
+      (id: string) => {
+        void removeWrongRow(id)
+      },
+      [removeWrongRow],
+    )
+
+    const markResolvedCb = useCallback(
+      (id: string) => {
+        void markResolvedRow(id)
+      },
+      [markResolvedRow],
+    )
+
+    const scratchActions = useMemo(
+      () => ({
+        onSolve: handleSolve,
+        onWrong: addWrong,
+        onResolved: markResolvedCb,
+      }),
+      [handleSolve, addWrong, markResolvedCb],
+    )
 
     return (
-      <Ctx.Provider value={{
-        solveCount, solved, handleSolve,
-        wrongIds, addWrong, removeWrong,
-        toast, setToast, showCongrats, setShowCongrats,
-      }}>
-        {children}
+      <Ctx.Provider
+        value={{
+          solveCount,
+          solved,
+          handleSolve,
+          wrongIds,
+          addWrong,
+          removeWrong,
+          markResolved: markResolvedCb,
+          toast,
+          setToast,
+          showCongrats,
+          setShowCongrats,
+        }}
+      >
+        <LessonScratchActionsProvider value={scratchActions}>
+          {children}
+        </LessonScratchActionsProvider>
       </Ctx.Provider>
     )
   }

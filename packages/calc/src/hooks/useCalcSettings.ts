@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import type { BlockSel, CalcSettings, MixedOp } from '@rosie/core'
 
 const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: 0 }
@@ -33,7 +33,6 @@ interface RawRow {
   session_counter: number | null
 }
 
-/** Accept both legacy string ids and the new object shape. seconds 默认 0(不限). */
 function toBlockSel(v: string | BlockSel): BlockSel {
   if (typeof v === 'string') return { id: v, count: 20, seconds: 0 }
   return { id: v.id, count: v.count ?? 20, seconds: v.seconds ?? 0 }
@@ -83,35 +82,30 @@ function settingsToRow(s: CalcSettings, userId: string) {
   }
 }
 
-export function useCalcSettings(user: User | null) {
-  const [settings, setSettings] = useState<CalcSettings>(DEFAULT_SETTINGS)
-  const [isLoading, setIsLoading] = useState(() => user !== null)
+async function fetchCalcSettings(userId: string): Promise<CalcSettings> {
+  const { data } = await supabase
+    .from('calc_settings')
+    .select(
+      'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers,timed_answer_enabled,immersive_mode',
+    )
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (data) return rowToSettings(data as RawRow)
+  return DEFAULT_SETTINGS
+}
 
-  useEffect(() => {
-    if (!user) return
-    let cancelled = false
-    const init = async () => {
-      const { data } = await supabase
-        .from('calc_settings')
-        .select(
-          'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers,timed_answer_enabled,immersive_mode',
-        )
-        .eq('user_id', user.id)
-        .maybeSingle()
-      if (cancelled) return
-      if (data) setSettings(rowToSettings(data as RawRow))
-      setIsLoading(false)
-    }
-    void init()
-    return () => {
-      cancelled = true
-    }
-  }, [user])
+export const calcSettingsStore = createUserSessionStore<CalcSettings>('calc_settings', {
+  fetch: fetchCalcSettings,
+  empty: DEFAULT_SETTINGS,
+})
+
+export function useCalcSettings(user: User | null) {
+  const { data: settings, isLoading } = calcSettingsStore.useSessionData(user)
 
   const persist = useCallback(
     async (next: CalcSettings) => {
-      setSettings(next)
       if (!user) return
+      calcSettingsStore.replaceSessionData(user.id, next)
       try {
         await supabase
           .from('calc_settings')
@@ -125,14 +119,13 @@ export function useCalcSettings(user: User | null) {
 
   const update = useCallback(
     (patch: Partial<CalcSettings>) => {
-      setSettings((prev) => {
+      if (!user) return
+      calcSettingsStore.patchSessionData(user.id, (prev) => {
         const next = { ...prev, ...patch }
-        if (user) {
-          void supabase
-            .from('calc_settings')
-            .upsert(settingsToRow(next, user.id), { onConflict: 'user_id' })
-            .then(() => {})
-        }
+        void supabase
+          .from('calc_settings')
+          .upsert(settingsToRow(next, user.id), { onConflict: 'user_id' })
+          .then(() => {})
         return next
       })
     },

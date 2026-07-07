@@ -5,6 +5,7 @@ import { PROBLEMS } from '@rosie/math/utils/lesson30-data'
 import Lesson30Provider, { useLesson30 } from '@rosie/math/components/lesson30/Lesson30Provider'
 import AppHeader from '@rosie/math/components/lesson30/AppHeader'
 import Sidebar from '@rosie/math/components/lesson30/Sidebar'
+import LessonInnerLayout from '@rosie/math/components/shared/LessonInnerLayout'
 import BottomNav from '@rosie/math/components/lesson30/BottomNav'
 import CongratsModal from '@rosie/math/components/lesson35/CongratsModal'
 import Toast from '@rosie/math/components/lesson35/Toast'
@@ -36,12 +37,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       style={{ fontFamily: '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif' }}
     >
       <AppHeader problems={PROBLEMS} />
-      <div className="mx-auto flex w-full max-w-[1400px] flex-1 pb-[60px] md:pb-0">
-        <Sidebar problems={PROBLEMS} />
-        <div className="min-w-0 flex-1 overflow-y-auto p-5 md:px-8 md:py-6">
-          {children}
-        </div>
-      </div>
+      <LessonInnerLayout sidebar={<Sidebar problems={PROBLEMS} />}>{children}</LessonInnerLayout>
       <BottomNav />
       <CongratsModal visible={showCongrats} onClose={() => setShowCongrats(false)} nextHref={nextHref} />
       <Toast message={toast} onDismiss={() => setToast(null)} />

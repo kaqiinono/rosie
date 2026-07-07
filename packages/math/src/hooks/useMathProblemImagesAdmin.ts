@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { MathImageKind } from '@rosie/math/constants'
+import { lessonIdFromProblemId } from '@rosie/math/constants'
 import {
   deleteMathProblemImage,
   changeMathProblemImageKind,
@@ -13,21 +14,29 @@ import {
   type MathProblemImage,
 } from '@rosie/math/hooks/useMathProblemImages'
 
-export function useMathProblemImagesAdmin(user: User | null, lessonId: string | null) {
+function normalizeLessonIds(lessonId: string | string[] | null): string[] {
+  if (lessonId === null) return []
+  return Array.isArray(lessonId) ? lessonId : [lessonId]
+}
+
+export function useMathProblemImagesAdmin(user: User | null, lessonId: string | string[] | null) {
+  const lessonIds = normalizeLessonIds(lessonId)
+  const lessonIdsKey = lessonIds.join(',')
+
   const [images, setImages] = useState<MathProblemImage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
 
   const reload = useCallback(async () => {
-    if (!lessonId) {
+    if (lessonIds.length === 0) {
       setImages([])
       return
     }
     setIsLoading(true)
-    const rows = await fetchLessonProblemImages(lessonId)
-    setImages(rows)
+    const rows = await Promise.all(lessonIds.map(fetchLessonProblemImages))
+    setImages(rows.flat())
     setIsLoading(false)
-  }, [lessonId])
+  }, [lessonIdsKey, lessonIds])
 
   useEffect(() => {
     void reload()
@@ -47,9 +56,16 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
       kind: MathImageKind,
       file: File,
     ): Promise<{ error: string | null }> => {
-      if (!user || !lessonId) return { error: '请先登录并选择讲次' }
+      if (!user || lessonIds.length === 0) return { error: '请先登录并选择讲次' }
+      const targetLessonId = lessonIdFromProblemId(problemId)
       setIsUploading(true)
-      const { error, image } = await uploadMathProblemImage(user.id, lessonId, problemId, kind, file)
+      const { error, image } = await uploadMathProblemImage(
+        user.id,
+        targetLessonId,
+        problemId,
+        kind,
+        file,
+      )
       setIsUploading(false)
       if (error || !image) return { error: error ?? '上传失败' }
       setImages((prev) => {
@@ -58,10 +74,10 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
         )
         return [...next, image]
       })
-      invalidateLessonImageCache(lessonId)
+      invalidateLessonImageCache(targetLessonId)
       return { error: null }
     },
-    [user, lessonId],
+    [user, lessonIdsKey, lessonIds.length],
   )
 
   const removeImage = useCallback(

@@ -1,11 +1,19 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
+import { lessonIdFromProblemId } from '@rosie/math/constants'
 import type { MathProblemNote } from '@rosie/math/hooks/useMathProblemNotes'
+import { uploadProblemNoteContentImage } from '@rosie/math/hooks/useMathProblemImages'
 import type { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
 import RichTextEditor from '@rosie/math/components/shared/RichTextEditor'
-import { isNoteBodyEmpty } from '@rosie/math/utils/sanitize-note-html'
+import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math/components/shared/rich-text-image'
+import {
+  RICH_CONTENT_IMG_TW,
+  isRichBodyEmpty,
+  sanitizeRichHtml,
+} from '@rosie/math/utils/sanitize-summary-html'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 
@@ -15,15 +23,6 @@ type Props = {
   onFlash: (msg: string) => void
   /** Hide题干 preview when the surrounding page already shows the problem. */
   showProblemContext?: boolean
-}
-
-type Draft = {
-  title: string
-  bodyHtml: string
-}
-
-function emptyDraft(): Draft {
-  return { title: '', bodyHtml: '<p></p>' }
 }
 
 function ProblemContextCard({ problem }: { problem: Problem }) {
@@ -44,15 +43,17 @@ function ProblemContextCard({ problem }: { problem: Problem }) {
 }
 
 function NoteEditor({
-  draft,
-  onDraftChange,
+  bodyHtml,
+  onBodyChange,
+  onUploadImage,
   onSave,
   onCancel,
   isSaving,
   saveLabel,
 }: {
-  draft: Draft
-  onDraftChange: (d: Draft) => void
+  bodyHtml: string
+  onBodyChange: (html: string) => void
+  onUploadImage: (file: File) => Promise<string | null>
   onSave: () => void
   onCancel: () => void
   isSaving: boolean
@@ -60,16 +61,11 @@ function NoteEditor({
 }) {
   return (
     <div className="space-y-2 rounded-xl border border-violet-200 bg-violet-50/50 p-3">
-      <input
-        type="text"
-        value={draft.title}
-        onChange={(e) => onDraftChange({ ...draft, title: e.target.value })}
-        placeholder="标题（可选）"
-        className="w-full rounded-lg border border-violet-200 bg-white px-3 py-2 text-[12px] outline-none focus:border-violet-400"
-      />
       <RichTextEditor
-        value={draft.bodyHtml}
-        onChange={(bodyHtml) => onDraftChange({ ...draft, bodyHtml })}
+        value={bodyHtml}
+        onChange={onBodyChange}
+        onUploadImage={onUploadImage}
+        placeholder="输入文字、点插图、或粘贴图片…"
         disabled={isSaving}
       />
       <div className="flex gap-2">
@@ -96,35 +92,33 @@ function NoteEditor({
 
 function NoteRow({
   note,
+  onUploadImage,
   admin,
   onFlash,
   isFirst,
   isLast,
 }: {
   note: MathProblemNote
+  onUploadImage: (file: File) => Promise<string | null>
   admin: AdminApi
   onFlash: (msg: string) => void
   isFirst: boolean
   isLast: boolean
 }) {
   const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState<Draft>({ title: note.title ?? '', bodyHtml: note.bodyHtml })
+  const [bodyHtml, setBodyHtml] = useState(note.bodyHtml)
 
   useEffect(() => {
-    if (!editing) {
-      setDraft({ title: note.title ?? '', bodyHtml: note.bodyHtml })
-    }
+    if (!editing) setBodyHtml(note.bodyHtml)
   }, [note, editing])
 
   const handleSave = async () => {
-    if (isNoteBodyEmpty(draft.bodyHtml)) {
-      onFlash('笔记正文不能为空')
+    const toSave = sanitizeRichHtml(bodyHtml)
+    if (isRichBodyEmpty(toSave)) {
+      onFlash('笔记不能为空（可输入文字或插入图片）')
       return
     }
-    const { error } = await admin.saveNote(note, {
-      title: draft.title,
-      bodyHtml: draft.bodyHtml,
-    })
+    const { error } = await admin.saveNote(note, { bodyHtml: toSave })
     if (error) onFlash(`保存失败：${error}`)
     else {
       onFlash('笔记已保存')
@@ -142,8 +136,9 @@ function NoteRow({
   if (editing) {
     return (
       <NoteEditor
-        draft={draft}
-        onDraftChange={setDraft}
+        bodyHtml={bodyHtml}
+        onBodyChange={setBodyHtml}
+        onUploadImage={onUploadImage}
         onSave={() => void handleSave()}
         onCancel={() => setEditing(false)}
         isSaving={admin.isSaving}
@@ -154,10 +149,9 @@ function NoteRow({
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3">
-      {note.title && <div className="mb-1 text-[12px] font-bold text-violet-900">{note.title}</div>}
       <div
-        className="note-preview text-[12px] leading-relaxed text-slate-700 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_strong]:font-bold"
-        dangerouslySetInnerHTML={{ __html: note.bodyHtml }}
+        className={`note-preview text-[12px] leading-relaxed text-slate-700 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_strong]:font-bold ${RICH_CONTENT_IMG_TW} ${RICH_CONTENT_CLEARFIX_TW}`}
+        dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.bodyHtml) }}
       />
       <div className="mt-2 flex flex-wrap gap-1.5">
         <button
@@ -203,25 +197,41 @@ export default function MathProblemNotesPanel({
   onFlash,
   showProblemContext = true,
 }: Props) {
+  const { user } = useAuth()
+  const lessonId = lessonIdFromProblemId(problem.id)
   const [adding, setAdding] = useState(false)
-  const [draft, setDraft] = useState<Draft>(emptyDraft)
+  const [bodyHtml, setBodyHtml] = useState('<p></p>')
 
   const notes = admin.getNotes(problem.id)
 
+  const handleUploadImage = useCallback(
+    async (file: File): Promise<string | null> => {
+      if (!user) {
+        onFlash('请先登录')
+        return null
+      }
+      const { error, url } = await uploadProblemNoteContentImage(lessonId, problem.id, file)
+      if (error || !url) {
+        onFlash(error ? `图片上传失败：${error}` : '图片上传失败')
+        return null
+      }
+      return url
+    },
+    [user, lessonId, problem.id, onFlash],
+  )
+
   const resetAdd = useCallback(() => {
     setAdding(false)
-    setDraft(emptyDraft())
+    setBodyHtml('<p></p>')
   }, [])
 
   const handleAdd = async () => {
-    if (isNoteBodyEmpty(draft.bodyHtml)) {
-      onFlash('笔记正文不能为空')
+    const toSave = sanitizeRichHtml(bodyHtml)
+    if (isRichBodyEmpty(toSave)) {
+      onFlash('笔记不能为空（可输入文字或插入图片）')
       return
     }
-    const { error } = await admin.addNote(problem.id, {
-      title: draft.title,
-      bodyHtml: draft.bodyHtml,
-    })
+    const { error } = await admin.addNote(problem.id, { bodyHtml: toSave })
     if (error) onFlash(`添加失败：${error}`)
     else {
       onFlash('笔记已添加')
@@ -234,7 +244,7 @@ export default function MathProblemNotesPanel({
       {showProblemContext && <ProblemContextCard problem={problem} />}
 
       <p className="text-[11px] leading-relaxed text-violet-700">
-        为本题添加补充笔记（要点、易错提醒等）。支持加粗与列表，孩子做题时可展开查看。
+        为本题添加补充笔记（要点、易错提醒、插图等）。支持加粗、列表、插图与粘贴图片。
       </p>
 
       {notes.length === 0 && !adding && (
@@ -248,6 +258,7 @@ export default function MathProblemNotesPanel({
           <NoteRow
             key={note.id}
             note={note}
+            onUploadImage={handleUploadImage}
             admin={admin}
             onFlash={onFlash}
             isFirst={i === 0}
@@ -258,8 +269,9 @@ export default function MathProblemNotesPanel({
 
       {adding ? (
         <NoteEditor
-          draft={draft}
-          onDraftChange={setDraft}
+          bodyHtml={bodyHtml}
+          onBodyChange={setBodyHtml}
+          onUploadImage={handleUploadImage}
           onSave={() => void handleAdd()}
           onCancel={resetAdd}
           isSaving={admin.isSaving}

@@ -1,12 +1,15 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import type { MasteryLevel, Problem } from '@rosie/core'
 import { MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import AnalysisGuideBadgeForProblem from '@rosie/math/components/shared/AnalysisGuideBadgeForProblem'
 import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
+import PaperDraftUploadButton from '@rosie/math/components/shared/PaperDraftUploadButton'
+import { useLessonScratchActions } from '@rosie/math/components/shared/ScratchPad/LessonScratchActionsContext'
 
 type LessonProblemDetailHeaderProps = {
   problemId: string
@@ -25,6 +28,8 @@ export default function LessonProblemDetailHeader({
   problem,
 }: LessonProblemDetailHeaderProps) {
   const router = useRouter()
+  const scratchActions = useLessonScratchActions()
+  const [flash, setFlash] = useState<string | null>(null)
 
   return (
     <div className="mb-4 flex items-center gap-2.5 border-b border-border-light pb-3.5">
@@ -44,12 +49,34 @@ export default function LessonProblemDetailHeader({
         </div>
       </div>
       <FavoriteHeart problemId={problemId} size="md" />
-      {problem && <ScratchPadTrigger problem={problem} variant="compact" />}
+      {problem && (
+        <>
+          <PaperDraftUploadButton
+            problem={problem}
+            onFlash={(msg) => {
+              setFlash(msg)
+              window.setTimeout(() => setFlash(null), 2200)
+            }}
+          />
+          <ScratchPadTrigger
+            problem={problem}
+            variant="compact"
+            onSolve={scratchActions?.onSolve}
+            onWrong={scratchActions?.onWrong}
+            onResolved={scratchActions?.onResolved}
+          />
+        </>
+      )}
       <div
         className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[masteryLevel]}`}
       >
         {MASTERY_ICON[masteryLevel] || '·'}
       </div>
+      {flash && (
+        <div className="pointer-events-none fixed top-16 left-1/2 z-50 -translate-x-1/2 rounded-full bg-amber-800 px-4 py-2 text-[13px] font-semibold text-white shadow-lg">
+          {flash}
+        </div>
+      )}
     </div>
   )
 }

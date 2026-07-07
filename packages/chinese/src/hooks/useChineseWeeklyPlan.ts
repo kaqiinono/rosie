@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import { getWeekStart } from '../utils/chinese-helpers'
 import type { LessonCharGroup } from '../types/chineseCharData'
 import {
@@ -50,72 +50,61 @@ async function saveToCloud(userId: string, plan: ChineseWeeklyPlan): Promise<str
   }
 }
 
+/** Plans keyed by user; defaultLessonKey only affects parse fallback on fetch. */
+const chineseWeeklyPlansStore = createUserSessionStore<ChineseWeeklyPlan[]>(
+  'chinese_weekly_plans',
+  {
+    fetch: (userId) => loadAllPlansFromCloud(userId, 'u1-l1'),
+    empty: [],
+  },
+)
+
 export function useChineseWeeklyPlan(
   user: User | null,
   lessonGroups: LessonCharGroup[],
   bookSlug = 'g1b',
 ) {
   const defaultLessonKey = lessonGroups[0]?.lessonKey ?? 'u1-l1'
-
-  const [defaultParams, setDefaultParams] = useState<{
-    weekStartDay: number
-    newRecognizePerDay: number
-    newWritePerDay: number
-  } | null>(null)
-  const [weeklyPlan, setWeeklyPlan] = useState<ChineseWeeklyPlan | null>(null)
+  const { data: allPlans, isLoading } = chineseWeeklyPlansStore.useSessionData(user)
   const weeklyPlanRef = useRef<ChineseWeeklyPlan | null>(null)
-  const [allPlans, setAllPlans] = useState<ChineseWeeklyPlan[]>([])
-  const [isLoading, setIsLoading] = useState(() => user !== null)
+
+  const defaultParams = useMemo(() => {
+    if (allPlans.length === 0) return { ...CHINESE_PLAN_DEFAULTS }
+    return {
+      weekStartDay: allPlans[0].weekStartDay,
+      newRecognizePerDay: allPlans[0].newRecognizePerDay,
+      newWritePerDay: allPlans[0].newWritePerDay,
+    }
+  }, [allPlans])
+
+  const currentWeekStart = useMemo(() => {
+    return getWeekStart(undefined, defaultParams.weekStartDay)
+  }, [defaultParams.weekStartDay])
+
+  const weeklyPlan = useMemo(
+    () => allPlans.find((p) => p.weekStart === currentWeekStart) ?? null,
+    [allPlans, currentWeekStart],
+  )
 
   useEffect(() => {
     weeklyPlanRef.current = weeklyPlan
   }, [weeklyPlan])
 
-  useEffect(() => {
-    if (!user) return
-    void (async () => {
-      setIsLoading(true)
-      const plans = await loadAllPlansFromCloud(user.id, defaultLessonKey)
-      setAllPlans(plans)
-
-      const params =
-        plans.length > 0
-          ? {
-              weekStartDay: plans[0].weekStartDay,
-              newRecognizePerDay: plans[0].newRecognizePerDay,
-              newWritePerDay: plans[0].newWritePerDay,
-            }
-          : { ...CHINESE_PLAN_DEFAULTS }
-
-      setDefaultParams(params)
-
-      const weekStart = getWeekStart(undefined, params.weekStartDay)
-      setWeeklyPlan(plans.find((p) => p.weekStart === weekStart) ?? null)
-      setIsLoading(false)
-    })()
-  }, [user, defaultLessonKey])
-
-  const currentWeekStart = useMemo(() => {
-    if (!defaultParams) return null
-    return getWeekStart(undefined, defaultParams.weekStartDay)
-  }, [defaultParams])
-
   const savePlan = useCallback(
     async (plan: ChineseWeeklyPlan): Promise<ChineseWeeklyPlan> => {
-      setWeeklyPlan(plan)
-      setAllPlans((prev) => {
+      if (!user) return plan
+      chineseWeeklyPlansStore.patchSessionData(user.id, (prev) => {
         const rest = prev.filter((p) => p.weekStart !== plan.weekStart)
         return [plan, ...rest]
       })
-      if (user) {
-        const savedId = await saveToCloud(user.id, plan)
-        if (savedId) {
-          const withId = { ...plan, id: savedId }
-          weeklyPlanRef.current = withId
-          setWeeklyPlan(withId)
-          setAllPlans((prev) => prev.map((p) => (p.weekStart === withId.weekStart ? withId : p)))
-          return withId
-        }
+      const savedId = await saveToCloud(user.id, plan)
+      if (savedId) {
+        const withId = { ...plan, id: savedId }
+        weeklyPlanRef.current = withId
+        chineseWeeklyPlansStore.patchSessionData(user.id, (prev) =>
+          prev.map((p) => (p.weekStart === withId.weekStart ? withId : p)),
+        )
+        return withId
       }
       return plan
     },
@@ -143,15 +132,16 @@ export function useChineseWeeklyPlan(
   const updateDayProgress = useCallback(
     async (date: string, progress: ChineseWeekDayProgress) => {
       const current = weeklyPlanRef.current
-      if (!current) return
+      if (!current || !user) return
       const updated: ChineseWeeklyPlan = {
         ...current,
         progress: { ...current.progress, [date]: progress },
       }
       weeklyPlanRef.current = updated
-      setWeeklyPlan(updated)
-      setAllPlans((prev) => prev.map((p) => (p.weekStart === updated.weekStart ? updated : p)))
-      if (user) void saveToCloud(user.id, updated)
+      chineseWeeklyPlansStore.patchSessionData(user.id, (prev) =>
+        prev.map((p) => (p.weekStart === updated.weekStart ? updated : p)),
+      )
+      void saveToCloud(user.id, updated)
     },
     [user],
   )

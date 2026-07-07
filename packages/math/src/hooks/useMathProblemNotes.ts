@@ -1,7 +1,11 @@
 'use client'
 
 import { supabase } from '@rosie/core'
-import { sanitizeNoteHtml, isNoteBodyEmpty } from '@rosie/math/utils/sanitize-note-html'
+import { isLessonSummaryProblemId } from '@rosie/math/constants'
+import {
+  isRichBodyEmpty,
+  sanitizeRichHtml,
+} from '@rosie/math/utils/sanitize-summary-html'
 
 type RawRow = {
   id: string
@@ -88,8 +92,8 @@ export async function createMathProblemNote(
   problemId: string,
   input: { title?: string | null; bodyHtml: string; sortOrder?: number },
 ): Promise<{ error: string | null; note: MathProblemNote | null }> {
-  const bodyHtml = sanitizeNoteHtml(input.bodyHtml)
-  if (isNoteBodyEmpty(bodyHtml)) {
+  const bodyHtml = sanitizeRichHtml(input.bodyHtml)
+  if (isRichBodyEmpty(bodyHtml)) {
     return { error: '笔记正文不能为空', note: null }
   }
 
@@ -126,8 +130,8 @@ export async function updateMathProblemNote(
   if (patch.title !== undefined) row.title = patch.title?.trim() || null
   if (patch.sortOrder !== undefined) row.sort_order = patch.sortOrder
   if (patch.bodyHtml !== undefined) {
-    const bodyHtml = sanitizeNoteHtml(patch.bodyHtml)
-    if (isNoteBodyEmpty(bodyHtml)) return { error: '笔记正文不能为空', note: null }
+    const bodyHtml = sanitizeRichHtml(patch.bodyHtml)
+    if (isRichBodyEmpty(bodyHtml)) return { error: '笔记正文不能为空', note: null }
     row.body_html = bodyHtml
   }
 
@@ -159,6 +163,7 @@ export function notesForProblem(notes: MathProblemNote[], problemId: string): Ma
 export function noteCountByProblem(notes: MathProblemNote[]): Map<string, number> {
   const map = new Map<string, number>()
   for (const n of notes) {
+    if (isLessonSummaryProblemId(n.problemId)) continue
     map.set(n.problemId, (map.get(n.problemId) ?? 0) + 1)
   }
   return map
@@ -170,6 +175,7 @@ export function groupNotesByProblem(
 ): { problemId: string; notes: MathProblemNote[] }[] {
   const map = new Map<string, MathProblemNote[]>()
   for (const note of notes) {
+    if (isLessonSummaryProblemId(note.problemId)) continue
     const list = map.get(note.problemId) ?? []
     list.push(note)
     map.set(note.problemId, list)

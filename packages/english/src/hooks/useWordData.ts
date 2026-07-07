@@ -1,14 +1,13 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
 import type { WordEntry } from '@rosie/core'
 
-const SELECT_COLS = 'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
+const SELECT_COLS =
+  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
 
-// localStorage 缓存：按 stage 分 key，避免单词量大时整体缓存过重
-// key 格式：word_cache_v1_{userId}_{stage}（stage 为空用 __null__）
 const CACHE_VER = 'word_cache_v1'
 const NULL_STAGE = '__null__'
 
@@ -32,7 +31,7 @@ function readCachedVocab(userId: string): WordEntry[] | null {
     const all: WordEntry[] = []
     for (const stage of stages) {
       const json = localStorage.getItem(cacheDataKey(userId, stage))
-      if (!json) return null // 缓存不完整，放弃
+      if (!json) return null
       const { data } = JSON.parse(json) as { data: WordEntry[] }
       all.push(...data)
     }
@@ -64,7 +63,9 @@ function writeCacheByStage(userId: string, words: WordEntry[]) {
     for (const [stage, stageWords] of byStage) {
       localStorage.setItem(cacheDataKey(userId, stage), JSON.stringify({ data: stageWords }))
     }
-  } catch { /* localStorage 可能已满，静默忽略 */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 function clearCacheForStages(userId: string, stages: string[]) {
@@ -75,18 +76,17 @@ function clearCacheForStages(userId: string, stages: string[]) {
     const indexJson = localStorage.getItem(cacheIndexKey(userId))
     if (indexJson) {
       const existing: string[] = JSON.parse(indexJson)
-      const updated = existing.filter(s => !stages.includes(s))
+      const updated = existing.filter((s) => !stages.includes(s))
       localStorage.setItem(cacheIndexKey(userId), JSON.stringify(updated))
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 const UPSERT_OPTS = { onConflict: 'unit,lesson,word,stage', ignoreDuplicates: false } as const
 const FETCH_PAGE_SIZE = 1000
 const UPSERT_CHUNK = 500
-
-/** 并发 fetch 代数：仅最新一次 refresh/初始加载可写回 vocab，避免删除后被旧请求覆盖。 */
-let loadGen = 0
 
 function isSameWordEntry(a: WordEntry, b: WordEntry): boolean {
   return (
@@ -110,7 +110,6 @@ async function deleteWordRow(w: WordEntry): Promise<void> {
   if (error) throw error
 }
 
-/** Supabase/PostgREST 默认最多返回 1000 行，必须分页拉全量。 */
 async function fetchAllWordEntries(): Promise<WordEntry[]> {
   const all: WordEntry[] = []
   let from = 0
@@ -129,6 +128,12 @@ async function fetchAllWordEntries(): Promise<WordEntry[]> {
     from += FETCH_PAGE_SIZE
   }
   return all
+}
+
+async function fetchWordEntries(userId: string): Promise<WordEntry[]> {
+  const words = await fetchAllWordEntries()
+  writeCacheByStage(userId, words)
+  return words
 }
 
 async function upsertWordRows(creator: string, words: WordEntry[]) {
@@ -173,103 +178,140 @@ function fromRow(row: Record<string, unknown>): WordEntry {
   }
 }
 
-export function useWordData(user: User | null) {
-  const [vocab, setVocabState] = useState<WordEntry[]>([])
+export const wordEntriesStore = createUserSessionStore<WordEntry[]>('word_entries', {
+  fetch: fetchWordEntries,
+  empty: [],
+})
 
-  // 从 DB 重新读取全量词库并刷新本地状态 + 缓存。空结果也会写入（用于删空场景）。
-  const refresh = useCallback(async () => {
-    if (!user) return
-    const gen = ++loadGen
-    const words = await fetchAllWordEntries()
-    if (gen !== loadGen) return
-    setVocabState(words)
-    writeCacheByStage(user.id, words)
-  }, [user])
+async function reloadWordEntries(userId: string): Promise<void> {
+  wordEntriesStore.invalidate(userId)
+  wordEntriesStore.ensureLoaded(userId)
+}
+
+export function useWordData(user: User | null) {
+  const userId = user?.id ?? null
 
   useEffect(() => {
-    if (!user) {
-      setVocabState([])
-      return
+    if (!userId) return
+    const snapshot = wordEntriesStore.getSnapshot(userId)
+    if (snapshot.status === 'idle') {
+      const cached = readCachedVocab(userId)
+      if (cached) wordEntriesStore.replaceSessionData(userId, cached)
     }
-    const cached = readCachedVocab(user.id)
-    if (cached) setVocabState(cached)
-    void refresh()
-  }, [user, refresh])
+  }, [userId])
 
-  const upsertByStage = useCallback(async (words: WordEntry[]) => {
-    if (!user || !words.length) return
-    const stages = [...new Set(words.map(w => w.stage).filter(Boolean))] as string[]
+  const { data: vocab, isLoading } = wordEntriesStore.useSessionData(user)
 
-    // 清除受影响 stage 的缓存（精确失效，不影响其他 stage）
-    clearCacheForStages(user.id, stages.map(stageKey))
+  const upsertByStage = useCallback(
+    async (words: WordEntry[]) => {
+      if (!user || !words.length) return
+      const stages = [...new Set(words.map((w) => w.stage).filter(Boolean))] as string[]
+      clearCacheForStages(user.id, stages.map(stageKey))
+      for (const stage of stages) {
+        await supabase.from('word_entries').delete().eq('stage', stage)
+      }
+      await upsertWordRows(user.id, words)
+      invalidateSessionStore('word_entries')
+      await reloadWordEntries(user.id)
+    },
+    [user],
+  )
 
-    for (const stage of stages) {
-      await supabase.from('word_entries').delete().eq('stage', stage)
-    }
-    await upsertWordRows(user.id, words)
-    await refresh()
-  }, [user, refresh])
+  const addWords = useCallback(
+    async (words: WordEntry[]) => {
+      if (!user || !words.length) return
+      await upsertWordRows(user.id, words)
+      clearCacheForStages(user.id, [...new Set(words.map((w) => stageKey(w.stage)))])
+      wordEntriesStore.patchSessionData(user.id, (prev) => {
+        const next = [...prev]
+        for (const w of words) {
+          const idx = next.findIndex((x) => isSameWordEntry(x, w))
+          if (idx >= 0) next[idx] = w
+          else next.push(w)
+        }
+        writeCacheByStage(user.id, next)
+        return next
+      })
+    },
+    [user],
+  )
 
-  // —— 按行 / 按词库的增量 CRUD（供管理后台使用，绝不整库替换）——
+  const updateWord = useCallback(
+    async (original: WordEntry, updated: WordEntry) => {
+      if (!user) return
+      const base = supabase
+        .from('word_entries')
+        .update(toRow(user.id, updated))
+        .eq('unit', original.unit)
+        .eq('lesson', original.lesson)
+        .eq('word', original.word)
+      await (original.stage ? base.eq('stage', original.stage) : base.is('stage', null))
+      clearCacheForStages(user.id, [stageKey(original.stage), stageKey(updated.stage)])
+      wordEntriesStore.patchSessionData(user.id, (prev) => {
+        const next = prev.map((x) => (isSameWordEntry(x, original) ? updated : x))
+        writeCacheByStage(user.id, next)
+        return next
+      })
+    },
+    [user],
+  )
 
-  /** 增量 upsert 一批单词（按复合键冲突即更新），不删除任何 stage。单个添加传长度 1 的数组。 */
-  const addWords = useCallback(async (words: WordEntry[]) => {
-    if (!user || !words.length) return
-    await upsertWordRows(user.id, words)
-    clearCacheForStages(user.id, [...new Set(words.map(w => stageKey(w.stage)))])
-    await refresh()
-  }, [user, refresh])
+  const deleteWord = useCallback(
+    async (w: WordEntry) => {
+      if (!user) return
+      wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => !isSameWordEntry(x, w)))
+      try {
+        await deleteWordRow(w)
+        clearCacheForStages(user.id, [stageKey(w.stage)])
+        wordEntriesStore.patchSessionData(user.id, (prev) => {
+          writeCacheByStage(user.id, prev)
+          return prev
+        })
+      } catch (err) {
+        invalidateSessionStore('word_entries')
+        await reloadWordEntries(user.id)
+        throw err
+      }
+    },
+    [user],
+  )
 
-  /** 按原复合键定位后更新（支持改键字段：拼写 / unit / lesson / stage）。 */
-  const updateWord = useCallback(async (original: WordEntry, updated: WordEntry) => {
-    if (!user) return
-    const base = supabase
-      .from('word_entries')
-      .update(toRow(user.id, updated))
-      .eq('unit', original.unit)
-      .eq('lesson', original.lesson)
-      .eq('word', original.word)
-    await (original.stage ? base.eq('stage', original.stage) : base.is('stage', null))
-    clearCacheForStages(user.id, [stageKey(original.stage), stageKey(updated.stage)])
-    await refresh()
-  }, [user, refresh])
+  const deleteStage = useCallback(
+    async (stage: string) => {
+      if (!user || !stage) return
+      wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => (x.stage ?? '') !== stage))
+      try {
+        const { error } = await supabase.from('word_entries').delete().eq('stage', stage)
+        if (error) throw error
+        clearCacheForStages(user.id, [stageKey(stage)])
+        wordEntriesStore.patchSessionData(user.id, (prev) => {
+          writeCacheByStage(user.id, prev)
+          return prev
+        })
+      } catch (err) {
+        invalidateSessionStore('word_entries')
+        await reloadWordEntries(user.id)
+        throw err
+      }
+    },
+    [user],
+  )
 
-  /** 按复合键删除单个单词。 */
-  const deleteWord = useCallback(async (w: WordEntry) => {
-    if (!user) return
-    setVocabState((prev) => prev.filter((x) => !isSameWordEntry(x, w)))
-    try {
-      await deleteWordRow(w)
-      clearCacheForStages(user.id, [stageKey(w.stage)])
-      await refresh()
-    } catch (err) {
-      await refresh()
-      throw err
-    }
-  }, [user, refresh])
+  const renameStage = useCallback(
+    async (oldStage: string, newStage: string) => {
+      if (!user || !newStage.trim() || oldStage === newStage) return
+      await supabase.from('word_entries').update({ stage: newStage }).eq('stage', oldStage)
+      clearCacheForStages(user.id, [stageKey(oldStage), stageKey(newStage)])
+      wordEntriesStore.patchSessionData(user.id, (prev) => {
+        const next = prev.map((x) =>
+          (x.stage ?? '') === oldStage ? { ...x, stage: newStage } : x,
+        )
+        writeCacheByStage(user.id, next)
+        return next
+      })
+    },
+    [user],
+  )
 
-  /** 删除整个词库（stage 下全部单词）。UI 层需二次确认。 */
-  const deleteStage = useCallback(async (stage: string) => {
-    if (!user || !stage) return
-    setVocabState((prev) => prev.filter((x) => (x.stage ?? '') !== stage))
-    try {
-      const { error } = await supabase.from('word_entries').delete().eq('stage', stage)
-      if (error) throw error
-      clearCacheForStages(user.id, [stageKey(stage)])
-      await refresh()
-    } catch (err) {
-      await refresh()
-      throw err
-    }
-  }, [user, refresh])
-
-  /** 重命名词库：批量把 oldStage 的单词改到 newStage。 */
-  const renameStage = useCallback(async (oldStage: string, newStage: string) => {
-    if (!user || !newStage.trim() || oldStage === newStage) return
-    await supabase.from('word_entries').update({ stage: newStage }).eq('stage', oldStage)
-    clearCacheForStages(user.id, [stageKey(oldStage), stageKey(newStage)])
-    await refresh()
-  }, [user, refresh])
-
-  return { vocab, upsertByStage, addWords, updateWord, deleteWord, deleteStage, renameStage }
+  return { vocab, upsertByStage, addWords, updateWord, deleteWord, deleteStage, renameStage, isLoading }
 }

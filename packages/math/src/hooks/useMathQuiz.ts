@@ -12,17 +12,11 @@ export type QuizProblemItem = {
   types: string[]
 }
 
-import type { ScratchObject } from '../components/shared/ScratchPad/scratch-pad-types'
-
 export type QuizAnswerRecord = {
   userAnswer: number | null
   correct: boolean | null
   /** Draft-only: serialized interactive grid state */
   interactiveState?: unknown
-  /** Scratch-pad drawing objects for this problem */
-  scratchObjects?: ScratchObject[]
-  /** Show scratch pad inline below the problem card */
-  scratchEmbedded?: boolean
 }
 
 export type QuizPaper = {
