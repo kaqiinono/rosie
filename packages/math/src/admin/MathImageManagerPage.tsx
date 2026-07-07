@@ -26,7 +26,9 @@ import {
   type MathImageKind,
 } from '@rosie/math/constants'
 import { useMathProblemImagesAdmin } from '@rosie/math/hooks/useMathProblemImagesAdmin'
+import { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
 import MathPdfSliceMatcher from '@rosie/math/admin/MathPdfSliceMatcher'
+import MathProblemNotesPanel from '@rosie/math/admin/MathProblemNotesPanel'
 import AnalysisGuideBadge from '@rosie/math/components/shared/AnalysisGuideBadge'
 import { problemHasAnalysisImage } from '@rosie/math/utils/problem-analysis-image'
 
@@ -34,11 +36,19 @@ type Props = { user: User | null }
 
 type AdminMode = 'single' | 'pdf-slice'
 
+type DetailTab = 'image' | 'notes' | 'summary'
+
 type ImageCoverageKey = 'analysis' | 'figure'
+type NotesCoverageKey = 'has' | 'none'
 
 const IMAGE_COVERAGE_BTNS: { key: ImageCoverageKey; label: string }[] = [
   { key: 'analysis', label: '题解图' },
   { key: 'figure', label: '题面图' },
+]
+
+const NOTES_COVERAGE_BTNS: { key: NotesCoverageKey; label: string }[] = [
+  { key: 'has', label: '有笔记' },
+  { key: 'none', label: '无笔记' },
 ]
 
 const MAX_FILE_MB = 20
@@ -82,11 +92,14 @@ function imageStatus(
 }
 
 type ImageCoverageFlags = { analysis: boolean; figure: boolean }
+type NotesCoverageFlags = { has: boolean; none: boolean }
 
 /** Default: both off → problems missing both image types. */
 const DEFAULT_IMAGE_COVERAGE: ImageCoverageFlags = { analysis: false, figure: false }
+const DEFAULT_NOTES_COVERAGE: NotesCoverageFlags = { has: false, none: false }
 
 const ALL_IMAGE_COVERAGE: ImageCoverageFlags = { analysis: true, figure: true }
+const ALL_NOTES_COVERAGE: NotesCoverageFlags = { has: true, none: true }
 
 type FindImageFn = (
   problemId: string,
@@ -109,6 +122,19 @@ function matchesImageCoverage(
   return hasFigure
 }
 
+function matchesNotesCoverage(
+  problemId: string,
+  coverage: NotesCoverageFlags,
+  noteCount: number,
+): boolean {
+  const hasNotes = noteCount > 0
+  const { has, none } = coverage
+  if (has && none) return true
+  if (!has && !none) return true
+  if (has) return hasNotes
+  return !hasNotes
+}
+
 export default function MathImageManagerPage({ user }: Props) {
   const [mode, setMode] = useState<AdminMode>('single')
   const grades = gradesInOrder()
@@ -122,12 +148,15 @@ export default function MathImageManagerPage({ user }: Props) {
   const [sourceFilter, setSourceFilter] = useState<Set<string>>(new Set())
   const [typeFilter, setTypeFilter] = useState<Set<string>>(new Set())
   const [imageCoverage, setImageCoverage] = useState<ImageCoverageFlags>(DEFAULT_IMAGE_COVERAGE)
+  const [notesCoverage, setNotesCoverage] = useState<NotesCoverageFlags>(DEFAULT_NOTES_COVERAGE)
+  const [detailTab, setDetailTab] = useState<DetailTab>('image')
   const [isDragOver, setIsDragOver] = useState(false)
   const [isSummaryDragOver, setIsSummaryDragOver] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const summaryInputRef = useRef<HTMLInputElement>(null)
   const admin = useMathProblemImagesAdmin(user, selectedLesson)
+  const notesAdmin = useMathProblemNotesAdmin(user, selectedLesson)
 
   const cloudAnalysisIds = useMemo(() => {
     const ids = new Set<string>()
@@ -159,6 +188,7 @@ export default function MathImageManagerPage({ user }: Props) {
 
   useEffect(() => {
     setImageCoverage(DEFAULT_IMAGE_COVERAGE)
+    setNotesCoverage(DEFAULT_NOTES_COVERAGE)
   }, [selectedLesson])
 
   const { findImage } = admin
@@ -172,6 +202,7 @@ export default function MathImageManagerPage({ user }: Props) {
           sourceFilter.has(setName) &&
           typeFilter.has(p.tag) &&
           matchesImageCoverage(p, imageCoverage, findImage) &&
+          matchesNotesCoverage(p.id, notesCoverage, notesAdmin.counts.get(p.id) ?? 0) &&
           (!q ||
             p.id.toLowerCase().includes(q) ||
             p.title.toLowerCase().includes(q) ||
@@ -185,6 +216,8 @@ export default function MathImageManagerPage({ user }: Props) {
     sourceFilter,
     typeFilter,
     imageCoverage,
+    notesCoverage,
+    notesAdmin.counts,
     findImage,
     selectedLesson,
   ])
@@ -195,7 +228,7 @@ export default function MathImageManagerPage({ user }: Props) {
     }
   }, [problems, selectedProblem])
 
-  function toggleFilter(axis: 'source' | 'type' | 'image', value: string) {
+  function toggleFilter(axis: 'source' | 'type' | 'image' | 'notes', value: string) {
     if (axis === 'source') {
       setSourceFilter((prev) => {
         const next = new Set(prev)
@@ -214,11 +247,19 @@ export default function MathImageManagerPage({ user }: Props) {
       })
       return
     }
-    const key = value as ImageCoverageKey
-    setImageCoverage((prev) => ({ ...prev, [key]: !prev[key] }))
+    if (axis === 'image') {
+      const key = value as ImageCoverageKey
+      setImageCoverage((prev) => ({ ...prev, [key]: !prev[key] }))
+      return
+    }
+    toggleNotesFilter(value as NotesCoverageKey)
   }
 
-  function toggleAll(axis: 'source' | 'type' | 'image') {
+  function toggleNotesFilter(key: NotesCoverageKey) {
+    setNotesCoverage((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  function toggleAll(axis: 'source' | 'type' | 'image' | 'notes') {
     if (axis === 'source') {
       const allSelected = sourceBtns.every((b) => sourceFilter.has(b.key))
       setSourceFilter(allSelected ? new Set() : new Set(sourceBtns.map((b) => b.key)))
@@ -229,13 +270,19 @@ export default function MathImageManagerPage({ user }: Props) {
       setTypeFilter(allSelected ? new Set() : new Set(typeBtns.map((b) => b.key)))
       return
     }
-    const allSelected = imageCoverage.analysis && imageCoverage.figure
-    setImageCoverage(allSelected ? DEFAULT_IMAGE_COVERAGE : ALL_IMAGE_COVERAGE)
+    if (axis === 'image') {
+      const allSelected = imageCoverage.analysis && imageCoverage.figure
+      setImageCoverage(allSelected ? DEFAULT_IMAGE_COVERAGE : ALL_IMAGE_COVERAGE)
+      return
+    }
+    const allNotesSelected = notesCoverage.has && notesCoverage.none
+    setNotesCoverage(allNotesSelected ? DEFAULT_NOTES_COVERAGE : ALL_NOTES_COVERAGE)
   }
 
   const allSourceSelected = sourceBtns.length > 0 && sourceBtns.every((b) => sourceFilter.has(b.key))
   const allTypeSelected = typeBtns.length > 0 && typeBtns.every((b) => typeFilter.has(b.key))
   const allImageCoverageSelected = imageCoverage.analysis && imageCoverage.figure
+  const allNotesCoverageSelected = notesCoverage.has && notesCoverage.none
   const filterBtnBase =
     'rounded-full border px-2.5 py-1 text-[11px] font-semibold transition active:scale-95'
   const filterBtnOn = 'border-teal-600 bg-teal-600 text-white'
@@ -291,7 +338,7 @@ export default function MathImageManagerPage({ user }: Props) {
   )
 
   useEffect(() => {
-    if (!selectedProblem) return
+    if (!selectedProblem || detailTab !== 'image') return
 
     function onPaste(e: ClipboardEvent) {
       const target = e.target
@@ -306,7 +353,7 @@ export default function MathImageManagerPage({ user }: Props) {
 
     document.addEventListener('paste', onPaste)
     return () => document.removeEventListener('paste', onPaste)
-  }, [selectedProblem, uploadFile])
+  }, [selectedProblem, detailTab, uploadFile])
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -454,8 +501,8 @@ export default function MathImageManagerPage({ user }: Props) {
             ←
           </Link>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[16px] font-extrabold text-teal-900">📐 数学题图</div>
-            <div className="truncate text-[11px] text-slate-500">单题上传或 PDF 分片匹配</div>
+            <div className="truncate text-[16px] font-extrabold text-teal-900">📐 数学题管理</div>
+            <div className="truncate text-[11px] text-slate-500">题图上传 · 笔记编辑 · PDF 分片</div>
           </div>
           <div className="flex shrink-0 gap-1 rounded-xl bg-teal-50 p-1">
             <button
@@ -492,11 +539,11 @@ export default function MathImageManagerPage({ user }: Props) {
         {mode === 'pdf-slice' ? (
           <MathPdfSliceMatcher user={user} />
         ) : (
-          <div className="grid gap-4 lg:grid-cols-[240px_1fr_320px]">
-        {/* Lesson picker */}
+          <div className="grid gap-4 lg:grid-cols-[280px_1fr_320px]">
+        {/* Lesson picker + filters */}
         <aside className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
           <div className="mb-2 text-[12px] font-bold text-slate-500">选择讲次</div>
-          <div className="max-h-[70vh] space-y-3 overflow-y-auto">
+          <div className="mb-3 max-h-[36vh] space-y-3 overflow-y-auto">
             {grades.map((grade) => (
               <div key={grade}>
                 <div className="mb-1 px-1 text-[11px] font-bold text-teal-700">{GRADE_LABEL[grade]}</div>
@@ -508,6 +555,7 @@ export default function MathImageManagerPage({ user }: Props) {
                       onClick={() => {
                         setSelectedLesson(id)
                         setSelectedProblem(null)
+                        setDetailTab('image')
                         setIsDragOver(false)
                       }}
                       className={`rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition ${
@@ -523,6 +571,123 @@ export default function MathImageManagerPage({ user }: Props) {
               </div>
             ))}
           </div>
+
+          <div className="border-t border-teal-100 pt-3">
+            <div className="mb-2 text-[12px] font-bold text-slate-500">筛选题目</div>
+            <input
+              type="search"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              placeholder="搜索题号、标题…"
+              className="mb-2.5 w-full rounded-xl border border-slate-200 px-3 py-2 text-[12px] outline-none focus:border-teal-400"
+            />
+
+            <div className="max-h-[42vh] space-y-2 overflow-y-auto rounded-xl border border-teal-100 bg-teal-50/40 p-2.5">
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-teal-800">📂 来源</span>
+                  {sourceBtns.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleAll('source')}
+                      className="text-[10px] text-teal-600 transition hover:text-teal-800"
+                    >
+                      {allSourceSelected ? '全不选' : '全选'}
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {sourceBtns.map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => toggleFilter('source', b.key)}
+                      className={`${filterBtnBase} ${sourceFilter.has(b.key) ? filterBtnOn : filterBtnOff}`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-teal-800">🏷️ 题型</span>
+                  {typeBtns.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleAll('type')}
+                      className="text-[10px] text-teal-600 transition hover:text-teal-800"
+                    >
+                      {allTypeSelected ? '全不选' : '全选'}
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {typeBtns.map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => toggleFilter('type', b.key)}
+                      className={`${filterBtnBase} ${typeFilter.has(b.key) ? filterBtnOn : filterBtnOff}`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-teal-800">🖼️ 题图</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleAll('image')}
+                    className="text-[10px] text-teal-600 transition hover:text-teal-800"
+                  >
+                    {allImageCoverageSelected ? '清除' : '全选'}
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {IMAGE_COVERAGE_BTNS.map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => toggleFilter('image', b.key)}
+                      className={`${filterBtnBase} ${imageCoverage[b.key] ? filterBtnOn : filterBtnOff}`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-teal-800">📝 笔记</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleAll('notes')}
+                    className="text-[10px] text-teal-600 transition hover:text-teal-800"
+                  >
+                    {allNotesCoverageSelected ? '清除' : '全选'}
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {NOTES_COVERAGE_BTNS.map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => toggleFilter('notes', b.key)}
+                      className={`${filterBtnBase} ${notesCoverage[b.key] ? filterBtnOn : filterBtnOff}`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </aside>
 
         {/* Problem list */}
@@ -534,170 +699,21 @@ export default function MathImageManagerPage({ user }: Props) {
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">
               {problems.length} 题
             </span>
+            {summaryUrl && (
+              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-700">
+                已有总结图
+              </span>
+            )}
           </div>
 
-          <div className="mb-3 rounded-xl border border-violet-100 bg-violet-50/40 p-3">
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <div className="text-[12px] font-bold text-violet-900">📋 本讲内容总结图</div>
-                <p className="text-[10px] text-violet-700">{MATH_IMAGE_KIND_HINT.summary}</p>
-                <p className="mt-0.5 text-[10px] text-violet-600/75">
-                  若报 403 RLS，在 Supabase SQL Editor 执行 <code className="text-[9px]">docs/sql/math-lesson-summary-rls.sql</code>
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => summaryInputRef.current?.click()}
-                  disabled={admin.isUploading}
-                  className="rounded-lg bg-violet-600 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
-                >
-                  {summaryUrl ? '替换图片' : '上传图片'}
-                </button>
-                {summaryUrl && (
-                  <button
-                    type="button"
-                    onClick={() => void handleDeleteSummary()}
-                    disabled={admin.isUploading}
-                    className="rounded-lg border border-violet-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-50 disabled:opacity-50"
-                  >
-                    删除
-                  </button>
-                )}
-              </div>
-            </div>
-            <input
-              ref={summaryInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              className="hidden"
-              onChange={handleSummaryFile}
-            />
-            <div
-              className={`relative rounded-xl border border-dashed p-2 transition ${
-                isSummaryDragOver
-                  ? 'border-violet-500 bg-violet-100/80 ring-2 ring-violet-300'
-                  : 'border-violet-200 bg-white/70'
-              }`}
-              onDragOver={handleSummaryDragOver}
-              onDragLeave={handleSummaryDragLeave}
-              onDrop={handleSummaryDrop}
-            >
-              {summaryUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={summaryUrl}
-                  alt={`第 ${selectedLesson} 讲内容总结`}
-                  className="mx-auto max-h-56 w-full rounded-lg object-contain"
-                />
-              ) : (
-                <div className="flex min-h-[88px] flex-col items-center justify-center gap-1 text-center text-[11px] text-violet-600/80">
-                  <span>拖入图片或点击「上传图片」</span>
-                  <span className="text-[10px] opacity-70">PNG / JPG / WEBP / GIF · 最大 {MAX_FILE_MB} MB</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mb-3 space-y-2 rounded-xl border border-teal-100 bg-teal-50/40 p-2.5">
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-teal-800">📂 来源</span>
-                {sourceBtns.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => toggleAll('source')}
-                    className="text-[10px] text-teal-600 transition hover:text-teal-800"
-                  >
-                    {allSourceSelected ? '全不选' : '全选'}
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {sourceBtns.map((b) => (
-                  <button
-                    key={b.key}
-                    type="button"
-                    onClick={() => toggleFilter('source', b.key)}
-                    className={`${filterBtnBase} ${sourceFilter.has(b.key) ? filterBtnOn : filterBtnOff}`}
-                  >
-                    {b.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-teal-800">🏷️ 题型</span>
-                {typeBtns.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => toggleAll('type')}
-                    className="text-[10px] text-teal-600 transition hover:text-teal-800"
-                  >
-                    {allTypeSelected ? '全不选' : '全选'}
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {typeBtns.map((b) => (
-                  <button
-                    key={b.key}
-                    type="button"
-                    onClick={() => toggleFilter('type', b.key)}
-                    className={`${filterBtnBase} ${typeFilter.has(b.key) ? filterBtnOn : filterBtnOff}`}
-                  >
-                    {b.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-teal-800">🖼️ 题图筛选</span>
-                <button
-                  type="button"
-                  onClick={() => toggleAll('image')}
-                  className="text-[10px] text-teal-600 transition hover:text-teal-800"
-                >
-                  {allImageCoverageSelected ? '清除' : '全选'}
-                </button>
-              </div>
-              <p className="mb-1.5 text-[10px] text-teal-600">
-                默认两项均不选 → 既无题解也无题面。只勾选「题解图」→ 仅有题解；只勾选「题面图」→ 仅有题面；两项都选 → 显示全部
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {IMAGE_COVERAGE_BTNS.map((b) => (
-                  <button
-                    key={b.key}
-                    type="button"
-                    onClick={() => toggleFilter('image', b.key)}
-                    className={`${filterBtnBase} ${imageCoverage[b.key] ? filterBtnOn : filterBtnOff}`}
-                  >
-                    {b.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <input
-            type="search"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="搜索题号、标题或题型…"
-            className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-[13px] outline-none focus:border-teal-400"
-          />
-
-          {admin.isLoading ? (
+          {admin.isLoading || notesAdmin.isLoading ? (
             <div className="flex items-center justify-center py-16 text-[13px] text-slate-400">加载中…</div>
           ) : (
-            <ul className="max-h-[65vh] space-y-1 overflow-y-auto">
+            <ul className="max-h-[84vh] space-y-1 overflow-y-auto">
               {problems.map((p) => {
                 const status = imageStatus(p.id, admin.findImage)
                 const hasAnalysis = problemHasAnalysisImage(p, cloudAnalysisIds)
+                const noteCount = notesAdmin.counts.get(p.id) ?? 0
                 const active = selectedProblem?.id === p.id
                 return (
                   <li key={p.id}>
@@ -705,6 +721,7 @@ export default function MathImageManagerPage({ user }: Props) {
                       type="button"
                       onClick={() => {
                         setSelectedProblem(p)
+                        setDetailTab('image')
                         setIsDragOver(false)
                       }}
                       className={`flex w-full items-start gap-2 rounded-xl px-3 py-2.5 text-left transition ${
@@ -742,6 +759,14 @@ export default function MathImageManagerPage({ user }: Props) {
                         >
                           面
                         </span>
+                        <span
+                          title="笔记"
+                          className={`rounded px-1 text-[10px] font-bold ${
+                            noteCount > 0 ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-400'
+                          }`}
+                        >
+                          记{noteCount > 0 ? noteCount : ''}
+                        </span>
                       </div>
                     </button>
                   </li>
@@ -751,12 +776,103 @@ export default function MathImageManagerPage({ user }: Props) {
           )}
         </section>
 
-        {/* Upload panel */}
+        {/* Detail panel */}
         <aside className="rounded-2xl border border-teal-100 bg-white/90 p-4 shadow-sm">
-          {!selectedProblem ? (
+          <div className="mb-4 flex gap-1 rounded-xl bg-slate-100 p-1">
+            {(
+              [
+                { key: 'image' as const, label: '图片' },
+                { key: 'notes' as const, label: '笔记' },
+                { key: 'summary' as const, label: '总结' },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setDetailTab(tab.key)}
+                className={`flex-1 rounded-lg py-2 text-[12px] font-bold transition ${
+                  detailTab === tab.key ? 'bg-white text-teal-800 shadow-sm' : 'text-slate-500'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {detailTab === 'summary' ? (
+            <div className="space-y-4">
+              <div>
+                <div className="text-[12px] font-bold text-violet-900">第 {selectedLesson} 讲 · 内容总结图</div>
+                <p className="mt-1 text-[11px] leading-relaxed text-violet-700">{MATH_IMAGE_KIND_HINT.summary}</p>
+                <p className="mt-0.5 text-[10px] text-violet-600/75">
+                  若报 403 RLS，在 Supabase SQL Editor 执行{' '}
+                  <code className="text-[9px]">docs/sql/math-lesson-summary-rls.sql</code>
+                </p>
+              </div>
+
+              <input
+                ref={summaryInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                className="hidden"
+                onChange={handleSummaryFile}
+              />
+
+              <div
+                className={`relative rounded-xl border border-dashed p-3 transition ${
+                  isSummaryDragOver
+                    ? 'border-violet-500 bg-violet-100/80 ring-2 ring-violet-300'
+                    : 'border-violet-200 bg-violet-50/50'
+                }`}
+                onDragOver={handleSummaryDragOver}
+                onDragLeave={handleSummaryDragLeave}
+                onDrop={handleSummaryDrop}
+              >
+                {summaryUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={summaryUrl}
+                    alt={`第 ${selectedLesson} 讲内容总结`}
+                    className="mx-auto max-h-56 w-full rounded-lg object-contain"
+                  />
+                ) : (
+                  <div className="flex min-h-[120px] flex-col items-center justify-center gap-1 text-center text-[12px] text-violet-600/80">
+                    <span>拖入图片或点击下方上传</span>
+                    <span className="text-[10px] opacity-70">PNG / JPG / WEBP / GIF · 最大 {MAX_FILE_MB} MB</span>
+                  </div>
+                )}
+                {isSummaryDragOver && (
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-violet-100/90 text-[12px] font-semibold text-violet-800">
+                    松开上传总结图
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="button"
+                disabled={admin.isUploading}
+                onClick={() => summaryInputRef.current?.click()}
+                className="w-full rounded-xl bg-violet-600 py-2.5 text-[13px] font-bold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60"
+              >
+                {admin.isUploading ? '上传中…' : summaryUrl ? '替换总结图' : '上传总结图'}
+              </button>
+
+              {summaryUrl && (
+                <button
+                  type="button"
+                  onClick={() => void handleDeleteSummary()}
+                  disabled={admin.isUploading}
+                  className="w-full rounded-xl border border-red-200 py-2 text-[12px] font-semibold text-red-600 transition hover:bg-red-50"
+                >
+                  删除总结图
+                </button>
+              )}
+            </div>
+          ) : !selectedProblem ? (
             <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
               <div className="text-3xl opacity-40">👈</div>
-              <div className="text-[13px] text-slate-500">从左侧列表选择一道题</div>
+              <div className="text-[13px] text-slate-500">从中间列表选择一道题</div>
+              <div className="text-[11px] text-slate-400">或切换到「总结」管理本讲内容图</div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -765,6 +881,10 @@ export default function MathImageManagerPage({ user }: Props) {
                 <div className="text-[13px] font-semibold text-slate-800">{selectedProblem.title}</div>
               </div>
 
+              {detailTab === 'notes' ? (
+                <MathProblemNotesPanel problem={selectedProblem} admin={notesAdmin} onFlash={showFlash} />
+              ) : (
+                <>
               <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
                 {(['analysis', 'figure'] as const).map((kind) => (
                   <button
@@ -882,6 +1002,8 @@ export default function MathImageManagerPage({ user }: Props) {
               <p className="text-[10px] leading-relaxed text-slate-400">
                 题解图显示在「查看题解」面板内；题面图显示在题目文字下方。上传前请确认上方标签；误传可用「更正」按钮调整，无需重新划片。
               </p>
+                </>
+              )}
             </div>
           )}
         </aside>

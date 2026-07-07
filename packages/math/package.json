@@ -17,7 +17,11 @@
     "@rosie/rewards": "workspace:*",
     "@rosie/ui": "workspace:*",
     "@supabase/supabase-js": "^2.99.2",
+    "@tiptap/pm": "^3.27.2",
+    "@tiptap/react": "^3.27.2",
+    "@tiptap/starter-kit": "^3.27.2",
     "clsx": "^2.1.1",
+    "dompurify": "^3.4.11",
     "pdfjs-dist": "^4.10.38"
   },
   "peerDependencies": {
@@ -26,6 +30,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.2.0",
     "@types/node": "^22.13.14",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",

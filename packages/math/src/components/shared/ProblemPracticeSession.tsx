@@ -364,7 +364,7 @@ function PracticeProblem({
   return (
     <div className="practice-overlay-enter">
       <div className="mb-3 text-[15px] font-bold text-gray-800">{problem.title}</div>
-      <QuestionLayout question={question} solution={solution} answer={answerDom} />
+      <QuestionLayout question={question} solution={solution} answer={answerDom} problemId={problem.id} problem={problem} />
     </div>
   )
 }

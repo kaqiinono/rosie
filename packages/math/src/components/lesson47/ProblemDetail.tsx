@@ -100,6 +100,8 @@ export default function ProblemDetail({ problem, mode = 'full', defaultSolutionO
         solution={solution}
         answer={answerDom}
         defaultSolutionOpen={defaultSolutionOpen}
+        problemId={problem.id}
+        problem={problem}
       />
       {mode === 'full' && positionLabel && (
         <LessonProblemNavBar prevHref={prevHref} nextHref={nextHref} positionLabel={positionLabel} />
