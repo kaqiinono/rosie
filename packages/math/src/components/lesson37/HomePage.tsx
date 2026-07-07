@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson37-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/37'
+const BASE = '/math/ny/1/37'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -50,7 +51,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-[#1e40af]">
           第37讲 · 一年级目标班<br />掌握假设法4大题型，轻松搞定鸡兔同笼！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
 

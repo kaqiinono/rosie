@@ -4,7 +4,7 @@ import LessonSidebar from '@rosie/math/components/shared/LessonSidebar'
 import type { ProblemSet } from '@rosie/core'
 import { useLesson41 } from './Lesson41Provider'
 
-const BASE = '/math/ny/41'
+const BASE = '/math/ny/1/41'
 
 const CONFIG = {
   basePath: BASE,

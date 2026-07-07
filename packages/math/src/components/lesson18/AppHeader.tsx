@@ -5,7 +5,7 @@ import type { ProblemSet } from '@rosie/core'
 import { useLesson18 } from './Lesson18Provider'
 
 const CONFIG = {
-  basePath: '/math/ny/18',
+  basePath: '/math/ny/1/18',
   emoji: '✖️',
   titleShort: '和差倍',
   titleFull: '问题',

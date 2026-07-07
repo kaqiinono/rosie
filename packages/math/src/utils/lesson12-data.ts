@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '12-P1',
+    id: '1-12-P1',
     title: '课前测1 · 凑整混合计算',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 3,
@@ -17,7 +17,7 @@ const PRETEST: Problem[] = [
     finalAns: 1201,
   },
   {
-    id: '12-P2',
+    id: '1-12-P2',
     title: '课前测2 · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 3,
@@ -32,7 +32,7 @@ const PRETEST: Problem[] = [
     finalAns: 4300,
   },
   {
-    id: '12-P3',
+    id: '1-12-P3',
     title: '课前测3 · 括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 2,
@@ -47,7 +47,7 @@ const PRETEST: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '12-P4',
+    id: '1-12-P4',
     title: '课前测4 · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -62,7 +62,7 @@ const PRETEST: Problem[] = [
     finalAns: 1306,
   },
   {
-    id: '12-P5',
+    id: '1-12-P5',
     title: '课前测5 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 2,
@@ -80,7 +80,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '12-L1',
+    id: '1-12-L1',
     title: '例1(1) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 1,
@@ -95,7 +95,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '12-L2',
+    id: '1-12-L2',
     title: '例1(2) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -110,7 +110,7 @@ const LESSON: Problem[] = [
     finalAns: 401,
   },
   {
-    id: '12-L3',
+    id: '1-12-L3',
     title: '练一练1 · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 1,
@@ -125,7 +125,7 @@ const LESSON: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '12-L4',
+    id: '1-12-L4',
     title: '练一练2 · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -140,7 +140,7 @@ const LESSON: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '12-L5',
+    id: '1-12-L5',
     title: '例2 · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 3,
@@ -155,7 +155,7 @@ const LESSON: Problem[] = [
     finalAns: 2000,
   },
   {
-    id: '12-L6',
+    id: '1-12-L6',
     title: '练一练 · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 3,
@@ -170,7 +170,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '12-L7',
+    id: '1-12-L7',
     title: '例3(1) · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 1,
@@ -185,7 +185,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '12-L8',
+    id: '1-12-L8',
     title: '例3(2) · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 3,
@@ -200,7 +200,7 @@ const LESSON: Problem[] = [
     finalAns: 700,
   },
   {
-    id: '12-L9',
+    id: '1-12-L9',
     title: '练一练1 · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 1,
@@ -215,7 +215,7 @@ const LESSON: Problem[] = [
     finalAns: 1000,
   },
   {
-    id: '12-L10',
+    id: '1-12-L10',
     title: '练一练2 · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 3,
@@ -230,7 +230,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '12-L11',
+    id: '1-12-L11',
     title: '例4(1) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 2,
@@ -245,7 +245,7 @@ const LESSON: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '12-L12',
+    id: '1-12-L12',
     title: '例4(2) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 4,
@@ -260,7 +260,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '12-L13',
+    id: '1-12-L13',
     title: '练一练1 · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 2,
@@ -275,7 +275,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '12-L14',
+    id: '1-12-L14',
     title: '练一练2 · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 4,
@@ -290,7 +290,7 @@ const LESSON: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '12-L15',
+    id: '1-12-L15',
     title: '例5(1) · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -305,7 +305,7 @@ const LESSON: Problem[] = [
     finalAns: 555,
   },
   {
-    id: '12-L16',
+    id: '1-12-L16',
     title: '例5(2) · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -320,7 +320,7 @@ const LESSON: Problem[] = [
     finalAns: 760,
   },
   {
-    id: '12-L17',
+    id: '1-12-L17',
     title: '练一练1 · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -335,7 +335,7 @@ const LESSON: Problem[] = [
     finalAns: 375,
   },
   {
-    id: '12-L18',
+    id: '1-12-L18',
     title: '练一练2 · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -350,7 +350,7 @@ const LESSON: Problem[] = [
     finalAns: 718,
   },
   {
-    id: '12-L19',
+    id: '1-12-L19',
     title: '例6 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 2,
@@ -365,7 +365,7 @@ const LESSON: Problem[] = [
     finalAns: 192,
   },
   {
-    id: '12-L20',
+    id: '1-12-L20',
     title: '练一练 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 1,
@@ -380,7 +380,7 @@ const LESSON: Problem[] = [
     finalAns: 65,
   },
   {
-    id: '12-L21',
+    id: '1-12-L21',
     title: '附加题1 · 连续自然数求最小',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 4,
@@ -395,7 +395,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '12-L22',
+    id: '1-12-L22',
     title: '附加题2 · 奇偶求差',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 5,
@@ -414,7 +414,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '12-H1',
+    id: '1-12-H1',
     title: '巩固1(1) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 1,
@@ -429,7 +429,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '12-H2',
+    id: '1-12-H2',
     title: '巩固1(2) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -444,7 +444,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 800,
   },
   {
-    id: '12-H3',
+    id: '1-12-H3',
     title: '巩固2 · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 3,
@@ -459,7 +459,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 1100,
   },
   {
-    id: '12-H4',
+    id: '1-12-H4',
     title: '巩固3(1) · 括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 1,
@@ -474,7 +474,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '12-H5',
+    id: '1-12-H5',
     title: '巩固3(2) · 括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 3,
@@ -489,7 +489,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 300,
   },
   {
-    id: '12-H6',
+    id: '1-12-H6',
     title: '巩固4(1) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 2,
@@ -504,7 +504,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '12-H7',
+    id: '1-12-H7',
     title: '巩固4(2) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 4,
@@ -519,7 +519,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '12-H8',
+    id: '1-12-H8',
     title: '巩固5(1) · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -534,7 +534,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 161,
   },
   {
-    id: '12-H9',
+    id: '1-12-H9',
     title: '巩固5(2) · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -549,7 +549,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 419,
   },
   {
-    id: '12-H10',
+    id: '1-12-H10',
     title: '巩固6 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 2,
@@ -567,7 +567,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '12-W1',
+    id: '1-12-W1',
     title: '闯关1(1) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -582,7 +582,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 1541,
   },
   {
-    id: '12-W2',
+    id: '1-12-W2',
     title: '闯关1(2) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -597,7 +597,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 700,
   },
   {
-    id: '12-W3',
+    id: '1-12-W3',
     title: '闯关2(1) · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 2,
@@ -612,7 +612,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 375,
   },
   {
-    id: '12-W4',
+    id: '1-12-W4',
     title: '闯关2(2) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 3,
@@ -627,7 +627,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3200,
   },
   {
-    id: '12-W5',
+    id: '1-12-W5',
     title: '闯关3(1) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 3,
@@ -642,7 +642,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '12-W6',
+    id: '1-12-W6',
     title: '闯关3(2) · 括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 4,
@@ -657,7 +657,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '12-W7',
+    id: '1-12-W7',
     title: '闯关4 · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 4,
@@ -672,7 +672,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 2222214,
   },
   {
-    id: '12-W8',
+    id: '1-12-W8',
     title: '闯关5 · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -687,7 +687,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3998,
   },
   {
-    id: '12-W9',
+    id: '1-12-W9',
     title: '闯关6 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 3,
@@ -702,7 +702,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 220,
   },
   {
-    id: '12-W10',
+    id: '1-12-W10',
     title: '闯关7 · 1到100求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 2,
@@ -717,7 +717,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 5050,
   },
   {
-    id: '12-W11',
+    id: '1-12-W11',
     title: '闯关8 · 101到110求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 2,
@@ -732,7 +732,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 1055,
   },
   {
-    id: '12-W12',
+    id: '1-12-W12',
     title: '闯关9 · 连续偶数求最小',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 3,
@@ -747,7 +747,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '12-W13',
+    id: '1-12-W13',
     title: '闯关10 · 对称求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 4,
@@ -762,7 +762,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 2500,
   },
   {
-    id: '12-W14',
+    id: '1-12-W14',
     title: '闯关11 · 填数等式',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 5,
@@ -777,7 +777,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 158,
   },
   {
-    id: '12-W15',
+    id: '1-12-W15',
     title: '闯关12 · 交错数列',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 5,

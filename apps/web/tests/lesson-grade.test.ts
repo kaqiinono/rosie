@@ -6,6 +6,7 @@ import {
   lessonsForGrade,
   gradeOf,
   lessonIdFromHref,
+  lessonKeyFromHref,
   lessonDisplayNum,
   lessonDisplayLabel,
   highestGrade,
@@ -13,49 +14,51 @@ import {
 } from '@rosie/math/utils/lesson-grade'
 
 describe('lesson-grade', () => {
-  it('现有 20 讲全部属于一年级', () => {
-    const ids = ['12','13','15','18','23','29','30','34','35','36','37','38','39','40','41','42','43','44','46','47']
-    expect(ids.every((id) => LESSON_GRADE[id] === 1)).toBe(true)
-    expect(ids.every((id) => Object.keys(LESSON_GRADE).includes(id))).toBe(true)
+  it('一年级讲次登记正确', () => {
+    const keys = lessonsForGrade(1)
+    expect(keys).toContain('1-35')
+    expect(keys).toContain('1-12')
+    expect(keys).not.toContain('2-1')
+    expect(keys.every((id) => LESSON_GRADE[id] === 1)).toBe(true)
   })
 
-  it('二年级讲次 49–52 登记正确', () => {
-    expect(LESSON_GRADE['49']).toBe(2)
-    expect(LESSON_GRADE['50']).toBe(2)
-    expect(LESSON_GRADE['51']).toBe(2)
-    expect(LESSON_GRADE['52']).toBe(2)
-    expect(lessonsForGrade(2)).toEqual(['49', '50', '51', '52'])
-    expect(lessonDisplayNum('49')).toBe(1)
-    expect(lessonDisplayNum('50')).toBe(2)
-    expect(lessonDisplayNum('51')).toBe(3)
-    expect(lessonDisplayNum('52')).toBe(4)
-    expect(lessonDisplayLabel('49')).toBe('第 1 讲')
-    expect(lessonDisplayLabel('50')).toBe('第 2 讲')
-    expect(lessonDisplayLabel('51')).toBe('第 3 讲')
-    expect(lessonDisplayLabel('52')).toBe('第 4 讲')
+  it('二年级讲次登记正确', () => {
+    expect(LESSON_GRADE['2-1']).toBe(2)
+    expect(LESSON_GRADE['49']).toBe(2) // legacy 键仍可用
+    expect(lessonsForGrade(2)).toEqual(['2-1', '2-2', '2-3', '2-4', '2-5', '2-6'])
+    expect(lessonDisplayNum('2-1')).toBe(1)
+    expect(lessonDisplayNum('2-4')).toBe(4)
+    expect(lessonDisplayLabel('2-1')).toBe('第 1 讲')
+    expect(lessonDisplayLabel('2-4')).toBe('第 4 讲')
   })
 
   it('gradesInOrder 返回升序去重的年级', () => {
     expect(gradesInOrder()).toEqual([1, 2])
   })
 
-  it('lessonsForGrade(1) 返回一年级全部 20 讲', () => {
+  it('lessonsForGrade(1) 返回一年级全部讲次', () => {
     expect(lessonsForGrade(1)).toHaveLength(20)
-    expect(lessonsForGrade(1)).toContain('35')
-    expect(lessonsForGrade(1)).not.toContain('49')
+    expect(lessonsForGrade(1)).toContain('1-35')
+    expect(lessonsForGrade(1)).not.toContain('2-1')
   })
 
   it('gradeOf 取讲次年级，未登记返回 undefined', () => {
-    expect(gradeOf('35')).toBe(1)
-    expect(gradeOf('52')).toBe(2)
+    expect(gradeOf('1-35')).toBe(1)
+    expect(gradeOf('2-4')).toBe(2)
+    expect(gradeOf('35')).toBe(1) // legacy
     expect(gradeOf('999')).toBeUndefined()
   })
 
-  it('lessonIdFromHref 从路由取讲次 id', () => {
-    expect(lessonIdFromHref('/math/ny/35')).toBe('35')
-    expect(lessonIdFromHref('/math/ny/52')).toBe('52')
-    expect(lessonIdFromHref('/math/ny/g1')).toBeUndefined()
+  it('lessonIdFromHref 从路由取 lessonKey', () => {
+    expect(lessonIdFromHref('/math/ny/1/35')).toBe('1-35')
+    expect(lessonIdFromHref('/math/ny/2/4')).toBe('2-4')
+    expect(lessonIdFromHref('/math/ny/1')).toBeUndefined()
+    expect(lessonIdFromHref('/math/ny/52')).toBeUndefined()
     expect(lessonIdFromHref('/foo')).toBeUndefined()
+  })
+
+  it('lessonKeyFromHref 与 lessonIdFromHref 一致', () => {
+    expect(lessonKeyFromHref('/math/ny/2/1')).toBe('2-1')
   })
 
   it('highestGrade 返回当前最高年级', () => {

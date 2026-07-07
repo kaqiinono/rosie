@@ -5,7 +5,7 @@ import type { ProblemSet } from '@rosie/core'
 import { useLesson49 } from './Lesson49Provider'
 
 const CONFIG = {
-  basePath: '/math/ny/49',
+  basePath: '/math/ny/2/1',
   emoji: '🧮',
   titleShort: '巧算',
   titleFull: '速算',

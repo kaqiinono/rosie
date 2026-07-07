@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '13-P1',
+    id: '1-13-P1',
     title: '课前测1 · 两侧种树总棵数',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -17,7 +17,7 @@ const PRETEST: Problem[] = [
     finalAns: 82,
   },
   {
-    id: '13-P2',
+    id: '1-13-P2',
     title: '课前测2 · 行程与速度求石凳编号',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 3,
@@ -34,7 +34,7 @@ const PRETEST: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '13-P3',
+    id: '1-13-P3',
     title: '课前测3 · 长方形四周种树',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -49,7 +49,7 @@ const PRETEST: Problem[] = [
     finalAns: 32,
   },
   {
-    id: '13-P4',
+    id: '1-13-P4',
     title: '课前测4 · 六边形花圃摆花盆',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -64,7 +64,7 @@ const PRETEST: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '13-P5',
+    id: '1-13-P5',
     title: '课前测5 · 剪绳子所需时间',
     tag: 'type2',
     tagLabel: '直线型一端不种', difficulty: 2,
@@ -83,7 +83,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '13-L1',
+    id: '1-13-L1',
     title: '例1 · 已知棵数求路长',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -99,7 +99,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '13-L2',
+    id: '1-13-L2',
     title: '练一练 · 已知棵数求路长',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 1,
@@ -114,7 +114,7 @@ const LESSON: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '13-L3',
+    id: '1-13-L3',
     title: '例2(1) · 两端都放',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 1,
@@ -128,7 +128,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '13-L4',
+    id: '1-13-L4',
     title: '例2(2) · 只一端放',
     tag: 'type2',
     tagLabel: '直线型一端不种', difficulty: 1,
@@ -142,7 +142,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '13-L5',
+    id: '1-13-L5',
     title: '例2(3) · 两端都不放',
     tag: 'type3',
     tagLabel: '直线型两端不种', difficulty: 1,
@@ -156,7 +156,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '13-L6',
+    id: '1-13-L6',
     title: '练一练 · 桥上挂彩灯',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 1,
@@ -170,7 +170,7 @@ const LESSON: Problem[] = [
     finalAns: 101,
   },
   {
-    id: '13-L7',
+    id: '1-13-L7',
     title: '例3 · 已知路长和棵数求间距',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -186,7 +186,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '13-L8',
+    id: '1-13-L8',
     title: '练一练 · 110米栏架间距',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -201,7 +201,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '13-L9',
+    id: '1-13-L9',
     title: '例4 · 行程速度求距离',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 3,
@@ -217,7 +217,7 @@ const LESSON: Problem[] = [
     finalAns: 2400,
   },
   {
-    id: '13-L10',
+    id: '1-13-L10',
     title: '练一练 · 行程速度求总距离',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 3,
@@ -233,7 +233,7 @@ const LESSON: Problem[] = [
     finalAns: 2400,
   },
   {
-    id: '13-L11',
+    id: '1-13-L11',
     title: '例题(练习)1 · 改变间距求时间',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 4,
@@ -249,7 +249,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '13-L12',
+    id: '1-13-L12',
     title: '例题(练习)2 · 改变间距求棵数',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 3,
@@ -264,7 +264,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '13-L13',
+    id: '1-13-L13',
     title: '例5 · 三角形池塘封闭型',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '13-L14',
+    id: '1-13-L14',
     title: '练一练 · 长方形地种杨树',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -294,7 +294,7 @@ const LESSON: Problem[] = [
     finalAns: 70,
   },
   {
-    id: '13-L15',
+    id: '1-13-L15',
     title: '例6 · 圆形鱼池求周长和花盆数',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 3,
@@ -310,7 +310,7 @@ const LESSON: Problem[] = [
     finalAns: 50,
   },
   {
-    id: '13-L16',
+    id: '1-13-L16',
     title: '练一练 · 正方形池塘求周长',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -324,7 +324,7 @@ const LESSON: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '13-L17',
+    id: '1-13-L17',
     title: '附加题1 · 改变间距求最多棵数',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 4,
@@ -344,7 +344,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '13-H1',
+    id: '1-13-H1',
     title: '巩固1 · 两侧种树求路长',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -360,7 +360,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 70,
   },
   {
-    id: '13-H2',
+    id: '1-13-H2',
     title: '巩固2 · 一端不安装电线杆',
     tag: 'type2',
     tagLabel: '直线型一端不种', difficulty: 1,
@@ -374,7 +374,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '13-H3',
+    id: '1-13-H3',
     title: '巩固3 · 300米路求间距',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -390,7 +390,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '13-H4',
+    id: '1-13-H4',
     title: '巩固4 · 已知局部距离求路长',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 3,
@@ -406,7 +406,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '13-H5',
+    id: '1-13-H5',
     title: '巩固5 · 圆形鱼塘种树',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 1,
@@ -420,7 +420,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '13-H6',
+    id: '1-13-H6',
     title: '巩固6 · 正方形广场种柳树',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 1,
@@ -438,7 +438,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '13-W1',
+    id: '1-13-W1',
     title: '闯关1 · 一端不种求间距',
     tag: 'type2',
     tagLabel: '直线型一端不种', difficulty: 2,
@@ -453,7 +453,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '13-W2',
+    id: '1-13-W2',
     title: '闯关2 · 两端都种求棵数',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -467,7 +467,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 101,
   },
   {
-    id: '13-W3',
+    id: '1-13-W3',
     title: '闯关3 · 两侧路灯求间距',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -483,7 +483,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '13-W4',
+    id: '1-13-W4',
     title: '闯关4 · 两侧种树求路长',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -499,7 +499,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 150,
   },
   {
-    id: '13-W5',
+    id: '1-13-W5',
     title: '闯关5 · 圆形花坛求间距',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 1,
@@ -513,7 +513,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '13-W6',
+    id: '1-13-W6',
     title: '闯关6 · 五边形花圃摆花盆',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -528,7 +528,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '13-W7',
+    id: '1-13-W7',
     title: '闯关7 · 长方形地基打桩',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -543,7 +543,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '13-W8',
+    id: '1-13-W8',
     title: '闯关8 · 路灯行走求路灯编号',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 3,
@@ -560,7 +560,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '13-W9',
+    id: '1-13-W9',
     title: '闯关9 · 改变间距求棵数',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 3,
@@ -576,7 +576,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 22,
   },
   {
-    id: '13-W10',
+    id: '1-13-W10',
     title: '闯关10 · "田"字道路最少种树',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 5,
@@ -595,7 +595,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 39,
   },
   {
-    id: '13-W11',
+    id: '1-13-W11',
     title: '闯关11 · 圆形花坛三色堇与风信子',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 3,
@@ -611,7 +611,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 40,
   },
   {
-    id: '13-W12',
+    id: '1-13-W12',
     title: '闯关12 · 光缆连接器与固定器',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 5,

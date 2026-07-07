@@ -19,8 +19,8 @@
 
 `apps/web/src/app/math/ny/**` 下有 **260 个讲次路由文件**（每讲约 12 个：`page`/`layout`/
 `pretest`/`homework`/`lesson`/`workbook`/`mistakes`/`alltest` 及其 `[id]` 变体），且每讲的
-`layout.tsx`/`page.tsx`/`basePath` 中**硬编码**了绝对路径 `/math/ny/35/...`（如 `getNextHref`、
-`basePath="/math/ny/35/lesson"`）。讲次内部 ID 已**全局唯一**（12–47）。
+`layout.tsx`/`page.tsx`/`basePath` 中**硬编码**了绝对路径 `/math/ny/1/35/...`（如 `getNextHref`、
+`basePath="/math/ny/1/35/lesson"`）。讲次内部 ID 已**全局唯一**（12–47）。
 
 因此本设计**绝不迁移、不改动这 260 个文件，也不改动任何 `/math/ny/NN` 硬编码路径**。
 二年级新讲内部 ID **接着 48 往后排**（与 12–47 同样全局唯一，零冲突），仅在**显示层**呈现
@@ -74,7 +74,7 @@ export function gradeOf(lessonId: string): number | undefined
 - 把当前内联在 `apps/web/src/app/math/page.tsx` 的 `courses: CourseCardData[]` 数组，
   原样抽到此文件导出为 `COURSES: CourseCardData[]`。
 - **`CourseCardData` 不新增 `grade` 字段**：年级由 `LESSON_GRADE` 按 `href` 中的讲次 id 派生
-  （`/math/ny/35` → `'35'` → `gradeOf('35')`），避免重复存储。
+  （`/math/ny/1/35` → `'35'` → `gradeOf('35')`），避免重复存储。
 - 一年级各讲的 `lectureNum` **保持现状不变**（第 12 讲 … 第 47 讲）。
 
 ### 2. 首页改为年级卡片：`apps/web/src/app/math/page.tsx`（改）
@@ -85,24 +85,24 @@ export function gradeOf(lessonId: string): number | undefined
   每张 `GradeCard` 显示：年级名（`GRADE_LABEL`）、该年级讲数（`lessonsForGrade(g).length`，
   如「20 讲」）、playful 图标。
 - 只渲染**有讲次的年级**：二年级暂无课 → 现在只显示「一年级」一张卡；加课后自动出现。
-- 点击年级卡 → `href = '/math/ny/g1'`（grade 2 → `/math/ny/g2`）。
+- 点击年级卡 → `href = '/math/ny/1'`（grade 2 → `/math/ny/2`）。
 
 新组件 **`GradeCard`**（`packages/math/src/components/GradeCard.tsx`）：实现前先调用
 `frontend-design` skill，走 playful、7 岁向风格；从 `index.ts` 暴露。
 
-### 3. 年级讲次列表页：`apps/web/src/app/math/ny/g1/page.tsx` 等（新增 · 薄壳）
+### 3. 年级讲次列表页：`apps/web/src/app/math/ny/1/page.tsx` 等（新增 · 薄壳）
 
-- 为每个年级建**静态文件夹**：`apps/web/src/app/math/ny/g1/page.tsx`、`/g2/page.tsx`…
+- 为每个年级建**静态文件夹**：`apps/web/src/app/math/ny/1/page.tsx`、`/g2/page.tsx`…
   （用静态段，**不用动态 `[grade]`**，避免与现有讲次静态文件夹的静态/动态优先级纠缠）。
 - 每个 page 是 3 行薄壳，渲染共享组件 `GradeLessonList grade={1}`。
 - **`GradeLessonList`**（`packages/math/src/components/GradeLessonList.tsx`）：
   从 `COURSES` 按 `gradeOf(href 中的讲次 id) === grade` 过滤出本年级讲次，渲染**现有
   `CourseCard`**（顺序保持现状：最新讲次置顶）；带返回首页的入口与年级标题。
-- 讲次卡 `href` 仍是 `/math/ny/35` —— **进入讲次的旧路径完全不变**。
+- 讲次卡 `href` 仍是 `/math/ny/1/35` —— **进入讲次的旧路径完全不变**。
 
 ### 4. `/math/ny` 重定向（改）
 
-- `apps/web/src/app/math/ny/page.tsx` 当前 `redirect('/math/ny/35')` → 改为
+- `apps/web/src/app/math/ny/page.tsx` 当前 `redirect('/math/ny/1/35')` → 改为
   `redirect('/math')`（年级选择页），因为无年级地进入 `ny` 已无明确目标。
 
 ### 5. 题海按年级筛选：`apps/web/src/app/math/sea/page.tsx` + `sea-data.ts`（改）
@@ -153,10 +153,10 @@ export function gradeOf(lessonId: string): number | undefined
 ## 验收标准
 
 - `/math` 显示年级卡片（当前仅「一年级 · 20 讲」），工具行保留；不再平铺讲次卡。
-- 点「一年级」→ `/math/ny/g1` 显示一年级 20 讲（讲次号保留真实值），点讲次进入 `/math/ny/NN` 正常。
+- 点「一年级」→ `/math/ny/1` 显示一年级 20 讲（讲次号保留真实值），点讲次进入 `/math/ny/NN` 正常。
 - 题海筛选面板讲次按年级分组，可整组选中；筛选结果正确。
 - 组卷弹窗、每日计划讲次选择器按年级分组。
-- 新增一条 grade=2 的测试讲次时，「二年级」卡片自动出现且 `/math/ny/g2` 正常列出。
+- 新增一条 grade=2 的测试讲次时，「二年级」卡片自动出现且 `/math/ny/2` 正常列出。
 - `pnpm --filter @rosie/math typecheck`、`pnpm --filter web build` 通过。
 
 ## 实现注意

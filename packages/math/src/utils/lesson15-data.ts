@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '15-P1',
+    id: '1-15-P1',
     title: '课前测1 · 气球和差',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -18,7 +18,7 @@ const PRETEST: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '15-P2',
+    id: '1-15-P2',
     title: '课前测2 · 汉堡饮料',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -34,7 +34,7 @@ const PRETEST: Problem[] = [
     finalAns: 26,
   },
   {
-    id: '15-P3',
+    id: '1-15-P3',
     title: '课前测3 · 千纸鹤',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -51,7 +51,7 @@ const PRETEST: Problem[] = [
     finalAns: 40,
   },
   {
-    id: '15-P4',
+    id: '1-15-P4',
     title: '课前测4 · 苹果维尼熊',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -68,7 +68,7 @@ const PRETEST: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '15-P5',
+    id: '1-15-P5',
     title: '课前测5 · 两箱水果',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -88,7 +88,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '15-L1',
+    id: '1-15-L1',
     title: '例1 · 汉堡与饮料',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -105,7 +105,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '15-L2',
+    id: '1-15-L2',
     title: '练一练 · 桃树梨树',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -122,7 +122,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-L3',
+    id: '1-15-L3',
     title: '例2 · 口算题时间匹配',
     tag: 'type2',
     tagLabel: '时间匹配和差', difficulty: 2,
@@ -140,7 +140,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '15-L4',
+    id: '1-15-L4',
     title: '练一练 · 打字速度',
     tag: 'type2',
     tagLabel: '时间匹配和差', difficulty: 2,
@@ -158,7 +158,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-L5',
+    id: '1-15-L5',
     title: '例3 · 语数平均分',
     tag: 'type3',
     tagLabel: '平均数变形', difficulty: 2,
@@ -176,7 +176,7 @@ const LESSON: Problem[] = [
     finalAns: 90,
   },
   {
-    id: '15-L6',
+    id: '1-15-L6',
     title: '练一练 · 玩具身高',
     tag: 'type3',
     tagLabel: '平均数变形', difficulty: 2,
@@ -194,7 +194,7 @@ const LESSON: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '15-L7',
+    id: '1-15-L7',
     title: '例4 · 书架上下层',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -211,7 +211,7 @@ const LESSON: Problem[] = [
     finalAns: 32,
   },
   {
-    id: '15-L8',
+    id: '1-15-L8',
     title: '练一练 · 红黄油桶',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -228,7 +228,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-L9',
+    id: '1-15-L9',
     title: '例5 · 萝卜小白黑兔',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -246,7 +246,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '15-L10',
+    id: '1-15-L10',
     title: '练一练 · 零花钱乐乐豆丁',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -264,7 +264,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-L11',
+    id: '1-15-L11',
     title: '例6 · 数学英语兴趣小组',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -282,7 +282,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-L12',
+    id: '1-15-L12',
     title: '练一练 · 故事科技书',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -303,7 +303,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '15-H1',
+    id: '1-15-H1',
     title: '巩固1 · 两筐水果',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -320,7 +320,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 70,
   },
   {
-    id: '15-H2',
+    id: '1-15-H2',
     title: '巩固2 · 剪纸速度',
     tag: 'type2',
     tagLabel: '时间匹配和差', difficulty: 2,
@@ -338,7 +338,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '15-H3',
+    id: '1-15-H3',
     title: '巩固3 · 平均年龄',
     tag: 'type3',
     tagLabel: '平均数变形', difficulty: 1,
@@ -355,7 +355,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '15-H4',
+    id: '1-15-H4',
     title: '巩固4 · 转班学生',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -372,7 +372,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '15-H5',
+    id: '1-15-H5',
     title: '巩固5 · 两桶水',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -390,7 +390,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-H6',
+    id: '1-15-H6',
     title: '巩固6 · 停车场',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -410,7 +410,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '15-W1',
+    id: '1-15-W1',
     title: '闯关1 · 作业本田格本',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -427,7 +427,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '15-W2',
+    id: '1-15-W2',
     title: '闯关2 · 奶油饼干',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -444,7 +444,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-W3',
+    id: '1-15-W3',
     title: '闯关3 · 甲乙仓库大米',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -461,7 +461,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 33,
   },
   {
-    id: '15-W4',
+    id: '1-15-W4',
     title: '闯关4 · 思思约约零花钱',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -479,7 +479,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '15-W5',
+    id: '1-15-W5',
     title: '闯关5 · 甲乙苹果箱',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -497,7 +497,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '15-W6',
+    id: '1-15-W6',
     title: '闯关6 · 豆丁豆包图画书',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 4,
@@ -514,7 +514,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '15-W7',
+    id: '1-15-W7',
     title: '闯关7 · 三只兔萝卜',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 3,
@@ -530,7 +530,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '15-W8',
+    id: '1-15-W8',
     title: '闯关8 · 三人卡片',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 3,
@@ -546,7 +546,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '15-W9',
+    id: '1-15-W9',
     title: '闯关9 · 三种蔬菜',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 4,

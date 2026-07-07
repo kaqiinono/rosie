@@ -26,7 +26,7 @@ const PRETEST: Problem[] = []
 
 const LESSON: Problem[] = [
   {
-    id: '47-L1',
+    id: '1-47-L1',
     title: '例题1 · 数连',
     tag: 'type1',
     tagLabel: '数连',
@@ -39,7 +39,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L2',
+    id: '1-47-L2',
     title: '练一练 · 数连',
     tag: 'type1',
     tagLabel: '数连',
@@ -52,7 +52,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L3',
+    id: '1-47-L3',
     title: '例题2 · 数桥',
     tag: 'type2',
     tagLabel: '数桥',
@@ -65,7 +65,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L4',
+    id: '1-47-L4',
     title: '练一练 · 数桥',
     tag: 'type2',
     tagLabel: '数桥',
@@ -78,7 +78,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L5',
+    id: '1-47-L5',
     title: '例题3 · 数方',
     tag: 'type3',
     tagLabel: '数方',
@@ -91,7 +91,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L6',
+    id: '1-47-L6',
     title: '练一练 · 数方',
     tag: 'type3',
     tagLabel: '数方',
@@ -104,7 +104,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L7',
+    id: '1-47-L7',
     title: '例题4 · 不等号数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -119,7 +119,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L8',
+    id: '1-47-L8',
     title: '练一练 · 不等号数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -134,7 +134,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L9',
+    id: '1-47-L9',
     title: '例题5 · 无马数独',
     tag: 'type5',
     tagLabel: '无马数独',
@@ -151,7 +151,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L10',
+    id: '1-47-L10',
     title: '练一练 · 无马数独',
     tag: 'type5',
     tagLabel: '无马数独',
@@ -164,7 +164,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L11',
+    id: '1-47-L11',
     title: '例题6 · 窗口数独',
     tag: 'type6',
     tagLabel: '窗口数独',
@@ -188,7 +188,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '47-L12',
+    id: '1-47-L12',
     title: '练一练 · 窗口数独',
     tag: 'type6',
     tagLabel: '窗口数独',
@@ -215,7 +215,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '47-H1',
+    id: '1-47-H1',
     title: '巩固1 · 数连',
     tag: 'type1',
     tagLabel: '数连',
@@ -228,7 +228,7 @@ const HOMEWORK: Problem[] = [
     }),
   },
   {
-    id: '47-H2',
+    id: '1-47-H2',
     title: '巩固2 · 数桥',
     tag: 'type2',
     tagLabel: '数桥',
@@ -241,7 +241,7 @@ const HOMEWORK: Problem[] = [
     }),
   },
   {
-    id: '47-H3',
+    id: '1-47-H3',
     title: '巩固3 · 数方',
     tag: 'type3',
     tagLabel: '数方',
@@ -254,7 +254,7 @@ const HOMEWORK: Problem[] = [
     }),
   },
   {
-    id: '47-H4',
+    id: '1-47-H4',
     title: '巩固4 · 不等号数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -269,7 +269,7 @@ const HOMEWORK: Problem[] = [
     }),
   },
   {
-    id: '47-H5',
+    id: '1-47-H5',
     title: '巩固5 · 无马数独',
     tag: 'type5',
     tagLabel: '无马数独',
@@ -282,7 +282,7 @@ const HOMEWORK: Problem[] = [
     }),
   },
   {
-    id: '47-H6',
+    id: '1-47-H6',
     title: '巩固6 · 窗口数独',
     tag: 'type6',
     tagLabel: '窗口数独',
@@ -309,7 +309,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '47-W1',
+    id: '1-47-W1',
     title: '闯关1 · 常规数独（四宫）',
     tag: 'type7',
     tagLabel: '常规数独',
@@ -322,7 +322,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W2',
+    id: '1-47-W2',
     title: '闯关2 · 数连',
     tag: 'type1',
     tagLabel: '数连',
@@ -335,7 +335,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W3',
+    id: '1-47-W3',
     title: '闯关3 · 数桥',
     tag: 'type2',
     tagLabel: '数桥',
@@ -348,7 +348,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W4',
+    id: '1-47-W4',
     title: '闯关4 · 数方',
     tag: 'type3',
     tagLabel: '数方',
@@ -361,7 +361,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W5',
+    id: '1-47-W5',
     title: '闯关5 · 不等式数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -375,7 +375,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W6',
+    id: '1-47-W6',
     title: '闯关6 · 不等号数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -389,7 +389,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W7',
+    id: '1-47-W7',
     title: '闯关7 · 六宫数独',
     tag: 'type7',
     tagLabel: '常规数独',
@@ -409,7 +409,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W8',
+    id: '1-47-W8',
     title: '闯关8 · 对角线数独',
     tag: 'type8',
     tagLabel: '对角线数独',
@@ -429,7 +429,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W9',
+    id: '1-47-W9',
     title: '闯关9 · 对角线数独',
     tag: 'type8',
     tagLabel: '对角线数独',
@@ -454,7 +454,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W10',
+    id: '1-47-W10',
     title: '闯关10 · 锯齿数独',
     tag: 'type9',
     tagLabel: '锯齿数独',
@@ -487,7 +487,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W11',
+    id: '1-47-W11',
     title: '闯关11 · 不等号数独（六宫）',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -502,7 +502,7 @@ const WORKBOOK: Problem[] = [
     }),
   },
   {
-    id: '47-W12',
+    id: '1-47-W12',
     title: '闯关12 · 九宫数独',
     tag: 'type7',
     tagLabel: '常规数独',

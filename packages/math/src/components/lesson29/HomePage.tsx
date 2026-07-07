@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson29-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/29'
+const BASE = '/math/ny/1/29'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -44,7 +45,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第29讲 · 一年级目标班<br />
           玩转24点游戏，掌握填运算符的3大技巧！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

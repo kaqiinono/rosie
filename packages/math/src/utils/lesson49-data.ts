@@ -15,7 +15,7 @@ export const TYPE_TIP: Record<string, string> = {
 const LESSON: Problem[] = [
   // ===== 模块一：交换律结合律 =====
   {
-    id: '49-L1',
+    id: '2-1-L1',
     title: '例1 · 凑整加法(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -31,7 +31,7 @@ const LESSON: Problem[] = [
     finalAns: 700,
   },
   {
-    id: '49-L2',
+    id: '2-1-L2',
     title: '例1 · 凑整加法(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -47,7 +47,7 @@ const LESSON: Problem[] = [
     finalAns: 1541,
   },
   {
-    id: '49-L3',
+    id: '2-1-L3',
     title: '练一练 · 凑整(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -63,7 +63,7 @@ const LESSON: Problem[] = [
     finalAns: 251,
   },
   {
-    id: '49-L4',
+    id: '2-1-L4',
     title: '练一练 · 凑整(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -79,7 +79,7 @@ const LESSON: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '49-L5',
+    id: '2-1-L5',
     title: '例2 · 加减混合凑整(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -95,7 +95,7 @@ const LESSON: Problem[] = [
     finalAns: 2000,
   },
   {
-    id: '49-L6',
+    id: '2-1-L6',
     title: '例2 · 加减混合凑整(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -111,7 +111,7 @@ const LESSON: Problem[] = [
     finalAns: 6007,
   },
   {
-    id: '49-L7',
+    id: '2-1-L7',
     title: '例3 · 多数凑整',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -127,7 +127,7 @@ const LESSON: Problem[] = [
     finalAns: 76,
   },
   {
-    id: '49-L8',
+    id: '2-1-L8',
     title: '例4 · 长串加减',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -144,7 +144,7 @@ const LESSON: Problem[] = [
     finalAns: 34,
   },
   {
-    id: '49-L9',
+    id: '2-1-L9',
     title: '例5 · 接近整数凑整(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 3202,
   },
   {
-    id: '49-L10',
+    id: '2-1-L10',
     title: '例5 · 接近整数凑整(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -178,7 +178,7 @@ const LESSON: Problem[] = [
     finalAns: 6998,
   },
   {
-    id: '49-L11',
+    id: '2-1-L11',
     title: '例6 · 凑整加法',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -194,7 +194,7 @@ const LESSON: Problem[] = [
     finalAns: 3998,
   },
   {
-    id: '49-L12',
+    id: '2-1-L12',
     title: '练一练 · 对称凑整',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -211,7 +211,7 @@ const LESSON: Problem[] = [
   },
   // ===== 模块二：去括号 =====
   {
-    id: '49-L13',
+    id: '2-1-L13',
     title: '例7 · 去括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -227,7 +227,7 @@ const LESSON: Problem[] = [
     finalAns: 782,
   },
   {
-    id: '49-L14',
+    id: '2-1-L14',
     title: '例7 · 去括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -243,7 +243,7 @@ const LESSON: Problem[] = [
     finalAns: 750,
   },
   {
-    id: '49-L15',
+    id: '2-1-L15',
     title: '例7 · 去括号(3)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -260,7 +260,7 @@ const LESSON: Problem[] = [
     finalAns: 300,
   },
   {
-    id: '49-L16',
+    id: '2-1-L16',
     title: '例7 · 去括号(4)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -277,7 +277,7 @@ const LESSON: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '49-L17',
+    id: '2-1-L17',
     title: '例8 · 双括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -293,7 +293,7 @@ const LESSON: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '49-L18',
+    id: '2-1-L18',
     title: '例8 · 双括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -310,7 +310,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '49-L19',
+    id: '2-1-L19',
     title: '例9 · 多括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -327,7 +327,7 @@ const LESSON: Problem[] = [
     finalAns: 5045,
   },
   {
-    id: '49-L20',
+    id: '2-1-L20',
     title: '例9 · 多括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -345,7 +345,7 @@ const LESSON: Problem[] = [
   },
   // ===== 模块三：按位相加 =====
   {
-    id: '49-L21',
+    id: '2-1-L21',
     title: '例10 · 按位相加(1)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -361,7 +361,7 @@ const LESSON: Problem[] = [
     finalAns: 666,
   },
   {
-    id: '49-L22',
+    id: '2-1-L22',
     title: '例10 · 按位相加(2)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -377,7 +377,7 @@ const LESSON: Problem[] = [
     finalAns: 11110,
   },
   {
-    id: '49-L23',
+    id: '2-1-L23',
     title: '例11 · 循环数除法(1)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -394,7 +394,7 @@ const LESSON: Problem[] = [
     finalAns: 55555,
   },
   {
-    id: '49-L24',
+    id: '2-1-L24',
     title: '例11 · 循环数除法(2)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -412,7 +412,7 @@ const LESSON: Problem[] = [
   },
   // ===== 模块四：基准数 =====
   {
-    id: '49-L25',
+    id: '2-1-L25',
     title: '例12 · 基准数求和',
     tag: 'type4',
     tagLabel: '基准数',
@@ -429,7 +429,7 @@ const LESSON: Problem[] = [
     finalAns: 1527,
   },
   {
-    id: '49-L26',
+    id: '2-1-L26',
     title: '练一练 · 基准数求和',
     tag: 'type4',
     tagLabel: '基准数',
@@ -449,7 +449,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '49-H1',
+    id: '2-1-H1',
     title: '练习1 · 凑整加法',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -465,7 +465,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 190,
   },
   {
-    id: '49-H2',
+    id: '2-1-H2',
     title: '练习2 · 加减凑整',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -481,7 +481,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 7000,
   },
   {
-    id: '49-H3',
+    id: '2-1-H3',
     title: '练习3 · 多数加减',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -497,7 +497,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 456,
   },
   {
-    id: '49-H4',
+    id: '2-1-H4',
     title: '练习4 · 接近整数凑整',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -514,7 +514,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 3692,
   },
   {
-    id: '49-H5',
+    id: '2-1-H5',
     title: '练习5 · 对称配对',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -530,7 +530,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2997,
   },
   {
-    id: '49-H6',
+    id: '2-1-H6',
     title: '练习6 · 接近整数(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -546,7 +546,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 111105,
   },
   {
-    id: '49-H7',
+    id: '2-1-H7',
     title: '练习6 · 接近整数(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -562,7 +562,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 22216,
   },
   {
-    id: '49-H8',
+    id: '2-1-H8',
     title: '练习7 · 去括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -578,7 +578,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 700,
   },
   {
-    id: '49-H9',
+    id: '2-1-H9',
     title: '练习7 · 去括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -594,7 +594,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 472,
   },
   {
-    id: '49-H10',
+    id: '2-1-H10',
     title: '练习8 · 双括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -611,7 +611,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '49-H11',
+    id: '2-1-H11',
     title: '练习8 · 双括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -628,7 +628,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '49-H12',
+    id: '2-1-H12',
     title: '练习9 · 多括号',
     tag: 'type2',
     tagLabel: '去括号',
@@ -645,7 +645,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 5400,
   },
   {
-    id: '49-H13',
+    id: '2-1-H13',
     title: '练习10 · 按位相加',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -661,7 +661,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8888,
   },
   {
-    id: '49-H14',
+    id: '2-1-H14',
     title: '练习11 · 循环数除法',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -678,7 +678,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 55555,
   },
   {
-    id: '49-H15',
+    id: '2-1-H15',
     title: '练习12 · 循环数除法',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -695,7 +695,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '49-H16',
+    id: '2-1-H16',
     title: '练习13 · 基准数求和',
     tag: 'type4',
     tagLabel: '基准数',
@@ -715,7 +715,7 @@ const HOMEWORK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '49-S1',
+    id: '2-1-S1',
     title: '附加题1 · 连减凑整',
     tag: 'type5',
     tagLabel: '附加题',
@@ -732,7 +732,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '49-S2',
+    id: '2-1-S2',
     title: '附加题2 · 奇偶数列相减',
     tag: 'type5',
     tagLabel: '附加题',
@@ -749,7 +749,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 1013,
   },
   {
-    id: '49-S3',
+    id: '2-1-S3',
     title: '附加题3 · 交换律巧算',
     tag: 'type5',
     tagLabel: '附加题',
@@ -765,7 +765,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 0,
   },
   {
-    id: '49-S4',
+    id: '2-1-S4',
     title: '附加题4 · 反复加减第几次为0',
     tag: 'type5',
     tagLabel: '附加题',
@@ -782,7 +782,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 1179,
   },
   {
-    id: '49-S5',
+    id: '2-1-S5',
     title: '附加题5 · 百位数字之和',
     tag: 'type5',
     tagLabel: '附加题',
@@ -799,7 +799,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 58,
   },
   {
-    id: '49-S6',
+    id: '2-1-S6',
     title: '附加作业1 · 正负交替',
     tag: 'type5',
     tagLabel: '附加题',
@@ -818,14 +818,14 @@ const SUPPLEMENT: Problem[] = [
 ]
 
 const PRETEST: Problem[] = [
-  { id: '49-P1', title: '课前测1 · 凑整加法', tag: 'type1', tagLabel: '交换律结合律', difficulty: 2, text: '计算 <strong>164 + 133 + 136 + 73 + 119 + 381 + 67</strong>', analysis: ['164+136=300，133+67=200，119+381=500', '300+200+500+73 = <strong>1073</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 1073 },
-  { id: '49-P2', title: '课前测2 · 加减混合', tag: 'type1', tagLabel: '交换律结合律', difficulty: 1, text: '计算 <strong>117 + 56 + 83 − 156</strong>', analysis: ['117+56+83=256', '256−156 = <strong>100</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 100 },
-  { id: '49-P3', title: '课前测3 · 凑整', tag: 'type1', tagLabel: '交换律结合律', difficulty: 2, text: '计算 <strong>245 + 598 + 554 + 601</strong>', analysis: ['245+554=799，598+601=1199', '799+1199 = <strong>1998</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 1998 },
-  { id: '49-P4', title: '课前测4 · 大数相加', tag: 'type4', tagLabel: '基准数', difficulty: 3, text: '计算 <strong>39 + 398 + 3997 + 39996</strong>', analysis: ['分组相加 = <strong>44430</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 44430 },
-  { id: '49-P5', title: '课前测5 · 去括号', tag: 'type2', tagLabel: '去括号', difficulty: 2, text: '计算 <strong>(123 + 348 + 400) − (23 + 150 + 148)</strong>', analysis: ['871 − 321 = <strong>550</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 550 },
-  { id: '49-P6', title: '课前测6 · 基准数', tag: 'type4', tagLabel: '基准数', difficulty: 2, text: '计算 <strong>101 + 98 + 97 + 98 + 99 + 102</strong>', analysis: ['以 100 为基准，偏差 −5', '600−5 = <strong>595</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 595 },
-  { id: '49-P7', title: '课前测7 · 按位相加', tag: 'type3', tagLabel: '按位相加', difficulty: 3, text: '计算 <strong>1234 + 2341 + 3412 + 4123</strong>', analysis: ['各位和都是 10，四位 → <strong>11110</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 11110 },
-  { id: '49-P8', title: '课前测8 · 配对相减', tag: 'type5', tagLabel: '综合巧算', difficulty: 3, text: '计算 <strong>100 − 99 + 98 − 97 + … + 2 − 1</strong>', analysis: ['50 组每组得 1', '共 <strong>50</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 50 },
+  { id: '2-1-P1', title: '课前测1 · 凑整加法', tag: 'type1', tagLabel: '交换律结合律', difficulty: 2, text: '计算 <strong>164 + 133 + 136 + 73 + 119 + 381 + 67</strong>', analysis: ['164+136=300，133+67=200，119+381=500', '300+200+500+73 = <strong>1073</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 1073 },
+  { id: '2-1-P2', title: '课前测2 · 加减混合', tag: 'type1', tagLabel: '交换律结合律', difficulty: 1, text: '计算 <strong>117 + 56 + 83 − 156</strong>', analysis: ['117+56+83=256', '256−156 = <strong>100</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 100 },
+  { id: '2-1-P3', title: '课前测3 · 凑整', tag: 'type1', tagLabel: '交换律结合律', difficulty: 2, text: '计算 <strong>245 + 598 + 554 + 601</strong>', analysis: ['245+554=799，598+601=1199', '799+1199 = <strong>1998</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 1998 },
+  { id: '2-1-P4', title: '课前测4 · 大数相加', tag: 'type4', tagLabel: '基准数', difficulty: 3, text: '计算 <strong>39 + 398 + 3997 + 39996</strong>', analysis: ['分组相加 = <strong>44430</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 44430 },
+  { id: '2-1-P5', title: '课前测5 · 去括号', tag: 'type2', tagLabel: '去括号', difficulty: 2, text: '计算 <strong>(123 + 348 + 400) − (23 + 150 + 148)</strong>', analysis: ['871 − 321 = <strong>550</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 550 },
+  { id: '2-1-P6', title: '课前测6 · 基准数', tag: 'type4', tagLabel: '基准数', difficulty: 2, text: '计算 <strong>101 + 98 + 97 + 98 + 99 + 102</strong>', analysis: ['以 100 为基准，偏差 −5', '600−5 = <strong>595</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 595 },
+  { id: '2-1-P7', title: '课前测7 · 按位相加', tag: 'type3', tagLabel: '按位相加', difficulty: 3, text: '计算 <strong>1234 + 2341 + 3412 + 4123</strong>', analysis: ['各位和都是 10，四位 → <strong>11110</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 11110 },
+  { id: '2-1-P8', title: '课前测8 · 配对相减', tag: 'type5', tagLabel: '综合巧算', difficulty: 3, text: '计算 <strong>100 − 99 + 98 − 97 + … + 2 − 1</strong>', analysis: ['50 组每组得 1', '共 <strong>50</strong>'], type: 'none', finalQ: '结果是', finalUnit: '', finalAns: 50 },
 ]
 
 export const PROBLEMS: ProblemSet = {

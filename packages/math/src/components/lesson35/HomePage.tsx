@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson35-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/35'
+const BASE = '/math/ny/1/35'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -62,7 +63,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-[#92400e]">
           第35讲 · 一年级目标班<br />学会用倍比图解决归一问题！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
 

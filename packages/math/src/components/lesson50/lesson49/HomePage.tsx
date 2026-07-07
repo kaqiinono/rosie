@@ -4,7 +4,7 @@ import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson49-data'
 
-const BASE = '/math/ny/49'
+const BASE = '/math/ny/2/1'
 
 interface HomePageProps {
   problems: ProblemSet

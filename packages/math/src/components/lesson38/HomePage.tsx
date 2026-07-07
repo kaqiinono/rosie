@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson38-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/38'
+const BASE = '/math/ny/1/38'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -50,7 +51,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-[#5b21b6]">
           第38讲 · 一年级目标班<br />掌握欧拉定理，判断一笔画、求最短路、解立体棱爬行！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
 

@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson30-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/30'
+const BASE = '/math/ny/1/30'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -45,7 +46,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第30讲 · 一年级目标班<br />
           在和差倍基础上，挑战三量、除法余数、双倍交叉等进阶变形题！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

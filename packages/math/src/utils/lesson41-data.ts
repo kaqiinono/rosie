@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '41-P1',
+    id: '1-41-P1',
     title: '课前测1 · 爬楼梯',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 1,
@@ -19,7 +19,7 @@ const PRETEST: Problem[] = [
     finalAns: 280,
   },
   {
-    id: '41-P2',
+    id: '1-41-P2',
     title: '课前测2 · 植树问题',
     tag: 'type4',
     tagLabel: '圆形与队列', difficulty: 2,
@@ -36,7 +36,7 @@ const PRETEST: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '41-P3',
+    id: '1-41-P3',
     title: '课前测3 · 锯圆木',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 2,
@@ -52,7 +52,7 @@ const PRETEST: Problem[] = [
     finalAns: 128,
   },
   {
-    id: '41-P4',
+    id: '1-41-P4',
     title: '课前测4 · 双色锯点',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 2,
@@ -71,7 +71,7 @@ const PRETEST: Problem[] = [
     analysisImg: '/img/math/41-P4.png',
   },
   {
-    id: '41-P5',
+    id: '1-41-P5',
     title: '课前测5 · 圆圈站队（一）',
     tag: 'type4',
     tagLabel: '圆形与队列', difficulty: 2,
@@ -89,7 +89,7 @@ const PRETEST: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '41-P6',
+    id: '1-41-P6',
     title: '课前测6 · 圆圈站队（二）',
     tag: 'type4',
     tagLabel: '圆形与队列', difficulty: 2,
@@ -107,7 +107,7 @@ const PRETEST: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '41-P7',
+    id: '1-41-P7',
     title: '课前测7 · 圆圈站队（三）',
     tag: 'type4',
     tagLabel: '圆形与队列', difficulty: 2,
@@ -127,7 +127,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '41-L1',
+    id: '1-41-L1',
     title: '例1 · 多根木棍全锯完',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 1,
@@ -143,7 +143,7 @@ const LESSON: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '41-L2',
+    id: '1-41-L2',
     title: '练一练 · 锯面包',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -160,7 +160,7 @@ const LESSON: Problem[] = [
     finalAns: 45,
   },
   {
-    id: '41-L3',
+    id: '1-41-L3',
     title: '例2 · 比较工作量',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 2,
@@ -176,7 +176,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '41-L4',
+    id: '1-41-L4',
     title: '练一练 · 多规格比较',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -192,7 +192,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '41-L5',
+    id: '1-41-L5',
     title: '例3 · 爬楼梯求时间',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 2,
@@ -209,7 +209,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '41-L6',
+    id: '1-41-L6',
     title: '练一练 · 送餐员爬楼',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -226,7 +226,7 @@ const LESSON: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '41-L7',
+    id: '1-41-L7',
     title: '例4 · 速度比较',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 2,
@@ -244,7 +244,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '41-L8',
+    id: '1-41-L8',
     title: '练一练 · 青蛙跳台阶',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -262,7 +262,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '41-L9',
+    id: '1-41-L9',
     title: '例5 · 几点钟敲几下',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 2,
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '41-L10',
+    id: '1-41-L10',
     title: '练一练 · 钟楼敲钟',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -296,7 +296,7 @@ const LESSON: Problem[] = [
     finalAns: 88,
   },
   {
-    id: '41-L11',
+    id: '1-41-L11',
     title: '例6 · 间隔计时推算',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 2,
@@ -313,7 +313,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '41-L12',
+    id: '1-41-L12',
     title: '练一练 · 庙里敲钟倒推',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -333,7 +333,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '41-H1',
+    id: '1-41-H1',
     title: '巩固1 · 两根锯成8段',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -350,7 +350,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 56,
   },
   {
-    id: '41-H2',
+    id: '1-41-H2',
     title: '巩固2 · 谁用时最短',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -366,7 +366,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '41-H3',
+    id: '1-41-H3',
     title: '巩固3 · 快递员爬楼',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -383,7 +383,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '41-H4',
+    id: '1-41-H4',
     title: '巩固4 · 约约和奶奶',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -401,7 +401,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '41-H5',
+    id: '1-41-H5',
     title: '巩固5 · 石英钟敲钟',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -418,7 +418,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '41-H6',
+    id: '1-41-H6',
     title: '巩固6 · 敲鼓推算',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -438,7 +438,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '41-W1',
+    id: '1-41-W1',
     title: '闯关1 · 伐木场比赛',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -454,7 +454,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 80,
   },
   {
-    id: '41-W2',
+    id: '1-41-W2',
     title: '闯关2 · 多根截多段',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -471,7 +471,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 150,
   },
   {
-    id: '41-W3',
+    id: '1-41-W3',
     title: '闯关3 · 钢管锯次数',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -487,7 +487,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 73,
   },
   {
-    id: '41-W4',
+    id: '1-41-W4',
     title: '闯关4 · 三人锯木比较',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -504,7 +504,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '41-W5',
+    id: '1-41-W5',
     title: '闯关5 · 思思爬楼梯',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -521,7 +521,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '41-W6',
+    id: '1-41-W6',
     title: '闯关6 · 台阶总数',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -538,7 +538,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 80,
   },
   {
-    id: '41-W7',
+    id: '1-41-W7',
     title: '闯关7 · 电线杆追问',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -556,7 +556,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '41-W8',
+    id: '1-41-W8',
     title: '闯关8 · 时钟敲12下',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -573,7 +573,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 22,
   },
   {
-    id: '41-W9',
+    id: '1-41-W9',
     title: '闯关9 · 怪钟响几次',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -590,7 +590,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '41-W10',
+    id: '1-41-W10',
     title: '闯关10 · 实验记录倒推',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 4,
@@ -607,7 +607,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 55,
   },
   {
-    id: '41-W11',
+    id: '1-41-W11',
     title: '闯关11 · 敲钟带休息',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 5,
@@ -625,7 +625,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 210,
   },
   {
-    id: '41-W12',
+    id: '1-41-W12',
     title: '闯关12 · 交替锯木棍',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 5,

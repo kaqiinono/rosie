@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson51-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/51'
+const BASE = '/math/ny/2/3'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -45,7 +46,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
         <p className="text-[13px] leading-relaxed text-emerald-800">
           第51讲 · 二年级目标班 · 第3讲<br />学会用等量代换统一数量，用归一法求效率与总量！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

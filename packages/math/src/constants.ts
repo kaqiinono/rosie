@@ -1,3 +1,5 @@
+import { lessonKeyFromProblemId } from './utils/lesson-registry'
+
 /** Supabase Storage bucket for uploaded math problem images. */
 export const MATH_IMAGES_BUCKET = 'math'
 
@@ -124,8 +126,10 @@ export function scratchDraftImagePath(
   return `drafts/${lessonId}/${problemId}/${imageId}.${ext}`
 }
 
-/** Parse lesson id from problem id like `41-P5` → `41`, or `52__SUMMARY` → `52`. */
+/** Parse lesson id (lessonKey) from problem id like `2-1-L1` → `2-1`, or legacy `52-L1` → `2-4`. */
 export function lessonIdFromProblemId(problemId: string): string {
+  const key = lessonKeyFromProblemId(problemId)
+  if (key) return key
   if (isLessonSummaryProblemId(problemId)) {
     return problemId.slice(0, -'__SUMMARY'.length)
   }

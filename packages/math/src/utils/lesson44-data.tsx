@@ -7,7 +7,7 @@ import WorkbookFig9 from '@rosie/math/components/lesson44/Figure/WorkbookFig9'
 
 const PRETEST: Problem[] = [
   {
-    id: '44-P1',
+    id: '1-44-P1',
     title: '课前测1 · 打扫卫生',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -24,7 +24,7 @@ const PRETEST: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '44-P2',
+    id: '1-44-P2',
     title: '课前测2 · 农夫过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -42,7 +42,7 @@ const PRETEST: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '44-P3',
+    id: '1-44-P3',
     title: '课前测3 · 打开水',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -58,7 +58,7 @@ const PRETEST: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '44-P4',
+    id: '1-44-P4',
     title: '课前测4 · 最短路径',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -76,7 +76,7 @@ const PRETEST: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '44-P5',
+    id: '1-44-P5',
     title: '课前测5 · 猎人过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -98,7 +98,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '44-L1',
+    id: '1-44-L1',
     title: '例1 · 冲牛奶',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -115,7 +115,7 @@ const LESSON: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '44-L2',
+    id: '1-44-L2',
     title: '练一练 · 榨果汁',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -132,7 +132,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '44-L3',
+    id: '1-44-L3',
     title: '例2 · 四人用水',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -148,7 +148,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '44-L4',
+    id: '1-44-L4',
     title: '练一练 · 三人看病',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -164,7 +164,7 @@ const LESSON: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '44-L5',
+    id: '1-44-L5',
     title: '例3 · 两面刷漆',
     tag: 'type3',
     tagLabel: '刷漆晾晒',
@@ -181,7 +181,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '44-L6',
+    id: '1-44-L6',
     title: '练一练 · 木板刷漆',
     tag: 'type3',
     tagLabel: '刷漆晾晒',
@@ -198,7 +198,7 @@ const LESSON: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '44-L7',
+    id: '1-44-L7',
     title: '例4 · 赶牛过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -214,7 +214,7 @@ const LESSON: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '44-L8',
+    id: '1-44-L8',
     title: '练一练 · 三头牛过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -230,7 +230,7 @@ const LESSON: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '44-L9',
+    id: '1-44-L9',
     title: '例5 · 烙饼问题',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -248,7 +248,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '44-L10',
+    id: '1-44-L10',
     title: '练一练 · 煎牛排',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -265,7 +265,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '44-L11',
+    id: '1-44-L11',
     title: '例6 · 最短路径',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -284,7 +284,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '44-L12',
+    id: '1-44-L12',
     title: '练一练 · 校园最短路径',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -305,7 +305,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '44-H1',
+    id: '1-44-H1',
     title: '巩固1 · 早晨安排',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -322,7 +322,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '44-H2',
+    id: '1-44-H2',
     title: '巩固2 · 理发店排队',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -338,7 +338,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 207,
   },
   {
-    id: '44-H3',
+    id: '1-44-H3',
     title: '巩固3 · 涂贺卡',
     tag: 'type3',
     tagLabel: '刷漆晾晒',
@@ -355,7 +355,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 29,
   },
   {
-    id: '44-H4',
+    id: '1-44-H4',
     title: '巩固4 · 烙11张饼',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -371,7 +371,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '44-H5',
+    id: '1-44-H5',
     title: '巩固5 · 森林路径',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -389,7 +389,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '44-H6',
+    id: '1-44-H6',
     title: '巩固6 · 三人过桥',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -409,7 +409,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '44-W1',
+    id: '1-44-W1',
     title: '闯关1 · 泡感冒药',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -422,7 +422,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '44-W2',
+    id: '1-44-W2',
     title: '闯关2 · 沏茶',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -438,7 +438,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '44-W3',
+    id: '1-44-W3',
     title: '闯关3 · 买零食排队',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -451,7 +451,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '44-W4',
+    id: '1-44-W4',
     title: '闯关4 · 接水排队',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -464,7 +464,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '44-W5',
+    id: '1-44-W5',
     title: '闯关5 · 煎10条鱼',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -477,7 +477,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '44-W6',
+    id: '1-44-W6',
     title: '闯关6 · 不对称烙饼',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -493,7 +493,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '44-W7',
+    id: '1-44-W7',
     title: '闯关7 · 刷油桶',
     tag: 'type3',
     tagLabel: '刷漆晾晒',
@@ -509,7 +509,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '44-W8',
+    id: '1-44-W8',
     title: '闯关8 · 五马过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -525,7 +525,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '44-W9',
+    id: '1-44-W9',
     title: '闯关9 · 上学路径',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -543,7 +543,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '44-W10',
+    id: '1-44-W10',
     title: '闯关10 · 师徒过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -559,7 +559,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '44-W11',
+    id: '1-44-W11',
     title: '闯关11 · 四人过桥',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -575,7 +575,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '44-W12',
+    id: '1-44-W12',
     title: '闯关12 · 贴奖状',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -594,7 +594,7 @@ const WORKBOOK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '44-S1',
+    id: '1-44-S1',
     title: '附加1 · 独木桥',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -611,7 +611,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '44-S2',
+    id: '1-44-S2',
     title: '附加2 · 橡皮船渡河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -628,7 +628,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '44-S3',
+    id: '1-44-S3',
     title: '附加3 · 公共汽车站',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -644,7 +644,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 3600,
   },
   {
-    id: '44-S4',
+    id: '1-44-S4',
     title: '附加4 · 运费最少',
     tag: 'type2',
     tagLabel: '统筹分配',
@@ -661,7 +661,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 9700,
   },
   {
-    id: '44-S5',
+    id: '1-44-S5',
     title: '附加5 · 合作植树',
     tag: 'type1',
     tagLabel: '合理安排时间',

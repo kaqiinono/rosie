@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const LESSON: Problem[] = [
   {
-    id: '37-L1',
+    id: '1-37-L1',
     title: '例题1：鸡兔同笼10头34腿',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 1,
@@ -19,7 +19,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '37-L2',
+    id: '1-37-L2',
     title: '练一练：蜻蜓蜘蛛7只46腿',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -36,7 +36,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '37-L3',
+    id: '1-37-L3',
     title: '例题2：自行车三轮车8辆21轮',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 2,
@@ -53,7 +53,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '37-L4',
+    id: '1-37-L4',
     title: '练一练：三角形长方形9张33角',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -70,7 +70,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '37-L5',
+    id: '1-37-L5',
     title: '例题3：2分5分硬币12枚39分',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 2,
@@ -87,7 +87,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '37-L6',
+    id: '1-37-L6',
     title: '练一练：1角5角邮票14张30角',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -104,7 +104,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '37-L7',
+    id: '1-37-L7',
     title: '例题4：骆驼24驼峰60只脚',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 2,
@@ -123,7 +123,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '37-L8',
+    id: '1-37-L8',
     title: '练一练：新兵270千米平均30',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 3,
@@ -142,7 +142,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '37-L9',
+    id: '1-37-L9',
     title: '例题5：喜羊羊分水果80桔70苹',
     tag: 'type3',
     tagLabel: '双组分配', difficulty: 2,
@@ -162,7 +162,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '37-L10',
+    id: '1-37-L10',
     title: '练一练：优良生分练习本30数26英',
     tag: 'type3',
     tagLabel: '双组分配', difficulty: 3,
@@ -182,7 +182,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '37-L11',
+    id: '1-37-L11',
     title: '例题6（倒扣分）：婷婷竞赛20题60分',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 3,
@@ -201,7 +201,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '37-L12',
+    id: '1-37-L12',
     title: '练一练（倒扣分）：工人运花瓶40个352元',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 4,
@@ -223,7 +223,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '37-H1',
+    id: '1-37-H1',
     title: '课后巩固1：鸡兔6只16腿',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -240,7 +240,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '37-H2',
+    id: '1-37-H2',
     title: '课后巩固2：停车场10辆37轮',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -257,7 +257,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '37-H3',
+    id: '1-37-H3',
     title: '课后巩固3：2分5分13枚41分',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -274,7 +274,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '37-H4',
+    id: '1-37-H4',
     title: '课后巩固4：光头强砍树80棵平均8棵',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 3,
@@ -292,7 +292,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '37-H5',
+    id: '1-37-H5',
     title: '课后巩固5：星星花店120康乃馨50百合',
     tag: 'type3',
     tagLabel: '双组分配', difficulty: 3,
@@ -312,7 +312,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '37-H6',
+    id: '1-37-H6',
     title: '课后巩固6（倒扣分）：小约竞赛20题79分',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 4,
@@ -334,7 +334,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '37-W1',
+    id: '1-37-W1',
     title: '闯关1：鸡兔14只40腿',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -351,7 +351,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '37-W2',
+    id: '1-37-W2',
     title: '闯关2：短信彩信150条39元',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -369,7 +369,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '37-W3',
+    id: '1-37-W3',
     title: '闯关3：摩托自行车34辆78轮',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -386,7 +386,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '37-W4',
+    id: '1-37-W4',
     title: '闯关4（倒扣分）：托运玻璃240箱最多损坏几箱',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 4,
@@ -404,7 +404,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 39,
   },
   {
-    id: '37-W5',
+    id: '1-37-W5',
     title: '闯关5：宿舍30间160人',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -421,7 +421,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '37-W6',
+    id: '1-37-W6',
     title: '闯关6：变异青蛙42只150腿',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 4,
@@ -440,7 +440,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '37-W7',
+    id: '1-37-W7',
     title: '闯关7：植树节35学生+班主任112棵',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -459,7 +459,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '37-W8',
+    id: '1-37-W8',
     title: '闯关8：魏老师分花135红70蓝',
     tag: 'type3',
     tagLabel: '双组分配', difficulty: 3,
@@ -479,7 +479,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '37-W9',
+    id: '1-37-W9',
     title: '闯关9（倒扣分）：纳纳试卷21题得0分',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 5,
@@ -497,7 +497,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '37-W10',
+    id: '1-37-W10',
     title: '闯关10（倒扣分）：大富翁16次走24步',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 5,
@@ -515,7 +515,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '37-W11',
+    id: '1-37-W11',
     title: '闯关11：悦悦徒步15天450千米',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 5,
@@ -533,7 +533,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 184,
   },
   {
-    id: '37-W12',
+    id: '1-37-W12',
     title: '闯关12（两步）：犀牛羚羊孔雀26头80脚',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 5,
@@ -555,7 +555,7 @@ const WORKBOOK: Problem[] = [
 
 const PRETEST: Problem[] = [
   {
-    id: '37-P1',
+    id: '1-37-P1',
     title: '课前测1：鸵鸟大象36眼52腿',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 1,
@@ -575,7 +575,7 @@ const PRETEST: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '37-P2',
+    id: '1-37-P2',
     title: '课前测2：停车场21辆67轮',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 2,
@@ -592,7 +592,7 @@ const PRETEST: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '37-P3',
+    id: '1-37-P3',
     title: '课前测3：2元5元31张92元',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 2,
@@ -609,7 +609,7 @@ const PRETEST: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '37-P4',
+    id: '1-37-P4',
     title: '课前测4：松鼠采松果112个平均14',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 2,
@@ -627,7 +627,7 @@ const PRETEST: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '37-P5',
+    id: '1-37-P5',
     title: '课前测5（倒扣分）：3人共10题各人得分',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 3,
@@ -648,7 +648,7 @@ const PRETEST: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '37-S1',
+    id: '1-37-S1',
     title: '附加题1：一四年级44人植树100棵',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 4,
@@ -665,7 +665,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '37-S2',
+    id: '1-37-S2',
     title: '附加题2（倒扣分）：100只花瓶92元',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 5,
@@ -683,7 +683,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '37-S3',
+    id: '1-37-S3',
     title: '附加题3（特殊）：鸡兔同数量共60腿',
     tag: 'type5',
     tagLabel: '特殊条件', difficulty: 5,
@@ -701,7 +701,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '37-S4',
+    id: '1-37-S4',
     title: '附加题4（特殊）：兔是鸡2倍共100腿',
     tag: 'type5',
     tagLabel: '特殊条件', difficulty: 5,
@@ -719,7 +719,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '37-S5',
+    id: '1-37-S5',
     title: '附加题5（特殊）：鸡比兔3倍多1共82腿',
     tag: 'type5',
     tagLabel: '特殊条件', difficulty: 5,

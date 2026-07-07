@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.12.1",
   "scripts": {
     "dev": "turbo run dev",
+    "fresh": "pnpm --filter web fresh",
     "build": "turbo run build",
     "start": "turbo run start",
     "lint": "turbo run lint",

@@ -294,7 +294,7 @@ export interface MathPlanProblem {
   key: string // globally unique key e.g. "35::L1"
   lessonId: string // "35" | "36"
   section: string // "lesson" | "homework" | "workbook" | "pretest"
-  index: number // 1-based, used to construct URL e.g. /math/ny/35/lesson/1
+  index: number // 1-based, used to construct URL e.g. /math/ny/1/35/lesson/1
   title: string // problem title
   problemId: string // original Problem.id e.g. "36-L1"
 }

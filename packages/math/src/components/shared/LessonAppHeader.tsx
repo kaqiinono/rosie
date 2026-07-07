@@ -1,10 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import type { ProblemSet, Problem } from '@rosie/core'
-import { NAV_PAGES } from '@rosie/core'
+import type { ProblemSet } from '@rosie/core'
+import { AccountBar } from '@rosie/ui'
 import type { LessonContextType } from './createLessonProvider'
+import {
+  LESSON_HEADER_TEXT_BTN,
+} from './lesson-header-chrome'
+import LessonGradeNav from './LessonGradeNav'
 
 type LessonHeaderConfig = {
   basePath: string
@@ -20,20 +23,8 @@ type LessonHeaderConfig = {
 
 type Props = {
   config: LessonHeaderConfig
-  problems: ProblemSet
-  useLessonContext: () => LessonContextType
-}
-
-function buildPathMap(base: string): Record<string, string> {
-  return {
-    home: base,
-    lesson: `${base}/lesson`,
-    homework: `${base}/homework`,
-    workbook: `${base}/workbook`,
-    alltest: `${base}/alltest`,
-    pretest: `${base}/pretest`,
-    mistakes: `${base}/mistakes`,
-  }
+  problems?: ProblemSet
+  useLessonContext?: () => LessonContextType
 }
 
 const defaultBackIcon = (
@@ -51,66 +42,31 @@ const defaultBackIcon = (
   </svg>
 )
 
-export default function LessonAppHeader({ config, problems, useLessonContext }: Props) {
-  const pathname = usePathname()
-  const { solveCount } = useLessonContext()
-  const pathMap = buildPathMap(config.basePath)
-
-  const allIds = new Set(
-    (Object.values(problems) as Problem[][]).flatMap((l) => l.map((p) => p.id)),
-  )
-  const total = allIds.size
-  const mastered = [...allIds].filter((id) => (solveCount[id] ?? 0) >= 3).length
-
-  function isActive(key: string): boolean {
-    if (key === 'home') return pathname === config.basePath
-    return pathname.startsWith(pathMap[key])
-  }
-
+export default function LessonAppHeader({ config }: Props) {
   return (
-    <div className="border-border-light sticky top-0 z-30 shrink-0 border-b bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.06)] backdrop-blur-sm">
-      <div className="flex h-12 w-full items-center gap-2 pr-[168px] pl-3 sm:h-14 sm:gap-3 sm:pr-5 sm:pl-5">
+    <div className="border-border-light sticky top-0 z-30 shrink-0 overflow-visible border-b bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.06)] backdrop-blur-sm">
+      <div className="flex h-12 w-full items-center gap-1.5 px-3 sm:h-14 sm:gap-2 sm:px-4">
         <Link
           href="/math"
-          className="text-text-muted hover:text-text-secondary flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200 no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-auto sm:w-auto sm:gap-1 sm:px-3 sm:py-1.5"
+          className={`${LESSON_HEADER_TEXT_BTN} w-8 justify-center gap-0 p-0 sm:w-auto sm:justify-start sm:gap-1.5 sm:px-3`}
         >
-          {config.backIcon ?? defaultBackIcon}
-          <span className="hidden text-[12px] font-medium sm:inline">课程列表</span>
+          <span className="flex items-center justify-center">{config.backIcon ?? defaultBackIcon}</span>
+          <span className="hidden sm:inline">课程列表</span>
         </Link>
 
-        <Link href={config.basePath} className="shrink-0 no-underline">
-          <span className="text-text-primary text-[15px] font-bold sm:text-[17px]">
-            {config.emoji} <span className={config.titleColor}>{config.titleShort}</span>
-            <span className="hidden min-[480px]:inline">{config.titleFull}</span>
-          </span>
-        </Link>
+        <div className="bg-border-light/70 mx-0.5 hidden h-5 w-px shrink-0 sm:block" aria-hidden />
 
-        <div className="text-text-secondary flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[11px] font-semibold sm:gap-1.5 sm:px-3 sm:text-[12px]">
-          🦋 <span className="text-app-green-dark">{mastered}</span>
-          <span className="text-text-muted">/{total}</span>
+        <LessonGradeNav
+          basePath={config.basePath}
+          activeColor={config.navActiveColor}
+          activeBorderColor={config.navActiveBorderColor}
+        />
+
+        <div className="bg-border-light/70 mx-0.5 hidden h-5 w-px shrink-0 md:block" aria-hidden />
+
+        <div className="ml-auto shrink-0 pl-1">
+          <AccountBar variant="header" />
         </div>
-
-        <div className="scrollbar-none hidden gap-0 overflow-x-auto lg:flex xl:hidden">
-          {NAV_PAGES.map((p) => {
-            const active = isActive(p.key)
-            return (
-              <Link
-                key={p.key}
-                href={pathMap[p.key] || config.basePath}
-                className={`flex h-12 items-center px-3 text-[13px] font-medium whitespace-nowrap no-underline transition-all sm:h-14 ${
-                  active ? config.navActiveColor : 'text-text-muted hover:text-text-secondary'
-                }`}
-                style={{
-                  borderBottom: `2px solid ${active ? config.navActiveBorderColor : 'transparent'}`,
-                }}
-              >
-                {p.icon} {p.label}
-              </Link>
-            )
-          })}
-        </div>
-
-        <div className="flex-1" />
       </div>
     </div>
   )

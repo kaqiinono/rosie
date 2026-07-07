@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '23-P1',
+    id: '1-23-P1',
     title: '课前测1 · 职业推断',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -18,7 +18,7 @@ const PRETEST: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-P2',
+    id: '1-23-P2',
     title: '课前测2 · 九张牌积与和',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -35,7 +35,7 @@ const PRETEST: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '23-P3',
+    id: '1-23-P3',
     title: '课前测3 · 谁做了好事',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 3,
@@ -52,7 +52,7 @@ const PRETEST: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-P4',
+    id: '1-23-P4',
     title: '课前测4 · 各说对一半',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 3,
@@ -69,7 +69,7 @@ const PRETEST: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-P5',
+    id: '1-23-P5',
     title: '课前测5 · 三位老师的课',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 3,
@@ -88,7 +88,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '23-L1',
+    id: '1-23-L1',
     title: '例1 · 四种鸡各归其主',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -105,7 +105,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-L2',
+    id: '1-23-L2',
     title: '练一练 · 积木颜色形状',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -122,7 +122,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-L3',
+    id: '1-23-L3',
     title: '例2 · 三人职业推断',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 3,
@@ -138,7 +138,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-L4',
+    id: '1-23-L4',
     title: '练一练 · 导演经理会计',
     tag: 'type2',
     tagLabel: '题型2·关系对应', difficulty: 3,
@@ -154,7 +154,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-L5',
+    id: '1-23-L5',
     title: '例3 · 混双搭档关系',
     tag: 'type2',
     tagLabel: '题型2·关系对应', difficulty: 4,
@@ -171,7 +171,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '23-L6',
+    id: '1-23-L6',
     title: '练一练 · 三对父子的搭档',
     tag: 'type2',
     tagLabel: '题型2·关系对应', difficulty: 4,
@@ -188,7 +188,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-L7',
+    id: '1-23-L7',
     title: '例4 · 谁打破了玻璃',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 3,
@@ -205,7 +205,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-L8',
+    id: '1-23-L8',
     title: '练一练 · 谁会游泳',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 3,
@@ -222,7 +222,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '23-L9',
+    id: '1-23-L9',
     title: '例5 · 五省份编号',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 5,
@@ -239,7 +239,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-L10',
+    id: '1-23-L10',
     title: '练一练 · 象棋比赛排名',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 4,
@@ -256,7 +256,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-L11',
+    id: '1-23-L11',
     title: '例6 · 写信的是谁',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -273,7 +273,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-L12',
+    id: '1-23-L12',
     title: '练一练 · 四兄弟排行',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -293,7 +293,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '23-H1',
+    id: '1-23-H1',
     title: '巩固1 · 黄色三角形',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -310,7 +310,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '23-H2',
+    id: '1-23-H2',
     title: '巩固2 · 老师科学家警察',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -326,7 +326,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '23-H3',
+    id: '1-23-H3',
     title: '巩固3 · 物化生三科老师',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -342,7 +342,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-H4',
+    id: '1-23-H4',
     title: '巩固4 · 今天是星期几',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 3,
@@ -359,7 +359,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '23-H5',
+    id: '1-23-H5',
     title: '巩固5 · 运动会号码',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 3,
@@ -376,7 +376,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-H6',
+    id: '1-23-H6',
     title: '巩固6 · 衣服和鞋子颜色',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -396,7 +396,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '23-W1',
+    id: '1-23-W1',
     title: '闯关1 · 四人比体重排序',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -413,7 +413,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-W2',
+    id: '1-23-W2',
     title: '闯关2 · 三种球的喜好',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 1,
@@ -429,7 +429,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-W3',
+    id: '1-23-W3',
     title: '闯关3 · 气球颜色形状',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -446,7 +446,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-W4',
+    id: '1-23-W4',
     title: '闯关4 · 四人数学成绩',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 3,
@@ -463,7 +463,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 97,
   },
   {
-    id: '23-W5',
+    id: '1-23-W5',
     title: '闯关5 · 牧师骗子赌棍',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 4,
@@ -480,7 +480,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '23-W6',
+    id: '1-23-W6',
     title: '闯关6 · 六张牌积与和',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 3,
@@ -497,7 +497,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '23-W7',
+    id: '1-23-W7',
     title: '闯关7 · 抄古诗词的是谁',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -514,7 +514,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-W8',
+    id: '1-23-W8',
     title: '闯关8 · 唐僧师徒分工',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 3,
@@ -531,7 +531,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '23-W9',
+    id: '1-23-W9',
     title: '闯关9 · 九张牌三人分',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -548,7 +548,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '23-W10',
+    id: '1-23-W10',
     title: '闯关10 · 五封信颜色',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 5,
@@ -565,7 +565,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '23-W11',
+    id: '1-23-W11',
     title: '闯关11 · 铅笔数量',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 4,
@@ -582,7 +582,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '23-W12',
+    id: '1-23-W12',
     title: '闯关12 · 挑选学校',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 5,

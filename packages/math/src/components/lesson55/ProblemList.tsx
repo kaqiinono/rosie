@@ -18,7 +18,7 @@ export default function ProblemList({ problems, solveCount, basePath, showSource
       problems={problems}
       solveCount={solveCount}
       basePath={basePath}
-      lessonId="55"
+      lessonId="2-6"
       tagStyles={TAG_STYLE}
       showSource={showSource}
       sourceLabel={sourceLabel}

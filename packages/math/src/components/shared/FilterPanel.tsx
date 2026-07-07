@@ -14,6 +14,7 @@ import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesPro
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import type { SeaProblem } from '@rosie/math/utils/sea-data'
 import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 export type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
@@ -137,7 +138,7 @@ export function createFilterPanel(
   ProblemDetailComponent: ComponentType<{ problem: Problem; mode: 'inline' | 'full'; defaultSolutionOpen?: boolean }>,
 ) {
   const { base, title, theme, sourceBtns, typeBtns, tagColors } = config
-  const lessonId = base.split('/').pop() ?? ''
+  const lessonId = lessonKeyFromHref(base) ?? base.split('/').pop() ?? ''
   const ExpandedCard = createExpandedCard(tagColors, theme.srcBadge, lessonId, ProblemDetailComponent)
 
   function getProblemHref(setName: string, indexInSet: number): string {

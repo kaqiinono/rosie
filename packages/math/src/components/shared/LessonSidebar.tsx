@@ -77,7 +77,7 @@ export default function LessonSidebar({ config, problems, useLessonContext }: Pr
 
   return (
     <div
-      className={`sticky top-14 z-20 hidden h-[calc(100vh-56px)] shrink-0 self-start overflow-hidden border-r border-border-light bg-white transition-[width] duration-200 md:block lg:hidden xl:block ${
+      className={`sticky top-14 z-20 hidden h-[calc(100vh-56px)] shrink-0 self-start overflow-hidden border-r border-border-light bg-white transition-[width] duration-200 md:block ${
         collapsed ? 'w-[48px]' : 'w-[240px]'
       }`}
     >

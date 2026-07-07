@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const LESSON: Problem[] = [
   {
-    id: '39-L1',
+    id: '1-39-L1',
     title: '例1 · 盈盈问题：买铅笔',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 1,
@@ -21,7 +21,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '39-L2',
+    id: '1-39-L2',
     title: '练一练 · 盈盈问题：孙悟空发香蕉',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 3,
@@ -40,7 +40,7 @@ const LESSON: Problem[] = [
     finalAns: 53,
   },
   {
-    id: '39-L3',
+    id: '1-39-L3',
     title: '例2 · 盈恰问题：弹珠放盒子',
     tag: 'type4',
     tagLabel: '盈恰', difficulty: 2,
@@ -59,7 +59,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '39-L4',
+    id: '1-39-L4',
     title: '练一练 · 亏恰问题：约约做数学题',
     tag: 'type5',
     tagLabel: '亏恰', difficulty: 4,
@@ -78,7 +78,7 @@ const LESSON: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '39-L5',
+    id: '1-39-L5',
     title: '例3 · 亏亏问题：张阿姨的玫瑰花',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 2,
@@ -97,7 +97,7 @@ const LESSON: Problem[] = [
     finalAns: 39,
   },
   {
-    id: '39-L6',
+    id: '1-39-L6',
     title: '练一练 · 亏亏问题：花花买发卡',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 3,
@@ -117,7 +117,7 @@ const LESSON: Problem[] = [
     finalAns: 83,
   },
   {
-    id: '39-L7',
+    id: '1-39-L7',
     title: '例4 · 盈亏问题：兔妈妈的萝卜',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -136,7 +136,7 @@ const LESSON: Problem[] = [
     finalAns: 83,
   },
   {
-    id: '39-L8',
+    id: '1-39-L8',
     title: '练一练 · 盈亏问题：搬砖',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -155,7 +155,7 @@ const LESSON: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '39-L9',
+    id: '1-39-L9',
     title: '例5 · 盈亏问题：合唱队开会',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -174,7 +174,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '39-L10',
+    id: '1-39-L10',
     title: '练一练 · 盈亏问题：朱朱的水果箱',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -194,7 +194,7 @@ const LESSON: Problem[] = [
     finalAns: 33,
   },
   {
-    id: '39-L11',
+    id: '1-39-L11',
     title: '例6 · 变形盈亏：少先队员植树',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -214,7 +214,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '39-L12',
+    id: '1-39-L12',
     title: '练一练 · 变形盈亏：韦老师安排帐篷',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -237,7 +237,7 @@ const LESSON: Problem[] = [
 
 const PRETEST: Problem[] = [
   {
-    id: '39-P1',
+    id: '1-39-P1',
     title: '课前测1 · 盈恰：校运会分水',
     tag: 'type4',
     tagLabel: '盈恰', difficulty: 1,
@@ -256,7 +256,7 @@ const PRETEST: Problem[] = [
     finalAns: 48,
   },
   {
-    id: '39-P2',
+    id: '1-39-P2',
     title: '课前测2 · 盈盈：铅笔单价',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 2,
@@ -275,7 +275,7 @@ const PRETEST: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '39-P3',
+    id: '1-39-P3',
     title: '课前测3 · 亏亏：分巧克力',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 2,
@@ -294,7 +294,7 @@ const PRETEST: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '39-P4',
+    id: '1-39-P4',
     title: '课前测4 · 变形盈亏：分糖果',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -314,7 +314,7 @@ const PRETEST: Problem[] = [
     finalAns: 210,
   },
   {
-    id: '39-P5',
+    id: '1-39-P5',
     title: '课前测5 · 盈亏：会议室长椅',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -337,7 +337,7 @@ const PRETEST: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '39-H1',
+    id: '1-39-H1',
     title: '课后巩固1 · 盈盈：老师发本子',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 3,
@@ -356,7 +356,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 150,
   },
   {
-    id: '39-H2',
+    id: '1-39-H2',
     title: '课后巩固2 · 盈恰：分小玩具',
     tag: 'type4',
     tagLabel: '盈恰', difficulty: 3,
@@ -374,7 +374,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 48,
   },
   {
-    id: '39-H3',
+    id: '1-39-H3',
     title: '课后巩固3 · 亏亏：羊羊发奖学金',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 3,
@@ -393,7 +393,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '39-H4',
+    id: '1-39-H4',
     title: '课后巩固4 · 盈亏：桑桑爸爸的旅游奖金',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -413,7 +413,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 4300,
   },
   {
-    id: '39-H5',
+    id: '1-39-H5',
     title: '课后巩固5 · 盈亏：猪妈妈的餐布',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -433,7 +433,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '39-H6',
+    id: '1-39-H6',
     title: '课后巩固6 · 变形亏亏：士兵背炮弹',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 3,
@@ -454,7 +454,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '39-W1',
+    id: '1-39-W1',
     title: '闯关1 · 盈盈：老师分剪纸',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 3,
@@ -471,7 +471,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 66,
   },
   {
-    id: '39-W2',
+    id: '1-39-W2',
     title: '闯关2 · 盈盈：婷婷买包子',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 3,
@@ -489,7 +489,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '39-W3',
+    id: '1-39-W3',
     title: '闯关3 · 亏亏：哥哥买游戏币',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 3,
@@ -508,7 +508,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '39-W4',
+    id: '1-39-W4',
     title: '闯关4 · 亏亏：老师发积分卡',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 3,
@@ -527,7 +527,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 42,
   },
   {
-    id: '39-W5',
+    id: '1-39-W5',
     title: '闯关5 · 盈亏：目标班看电影',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -547,7 +547,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 160,
   },
   {
-    id: '39-W6',
+    id: '1-39-W6',
     title: '闯关6 · 盈亏：纳约小学宿舍',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -566,7 +566,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '39-W7',
+    id: '1-39-W7',
     title: '闯关7 · 盈亏：老师和学生',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -586,7 +586,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '39-W8',
+    id: '1-39-W8',
     title: '闯关8 · 盈亏：魏老师发牛奶',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -604,7 +604,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '39-W9',
+    id: '1-39-W9',
     title: '闯关9 · 盈亏：吉吉国王分香蕉',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -622,7 +622,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 70,
   },
   {
-    id: '39-W10',
+    id: '1-39-W10',
     title: '闯关10 · 变形盈亏：海盗分金币',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 4,
@@ -642,7 +642,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 52,
   },
   {
-    id: '39-W11',
+    id: '1-39-W11',
     title: '闯关11 · 变形盈亏：体育课发乒乓球',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 5,
@@ -662,7 +662,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 72,
   },
   {
-    id: '39-W12',
+    id: '1-39-W12',
     title: '闯关12 · 盈亏范围：韦老师住宿',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 5,
@@ -683,7 +683,7 @@ const WORKBOOK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '39-S1',
+    id: '1-39-S1',
     title: '附加题1 · 盈亏：糖果分配',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 4,
@@ -703,7 +703,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '39-S2',
+    id: '1-39-S2',
     title: '附加题2 · 盈亏：笔记本单价',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 4,
@@ -721,7 +721,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 70,
   },
   {
-    id: '39-S3',
+    id: '1-39-S3',
     title: '附加题3 · 盈亏换算：买肉',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 4,
@@ -740,7 +740,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 124,
   },
   {
-    id: '39-S4',
+    id: '1-39-S4',
     title: '附加题4 · 盈亏人数差：分糖粒',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 4,

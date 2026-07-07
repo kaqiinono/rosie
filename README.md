@@ -19,9 +19,9 @@
 |------|------|
 | `/` | 首页 — 选择数学或英语模块 |
 | `/math` | 数学中心 — 课程列表 |
-| `/math/ny/34` | 乘法分配律 — 买苹果互动演示 |
-| `/math/ny/35` | 归一问题 — 29 道题的完整 SPA |
-| `/math/ny` | 重定向到 `/math/ny/35` |
+| `/math/ny/1/34` | 乘法分配律 — 买苹果互动演示 |
+| `/math/ny/1/35` | 归一问题 — 29 道题的完整 SPA |
+| `/math/ny` | 重定向到 `/math/ny/1/35` |
 | `/english/words` | WordMaster Pro — 单词卡 / 拼写练习 / 每日一练 |
 | `/offline` | 离线回退页 |
 
@@ -36,7 +36,7 @@ src/
 │   ├── math/
 │   │   ├── page.tsx        # 数学中心
 │   │   └── ny/
-│   │       ├── page.tsx    # 重定向 → /math/ny/35
+│   │       ├── page.tsx    # 重定向 → /math/ny/1/35
 │   │       ├── 34/page.tsx # 乘法分配律
 │   │       └── 35/page.tsx # 归一问题
 │   └── english/
@@ -178,7 +178,7 @@ vercel --prod
 - **Service Worker 无缓存** — 确保用户总是获取最新 SW
 - **Manifest 无缓存** — 确保 PWA 安装信息最新
 - **静态资源长缓存** — `_next/static/*` 和 `icons/*` 缓存 1 年
-- **路径重写** — `/math/ny` → `/math/ny/35`
+- **路径重写** — `/math/ny` → `/math/ny/1/35`
 
 ### 自定义域名
 

@@ -76,7 +76,7 @@ export const TAG_STYLE: Record<string, string> = {
 export const PROBLEMS: ProblemSet = {
   pretest: [
     {
-      id: '40-P1',
+      id: '1-40-P1',
       title: '课前测1 · 正方形排成一行',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 1,
@@ -101,7 +101,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 38,
     },
     {
-      id: '40-P2',
+      id: '1-40-P2',
       title: '课前测2 · 长方形纸片横竖剪刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 2,
@@ -125,7 +125,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 100,
     },
     {
-      id: '40-P3',
+      id: '1-40-P3',
       title: '课前测3 · 大长方形分成12个小正方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 2,
@@ -149,7 +149,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 28,
     },
     {
-      id: '40-P4',
+      id: '1-40-P4',
       title: '课前测4 · 15个小长方形组合图',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 2,
@@ -173,7 +173,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 140,
     },
     {
-      id: '40-P5',
+      id: '1-40-P5',
       title: '课前测5 · 相邻边垂直多边形',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 2,
@@ -201,7 +201,7 @@ export const PROBLEMS: ProblemSet = {
 
   lesson: [
     {
-      id: '40-L1',
+      id: '1-40-L1',
       title: '课1 · 3个长方形拼大长方形（种数）',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 2,
@@ -225,7 +225,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 2,
     },
     {
-      id: '40-L2',
+      id: '1-40-L2',
       title: '练一练1 · 6个正方形拼大长方形（种数）',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -242,7 +242,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 2,
     },
     {
-      id: '40-L3',
+      id: '1-40-L3',
       title: '课2 · 4个小长方形拼大长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 2,
@@ -267,7 +267,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 42,
     },
     {
-      id: '40-L4',
+      id: '1-40-L4',
       title: '练一练2 · 4个小长方形拼大长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -291,7 +291,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 60,
     },
     {
-      id: '40-L5',
+      id: '1-40-L5',
       title: '课3 · 长方形横剪1刀竖剪2刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 2,
@@ -315,7 +315,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 46,
     },
     {
-      id: '40-L6',
+      id: '1-40-L6',
       title: '练一练3 · 正方形横剪1刀竖剪1刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 3,
@@ -339,7 +339,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 64,
     },
     {
-      id: '40-L7',
+      id: '1-40-L7',
       title: '课4 · 礼品盒阶梯形周长',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 2,
@@ -363,7 +363,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 300,
     },
     {
-      id: '40-L8',
+      id: '1-40-L8',
       title: '练一练4 · 等边三角形拼平行四边形',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 3,
@@ -388,7 +388,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 88,
     },
     {
-      id: '40-L9',
+      id: '1-40-L9',
       title: '课5 · 小区平面图晨跑',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 2,
@@ -412,7 +412,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 1200,
     },
     {
-      id: '40-L10',
+      id: '1-40-L10',
       title: '练一练5 · 凹凸图形周长（平移法）',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 3,
@@ -430,7 +430,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 28,
     },
     {
-      id: '40-L11',
+      id: '1-40-L11',
       title: '课6 · 标向法求多边形周长',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 2,
@@ -455,7 +455,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 42,
     },
     {
-      id: '40-L12',
+      id: '1-40-L12',
       title: '练一练6 · 两图形标向法',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 3,
@@ -481,7 +481,7 @@ export const PROBLEMS: ProblemSet = {
 
   homework: [
     {
-      id: '40-H1',
+      id: '1-40-H1',
       title: '课后巩固1 · 4个长方形拼大长方形（种数）',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -505,7 +505,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 3,
     },
     {
-      id: '40-H2',
+      id: '1-40-H2',
       title: '课后巩固2 · 5个小长方形拼大长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -530,7 +530,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 88,
     },
     {
-      id: '40-H3',
+      id: '1-40-H3',
       title: '课后巩固3 · 长方形横剪2刀竖剪3刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 3,
@@ -554,7 +554,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 200,
     },
     {
-      id: '40-H4',
+      id: '1-40-H4',
       title: '课后巩固4 · 砖墙阶梯形周长',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 3,
@@ -578,7 +578,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 144,
     },
     {
-      id: '40-H5',
+      id: '1-40-H5',
       title: '课后巩固5 · 玩具侧面图周长',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 3,
@@ -602,7 +602,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 45,
     },
     {
-      id: '40-H6',
+      id: '1-40-H6',
       title: '课后巩固6 · 相邻边垂直多边形',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 3,
@@ -629,7 +629,7 @@ export const PROBLEMS: ProblemSet = {
 
   workbook: [
     {
-      id: '40-W1',
+      id: '1-40-W1',
       title: '闯关1 · 12个正方形可拼几种周长',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -654,7 +654,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 3,
     },
     {
-      id: '40-W2',
+      id: '1-40-W2',
       title: '闯关2 · 5个小长方形拼大长方形最小周长',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -679,7 +679,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 14,
     },
     {
-      id: '40-W3',
+      id: '1-40-W3',
       title: '闯关3 · 正方形分成3个长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -702,7 +702,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 8,
     },
     {
-      id: '40-W4',
+      id: '1-40-W4',
       title: '闯关4 · 8个小长方形拼大长方形，求小长方形周长',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -726,7 +726,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 10,
     },
     {
-      id: '40-W5',
+      id: '1-40-W5',
       title: '闯关5 · 正方形横竖各剪一刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 3,
@@ -751,7 +751,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 44,
     },
     {
-      id: '40-W6',
+      id: '1-40-W6',
       title: '闯关6 · 长方形横剪3刀竖剪4刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 3,
@@ -775,7 +775,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 260,
     },
     {
-      id: '40-W7',
+      id: '1-40-W7',
       title: '闯关7 · 长方形剪去正方形求周长',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 3,
@@ -800,7 +800,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 34,
     },
     {
-      id: '40-W8',
+      id: '1-40-W8',
       title: '闯关8 · 4个小长方形摆成图形',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 3,
@@ -825,7 +825,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 22,
     },
     {
-      id: '40-W9',
+      id: '1-40-W9',
       title: '闯关9 · 复杂阶梯多边形周长',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 3,
@@ -849,7 +849,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 58,
     },
     {
-      id: '40-W10',
+      id: '1-40-W10',
       title: '闯关10 · 最少知道几条边',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 4,
@@ -873,7 +873,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 4,
     },
     {
-      id: '40-W11',
+      id: '1-40-W11',
       title: '闯关11 · 大正方形=小正方形+4个长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 5,
@@ -898,7 +898,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 20,
     },
     {
-      id: '40-W12',
+      id: '1-40-W12',
       title: '闯关12 · 大正方形=8小长方形+1小正方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 5,
@@ -926,7 +926,7 @@ export const PROBLEMS: ProblemSet = {
 
   supplement: [
     {
-      id: '40-S1',
+      id: '1-40-S1',
       title: '附加题1 · 8个小长方形拼大长方形周长',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 4,
@@ -951,7 +951,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 60,
     },
     {
-      id: '40-S2',
+      id: '1-40-S2',
       title: '附加题2 · 大长方形分成5个小正方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 4,
@@ -976,7 +976,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 39,
     },
     {
-      id: '40-S3',
+      id: '1-40-S3',
       title: '附加题3 · 6个正方形拼成图形，求单个周长',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 4,

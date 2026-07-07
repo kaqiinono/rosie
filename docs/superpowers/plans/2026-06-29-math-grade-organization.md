@@ -30,7 +30,7 @@
 | `apps/web/tests/lesson-grade.test.ts` | 新增 | lesson-grade 纯函数单测 |
 | `packages/math/src/utils/courses-data.ts` | 新增 | 把内联 `courses` 数组抽出为 `COURSES` |
 | `packages/math/src/components/GradeLessonList.tsx` | 新增 | 某年级讲次列表整页（背景/返回/标题 + 过滤 COURSES 渲染 CourseCard） |
-| `apps/web/src/app/math/ny/g1/page.tsx` | 新增 | 薄壳 → `<GradeLessonList grade={1} />` |
+| `apps/web/src/app/math/ny/1/page.tsx` | 新增 | 薄壳 → `<GradeLessonList grade={1} />` |
 | `apps/web/src/app/math/ny/page.tsx` | 改 | redirect 改为 `/math` |
 | `packages/math/src/components/GradeCard.tsx` | 新增 | 单张年级卡片（展示） |
 | `apps/web/src/app/math/page.tsx` | 改 | 讲次卡列表 → 年级卡片网格（工具行保留） |
@@ -56,7 +56,7 @@
   - `gradesInOrder(): number[]` — 有讲次的年级，升序去重
   - `lessonsForGrade(grade: number): string[]` — 该年级讲次 id，按 `LESSON_GRADE` 键序
   - `gradeOf(lessonId: string): number | undefined`
-  - `lessonIdFromHref(href: string): string | undefined` — 从 `/math/ny/35` 取 `'35'`
+  - `lessonIdFromHref(href: string): string | undefined` — 从 `/math/ny/1/35` 取 `'35'`
 
 - [ ] **Step 1: 写失败测试** — `apps/web/tests/lesson-grade.test.ts`
 
@@ -94,8 +94,8 @@ describe('lesson-grade', () => {
   })
 
   it('lessonIdFromHref 从路由取讲次 id', () => {
-    expect(lessonIdFromHref('/math/ny/35')).toBe('35')
-    expect(lessonIdFromHref('/math/ny/g1')).toBeUndefined()
+    expect(lessonIdFromHref('/math/ny/1/35')).toBe('35')
+    expect(lessonIdFromHref('/math/ny/1')).toBeUndefined()
     expect(lessonIdFromHref('/foo')).toBeUndefined()
   })
 
@@ -148,7 +148,7 @@ export function gradeOf(lessonId: string): number | undefined {
   return LESSON_GRADE[lessonId]
 }
 
-/** 从 `/math/ny/35` 取讲次 id `'35'`；非讲次路由返回 undefined。 */
+/** 从 `/math/ny/1/35` 取讲次 id `'35'`；非讲次路由返回 undefined。 */
 export function lessonIdFromHref(href: string): string | undefined {
   const m = href.match(/^\/math\/ny\/(\d+)$/)
   return m ? m[1] : undefined
@@ -314,13 +314,13 @@ git commit -m "feat(math): add GradeLessonList per-grade lesson list"
 ## Task 4: 年级路由薄壳 + `/math/ny` 重定向
 
 **Files:**
-- Create: `apps/web/src/app/math/ny/g1/page.tsx`
+- Create: `apps/web/src/app/math/ny/1/page.tsx`
 - Modify: `apps/web/src/app/math/ny/page.tsx`
 
 **Interfaces:**
 - Consumes: `GradeLessonList`（`@rosie/math/components/GradeLessonList`）
 
-- [ ] **Step 1: 一年级薄壳** — `apps/web/src/app/math/ny/g1/page.tsx`
+- [ ] **Step 1: 一年级薄壳** — `apps/web/src/app/math/ny/1/page.tsx`
 
 ```tsx
 import GradeLessonList from '@rosie/math/components/GradeLessonList'
@@ -343,13 +343,13 @@ export default function MathNyPage() {
 - [ ] **Step 3: 构建并人工核对**
 
 Run: `pnpm --filter web build`
-Expected: 构建通过。手动核对：访问 `/math/ny/g1` 列出一年级 20 讲（讲次号为真实值），点任一讲进入 `/math/ny/NN` 正常；`/math/ny` 跳到 `/math`。
+Expected: 构建通过。手动核对：访问 `/math/ny/1` 列出一年级 20 讲（讲次号为真实值），点任一讲进入 `/math/ny/NN` 正常；`/math/ny` 跳到 `/math`。
 
 - [ ] **Step 4: 提交**
 
 ```bash
-git add apps/web/src/app/math/ny/g1/page.tsx apps/web/src/app/math/ny/page.tsx
-git commit -m "feat(math): add /math/ny/g1 grade route, redirect /math/ny to /math"
+git add apps/web/src/app/math/ny/1/page.tsx apps/web/src/app/math/ny/page.tsx
+git commit -m "feat(math): add /math/ny/1 grade route, redirect /math/ny to /math"
 ```
 
 ---
@@ -450,7 +450,7 @@ import { gradesInOrder, GRADE_LABEL, lessonsForGrade } from '@rosie/math/utils/l
 - [ ] **Step 3: 构建并人工核对**
 
 Run: `pnpm --filter web build`
-Expected: 构建通过。`/math` 顶部工具行保留，下方只显示「一年级 · 20 讲」一张年级卡（二年级暂无讲次故不出现），点进 `/math/ny/g1` 正常。
+Expected: 构建通过。`/math` 顶部工具行保留，下方只显示「一年级 · 20 讲」一张年级卡（二年级暂无讲次故不出现），点进 `/math/ny/1` 正常。
 
 - [ ] **Step 4: 提交**
 

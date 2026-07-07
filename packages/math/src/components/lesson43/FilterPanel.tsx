@@ -6,7 +6,7 @@ import ProblemDetail from './ProblemDetail'
 export type { Filters, MasteryFilter, PracticeFilter, FilterPanelProps } from '@rosie/math/components/shared/FilterPanel'
 
 export default createFilterPanel({
-  base: '/math/ny/43',
+  base: '/math/ny/1/43',
   title: '🎯 综合题库 · 第43讲',
   theme: {
     btnOn:              'border-cyan-600 bg-cyan-600 text-white',

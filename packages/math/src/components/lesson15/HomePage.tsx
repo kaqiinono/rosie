@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson15-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/15'
+const BASE = '/math/ny/1/15'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -46,7 +47,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第15讲 · 一年级目标班<br />
           掌握和差问题万能公式：大数=(和+差)÷2，小数=(和-差)÷2！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

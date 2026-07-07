@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson46-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/46'
+const BASE = '/math/ny/1/46'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -47,7 +48,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第46讲 · 一年级目标班<br />
           学会用"抽屉原理"和"最不利原则"解决各种"至少……才能保证"的难题！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

@@ -5,7 +5,7 @@ export const LESSON_TIP =
 
 const PRETEST: Problem[] = [
   {
-    id: '46-P1',
+    id: '1-46-P1',
     title: '课前测1 · 练习本',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -22,7 +22,7 @@ const PRETEST: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '46-P2',
+    id: '1-46-P2',
     title: '课前测2 · 取球记录',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -39,7 +39,7 @@ const PRETEST: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '46-P3',
+    id: '1-46-P3',
     title: '课前测3 · 保证有黄笔',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -56,7 +56,7 @@ const PRETEST: Problem[] = [
     finalAns: 23,
   },
   {
-    id: '46-P4',
+    id: '1-46-P4',
     title: '课前测3 · 保证两种颜色',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -73,7 +73,7 @@ const PRETEST: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '46-P5',
+    id: '1-46-P5',
     title: '课前测4 · 保证三种颜色',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -90,7 +90,7 @@ const PRETEST: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '46-P6',
+    id: '1-46-P6',
     title: '课前测4 · 保证有红和黄',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -107,7 +107,7 @@ const PRETEST: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '46-P7',
+    id: '1-46-P7',
     title: '课前测5 · 5 张同花色',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -124,7 +124,7 @@ const PRETEST: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '46-P8',
+    id: '1-46-P8',
     title: '课前测5 · 四种花色都有',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -141,7 +141,7 @@ const PRETEST: Problem[] = [
     finalAns: 42,
   },
   {
-    id: '46-P9',
+    id: '1-46-P9',
     title: '课前测5 · 3 张红桃',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -158,7 +158,7 @@ const PRETEST: Problem[] = [
     finalAns: 44,
   },
   {
-    id: '46-P10',
+    id: '1-46-P10',
     title: '课前测5 · 3 张点数相同',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -178,7 +178,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '46-L1',
+    id: '1-46-L1',
     title: '例题1 · 苹果放抽屉',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -195,7 +195,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '46-L2',
+    id: '1-46-L2',
     title: '练一练 · 饼干放抽屉',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -212,7 +212,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '46-L3',
+    id: '1-46-L3',
     title: '例题2 · 同一天生日',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -229,7 +229,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '46-L4',
+    id: '1-46-L4',
     title: '练一练 · 鸽子回舍',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -246,7 +246,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '46-L5',
+    id: '1-46-L5',
     title: '例题3 · 4 种玩具',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -263,7 +263,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '46-L6',
+    id: '1-46-L6',
     title: '例题3 · 摸出同色球',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -280,7 +280,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '46-L7',
+    id: '1-46-L7',
     title: '练一练 · 借书同种',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -297,7 +297,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '46-L8',
+    id: '1-46-L8',
     title: '例题4 · 保证有酸奶味',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -314,7 +314,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '46-L9',
+    id: '1-46-L9',
     title: '例题4 · 保证两种口味',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -331,7 +331,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '46-L10',
+    id: '1-46-L10',
     title: '练一练 · 保证有黄球',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -348,7 +348,7 @@ const LESSON: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '46-L11',
+    id: '1-46-L11',
     title: '练一练 · 保证两种颜色',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -365,7 +365,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '46-L12',
+    id: '1-46-L12',
     title: '例题5 · 游览鸟巢',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -382,7 +382,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '46-L13',
+    id: '1-46-L13',
     title: '练一练 · 报名项目',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -399,7 +399,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '46-L14',
+    id: '1-46-L14',
     title: '例题6 · 三色手套都取到',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -416,7 +416,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '46-L15',
+    id: '1-46-L15',
     title: '例题6 · 保证 1 双红手套',
     tag: 'type5',
     tagLabel: '保证成双',
@@ -433,7 +433,7 @@ const LESSON: Problem[] = [
     finalAns: 22,
   },
   {
-    id: '46-L16',
+    id: '1-46-L16',
     title: '例题6 · 保证 2 双同色',
     tag: 'type5',
     tagLabel: '保证成双',
@@ -450,7 +450,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '46-L17',
+    id: '1-46-L17',
     title: '练一练 · 四色袜子都取到',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -467,7 +467,7 @@ const LESSON: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '46-L18',
+    id: '1-46-L18',
     title: '练一练 · 保证 2 双同色袜',
     tag: 'type5',
     tagLabel: '保证成双',
@@ -487,7 +487,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '46-H1',
+    id: '1-46-H1',
     title: '巩固1 · 同月出生',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -504,7 +504,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '46-H2',
+    id: '1-46-H2',
     title: '巩固2 · 故事书放抽屉',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -521,7 +521,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '46-H3',
+    id: '1-46-H3',
     title: '巩固3 · 4 张同花色',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -538,7 +538,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '46-H4',
+    id: '1-46-H4',
     title: '巩固4 · 3 条同品种鱼',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -555,7 +555,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '46-H5',
+    id: '1-46-H5',
     title: '巩固5 · 拿水果相同',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -572,7 +572,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '46-H6',
+    id: '1-46-H6',
     title: '巩固6 · 保证 1 支红笔',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -592,7 +592,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '46-W1',
+    id: '1-46-W1',
     title: '闯关1 · 保证有白球',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -609,7 +609,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '46-W2',
+    id: '1-46-W2',
     title: '闯关2 · 拿球种类一致',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -626,7 +626,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '46-W3',
+    id: '1-46-W3',
     title: '闯关3 · 2 个同味果冻',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -643,7 +643,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '46-W4',
+    id: '1-46-W4',
     title: '闯关4 · 2 条同品种鱼',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -660,7 +660,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '46-W5',
+    id: '1-46-W5',
     title: '闯关5 · 保证 1 支绿笔',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -677,7 +677,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 34,
   },
   {
-    id: '46-W6',
+    id: '1-46-W6',
     title: '闯关6 · 保证 1 双红袜',
     tag: 'type5',
     tagLabel: '保证成双',
@@ -694,7 +694,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 32,
   },
   {
-    id: '46-W7',
+    id: '1-46-W7',
     title: '闯关7 · 2 件同色衣服',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -711,7 +711,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '46-W8',
+    id: '1-46-W8',
     title: '闯关8 · 4 位同学礼物相同',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -728,7 +728,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 31,
   },
   {
-    id: '46-W9',
+    id: '1-46-W9',
     title: '闯关9 · 订阅种类相同',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -745,7 +745,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '46-W10',
+    id: '1-46-W10',
     title: '闯关10 · 4 张同花色',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -762,7 +762,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '46-W11',
+    id: '1-46-W11',
     title: '闯关11 · 3 双同色手套',
     tag: 'type5',
     tagLabel: '保证成双',
@@ -779,7 +779,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '46-W12',
+    id: '1-46-W12',
     title: '闯关11 · 3 双不同色手套',
     tag: 'type5',
     tagLabel: '保证成双',
@@ -796,7 +796,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 29,
   },
   {
-    id: '46-W13',
+    id: '1-46-W13',
     title: '闯关12 · 汤圆 2 种馅',
     tag: 'type2',
     tagLabel: '保证两个相同',
@@ -816,7 +816,7 @@ const WORKBOOK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '46-S1',
+    id: '1-46-S1',
     title: '附加题1 · 3 只动物买水果相同',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -833,7 +833,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '46-S2',
+    id: '1-46-S2',
     title: '附加题2 · 三花色各 3 张',
     tag: 'type4',
     tagLabel: '保证种类齐全',

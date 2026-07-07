@@ -23,11 +23,34 @@ export {
   highestGrade,
   gradeForNewLesson,
   lessonsForGrade,
+  lessonKeysForGrade,
   gradeOf,
   lessonIdFromHref,
+  lessonKeyFromHref,
   lessonDisplayNum,
   lessonDisplayLabel,
 } from './utils/lesson-grade'
+export {
+  LESSONS,
+  type LessonEntry,
+  lessonByKey,
+  lessonByLegacyId,
+  lessonByRoute,
+  lessonBySlug,
+  resolveLesson,
+  lessonKeyFromLegacy,
+  legacyIdFromKey,
+  compareLessonIds,
+  lessonRoutePath,
+  routeForLesson,
+  lessonFromHref,
+  problemIdForLesson,
+  lessonKeyFromProblemId,
+  migrateProblemId,
+  buildLegacyToKeyMap,
+  buildKeyToLegacyMap,
+} from './utils/lesson-registry'
 
 // Admin
 export { default as MathImageManagerPage } from './admin/MathImageManagerPage'
+export { default as MathLessonIdAuditPage } from './admin/MathLessonIdAuditPage'

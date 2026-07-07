@@ -63,6 +63,15 @@ const TOOLS: AdminTool[] = [
     ring: 'rgba(13,148,136,0.28)',
   },
   {
+    href: '/admin/math-lesson-id-audit',
+    emoji: '🔀',
+    title: '讲次 ID 迁移审计',
+    description: '扫描 Supabase 中受 legacy → lessonKey 迁移影响的数据量、冲突与 JSON 引用。',
+    from: 'rgba(99,102,241,0.14)',
+    to: 'rgba(14,165,233,0.10)',
+    ring: 'rgba(99,102,241,0.28)',
+  },
+  {
     href: '/admin/word-audit',
     emoji: '🔍',
     title: '单词审计',

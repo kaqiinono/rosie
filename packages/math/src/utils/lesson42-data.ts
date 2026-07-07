@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '42-P1',
+    id: '1-42-P1',
     title: '课前测1 · 三砝码单边',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 1,
@@ -21,7 +21,7 @@ const PRETEST: Problem[] = [
     analysisImg: '/img/math/42-P1.png',
   },
   {
-    id: '42-P2',
+    id: '1-42-P2',
     title: '课前测2 · 四砝码两边',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 2,
@@ -40,7 +40,7 @@ const PRETEST: Problem[] = [
     analysisImg: '/img/math/42-P2.png',
   },
   {
-    id: '42-P3',
+    id: '1-42-P3',
     title: '课前测3 · 奶酪棒分账',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 2,
@@ -58,7 +58,7 @@ const PRETEST: Problem[] = [
     analysisImg: '/img/math/42-P3.png',
   },
   {
-    id: '42-P4',
+    id: '1-42-P4',
     title: '课前测4 · 空可乐罐换可乐',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 2,
@@ -76,7 +76,7 @@ const PRETEST: Problem[] = [
     analysisImg: '/img/math/42-P4.png',
   },
   {
-    id: '42-P5',
+    id: '1-42-P5',
     title: '课前测5 · 大小勺量酒',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -98,7 +98,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '42-L1',
+    id: '1-42-L1',
     title: '例1 · 砝码单边称重',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 1,
@@ -116,7 +116,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L1.png',
   },
   {
-    id: '42-L2',
+    id: '1-42-L2',
     title: '练一练 · 三砝码单边',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 3,
@@ -135,7 +135,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L2.png',
   },
   {
-    id: '42-L3',
+    id: '1-42-L3',
     title: '例2 · 砝码两边称重',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 2,
@@ -153,7 +153,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L3.png',
   },
   {
-    id: '42-L4',
+    id: '1-42-L4',
     title: '练一练 · 两边称重',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 3,
@@ -170,7 +170,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L4.png',
   },
   {
-    id: '42-L5',
+    id: '1-42-L5',
     title: '例3 · 三人买面包分账',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 2,
@@ -187,7 +187,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L5.png',
   },
   {
-    id: '42-L6',
+    id: '1-42-L6',
     title: '练一练 · 雪糕分账',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 3,
@@ -205,7 +205,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L6.png',
   },
   {
-    id: '42-L7',
+    id: '1-42-L7',
     title: '例4 · 4 空瓶换 1 瓶',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 2,
@@ -223,7 +223,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L7.png',
   },
   {
-    id: '42-L8',
+    id: '1-42-L8',
     title: '练一练 · 桃核换桃',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 3,
@@ -241,7 +241,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L8.png',
   },
   {
-    id: '42-L9',
+    id: '1-42-L9',
     title: '例5 · 绳子定时 9 分钟',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -259,7 +259,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L9.png',
   },
   {
-    id: '42-L10',
+    id: '1-42-L10',
     title: '练一练 · 香测 15 分钟',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -277,7 +277,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L10.png',
   },
   {
-    id: '42-L11',
+    id: '1-42-L11',
     title: '例6 · 量出 100 克水',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -298,7 +298,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L11.png',
   },
   {
-    id: '42-L12',
+    id: '1-42-L12',
     title: '练一练 · 量 3 升水',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 3,
@@ -316,7 +316,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L12.png',
   },
   {
-    id: '42-L13',
+    id: '1-42-L13',
     title: '附加题1 · 9 枚金币找假币',
     tag: 'type5',
     tagLabel: '天平找异物', difficulty: 4,
@@ -334,7 +334,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '42-L14',
+    id: '1-42-L14',
     title: '附加题2 · 27 个球找次品',
     tag: 'type5',
     tagLabel: '天平找异物', difficulty: 4,
@@ -357,7 +357,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '42-H1',
+    id: '1-42-H1',
     title: '巩固1 · 砝码两边称重',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 3,
@@ -376,7 +376,7 @@ const HOMEWORK: Problem[] = [
     analysisImg: '/img/math/42-H1.png',
   },
   {
-    id: '42-H2',
+    id: '1-42-H2',
     title: '巩固2 · 棒棒糖三人分账',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 3,
@@ -394,7 +394,7 @@ const HOMEWORK: Problem[] = [
     analysisImg: '/img/math/42-H2.png',
   },
   {
-    id: '42-H3',
+    id: '1-42-H3',
     title: '巩固3 · 3 空瓶换 1 瓶',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 3,
@@ -412,7 +412,7 @@ const HOMEWORK: Problem[] = [
     analysisImg: '/img/math/42-H3.png',
   },
   {
-    id: '42-H4',
+    id: '1-42-H4',
     title: '巩固4 · 木棍测 30 分钟',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 3,
@@ -429,7 +429,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '42-H5',
+    id: '1-42-H5',
     title: '巩固5 · 12 升啤酒分 6 升',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 3,
@@ -449,7 +449,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '42-H6',
+    id: '1-42-H6',
     title: '巩固6 · 3 硬币不知轻重',
     tag: 'type5',
     tagLabel: '天平找异物', difficulty: 4,
@@ -471,7 +471,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '42-W1',
+    id: '1-42-W1',
     title: '闯关1 · 4 砝码两边',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 3,
@@ -490,7 +490,7 @@ const WORKBOOK: Problem[] = [
     analysisImg: '/img/math/42-W1.png',
   },
   {
-    id: '42-W2',
+    id: '1-42-W2',
     title: '闯关2 · 24 巧克力三人分',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 3,
@@ -509,7 +509,7 @@ const WORKBOOK: Problem[] = [
     analysisImg: '/img/math/42-W2.png',
   },
   {
-    id: '42-W3',
+    id: '1-42-W3',
     title: '闯关3 · 5 空盒换 1 盒糖',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 3,
@@ -526,7 +526,7 @@ const WORKBOOK: Problem[] = [
     analysisImg: '/img/math/42-W3.png',
   },
   {
-    id: '42-W4',
+    id: '1-42-W4',
     title: '闯关4 · 啤酒花费',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 3,
@@ -544,7 +544,7 @@ const WORKBOOK: Problem[] = [
     analysisImg: '/img/math/42-W4.png',
   },
   {
-    id: '42-W5',
+    id: '1-42-W5',
     title: '闯关5 · 8 分钟绳测 6 分钟',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 3,
@@ -561,7 +561,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '42-W6',
+    id: '1-42-W6',
     title: '闯关6 · 10 升牛奶分 2+2',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 3,
@@ -581,7 +581,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '42-W7',
+    id: '1-42-W7',
     title: '闯关7 · 18 硬币找轻假',
     tag: 'type5',
     tagLabel: '天平找异物', difficulty: 4,
@@ -602,7 +602,7 @@ const WORKBOOK: Problem[] = [
     analysisImg: '/img/math/42-W7.png',
   },
   {
-    id: '42-W8',
+    id: '1-42-W8',
     title: '闯关8 · 12 硬币不知轻重',
     tag: 'type5',
     tagLabel: '天平找异物', difficulty: 4,
@@ -622,7 +622,7 @@ const WORKBOOK: Problem[] = [
     analysisImg: '/img/math/42-W8.png',
   },
   {
-    id: '42-W9',
+    id: '1-42-W9',
     title: '闯关9 · 10 箱零件电子秤',
     tag: 'type5',
     tagLabel: '天平找异物', difficulty: 4,
@@ -640,7 +640,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '42-W10',
+    id: '1-42-W10',
     title: '闯关10 · 25 人 7 人船渡河',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,
@@ -658,7 +658,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '42-W11',
+    id: '1-42-W11',
     title: '闯关11 · 3 圆分 10 妖精',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 5,
@@ -676,7 +676,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '42-W12',
+    id: '1-42-W12',
     title: '闯关12 · 两堆火柴博弈',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 5,
@@ -697,7 +697,7 @@ const WORKBOOK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '42-S1',
+    id: '1-42-S1',
     title: '附加1 · 大小和尚过河',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,
@@ -716,7 +716,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '42-S2',
+    id: '1-42-S2',
     title: '附加2 · 绳子对折 5 次剪',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,
@@ -733,7 +733,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 33,
   },
   {
-    id: '42-S3',
+    id: '1-42-S3',
     title: '附加3 · 六边形切角',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,
@@ -751,7 +751,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '42-S4',
+    id: '1-42-S4',
     title: '附加4 · 49 同学过河',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,
@@ -769,7 +769,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 45,
   },
   {
-    id: '42-S5',
+    id: '1-42-S5',
     title: '附加5 · 棋子盒子',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,
@@ -787,7 +787,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '42-S6',
+    id: '1-42-S6',
     title: '附加6 · 4×4 加 4 碟子',
     tag: 'type6',
     tagLabel: '综合策略', difficulty: 4,

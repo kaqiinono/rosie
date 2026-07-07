@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '30-P1',
+    id: '1-30-P1',
     title: '课前测1 · 三种球各多少',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 3,
@@ -20,7 +20,7 @@ const PRETEST: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '30-P2',
+    id: '1-30-P2',
     title: '课前测2 · 被除数是多少',
     tag: 'type1',
     tagLabel: '题型1·特殊和差关系', difficulty: 3,
@@ -38,7 +38,7 @@ const PRETEST: Problem[] = [
     finalAns: 33,
   },
   {
-    id: '30-P3',
+    id: '1-30-P3',
     title: '课前测3 · 第三根绳多长',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 2,
@@ -56,7 +56,7 @@ const PRETEST: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '30-P4',
+    id: '1-30-P4',
     title: '课前测4 · 丁数是多少',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 3,
@@ -73,7 +73,7 @@ const PRETEST: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '30-P5',
+    id: '1-30-P5',
     title: '课前测5 · 丙物体多重',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 4,
@@ -94,7 +94,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '30-L1',
+    id: '1-30-L1',
     title: '例1 · 被减数是多少',
     tag: 'type1',
     tagLabel: '题型1·特殊和差关系', difficulty: 3,
@@ -113,7 +113,7 @@ const LESSON: Problem[] = [
     finalAns: 40,
   },
   {
-    id: '30-L2',
+    id: '1-30-L2',
     title: '练一练 · 差是多少',
     tag: 'type1',
     tagLabel: '题型1·特殊和差关系', difficulty: 2,
@@ -131,7 +131,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '30-L3',
+    id: '1-30-L3',
     title: '例2 · 语文小组有多少人',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -149,7 +149,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '30-L4',
+    id: '1-30-L4',
     title: '练一练 · 杏树有多少棵',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -167,7 +167,7 @@ const LESSON: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '30-L5',
+    id: '1-30-L5',
     title: '例3 · 乙粮仓有多少吨',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 3,
@@ -185,7 +185,7 @@ const LESSON: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '30-L6',
+    id: '1-30-L6',
     title: '练一练 · 第一组比第三组多多少人',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 4,
@@ -204,7 +204,7 @@ const LESSON: Problem[] = [
     finalAns: 104,
   },
   {
-    id: '30-L7',
+    id: '1-30-L7',
     title: '例4 · 三连比一连多几辆',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 4,
@@ -223,7 +223,7 @@ const LESSON: Problem[] = [
     finalAns: 71,
   },
   {
-    id: '30-L8',
+    id: '1-30-L8',
     title: '练一练 · 甲有多少元',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 4,
@@ -241,7 +241,7 @@ const LESSON: Problem[] = [
     finalAns: 58,
   },
   {
-    id: '30-L9',
+    id: '1-30-L9',
     title: '例5 · 课外活动共多少人',
     tag: 'type5',
     tagLabel: '题型5·特殊变形', difficulty: 4,
@@ -260,7 +260,7 @@ const LESSON: Problem[] = [
     finalAns: 170,
   },
   {
-    id: '30-L10',
+    id: '1-30-L10',
     title: '练一练 · 一共有多少盆花',
     tag: 'type5',
     tagLabel: '题型5·特殊变形', difficulty: 4,
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 570,
   },
   {
-    id: '30-L11',
+    id: '1-30-L11',
     title: '例6 · 文具盒里共多少支笔',
     tag: 'type6',
     tagLabel: '题型6·综合变形', difficulty: 4,
@@ -297,7 +297,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '30-L12',
+    id: '1-30-L12',
     title: '练一练 · 绿纸鹤多少个',
     tag: 'type6',
     tagLabel: '题型6·综合变形', difficulty: 4,
@@ -320,7 +320,7 @@ const HOMEWORK: Problem[] = []
 
 const WORKBOOK: Problem[] = [
   {
-    id: '30-W1',
+    id: '1-30-W1',
     title: '闯关1 · 一班捐了多少本',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -338,7 +338,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '30-W2',
+    id: '1-30-W2',
     title: '闯关2 · 上层放书多少本',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 2,
@@ -355,7 +355,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 41,
   },
   {
-    id: '30-W3',
+    id: '1-30-W3',
     title: '闯关3 · 最后留下多少人',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -372,7 +372,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '30-W4',
+    id: '1-30-W4',
     title: '闯关4 · 甲有多少本书',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -389,7 +389,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '30-W5',
+    id: '1-30-W5',
     title: '闯关5 · 胖胖有几块糖',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 1,
@@ -405,7 +405,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '30-W6',
+    id: '1-30-W6',
     title: '闯关6 · 被除数是多少',
     tag: 'type1',
     tagLabel: '题型1·特殊和差关系', difficulty: 3,
@@ -423,7 +423,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 28,
   },
   {
-    id: '30-W7',
+    id: '1-30-W7',
     title: '闯关7 · 橘子有多少千克',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 3,
@@ -440,7 +440,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '30-W8',
+    id: '1-30-W8',
     title: '闯关8 · 车+马+炮等于多少',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 4,
@@ -457,7 +457,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 55,
   },
   {
-    id: '30-W9',
+    id: '1-30-W9',
     title: '闯关9 · 甲有多少本书',
     tag: 'type5',
     tagLabel: '题型5·特殊变形', difficulty: 4,
@@ -476,7 +476,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 195,
   },
   {
-    id: '30-W10',
+    id: '1-30-W10',
     title: '闯关10 · 魏国军队多少万人',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 3,
@@ -493,7 +493,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '30-W11',
+    id: '1-30-W11',
     title: '闯关11 · 三种公鸡共多少只',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 3,
@@ -510,7 +510,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 59,
   },
   {
-    id: '30-W12',
+    id: '1-30-W12',
     title: '闯关12 · 甲班原有多少人',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 4,

@@ -13,7 +13,7 @@ export const TYPE_TIP: Record<string, string> = {
 
 const LESSON: Problem[] = [
   {
-    id: '50-L1',
+    id: '2-2-L1',
     title: '例1 · 水果采购',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -30,7 +30,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '50-L2',
+    id: '2-2-L2',
     title: '例2 · 买二送一',
     tag: 'type5',
     tagLabel: '优惠问题',
@@ -46,7 +46,7 @@ const LESSON: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '50-L3',
+    id: '2-2-L3',
     title: '例3 · 习题册天数',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -63,7 +63,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '50-L4',
+    id: '2-2-L4',
     title: '例4 · 鸡蛋够吃几天',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -79,7 +79,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '50-L5',
+    id: '2-2-L5',
     title: '例5 · 分组数男生',
     tag: 'type3',
     tagLabel: '分组统计',
@@ -96,7 +96,7 @@ const LESSON: Problem[] = [
     finalAns: 190,
   },
   {
-    id: '50-L6',
+    id: '2-2-L6',
     title: '练一练 · 糖果分组',
     tag: 'type3',
     tagLabel: '分组统计',
@@ -113,7 +113,7 @@ const LESSON: Problem[] = [
     finalAns: 164,
   },
   {
-    id: '50-L7',
+    id: '2-2-L7',
     title: '例6 · 排队距离',
     tag: 'type4',
     tagLabel: '位置推理',
@@ -129,7 +129,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '50-L8',
+    id: '2-2-L8',
     title: '例7 · 扑克牌点数',
     tag: 'type5',
     tagLabel: '逻辑综合',
@@ -145,7 +145,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '50-L9',
+    id: '2-2-L9',
     title: '例8 · 帽子与气球',
     tag: 'type5',
     tagLabel: '逻辑综合',
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '50-L10',
+    id: '2-2-L10',
     title: '例9 · 合作加工时间',
     tag: 'type5',
     tagLabel: '逻辑综合',
@@ -180,7 +180,7 @@ const LESSON: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '50-S1',
+    id: '2-2-S1',
     title: '附加1 · 电话计费',
     tag: 'type5',
     tagLabel: '附加题',
@@ -197,7 +197,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '50-S2',
+    id: '2-2-S2',
     title: '附加2 · 文具分配',
     tag: 'type2',
     tagLabel: '附加题',
@@ -213,7 +213,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 84,
   },
   {
-    id: '50-S3',
+    id: '2-2-S3',
     title: '附加3 · 选举班长',
     tag: 'type5',
     tagLabel: '附加题',
@@ -230,7 +230,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '50-S4',
+    id: '2-2-S4',
     title: '附加4 · 动物平衡',
     tag: 'type5',
     tagLabel: '附加题',
@@ -246,7 +246,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '50-S5',
+    id: '2-2-S5',
     title: '附加5 · 击掌次数',
     tag: 'type5',
     tagLabel: '附加题',
@@ -266,7 +266,7 @@ const SUPPLEMENT: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '50-H1',
+    id: '2-2-H1',
     title: '练习1 · 水果单价',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -282,7 +282,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '50-H2',
+    id: '2-2-H2',
     title: '练习2 · 苹果箱重',
     tag: 'type2',
     tagLabel: '等量代换',
@@ -298,7 +298,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '50-H3',
+    id: '2-2-H3',
     title: '练习3 · 饼干天数',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -314,7 +314,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '50-H4',
+    id: '2-2-H4',
     title: '练习4 · 租车问题',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -330,7 +330,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '50-H5',
+    id: '2-2-H5',
     title: '练习5 · 正方形站位',
     tag: 'type4',
     tagLabel: '位置推理',
@@ -346,7 +346,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '50-H6',
+    id: '2-2-H6',
     title: '练习6 · 鸡蛋与母鸡',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -362,7 +362,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '50-H7',
+    id: '2-2-H7',
     title: '练习7 · 三种糖果',
     tag: 'type2',
     tagLabel: '等量代换',
@@ -378,7 +378,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '50-H8',
+    id: '2-2-H8',
     title: '练习8 · 读书计划',
     tag: 'type1',
     tagLabel: '归一问题',
@@ -395,7 +395,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 195,
   },
   {
-    id: '50-H9',
+    id: '2-2-H9',
     title: '练习9 · 合作加工',
     tag: 'type5',
     tagLabel: '逻辑综合',
@@ -411,7 +411,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '50-H10',
+    id: '2-2-H10',
     title: '练习10 · 球堆顺序',
     tag: 'type4',
     tagLabel: '位置推理',
@@ -427,7 +427,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '50-H11',
+    id: '2-2-H11',
     title: '练习11 · 彩旗分组',
     tag: 'type3',
     tagLabel: '分组统计',
@@ -444,7 +444,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 95,
   },
   {
-    id: '50-H12',
+    id: '2-2-H12',
     title: '练习12 · 扎花分组',
     tag: 'type3',
     tagLabel: '分组统计',
@@ -462,16 +462,16 @@ const HOMEWORK: Problem[] = [
 ]
 
 const PRETEST: Problem[] = [
-  { id: '50-P1', title: '课前测1 · 买排球', tag: 'type1', tagLabel: '归一问题', difficulty: 2, text: '学校计划买 <strong>20</strong> 个排球，要 <strong>360</strong> 元；现决定多买 <strong>15</strong> 个，一共需用多少元？', analysis: ['单价 18 元/个', '18×35 = <strong>630</strong> 元'], type: 'none', finalQ: '一共需用', finalUnit: '元', finalAns: 630 },
-  { id: '50-P2', title: '课前测2 · 移苹果', tag: 'type1', tagLabel: '归一问题', difficulty: 2, text: '甲筐 <strong>280</strong> 个苹果，乙筐 <strong>40</strong> 个。每次从甲筐拿出 <strong>8</strong> 个放入乙筐，取多少次后两筐相等？', analysis: ['280−8n=40+8n', 'n = <strong>15</strong> 次'], type: 'none', finalQ: '取', finalUnit: '次', finalAns: 15 },
-  { id: '50-P3', title: '课前测3 · 人民币', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '人民币有 1、2、5、10、20、50、100 元面值，共计 <strong>940</strong> 元，各面值张数相同。每种多少张？', analysis: ['一套 188 元', '940÷188 = <strong>5</strong> 张'], type: 'none', finalQ: '每种', finalUnit: '张', finalAns: 5 },
-  { id: '50-P4', title: '课前测4 · 扎花', tag: 'type3', tagLabel: '分组统计', difficulty: 4, text: '红、黄两种花共 <strong>300</strong> 朵，每 <strong>3</strong> 朵扎一束。只有 1 朵红花的 24 束，有 2 或 3 朵黄花的 50 束，3 朵红花与 3 朵黄花的束数相等。红花共多少朵？', analysis: ['3 红束=3 黄束=26 束', '红花 = <strong>150</strong> 朵'], type: 'none', finalQ: '红花共', finalUnit: '朵', finalAns: 150 },
-  { id: '50-P5', title: '课前测5 · 正方体点数', tag: 'type5', tagLabel: '逻辑综合', difficulty: 4, text: '正方体相对两面点数和为 <strong>13</strong>。上、左、前三面和为 <strong>16</strong>，上、右、后三面和为 <strong>24</strong>。贴着桌面的点数是几？', analysis: ['求得上=8，下=13−8 = <strong>5</strong>'], type: 'none', finalQ: '贴着桌面是', finalUnit: '', finalAns: 5 },
-  { id: '50-P6', title: '课前测6 · 挖沟', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>5</strong> 人挖 <strong>3</strong> 米沟要 <strong>3</strong> 小时，<strong>50</strong> 小时挖 <strong>50</strong> 米需多少名工人？', analysis: ['效率 1 米/时', '需 <strong>5</strong> 人'], type: 'none', finalQ: '需要', finalUnit: '名工人', finalAns: 5 },
-  { id: '50-P7', title: '课前测7-1 · 轧钢机', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>6</strong> 台 <strong>9</strong> 小时产 <strong>8</strong> 吨。再增 <strong>12</strong> 台，<strong>6</strong> 小时产多少吨？', analysis: ['18 台 6 小时 = <strong>16</strong> 吨'], type: 'none', finalQ: '产', finalUnit: '吨', finalAns: 16 },
-  { id: '50-P8', title: '课前测7-2 · 轧钢机', tag: 'type1', tagLabel: '归一问题', difficulty: 4, text: '<strong>18</strong> 小时内产 <strong>40</strong> 吨，原 6 台，需增加多少台？', analysis: ['需 15 台，增 <strong>9</strong> 台'], type: 'none', finalQ: '需增加', finalUnit: '台', finalAns: 9 },
-  { id: '50-P9', title: '课前测8 · 吃白菜', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>170</strong> 只兔日吃 <strong>51</strong> 斤，又买 <strong>30</strong> 只，<strong>840</strong> 斤够吃多少天？', analysis: ['200 只日吃 60 斤', '840÷60 = <strong>14</strong> 天'], type: 'none', finalQ: '够吃', finalUnit: '天', finalAns: 14 },
-  { id: '50-P10', title: '课前测9 · 粉笔', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>8</strong> 个班粉笔原计划 <strong>50</strong> 天，用 <strong>15</strong> 天后 3 班外出，剩余还够用多少天？', analysis: ['剩 280 班·天，5 班 → <strong>56</strong> 天'], type: 'none', finalQ: '还够用', finalUnit: '天', finalAns: 56 },
+  { id: '2-2-P1', title: '课前测1 · 买排球', tag: 'type1', tagLabel: '归一问题', difficulty: 2, text: '学校计划买 <strong>20</strong> 个排球，要 <strong>360</strong> 元；现决定多买 <strong>15</strong> 个，一共需用多少元？', analysis: ['单价 18 元/个', '18×35 = <strong>630</strong> 元'], type: 'none', finalQ: '一共需用', finalUnit: '元', finalAns: 630 },
+  { id: '2-2-P2', title: '课前测2 · 移苹果', tag: 'type1', tagLabel: '归一问题', difficulty: 2, text: '甲筐 <strong>280</strong> 个苹果，乙筐 <strong>40</strong> 个。每次从甲筐拿出 <strong>8</strong> 个放入乙筐，取多少次后两筐相等？', analysis: ['280−8n=40+8n', 'n = <strong>15</strong> 次'], type: 'none', finalQ: '取', finalUnit: '次', finalAns: 15 },
+  { id: '2-2-P3', title: '课前测3 · 人民币', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '人民币有 1、2、5、10、20、50、100 元面值，共计 <strong>940</strong> 元，各面值张数相同。每种多少张？', analysis: ['一套 188 元', '940÷188 = <strong>5</strong> 张'], type: 'none', finalQ: '每种', finalUnit: '张', finalAns: 5 },
+  { id: '2-2-P4', title: '课前测4 · 扎花', tag: 'type3', tagLabel: '分组统计', difficulty: 4, text: '红、黄两种花共 <strong>300</strong> 朵，每 <strong>3</strong> 朵扎一束。只有 1 朵红花的 24 束，有 2 或 3 朵黄花的 50 束，3 朵红花与 3 朵黄花的束数相等。红花共多少朵？', analysis: ['3 红束=3 黄束=26 束', '红花 = <strong>150</strong> 朵'], type: 'none', finalQ: '红花共', finalUnit: '朵', finalAns: 150 },
+  { id: '2-2-P5', title: '课前测5 · 正方体点数', tag: 'type5', tagLabel: '逻辑综合', difficulty: 4, text: '正方体相对两面点数和为 <strong>13</strong>。上、左、前三面和为 <strong>16</strong>，上、右、后三面和为 <strong>24</strong>。贴着桌面的点数是几？', analysis: ['求得上=8，下=13−8 = <strong>5</strong>'], type: 'none', finalQ: '贴着桌面是', finalUnit: '', finalAns: 5 },
+  { id: '2-2-P6', title: '课前测6 · 挖沟', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>5</strong> 人挖 <strong>3</strong> 米沟要 <strong>3</strong> 小时，<strong>50</strong> 小时挖 <strong>50</strong> 米需多少名工人？', analysis: ['效率 1 米/时', '需 <strong>5</strong> 人'], type: 'none', finalQ: '需要', finalUnit: '名工人', finalAns: 5 },
+  { id: '2-2-P7', title: '课前测7-1 · 轧钢机', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>6</strong> 台 <strong>9</strong> 小时产 <strong>8</strong> 吨。再增 <strong>12</strong> 台，<strong>6</strong> 小时产多少吨？', analysis: ['18 台 6 小时 = <strong>16</strong> 吨'], type: 'none', finalQ: '产', finalUnit: '吨', finalAns: 16 },
+  { id: '2-2-P8', title: '课前测7-2 · 轧钢机', tag: 'type1', tagLabel: '归一问题', difficulty: 4, text: '<strong>18</strong> 小时内产 <strong>40</strong> 吨，原 6 台，需增加多少台？', analysis: ['需 15 台，增 <strong>9</strong> 台'], type: 'none', finalQ: '需增加', finalUnit: '台', finalAns: 9 },
+  { id: '2-2-P9', title: '课前测8 · 吃白菜', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>170</strong> 只兔日吃 <strong>51</strong> 斤，又买 <strong>30</strong> 只，<strong>840</strong> 斤够吃多少天？', analysis: ['200 只日吃 60 斤', '840÷60 = <strong>14</strong> 天'], type: 'none', finalQ: '够吃', finalUnit: '天', finalAns: 14 },
+  { id: '2-2-P10', title: '课前测9 · 粉笔', tag: 'type1', tagLabel: '归一问题', difficulty: 3, text: '<strong>8</strong> 个班粉笔原计划 <strong>50</strong> 天，用 <strong>15</strong> 天后 3 班外出，剩余还够用多少天？', analysis: ['剩 280 班·天，5 班 → <strong>56</strong> 天'], type: 'none', finalQ: '还够用', finalUnit: '天', finalAns: 56 },
 ]
 
 export const PROBLEMS: ProblemSet = {

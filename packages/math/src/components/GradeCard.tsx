@@ -99,7 +99,7 @@ export default function GradeCard({
 
   return (
     <NavigationLink
-      href={`/math/ny/g${grade}`}
+      href={`/math/ny/${grade}`}
       className="group block h-full w-full no-underline"
     >
       <div

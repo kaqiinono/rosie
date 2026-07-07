@@ -13,7 +13,7 @@ export const TYPE_TIP: Record<string, string> = {
 
 const LESSON: Problem[] = [
   {
-    id: '52-L1',
+    id: '2-4-L1',
     title: '例题1 · 甲乙和差',
     tag: 'type1',
     tagLabel: '和差问题',
@@ -29,7 +29,7 @@ const LESSON: Problem[] = [
     finalAns: 46,
   },
   {
-    id: '52-L2',
+    id: '2-4-L2',
     title: '例题2 · 减法三量',
     tag: 'type1',
     tagLabel: '和差问题',
@@ -46,7 +46,7 @@ const LESSON: Problem[] = [
     finalAns: 580,
   },
   {
-    id: '52-L3',
+    id: '2-4-L3',
     title: '例题3 · 小组转人',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -63,7 +63,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '52-L4',
+    id: '2-4-L4',
     title: '例题4 · 三小组造件',
     tag: 'type1',
     tagLabel: '和差问题',
@@ -80,7 +80,7 @@ const LESSON: Problem[] = [
     finalAns: 141,
   },
   {
-    id: '52-L5',
+    id: '2-4-L5',
     title: '例题5 · 三班调人',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -97,7 +97,7 @@ const LESSON: Problem[] = [
     finalAns: 61,
   },
   {
-    id: '52-L6',
+    id: '2-4-L6',
     title: '例题6 · 奥运志愿者',
     tag: 'type4',
     tagLabel: '和倍问题',
@@ -114,7 +114,7 @@ const LESSON: Problem[] = [
     finalAns: 140,
   },
   {
-    id: '52-L7',
+    id: '2-4-L7',
     title: '例题7 · 植树节',
     tag: 'type4',
     tagLabel: '和倍问题',
@@ -131,7 +131,7 @@ const LESSON: Problem[] = [
     finalAns: 23,
   },
   {
-    id: '52-L8',
+    id: '2-4-L8',
     title: '例题8 · 三色气球',
     tag: 'type4',
     tagLabel: '和倍问题',
@@ -148,7 +148,7 @@ const LESSON: Problem[] = [
     finalAns: 90,
   },
   {
-    id: '52-L9',
+    id: '2-4-L9',
     title: '例题9 · 三数和倍',
     tag: 'type4',
     tagLabel: '和倍问题',
@@ -165,7 +165,7 @@ const LESSON: Problem[] = [
     finalAns: 63,
   },
   {
-    id: '52-L10',
+    id: '2-4-L10',
     title: '例题10 · 三船捕鱼',
     tag: 'type4',
     tagLabel: '和倍问题',
@@ -182,7 +182,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '52-L11',
+    id: '2-4-L11',
     title: '例题11 · 三班人数',
     tag: 'type4',
     tagLabel: '和倍问题',
@@ -199,7 +199,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '52-L12',
+    id: '2-4-L12',
     title: '例题12 · 投篮比赛',
     tag: 'type1',
     tagLabel: '差倍问题',
@@ -216,7 +216,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '52-L13',
+    id: '2-4-L13',
     title: '例题13 · 商与差',
     tag: 'type1',
     tagLabel: '差倍问题',
@@ -233,7 +233,7 @@ const LESSON: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '52-L14',
+    id: '2-4-L14',
     title: '例题14 · 两根绳子',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -250,7 +250,7 @@ const LESSON: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '52-L15',
+    id: '2-4-L15',
     title: '例题15 · 施工队调人',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -267,7 +267,7 @@ const LESSON: Problem[] = [
     finalAns: 22,
   },
   {
-    id: '52-L16',
+    id: '2-4-L16',
     title: '例题16 · 分书问题',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -284,7 +284,7 @@ const LESSON: Problem[] = [
     finalAns: 195,
   },
   {
-    id: '52-L17',
+    id: '2-4-L17',
     title: '例题17 · 车马炮',
     tag: 'type1',
     tagLabel: '差倍问题',
@@ -301,7 +301,7 @@ const LESSON: Problem[] = [
     finalAns: 88,
   },
   {
-    id: '52-L18',
+    id: '2-4-L18',
     title: '例题18 · 连续自然数',
     tag: 'type1',
     tagLabel: '差倍问题',
@@ -318,7 +318,7 @@ const LESSON: Problem[] = [
     finalAns: 43,
   },
   {
-    id: '52-L19',
+    id: '2-4-L19',
     title: '例题19 · 三国军队',
     tag: 'type5',
     tagLabel: '综合应用',
@@ -335,7 +335,7 @@ const LESSON: Problem[] = [
     finalAns: 45,
   },
   {
-    id: '52-L20',
+    id: '2-4-L20',
     title: '例题20 · 图书馆藏书',
     tag: 'type5',
     tagLabel: '综合应用',
@@ -352,7 +352,7 @@ const LESSON: Problem[] = [
     finalAns: 300,
   },
   {
-    id: '52-L21',
+    id: '2-4-L21',
     title: '例题21 · 三人吃糖',
     tag: 'type5',
     tagLabel: '综合应用',
@@ -369,7 +369,7 @@ const LESSON: Problem[] = [
     finalAns: 61,
   },
   {
-    id: '52-L22',
+    id: '2-4-L22',
     title: '例题22 · 三座水库',
     tag: 'type5',
     tagLabel: '综合应用',
@@ -386,7 +386,7 @@ const LESSON: Problem[] = [
     finalAns: 61,
   },
   {
-    id: '52-L23',
+    id: '2-4-L23',
     title: '例题23 · 蚂蚁窝',
     tag: 'type5',
     tagLabel: '综合应用',
@@ -406,7 +406,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '52-H1',
+    id: '2-4-H1',
     title: '练习1 · 钢管锯段',
     tag: 'type1',
     tagLabel: '基本差倍',
@@ -423,7 +423,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '52-H2',
+    id: '2-4-H2',
     title: '练习2 · 连续奇数',
     tag: 'type1',
     tagLabel: '基本差倍',
@@ -440,7 +440,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '52-H3',
+    id: '2-4-H3',
     title: '练习3 · 专家组调人',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -457,7 +457,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 169,
   },
   {
-    id: '52-H4',
+    id: '2-4-H4',
     title: '练习4 · 两桶水',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -474,7 +474,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 50,
   },
   {
-    id: '52-H5',
+    id: '2-4-H5',
     title: '练习5 · 操场长宽',
     tag: 'type4',
     tagLabel: '几何与和倍',
@@ -491,7 +491,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 260,
   },
   {
-    id: '52-H6',
+    id: '2-4-H6',
     title: '练习6 · 铅笔用去',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -508,7 +508,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '52-H7',
+    id: '2-4-H7',
     title: '练习7 · 分糖三人',
     tag: 'type1',
     tagLabel: '基本差倍',
@@ -525,7 +525,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '52-H8',
+    id: '2-4-H8',
     title: '练习8 · 荔枝黄杏',
     tag: 'type1',
     tagLabel: '基本差倍',
@@ -542,7 +542,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '52-H9',
+    id: '2-4-H9',
     title: '练习9 · 模型转让',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -559,7 +559,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '52-H10',
+    id: '2-4-H10',
     title: '练习10 · 分糖两人',
     tag: 'type1',
     tagLabel: '基本差倍',
@@ -576,7 +576,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 32,
   },
   {
-    id: '52-H11',
+    id: '2-4-H11',
     title: '练习11 · 父女年龄',
     tag: 'type3',
     tagLabel: '年龄问题',
@@ -593,7 +593,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '52-H12',
+    id: '2-4-H12',
     title: '练习12 · 下雨天数',
     tag: 'type4',
     tagLabel: '几何与和倍',
@@ -610,7 +610,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 90,
   },
   {
-    id: '52-H13',
+    id: '2-4-H13',
     title: '练习13 · 一家三口年龄',
     tag: 'type3',
     tagLabel: '年龄问题',
@@ -627,7 +627,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '52-H14',
+    id: '2-4-H14',
     title: '练习14 · 彩票纸盒',
     tag: 'type4',
     tagLabel: '几何与和倍',
@@ -644,7 +644,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '52-H15',
+    id: '2-4-H15',
     title: '练习15 · 三种商品',
     tag: 'type4',
     tagLabel: '几何与和倍',
@@ -661,7 +661,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '52-H16',
+    id: '2-4-H16',
     title: '练习16 · 书架藏书',
     tag: 'type4',
     tagLabel: '几何与和倍',
@@ -678,7 +678,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 162,
   },
   {
-    id: '52-H17',
+    id: '2-4-H17',
     title: '练习17 · 每天存钱',
     tag: 'type3',
     tagLabel: '年龄问题',
@@ -695,7 +695,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '52-H18',
+    id: '2-4-H18',
     title: '练习18 · 纸带剪段',
     tag: 'type1',
     tagLabel: '基本差倍',
@@ -712,7 +712,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '52-H19',
+    id: '2-4-H19',
     title: '练习19 · 花布售出',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -729,7 +729,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '52-H20',
+    id: '2-4-H20',
     title: '练习20 · 父子年龄',
     tag: 'type3',
     tagLabel: '年龄问题',
@@ -746,7 +746,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '52-H21',
+    id: '2-4-H21',
     title: '练习21 · 叔叔年龄',
     tag: 'type3',
     tagLabel: '年龄问题',
@@ -762,7 +762,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '52-H22',
+    id: '2-4-H22',
     title: '练习22 · 仓库调运',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -779,7 +779,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 1280,
   },
   {
-    id: '52-H23',
+    id: '2-4-H23',
     title: '练习23 · 两筐水果',
     tag: 'type2',
     tagLabel: '移多补少',
@@ -799,7 +799,7 @@ const HOMEWORK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '52-S1',
+    id: '2-4-S1',
     title: '附加作业1 · 图书转让',
     tag: 'type5',
     tagLabel: '附加题',
@@ -816,7 +816,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '52-S2',
+    id: '2-4-S2',
     title: '附加作业2 · 钢琴测试',
     tag: 'type5',
     tagLabel: '附加题',
@@ -832,7 +832,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '52-S3',
+    id: '2-4-S3',
     title: '附加作业3 · 两袋糖',
     tag: 'type5',
     tagLabel: '附加题',
@@ -848,7 +848,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '52-S4',
+    id: '2-4-S4',
     title: '附加作业4 · 三校人数',
     tag: 'type5',
     tagLabel: '附加题',
@@ -865,7 +865,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 405,
   },
   {
-    id: '52-S5',
+    id: '2-4-S5',
     title: '附加5 · 甲乙两班人数',
     tag: 'type5',
     tagLabel: '附加题',
@@ -882,7 +882,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '52-S6',
+    id: '2-4-S6',
     title: '附加6 · 男女生人数',
     tag: 'type5',
     tagLabel: '附加题',
@@ -901,20 +901,20 @@ const SUPPLEMENT: Problem[] = [
 ]
 
 const PRETEST: Problem[] = [
-  { id: '52-P1', title: '课前测1 · 移苹果', tag: 'type2', tagLabel: '移多补少', difficulty: 3, text: '甲筐比乙筐多 <strong>19</strong> 千克，从甲筐取出若干千克放入乙筐，可使乙筐比甲筐多 <strong>3</strong> 千克。应取出多少千克？', analysis: ['(B+x)−(A−x)=3，A−B=19', '2x=22，取出 <strong>11</strong> 千克'], type: 'none', finalQ: '应取出', finalUnit: '千克', finalAns: 11 },
-  { id: '52-P2', title: '课前测2 · 两校人数', tag: 'type1', tagLabel: '和差问题', difficulty: 3, text: '甲、乙两校共 <strong>1050</strong> 人，甲校转入乙校 <strong>20</strong> 人后甲校仍比乙校多 <strong>10</strong> 人。甲校原来有多少人？', analysis: ['A−B=50，A+B=1050', '甲 = <strong>550</strong> 人'], type: 'none', finalQ: '甲校原来有', finalUnit: '人', finalAns: 550 },
-  { id: '52-P3', title: '课前测3 · 开分店', tag: 'type1', tagLabel: '和差问题', difficulty: 2, text: '北京、上海共开 <strong>34</strong> 家分店，北京比上海多 <strong>8</strong> 家。北京计划开多少家？', analysis: ['(34+8)÷2 = <strong>21</strong> 家'], type: 'none', finalQ: '北京开', finalUnit: '家', finalAns: 21 },
-  { id: '52-P4', title: '课前测4 · 水果箱', tag: 'type1', tagLabel: '差倍问题', difficulty: 3, text: '葡萄比橘子多 <strong>100</strong> 箱，葡萄是橘子的 <strong>6</strong> 倍。葡萄多少箱？', analysis: ['5 份=100，葡萄 = <strong>120</strong> 箱'], type: 'none', finalQ: '葡萄', finalUnit: '箱', finalAns: 120 },
-  { id: '52-P5', title: '课前测5 · 三人书本', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '小明比小红多 <strong>13</strong> 本，比小华多 <strong>6</strong> 本，小红和小华共 <strong>47</strong> 本。小明有多少本？', analysis: ['2M−19=47', 'M = <strong>33</strong> 本'], type: 'none', finalQ: '小明有', finalUnit: '本', finalAns: 33 },
-  { id: '52-P6', title: '课前测6 · 水池', tag: 'type2', tagLabel: '移多补少', difficulty: 4, text: '甲池 <strong>2600</strong> m³，乙池 <strong>1200</strong> m³。甲流入乙多少 m³ 后，乙是甲的 <strong>4</strong> 倍？', analysis: ['1200+x=4(2600−x)', 'x = <strong>1840</strong> m³'], type: 'none', finalQ: '流入', finalUnit: '立方米', finalAns: 1840 },
-  { id: '52-P7', title: '课前测7 · 三种水果', tag: 'type4', tagLabel: '和倍应用', difficulty: 4, text: '西瓜、苹果、芒果共 <strong>78</strong> 斤，西瓜是苹果的 2 倍，芒果比苹果的 3 倍多 6 斤。芒果多少斤？', analysis: ['6 份+6=78，芒果 = <strong>42</strong> 斤'], type: 'none', finalQ: '芒果', finalUnit: '斤', finalAns: 42 },
-  { id: '52-P8', title: '课前测8 · 鸡鸭鹅', tag: 'type1', tagLabel: '差倍问题', difficulty: 4, text: '鸡比鸭的 4 倍多 132 只，鹅是鸭的 2 倍，鸡比鹅多 452 只。鸡多少只？', analysis: ['4D+132=2D+452，D=160', '鸡 = <strong>772</strong> 只'], type: 'none', finalQ: '鸡', finalUnit: '只', finalAns: 772 },
-  { id: '52-P9', title: '课前测9 · 三种水果重量', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '橘子、苹果、香蕉共 <strong>53</strong> 千克，橘子比苹果的 3 倍少 3 千克，香蕉比苹果的 2 倍多 2 千克。橘子重多少千克？', analysis: ['6a=54，橘子 = <strong>24</strong> 千克'], type: 'none', finalQ: '橘子重', finalUnit: '千克', finalAns: 24 },
-  { id: '52-P10', title: '课前测10 · 三数之和', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '甲、乙、丙三数之和 <strong>183</strong>，乙比丙的 2 倍少 4，甲比丙的 3 倍多 7。甲是多少？', analysis: ['6c=180，甲 = <strong>97</strong>'], type: 'none', finalQ: '甲是', finalUnit: '', finalAns: 97 },
-  { id: '52-P11', title: '课前测11 · 除法关系', tag: 'type5', tagLabel: '综合挑战', difficulty: 3, text: '被除数、除数、商之和 <strong>212</strong>，商是 <strong>2</strong>。被除数是多少？', analysis: ['被=2×除，被 = <strong>140</strong>'], type: 'none', finalQ: '被除数是', finalUnit: '', finalAns: 140 },
-  { id: '52-P12', title: '课前测12 · 两桶水', tag: 'type2', tagLabel: '移多补少', difficulty: 3, text: '大小两桶原来水一样多，从小桶倒 <strong>8</strong> 千克到大桶，则大桶是小桶的 3 倍。原来大桶有多少千克？', analysis: ['w+8=3(w−8)，w = <strong>16</strong> 千克'], type: 'none', finalQ: '原来大桶有', finalUnit: '千克', finalAns: 16 },
-  { id: '52-P13', title: '课前测13 · 三种花', tag: 'type4', tagLabel: '和倍应用', difficulty: 4, text: '黄花朵数是红花的 4 倍、也是蓝花的 3 倍，蓝花比红花多 <strong>20</strong> 盆。一共有多少盆花？', analysis: ['红 60，黄 240，蓝 80', '共 <strong>380</strong> 盆'], type: 'none', finalQ: '一共有', finalUnit: '盆', finalAns: 380 },
-  { id: '52-P14', title: '课前测14 · 三物重量', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '甲、乙、丙总重 <strong>93</strong> 千克，甲比乙丙之和轻 1 千克，乙比丙的 2 倍多 2 千克。甲重多少千克？', analysis: ['乙+丙=47，甲 = <strong>46</strong> 千克'], type: 'none', finalQ: '甲重', finalUnit: '千克', finalAns: 46 },
+  { id: '2-4-P1', title: '课前测1 · 移苹果', tag: 'type2', tagLabel: '移多补少', difficulty: 3, text: '甲筐比乙筐多 <strong>19</strong> 千克，从甲筐取出若干千克放入乙筐，可使乙筐比甲筐多 <strong>3</strong> 千克。应取出多少千克？', analysis: ['(B+x)−(A−x)=3，A−B=19', '2x=22，取出 <strong>11</strong> 千克'], type: 'none', finalQ: '应取出', finalUnit: '千克', finalAns: 11 },
+  { id: '2-4-P2', title: '课前测2 · 两校人数', tag: 'type1', tagLabel: '和差问题', difficulty: 3, text: '甲、乙两校共 <strong>1050</strong> 人，甲校转入乙校 <strong>20</strong> 人后甲校仍比乙校多 <strong>10</strong> 人。甲校原来有多少人？', analysis: ['A−B=50，A+B=1050', '甲 = <strong>550</strong> 人'], type: 'none', finalQ: '甲校原来有', finalUnit: '人', finalAns: 550 },
+  { id: '2-4-P3', title: '课前测3 · 开分店', tag: 'type1', tagLabel: '和差问题', difficulty: 2, text: '北京、上海共开 <strong>34</strong> 家分店，北京比上海多 <strong>8</strong> 家。北京计划开多少家？', analysis: ['(34+8)÷2 = <strong>21</strong> 家'], type: 'none', finalQ: '北京开', finalUnit: '家', finalAns: 21 },
+  { id: '2-4-P4', title: '课前测4 · 水果箱', tag: 'type1', tagLabel: '差倍问题', difficulty: 3, text: '葡萄比橘子多 <strong>100</strong> 箱，葡萄是橘子的 <strong>6</strong> 倍。葡萄多少箱？', analysis: ['5 份=100，葡萄 = <strong>120</strong> 箱'], type: 'none', finalQ: '葡萄', finalUnit: '箱', finalAns: 120 },
+  { id: '2-4-P5', title: '课前测5 · 三人书本', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '小明比小红多 <strong>13</strong> 本，比小华多 <strong>6</strong> 本，小红和小华共 <strong>47</strong> 本。小明有多少本？', analysis: ['2M−19=47', 'M = <strong>33</strong> 本'], type: 'none', finalQ: '小明有', finalUnit: '本', finalAns: 33 },
+  { id: '2-4-P6', title: '课前测6 · 水池', tag: 'type2', tagLabel: '移多补少', difficulty: 4, text: '甲池 <strong>2600</strong> m³，乙池 <strong>1200</strong> m³。甲流入乙多少 m³ 后，乙是甲的 <strong>4</strong> 倍？', analysis: ['1200+x=4(2600−x)', 'x = <strong>1840</strong> m³'], type: 'none', finalQ: '流入', finalUnit: '立方米', finalAns: 1840 },
+  { id: '2-4-P7', title: '课前测7 · 三种水果', tag: 'type4', tagLabel: '和倍应用', difficulty: 4, text: '西瓜、苹果、芒果共 <strong>78</strong> 斤，西瓜是苹果的 2 倍，芒果比苹果的 3 倍多 6 斤。芒果多少斤？', analysis: ['6 份+6=78，芒果 = <strong>42</strong> 斤'], type: 'none', finalQ: '芒果', finalUnit: '斤', finalAns: 42 },
+  { id: '2-4-P8', title: '课前测8 · 鸡鸭鹅', tag: 'type1', tagLabel: '差倍问题', difficulty: 4, text: '鸡比鸭的 4 倍多 132 只，鹅是鸭的 2 倍，鸡比鹅多 452 只。鸡多少只？', analysis: ['4D+132=2D+452，D=160', '鸡 = <strong>772</strong> 只'], type: 'none', finalQ: '鸡', finalUnit: '只', finalAns: 772 },
+  { id: '2-4-P9', title: '课前测9 · 三种水果重量', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '橘子、苹果、香蕉共 <strong>53</strong> 千克，橘子比苹果的 3 倍少 3 千克，香蕉比苹果的 2 倍多 2 千克。橘子重多少千克？', analysis: ['6a=54，橘子 = <strong>24</strong> 千克'], type: 'none', finalQ: '橘子重', finalUnit: '千克', finalAns: 24 },
+  { id: '2-4-P10', title: '课前测10 · 三数之和', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '甲、乙、丙三数之和 <strong>183</strong>，乙比丙的 2 倍少 4，甲比丙的 3 倍多 7。甲是多少？', analysis: ['6c=180，甲 = <strong>97</strong>'], type: 'none', finalQ: '甲是', finalUnit: '', finalAns: 97 },
+  { id: '2-4-P11', title: '课前测11 · 除法关系', tag: 'type5', tagLabel: '综合挑战', difficulty: 3, text: '被除数、除数、商之和 <strong>212</strong>，商是 <strong>2</strong>。被除数是多少？', analysis: ['被=2×除，被 = <strong>140</strong>'], type: 'none', finalQ: '被除数是', finalUnit: '', finalAns: 140 },
+  { id: '2-4-P12', title: '课前测12 · 两桶水', tag: 'type2', tagLabel: '移多补少', difficulty: 3, text: '大小两桶原来水一样多，从小桶倒 <strong>8</strong> 千克到大桶，则大桶是小桶的 3 倍。原来大桶有多少千克？', analysis: ['w+8=3(w−8)，w = <strong>16</strong> 千克'], type: 'none', finalQ: '原来大桶有', finalUnit: '千克', finalAns: 16 },
+  { id: '2-4-P13', title: '课前测13 · 三种花', tag: 'type4', tagLabel: '和倍应用', difficulty: 4, text: '黄花朵数是红花的 4 倍、也是蓝花的 3 倍，蓝花比红花多 <strong>20</strong> 盆。一共有多少盆花？', analysis: ['红 60，黄 240，蓝 80', '共 <strong>380</strong> 盆'], type: 'none', finalQ: '一共有', finalUnit: '盆', finalAns: 380 },
+  { id: '2-4-P14', title: '课前测14 · 三物重量', tag: 'type5', tagLabel: '综合挑战', difficulty: 4, text: '甲、乙、丙总重 <strong>93</strong> 千克，甲比乙丙之和轻 1 千克，乙比丙的 2 倍多 2 千克。甲重多少千克？', analysis: ['乙+丙=47，甲 = <strong>46</strong> 千克'], type: 'none', finalQ: '甲重', finalUnit: '千克', finalAns: 46 },
 ]
 
 export const PROBLEMS: ProblemSet = {

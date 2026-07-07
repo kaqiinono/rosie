@@ -13,7 +13,7 @@ export const TYPE_TIP: Record<string, string> = {
 
 const LESSON: Problem[] = [
   {
-    id: '51-L1',
+    id: '2-3-L1',
     title: '例1 · 动物体重代换',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -30,7 +30,7 @@ const LESSON: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '51-L2',
+    id: '2-3-L2',
     title: '练一练 · 西瓜菠萝柚子',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -47,7 +47,7 @@ const LESSON: Problem[] = [
     finalAns: 1600,
   },
   {
-    id: '51-L3',
+    id: '2-3-L3',
     title: '例2 · 买本子问题',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -65,7 +65,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '51-L4',
+    id: '2-3-L4',
     title: '练一练 · 西瓜与榴莲',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -82,7 +82,7 @@ const LESSON: Problem[] = [
     finalAns: 160,
   },
   {
-    id: '51-L5',
+    id: '2-3-L5',
     title: '例3 · 大小盘包子',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -99,7 +99,7 @@ const LESSON: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '51-L6',
+    id: '2-3-L6',
     title: '例4 · 师徒组装零件',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -116,7 +116,7 @@ const LESSON: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '51-L7',
+    id: '2-3-L7',
     title: '例5 · 足球和篮球价格',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -133,7 +133,7 @@ const LESSON: Problem[] = [
     finalAns: 308,
   },
   {
-    id: '51-L8',
+    id: '2-3-L8',
     title: '例6 · 笔袋与圆珠笔',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -150,7 +150,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '51-L9',
+    id: '2-3-L9',
     title: '例7 · 工人生产零件',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -167,7 +167,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '51-L10',
+    id: '2-3-L10',
     title: '练一练 · 学生植树挖坑',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -184,7 +184,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '51-L11',
+    id: '2-3-L11',
     title: '例2(1) · 带了多少元',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -201,7 +201,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '51-L12',
+    id: '2-3-L12',
     title: '例6(2) · 圆珠笔单价',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -217,7 +217,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '51-L13',
+    id: '2-3-L13',
     title: '例7(1) · 工人产量',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -233,7 +233,7 @@ const LESSON: Problem[] = [
     finalAns: 264,
   },
   {
-    id: '51-L14',
+    id: '2-3-L14',
     title: '练一练(1) · 植树挖坑',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -252,7 +252,7 @@ const LESSON: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '51-S1',
+    id: '2-3-S1',
     title: '附加1 · 球类价钱代换',
     tag: 'type1',
     tagLabel: '附加题',
@@ -269,7 +269,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '51-S2',
+    id: '2-3-S2',
     title: '附加2 · 吃饺子付钱',
     tag: 'type5',
     tagLabel: '附加题',
@@ -286,7 +286,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '51-S3',
+    id: '2-3-S3',
     title: '附加2(2) · 还给甲',
     tag: 'type5',
     tagLabel: '附加题',
@@ -302,7 +302,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '51-S4',
+    id: '2-3-S4',
     title: '附加3(1) · 完成作品',
     tag: 'type3',
     tagLabel: '附加题',
@@ -318,7 +318,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '51-S5',
+    id: '2-3-S5',
     title: '附加3(2) · 完成作品',
     tag: 'type3',
     tagLabel: '附加题',
@@ -334,7 +334,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 105,
   },
   {
-    id: '51-S6',
+    id: '2-3-S6',
     title: '附加4(1) · 采摘果园',
     tag: 'type3',
     tagLabel: '附加题',
@@ -350,7 +350,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 390,
   },
   {
-    id: '51-S7',
+    id: '2-3-S7',
     title: '附加4(2) · 采摘天数',
     tag: 'type3',
     tagLabel: '附加题',
@@ -369,7 +369,7 @@ const SUPPLEMENT: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '51-H1',
+    id: '2-3-H1',
     title: '练习1 · 连环代换',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -386,7 +386,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 6000,
   },
   {
-    id: '51-H2',
+    id: '2-3-H2',
     title: '练习2 · 计算题量代换',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -403,7 +403,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '51-H3',
+    id: '2-3-H3',
     title: '练习3 · 荔枝与黄杏',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -421,7 +421,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 19680,
   },
   {
-    id: '51-H4',
+    id: '2-3-H4',
     title: '练习4 · 水果糖与巧克力',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -438,7 +438,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 7.8,
   },
   {
-    id: '51-H5',
+    id: '2-3-H5',
     title: '练习5 · 张师傅加工零件',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -455,7 +455,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '51-H6',
+    id: '2-3-H6',
     title: '练习6 · 卡车运沙石',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -472,7 +472,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 40,
   },
   {
-    id: '51-H7',
+    id: '2-3-H7',
     title: '练习7 · 橙子苹果梨',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -489,7 +489,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '51-H8',
+    id: '2-3-H8',
     title: '练习8 · 钢笔铅笔本子',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -506,7 +506,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '51-H9',
+    id: '2-3-H9',
     title: '练习9 · 甲乙做题比赛',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -523,7 +523,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 175,
   },
   {
-    id: '51-H10',
+    id: '2-3-H10',
     title: '练习10 · 分水果',
     tag: 'type5',
     tagLabel: '综合应用',
@@ -540,7 +540,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 23,
   },
   {
-    id: '51-H11',
+    id: '2-3-H11',
     title: '练习11 · 水池排水',
     tag: 'type4',
     tagLabel: '反比例归一',
@@ -557,7 +557,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '51-H12',
+    id: '2-3-H12',
     title: '练习12 · 博物馆开门',
     tag: 'type4',
     tagLabel: '反比例归一',
@@ -574,7 +574,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '51-H13',
+    id: '2-3-H13',
     title: '练习13 · 摘桃子',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -591,7 +591,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '51-H14',
+    id: '2-3-H14',
     title: '练习14 · 工人制作零件',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -610,7 +610,7 @@ const HOMEWORK: Problem[] = [
 
 const PRETEST: Problem[] = [
   {
-    id: '51-P1',
+    id: '2-3-P1',
     title: '课前测1 · 猫狗鸡',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -627,7 +627,7 @@ const PRETEST: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '51-P2',
+    id: '2-3-P2',
     title: '课前测2 · 大盘小盘',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -645,7 +645,7 @@ const PRETEST: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '51-P3',
+    id: '2-3-P3',
     title: '课前测3 · 租公寓',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -663,7 +663,7 @@ const PRETEST: Problem[] = [
     finalAns: 4140,
   },
   {
-    id: '51-P4',
+    id: '2-3-P4',
     title: '课前测4 · 水果价',
     tag: 'type2',
     tagLabel: '消元求单价',
@@ -681,7 +681,7 @@ const PRETEST: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '51-P5',
+    id: '2-3-P5',
     title: '课前测5 · 植树',
     tag: 'type3',
     tagLabel: '归一问题',
@@ -697,7 +697,7 @@ const PRETEST: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '51-P6',
+    id: '2-3-P6',
     title: '课前测6 · 加工零件',
     tag: 'type3',
     tagLabel: '归一问题',

@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const LESSON: Problem[] = [
   {
-    id: '29-L1',
+    id: '1-29-L1',
     title: '例1-1 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -20,7 +20,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '29-L2',
+    id: '1-29-L2',
     title: '例1-2 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -38,7 +38,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '29-L3',
+    id: '1-29-L3',
     title: '例1-3 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -56,7 +56,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '29-L4',
+    id: '1-29-L4',
     title: '例1-4 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -74,7 +74,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '29-L5',
+    id: '1-29-L5',
     title: '练一练1 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -91,7 +91,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '29-L6',
+    id: '1-29-L6',
     title: '练一练2 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -108,7 +108,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '29-L7',
+    id: '1-29-L7',
     title: '例2-1 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -128,7 +128,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-L8',
+    id: '1-29-L8',
     title: '例2-2 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 2,
@@ -145,7 +145,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-L9',
+    id: '1-29-L9',
     title: '例2-3 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -162,7 +162,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-L10',
+    id: '1-29-L10',
     title: '例2-4 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -180,7 +180,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-L11',
+    id: '1-29-L11',
     title: '练一练（24点）1 · 2,8,9,10',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -197,7 +197,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-L12',
+    id: '1-29-L12',
     title: '练一练（24点）4 · 3,4,7,8',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -218,7 +218,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '29-H1',
+    id: '1-29-H1',
     title: '巩固1-1 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -237,7 +237,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '29-H2',
+    id: '1-29-H2',
     title: '巩固1-2 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -256,7 +256,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '29-H3',
+    id: '1-29-H3',
     title: '巩固2-1 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -282,7 +282,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-H4',
+    id: '1-29-H4',
     title: '巩固2-2 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 2,
@@ -299,7 +299,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-H5',
+    id: '1-29-H5',
     title: '巩固2-3 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 2,
@@ -315,7 +315,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '29-H6',
+    id: '1-29-H6',
     title: '巩固6 · 最大值问题',
     tag: 'type4',
     tagLabel: '题型4·凑数法逆推', difficulty: 3,

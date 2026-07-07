@@ -4,7 +4,7 @@ import LessonBottomNav from '@rosie/math/components/shared/LessonBottomNav'
 import { useLesson15 } from './Lesson15Provider'
 
 const CONFIG = {
-  basePath: '/math/ny/15',
+  basePath: '/math/ny/1/15',
   activeColor: 'text-sky-700',
 } as const
 

@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '18-P1',
+    id: '1-18-P1',
     title: '课前测1 · 和倍问题',
     tag: 'type1',
     tagLabel: '题型1·和倍问题', difficulty: 2,
@@ -18,7 +18,7 @@ const PRETEST: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '18-P2',
+    id: '1-18-P2',
     title: '课前测2 · 和倍变形',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 3,
@@ -35,7 +35,7 @@ const PRETEST: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '18-P3',
+    id: '1-18-P3',
     title: '课前测3 · 差倍问题',
     tag: 'type3',
     tagLabel: '题型3·差倍问题', difficulty: 2,
@@ -51,7 +51,7 @@ const PRETEST: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '18-P4',
+    id: '1-18-P4',
     title: '课前测4 · 差倍问题',
     tag: 'type3',
     tagLabel: '题型3·差倍问题', difficulty: 2,
@@ -67,7 +67,7 @@ const PRETEST: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '18-P5',
+    id: '1-18-P5',
     title: '课前测5 · 差倍变形',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 4,
@@ -87,7 +87,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '18-L1',
+    id: '1-18-L1',
     title: '例1-1 · 和倍基本型',
     tag: 'type1',
     tagLabel: '题型1·和倍问题', difficulty: 1,
@@ -103,7 +103,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '18-L2',
+    id: '1-18-L2',
     title: '例1-2 · 和倍变形',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -120,7 +120,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-L3',
+    id: '1-18-L3',
     title: '练一练 · 和倍变形',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -137,7 +137,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '18-L4',
+    id: '1-18-L4',
     title: '例2 · 和倍变形（少N型）',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 3,
@@ -154,7 +154,7 @@ const LESSON: Problem[] = [
     finalAns: 22,
   },
   {
-    id: '18-L5',
+    id: '1-18-L5',
     title: '练一练 · 和倍变形（少N型）',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -171,7 +171,7 @@ const LESSON: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '18-L6',
+    id: '1-18-L6',
     title: '例3 · 三量和倍',
     tag: 'type6',
     tagLabel: '题型6·三量和倍', difficulty: 3,
@@ -188,7 +188,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-L7',
+    id: '1-18-L7',
     title: '练一练 · 三量和倍',
     tag: 'type6',
     tagLabel: '题型6·三量和倍', difficulty: 3,
@@ -205,7 +205,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-L8',
+    id: '1-18-L8',
     title: '例4-1 · 差倍基本型',
     tag: 'type3',
     tagLabel: '题型3·差倍问题', difficulty: 2,
@@ -221,7 +221,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '18-L9',
+    id: '1-18-L9',
     title: '例4-2 · 差倍变形',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 3,
@@ -238,7 +238,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '18-L10',
+    id: '1-18-L10',
     title: '练一练 · 差倍基本型',
     tag: 'type3',
     tagLabel: '题型3·差倍问题', difficulty: 2,
@@ -254,7 +254,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '18-L11',
+    id: '1-18-L11',
     title: '例5 · 差倍变形（少N型）',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 3,
@@ -271,7 +271,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '18-L12',
+    id: '1-18-L12',
     title: '练一练 · 差倍变形（少N型）',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 3,
@@ -288,7 +288,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-L13',
+    id: '1-18-L13',
     title: '例6 · 移动变倍',
     tag: 'type5',
     tagLabel: '题型5·移动变倍', difficulty: 3,
@@ -305,7 +305,7 @@ const LESSON: Problem[] = [
     finalAns: 40,
   },
   {
-    id: '18-L14',
+    id: '1-18-L14',
     title: '练一练 · 移动变倍',
     tag: 'type5',
     tagLabel: '题型5·移动变倍', difficulty: 3,
@@ -325,7 +325,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '18-H1',
+    id: '1-18-H1',
     title: '巩固1 · 和倍基本型',
     tag: 'type1',
     tagLabel: '题型1·和倍问题', difficulty: 1,
@@ -341,7 +341,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '18-H2',
+    id: '1-18-H2',
     title: '巩固2 · 和倍变形',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -358,7 +358,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '18-H3',
+    id: '1-18-H3',
     title: '巩固3 · 和倍变形（少N型）',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -375,7 +375,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '18-H4',
+    id: '1-18-H4',
     title: '巩固4 · 差倍基本型',
     tag: 'type3',
     tagLabel: '题型3·差倍问题', difficulty: 2,
@@ -391,7 +391,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '18-H5',
+    id: '1-18-H5',
     title: '巩固5 · 差倍变形',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 3,
@@ -408,7 +408,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-H6',
+    id: '1-18-H6',
     title: '巩固6 · 移动变倍',
     tag: 'type5',
     tagLabel: '题型5·移动变倍', difficulty: 3,
@@ -428,7 +428,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '18-W1',
+    id: '1-18-W1',
     title: '闯关1 · 和倍基本型',
     tag: 'type1',
     tagLabel: '题型1·和倍问题', difficulty: 1,
@@ -444,7 +444,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '18-W2',
+    id: '1-18-W2',
     title: '闯关2 · 和倍变形',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -461,7 +461,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '18-W3',
+    id: '1-18-W3',
     title: '闯关3 · 和倍变形（少N型）',
     tag: 'type2',
     tagLabel: '题型2·和倍变形', difficulty: 2,
@@ -478,7 +478,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '18-W4',
+    id: '1-18-W4',
     title: '闯关4 · 差倍基本型',
     tag: 'type3',
     tagLabel: '题型3·差倍问题', difficulty: 2,
@@ -494,7 +494,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-W5',
+    id: '1-18-W5',
     title: '闯关5 · 差倍变形（多N型）',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 3,
@@ -511,7 +511,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '18-W6',
+    id: '1-18-W6',
     title: '闯关6 · 差倍变形（少N型）',
     tag: 'type4',
     tagLabel: '题型4·差倍变形', difficulty: 3,
@@ -528,7 +528,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '18-W7',
+    id: '1-18-W7',
     title: '闯关7 · 移动变倍',
     tag: 'type5',
     tagLabel: '题型5·移动变倍', difficulty: 3,
@@ -545,7 +545,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '18-W8',
+    id: '1-18-W8',
     title: '闯关8 · 移动变倍（同减型）',
     tag: 'type5',
     tagLabel: '题型5·移动变倍', difficulty: 4,
@@ -562,7 +562,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '18-W9',
+    id: '1-18-W9',
     title: '闯关9 · 移动变倍',
     tag: 'type5',
     tagLabel: '题型5·移动变倍', difficulty: 3,
@@ -579,7 +579,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '18-W10',
+    id: '1-18-W10',
     title: '闯关10 · 三量和倍',
     tag: 'type6',
     tagLabel: '题型6·三量和倍', difficulty: 3,
@@ -596,7 +596,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '18-W11',
+    id: '1-18-W11',
     title: '闯关11 · 三量和倍（变形）',
     tag: 'type6',
     tagLabel: '题型6·三量和倍', difficulty: 4,
@@ -613,7 +613,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '18-W12',
+    id: '1-18-W12',
     title: '闯关12 · 三量和倍（综合）',
     tag: 'type6',
     tagLabel: '题型6·三量和倍', difficulty: 4,

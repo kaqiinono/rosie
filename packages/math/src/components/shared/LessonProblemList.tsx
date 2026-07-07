@@ -75,7 +75,7 @@ export default function LessonProblemList({
                   onClick={e => {
                     e.preventDefault()
                     e.stopPropagation()
-                    router.push(`/math/ny/${lessonId}/alltest?type=${p.tag}`)
+                    router.push(`${basePath}/alltest?type=${p.tag}`)
                   }}
                   className={`inline-flex max-w-[42%] shrink-0 cursor-pointer items-center truncate rounded-md px-1.5 py-0.5 font-semibold ${tagStyles[p.tag] || 'bg-gray-100 text-gray-600'}`}
                   title={`查看所有${p.tagLabel}题目`}

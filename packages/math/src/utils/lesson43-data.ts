@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const PRETEST: Problem[] = [
   {
-    id: '43-P1',
+    id: '1-43-P1',
     title: '课前测1 · 求第101项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 3,
@@ -18,7 +18,7 @@ const PRETEST: Problem[] = [
     finalAns: 302,
   },
   {
-    id: '43-P2',
+    id: '1-43-P2',
     title: '课前测2 · 求项数',
     tag: 'type2',
     tagLabel: '求项数', difficulty: 2,
@@ -34,7 +34,7 @@ const PRETEST: Problem[] = [
     finalAns: 101,
   },
   {
-    id: '43-P3',
+    id: '1-43-P3',
     title: '课前测3 · 求公差与第15项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -50,7 +50,7 @@ const PRETEST: Problem[] = [
     finalAns: 147,
   },
   {
-    id: '43-P4',
+    id: '1-43-P4',
     title: '课前测4 · 剧场座位总数',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -66,7 +66,7 @@ const PRETEST: Problem[] = [
     finalAns: 792,
   },
   {
-    id: '43-P5',
+    id: '1-43-P5',
     title: '课前测5 · 连续自然数求和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 2,
@@ -85,7 +85,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '43-L1',
+    id: '1-43-L1',
     title: '例1 · 递增数列第12项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 1,
@@ -100,7 +100,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '43-L2',
+    id: '1-43-L2',
     title: '练一练 · 递减数列第10项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -115,7 +115,7 @@ const LESSON: Problem[] = [
     finalAns: 29,
   },
   {
-    id: '43-L3',
+    id: '1-43-L3',
     title: '例2 · 大于100的奇数第31个',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -131,7 +131,7 @@ const LESSON: Problem[] = [
     finalAns: 161,
   },
   {
-    id: '43-L4',
+    id: '1-43-L4',
     title: '练一练 · 从0开始的偶数第102个',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -146,7 +146,7 @@ const LESSON: Problem[] = [
     finalAns: 202,
   },
   {
-    id: '43-L5',
+    id: '1-43-L5',
     title: '例3 · 已知两项求公差',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 2,
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '43-L6',
+    id: '1-43-L6',
     title: '练一练 · 已知首项和第7项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 2,
@@ -176,7 +176,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '43-L7',
+    id: '1-43-L7',
     title: '例4 · 求首项与第15项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -192,7 +192,7 @@ const LESSON: Problem[] = [
     finalAns: 46,
   },
   {
-    id: '43-L8',
+    id: '1-43-L8',
     title: '练一练 · 求首项与第29项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -208,7 +208,7 @@ const LESSON: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '43-L9',
+    id: '1-43-L9',
     title: '例5 · 弹珠递减求公差',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -224,7 +224,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '43-L10',
+    id: '1-43-L10',
     title: '练一练 · 卖包子递增',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -240,7 +240,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '43-L11',
+    id: '1-43-L11',
     title: '例6 · 报数求人数',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -255,7 +255,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '43-L12',
+    id: '1-43-L12',
     title: '练一练 · 读书天数',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -270,7 +270,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '43-L13',
+    id: '1-43-L13',
     title: '附加题1(1) · 4加到76',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 3,
@@ -286,7 +286,7 @@ const LESSON: Problem[] = [
     finalAns: 2920,
   },
   {
-    id: '43-L14',
+    id: '1-43-L14',
     title: '附加题1(2) · 奇数求和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 3,
@@ -302,7 +302,7 @@ const LESSON: Problem[] = [
     finalAns: 900,
   },
   {
-    id: '43-L15',
+    id: '1-43-L15',
     title: '附加题2(1) · 连续偶数求最大',
     tag: 'type7',
     tagLabel: '中项求和', difficulty: 3,
@@ -318,7 +318,7 @@ const LESSON: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '43-L16',
+    id: '1-43-L16',
     title: '附加题2(2) · 连续自然数求最小',
     tag: 'type7',
     tagLabel: '中项求和', difficulty: 3,
@@ -337,7 +337,7 @@ const LESSON: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '43-H1',
+    id: '1-43-H1',
     title: '巩固1 · 求末项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 2,
@@ -351,7 +351,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 50,
   },
   {
-    id: '43-H2',
+    id: '1-43-H2',
     title: '巩固2 · 递减求首项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 2,
@@ -365,7 +365,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '43-H3',
+    id: '1-43-H3',
     title: '巩固3 · 已知两项求第8项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 3,
@@ -380,7 +380,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 45,
   },
   {
-    id: '43-H4',
+    id: '1-43-H4',
     title: '巩固4 · 求项数',
     tag: 'type2',
     tagLabel: '求项数', difficulty: 2,
@@ -395,7 +395,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 41,
   },
   {
-    id: '43-H5',
+    id: '1-43-H5',
     title: '巩固5 · 三项综合',
     tag: 'type6',
     tagLabel: '综合规律', difficulty: 4,
@@ -412,7 +412,7 @@ const HOMEWORK: Problem[] = [
     finalAns: 150,
   },
   {
-    id: '43-H6',
+    id: '1-43-H6',
     title: '巩固6 · 圆木堆梯形',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -430,7 +430,7 @@ const HOMEWORK: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '43-W1',
+    id: '1-43-W1',
     title: '闯关1 · 公差个数与第26项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 3,
@@ -445,7 +445,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '43-W2',
+    id: '1-43-W2',
     title: '闯关2 · 分苹果',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -460,7 +460,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '43-W3',
+    id: '1-43-W3',
     title: '闯关3 · 已知两项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -475,7 +475,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 59,
   },
   {
-    id: '43-W4',
+    id: '1-43-W4',
     title: '闯关4 · 循环算式',
     tag: 'type6',
     tagLabel: '综合规律', difficulty: 5,
@@ -491,7 +491,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 66,
   },
   {
-    id: '43-W5',
+    id: '1-43-W5',
     title: '闯关5 · 连续偶数求最大',
     tag: 'type7',
     tagLabel: '中项求和', difficulty: 3,
@@ -507,7 +507,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '43-W6',
+    id: '1-43-W6',
     title: '闯关6(1) · 3加到77',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 3,
@@ -522,7 +522,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 3000,
   },
   {
-    id: '43-W7',
+    id: '1-43-W7',
     title: '闯关6(2) · 奇数求和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 3,
@@ -537,7 +537,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 2025,
   },
   {
-    id: '43-W8',
+    id: '1-43-W8',
     title: '闯关6(3) · 公差3求和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 3,
@@ -552,7 +552,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 375,
   },
   {
-    id: '43-W9',
+    id: '1-43-W9',
     title: '闯关7 · 拆数成等差数列',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 4,
@@ -567,7 +567,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 45,
   },
   {
-    id: '43-W10',
+    id: '1-43-W10',
     title: '闯关8 · 电影院座位',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 4,
@@ -582,7 +582,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 594,
   },
   {
-    id: '43-W11',
+    id: '1-43-W11',
     title: '闯关9 · 前5项和求第5项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -597,7 +597,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '43-W12',
+    id: '1-43-W12',
     title: '闯关10 · 中间三项的和',
     tag: 'type6',
     tagLabel: '综合规律', difficulty: 5,
@@ -612,7 +612,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 54,
   },
   {
-    id: '43-W13',
+    id: '1-43-W13',
     title: '闯关11 · 奇偶项之差',
     tag: 'type6',
     tagLabel: '综合规律', difficulty: 5,
@@ -628,7 +628,7 @@ const WORKBOOK: Problem[] = [
     finalAns: 52,
   },
   {
-    id: '43-W14',
+    id: '1-43-W14',
     title: '闯关12 · 算式和的总和',
     tag: 'type6',
     tagLabel: '综合规律', difficulty: 5,
@@ -646,7 +646,7 @@ const WORKBOOK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '43-S1',
+    id: '1-43-S1',
     title: '附加1(1) · 奇数列第18项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -660,7 +660,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '43-S2',
+    id: '1-43-S2',
     title: '附加1(2) · 256是第几项',
     tag: 'type2',
     tagLabel: '求项数', difficulty: 2,
@@ -674,7 +674,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 128,
   },
   {
-    id: '43-S3',
+    id: '1-43-S3',
     title: '附加1(3) · 求项数',
     tag: 'type2',
     tagLabel: '求项数', difficulty: 2,
@@ -688,7 +688,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '43-S4',
+    id: '1-43-S4',
     title: '附加2(1) · 6的倍数个数',
     tag: 'type2',
     tagLabel: '求项数', difficulty: 2,
@@ -703,7 +703,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '43-S5',
+    id: '1-43-S5',
     title: '附加2(2) · 除以6余1求和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 3,
@@ -718,7 +718,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 833,
   },
   {
-    id: '43-S6',
+    id: '1-43-S6',
     title: '附加4 · 交错数列第100项',
     tag: 'type6',
     tagLabel: '综合规律', difficulty: 5,
@@ -733,7 +733,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 150,
   },
   {
-    id: '43-S7',
+    id: '1-43-S7',
     title: '附加4(2) · 前100项的和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 5,
@@ -749,7 +749,7 @@ const SUPPLEMENT: Problem[] = [
     finalAns: 7600,
   },
   {
-    id: '43-S8',
+    id: '1-43-S8',
     title: '附加5 · 前15项的和',
     tag: 'type5',
     tagLabel: '首末项求和', difficulty: 4,

@@ -43,7 +43,7 @@ import PretestFig5 from '@rosie/math/components/lesson38/Figure/PretestFig5'
 const LESSON: Problem[] = [
   // ── 例题 ──
   {
-    id: '38-L1',
+    id: '1-38-L1',
     title: '例1 · 判断一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 1,
@@ -62,7 +62,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonEx1 />,
   },
   {
-    id: '38-L2',
+    id: '1-38-L2',
     title: '例2 · 六面体蚂蚁比赛',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 2,
@@ -82,7 +82,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonEx2 />,
   },
   {
-    id: '38-L3',
+    id: '1-38-L3',
     title: '例3 · 哥尼斯堡七桥',
     tag: 'type5',
     tagLabel: '欧拉路径', difficulty: 4,
@@ -101,7 +101,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonEx3 />,
   },
   {
-    id: '38-L4',
+    id: '1-38-L4',
     title: '例4 · 最少几笔画出',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 2,
@@ -121,7 +121,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonEx4 />,
   },
   {
-    id: '38-L5',
+    id: '1-38-L5',
     title: '例5 · 添线或去线使能一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 2,
@@ -140,7 +140,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonEx5 />,
   },
   {
-    id: '38-L6',
+    id: '1-38-L6',
     title: '例6 · 林间小路最多走多少米',
     tag: 'type7',
     tagLabel: '最长路程', difficulty: 2,
@@ -162,7 +162,7 @@ const LESSON: Problem[] = [
   },
   // ── 练一练 ──
   {
-    id: '38-L7',
+    id: '1-38-L7',
     title: '练1 · 判断一笔画（2图）',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -179,7 +179,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr1 />,
   },
   {
-    id: '38-L8',
+    id: '1-38-L8',
     title: '练2 · 游乐场路线比较',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -199,7 +199,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr2 />,
   },
   {
-    id: '38-L9',
+    id: '1-38-L9',
     title: '练3 · 五桥问题',
     tag: 'type5',
     tagLabel: '欧拉路径', difficulty: 4,
@@ -218,7 +218,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr3 />,
   },
   {
-    id: '38-L10',
+    id: '1-38-L10',
     title: '练4 · 两图最少几笔',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -235,7 +235,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr4 />,
   },
   {
-    id: '38-L11',
+    id: '1-38-L11',
     title: '练5 · 四棱锥添铁丝',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -255,7 +255,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr5 />,
   },
   {
-    id: '38-L12',
+    id: '1-38-L12',
     title: '练6 · 学校道路最多走多少米',
     tag: 'type7',
     tagLabel: '最长路程', difficulty: 3,
@@ -278,7 +278,7 @@ const LESSON: Problem[] = [
 
 const WORKBOOK: Problem[] = [
   {
-    id: '38-W1',
+    id: '1-38-W1',
     title: '闯关1 · 判断四图一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -297,7 +297,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig1 />,
   },
   {
-    id: '38-W2',
+    id: '1-38-W2',
     title: '闯关2 · 判断并标起终点',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -316,7 +316,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig2 />,
   },
   {
-    id: '38-W3',
+    id: '1-38-W3',
     title: '闯关3 · 四图最少几笔',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -335,7 +335,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig3 />,
   },
   {
-    id: '38-W4',
+    id: '1-38-W4',
     title: '闯关4 · 最少加几条线一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -353,7 +353,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig4 />,
   },
   {
-    id: '38-W5',
+    id: '1-38-W5',
     title: '闯关5 · 去掉一条线后一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -370,7 +370,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig5 />,
   },
   {
-    id: '38-W6',
+    id: '1-38-W6',
     title: '闯关6 · 添加或去掉最少的线',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -387,7 +387,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig6 />,
   },
   {
-    id: '38-W7',
+    id: '1-38-W7',
     title: '闯关7 · 甲乙昆虫谁能爬遍',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -406,7 +406,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig7 />,
   },
   {
-    id: '38-W8',
+    id: '1-38-W8',
     title: '闯关8 · 游乐园谁先出',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -426,7 +426,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig8 />,
   },
   {
-    id: '38-W9',
+    id: '1-38-W9',
     title: '闯关9 · 迷宫出入口设在哪',
     tag: 'type5',
     tagLabel: '欧拉路径', difficulty: 4,
@@ -446,7 +446,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig9 />,
   },
   {
-    id: '38-W10',
+    id: '1-38-W10',
     title: '闯关10 · 展览馆能否穿过所有门',
     tag: 'type5',
     tagLabel: '欧拉路径', difficulty: 4,
@@ -465,7 +465,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig10 />,
   },
   {
-    id: '38-W11',
+    id: '1-38-W11',
     title: '闯关11 · 邮递员送信最优路线',
     tag: 'type5',
     tagLabel: '欧拉路径', difficulty: 5,
@@ -484,7 +484,7 @@ const WORKBOOK: Problem[] = [
     figureNode: <WorkbookFig11 />,
   },
   {
-    id: '38-W12',
+    id: '1-38-W12',
     title: '闯关12 · 邮递员最短投信路程',
     tag: 'type7',
     tagLabel: '最长路程', difficulty: 5,
@@ -507,7 +507,7 @@ const WORKBOOK: Problem[] = [
 
 const HOMEWORK: Problem[] = [
   {
-    id: '38-H1',
+    id: '1-38-H1',
     title: '课后1 · 判断一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -525,7 +525,7 @@ const HOMEWORK: Problem[] = [
     figureNode: <HomeworkFig1 />,
   },
   {
-    id: '38-H2',
+    id: '1-38-H2',
     title: '课后2 · 浇花路线比较',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -547,7 +547,7 @@ const HOMEWORK: Problem[] = [
     figureNode: <HomeworkFig2 />,
   },
   {
-    id: '38-H3',
+    id: '1-38-H3',
     title: '课后3 · 图书馆参观路线',
     tag: 'type5',
     tagLabel: '欧拉路径', difficulty: 4,
@@ -566,7 +566,7 @@ const HOMEWORK: Problem[] = [
     figureNode: <HomeworkFig3 />,
   },
   {
-    id: '38-H4',
+    id: '1-38-H4',
     title: '课后4 · 最少几笔画出',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -584,7 +584,7 @@ const HOMEWORK: Problem[] = [
     figureNode: <HomeworkFig4 />,
   },
   {
-    id: '38-H5',
+    id: '1-38-H5',
     title: '课后5 · 添线或去线使能一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 3,
@@ -602,7 +602,7 @@ const HOMEWORK: Problem[] = [
     figureNode: <HomeworkFig5 />,
   },
   {
-    id: '38-H6',
+    id: '1-38-H6',
     title: '课后6 · 长方体棱爬行',
     tag: 'type6',
     tagLabel: '立体棱爬行', difficulty: 4,
@@ -629,7 +629,7 @@ const HOMEWORK: Problem[] = [
 
 const SUPPLEMENT: Problem[] = [
   {
-    id: '38-S1',
+    id: '1-38-S1',
     title: '附加1 · 正方体棱爬行',
     tag: 'type1',
     tagLabel: '立体棱爬行', difficulty: 4,
@@ -649,7 +649,7 @@ const SUPPLEMENT: Problem[] = [
     figureNode: <CubeFigure />,
   },
   {
-    id: '38-S2',
+    id: '1-38-S2',
     title: '附加2 · 长方体棱爬行',
     tag: 'type1',
     tagLabel: '立体棱爬行', difficulty: 4,
@@ -670,7 +670,7 @@ const SUPPLEMENT: Problem[] = [
     figureNode: <RectBoxFigure />,
   },
   {
-    id: '38-S3',
+    id: '1-38-S3',
     title: '附加3 · 博物馆参观路线',
     tag: 'type2',
     tagLabel: '平面路线', difficulty: 4,
@@ -690,7 +690,7 @@ const SUPPLEMENT: Problem[] = [
     figureNode: <MuseumFigure />,
   },
   {
-    id: '38-S4',
+    id: '1-38-S4',
     title: '附加4 · 展览厅参观路线',
     tag: 'type2',
     tagLabel: '平面路线', difficulty: 4,
@@ -711,7 +711,7 @@ const SUPPLEMENT: Problem[] = [
     figureNode: <ExhibitFigure />,
   },
   {
-    id: '38-S5',
+    id: '1-38-S5',
     title: '附加5 · 动物园街道最短路程',
     tag: 'type3',
     tagLabel: '最短路程', difficulty: 4,
@@ -737,7 +737,7 @@ const SUPPLEMENT: Problem[] = [
 
 const PRETEST: Problem[] = [
   {
-    id: '38-P1',
+    id: '1-38-P1',
     title: '课前测1 · 判断一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 1,
@@ -755,7 +755,7 @@ const PRETEST: Problem[] = [
     figureNode: <PretestFig1 />,
   },
   {
-    id: '38-P2',
+    id: '1-38-P2',
     title: '课前测2 · 判断并标出起终点',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 2,
@@ -772,7 +772,7 @@ const PRETEST: Problem[] = [
     figureNode: <PretestFig2 />,
   },
   {
-    id: '38-P3',
+    id: '1-38-P3',
     title: '课前测3 · 最少几笔画出',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 2,
@@ -791,7 +791,7 @@ const PRETEST: Problem[] = [
     figureNode: <PretestFig3 />,
   },
   {
-    id: '38-P4',
+    id: '1-38-P4',
     title: '课前测4 · 添线或去线使能一笔画',
     tag: 'type4',
     tagLabel: '一笔画判断', difficulty: 2,
@@ -810,7 +810,7 @@ const PRETEST: Problem[] = [
     figureNode: <PretestFig4 />,
   },
   {
-    id: '38-P5',
+    id: '1-38-P5',
     title: '课前测5 · 正方体棱爬行最长路',
     tag: 'type6',
     tagLabel: '立体棱爬行', difficulty: 4,

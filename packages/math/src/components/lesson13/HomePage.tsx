@@ -1,11 +1,12 @@
 'use client'
 
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math/utils/lesson13-data'
 import LessonSummary from '@rosie/math/components/shared/LessonSummary'
 
-const BASE = '/math/ny/13'
+const BASE = '/math/ny/1/13'
 
 interface HomePageProps {
   problems: ProblemSet
@@ -46,7 +47,7 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
           第13讲 · 一年级目标班<br />
           掌握直线型和封闭型植树的4大公式，轻松解决间距、棵数、路程问题！
         </p>
-        <LessonSummary lessonId={BASE.split("/").pop()!} embedded />
+        <LessonSummary lessonId={lessonKeyFromHref(BASE)!} embedded />
       </div>
 
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
