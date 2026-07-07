@@ -152,7 +152,7 @@ export default function QuizPrintPage({params}: { params: Promise<{ id: string }
     }, [paper, searchParams])
 
     const printMode =
-        userPrintMode?.paperId === paper?.id ? userPrintMode.mode : autoPrintMode
+        userPrintMode?.paperId === paper?.id ? userPrintMode?.mode : autoPrintMode
 
     if (loading) {
         return (
