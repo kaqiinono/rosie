@@ -5,6 +5,10 @@ import {
   routeForLesson,
   type LessonEntry,
 } from '@rosie/math/utils/lesson-registry'
+import {
+  runBundledSourceAudit,
+  type SourceAuditReport,
+} from '@rosie/math/admin/math-lesson-source-audit'
 
 export type TableProbe = {
   table: string
@@ -55,6 +59,26 @@ export type JsonLegacyHit = {
   sample: string
 }
 
+export type SlugStorageHit = {
+  lessonKey: string
+  legacyId: string
+  slug: string
+  storagePath: string
+}
+
+export type RefactorRiskAssessment = {
+  /** 综合判断：是否建议按 docs/math/lesson-id-cleanup.md 分阶段推进 */
+  controllable: boolean
+  level: 'green' | 'amber' | 'red'
+  headline: string
+  dbUncleanedRows: number
+  sourceUncleanedItems: number
+  totalUncleanedEstimate: number
+  blockers: string[]
+  mitigations: string[]
+  scopeLines: string[]
+}
+
 export type MathLessonIdAuditReport = {
   generatedAt: string
   mapping: {
@@ -62,6 +86,7 @@ export type MathLessonIdAuditReport = {
     lessonKey: string
     grade: number
     seq: number
+    slug: string
     newRoute: string
     legacyRoute: string
   }[]
@@ -70,13 +95,24 @@ export type MathLessonIdAuditReport = {
   orphans: OrphanProblemId[]
   conflicts: MigrationConflict[]
   jsonLegacyHits: JsonLegacyHit[]
+  slugStorageHits: SlugStorageHit[]
+  source: SourceAuditReport
+  risk: RefactorRiskAssessment
   totals: {
     legacyProblemRows: number
     legacyLessonIdRows: number
+    legacyStoragePathRows: number
+    legacySlugStorageRows: number
     orphanProblemRows: number
     imageRows: number
     weeklyPlanRows: number
     quizPaperRows: number
+    jsonLegacyHitRows: number
+    dbUncleanedTotal: number
+    sourceLegacyIdHits: number
+    sourceSlugHits: number
+    sourceUncleanedTotal: number
+    grandUncleanedTotal: number
   }
   sourceCodeNote: string
 }
@@ -219,12 +255,15 @@ function scanJsonForLegacy(
 ): void {
   if (hits.length >= limit || json === null || json === undefined) return
   const text = typeof json === 'string' ? json : JSON.stringify(json)
-  for (const legacyId of LEGACY_IDS) {
+  for (const entry of LESSONS) {
+    const { legacyId, slug } = entry
     if (
       text.includes(`"${legacyId}"`) ||
       text.includes(`"${legacyId}-`) ||
       text.includes(`/${legacyId}/`) ||
-      text.includes(`${legacyId}__SUMMARY`)
+      text.includes(`${legacyId}__SUMMARY`) ||
+      text.includes(`"${slug}"`) ||
+      text.includes(`/${slug}/`)
     ) {
       hits.push({
         table,
@@ -234,6 +273,83 @@ function scanJsonForLegacy(
       })
       return
     }
+  }
+}
+
+function buildRiskAssessment(
+  totals: MathLessonIdAuditReport['totals'],
+  conflicts: MigrationConflict[],
+  source: SourceAuditReport,
+): RefactorRiskAssessment {
+  const blockers: string[] = []
+  const mitigations: string[] = []
+  if (conflicts.length > 0) {
+    blockers.push(`math_solved 存在 ${conflicts.length} 组迁移主键冲突，需先合并或删除重复行`)
+  }
+  if (totals.legacyProblemRows > 0) {
+    mitigations.push(
+      '用户做题记录：运行 docs/sql/math-lesson-id-migrate.sql（事务内一次执行）',
+    )
+  }
+  if (totals.jsonLegacyHitRows > 0) {
+    mitigations.push(
+      '周计划/组卷 JSON：可跑 math-lesson-id-delete-disposable.sql 清空后重建，或写 JSON 键迁移脚本',
+    )
+  }
+  if (totals.legacyStoragePathRows > 0 || totals.legacySlugStorageRows > 0) {
+    mitigations.push('Storage 路径：SQL 迁移 + node scripts/migrate-math-lesson-ids.mjs --apply --storage')
+  }
+  if (source.totals.bundledProblemIdsLegacy > 0) {
+    mitigations.push('源码题目 ID：按 docs/math/lesson-id-cleanup.md Phase 1 改 lesson*-data')
+  }
+  if (source.totals.seaLegacyIds > 0) {
+    mitigations.push('题海/组卷/计划静态表：将 id 键改为 lessonKey（见 cleanup 文档 Phase 1）')
+  }
+
+  const scopeLines = [
+    `注册表：${LESSONS.length} 讲，每讲含 legacyId + slug 双字段（收尾后仅 lessonKey/grade/seq）`,
+    `模块表：${source.totals.moduleSlugKeys} 个 lessonNN 键待改为 lessonKey`,
+    `静态路由：${source.legacyRoutes.length} 条 /math/ny/{legacyId} 目录应删除（若仍存在）`,
+    `apps/web 已知待改文件：${source.manualSites.length} 处（见下方清单）`,
+    'DB 表：math_solved / wrong / favorites / notes / images / weekly_plans 等（见 SQL 审计脚本）',
+  ]
+
+  let level: RefactorRiskAssessment['level'] = 'green'
+  if (
+    totals.dbUncleanedTotal > 0 ||
+    source.totals.legacyIdHits > 0 ||
+    conflicts.length > 0
+  ) {
+    level = 'amber'
+  }
+  if (conflicts.length > 10 || totals.dbUncleanedTotal > 5000) {
+    level = 'red'
+  }
+
+  const controllable =
+    conflicts.length === 0 &&
+    (totals.dbUncleanedTotal === 0 ||
+      (totals.legacyProblemRows > 0 && mitigations.some((m) => m.includes('migrate.sql'))))
+
+  const headline =
+    totals.grandUncleanedTotal === 0
+      ? '✅ 未发现 legacyId/slug 脏数据（DB + 已打包源码）'
+      : level === 'red'
+        ? '⚠️ 改造范围较大或存在阻塞项，建议先处理冲突再迁移'
+        : controllable
+          ? '✅ 改造范围清晰、风险可控：DB 有现成 SQL/脚本，源码按文档分 PR 收尾'
+          : '⚠️ 仍有未清理数据，建议按推荐顺序执行后再部署代码收尾'
+
+  return {
+    controllable,
+    level,
+    headline,
+    dbUncleanedRows: totals.dbUncleanedTotal,
+    sourceUncleanedItems: totals.sourceUncleanedTotal,
+    totalUncleanedEstimate: totals.grandUncleanedTotal,
+    blockers,
+    mitigations,
+    scopeLines,
   }
 }
 
@@ -407,6 +523,66 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     0,
   )
 
+  const legacyStoragePathRows = imageRows.filter((r) =>
+    LESSONS.some((e) => r.storage_path.includes(`/${e.legacyId}/`)),
+  ).length
+
+  const slugStorageHits: SlugStorageHit[] = []
+  for (const row of imageRows) {
+    for (const entry of LESSONS) {
+      if (
+        row.storage_path.includes(`/${entry.slug}/`) ||
+        row.storage_path.includes(`${entry.slug}/`) ||
+        row.storage_path.includes(`summaries/${entry.legacyId}/`)
+      ) {
+        slugStorageHits.push({
+          lessonKey: entry.lessonKey,
+          legacyId: entry.legacyId,
+          slug: entry.slug,
+          storagePath: row.storage_path,
+        })
+        break
+      }
+    }
+    if (slugStorageHits.length >= 50) break
+  }
+  const legacySlugStorageRows = imageRows.filter((r) =>
+    LESSONS.some(
+      (e) =>
+        r.storage_path.includes(`/${e.slug}/`) ||
+        r.storage_path.includes(`${e.slug}/`),
+    ),
+  ).length
+
+  const source = runBundledSourceAudit()
+
+  const dbUncleanedTotal =
+    legacyProblemRows +
+    legacyLessonIdRows +
+    legacyStoragePathRows +
+    jsonLegacyHits.length
+
+  const sourceUncleanedTotal = source.buckets.reduce((sum, b) => sum + b.count, 0)
+
+  const totals = {
+    legacyProblemRows,
+    legacyLessonIdRows,
+    legacyStoragePathRows,
+    legacySlugStorageRows,
+    orphanProblemRows: orphans.length,
+    imageRows: imageRows.length,
+    weeklyPlanRows: weeklyPlans.length,
+    quizPaperRows: tables.find((t) => t.table === 'math_quiz_papers')?.rowCount ?? 0,
+    jsonLegacyHitRows: jsonLegacyHits.length,
+    dbUncleanedTotal,
+    sourceLegacyIdHits: source.totals.legacyIdHits,
+    sourceSlugHits: source.totals.slugHits,
+    sourceUncleanedTotal,
+    grandUncleanedTotal: dbUncleanedTotal + sourceUncleanedTotal,
+  }
+
+  const risk = buildRiskAssessment(totals, conflicts, source)
+
   return {
     generatedAt: new Date().toISOString(),
     mapping: LESSONS.map((e) => ({
@@ -414,6 +590,7 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
       lessonKey: e.lessonKey,
       grade: e.grade,
       seq: e.seq,
+      slug: e.slug,
       newRoute: routeForLesson(e),
       legacyRoute: `/math/ny/${e.legacyId}`,
     })),
@@ -422,16 +599,12 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     orphans,
     conflicts,
     jsonLegacyHits,
-    totals: {
-      legacyProblemRows,
-      legacyLessonIdRows,
-      orphanProblemRows: orphans.length,
-      imageRows: imageRows.length,
-      weeklyPlanRows: weeklyPlans.length,
-      quizPaperRows: tables.find((t) => t.table === 'math_quiz_papers')?.rowCount ?? 0,
-    },
+    slugStorageHits,
+    source,
+    risk,
+    totals,
     sourceCodeNote:
-      '源码中 lesson*-data.ts 题目 id、组件内 BASE 路径仍为 legacy 格式；DB 迁移后需同步改代码并部署。',
+      '源码审计扫描已打包的 registry / sea-data / LESSON_MODULES 题目；apps/web 内联常量见「待改文件清单」。完整方案：docs/math/lesson-id-cleanup.md',
   }
 }
 
