@@ -17,10 +17,7 @@ export function useProblemNotes(problemId: string | undefined): {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    if (!problemId) {
-      setNotes([])
-      return
-    }
+    if (!problemId) return
 
     let cancelled = false
     const lessonId = lessonIdFromProblemId(problemId)
@@ -45,6 +42,10 @@ export function useProblemNotes(problemId: string | undefined): {
       cancelled = true
     }
   }, [problemId])
+
+  if (!problemId) {
+    return { notes: [], isLoading: false }
+  }
 
   return { notes, isLoading }
 }
