@@ -69,13 +69,19 @@ function AlltestContent() {
   const searchParams = useSearchParams()
   const typeParam = searchParams.get('type')
 
-  const [filters, setFilters] = useState(() => ({
-    source: new Set(['pretest', 'lesson', 'homework', 'supplement']),
-    type: typeParam ? new Set([typeParam]) : new Set<string>(),
-    mastery: 'all' as MasteryFilter,
-    practice: 'all' as PracticeFilter,
-    difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
-  }))
+  const [filters, setFilters] = useState(() => {
+    const allTags = new Set<string>()
+    for (const list of Object.values(module.PROBLEMS)) {
+      for (const p of list ?? []) allTags.add(p.tag)
+    }
+    return {
+      source: new Set(['pretest', 'lesson', 'homework', 'supplement']),
+      type: typeParam ? new Set([typeParam]) : allTags,
+      mastery: 'all' as MasteryFilter,
+      practice: 'all' as PracticeFilter,
+      difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
+    }
+  })
 
   const toggleFilter = (axis: 'source' | 'type' | 'difficulty', value: string) => {
     if (axis === 'difficulty') {
@@ -182,10 +188,10 @@ export function DynamicLessonMagicPage() {
 }
 
 export function DynamicLessonProblemPage({
-  params,
+  problemId,
   section,
 }: {
-  params: Promise<{ id: string }>
+  problemId: string
   section: SectionKey
 }) {
   const { module, basePath } = useLessonRoute()
@@ -194,7 +200,7 @@ export function DynamicLessonProblemPage({
 
   return (
     <LessonProblemRoutePage
-      params={params}
+      problemId={problemId}
       basePath={basePath}
       section={section}
       problems={problems}

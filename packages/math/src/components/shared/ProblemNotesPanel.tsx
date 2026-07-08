@@ -193,7 +193,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
   const lessonId = lessonIdFromProblemId(problemId)
   const { notes, isLoading } = useProblemNotes(problemId)
   const notesAdmin = useMathProblemNotesAdmin(user, user ? lessonId : null)
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
 
   const showFlash = useCallback((msg: string) => {

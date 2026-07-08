@@ -242,6 +242,15 @@ import BottomNav55 from '@rosie/math/components/lesson55/BottomNav'
 import FilterPanel55 from '@rosie/math/components/lesson55/FilterPanel'
 import ProblemList55 from '@rosie/math/components/lesson55/ProblemList'
 import ProblemDetail55 from '@rosie/math/components/lesson55/ProblemDetail'
+import { PROBLEMS as P56, TAG_STYLE as TS56 } from '@rosie/math/utils/lesson56-data'
+import Provider56, { useLesson56 } from '@rosie/math/components/lesson56/Lesson56Provider'
+import HomePage56 from '@rosie/math/components/lesson56/HomePage'
+import AppHeader56 from '@rosie/math/components/lesson56/AppHeader'
+import Sidebar56 from '@rosie/math/components/lesson56/Sidebar'
+import BottomNav56 from '@rosie/math/components/lesson56/BottomNav'
+import FilterPanel56 from '@rosie/math/components/lesson56/FilterPanel'
+import ProblemList56 from '@rosie/math/components/lesson56/ProblemList'
+import ProblemDetail56 from '@rosie/math/components/lesson56/ProblemDetail'
 
 export type LessonModule = {
   slug: string
@@ -686,7 +695,23 @@ export const LESSON_MODULES: Record<string, LessonModule> = {
     ProblemList: ProblemList55,
     ProblemDetail: ProblemDetail55,
     layoutBgClass: 'bg-[#f0fdfa]',
-  }
+  },
+  lesson56: {
+    slug: 'lesson56',
+    legacyId: '56',
+    PROBLEMS: P56,
+    TAG_STYLE: TS56,
+    Provider: Provider56,
+    useLesson: useLesson56,
+    HomePage: HomePage56,
+    AppHeader: AppHeader56,
+    Sidebar: Sidebar56,
+    BottomNav: BottomNav56,
+    FilterPanel: FilterPanel56,
+    ProblemList: ProblemList56,
+    ProblemDetail: ProblemDetail56,
+    layoutBgClass: 'bg-[#f0f9ff]',
+  },
 }
 
 export function lessonModuleBySlug(slug: string): LessonModule | undefined {

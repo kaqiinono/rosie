@@ -35,7 +35,10 @@ export default function QuestionLayout({
     const el = solutionRef.current
     if (!el || !solutionOpen) return
 
-    const measure = () => setSolutionHeight(el.scrollHeight)
+    const measure = () => {
+      const nextHeight = el.scrollHeight
+      setSolutionHeight((prev) => (prev === nextHeight ? prev : nextHeight))
+    }
     measure()
 
     const ro = new ResizeObserver(measure)
@@ -50,7 +53,7 @@ export default function QuestionLayout({
       ro.disconnect()
       el.querySelectorAll('img').forEach((img) => img.removeEventListener('load', onImageLoad))
     }
-  }, [solution, solutionOpen])
+  }, [problemId, solutionOpen])
 
   return (
     <div className="question-layout">

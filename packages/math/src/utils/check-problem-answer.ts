@@ -8,7 +8,7 @@ export interface CheckProblemAnswerOptions {
 }
 
 export function isInteractiveProblem(problem: Problem): boolean {
-  return typeof problem.checkAnswer === 'function'
+  return typeof problem.checkAnswer === 'function' || Boolean(problem.verticalPuzzle)
 }
 
 export function isEmptyAnswerInput(input: unknown): boolean {

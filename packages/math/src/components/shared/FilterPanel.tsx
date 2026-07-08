@@ -162,8 +162,8 @@ export function createFilterPanel(
 
     const filtered = all.filter(
       ({ p, setName }) =>
-        filters.source.has(setName) &&
-        filters.type.has(p.tag) &&
+        (filters.source.size === 0 || filters.source.has(setName)) &&
+        (filters.type.size === 0 || filters.type.has(p.tag)) &&
         filters.difficulty.has(p.difficulty) &&
         matchesMastery(solveCount[p.id] ?? 0, filters.mastery) &&
         matchesPractice(solveCount[p.id] ?? 0, filters.practice) &&

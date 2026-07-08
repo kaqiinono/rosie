@@ -31,6 +31,7 @@ import {PROBLEMS as P47} from '@rosie/math/utils/lesson47-data'
 import {PROBLEMS as P49} from '@rosie/math/utils/lesson49-data'
 import {PROBLEMS as P50} from '@rosie/math/utils/lesson50-data'
 import {PROBLEMS as P55} from '@rosie/math/utils/lesson55-data'
+import {PROBLEMS as P56} from '@rosie/math/utils/lesson56-data'
 import {PROBLEMS as P53} from '@rosie/math/utils/lesson53-data'
 import {PROBLEMS as P52} from '@rosie/math/utils/lesson52-data'
 import {PROBLEMS as P51} from '@rosie/math/utils/lesson51-data'
@@ -73,6 +74,7 @@ const LESSON_DATA: Record<string, ProblemSet> = {
     '49': P49,
     '50': P50,
     '55': P55,
+    '56': P56,
     '53': P53,
     '52': P52,
     '51': P51,
@@ -86,6 +88,7 @@ const LESSON_NAMES: Record<string, string> = {
     '40': '周长问题', '41': '间隔趣题', '42': '生活智力题', '43': '等差数列初识', '44': '统筹优化',
     '46': '抽屉原理与最不利', '47': '方格中的秘密', '49': '加减法速算与巧算', '50': '等量代换与归一问题',
     '55': '简单枚举',
+    '56': '数字谜',
     '53': '找规律',
     '52': '差倍问题',
     '51': '等量代换与归一问题',

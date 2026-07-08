@@ -31,21 +31,25 @@
 
 ---
 
-## 2. courses-data.ts
+## 2. courses-data.ts（年级首页卡片 — 易漏）
 
-`COURSES` **最前面**追加卡片（高年级/新讲次靠前）：
+`packages/math/src/utils/courses-data.ts` → `RAW_COURSES` **最前面**追加卡片（高年级/新讲次靠前）：
 
 ```ts
 {
   href: '/math/ny/2/7',
+  title: '数字谜探险',
+  description: '…',
+  icon: '🔐',
   lectureNum: '第 7 讲',
-  title: '…探险',
-  icon: '📐',
-  // …
+  tags: ['数字谜', '竖式推理', '35 道互动题'],
+  variant: 'blue',
 }
 ```
 
-`href` 必须是 canonical 路径。`lectureNum`：一年级可用教材号；二年级起用年级内序号。
+- `href` 必须是 canonical 路径（与 registry 的 `grade`/`seq` 一致）
+- `lectureNum`：一年级可用教材号；二年级起用**年级内**序号（第 7 讲，不是 legacyId 56）
+- `GradeLessonList` 用 `lessonIdFromHref(href)` 过滤年级 — **registry 未登记时卡片也会被滤掉**
 
 ---
 
@@ -67,6 +71,11 @@
 ```
 
 并添加对应 `import { PROBLEMS as PROBLEMS56, … } from './lesson56-data'`。
+
+**这一项同时驱动 `/admin/math`（数学题管理）的筛选器和题海/组卷。** 两个易错点（lesson56 教训）：
+
+- **`types` 必须齐全且 tag 与题目一致**：`types: PT56.map(...)` 来自 `lesson56-data.ts` 的 `PROBLEM_TYPES`；每个 `PROBLEM_TYPES[].tag` 必须能在该讲某道题的 `problem.tag` 中出现，否则 `/admin/math` 的「题型」筛选按钮不显示、列表查询为空。（注意 `PROBLEM_TYPES` 里 label 是「题型4」但 tag 可能写成 `type5` 这类**跳号**，只要与题目 tag 对应即可。）
+- **`id` 保持 legacyId 即可，不要手写 `l.id === lessonKey` 比较**：筛选器传入的是 **lessonKey**（如 `2-7`），而这里 `id` 是 legacyId（`56`）。二者由注册表在 `math-problem-search.ts`（`canonicalLessonId`）与 `sea-data.ts`（`findSeaLesson`）内部归一后再比较。查 SEA 讲次一律用 **`findSeaLesson(id)`**，勿新增 `SEA_LESSONS.find(l => l.id === someLessonKey)`（会因 id 类型不符匹配失败）。
 
 ---
 
@@ -98,7 +107,22 @@
 
 ---
 
-## 6. 不必再做的旧步骤
+## 6. lesson-source-btns.ts
+
+`packages/math/src/utils/lesson-source-btns.ts` → `LESSON_SOURCE_BTNS` 追加 legacyId 键。
+
+仅录入部分模块时，只列有题的 source（例：仅课堂+附加）：
+
+```ts
+'56': [
+  { key: 'lesson', label: '📖 课堂' },
+  { key: 'supplement', label: '📒 附加' },
+],
+```
+
+---
+
+## 7. 不必再做的旧步骤
 
 - ~~`lesson-grade.ts` 手改 `LESSON_GRADE[N]`~~（自动派生）
 - ~~新建 `apps/web/src/app/math/ny/gN/page.tsx`~~（已有 `[grade]/page.tsx`）
@@ -113,7 +137,8 @@
 [ ] lesson-module-registry.ts
 [ ] lessonN-data.ts(x)
 [ ] components/lessonN/*（含 navigation 中的 basePath）
-[ ] courses-data.ts
+[ ] courses-data.ts          ← 年级首页卡片
+[ ] lesson-source-btns.ts
 [ ] sea-data.ts
 [ ] plan/page.tsx
 [ ] MathWeeklyPractice.tsx

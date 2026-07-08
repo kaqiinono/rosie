@@ -147,7 +147,7 @@ export default function ScratchPadOverlay({
         {showCanvas && (
           <canvas
             ref={canvasRef}
-            className={`absolute inset-0 touch-none${readOnly ? ' pointer-events-none' : ''}`}
+            className={`absolute inset-0 z-0 touch-none${readOnly ? ' pointer-events-none' : ''}`}
             onPointerDown={readOnly ? undefined : handlePointerDown}
             onPointerMove={readOnly ? undefined : handlePointerMove}
             onPointerUp={readOnly ? undefined : handlePointerUp}
@@ -219,8 +219,13 @@ export default function ScratchPadOverlay({
           />
         )}
 
-        {edgeNav && <ScratchPadEdgeNav {...edgeNav} />}
       </div>
+
+      {edgeNav && (
+        <div className="pointer-events-none absolute inset-0 z-40">
+          <ScratchPadEdgeNav {...edgeNav} />
+        </div>
+      )}
 
       {readOnly ? (
         <div

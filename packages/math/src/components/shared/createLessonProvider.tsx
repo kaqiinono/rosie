@@ -48,12 +48,15 @@ export function createLessonProvider(displayName: string): {
     const [toast, setToast] = useState<string | null>(null)
     const [showCongrats, setShowCongrats] = useState(false)
 
-    const solved: Record<string, boolean> = {}
-    for (const [k, v] of Object.entries(solveCount)) {
-      if (v >= 1) solved[k] = true
-    }
+    const solved = useMemo(() => {
+      const next: Record<string, boolean> = {}
+      for (const [k, v] of Object.entries(solveCount)) {
+        if (v >= 1) next[k] = true
+      }
+      return next
+    }, [solveCount])
 
-    const handleSolve = async (id: string) => {
+    const handleSolve = useCallback(async (id: string) => {
       const newCount = await solveAndSync(id)
 
       if (wrongIds.has(id)) {
@@ -71,7 +74,7 @@ export function createLessonProvider(displayName: string): {
       } else {
         setToast(`⭐ 第${newCount}次答对！继续保持！`)
       }
-    }
+    }, [solveAndSync, wrongIds, markResolvedRow, awardStars])
 
     const addWrong = useCallback(
       (id: string) => {
@@ -103,22 +106,35 @@ export function createLessonProvider(displayName: string): {
       [handleSolve, addWrong, markResolvedCb],
     )
 
+    const contextValue = useMemo(
+      () => ({
+        solveCount,
+        solved,
+        handleSolve,
+        wrongIds,
+        addWrong,
+        removeWrong,
+        markResolved: markResolvedCb,
+        toast,
+        setToast,
+        showCongrats,
+        setShowCongrats,
+      }),
+      [
+        solveCount,
+        solved,
+        handleSolve,
+        wrongIds,
+        addWrong,
+        removeWrong,
+        markResolvedCb,
+        toast,
+        showCongrats,
+      ],
+    )
+
     return (
-      <Ctx.Provider
-        value={{
-          solveCount,
-          solved,
-          handleSolve,
-          wrongIds,
-          addWrong,
-          removeWrong,
-          markResolved: markResolvedCb,
-          toast,
-          setToast,
-          showCongrats,
-          setShowCongrats,
-        }}
-      >
+      <Ctx.Provider value={contextValue}>
         <LessonScratchActionsProvider value={scratchActions}>
           {children}
         </LessonScratchActionsProvider>

@@ -23,6 +23,7 @@ import {PROBLEMS as PROBLEMS46} from '@rosie/math/utils/lesson46-data'
 import {PROBLEMS as PROBLEMS47} from '@rosie/math/utils/lesson47-data'
 import {PROBLEMS as PROBLEMS49} from '@rosie/math/utils/lesson49-data'
 import {PROBLEMS as PROBLEMS55} from '@rosie/math/utils/lesson55-data'
+import {PROBLEMS as PROBLEMS56} from '@rosie/math/utils/lesson56-data'
 import {PROBLEMS as PROBLEMS53} from '@rosie/math/utils/lesson53-data'
 import {PROBLEMS as PROBLEMS52} from '@rosie/math/utils/lesson52-data'
 import {PROBLEMS as PROBLEMS51} from '@rosie/math/utils/lesson51-data'
@@ -54,6 +55,7 @@ const PROBLEM_SETS: Record<string, ProblemSet> = {
     '49': PROBLEMS49,
     '50': PROBLEMS50,
     '55': PROBLEMS55,
+    '56': PROBLEMS56,
     '53': PROBLEMS53,
     '52': PROBLEMS52,
     '51': PROBLEMS51,

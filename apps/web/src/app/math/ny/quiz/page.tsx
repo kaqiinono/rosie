@@ -29,6 +29,7 @@ import {PROBLEMS as P47, PROBLEM_TYPES as PT47} from '@rosie/math/utils/lesson47
 import {PROBLEMS as P49, PROBLEM_TYPES as PT49} from '@rosie/math/utils/lesson49-data'
 import {PROBLEMS as P50, PROBLEM_TYPES as PT50} from '@rosie/math/utils/lesson50-data'
 import {PROBLEMS as P55, PROBLEM_TYPES as PT55} from '@rosie/math/utils/lesson55-data'
+import {PROBLEMS as P56, PROBLEM_TYPES as PT56} from '@rosie/math/utils/lesson56-data'
 import {PROBLEMS as P53, PROBLEM_TYPES as PT53} from '@rosie/math/utils/lesson53-data'
 import {PROBLEMS as P52, PROBLEM_TYPES as PT52} from '@rosie/math/utils/lesson52-data'
 import {PROBLEMS as P51, PROBLEM_TYPES as PT51} from '@rosie/math/utils/lesson51-data'
@@ -99,6 +100,7 @@ const LESSON_META: Array<{
     {id: '49', name: '加减法速算与巧算', data: P49, types: PT49},
     {id: '50', name: '等量代换与归一问题', data: P50, types: PT50},
     {id: '55', name: '简单枚举', data: P55, types: PT55},
+    {id: '56', name: '数字谜', data: P56, types: PT56},
     {id: '53', name: '找规律', data: P53, types: PT53},
     {id: '52', name: '差倍问题', data: P52, types: PT52},
     {id: '51', name: '等量代换与归一问题', data: P51, types: PT51},

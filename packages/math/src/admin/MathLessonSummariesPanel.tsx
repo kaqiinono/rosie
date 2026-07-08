@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { lessonSummaryProblemId } from '@rosie/math/constants'
-import { SEA_LESSONS } from '@rosie/math/utils/sea-data'
+import { findSeaLesson } from '@rosie/math/utils/sea-data'
 import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
 import type { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
 import MathLessonSummaryPanel from '@rosie/math/admin/MathLessonSummaryPanel'
@@ -17,7 +17,7 @@ type Props = {
 }
 
 function lessonTitle(id: string): string {
-  return SEA_LESSONS.find((l) => l.id === id)?.title ?? `第 ${id} 讲`
+  return findSeaLesson(id)?.title ?? `第 ${id} 讲`
 }
 
 function lessonHasSummary(admin: AdminApi, lessonId: string): boolean {

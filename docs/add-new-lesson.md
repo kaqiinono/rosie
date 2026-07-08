@@ -24,14 +24,14 @@
 
 ## ID 与路由（重构后）
 
-| 字段 | 示例（legacy 52 = 二年级第 4 讲） |
-|------|-----------------------------------|
-| legacyId | `52`（`/add-lesson 52` 的 N，目录 `lesson52`） |
-| grade | `2` |
-| seq | `4`（二年级内第 4 讲） |
-| lessonKey | `2-4` |
-| canonical href | `/math/ny/2/4` |
-| 题目 ID | `2-4-L1`、`2-4-H3`、`2-4-P1`… |
+| 字段 | 示例（legacy 52 = 二年级第 4 讲） | 示例（legacy 56 = 二年级第 7 讲） |
+|------|-----------------------------------|-----------------------------------|
+| legacyId | `52`（目录 `lesson52`） | `56`（目录 `lesson56`） |
+| grade | `2` | `2` |
+| seq | `4`（二年级内第 4 讲） | `7` |
+| lessonKey | `2-4` | `2-7` |
+| canonical href | `/math/ny/2/4` | `/math/ny/2/7` |
+| 题目 ID | `2-4-L1`、`2-4-H3`… | `2-7-L1`、`2-7-S1`… |
 
 **注册表：** `packages/math/src/utils/lesson-registry.ts` 的 `LESSON_ENTRIES` 追加一行即可；`lesson-grade.ts` 自动派生年级映射。
 
@@ -49,9 +49,16 @@
 
 题目源：`docs/math/lessons/N.md`（`N` = legacyId）。单讲**只读这一个文件**。
 
-1. 通读全部章节，逐题列出
-2. 确认 `grade`、`seq`、推导出 `lessonKey` 与 `basePath`
-3. 写出总题数，确认后再录入
+若用户只提供照片（如 `docs/files/lesson/*.HEIC`）：先转 PNG、抄题生成 `N.md`，再录入代码。**仅写 md 不会出现首页卡片。**
+
+1. 通读全部章节，逐题列出（多小题拆成多道 `L`/`S` 题）
+2. 确认 `grade`、`seq`、`legacyId`、`lessonKey` 与 `basePath`
+3. 确认本次录入哪些模块（可仅课堂+附加，其余 `[]`）
+4. 写出总题数，确认后再录入
+
+### 首页卡片为何不见？
+
+`/math/ny/{grade}` 列表来自 `courses-data.ts`，且 `href` 必须在 `lesson-registry.ts` 能解析。缺任一都不会显示该讲卡片。
 
 ---
 
@@ -89,7 +96,8 @@ apps/web — 通常无需新增：
   (已有) math/ny/[grade]/[seq]/**        — 动态讲次页（home/lesson/…/notes/drafts）
 
 入口注册（见 registration.md）：
-  [ ] courses-data.ts
+  [ ] courses-data.ts                    — 缺此项年级首页无卡片
+  [ ] lesson-source-btns.ts
   [ ] sea-data.ts
   [ ] plan/page.tsx、MathWeeklyPractice.tsx
   [ ] quiz/page.tsx、quiz/[id]/page.tsx、quiz/[id]/print/page.tsx

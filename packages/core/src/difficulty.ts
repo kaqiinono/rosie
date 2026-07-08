@@ -1,6 +1,23 @@
 /** 题目难度：1（入门）～ 5（挑战） */
 export type ProblemDifficulty = 1 | 2 | 3 | 4 | 5
 
+/** Fixed digit; `null` = blank方格; `'spacer'` = 列对齐占位（不可填、不参与组成数值）。 */
+export type VerticalPuzzleCell = number | null | 'spacer'
+
+/** Structured竖式数字谜 — rendered interactively in the answer area. */
+export interface VerticalDigitPuzzleSpec {
+  op: '+' | '-'
+  /** Operand rows above the divider (one row for subtraction minuend, etc.). */
+  operands: VerticalPuzzleCell[][]
+  /** Result row below the divider. */
+  result: VerticalPuzzleCell[]
+  /** Optional reference fill for per-cell feedback when the puzzle has one solution. */
+  solutionFills?: Record<string, number>
+  /** After the addition `result`, subtract this row to get `chainResult` (e.g. L18). */
+  chainSubtract?: VerticalPuzzleCell[]
+  chainResult?: VerticalPuzzleCell[]
+}
+
 export const DIFFICULTY_LABELS: Record<ProblemDifficulty, string> = {
   1: '入门',
   2: '基础',

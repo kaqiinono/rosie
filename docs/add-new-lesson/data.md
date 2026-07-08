@@ -40,6 +40,32 @@ export const PROBLEMS: ProblemSet = {
 
 空模块用 `[]`，页面仍可正常生成。
 
+**仅课堂+附加题** 时常见结构：
+
+```ts
+export const PROBLEMS: ProblemSet = {
+  pretest: [],
+  lesson: LESSON,      // 课堂讲解
+  homework: [],
+  workbook: [],
+  supplement: SUPPLEMENT,
+}
+```
+
+多小题（例题 1 的（1）（2）（3））拆成 `L1`、`L2`、`L3`，不要合并成一题。
+
+### 竖式 / 数字谜（纯文本）
+
+```ts
+const V = (body: string) =>
+  `<pre class="my-3 overflow-x-auto rounded-lg bg-slate-50 px-3 py-2 font-mono text-[13px] leading-relaxed whitespace-pre">${body}</pre>`
+
+// text 字段示例：
+text: `在方框内填数使竖式成立。${V('  □ 5 □\n+ 3 □ 3\n──────\n  8 5 2')}`,
+```
+
+字母/汉字谜若无唯一数值答案，`finalQ` 问其中一个关键量（如「○代表」），`analysis` 写推理步骤。
+
 ---
 
 ## 导出

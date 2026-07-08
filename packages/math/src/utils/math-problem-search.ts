@@ -1,10 +1,19 @@
 import type { Problem } from '@rosie/core'
 import { SEA_LESSONS } from '@rosie/math/utils/sea-data'
+import { resolveLesson } from '@rosie/math/utils/lesson-registry'
 import {
   enumerateProblemSet,
   problemSectionLabel,
   problemSetSourceButtons,
 } from '@rosie/math/utils/problem-set-helpers'
+
+/**
+ * Canonicalize a lesson id (lessonKey 或 legacyId) 为 lessonKey，未登记时原样返回。
+ * 迁移期 SEA_LESSONS[].id 仍为 legacyId，而筛选器传入 lessonKey，需两侧归一后再比较。
+ */
+function canonicalLessonId(id: string): string {
+  return resolveLesson(id)?.lessonKey ?? id
+}
 export type SearchableProblem = {
   problem: Problem
   lessonId: string
@@ -14,10 +23,10 @@ export type SearchableProblem = {
 }
 
 export function buildProblemPool(lessonIds: string[]): SearchableProblem[] {
-  const idSet = new Set(lessonIds)
+  const idSet = new Set(lessonIds.map(canonicalLessonId))
   const pool: SearchableProblem[] = []
   for (const lesson of SEA_LESSONS) {
-    if (!idSet.has(lesson.id)) continue
+    if (!idSet.has(canonicalLessonId(lesson.id))) continue
     for (const { problem, setName } of enumerateProblemSet(lesson.problems)) {
       pool.push({
         problem,
@@ -42,10 +51,10 @@ export function filterProblemPool(
 }
 
 export function aggregateSourceButtons(lessonIds: string[]): { key: string; label: string }[] {
+  const idSet = new Set(lessonIds.map(canonicalLessonId))
   const labels = new Map<string, string>()
-  for (const id of lessonIds) {
-    const lesson = SEA_LESSONS.find((l) => l.id === id)
-    if (!lesson) continue
+  for (const lesson of SEA_LESSONS) {
+    if (!idSet.has(canonicalLessonId(lesson.id))) continue
     for (const btn of problemSetSourceButtons(lesson.problems, lesson.id)) {
       if (!labels.has(btn.key)) labels.set(btn.key, btn.label)
     }
@@ -56,9 +65,10 @@ export function aggregateSourceButtons(lessonIds: string[]): { key: string; labe
 export function aggregateTypeButtons(
   lessonIds: string[],
 ): { key: string; label: string }[] {
+  const idSet = new Set(lessonIds.map(canonicalLessonId))
   const labels = new Map<string, string>()
   for (const lesson of SEA_LESSONS) {
-    if (!lessonIds.includes(lesson.id)) continue
+    if (!idSet.has(canonicalLessonId(lesson.id))) continue
     for (const t of lesson.types) {
       labels.set(t.tag, t.label)
     }

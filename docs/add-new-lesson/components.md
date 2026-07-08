@@ -2,7 +2,7 @@
 
 目录：`packages/math/src/components/lessonN/`（`N` = legacyId）。
 
-**不要**遍历历史讲次目录找模板——按本文替换占位符即可。导航配置见 [`navigation.md`](navigation.md)。
+**不要**遍历历史讲次目录找模板。优先**复制同年级上一讲**（如 `lesson55` → `lesson56`），批量替换 `BASE` / `lessonKey` / 色系 / Provider 名。
 
 ---
 
@@ -54,7 +54,16 @@ export default function AppHeader({ problems }: { problems: ProblemSet }) {
 
 ## 3–8. Sidebar / BottomNav / HomePage / FilterPanel / ProblemList / ProblemDetail
 
-见 `navigation.md` 与各讲参考 `lesson52` 对应文件结构。
+参考同年级最近一讲（二年级：`lesson56`）对应文件结构。
+
+### 仅部分模块时
+
+| 文件 | 调整 |
+|------|------|
+| `HomePage.tsx` | `MODULES` 只含有题模块；`desc` 写实际题号范围 |
+| `Sidebar.tsx` | `sections` 去掉 homework/workbook 等空模块 |
+| `FilterPanel.tsx` | `sourceBtns` 与 `typeBtns` 对齐实际题型 tag |
+| `ProblemList.tsx` | `lessonId="{lessonKey}"`（如 `2-7`） |
 
 ### ProblemDetail
 

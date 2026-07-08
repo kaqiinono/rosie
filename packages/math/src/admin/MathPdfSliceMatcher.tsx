@@ -13,7 +13,7 @@ import {
   lessonSummaryProblemId,
   type PdfSliceKind,
 } from '@rosie/math/constants'
-import { SEA_LESSONS } from '@rosie/math/utils/sea-data'
+import { SEA_LESSONS, findSeaLesson } from '@rosie/math/utils/sea-data'
 import { cropImageBlob, rectIoU, type NormalizedRect } from '@rosie/math/utils/crop-image-blob'
 import { revokePageUrls, type PdfPageMeta } from '@rosie/math/utils/math-pdf'
 import {
@@ -212,7 +212,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
     const q = searchQuery.trim().toLowerCase()
     return selectedLessons
       .map((id) => {
-        const meta = SEA_LESSONS.find((l) => l.id === id)
+        const meta = findSeaLesson(id)
         if (!meta) return null
         return {
           lessonId: meta.id,

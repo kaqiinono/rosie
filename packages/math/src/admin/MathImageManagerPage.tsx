@@ -5,7 +5,7 @@ import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import type { Problem } from '@rosie/core'
 import clsx from 'clsx'
-import { SEA_LESSONS } from '@rosie/math/utils/sea-data'
+import { findSeaLesson } from '@rosie/math/utils/sea-data'
 import {
   buildProblemPool,
   filterProblemPool,
@@ -177,7 +177,7 @@ export default function MathImageManagerPage({ user }: Props) {
   const listTitle = useMemo(() => {
     if (selectedLessons.length === 0) return '请选择讲次'
     if (selectedLessons.length === 1) {
-      const lesson = SEA_LESSONS.find((l) => l.id === selectedLessons[0])
+      const lesson = findSeaLesson(selectedLessons[0])
       return lesson?.title ?? `第 ${selectedLessons[0]} 讲`
     }
     return `已选 ${selectedLessons.length} 讲`

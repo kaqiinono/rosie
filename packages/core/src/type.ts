@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import type { ProblemDifficulty } from './difficulty'
+import type { ProblemDifficulty, VerticalDigitPuzzleSpec } from './difficulty'
 
 export interface ModuleCardData {
   href: string
@@ -118,6 +118,8 @@ export interface Problem {
    * since it's a plain string — for fully custom JSX diagrams, use `figureNode`.
    */
   analysisImg?: string
+  /** Interactive竖式数字谜 — answer area renders a fill-in grid. */
+  verticalPuzzle?: VerticalDigitPuzzleSpec
 }
 
 export interface ProblemSet {

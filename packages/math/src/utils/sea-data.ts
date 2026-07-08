@@ -20,11 +20,13 @@ import { PROBLEMS as PROBLEMS46, PROBLEM_TYPES as PT46, TAG_STYLE as TS46 } from
 import { PROBLEMS as PROBLEMS47, PROBLEM_TYPES as PT47, TAG_STYLE as TS47 } from './lesson47-data'
 import { PROBLEMS as PROBLEMS49, PROBLEM_TYPES as PT49, TAG_STYLE as TS49 } from './lesson49-data'
 import { PROBLEMS as PROBLEMS55, PROBLEM_TYPES as PT55, TAG_STYLE as TS55 } from './lesson55-data'
+import { PROBLEMS as PROBLEMS56, PROBLEM_TYPES as PT56, TAG_STYLE as TS56 } from './lesson56-data'
 import { PROBLEMS as PROBLEMS53, PROBLEM_TYPES as PT53, TAG_STYLE as TS53 } from './lesson53-data'
 import { PROBLEMS as PROBLEMS52, PROBLEM_TYPES as PT52, TAG_STYLE as TS52 } from './lesson52-data'
 import { PROBLEMS as PROBLEMS51, PROBLEM_TYPES as PT51, TAG_STYLE as TS51 } from './lesson51-data'
 import { PROBLEMS as PROBLEMS50, PROBLEM_TYPES as PT50, TAG_STYLE as TS50 } from './lesson50-data'
 import type { Problem, ProblemSet } from '@rosie/core'
+import { resolveLesson } from '@rosie/math/utils/lesson-registry'
 
 export interface SeaLessonMeta {
   id: string
@@ -259,6 +261,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     problems: PROBLEMS49,
   },
   {
+    id: '56',
+    title: '第7讲·数字谜',
+    shortTitle: '7·数字谜',
+    icon: '🔐',
+    badgeClass: 'bg-sky-100 text-sky-700',
+    tagStyle: TS56,
+    types: PT56.map(t => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
+    problems: PROBLEMS56,
+  },
+  {
     id: '55',
     title: '第6讲·简单枚举',
     shortTitle: '6·简单枚举',
@@ -303,6 +315,18 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
 export const SEA_LESSON_MAP: Record<string, SeaLessonMeta> = Object.fromEntries(
   SEA_LESSONS.map(l => [l.id, l])
 )
+
+/**
+ * 按 lessonKey 或 legacyId 查 SEA 讲次。
+ * 迁移期 SEA_LESSONS[].id 仍为 legacyId，而调用方多传 lessonKey，故两侧经注册表归一后再比较。
+ */
+export function findSeaLesson(id: string): SeaLessonMeta | undefined {
+  const direct = SEA_LESSON_MAP[id]
+  if (direct) return direct
+  const key = resolveLesson(id)?.lessonKey
+  if (!key) return undefined
+  return SEA_LESSONS.find((l) => resolveLesson(l.id)?.lessonKey === key)
+}
 
 export interface SeaProblem {
   problem: Problem

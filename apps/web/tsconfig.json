@@ -4,7 +4,8 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./src/*"],
-      "@rosie/math/*": ["../../packages/math/src/*"]
+      "@rosie/math/*": ["../../packages/math/src/*"],
+      "@rosie/calc/*": ["../../packages/calc/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

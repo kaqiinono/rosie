@@ -27,15 +27,16 @@ export function useMathProblemNotesAdmin(user: User | null, lessonId: string | s
   const [isSaving, setIsSaving] = useState(false)
 
   const reload = useCallback(async () => {
-    if (lessonIds.length === 0) {
+    const ids = lessonIdsKey ? lessonIdsKey.split(',') : []
+    if (ids.length === 0) {
       setNotes([])
       return
     }
     setIsLoading(true)
-    const rows = await Promise.all(lessonIds.map(loadLessonNotes))
+    const rows = await Promise.all(ids.map(loadLessonNotes))
     setNotes(rows.flat())
     setIsLoading(false)
-  }, [lessonIdsKey, lessonIds])
+  }, [lessonIdsKey])
 
   useEffect(() => {
     void reload()

@@ -106,10 +106,10 @@ export default function ScratchPadSession({
   }, [problem?.id, loadProblemState, index, initialIndex, seedWrongAttemptId])
 
   const flushAndGo = useCallback(
-    async (nextIndex: number) => {
-      if (!user || !problem) return
-      if (!readOnly) {
-        await upsertScratchWorking(user.id, problem.id, paperId, objects, answerDraft).catch(() => {})
+    (nextIndex: number) => {
+      if (!problem) return
+      if (!readOnly && user) {
+        void upsertScratchWorking(user.id, problem.id, paperId, objects, answerDraft).catch(() => {})
       }
       setIndex(nextIndex)
     },

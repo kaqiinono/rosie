@@ -28,15 +28,16 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
   const [isUploading, setIsUploading] = useState(false)
 
   const reload = useCallback(async () => {
-    if (lessonIds.length === 0) {
+    const ids = lessonIdsKey ? lessonIdsKey.split(',') : []
+    if (ids.length === 0) {
       setImages([])
       return
     }
     setIsLoading(true)
-    const rows = await Promise.all(lessonIds.map(fetchLessonProblemImages))
+    const rows = await Promise.all(ids.map(fetchLessonProblemImages))
     setImages(rows.flat())
     setIsLoading(false)
-  }, [lessonIdsKey, lessonIds])
+  }, [lessonIdsKey])
 
   useEffect(() => {
     void reload()

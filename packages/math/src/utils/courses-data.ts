@@ -4,6 +4,15 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/7',
+    title: '数字谜探险',
+    description: '加法/减法/数字和分析 —— 方框、字母、汉字竖式推理，从个位进位退位逐位破解，含附加挑战。',
+    icon: '🔐',
+    lectureNum: '第 7 讲',
+    tags: ['数字谜', '竖式推理·字母谜', '35 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/2/6',
     title: '简单枚举探险',
     description: '有序列举、分类讨论 —— 简单枚举、无序分堆、数字排序与隔板分物，含终极挑战附加题。',

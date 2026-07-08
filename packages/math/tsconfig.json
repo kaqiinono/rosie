@@ -4,7 +4,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@rosie/math/*": ["./src/*"]
+      "@rosie/math/*": ["./src/*"],
+      "@rosie/calc/*": ["../calc/src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]

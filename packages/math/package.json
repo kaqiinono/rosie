@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@rosie/calc": "workspace:*",
     "@rosie/core": "workspace:*",
     "@rosie/rewards": "workspace:*",
     "@rosie/ui": "workspace:*",
