@@ -46,16 +46,6 @@ export default function LessonProblemRoutePage({
   const id1 = parseInt(problemId, 10)
   const problem = Number.isNaN(id1) || id1 < 1 ? undefined : problems[id1 - 1]
 
-  if (!problem) {
-    return (
-      <div className="py-10 text-center text-sm text-text-muted">
-        题目不存在或已移除。
-      </div>
-    )
-  }
-
-  const { prevHref, nextHref, positionLabel } = getProblemNav(basePath, section, id1, problems.length)
-
   const scratchValue = useMemo(
     () => ({
       sectionProblems: problems,
@@ -65,6 +55,16 @@ export default function LessonProblemRoutePage({
     }),
     [problems, section, id1, basePath],
   )
+
+  if (!problem) {
+    return (
+      <div className="py-10 text-center text-sm text-text-muted">
+        题目不存在或已移除。
+      </div>
+    )
+  }
+
+  const { prevHref, nextHref, positionLabel } = getProblemNav(basePath, section, id1, problems.length)
 
   return (
     <ProblemScratchProvider value={scratchValue}>
