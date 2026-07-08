@@ -45,6 +45,22 @@ export type Database = {
         Row: { user_id: string; problem_id: string; added_at: string; resolved: boolean; resolved_at: string | null }
         Insert: { user_id: string; problem_id: string; added_at?: string; resolved?: boolean; resolved_at?: string | null }
       }
+      math_quiz_batches: {
+        Row: {
+          id: string
+          user_id: string
+          title_base: string
+          config: unknown
+          volume_count: number
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          title_base: string
+          config?: unknown
+          volume_count?: number
+        }
+      }
       math_quiz_papers: {
         Row: {
           id: string
@@ -56,6 +72,8 @@ export type Database = {
           answers: unknown | null
           completed_at: string | null
           created_at: string
+          batch_id: string | null
+          batch_index: number | null
         }
         Insert: {
           user_id: string
@@ -65,6 +83,8 @@ export type Database = {
           total_score: number
           answers?: unknown | null
           completed_at?: string | null
+          batch_id?: string | null
+          batch_index?: number | null
         }
       }
       word_entries: {

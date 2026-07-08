@@ -38,7 +38,9 @@ import { PROBLEMS as G2Lesson3PROBLEMS } from '@rosie/math/utils/g2/lesson3-data
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizPaper, QuizAnswerRecord } from '@rosie/math/hooks/useMathQuiz'
 import { checkProblemAnswer, isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
-import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
+import { getProblemAnswerMode } from '@rosie/math/utils/problem-answer-mode'
+import VerticalDigitPuzzlePanel from '@rosie/math/components/shared/VerticalDigitPuzzlePanel'
+import ScratchPadCustomAnswerWidget from '@rosie/math/components/shared/ScratchPad/ScratchPadCustomAnswerWidget'
 import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 import QuizProblemSolution from '@rosie/math/components/shared/QuizProblemSolution'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
@@ -139,6 +141,16 @@ function paperProblemsList(paper: QuizPaper): Problem[] {
     .filter((p): p is Problem => Boolean(p))
 }
 
+function customWidgetHint(problem: Problem): string {
+  if (problem.verticalPuzzle) {
+    return '在下方竖式中填入数字完成作答；交卷后统一批阅。'
+  }
+  if (problem.figureNode) {
+    return '在下方宫格中完成作答；交卷后统一批阅。'
+  }
+  return '在下方完成作答；交卷后统一批阅。'
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function QuizDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -179,6 +191,8 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
             answers: data.answers as QuizPaper['answers'],
             completedAt: data.completed_at as string | null,
             createdAt: data.created_at as string,
+            batchId: (data.batch_id as string | null) ?? null,
+            batchIndex: (data.batch_index as number | null) ?? null,
           }
           setPaper(p)
           if (p.completedAt && p.answers) {
@@ -580,6 +594,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
             const entry = PROBLEM_MAP.get(item.problemId)
             if (!entry) return null
             const { problem, section } = entry
+            const answerMode = getProblemAnswerMode(problem)
             const ans = answers[item.problemId] ?? ''
             const isCorrect = submitted ? results[item.problemId] : undefined
             const pts = pointsArr[i] ?? 0
@@ -682,7 +697,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                 )}
 
                 {/* ── Answer area ── */}
-                {isInteractiveProblem(problem) ? (
+                {answerMode === 'custom-widget' ? (
                   <div
                     className="rounded-xl p-3"
                     style={{
@@ -694,15 +709,14 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                         : '1px solid #e2e8f0',
                     }}
                   >
-                    <p className="mb-3 text-sm text-slate-600">
-                      在下方宫格中完成作答即可交卷；点「检查答案」可提前看对错提示。
-                    </p>
+                    <p className="mb-3 text-sm text-slate-600">{customWidgetHint(problem)}</p>
                     <div className={submitted ? 'pointer-events-none opacity-90' : undefined}>
-                      {injectFigureGridCallbacks(problem.figureNode, {
-                        initialState: interactiveStates[item.problemId],
-                        onStateChange: (state) => recordInteractiveState(item.problemId, state),
-                        onSubmit: (state) => recordInteractiveState(item.problemId, state),
-                      })}
+                      <ScratchPadCustomAnswerWidget
+                        problem={problem}
+                        initialState={interactiveStates[item.problemId]}
+                        onStateChange={(state) => recordInteractiveState(item.problemId, state)}
+                        onSubmit={(state) => recordInteractiveState(item.problemId, state)}
+                      />
                     </div>
                     {submitted && (
                       <div className="mt-3 flex items-center gap-2">
@@ -724,6 +738,67 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     )}
                     {!submitted && interactiveTouched[item.problemId] && (
                       <p className="mt-2 text-xs font-medium text-indigo-600">已记录作答，可交卷</p>
+                    )}
+                  </div>
+                ) : answerMode === 'readonly-puzzle-numeric' && problem.verticalPuzzle ? (
+                  <div
+                    className="rounded-xl p-3"
+                    style={{
+                      background: submitted ? 'transparent' : '#f8fafc',
+                      border: submitted ? 'none' : '1px solid #e2e8f0',
+                    }}
+                  >
+                    <div className="mb-4 overflow-x-auto rounded-lg border border-slate-100 bg-white p-2">
+                      <VerticalDigitPuzzlePanel
+                        spec={problem.verticalPuzzle}
+                        embedded
+                        onSubmit={() => {}}
+                      />
+                    </div>
+                    {problem.finalQ && (
+                      <p className="mb-2.5 text-sm text-slate-600">{problem.finalQ}</p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <div className="relative max-w-[180px] flex-1">
+                        <input
+                          type="number"
+                          disabled={submitted}
+                          value={ans}
+                          onChange={(e) =>
+                            setAnswers((prev) => ({
+                              ...prev,
+                              [item.problemId]: e.target.value,
+                            }))
+                          }
+                          placeholder="填写答案"
+                          className="w-full rounded-xl px-3 py-2 text-center text-sm font-semibold transition-colors focus:outline-none"
+                          style={{
+                            border: submitted
+                              ? isCorrect
+                                ? '1.5px solid #6ee7b7'
+                                : '1.5px solid #fca5a5'
+                              : '1.5px solid #c7d2fe',
+                            background: submitted ? (isCorrect ? '#d1fae5' : '#fee2e2') : '#ffffff',
+                            color: submitted ? (isCorrect ? '#065f46' : '#b91c1c') : '#1e293b',
+                            MozAppearance: 'textfield',
+                          }}
+                        />
+                      </div>
+                      {problem.finalUnit && (
+                        <span className="shrink-0 text-sm text-slate-500">{problem.finalUnit}</span>
+                      )}
+                      {submitted && isCorrect && (
+                        <span className="shrink-0 text-lg text-emerald-500">✓</span>
+                      )}
+                      {submitted && !isCorrect && (
+                        <span className="shrink-0 text-lg text-rose-400">✗</span>
+                      )}
+                    </div>
+                    {submitted && !isCorrect && (
+                      <p className="mt-2 text-xs font-semibold" style={{ color: '#dc2626' }}>
+                        正确答案：{problem.finalAns}
+                        {problem.finalUnit ? ` ${problem.finalUnit}` : ''}
+                      </p>
                     )}
                   </div>
                 ) : (

@@ -139,6 +139,12 @@ export async function rasterizeDomElement(
   clone.style.maxWidth = 'none'
   clone.style.width = 'max-content'
   clone.style.flexShrink = '0'
+  // 竖式谜空白格也是 button；仅对宫格等答题区隐藏操作按钮
+  if (!el.hasAttribute('data-scratch-puzzle-grid')) {
+    clone.querySelectorAll('button').forEach((btn) => {
+      btn.style.display = 'none'
+    })
+  }
   sandbox.appendChild(clone)
   document.body.appendChild(sandbox)
 

@@ -7,7 +7,7 @@ import MathSeaCard from '@rosie/math/components/MathSeaCard'
 import { MathFavoritesCard } from '@rosie/math'
 import MathQuizCard from '@rosie/math/components/MathQuizCard'
 import MathCatalogCard from '@rosie/math/components/MathCatalogCard'
-import MathPriorityCard from '@rosie/math/components/MathPriorityCard'
+import MathNotesCard from '@rosie/math/components/MathNotesCard'
 import MathMistakesCard from '@rosie/math/components/MathMistakesCard'
 import { gradesForLanding, GRADE_LABEL, lessonsForGrade } from '@rosie/math/utils/lesson-grade'
 import { gradeCourseSummary } from '@rosie/math/utils/courses-data'
@@ -43,7 +43,7 @@ export default function MathPage() {
                         <MathFavoritesCard />
                         <MathQuizCard />
                         <MathCatalogCard />
-                        <MathPriorityCard />
+                        <MathNotesCard />
                         <MathMistakesCard />
                     </div>
                     <section className="grid w-full grid-cols-1 gap-4 min-[501px]:grid-cols-2">

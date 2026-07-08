@@ -12,6 +12,7 @@ type Props = {
   feedback?: AnswerCheckResult | null
   onStateChange: (state: unknown) => void
   onSubmit: (state: unknown) => void
+  disabled?: boolean
   /** 供草稿纸栅格化导出（竖式 grid 或 figure 容器） */
   exportHostRef?: RefObject<HTMLDivElement | null>
   /** 竖式键盘固定底栏槽位；传入 `null` 表示槽位尚未挂载，键盘暂不内联显示 */
@@ -28,6 +29,7 @@ export default function ScratchPadCustomAnswerWidget({
   feedback,
   onStateChange,
   onSubmit,
+  disabled = false,
   exportHostRef,
   padSlot,
 }: Props) {
@@ -44,6 +46,7 @@ export default function ScratchPadCustomAnswerWidget({
         onStateChange={() => {}}
         onSubmit={(fills) => onSubmit(fills)}
         feedback={feedback ?? null}
+        disabled={disabled}
         padSlot={padSlot}
       />
     )

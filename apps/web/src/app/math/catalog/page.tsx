@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { BackLink } from '@rosie/ui'
 import CatalogTree from '@rosie/math/components/catalog/CatalogTree'
 import {
@@ -127,6 +128,14 @@ export default function MathCatalogPage() {
             </div>
           ))}
         </div>
+        <Link
+          href="/math/priority"
+          className="mt-4 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-[10px] border border-emerald-300/40 bg-emerald-500/20 px-4 py-2.5 text-[13px] font-semibold text-white no-underline transition hover:bg-emerald-500/30"
+        >
+          <span>🧄 纳约数学大纲</span>
+          <span className="font-normal opacity-85">知识点分析 · 模块优先级 · 复习计划</span>
+          <span className="opacity-75">→</span>
+        </Link>
       </header>
 
       <div className="mx-auto max-w-[1180px] p-5">

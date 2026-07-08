@@ -5,48 +5,38 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathQuiz } from '@rosie/math/hooks/useMathQuiz'
-import { PROBLEMS as G1Lesson12PROBLEMS, PROBLEM_TYPES as G1Lesson12PT } from '@rosie/math/utils/g1/lesson12-data'
-import { PROBLEMS as G1Lesson13PROBLEMS, PROBLEM_TYPES as G1Lesson13PT } from '@rosie/math/utils/g1/lesson13-data'
-import { PROBLEMS as G1Lesson15PROBLEMS, PROBLEM_TYPES as G1Lesson15PT } from '@rosie/math/utils/g1/lesson15-data'
-import { PROBLEMS as G1Lesson18PROBLEMS, PROBLEM_TYPES as G1Lesson18PT } from '@rosie/math/utils/g1/lesson18-data'
-import { PROBLEMS as G1Lesson23PROBLEMS, PROBLEM_TYPES as G1Lesson23PT } from '@rosie/math/utils/g1/lesson23-data'
-import { PROBLEMS as G1Lesson29PROBLEMS, PROBLEM_TYPES as G1Lesson29PT } from '@rosie/math/utils/g1/lesson29-data'
-import { PROBLEMS as G1Lesson30PROBLEMS, PROBLEM_TYPES as G1Lesson30PT } from '@rosie/math/utils/g1/lesson30-data'
-import { PROBLEMS as G1Lesson34PROBLEMS, PROBLEM_TYPES as G1Lesson34PT } from '@rosie/math/utils/g1/lesson34-data'
-import { PROBLEMS as G1Lesson35PROBLEMS, PROBLEM_TYPES as G1Lesson35PT } from '@rosie/math/utils/g1/lesson35-data'
-import { PROBLEMS as G1Lesson36PROBLEMS, PROBLEM_TYPES as G1Lesson36PT } from '@rosie/math/utils/g1/lesson36-data'
-import { PROBLEMS as G1Lesson37PROBLEMS, PROBLEM_TYPES as G1Lesson37PT } from '@rosie/math/utils/g1/lesson37-data'
-import { PROBLEMS as G1Lesson38PROBLEMS, PROBLEM_TYPES as G1Lesson38PT } from '@rosie/math/utils/g1/lesson38-data'
-import { PROBLEMS as G1Lesson39PROBLEMS, PROBLEM_TYPES as G1Lesson39PT } from '@rosie/math/utils/g1/lesson39-data'
-import { PROBLEMS as G1Lesson40PROBLEMS, PROBLEM_TYPES as G1Lesson40PT } from '@rosie/math/utils/g1/lesson40-data'
-import { PROBLEMS as G1Lesson41PROBLEMS, PROBLEM_TYPES as G1Lesson41PT } from '@rosie/math/utils/g1/lesson41-data'
-import { PROBLEMS as G1Lesson42PROBLEMS, PROBLEM_TYPES as G1Lesson42PT } from '@rosie/math/utils/g1/lesson42-data'
-import { PROBLEMS as G1Lesson43PROBLEMS, PROBLEM_TYPES as G1Lesson43PT } from '@rosie/math/utils/g1/lesson43-data'
-import { PROBLEMS as G1Lesson44PROBLEMS, PROBLEM_TYPES as G1Lesson44PT } from '@rosie/math/utils/g1/lesson44-data'
-import { PROBLEMS as G1Lesson46PROBLEMS, PROBLEM_TYPES as G1Lesson46PT } from '@rosie/math/utils/g1/lesson46-data'
-import { PROBLEMS as G1Lesson47PROBLEMS, PROBLEM_TYPES as G1Lesson47PT } from '@rosie/math/utils/g1/lesson47-data'
-import { PROBLEMS as G2Lesson1PROBLEMS, PROBLEM_TYPES as G2Lesson1PT } from '@rosie/math/utils/g2/lesson1-data'
-import { PROBLEMS as G2Lesson2PROBLEMS, PROBLEM_TYPES as G2Lesson2PT } from '@rosie/math/utils/g2/lesson2-data'
-import { PROBLEMS as G2Lesson6PROBLEMS, PROBLEM_TYPES as G2Lesson6PT } from '@rosie/math/utils/g2/lesson6-data'
-import { PROBLEMS as G2Lesson7PROBLEMS, PROBLEM_TYPES as G2Lesson7PT } from '@rosie/math/utils/g2/lesson7-data'
-import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT } from '@rosie/math/utils/g2/lesson5-data'
-import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT } from '@rosie/math/utils/g2/lesson4-data'
-import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT } from '@rosie/math/utils/g2/lesson3-data'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import { useProblemMastery } from '@rosie/math/hooks/useProblemMastery'
+import { useMathQuiz, type QuizBatch, type QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 import {
   gradeOf,
   GRADE_LABEL,
   gradesInOrder,
   lessonDisplayLabel,
 } from '@rosie/math/utils/lesson-grade'
-import type { Problem, ProblemSet } from '@rosie/core'
+import {
+  allocateAppendLessons,
+  allocateInitialBatch,
+  computeQuizPoolStats,
+  entriesToProblemItems,
+  pickByPriority,
+  quizBatchVolumeTitle,
+  quizTodayDateStr,
+} from '@rosie/math/utils/quiz-allocate'
+import {
+  ALL_QUIZ_SECTIONS,
+  buildQuizPool,
+  QUIZ_ALL_ENTRIES_MAP,
+  QUIZ_LESSON_META,
+  QUIZ_SECTION_INFO,
+  type QuizEntry,
+  type QuizSection,
+} from '@rosie/math/utils/quiz-lesson-meta'
 import type { QuizProblemItem } from '@rosie/math/hooks/useMathQuiz'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Section = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
-
-type QuizEntry = { problem: Problem; lessonId: string; section: Section }
+type Section = QuizSection
 
 type QuizItem = {
   uid: string
@@ -64,97 +54,21 @@ function makeUid() {
   return `q${Date.now().toString(36)}${uidCounter.toString(36)}`
 }
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const ALL_SECTIONS: Section[] = ['lesson', 'homework', 'workbook', 'supplement', 'pretest']
-
-const SECTION_INFO: Record<Section, { label: string; icon: string }> = {
-  lesson: { label: '课堂讲解', icon: '📖' },
-  homework: { label: '课后巩固', icon: '✏️' },
-  workbook: { label: '拓展练习', icon: '📚' },
-  supplement: { label: '附加题', icon: '📒' },
-  pretest: { label: '课前测', icon: '📝' },
-}
-
-const LESSON_META: Array<{
-  id: string
-  name: string
-  data: ProblemSet
-  types: ReadonlyArray<{ tag: string; label: string }>
-}> = [
-  { id: '1-12', name: '巧算加减法进阶', data: G1Lesson12PROBLEMS, types: G1Lesson12PT },
-  { id: '1-13', name: '植树问题', data: G1Lesson13PROBLEMS, types: G1Lesson13PT },
-  { id: '1-15', name: '和差问题', data: G1Lesson15PROBLEMS, types: G1Lesson15PT },
-  { id: '1-18', name: '和差倍初步', data: G1Lesson18PROBLEMS, types: G1Lesson18PT },
-  { id: '1-23', name: '逻辑推理', data: G1Lesson23PROBLEMS, types: G1Lesson23PT },
-  { id: '1-29', name: '算符大作战', data: G1Lesson29PROBLEMS, types: G1Lesson29PT },
-  { id: '1-30', name: '和差倍进阶', data: G1Lesson30PROBLEMS, types: G1Lesson30PT },
-  { id: '1-34', name: '乘法分配律', data: G1Lesson34PROBLEMS, types: G1Lesson34PT },
-  { id: '1-35', name: '归一问题', data: G1Lesson35PROBLEMS, types: G1Lesson35PT },
-  { id: '1-36', name: '星期几问题', data: G1Lesson36PROBLEMS, types: G1Lesson36PT },
-  { id: '1-37', name: '鸡兔同笼', data: G1Lesson37PROBLEMS, types: G1Lesson37PT },
-  { id: '1-38', name: '一笔画', data: G1Lesson38PROBLEMS, types: G1Lesson38PT },
-  { id: '1-39', name: '盈亏问题', data: G1Lesson39PROBLEMS, types: G1Lesson39PT },
-  { id: '1-40', name: '周长问题', data: G1Lesson40PROBLEMS, types: G1Lesson40PT },
-  { id: '1-41', name: '间隔趣题', data: G1Lesson41PROBLEMS, types: G1Lesson41PT },
-  { id: '1-42', name: '生活智力题', data: G1Lesson42PROBLEMS, types: G1Lesson42PT },
-  { id: '1-43', name: '等差数列初识', data: G1Lesson43PROBLEMS, types: G1Lesson43PT },
-  { id: '1-44', name: '统筹优化', data: G1Lesson44PROBLEMS, types: G1Lesson44PT },
-  { id: '1-46', name: '抽屉原理与最不利', data: G1Lesson46PROBLEMS, types: G1Lesson46PT },
-  { id: '1-47', name: '方格中的秘密', data: G1Lesson47PROBLEMS, types: G1Lesson47PT },
-  { id: '2-1', name: '加减法速算与巧算', data: G2Lesson1PROBLEMS, types: G2Lesson1PT },
-  { id: '2-2', name: '等量代换与归一问题', data: G2Lesson2PROBLEMS, types: G2Lesson2PT },
-  { id: '2-6', name: '简单枚举', data: G2Lesson6PROBLEMS, types: G2Lesson6PT },
-  { id: '2-7', name: '数字谜', data: G2Lesson7PROBLEMS, types: G2Lesson7PT },
-  { id: '2-5', name: '找规律', data: G2Lesson5PROBLEMS, types: G2Lesson5PT },
-  { id: '2-4', name: '差倍问题', data: G2Lesson4PROBLEMS, types: G2Lesson4PT },
-  { id: '2-3', name: '等量代换与归一问题', data: G2Lesson3PROBLEMS, types: G2Lesson3PT },
-]
+const ALL_SECTIONS = ALL_QUIZ_SECTIONS
+const SECTION_INFO = QUIZ_SECTION_INFO
+const LESSON_META = QUIZ_LESSON_META
+const ALL_ENTRIES_MAP = QUIZ_ALL_ENTRIES_MAP
+const buildPool = buildQuizPool
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function buildPool(lessonId: string, sections: Section[], types: string[]): QuizEntry[] {
-  const meta = LESSON_META.find((l) => l.id === lessonId)
-  if (!meta) return []
-  const activeSections = sections.length > 0 ? sections : ALL_SECTIONS
-  const entries: QuizEntry[] = []
-  for (const section of activeSections) {
-    const problems = meta.data[section]
-    if (!problems) continue
-    for (const problem of problems) {
-      if (types.length > 0 && !types.includes(problem.tag)) continue
-      entries.push({ problem, lessonId, section })
-    }
-  }
-  return entries
-}
-
-function pickRandom(pool: QuizEntry[], exclude: Set<string>): QuizEntry | null {
-  const candidates = pool.filter((e) => !exclude.has(e.problem.id))
-  if (candidates.length === 0) return null
-  return candidates[Math.floor(Math.random() * candidates.length)]
-}
 
 function stripHtml(html: string) {
   return html.replace(/<[^>]+>/g, '')
 }
 
 function todayDateStr() {
-  const d = new Date()
-  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
+  return quizTodayDateStr()
 }
-
-const ALL_ENTRIES_MAP = (() => {
-  const map = new Map<string, QuizEntry>()
-  for (const { id, data } of LESSON_META) {
-    for (const section of ALL_SECTIONS) {
-      const problems = data[section]
-      if (!problems) continue
-      for (const p of problems) map.set(p.id, { problem: p, lessonId: id, section })
-    }
-  }
-  return map
-})()
 
 function formatDate(iso: string) {
   const d = new Date(iso)
@@ -167,20 +81,36 @@ export default function QuizPage() {
   const router = useRouter()
   const { user } = useAuth()
   const { solveCount } = useMathSolved(user)
-  const { papers, savePaper, deletePaper, renamePaper } = useMathQuiz(user)
+  const { wrongIds } = useMathWrong(user)
+  const { masteryMap } = useProblemMastery(user)
+  const { papers, batches, savePaper, createBatch, appendToBatch, deletePaper, renamePaper, renameBatch, deleteBatch } =
+    useMathQuiz(user)
+
+  const allocationCtx = useMemo(
+    () => ({ wrongIds, solveCount, masteryMap }),
+    [wrongIds, solveCount, masteryMap],
+  )
 
   // Builder state
   const [quizItems, setQuizItems] = useState<QuizItem[]>([])
   const [draftTitle, setDraftTitle] = useState('')
   const [saving, setSaving] = useState(false)
+  const [batchSaving, setBatchSaving] = useState(false)
 
   // Inline rename state for saved papers
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
+  const [editingBatchId, setEditingBatchId] = useState<string | null>(null)
+  const [editingBatchTitle, setEditingBatchTitle] = useState('')
+  const [batchBusyId, setBatchBusyId] = useState<string | null>(null)
+  /** Expanded batch cards; default collapsed */
+  const [expandedBatchIds, setExpandedBatchIds] = useState<Set<string>>(new Set())
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<'random' | 'precise'>('random')
+  const [modalMode, setModalMode] = useState<'random' | 'precise' | 'append'>('random')
+  const [appendBatchId, setAppendBatchId] = useState<string | null>(null)
+  const [modalTitle, setModalTitle] = useState('')
   const [preciseStep, setPreciseStep] = useState<1 | 2>(1)
   // When set, the draft is swapping the problem of this precise item via a picker.
   const [swapUid, setSwapUid] = useState<string | null>(null)
@@ -198,13 +128,42 @@ export default function QuizPage() {
     [modalLessons, modalCounts],
   )
 
+  const modalPoolStats = useMemo(() => {
+    if (modalLessons.length === 0) {
+      return { totalPool: 0, perVolume: 0, volumeCount: 0, lessonPoolSizes: {} as Record<string, number> }
+    }
+    return computeQuizPoolStats(
+      modalLessons,
+      modalSections,
+      modalTypes,
+      modalCounts,
+      draftProblemIds,
+    )
+  }, [modalLessons, modalSections, modalTypes, modalCounts, draftProblemIds])
+
+  const appendBatch = useMemo(
+    () => (appendBatchId ? batches.find((b) => b.id === appendBatchId) ?? null : null),
+    [appendBatchId, batches],
+  )
+
+  const batchLessonIds = useMemo(
+    () => new Set(Object.keys(appendBatch?.config.lessons ?? {})),
+    [appendBatch],
+  )
+
   // Lessons that can be picked in the current modal mode. In random mode lessons
   // already in the draft are excluded; in precise mode every lesson is selectable
   // because individual problems are de-duplicated against the draft.
   const selectableLessons = useMemo(
-    () =>
-      modalMode === 'random' ? LESSON_META.filter((l) => !existingIds.has(l.id)) : LESSON_META,
-    [modalMode, existingIds],
+    () => {
+      if (modalMode === 'append') {
+        return LESSON_META.filter((l) => !batchLessonIds.has(l.id))
+      }
+      return modalMode === 'random'
+        ? LESSON_META.filter((l) => !existingIds.has(l.id))
+        : LESSON_META
+    },
+    [modalMode, existingIds, batchLessonIds],
   )
 
   // Step 2 of precise mode: filtered problems grouped per lesson.
@@ -235,16 +194,67 @@ export default function QuizPage() {
     [quizItems],
   )
 
+  const batchUsedIds = useMemo(() => {
+    if (!appendBatch) return new Set<string>()
+    return new Set(
+      papers
+        .filter((p) => p.batchId === appendBatch.id)
+        .flatMap((p) => p.problems.map((x) => x.problemId)),
+    )
+  }, [appendBatch, papers])
+
+  const appendPoolStats = useMemo(() => {
+    if (modalMode !== 'append' || modalLessons.length === 0) {
+      return { totalPool: 0, perVolume: 0, volumeCount: 0, lessonPoolSizes: {} as Record<string, number> }
+    }
+    const sections =
+      modalSections.length > 0 ? modalSections : appendBatch?.config.sections ?? []
+    return computeQuizPoolStats(
+      modalLessons,
+      sections,
+      modalTypes,
+      modalCounts,
+      batchUsedIds,
+    )
+  }, [modalMode, modalLessons, modalSections, modalTypes, modalCounts, batchUsedIds, appendBatch])
+
+  const groupedRecords = useMemo(() => {
+    const batchGroups = batches.map((batch) => ({
+      batch,
+      papers: papers
+        .filter((p) => p.batchId === batch.id)
+        .sort((a, b) => (a.batchIndex ?? 0) - (b.batchIndex ?? 0)),
+    }))
+    const orphanPapers = papers.filter((p) => !p.batchId)
+    return { batchGroups, orphanPapers }
+  }, [batches, papers])
+
   // ── Modal handlers ────────────────────────────────────────────────────────
 
   function openModal(mode: 'random' | 'precise') {
     setModalMode(mode)
+    setAppendBatchId(null)
     setPreciseStep(1)
     setPreciseSelected(new Set())
     setModalLessons(LESSON_META.filter((l) => !existingIds.has(l.id)).map((l) => l.id))
     setModalSections([])
     setModalTypes({})
     setModalCounts({})
+    setModalTitle(draftTitle)
+    setModalOpen(true)
+  }
+
+  function openAppendModal(batch: QuizBatch) {
+    setModalMode('append')
+    setAppendBatchId(batch.id)
+    setPreciseStep(1)
+    setPreciseSelected(new Set())
+    const inBatch = new Set(Object.keys(batch.config.lessons))
+    setModalLessons(LESSON_META.filter((l) => !inBatch.has(l.id)).map((l) => l.id))
+    setModalSections(batch.config.sections)
+    setModalTypes({})
+    setModalCounts({})
+    setModalTitle(batch.titleBase)
     setModalOpen(true)
   }
 
@@ -270,7 +280,10 @@ export default function QuizPage() {
 
   function toggleGradeGroup(gradeLessons: typeof LESSON_META, on: boolean) {
     const ids = gradeLessons
-      .filter((l) => modalMode !== 'random' || !existingIds.has(l.id))
+      .filter((l) => {
+        if (modalMode === 'append') return !batchLessonIds.has(l.id)
+        return modalMode !== 'random' || !existingIds.has(l.id)
+      })
       .map((l) => l.id)
     if (on) {
       setModalLessons((prev) => [...new Set([...prev, ...ids])])
@@ -317,7 +330,7 @@ export default function QuizPage() {
     })
   }
 
-  // Random mode: pick N distinct problems per lesson at random from the filtered pool.
+  // Random mode: pick N distinct problems per lesson by priority from the filtered pool.
   function handleRandomConfirm() {
     const newItems: QuizItem[] = []
     for (const lessonId of modalLessons) {
@@ -327,8 +340,8 @@ export default function QuizPage() {
       const count = Math.max(1, modalCounts[lessonId] ?? 1)
       const chosen = new Set<string>()
       for (let k = 0; k < count; k++) {
-        const picked = pickRandom(pool, chosen)
-        if (!picked) break // pool exhausted — fewer distinct problems than requested
+        const picked = pickByPriority(pool, chosen, allocationCtx)
+        if (!picked) break
         chosen.add(picked.problem.id)
         newItems.push({
           uid: makeUid(),
@@ -342,6 +355,91 @@ export default function QuizPage() {
     }
     setQuizItems((prev) => [...prev, ...newItems])
     setModalOpen(false)
+  }
+
+  async function handleBatchCreate() {
+    if (!user || modalLessons.length === 0 || modalPoolStats.volumeCount === 0) return
+    setBatchSaving(true)
+    const titleBase = modalTitle.trim() || draftTitle.trim() || `综合测试卷${todayDateStr()}`
+    const { volumes, config } = allocateInitialBatch(
+      modalLessons,
+      modalSections,
+      modalTypes,
+      modalCounts,
+      allocationCtx,
+      draftProblemIds,
+    )
+    const inserts = volumes.map((vol) => ({
+      batchIndex: vol.batchIndex,
+      title: quizBatchVolumeTitle(titleBase, vol.batchIndex, volumes.length),
+      problems: entriesToProblemItems(vol.entries, modalSections, modalTypes),
+    }))
+    const batchId = await createBatch(titleBase, inserts, config)
+    setBatchSaving(false)
+    setModalOpen(false)
+    if (batchId) {
+      setModalTitle('')
+    }
+  }
+
+  async function handleAppendConfirm() {
+    if (!user || !appendBatch || modalLessons.length === 0) return
+    setBatchSaving(true)
+    const titleBase = appendBatch.titleBase
+    const batchPapers = papers
+      .filter((p) => p.batchId === appendBatch.id)
+      .sort((a, b) => (a.batchIndex ?? 0) - (b.batchIndex ?? 0))
+
+    const countsWithDefaults = { ...modalCounts }
+    const defaultCount =
+      Object.values(appendBatch.config.lessons)[0]?.countPerVolume ?? 1
+    for (const lessonId of modalLessons) {
+      if (!countsWithDefaults[lessonId]) {
+        countsWithDefaults[lessonId] = defaultCount
+      }
+    }
+
+    const plan = allocateAppendLessons(
+      modalLessons,
+      modalSections.length > 0 ? modalSections : appendBatch.config.sections,
+      modalTypes,
+      countsWithDefaults,
+      batchPapers.map((p) => ({
+        id: p.id,
+        batchIndex: p.batchIndex,
+        completedAt: p.completedAt,
+        problems: p.problems,
+      })),
+      appendBatch.config,
+      allocationCtx,
+    )
+
+    const sections =
+      modalSections.length > 0 ? modalSections : appendBatch.config.sections
+
+    const updates = plan.updates.map((u) => {
+      const paper = batchPapers.find((p) => p.id === u.paperId)!
+      const appended = entriesToProblemItems(u.appendEntries, sections, modalTypes)
+      return { paperId: u.paperId, problems: [...paper.problems, ...appended] }
+    })
+
+    const maxExisting = batchPapers.reduce((m, p) => Math.max(m, p.batchIndex ?? 0), 0)
+    const maxNew = plan.newVolumes.reduce((m, v) => Math.max(m, v.batchIndex), 0)
+    const totalVolumes = Math.max(maxExisting, maxNew, appendBatch.volumeCount)
+
+    const newVolumes = plan.newVolumes.map((vol) => ({
+      batchIndex: vol.batchIndex,
+      title: quizBatchVolumeTitle(titleBase, vol.batchIndex, totalVolumes),
+      problems: entriesToProblemItems(vol.entries, sections, modalTypes),
+    }))
+
+    const ok = await appendToBatch(appendBatch.id, titleBase, updates, newVolumes, plan.config)
+    setBatchSaving(false)
+    setModalOpen(false)
+    setAppendBatchId(null)
+    if (!ok) {
+      window.alert('追加失败，请确认已执行 docs/sql/math-quiz-batches.sql 迁移')
+    }
   }
 
   // Precise mode: add exactly the manually selected problems (skipping any already in the draft).
@@ -397,9 +495,10 @@ export default function QuizPage() {
       return
     }
     const pool = buildPool(item.lessonId, item.sections, item.types)
-    // Avoid duplicating any problem already in the draft (including this one).
     const used = new Set(quizItems.map((i) => i.problemId))
-    const picked = pickRandom(pool, used) ?? pickRandom(pool, new Set([item.problemId]))
+    const picked =
+      pickByPriority(pool, used, allocationCtx) ??
+      pickByPriority(pool, new Set([item.problemId]), allocationCtx)
     if (!picked) return
     setQuizItems((prev) =>
       prev.map((i) => (i.uid === uid ? { ...i, problemId: picked.problem.id } : i)),
@@ -447,6 +546,173 @@ export default function QuizPage() {
     const title = editingTitle
     setEditingId(null)
     await renamePaper(id, title)
+  }
+
+  function startBatchRename(batch: QuizBatch) {
+    setEditingBatchId(batch.id)
+    setEditingBatchTitle(batch.titleBase)
+  }
+
+  async function commitBatchRename() {
+    if (!editingBatchId) return
+    const id = editingBatchId
+    const title = editingBatchTitle
+    setEditingBatchId(null)
+    setBatchBusyId(id)
+    const ok = await renameBatch(id, title)
+    setBatchBusyId(null)
+    if (!ok) window.alert('修改批次标题失败')
+  }
+
+  async function handleDeleteBatch(batch: QuizBatch, paperCount: number) {
+    const okConfirm = window.confirm(
+      `确定删除批次「${batch.titleBase}」？将同时删除其中 ${paperCount} 卷试卷，且不可恢复。`,
+    )
+    if (!okConfirm) return
+    setBatchBusyId(batch.id)
+    const ok = await deleteBatch(batch.id)
+    setBatchBusyId(null)
+    if (!ok) window.alert('删除批次失败')
+  }
+
+  function toggleBatchExpanded(batchId: string) {
+    setExpandedBatchIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(batchId)) next.delete(batchId)
+      else next.add(batchId)
+      return next
+    })
+  }
+
+  function renderPaperRow(paper: QuizPaper) {
+    return (
+      <div
+        key={paper.id}
+        className="flex cursor-pointer items-center gap-2 rounded-2xl bg-white py-3 pr-2 pl-4 transition-all hover:shadow-md"
+        style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,.04)' }}
+        onClick={() => router.push(`/math/ny/quiz/${paper.id}`)}
+      >
+        <div className="min-w-0 flex-1">
+          {editingId === paper.id ? (
+            <input
+              autoFocus
+              type="text"
+              value={editingTitle}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => setEditingTitle(e.target.value)}
+              onBlur={() => void commitRename()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void commitRename()
+                else if (e.key === 'Escape') setEditingId(null)
+              }}
+              className="w-full rounded-lg border border-indigo-300 bg-white px-2 py-1 text-sm font-bold text-slate-800 outline-none"
+              aria-label="修改试卷标题"
+            />
+          ) : (
+            <p className="truncate text-sm font-bold text-slate-800">{paper.title}</p>
+          )}
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
+            {paper.batchIndex != null && (
+              <>
+                <span className="text-indigo-500">第{paper.batchIndex}卷</span>
+                <span className="text-slate-300">·</span>
+              </>
+            )}
+            <span className="text-slate-400">{paper.problems.length} 题</span>
+            <span className="text-slate-300">·</span>
+            <span className="text-slate-400">{formatDate(paper.createdAt)}</span>
+            <span className="text-slate-300">·</span>
+            {paper.completedAt ? (
+              <span className="font-semibold text-emerald-600">
+                {paper.score ?? 0}/{paper.totalScore} 分
+                {paper.batchId ? ' · 已提交' : ''}
+              </span>
+            ) : paper.answers && Object.keys(paper.answers).length > 0 ? (
+              <span className="font-semibold text-indigo-500">作答中</span>
+            ) : (
+              <span className="font-semibold text-amber-500">未作答</span>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            startRename(paper.id, paper.title)
+          }}
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
+          title="重命名"
+          aria-label="重命名试卷"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z" />
+          </svg>
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            window.open(
+              `/math/ny/quiz/${paper.id}/print${paper.completedAt ? '?mode=complete' : ''}`,
+              '_blank',
+            )
+          }}
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
+          title="打印"
+          aria-label="打印试卷"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            void deletePaper(paper.id)
+          }}
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-rose-50 hover:text-rose-500"
+          title="删除"
+          aria-label="删除试卷"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6M14 11v6" />
+          </svg>
+        </button>
+      </div>
+    )
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -677,128 +943,136 @@ export default function QuizPage() {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col gap-2">
-                {papers.map((paper) => (
-                  <div
-                    key={paper.id}
-                    className="flex cursor-pointer items-center gap-2 rounded-2xl bg-white py-3 pr-2 pl-4 transition-all hover:shadow-md"
-                    style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,.04)' }}
-                    onClick={() => router.push(`/math/ny/quiz/${paper.id}`)}
-                  >
-                    <div className="min-w-0 flex-1">
-                      {editingId === paper.id ? (
-                        <input
-                          autoFocus
-                          type="text"
-                          value={editingTitle}
-                          onClick={(e) => e.stopPropagation()}
-                          onChange={(e) => setEditingTitle(e.target.value)}
-                          onBlur={() => void commitRename()}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') void commitRename()
-                            else if (e.key === 'Escape') setEditingId(null)
-                          }}
-                          className="w-full rounded-lg border border-indigo-300 bg-white px-2 py-1 text-sm font-bold text-slate-800 outline-none"
-                          aria-label="修改试卷标题"
-                        />
-                      ) : (
-                        <p className="truncate text-sm font-bold text-slate-800">{paper.title}</p>
-                      )}
-                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
-                        <span className="text-slate-400">{paper.problems.length} 题</span>
-                        <span className="text-slate-300">·</span>
-                        <span className="text-slate-400">{formatDate(paper.createdAt)}</span>
-                        <span className="text-slate-300">·</span>
-                        {paper.completedAt ? (
-                          <span className="font-semibold text-emerald-600">
-                            {paper.score ?? 0}/{paper.totalScore} 分
-                          </span>
-                        ) : paper.answers && Object.keys(paper.answers).length > 0 ? (
-                          <span className="font-semibold text-indigo-500">作答中</span>
-                        ) : (
-                          <span className="font-semibold text-amber-500">未作答</span>
-                        )}
+              <div className="flex flex-col gap-4">
+                {groupedRecords.batchGroups.map(({ batch, papers: batchPapers }) => {
+                  const expanded = expandedBatchIds.has(batch.id)
+                  const completedCount = batchPapers.filter((p) => p.completedAt).length
+                  const totalCount = batchPapers.length
+                  const progressDone = totalCount > 0 && completedCount === totalCount
+                  return (
+                    <div
+                      key={batch.id}
+                      className="rounded-2xl bg-white p-3"
+                      style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,.04)' }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleBatchExpanded(batch.id)}
+                          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-xl px-1 py-0.5 text-left transition-colors hover:bg-slate-50"
+                          aria-expanded={expanded}
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            className={`shrink-0 text-slate-400 transition-transform ${expanded ? 'rotate-90' : ''}`}
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M6 4l4 4-4 4"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <div className="min-w-0 flex-1">
+                            {editingBatchId === batch.id ? (
+                              <input
+                                autoFocus
+                                type="text"
+                                value={editingBatchTitle}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) => setEditingBatchTitle(e.target.value)}
+                                onBlur={() => void commitBatchRename()}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void commitBatchRename()
+                                  else if (e.key === 'Escape') setEditingBatchId(null)
+                                }}
+                                className="w-full max-w-xs rounded-lg border border-indigo-300 bg-white px-2 py-1 text-sm font-bold text-slate-800 outline-none"
+                                aria-label="修改批次标题"
+                              />
+                            ) : (
+                              <p className="truncate text-sm font-bold text-slate-700">{batch.titleBase}</p>
+                            )}
+                            <p className="mt-0.5 text-[11px] text-slate-400">
+                              <span
+                                className={
+                                  progressDone
+                                    ? 'font-semibold text-emerald-600'
+                                    : completedCount > 0
+                                      ? 'font-semibold text-indigo-500'
+                                      : 'font-semibold text-amber-500'
+                                }
+                              >
+                                {completedCount}/{totalCount}
+                              </span>
+                              <span className="text-slate-300"> · </span>
+                              {totalCount} 卷 ·{' '}
+                              {batchPapers.reduce((n, p) => n + p.problems.length, 0)} 题
+                            </p>
+                          </div>
+                        </button>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          <button
+                            type="button"
+                            disabled={batchBusyId === batch.id}
+                            onClick={() => startBatchRename(batch)}
+                            className="cursor-pointer rounded-full bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200 disabled:opacity-50"
+                            title="修改批次标题"
+                          >
+                            改名
+                          </button>
+                          <button
+                            type="button"
+                            disabled={batchBusyId === batch.id || batchPapers.length === 0}
+                            onClick={() => {
+                              window.open(`/math/ny/quiz/batch/${batch.id}/print`, '_blank')
+                            }}
+                            className="cursor-pointer rounded-full bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-100 disabled:opacity-50"
+                            title="按批次打印全部试卷"
+                          >
+                            打印
+                          </button>
+                          <button
+                            type="button"
+                            disabled={batchBusyId === batch.id}
+                            onClick={() => openAppendModal(batch)}
+                            className="cursor-pointer rounded-full bg-violet-100 px-3 py-1.5 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-200 disabled:opacity-50"
+                          >
+                            追加讲次
+                          </button>
+                          <button
+                            type="button"
+                            disabled={batchBusyId === batch.id}
+                            onClick={() => void handleDeleteBatch(batch, batchPapers.length)}
+                            className="cursor-pointer rounded-full bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-500 transition-colors hover:bg-rose-100 disabled:opacity-50"
+                            title="删除整批"
+                          >
+                            {batchBusyId === batch.id ? '…' : '删除'}
+                          </button>
+                        </div>
                       </div>
+                      {expanded && (
+                        <div className="mt-3 flex flex-col gap-2">{batchPapers.map(renderPaperRow)}</div>
+                      )}
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        startRename(paper.id, paper.title)
-                      }}
-                      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
-                      title="重命名"
-                      aria-label="重命名试卷"
-                    >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.open(
-                          `/math/ny/quiz/${paper.id}/print${paper.completedAt ? '?mode=complete' : ''}`,
-                          '_blank',
-                        )
-                      }}
-                      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
-                      title="打印"
-                      aria-label="打印试卷"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <polyline points="6 9 6 2 18 2 18 9" />
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                        <rect x="6" y="14" width="12" height="8" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        void deletePaper(paper.id)
-                      }}
-                      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-rose-50 hover:text-rose-500"
-                      title="删除"
-                      aria-label="删除试卷"
-                    >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                        <path d="M10 11v6M14 11v6" />
-                      </svg>
-                    </button>
+                  )
+                })}
+                {groupedRecords.orphanPapers.length > 0 && (
+                  <div>
+                    {groupedRecords.batchGroups.length > 0 && (
+                      <p className="mb-2 text-xs font-bold tracking-wider text-slate-400 uppercase">
+                        单卷记录
+                      </p>
+                    )}
+                    <div className="flex flex-col gap-2">
+                      {groupedRecords.orphanPapers.map(renderPaperRow)}
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
@@ -822,9 +1096,11 @@ export default function QuizPage() {
               <h2 className="font-black text-slate-800">
                 {modalMode === 'random'
                   ? '随机出题'
-                  : preciseStep === 1
-                    ? '精准出题 · 筛选'
-                    : '精准出题 · 选题'}
+                  : modalMode === 'append'
+                    ? `追加讲次 · ${appendBatch?.titleBase ?? ''}`
+                    : preciseStep === 1
+                      ? '精准出题 · 筛选'
+                      : '精准出题 · 选题'}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
@@ -954,9 +1230,10 @@ export default function QuizPage() {
                     </div>
                     <div className="space-y-4">
                       {lessonsByGrade.map((grp) => {
-                        const selectable = grp.lessons.filter(
-                          (l) => modalMode !== 'random' || !existingIds.has(l.id),
-                        )
+                        const selectable = grp.lessons.filter((l) => {
+                          if (modalMode === 'append') return !batchLessonIds.has(l.id)
+                          return modalMode !== 'random' || !existingIds.has(l.id)
+                        })
                         const allSel =
                           selectable.length > 0 &&
                           selectable.every((l) => modalLessons.includes(l.id))
@@ -973,7 +1250,9 @@ export default function QuizPage() {
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {grp.lessons.map(({ id, name }) => {
-                                const alreadyIn = modalMode === 'random' && existingIds.has(id)
+                                const alreadyIn =
+                                  (modalMode === 'random' && existingIds.has(id)) ||
+                                  (modalMode === 'append' && batchLessonIds.has(id))
                                 const selected = modalLessons.includes(id)
                                 return (
                                   <button
@@ -1046,7 +1325,7 @@ export default function QuizPage() {
                   {modalLessons.length > 0 && (
                     <section>
                       <p className="mb-2.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                        {modalMode === 'random' ? '数量与题型' : '题型筛选'}{' '}
+                        {modalMode === 'random' || modalMode === 'append' ? '数量与题型' : '题型筛选'}{' '}
                         <span className="font-normal normal-case">(题型可选)</span>
                       </p>
                       <div className="flex flex-col gap-3">
@@ -1061,7 +1340,7 @@ export default function QuizPage() {
                                 <p className="min-w-0 truncate text-xs font-semibold text-slate-600">
                                   第{lessonId}讲 · {meta.name}
                                 </p>
-                                {modalMode === 'random' && (
+                                {(modalMode === 'random' || modalMode === 'append') && (
                                   <div className="flex shrink-0 items-center gap-1">
                                     <button
                                       type="button"
@@ -1111,22 +1390,71 @@ export default function QuizPage() {
                       </div>
                     </section>
                   )}
+                  {(modalMode === 'random' || modalMode === 'append') && modalLessons.length > 0 && (
+                    <section>
+                      <p className="mb-2 text-xs font-bold tracking-wider text-slate-400 uppercase">
+                        试卷标题
+                      </p>
+                      <input
+                        type="text"
+                        value={modalTitle}
+                        onChange={(e) => setModalTitle(e.target.value)}
+                        readOnly={modalMode === 'append'}
+                        placeholder={`综合测试卷${todayDateStr()}`}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 outline-none read-only:cursor-default read-only:opacity-80 focus:border-indigo-400 focus:bg-white"
+                        aria-label="试卷标题"
+                      />
+                      {modalMode === 'append' && (
+                        <p className="mt-1.5 text-[11px] text-slate-400">
+                          追加卷将沿用批次标题并自动续卷号
+                        </p>
+                      )}
+                    </section>
+                  )}
                 </>
               )}
             </div>
 
-            <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-slate-100 bg-white px-5 py-4">
+            <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-100 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               {modalMode === 'random' ? (
                 <>
                   <span className="text-xs text-slate-400">
-                    已选 {modalLessons.length} 个课题 · 共 {modalTotal} 题
+                    已选 {modalLessons.length} 个课题 · 每卷 {modalTotal} 题 · 题库{' '}
+                    {modalPoolStats.totalPool} 题 · 可出 {modalPoolStats.volumeCount} 卷
+                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      disabled={modalLessons.length === 0}
+                      onClick={handleRandomConfirm}
+                      className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      确认组卷
+                    </button>
+                    <button
+                      disabled={
+                        modalLessons.length === 0 ||
+                        modalPoolStats.volumeCount === 0 ||
+                        batchSaving
+                      }
+                      onClick={() => void handleBatchCreate()}
+                      className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {batchSaving ? '生成中…' : `批量出卷 (${modalPoolStats.volumeCount})`}
+                    </button>
+                  </div>
+                </>
+              ) : modalMode === 'append' ? (
+                <>
+                  <span className="text-xs text-slate-400">
+                    新增 {modalLessons.length} 个讲次 · 每卷 {modalTotal} 题 · 题库{' '}
+                    {appendPoolStats.totalPool} 题 · 预计新卷 {appendPoolStats.volumeCount} 卷
                   </span>
                   <button
-                    disabled={modalLessons.length === 0}
-                    onClick={handleRandomConfirm}
+                    disabled={modalLessons.length === 0 || appendPoolStats.totalPool === 0 || batchSaving}
+                    onClick={() => void handleAppendConfirm()}
                     className="rounded-full bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    确认组卷
+                    {batchSaving ? '追加中…' : '确认追加'}
                   </button>
                 </>
               ) : preciseStep === 1 ? (
