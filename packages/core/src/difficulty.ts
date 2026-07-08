@@ -1,8 +1,21 @@
 /** 题目难度：1（入门）～ 5（挑战） */
 export type ProblemDifficulty = 1 | 2 | 3 | 4 | 5
 
+/** Symbol / 汉字 / 字母格：`sym` 相同则填入数字必须相同；`fixed` 为已知数字。 */
+export type VerticalPuzzleSymbolCell = {
+  sym: string
+  label?: string
+  fixed?: number
+}
+
 /** Fixed digit; `null` = blank方格; `'spacer'` = 列对齐占位（不可填、不参与组成数值）。 */
-export type VerticalPuzzleCell = number | null | 'spacer'
+export type VerticalPuzzleCell = number | null | 'spacer' | VerticalPuzzleSymbolCell
+
+export interface VerticalPuzzleBlock {
+  op: '+' | '-'
+  operands: VerticalPuzzleCell[][]
+  result: VerticalPuzzleCell[]
+}
 
 /** Structured竖式数字谜 — rendered interactively in the answer area. */
 export interface VerticalDigitPuzzleSpec {
@@ -16,6 +29,12 @@ export interface VerticalDigitPuzzleSpec {
   /** After the addition `result`, subtract this row to get `chainResult` (e.g. L18). */
   chainSubtract?: VerticalPuzzleCell[]
   chainResult?: VerticalPuzzleCell[]
+  /** Side-by-side extra equations sharing symbol constraints (e.g. 例题10). */
+  blocks?: VerticalPuzzleBlock[]
+  /** Pre-known symbol → digit (e.g. A=9, E=5). */
+  knownSymbols?: Record<string, number>
+  /** Display-only grid (no fill-in); use with numeric final answer. */
+  readonly?: boolean
 }
 
 export const DIFFICULTY_LABELS: Record<ProblemDifficulty, string> = {

@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useCallback, type CSSProperties, type ReactNode } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@rosie/core'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import { SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
@@ -226,6 +228,8 @@ function PracticeProblem({
   const count = solveCount[problem.id] ?? 0
   const tagStyle = lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'
   const interactive = isInteractiveProblem(problem)
+  const { user } = useAuth()
+  const { addWrong } = useMathWrong(user)
   const { awardStars } = useStarHud()
 
   const awardSeaStar = useCallback((origin?: HTMLElement) => {
@@ -243,7 +247,7 @@ function PracticeProblem({
       handleSolve: (id) => {
         void onSolve(id)
       },
-      addWrong: () => {},
+      addWrong,
     },
     {
       onCorrect: () => {

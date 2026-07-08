@@ -55,6 +55,7 @@ const LESSON_MAP = [
   { legacyId: '52', lessonKey: '2-4' },
   { legacyId: '53', lessonKey: '2-5' },
   { legacyId: '55', lessonKey: '2-6' },
+  { legacyId: '56', lessonKey: '2-7' },
 ]
 
 const LEGACY_TO_KEY = Object.fromEntries(LESSON_MAP.map((e) => [e.legacyId, e.lessonKey]))

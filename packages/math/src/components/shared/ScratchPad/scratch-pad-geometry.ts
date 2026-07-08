@@ -1,11 +1,18 @@
 import type {
   ScratchBounds,
+  ScratchHighlightObject,
   ScratchObject,
   ScratchPoint,
   ScratchStrokeObject,
 } from './scratch-pad-types'
 
 const HIT_TOLERANCE = 10
+
+type ScratchFreehandObject = ScratchStrokeObject | ScratchHighlightObject
+
+function isFreehandObject(obj: ScratchObject): obj is ScratchFreehandObject {
+  return obj.kind === 'stroke' || obj.kind === 'highlight'
+}
 
 export function scratchBoundsEmpty(): ScratchBounds {
   return { minX: 0, minY: 0, maxX: 0, maxY: 0 }
@@ -51,6 +58,7 @@ export function scratchRectBounds(x1: number, y1: number, x2: number, y2: number
 export function scratchObjectBounds(obj: ScratchObject): ScratchBounds | null {
   switch (obj.kind) {
     case 'stroke':
+    case 'highlight':
       return scratchBoundsFromPoints(obj.points)
     case 'line':
       return scratchRectBounds(obj.x1, obj.y1, obj.x2, obj.y2)
@@ -114,7 +122,7 @@ export function pointInPolygon(px: number, py: number, polygon: ScratchPoint[]):
   return inside
 }
 
-function strokeHitTest(obj: ScratchStrokeObject, px: number, py: number, tolerance: number): boolean {
+function strokeHitTest(obj: ScratchFreehandObject, px: number, py: number, tolerance: number): boolean {
   const pts = obj.points
   if (pts.length === 0) return false
   if (pts.length === 1) return Math.hypot(px - pts[0].x, py - pts[0].y) <= tolerance
@@ -129,12 +137,14 @@ function strokeHitTest(obj: ScratchStrokeObject, px: number, py: number, toleran
 export function scratchHitTest(obj: ScratchObject, px: number, py: number, tolerance = HIT_TOLERANCE): boolean {
   switch (obj.kind) {
     case 'stroke':
+    case 'highlight':
       return strokeHitTest(obj, px, py, tolerance + obj.lineWidth / 2)
     case 'line':
       return distPointToSegment(px, py, obj.x1, obj.y1, obj.x2, obj.y2) <= tolerance + obj.lineWidth / 2
     case 'rect': {
       const b = scratchObjectBounds(obj)
       if (!b) return false
+      if (obj.filled && px >= b.minX && px <= b.maxX && py >= b.minY && py <= b.maxY) return true
       const pad = tolerance + obj.lineWidth / 2
       const nearBorder =
         distPointToSegment(px, py, b.minX, b.minY, b.maxX, b.minY) <= pad ||
@@ -166,7 +176,7 @@ export function scratchObjectIntersectsRect(obj: ScratchObject, rect: ScratchBou
   if (!bounds) return false
   if (!scratchBoundsIntersect(bounds, rect)) return false
 
-  if (obj.kind === 'stroke') {
+  if (isFreehandObject(obj)) {
     for (const p of obj.points) {
       if (p.x >= rect.minX && p.x <= rect.maxX && p.y >= rect.minY && p.y <= rect.maxY) return true
     }
@@ -198,7 +208,7 @@ export function scratchObjectIntersectsPolygon(obj: ScratchObject, polygon: Scra
   const cy = (bounds.minY + bounds.maxY) / 2
   if (pointInPolygon(cx, cy, polygon)) return true
 
-  if (obj.kind === 'stroke') {
+  if (isFreehandObject(obj)) {
     for (const p of obj.points) {
       if (pointInPolygon(p.x, p.y, polygon)) return true
     }
@@ -212,7 +222,7 @@ export function scratchObjectIntersectsPolygon(obj: ScratchObject, polygon: Scra
 }
 
 export function cloneScratchObject(obj: ScratchObject, createId: () => string): ScratchObject {
-  if (obj.kind === 'stroke') {
+  if (isFreehandObject(obj)) {
     return { ...obj, id: createId(), points: obj.points.map((p) => ({ ...p })) }
   }
   if (obj.kind === 'image') {
@@ -224,6 +234,7 @@ export function cloneScratchObject(obj: ScratchObject, createId: () => string): 
 export function translateScratchObject(obj: ScratchObject, dx: number, dy: number): ScratchObject {
   switch (obj.kind) {
     case 'stroke':
+    case 'highlight':
       return {
         ...obj,
         points: obj.points.map((p) => ({ x: p.x + dx, y: p.y + dy })),
@@ -423,6 +434,7 @@ export function scaleScratchObject(
 
   switch (obj.kind) {
     case 'stroke':
+    case 'highlight':
       return {
         ...obj,
         points: obj.points.map((p) => map(p.x, p.y)),
@@ -507,7 +519,52 @@ export function scaleSelectedObjects(
 }
 
 export function rightTriangleFromDrag(x1: number, y1: number, x2: number, y2: number) {
-  return { x1, y1, x2, y2, x3: x2, y3: y1 }
+  return triangleFromDrag(x1, y1, x2, y2, 'right')
+}
+
+/** 根据拖拽框生成三角形顶点（直角沿用原逻辑：直角在 (x2,y1)） */
+export function triangleFromDrag(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  variant: 'right' | 'isosceles' | 'equilateral',
+) {
+  if (variant === 'right') {
+    return { x1, y1, x2, y2, x3: x2, y3: y1 }
+  }
+
+  const left = Math.min(x1, x2)
+  const right = Math.max(x1, x2)
+  const top = Math.min(y1, y2)
+  const bottom = Math.max(y1, y2)
+  const w = right - left
+  const h = bottom - top
+
+  if (variant === 'isosceles') {
+    return {
+      x1: (left + right) / 2,
+      y1: top,
+      x2: left,
+      y2: bottom,
+      x3: right,
+      y3: bottom,
+    }
+  }
+
+  const side = Math.min(w, (h * 2) / Math.sqrt(3))
+  const triH = (side * Math.sqrt(3)) / 2
+  const offsetY = (h - triH) / 2
+  const cx = (left + right) / 2
+  const half = side / 2
+  return {
+    x1: cx,
+    y1: top + offsetY,
+    x2: cx - half,
+    y2: top + offsetY + triH,
+    x3: cx + half,
+    y3: top + offsetY + triH,
+  }
 }
 
 function pointInEraser(px: number, py: number, cx: number, cy: number, radius: number): boolean {
@@ -526,13 +583,13 @@ function segmentHitsEraser(
   return distPointToSegment(cx, cy, x1, y1, x2, y2) <= radius
 }
 
-function eraseStrokeAt(
-  stroke: ScratchStrokeObject,
+function eraseFreehandAt(
+  stroke: ScratchFreehandObject,
   cx: number,
   cy: number,
   radius: number,
   createId: () => string,
-): ScratchStrokeObject[] {
+): ScratchFreehandObject[] {
   const pts = stroke.points
   if (pts.length === 0) return []
 
@@ -544,7 +601,7 @@ function eraseStrokeAt(
     }
   }
 
-  const parts: ScratchStrokeObject[] = []
+  const parts: ScratchFreehandObject[] = []
   let run: ScratchPoint[] = []
   for (let i = 0; i < pts.length; i++) {
     if (!erased[i]) {
@@ -580,8 +637,8 @@ export function applyEraserAt(
 ): ScratchObject[] {
   const result: ScratchObject[] = []
   for (const obj of objects) {
-    if (obj.kind === 'stroke') {
-      result.push(...eraseStrokeAt(obj, cx, cy, radius, createId))
+    if (isFreehandObject(obj)) {
+      result.push(...eraseFreehandAt(obj, cx, cy, radius, createId))
     } else if (shapeHitByEraser(obj, cx, cy, radius)) {
       // 图形整块擦除
     } else {

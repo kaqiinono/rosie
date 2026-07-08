@@ -1,82 +1,66 @@
 # 第二步：组件 wrapper（8 个）
 
-目录：`packages/math/src/components/lessonN/`（`N` = legacyId）。
+目录：`packages/math/src/components/lesson/g{grade}/lesson{seq}/`
 
-**不要**遍历历史讲次目录找模板。优先**复制同年级上一讲**（如 `lesson55` → `lesson56`），批量替换 `BASE` / `lessonKey` / 色系 / Provider 名。
+| lessonKey | 目录 |
+|-----------|------|
+| `2-7` | `lesson/g2/lesson7/` |
+| `2-8` | `lesson/g2/lesson8/` |
+| `1-46` | `lesson/g1/lesson46/` |
 
----
-
-## 全局占位符
-
-| 占位 | 示例 |
-|------|------|
-| legacyId `N` | `56` |
-| lessonKey | `2-7` |
-| `BASE` | `/math/ny/2/7` |
-| Provider 名 | `Lesson56Provider` / `useLesson56` |
+复制**同年级上一讲**目录，改 `BASE`、`lessonKey`、色系、Provider 名。
 
 ---
 
-## 1. LessonNProvider.tsx
+## 占位符（`2-8`）
+
+| 项 | 值 |
+|----|-----|
+| lessonKey | `2-8` |
+| BASE | `/math/ny/2/8` |
+| 数据 import | `@rosie/math/utils/g2/lesson8-data` |
+| Provider 文件 | `G2Lesson8Provider.tsx` |
+| hook | `useG2Lesson8` |
+
+> 旧讲次可能仍用 `Lesson56Provider` 等历史文件名；**新讲次**用 `G{grade}Lesson{seq}Provider`。
+
+---
+
+## 1. G2Lesson8Provider.tsx
 
 ```tsx
 'use client'
 import { createLessonProvider } from '@rosie/math/components/shared/createLessonProvider'
-const { Provider, useLessonContext } = createLessonProvider('Lesson56')
+const { Provider, useLessonContext } = createLessonProvider('G2Lesson8')
 export default Provider
-export { useLessonContext as useLesson56 }
+export { useLessonContext as useG2Lesson8 }
 ```
 
 ## 2. AppHeader.tsx
 
 ```tsx
-'use client'
-import LessonAppHeader from '@rosie/math/components/shared/LessonAppHeader'
-import type { ProblemSet } from '@rosie/core'
-import { useLesson56 } from './Lesson56Provider'
-
 const CONFIG = {
-  basePath: '/math/ny/2/7',
-  emoji: '📐',
-  titleShort: '讲次简称',
-  titleFull: '探险',
-  titleColor: 'text-sky-700',
-  navActiveColor: 'text-sky-700',
-  navActiveBorderColor: '#0369a1',
+  basePath: '/math/ny/2/8',
+  // …
 } as const
-
-export default function AppHeader({ problems }: { problems: ProblemSet }) {
-  return <LessonAppHeader config={CONFIG} problems={problems} useLessonContext={useLesson56} />
-}
+// useLessonContext = useG2Lesson8
 ```
-
-顶栏由共享 `LessonAppHeader` 实现：课程列表 → `/math`、同年级讲次横滑/「更多」、用户区。
 
 ## 3–8. Sidebar / BottomNav / HomePage / FilterPanel / ProblemList / ProblemDetail
 
-参考同年级最近一讲（二年级：`lesson56`）对应文件结构。
+- `ProblemList`：`lessonId="2-8"`（wrapper 仍需要；**分模块列表页的「开始练习」由 `SectionListPage` + 共享 `LessonProblemList` 提供**，不必在 wrapper 里实现）
+- `HomePage`：`LessonSummary lessonId="2-8"`
+- 仅部分模块时：HomePage `MODULES`、Sidebar `sections`、FilterPanel `sourceBtns` 对齐实际模块
+- `FilterPanel`：`createFilterPanel` 已含综合题库「开始练习」，走 `PracticeQueue`（见 [`practice-queue.md`](practice-queue.md)）
 
-### 仅部分模块时
+五处组件**同一色系**。
 
-| 文件 | 调整 |
-|------|------|
-| `HomePage.tsx` | `MODULES` 只含有题模块；`desc` 写实际题号范围 |
-| `Sidebar.tsx` | `sections` 去掉 homework/workbook 等空模块 |
-| `FilterPanel.tsx` | `sourceBtns` 与 `typeBtns` 对齐实际题型 tag |
-| `ProblemList.tsx` | `lessonId="{lessonKey}"`（如 `2-7`） |
+### ProblemDetail — 按题型选模板
 
-### ProblemDetail
+| 题型 | 参考讲次 | 说明 |
+|------|----------|------|
+| 宫格 / `figureNode` | `g1/lesson47/ProblemDetail.tsx` | `injectFigureGridCallbacks` + `InteractiveAnswerFeedback` |
+| 竖式谜 / `verticalPuzzle` | `g2/lesson7/ProblemDetail.tsx` | 题面区 `VerticalDigitPuzzlePanel embedded` + `InteractiveAnswerFeedback` |
+| 纯数值 | 同年级无交互讲次 | `NumericAnswerPanel` |
 
-- **模板 A（数字答案）：** `QuestionLayout` + `LessonProblemDetailHeader` + `LessonProblemNavBar`
-- **模板 B（交互谜题）：** 无数字 `finalAns` + [`figures.md`](figures.md)
-
-### HomePage
-
-- `MODULES` / 题型卡片链接前缀 = `BASE`
-- `LessonSummary lessonId={lessonKey}`（如 `lessonKeyFromHref(BASE)!`）
-
----
-
-## 主题色
-
-AppHeader、Sidebar `activeClass`、BottomNav `activeColor`、FilterPanel `theme`、ProblemDetail 强调色 — **同一色系**。
+草稿纸、组卷对 custom-widget 的渲染由共享层自动处理，见 [`custom-answer-widget.md`](custom-answer-widget.md)。

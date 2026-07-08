@@ -5,7 +5,7 @@ import { useAuth } from '@rosie/core'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import { useCalcMistakes, categoryLabel, formatAnswer } from '@rosie/calc'
 import { useEnglishWrong, useWordData, findWordByKey, practiceHrefForWord } from '@rosie/english'
-import { MATH_PROBLEM_BY_ID } from '@rosie/math/utils/math-problem-lookup'
+import { lookupMathProblem } from '@rosie/math/utils/math-problem-lookup'
 import type { CalcMistake } from '@rosie/core'
 
 export type MistakeModule = 'math' | 'calc' | 'english'
@@ -42,7 +42,7 @@ export function useUnifiedMistakes() {
 
   const items = useMemo((): UnifiedMistakeItem[] => {
     const mathItems: UnifiedMistakeItem[] = mathRows.flatMap((row) => {
-      const lookup = MATH_PROBLEM_BY_ID.get(row.problemId)
+      const lookup = lookupMathProblem(row.problemId)
       if (!lookup) return []
       return [
         {

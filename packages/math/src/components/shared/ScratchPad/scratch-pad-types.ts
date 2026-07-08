@@ -3,7 +3,9 @@ export type ScratchPoint = { x: number; y: number }
 export type ScratchTool =
   | 'select-box'
   | 'select-lasso'
+  | 'pan'
   | 'pen'
+  | 'highlighter'
   | 'line'
   | 'rect'
   | 'circle'
@@ -35,6 +37,40 @@ export const SCRATCH_COLORS: ReadonlyArray<{ id: ScratchColorId; hex: string; la
 
 export const SCRATCH_STROKE_WIDTHS: ScratchStrokeWidth[] = [2, 4, 8]
 
+export type ScratchHighlightColorId = 'yellow' | 'green' | 'pink' | 'blue'
+
+export const SCRATCH_HIGHLIGHT_COLORS: ReadonlyArray<{
+  id: ScratchHighlightColorId
+  hex: string
+  label: string
+}> = [
+  { id: 'yellow', hex: '#fde047', label: '黄' },
+  { id: 'green', hex: '#86efac', label: '绿' },
+  { id: 'pink', hex: '#f9a8d4', label: '粉' },
+  { id: 'blue', hex: '#93c5fd', label: '蓝' },
+] as const
+
+export type ScratchHighlightWidth = 16 | 24 | 36
+
+export const SCRATCH_HIGHLIGHT_WIDTHS: ScratchHighlightWidth[] = [16, 24, 36]
+
+/** 荧光笔不透明度 */
+export const SCRATCH_HIGHLIGHT_ALPHA = 0.42
+
+/** 图形半透明填充不透明度 */
+export const SCRATCH_SHAPE_FILL_ALPHA = 0.28
+
+export type ScratchTriangleVariant = 'right' | 'isosceles' | 'equilateral'
+
+export const SCRATCH_TRIANGLE_VARIANTS: ReadonlyArray<{
+  id: ScratchTriangleVariant
+  label: string
+}> = [
+  { id: 'right', label: '直角' },
+  { id: 'isosceles', label: '等腰' },
+  { id: 'equilateral', label: '等边' },
+] as const
+
 /** 橡皮擦半径（px），比画笔更粗 */
 export type ScratchEraserWidth = 12 | 24 | 40
 
@@ -48,6 +84,11 @@ type ScratchObjectBase = {
 
 export type ScratchStrokeObject = ScratchObjectBase & {
   kind: 'stroke'
+  points: ScratchPoint[]
+}
+
+export type ScratchHighlightObject = ScratchObjectBase & {
+  kind: 'highlight'
   points: ScratchPoint[]
 }
 
@@ -65,6 +106,7 @@ export type ScratchRectObject = ScratchObjectBase & {
   y: number
   w: number
   h: number
+  filled?: boolean
 }
 
 export type ScratchEllipseObject = ScratchObjectBase & {
@@ -73,6 +115,7 @@ export type ScratchEllipseObject = ScratchObjectBase & {
   cy: number
   rx: number
   ry: number
+  filled?: boolean
 }
 
 export type ScratchTriangleObject = ScratchObjectBase & {
@@ -83,6 +126,7 @@ export type ScratchTriangleObject = ScratchObjectBase & {
   y2: number
   x3: number
   y3: number
+  filled?: boolean
 }
 
 /** 题面图 / 导入图片 */
@@ -98,6 +142,7 @@ export type ScratchImageObject = {
 
 export type ScratchObject =
   | ScratchStrokeObject
+  | ScratchHighlightObject
   | ScratchLineObject
   | ScratchRectObject
   | ScratchEllipseObject

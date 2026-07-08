@@ -1,10 +1,13 @@
 import { supabase } from '@rosie/core'
+import { LESSONS, routeForLesson, type LessonEntry } from '@rosie/math/utils/lesson-registry'
 import {
-  LESSONS,
-  migrateProblemId,
-  routeForLesson,
-  type LessonEntry,
-} from '@rosie/math/utils/lesson-registry'
+  LEGACY_ID_SET,
+  LEGACY_TO_LESSON_KEY,
+  LESSON_KEY_TO_LEGACY,
+  legacyIdForLessonKey,
+  legacyPrefixFromProblemId,
+  migrateProblemIdForAudit,
+} from '@rosie/math/admin/legacy-migration-map'
 import {
   runBundledSourceAudit,
   type SourceAuditReport,
@@ -19,6 +22,7 @@ export type TableProbe = {
 
 export type LessonImpactRow = {
   entry: LessonEntry
+  legacyId?: string
   problemIds: {
     solved: number
     wrong: number
@@ -62,12 +66,10 @@ export type JsonLegacyHit = {
 export type SlugStorageHit = {
   lessonKey: string
   legacyId: string
-  slug: string
   storagePath: string
 }
 
 export type RefactorRiskAssessment = {
-  /** 综合判断：是否建议按 docs/math/lesson-id-cleanup.md 分阶段推进 */
   controllable: boolean
   level: 'green' | 'amber' | 'red'
   headline: string
@@ -82,13 +84,12 @@ export type RefactorRiskAssessment = {
 export type MathLessonIdAuditReport = {
   generatedAt: string
   mapping: {
-    legacyId: string
+    legacyId?: string
     lessonKey: string
     grade: number
     seq: number
-    slug: string
     newRoute: string
-    legacyRoute: string
+    legacyRoute?: string
   }[]
   tables: TableProbe[]
   byLesson: LessonImpactRow[]
@@ -109,15 +110,11 @@ export type MathLessonIdAuditReport = {
     quizPaperRows: number
     jsonLegacyHitRows: number
     dbUncleanedTotal: number
-    sourceLegacyIdHits: number
-    sourceSlugHits: number
     sourceUncleanedTotal: number
     grandUncleanedTotal: number
   }
   sourceCodeNote: string
 }
-
-const LEGACY_IDS = new Set(LESSONS.map((e) => e.legacyId))
 
 const PROBLEM_ID_TABLES = [
   'math_solved',
@@ -143,15 +140,8 @@ const ALL_TABLES = [
   ...OPTIONAL_TABLES,
 ] as const
 
-export function legacyPrefixFromProblemId(problemId: string): string | null {
-  if (problemId.endsWith('__SUMMARY')) {
-    const prefix = problemId.slice(0, -'__SUMMARY'.length)
-    return LEGACY_IDS.has(prefix) ? prefix : null
-  }
-  for (const entry of [...LESSONS].sort((a, b) => b.legacyId.length - a.legacyId.length)) {
-    if (problemId.startsWith(`${entry.legacyId}-`)) return entry.legacyId
-  }
-  return null
+function slugForLegacyId(legacyId: string): string {
+  return `lesson${legacyId}`
 }
 
 async function probeTable(table: string): Promise<TableProbe> {
@@ -218,28 +208,17 @@ function findConflicts(
   rows: { user_id: string; problem_id: string }[],
 ): MigrationConflict[] {
   const out: MigrationConflict[] = []
-  const byUserNew = new Map<string, Set<string>>()
   for (const row of rows) {
-    const newId = migrateProblemId(row.problem_id)
+    const newId = migrateProblemIdForAudit(row.problem_id)
     if (!newId || newId === row.problem_id) continue
-    const key = `${row.user_id}::${newId}`
-    if (!byUserNew.has(row.user_id)) byUserNew.set(row.user_id, new Set())
-    byUserNew.get(row.user_id)!.add(newId)
-  }
-  for (const row of rows) {
-    const newId = migrateProblemId(row.problem_id)
-    if (!newId || newId === row.problem_id) continue
-    const set = byUserNew.get(row.user_id)
-    if (set?.has(newId) && row.problem_id !== newId) {
-      const existsNew = rows.some((r) => r.user_id === row.user_id && r.problem_id === newId)
-      if (existsNew) {
-        out.push({
-          userId: row.user_id,
-          oldProblemId: row.problem_id,
-          newProblemId: newId,
-          table,
-        })
-      }
+    const existsNew = rows.some((r) => r.user_id === row.user_id && r.problem_id === newId)
+    if (existsNew) {
+      out.push({
+        userId: row.user_id,
+        oldProblemId: row.problem_id,
+        newProblemId: newId,
+        table,
+      })
     }
   }
   return out
@@ -255,8 +234,8 @@ function scanJsonForLegacy(
 ): void {
   if (hits.length >= limit || json === null || json === undefined) return
   const text = typeof json === 'string' ? json : JSON.stringify(json)
-  for (const entry of LESSONS) {
-    const { legacyId, slug } = entry
+  for (const [legacyId, lessonKey] of Object.entries(LEGACY_TO_LESSON_KEY)) {
+    const slug = slugForLegacyId(legacyId)
     if (
       text.includes(`"${legacyId}"`) ||
       text.includes(`"${legacyId}-`) ||
@@ -273,6 +252,10 @@ function scanJsonForLegacy(
       })
       return
     }
+    if (text.includes(`"${lessonKey}"`) || text.includes(`"${lessonKey}-`)) {
+      // canonical — not a hit
+      continue
+    }
   }
 }
 
@@ -280,6 +263,7 @@ function buildRiskAssessment(
   totals: MathLessonIdAuditReport['totals'],
   conflicts: MigrationConflict[],
   source: SourceAuditReport,
+  sourceUncleanedTotal: number,
 ): RefactorRiskAssessment {
   const blockers: string[] = []
   const mitigations: string[] = []
@@ -287,9 +271,7 @@ function buildRiskAssessment(
     blockers.push(`math_solved 存在 ${conflicts.length} 组迁移主键冲突，需先合并或删除重复行`)
   }
   if (totals.legacyProblemRows > 0) {
-    mitigations.push(
-      '用户做题记录：运行 docs/sql/math-lesson-id-migrate.sql（事务内一次执行）',
-    )
+    mitigations.push('用户做题记录：运行 docs/sql/math-lesson-id-migrate.sql（事务内一次执行）')
   }
   if (totals.jsonLegacyHitRows > 0) {
     mitigations.push(
@@ -299,27 +281,27 @@ function buildRiskAssessment(
   if (totals.legacyStoragePathRows > 0 || totals.legacySlugStorageRows > 0) {
     mitigations.push('Storage 路径：SQL 迁移 + node scripts/migrate-math-lesson-ids.mjs --apply --storage')
   }
-  if (source.totals.bundledProblemIdsLegacy > 0) {
-    mitigations.push('源码题目 ID：按 docs/math/lesson-id-cleanup.md Phase 1 改 lesson*-data')
+  if (source.totals.seaBrokenHrefs > 0) {
+    blockers.push(
+      `题海 ${source.totals.seaBrokenHrefs} 条链接格式错误（非 /math/ny/{grade}/{seq}），用户点击会 404`,
+    )
   }
-  if (source.totals.seaLegacyIds > 0) {
-    mitigations.push('题海/组卷/计划静态表：将 id 键改为 lessonKey（见 cleanup 文档 Phase 1）')
+  if (source.totals.bundledProblemIdsLegacy > 0) {
+    mitigations.push('源码题目 ID：将 lesson*-data 中 problem_id 前缀改为 lessonKey')
+  }
+  if (source.totals.moduleKeyDrift > 0) {
+    blockers.push(`lesson-module-registry 有 ${source.totals.moduleKeyDrift} 个键非 lessonKey`)
   }
 
   const scopeLines = [
-    `注册表：${LESSONS.length} 讲，每讲含 legacyId + slug 双字段（收尾后仅 lessonKey/grade/seq）`,
-    `模块表：${source.totals.moduleSlugKeys} 个 lessonNN 键待改为 lessonKey`,
-    `静态路由：${source.legacyRoutes.length} 条 /math/ny/{legacyId} 目录应删除（若仍存在）`,
-    `apps/web 已知待改文件：${source.manualSites.length} 处（见下方清单）`,
-    'DB 表：math_solved / wrong / favorites / notes / images / weekly_plans 等（见 SQL 审计脚本）',
+    `注册表：${LESSONS.length} 讲（lessonKey + grade + seq）`,
+    `模块表：${Object.keys(LEGACY_TO_LESSON_KEY).length} 讲历史 legacy 映射（仅审计用）`,
+    '静态路由：仅保留 /math/ny/[grade]/[seq] 动态路由',
+    'DB 表：math_solved / wrong / favorites / notes / images / weekly_plans 等',
   ]
 
   let level: RefactorRiskAssessment['level'] = 'green'
-  if (
-    totals.dbUncleanedTotal > 0 ||
-    source.totals.legacyIdHits > 0 ||
-    conflicts.length > 0
-  ) {
+  if (totals.dbUncleanedTotal > 0 || sourceUncleanedTotal > 0 || conflicts.length > 0) {
     level = 'amber'
   }
   if (conflicts.length > 10 || totals.dbUncleanedTotal > 5000) {
@@ -333,12 +315,12 @@ function buildRiskAssessment(
 
   const headline =
     totals.grandUncleanedTotal === 0
-      ? '✅ 未发现 legacyId/slug 脏数据（DB + 已打包源码）'
+      ? '✅ 未发现 legacy 脏数据（DB + 已打包源码）'
       : level === 'red'
         ? '⚠️ 改造范围较大或存在阻塞项，建议先处理冲突再迁移'
         : controllable
           ? '✅ 改造范围清晰、风险可控：DB 有现成 SQL/脚本，源码按文档分 PR 收尾'
-          : '⚠️ 仍有未清理数据，建议按推荐顺序执行后再部署代码收尾'
+          : '⚠️ 仍有未清理数据，建议按推荐顺序执行后再部署'
 
   return {
     controllable,
@@ -458,44 +440,54 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     : []
 
   const byLesson: LessonImpactRow[] = LESSONS.map((entry) => {
+    const legacyId = legacyIdForLessonKey(entry.lessonKey)
     const problemIds = {
-      solved: countProblemIdsForLegacy(problemIdsByTable.math_solved ?? [], entry.legacyId),
-      wrong: countProblemIdsForLegacy(problemIdsByTable.math_wrong ?? [], entry.legacyId),
-      favorites: countProblemIdsForLegacy(problemIdsByTable.math_favorites ?? [], entry.legacyId),
-      scratchWorking: countProblemIdsForLegacy(
-        problemIdsByTable.math_scratch_working ?? [],
-        entry.legacyId,
-      ),
-      notes: noteProblemIds.filter(
-        (pid) =>
-          legacyPrefixFromProblemId(pid) === entry.legacyId ||
-          pid === `${entry.legacyId}__SUMMARY`,
-      ).length,
-      images: imageRows.filter(
-        (r) => r.lesson_id === entry.legacyId || legacyPrefixFromProblemId(r.problem_id) === entry.legacyId,
-      ).length,
+      solved: legacyId ? countProblemIdsForLegacy(problemIdsByTable.math_solved ?? [], legacyId) : 0,
+      wrong: legacyId ? countProblemIdsForLegacy(problemIdsByTable.math_wrong ?? [], legacyId) : 0,
+      favorites: legacyId
+        ? countProblemIdsForLegacy(problemIdsByTable.math_favorites ?? [], legacyId)
+        : 0,
+      scratchWorking: legacyId
+        ? countProblemIdsForLegacy(problemIdsByTable.math_scratch_working ?? [], legacyId)
+        : 0,
+      notes: legacyId
+        ? noteProblemIds.filter(
+            (pid) =>
+              legacyPrefixFromProblemId(pid) === legacyId || pid === `${legacyId}__SUMMARY`,
+          ).length
+        : 0,
+      images: legacyId
+        ? imageRows.filter(
+            (r) =>
+              r.lesson_id === legacyId || legacyPrefixFromProblemId(r.problem_id) === legacyId,
+          ).length
+        : 0,
     }
     const lessonIdRows = {
-      weeklyPlans: countByLegacyId(
-        weeklyPlans.map((r) => r.lesson_id),
-        entry.legacyId,
-      ),
-      notes: countByLegacyId(noteLessonIds, entry.legacyId),
-      images: countByLegacyId(
-        imageRows.map((r) => r.lesson_id),
-        entry.legacyId,
-      ),
-      scratchDrafts: countByLegacyId(scratchDraftLessonIds, entry.legacyId),
-      practiceAttempts: countByLegacyId(practiceLessonIds, entry.legacyId),
+      weeklyPlans: legacyId
+        ? countByLegacyId(
+            weeklyPlans.map((r) => r.lesson_id),
+            legacyId,
+          )
+        : 0,
+      notes: legacyId ? countByLegacyId(noteLessonIds, legacyId) : 0,
+      images: legacyId
+        ? countByLegacyId(
+            imageRows.map((r) => r.lesson_id),
+            legacyId,
+          )
+        : 0,
+      scratchDrafts: legacyId ? countByLegacyId(scratchDraftLessonIds, legacyId) : 0,
+      practiceAttempts: legacyId ? countByLegacyId(practiceLessonIds, legacyId) : 0,
     }
-    const storagePaths = imageRows.filter((r) =>
-      r.storage_path.includes(`/${entry.legacyId}/`),
-    ).length
+    const storagePaths = legacyId
+      ? imageRows.filter((r) => r.storage_path.includes(`/${legacyId}/`)).length
+      : 0
     const total =
       Object.values(problemIds).reduce((a, b) => a + b, 0) +
       Object.values(lessonIdRows).reduce((a, b) => a + b, 0) +
       storagePaths
-    return { entry, problemIds, lessonIdRows, storagePaths, total }
+    return { entry, legacyId, problemIds, lessonIdRows, storagePaths, total }
   })
 
   const orphans = [...orphanMap.values()].sort((a, b) => b.solved + b.wrong - (a.solved + a.wrong))
@@ -524,21 +516,21 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
   )
 
   const legacyStoragePathRows = imageRows.filter((r) =>
-    LESSONS.some((e) => r.storage_path.includes(`/${e.legacyId}/`)),
+    [...LEGACY_ID_SET].some((legacyId) => r.storage_path.includes(`/${legacyId}/`)),
   ).length
 
   const slugStorageHits: SlugStorageHit[] = []
   for (const row of imageRows) {
-    for (const entry of LESSONS) {
+    for (const legacyId of LEGACY_ID_SET) {
+      const slug = slugForLegacyId(legacyId)
       if (
-        row.storage_path.includes(`/${entry.slug}/`) ||
-        row.storage_path.includes(`${entry.slug}/`) ||
-        row.storage_path.includes(`summaries/${entry.legacyId}/`)
+        row.storage_path.includes(`/${slug}/`) ||
+        row.storage_path.includes(`${slug}/`) ||
+        row.storage_path.includes(`summaries/${legacyId}/`)
       ) {
         slugStorageHits.push({
-          lessonKey: entry.lessonKey,
-          legacyId: entry.legacyId,
-          slug: entry.slug,
+          lessonKey: LEGACY_TO_LESSON_KEY[legacyId]!,
+          legacyId,
           storagePath: row.storage_path,
         })
         break
@@ -547,22 +539,18 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     if (slugStorageHits.length >= 50) break
   }
   const legacySlugStorageRows = imageRows.filter((r) =>
-    LESSONS.some(
-      (e) =>
-        r.storage_path.includes(`/${e.slug}/`) ||
-        r.storage_path.includes(`${e.slug}/`),
-    ),
+    [...LEGACY_ID_SET].some((legacyId) => {
+      const slug = slugForLegacyId(legacyId)
+      return r.storage_path.includes(`/${slug}/`) || r.storage_path.includes(`${slug}/`)
+    }),
   ).length
 
   const source = runBundledSourceAudit()
 
-  const dbUncleanedTotal =
-    legacyProblemRows +
-    legacyLessonIdRows +
-    legacyStoragePathRows +
-    jsonLegacyHits.length
-
   const sourceUncleanedTotal = source.buckets.reduce((sum, b) => sum + b.count, 0)
+
+  const dbUncleanedTotal =
+    legacyProblemRows + legacyLessonIdRows + legacyStoragePathRows + jsonLegacyHits.length
 
   const totals = {
     legacyProblemRows,
@@ -575,25 +563,25 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     quizPaperRows: tables.find((t) => t.table === 'math_quiz_papers')?.rowCount ?? 0,
     jsonLegacyHitRows: jsonLegacyHits.length,
     dbUncleanedTotal,
-    sourceLegacyIdHits: source.totals.legacyIdHits,
-    sourceSlugHits: source.totals.slugHits,
     sourceUncleanedTotal,
     grandUncleanedTotal: dbUncleanedTotal + sourceUncleanedTotal,
   }
 
-  const risk = buildRiskAssessment(totals, conflicts, source)
+  const risk = buildRiskAssessment(totals, conflicts, source, sourceUncleanedTotal)
 
   return {
     generatedAt: new Date().toISOString(),
-    mapping: LESSONS.map((e) => ({
-      legacyId: e.legacyId,
-      lessonKey: e.lessonKey,
-      grade: e.grade,
-      seq: e.seq,
-      slug: e.slug,
-      newRoute: routeForLesson(e),
-      legacyRoute: `/math/ny/${e.legacyId}`,
-    })),
+    mapping: LESSONS.map((e) => {
+      const legacyId = legacyIdForLessonKey(e.lessonKey)
+      return {
+        legacyId,
+        lessonKey: e.lessonKey,
+        grade: e.grade,
+        seq: e.seq,
+        newRoute: routeForLesson(e),
+        legacyRoute: legacyId ? `/math/ny/${legacyId}` : undefined,
+      }
+    }),
     tables,
     byLesson,
     orphans,
@@ -604,12 +592,12 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     risk,
     totals,
     sourceCodeNote:
-      '源码审计扫描已打包的 registry / sea-data / LESSON_MODULES 题目；apps/web 内联常量见「待改文件清单」。完整方案：docs/math/lesson-id-cleanup.md',
+      '源码审计扫描 registry / sea-data / LESSON_MODULES / lesson-source-btns。完整方案：docs/math/lesson-id-cleanup.md',
   }
 }
 
 export function previewMigration(problemId: string): string | null {
-  return migrateProblemId(problemId)
+  return migrateProblemIdForAudit(problemId)
 }
 
 export function isAlreadyMigratedProblemId(problemId: string): boolean {
@@ -619,3 +607,5 @@ export function isAlreadyMigratedProblemId(problemId: string): boolean {
   }
   return LESSONS.some((e) => problemId.startsWith(`${e.lessonKey}-`))
 }
+
+export { legacyPrefixFromProblemId }

@@ -49,15 +49,16 @@ export default function AccountBar({ variant = 'default' }: AccountBarProps) {
 
     return (
       <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
-        <div
-          className="inline-flex h-8 max-w-[9rem] items-center gap-1.5 rounded-lg border border-gray-200/90 bg-white px-2 text-[11px] font-semibold text-text-secondary sm:h-9 sm:max-w-[10rem] sm:px-2.5 sm:text-[12px]"
-          title={username}
+        <Link
+          href="/admin"
+          className="inline-flex h-8 max-w-[9rem] items-center gap-1.5 rounded-lg border border-gray-200/90 bg-white px-2 text-[11px] font-semibold text-text-secondary no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-9 sm:max-w-[10rem] sm:px-2.5 sm:text-[12px]"
+          title={`${username} — 管理`}
         >
           <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-gray-100 text-[10px] font-bold text-text-secondary sm:h-[22px] sm:w-[22px] sm:text-[11px]">
             {initial}
           </span>
           <span className="hidden truncate sm:inline">{username}</span>
-        </div>
+        </Link>
         <button
           type="button"
           onClick={() => signOut()}
@@ -119,19 +120,20 @@ export default function AccountBar({ variant = 'default' }: AccountBarProps) {
 
   return (
     <div className="flex items-center gap-1">
-      <div
-        className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-bold sm:px-3"
+      <Link
+        href="/admin"
+        className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-bold no-underline transition-all hover:brightness-110 sm:px-3"
         style={{
           background: 'rgba(34,197,94,0.1)',
           border: '1.5px solid rgba(34,197,94,0.3)',
           color: '#4ade80',
         }}
-        title={username}
+        title={`${username} — 管理`}
       >
         <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-green-400" />
         <span className="hidden max-w-[120px] truncate sm:inline">{username}</span>
         <span className="font-extrabold sm:hidden">{initial}</span>
-      </div>
+      </Link>
       <button
         type="button"
         onClick={() => signOut()}

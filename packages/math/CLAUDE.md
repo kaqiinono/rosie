@@ -30,19 +30,15 @@ src/
 │                   #   MathSeaCard, MathQuizCard, MathCatalogCard). NOT a full barrel —
 │                   #   see "Imports" below.
 ├── components/     # all math UI:
-│   ├── lessonNN/   #   per-lesson (12,13,15,18,23,29,30,34,35,36,37,38,39,40,41,42,43,44):
-│   │               #     HomePage, ProblemList, ProblemDetail, AppHeader, Sidebar,
-│   │               #     BottomNav, FilterPanel, LessonNNProvider, …
-│   ├── shared/     #   the factory + configurable chrome that eliminate per-lesson dup:
-│   │               #     createLessonProvider, LessonAppHeader, LessonSidebar,
-│   │               #     LessonBottomNav, LessonProblemList, FilterPanel
+│   ├── lesson/     #   g{grade}/lesson{seq}/ — HomePage, ProblemList, Provider, …
+│   ├── shared/     #   createLessonProvider, LessonAppHeader, dynamic-lesson, …
 │   ├── catalog/    #   CatalogTree + treeLayout (course map)
 │   └── *Card.tsx   #   top-level entry cards (the public surface)
 ├── hooks/          # useMathSolved, useMathWrong, useMathQuiz, useMathRotatingReview,
 │                   #   useMathWeeklyLessonReview, useMathWeeklyPlan, useProblemMastery
-└── utils/          # lessonNN-data (per-lesson ProblemSet banks; some are .tsx for inline
-                    #   diagrams), lesson34 (drill step helpers), math-helpers, sea-data
-                    #   (aggregates all lesson banks into the 海域 bank), catalog-data
+└── utils/          # g1/lesson{seq}-data, g2/lesson{seq}-data (ProblemSet banks);
+                    #   lesson-registry (lessonKey + grade + seq), lesson-module-registry,
+                    #   sea-data, courses-data, catalog-data, math-helpers
 ```
 
 ## Imports — deep subpaths, NOT a barrel
@@ -51,8 +47,8 @@ Every lesson exports the same names (`HomePage`/`ProblemList`/`ProblemDetail`/`P
 so a single barrel would collide. The app and this package import math via **deep subpaths**
 that map 1:1 onto the source tree:
 
-- `@rosie/math/components/lesson35/ProblemDetail`
-- `@rosie/math/utils/lesson35-data`  (and `@rosie/math/utils/lesson34` for drill steps)
+- `@rosie/math/components/lesson/g2/lesson7/HomePage`
+- `@rosie/math/utils/g2/lesson7-data`
 - `@rosie/math/hooks/useMathWeeklyPlan`
 
 Resolution setup (deep subpaths with mixed `.ts`/`.tsx` need all three):

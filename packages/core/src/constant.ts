@@ -39,6 +39,8 @@ export const STORAGE_KEYS = {
   CHINESE_CHARS_FILTER: 'chinese-chars-filter',
   /** 数学管理后台讲次/来源/题型筛选，下次进入恢复上次选择 */
   ADMIN_MATH_LESSON_FILTER: 'admin-math-lesson-filter',
+  /** 数学连续练习：是否默认沉浸式（草稿纸）答题 */
+  MATH_PRACTICE_IMMERSIVE: 'math-practice-immersive',
 } as const
 
 export const NAV_PAGES = [

@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { Problem } from '@rosie/core'
 import type { ScratchObject } from './scratch-pad-types'
 import ScratchPadContentPreview from './ScratchPadContentPreview'
 import ScratchPadInsertFigureButton from './ScratchPadInsertFigureButton'
+import ScratchPadSelectionActions from './ScratchPadSelectionActions'
 import ScratchPadToolbar from './ScratchPadToolbar'
 import { useScratchPad } from './useScratchPad'
 
@@ -74,8 +75,16 @@ function ScratchPadInlineEditor({
     setTool,
     colorId,
     pickColor,
+    highlightColorId,
+    pickHighlightColor,
     strokeWidth,
     setStrokeWidth,
+    highlightWidth,
+    setHighlightWidth,
+    shapeFillEnabled,
+    setShapeFillEnabled,
+    triangleVariant,
+    setTriangleVariant,
     eraserWidth,
     setEraserWidth,
     handlePointerDown,
@@ -86,6 +95,7 @@ function ScratchPadInlineEditor({
     undo,
     hasSelection,
     selectionCount,
+    selectionBoundsRect,
     deleteSelected,
     clearSelection,
     duplicateSelected,
@@ -113,6 +123,21 @@ function ScratchPadInlineEditor({
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [deleteSelected, duplicateSelected])
 
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const update = () => {
+      const rect = el.getBoundingClientRect()
+      setCanvasSize({ width: rect.width, height: rect.height })
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [containerRef])
+
   return (
     <div className="overflow-hidden rounded-xl border border-indigo-100 bg-[#fafafa]">
       <ScratchPadInlineHeader
@@ -131,23 +156,40 @@ function ScratchPadInlineEditor({
           onPointerCancel={handlePointerUp}
           onPointerLeave={handlePointerLeave}
         />
+        {hasSelection && selectionBoundsRect && canvasSize.width > 0 && (
+          <ScratchPadSelectionActions
+            bounds={selectionBoundsRect}
+            count={selectionCount}
+            containerWidth={canvasSize.width}
+            containerHeight={canvasSize.height}
+            activeColorId={colorId}
+            onRecolor={(_hex, id) => pickColor(id)}
+            onDuplicate={duplicateSelected}
+            onDelete={deleteSelected}
+            onClearSelection={clearSelection}
+          />
+        )}
       </div>
       <ScratchPadToolbar
         tool={tool}
         onToolChange={setTool}
         colorId={colorId}
         onColorChange={pickColor}
+        highlightColorId={highlightColorId}
+        onHighlightColorChange={pickHighlightColor}
         strokeWidth={strokeWidth}
         onStrokeWidthChange={setStrokeWidth}
+        highlightWidth={highlightWidth}
+        onHighlightWidthChange={setHighlightWidth}
+        shapeFillEnabled={shapeFillEnabled}
+        onShapeFillChange={setShapeFillEnabled}
+        triangleVariant={triangleVariant}
+        onTriangleVariantChange={setTriangleVariant}
         eraserWidth={eraserWidth}
         onEraserWidthChange={setEraserWidth}
         canUndo={canUndo}
         onUndo={undo}
         hasSelection={hasSelection}
-        selectionCount={selectionCount}
-        onDeleteSelected={deleteSelected}
-        onClearSelection={clearSelection}
-        onDuplicateSelected={duplicateSelected}
         onClear={clearAll}
         variant="inline"
       />

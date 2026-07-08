@@ -1,4 +1,5 @@
 import type { AnswerCheckResult, Problem } from '@rosie/core'
+import { getProblemAnswerMode } from '@rosie/math/utils/problem-answer-mode'
 
 export const CORRECT_MESSAGE = '🎉 完全正确！你真棒！'
 
@@ -8,7 +9,7 @@ export interface CheckProblemAnswerOptions {
 }
 
 export function isInteractiveProblem(problem: Problem): boolean {
-  return typeof problem.checkAnswer === 'function' || Boolean(problem.verticalPuzzle)
+  return getProblemAnswerMode(problem) === 'custom-widget'
 }
 
 export function isEmptyAnswerInput(input: unknown): boolean {

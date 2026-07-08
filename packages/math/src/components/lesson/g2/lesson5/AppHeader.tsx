@@ -1,0 +1,19 @@
+'use client'
+
+import LessonAppHeader from '@rosie/math/components/shared/LessonAppHeader'
+import type { ProblemSet } from '@rosie/core'
+import { useG2Lesson5 } from './G2Lesson5Provider'
+
+const CONFIG = {
+  basePath: '/math/ny/2/5',
+  emoji: '🔮',
+  titleShort: '找规律',
+  titleFull: '探险',
+  titleColor: 'text-amber-700',
+  navActiveColor: 'text-amber-700',
+  navActiveBorderColor: '#b45309',
+} as const
+
+export default function AppHeader({ problems }: { problems: ProblemSet }) {
+  return <LessonAppHeader config={CONFIG} problems={problems} useLessonContext={useG2Lesson5} />
+}

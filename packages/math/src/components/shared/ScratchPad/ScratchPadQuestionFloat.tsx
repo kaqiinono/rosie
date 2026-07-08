@@ -4,6 +4,10 @@ import { useRef, useState } from 'react'
 import type { Problem } from '@rosie/core'
 import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
 import { useProblemImageUrl } from '@rosie/math/hooks/useProblemImageUrl'
+import {
+  getProblemAnswerMode,
+  hasScratchExportableVisual,
+} from '@rosie/math/utils/problem-answer-mode'
 import ScratchPadInsertFigureButton from './ScratchPadInsertFigureButton'
 import ScratchPadAnswerPanel from './ScratchPadAnswerPanel'
 import PracticeAttemptTimeline from './PracticeAttemptTimeline'
@@ -37,8 +41,15 @@ export default function ScratchPadQuestionFloat({
 }: ScratchPadQuestionFloatProps) {
   const [expanded, setExpanded] = useState(expandedDefault)
   const figureHostRef = useRef<HTMLDivElement>(null)
+  const answerExportRef = useRef<HTMLDivElement>(null)
+  const [padSlotEl, setPadSlotEl] = useState<HTMLDivElement | null>(null)
   const figureUrl = useProblemImageUrl(problem, 'figure')
-  const hasFigure = Boolean(figureUrl || problem.figureNode)
+  const hasQuestionFigure = Boolean(figureUrl || problem.figureNode)
+  const showPadFooter =
+    showAnswerPanel &&
+    getProblemAnswerMode(problem) === 'custom-widget' &&
+    Boolean(problem.verticalPuzzle && !problem.verticalPuzzle.readonly)
+  const canInsertToCanvas = Boolean(onInsertFigure && hasScratchExportableVisual(problem))
 
   if (!expanded) {
     return (
@@ -57,7 +68,7 @@ export default function ScratchPadQuestionFloat({
 
   return (
     <div
-      className={`absolute z-20 flex max-h-[min(58vh,480px)] w-[min(92vw,420px)] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/92 shadow-[0_12px_40px_rgba(15,23,42,0.16)] backdrop-blur-md ${
+      className={`absolute z-20 flex max-h-[min(70vh,540px)] w-[min(92vw,420px)] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/92 shadow-[0_12px_40px_rgba(15,23,42,0.16)] backdrop-blur-md ${
         expandedDefault && !onInsertFigure ? 'relative left-auto top-auto mx-auto' : 'left-3'
       }`}
       style={onInsertFigure ? { top: 'max(12px, env(safe-area-inset-top))' } : undefined}
@@ -70,6 +81,15 @@ export default function ScratchPadQuestionFloat({
             <div className="truncate text-[10px] font-medium text-rose-500">{mistakeHint}</div>
           )}
         </div>
+        {canInsertToCanvas && (
+          <ScratchPadInsertFigureButton
+            problem={problem}
+            onInsertFigure={onInsertFigure!}
+            figureHostRef={figureHostRef}
+            answerExportRef={answerExportRef}
+            header
+          />
+        )}
         <button
           type="button"
           onClick={() => setExpanded(false)}
@@ -78,38 +98,42 @@ export default function ScratchPadQuestionFloat({
           收起
         </button>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto px-3.5 py-3">
-        <div
-          className="text-[14px] leading-relaxed text-slate-600 [&>strong]:font-bold [&>strong]:text-slate-800"
-          dangerouslySetInnerHTML={{ __html: problem.text }}
-        />
-        {hasFigure && (
-          <div ref={figureHostRef} className="mt-3">
-            <ProblemFigureImage problem={problem} />
-            {onInsertFigure && (
-              <ScratchPadInsertFigureButton
-                problem={problem}
-                onInsertFigure={onInsertFigure}
-                figureHostRef={figureHostRef}
-              />
-            )}
-          </div>
-        )}
-        {showAnswerPanel && onAnswerDraftChange && (
-          <ScratchPadAnswerPanel
-            problem={problem}
-            mode={answerMode}
-            initialAnswer={initialAnswer}
-            onAnswerDraftChange={onAnswerDraftChange}
-            onSubmitResult={onSubmitResult}
+
+      <div className="flex min-h-0 flex-1 flex-col">
+        {showPadFooter && (
+          <div
+            ref={setPadSlotEl}
+            className="order-2 shrink-0 border-t border-slate-100 bg-white/95 px-3 py-2 backdrop-blur-sm"
           />
         )}
-        {answerMode === 'practice' && (
-          <PracticeAttemptTimeline
-            problemId={problem.id}
-            refreshKey={attemptRefreshKey}
+        <div className="order-1 min-h-0 flex-1 overflow-x-auto overflow-y-auto px-3.5 py-3">
+          <div
+            className="text-[14px] leading-relaxed text-slate-600 [&>strong]:font-bold [&>strong]:text-slate-800"
+            dangerouslySetInnerHTML={{ __html: problem.text }}
           />
-        )}
+          {hasQuestionFigure && (
+            <div ref={figureHostRef} className="mt-3">
+              <ProblemFigureImage problem={problem} />
+            </div>
+          )}
+          {showAnswerPanel && onAnswerDraftChange && (
+            <ScratchPadAnswerPanel
+              problem={problem}
+              mode={answerMode}
+              initialAnswer={initialAnswer}
+              onAnswerDraftChange={onAnswerDraftChange}
+              onSubmitResult={onSubmitResult}
+              exportHostRef={answerExportRef}
+              padSlot={showPadFooter ? padSlotEl : undefined}
+            />
+          )}
+          {answerMode === 'practice' && (
+            <PracticeAttemptTimeline
+              problemId={problem.id}
+              refreshKey={attemptRefreshKey}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

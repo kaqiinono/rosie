@@ -1,6 +1,6 @@
 import type { ProblemSet } from '@rosie/core'
 import { lessonByRoute, routeForLesson, type LessonEntry } from '@rosie/math/utils/lesson-registry'
-import { lessonModuleBySlug, type LessonModule } from '@rosie/math/utils/lesson-module-registry'
+import { lessonModuleByKey, type LessonModule } from '@rosie/math/utils/lesson-module-registry'
 
 export type ResolvedLessonRoute = {
   entry: LessonEntry
@@ -13,7 +13,7 @@ export type ResolvedLessonRoute = {
 export function resolveLessonRoute(grade: number, seq: number): ResolvedLessonRoute | undefined {
   const entry = lessonByRoute(grade, seq)
   if (!entry) return undefined
-  const lessonModule = lessonModuleBySlug(entry.slug)
+  const lessonModule = lessonModuleByKey(entry.lessonKey)
   if (!lessonModule) return undefined
   return {
     entry,

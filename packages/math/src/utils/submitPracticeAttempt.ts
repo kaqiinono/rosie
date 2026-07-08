@@ -9,6 +9,7 @@ import {
   upsertQuizScratchLink,
   upsertWrongWithAttempt,
 } from '@rosie/math/utils/math-scratch-db'
+import { mathWrongStore } from '@rosie/math/hooks/useMathWrong'
 import { supabase } from '@rosie/core'
 
 export type SubmitPracticeAttemptInput = {
@@ -45,8 +46,24 @@ export async function submitPracticeAttempt(
 
   if (!correct) {
     await upsertWrongWithAttempt(userId, problem.id, attemptId)
+    const now = new Date().toISOString()
+    mathWrongStore.patchSessionData(userId, (prev) => {
+      if (prev.some((r) => r.problemId === problem.id && !r.resolved)) return prev
+      const without = prev.filter((r) => r.problemId !== problem.id)
+      return [
+        ...without,
+        { problemId: problem.id, addedAt: now, resolved: false, resolvedAt: null },
+      ]
+    })
   } else {
     const now = new Date().toISOString()
+    mathWrongStore.patchSessionData(userId, (prev) => {
+      const hit = prev.some((r) => r.problemId === problem.id)
+      if (!hit) return prev
+      return prev.map((r) =>
+        r.problemId === problem.id ? { ...r, resolved: true, resolvedAt: now } : r,
+      )
+    })
     await supabase
       .from('math_wrong')
       .update({ resolved: true, resolved_at: now })
@@ -58,7 +75,9 @@ export async function submitPracticeAttempt(
     await upsertQuizScratchLink(userId, paperId, problem.id, draftId)
   }
 
-  await clearScratchWorking(userId, problem.id, paperId)
+  if (correct) {
+    await clearScratchWorking(userId, problem.id, paperId)
+  }
 
   return { attemptId, draftId }
 }

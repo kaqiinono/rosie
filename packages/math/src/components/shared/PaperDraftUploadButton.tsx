@@ -8,6 +8,7 @@ import {
   appendPaperImageToWorking,
   submitPaperWorkingArchive,
 } from '@rosie/math/utils/paper-scratch'
+import { useLessonScratchActions } from '@rosie/math/components/shared/ScratchPad/LessonScratchActionsContext'
 
 type PaperDraftUploadButtonProps = {
   problem: Problem
@@ -32,6 +33,7 @@ export default function PaperDraftUploadButton({
 }: PaperDraftUploadButtonProps) {
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
+  const scratchActions = useLessonScratchActions()
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [pending, setPending] = useState<PendingUpload | null>(null)
@@ -75,6 +77,11 @@ export default function PaperDraftUploadButton({
       if (error) {
         onFlash?.(error)
         return
+      }
+      if (archivedCorrect) {
+        void scratchActions?.onSolve?.(problem.id)
+      } else {
+        scratchActions?.onWrong?.(problem.id)
       }
       onFlash?.(archivedCorrect ? '纸质练习已提交（做对）' : '纸质练习已提交（做错）')
       onUploaded?.()

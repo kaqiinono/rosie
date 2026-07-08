@@ -5,256 +5,254 @@ import type { Problem, ProblemSet } from '@rosie/core'
 import type { LessonContextType } from '@rosie/math/components/shared/createLessonProvider'
 import type { ProblemDetailComponentProps } from '@rosie/math/components/shared/LessonProblemRoutePage'
 import type { FilterPanelProps } from '@rosie/math/components/shared/FilterPanel'
-import WeekdayMagic from '@rosie/math/components/lesson36/WeekdayMagic'
-import YibihaMagicBook from '@rosie/math/components/lesson38/YibihaMagicBook'
-import Lesson34MagicDemo from '@rosie/math/components/lesson34/Lesson34MagicDemo'
-import { PROBLEMS as P12, TAG_STYLE as TS12 } from '@rosie/math/utils/lesson12-data'
-import Provider12, { useLesson12 } from '@rosie/math/components/lesson12/Lesson12Provider'
-import HomePage12 from '@rosie/math/components/lesson12/HomePage'
-import AppHeader12 from '@rosie/math/components/lesson12/AppHeader'
-import Sidebar12 from '@rosie/math/components/lesson12/Sidebar'
-import BottomNav12 from '@rosie/math/components/lesson12/BottomNav'
-import FilterPanel12 from '@rosie/math/components/lesson12/FilterPanel'
-import ProblemList12 from '@rosie/math/components/lesson12/ProblemList'
-import ProblemDetail12 from '@rosie/math/components/lesson12/ProblemDetail'
-import { PROBLEMS as P13, TAG_STYLE as TS13 } from '@rosie/math/utils/lesson13-data'
-import Provider13, { useLesson13 } from '@rosie/math/components/lesson13/Lesson13Provider'
-import HomePage13 from '@rosie/math/components/lesson13/HomePage'
-import AppHeader13 from '@rosie/math/components/lesson13/AppHeader'
-import Sidebar13 from '@rosie/math/components/lesson13/Sidebar'
-import BottomNav13 from '@rosie/math/components/lesson13/BottomNav'
-import FilterPanel13 from '@rosie/math/components/lesson13/FilterPanel'
-import ProblemList13 from '@rosie/math/components/lesson13/ProblemList'
-import ProblemDetail13 from '@rosie/math/components/lesson13/ProblemDetail'
-import { PROBLEMS as P15, TAG_STYLE as TS15 } from '@rosie/math/utils/lesson15-data'
-import Provider15, { useLesson15 } from '@rosie/math/components/lesson15/Lesson15Provider'
-import HomePage15 from '@rosie/math/components/lesson15/HomePage'
-import AppHeader15 from '@rosie/math/components/lesson15/AppHeader'
-import Sidebar15 from '@rosie/math/components/lesson15/Sidebar'
-import BottomNav15 from '@rosie/math/components/lesson15/BottomNav'
-import FilterPanel15 from '@rosie/math/components/lesson15/FilterPanel'
-import ProblemList15 from '@rosie/math/components/lesson15/ProblemList'
-import ProblemDetail15 from '@rosie/math/components/lesson15/ProblemDetail'
-import { PROBLEMS as P18, TAG_STYLE as TS18 } from '@rosie/math/utils/lesson18-data'
-import Provider18, { useLesson18 } from '@rosie/math/components/lesson18/Lesson18Provider'
-import HomePage18 from '@rosie/math/components/lesson18/HomePage'
-import AppHeader18 from '@rosie/math/components/lesson18/AppHeader'
-import Sidebar18 from '@rosie/math/components/lesson18/Sidebar'
-import BottomNav18 from '@rosie/math/components/lesson18/BottomNav'
-import FilterPanel18 from '@rosie/math/components/lesson18/FilterPanel'
-import ProblemList18 from '@rosie/math/components/lesson18/ProblemList'
-import ProblemDetail18 from '@rosie/math/components/lesson18/ProblemDetail'
-import { PROBLEMS as P23, TAG_STYLE as TS23 } from '@rosie/math/utils/lesson23-data'
-import Provider23, { useLesson23 } from '@rosie/math/components/lesson23/Lesson23Provider'
-import HomePage23 from '@rosie/math/components/lesson23/HomePage'
-import AppHeader23 from '@rosie/math/components/lesson23/AppHeader'
-import Sidebar23 from '@rosie/math/components/lesson23/Sidebar'
-import BottomNav23 from '@rosie/math/components/lesson23/BottomNav'
-import FilterPanel23 from '@rosie/math/components/lesson23/FilterPanel'
-import ProblemList23 from '@rosie/math/components/lesson23/ProblemList'
-import ProblemDetail23 from '@rosie/math/components/lesson23/ProblemDetail'
-import { PROBLEMS as P29, TAG_STYLE as TS29 } from '@rosie/math/utils/lesson29-data'
-import Provider29, { useLesson29 } from '@rosie/math/components/lesson29/Lesson29Provider'
-import HomePage29 from '@rosie/math/components/lesson29/HomePage'
-import AppHeader29 from '@rosie/math/components/lesson29/AppHeader'
-import Sidebar29 from '@rosie/math/components/lesson29/Sidebar'
-import BottomNav29 from '@rosie/math/components/lesson29/BottomNav'
-import FilterPanel29 from '@rosie/math/components/lesson29/FilterPanel'
-import ProblemList29 from '@rosie/math/components/lesson29/ProblemList'
-import ProblemDetail29 from '@rosie/math/components/lesson29/ProblemDetail'
-import { PROBLEMS as P30, TAG_STYLE as TS30 } from '@rosie/math/utils/lesson30-data'
-import Provider30, { useLesson30 } from '@rosie/math/components/lesson30/Lesson30Provider'
-import HomePage30 from '@rosie/math/components/lesson30/HomePage'
-import AppHeader30 from '@rosie/math/components/lesson30/AppHeader'
-import Sidebar30 from '@rosie/math/components/lesson30/Sidebar'
-import BottomNav30 from '@rosie/math/components/lesson30/BottomNav'
-import FilterPanel30 from '@rosie/math/components/lesson30/FilterPanel'
-import ProblemList30 from '@rosie/math/components/lesson30/ProblemList'
-import ProblemDetail30 from '@rosie/math/components/lesson30/ProblemDetail'
-import { PROBLEMS as P34, TAG_STYLE as TS34 } from '@rosie/math/utils/lesson34-data'
-import Provider34, { useLesson34 } from '@rosie/math/components/lesson34/Lesson34Provider'
-import HomePage34 from '@rosie/math/components/lesson34/HomePage'
-import AppHeader34 from '@rosie/math/components/lesson34/AppHeader'
-import Sidebar34 from '@rosie/math/components/lesson34/Sidebar'
-import BottomNav34 from '@rosie/math/components/lesson34/BottomNav'
-import FilterPanel34 from '@rosie/math/components/lesson34/FilterPanel'
-import ProblemList34 from '@rosie/math/components/lesson34/ProblemList'
-import ProblemDetail34 from '@rosie/math/components/lesson34/ProblemDetail'
-import { PROBLEMS as P35, TAG_STYLE as TS35 } from '@rosie/math/utils/lesson35-data'
-import Provider35, { useLesson35 } from '@rosie/math/components/lesson35/Lesson35Provider'
-import HomePage35 from '@rosie/math/components/lesson35/HomePage'
-import AppHeader35 from '@rosie/math/components/lesson35/AppHeader'
-import Sidebar35 from '@rosie/math/components/lesson35/Sidebar'
-import BottomNav35 from '@rosie/math/components/lesson35/BottomNav'
-import FilterPanel35 from '@rosie/math/components/lesson35/FilterPanel'
-import ProblemList35 from '@rosie/math/components/lesson35/ProblemList'
-import ProblemDetail35 from '@rosie/math/components/lesson35/ProblemDetail'
-import { PROBLEMS as P36, TAG_STYLE as TS36 } from '@rosie/math/utils/lesson36-data'
-import Provider36, { useLesson36 } from '@rosie/math/components/lesson36/Lesson36Provider'
-import HomePage36 from '@rosie/math/components/lesson36/HomePage'
-import AppHeader36 from '@rosie/math/components/lesson36/AppHeader'
-import Sidebar36 from '@rosie/math/components/lesson36/Sidebar'
-import BottomNav36 from '@rosie/math/components/lesson36/BottomNav'
-import FilterPanel36 from '@rosie/math/components/lesson36/FilterPanel'
-import ProblemList36 from '@rosie/math/components/lesson36/ProblemList'
-import ProblemDetail36 from '@rosie/math/components/lesson36/ProblemDetail'
-import { PROBLEMS as P37, TAG_STYLE as TS37 } from '@rosie/math/utils/lesson37-data'
-import Provider37, { useLesson37 } from '@rosie/math/components/lesson37/Lesson37Provider'
-import HomePage37 from '@rosie/math/components/lesson37/HomePage'
-import AppHeader37 from '@rosie/math/components/lesson37/AppHeader'
-import Sidebar37 from '@rosie/math/components/lesson37/Sidebar'
-import BottomNav37 from '@rosie/math/components/lesson37/BottomNav'
-import FilterPanel37 from '@rosie/math/components/lesson37/FilterPanel'
-import ProblemList37 from '@rosie/math/components/lesson37/ProblemList'
-import ProblemDetail37 from '@rosie/math/components/lesson37/ProblemDetail'
-import { PROBLEMS as P38, TAG_STYLE as TS38 } from '@rosie/math/utils/lesson38-data'
-import Provider38, { useLesson38 } from '@rosie/math/components/lesson38/Lesson38Provider'
-import HomePage38 from '@rosie/math/components/lesson38/HomePage'
-import AppHeader38 from '@rosie/math/components/lesson38/AppHeader'
-import Sidebar38 from '@rosie/math/components/lesson38/Sidebar'
-import BottomNav38 from '@rosie/math/components/lesson38/BottomNav'
-import FilterPanel38 from '@rosie/math/components/lesson38/FilterPanel'
-import ProblemList38 from '@rosie/math/components/lesson38/ProblemList'
-import ProblemDetail38 from '@rosie/math/components/lesson38/ProblemDetail'
-import { PROBLEMS as P39, TAG_STYLE as TS39 } from '@rosie/math/utils/lesson39-data'
-import Provider39, { useLesson39 } from '@rosie/math/components/lesson39/Lesson39Provider'
-import HomePage39 from '@rosie/math/components/lesson39/HomePage'
-import AppHeader39 from '@rosie/math/components/lesson39/AppHeader'
-import Sidebar39 from '@rosie/math/components/lesson39/Sidebar'
-import BottomNav39 from '@rosie/math/components/lesson39/BottomNav'
-import FilterPanel39 from '@rosie/math/components/lesson39/FilterPanel'
-import ProblemList39 from '@rosie/math/components/lesson39/ProblemList'
-import ProblemDetail39 from '@rosie/math/components/lesson39/ProblemDetail'
-import { PROBLEMS as P40, TAG_STYLE as TS40 } from '@rosie/math/utils/lesson40-data'
-import Provider40, { useLesson40 } from '@rosie/math/components/lesson40/Lesson40Provider'
-import HomePage40 from '@rosie/math/components/lesson40/HomePage'
-import AppHeader40 from '@rosie/math/components/lesson40/AppHeader'
-import Sidebar40 from '@rosie/math/components/lesson40/Sidebar'
-import BottomNav40 from '@rosie/math/components/lesson40/BottomNav'
-import FilterPanel40 from '@rosie/math/components/lesson40/FilterPanel'
-import ProblemList40 from '@rosie/math/components/lesson40/ProblemList'
-import ProblemDetail40 from '@rosie/math/components/lesson40/ProblemDetail'
-import { PROBLEMS as P41, TAG_STYLE as TS41 } from '@rosie/math/utils/lesson41-data'
-import Provider41, { useLesson41 } from '@rosie/math/components/lesson41/Lesson41Provider'
-import HomePage41 from '@rosie/math/components/lesson41/HomePage'
-import AppHeader41 from '@rosie/math/components/lesson41/AppHeader'
-import Sidebar41 from '@rosie/math/components/lesson41/Sidebar'
-import BottomNav41 from '@rosie/math/components/lesson41/BottomNav'
-import FilterPanel41 from '@rosie/math/components/lesson41/FilterPanel'
-import ProblemList41 from '@rosie/math/components/lesson41/ProblemList'
-import ProblemDetail41 from '@rosie/math/components/lesson41/ProblemDetail'
-import { PROBLEMS as P42, TAG_STYLE as TS42 } from '@rosie/math/utils/lesson42-data'
-import Provider42, { useLesson42 } from '@rosie/math/components/lesson42/Lesson42Provider'
-import HomePage42 from '@rosie/math/components/lesson42/HomePage'
-import AppHeader42 from '@rosie/math/components/lesson42/AppHeader'
-import Sidebar42 from '@rosie/math/components/lesson42/Sidebar'
-import BottomNav42 from '@rosie/math/components/lesson42/BottomNav'
-import FilterPanel42 from '@rosie/math/components/lesson42/FilterPanel'
-import ProblemList42 from '@rosie/math/components/lesson42/ProblemList'
-import ProblemDetail42 from '@rosie/math/components/lesson42/ProblemDetail'
-import { PROBLEMS as P43, TAG_STYLE as TS43 } from '@rosie/math/utils/lesson43-data'
-import Provider43, { useLesson43 } from '@rosie/math/components/lesson43/Lesson43Provider'
-import HomePage43 from '@rosie/math/components/lesson43/HomePage'
-import AppHeader43 from '@rosie/math/components/lesson43/AppHeader'
-import Sidebar43 from '@rosie/math/components/lesson43/Sidebar'
-import BottomNav43 from '@rosie/math/components/lesson43/BottomNav'
-import FilterPanel43 from '@rosie/math/components/lesson43/FilterPanel'
-import ProblemList43 from '@rosie/math/components/lesson43/ProblemList'
-import ProblemDetail43 from '@rosie/math/components/lesson43/ProblemDetail'
-import { PROBLEMS as P44, TAG_STYLE as TS44 } from '@rosie/math/utils/lesson44-data'
-import Provider44, { useLesson44 } from '@rosie/math/components/lesson44/Lesson44Provider'
-import HomePage44 from '@rosie/math/components/lesson44/HomePage'
-import AppHeader44 from '@rosie/math/components/lesson44/AppHeader'
-import Sidebar44 from '@rosie/math/components/lesson44/Sidebar'
-import BottomNav44 from '@rosie/math/components/lesson44/BottomNav'
-import FilterPanel44 from '@rosie/math/components/lesson44/FilterPanel'
-import ProblemList44 from '@rosie/math/components/lesson44/ProblemList'
-import ProblemDetail44 from '@rosie/math/components/lesson44/ProblemDetail'
-import { PROBLEMS as P46, TAG_STYLE as TS46 } from '@rosie/math/utils/lesson46-data'
-import Provider46, { useLesson46 } from '@rosie/math/components/lesson46/Lesson46Provider'
-import HomePage46 from '@rosie/math/components/lesson46/HomePage'
-import AppHeader46 from '@rosie/math/components/lesson46/AppHeader'
-import Sidebar46 from '@rosie/math/components/lesson46/Sidebar'
-import BottomNav46 from '@rosie/math/components/lesson46/BottomNav'
-import FilterPanel46 from '@rosie/math/components/lesson46/FilterPanel'
-import ProblemList46 from '@rosie/math/components/lesson46/ProblemList'
-import ProblemDetail46 from '@rosie/math/components/lesson46/ProblemDetail'
-import { PROBLEMS as P47, TAG_STYLE as TS47 } from '@rosie/math/utils/lesson47-data'
-import Provider47, { useLesson47 } from '@rosie/math/components/lesson47/Lesson47Provider'
-import HomePage47 from '@rosie/math/components/lesson47/HomePage'
-import AppHeader47 from '@rosie/math/components/lesson47/AppHeader'
-import Sidebar47 from '@rosie/math/components/lesson47/Sidebar'
-import BottomNav47 from '@rosie/math/components/lesson47/BottomNav'
-import FilterPanel47 from '@rosie/math/components/lesson47/FilterPanel'
-import ProblemList47 from '@rosie/math/components/lesson47/ProblemList'
-import ProblemDetail47 from '@rosie/math/components/lesson47/ProblemDetail'
-import { PROBLEMS as P49, TAG_STYLE as TS49 } from '@rosie/math/utils/lesson49-data'
-import Provider49, { useLesson49 } from '@rosie/math/components/lesson49/Lesson49Provider'
-import HomePage49 from '@rosie/math/components/lesson49/HomePage'
-import AppHeader49 from '@rosie/math/components/lesson49/AppHeader'
-import Sidebar49 from '@rosie/math/components/lesson49/Sidebar'
-import BottomNav49 from '@rosie/math/components/lesson49/BottomNav'
-import FilterPanel49 from '@rosie/math/components/lesson49/FilterPanel'
-import ProblemList49 from '@rosie/math/components/lesson49/ProblemList'
-import ProblemDetail49 from '@rosie/math/components/lesson49/ProblemDetail'
-import { PROBLEMS as P50, TAG_STYLE as TS50 } from '@rosie/math/utils/lesson50-data'
-import Provider50, { useLesson50 } from '@rosie/math/components/lesson50/Lesson50Provider'
-import HomePage50 from '@rosie/math/components/lesson50/HomePage'
-import AppHeader50 from '@rosie/math/components/lesson50/AppHeader'
-import Sidebar50 from '@rosie/math/components/lesson50/Sidebar'
-import BottomNav50 from '@rosie/math/components/lesson50/BottomNav'
-import FilterPanel50 from '@rosie/math/components/lesson50/FilterPanel'
-import ProblemList50 from '@rosie/math/components/lesson50/ProblemList'
-import ProblemDetail50 from '@rosie/math/components/lesson50/ProblemDetail'
-import { PROBLEMS as P51, TAG_STYLE as TS51 } from '@rosie/math/utils/lesson51-data'
-import Provider51, { useLesson51 } from '@rosie/math/components/lesson51/Lesson51Provider'
-import HomePage51 from '@rosie/math/components/lesson51/HomePage'
-import AppHeader51 from '@rosie/math/components/lesson51/AppHeader'
-import Sidebar51 from '@rosie/math/components/lesson51/Sidebar'
-import BottomNav51 from '@rosie/math/components/lesson51/BottomNav'
-import FilterPanel51 from '@rosie/math/components/lesson51/FilterPanel'
-import ProblemList51 from '@rosie/math/components/lesson51/ProblemList'
-import ProblemDetail51 from '@rosie/math/components/lesson51/ProblemDetail'
-import { PROBLEMS as P52, TAG_STYLE as TS52 } from '@rosie/math/utils/lesson52-data'
-import Provider52, { useLesson52 } from '@rosie/math/components/lesson52/Lesson52Provider'
-import HomePage52 from '@rosie/math/components/lesson52/HomePage'
-import AppHeader52 from '@rosie/math/components/lesson52/AppHeader'
-import Sidebar52 from '@rosie/math/components/lesson52/Sidebar'
-import BottomNav52 from '@rosie/math/components/lesson52/BottomNav'
-import FilterPanel52 from '@rosie/math/components/lesson52/FilterPanel'
-import ProblemList52 from '@rosie/math/components/lesson52/ProblemList'
-import ProblemDetail52 from '@rosie/math/components/lesson52/ProblemDetail'
-import { PROBLEMS as P53, TAG_STYLE as TS53 } from '@rosie/math/utils/lesson53-data'
-import Provider53, { useLesson53 } from '@rosie/math/components/lesson53/Lesson53Provider'
-import HomePage53 from '@rosie/math/components/lesson53/HomePage'
-import AppHeader53 from '@rosie/math/components/lesson53/AppHeader'
-import Sidebar53 from '@rosie/math/components/lesson53/Sidebar'
-import BottomNav53 from '@rosie/math/components/lesson53/BottomNav'
-import FilterPanel53 from '@rosie/math/components/lesson53/FilterPanel'
-import ProblemList53 from '@rosie/math/components/lesson53/ProblemList'
-import ProblemDetail53 from '@rosie/math/components/lesson53/ProblemDetail'
-import { PROBLEMS as P55, TAG_STYLE as TS55 } from '@rosie/math/utils/lesson55-data'
-import Provider55, { useLesson55 } from '@rosie/math/components/lesson55/Lesson55Provider'
-import HomePage55 from '@rosie/math/components/lesson55/HomePage'
-import AppHeader55 from '@rosie/math/components/lesson55/AppHeader'
-import Sidebar55 from '@rosie/math/components/lesson55/Sidebar'
-import BottomNav55 from '@rosie/math/components/lesson55/BottomNav'
-import FilterPanel55 from '@rosie/math/components/lesson55/FilterPanel'
-import ProblemList55 from '@rosie/math/components/lesson55/ProblemList'
-import ProblemDetail55 from '@rosie/math/components/lesson55/ProblemDetail'
-import { PROBLEMS as P56, TAG_STYLE as TS56 } from '@rosie/math/utils/lesson56-data'
-import Provider56, { useLesson56 } from '@rosie/math/components/lesson56/Lesson56Provider'
-import HomePage56 from '@rosie/math/components/lesson56/HomePage'
-import AppHeader56 from '@rosie/math/components/lesson56/AppHeader'
-import Sidebar56 from '@rosie/math/components/lesson56/Sidebar'
-import BottomNav56 from '@rosie/math/components/lesson56/BottomNav'
-import FilterPanel56 from '@rosie/math/components/lesson56/FilterPanel'
-import ProblemList56 from '@rosie/math/components/lesson56/ProblemList'
-import ProblemDetail56 from '@rosie/math/components/lesson56/ProblemDetail'
+import WeekdayMagic from '@rosie/math/components/lesson/g1/lesson36/WeekdayMagic'
+import YibihaMagicBook from '@rosie/math/components/lesson/g1/lesson38/YibihaMagicBook'
+import Lesson34MagicDemo from '@rosie/math/components/lesson/g1/lesson34/Lesson34MagicDemo'
+import { PROBLEMS as G1Lesson12PROBLEMS, TAG_STYLE as G1Lesson12TAG_STYLE } from '@rosie/math/utils/g1/lesson12-data'
+import G1Lesson12Provider, { useG1Lesson12 } from '@rosie/math/components/lesson/g1/lesson12/G1Lesson12Provider'
+import G1Lesson12HomePage from '@rosie/math/components/lesson/g1/lesson12/HomePage'
+import G1Lesson12AppHeader from '@rosie/math/components/lesson/g1/lesson12/AppHeader'
+import G1Lesson12Sidebar from '@rosie/math/components/lesson/g1/lesson12/Sidebar'
+import G1Lesson12BottomNav from '@rosie/math/components/lesson/g1/lesson12/BottomNav'
+import G1Lesson12FilterPanel from '@rosie/math/components/lesson/g1/lesson12/FilterPanel'
+import G1Lesson12ProblemList from '@rosie/math/components/lesson/g1/lesson12/ProblemList'
+import G1Lesson12ProblemDetail from '@rosie/math/components/lesson/g1/lesson12/ProblemDetail'
+import { PROBLEMS as G1Lesson13PROBLEMS, TAG_STYLE as G1Lesson13TAG_STYLE } from '@rosie/math/utils/g1/lesson13-data'
+import G1Lesson13Provider, { useG1Lesson13 } from '@rosie/math/components/lesson/g1/lesson13/G1Lesson13Provider'
+import G1Lesson13HomePage from '@rosie/math/components/lesson/g1/lesson13/HomePage'
+import G1Lesson13AppHeader from '@rosie/math/components/lesson/g1/lesson13/AppHeader'
+import G1Lesson13Sidebar from '@rosie/math/components/lesson/g1/lesson13/Sidebar'
+import G1Lesson13BottomNav from '@rosie/math/components/lesson/g1/lesson13/BottomNav'
+import G1Lesson13FilterPanel from '@rosie/math/components/lesson/g1/lesson13/FilterPanel'
+import G1Lesson13ProblemList from '@rosie/math/components/lesson/g1/lesson13/ProblemList'
+import G1Lesson13ProblemDetail from '@rosie/math/components/lesson/g1/lesson13/ProblemDetail'
+import { PROBLEMS as G1Lesson15PROBLEMS, TAG_STYLE as G1Lesson15TAG_STYLE } from '@rosie/math/utils/g1/lesson15-data'
+import G1Lesson15Provider, { useG1Lesson15 } from '@rosie/math/components/lesson/g1/lesson15/G1Lesson15Provider'
+import G1Lesson15HomePage from '@rosie/math/components/lesson/g1/lesson15/HomePage'
+import G1Lesson15AppHeader from '@rosie/math/components/lesson/g1/lesson15/AppHeader'
+import G1Lesson15Sidebar from '@rosie/math/components/lesson/g1/lesson15/Sidebar'
+import G1Lesson15BottomNav from '@rosie/math/components/lesson/g1/lesson15/BottomNav'
+import G1Lesson15FilterPanel from '@rosie/math/components/lesson/g1/lesson15/FilterPanel'
+import G1Lesson15ProblemList from '@rosie/math/components/lesson/g1/lesson15/ProblemList'
+import G1Lesson15ProblemDetail from '@rosie/math/components/lesson/g1/lesson15/ProblemDetail'
+import { PROBLEMS as G1Lesson18PROBLEMS, TAG_STYLE as G1Lesson18TAG_STYLE } from '@rosie/math/utils/g1/lesson18-data'
+import G1Lesson18Provider, { useG1Lesson18 } from '@rosie/math/components/lesson/g1/lesson18/G1Lesson18Provider'
+import G1Lesson18HomePage from '@rosie/math/components/lesson/g1/lesson18/HomePage'
+import G1Lesson18AppHeader from '@rosie/math/components/lesson/g1/lesson18/AppHeader'
+import G1Lesson18Sidebar from '@rosie/math/components/lesson/g1/lesson18/Sidebar'
+import G1Lesson18BottomNav from '@rosie/math/components/lesson/g1/lesson18/BottomNav'
+import G1Lesson18FilterPanel from '@rosie/math/components/lesson/g1/lesson18/FilterPanel'
+import G1Lesson18ProblemList from '@rosie/math/components/lesson/g1/lesson18/ProblemList'
+import G1Lesson18ProblemDetail from '@rosie/math/components/lesson/g1/lesson18/ProblemDetail'
+import { PROBLEMS as G1Lesson23PROBLEMS, TAG_STYLE as G1Lesson23TAG_STYLE } from '@rosie/math/utils/g1/lesson23-data'
+import G1Lesson23Provider, { useG1Lesson23 } from '@rosie/math/components/lesson/g1/lesson23/G1Lesson23Provider'
+import G1Lesson23HomePage from '@rosie/math/components/lesson/g1/lesson23/HomePage'
+import G1Lesson23AppHeader from '@rosie/math/components/lesson/g1/lesson23/AppHeader'
+import G1Lesson23Sidebar from '@rosie/math/components/lesson/g1/lesson23/Sidebar'
+import G1Lesson23BottomNav from '@rosie/math/components/lesson/g1/lesson23/BottomNav'
+import G1Lesson23FilterPanel from '@rosie/math/components/lesson/g1/lesson23/FilterPanel'
+import G1Lesson23ProblemList from '@rosie/math/components/lesson/g1/lesson23/ProblemList'
+import G1Lesson23ProblemDetail from '@rosie/math/components/lesson/g1/lesson23/ProblemDetail'
+import { PROBLEMS as G1Lesson29PROBLEMS, TAG_STYLE as G1Lesson29TAG_STYLE } from '@rosie/math/utils/g1/lesson29-data'
+import G1Lesson29Provider, { useG1Lesson29 } from '@rosie/math/components/lesson/g1/lesson29/G1Lesson29Provider'
+import G1Lesson29HomePage from '@rosie/math/components/lesson/g1/lesson29/HomePage'
+import G1Lesson29AppHeader from '@rosie/math/components/lesson/g1/lesson29/AppHeader'
+import G1Lesson29Sidebar from '@rosie/math/components/lesson/g1/lesson29/Sidebar'
+import G1Lesson29BottomNav from '@rosie/math/components/lesson/g1/lesson29/BottomNav'
+import G1Lesson29FilterPanel from '@rosie/math/components/lesson/g1/lesson29/FilterPanel'
+import G1Lesson29ProblemList from '@rosie/math/components/lesson/g1/lesson29/ProblemList'
+import G1Lesson29ProblemDetail from '@rosie/math/components/lesson/g1/lesson29/ProblemDetail'
+import { PROBLEMS as G1Lesson30PROBLEMS, TAG_STYLE as G1Lesson30TAG_STYLE } from '@rosie/math/utils/g1/lesson30-data'
+import G1Lesson30Provider, { useG1Lesson30 } from '@rosie/math/components/lesson/g1/lesson30/G1Lesson30Provider'
+import G1Lesson30HomePage from '@rosie/math/components/lesson/g1/lesson30/HomePage'
+import G1Lesson30AppHeader from '@rosie/math/components/lesson/g1/lesson30/AppHeader'
+import G1Lesson30Sidebar from '@rosie/math/components/lesson/g1/lesson30/Sidebar'
+import G1Lesson30BottomNav from '@rosie/math/components/lesson/g1/lesson30/BottomNav'
+import G1Lesson30FilterPanel from '@rosie/math/components/lesson/g1/lesson30/FilterPanel'
+import G1Lesson30ProblemList from '@rosie/math/components/lesson/g1/lesson30/ProblemList'
+import G1Lesson30ProblemDetail from '@rosie/math/components/lesson/g1/lesson30/ProblemDetail'
+import { PROBLEMS as G1Lesson34PROBLEMS, TAG_STYLE as G1Lesson34TAG_STYLE } from '@rosie/math/utils/g1/lesson34-data'
+import G1Lesson34Provider, { useG1Lesson34 } from '@rosie/math/components/lesson/g1/lesson34/G1Lesson34Provider'
+import G1Lesson34HomePage from '@rosie/math/components/lesson/g1/lesson34/HomePage'
+import G1Lesson34AppHeader from '@rosie/math/components/lesson/g1/lesson34/AppHeader'
+import G1Lesson34Sidebar from '@rosie/math/components/lesson/g1/lesson34/Sidebar'
+import G1Lesson34BottomNav from '@rosie/math/components/lesson/g1/lesson34/BottomNav'
+import G1Lesson34FilterPanel from '@rosie/math/components/lesson/g1/lesson34/FilterPanel'
+import G1Lesson34ProblemList from '@rosie/math/components/lesson/g1/lesson34/ProblemList'
+import G1Lesson34ProblemDetail from '@rosie/math/components/lesson/g1/lesson34/ProblemDetail'
+import { PROBLEMS as G1Lesson35PROBLEMS, TAG_STYLE as G1Lesson35TAG_STYLE } from '@rosie/math/utils/g1/lesson35-data'
+import G1Lesson35Provider, { useG1Lesson35 } from '@rosie/math/components/lesson/g1/lesson35/G1Lesson35Provider'
+import G1Lesson35HomePage from '@rosie/math/components/lesson/g1/lesson35/HomePage'
+import G1Lesson35AppHeader from '@rosie/math/components/lesson/g1/lesson35/AppHeader'
+import G1Lesson35Sidebar from '@rosie/math/components/lesson/g1/lesson35/Sidebar'
+import G1Lesson35BottomNav from '@rosie/math/components/lesson/g1/lesson35/BottomNav'
+import G1Lesson35FilterPanel from '@rosie/math/components/lesson/g1/lesson35/FilterPanel'
+import G1Lesson35ProblemList from '@rosie/math/components/lesson/g1/lesson35/ProblemList'
+import G1Lesson35ProblemDetail from '@rosie/math/components/lesson/g1/lesson35/ProblemDetail'
+import { PROBLEMS as G1Lesson36PROBLEMS, TAG_STYLE as G1Lesson36TAG_STYLE } from '@rosie/math/utils/g1/lesson36-data'
+import G1Lesson36Provider, { useG1Lesson36 } from '@rosie/math/components/lesson/g1/lesson36/G1Lesson36Provider'
+import G1Lesson36HomePage from '@rosie/math/components/lesson/g1/lesson36/HomePage'
+import G1Lesson36AppHeader from '@rosie/math/components/lesson/g1/lesson36/AppHeader'
+import G1Lesson36Sidebar from '@rosie/math/components/lesson/g1/lesson36/Sidebar'
+import G1Lesson36BottomNav from '@rosie/math/components/lesson/g1/lesson36/BottomNav'
+import G1Lesson36FilterPanel from '@rosie/math/components/lesson/g1/lesson36/FilterPanel'
+import G1Lesson36ProblemList from '@rosie/math/components/lesson/g1/lesson36/ProblemList'
+import G1Lesson36ProblemDetail from '@rosie/math/components/lesson/g1/lesson36/ProblemDetail'
+import { PROBLEMS as G1Lesson37PROBLEMS, TAG_STYLE as G1Lesson37TAG_STYLE } from '@rosie/math/utils/g1/lesson37-data'
+import G1Lesson37Provider, { useG1Lesson37 } from '@rosie/math/components/lesson/g1/lesson37/G1Lesson37Provider'
+import G1Lesson37HomePage from '@rosie/math/components/lesson/g1/lesson37/HomePage'
+import G1Lesson37AppHeader from '@rosie/math/components/lesson/g1/lesson37/AppHeader'
+import G1Lesson37Sidebar from '@rosie/math/components/lesson/g1/lesson37/Sidebar'
+import G1Lesson37BottomNav from '@rosie/math/components/lesson/g1/lesson37/BottomNav'
+import G1Lesson37FilterPanel from '@rosie/math/components/lesson/g1/lesson37/FilterPanel'
+import G1Lesson37ProblemList from '@rosie/math/components/lesson/g1/lesson37/ProblemList'
+import G1Lesson37ProblemDetail from '@rosie/math/components/lesson/g1/lesson37/ProblemDetail'
+import { PROBLEMS as G1Lesson38PROBLEMS, TAG_STYLE as G1Lesson38TAG_STYLE } from '@rosie/math/utils/g1/lesson38-data'
+import G1Lesson38Provider, { useG1Lesson38 } from '@rosie/math/components/lesson/g1/lesson38/G1Lesson38Provider'
+import G1Lesson38HomePage from '@rosie/math/components/lesson/g1/lesson38/HomePage'
+import G1Lesson38AppHeader from '@rosie/math/components/lesson/g1/lesson38/AppHeader'
+import G1Lesson38Sidebar from '@rosie/math/components/lesson/g1/lesson38/Sidebar'
+import G1Lesson38BottomNav from '@rosie/math/components/lesson/g1/lesson38/BottomNav'
+import G1Lesson38FilterPanel from '@rosie/math/components/lesson/g1/lesson38/FilterPanel'
+import G1Lesson38ProblemList from '@rosie/math/components/lesson/g1/lesson38/ProblemList'
+import G1Lesson38ProblemDetail from '@rosie/math/components/lesson/g1/lesson38/ProblemDetail'
+import { PROBLEMS as G1Lesson39PROBLEMS, TAG_STYLE as G1Lesson39TAG_STYLE } from '@rosie/math/utils/g1/lesson39-data'
+import G1Lesson39Provider, { useG1Lesson39 } from '@rosie/math/components/lesson/g1/lesson39/G1Lesson39Provider'
+import G1Lesson39HomePage from '@rosie/math/components/lesson/g1/lesson39/HomePage'
+import G1Lesson39AppHeader from '@rosie/math/components/lesson/g1/lesson39/AppHeader'
+import G1Lesson39Sidebar from '@rosie/math/components/lesson/g1/lesson39/Sidebar'
+import G1Lesson39BottomNav from '@rosie/math/components/lesson/g1/lesson39/BottomNav'
+import G1Lesson39FilterPanel from '@rosie/math/components/lesson/g1/lesson39/FilterPanel'
+import G1Lesson39ProblemList from '@rosie/math/components/lesson/g1/lesson39/ProblemList'
+import G1Lesson39ProblemDetail from '@rosie/math/components/lesson/g1/lesson39/ProblemDetail'
+import { PROBLEMS as G1Lesson40PROBLEMS, TAG_STYLE as G1Lesson40TAG_STYLE } from '@rosie/math/utils/g1/lesson40-data'
+import G1Lesson40Provider, { useG1Lesson40 } from '@rosie/math/components/lesson/g1/lesson40/G1Lesson40Provider'
+import G1Lesson40HomePage from '@rosie/math/components/lesson/g1/lesson40/HomePage'
+import G1Lesson40AppHeader from '@rosie/math/components/lesson/g1/lesson40/AppHeader'
+import G1Lesson40Sidebar from '@rosie/math/components/lesson/g1/lesson40/Sidebar'
+import G1Lesson40BottomNav from '@rosie/math/components/lesson/g1/lesson40/BottomNav'
+import G1Lesson40FilterPanel from '@rosie/math/components/lesson/g1/lesson40/FilterPanel'
+import G1Lesson40ProblemList from '@rosie/math/components/lesson/g1/lesson40/ProblemList'
+import G1Lesson40ProblemDetail from '@rosie/math/components/lesson/g1/lesson40/ProblemDetail'
+import { PROBLEMS as G1Lesson41PROBLEMS, TAG_STYLE as G1Lesson41TAG_STYLE } from '@rosie/math/utils/g1/lesson41-data'
+import G1Lesson41Provider, { useG1Lesson41 } from '@rosie/math/components/lesson/g1/lesson41/G1Lesson41Provider'
+import G1Lesson41HomePage from '@rosie/math/components/lesson/g1/lesson41/HomePage'
+import G1Lesson41AppHeader from '@rosie/math/components/lesson/g1/lesson41/AppHeader'
+import G1Lesson41Sidebar from '@rosie/math/components/lesson/g1/lesson41/Sidebar'
+import G1Lesson41BottomNav from '@rosie/math/components/lesson/g1/lesson41/BottomNav'
+import G1Lesson41FilterPanel from '@rosie/math/components/lesson/g1/lesson41/FilterPanel'
+import G1Lesson41ProblemList from '@rosie/math/components/lesson/g1/lesson41/ProblemList'
+import G1Lesson41ProblemDetail from '@rosie/math/components/lesson/g1/lesson41/ProblemDetail'
+import { PROBLEMS as G1Lesson42PROBLEMS, TAG_STYLE as G1Lesson42TAG_STYLE } from '@rosie/math/utils/g1/lesson42-data'
+import G1Lesson42Provider, { useG1Lesson42 } from '@rosie/math/components/lesson/g1/lesson42/G1Lesson42Provider'
+import G1Lesson42HomePage from '@rosie/math/components/lesson/g1/lesson42/HomePage'
+import G1Lesson42AppHeader from '@rosie/math/components/lesson/g1/lesson42/AppHeader'
+import G1Lesson42Sidebar from '@rosie/math/components/lesson/g1/lesson42/Sidebar'
+import G1Lesson42BottomNav from '@rosie/math/components/lesson/g1/lesson42/BottomNav'
+import G1Lesson42FilterPanel from '@rosie/math/components/lesson/g1/lesson42/FilterPanel'
+import G1Lesson42ProblemList from '@rosie/math/components/lesson/g1/lesson42/ProblemList'
+import G1Lesson42ProblemDetail from '@rosie/math/components/lesson/g1/lesson42/ProblemDetail'
+import { PROBLEMS as G1Lesson43PROBLEMS, TAG_STYLE as G1Lesson43TAG_STYLE } from '@rosie/math/utils/g1/lesson43-data'
+import G1Lesson43Provider, { useG1Lesson43 } from '@rosie/math/components/lesson/g1/lesson43/G1Lesson43Provider'
+import G1Lesson43HomePage from '@rosie/math/components/lesson/g1/lesson43/HomePage'
+import G1Lesson43AppHeader from '@rosie/math/components/lesson/g1/lesson43/AppHeader'
+import G1Lesson43Sidebar from '@rosie/math/components/lesson/g1/lesson43/Sidebar'
+import G1Lesson43BottomNav from '@rosie/math/components/lesson/g1/lesson43/BottomNav'
+import G1Lesson43FilterPanel from '@rosie/math/components/lesson/g1/lesson43/FilterPanel'
+import G1Lesson43ProblemList from '@rosie/math/components/lesson/g1/lesson43/ProblemList'
+import G1Lesson43ProblemDetail from '@rosie/math/components/lesson/g1/lesson43/ProblemDetail'
+import { PROBLEMS as G1Lesson44PROBLEMS, TAG_STYLE as G1Lesson44TAG_STYLE } from '@rosie/math/utils/g1/lesson44-data'
+import G1Lesson44Provider, { useG1Lesson44 } from '@rosie/math/components/lesson/g1/lesson44/G1Lesson44Provider'
+import G1Lesson44HomePage from '@rosie/math/components/lesson/g1/lesson44/HomePage'
+import G1Lesson44AppHeader from '@rosie/math/components/lesson/g1/lesson44/AppHeader'
+import G1Lesson44Sidebar from '@rosie/math/components/lesson/g1/lesson44/Sidebar'
+import G1Lesson44BottomNav from '@rosie/math/components/lesson/g1/lesson44/BottomNav'
+import G1Lesson44FilterPanel from '@rosie/math/components/lesson/g1/lesson44/FilterPanel'
+import G1Lesson44ProblemList from '@rosie/math/components/lesson/g1/lesson44/ProblemList'
+import G1Lesson44ProblemDetail from '@rosie/math/components/lesson/g1/lesson44/ProblemDetail'
+import { PROBLEMS as G1Lesson46PROBLEMS, TAG_STYLE as G1Lesson46TAG_STYLE } from '@rosie/math/utils/g1/lesson46-data'
+import G1Lesson46Provider, { useG1Lesson46 } from '@rosie/math/components/lesson/g1/lesson46/G1Lesson46Provider'
+import G1Lesson46HomePage from '@rosie/math/components/lesson/g1/lesson46/HomePage'
+import G1Lesson46AppHeader from '@rosie/math/components/lesson/g1/lesson46/AppHeader'
+import G1Lesson46Sidebar from '@rosie/math/components/lesson/g1/lesson46/Sidebar'
+import G1Lesson46BottomNav from '@rosie/math/components/lesson/g1/lesson46/BottomNav'
+import G1Lesson46FilterPanel from '@rosie/math/components/lesson/g1/lesson46/FilterPanel'
+import G1Lesson46ProblemList from '@rosie/math/components/lesson/g1/lesson46/ProblemList'
+import G1Lesson46ProblemDetail from '@rosie/math/components/lesson/g1/lesson46/ProblemDetail'
+import { PROBLEMS as G1Lesson47PROBLEMS, TAG_STYLE as G1Lesson47TAG_STYLE } from '@rosie/math/utils/g1/lesson47-data'
+import G1Lesson47Provider, { useG1Lesson47 } from '@rosie/math/components/lesson/g1/lesson47/G1Lesson47Provider'
+import G1Lesson47HomePage from '@rosie/math/components/lesson/g1/lesson47/HomePage'
+import G1Lesson47AppHeader from '@rosie/math/components/lesson/g1/lesson47/AppHeader'
+import G1Lesson47Sidebar from '@rosie/math/components/lesson/g1/lesson47/Sidebar'
+import G1Lesson47BottomNav from '@rosie/math/components/lesson/g1/lesson47/BottomNav'
+import G1Lesson47FilterPanel from '@rosie/math/components/lesson/g1/lesson47/FilterPanel'
+import G1Lesson47ProblemList from '@rosie/math/components/lesson/g1/lesson47/ProblemList'
+import G1Lesson47ProblemDetail from '@rosie/math/components/lesson/g1/lesson47/ProblemDetail'
+import { PROBLEMS as G2Lesson1PROBLEMS, TAG_STYLE as G2Lesson1TAG_STYLE } from '@rosie/math/utils/g2/lesson1-data'
+import G2Lesson1Provider, { useG2Lesson1 } from '@rosie/math/components/lesson/g2/lesson1/G2Lesson1Provider'
+import G2Lesson1HomePage from '@rosie/math/components/lesson/g2/lesson1/HomePage'
+import G2Lesson1AppHeader from '@rosie/math/components/lesson/g2/lesson1/AppHeader'
+import G2Lesson1Sidebar from '@rosie/math/components/lesson/g2/lesson1/Sidebar'
+import G2Lesson1BottomNav from '@rosie/math/components/lesson/g2/lesson1/BottomNav'
+import G2Lesson1FilterPanel from '@rosie/math/components/lesson/g2/lesson1/FilterPanel'
+import G2Lesson1ProblemList from '@rosie/math/components/lesson/g2/lesson1/ProblemList'
+import G2Lesson1ProblemDetail from '@rosie/math/components/lesson/g2/lesson1/ProblemDetail'
+import { PROBLEMS as G2Lesson2PROBLEMS, TAG_STYLE as G2Lesson2TAG_STYLE } from '@rosie/math/utils/g2/lesson2-data'
+import G2Lesson2Provider, { useG2Lesson2 } from '@rosie/math/components/lesson/g2/lesson2/G2Lesson2Provider'
+import G2Lesson2HomePage from '@rosie/math/components/lesson/g2/lesson2/HomePage'
+import G2Lesson2AppHeader from '@rosie/math/components/lesson/g2/lesson2/AppHeader'
+import G2Lesson2Sidebar from '@rosie/math/components/lesson/g2/lesson2/Sidebar'
+import G2Lesson2BottomNav from '@rosie/math/components/lesson/g2/lesson2/BottomNav'
+import G2Lesson2FilterPanel from '@rosie/math/components/lesson/g2/lesson2/FilterPanel'
+import G2Lesson2ProblemList from '@rosie/math/components/lesson/g2/lesson2/ProblemList'
+import G2Lesson2ProblemDetail from '@rosie/math/components/lesson/g2/lesson2/ProblemDetail'
+import { PROBLEMS as G2Lesson3PROBLEMS, TAG_STYLE as G2Lesson3TAG_STYLE } from '@rosie/math/utils/g2/lesson3-data'
+import G2Lesson3Provider, { useG2Lesson3 } from '@rosie/math/components/lesson/g2/lesson3/G2Lesson3Provider'
+import G2Lesson3HomePage from '@rosie/math/components/lesson/g2/lesson3/HomePage'
+import G2Lesson3AppHeader from '@rosie/math/components/lesson/g2/lesson3/AppHeader'
+import G2Lesson3Sidebar from '@rosie/math/components/lesson/g2/lesson3/Sidebar'
+import G2Lesson3BottomNav from '@rosie/math/components/lesson/g2/lesson3/BottomNav'
+import G2Lesson3FilterPanel from '@rosie/math/components/lesson/g2/lesson3/FilterPanel'
+import G2Lesson3ProblemList from '@rosie/math/components/lesson/g2/lesson3/ProblemList'
+import G2Lesson3ProblemDetail from '@rosie/math/components/lesson/g2/lesson3/ProblemDetail'
+import { PROBLEMS as G2Lesson4PROBLEMS, TAG_STYLE as G2Lesson4TAG_STYLE } from '@rosie/math/utils/g2/lesson4-data'
+import G2Lesson4Provider, { useG2Lesson4 } from '@rosie/math/components/lesson/g2/lesson4/G2Lesson4Provider'
+import G2Lesson4HomePage from '@rosie/math/components/lesson/g2/lesson4/HomePage'
+import G2Lesson4AppHeader from '@rosie/math/components/lesson/g2/lesson4/AppHeader'
+import G2Lesson4Sidebar from '@rosie/math/components/lesson/g2/lesson4/Sidebar'
+import G2Lesson4BottomNav from '@rosie/math/components/lesson/g2/lesson4/BottomNav'
+import G2Lesson4FilterPanel from '@rosie/math/components/lesson/g2/lesson4/FilterPanel'
+import G2Lesson4ProblemList from '@rosie/math/components/lesson/g2/lesson4/ProblemList'
+import G2Lesson4ProblemDetail from '@rosie/math/components/lesson/g2/lesson4/ProblemDetail'
+import { PROBLEMS as G2Lesson5PROBLEMS, TAG_STYLE as G2Lesson5TAG_STYLE } from '@rosie/math/utils/g2/lesson5-data'
+import G2Lesson5Provider, { useG2Lesson5 } from '@rosie/math/components/lesson/g2/lesson5/G2Lesson5Provider'
+import G2Lesson5HomePage from '@rosie/math/components/lesson/g2/lesson5/HomePage'
+import G2Lesson5AppHeader from '@rosie/math/components/lesson/g2/lesson5/AppHeader'
+import G2Lesson5Sidebar from '@rosie/math/components/lesson/g2/lesson5/Sidebar'
+import G2Lesson5BottomNav from '@rosie/math/components/lesson/g2/lesson5/BottomNav'
+import G2Lesson5FilterPanel from '@rosie/math/components/lesson/g2/lesson5/FilterPanel'
+import G2Lesson5ProblemList from '@rosie/math/components/lesson/g2/lesson5/ProblemList'
+import G2Lesson5ProblemDetail from '@rosie/math/components/lesson/g2/lesson5/ProblemDetail'
+import { PROBLEMS as G2Lesson6PROBLEMS, TAG_STYLE as G2Lesson6TAG_STYLE } from '@rosie/math/utils/g2/lesson6-data'
+import G2Lesson6Provider, { useG2Lesson6 } from '@rosie/math/components/lesson/g2/lesson6/G2Lesson6Provider'
+import G2Lesson6HomePage from '@rosie/math/components/lesson/g2/lesson6/HomePage'
+import G2Lesson6AppHeader from '@rosie/math/components/lesson/g2/lesson6/AppHeader'
+import G2Lesson6Sidebar from '@rosie/math/components/lesson/g2/lesson6/Sidebar'
+import G2Lesson6BottomNav from '@rosie/math/components/lesson/g2/lesson6/BottomNav'
+import G2Lesson6FilterPanel from '@rosie/math/components/lesson/g2/lesson6/FilterPanel'
+import G2Lesson6ProblemList from '@rosie/math/components/lesson/g2/lesson6/ProblemList'
+import G2Lesson6ProblemDetail from '@rosie/math/components/lesson/g2/lesson6/ProblemDetail'
+import { PROBLEMS as G2Lesson7PROBLEMS, TAG_STYLE as G2Lesson7TAG_STYLE } from '@rosie/math/utils/g2/lesson7-data'
+import G2Lesson7Provider, { useG2Lesson7 } from '@rosie/math/components/lesson/g2/lesson7/G2Lesson7Provider'
+import G2Lesson7HomePage from '@rosie/math/components/lesson/g2/lesson7/HomePage'
+import G2Lesson7AppHeader from '@rosie/math/components/lesson/g2/lesson7/AppHeader'
+import G2Lesson7Sidebar from '@rosie/math/components/lesson/g2/lesson7/Sidebar'
+import G2Lesson7BottomNav from '@rosie/math/components/lesson/g2/lesson7/BottomNav'
+import G2Lesson7FilterPanel from '@rosie/math/components/lesson/g2/lesson7/FilterPanel'
+import G2Lesson7ProblemList from '@rosie/math/components/lesson/g2/lesson7/ProblemList'
+import G2Lesson7ProblemDetail from '@rosie/math/components/lesson/g2/lesson7/ProblemDetail'
 
 export type LessonModule = {
-  slug: string
-  legacyId: string
   PROBLEMS: ProblemSet
   TAG_STYLE: Record<string, string>
   Provider: ComponentType<{ children: ReactNode }>
@@ -277,443 +275,389 @@ export type LessonModule = {
 }
 
 export const LESSON_MODULES: Record<string, LessonModule> = {
-  lesson12: {
-    slug: 'lesson12',
-    legacyId: '12',
-    PROBLEMS: P12,
-    TAG_STYLE: TS12,
-    Provider: Provider12,
-    useLesson: useLesson12,
-    HomePage: HomePage12,
-    AppHeader: AppHeader12,
-    Sidebar: Sidebar12,
-    BottomNav: BottomNav12,
-    FilterPanel: FilterPanel12,
-    ProblemList: ProblemList12,
-    ProblemDetail: ProblemDetail12,
+  '1-12': {
+    PROBLEMS: G1Lesson12PROBLEMS,
+    TAG_STYLE: G1Lesson12TAG_STYLE,
+    Provider: G1Lesson12Provider,
+    useLesson: useG1Lesson12,
+    HomePage: G1Lesson12HomePage,
+    AppHeader: G1Lesson12AppHeader,
+    Sidebar: G1Lesson12Sidebar,
+    BottomNav: G1Lesson12BottomNav,
+    FilterPanel: G1Lesson12FilterPanel,
+    ProblemList: G1Lesson12ProblemList,
+    ProblemDetail: G1Lesson12ProblemDetail,
     layoutBgClass: 'bg-orange-50',
   },
-  lesson13: {
-    slug: 'lesson13',
-    legacyId: '13',
-    PROBLEMS: P13,
-    TAG_STYLE: TS13,
-    Provider: Provider13,
-    useLesson: useLesson13,
-    HomePage: HomePage13,
-    AppHeader: AppHeader13,
-    Sidebar: Sidebar13,
-    BottomNav: BottomNav13,
-    FilterPanel: FilterPanel13,
-    ProblemList: ProblemList13,
-    ProblemDetail: ProblemDetail13,
+  '1-13': {
+    PROBLEMS: G1Lesson13PROBLEMS,
+    TAG_STYLE: G1Lesson13TAG_STYLE,
+    Provider: G1Lesson13Provider,
+    useLesson: useG1Lesson13,
+    HomePage: G1Lesson13HomePage,
+    AppHeader: G1Lesson13AppHeader,
+    Sidebar: G1Lesson13Sidebar,
+    BottomNav: G1Lesson13BottomNav,
+    FilterPanel: G1Lesson13FilterPanel,
+    ProblemList: G1Lesson13ProblemList,
+    ProblemDetail: G1Lesson13ProblemDetail,
     layoutBgClass: 'bg-green-50',
   },
-  lesson15: {
-    slug: 'lesson15',
-    legacyId: '15',
-    PROBLEMS: P15,
-    TAG_STYLE: TS15,
-    Provider: Provider15,
-    useLesson: useLesson15,
-    HomePage: HomePage15,
-    AppHeader: AppHeader15,
-    Sidebar: Sidebar15,
-    BottomNav: BottomNav15,
-    FilterPanel: FilterPanel15,
-    ProblemList: ProblemList15,
-    ProblemDetail: ProblemDetail15,
+  '1-15': {
+    PROBLEMS: G1Lesson15PROBLEMS,
+    TAG_STYLE: G1Lesson15TAG_STYLE,
+    Provider: G1Lesson15Provider,
+    useLesson: useG1Lesson15,
+    HomePage: G1Lesson15HomePage,
+    AppHeader: G1Lesson15AppHeader,
+    Sidebar: G1Lesson15Sidebar,
+    BottomNav: G1Lesson15BottomNav,
+    FilterPanel: G1Lesson15FilterPanel,
+    ProblemList: G1Lesson15ProblemList,
+    ProblemDetail: G1Lesson15ProblemDetail,
     layoutBgClass: 'bg-sky-50',
   },
-  lesson18: {
-    slug: 'lesson18',
-    legacyId: '18',
-    PROBLEMS: P18,
-    TAG_STYLE: TS18,
-    Provider: Provider18,
-    useLesson: useLesson18,
-    HomePage: HomePage18,
-    AppHeader: AppHeader18,
-    Sidebar: Sidebar18,
-    BottomNav: BottomNav18,
-    FilterPanel: FilterPanel18,
-    ProblemList: ProblemList18,
-    ProblemDetail: ProblemDetail18,
+  '1-18': {
+    PROBLEMS: G1Lesson18PROBLEMS,
+    TAG_STYLE: G1Lesson18TAG_STYLE,
+    Provider: G1Lesson18Provider,
+    useLesson: useG1Lesson18,
+    HomePage: G1Lesson18HomePage,
+    AppHeader: G1Lesson18AppHeader,
+    Sidebar: G1Lesson18Sidebar,
+    BottomNav: G1Lesson18BottomNav,
+    FilterPanel: G1Lesson18FilterPanel,
+    ProblemList: G1Lesson18ProblemList,
+    ProblemDetail: G1Lesson18ProblemDetail,
     layoutBgClass: 'bg-purple-50',
   },
-  lesson23: {
-    slug: 'lesson23',
-    legacyId: '23',
-    PROBLEMS: P23,
-    TAG_STYLE: TS23,
-    Provider: Provider23,
-    useLesson: useLesson23,
-    HomePage: HomePage23,
-    AppHeader: AppHeader23,
-    Sidebar: Sidebar23,
-    BottomNav: BottomNav23,
-    FilterPanel: FilterPanel23,
-    ProblemList: ProblemList23,
-    ProblemDetail: ProblemDetail23,
+  '1-23': {
+    PROBLEMS: G1Lesson23PROBLEMS,
+    TAG_STYLE: G1Lesson23TAG_STYLE,
+    Provider: G1Lesson23Provider,
+    useLesson: useG1Lesson23,
+    HomePage: G1Lesson23HomePage,
+    AppHeader: G1Lesson23AppHeader,
+    Sidebar: G1Lesson23Sidebar,
+    BottomNav: G1Lesson23BottomNav,
+    FilterPanel: G1Lesson23FilterPanel,
+    ProblemList: G1Lesson23ProblemList,
+    ProblemDetail: G1Lesson23ProblemDetail,
     layoutBgClass: 'bg-violet-50',
   },
-  lesson29: {
-    slug: 'lesson29',
-    legacyId: '29',
-    PROBLEMS: P29,
-    TAG_STYLE: TS29,
-    Provider: Provider29,
-    useLesson: useLesson29,
-    HomePage: HomePage29,
-    AppHeader: AppHeader29,
-    Sidebar: Sidebar29,
-    BottomNav: BottomNav29,
-    FilterPanel: FilterPanel29,
-    ProblemList: ProblemList29,
-    ProblemDetail: ProblemDetail29,
+  '1-29': {
+    PROBLEMS: G1Lesson29PROBLEMS,
+    TAG_STYLE: G1Lesson29TAG_STYLE,
+    Provider: G1Lesson29Provider,
+    useLesson: useG1Lesson29,
+    HomePage: G1Lesson29HomePage,
+    AppHeader: G1Lesson29AppHeader,
+    Sidebar: G1Lesson29Sidebar,
+    BottomNav: G1Lesson29BottomNav,
+    FilterPanel: G1Lesson29FilterPanel,
+    ProblemList: G1Lesson29ProblemList,
+    ProblemDetail: G1Lesson29ProblemDetail,
     layoutBgClass: 'bg-rose-50',
   },
-  lesson30: {
-    slug: 'lesson30',
-    legacyId: '30',
-    PROBLEMS: P30,
-    TAG_STYLE: TS30,
-    Provider: Provider30,
-    useLesson: useLesson30,
-    HomePage: HomePage30,
-    AppHeader: AppHeader30,
-    Sidebar: Sidebar30,
-    BottomNav: BottomNav30,
-    FilterPanel: FilterPanel30,
-    ProblemList: ProblemList30,
-    ProblemDetail: ProblemDetail30,
+  '1-30': {
+    PROBLEMS: G1Lesson30PROBLEMS,
+    TAG_STYLE: G1Lesson30TAG_STYLE,
+    Provider: G1Lesson30Provider,
+    useLesson: useG1Lesson30,
+    HomePage: G1Lesson30HomePage,
+    AppHeader: G1Lesson30AppHeader,
+    Sidebar: G1Lesson30Sidebar,
+    BottomNav: G1Lesson30BottomNav,
+    FilterPanel: G1Lesson30FilterPanel,
+    ProblemList: G1Lesson30ProblemList,
+    ProblemDetail: G1Lesson30ProblemDetail,
     layoutBgClass: 'bg-amber-50',
   },
-  lesson34: {
-    slug: 'lesson34',
-    legacyId: '34',
-    PROBLEMS: P34,
-    TAG_STYLE: TS34,
-    Provider: Provider34,
-    useLesson: useLesson34,
-    HomePage: HomePage34,
-    AppHeader: AppHeader34,
-    Sidebar: Sidebar34,
-    BottomNav: BottomNav34,
-    FilterPanel: FilterPanel34,
-    ProblemList: ProblemList34,
-    ProblemDetail: ProblemDetail34,
+  '1-34': {
+    PROBLEMS: G1Lesson34PROBLEMS,
+    TAG_STYLE: G1Lesson34TAG_STYLE,
+    Provider: G1Lesson34Provider,
+    useLesson: useG1Lesson34,
+    HomePage: G1Lesson34HomePage,
+    AppHeader: G1Lesson34AppHeader,
+    Sidebar: G1Lesson34Sidebar,
+    BottomNav: G1Lesson34BottomNav,
+    FilterPanel: G1Lesson34FilterPanel,
+    ProblemList: G1Lesson34ProblemList,
+    ProblemDetail: G1Lesson34ProblemDetail,
     layoutBgClass: 'bg-[#fffbeb]',
     MagicPage: Lesson34MagicDemo,
   },
-  lesson35: {
-    slug: 'lesson35',
-    legacyId: '35',
-    PROBLEMS: P35,
-    TAG_STYLE: TS35,
-    Provider: Provider35,
-    useLesson: useLesson35,
-    HomePage: HomePage35,
-    AppHeader: AppHeader35,
-    Sidebar: Sidebar35,
-    BottomNav: BottomNav35,
-    FilterPanel: FilterPanel35,
-    ProblemList: ProblemList35,
-    ProblemDetail: ProblemDetail35,
+  '1-35': {
+    PROBLEMS: G1Lesson35PROBLEMS,
+    TAG_STYLE: G1Lesson35TAG_STYLE,
+    Provider: G1Lesson35Provider,
+    useLesson: useG1Lesson35,
+    HomePage: G1Lesson35HomePage,
+    AppHeader: G1Lesson35AppHeader,
+    Sidebar: G1Lesson35Sidebar,
+    BottomNav: G1Lesson35BottomNav,
+    FilterPanel: G1Lesson35FilterPanel,
+    ProblemList: G1Lesson35ProblemList,
+    ProblemDetail: G1Lesson35ProblemDetail,
     layoutBgClass: 'bg-[#fef9f0]',
   },
-  lesson36: {
-    slug: 'lesson36',
-    legacyId: '36',
-    PROBLEMS: P36,
-    TAG_STYLE: TS36,
-    Provider: Provider36,
-    useLesson: useLesson36,
-    HomePage: HomePage36,
-    AppHeader: AppHeader36,
-    Sidebar: Sidebar36,
-    BottomNav: BottomNav36,
-    FilterPanel: FilterPanel36,
-    ProblemList: ProblemList36,
-    ProblemDetail: ProblemDetail36,
+  '1-36': {
+    PROBLEMS: G1Lesson36PROBLEMS,
+    TAG_STYLE: G1Lesson36TAG_STYLE,
+    Provider: G1Lesson36Provider,
+    useLesson: useG1Lesson36,
+    HomePage: G1Lesson36HomePage,
+    AppHeader: G1Lesson36AppHeader,
+    Sidebar: G1Lesson36Sidebar,
+    BottomNav: G1Lesson36BottomNav,
+    FilterPanel: G1Lesson36FilterPanel,
+    ProblemList: G1Lesson36ProblemList,
+    ProblemDetail: G1Lesson36ProblemDetail,
     layoutBgClass: 'bg-[#f0f7ff]',
     MagicPage: WeekdayMagic,
   },
-  lesson37: {
-    slug: 'lesson37',
-    legacyId: '37',
-    PROBLEMS: P37,
-    TAG_STYLE: TS37,
-    Provider: Provider37,
-    useLesson: useLesson37,
-    HomePage: HomePage37,
-    AppHeader: AppHeader37,
-    Sidebar: Sidebar37,
-    BottomNav: BottomNav37,
-    FilterPanel: FilterPanel37,
-    ProblemList: ProblemList37,
-    ProblemDetail: ProblemDetail37,
+  '1-37': {
+    PROBLEMS: G1Lesson37PROBLEMS,
+    TAG_STYLE: G1Lesson37TAG_STYLE,
+    Provider: G1Lesson37Provider,
+    useLesson: useG1Lesson37,
+    HomePage: G1Lesson37HomePage,
+    AppHeader: G1Lesson37AppHeader,
+    Sidebar: G1Lesson37Sidebar,
+    BottomNav: G1Lesson37BottomNav,
+    FilterPanel: G1Lesson37FilterPanel,
+    ProblemList: G1Lesson37ProblemList,
+    ProblemDetail: G1Lesson37ProblemDetail,
     layoutBgClass: 'bg-[#f0f7ff]',
   },
-  lesson38: {
-    slug: 'lesson38',
-    legacyId: '38',
-    PROBLEMS: P38,
-    TAG_STYLE: TS38,
-    Provider: Provider38,
-    useLesson: useLesson38,
-    HomePage: HomePage38,
-    AppHeader: AppHeader38,
-    Sidebar: Sidebar38,
-    BottomNav: BottomNav38,
-    FilterPanel: FilterPanel38,
-    ProblemList: ProblemList38,
-    ProblemDetail: ProblemDetail38,
+  '1-38': {
+    PROBLEMS: G1Lesson38PROBLEMS,
+    TAG_STYLE: G1Lesson38TAG_STYLE,
+    Provider: G1Lesson38Provider,
+    useLesson: useG1Lesson38,
+    HomePage: G1Lesson38HomePage,
+    AppHeader: G1Lesson38AppHeader,
+    Sidebar: G1Lesson38Sidebar,
+    BottomNav: G1Lesson38BottomNav,
+    FilterPanel: G1Lesson38FilterPanel,
+    ProblemList: G1Lesson38ProblemList,
+    ProblemDetail: G1Lesson38ProblemDetail,
     layoutBgClass: 'bg-[#f5f3ff]',
     MagicPage: YibihaMagicBook,
   },
-  lesson39: {
-    slug: 'lesson39',
-    legacyId: '39',
-    PROBLEMS: P39,
-    TAG_STYLE: TS39,
-    Provider: Provider39,
-    useLesson: useLesson39,
-    HomePage: HomePage39,
-    AppHeader: AppHeader39,
-    Sidebar: Sidebar39,
-    BottomNav: BottomNav39,
-    FilterPanel: FilterPanel39,
-    ProblemList: ProblemList39,
-    ProblemDetail: ProblemDetail39,
+  '1-39': {
+    PROBLEMS: G1Lesson39PROBLEMS,
+    TAG_STYLE: G1Lesson39TAG_STYLE,
+    Provider: G1Lesson39Provider,
+    useLesson: useG1Lesson39,
+    HomePage: G1Lesson39HomePage,
+    AppHeader: G1Lesson39AppHeader,
+    Sidebar: G1Lesson39Sidebar,
+    BottomNav: G1Lesson39BottomNav,
+    FilterPanel: G1Lesson39FilterPanel,
+    ProblemList: G1Lesson39ProblemList,
+    ProblemDetail: G1Lesson39ProblemDetail,
     layoutBgClass: 'bg-[#fffbeb]',
   },
-  lesson40: {
-    slug: 'lesson40',
-    legacyId: '40',
-    PROBLEMS: P40,
-    TAG_STYLE: TS40,
-    Provider: Provider40,
-    useLesson: useLesson40,
-    HomePage: HomePage40,
-    AppHeader: AppHeader40,
-    Sidebar: Sidebar40,
-    BottomNav: BottomNav40,
-    FilterPanel: FilterPanel40,
-    ProblemList: ProblemList40,
-    ProblemDetail: ProblemDetail40,
+  '1-40': {
+    PROBLEMS: G1Lesson40PROBLEMS,
+    TAG_STYLE: G1Lesson40TAG_STYLE,
+    Provider: G1Lesson40Provider,
+    useLesson: useG1Lesson40,
+    HomePage: G1Lesson40HomePage,
+    AppHeader: G1Lesson40AppHeader,
+    Sidebar: G1Lesson40Sidebar,
+    BottomNav: G1Lesson40BottomNav,
+    FilterPanel: G1Lesson40FilterPanel,
+    ProblemList: G1Lesson40ProblemList,
+    ProblemDetail: G1Lesson40ProblemDetail,
     layoutBgClass: 'bg-[#f0fdf4]',
   },
-  lesson41: {
-    slug: 'lesson41',
-    legacyId: '41',
-    PROBLEMS: P41,
-    TAG_STYLE: TS41,
-    Provider: Provider41,
-    useLesson: useLesson41,
-    HomePage: HomePage41,
-    AppHeader: AppHeader41,
-    Sidebar: Sidebar41,
-    BottomNav: BottomNav41,
-    FilterPanel: FilterPanel41,
-    ProblemList: ProblemList41,
-    ProblemDetail: ProblemDetail41,
+  '1-41': {
+    PROBLEMS: G1Lesson41PROBLEMS,
+    TAG_STYLE: G1Lesson41TAG_STYLE,
+    Provider: G1Lesson41Provider,
+    useLesson: useG1Lesson41,
+    HomePage: G1Lesson41HomePage,
+    AppHeader: G1Lesson41AppHeader,
+    Sidebar: G1Lesson41Sidebar,
+    BottomNav: G1Lesson41BottomNav,
+    FilterPanel: G1Lesson41FilterPanel,
+    ProblemList: G1Lesson41ProblemList,
+    ProblemDetail: G1Lesson41ProblemDetail,
     layoutBgClass: 'bg-[#f0f9ff]',
   },
-  lesson42: {
-    slug: 'lesson42',
-    legacyId: '42',
-    PROBLEMS: P42,
-    TAG_STYLE: TS42,
-    Provider: Provider42,
-    useLesson: useLesson42,
-    HomePage: HomePage42,
-    AppHeader: AppHeader42,
-    Sidebar: Sidebar42,
-    BottomNav: BottomNav42,
-    FilterPanel: FilterPanel42,
-    ProblemList: ProblemList42,
-    ProblemDetail: ProblemDetail42,
+  '1-42': {
+    PROBLEMS: G1Lesson42PROBLEMS,
+    TAG_STYLE: G1Lesson42TAG_STYLE,
+    Provider: G1Lesson42Provider,
+    useLesson: useG1Lesson42,
+    HomePage: G1Lesson42HomePage,
+    AppHeader: G1Lesson42AppHeader,
+    Sidebar: G1Lesson42Sidebar,
+    BottomNav: G1Lesson42BottomNav,
+    FilterPanel: G1Lesson42FilterPanel,
+    ProblemList: G1Lesson42ProblemList,
+    ProblemDetail: G1Lesson42ProblemDetail,
     layoutBgClass: 'bg-rose-50',
   },
-  lesson43: {
-    slug: 'lesson43',
-    legacyId: '43',
-    PROBLEMS: P43,
-    TAG_STYLE: TS43,
-    Provider: Provider43,
-    useLesson: useLesson43,
-    HomePage: HomePage43,
-    AppHeader: AppHeader43,
-    Sidebar: Sidebar43,
-    BottomNav: BottomNav43,
-    FilterPanel: FilterPanel43,
-    ProblemList: ProblemList43,
-    ProblemDetail: ProblemDetail43,
+  '1-43': {
+    PROBLEMS: G1Lesson43PROBLEMS,
+    TAG_STYLE: G1Lesson43TAG_STYLE,
+    Provider: G1Lesson43Provider,
+    useLesson: useG1Lesson43,
+    HomePage: G1Lesson43HomePage,
+    AppHeader: G1Lesson43AppHeader,
+    Sidebar: G1Lesson43Sidebar,
+    BottomNav: G1Lesson43BottomNav,
+    FilterPanel: G1Lesson43FilterPanel,
+    ProblemList: G1Lesson43ProblemList,
+    ProblemDetail: G1Lesson43ProblemDetail,
     layoutBgClass: 'bg-cyan-50',
   },
-  lesson44: {
-    slug: 'lesson44',
-    legacyId: '44',
-    PROBLEMS: P44,
-    TAG_STYLE: TS44,
-    Provider: Provider44,
-    useLesson: useLesson44,
-    HomePage: HomePage44,
-    AppHeader: AppHeader44,
-    Sidebar: Sidebar44,
-    BottomNav: BottomNav44,
-    FilterPanel: FilterPanel44,
-    ProblemList: ProblemList44,
-    ProblemDetail: ProblemDetail44,
+  '1-44': {
+    PROBLEMS: G1Lesson44PROBLEMS,
+    TAG_STYLE: G1Lesson44TAG_STYLE,
+    Provider: G1Lesson44Provider,
+    useLesson: useG1Lesson44,
+    HomePage: G1Lesson44HomePage,
+    AppHeader: G1Lesson44AppHeader,
+    Sidebar: G1Lesson44Sidebar,
+    BottomNav: G1Lesson44BottomNav,
+    FilterPanel: G1Lesson44FilterPanel,
+    ProblemList: G1Lesson44ProblemList,
+    ProblemDetail: G1Lesson44ProblemDetail,
     layoutBgClass: 'bg-indigo-50',
   },
-  lesson46: {
-    slug: 'lesson46',
-    legacyId: '46',
-    PROBLEMS: P46,
-    TAG_STYLE: TS46,
-    Provider: Provider46,
-    useLesson: useLesson46,
-    HomePage: HomePage46,
-    AppHeader: AppHeader46,
-    Sidebar: Sidebar46,
-    BottomNav: BottomNav46,
-    FilterPanel: FilterPanel46,
-    ProblemList: ProblemList46,
-    ProblemDetail: ProblemDetail46,
+  '1-46': {
+    PROBLEMS: G1Lesson46PROBLEMS,
+    TAG_STYLE: G1Lesson46TAG_STYLE,
+    Provider: G1Lesson46Provider,
+    useLesson: useG1Lesson46,
+    HomePage: G1Lesson46HomePage,
+    AppHeader: G1Lesson46AppHeader,
+    Sidebar: G1Lesson46Sidebar,
+    BottomNav: G1Lesson46BottomNav,
+    FilterPanel: G1Lesson46FilterPanel,
+    ProblemList: G1Lesson46ProblemList,
+    ProblemDetail: G1Lesson46ProblemDetail,
     layoutBgClass: 'bg-[#f0fdfa]',
   },
-  lesson47: {
-    slug: 'lesson47',
-    legacyId: '47',
-    PROBLEMS: P47,
-    TAG_STYLE: TS47,
-    Provider: Provider47,
-    useLesson: useLesson47,
-    HomePage: HomePage47,
-    AppHeader: AppHeader47,
-    Sidebar: Sidebar47,
-    BottomNav: BottomNav47,
-    FilterPanel: FilterPanel47,
-    ProblemList: ProblemList47,
-    ProblemDetail: ProblemDetail47,
+  '1-47': {
+    PROBLEMS: G1Lesson47PROBLEMS,
+    TAG_STYLE: G1Lesson47TAG_STYLE,
+    Provider: G1Lesson47Provider,
+    useLesson: useG1Lesson47,
+    HomePage: G1Lesson47HomePage,
+    AppHeader: G1Lesson47AppHeader,
+    Sidebar: G1Lesson47Sidebar,
+    BottomNav: G1Lesson47BottomNav,
+    FilterPanel: G1Lesson47FilterPanel,
+    ProblemList: G1Lesson47ProblemList,
+    ProblemDetail: G1Lesson47ProblemDetail,
     layoutBgClass: 'bg-[#fdf4ff]',
   },
-  lesson49: {
-    slug: 'lesson49',
-    legacyId: '49',
-    PROBLEMS: P49,
-    TAG_STYLE: TS49,
-    Provider: Provider49,
-    useLesson: useLesson49,
-    HomePage: HomePage49,
-    AppHeader: AppHeader49,
-    Sidebar: Sidebar49,
-    BottomNav: BottomNav49,
-    FilterPanel: FilterPanel49,
-    ProblemList: ProblemList49,
-    ProblemDetail: ProblemDetail49,
+  '2-1': {
+    PROBLEMS: G2Lesson1PROBLEMS,
+    TAG_STYLE: G2Lesson1TAG_STYLE,
+    Provider: G2Lesson1Provider,
+    useLesson: useG2Lesson1,
+    HomePage: G2Lesson1HomePage,
+    AppHeader: G2Lesson1AppHeader,
+    Sidebar: G2Lesson1Sidebar,
+    BottomNav: G2Lesson1BottomNav,
+    FilterPanel: G2Lesson1FilterPanel,
+    ProblemList: G2Lesson1ProblemList,
+    ProblemDetail: G2Lesson1ProblemDetail,
     layoutBgClass: 'bg-[#eef2ff]',
   },
-  lesson50: {
-    slug: 'lesson50',
-    legacyId: '50',
-    PROBLEMS: P50,
-    TAG_STYLE: TS50,
-    Provider: Provider50,
-    useLesson: useLesson50,
-    HomePage: HomePage50,
-    AppHeader: AppHeader50,
-    Sidebar: Sidebar50,
-    BottomNav: BottomNav50,
-    FilterPanel: FilterPanel50,
-    ProblemList: ProblemList50,
-    ProblemDetail: ProblemDetail50,
+  '2-2': {
+    PROBLEMS: G2Lesson2PROBLEMS,
+    TAG_STYLE: G2Lesson2TAG_STYLE,
+    Provider: G2Lesson2Provider,
+    useLesson: useG2Lesson2,
+    HomePage: G2Lesson2HomePage,
+    AppHeader: G2Lesson2AppHeader,
+    Sidebar: G2Lesson2Sidebar,
+    BottomNav: G2Lesson2BottomNav,
+    FilterPanel: G2Lesson2FilterPanel,
+    ProblemList: G2Lesson2ProblemList,
+    ProblemDetail: G2Lesson2ProblemDetail,
     layoutBgClass: 'bg-[#f0fdfa]',
   },
-  lesson51: {
-    slug: 'lesson51',
-    legacyId: '51',
-    PROBLEMS: P51,
-    TAG_STYLE: TS51,
-    Provider: Provider51,
-    useLesson: useLesson51,
-    HomePage: HomePage51,
-    AppHeader: AppHeader51,
-    Sidebar: Sidebar51,
-    BottomNav: BottomNav51,
-    FilterPanel: FilterPanel51,
-    ProblemList: ProblemList51,
-    ProblemDetail: ProblemDetail51,
+  '2-3': {
+    PROBLEMS: G2Lesson3PROBLEMS,
+    TAG_STYLE: G2Lesson3TAG_STYLE,
+    Provider: G2Lesson3Provider,
+    useLesson: useG2Lesson3,
+    HomePage: G2Lesson3HomePage,
+    AppHeader: G2Lesson3AppHeader,
+    Sidebar: G2Lesson3Sidebar,
+    BottomNav: G2Lesson3BottomNav,
+    FilterPanel: G2Lesson3FilterPanel,
+    ProblemList: G2Lesson3ProblemList,
+    ProblemDetail: G2Lesson3ProblemDetail,
     layoutBgClass: 'bg-[#ecfdf5]',
   },
-  lesson52: {
-    slug: 'lesson52',
-    legacyId: '52',
-    PROBLEMS: P52,
-    TAG_STYLE: TS52,
-    Provider: Provider52,
-    useLesson: useLesson52,
-    HomePage: HomePage52,
-    AppHeader: AppHeader52,
-    Sidebar: Sidebar52,
-    BottomNav: BottomNav52,
-    FilterPanel: FilterPanel52,
-    ProblemList: ProblemList52,
-    ProblemDetail: ProblemDetail52,
+  '2-4': {
+    PROBLEMS: G2Lesson4PROBLEMS,
+    TAG_STYLE: G2Lesson4TAG_STYLE,
+    Provider: G2Lesson4Provider,
+    useLesson: useG2Lesson4,
+    HomePage: G2Lesson4HomePage,
+    AppHeader: G2Lesson4AppHeader,
+    Sidebar: G2Lesson4Sidebar,
+    BottomNav: G2Lesson4BottomNav,
+    FilterPanel: G2Lesson4FilterPanel,
+    ProblemList: G2Lesson4ProblemList,
+    ProblemDetail: G2Lesson4ProblemDetail,
     layoutBgClass: 'bg-[#f0f9ff]',
   },
-  lesson53: {
-    slug: 'lesson53',
-    legacyId: '53',
-    PROBLEMS: P53,
-    TAG_STYLE: TS53,
-    Provider: Provider53,
-    useLesson: useLesson53,
-    HomePage: HomePage53,
-    AppHeader: AppHeader53,
-    Sidebar: Sidebar53,
-    BottomNav: BottomNav53,
-    FilterPanel: FilterPanel53,
-    ProblemList: ProblemList53,
-    ProblemDetail: ProblemDetail53,
+  '2-5': {
+    PROBLEMS: G2Lesson5PROBLEMS,
+    TAG_STYLE: G2Lesson5TAG_STYLE,
+    Provider: G2Lesson5Provider,
+    useLesson: useG2Lesson5,
+    HomePage: G2Lesson5HomePage,
+    AppHeader: G2Lesson5AppHeader,
+    Sidebar: G2Lesson5Sidebar,
+    BottomNav: G2Lesson5BottomNav,
+    FilterPanel: G2Lesson5FilterPanel,
+    ProblemList: G2Lesson5ProblemList,
+    ProblemDetail: G2Lesson5ProblemDetail,
     layoutBgClass: 'bg-[#f0f9ff]',
   },
-  lesson55: {
-    slug: 'lesson55',
-    legacyId: '55',
-    PROBLEMS: P55,
-    TAG_STYLE: TS55,
-    Provider: Provider55,
-    useLesson: useLesson55,
-    HomePage: HomePage55,
-    AppHeader: AppHeader55,
-    Sidebar: Sidebar55,
-    BottomNav: BottomNav55,
-    FilterPanel: FilterPanel55,
-    ProblemList: ProblemList55,
-    ProblemDetail: ProblemDetail55,
+  '2-6': {
+    PROBLEMS: G2Lesson6PROBLEMS,
+    TAG_STYLE: G2Lesson6TAG_STYLE,
+    Provider: G2Lesson6Provider,
+    useLesson: useG2Lesson6,
+    HomePage: G2Lesson6HomePage,
+    AppHeader: G2Lesson6AppHeader,
+    Sidebar: G2Lesson6Sidebar,
+    BottomNav: G2Lesson6BottomNav,
+    FilterPanel: G2Lesson6FilterPanel,
+    ProblemList: G2Lesson6ProblemList,
+    ProblemDetail: G2Lesson6ProblemDetail,
     layoutBgClass: 'bg-[#f0fdfa]',
   },
-  lesson56: {
-    slug: 'lesson56',
-    legacyId: '56',
-    PROBLEMS: P56,
-    TAG_STYLE: TS56,
-    Provider: Provider56,
-    useLesson: useLesson56,
-    HomePage: HomePage56,
-    AppHeader: AppHeader56,
-    Sidebar: Sidebar56,
-    BottomNav: BottomNav56,
-    FilterPanel: FilterPanel56,
-    ProblemList: ProblemList56,
-    ProblemDetail: ProblemDetail56,
+  '2-7': {
+    PROBLEMS: G2Lesson7PROBLEMS,
+    TAG_STYLE: G2Lesson7TAG_STYLE,
+    Provider: G2Lesson7Provider,
+    useLesson: useG2Lesson7,
+    HomePage: G2Lesson7HomePage,
+    AppHeader: G2Lesson7AppHeader,
+    Sidebar: G2Lesson7Sidebar,
+    BottomNav: G2Lesson7BottomNav,
+    FilterPanel: G2Lesson7FilterPanel,
+    ProblemList: G2Lesson7ProblemList,
+    ProblemDetail: G2Lesson7ProblemDetail,
     layoutBgClass: 'bg-[#f0f9ff]',
   },
 }
 
-export function lessonModuleBySlug(slug: string): LessonModule | undefined {
-  return LESSON_MODULES[slug]
+export function lessonModuleByKey(lessonKey: string): LessonModule | undefined {
+  return LESSON_MODULES[lessonKey]
 }

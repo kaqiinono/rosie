@@ -2,6 +2,8 @@ import type { ProblemSet } from '@rosie/core'
 import { LESSONS, routeForLesson } from '@rosie/math/utils/lesson-registry'
 import { LESSON_MODULES } from '@rosie/math/utils/lesson-module-registry'
 import { SEA_LESSONS, SEA_POOL } from '@rosie/math/utils/sea-data'
+import { LESSON_SOURCE_BTNS } from '@rosie/math/utils/lesson-source-btns'
+import { legacyPrefixFromProblemId } from '@rosie/math/admin/legacy-migration-map'
 
 export type SourceDirtyBucket = {
   id: string
@@ -11,60 +13,20 @@ export type SourceDirtyBucket = {
   locations: string[]
 }
 
-export type LegacyRouteCheck = {
-  legacyId: string
-  lessonKey: string
-  legacyRoute: string
-  canonicalRoute: string
-  legacyAppFolder: string
-}
-
-export type ManualAuditSite = {
-  path: string
-  what: string
-  idKind: 'legacyId' | 'slug' | 'both'
-}
-
 export type SourceAuditReport = {
   buckets: SourceDirtyBucket[]
-  legacyRoutes: LegacyRouteCheck[]
-  manualSites: ManualAuditSite[]
   totals: {
-    legacyIdHits: number
-    slugHits: number
+    moduleKeyDrift: number
+    seaNonLessonKeyIds: number
+    seaBrokenHrefs: number
+    lessonSourceBtnDrift: number
     bundledProblemIdsLegacy: number
     bundledProblemIdsCanonical: number
-    seaLegacyIds: number
-    seaLegacyHrefs: number
-    moduleSlugKeys: number
-    registryFields: number
   }
 }
 
 const LESSON_KEYS = new Set(LESSONS.map((e) => e.lessonKey))
-const LEGACY_IDS = new Set(LESSONS.map((e) => e.legacyId))
-const SLUGS = new Set(LESSONS.map((e) => e.slug))
-
 const SECTIONS = ['pretest', 'lesson', 'homework', 'workbook', 'supplement'] as const
-
-function legacyPrefixFromProblemId(problemId: string): string | null {
-  if (problemId.endsWith('__SUMMARY')) {
-    const prefix = problemId.slice(0, -'__SUMMARY'.length)
-    return LEGACY_IDS.has(prefix) ? prefix : null
-  }
-  for (const entry of [...LESSONS].sort((a, b) => b.legacyId.length - a.legacyId.length)) {
-    if (problemId.startsWith(`${entry.legacyId}-`)) return entry.legacyId
-  }
-  return null
-}
-
-function isAlreadyMigratedProblemId(problemId: string): boolean {
-  if (problemId.endsWith('__SUMMARY')) {
-    const prefix = problemId.slice(0, -'__SUMMARY'.length)
-    return LESSON_KEYS.has(prefix)
-  }
-  return LESSONS.some((e) => problemId.startsWith(`${e.lessonKey}-`))
-}
 
 function collectProblemIds(set: ProblemSet): string[] {
   const ids: string[] = []
@@ -75,120 +37,61 @@ function collectProblemIds(set: ProblemSet): string[] {
   return ids
 }
 
-function isLegacySeaHref(href: string): boolean {
-  const m = href.match(/^\/math\/ny\/(\d+)\//)
-  if (!m) return false
-  return LEGACY_IDS.has(m[1]!)
+function isCanonicalLessonKey(id: string): boolean {
+  return LESSON_KEYS.has(id)
 }
 
-/** apps/web 内已知仍可能使用 legacyId / slug 的位置（需随收尾勾选） */
-export const MANUAL_WEB_AUDIT_SITES: ManualAuditSite[] = [
-  {
-    path: 'apps/web/src/app/math/ny/plan/page.tsx',
-    what: 'PROBLEM_SETS 键（legacyId）',
-    idKind: 'legacyId',
-  },
-  {
-    path: 'apps/web/src/app/math/ny/quiz/page.tsx',
-    what: 'LESSON_META[].id',
-    idKind: 'legacyId',
-  },
-  {
-    path: 'apps/web/src/app/math/ny/quiz/[id]/page.tsx',
-    what: 'LESSON_DATA / LESSON_NAMES 键',
-    idKind: 'legacyId',
-  },
-  {
-    path: 'apps/web/src/app/math/ny/quiz/[id]/print/page.tsx',
-    what: 'LESSON_DATA 键',
-    idKind: 'legacyId',
-  },
-  {
-    path: 'apps/web/src/app/math/mistakes/page.tsx',
-    what: 'LESSON_META[].id',
-    idKind: 'legacyId',
-  },
-  {
-    path: 'packages/math/src/components/MathWeeklyPractice.tsx',
-    what: 'LESSONS[].id、Number(lessonId) 排序与链接',
-    idKind: 'legacyId',
-  },
-  {
-    path: 'apps/web/src/app/math/ny/{legacyId}/**',
-    what: '静态 legacy 路由目录（应仅保留 [grade]/[seq]）',
-    idKind: 'both',
-  },
-  {
-    path: 'packages/math/src/utils/lesson-registry.ts',
-    what: 'LessonEntry.legacyId / .slug 字段',
-    idKind: 'both',
-  },
-  {
-    path: 'packages/math/src/utils/lesson-module-registry.ts',
-    what: 'LESSON_MODULES 键（lessonNN）与 legacyId 字段',
-    idKind: 'both',
-  },
-]
+function isBrokenSeaHref(href: string): boolean {
+  if (!href.startsWith('/math/ny/')) return false
+  return !/^\/math\/ny\/\d+\/\d+\//.test(href)
+}
+
+function isAlreadyMigratedProblemId(problemId: string): boolean {
+  if (problemId.endsWith('__SUMMARY')) {
+    const prefix = problemId.slice(0, -'__SUMMARY'.length)
+    return LESSON_KEYS.has(prefix)
+  }
+  return LESSONS.some((e) => problemId.startsWith(`${e.lessonKey}-`))
+}
 
 export function runBundledSourceAudit(): SourceAuditReport {
   const buckets: SourceDirtyBucket[] = []
 
-  const registryLegacyFields = LESSONS.filter((e) => e.legacyId && e.legacyId !== e.lessonKey).length
-  const registrySlugFields = LESSONS.filter((e) => e.slug?.startsWith('lesson')).length
-  buckets.push({
-    id: 'registry-legacyId',
-    label: 'lesson-registry 登记 legacyId 字段',
-    count: registryLegacyFields,
-    samples: LESSONS.slice(0, 3).map((e) => `${e.lessonKey} → legacyId=${e.legacyId}`),
-    locations: ['packages/math/src/utils/lesson-registry.ts'],
-  })
-  buckets.push({
-    id: 'registry-slug',
-    label: 'lesson-registry 登记 slug 字段',
-    count: registrySlugFields,
-    samples: LESSONS.slice(0, 3).map((e) => `${e.lessonKey} → slug=${e.slug}`),
-    locations: ['packages/math/src/utils/lesson-registry.ts'],
-  })
-
   const moduleKeys = Object.keys(LESSON_MODULES)
-  const moduleSlugKeys = moduleKeys.filter((k) => /^lesson\d+/.test(k))
+  const moduleKeyDrift = moduleKeys.filter((k) => !LESSON_KEYS.has(k))
   buckets.push({
-    id: 'module-slug-keys',
-    label: 'lesson-module-registry 模块键（lessonNN，非 lessonKey）',
-    count: moduleSlugKeys.length,
-    samples: moduleSlugKeys.slice(0, 5),
+    id: 'module-keys',
+    label: 'lesson-module-registry 键非 lessonKey',
+    count: moduleKeyDrift.length,
+    samples: moduleKeyDrift.slice(0, 5),
     locations: ['packages/math/src/utils/lesson-module-registry.ts'],
   })
 
-  const moduleLegacyFields = Object.values(LESSON_MODULES).filter(
-    (m) => m.legacyId && LEGACY_IDS.has(m.legacyId),
-  ).length
-  buckets.push({
-    id: 'module-legacyId',
-    label: 'lesson-module-registry 条目 legacyId 字段',
-    count: moduleLegacyFields,
-    samples: Object.values(LESSON_MODULES)
-      .slice(0, 3)
-      .map((m) => `${m.slug} → legacyId=${m.legacyId}`),
-    locations: ['packages/math/src/utils/lesson-module-registry.ts'],
-  })
-
-  const seaLegacy = SEA_LESSONS.filter((l) => LEGACY_IDS.has(l.id))
+  const seaNonKey = SEA_LESSONS.filter((l) => !isCanonicalLessonKey(l.id))
   buckets.push({
     id: 'sea-lesson-id',
-    label: 'sea-data SEA_LESSONS[].id 仍为 legacyId',
-    count: seaLegacy.length,
-    samples: seaLegacy.slice(0, 5).map((l) => `${l.id} (${l.shortTitle})`),
+    label: 'SEA_LESSONS[].id 非 lessonKey',
+    count: seaNonKey.length,
+    samples: seaNonKey.slice(0, 5).map((l) => l.id),
     locations: ['packages/math/src/utils/sea-data.ts'],
   })
 
-  const seaLegacyHrefs = SEA_POOL.filter((sp) => isLegacySeaHref(sp.href))
+  const seaBrokenHrefs = SEA_POOL.filter((sp) => isBrokenSeaHref(sp.href))
   buckets.push({
-    id: 'sea-href',
-    label: '题海 SEA_POOL 链接仍为 /math/ny/{legacyId}/…',
-    count: seaLegacyHrefs.length,
-    samples: seaLegacyHrefs.slice(0, 5).map((sp) => sp.href),
+    id: 'sea-broken-href',
+    label: '题海链接非 /math/ny/{grade}/{seq}/…',
+    count: seaBrokenHrefs.length,
+    samples: seaBrokenHrefs.slice(0, 5).map((sp) => sp.href),
     locations: ['packages/math/src/utils/sea-data.ts'],
+  })
+
+  const sourceBtnDrift = Object.keys(LESSON_SOURCE_BTNS).filter((k) => !LESSON_KEYS.has(k))
+  buckets.push({
+    id: 'lesson-source-btns',
+    label: 'lesson-source-btns 键非 lessonKey',
+    count: sourceBtnDrift.length,
+    samples: sourceBtnDrift.slice(0, 5),
+    locations: ['packages/math/src/utils/lesson-source-btns.ts'],
   })
 
   let bundledLegacy = 0
@@ -206,53 +109,42 @@ export function runBundledSourceAudit(): SourceAuditReport {
   }
   buckets.push({
     id: 'bundled-problem-id',
-    label: '已打包题目数据中 legacy 前缀 problem_id',
+    label: '题目数据含 legacy 前缀 problem_id',
     count: bundledLegacy,
     samples: legacyProblemSamples,
-    locations: ['packages/math/src/utils/lesson*-data.ts（经 LESSON_MODULES）'],
+    locations: ['packages/math/src/utils/lesson*-data.ts'],
   })
 
-  const legacyRoutes: LegacyRouteCheck[] = LESSONS.map((e) => ({
-    legacyId: e.legacyId,
-    lessonKey: e.lessonKey,
-    legacyRoute: `/math/ny/${e.legacyId}`,
-    canonicalRoute: routeForLesson(e),
-    legacyAppFolder: `apps/web/src/app/math/ny/${e.legacyId}/`,
-  }))
-
-  const legacyIdHits =
-    registryLegacyFields +
-    moduleLegacyFields +
-    seaLegacy.length +
-    seaLegacyHrefs.length +
-    bundledLegacy
-  const slugHits = registrySlugFields + moduleSlugKeys.length + moduleLegacyFields
+  // registry 完整性：每讲应有 module + sea 条目
+  const missingModule = LESSONS.filter((e) => !LESSON_MODULES[e.lessonKey]).map((e) => e.lessonKey)
+  if (missingModule.length > 0) {
+    buckets.push({
+      id: 'registry-module-gap',
+      label: 'registry 讲次缺少 LESSON_MODULES 条目',
+      count: missingModule.length,
+      samples: missingModule,
+      locations: ['lesson-registry.ts', 'lesson-module-registry.ts'],
+    })
+  }
 
   return {
     buckets,
-    legacyRoutes,
-    manualSites: MANUAL_WEB_AUDIT_SITES,
     totals: {
-      legacyIdHits,
-      slugHits,
+      moduleKeyDrift: moduleKeyDrift.length,
+      seaNonLessonKeyIds: seaNonKey.length,
+      seaBrokenHrefs: seaBrokenHrefs.length,
+      lessonSourceBtnDrift: sourceBtnDrift.length,
       bundledProblemIdsLegacy: bundledLegacy,
       bundledProblemIdsCanonical: bundledCanonical,
-      seaLegacyIds: seaLegacy.length,
-      seaLegacyHrefs: seaLegacyHrefs.length,
-      moduleSlugKeys: moduleSlugKeys.length,
-      registryFields: registryLegacyFields + registrySlugFields,
     },
   }
 }
 
-export function isCanonicalLessonKey(id: string): boolean {
-  return LESSON_KEYS.has(id)
+export function canonicalRoutesFromRegistry(): Array<{ lessonKey: string; route: string }> {
+  return LESSONS.map((e) => ({
+    lessonKey: e.lessonKey,
+    route: routeForLesson(e),
+  }))
 }
 
-export function isLegacyLessonId(id: string): boolean {
-  return LEGACY_IDS.has(id)
-}
-
-export function isLessonSlug(id: string): boolean {
-  return SLUGS.has(id)
-}
+export { isCanonicalLessonKey, isBrokenSeaHref }

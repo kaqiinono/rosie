@@ -1,3 +1,5 @@
+import { normalizeAllowedFontSize } from '@rosie/math/components/shared/rich-text-font-size'
+
 /** Preset text colors (TipTap Color + TextStyle). */
 export const RICH_TEXT_COLOR_PRESETS = [
   { value: '', label: '默认', swatch: '#1e293b' },
@@ -67,16 +69,20 @@ export function isAllowedRichColor(value: string): boolean {
   return normalizeAllowedColor(value) !== null
 }
 
-/** Keep only whitelisted color / background-color declarations. */
+/** Keep only whitelisted color / background-color / font-size declarations. */
 export function sanitizeRichInlineStyle(style: string): string | null {
   const parts: string[] = []
   for (const chunk of style.split(';')) {
     const sep = chunk.indexOf(':')
     if (sep < 0) continue
     const prop = chunk.slice(0, sep).trim().toLowerCase()
-    const normalized = normalizeAllowedColor(chunk.slice(sep + 1).trim())
-    if ((prop === 'color' || prop === 'background-color') && normalized) {
-      parts.push(`${prop}: ${normalized}`)
+    const rawValue = chunk.slice(sep + 1).trim()
+    if (prop === 'color' || prop === 'background-color') {
+      const normalized = normalizeAllowedColor(rawValue)
+      if (normalized) parts.push(`${prop}: ${normalized}`)
+    } else if (prop === 'font-size') {
+      const normalized = normalizeAllowedFontSize(rawValue)
+      if (normalized) parts.push(`${prop}: ${normalized}`)
     }
   }
   return parts.length > 0 ? parts.join('; ') : null

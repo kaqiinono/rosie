@@ -1,7 +1,11 @@
 'use client'
 
-import { MathFavoritesProvider } from '@rosie/math'
+import { MathFavoritesProvider, PracticeQueueProvider } from '@rosie/math'
 
 export default function MathLayout({ children }: { children: React.ReactNode }) {
-  return <MathFavoritesProvider>{children}</MathFavoritesProvider>
+  return (
+    <MathFavoritesProvider>
+      <PracticeQueueProvider>{children}</PracticeQueueProvider>
+    </MathFavoritesProvider>
+  )
 }

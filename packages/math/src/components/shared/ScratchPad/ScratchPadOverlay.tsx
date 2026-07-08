@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Problem } from '@rosie/core'
 import type { ScratchSessionMode } from '@rosie/math/hooks/math-scratch-types'
@@ -29,10 +29,12 @@ type ScratchPadOverlayProps = {
   attemptRefreshKey?: number
   answerDraft?: unknown
   mistakeHint?: string
-  onClose: () => void
+  embedded?: boolean
+  closeLabel?: string
   onObjectsChange?: (objects: ScratchObject[]) => void
   onAnswerDraftChange?: (snapshot: unknown) => void
-  onSubmitResult?: (correct: boolean, snapshot: unknown) => void
+  onSubmitResult?: (correct: boolean, snapshot: unknown, objects: ScratchObject[]) => void
+  onClose: (objects?: ScratchObject[]) => void
   edgeNav?: EdgeNavConfig
   readOnly?: boolean
 }
@@ -41,12 +43,14 @@ export default function ScratchPadOverlay({
   problem,
   initialObjects,
   showCanvas = true,
-  questionExpandedDefault = false,
+  questionExpandedDefault = true,
   mode = 'practice',
   section = '',
   attemptRefreshKey = 0,
   answerDraft,
   mistakeHint,
+  embedded = false,
+  closeLabel = '完成',
   onClose,
   onObjectsChange,
   onAnswerDraftChange,
@@ -61,8 +65,16 @@ export default function ScratchPadOverlay({
     setTool,
     colorId,
     pickColor,
+    highlightColorId,
+    pickHighlightColor,
     strokeWidth,
     setStrokeWidth,
+    highlightWidth,
+    setHighlightWidth,
+    shapeFillEnabled,
+    setShapeFillEnabled,
+    triangleVariant,
+    setTriangleVariant,
     eraserWidth,
     setEraserWidth,
     handlePointerDown,
@@ -74,6 +86,7 @@ export default function ScratchPadOverlay({
     hasSelection,
     selectionCount,
     selectionBoundsRect,
+    surfaceSize,
     deleteSelected,
     clearSelection,
     duplicateSelected,
@@ -83,6 +96,7 @@ export default function ScratchPadOverlay({
   } = useScratchPad(problem.id, {
     initialObjects,
     onObjectsChange,
+    scrollableSurface: showCanvas,
   })
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
 
@@ -130,30 +144,76 @@ export default function ScratchPadOverlay({
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [deleteSelected, clearSelection, duplicateSelected, readOnly, showCanvas])
 
-  const handleClose = () => {
-    if (!readOnly && showCanvas) onObjectsChange?.(getObjects())
-    onClose()
-  }
+  const handleClose = useCallback(() => {
+    const latestObjects = getObjects()
+    if (!readOnly && showCanvas) onObjectsChange?.(latestObjects)
+    onClose(latestObjects)
+  }, [getObjects, onClose, onObjectsChange, readOnly, showCanvas])
+
+  const handleAnswerSubmit = useCallback(
+    (correct: boolean, snapshot: unknown) => {
+      if (!onSubmitResult) return
+      void onSubmitResult(correct, snapshot, getObjects())
+    },
+    [getObjects, onSubmitResult],
+  )
 
   const answerMode = mode === 'quiz' ? 'quiz' : 'practice'
   const showAnswerPanel = mode === 'practice'
+  const canvasW = surfaceSize.width > 0 ? surfaceSize.width : '100%'
+  const canvasH = surfaceSize.height > 0 ? surfaceSize.height : '100%'
+  const selectionW = surfaceSize.width > 0 ? surfaceSize.width : containerSize.width
+  const selectionH = surfaceSize.height > 0 ? surfaceSize.height : containerSize.height
 
-  return createPortal(
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#fafafa]">
+  const shell = (
+    <div
+      className={
+        embedded
+          ? 'absolute inset-0 z-0 flex flex-col bg-[#fafafa]'
+          : 'fixed inset-0 z-[100] flex flex-col bg-[#fafafa]'
+      }
+    >
       <div
-        ref={showCanvas ? containerRef : undefined}
         className={`relative min-h-0 flex-1 ${showCanvas ? '' : 'flex items-start justify-center pt-4'}`}
       >
         {showCanvas && (
-          <canvas
-            ref={canvasRef}
-            className={`absolute inset-0 z-0 touch-none${readOnly ? ' pointer-events-none' : ''}`}
-            onPointerDown={readOnly ? undefined : handlePointerDown}
-            onPointerMove={readOnly ? undefined : handlePointerMove}
-            onPointerUp={readOnly ? undefined : handlePointerUp}
-            onPointerCancel={readOnly ? undefined : handlePointerUp}
-            onPointerLeave={readOnly ? undefined : handlePointerLeave}
-          />
+          <div
+            ref={containerRef}
+            className="absolute inset-0 overflow-auto overscroll-contain"
+          >
+            <div
+              className="relative"
+              style={{
+                width: canvasW,
+                height: canvasH,
+                minWidth: '100%',
+                minHeight: '100%',
+              }}
+            >
+              <canvas
+                ref={canvasRef}
+                className={`block touch-none${readOnly ? ' pointer-events-none' : ''}${tool === 'pan' ? ' cursor-grab active:cursor-grabbing' : ''}`}
+                onPointerDown={readOnly ? undefined : handlePointerDown}
+                onPointerMove={readOnly ? undefined : handlePointerMove}
+                onPointerUp={readOnly ? undefined : handlePointerUp}
+                onPointerCancel={readOnly ? undefined : handlePointerUp}
+                onPointerLeave={readOnly ? undefined : handlePointerLeave}
+              />
+              {!readOnly && hasSelection && selectionBoundsRect && selectionW > 0 && (
+                <ScratchPadSelectionActions
+                  bounds={selectionBoundsRect}
+                  count={selectionCount}
+                  containerWidth={selectionW}
+                  containerHeight={selectionH}
+                  activeColorId={colorId}
+                  onRecolor={(_hex, id) => pickColor(id)}
+                  onDuplicate={duplicateSelected}
+                  onDelete={deleteSelected}
+                  onClearSelection={clearSelection}
+                />
+              )}
+            </div>
+          </div>
         )}
 
         {!showCanvas && !readOnly && (
@@ -168,7 +228,7 @@ export default function ScratchPadOverlay({
               answerMode={answerMode}
               initialAnswer={answerDraft}
               onAnswerDraftChange={onAnswerDraftChange}
-              onSubmitResult={onSubmitResult}
+              onSubmitResult={handleAnswerSubmit}
             />
           </div>
         )}
@@ -191,7 +251,7 @@ export default function ScratchPadOverlay({
             answerMode={answerMode}
             initialAnswer={answerDraft}
             onAnswerDraftChange={onAnswerDraftChange}
-            onSubmitResult={onSubmitResult}
+            onSubmitResult={handleAnswerSubmit}
           />
         )}
 
@@ -204,21 +264,6 @@ export default function ScratchPadOverlay({
             showAnswerPanel={false}
           />
         )}
-
-        {!readOnly && showCanvas && hasSelection && selectionBoundsRect && containerSize.width > 0 && (
-          <ScratchPadSelectionActions
-            bounds={selectionBoundsRect}
-            count={selectionCount}
-            containerWidth={containerSize.width}
-            containerHeight={containerSize.height}
-            activeColorId={colorId}
-            onRecolor={(_hex, id) => pickColor(id)}
-            onDuplicate={duplicateSelected}
-            onDelete={deleteSelected}
-            onClearSelection={clearSelection}
-          />
-        )}
-
       </div>
 
       {edgeNav && (
@@ -249,19 +294,24 @@ export default function ScratchPadOverlay({
           onToolChange={setTool}
           colorId={colorId}
           onColorChange={pickColor}
+          highlightColorId={highlightColorId}
+          onHighlightColorChange={pickHighlightColor}
           strokeWidth={strokeWidth}
           onStrokeWidthChange={setStrokeWidth}
+          highlightWidth={highlightWidth}
+          onHighlightWidthChange={setHighlightWidth}
+          shapeFillEnabled={shapeFillEnabled}
+          onShapeFillChange={setShapeFillEnabled}
+          triangleVariant={triangleVariant}
+          onTriangleVariantChange={setTriangleVariant}
           eraserWidth={eraserWidth}
           onEraserWidthChange={setEraserWidth}
           canUndo={canUndo}
           onUndo={undo}
           hasSelection={hasSelection}
-          selectionCount={selectionCount}
-          onDeleteSelected={deleteSelected}
-          onClearSelection={clearSelection}
-          onDuplicateSelected={duplicateSelected}
           onClear={clearAll}
           onClose={handleClose}
+          closeLabel={closeLabel}
         />
       ) : (
         <div
@@ -273,11 +323,13 @@ export default function ScratchPadOverlay({
             onClick={handleClose}
             className="w-full cursor-pointer rounded-lg bg-indigo-500 py-2.5 text-[13px] font-bold text-white shadow-sm active:scale-95"
           >
-            关闭
+            {closeLabel}
           </button>
         </div>
       )}
-    </div>,
-    document.body,
+    </div>
   )
+
+  if (embedded) return shell
+  return createPortal(shell, document.body)
 }

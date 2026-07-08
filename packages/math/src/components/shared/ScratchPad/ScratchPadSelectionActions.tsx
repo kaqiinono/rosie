@@ -16,11 +16,11 @@ type ScratchPadSelectionActionsProps = {
   onClearSelection: () => void
 }
 
-const BAR_H = 34
+const BAR_H = 38
 const GAP = 22
 const TOP_SAFE = 52
 const MARGIN = 8
-const APPROX_W = 300
+const APPROX_W = 340
 
 function clampBarPosition(bounds: ScratchBounds, containerWidth: number, containerHeight: number) {
   const cx = (bounds.minX + bounds.maxX) / 2
@@ -73,30 +73,35 @@ export default function ScratchPadSelectionActions({
       style={{ left: 0, top: 0, width: containerWidth, height: containerHeight }}
     >
       <div
-        className="pointer-events-auto absolute flex max-w-[min(92vw,320px)] items-center gap-1 rounded-xl border border-white/70 bg-white/90 px-1.5 py-1 shadow-[0_4px_16px_rgba(15,23,42,0.12)] backdrop-blur-sm"
+        className="pointer-events-auto absolute flex max-w-[min(94vw,360px)] items-center gap-1.5 overflow-visible rounded-xl border border-indigo-200/80 bg-white/95 px-2 py-1.5 shadow-[0_4px_20px_rgba(79,70,229,0.18)] backdrop-blur-sm"
         style={{ left, top, transform }}
       >
-        <span className="shrink-0 whitespace-nowrap px-0.5 text-[10px] font-medium text-slate-400">
+        <span className="shrink-0 whitespace-nowrap text-[10px] font-semibold text-indigo-600">
           {count}项
         </span>
 
-        <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {SCRATCH_COLORS.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              title={`改为${c.label}色`}
-              onClick={() => onRecolor(c.hex, c.id)}
-              className={clsx(
-                'h-4 w-4 shrink-0 cursor-pointer rounded-full border transition-transform active:scale-90',
-                activeColorId === c.id ? 'scale-110 border-slate-700' : 'border-white/80',
-              )}
-              style={{ backgroundColor: c.hex }}
-            />
-          ))}
+        <div className="flex shrink-0 items-center gap-1 px-0.5 py-0.5">
+          {SCRATCH_COLORS.map((c) => {
+            const active = activeColorId === c.id
+            return (
+              <button
+                key={c.id}
+                type="button"
+                title={`改为${c.label}色`}
+                onClick={() => onRecolor(c.hex, c.id)}
+                className={clsx(
+                  'h-5 w-5 shrink-0 cursor-pointer rounded-full border-2 transition-all active:scale-95',
+                  active
+                    ? 'scale-110 border-slate-800 shadow-[0_0_0_2px_#fff,0_0_0_4px_#6366f1]'
+                    : 'border-white/90 shadow-sm hover:scale-105',
+                )}
+                style={{ backgroundColor: c.hex }}
+              />
+            )
+          })}
         </div>
 
-        <div className="mx-0.5 h-4 w-px shrink-0 bg-slate-200" />
+        <div className="mx-0.5 h-5 w-px shrink-0 bg-slate-200" />
 
         <button
           type="button"

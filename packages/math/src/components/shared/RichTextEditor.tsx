@@ -6,12 +6,13 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Color } from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
-import { TextStyle } from '@tiptap/extension-text-style'
+import { FontSize, TextStyle } from '@tiptap/extension-text-style'
 import clsx from 'clsx'
 import {
   RICH_HIGHLIGHT_PRESETS,
   RICH_TEXT_COLOR_PRESETS,
 } from '@rosie/math/components/shared/rich-text-colors'
+import { RICH_FONT_SIZE_PRESETS } from '@rosie/math/components/shared/rich-text-font-size'
 import {
   DEFAULT_RICH_IMG_ALIGN,
   DEFAULT_RICH_IMG_WIDTH_PCT,
@@ -115,6 +116,7 @@ export default function RichTextEditor({
         code: false,
       }),
       TextStyle,
+      FontSize,
       Color.configure({ types: ['textStyle'] }),
       Highlight.configure({ multicolor: true }),
       ...(allowImages ? [RichTextImage.configure({ inline: false, allowBase64: false })] : []),
@@ -216,6 +218,28 @@ export default function RichTextEditor({
         >
           B
         </button>
+        <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
+        <span className="self-center text-[10px] font-semibold text-slate-500">字号</span>
+        {RICH_FONT_SIZE_PRESETS.map(({ value, label }) => {
+          const activeFontSize = editor.getAttributes('textStyle').fontSize as string | undefined
+          const active = value ? activeFontSize === value : !activeFontSize
+          return (
+            <button
+              key={value || 'default'}
+              type="button"
+              disabled={busy}
+              title={value ? `${label}px` : '默认字号'}
+              onMouseDown={keepEditorSelection}
+              onClick={() => {
+                if (!value) editor.chain().focus().unsetFontSize().run()
+                else editor.chain().focus().setFontSize(value).run()
+              }}
+              className={clsx(btn, active ? btnOn : btnOff, 'min-w-[1.75rem]')}
+            >
+              {label}
+            </button>
+          )
+        })}
         <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
         <span className="self-center text-[10px] font-semibold text-slate-500">字色</span>
         {RICH_TEXT_COLOR_PRESETS.map(({ value, label, swatch }) => {

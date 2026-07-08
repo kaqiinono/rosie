@@ -17,8 +17,9 @@ import {
 } from '@rosie/core'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
-import ProblemPracticeSession, {
-  SEA_SKIN,
+import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
+import {
   getBadgeStyle,
   getMasteryLabel,
   formatDate,
@@ -191,6 +192,7 @@ function SeaGrid({
   solveCount,
   solvedAt,
   onPageChange,
+  onCardClick,
 }: {
   items: SeaProblem[]
   page: number
@@ -198,6 +200,7 @@ function SeaGrid({
   solveCount: Record<string, number>
   solvedAt: Record<string, string>
   onPageChange: (p: number) => void
+  onCardClick: (sp: SeaProblem) => void
 }) {
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize))
   const pageItems = items.slice((page - 1) * pageSize, page * pageSize)
@@ -226,10 +229,11 @@ function SeaGrid({
           const cardStyle = getCardStyle(count)
 
           return (
-            <Link
+            <button
               key={`${lessonId}-${section}-${problem.id}`}
-              href={sp.href}
-              className={`sea-card group flex items-start gap-3 rounded-[14px] p-3 no-underline transition-all duration-200 hover:-translate-y-0.5 ${level >= 3 ? 'sea-card-mastered' : ''}`}
+              type="button"
+              onClick={() => onCardClick(sp)}
+              className={`sea-card group flex w-full cursor-pointer items-start gap-3 rounded-[14px] p-3 text-left transition-all duration-200 hover:-translate-y-0.5 ${level >= 3 ? 'sea-card-mastered' : ''}`}
               style={{ ...cardStyle, animationDelay: `${Math.min(idx * 0.04, 0.5)}s` }}
             >
               <div
@@ -269,14 +273,16 @@ function SeaGrid({
                   </div>
                 )}
               </div>
-              <FavoriteHeart problemId={problem.id} size="sm" />
+              <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                <FavoriteHeart problemId={problem.id} size="sm" />
+              </div>
               <span
                 className="shrink-0 self-center text-[12px] opacity-0 transition-opacity group-hover:opacity-100"
                 style={{ color: count >= 3 ? 'rgba(255,209,102,0.7)' : 'rgba(0,229,255,0.5)' }}
               >
                 →
               </span>
-            </Link>
+            </button>
           )
         })}
       </div>
@@ -338,7 +344,8 @@ type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 
 export default function MathSeaPage() {
   const { user } = useAuth()
-  const { solveCount, solvedAt, handleSolve } = useMathSolved(user)
+  const { solveCount, solvedAt } = useMathSolved(user)
+  const startPractice = useStartPracticeQueue()
   const searchParams = useSearchParams()
 
   const [search, setSearch] = useState('')
@@ -373,7 +380,6 @@ export default function MathSeaPage() {
   const [selectedDifficulties, setSelectedDifficulties] = useState<Set<ProblemDifficulty>>(
     () => new Set(ALL_DIFFICULTY_LEVELS),
   )
-  const [practiceMode, setPracticeMode] = useState(false)
   const [filterOpen, setFilterOpen] = useState(() => !searchParams.get('lessons'))
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 20
@@ -564,20 +570,22 @@ export default function MathSeaPage() {
     { key: 'mastered', label: '🦋 已掌握' },
   ]
 
+  const beginPractice = useCallback(
+    (initialProblemId?: string) => {
+      if (filtered.length === 0) return
+      startPractice({
+        pool: seaPoolToQueueItems(filtered),
+        title: '题海练习',
+        initialProblemId,
+        returnHref: '/math/sea',
+      })
+    },
+    [filtered, startPractice],
+  )
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: OCEAN_CSS }} />
-
-      {practiceMode && (
-        <ProblemPracticeSession
-          pool={filtered}
-          solveCount={solveCount}
-          solvedAt={solvedAt}
-          onSolve={handleSolve}
-          onEnd={() => setPracticeMode(false)}
-          skin={SEA_SKIN}
-        />
-      )}
 
       <div
         className="sea-root relative min-h-screen"
@@ -860,7 +868,7 @@ export default function MathSeaPage() {
 
               {/* Random practice button */}
               <button
-                onClick={() => filtered.length > 0 && setPracticeMode(true)}
+                onClick={() => beginPractice()}
                 disabled={filtered.length === 0}
                 className="lure-btn shrink-0 cursor-pointer rounded-full px-4 py-2.5 text-[12px] font-extrabold tracking-wide transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
@@ -870,7 +878,7 @@ export default function MathSeaPage() {
                   letterSpacing: '0.06em',
                 }}
               >
-                随机练 ≋
+                开始练习 ≋
               </button>
             </div>
           </div>
@@ -894,6 +902,7 @@ export default function MathSeaPage() {
               solveCount={solveCount}
               solvedAt={solvedAt}
               onPageChange={setPage}
+              onCardClick={(sp) => beginPractice(sp.problem.id)}
             />
           )}
 

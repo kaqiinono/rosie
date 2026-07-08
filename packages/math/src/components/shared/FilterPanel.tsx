@@ -1,17 +1,16 @@
 'use client'
 
-import { memo, useCallback, useMemo, useState, type ComponentType } from 'react'
-import Link from 'next/link'
+import { useCallback, useMemo, useState } from 'react'
 import type { Problem, ProblemSet } from '@rosie/core'
-import { useAuth } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@rosie/math/components/shared/DifficultyFilterRow'
+import ExpandedProblemCard, { type ProblemDetailInlineComponent } from '@rosie/math/components/shared/ExpandedProblemCard'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
-import ProblemPracticeSession, { MATH_SKIN } from '@rosie/math/components/shared/ProblemPracticeSession'
+import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
 import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import type { SeaProblem } from '@rosie/math/utils/sea-data'
 import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
@@ -90,69 +89,23 @@ function matchesPractice(count: number, practice: PracticeFilter): boolean {
   return true
 }
 
-function createExpandedCard(
-  tagColors: Record<string, string>,
-  srcBadge: string,
-  lessonId: string,
-  ProblemDetailComponent: ComponentType<{ problem: Problem; mode: 'inline' | 'full'; defaultSolutionOpen?: boolean }>,
-) {
-  return memo(function ExpandedCard({
-    p, setName, idx, solveCount, isOpen, cardId, onToggle, defaultSolutionOpen,
-  }: {
-    p: Problem; setName: string; idx: number; solveCount: Record<string, number>
-    isOpen: boolean; cardId: string; onToggle: (id: string) => void; defaultSolutionOpen?: boolean
-  }) {
-    const count = solveCount[p.id] ?? 0
-    const level = getMasteryLevel(count)
-    const srcLabel = problemSetSectionLabel(setName, lessonId)
-    return (
-      <div className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${MASTERY_BORDER[level]}`}>
-        <button onClick={() => onToggle(cardId)} className="flex w-full cursor-pointer items-center gap-2.5 rounded-[12px] p-3 text-left">
-          <div className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}>
-            {idx + 1}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
-            <div className="mt-0.5 flex flex-wrap gap-1">
-              <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
-              <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${srcBadge}`}>{srcLabel}</span>
-              <PracticeCountBadge count={count} />
-            </div>
-          </div>
-          <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
-          <FavoriteHeart problemId={p.id} size="sm" />
-          <span className={`shrink-0 text-[13px] font-bold text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
-        </button>
-        {isOpen && (
-          <div className="border-t border-border-light px-4 pb-5 pt-3">
-            <ProblemDetailComponent problem={p} mode="inline" defaultSolutionOpen={defaultSolutionOpen} />
-          </div>
-        )}
-      </div>
-    )
-  })
-}
-
 export function createFilterPanel(
   config: FilterPanelConfig,
-  ProblemDetailComponent: ComponentType<{ problem: Problem; mode: 'inline' | 'full'; defaultSolutionOpen?: boolean }>,
+  ProblemDetailComponent: ProblemDetailInlineComponent,
 ) {
   const { base, title, theme, sourceBtns, typeBtns, tagColors } = config
   const lessonId = lessonKeyFromHref(base) ?? base.split('/').pop() ?? ''
-  const ExpandedCard = createExpandedCard(tagColors, theme.srcBadge, lessonId, ProblemDetailComponent)
 
   function getProblemHref(setName: string, indexInSet: number): string {
     return `${base}/${setName}/${indexInSet + 1}`
   }
 
   return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery, onSetPractice }: FilterPanelProps) {
-    const { user } = useAuth()
-    const { solvedAt, handleSolve } = useMathSolved(user)
     const { favorites } = useMathFavoritesContext()
+    const startPractice = useStartPracticeQueue()
     const [favOnly, setFavOnly] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
     const [autoExpand, setAutoExpand] = useState(false)
-    const [practiceMode, setPracticeMode] = useState(false)
     const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
 
     const all: { p: Problem; setName: string; idx: number }[] = []
@@ -185,6 +138,19 @@ export function createFilterPanel(
       })),
     [filtered, lessonId])
 
+    const beginPractice = useCallback(
+      (initialProblemId?: string) => {
+        if (practicePool.length === 0) return
+        startPractice({
+          pool: seaPoolToQueueItems(practicePool),
+          title: title,
+          initialProblemId,
+          returnHref: base,
+        })
+      },
+      [practicePool, startPractice, title, base],
+    )
+
     const toggleDetailMode = useCallback(() => { setShowDetail(v => !v); setCollapsedIds(new Set()) }, [])
     const toggleAutoExpand = useCallback(() => { setAutoExpand(v => !v) }, [])
     const toggleCard = useCallback((id: string) => {
@@ -196,17 +162,6 @@ export function createFilterPanel(
 
     return (
       <div>
-        {practiceMode && (
-          <ProblemPracticeSession
-            pool={practicePool}
-            solveCount={solveCount}
-            solvedAt={solvedAt}
-            onSolve={handleSolve}
-            onEnd={() => setPracticeMode(false)}
-            skin={MATH_SKIN}
-          />
-        )}
-
         <div className={`mb-3 rounded-[14px] border ${theme.containerBorder} ${theme.containerGradient} p-4`}>
           <div className={`mb-1.5 text-[15px] font-extrabold ${theme.titleColor}`}>{title}</div>
           <div className={`mb-2.5 text-xs ${theme.labelColor}`}>全部{total}道题 · 多选筛选 · 按题型/来源练习</div>
@@ -302,11 +257,11 @@ export function createFilterPanel(
                   style={{ width: `${pct}%` }} />
               </div>
               <button
-                onClick={() => total > 0 && setPracticeMode(true)}
+                onClick={() => beginPractice()}
                 disabled={total === 0}
                 className={`shrink-0 ${btnBase} ${btnOn} disabled:cursor-not-allowed disabled:opacity-40`}
               >
-                随机练
+                开始练习
               </button>
               <button onClick={toggleDetailMode}
                 className={`shrink-0 ${btnBase} ${showDetail ? btnOn : `${btnOff} bg-white`}`}>
@@ -319,9 +274,19 @@ export function createFilterPanel(
         {showDetail ? (
           <div className="flex flex-col gap-2">
             {filtered.map(({ p, setName, idx }) => (
-              <ExpandedCard key={p.id} p={p} setName={setName} idx={idx} solveCount={solveCount}
-                isOpen={!collapsedIds.has(p.id)} cardId={p.id} onToggle={toggleCard}
-                defaultSolutionOpen={autoExpand} />
+              <ExpandedProblemCard
+                key={p.id}
+                problem={p}
+                index={idx}
+                solveCount={solveCount}
+                tagStyles={tagColors}
+                isOpen={!collapsedIds.has(p.id)}
+                onToggle={() => toggleCard(p.id)}
+                ProblemDetail={ProblemDetailComponent}
+                defaultSolutionOpen={autoExpand}
+                sourceLabel={problemSetSectionLabel(setName, lessonId)}
+                sourceBadgeClass={theme.srcBadge}
+              />
             ))}
             {filtered.length === 0 && <div className="py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}
           </div>
@@ -331,8 +296,12 @@ export function createFilterPanel(
               const count = solveCount[p.id] ?? 0
               const level = getMasteryLevel(count)
               return (
-                <Link key={p.id} href={getProblemHref(setName, idx)}
-                  className={`flex items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all ${MASTERY_BORDER[level]}`}>
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => beginPractice(p.id)}
+                  className={`flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 text-left shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all ${MASTERY_BORDER[level]}`}
+                >
                   <div className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}>
                     {idx + 1}
                   </div>
@@ -344,11 +313,11 @@ export function createFilterPanel(
                       <PracticeCountBadge count={count} />
                     </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                     <div className="text-base">{MASTERY_ICON[level]}</div>
                     <FavoriteHeart problemId={p.id} size="sm" />
                   </div>
-                </Link>
+                </button>
               )
             })}
             {filtered.length === 0 && <div className="col-span-full py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}

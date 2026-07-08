@@ -1,11 +1,24 @@
 'use client'
 
+import type { ReactNode } from 'react'
+
 type ScratchPadEdgeNavProps = {
   hasPrev: boolean
   hasNext: boolean
   positionLabel: string
   onPrev: () => void
   onNext: () => void
+}
+
+function VerticalNavLabel({ children }: { children: ReactNode }) {
+  return (
+    <span
+      className="select-none text-[12px] font-bold leading-none tracking-[0.2em]"
+      style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
+    >
+      {children}
+    </span>
+  )
 }
 
 export default function ScratchPadEdgeNav({
@@ -16,8 +29,10 @@ export default function ScratchPadEdgeNav({
   onNext,
 }: ScratchPadEdgeNavProps) {
   const btnBase =
-    'pointer-events-auto flex min-h-[64px] min-w-[44px] items-center justify-center rounded-2xl bg-white/95 px-3 py-3 text-[13px] font-bold text-indigo-700 shadow-lg backdrop-blur-md transition-transform active:scale-95'
-  const btnDisabled = 'pointer-events-none cursor-not-allowed opacity-30'
+    'pointer-events-auto flex w-9 shrink-0 items-center justify-center rounded-r-xl bg-white/90 py-5 shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95'
+  const btnRight =
+    'pointer-events-auto flex w-9 shrink-0 items-center justify-center rounded-l-xl bg-white/90 py-5 shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95'
+  const btnDisabled = 'pointer-events-none cursor-not-allowed opacity-25'
 
   return (
     <>
@@ -28,12 +43,13 @@ export default function ScratchPadEdgeNav({
           if (!hasPrev) return
           onPrev()
         }}
-        className={`absolute left-0 top-1/2 z-40 -translate-y-1/2 rounded-l-none rounded-r-2xl ${btnBase} ${
-          !hasPrev ? btnDisabled : 'cursor-pointer'
+        className={`absolute left-0 top-1/2 z-40 -translate-y-1/2 ${btnBase} ${
+          !hasPrev ? btnDisabled : 'cursor-pointer text-indigo-700'
         }`}
+        style={{ paddingLeft: 'max(0px, env(safe-area-inset-left))' }}
         aria-label="上一题"
       >
-        ‹ 上一题
+        <VerticalNavLabel>‹上一题</VerticalNavLabel>
       </button>
 
       <button
@@ -43,12 +59,13 @@ export default function ScratchPadEdgeNav({
           if (!hasNext) return
           onNext()
         }}
-        className={`absolute right-0 top-1/2 z-40 -translate-y-1/2 rounded-l-2xl rounded-r-none ${btnBase} ${
-          !hasNext ? btnDisabled : 'cursor-pointer'
+        className={`absolute right-0 top-1/2 z-40 -translate-y-1/2 ${btnRight} ${
+          !hasNext ? btnDisabled : 'cursor-pointer text-indigo-700'
         }`}
+        style={{ paddingRight: 'max(0px, env(safe-area-inset-right))' }}
         aria-label="下一题"
       >
-        下一题 ›
+        <VerticalNavLabel>下一题›</VerticalNavLabel>
       </button>
 
       <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-sm">

@@ -1,10 +1,27 @@
 # 新增讲次操作指引（索引）
 
-> 适用场景：新增一个数学讲次（legacyId = N，如第 52 讲），录入题目并注册到平台。
+> 适用场景：新增一个数学讲次，录入题目并注册到平台。
 >
-> **路由已统一为动态页** `apps/web/src/app/math/ny/[grade]/[seq]/`，新增讲次**不需要**再建 `apps/web/src/app/math/ny/N/` 目录。
+> **讲次 ID：** 全程只用 **lessonKey**（`{grade}-{seq}`，如 `2-8`）— registry、md 文件名、组件路径、数据路径均由此派生。
 >
-> **ID 收尾（去掉 legacyId / slug）：** 见 [`docs/math/lesson-id-cleanup.md`](math/lesson-id-cleanup.md)。
+> **路由：** 动态页 `apps/web/src/app/math/ny/[grade]/[seq]/`，勿建 `ny/N/` 静态目录。
+
+---
+
+## 路径对照（一表通）
+
+以 **lessonKey `2-8`**（二年级第 8 讲）为例：
+
+| 用途 | 路径 |
+|------|------|
+| 本地题目源 | `docs/math/lessons/2-8.md` |
+| 数据 | `packages/math/src/utils/g2/lesson8-data.ts(x)` |
+| 组件 | `packages/math/src/components/lesson/g2/lesson8/` |
+| registry | `{ lessonKey: '2-8', grade: 2, seq: 8 }` |
+| href | `/math/ny/2/8` |
+| 题目 ID | `2-8-L1` |
+
+**规则：** `g{grade}/lesson{seq}` — 其中 `seq` 来自 registry（一年级=教材号，二年级起=年级内序号）。
 
 ---
 
@@ -12,95 +29,63 @@
 
 每新增一个讲次需要：
 
-- **新建** `lesson-registry` 登记 + `lesson-module-registry` 模块 + 数据文件 + 8 个组件 wrapper
-- **修改** 题海 / 每日计划 / 组卷等入口（仍用 legacyId 字符串的部分见 `registration.md`）
-- **不必新建** App Router 路由 shell（动态路由已覆盖）
+- **新建** registry 一行 + module-registry 模块 + 数据 + 8 个组件 wrapper
+- **修改** courses-data、sea-data、plan、quiz、source-btns（**键 = lessonKey**）
+- **不必**新建 App Router 路由 shell
 
-导航由共享组件承担（`LessonAppHeader` / `LessonSidebar` / `LessonBottomNav`），新讲次只需在各 wrapper 里配置 **canonical `basePath`**。详见 [`navigation.md`](add-new-lesson/navigation.md)。
+导航：`LessonAppHeader` / `LessonSidebar` / `LessonBottomNav`，wrapper 里设 canonical `basePath`。见 [`navigation.md`](add-new-lesson/navigation.md)。
 
-`constant.ts` **无需改动**。
-
----
-
-## ID 与路由（重构后）
-
-| 字段 | 示例（legacy 52 = 二年级第 4 讲） | 示例（legacy 56 = 二年级第 7 讲） |
-|------|-----------------------------------|-----------------------------------|
-| legacyId | `52`（目录 `lesson52`） | `56`（目录 `lesson56`） |
-| grade | `2` | `2` |
-| seq | `4`（二年级内第 4 讲） | `7` |
-| lessonKey | `2-4` | `2-7` |
-| canonical href | `/math/ny/2/4` | `/math/ny/2/7` |
-| 题目 ID | `2-4-L1`、`2-4-H3`… | `2-7-L1`、`2-7-S1`… |
-
-**注册表：** `packages/math/src/utils/lesson-registry.ts` 的 `LESSON_ENTRIES` 追加一行即可；`lesson-grade.ts` 自动派生年级映射。
+**连续练习：** 注册后各学习模块「开始练习」、综合题库筛选练习、错题「一键练习」由共享 `PracticeQueue` 自动提供，**无需每讲额外代码**。见 [`practice-queue.md`](add-new-lesson/practice-queue.md)。
 
 ---
 
 ## ⚠️ 铁律
 
-1. **题目 ID 用 lessonKey 前缀**（`2-4-L1`），禁止裸 `L1` 或仅 legacyId（`52-L1`）——否则跨讲次碰撞。
-2. **href / basePath 用 canonical 路由** `/math/ny/{grade}/{seq}`，禁止 `/math/ny/52`、`/math/ny/g2/4`。
-3. **green build ≠ 渲染正常**：改 UI 后 `pnpm dev` 真机看一眼（`docs/bug-report.md`）。
+1. 题目 ID：`{lessonKey}-L1`，禁止 legacy 前缀或裸 `L1`。
+2. href / basePath：`/math/ny/{grade}/{seq}`。
+3. md 文件名 = lessonKey（`2-8.md`，不是 `57.md`）。
+4. 组件在 `lesson/g{grade}/lesson{seq}/`，不是根目录 `lesson57/`。
+5. green build ≠ 渲染正常 — 改 UI 后真机看一眼。
+6. **答题区自定义组件**（竖式谜、宫格）必须走 `custom-answer-widget.md` 统一逻辑；禁止题面 `<pre>` 竖式、禁止 per-lesson 草稿答题 UI。
 
 ---
 
 ## 读取题目
 
-题目源：`docs/math/lessons/N.md`（`N` = legacyId）。单讲**只读这一个文件**。
+`docs/math/lessons/{lessonKey}.md`。单讲只读这一个文件。
 
-若用户只提供照片（如 `docs/files/lesson/*.HEIC`）：先转 PNG、抄题生成 `N.md`，再录入代码。**仅写 md 不会出现首页卡片。**
-
-1. 通读全部章节，逐题列出（多小题拆成多道 `L`/`S` 题）
-2. 确认 `grade`、`seq`、`legacyId`、`lessonKey` 与 `basePath`
-3. 确认本次录入哪些模块（可仅课堂+附加，其余 `[]`）
-4. 写出总题数，确认后再录入
-
-### 首页卡片为何不见？
-
-`/math/ny/{grade}` 列表来自 `courses-data.ts`，且 `href` 必须在 `lesson-registry.ts` 能解析。缺任一都不会显示该讲卡片。
+仅照片 → 转 PNG、写 md、再录入代码。
 
 ---
 
 ## 按需阅读
 
-| 步骤 | 文件 | 何时 |
-|------|------|------|
-| 数据 | [`data.md`](add-new-lesson/data.md) | 总是 |
-| 组件 | [`components.md`](add-new-lesson/components.md) | 总是 |
-| 导航 | [`navigation.md`](add-new-lesson/navigation.md) | 总是（basePath、侧栏/顶栏/底栏） |
-| 注册 | [`registration.md`](add-new-lesson/registration.md) | 总是（最易漏） |
-| 路由 | [`routes.md`](add-new-lesson/routes.md) | 了解动态路由即可，通常无需改文件 |
-| 图形 | [`figures.md`](add-new-lesson/figures.md) | 仅有图表/交互题时 |
+| 步骤 | 文件 |
+|------|------|
+| 数据 | [`data.md`](add-new-lesson/data.md) |
+| 组件 | [`components.md`](add-new-lesson/components.md) |
+| 导航 | [`navigation.md`](add-new-lesson/navigation.md) |
+| 注册 | [`registration.md`](add-new-lesson/registration.md) |
+| 路由 | [`routes.md`](add-new-lesson/routes.md) |
+| 图形 | [`figures.md`](add-new-lesson/figures.md) |
+| **答题区自定义组件** | [`custom-answer-widget.md`](add-new-lesson/custom-answer-widget.md) |
+| **连续练习** | [`practice-queue.md`](add-new-lesson/practice-queue.md) — 只读，新讲次无需实现 |
 
 ---
 
 ## 文件清单
 
 ```
-packages/math/src/utils/
-  [ ] lesson-registry.ts                 — LESSON_ENTRIES 追加一行（最先做）
-  [ ] lesson-module-registry.ts          — 导入 + LESSON_MODULES.lessonN
-  [ ] lessonN-data.ts(.tsx)
-  [ ] sea-data.ts                        — SEA_LESSONS
-
-packages/math/src/components/lessonN/
-  [ ] LessonNProvider.tsx
-  [ ] AppHeader.tsx / Sidebar.tsx / BottomNav.tsx
-  [ ] HomePage.tsx / FilterPanel.tsx
-  [ ] ProblemList.tsx / ProblemDetail.tsx
-  [ ] Figure/ …                          — 可选
-
-apps/web — 通常无需新增：
-  (已有) math/ny/[grade]/page.tsx        — 年级讲次列表
-  (已有) math/ny/[grade]/[seq]/**        — 动态讲次页（home/lesson/…/notes/drafts）
-
-入口注册（见 registration.md）：
-  [ ] courses-data.ts                    — 缺此项年级首页无卡片
-  [ ] lesson-source-btns.ts
-  [ ] sea-data.ts
-  [ ] plan/page.tsx、MathWeeklyPractice.tsx
-  [ ] quiz/page.tsx、quiz/[id]/page.tsx、quiz/[id]/print/page.tsx
+[ ] docs/math/lessons/{lessonKey}.md
+[ ] utils/g{grade}/lesson{seq}-data.ts(x)
+[ ] components/lesson/g{grade}/lesson{seq}/*   (8 wrappers)
+[ ] lesson-registry.ts
+[ ] lesson-module-registry.ts                  — 键 = lessonKey
+[ ] courses-data.ts
+[ ] sea-data.ts                                — id = lessonKey
+[ ] lesson-source-btns.ts
+[ ] plan/page.tsx、MathWeeklyPractice.tsx
+[ ] quiz/page.tsx、quiz/[id]/*、print/*
 ```
 
 ---
@@ -112,4 +97,6 @@ pnpm --filter @rosie/math typecheck
 pnpm build
 ```
 
-访问 `/math/ny/{grade}/{seq}` 与顶栏讲次切换、侧栏各模块。
+访问 `/math/ny/{grade}/{seq}`；可选 `/admin/math-lesson-id-audit`。
+
+**连续练习：** 各模块页（pretest / lesson / homework 等）顶栏「开始练习」、综合题库「开始练习」、错题「一键练习」；顶栏显示进度，答对自动下一题。详见 [`practice-queue.md`](add-new-lesson/practice-queue.md)。

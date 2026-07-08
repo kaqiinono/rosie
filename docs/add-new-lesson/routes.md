@@ -2,59 +2,32 @@
 
 ## 现状
 
-所有讲次共用一套 App Router 动态路由：
-
 ```
-apps/web/src/app/math/ny/
-  [grade]/page.tsx              → 年级讲次卡片列表
-  [grade]/[seq]/
-    layout.tsx                  → DynamicLessonLayout（顶栏/侧栏/底栏壳）
-    page.tsx                    → 讲次首页
-    lesson/page.tsx             → 课堂列表
-    lesson/[id]/page.tsx        → 题目详情
-    homework/ … pretest/ … workbook/ … supplement/
-    alltest/page.tsx
-    mistakes/page.tsx
-    notes/page.tsx
-    drafts/page.tsx
-    magic/page.tsx              → 仅 module 声明 MagicPage 时有效
+apps/web/src/app/math/ny/[grade]/[seq]/**
 ```
 
-页面体为薄 re-export，例如：
-
-```tsx
-export { DynamicLessonHomePage as default } from '@rosie/math/components/shared/dynamic-lesson/DynamicLessonPages'
-```
-
-`DynamicLessonLayout` 通过 `lesson-registry` + `lesson-module-registry` 解析 `grade`/`seq` → 加载对应 `lessonN` 组件集。
+`DynamicLessonLayout`：`lesson-registry`（grade+seq → lessonKey）→ `lesson-module-registry`（lessonKey → 组件）→ `components/lesson/g{grade}/lesson{seq}/`。
 
 ---
 
-## 新增讲次时
+## 新增讲次
 
-1. 在 `lesson-registry.ts` 登记 `{ grade, seq, lessonKey, legacyId, slug }`
-2. 在 `lesson-module-registry.ts` 注册 `slug` 模块
-3. **不要**创建 `apps/web/src/app/math/ny/N/` 或 `g2/4` 等静态目录
-4. **不要**修改 `[grade]/[seq]/*.tsx`（除非新增全站级子路由类型）
-
----
-
-## 已废弃路径
-
-| 旧路径 | 现状 |
-|--------|------|
-| `/math/ny/52` | 已移除，用 `/math/ny/2/4` |
-| `/math/ny/g2/4` | 已移除 |
-| 每讲 `ny/N/layout.tsx` | 已移除 |
-
-`next.config` 不再配置讲次 legacy 重定向。
+1. `lesson-registry.ts` — `{ lessonKey, grade, seq }`
+2. `lesson-module-registry.ts` — `'2-8': { … }`
+3. 数据 + `lesson/g2/lesson8/` 组件
+4. **不要**建 `apps/web/src/app/math/ny/N/` 或 `ny/56/`
 
 ---
 
-## 验证 URL
+## 已废弃
 
-登录后访问：
+- `/math/ny/52` → 用 `/math/ny/2/4`
+- 根目录 `components/lesson52/`（已迁至 `lesson/g2/lesson4/` 等）
 
-- `/math/ny/{grade}/{seq}` — 首页
-- `/math/ny/{grade}/{seq}/alltest` — 综合题库
-- `/math/ny/{grade}/{seq}/lesson/1` — 第一题
+---
+
+## 验证
+
+`/math/ny/2/8`、`/math/ny/2/8/alltest`、`/math/ny/2/8/lesson/1`
+
+**连续练习：** `/math/ny/2/8/pretest` 等分模块页顶栏「开始练习」；`/math/ny/2/8/alltest` 筛选后「开始练习」。`PracticeQueueProvider` 已在 `apps/web/src/app/math/layout.tsx` 挂载。详见 [`practice-queue.md`](practice-queue.md)。

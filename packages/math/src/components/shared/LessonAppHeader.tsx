@@ -8,6 +8,7 @@ import {
   LESSON_HEADER_TEXT_BTN,
 } from './lesson-header-chrome'
 import LessonGradeNav from './LessonGradeNav'
+import LessonGradeSwitcher from './LessonGradeSwitcher'
 
 type LessonHeaderConfig = {
   basePath: string
@@ -55,6 +56,11 @@ export default function LessonAppHeader({ config }: Props) {
         </Link>
 
         <div className="bg-border-light/70 mx-0.5 hidden h-5 w-px shrink-0 sm:block" aria-hidden />
+
+        <LessonGradeSwitcher
+          basePath={config.basePath}
+          activeColor={config.navActiveColor}
+        />
 
         <LessonGradeNav
           basePath={config.basePath}

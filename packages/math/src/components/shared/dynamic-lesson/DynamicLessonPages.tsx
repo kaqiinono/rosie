@@ -1,13 +1,19 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { notFound } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import type { ProblemDifficulty } from '@rosie/core'
+import { useAuth } from '@rosie/core'
 import LessonProblemRoutePage from '@rosie/math/components/shared/LessonProblemRoutePage'
+import LessonProblemList from '@rosie/math/components/shared/LessonProblemList'
 import LessonMistakesPage from '@rosie/math/components/shared/LessonMistakesPage'
 import LessonNotesPage from '@rosie/math/components/shared/LessonNotesPage'
 import LessonDraftsPage from '@rosie/math/components/shared/LessonDraftsPage'
+import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
+import { mathWrongStore } from '@rosie/math/hooks/useMathWrong'
+import { syncWrongBookFromAttempts } from '@rosie/math/utils/math-scratch-db'
 import { lessonDisplayLabelFromRegistry } from '@rosie/math/utils/lesson-registry'
 import { useLessonRoute } from './LessonRouteContext'
 
@@ -27,11 +33,42 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 function SectionListPage({ section }: { section: SectionKey }) {
   const { module, basePath, entry } = useLessonRoute()
   const { solveCount } = module.useLesson()
+  const startPractice = useStartPracticeQueue()
+  const [showDetail, setShowDetail] = useState(false)
+  const [autoExpand, setAutoExpand] = useState(false)
   const list = (module.PROBLEMS[section] ?? []) as typeof module.PROBLEMS.lesson
   const attempted = list.filter((p) => (solveCount[p.id] ?? 0) >= 1).length
   const mastered = list.filter((p) => (solveCount[p.id] ?? 0) >= 3).length
   const total = list.length
   const label = lessonDisplayLabelFromRegistry(entry.lessonKey, true)
+  const sectionPath = `${basePath}/${section}`
+
+  const practicePool = useMemo((): PracticeQueueItem[] => {
+    return list.map((problem, idx) => ({
+      problem,
+      section,
+      lessonId: entry.lessonKey,
+      detailHref: `${sectionPath}/${idx + 1}`,
+    }))
+  }, [list, section, entry.lessonKey, sectionPath])
+
+  const beginPractice = useCallback(
+    (initialProblemId?: string) => {
+      if (practicePool.length === 0) return
+      startPractice({
+        pool: practicePool,
+        title: `${SECTION_LABELS[section]} · ${label}`,
+        initialProblemId,
+        returnHref: sectionPath,
+      })
+    },
+    [practicePool, startPractice, section, label, sectionPath],
+  )
+
+  const btnBase =
+    'cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95'
+  const btnOn = 'border-blue-600 bg-blue-600 text-white'
+  const btnOff = 'border-slate-200 bg-white text-text-secondary'
 
   return (
     <div>
@@ -42,6 +79,20 @@ function SectionListPage({ section }: { section: SectionKey }) {
         <div className="mb-2 text-xs text-text-secondary">
           {total > 0 ? `共 ${total} 道题` : '本模块暂无题目'}
         </div>
+        {total > 0 && (
+          <div className="mb-2">
+            <div className="mb-1.5 text-[11px] font-bold text-text-secondary">📖 题解显示</div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setAutoExpand((v) => !v)}
+                className={`${btnBase} ${autoExpand ? btnOn : btnOff}`}
+              >
+                {autoExpand ? '✅ 自动展开题解' : '⭕ 自动展开题解'}
+              </button>
+            </div>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
             <div
@@ -56,9 +107,40 @@ function SectionListPage({ section }: { section: SectionKey }) {
           <div className="shrink-0 text-xs font-bold text-text-secondary">
             练过 {attempted} · 🦋 {mastered}/{total}
           </div>
+          {total > 0 && (
+            <>
+              <button
+                type="button"
+                onClick={() => beginPractice()}
+                className={`shrink-0 ${btnBase} ${btnOn}`}
+              >
+                开始练习
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDetail((v) => !v)
+                }}
+                className={`shrink-0 ${btnBase} ${showDetail ? btnOn : btnOff}`}
+              >
+                {showDetail ? '收起 ↑' : '展开 ↓'}
+              </button>
+            </>
+          )}
         </div>
       </div>
-      <module.ProblemList problems={list} solveCount={solveCount} basePath={`${basePath}/${section}`} />
+      <LessonProblemList
+        problems={list}
+        solveCount={solveCount}
+        basePath={sectionPath}
+        lessonId={entry.lessonKey}
+        tagStyles={module.TAG_STYLE}
+        lessonBasePath={basePath}
+        onPractice={(problemId) => beginPractice(problemId)}
+        showExpanded={showDetail}
+        ProblemDetail={module.ProblemDetail}
+        autoExpandSolution={autoExpand}
+      />
     </div>
   )
 }
@@ -121,8 +203,20 @@ export function DynamicLessonHomePage() {
 }
 
 export function DynamicLessonMistakesPage() {
-  const { module, basePath } = useLessonRoute()
-  const { wrongIds, removeWrong, solveCount } = module.useLesson()
+  const { user } = useAuth()
+  const { module, basePath, entry } = useLessonRoute()
+  const { wrongIds, solveCount } = module.useLesson()
+
+  useEffect(() => {
+    if (!user) return
+    void syncWrongBookFromAttempts(user.id, entry.lessonKey).then((added) => {
+      if (added > 0) {
+        mathWrongStore.invalidate(user.id)
+        mathWrongStore.ensureLoaded(user.id)
+      }
+    })
+  }, [user, entry.lessonKey])
+
   return (
     <LessonMistakesPage
       basePath={basePath}
@@ -130,7 +224,6 @@ export function DynamicLessonMistakesPage() {
       tagStyle={module.TAG_STYLE}
       wrongIds={wrongIds}
       solveCount={solveCount}
-      removeWrong={removeWrong}
     />
   )
 }

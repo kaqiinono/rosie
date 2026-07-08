@@ -30,15 +30,22 @@ import ProblemMasteryPanel from './ProblemMasteryPanel'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import { todayStr } from '@rosie/core'
-import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
+import { gradeOf, GRADE_LABEL, gradesInOrder, lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
+import { compareLessonIds, lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 import type { MathPlanSectionKey } from '@rosie/math/utils/math-helpers'
+
+function problemDetailHref(lessonId: string, section: string, index: number): string {
+  const entry = lessonByKey(lessonId)
+  const base = entry ? routeForLesson(entry) : `/math/ny/${lessonId}`
+  return `${base}/${section}/${index}`
+}
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const LESSONS = [
   {
-    id: '12',
+    id: '1-12',
     label: '第12讲 · 巧算加减法进阶',
     short: '巧算加减法',
     emoji: '🔢',
@@ -48,7 +55,7 @@ const LESSONS = [
     desc: '补数·凑整·连续自然数求和',
   },
   {
-    id: '13',
+    id: '1-13',
     label: '第13讲 · 植树问题',
     short: '植树问题',
     emoji: '🌳',
@@ -58,7 +65,7 @@ const LESSONS = [
     desc: '两端植·一端植·环形植',
   },
   {
-    id: '15',
+    id: '1-15',
     label: '第15讲 · 和差问题',
     short: '和差问题',
     emoji: '➕',
@@ -68,7 +75,7 @@ const LESSONS = [
     desc: '和差公式·移多补少·隐藏差',
   },
   {
-    id: '18',
+    id: '1-18',
     label: '第18讲 · 和差倍初步',
     short: '和差倍初步',
     emoji: '✖️',
@@ -78,7 +85,7 @@ const LESSONS = [
     desc: '和倍·差倍·三量联立',
   },
   {
-    id: '23',
+    id: '1-23',
     label: '第23讲 · 逻辑推理',
     short: '逻辑推理',
     emoji: '🔍',
@@ -88,7 +95,7 @@ const LESSONS = [
     desc: '排除法·假设法·对应法',
   },
   {
-    id: '29',
+    id: '1-29',
     label: '第29讲 · 算符大作战',
     short: '算符大作战',
     emoji: '🎮',
@@ -98,7 +105,7 @@ const LESSONS = [
     desc: '填算符·24点·奇偶性',
   },
   {
-    id: '30',
+    id: '1-30',
     label: '第30讲 · 和差倍进阶',
     short: '和差倍进阶',
     emoji: '🧮',
@@ -108,7 +115,7 @@ const LESSONS = [
     desc: '三量联立·倍比·进阶题',
   },
   {
-    id: '34',
+    id: '1-34',
     label: '第34讲 · 乘法分配律',
     short: '乘法分配律问题',
     emoji: '🍑',
@@ -118,7 +125,7 @@ const LESSONS = [
     desc: '装一袋，分多袋，找好朋友',
   },
   {
-    id: '35',
+    id: '1-35',
     label: '第35讲 · 归一问题',
     short: '归一问题',
     emoji: '🐦',
@@ -128,7 +135,7 @@ const LESSONS = [
     desc: '单归一、双归一、反向归一',
   },
   {
-    id: '36',
+    id: '1-36',
     label: '第36讲 · 星期几问题',
     short: '星期几',
     emoji: '📅',
@@ -138,7 +145,7 @@ const LESSONS = [
     desc: '同月/跨月/跨年推算',
   },
   {
-    id: '37',
+    id: '1-37',
     label: '第37讲 · 鸡兔同笼问题',
     short: '鸡兔同笼',
     emoji: '🐰',
@@ -148,7 +155,7 @@ const LESSONS = [
     desc: '找头和，腿和，否则分组',
   },
   {
-    id: '38',
+    id: '1-38',
     label: '第38讲 · 一笔画',
     short: '一笔画',
     emoji: '✏️',
@@ -158,7 +165,7 @@ const LESSONS = [
     desc: '端点·奇点·偶点判断',
   },
   {
-    id: '39',
+    id: '1-39',
     label: '第39讲 · 盈亏问题',
     short: '盈亏问题',
     emoji: '⚖️',
@@ -168,7 +175,7 @@ const LESSONS = [
     desc: '总差额 ÷ 每份差额',
   },
   {
-    id: '40',
+    id: '1-40',
     label: '第40讲 · 周长问题',
     short: '周长问题',
     emoji: '📐',
@@ -178,7 +185,7 @@ const LESSONS = [
     desc: '拼图·剪切·平移·标向',
   },
   {
-    id: '41',
+    id: '1-41',
     label: '第41讲 · 间隔趣题',
     short: '间隔趣题',
     emoji: '✂️',
@@ -188,7 +195,7 @@ const LESSONS = [
     desc: '锯木头·爬楼·敲钟',
   },
   {
-    id: '42',
+    id: '1-42',
     label: '第42讲 · 生活智力题',
     short: '生活智力题',
     emoji: '🧠',
@@ -198,7 +205,7 @@ const LESSONS = [
     desc: '称重·换水·计时·找异物',
   },
   {
-    id: '43',
+    id: '1-43',
     label: '第43讲 · 等差数列初识',
     short: '等差数列',
     emoji: '📊',
@@ -208,7 +215,7 @@ const LESSONS = [
     desc: '首项·公差·项数·求和公式',
   },
   {
-    id: '44',
+    id: '1-44',
     label: '第44讲 · 统筹优化',
     short: '统筹优化',
     emoji: '⏱️',
@@ -218,7 +225,7 @@ const LESSONS = [
     desc: '排队·过河·路径·烙饼',
   },
   {
-    id: '46',
+    id: '1-46',
     label: '第46讲 · 抽屉原理与最不利',
     short: '抽屉·最不利',
     emoji: '🗄️',
@@ -228,7 +235,7 @@ const LESSONS = [
     desc: '抽屉原理·最不利·保证问题',
   },
   {
-    id: '47',
+    id: '1-47',
     label: '第47讲 · 方格中的秘密',
     short: '方格谜题',
     emoji: '🧩',
@@ -238,7 +245,7 @@ const LESSONS = [
     desc: '数连·数桥·数方·变型数独',
   },
   {
-    id: '50',
+    id: '2-2',
     label: '第2讲 · 等量代换与归一问题',
     short: '归一问题',
     emoji: '⚖️',
@@ -248,7 +255,7 @@ const LESSONS = [
     desc: '归一·等量代换·分组统计',
   },
   {
-    id: '49',
+    id: '2-1',
     label: '第1讲 · 加减法速算与巧算',
     short: '速算巧算',
     emoji: '🧮',
@@ -258,7 +265,7 @@ const LESSONS = [
     desc: '凑整·去括号·按位相加·基准数',
   },
   {
-    id: '56',
+    id: '2-7',
     label: '第7讲 · 数字谜',
     short: '数字谜',
     emoji: '🔐',
@@ -268,7 +275,7 @@ const LESSONS = [
     desc: '加法谜·减法谜·数字和分析',
   },
   {
-    id: '55',
+    id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',
     emoji: '🔢',
@@ -278,7 +285,7 @@ const LESSONS = [
     desc: '列举·分堆·组数·隔板',
   },
   {
-    id: '53',
+    id: '2-5',
     label: '第5讲 · 找规律',
     short: '找规律',
     emoji: '🔮',
@@ -288,7 +295,7 @@ const LESSONS = [
     desc: '数列·数表·图形编码',
   },
   {
-    id: '52',
+    id: '2-4',
     label: '第4讲 · 差倍问题',
     short: '差倍问题',
     emoji: '📊',
@@ -298,7 +305,7 @@ const LESSONS = [
     desc: '差倍·移多补少·年龄·和倍',
   },
   {
-    id: '51',
+    id: '2-3',
     label: '第3讲 · 等量代换与归一问题',
     short: '代换归一',
     emoji: '⚖️',
@@ -400,7 +407,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   const today = todayStr()
   const [showParamsDialog, setShowParamsDialog] = useState(false)
   const [selectedLessons, setSelectedLessons] = useState<Set<string>>(
-    () => new Set([LESSONS.slice(-1)[0]?.id ?? '37']),
+    () => new Set([LESSONS.slice(-1)[0]?.id ?? '1-37']),
   )
   const [sectionFilters, setSectionFilters] = useState<Record<string, string[]>>({})
   const [tagFilters, setTagFilters] = useState<Record<string, string[]>>({})
@@ -680,7 +687,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   const openCreateDialog = useCallback(() => {
     setEditingPlanStart(null)
     applySuggestedDateRange(today)
-    setSelectedLessons(new Set([LESSONS.slice(-1)[0]?.id ?? '37']))
+    setSelectedLessons(new Set([LESSONS.slice(-1)[0]?.id ?? '1-37']))
     setSectionFilters({})
     setTagFilters({})
     setShowParamsDialog(true)
@@ -737,7 +744,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
         .map(id => problemIdMap.get(id))
         .filter((p): p is MathPlanProblem => p != null && !requiredIds.has(p.problemId))
         .sort((a, b) => {
-          const lc = Number(a.lessonId) - Number(b.lessonId)
+          const lc = compareLessonIds(a.lessonId, b.lessonId)
           if (lc !== 0) return lc
           return a.key.localeCompare(b.key)
         })
@@ -748,10 +755,9 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
   // All prior lesson problems (lessonId < current), skipping lessons with no problems (e.g. pure animation)
   const priorLessonProbs = useMemo(() => {
     if (!weeklyPlan) return {} as Record<string, MathPlanProblem[]>
-    const currentId = Number(weeklyPlan.lessonId)
     const result: Record<string, MathPlanProblem[]> = {}
     for (const [id, ps] of Object.entries(problemSets)) {
-      if (Number(id) >= currentId) continue
+      if (compareLessonIds(id, weeklyPlan.lessonId) >= 0) continue
       const probs = [
         ...ps.lesson.map((p, i) => makeProblem(id, 'lesson', p, i + 1)),
         ...ps.homework.map((p, i) => makeProblem(id, 'homework', p, i + 1)),
@@ -783,7 +789,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
 
   // Detect rotating review completions
   useEffect(() => {
-    if (weeklyPlan?.lessonId !== '36') return
+    if (weeklyPlan?.lessonId !== '1-36') return
     for (const prob of rotatingReviews) {
       if ((solveCount[prob.problemId] ?? 0) > 0 && !isCompletedToday(prob.key)) {
         markReviewDone(prob.key)
@@ -1531,7 +1537,7 @@ export default function MathWeeklyPractice({ problemSets }: Props) {
             })()}
 
             {/* Review problems */}
-            {weeklyPlan?.lessonId === '36'
+            {weeklyPlan?.lessonId === '1-36'
               ? rotatingReviews.length > 0 && (
                   <div>
                     <SectionHeader
@@ -1732,7 +1738,7 @@ function ProblemCard({
         </div>
         <div className="mt-0.5 flex items-center gap-1.5">
           <span className="text-[10px] font-medium" style={{ color: sc.text }}>
-            第{prob.lessonId}讲
+            {lessonDisplayLabel(prob.lessonId, true)}
           </span>
           {isReview && (
             <span
@@ -1757,7 +1763,7 @@ function ProblemCard({
       {/* Do button */}
       {!done && (
         <Link
-          href={`/math/ny/${prob.lessonId}/${prob.section}/${prob.index}`}
+          href={problemDetailHref(prob.lessonId, prob.section, prob.index)}
           className="flex shrink-0 items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(249,115,22,.4)]"
           style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
         >
@@ -1799,7 +1805,7 @@ function WeeklyLessonSection({
         >
           本周旧讲
         </span>
-        <span className="text-[11px] font-bold text-purple-500">第{lessonId}讲</span>
+        <span className="text-[11px] font-bold text-purple-500">{lessonDisplayLabel(lessonId, true)}</span>
         <span
           className="rounded-full px-2 py-0.5 text-[10px] font-extrabold"
           style={{ background: 'rgba(124,58,237,.1)', color: '#7c3aed' }}
@@ -1846,7 +1852,7 @@ function WeeklyLessonSection({
           </div>
           <div className="mt-0.5 flex items-center gap-1.5">
             <span className="text-[10px] font-medium" style={{ color: sc.text }}>
-              第{problem.lessonId}讲
+              {lessonDisplayLabel(problem.lessonId, true)}
             </span>
             <span
               className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
@@ -1871,7 +1877,7 @@ function WeeklyLessonSection({
         ) : (
           <div className="flex shrink-0 items-center gap-2">
             <Link
-              href={`/math/ny/${problem.lessonId}/${problem.section}/${problem.index}`}
+              href={problemDetailHref(problem.lessonId, problem.section, problem.index)}
               className="flex items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
               style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
             >

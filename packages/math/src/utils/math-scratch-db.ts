@@ -297,7 +297,7 @@ export async function fetchQuizScratchDraftId(
 export async function upsertWrongWithAttempt(
   userId: string,
   problemId: string,
-  attemptId: string,
+  _attemptId: string,
 ): Promise<void> {
   const { error } = await supabase.from('math_wrong').upsert(
     {
@@ -305,11 +305,44 @@ export async function upsertWrongWithAttempt(
       problem_id: problemId,
       resolved: false,
       resolved_at: null,
-      last_wrong_attempt_id: attemptId,
     },
     { onConflict: 'user_id,problem_id' },
   )
   if (error) throw error
+}
+
+/** Backfill math_wrong rows for wrong attempts that never synced (e.g. prior schema mismatch). */
+export async function syncWrongBookFromAttempts(
+  userId: string,
+  lessonId: string,
+): Promise<number> {
+  const { data: attempts, error } = await supabase
+    .from('math_practice_attempts')
+    .select('problem_id')
+    .eq('user_id', userId)
+    .eq('lesson_id', lessonId)
+    .eq('correct', false)
+  if (error || !attempts?.length) return 0
+
+  const wrongPids = [...new Set(attempts.map((a) => a.problem_id as string))]
+
+  const { data: existing } = await supabase
+    .from('math_wrong')
+    .select('problem_id')
+    .eq('user_id', userId)
+    .in('problem_id', wrongPids)
+
+  const existingPids = new Set((existing ?? []).map((r) => r.problem_id as string))
+  let added = 0
+  for (const pid of wrongPids) {
+    if (existingPids.has(pid)) continue
+    const { error: upsertErr } = await supabase.from('math_wrong').upsert(
+      { user_id: userId, problem_id: pid, resolved: false, resolved_at: null },
+      { onConflict: 'user_id,problem_id' },
+    )
+    if (!upsertErr) added++
+  }
+  return added
 }
 
 export async function fetchAllScratchWorkingForPaper(
@@ -351,14 +384,45 @@ export async function fetchWrongAttemptId(
   problemId: string,
 ): Promise<string | null> {
   const { data, error } = await supabase
-    .from('math_wrong')
-    .select('last_wrong_attempt_id')
+    .from('math_practice_attempts')
+    .select('id')
     .eq('user_id', userId)
     .eq('problem_id', problemId)
-    .eq('resolved', false)
+    .eq('correct', false)
+    .not('draft_id', 'is', null)
+    .order('attempted_at', { ascending: false })
+    .limit(1)
     .maybeSingle()
   if (error || !data) return null
-  return (data.last_wrong_attempt_id as string | null) ?? null
+  return data.id as string
+}
+
+/** Problem ids among wrong attempts that have an archived scratch draft. */
+export async function fetchWrongDraftProblemIds(
+  userId: string,
+  problemIds: string[],
+): Promise<Set<string>> {
+  if (problemIds.length === 0) return new Set()
+  const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .select('problem_id')
+    .eq('user_id', userId)
+    .eq('correct', false)
+    .not('draft_id', 'is', null)
+    .in('problem_id', problemIds)
+  if (error || !data) return new Set()
+  return new Set(data.map((r) => r.problem_id as string))
+}
+
+export async function resolveWrongAttemptId(
+  userId: string,
+  ...problemIds: string[]
+): Promise<string | null> {
+  for (const pid of problemIds) {
+    const id = await fetchWrongAttemptId(userId, pid)
+    if (id) return id
+  }
+  return null
 }
 
 /** Seed practice working from the wrong attempt's draft (mistake retry). */
@@ -384,4 +448,28 @@ export async function seedWorkingFromWrongAttempt(
     attempt.answerSnapshot,
   )
   return { hasScratch: true, answerDraft: attempt.answerSnapshot }
+}
+
+/** Working scratch or latest wrong-attempt archived draft — whichever has canvas objects. */
+export async function fetchViewableDraftObjects(
+  userId: string,
+  problemId: string,
+): Promise<ScratchObject[]> {
+  const working = await fetchScratchWorking(userId, problemId, null)
+  if (working?.objects && working.objects.length > 0) return working.objects
+
+  const attemptId = await resolveWrongAttemptId(userId, problemId)
+  if (!attemptId) return []
+  const attempt = await fetchPracticeAttempt(attemptId)
+  if (!attempt?.draftId) return []
+  const draft = await fetchScratchDraft(attempt.draftId)
+  return draft?.objects ?? []
+}
+
+export async function problemHasViewableDraft(
+  userId: string,
+  problemId: string,
+): Promise<boolean> {
+  const objects = await fetchViewableDraftObjects(userId, problemId)
+  return objects.length > 0
 }

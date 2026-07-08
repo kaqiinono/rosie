@@ -6,8 +6,11 @@ import clsx from 'clsx'
 import type { ProblemSet } from '@rosie/core'
 import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math/components/shared/rich-text-image'
 import { useLessonNotes } from '@rosie/math/hooks/useLessonNotes'
+import { useLessonSummary } from '@rosie/math/hooks/useLessonSummary'
+import LessonSummaryBody from '@rosie/math/components/shared/LessonSummaryBody'
 import { buildLessonNoteEntries } from '@rosie/math/utils/lesson-note-entries'
 import {
+  isRichBodyEmpty,
   RICH_CONTENT_IMG_TW_COMPACT,
   sanitizeRichHtml,
 } from '@rosie/math/utils/sanitize-summary-html'
@@ -19,6 +22,7 @@ type Props = {
 }
 
 export default function LessonNotesPage({ basePath, lessonId, problems }: Props) {
+  const { summary, isLoading: summaryLoading } = useLessonSummary(lessonId)
   const { notes, isLoading } = useLessonNotes(lessonId)
 
   const entries = useMemo(
@@ -26,8 +30,17 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
     [notes, lessonId, basePath, problems],
   )
 
+  const showSummary =
+    !summaryLoading && summary != null && !isRichBodyEmpty(summary.bodyHtml)
+
   return (
     <div>
+      {showSummary && (
+        <div className="mb-4">
+          <LessonSummaryBody bodyHtml={summary.bodyHtml} />
+        </div>
+      )}
+
       <div className="mb-4 rounded-[14px] border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-4">
         <div className="flex items-center gap-2 text-sm font-extrabold text-violet-900">
           📝 题目笔记

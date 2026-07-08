@@ -1,7 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import Link from 'next/link'
+import { useMemo } from 'react'
 import { useAuth, getMasteryLevel, MASTERY_ICON } from '@rosie/core'
 import { BackLink } from '@rosie/ui'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
@@ -13,16 +12,28 @@ import {
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
-import ProblemPracticeSession, { FAVORITES_SKIN } from '@rosie/math/components/shared/ProblemPracticeSession'
+import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
 
 export default function MathFavoritesPage() {
   const { user } = useAuth()
-  const { solveCount, solvedAt, handleSolve } = useMathSolved(user)
+  const { solveCount } = useMathSolved(user)
   const { favorites } = useMathFavoritesContext()
-  const [practiceMode, setPracticeMode] = useState(false)
+  const startPractice = useStartPracticeQueue()
 
   const favItems = useMemo(() => resolveFavoriteProblems(favorites), [favorites])
   const groups = useMemo(() => groupFavoritesByLesson(favItems), [favItems])
+  const queuePool = useMemo(() => seaPoolToQueueItems(favItems), [favItems])
+
+  const beginPractice = (initialProblemId?: string) => {
+    if (queuePool.length === 0) return
+    startPractice({
+      pool: queuePool,
+      title: '收藏练习',
+      initialProblemId,
+      returnHref: '/math/favorites',
+    })
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-5">
@@ -35,7 +46,8 @@ export default function MathFavoritesPage() {
         </p>
         {favItems.length > 0 && (
           <button
-            onClick={() => setPracticeMode(true)}
+            type="button"
+            onClick={() => beginPractice()}
             className="mt-3 cursor-pointer rounded-full bg-rose-500 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform active:scale-95"
           >
             ▶ 开始连刷
@@ -64,10 +76,11 @@ export default function MathFavoritesPage() {
                   const count = solveCount[sp.problem.id] ?? 0
                   const level = getMasteryLevel(count)
                   return (
-                    <Link
+                    <button
                       key={`${sp.lessonId}-${sp.section}-${sp.problem.id}`}
-                      href={sp.href}
-                      className="flex items-center gap-2.5 rounded-[10px] border-[1.5px] border-border-light bg-white p-3 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]"
+                      type="button"
+                      onClick={() => beginPractice(sp.problem.id)}
+                      className="flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] border-border-light bg-white p-3 text-left shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="text-[13px] font-semibold text-text-primary">{sp.problem.title}</div>
@@ -76,26 +89,16 @@ export default function MathFavoritesPage() {
                         </div>
                       </div>
                       <div className="text-xl">{MASTERY_ICON[level]}</div>
-                      <FavoriteHeart problemId={sp.problem.id} size="sm" />
-                    </Link>
+                      <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                        <FavoriteHeart problemId={sp.problem.id} size="sm" />
+                      </div>
+                    </button>
                   )
                 })}
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {practiceMode && (
-        <ProblemPracticeSession
-          pool={favItems}
-          poolMode="favorites"
-          solveCount={solveCount}
-          solvedAt={solvedAt}
-          onSolve={handleSolve}
-          onEnd={() => setPracticeMode(false)}
-          skin={FAVORITES_SKIN}
-        />
       )}
     </div>
   )

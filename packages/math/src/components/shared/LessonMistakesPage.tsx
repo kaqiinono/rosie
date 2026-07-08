@@ -1,12 +1,17 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
+import { useAuth } from '@rosie/core'
 import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
-import { MistakeScratchButton } from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
-import { ProblemScratchProvider } from '@rosie/math/components/shared/ScratchPad/ProblemScratchContext'
+import { MistakeDraftButton } from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 import { useLessonScratchActions } from '@rosie/math/components/shared/ScratchPad/LessonScratchActionsContext'
+import { fetchWrongDraftProblemIds } from '@rosie/math/utils/math-scratch-db'
+import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
+import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
 
 type TagStyleMap = Record<string, string>
 
@@ -16,7 +21,6 @@ type Props = {
   tagStyle: TagStyleMap
   wrongIds: Set<string>
   solveCount: Record<string, number>
-  removeWrong: (id: string) => void
   accentClass?: string
 }
 
@@ -34,28 +38,29 @@ function MistakeRow({
   wrongProblems,
   solveCount,
   tagStyle,
-  basePath,
-  removeWrong,
+  hasDraft,
+  onPractice,
 }: {
   item: { p: Problem; setName: string; idx: number }
   index: number
   wrongProblems: Problem[]
   solveCount: Record<string, number>
   tagStyle: TagStyleMap
-  basePath: string
-  removeWrong: (id: string) => void
+  hasDraft: boolean
+  onPractice: () => void
 }) {
   const scratchActions = useLessonScratchActions()
-  const { p, setName, idx } = item
+  const { p } = item
   const count = solveCount[p.id] ?? 0
   const level = getMasteryLevel(count)
   const isMastered = count >= 3
-  const srcLabel = SOURCE_LABELS[setName] || setName
-  const href = `${basePath}/${setName}/${idx + 1}`
+  const srcLabel = SOURCE_LABELS[item.setName] || item.setName
 
   return (
-    <div
-      className={`flex items-center gap-3 rounded-[12px] border-[1.5px] bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
+    <button
+      type="button"
+      onClick={onPractice}
+      className={`flex w-full cursor-pointer items-center gap-3 rounded-[12px] border-[1.5px] bg-white p-3 text-left shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] active:scale-[0.99] ${
         isMastered ? 'border-app-green opacity-70' : `border-[#fca5a5] ${MASTERY_BORDER[level]}`
       }`}
     >
@@ -71,6 +76,11 @@ function MistakeRow({
           <span className="rounded-full bg-orange-100 px-2 py-px text-[10px] font-semibold text-orange-700">
             {srcLabel}
           </span>
+          {hasDraft && (
+            <span className="rounded-full bg-indigo-100 px-2 py-px text-[10px] font-bold text-indigo-700">
+              有草稿
+            </span>
+          )}
           {count > 0 && (
             <span className="rounded-full bg-gray-100 px-2 py-px text-[10px] text-text-muted">
               已练 {count} 次
@@ -78,37 +88,22 @@ function MistakeRow({
           )}
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-1.5">
-        <ProblemScratchProvider
-          value={{
-            sectionProblems: wrongProblems,
-            section: 'mistakes',
-            problemIndex: index,
-            basePath,
-          }}
-        >
-          <MistakeScratchButton
-            problem={p}
-            problems={wrongProblems}
-            problemIndex={index}
-            onSolve={scratchActions?.onSolve}
-            onWrong={scratchActions?.onWrong}
-            onResolved={scratchActions?.onResolved}
-          />
-        </ProblemScratchProvider>
-        <Link href={href} className="rounded-full border border-orange-200 px-3 py-1.5 text-[11px] font-semibold text-orange-700 no-underline">
-          详情
-        </Link>
-        <button
-          type="button"
-          onClick={() => removeWrong(p.id)}
-          className="rounded-full border border-[#fca5a5] px-2 py-1.5 text-[11px] text-[#dc2626] transition-colors hover:bg-[#ffedd5]"
-          title="从错题本移除"
-        >
-          ✕
-        </button>
+      <div
+        className="flex shrink-0 items-center gap-1.5"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <MistakeDraftButton
+          problem={p}
+          draftLookupIds={[p.id]}
+          problems={wrongProblems}
+          problemIndex={index}
+          onSolve={scratchActions?.onSolve}
+          onWrong={scratchActions?.onWrong}
+          onResolved={scratchActions?.onResolved}
+        />
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -118,14 +113,53 @@ export default function LessonMistakesPage({
   tagStyle,
   wrongIds,
   solveCount,
-  removeWrong,
 }: Props) {
+  const { user } = useAuth()
+  const startPractice = useStartPracticeQueue()
+  const lessonId = lessonKeyFromHref(basePath) ?? ''
+  const [draftProblemIds, setDraftProblemIds] = useState<Set<string>>(() => new Set())
+
   const problemMap = buildProblemMap(problems)
   const wrongList = [...wrongIds]
     .map((id) => problemMap.get(id))
     .filter(Boolean) as { p: Problem; setName: string; idx: number }[]
   const wrongProblems = wrongList.map((x) => x.p)
   const masteredCount = wrongList.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
+
+  const mistakePool = useMemo((): PracticeQueueItem[] =>
+    wrongList.map(({ p, setName, idx }) => ({
+      problem: p,
+      section: setName,
+      lessonId,
+      detailHref: `${basePath}/${setName}/${idx + 1}`,
+    })),
+  [wrongList, lessonId, basePath])
+
+  const beginPractice = (initialProblemId?: string) => {
+    if (mistakePool.length === 0) return
+    startPractice({
+      pool: mistakePool,
+      title: '错题练习',
+      initialProblemId,
+      returnHref: `${basePath}/mistakes`,
+    })
+  }
+
+  const wrongIdsKey = useMemo(() => [...wrongIds].sort().join('\0'), [wrongIds])
+
+  useEffect(() => {
+    if (!user || wrongIds.size === 0) {
+      setDraftProblemIds(new Set())
+      return
+    }
+    let cancelled = false
+    void fetchWrongDraftProblemIds(user.id, [...wrongIds]).then((ids) => {
+      if (!cancelled) setDraftProblemIds(ids)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [user, wrongIdsKey, wrongIds])
 
   return (
     <div>
@@ -152,6 +186,15 @@ export default function LessonMistakesPage({
             </div>
           </div>
         )}
+        {wrongList.length > 0 && (
+          <button
+            type="button"
+            onClick={() => beginPractice()}
+            className="mt-2 cursor-pointer rounded-full bg-[#ea580c] px-4 py-1.5 text-[12px] font-bold text-white shadow-sm active:scale-95"
+          >
+            一键练习（{wrongList.length} 题）
+          </button>
+        )}
       </div>
 
       {wrongList.length === 0 ? (
@@ -176,8 +219,8 @@ export default function LessonMistakesPage({
               wrongProblems={wrongProblems}
               solveCount={solveCount}
               tagStyle={tagStyle}
-              basePath={basePath}
-              removeWrong={removeWrong}
+              hasDraft={draftProblemIds.has(item.p.id)}
+              onPractice={() => beginPractice(item.p.id)}
             />
           ))}
         </div>

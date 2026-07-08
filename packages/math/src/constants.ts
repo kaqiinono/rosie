@@ -126,12 +126,16 @@ export function scratchDraftImagePath(
   return `drafts/${lessonId}/${problemId}/${imageId}.${ext}`
 }
 
-/** Parse lesson id (lessonKey) from problem id like `2-1-L1` → `2-1`, or legacy `52-L1` → `2-4`. */
+/** Parse lessonKey from problem id like `2-1-L1` → `2-1`. */
 export function lessonIdFromProblemId(problemId: string): string {
   const key = lessonKeyFromProblemId(problemId)
   if (key) return key
   if (isLessonSummaryProblemId(problemId)) {
     return problemId.slice(0, -'__SUMMARY'.length)
   }
-  return problemId.split('-')[0] ?? problemId
+  const parts = problemId.split('-')
+  if (parts.length >= 3 && /^\d+$/.test(parts[0]!) && /^\d+$/.test(parts[1]!)) {
+    return `${parts[0]}-${parts[1]}`
+  }
+  return parts[0] ?? problemId
 }

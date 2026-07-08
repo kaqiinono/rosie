@@ -32,6 +32,11 @@ function formatAttemptTime(iso: string): string {
   return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
+/** Text-only problem body for draft preview — no inline images or figure widgets. */
+function problemTextOnly(html: string): string {
+  return html.replace(/<img\b[^>]*\/?>/gi, '')
+}
+
 function buildDraftEntries(
   attempts: MathPracticeAttemptRow[],
   lessonId: string,
@@ -188,8 +193,16 @@ export default function LessonDraftsPage({ basePath, lessonId, problems }: Props
                 )}
 
                 {expanded && attempt.draftId && (
-                  <div className="mt-2 overflow-hidden rounded-lg border border-slate-100 bg-slate-50/50 p-1">
-                    <DraftPreview draftId={attempt.draftId} />
+                  <div className="mt-2 overflow-hidden rounded-lg border border-slate-100 bg-slate-50/50">
+                    {problem?.text && (
+                      <div
+                        className="border-b border-slate-100 bg-white px-3 py-2.5 text-[13px] leading-relaxed text-slate-700 [&>strong]:font-bold [&>strong]:text-slate-900"
+                        dangerouslySetInnerHTML={{ __html: problemTextOnly(problem.text) }}
+                      />
+                    )}
+                    <div className="p-1">
+                      <DraftPreview draftId={attempt.draftId} />
+                    </div>
                   </div>
                 )}
               </div>

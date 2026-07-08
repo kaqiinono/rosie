@@ -2,166 +2,166 @@
 export type LessonSourceBtn = { key: string; label: string }
 
 export const LESSON_SOURCE_BTNS: Record<string, LessonSourceBtn[]> = {
-  '12': [
+  '1-12': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
   ],
-  '13': [
+  '1-13': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
   ],
-  '15': [
+  '1-15': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
   ],
-  '18': [
+  '1-18': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 练习册' },
   ],
-  '23': [
+  '1-23': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 练习册' },
   ],
-  '29': [
+  '1-29': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
   ],
-  '30': [
+  '1-30': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'workbook', label: '📚 拓展' },
   ],
-  '34': [
+  '1-34': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'supplement', label: '📒 补充题' },
     { key: 'pretest', label: '📝 课前测' },
   ],
-  '35': [
+  '1-35': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'pretest', label: '📝 课前测' },
   ],
-  '36': [
+  '1-36': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'pretest', label: '📝 课前测' },
   ],
-  '37': [
+  '1-37': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'supplement', label: '📒 附加题' },
     { key: 'pretest', label: '📝 课前测' },
   ],
-  '38': [
+  '1-38': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '39': [
-    { key: 'pretest', label: '📝 课前测' },
-    { key: 'lesson', label: '📖 课堂' },
-    { key: 'homework', label: '✏️ 课后' },
-    { key: 'workbook', label: '📚 拓展' },
-    { key: 'supplement', label: '📒 附加题' },
-  ],
-  '40': [
+  '1-39': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'supplement', label: '📒 附加题' },
   ],
-  '41': [
+  '1-40': [
+    { key: 'pretest', label: '📝 课前测' },
+    { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
+    { key: 'workbook', label: '📚 拓展' },
+    { key: 'supplement', label: '📒 附加题' },
+  ],
+  '1-41': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
   ],
-  '42': [
-    { key: 'pretest', label: '📝 课前测' },
-    { key: 'lesson', label: '📖 课堂' },
-    { key: 'homework', label: '✏️ 课后' },
-    { key: 'workbook', label: '📚 拓展' },
-    { key: 'supplement', label: '📒 附加' },
-  ],
-  '43': [
-    { key: 'pretest', label: '📝 课前测' },
-    { key: 'lesson', label: '📖 课堂' },
-    { key: 'homework', label: '✏️ 课后' },
-    { key: 'workbook', label: '📚 拓展' },
-    { key: 'supplement', label: '📒 附加' },
-  ],
-  '44': [
+  '1-42': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '46': [
+  '1-43': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '47': [
+  '1-44': [
+    { key: 'pretest', label: '📝 课前测' },
+    { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
+    { key: 'workbook', label: '📚 拓展' },
+    { key: 'supplement', label: '📒 附加' },
+  ],
+  '1-46': [
+    { key: 'pretest', label: '📝 课前测' },
+    { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
+    { key: 'workbook', label: '📚 拓展' },
+    { key: 'supplement', label: '📒 附加' },
+  ],
+  '1-47': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'workbook', label: '📚 拓展' },
   ],
-  '49': [
+  '2-1': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '50': [
+  '2-2': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '51': [
+  '2-3': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '52': [
+  '2-4': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '53': [
+  '2-5': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '55': [
+  '2-6': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
-  '56': [
+  '2-7': [
     { key: 'lesson', label: '📖 课堂' },
     { key: 'supplement', label: '📒 附加' },
   ],

@@ -64,7 +64,7 @@ export default function MathLessonIdAuditPage() {
           <div>
             <h1 className="text-2xl font-bold">🧮 数学讲次 ID 迁移审计</h1>
             <p className="mt-1 text-sm text-slate-500">
-              统计 Supabase 与已打包源码中 legacyId / slug 脏数据，评估收尾改造范围与风险
+              统计 Supabase 与已打包源码中残留的 legacy ID 脏数据
             </p>
           </div>
           <Link href="/admin" className="text-sm text-slate-500 hover:underline">
@@ -155,15 +155,17 @@ export default function MathLessonIdAuditPage() {
               <h3 className="mb-2 text-sm font-semibold text-slate-700">Supabase（DB）</h3>
               <KV k="legacy problem_id 相关行" v={report.totals.legacyProblemRows} warn={report.totals.legacyProblemRows > 0} />
               <KV k="legacy lesson_id 列" v={report.totals.legacyLessonIdRows} warn={report.totals.legacyLessonIdRows > 0} />
-              <KV k="Storage 路径含 /{legacyId}/" v={report.totals.legacyStoragePathRows} warn={report.totals.legacyStoragePathRows > 0} />
-              <KV k="Storage 路径含 slug（lessonNN）" v={report.totals.legacySlugStorageRows} warn={report.totals.legacySlugStorageRows > 0} />
-              <KV k="JSON 字段 legacy/slug 引用" v={report.totals.jsonLegacyHitRows} warn={report.totals.jsonLegacyHitRows > 0} />
+              <KV k="Storage 路径含 legacy 目录" v={report.totals.legacyStoragePathRows} warn={report.totals.legacyStoragePathRows > 0} />
+              <KV k="Storage 路径含 lessonNN slug" v={report.totals.legacySlugStorageRows} warn={report.totals.legacySlugStorageRows > 0} />
+              <KV k="JSON 字段 legacy 引用" v={report.totals.jsonLegacyHitRows} warn={report.totals.jsonLegacyHitRows > 0} />
               <KV k="迁移主键冲突风险" v={report.conflicts.length} warn={report.conflicts.length > 0} />
               <KV k="DB 小计" v={report.totals.dbUncleanedTotal} warn={report.totals.dbUncleanedTotal > 0} />
 
               <h3 className="mb-2 mt-4 text-sm font-semibold text-slate-700">已打包源码（浏览器内扫描）</h3>
-              <KV k="legacyId 类脏点" v={report.totals.sourceLegacyIdHits} warn={report.totals.sourceLegacyIdHits > 0} />
-              <KV k="slug 类脏点" v={report.totals.sourceSlugHits} warn={report.totals.sourceSlugHits > 0} />
+              <KV k="模块键非 lessonKey" v={report.source.totals.moduleKeyDrift} warn={report.source.totals.moduleKeyDrift > 0} />
+              <KV k="题海 id 非 lessonKey" v={report.source.totals.seaNonLessonKeyIds} warn={report.source.totals.seaNonLessonKeyIds > 0} />
+              <KV k="题海错误链接" v={report.source.totals.seaBrokenHrefs} warn={report.source.totals.seaBrokenHrefs > 0} />
+              <KV k="lesson-source-btns 键漂移" v={report.source.totals.lessonSourceBtnDrift} warn={report.source.totals.lessonSourceBtnDrift > 0} />
               <KV k="题目数据 canonical problem_id" v={report.source.totals.bundledProblemIdsCanonical} />
               <KV k="题目数据 legacy problem_id" v={report.source.totals.bundledProblemIdsLegacy} warn={report.source.totals.bundledProblemIdsLegacy > 0} />
               <KV k="源码小计" v={report.totals.sourceUncleanedTotal} warn={report.totals.sourceUncleanedTotal > 0} />
@@ -208,60 +210,6 @@ export default function MathLessonIdAuditPage() {
               </div>
             </Section>
 
-            <Section title={`待改文件清单（${report.source.manualSites.length}，含 apps/web）`}>
-              <p className="mb-3 text-xs text-slate-500">
-                以下位置无法从浏览器自动验证是否已改完，收尾时需人工对照或跑 rg；与 cleanup 文档 Phase 1 一致。
-              </p>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-left">
-                      <th className="p-2">路径</th>
-                      <th className="p-2">内容</th>
-                      <th className="p-2">ID 类型</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {report.source.manualSites.map((site) => (
-                      <tr key={site.path} className="border-b border-slate-100">
-                        <td className="p-2 font-mono">{site.path}</td>
-                        <td className="p-2">{site.what}</td>
-                        <td className="p-2 font-mono">{site.idKind}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Section>
-
-            <Section title={`应删除的静态 legacy 路由（${report.source.legacyRoutes.length} 讲）`}>
-              <p className="mb-3 text-xs text-slate-500">
-                若仓库中仍存在左侧 legacy 目录，与 canonical 动态路由双轨并存，属未清理范围。
-              </p>
-              <div className="max-h-64 overflow-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-left">
-                      <th className="p-2">legacyId</th>
-                      <th className="p-2">lessonKey</th>
-                      <th className="p-2">旧路由</th>
-                      <th className="p-2">canonical</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {report.source.legacyRoutes.map((r) => (
-                      <tr key={r.lessonKey} className="border-b border-slate-100">
-                        <td className="p-2 font-mono">{r.legacyId}</td>
-                        <td className="p-2 font-mono">{r.lessonKey}</td>
-                        <td className="p-2 font-mono text-red-700/80">{r.legacyRoute}</td>
-                        <td className="p-2 font-mono text-teal-700">{r.canonicalRoute}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Section>
-
             <Section title="数据库表状态">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -285,15 +233,14 @@ export default function MathLessonIdAuditPage() {
               </div>
             </Section>
 
-            <Section title={`按讲次 DB 影响（${affectedLessons.length} 讲有数据）`}>
+            <Section title={`按讲次 DB 影响（${affectedLessons.length} 讲有 legacy 数据）`}>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 text-left">
-                      <th className="p-2">legacy</th>
-                      <th className="p-2">slug</th>
+                      <th className="p-2">legacy（历史）</th>
                       <th className="p-2">lessonKey</th>
-                      <th className="p-2">新路由</th>
+                      <th className="p-2">路由</th>
                       <th className="p-2 text-right">solved</th>
                       <th className="p-2 text-right">wrong</th>
                       <th className="p-2 text-right">images</th>
@@ -307,8 +254,7 @@ export default function MathLessonIdAuditPage() {
                         key={row.entry.lessonKey}
                         className={row.total > 0 ? 'bg-amber-50/50' : 'text-slate-400'}
                       >
-                        <td className="p-2 font-mono">{row.entry.legacyId}</td>
-                        <td className="p-2 font-mono text-slate-500">{row.entry.slug}</td>
+                        <td className="p-2 font-mono">{row.legacyId ?? '—'}</td>
                         <td className="p-2 font-mono">{row.entry.lessonKey}</td>
                         <td className="p-2 font-mono">
                           {report.mapping.find((m) => m.lessonKey === row.entry.lessonKey)?.newRoute}
@@ -325,18 +271,17 @@ export default function MathLessonIdAuditPage() {
               </div>
             </Section>
 
-            <Section title="ID 映射表（含 slug）">
+            <Section title={`讲次映射表（${report.mapping.length} 讲）`}>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 text-left">
                       <th className="p-2">年级</th>
                       <th className="p-2">seq</th>
-                      <th className="p-2">legacyId</th>
-                      <th className="p-2">slug</th>
                       <th className="p-2">lessonKey</th>
-                      <th className="p-2">示例 problem_id</th>
-                      <th className="p-2">新路由</th>
+                      <th className="p-2">历史 legacyId</th>
+                      <th className="p-2">示例迁移</th>
+                      <th className="p-2">路由</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -344,11 +289,12 @@ export default function MathLessonIdAuditPage() {
                       <tr key={m.lessonKey} className="border-b border-slate-100">
                         <td className="p-2">g{m.grade}</td>
                         <td className="p-2">{m.seq}</td>
-                        <td className="p-2 font-mono">{m.legacyId}</td>
-                        <td className="p-2 font-mono text-slate-500">{m.slug}</td>
                         <td className="p-2 font-mono">{m.lessonKey}</td>
+                        <td className="p-2 font-mono text-slate-500">{m.legacyId ?? '—'}</td>
                         <td className="p-2 font-mono text-teal-700">
-                          {m.legacyId}-L1 → {previewMigration(`${m.legacyId}-L1`)}
+                          {m.legacyId
+                            ? `${m.legacyId}-L1 → ${previewMigration(`${m.legacyId}-L1`)}`
+                            : `${m.lessonKey}-L1`}
                         </td>
                         <td className="p-2 font-mono">{m.newRoute}</td>
                       </tr>
@@ -389,7 +335,7 @@ export default function MathLessonIdAuditPage() {
               )}
             </Section>
 
-            <Section title={`JSON 字段中的 legacy/slug 引用（${report.jsonLegacyHits.length}）`}>
+            <Section title={`JSON 字段中的 legacy 引用（${report.jsonLegacyHits.length}）`}>
               {report.jsonLegacyHits.length === 0 ? (
                 <p className="text-green-600">✅ 未检测到（或表为空）</p>
               ) : (
@@ -406,7 +352,7 @@ export default function MathLessonIdAuditPage() {
               )}
             </Section>
 
-            <Section title={`Storage 路径 slug/legacy 样本（${report.slugStorageHits.length}）`}>
+            <Section title={`Storage 路径 legacy 样本（${report.slugStorageHits.length}）`}>
               {report.slugStorageHits.length === 0 ? (
                 <p className="text-green-600">✅ 未检测到含 lessonNN 或 legacy 目录的样本</p>
               ) : (
@@ -435,7 +381,6 @@ export default function MathLessonIdAuditPage() {
                   {' '}
                   <code className="rounded bg-slate-100 px-1">--storage</code>
                 </li>
-                <li>按 <code className="rounded bg-slate-100 px-1">docs/math/lesson-id-cleanup.md</code> 改源码并部署</li>
                 <li>本页重新审计，确认 DB + 源码未清理合计为 0</li>
               </ol>
             </Section>

@@ -5,14 +5,17 @@ import type {
   ScratchBounds,
   ScratchColorId,
   ScratchEraserWidth,
+  ScratchHighlightColorId,
+  ScratchHighlightWidth,
   ScratchImageObject,
   ScratchObject,
   ScratchPoint,
   ScratchSnapshot,
   ScratchStrokeWidth,
   ScratchTool,
+  ScratchTriangleVariant,
 } from './scratch-pad-types'
-import { SCRATCH_COLORS } from './scratch-pad-types'
+import { SCRATCH_COLORS, SCRATCH_HIGHLIGHT_COLORS } from './scratch-pad-types'
 import {
   applyEraserAt,
   allObjectsBounds,
@@ -20,7 +23,7 @@ import {
   computeContentFitTransform,
   computeResizedBounds,
   hitResizeHandle,
-  rightTriangleFromDrag,
+  triangleFromDrag,
   scaleSelectedObjects,
   scratchHitTest,
   scratchObjectIntersectsPolygon,
@@ -37,8 +40,10 @@ import {
   renderScratchObject,
   renderSelectionBox,
   renderShapePreview,
+  scratchObjectPaintOrder,
 } from './scratch-pad-render'
 import { fitFigureLayout, loadHtmlImage } from './scratch-pad-figure'
+import { computeScratchSurfaceSize } from './scratch-pad-surface'
 
 let scratchIdCounter = 0
 function nextScratchId(): string {
@@ -48,7 +53,7 @@ function nextScratchId(): string {
 
 function deepCloneObjects(objects: ScratchObject[]): ScratchObject[] {
   return objects.map((obj) => {
-    if (obj.kind === 'stroke') {
+    if (obj.kind === 'stroke' || obj.kind === 'highlight') {
       return { ...obj, points: obj.points.map((p) => ({ ...p })) }
     }
     return { ...obj }
@@ -72,10 +77,15 @@ type DragMode =
       originBounds: ScratchBounds
       originObjects: ScratchObject[]
     }
+  | { kind: 'pan-view'; startScrollLeft: number; startScrollTop: number; startX: number; startY: number }
   | { kind: 'eraser'; lastX: number; lastY: number }
 
 function getColorHex(colorId: ScratchColorId): string {
   return SCRATCH_COLORS.find((c) => c.id === colorId)?.hex ?? '#334155'
+}
+
+function getHighlightColorHex(colorId: ScratchHighlightColorId): string {
+  return SCRATCH_HIGHLIGHT_COLORS.find((c) => c.id === colorId)?.hex ?? '#fde047'
 }
 
 function toolToShapeKind(tool: ScratchTool): 'line' | 'rect' | 'circle' | 'triangle' | null {
@@ -86,6 +96,10 @@ function toolToShapeKind(tool: ScratchTool): 'line' | 'rect' | 'circle' | 'trian
   return null
 }
 
+function isFillableShapeTool(tool: ScratchTool): boolean {
+  return tool === 'rect' || tool === 'circle' || tool === 'triangle'
+}
+
 function createShapeObject(
   tool: ScratchTool,
   color: string,
@@ -94,8 +108,11 @@ function createShapeObject(
   y1: number,
   x2: number,
   y2: number,
+  filled: boolean,
+  triangleVariant: ScratchTriangleVariant = 'right',
 ): ScratchObject | null {
   const id = nextScratchId()
+  const fill = filled && isFillableShapeTool(tool) ? { filled: true as const } : {}
   switch (tool) {
     case 'line':
       return { id, kind: 'line', color, lineWidth, x1, y1, x2, y2 }
@@ -105,7 +122,7 @@ function createShapeObject(
       const w = Math.abs(x2 - x1)
       const h = Math.abs(y2 - y1)
       if (w < 2 && h < 2) return null
-      return { id, kind: 'rect', color, lineWidth, x, y, w, h }
+      return { id, kind: 'rect', color, lineWidth, x, y, w, h, ...fill }
     }
     case 'circle': {
       const rx = Math.abs(x2 - x1) / 2
@@ -120,12 +137,13 @@ function createShapeObject(
         cy: (y1 + y2) / 2,
         rx,
         ry,
+        ...fill,
       }
     }
     case 'triangle': {
-      const t = rightTriangleFromDrag(x1, y1, x2, y2)
+      const t = triangleFromDrag(x1, y1, x2, y2, triangleVariant)
       if (Math.hypot(x2 - x1, y2 - y1) < 4) return null
-      return { id, kind: 'triangle', color, lineWidth, ...t }
+      return { id, kind: 'triangle', color, lineWidth, ...t, ...fill }
     }
     default:
       return null
@@ -139,6 +157,8 @@ export function useScratchPad(
     onObjectsChange?: (objects: ScratchObject[]) => void
     /** Scale all content to fit the container (inline embed) */
     fitContent?: boolean
+    /** 画布大于可视区域，可滚动（全屏草稿纸） */
+    scrollableSurface?: boolean
   },
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -148,7 +168,11 @@ export function useScratchPad(
 
   const [tool, setTool] = useState<ScratchTool>('pen')
   const [colorId, setColorId] = useState<ScratchColorId>('slate')
+  const [highlightColorId, setHighlightColorId] = useState<ScratchHighlightColorId>('yellow')
   const [strokeWidth, setStrokeWidth] = useState<ScratchStrokeWidth>(4)
+  const [highlightWidth, setHighlightWidth] = useState<ScratchHighlightWidth>(24)
+  const [shapeFillEnabled, setShapeFillEnabled] = useState(false)
+  const [triangleVariant, setTriangleVariant] = useState<ScratchTriangleVariant>('right')
   const [eraserWidth, setEraserWidth] = useState<ScratchEraserWidth>(24)
 
   const objectsRef = useRef<ScratchObject[]>([])
@@ -162,6 +186,8 @@ export function useScratchPad(
     shape?: { tool: 'line' | 'rect' | 'circle' | 'triangle'; x1: number; y1: number; x2: number; y2: number }
   }>({})
   const viewTransformRef = useRef({ scale: 1, offsetX: 0, offsetY: 0, active: false })
+  const paintRef = useRef<() => void>(() => {})
+  const pendingLocalFingerprintRef = useRef<string | null>(null)
 
   const onObjectsChangeRef = useRef(options?.onObjectsChange)
 
@@ -170,13 +196,21 @@ export function useScratchPad(
   }, [options?.onObjectsChange])
 
   const notifyChange = useCallback(() => {
+    pendingLocalFingerprintRef.current = scratchObjectsFingerprint(objectsRef.current)
     onObjectsChangeRef.current?.(deepCloneObjects(objectsRef.current))
   }, [])
   const [historyLen, setHistoryLen] = useState(0)
   const [selectionCount, setSelectionCount] = useState(0)
   const [selectionBoundsRect, setSelectionBoundsRect] = useState<ScratchBounds | null>(null)
+  const [surfaceSize, setSurfaceSize] = useState({ width: 0, height: 0 })
   const [, bumpRender] = useState(0)
   const forceRender = useCallback(() => bumpRender((n) => n + 1), [])
+
+  const switchToPenIfCanvasEmpty = useCallback(() => {
+    if (objectsRef.current.length === 0) {
+      setTool('pen')
+    }
+  }, [])
 
   const pushHistory = useCallback(() => {
     historyRef.current.push({
@@ -189,30 +223,53 @@ export function useScratchPad(
     setHistoryLen(historyRef.current.length)
   }, [])
 
-  const resetCanvas = useCallback(() => {
+  const resetCanvasRefs = useCallback(() => {
     objectsRef.current = []
     selectedIdsRef.current = new Set()
     historyRef.current = []
     dragRef.current = { kind: 'none' }
     previewRef.current = {}
+    pendingLocalFingerprintRef.current = null
+  }, [])
+
+  const resetCanvas = useCallback(() => {
+    resetCanvasRefs()
     setHistoryLen(0)
     setSelectionCount(0)
     setSelectionBoundsRect(null)
     forceRender()
-  }, [forceRender])
+  }, [forceRender, resetCanvasRefs])
 
-  const paintRef = useRef<() => void>(() => {})
+  const scheduleCanvasUiSync = useCallback(
+    (afterSync?: () => void) => {
+      queueMicrotask(() => {
+        setHistoryLen(historyRef.current.length)
+        setSelectionCount(selectedIdsRef.current.size)
+        setSelectionBoundsRect(
+          selectedIdsRef.current.size > 0
+            ? selectionBounds(objectsRef.current, selectedIdsRef.current)
+            : null,
+        )
+        if (objectsRef.current.length === 0) {
+          setTool('pen')
+        }
+        forceRender()
+        afterSync?.()
+      })
+    },
+    [forceRender],
+  )
 
   useEffect(() => {
-    resetCanvas()
+    resetCanvasRefs()
     imageCacheRef.current.clear()
     pendingImageLoadsRef.current.clear()
     const incoming = options?.initialObjects ?? []
     if (incoming.length > 0) {
       objectsRef.current = deepCloneObjects(incoming)
     }
-    forceRender()
-  }, [problemId, resetCanvas, forceRender]) // eslint-disable-line react-hooks/exhaustive-deps
+    scheduleCanvasUiSync()
+  }, [problemId, resetCanvasRefs, scheduleCanvasUiSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const initialObjectsFingerprint = scratchObjectsFingerprint(options?.initialObjects ?? [])
 
@@ -277,6 +334,11 @@ export function useScratchPad(
       if (obj.kind === 'image') {
         ensureImageLoaded(obj.src, () => paintRef.current())
       }
+    }
+    const sortedObjects = [...objectsRef.current].sort(
+      (a, b) => scratchObjectPaintOrder(a.kind) - scratchObjectPaintOrder(b.kind),
+    )
+    for (const obj of sortedObjects) {
       renderScratchObject(ctx, obj, imageCacheRef.current)
     }
 
@@ -285,7 +347,8 @@ export function useScratchPad(
 
     if (preview.shape) {
       const s = preview.shape
-      renderShapePreview(ctx, s.tool, s.x1, s.y1, s.x2, s.y2, color, strokeWidth)
+      const shapeFilled = shapeFillEnabled && s.tool !== 'line'
+      renderShapePreview(ctx, s.tool, s.x1, s.y1, s.x2, s.y2, color, strokeWidth, shapeFilled, triangleVariant)
     }
     if (preview.box) {
       const b = preview.box
@@ -309,7 +372,7 @@ export function useScratchPad(
       const sy = viewActive ? eraserPos.y * viewScale + viewOffsetY : eraserPos.y
       renderEraserPreview(ctx, sx, sy, eraserWidth / 2)
     }
-  }, [colorId, strokeWidth, eraserWidth, ensureImageLoaded, options?.fitContent])
+  }, [colorId, strokeWidth, eraserWidth, ensureImageLoaded, options?.fitContent, shapeFillEnabled, triangleVariant])
 
   useEffect(() => {
     paintRef.current = paint
@@ -319,14 +382,26 @@ export function useScratchPad(
     const canvas = canvasRef.current
     const container = containerRef.current
     if (!canvas || !container) return
-    const rect = container.getBoundingClientRect()
+    const viewport = container.getBoundingClientRect()
+    let surfaceW = viewport.width
+    let surfaceH = viewport.height
+    if (options?.scrollableSurface && viewport.width > 0 && viewport.height > 0) {
+      const expanded = computeScratchSurfaceSize(viewport.width, viewport.height)
+      surfaceW = expanded.width
+      surfaceH = expanded.height
+      setSurfaceSize((prev) =>
+        prev.width === expanded.width && prev.height === expanded.height ? prev : expanded,
+      )
+    } else if (options?.scrollableSurface) {
+      setSurfaceSize({ width: 0, height: 0 })
+    }
     const dpr = window.devicePixelRatio || 1
-    canvas.width = Math.floor(rect.width * dpr)
-    canvas.height = Math.floor(rect.height * dpr)
-    canvas.style.width = `${rect.width}px`
-    canvas.style.height = `${rect.height}px`
+    canvas.width = Math.floor(surfaceW * dpr)
+    canvas.height = Math.floor(surfaceH * dpr)
+    canvas.style.width = `${surfaceW}px`
+    canvas.style.height = `${surfaceH}px`
     paint()
-  }, [paint])
+  }, [paint, options?.scrollableSurface])
 
   useEffect(() => {
     resizeCanvas()
@@ -339,23 +414,41 @@ export function useScratchPad(
     paint()
   }, [paint])
 
-  // Sync when parent passes updated objects (e.g. fullscreen overlay saved → inline editor)
+  // Sync when parent passes updated objects (e.g. inline editor / problem load).
+  // Skip while local edits are still propagating — avoids reverting undo/clear.
   useEffect(() => {
     if (dragRef.current.kind !== 'none') return
     const incoming = options?.initialObjects ?? []
-    if (scratchObjectsFingerprint(incoming) === scratchObjectsFingerprint(objectsRef.current)) return
+    const currentFp = scratchObjectsFingerprint(objectsRef.current)
+    const incomingFp = scratchObjectsFingerprint(incoming)
+
+    if (incomingFp === currentFp) {
+      pendingLocalFingerprintRef.current = null
+      return
+    }
+
+    if (
+      pendingLocalFingerprintRef.current === currentFp &&
+      incomingFp === pendingLocalFingerprintRef.current
+    ) {
+      pendingLocalFingerprintRef.current = null
+      return
+    }
+
+    if (pendingLocalFingerprintRef.current === currentFp) {
+      return
+    }
 
     selectedIdsRef.current = new Set()
     historyRef.current = []
     dragRef.current = { kind: 'none' }
     previewRef.current = {}
-    setHistoryLen(0)
-    setSelectionCount(0)
-    setSelectionBoundsRect(null)
     objectsRef.current = incoming.length > 0 ? deepCloneObjects(incoming) : []
-    forceRender()
-    paintRef.current()
-  }, [initialObjectsFingerprint, forceRender]) // eslint-disable-line react-hooks/exhaustive-deps
+    pendingLocalFingerprintRef.current = null
+    scheduleCanvasUiSync(() => {
+      paintRef.current()
+    })
+  }, [initialObjectsFingerprint, scheduleCanvasUiSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getCanvasPoint = useCallback((e: React.PointerEvent<HTMLCanvasElement>): ScratchPoint => {
     const canvas = canvasRef.current
@@ -408,11 +501,12 @@ export function useScratchPad(
       h: layout.h,
     }
     objectsRef.current = [...objectsRef.current, imageObj]
-    ensureImageLoaded(src, () => forceRender())
+    ensureImageLoaded(src, () => paintRef.current())
+    setTool('select-box')
     setSelection([imageObj.id])
-    forceRender()
+    paint()
     notifyChange()
-  }, [pushHistory, ensureImageLoaded, setSelection, forceRender, notifyChange])
+  }, [pushHistory, ensureImageLoaded, setSelection, paint, notifyChange])
 
   const clearSelection = useCallback(() => {
     if (selectedIdsRef.current.size === 0) return
@@ -420,7 +514,8 @@ export function useScratchPad(
     setSelectionCount(0)
     setSelectionBoundsRect(null)
     forceRender()
-  }, [forceRender])
+    paint()
+  }, [forceRender, paint])
 
   const deleteSelected = useCallback(() => {
     if (selectedIdsRef.current.size === 0) return
@@ -430,8 +525,10 @@ export function useScratchPad(
     setSelectionCount(0)
     setSelectionBoundsRect(null)
     forceRender()
+    paint()
     notifyChange()
-  }, [pushHistory, forceRender, notifyChange])
+    switchToPenIfCanvasEmpty()
+  }, [pushHistory, forceRender, paint, notifyChange, switchToPenIfCanvasEmpty])
 
   const recolorSelected = useCallback((hex: string) => {
     if (selectedIdsRef.current.size === 0) return
@@ -446,6 +543,14 @@ export function useScratchPad(
   const pickColor = useCallback((id: ScratchColorId) => {
     setColorId(id)
     const hex = getColorHex(id)
+    if (selectedIdsRef.current.size > 0) {
+      recolorSelected(hex)
+    }
+  }, [recolorSelected])
+
+  const pickHighlightColor = useCallback((id: ScratchHighlightColorId) => {
+    setHighlightColorId(id)
+    const hex = getHighlightColorHex(id)
     if (selectedIdsRef.current.size > 0) {
       recolorSelected(hex)
     }
@@ -485,8 +590,18 @@ export function useScratchPad(
     dragRef.current = { kind: 'none' }
     previewRef.current = {}
     forceRender()
+    paint()
     notifyChange()
-  }, [forceRender, notifyChange])
+    switchToPenIfCanvasEmpty()
+  }, [forceRender, notifyChange, paint, switchToPenIfCanvasEmpty])
+
+  const refreshSelectionBounds = useCallback(() => {
+    if (selectedIdsRef.current.size === 0) {
+      setSelectionBoundsRect(null)
+      return
+    }
+    setSelectionBoundsRect(selectionBounds(objectsRef.current, selectedIdsRef.current))
+  }, [])
 
   const clearAll = useCallback(() => {
     if (objectsRef.current.length === 0) return
@@ -496,8 +611,10 @@ export function useScratchPad(
     setSelectionCount(0)
     setSelectionBoundsRect(null)
     forceRender()
+    paint()
     notifyChange()
-  }, [pushHistory, forceRender, notifyChange])
+    switchToPenIfCanvasEmpty()
+  }, [pushHistory, forceRender, paint, notifyChange, switchToPenIfCanvasEmpty])
 
   const applyEraser = useCallback((x: number, y: number) => {
     const radius = eraserWidth / 2
@@ -511,6 +628,20 @@ export function useScratchPad(
 
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId)
+
+    if (tool === 'pan') {
+      const container = containerRef.current
+      if (!container) return
+      dragRef.current = {
+        kind: 'pan-view',
+        startScrollLeft: container.scrollLeft,
+        startScrollTop: container.scrollTop,
+        startX: e.clientX,
+        startY: e.clientY,
+      }
+      return
+    }
+
     const { x, y } = getCanvasPoint(e)
     const color = getColorHex(colorId)
 
@@ -582,33 +713,52 @@ export function useScratchPad(
       return
     }
 
-    if (tool === 'pen') {
+    if (tool === 'pen' || tool === 'highlighter') {
       pushHistory()
       const id = nextScratchId()
-      const stroke: ScratchObject = {
-        id,
-        kind: 'stroke',
-        color,
-        lineWidth: strokeWidth,
-        points: [{ x, y }],
-      }
-      objectsRef.current = [...objectsRef.current, stroke]
+      const freehand: ScratchObject =
+        tool === 'highlighter'
+          ? {
+              id,
+              kind: 'highlight',
+              color: getHighlightColorHex(highlightColorId),
+              lineWidth: highlightWidth,
+              points: [{ x, y }],
+            }
+          : {
+              id,
+              kind: 'stroke',
+              color,
+              lineWidth: strokeWidth,
+              points: [{ x, y }],
+            }
+      objectsRef.current = [...objectsRef.current, freehand]
       dragRef.current = { kind: 'pen', objectId: id }
       setSelection([])
       forceRender()
+      return
     }
-  }, [colorId, strokeWidth, tool, findTopmostHit, getCanvasPoint, pushHistory, setSelection, forceRender, applyEraser])
+  }, [colorId, strokeWidth, highlightColorId, highlightWidth, tool, findTopmostHit, getCanvasPoint, pushHistory, setSelection, forceRender, applyEraser])
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    const drag = dragRef.current
+    if (drag.kind === 'pan-view') {
+      const container = containerRef.current
+      if (container) {
+        container.scrollLeft = drag.startScrollLeft - (e.clientX - drag.startX)
+        container.scrollTop = drag.startScrollTop - (e.clientY - drag.startY)
+      }
+      return
+    }
+
     const { x, y } = getCanvasPoint(e)
 
-    if (tool === 'eraser' && dragRef.current.kind === 'none') {
+    if (tool === 'eraser' && drag.kind === 'none') {
       eraserCursorRef.current = { x, y }
       paint()
       return
     }
 
-    const drag = dragRef.current
     if (drag.kind === 'none') return
 
     if (drag.kind === 'eraser') {
@@ -636,7 +786,7 @@ export function useScratchPad(
       const idx = objectsRef.current.findIndex((o) => o.id === drag.objectId)
       if (idx === -1) return
       const obj = objectsRef.current[idx]
-      if (obj.kind !== 'stroke') return
+      if (obj.kind !== 'stroke' && obj.kind !== 'highlight') return
       const last = obj.points[obj.points.length - 1]
       if (last && Math.hypot(x - last.x, y - last.y) < 1.5) return
       const updated: ScratchObject = { ...obj, points: [...obj.points, { x, y }] }
@@ -701,6 +851,7 @@ export function useScratchPad(
     if (drag.kind === 'eraser') {
       notifyChange()
       forceRender()
+      switchToPenIfCanvasEmpty()
       return
     }
 
@@ -716,6 +867,8 @@ export function useScratchPad(
           preview.y1,
           preview.x2,
           preview.y2,
+          shapeFillEnabled,
+          triangleVariant,
         )
         if (shape) {
           pushHistory()
@@ -737,7 +890,7 @@ export function useScratchPad(
           .map((o) => o.id)
         setSelection(ids)
       }
-      forceRender()
+      paint()
       return
     }
 
@@ -750,17 +903,24 @@ export function useScratchPad(
           .map((o) => o.id)
         setSelection(ids)
       }
-      forceRender()
+      paint()
       return
     }
 
-    if (drag.kind === 'pen' || drag.kind === 'move' || drag.kind === 'resize') {
+    if (drag.kind === 'move' || drag.kind === 'resize') {
+      refreshSelectionBounds()
+      notifyChange()
+      paint()
+      return
+    }
+
+    if (drag.kind === 'pen') {
       notifyChange()
     }
 
     previewRef.current = {}
     forceRender()
-  }, [colorId, strokeWidth, pushHistory, setSelection, forceRender, notifyChange])
+  }, [colorId, strokeWidth, shapeFillEnabled, triangleVariant, pushHistory, setSelection, forceRender, notifyChange, paint, refreshSelectionBounds, switchToPenIfCanvasEmpty])
 
   const handlePointerLeave = useCallback(() => {
     if (dragRef.current.kind !== 'none') return
@@ -783,8 +943,16 @@ export function useScratchPad(
     colorId,
     setColorId,
     pickColor,
+    highlightColorId,
+    pickHighlightColor,
     strokeWidth,
     setStrokeWidth,
+    highlightWidth,
+    setHighlightWidth,
+    shapeFillEnabled,
+    setShapeFillEnabled,
+    triangleVariant,
+    setTriangleVariant,
     eraserWidth,
     setEraserWidth,
     handlePointerDown,
@@ -801,6 +969,7 @@ export function useScratchPad(
     hasSelection,
     selectionCount,
     selectionBoundsRect,
+    surfaceSize,
     resetCanvas,
     insertImage,
     getObjects,
