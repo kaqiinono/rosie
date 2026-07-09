@@ -30,7 +30,7 @@ import {
 } from '../utils/calc-session-policy'
 import { tierOf, nextTierGap, suggestedTiers } from '../utils/calc-time-targets'
 import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-limit'
-import { checkAnswer, formatAnswer } from '../utils/calc-answer'
+import { checkAnswer, formatAnswer, shouldAutoSubmitNumberPad } from '../utils/calc-answer'
 import { diagnose } from '../utils/calc-diagnose'
 import { blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
@@ -191,6 +191,9 @@ export default function CalcSessionPage() {
   const plannedCountRef = useRef(0)
   const [plannedCount, setPlannedCount] = useState(0)
   const [input, setInput] = useState('')
+  // Guards NumberPad auto-submit from double-settling while a settle (correct/retry/wrong)
+  // is already in flight for the current question; cleared when advancing to the next one.
+  const settleLockRef = useRef(false)
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
   const [revealAnswer, setRevealAnswer] = useState<string | null>(null)
@@ -555,6 +558,7 @@ export default function CalcSessionPage() {
       userAnswer: string,
     ) => {
       const goNext = () => {
+        settleLockRef.current = false
         setFeedback(null)
         setInput('')
         setAttemptsForCurrent(0)
@@ -759,13 +763,16 @@ export default function CalcSessionPage() {
     [questions, done, feedback, idx, settleSelfGraded],
   )
 
-  const handleSubmit = useCallback(() => {
+  // Shared NumberPad settle path — takes an explicit `raw` string rather than closing over
+  // `input` state, so the auto-submit path (which fires from onInputChange with the just-typed
+  // value) never races a stale `input` that hasn't re-rendered yet.
+  const submitNumberPadAnswer = useCallback((raw: string) => {
     if (!questions || done || feedback) return
     const q = questions[idx]
-    const userAns = Number(input)
+    const userAns = Number(raw)
     if (!Number.isFinite(userAns)) return
 
-    const isCorrect = checkAnswer(input, q.answer)
+    const isCorrect = checkAnswer(raw, q.answer)
     const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
@@ -776,12 +783,12 @@ export default function CalcSessionPage() {
     }
 
     if (isCorrect) {
-      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, input)
+      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, raw)
       return
     }
 
     if (settings.immersiveMode) {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
       return
     }
 
@@ -797,20 +804,40 @@ export default function CalcSessionPage() {
         setAttemptsForCurrent(1)
       }, 700)
     } else {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
     }
   }, [
     questions,
     done,
     feedback,
     idx,
-    input,
     attemptsForCurrent,
     unresolved,
     settings,
     settleQuestion,
     withinLimitForQuestion,
   ])
+
+  const handleSubmit = useCallback(() => {
+    submitNumberPadAnswer(input)
+  }, [submitNumberPadAnswer, input])
+
+  // NumberPad only: as the child types, auto-settle once the input matches the answer
+  // (gated by settings.autoSubmitOnMatch) so a correct entry doesn't need an explicit tap.
+  const handleNumberPadInputChange = useCallback((next: string) => {
+    setInput(next)
+    if (!settings.autoSubmitOnMatch) return
+    if (!questions || done) return
+    const q = questions[idx]
+    if (!q) return
+    if (q.answerMode === 'vertical') return
+    if (q.answer.kind !== 'int' && q.answer.kind !== 'decimal') return
+    if (feedback) return
+    if (settleLockRef.current) return
+    if (!shouldAutoSubmitNumberPad(next, q.answer)) return
+    settleLockRef.current = true
+    submitNumberPadAnswer(next)
+  }, [settings.autoSubmitOnMatch, questions, done, idx, feedback, submitNumberPadAnswer])
 
   // Compute breakthrough drill summary values from the just-completed session's log.
   // Must use questionLogRef.current — wallet.sessions[0] is stale at this point because
@@ -952,7 +979,7 @@ export default function CalcSessionPage() {
           immersive={settings.immersiveMode}
           className=""
           input={input}
-          onInputChange={setInput}
+          onInputChange={handleNumberPadInputChange}
           onNumberSubmit={handleSubmit}
           onFractionSubmit={handleFractionSubmit}
           onRemainderSubmit={handleRemainderSubmit}
@@ -1052,6 +1079,7 @@ export default function CalcSessionPage() {
               setFinalStats(null)
               initRef.current = false
               autoAdvancedIdxRef.current = -1
+              settleLockRef.current = false
               setPrepConfirmed(false)
               setPrepModeOverride(null)
               setPrepBonusOverride(null)
