@@ -34,7 +34,8 @@ src/
 ├── hooks/          # useCalcSettings, useCalcProblemState (applyAttempt), useCalcMistakes,
 │                   #   useCalcDaily
 └── utils/          # the arithmetic engine:
-                    #   calc-blocks, calc-mixed, calc-helpers (buildSession),
+                    #   calc-blocks, calc-block-gens, calc-settings-normalize,
+                    #   calc-mixed, calc-helpers (buildSession),
                     #   calc-finite, calc-effective-limit, calc-apply-attempt,
                     #   calc-mastery-sync (dual-store same-frame patch),
                     #   calc-problem-state-store / calc-mistakes-store,
@@ -63,7 +64,7 @@ weakness weight. Per-signature state in `calc_problem_state`:
 
 | Concept | Mechanism |
 |---------|-----------|
-| **Unseen prefer** | Finite 2–9 mul/div: coverage slot from `enumerateFinite` − practiced |
+| **Unseen prefer** | Finite 2–9 mul/div + `add:100-comp`: coverage slot from `enumerateFinite` − practiced |
 | **Lagging** | `effectiveLimitSec` (explicit seconds ∥ `TIME_TARGETS.fluent`) — UI timer optional |
 | **Mastered** | Within-limit streak `consecutiveCorrect >= 3`; excluded from daily pool; ~5% recall |
 | **Cold start** | Infinite blocks with `< 50` states: all `generateSingle` until pool grows |
@@ -72,6 +73,10 @@ weakness weight. Per-signature state in `calc_problem_state`:
 
 Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Tables:
 `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
+
+**Block registry notes:** `mul:2d1d` was removed (replaced by split `mul:2d1d-nc` / `mul:2d1d-c` blocks).
+`calc-block-gens` holds per-block generators; `calc-settings-normalize` migrates legacy settings keys.
+P2 may evolve `sub:round` recall (not implemented yet).
 
 Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md`,
 `docs/superpowers/plans/2026-07-09-calc-cognitive-metrics.md` (under gitignored `docs/` locally).

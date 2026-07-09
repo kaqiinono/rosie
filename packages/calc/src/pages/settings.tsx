@@ -292,7 +292,7 @@ export default function CalcSettingsPage() {
             />
             <ToggleRow
               label="多位数题用竖式作答"
-              description="百以内 / 千以内 / 万以内加减、两位数×一·两位数、多位数÷一位数 用竖式格子作答"
+              description="百以内 / 千以内 / 万以内加减、两·三位数×一位数、两位数×两位数、多位数÷一位数（含满十）用竖式格子作答"
               value={settings.verticalForBigNumbers}
               onChange={(v) => update({ verticalForBigNumbers: v })}
             />
