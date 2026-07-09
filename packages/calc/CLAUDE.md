@@ -89,6 +89,11 @@ daily sessions use a capped retry pool + single-pass makeup (no re-enqueue from 
 Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Tables:
 `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
 
+**NumberPad auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).
+`shouldAutoSubmitNumberPad` in `calc-answer.ts` gates int/decimal only (length ≥ `formatAnswer`,
+then `checkAnswer`); session calls it from `handleNumberPadInputChange` with `settleLockRef`.
+SQL: `sql/calc-autosubmit-on-match.sql` (`auto_submit_on_match` column).
+
 **Block registry notes:** `mul:2d1d` was removed (replaced by split `mul:2d1d-nc` / `mul:2d1d-c` blocks).
 `calc-block-gens` holds per-block generators; `calc-settings-normalize` migrates legacy settings keys.
 P2 may evolve `sub:round` recall (not implemented yet).
