@@ -2,6 +2,13 @@ import { BLOCKS, blockById, VERTICAL_BLOCK_IDS, type CalcBlock } from './calc-bl
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
 import { toInverseQuestion } from './calc-inverse'
+import {
+  COLD_START_MIN,
+  isFiniteBlock,
+  pickRandom,
+  shuffleInPlace,
+  unseenSignatures,
+} from './calc-finite'
 import type {
   CalcCategory,
   CalcLevel,
@@ -192,29 +199,138 @@ function allocate(count: number, weights: number[]): number[] {
   return alloc
 }
 
-/** Generate `n` questions for a single block source, resurfacing weak facts. */
+/** Generate `n` questions for a single block: coverage / weak / maintenance / cold-start. */
 function generateBlock(block: CalcBlock, n: number, states: CalcProblemState[]): CalcQuestion[] {
   const category: CalcCategory = block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
   const coinBase = category === 'addsub' ? 1 : 2
+  const tag = (q: CalcQuestion): CalcQuestion => ({ ...q, sourceBlockId: block.id })
+  const blockStates = states.filter((s) => s.blockId === block.id)
+  const finite = isFiniteBlock(block.id)
+
+  // Infinite cold-start: explore until pool has enough rows
+  if (!finite && blockStates.length < COLD_START_MIN) {
+    return Array.from({ length: n }, () => tag(block.generateSingle()))
+  }
+
+  const recallN = Math.max(0, Math.floor(0.05 * n))
+  const nWork = Math.max(0, n - recallN)
+  let nCover = Math.round(0.4 * nWork)
+  let nWeak = Math.round(0.4 * nWork)
+  let nMaint = nWork - nCover - nWeak
+
+  if (!finite) {
+    nWeak += nCover
+    nCover = 0
+  }
+  if (block.noResurface) {
+    nMaint += nWeak
+    nWeak = 0
+  }
+
   const out: CalcQuestion[] = []
+  const used = new Set<string>()
 
-  const resurfaceN = block.noResurface ? 0 : Math.round(0.35 * n)
-  const weak = states
-    .filter((s) => s.blockId === block.id && s.status !== 'mastered')
-    .sort((a, b) => a.proficiency - b.proficiency || b.consecutiveWrong - a.consecutiveWrong)
-    .slice(0, resurfaceN)
-
-  for (const s of weak) {
-    const ast = parseSignature(s.signature)
-    out.push(makeQuestion(ast, 0, category, coinBase))
+  // 1) Coverage — finite unseen first
+  if (finite && nCover > 0) {
+    const unseen = shuffleInPlace(unseenSignatures(block.id, blockStates))
+    for (const sig of unseen) {
+      if (out.length >= nCover) break
+      if (used.has(sig)) continue
+      try {
+        const ast = parseSignature(sig)
+        out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+        used.add(sig)
+      } catch {
+        /* skip bad sig */
+      }
+    }
+    // shortfall → weak
+    nWeak += Math.max(0, nCover - out.length)
   }
 
-  const fresh = n - out.length
-  for (let k = 0; k < fresh; k++) {
-    out.push(block.generateSingle())
+  // 2) Weak / lagging resurface (exclude mastered)
+  const weakPool = blockStates
+    .filter((s) => s.status === 'active' || s.status === 'lagging')
+    .sort((a, b) => {
+      const lag = (x: CalcProblemState) => (x.status === 'lagging' ? 0 : 1)
+      return lag(a) - lag(b) || a.proficiency - b.proficiency || b.consecutiveWrong - a.consecutiveWrong
+    })
+  let weakTaken = 0
+  for (const s of weakPool) {
+    if (weakTaken >= nWeak) break
+    if (used.has(s.signature)) continue
+    if (block.noResurface) break
+    try {
+      const ast = parseSignature(s.signature)
+      out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+      used.add(s.signature)
+      weakTaken++
+    } catch {
+      /* skip */
+    }
+  }
+  nMaint += Math.max(0, nWeak - weakTaken)
+
+  // 3) Maintenance from eligible pool (no reject-retry loop)
+  const eligible = blockStates.filter(
+    (s) =>
+      (s.status === 'active' || s.status === 'lagging') &&
+      s.proficiency < 4 &&
+      !used.has(s.signature),
+  )
+  let maintTaken = 0
+  while (maintTaken < nMaint && eligible.length > 0) {
+    const s = pickRandom(eligible)
+    const idx = eligible.indexOf(s)
+    eligible.splice(idx, 1)
+    if (block.noResurface) {
+      out.push(tag(block.generateSingle()))
+    } else {
+      try {
+        const ast = parseSignature(s.signature)
+        out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+        used.add(s.signature)
+      } catch {
+        out.push(tag(block.generateSingle()))
+      }
+    }
+    maintTaken++
+  }
+  // Pool empty → single generateSingle per remaining slot (no reject loop)
+  while (maintTaken < nMaint) {
+    out.push(tag(block.generateSingle()))
+    maintTaken++
   }
 
-  return out.map((q) => ({ ...q, sourceBlockId: block.id }))
+  // 4) Recall slot from mastered (in-memory; SQL truncation is Task 6)
+  if (recallN > 0) {
+    const mastered = blockStates
+      .filter((s) => s.status === 'mastered' && !used.has(s.signature))
+      .sort((a, b) => recallScore(b) - recallScore(a))
+      .slice(0, recallN)
+    for (const s of mastered) {
+      if (block.noResurface) break
+      try {
+        const ast = parseSignature(s.signature)
+        out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+        used.add(s.signature)
+      } catch {
+        /* skip */
+      }
+    }
+  }
+
+  // Pad if still short
+  while (out.length < n) {
+    out.push(tag(block.generateSingle()))
+  }
+
+  return out.slice(0, n)
+}
+
+function recallScore(s: CalcProblemState): number {
+  const ageDays = Math.max(0, (Date.now() - new Date(s.updatedAt).getTime()) / 86400000)
+  return ageDays * 2 + Math.max(0, 12 - s.attemptCount) * 3
 }
 
 // Voucher prices, labels and gradients live in the `voucher_templates` DB table
@@ -283,7 +399,8 @@ export function buildDrillSession(
 ): CalcQuestion[] {
   if (params.type === 'weak-formulas') {
     const weak = [...problemStates.values()].filter(
-      (s) => s.proficiency <= 2 && s.attemptCount >= 3,
+      (s) =>
+        (s.proficiency <= 2 && s.attemptCount >= 3) || s.status === 'lagging',
     )
     if (weak.length === 0) return []
 
