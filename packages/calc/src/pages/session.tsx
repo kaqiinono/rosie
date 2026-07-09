@@ -17,6 +17,7 @@ import SessionSummary from '../components/SessionSummary'
 import DrillSummary from '../components/DrillSummary'
 import { buildSession, buildDrillSession, coinReward, type DrillParams } from '../utils/calc-helpers'
 import { tierOf, nextTierGap, suggestedTiers } from '../utils/calc-time-targets'
+import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-limit'
 import { checkAnswer, formatAnswer } from '../utils/calc-answer'
 import { diagnose } from '../utils/calc-diagnose'
 import { blockById } from '../utils/calc-blocks'
@@ -86,13 +87,35 @@ export default function CalcSessionPage() {
   const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
   const loadedStatesRef = useRef<Map<string, CalcProblemState>>(new Map())
 
-  // Per-question target seconds for the current question's source (null/0 → no countdown).
+  // UI countdown: only when timed mode + explicit seconds > 0.
   const secondsForQuestion = useCallback(
     (q: CalcQuestion): number | null => {
       if (!settings.timedAnswerEnabled) return null
       if (q.sourceBlockId) return settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds ?? null
       if (q.sourceMixedOpId) return settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)?.seconds ?? null
       return null
+    },
+    [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
+  )
+
+  /** Cognitive withinLimit — always has a threshold (explicit ∥ TIME_TARGETS.fluent). */
+  const withinLimitForQuestion = useCallback(
+    (q: CalcQuestion, elapsedMs: number): boolean => {
+      let explicit: number | null | undefined = null
+      let sourceId = sourceIdForLimit(q)
+      if (q.sourceBlockId) {
+        explicit = settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds
+      } else if (q.sourceMixedOpId) {
+        const op = settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)
+        explicit = op?.seconds
+        // TIME_TARGETS keys are skeleton ids for mixed ops
+        if (op) sourceId = op.skeleton
+      }
+      return elapsedMs <= effectiveLimitSec({
+        timedAnswerEnabled: settings.timedAnswerEnabled,
+        explicitSeconds: explicit,
+        sourceId,
+      }) * 1000
     },
     [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
   )
@@ -555,8 +578,7 @@ export default function CalcSessionPage() {
   const settleSelfGraded = useCallback(
     (q: CalcQuestion, isCorrect: boolean, userAnswer: string) => {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-      const sec = secondsForQuestion(q)
-      const withinLimit = sec && sec > 0 ? elapsedMs <= sec * 1000 : true
+      const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
         questionTimesRef.current.push(elapsedMs)
         questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
@@ -582,7 +604,7 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [attemptsForCurrent, mistakes, settings, settleQuestion, secondsForQuestion],
+    [attemptsForCurrent, mistakes, settings, settleQuestion, withinLimitForQuestion],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -625,8 +647,7 @@ export default function CalcSessionPage() {
     const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
 
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-    const sec = secondsForQuestion(q)
-    const withinLimit = sec && sec > 0 ? elapsedMs <= sec * 1000 : true
+    const withinLimit = withinLimitForQuestion(q, elapsedMs)
     if (attemptsForCurrent === 0) {
       questionTimesRef.current.push(elapsedMs)
       questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
@@ -665,7 +686,7 @@ export default function CalcSessionPage() {
     mistakes,
     settings,
     settleQuestion,
-    secondsForQuestion,
+    withinLimitForQuestion,
   ])
 
   // Compute breakthrough drill summary values from the just-completed session's log.

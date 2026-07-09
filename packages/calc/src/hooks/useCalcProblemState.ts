@@ -9,6 +9,7 @@ import type {
   CalcProblemStatus,
   QuestionAttempt,
 } from '@rosie/core'
+import { MASTERY_STREAK_K } from '../utils/calc-effective-limit'
 
 interface ProblemStateRow {
   signature: string
@@ -101,18 +102,30 @@ export function applyAttempt(
 
   let nextProf = prev.proficiency
   let nextConsecutiveWrong = prev.consecutiveWrong
-  if (attempt.correct) {
-    nextProf = withinLimit
-      ? Math.min(5, nextProf + 1)
-      : Math.min(5, Math.round(nextProf + 0.5))
+  let nextConsecutiveCorrect = prev.consecutiveCorrect ?? 0
+  let nextStatus: CalcProblemStatus = prev.status === 'forced' ? 'forced' : 'active'
+
+  if (attempt.correct && withinLimit) {
+    nextProf = Math.min(5, nextProf + 1)
     nextConsecutiveWrong = 0
+    nextConsecutiveCorrect = nextConsecutiveCorrect + 1
+    if (nextConsecutiveCorrect >= MASTERY_STREAK_K && nextAttemptCount >= MASTERY_STREAK_K) {
+      nextStatus = 'mastered'
+    } else {
+      nextStatus = 'active'
+    }
+  } else if (attempt.correct && !withinLimit) {
+    // Lagging = soft-fail: clear streak, drop one proficiency band, mark lagging.
+    nextProf = Math.max(0, nextProf - 1)
+    nextConsecutiveWrong = 0
+    nextConsecutiveCorrect = 0
+    nextStatus = 'lagging'
   } else {
     nextProf = Math.max(0, nextProf - 2)
     nextConsecutiveWrong = prev.consecutiveWrong + 1
+    nextConsecutiveCorrect = 0
+    nextStatus = 'active'
   }
-
-  const nextStatus: CalcProblemStatus =
-    nextProf >= 4 && nextAttemptCount >= 3 ? 'mastered' : 'active'
 
   return {
     ...prev,
@@ -122,7 +135,7 @@ export function applyAttempt(
     recentResults: nextRecent,
     status: nextStatus,
     consecutiveWrong: nextConsecutiveWrong,
-    consecutiveCorrect: prev.consecutiveCorrect ?? 0,
+    consecutiveCorrect: nextConsecutiveCorrect,
     lastWithinLimit: withinLimit,
     updatedAt: new Date().toISOString(),
   }
