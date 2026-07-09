@@ -1372,6 +1372,9 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
             </button>
           </div>
         </div>
+        <div className="mt-4">
+          <AdaptivePlanStageBoard rows={rows} vocab={vocab} panelTitle="词汇学习状态" />
+        </div>
       </div>
     )
   }
@@ -1411,10 +1414,6 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           <AdaptivePlanProgressBar rows={rows} />
         </div>
 
-        <div className="mb-5">
-          <AdaptivePlanStageBoard rows={rows} vocab={vocab} />
-        </div>
-
         <div className="grid gap-3 md:grid-cols-3">
           <div className="rounded-[16px] border border-white/[.08] bg-white/[.035] p-4">
             <div className="mb-1 text-[.72rem] font-extrabold text-[#c4b5fd]">Step 1</div>
@@ -1447,6 +1446,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           {settling ? '保存中…' : '开始本轮练习 →'}
         </button>
       </div>
+
+      <AdaptivePlanStageBoard rows={rows} vocab={vocab} panelTitle="词汇学习状态" />
     </div>
   )
 }
