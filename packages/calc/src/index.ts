@@ -31,3 +31,4 @@ export {
   enumerateFinite,
 } from './utils/calc-finite'
 export { missingTargetIds } from './utils/calc-time-targets'
+export { normalizeSelectedBlocks } from './utils/calc-settings-normalize'

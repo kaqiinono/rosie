@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, supabase } from '@rosie/core'
 import type { BlockSel, CalcSettings, MixedOp } from '@rosie/core'
+import { normalizeSelectedBlocks } from '../utils/calc-settings-normalize'
 
 const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: 0 }
 
@@ -53,7 +54,7 @@ function toMixedOp(v: Partial<MixedOp>): MixedOp {
 function rowToSettings(row: RawRow): CalcSettings {
   return {
     countMode: row.count_mode ?? 'auto',
-    selectedBlocks: (row.selected_blocks ?? ['add:10']).map(toBlockSel),
+    selectedBlocks: normalizeSelectedBlocks((row.selected_blocks ?? ['add:10']).map(toBlockSel)),
     mixedOps: (row.mixed_ops ?? []).map(toMixedOp),
     soundEnabled: row.sound_enabled,
     includeInverse: row.include_inverse ?? false,
@@ -105,11 +106,12 @@ export function useCalcSettings(user: User | null) {
   const persist = useCallback(
     async (next: CalcSettings) => {
       if (!user) return
-      calcSettingsStore.replaceSessionData(user.id, next)
+      const normalized = { ...next, selectedBlocks: normalizeSelectedBlocks(next.selectedBlocks) }
+      calcSettingsStore.replaceSessionData(user.id, normalized)
       try {
         await supabase
           .from('calc_settings')
-          .upsert(settingsToRow(next, user.id), { onConflict: 'user_id' })
+          .upsert(settingsToRow(normalized, user.id), { onConflict: 'user_id' })
       } catch {
         /* ignore */
       }
@@ -122,11 +124,12 @@ export function useCalcSettings(user: User | null) {
       if (!user) return
       calcSettingsStore.patchSessionData(user.id, (prev) => {
         const next = { ...prev, ...patch }
+        const normalized = { ...next, selectedBlocks: normalizeSelectedBlocks(next.selectedBlocks) }
         void supabase
           .from('calc_settings')
-          .upsert(settingsToRow(next, user.id), { onConflict: 'user_id' })
+          .upsert(settingsToRow(normalized, user.id), { onConflict: 'user_id' })
           .then(() => {})
-        return next
+        return normalized
       })
     },
     [user],
