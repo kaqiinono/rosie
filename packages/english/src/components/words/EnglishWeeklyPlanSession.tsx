@@ -176,8 +176,15 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
         </div>
       </div>
       <AdaptivePlanPractice />
+      <div className="mx-auto max-w-[1280px] px-4 pt-2">
+        <div className="mb-2 border-t border-[var(--wm-border)]" />
+      </div>
       <div className="mx-auto max-w-[1280px]">
-        <MasteryStatusPanel vocab={vocab} masteryMap={masteryMap} />
+        <MasteryStatusPanel
+          vocab={vocab}
+          masteryMap={masteryMap}
+          panelTitle="全局词汇学习状态"
+        />
       </div>
     </>
   )
