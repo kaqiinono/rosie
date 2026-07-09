@@ -574,8 +574,10 @@ export default function CalcSessionPage() {
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
       const inMakeup = idx >= plannedCountRef.current
-      if (!q.isChallenge && mode !== 'mistakes' && !drillParams) {
-        if (!inMakeup) {
+      if (!q.isChallenge && mode !== 'mistakes') {
+        if (drillParams) {
+          wrongQueueRef.current.push({ ...q })
+        } else if (!inMakeup) {
           const { pool } = tryEnqueueRetry(
             wrongQueueRef.current,
             { ...q },
