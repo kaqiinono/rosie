@@ -37,12 +37,14 @@ src/
                     #   calc-blocks, calc-block-gens, calc-settings-normalize,
                     #   calc-mixed, calc-helpers (buildSession),
                     #   calc-finite, calc-effective-limit, calc-apply-attempt,
+                    #   calc-session-policy (target vs clock, retry ceiling, star multiplier),
                     #   calc-mastery-sync (dual-store same-frame patch),
                     #   calc-problem-state-store / calc-mistakes-store,
                     #   calc-ast, calc-answer, calc-diagnose, calc-inverse,
                     #   calc-report-stats, calc-time-targets
 sql/
-└── calc-cognitive-metrics.sql  # ADD COLUMN consecutive_correct + mastered index
+├── calc-cognitive-metrics.sql  # ADD COLUMN consecutive_correct + mastered index
+└── calc-session-timing-modes.sql  # timing_mode + bonus_sec on calc_settings
 ```
 
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not
@@ -65,11 +67,24 @@ weakness weight. Per-signature state in `calc_problem_state`:
 | Concept | Mechanism |
 |---------|-----------|
 | **Unseen prefer** | Finite 2–9 mul/div + `add:100-comp`: coverage slot from `enumerateFinite` − practiced |
-| **Lagging** | `effectiveLimitSec` (explicit seconds ∥ `TIME_TARGETS.fluent`) — UI timer optional |
+| **Lagging** | `effectiveLimitSec` / `resolveTargetSec` — cognitive target; UI clock optional via `resolveClockSec` |
 | **Mastered** | Within-limit streak `consecutiveCorrect >= 3`; excluded from daily pool; ~5% recall |
 | **Cold start** | Infinite blocks with `< 50` states: all `generateSingle` until pool grows |
 | **Sync** | `applyMasterySideEffects`: dual `patchSessionData` same stack, then remote upsert |
 | **Grandfather** | On-load memory: old `prof≥4 && attempt≥3` → mastered; upsert on next settle |
+
+**Session prep (`mode=daily`):** `/calc/session` shows `SessionPrepScreen` before `buildSession`.
+Settings defaults (`timingMode`, `bonusSec`) preload; user can override per session or「设为默认」.
+Three modes in `calc-session-policy.ts`:
+
+| Mode | Clock (`T_clock`) | At 0 | Star multiplier |
+|------|-------------------|------|-----------------|
+| `relaxed` | optional (timed toggle + explicit sec) | no auto-advance | ×1.0 |
+| `strict` | `T_target` | final wrong | ×1.2 |
+| `bonus` | `T_target + bonusSec` | final wrong | `max(1, 1.2 − 0.05×bonusSec)` |
+
+`withinLimit` always uses `T_target` (never inflated by bonus). `maxRetryCeiling(N) = max(3, floor(N×0.15))`;
+daily sessions use a capped retry pool + single-pass makeup (no re-enqueue from makeup).
 
 Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Tables:
 `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
@@ -79,7 +94,8 @@ Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs master
 P2 may evolve `sub:round` recall (not implemented yet).
 
 Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md`,
-`docs/superpowers/plans/2026-07-09-calc-cognitive-metrics.md` (under gitignored `docs/` locally).
+`docs/superpowers/plans/2026-07-09-calc-cognitive-metrics.md`,
+`docs/superpowers/specs/2026-07-09-calc-session-timing-modes-design.md` (under gitignored `docs/` locally).
 
 ## Commands
 
