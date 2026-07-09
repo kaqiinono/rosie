@@ -1,7 +1,16 @@
+import type { CalcTimingMode } from '@rosie/core'
 import { TIME_TARGETS } from './calc-time-targets'
-import { groupDefaultLimitSec } from './calc-effective-limit'
 
-export type CalcTimingMode = 'relaxed' | 'strict' | 'bonus'
+export type { CalcTimingMode }
+
+/** Fallback when TIME_TARGETS has no entry for the source. */
+export function groupDefaultLimitSec(sourceId: string | undefined): number {
+  if (!sourceId) return 6
+  if (sourceId.startsWith('mul') || sourceId.startsWith('div') || sourceId.startsWith('md')) return 5
+  if (sourceId.startsWith('frac') || sourceId.startsWith('dec')) return 12
+  if (sourceId.startsWith('as')) return 10
+  return 6
+}
 
 export function maxRetryCeiling(plannedCount: number): number {
   return Math.max(3, Math.floor(Math.max(0, plannedCount) * 0.15))
