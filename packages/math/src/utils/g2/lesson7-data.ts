@@ -590,10 +590,24 @@ const SUPPLEMENT: Problem[] = [
   },
 ]
 
+// ── 课后巩固 ──（模块1 例题1-19 作为课后练习，题面/竖式与校验逻辑复用课堂讲解）
+const HOMEWORK: Problem[] = LESSON.map((p, i) => ({
+  ...p,
+  id: `2-7-H${i + 1}`,
+  title: p.title.replace('例题', '巩固'),
+}))
+
+// ── 补充附加题 ──（模块2 终极挑战 附加题1-9 作为补充练习）
+const SUPPLEMENT_EXTRA: Problem[] = SUPPLEMENT.map((p, i) => ({
+  ...p,
+  id: `2-7-S${i + 10}`,
+  title: p.title.replace('附加题', '补充附加'),
+}))
+
 export const PROBLEMS: ProblemSet = {
   pretest: [],
   lesson: LESSON,
-  homework: [],
+  homework: HOMEWORK,
   workbook: [],
-  supplement: SUPPLEMENT,
+  supplement: [...SUPPLEMENT, ...SUPPLEMENT_EXTRA],
 }

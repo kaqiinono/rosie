@@ -21,12 +21,20 @@ const MODULES = [
     desc: '例题1-19 · 加法·减法·数字和分析',
   },
   {
+    key: 'homework',
+    path: `${BASE}/homework`,
+    icon: '✏️',
+    bg: 'bg-app-green-light',
+    title: '课后巩固',
+    desc: '巩固1-19 · 加法·减法·数字和分析',
+  },
+  {
     key: 'supplement',
     path: `${BASE}/supplement`,
     icon: '📒',
     bg: 'bg-amber-50',
     title: '附加题',
-    desc: '附加1-9',
+    desc: '附加1-9 · 补充附加1-9',
   },
 ]
 

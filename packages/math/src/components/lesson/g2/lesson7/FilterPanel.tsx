@@ -26,6 +26,7 @@ export default createFilterPanel({
   },
   sourceBtns: [
     { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
   typeBtns: [

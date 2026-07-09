@@ -163,6 +163,7 @@ export const LESSON_SOURCE_BTNS: Record<string, LessonSourceBtn[]> = {
   ],
   '2-7': [
     { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
 }
