@@ -1,7 +1,8 @@
 import { signatureOf, type AstNode } from './calc-ast'
 import type { CalcProblemState } from '@rosie/core'
+import { enumerateComplementsTo100 } from './calc-block-gens'
 
-/** P0 finite blocks: 2–9 times-table related mul/div. */
+/** P0 finite blocks: 2–9 times-table related mul/div; P1 adds add:100-comp. */
 export const FINITE_BLOCK_IDS = new Set([
   'mul:25',
   'mul:34',
@@ -12,6 +13,7 @@ export const FINITE_BLOCK_IDS = new Set([
   'div:34',
   'div:69',
   'div:29',
+  'add:100-comp',
 ])
 
 export const COLD_START_MIN = 50
@@ -77,6 +79,12 @@ export function enumerateFinite(blockId: string): string[] {
         out.push(divSig(d * q, d))
       }
       break
+    case 'add:100-comp': {
+      for (const [a, b] of enumerateComplementsTo100()) {
+        out.push(signatureOf({ op: 'add', left: a, right: b } as AstNode))
+      }
+      break
+    }
     default:
       return []
   }

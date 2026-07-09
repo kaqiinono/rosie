@@ -21,3 +21,13 @@ export {
   genAdd100Comp,
   genMul2d1d,
 } from './utils/calc-block-gens'
+export {
+  blockById,
+  BLOCKS,
+  VERTICAL_BLOCK_IDS,
+} from './utils/calc-blocks'
+export {
+  isFiniteBlock,
+  enumerateFinite,
+} from './utils/calc-finite'
+export { missingTargetIds } from './utils/calc-time-targets'
