@@ -442,7 +442,8 @@ export interface CalcSettings {
 // 口算 mastery system (per master.md)
 // ─────────────────────────────────────────────────────────────────────────
 
-export type CalcProblemStatus = 'active' | 'review' | 'mastered' | 'forced'
+/** `review` is legacy read-only; new writes use `lagging` for correct-but-slow. */
+export type CalcProblemStatus = 'active' | 'lagging' | 'mastered' | 'forced' | 'review'
 
 export interface QuestionAttempt {
   correct: boolean
@@ -461,6 +462,10 @@ export interface CalcProblemState {
   recentResults: QuestionAttempt[] // most-recent at the end, capped at 10
   status: CalcProblemStatus
   consecutiveWrong: number
+  /** Per-fact streak of within-limit correct answers (K=3 → mastered). */
+  consecutiveCorrect: number
+  /** Last attempt's withinLimit flag; null/undefined when unknown. */
+  lastWithinLimit?: boolean | null
   updatedAt: string
   /** Attribution: which building block this problem was drawn from. */
   blockId?: string

@@ -19,13 +19,15 @@ interface ProblemStateRow {
   recent_results: QuestionAttempt[]
   status: CalcProblemStatus
   consecutive_wrong: number
+  consecutive_correct?: number | null
+  last_within_limit?: boolean | null
   updated_at: string
   block_id?: string | null
   mixed_op_id?: string | null
 }
 
 const SELECT_COLS =
-  'signature,level,proficiency,attempt_count,appearance_count,recent_results,status,consecutive_wrong,updated_at,block_id,mixed_op_id'
+  'signature,level,proficiency,attempt_count,appearance_count,recent_results,status,consecutive_wrong,consecutive_correct,last_within_limit,updated_at,block_id,mixed_op_id'
 
 function rowToState(r: ProblemStateRow): CalcProblemState {
   return {
@@ -37,6 +39,8 @@ function rowToState(r: ProblemStateRow): CalcProblemState {
     recentResults: Array.isArray(r.recent_results) ? r.recent_results : [],
     status: r.status,
     consecutiveWrong: r.consecutive_wrong,
+    consecutiveCorrect: r.consecutive_correct ?? 0,
+    lastWithinLimit: r.last_within_limit ?? null,
     updatedAt: r.updated_at,
     blockId: r.block_id ?? undefined,
     mixedOpId: r.mixed_op_id ?? undefined,
@@ -58,6 +62,8 @@ function stateToRow(s: CalcProblemState, userId: string) {
     recent_results: s.recentResults,
     status: s.status,
     consecutive_wrong: s.consecutiveWrong,
+    consecutive_correct: s.consecutiveCorrect,
+    last_within_limit: s.lastWithinLimit ?? null,
     updated_at: new Date().toISOString(),
     block_id: s.blockId ?? null,
     mixed_op_id: s.mixedOpId ?? null,
@@ -74,6 +80,8 @@ function defaultState(signature: string, level: CalcLevel): CalcProblemState {
     recentResults: [],
     status: 'active',
     consecutiveWrong: 0,
+    consecutiveCorrect: 0,
+    lastWithinLimit: null,
     updatedAt: new Date().toISOString(),
   }
 }
@@ -114,6 +122,8 @@ export function applyAttempt(
     recentResults: nextRecent,
     status: nextStatus,
     consecutiveWrong: nextConsecutiveWrong,
+    consecutiveCorrect: prev.consecutiveCorrect ?? 0,
+    lastWithinLimit: withinLimit,
     updatedAt: new Date().toISOString(),
   }
 }
