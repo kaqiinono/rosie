@@ -19,6 +19,7 @@ import ChallengeBanner from '../components/ChallengeBanner'
 import SessionSummary from '../components/SessionSummary'
 import DrillSummary from '../components/DrillSummary'
 import { buildSession, buildDrillSession, coinReward, type DrillParams } from '../utils/calc-helpers'
+import { maxRetryCeiling, tryEnqueueRetry } from '../utils/calc-session-policy'
 import { tierOf, nextTierGap, suggestedTiers } from '../utils/calc-time-targets'
 import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-limit'
 import { checkAnswer, formatAnswer } from '../utils/calc-answer'
@@ -132,6 +133,7 @@ export default function CalcSessionPage() {
   const [idx, setIdx] = useState(0)
   // Wrong questions collected during the session, appended to the tail for make-up.
   const wrongQueueRef = useRef<CalcQuestion[]>([])
+  const maxRetryRef = useRef(0)
   // Number of originally-planned questions (excludes make-up tail).
   // Ref for use inside event-handler closures; state mirror for render.
   const plannedCountRef = useRef(0)
@@ -230,6 +232,7 @@ export default function CalcSessionPage() {
         setQuestions(session)
         plannedCountRef.current = session.length
         setPlannedCount(session.length)
+        maxRetryRef.current = maxRetryCeiling(session.length)
       }
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
@@ -570,7 +573,17 @@ export default function CalcSessionPage() {
         sourceMixedOpId: q.sourceMixedOpId,
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
-      if (!q.isChallenge && mode !== 'mistakes') wrongQueueRef.current.push({ ...q })
+      const inMakeup = idx >= plannedCountRef.current
+      if (!q.isChallenge && mode !== 'mistakes' && !drillParams) {
+        if (!inMakeup) {
+          const { pool } = tryEnqueueRetry(
+            wrongQueueRef.current,
+            { ...q },
+            maxRetryRef.current,
+          )
+          wrongQueueRef.current = pool
+        }
+      }
       if (settings.immersiveMode) {
         goNext()
       } else {
@@ -880,6 +893,7 @@ export default function CalcSessionPage() {
               setQuestions(null)
               setIdx(0)
               wrongQueueRef.current = []
+              maxRetryRef.current = 0
               plannedCountRef.current = 0
               setPlannedCount(0)
               setInput('')
