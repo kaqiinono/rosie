@@ -22,6 +22,7 @@ import { buildSession, buildDrillSession, coinReward, type DrillParams } from '.
 import {
   applySessionStarMultiplier,
   clampBonusSec,
+  isInMakeupPhase,
   maxRetryCeiling,
   resolveClockSec,
   resolveTargetSec,
@@ -634,7 +635,7 @@ export default function CalcSessionPage() {
         sourceMixedOpId: q.sourceMixedOpId,
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
-      const inMakeup = idx >= plannedCountRef.current
+      const inMakeup = isInMakeupPhase(idx, plannedCountRef.current)
       if (!q.isChallenge && mode !== 'mistakes') {
         if (drillParams) {
           wrongQueueRef.current.push({ ...q })
@@ -714,7 +715,8 @@ export default function CalcSessionPage() {
         return
       }
       // first miss → 竖式: wrong cells in place + inline hint; others: brief retry banner.
-      if (attemptsForCurrent === 0) {
+      // makeup is single-pass: no soft retry when idx >= plannedCount.
+      if (!isInMakeupPhase(idx, plannedCountRef.current) && attemptsForCurrent === 0) {
         setStreak(0)
         playSfx('retry', settings.soundEnabled)
         setFeedback('retry')
@@ -724,7 +726,7 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion],
+    [idx, attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -784,7 +786,8 @@ export default function CalcSessionPage() {
     }
 
     // wrong: first miss → retry; second miss → settle as final wrong.
-    if (attemptsForCurrent === 0) {
+    // makeup is single-pass: no soft retry when idx >= plannedCount.
+    if (!isInMakeupPhase(idx, plannedCountRef.current) && attemptsForCurrent === 0) {
       setFeedback('retry')
       setStreak(0)
       playSfx('retry', settings.soundEnabled)
