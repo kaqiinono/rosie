@@ -29,6 +29,7 @@ const DEFAULT_SETTINGS: CalcSettings = {
   sessionCounter: 0,
   timingMode: 'relaxed',
   bonusSec: 3,
+  autoSubmitOnMatch: true,
 }
 
 interface RawRow {
@@ -44,6 +45,7 @@ interface RawRow {
   session_counter: number | null
   timing_mode: string | null
   bonus_sec: number | null
+  auto_submit_on_match: boolean | null
 }
 
 function toBlockSel(v: string | BlockSel): BlockSel {
@@ -87,6 +89,7 @@ function rowToSettings(row: RawRow): CalcSettings {
     sessionCounter: row.session_counter ?? 0,
     timingMode: parseTimingMode(row.timing_mode),
     bonusSec: clampBonusSec(row.bonus_sec ?? 3),
+    autoSubmitOnMatch: row.auto_submit_on_match ?? true,
   })
 }
 
@@ -105,6 +108,7 @@ function settingsToRow(s: CalcSettings, userId: string) {
     session_counter: s.sessionCounter,
     timing_mode: s.timingMode,
     bonus_sec: s.bonusSec,
+    auto_submit_on_match: s.autoSubmitOnMatch,
     updated_at: new Date().toISOString(),
   }
 }
@@ -113,7 +117,7 @@ async function fetchCalcSettings(userId: string): Promise<CalcSettings> {
   const { data } = await supabase
     .from('calc_settings')
     .select(
-      'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers,timed_answer_enabled,immersive_mode,timing_mode,bonus_sec',
+      'count_mode,selected_blocks,mixed_ops,sound_enabled,last_count,session_counter,include_inverse,vertical_for_big_numbers,timed_answer_enabled,immersive_mode,timing_mode,bonus_sec,auto_submit_on_match',
     )
     .eq('user_id', userId)
     .maybeSingle()

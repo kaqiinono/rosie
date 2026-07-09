@@ -440,6 +440,7 @@ export interface CalcSettings {
   sessionCounter: number     // 每次 session 完成自增
   timingMode: CalcTimingMode // 默认会话计时模式：宽松 / 严格 / 自定义加成
   bonusSec: number           // 自定义加成秒数（0–15，仅 bonus 模式）
+  autoSubmitOnMatch: boolean   // 数字键盘答对即过；默认 true
 }
 
 // ─────────────────────────────────────────────────────────────────────────

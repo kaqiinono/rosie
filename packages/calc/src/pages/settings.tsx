@@ -446,6 +446,12 @@ export default function CalcSettingsPage() {
               value={settings.immersiveMode}
               onChange={(v) => update({ immersiveMode: v })}
             />
+            <ToggleRow
+              label="数字键盘答对即过"
+              description="输入已与正确答案完全一致时无需点确认，直接进入下一题；答错仍需确认。竖式/分数/余数不受影响。"
+              value={settings.autoSubmitOnMatch}
+              onChange={(v) => update({ autoSubmitOnMatch: v })}
+            />
           </div>
         </section>
 
