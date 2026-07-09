@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, supabase } from '@rosie/core'
 import type { BlockSel, CalcSettings, MixedOp } from '@rosie/core'
-import { normalizeSelectedBlocks } from '../utils/calc-settings-normalize'
+import { normalizeMixedOps, normalizeSelectedBlocks } from '../utils/calc-settings-normalize'
 
 const DEFAULT_BLOCK: BlockSel = { id: 'add:10', count: 20, seconds: 0 }
 
@@ -51,10 +51,18 @@ function toMixedOp(v: Partial<MixedOp>): MixedOp {
   }
 }
 
-function rowToSettings(row: RawRow): CalcSettings {
+function normalizeSettings(next: CalcSettings): CalcSettings {
   return {
+    ...next,
+    selectedBlocks: normalizeSelectedBlocks(next.selectedBlocks),
+    mixedOps: normalizeMixedOps(next.mixedOps),
+  }
+}
+
+function rowToSettings(row: RawRow): CalcSettings {
+  return normalizeSettings({
     countMode: row.count_mode ?? 'auto',
-    selectedBlocks: normalizeSelectedBlocks((row.selected_blocks ?? ['add:10']).map(toBlockSel)),
+    selectedBlocks: (row.selected_blocks ?? ['add:10']).map(toBlockSel),
     mixedOps: (row.mixed_ops ?? []).map(toMixedOp),
     soundEnabled: row.sound_enabled,
     includeInverse: row.include_inverse ?? false,
@@ -63,7 +71,7 @@ function rowToSettings(row: RawRow): CalcSettings {
     immersiveMode: row.immersive_mode ?? false,
     lastCount: row.last_count,
     sessionCounter: row.session_counter ?? 0,
-  }
+  })
 }
 
 function settingsToRow(s: CalcSettings, userId: string) {
@@ -106,7 +114,7 @@ export function useCalcSettings(user: User | null) {
   const persist = useCallback(
     async (next: CalcSettings) => {
       if (!user) return
-      const normalized = { ...next, selectedBlocks: normalizeSelectedBlocks(next.selectedBlocks) }
+      const normalized = normalizeSettings(next)
       calcSettingsStore.replaceSessionData(user.id, normalized)
       try {
         await supabase
@@ -124,7 +132,7 @@ export function useCalcSettings(user: User | null) {
       if (!user) return
       calcSettingsStore.patchSessionData(user.id, (prev) => {
         const next = { ...prev, ...patch }
-        const normalized = { ...next, selectedBlocks: normalizeSelectedBlocks(next.selectedBlocks) }
+        const normalized = normalizeSettings(next)
         void supabase
           .from('calc_settings')
           .upsert(settingsToRow(normalized, user.id), { onConflict: 'user_id' })

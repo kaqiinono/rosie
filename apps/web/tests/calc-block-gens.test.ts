@@ -79,13 +79,15 @@ describe('generators sample invariants', () => {
     }
   })
 
-  it('zeros mul/div are exact and use trailing zeros', () => {
-    for (let i = 0; i < 20; i++) {
+  it('zeros mul/div are exact, use trailing zeros, and stay ≤4 digits', () => {
+    for (let i = 0; i < 30; i++) {
       const [a, b] = genZerosMul()
       expect(a * b).toBeGreaterThan(0)
+      expect(a * b).toBeLessThanOrEqual(9999)
       expect(a % 10 === 0 || b % 10 === 0).toBe(true)
       const [num, den] = genZerosDiv()
       expect(num % den).toBe(0)
+      expect(num).toBeLessThanOrEqual(9999)
       expect(num % 10 === 0 || den % 10 === 0).toBe(true)
     }
   })

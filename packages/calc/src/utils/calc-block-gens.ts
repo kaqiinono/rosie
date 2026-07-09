@@ -107,15 +107,24 @@ export function genDiv2d1d(borrow: boolean): [number, number] {
   }, borrow ? [72, 4] : [84, 4])
 }
 
+const ZEROS_MAX_MAG = 9999
+
 export function genZerosMul(): [number, number] {
   return withFallback(() => {
     const coreA = randInt(2, 9)
     const coreB = randInt(2, 9)
-    const zA = pickOne([1, 1, 2]) // prefer one trailing zero on left
-    const zB = pickOne([0, 0, 1])
+    // 整十/整百: total trailing-zero exponent ≤ 2, product ≤ 4 digits
+    const [zA, zB] = pickOne([
+      [1, 0],
+      [2, 0],
+      [0, 1],
+      [1, 1],
+      [0, 2],
+    ] as const)
     const a = coreA * 10 ** zA
     const b = coreB * 10 ** zB
     if (a < 10 && b < 10) return null
+    if (a * b > ZEROS_MAX_MAG) return null
     return Math.random() < 0.5 ? [a, b] : [b, a]
   }, [40, 6])
 }
@@ -128,8 +137,9 @@ export function genZerosDiv(): [number, number] {
       // 1200 ÷ 4
       const core = randInt(2, 9)
       const k = randInt(2, 9)
-      const z = pickOne([1, 2, 3])
+      const z = pickOne([1, 2])
       const dividend = core * k * 10 ** z
+      if (dividend > ZEROS_MAX_MAG) return null
       return [dividend, k]
     }
     if (kind === 1) {
@@ -139,13 +149,14 @@ export function genZerosDiv(): [number, number] {
       const z = pickOne([1, 2])
       const divisor = core * 10 ** z
       const dividend = q * divisor
+      if (dividend > ZEROS_MAX_MAG) return null
       return [dividend, divisor]
     }
-    // 800 ÷ 20
-    const q = randInt(2, 9) * pickOne([10, 100])
+    // 800 ÷ 20 — quotient and divisor both 整十
+    const q = randInt(2, 9) * 10
     const divisor = randInt(2, 9) * 10
     const dividend = q * divisor
-    if (dividend % 10 !== 0) return null
+    if (dividend % 10 !== 0 || dividend > ZEROS_MAX_MAG) return null
     return [dividend, divisor]
   }, [240, 60])
 }
