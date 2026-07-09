@@ -66,7 +66,7 @@ Applied **once at session finish** to the session’s earned-star total (not per
 | **严格** | `1.2`（+20%） |
 | **自定义加成** | `max(1.0, 1.2 - 0.05 × bonusSec)` — each +1s of clock bonus reduces the 20% premium by 5 percentage points, floored at no premium |
 
-Settlement: `finalStars = Math.round(rawStars × multiplier)` (0.5 rounds toward +∞ / standard `Math.round`). Wallet / session row persist **`finalStars`**. Prep UI should preview the multiplier (e.g.「严格 +20% 星」「自定义 +N 秒 → +X% 星」).
+Settlement: `finalStars = Math.round(rawStars × multiplier)` (0.5 rounds toward +∞ / standard `Math.round`). Wallet / session row persist **`finalStars`**. Prep UI **must** preview the live multiplier for the selected mode (see §3).
 
 Examples: `bonusSec=0` → ×1.2; `bonusSec=2` → ×1.1; `bonusSec=4` → ×1.0; `bonusSec≥4` → ×1.0.
 
@@ -80,6 +80,10 @@ Examples: `bonusSec=0` → ×1.2; `bonusSec=2` → ×1.1; `bonusSec=4` → ×1.0
 **Prep screen (daily only, before first question)**
 - Show approx main-path `N`, makeup cap `M`, prefilled default mode (editable).
 - Mode picker: 宽松 / 严格 / 自定义加成; bonus controls when bonus selected.
+- **Star multiplier preview (required):** always show the live end-of-session star bonus for the currently selected mode / `bonusSec`, derived from `sessionStarMultiplier`:
+  - 宽松 →「星星加成：无（×1.0）」
+  - 严格 →「星星加成：+20%（×1.2）」
+  - 自定义 →「星星加成：+X%（×Y）」where `X = round((multiplier - 1) * 100)`, `Y = multiplier` (updates when bonus chips / custom seconds change; at floor show「无额外加成（×1.0）」)
 - Optional「设为默认」writes settings.
 - CTA「开始练习」→ `buildSession`, start timers, enter answering.
 - Back → home, no session row.
@@ -115,4 +119,5 @@ Examples: `bonusSec=0` → ×1.2; `bonusSec=2` → ×1.1; `bonusSec=4` → ×1.0
 4. Every daily session: makeup size ≤ `max(3, floor(N×0.15))`; makeup never requeues.
 5. Settings defaults round-trip; prep can override for one session.
 6. End-of-session stars: relaxed ×1.0; strict ×1.2; bonus ×`max(1.0, 1.2 - 0.05×bonusSec)`, `Math.round`.
-7. `pnpm --filter @rosie/calc typecheck` passes.
+7. Prep screen always shows live star-bonus preview for the selected mode / bonusSec.
+8. `pnpm --filter @rosie/calc typecheck` passes.

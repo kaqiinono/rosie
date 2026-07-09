@@ -392,7 +392,7 @@ setCoinsTotal(finalStars)
 // persist coinsEarned: finalStars
 ```
 
-Prep screen should show the live multiplier preview from `sessionStarMultiplier`. Drills / mistakes: multiplier **1.0** (no mode).
+Prep screen **must** show the live multiplier preview from `sessionStarMultiplier` (updates when mode / bonusSec changes). Drills / mistakes: multiplier **1.0** (no mode).
 
 - [ ] **Step 1: Build `SessionPrepScreen`**
 
@@ -412,7 +412,7 @@ type Props = {
 }
 ```
 
-UI: dark calc chrome consistent with home/settings; three mode cards; bonus row when `bonus`; primary CTA.
+UI: dark calc chrome consistent with home/settings; three mode cards; bonus row when `bonus`; **dedicated star-bonus line** always visible (宽松 无/+0%、严格 +20%、自定义随秒数变); primary CTA.
 
 - [ ] **Step 2: Wire session.tsx prep + timeout effect**
 
