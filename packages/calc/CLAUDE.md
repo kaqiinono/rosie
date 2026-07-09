@@ -34,9 +34,14 @@ src/
 ├── hooks/          # useCalcSettings, useCalcProblemState (applyAttempt), useCalcMistakes,
 │                   #   useCalcDaily
 └── utils/          # the arithmetic engine:
-                    #   calc-blocks (BLOCKS catalog), calc-mixed (SKELETONS), calc-helpers
-                    #   (buildSession), calc-ast, calc-answer, calc-diagnose, calc-inverse,
+                    #   calc-blocks, calc-mixed, calc-helpers (buildSession),
+                    #   calc-finite, calc-effective-limit, calc-apply-attempt,
+                    #   calc-mastery-sync (dual-store same-frame patch),
+                    #   calc-problem-state-store / calc-mistakes-store,
+                    #   calc-ast, calc-answer, calc-diagnose, calc-inverse,
                     #   calc-report-stats, calc-time-targets
+sql/
+└── calc-cognitive-metrics.sql  # ADD COLUMN consecutive_correct + mastered index
 ```
 
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not
@@ -51,15 +56,25 @@ tsconfig aliases are honored at build time.
 - External consumers of the public API: `today` dashboard (`useCalcDaily`) and the `/vouchers`
   page (`VoucherCard`, `playSfx`).
 
-## Engine model (unchanged by the extraction)
+## Engine model
 
-Question generation is **composable**: `BLOCKS` (single-op generators, `calc-blocks.ts`) +
-`SKELETONS` (mixed-op shapes, `calc-mixed.ts`); `buildSession` (`calc-helpers.ts`) allocates a
-session weighted toward weak signatures; `signature` (`calc-ast.ts`) is the proficiency key.
-Proficiency 0–5 per signature lives in `calc_problem_state` (`useCalcProblemState`). Mistakes
-carry to the next session (`useCalcMistakes`, `calc_mistakes`). Tables: `calc_settings`,
-`calc_problem_state`, `calc_sessions`, `calc_mistakes` (wallet/voucher tables belong to
-`@rosie/rewards`).
+Question generation is **composable**: `BLOCKS` + `SKELETONS`; `buildSession` allocates by
+weakness weight. Per-signature state in `calc_problem_state`:
+
+| Concept | Mechanism |
+|---------|-----------|
+| **Unseen prefer** | Finite 2–9 mul/div: coverage slot from `enumerateFinite` − practiced |
+| **Lagging** | `effectiveLimitSec` (explicit seconds ∥ `TIME_TARGETS.fluent`) — UI timer optional |
+| **Mastered** | Within-limit streak `consecutiveCorrect >= 3`; excluded from daily pool; ~5% recall |
+| **Cold start** | Infinite blocks with `< 50` states: all `generateSingle` until pool grows |
+| **Sync** | `applyMasterySideEffects`: dual `patchSessionData` same stack, then remote upsert |
+| **Grandfather** | On-load memory: old `prof≥4 && attempt≥3` → mastered; upsert on next settle |
+
+Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Tables:
+`calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
+
+Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md`,
+`docs/superpowers/plans/2026-07-09-calc-cognitive-metrics.md` (under gitignored `docs/` locally).
 
 ## Commands
 

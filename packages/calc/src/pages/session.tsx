@@ -10,6 +10,7 @@ import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
 import { applyAttempt } from '../utils/calc-apply-attempt'
 import { applyMasterySideEffects } from '../utils/calc-mastery-sync'
+import { fetchMasteredRecallCandidates } from '../utils/calc-problem-state-store'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcQuestionStage from '../components/CalcQuestionStage'
 import CalcSessionStatusBar from '../components/CalcSessionStatusBar'
@@ -195,6 +196,18 @@ export default function CalcSessionPage() {
       // Use the returned map directly — `problemState.states` is still the stale
       // pre-load value within this same closure (React state updates async).
       const loadedStates = await problemState.loadAll()
+      // Merge SQL-truncated recall candidates (LIMIT recall*3) into the map.
+      if (!drillParams) {
+        const blockIds = settings.selectedBlocks.map((b) => b.id)
+        const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
+        const recall = await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot)
+        for (const s of recall) {
+          if (!loadedStates.has(s.signature)) loadedStates.set(s.signature, s)
+        }
+      }
+      // Reconcile hanging mistakes vs mastered (deadlock repair)
+      await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+
       loadedStatesRef.current = loadedStates
 
       if (drillParams) {
