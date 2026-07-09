@@ -19,7 +19,14 @@ import ChallengeBanner from '../components/ChallengeBanner'
 import SessionSummary from '../components/SessionSummary'
 import DrillSummary from '../components/DrillSummary'
 import { buildSession, buildDrillSession, coinReward, type DrillParams } from '../utils/calc-helpers'
-import { maxRetryCeiling, tryEnqueueRetry } from '../utils/calc-session-policy'
+import {
+  applySessionStarMultiplier,
+  clampBonusSec,
+  maxRetryCeiling,
+  resolveClockSec,
+  resolveTargetSec,
+  tryEnqueueRetry,
+} from '../utils/calc-session-policy'
 import { tierOf, nextTierGap, suggestedTiers } from '../utils/calc-time-targets'
 import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-limit'
 import { checkAnswer, formatAnswer } from '../utils/calc-answer'
@@ -29,7 +36,8 @@ import { skeletonMeta } from '../utils/calc-mixed'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
 import { todayStr } from '@rosie/core'
-import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, QuestionLogEntry } from '@rosie/core'
+import SessionPrepScreen from '../components/SessionPrepScreen'
+import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, CalcTimingMode, QuestionLogEntry } from '@rosie/core'
 
 interface AttemptStat {
   signature: string
@@ -92,13 +100,56 @@ export default function CalcSessionPage() {
   const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
   const loadedStatesRef = useRef<Map<string, CalcProblemState>>(new Map())
 
-  // UI countdown: only when timed mode + explicit seconds > 0.
+  // ── Prep gate (daily only) ──────────────────────────────────────
+  // Drills and mistakes-only sessions skip the prep screen entirely and keep
+  // today's behavior (relaxed clock, no end-of-session star multiplier).
+  const needsPrep = mode === 'daily' && !drillParams
+  const [prepConfirmed, setPrepConfirmed] = useState(false)
+  // Editable prep selections default to the persisted settings until the user
+  // overrides them for this run only; "设为默认" writes the override back to settings.
+  const [prepModeOverride, setPrepModeOverride] = useState<CalcTimingMode | null>(null)
+  const [prepBonusOverride, setPrepBonusOverride] = useState<number | null>(null)
+  const prepTimingMode = prepModeOverride ?? settings.timingMode
+  const prepBonusSec = prepBonusOverride ?? settings.bonusSec
+  // Frozen at confirm time — the session's timing authority for its whole run,
+  // read from refs inside stable callbacks (clock, auto-advance, star multiplier).
+  const sessionTimingModeRef = useRef<CalcTimingMode>('relaxed')
+  const sessionBonusSecRef = useRef<number>(0)
+
+  const manualTotalEstimate =
+    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
+    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
+  const plannedEstimate = settings.countMode === 'manual' ? manualTotalEstimate : settings.lastCount
+
+  const handlePrepStart = useCallback(() => {
+    sessionTimingModeRef.current = prepTimingMode
+    sessionBonusSecRef.current = clampBonusSec(prepBonusSec)
+    playSfx('coin', settings.soundEnabled)
+    setPrepConfirmed(true)
+  }, [prepTimingMode, prepBonusSec, settings.soundEnabled])
+
+  // UI countdown: clock time per the confirmed session timing mode (relaxed
+  // sessions — including drills/mistakes which never set the mode ref — fall
+  // back to today's "timed mode + explicit seconds" behavior).
   const secondsForQuestion = useCallback(
     (q: CalcQuestion): number | null => {
-      if (!settings.timedAnswerEnabled) return null
-      if (q.sourceBlockId) return settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds ?? null
-      if (q.sourceMixedOpId) return settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)?.seconds ?? null
-      return null
+      let explicit: number | null | undefined = null
+      let sourceId = sourceIdForLimit(q)
+      if (q.sourceBlockId) {
+        explicit = settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds
+      } else if (q.sourceMixedOpId) {
+        const op = settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)
+        explicit = op?.seconds
+        if (op) sourceId = op.skeleton
+      }
+      const targetSec = resolveTargetSec({ explicitSeconds: explicit, sourceId })
+      return resolveClockSec({
+        mode: sessionTimingModeRef.current,
+        targetSec,
+        bonusSec: sessionBonusSecRef.current,
+        timedAnswerEnabled: settings.timedAnswerEnabled,
+        explicitSeconds: explicit,
+      })
     },
     [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
   )
@@ -191,6 +242,7 @@ export default function CalcSessionPage() {
     if (initRef.current) return
     if (settingsLoading) return
     if (!user) return
+    if (needsPrep && !prepConfirmed) return
     initRef.current = true
 
     const init = async () => {
@@ -243,7 +295,7 @@ export default function CalcSessionPage() {
     }
     void init()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, settingsLoading, drillParams, sessionKey])
+  }, [user, settingsLoading, drillParams, sessionKey, needsPrep, prepConfirmed])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -433,6 +485,15 @@ export default function CalcSessionPage() {
       nextFocus,
     })
 
+    // End-of-session star multiplier (daily main path only — drills/mistakes
+    // never confirmed a prep mode, so they stay at the ×1.0 default).
+    if (!drillParams && mode === 'daily') {
+      const raw = coinsTotalRef.current
+      const finalStars = applySessionStarMultiplier(raw, sessionTimingModeRef.current, sessionBonusSecRef.current)
+      coinsTotalRef.current = finalStars
+      setCoinsTotal(finalStars)
+    }
+
     // 1. Persist session row (unchanged)
     await wallet.recordSession({
       date: todayStr(),
@@ -608,6 +669,29 @@ export default function CalcSessionPage() {
     ],
   )
 
+  // Strict/bonus auto-advance: clock hits 0 → settle as final wrong (unanswered),
+  // once per question. Relaxed mode never auto-advances (ref stays 'relaxed').
+  const autoAdvancedIdxRef = useRef<number>(-1)
+  useEffect(() => {
+    if (done || !questions || idx >= questions.length) return
+    const timingMode = sessionTimingModeRef.current
+    if (timingMode !== 'strict' && timingMode !== 'bonus') return
+    if (feedback) return
+    if (remainingSec === null || remainingSec > 0) return
+    if (autoAdvancedIdxRef.current === idx) return
+    autoAdvancedIdxRef.current = idx
+
+    const q = questions[idx]
+    const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+    const withinLimit = withinLimitForQuestion(q, elapsedMs)
+    if (attemptsForCurrent === 0) {
+      questionTimesRef.current.push(elapsedMs)
+      questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: false })
+    }
+    const wasMistake = unresolved.some((m) => m.signature === q.signature)
+    settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, '')
+  }, [done, questions, idx, feedback, remainingSec, attemptsForCurrent, unresolved, withinLimitForQuestion, settleQuestion])
+
   // Self-grading pads (竖式 / 余数 / 分数) lock + show inline 红/绿 on submit. They
   // run the SAME two-try loop as the number pad: first wrong → retry (竖式 keeps the
   // current grid + keypad; other pads remount via padKey); second wrong → final wrong.
@@ -752,7 +836,54 @@ export default function CalcSessionPage() {
     return nextT[currentTier ?? 'entry'] ?? '进阶'
   })()
 
-  if (settingsLoading || !questions || questions.length === 0) {
+  if (settingsLoading) {
+    return (
+      <>
+        <CalcAppHeader
+          balance={wallet.balance}
+          soundEnabled={settings.soundEnabled}
+          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+          title="练习中"
+          backHref="/calc"
+          backLabel="返回"
+        />
+        <div
+          className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
+          style={{ color: 'rgba(196,181,253,0.5)' }}
+        >
+          准备题目中…
+        </div>
+      </>
+    )
+  }
+
+  if (needsPrep && !prepConfirmed) {
+    return (
+      <>
+        <CalcAppHeader
+          balance={wallet.balance}
+          soundEnabled={settings.soundEnabled}
+          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+          title="准备练习"
+          backHref="/calc"
+          backLabel="返回"
+        />
+        <SessionPrepScreen
+          plannedEstimate={plannedEstimate}
+          maxRetry={maxRetryCeiling(plannedEstimate)}
+          timingMode={prepTimingMode}
+          bonusSec={prepBonusSec}
+          onChangeMode={setPrepModeOverride}
+          onChangeBonus={setPrepBonusOverride}
+          onSaveDefault={() => update({ timingMode: prepTimingMode, bonusSec: clampBonusSec(prepBonusSec) })}
+          onStart={handlePrepStart}
+          onBack={() => router.push('/calc')}
+        />
+      </>
+    )
+  }
+
+  if (!questions || questions.length === 0) {
     return (
       <>
         <CalcAppHeader
@@ -917,6 +1048,10 @@ export default function CalcSessionPage() {
               setDone(false)
               setFinalStats(null)
               initRef.current = false
+              autoAdvancedIdxRef.current = -1
+              setPrepConfirmed(false)
+              setPrepModeOverride(null)
+              setPrepBonusOverride(null)
               setSessionKey((k) => k + 1)
             }}
           />
