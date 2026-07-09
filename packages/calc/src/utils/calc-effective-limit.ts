@@ -1,6 +1,5 @@
-import { blockById } from './calc-blocks'
-import { TIME_TARGETS } from './calc-time-targets'
 import type { CalcQuestion } from '@rosie/core'
+import { resolveTargetSec } from './calc-session-policy'
 
 /** Consecutive within-limit corrects required to enter mastered. */
 export const MASTERY_STREAK_K = 3
@@ -24,24 +23,13 @@ export type EffectiveLimitInput = {
 
 /**
  * Cognitive speed threshold (seconds). Decoupled from UI countdown:
- * - When timed mode is on and explicitSeconds > 0 → use explicit
- * - Else → TIME_TARGETS[sourceId].fluent[1], else groupDefault
+ * explicit > 0 else TIME_TARGETS.fluent[1] else group default (see resolveTargetSec).
  */
 export function effectiveLimitSec(input: EffectiveLimitInput): number {
-  const { timedAnswerEnabled, explicitSeconds, sourceId } = input
-  if (timedAnswerEnabled && explicitSeconds != null && explicitSeconds > 0) {
-    return explicitSeconds
-  }
-  if (sourceId) {
-    const target = TIME_TARGETS[sourceId]
-    if (target) return target.fluent[1]
-    const block = blockById(sourceId)
-    if (block) {
-      const byBlock = TIME_TARGETS[block.id]
-      if (byBlock) return byBlock.fluent[1]
-    }
-  }
-  return groupDefaultLimitSec(sourceId)
+  return resolveTargetSec({
+    explicitSeconds: input.explicitSeconds,
+    sourceId: input.sourceId,
+  })
 }
 
 /** Resolve source id for limit lookup from a question. */

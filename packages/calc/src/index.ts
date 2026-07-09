@@ -32,3 +32,14 @@ export {
 } from './utils/calc-finite'
 export { missingTargetIds } from './utils/calc-time-targets'
 export { normalizeMixedOps, normalizeSelectedBlocks } from './utils/calc-settings-normalize'
+export {
+  type CalcTimingMode,
+  maxRetryCeiling,
+  clampBonusSec,
+  resolveTargetSec,
+  resolveClockSec,
+  tryEnqueueRetry,
+  isInMakeupPhase,
+  sessionStarMultiplier,
+  applySessionStarMultiplier,
+} from './utils/calc-session-policy'
