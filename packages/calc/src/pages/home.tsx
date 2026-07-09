@@ -306,6 +306,24 @@ export default function CalcHomePage() {
           <span style={{ color: 'rgba(125,211,252,0.5)' }}>→</span>
         </Link>
 
+        <Link
+          href="/calc/faq"
+          className="flex items-center gap-2.5 rounded-2xl px-4 py-3 no-underline transition-all"
+          style={{
+            background: 'rgba(167,139,250,0.06)',
+            border: '1px solid rgba(167,139,250,0.18)',
+          }}
+        >
+          <span className="text-xl">📖</span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-extrabold" style={{ color: '#c4b5fd' }}>口算说明</div>
+            <div className="text-[11px] truncate" style={{ color: 'rgba(196,181,253,0.55)' }}>
+              题目怎么来 · 快慢怎么算 · 错题与掌握
+            </div>
+          </div>
+          <span style={{ color: 'rgba(196,181,253,0.5)' }}>→</span>
+        </Link>
+
         {/* Recent sessions */}
         {wallet.sessions.length > 0 && (
           <section>

@@ -82,3 +82,10 @@ Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md
 pnpm --filter @rosie/calc typecheck   # scoped — type-checks ONLY calc
 pnpm --filter @rosie/calc lint
 ```
+
+## Parent-facing FAQ
+
+Plain-language guide (how selection / lagging / mastery / mistakes work):
+
+- Repo: [`FAQ.md`](./FAQ.md)
+- In-app: `/calc/faq`（口算首页「口算说明」入口）
