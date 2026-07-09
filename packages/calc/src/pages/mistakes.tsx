@@ -16,20 +16,22 @@ export default function CalcMistakesPage() {
   const { user } = useAuth()
   const { settings, update } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
-  const { mistakes, isLoading } = useCalcMistakes(user)
+  const { mistakes, unresolved, isLoading } = useCalcMistakes(user)
   const [showResolved, setShowResolved] = useState(false)
 
   const grouped = useMemo(() => {
     const buckets: Record<CalcCategory, CalcMistake[]> = { addsub: [], muldiv: [], mixed: [] }
     for (const m of mistakes) {
       if (m.resolved && !showResolved) continue
+      // Hide hanging !resolved that reconcile treats as mastered (unresolved list)
+      if (!m.resolved && !unresolved.some((u) => u.signature === m.signature) && !showResolved) continue
       buckets[m.category].push(m)
     }
     return buckets
-  }, [mistakes, showResolved])
+  }, [mistakes, unresolved, showResolved])
 
-  const unresolvedCount = mistakes.filter(m => !m.resolved).length
-  const resolvedCount = mistakes.filter(m => m.resolved).length
+  const unresolvedCount = unresolved.length
+  const resolvedCount = mistakes.filter((m) => m.resolved).length
 
   const startPractice = () => {
     if (unresolvedCount === 0) return

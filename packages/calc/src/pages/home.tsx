@@ -18,12 +18,7 @@ export default function CalcHomePage() {
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
   const wallet = useCalcWallet(user)
   const { totalProblems, practiceDays, weekProblems, monthProblems, yearProblems, isLoading: practiceStatsLoading } = useCalcPracticeStats(user)
-  const { mistakes } = useCalcMistakes(user)
-
-  const unresolvedMistakes = useMemo(
-    () => mistakes.filter(m => !m.resolved),
-    [mistakes],
-  )
+  const { unresolved: unresolvedMistakes } = useCalcMistakes(user)
 
   const blockCount = settings.selectedBlocks.length
   const mixedCount = settings.mixedOps.filter((m) => m.enabled).length

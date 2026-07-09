@@ -1,70 +1,22 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, supabase } from '@rosie/core'
-import type {
-  CalcAnswer,
-  CalcCategory,
-  CalcLevel,
-  CalcMistake,
-  CalcQuestion,
-  ErrorTag,
-} from '@rosie/core'
-import { levelKey, parseLevelKey } from '../utils/calc-helpers'
-import { answerFromRow, answerToNumeric } from '../utils/calc-answer'
+import type { CalcLevel, CalcMistake, CalcQuestion, ErrorTag } from '@rosie/core'
+import { calcMistakesStore } from '../utils/calc-mistakes-store'
+import { calcProblemStateStore } from '../utils/calc-problem-state-store'
+import {
+  applyMasterySideEffects,
+  unresolvedMistakes,
+} from '../utils/calc-mastery-sync'
 
-interface MistakeRow {
-  id: string
-  signature: string
-  display: string
-  answer: number
-  answer_json: CalcAnswer | null
-  level: string
-  category: CalcCategory
-  last_wrong_at: string
-  consecutive_correct: number
-  resolved: boolean
-  session_no: number | null
-  user_answer: string | null
-  error_tag: string | null
-}
-
-function rowToMistake(r: MistakeRow): CalcMistake {
-  return {
-    id: r.id,
-    signature: r.signature,
-    display: r.display,
-    answer: answerFromRow(r.answer_json, r.answer),
-    level: parseLevelKey(r.level),
-    category: r.category,
-    lastWrongAt: r.last_wrong_at,
-    consecutiveCorrect: r.consecutive_correct,
-    resolved: r.resolved,
-    sessionNo: r.session_no ?? undefined,
-    userAnswer: r.user_answer ?? undefined,
-    errorTag: (r.error_tag as ErrorTag | null) ?? null,
-  }
-}
-
-async function fetchCalcMistakes(userId: string): Promise<CalcMistake[]> {
-  const { data } = await supabase
-    .from('calc_mistakes')
-    .select(
-      'id,signature,display,answer,answer_json,level,category,last_wrong_at,consecutive_correct,resolved,session_no,user_answer,error_tag',
-    )
-    .eq('user_id', userId)
-    .order('last_wrong_at', { ascending: false })
-  return (data ?? []).map((r) => rowToMistake(r as MistakeRow))
-}
-
-export const calcMistakesStore = createUserSessionStore<CalcMistake[]>('calc_mistakes', {
-  fetch: fetchCalcMistakes,
-  empty: [],
-})
+export { calcMistakesStore }
 
 export function useCalcMistakes(user: User | null) {
   const { data: mistakes, isLoading } = calcMistakesStore.useSessionData(user)
+  const { data: stateRecord } = calcProblemStateStore.useSessionData(user)
+
+  const states = useMemo(() => new Map(Object.entries(stateRecord)), [stateRecord])
 
   const refresh = useCallback(async () => {
     if (!user) return
@@ -80,104 +32,52 @@ export function useCalcMistakes(user: User | null) {
       errorTag?: ErrorTag | null,
     ) => {
       if (!user) return
-      try {
-        await supabase.from('calc_mistakes').upsert(
-          {
-            user_id: user.id,
-            signature: q.signature,
-            display: q.display,
-            answer: answerToNumeric(q.answer),
-            answer_json: q.answer,
-            level: levelKey(q.level),
-            category: q.category,
-            last_wrong_at: new Date().toISOString(),
-            consecutive_correct: 0,
-            resolved: false,
-            session_no: sessionNo,
-            user_answer: userAnswer ?? null,
-            error_tag: errorTag ?? null,
-          },
-          { onConflict: 'user_id,signature' },
-        )
-      } catch {
-        /* ignore */
-      }
-      calcMistakesStore.patchSessionData(user.id, (prev) => {
-        const existing = prev.find((m) => m.signature === q.signature)
-        if (existing) {
-          return prev.map((m) =>
-            m.signature === q.signature
-              ? {
-                  ...m,
-                  consecutiveCorrect: 0,
-                  resolved: false,
-                  lastWrongAt: new Date().toISOString(),
-                  sessionNo,
-                  userAnswer,
-                  errorTag,
-                }
-              : m,
-          )
-        }
-        return [
-          {
-            signature: q.signature,
-            display: q.display,
-            answer: q.answer,
-            level: q.level,
-            category: q.category,
-            lastWrongAt: new Date().toISOString(),
-            consecutiveCorrect: 0,
-            resolved: false,
-            sessionNo,
-            userAnswer,
-            errorTag,
-          },
-          ...prev,
-        ]
+      await applyMasterySideEffects(user.id, {
+        kind: 'mistake_added',
+        question: q,
+        sessionNo,
+        userAnswer,
+        errorTag,
       })
     },
     [user],
   )
 
   const recordCorrect = useCallback(
-    async (signature: string, sessionNo: number) => {
+    async (signature: string, sessionNo: number, level: CalcLevel = 1) => {
       if (!user) return
       const existing = mistakes.find((m) => m.signature === signature)
       if (!existing) return
-      const nextCount = existing.consecutiveCorrect + 1
-      const nextResolved = nextCount >= 3
-      try {
-        await supabase
-          .from('calc_mistakes')
-          .update({
-            consecutive_correct: nextCount,
-            resolved: nextResolved,
-            session_no: sessionNo,
-          })
-          .eq('user_id', user.id)
-          .eq('signature', signature)
-      } catch {
-        /* ignore */
-      }
-      calcMistakesStore.patchSessionData(user.id, (prev) =>
-        prev.map((m) =>
-          m.signature === signature
-            ? { ...m, consecutiveCorrect: nextCount, resolved: nextResolved, sessionNo }
-            : m,
-        ),
-      )
+      await applyMasterySideEffects(user.id, {
+        kind: 'mistake_correct',
+        signature,
+        sessionNo,
+        level: existing.level ?? level,
+      })
     },
     [user, mistakes],
   )
 
   const lastSessionUnresolved = useCallback(
     (prevSessionNo: number): CalcMistake[] =>
-      mistakes.filter((m) => !m.resolved && m.sessionNo === prevSessionNo),
-    [mistakes],
+      unresolvedMistakes(mistakes, states).filter((m) => m.sessionNo === prevSessionNo),
+    [mistakes, states],
   )
 
-  return { mistakes, addMistake, recordCorrect, refresh, lastSessionUnresolved, isLoading }
+  const unresolved = useMemo(
+    () => unresolvedMistakes(mistakes, states),
+    [mistakes, states],
+  )
+
+  return {
+    mistakes,
+    unresolved,
+    addMistake,
+    recordCorrect,
+    refresh,
+    lastSessionUnresolved,
+    isLoading,
+  }
 }
 
 export type { CalcLevel }

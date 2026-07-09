@@ -7,7 +7,9 @@ import { useCalcSettings } from '../hooks/useCalcSettings'
 import { useCalcWallet } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
-import { useCalcProblemState, applyAttempt } from '../hooks/useCalcProblemState'
+import { useCalcProblemState } from '../hooks/useCalcProblemState'
+import { applyAttempt } from '../utils/calc-apply-attempt'
+import { applyMasterySideEffects } from '../utils/calc-mastery-sync'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcQuestionStage from '../components/CalcQuestionStage'
 import CalcSessionStatusBar from '../components/CalcSessionStatusBar'
@@ -56,6 +58,7 @@ export default function CalcSessionPage() {
   const { refresh: refreshStarHud } = useStarHud()
   const {
     mistakes,
+    unresolved,
     addMistake,
     recordCorrect,
     lastSessionUnresolved,
@@ -325,8 +328,12 @@ export default function CalcSessionPage() {
       if (first.sourceMixedOpId) state.mixedOpId = first.sourceMixedOpId
       nextStates.push(state)
     }
-    if (nextStates.length) {
-      await problemState.upsertStates(nextStates)
+    if (nextStates.length && user) {
+      await applyMasterySideEffects(user.id, {
+        kind: 'main_path_states',
+        states: nextStates,
+        sessionNo: nextSessionNo,
+      })
       // Refresh loadedStatesRef so DrillSummary reads updated proficiency (not pre-drill snapshot).
       for (const state of nextStates) {
         loadedStatesRef.current.set(state.signature, state)
@@ -453,6 +460,7 @@ export default function CalcSessionPage() {
     startedTsMs,
     startedAtIso,
     problemState,
+    user,
   ])
 
   // ── Submit answer ────────────────────────────────────────────────
@@ -583,7 +591,7 @@ export default function CalcSessionPage() {
         questionTimesRef.current.push(elapsedMs)
         questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
       }
-      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+      const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
       if (isCorrect) {
         settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, userAnswer)
@@ -604,7 +612,7 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [attemptsForCurrent, mistakes, settings, settleQuestion, withinLimitForQuestion],
+    [attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -644,7 +652,7 @@ export default function CalcSessionPage() {
     if (!Number.isFinite(userAns)) return
 
     const isCorrect = checkAnswer(input, q.answer)
-    const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+    const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
     const withinLimit = withinLimitForQuestion(q, elapsedMs)
@@ -683,7 +691,7 @@ export default function CalcSessionPage() {
     idx,
     input,
     attemptsForCurrent,
-    mistakes,
+    unresolved,
     settings,
     settleQuestion,
     withinLimitForQuestion,
