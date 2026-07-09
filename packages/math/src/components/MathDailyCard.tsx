@@ -55,7 +55,7 @@ export default function MathDailyCard() {
           <div className="flex items-center gap-1 text-[12px] font-bold text-orange-500 transition-transform group-hover:translate-x-0.5">
             {(() => {
               if (isLoading) return '…'
-              if (!weeklyPlan) return '新建计划'
+              if (!weeklyPlan) return '暂无计划'
               return allDone ? '✅ 完成！' : '去做题'
             })()}
             <span className="text-[14px]">→</span>
@@ -125,7 +125,7 @@ export default function MathDailyCard() {
           </>
         ) : (
           <div className="text-[12px] font-medium text-orange-700/70">
-            还没有本周计划，点击创建 ✨
+            还没有进行中的计划，请家长在计划中心创建
           </div>
         )}
       </div>

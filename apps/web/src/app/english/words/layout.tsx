@@ -20,7 +20,10 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const isPracticePage = pathname.includes('/practice')
   const isDaily = pathname.includes('/daily')
   const isWeeklyPage = pathname.includes('/weekly/')
+  const isAdaptivePage = pathname.includes('/adaptive/')
   const isReading = pathname.includes('/reading')
+  // Plan sessions own their own study/quiz UI; do not open the global ImmersiveMode overlay.
+  const suppressGlobalImmersive = isDaily || isWeeklyPage || isAdaptivePage || isReading
   const immersiveMode = isPracticePage && !previewCards ? 'practice' : 'vocab'
 
   const enterImmersive = useCallback(() => {
@@ -42,7 +45,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
       )}
       {children}
       <ImmersiveMode
-        open={isImmersive && !isDaily && !isWeeklyPage && !isReading}
+        open={isImmersive && !suppressGlobalImmersive}
         words={filteredWords}
         allWords={vocab}
         mode={immersiveMode}

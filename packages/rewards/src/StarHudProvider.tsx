@@ -22,6 +22,8 @@ interface AwardOptions {
   bonusLabel?: string
   /** Skip burst animation and earn sound — still updates balance and session. */
   silent?: boolean
+  /** Play earn sound but skip the burst popup (less distracting during quizzes). */
+  soundOnly?: boolean
 }
 
 interface StarHudContextValue {
@@ -101,17 +103,19 @@ export function StarHudProvider({ children }: { children: ReactNode }) {
         optimisticRef.current[color] +
         total
       if (!opts?.silent) {
-        const ev: BurstEvent = {
-          id: ++burstIdSeq,
-          color,
-          amount: safeAmount,
-          bonus: bonus > 0 ? bonus : undefined,
-          bonusLabel: opts?.bonusLabel,
-          sessionTotal: sessionRef.current[color] + total,
-          total: nextTotalBalance,
-          origin: opts?.origin,
+        if (!opts?.soundOnly) {
+          const ev: BurstEvent = {
+            id: ++burstIdSeq,
+            color,
+            amount: safeAmount,
+            bonus: bonus > 0 ? bonus : undefined,
+            bonusLabel: opts?.bonusLabel,
+            sessionTotal: sessionRef.current[color] + total,
+            total: nextTotalBalance,
+            origin: opts?.origin,
+          }
+          setBursts(prev => [...prev, ev])
         }
-        setBursts(prev => [...prev, ev])
         playStarEarn(color, total, bonus)
       }
 

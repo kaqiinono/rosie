@@ -30,8 +30,7 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
     [notes, lessonId, basePath, problems],
   )
 
-  const showSummary =
-    !summaryLoading && summary != null && !isRichBodyEmpty(summary.bodyHtml)
+  const showSummary = !summaryLoading && summary != null && !isRichBodyEmpty(summary.bodyHtml)
 
   return (
     <div>
@@ -43,7 +42,7 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
 
       <div className="mb-4 rounded-[14px] border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-4">
         <div className="flex items-center gap-2 text-sm font-extrabold text-violet-900">
-          📝 题目笔记
+          📝 笔记
           {!isLoading && entries.length > 0 && (
             <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold text-violet-700">
               {entries.length} 条
@@ -54,12 +53,12 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
       </div>
 
       {isLoading ? (
-        <p className="py-12 text-center text-[13px] text-text-muted">加载中…</p>
+        <p className="text-text-muted py-12 text-center text-[13px]">加载中…</p>
       ) : entries.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
           <div className="text-5xl">📭</div>
-          <div className="text-[15px] font-bold text-text-primary">还没有题目笔记</div>
-          <div className="text-[13px] text-text-muted">家长可在管理后台为题目添加笔记</div>
+          <div className="text-text-primary text-[15px] font-bold">还没有笔记</div>
+          <div className="text-text-muted text-[13px]">家长可在管理后台为题目添加笔记</div>
           <Link
             href={basePath}
             className="mt-2 rounded-full bg-violet-600 px-5 py-2 text-[13px] font-semibold text-white no-underline shadow-[0_3px_10px_rgba(91,76,204,0.25)]"
@@ -78,12 +77,14 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
                       {sourceLabel}
                     </span>
                   )}
-                  <span className="truncate text-[13px] font-bold text-text-primary">{problemTitle}</span>
+                  <span className="text-text-primary truncate text-[13px] font-bold">
+                    {problemTitle}
+                  </span>
                 </div>
                 <div
                   className={clsx(
-                    'lesson-note-preview text-[12px] leading-relaxed text-text-secondary',
-                    '[&_strong]:font-bold [&_strong]:text-text-primary',
+                    'lesson-note-preview text-text-secondary text-[12px] leading-relaxed',
+                    '[&_strong]:text-text-primary [&_strong]:font-bold',
                     '[&_ul]:my-0.5 [&_ul]:list-disc [&_ul]:pl-4',
                     '[&_ol]:my-0.5 [&_ol]:list-decimal [&_ol]:pl-4',
                     '[&_p]:my-0.5 [&_p:last-child]:mb-0',

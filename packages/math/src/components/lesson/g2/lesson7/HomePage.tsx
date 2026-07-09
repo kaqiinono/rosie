@@ -13,6 +13,14 @@ interface HomePageProps {
 
 const MODULES = [
   {
+    key: 'pretest',
+    path: `${BASE}/pretest`,
+    icon: '📝',
+    bg: 'bg-[#fef9c3]',
+    title: '课前测',
+    desc: '6道摸底题 · 数字谜初步',
+  },
+  {
     key: 'lesson',
     path: `${BASE}/lesson`,
     icon: '📖',

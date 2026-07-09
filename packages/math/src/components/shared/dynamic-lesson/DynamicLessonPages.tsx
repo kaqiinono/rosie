@@ -136,7 +136,6 @@ function SectionListPage({ section }: { section: SectionKey }) {
         lessonId={entry.lessonKey}
         tagStyles={module.TAG_STYLE}
         lessonBasePath={basePath}
-        onPractice={(problemId) => beginPractice(problemId)}
         showExpanded={showDetail}
         ProblemDetail={module.ProblemDetail}
         autoExpandSolution={autoExpand}

@@ -161,7 +161,7 @@ export default function ImmersiveMode({
       if (info.finalCorrect) {
         setQScore((s) => s + 1)
         const amount = currentQ.type === 'C' || currentQ.type === 'D' ? 2 : 1
-        void awardStars('red', amount)
+        void awardStars('red', amount, { soundOnly: true })
       }
       quizResultBuffer.current.push({ entry: currentQ.word, correct: info.finalCorrect })
     },

@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { getWeekStart, useAuth } from '@rosie/core'
@@ -11,6 +10,13 @@ import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcConfigBar from '../components/CalcConfigBar'
 import { playSfx } from '../components/audio'
+import { BLOCK_GROUPS, blockById } from '../utils/calc-blocks'
+import { skeletonMeta } from '../utils/calc-mixed'
+
+const GROUP_LABEL = Object.fromEntries(BLOCK_GROUPS.map((g) => [g.group, g.label])) as Record<
+  string,
+  string
+>
 
 export default function CalcHomePage() {
   const { user } = useAuth()
@@ -21,10 +27,21 @@ export default function CalcHomePage() {
   const { unresolved: unresolvedMistakes } = useCalcMistakes(user)
 
   const blockCount = settings.selectedBlocks.length
-  const mixedCount = settings.mixedOps.filter((m) => m.enabled).length
+  const enabledMixed = settings.mixedOps.filter((m) => m.enabled)
+  const mixedCount = enabledMixed.length
+  const selectedBlockLabels = settings.selectedBlocks.map((b) => {
+    const block = blockById(b.id)
+    if (!block) return b.id
+    const group = GROUP_LABEL[block.group]
+    // Labels like「10 以内」repeat across ops — prefix with 加/减/…
+    return group && !block.label.includes(group) ? `${group}·${block.label}` : block.label
+  })
+  const selectedMixedLabels = enabledMixed.map(
+    (m) => m.label ?? skeletonMeta(m.skeleton).label,
+  )
   const manualTotal =
     settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
-    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
+    enabledMixed.reduce((s, m) => s + m.count, 0)
   const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
 
   const todayTarget = totalQuestions
@@ -82,7 +99,7 @@ export default function CalcHomePage() {
             boxShadow: '0 4px 24px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
           }}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <div>
               <div
                 className="text-[10px] font-extrabold tracking-widest uppercase mb-0.5"
@@ -100,13 +117,15 @@ export default function CalcHomePage() {
               >
                 已选 {blockCount} 种单运算
               </div>
-              <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>
-                {mixedCount} 种混合运算
-              </div>
+              {mixedCount > 0 && (
+                <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>
+                  {mixedCount} 种混合运算
+                </div>
+              )}
             </div>
             <Link
               href="/calc/settings"
-              className="rounded-full px-3 py-1.5 text-[11px] font-extrabold no-underline transition-all"
+              className="rounded-full px-3 py-1.5 text-[11px] font-extrabold no-underline transition-all shrink-0"
               style={{
                 background: 'rgba(139,92,246,0.15)',
                 border: '1px solid rgba(139,92,246,0.3)',
@@ -116,6 +135,37 @@ export default function CalcHomePage() {
               ⚙ 设置
             </Link>
           </div>
+
+          {(selectedBlockLabels.length > 0 || selectedMixedLabels.length > 0) && (
+            <div className="mb-4 flex flex-wrap gap-1.5">
+              {selectedBlockLabels.map((label, i) => (
+                <span
+                  key={`b-${settings.selectedBlocks[i].id}`}
+                  className="rounded-md px-2 py-1 text-[10px] font-extrabold leading-none"
+                  style={{
+                    background: 'rgba(139,92,246,0.16)',
+                    border: '1px solid rgba(139,92,246,0.35)',
+                    color: '#c4b5fd',
+                  }}
+                >
+                  {label}
+                </span>
+              ))}
+              {selectedMixedLabels.map((label, i) => (
+                <span
+                  key={`m-${enabledMixed[i].id}`}
+                  className="rounded-md px-2 py-1 text-[10px] font-extrabold leading-none"
+                  style={{
+                    background: 'rgba(236,72,153,0.12)',
+                    border: '1px solid rgba(236,72,153,0.3)',
+                    color: '#f0abfc',
+                  }}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <div

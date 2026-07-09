@@ -2,12 +2,10 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import type { Problem, ProblemSet } from '@rosie/core'
-import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@rosie/math/components/shared/DifficultyFilterRow'
 import ExpandedProblemCard, { type ProblemDetailInlineComponent } from '@rosie/math/components/shared/ExpandedProblemCard'
-import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
-import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import MasonryGrid from '@rosie/math/components/shared/MasonryGrid'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
 import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
 import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
@@ -104,9 +102,8 @@ export function createFilterPanel(
     const { favorites } = useMathFavoritesContext()
     const startPractice = useStartPracticeQueue()
     const [favOnly, setFavOnly] = useState(false)
-    const [showDetail, setShowDetail] = useState(false)
     const [autoExpand, setAutoExpand] = useState(false)
-    const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
+    const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
     const all: { p: Problem; setName: string; idx: number }[] = []
     ;(Object.entries(problems) as [string, Problem[]][]).forEach(([setName, list]) => {
@@ -151,10 +148,23 @@ export function createFilterPanel(
       [practicePool, startPractice, title, base],
     )
 
-    const toggleDetailMode = useCallback(() => { setShowDetail(v => !v); setCollapsedIds(new Set()) }, [])
+    const allExpanded = total > 0 && filtered.every(({ p }) => expandedIds.has(p.id))
+
     const toggleAutoExpand = useCallback(() => { setAutoExpand(v => !v) }, [])
+    const toggleBatchExpand = useCallback(() => {
+      setExpandedIds(
+        allExpanded
+          ? new Set()
+          : new Set(filtered.map(({ p }) => p.id)),
+      )
+    }, [allExpanded, filtered])
     const toggleCard = useCallback((id: string) => {
-      setCollapsedIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next })
+      setExpandedIds(prev => {
+        const next = new Set(prev)
+        if (next.has(id)) next.delete(id)
+        else next.add(id)
+        return next
+      })
     }, [])
 
     const { btnOn, btnOff } = theme
@@ -263,65 +273,35 @@ export function createFilterPanel(
               >
                 开始练习
               </button>
-              <button onClick={toggleDetailMode}
-                className={`shrink-0 ${btnBase} ${showDetail ? btnOn : `${btnOff} bg-white`}`}>
-                {showDetail ? '收起 ↑' : '展开 ↓'}
+              <button
+                onClick={toggleBatchExpand}
+                className={`shrink-0 ${btnBase} ${allExpanded ? btnOn : `${btnOff} bg-white`}`}
+              >
+                {allExpanded ? '收起 ↑' : '展开 ↓'}
               </button>
             </div>
           </div>
         </div>
 
-        {showDetail ? (
-          <div className="flex flex-col gap-2">
-            {filtered.map(({ p, setName, idx }) => (
-              <ExpandedProblemCard
-                key={p.id}
-                problem={p}
-                index={idx}
-                solveCount={solveCount}
-                tagStyles={tagColors}
-                isOpen={!collapsedIds.has(p.id)}
-                onToggle={() => toggleCard(p.id)}
-                ProblemDetail={ProblemDetailComponent}
-                defaultSolutionOpen={autoExpand}
-                sourceLabel={problemSetSectionLabel(setName, lessonId)}
-                sourceBadgeClass={theme.srcBadge}
-              />
-            ))}
-            {filtered.length === 0 && <div className="py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map(({ p, setName, idx }) => {
-              const count = solveCount[p.id] ?? 0
-              const level = getMasteryLevel(count)
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => beginPractice(p.id)}
-                  className={`flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] bg-white p-3 text-left shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all ${MASTERY_BORDER[level]}`}
-                >
-                  <div className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-xs font-bold ${MASTERY_BADGE_BG[level]}`}>
-                    {idx + 1}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
-                    <div className="mt-0.5 flex flex-wrap gap-1">
-                      <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagColors[p.tag] || 'bg-gray-100 text-gray-600'}`}>{p.tagLabel}</span>
-                      <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${theme.srcBadge}`}>{problemSetSectionLabel(setName, lessonId)}</span>
-                      <PracticeCountBadge count={count} />
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
-                    <div className="text-base">{MASTERY_ICON[level]}</div>
-                    <FavoriteHeart problemId={p.id} size="sm" />
-                  </div>
-                </button>
-              )
-            })}
-            {filtered.length === 0 && <div className="col-span-full py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>}
-          </div>
+        <MasonryGrid>
+          {filtered.map(({ p, setName, idx }) => (
+            <ExpandedProblemCard
+              key={p.id}
+              problem={p}
+              index={idx}
+              solveCount={solveCount}
+              tagStyles={tagColors}
+              isOpen={expandedIds.has(p.id)}
+              onToggle={() => toggleCard(p.id)}
+              ProblemDetail={ProblemDetailComponent}
+              defaultSolutionOpen={autoExpand}
+              sourceLabel={problemSetSectionLabel(setName, lessonId)}
+              sourceBadgeClass={theme.srcBadge}
+            />
+          ))}
+        </MasonryGrid>
+        {filtered.length === 0 && (
+          <div className="py-6 text-center text-[13px] text-text-muted">没有符合筛选条件的题目</div>
         )}
       </div>
     )

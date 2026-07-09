@@ -7,6 +7,7 @@ import type { Problem } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import ExpandedProblemCard, { type ProblemDetailInlineComponent } from '@rosie/math/components/shared/ExpandedProblemCard'
+import MasonryGrid from '@rosie/math/components/shared/MasonryGrid'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import AnalysisGuideBadge from '@rosie/math/components/shared/AnalysisGuideBadge'
@@ -73,28 +74,30 @@ export default function LessonProblemList({
 
   if (showExpanded && ProblemDetail) {
     return (
-      <div className="flex flex-col gap-2">
-        {problems.map((p, i) => (
-          <ExpandedProblemCard
-            key={p.id}
-            problem={p}
-            index={i}
-            solveCount={solveCount}
-            tagStyles={tagStyles}
-            isOpen={!collapsedIds.has(p.id)}
-            onToggle={() => toggleCard(p.id)}
-            ProblemDetail={ProblemDetail}
-            defaultSolutionOpen={autoExpandSolution}
-            sourceLabel={showSource ? sourceLabel : undefined}
-            sourceBadgeClass={showSource ? 'bg-purple-100 text-purple-700' : undefined}
-          />
-        ))}
+      <>
+        <MasonryGrid>
+          {problems.map((p, i) => (
+            <ExpandedProblemCard
+              key={p.id}
+              problem={p}
+              index={i}
+              solveCount={solveCount}
+              tagStyles={tagStyles}
+              isOpen={!collapsedIds.has(p.id)}
+              onToggle={() => toggleCard(p.id)}
+              ProblemDetail={ProblemDetail}
+              defaultSolutionOpen={autoExpandSolution}
+              sourceLabel={showSource ? sourceLabel : undefined}
+              sourceBadgeClass={showSource ? 'bg-purple-100 text-purple-700' : undefined}
+            />
+          ))}
+        </MasonryGrid>
         {problems.length === 0 && (
           <div className="py-6 text-center text-[13px] text-text-muted">
             没有符合筛选条件的题目
           </div>
         )}
-      </div>
+      </>
     )
   }
 
