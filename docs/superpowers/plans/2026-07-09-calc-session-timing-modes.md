@@ -20,6 +20,7 @@
 - Timeout auto-advance = unanswered → **final wrong** (no partial keypad submit)
 - Custom `bonusSec` clamp **0–15**; chips +2 / +3 / +5 + custom
 - Prep offers all three modes even when `timedAnswerEnabled` is false
+- End-of-session star multiplier (daily): relaxed ×1.0; strict ×1.2; bonus ×`max(1.0, 1.2 - 0.05×bonusSec)`; `finalStars = Math.round(rawStars × multiplier)` applied once in `finishSession` before wallet write
 - SQL: only `ALTER … ADD COLUMN IF NOT EXISTS`; no DELETE/TRUNCATE/重灌
 - Before done: `pnpm --filter @rosie/calc typecheck` and focused vitest for new helpers
 
@@ -63,6 +64,8 @@
     - `relaxed` → if `timedAnswerEnabled && explicitSeconds > 0` then `explicitSeconds`, else `null`
   - `tryEnqueueRetry(pool: T[], item: T, maxRetry: number): { pool: T[]; enqueued: boolean }` — push if `pool.length < maxRetry`
   - `isInMakeupPhase(idx: number, plannedCount: number): boolean` → `idx >= plannedCount`
+  - `sessionStarMultiplier(mode: CalcTimingMode, bonusSec: number): number` — relaxed `1`; strict `1.2`; bonus `Math.max(1, 1.2 - 0.05 * clampBonusSec(bonusSec))`
+  - `applySessionStarMultiplier(rawStars: number, mode: CalcTimingMode, bonusSec: number): number` → `Math.round(rawStars * sessionStarMultiplier(...))`
 
 - [ ] **Step 1: Write failing tests**
 
@@ -136,8 +139,26 @@ describe('tryEnqueueRetry', () => {
     expect(r.pool).toEqual(['a', 'b'])
   })
 })
+
+describe('sessionStarMultiplier', () => {
+  it('relaxed 1, strict 1.2, bonus decays 5pp per second to floor 1', () => {
+    expect(sessionStarMultiplier('relaxed', 0)).toBe(1)
+    expect(sessionStarMultiplier('strict', 99)).toBe(1.2)
+    expect(sessionStarMultiplier('bonus', 0)).toBe(1.2)
+    expect(sessionStarMultiplier('bonus', 2)).toBeCloseTo(1.1)
+    expect(sessionStarMultiplier('bonus', 4)).toBe(1)
+    expect(sessionStarMultiplier('bonus', 10)).toBe(1)
+  })
+
+  it('applySessionStarMultiplier rounds', () => {
+    expect(applySessionStarMultiplier(10, 'strict', 0)).toBe(12)
+    expect(applySessionStarMultiplier(10, 'bonus', 2)).toBe(11)
+    expect(applySessionStarMultiplier(10, 'relaxed', 0)).toBe(10)
+  })
+})
 ```
 
+Import `sessionStarMultiplier` and `applySessionStarMultiplier` in the test file.
 - [ ] **Step 2: Run — expect FAIL**
 
 ```bash
@@ -192,6 +213,20 @@ export function tryEnqueueRetry<T>(pool: T[], item: T, maxRetry: number): { pool
 
 export function isInMakeupPhase(idx: number, plannedCount: number): boolean {
   return idx >= plannedCount
+}
+
+export function sessionStarMultiplier(mode: CalcTimingMode, bonusSec: number): number {
+  if (mode === 'relaxed') return 1
+  if (mode === 'strict') return 1.2
+  return Math.max(1, 1.2 - 0.05 * clampBonusSec(bonusSec))
+}
+
+export function applySessionStarMultiplier(
+  rawStars: number,
+  mode: CalcTimingMode,
+  bonusSec: number,
+): number {
+  return Math.round(rawStars * sessionStarMultiplier(mode, bonusSec))
 }
 ```
 
@@ -347,6 +382,18 @@ EOF
 
 **Relaxed:** no auto-advance effect.
 
+**End-of-session stars (daily):** In `finishSession`, before writing `coinsEarned` / wallet:
+
+```ts
+const raw = coinsTotalRef.current
+const finalStars = applySessionStarMultiplier(raw, sessionTimingMode, sessionBonusSec)
+coinsTotalRef.current = finalStars
+setCoinsTotal(finalStars)
+// persist coinsEarned: finalStars
+```
+
+Prep screen should show the live multiplier preview from `sessionStarMultiplier`. Drills / mistakes: multiplier **1.0** (no mode).
+
 - [ ] **Step 1: Build `SessionPrepScreen`**
 
 Props sketch:
@@ -437,6 +484,7 @@ pnpm --filter web exec vitest run tests/calc-session-policy.test.ts
 | Single-pass makeup | T3 |
 | T_target vs T_clock + bonus | T1, T4 |
 | Timeout = final wrong | T4 |
+| End-of-session star multiplier | T1 helpers, T4 `finishSession` |
 | Prep + defaults in settings | T2, T4, T5 |
 | Modes available when timed off | T1 clock/target, T4 |
 | FAQ / CLAUDE | T5 |
@@ -447,3 +495,4 @@ pnpm --filter web exec vitest run tests/calc-session-policy.test.ts
 - `CalcTimingMode` lives in `@rosie/core` (settings owner); policy module re-exports.
 - Prep estimate `N` may differ slightly from post-`buildSession` `plannedCount` if carried mistakes append — status bar uses real `plannedCount` after start; prep copy says「约 N 题」.
 - Speed bonus coins still require UI `secondsForQuestion` / withinLimit as today — under strict/bonus, prefer gating speed bonus on `withinLimit` (target), not clock.
+- Session mode star multiplier is **end-of-session only** (option A); live HUD during play shows raw running total; summary / wallet use multiplied total (option: briefly show「模式加成 +X」on the summary card).

@@ -56,6 +56,20 @@ Per question source: explicit per-type `seconds` when `> 0`, else `TIME_TARGETS[
 
 **「限时答题」toggle:** controls whether settings UI edits per-type target seconds. **Does not** gate mode availability on the prep screen. If the user picks 严格/自定义 while the toggle is off, `T_target` still resolves via explicit seconds if present, else fluent — prep stays usable without bouncing to settings.
 
+### Session star multiplier (end-of-session)
+
+Applied **once at session finish** to the session’s earned-star total (not per-question). Formula:
+
+| Mode | Multiplier |
+|------|------------|
+| **宽松** | `1.0`（无加成） |
+| **严格** | `1.2`（+20%） |
+| **自定义加成** | `max(1.0, 1.2 - 0.05 × bonusSec)` — each +1s of clock bonus reduces the 20% premium by 5 percentage points, floored at no premium |
+
+Settlement: `finalStars = Math.round(rawStars × multiplier)` (0.5 rounds toward +∞ / standard `Math.round`). Wallet / session row persist **`finalStars`**. Prep UI should preview the multiplier (e.g.「严格 +20% 星」「自定义 +N 秒 → +X% 星」).
+
+Examples: `bonusSec=0` → ×1.2; `bonusSec=2` → ×1.1; `bonusSec=4` → ×1.0; `bonusSec≥4` → ×1.0.
+
 ## §3 Settings defaults + prep screen
 
 **Settings**
@@ -72,14 +86,14 @@ Per question source: explicit per-type `seconds` when `> 0`, else `TIME_TARGETS[
 
 **Session authority:** confirmed prep values apply for this run; no per-session DB table required.
 
-**FAQ / CLAUDE:** document three modes, retry ceiling, single-pass makeup, and “clock soft / lagging hard” under bonus.
+**FAQ / CLAUDE:** document three modes, retry ceiling, single-pass makeup, “clock soft / lagging hard” under bonus, and end-of-session star multipliers.
 
 ## Out of scope
 
 - Drill / mistakes-mode prep screens
 - Changing selection weights / coverage / cold-start formulas
 - Auto-submit of partial keypad input on timeout (timeout = unanswered → final wrong)
-- Changing coin economy beyond existing withinLimit speed bonus rules
+- Changing per-question coin / streak formulas (only the end-of-session mode multiplier is added)
 
 ## Touch map (implementation hint)
 
@@ -100,4 +114,5 @@ Per question source: explicit per-type `seconds` when `> 0`, else `TIME_TARGETS[
 3. `withinLimit` ignores `bonusSec`.
 4. Every daily session: makeup size ≤ `max(3, floor(N×0.15))`; makeup never requeues.
 5. Settings defaults round-trip; prep can override for one session.
-6. `pnpm --filter @rosie/calc typecheck` passes.
+6. End-of-session stars: relaxed ×1.0; strict ×1.2; bonus ×`max(1.0, 1.2 - 0.05×bonusSec)`, `Math.round`.
+7. `pnpm --filter @rosie/calc typecheck` passes.
