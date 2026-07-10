@@ -9,8 +9,12 @@ import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
 import { applyAttempt } from '../utils/calc-apply-attempt'
-import { applyMasterySideEffects } from '../utils/calc-mastery-sync'
-import { fetchMasteredRecallCandidates } from '../utils/calc-problem-state-store'
+import { applyMasterySideEffects, unresolvedMistakes } from '../utils/calc-mastery-sync'
+import { calcMistakesStore } from '../utils/calc-mistakes-store'
+import {
+  calcProblemStateStore,
+  fetchMasteredRecallCandidates,
+} from '../utils/calc-problem-state-store'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcQuestionStage from '../components/CalcQuestionStage'
 import CalcSessionStatusBar from '../components/CalcSessionStatusBar'
@@ -72,7 +76,6 @@ export default function CalcSessionPage() {
     unresolved,
     addMistake,
     recordCorrect,
-    lastSessionUnresolved,
     refresh: refreshMistakes,
   } = useCalcMistakes(user)
   const problemState = useCalcProblemState(user)
@@ -254,17 +257,16 @@ export default function CalcSessionPage() {
       // Use the returned map directly — `problemState.states` is still the stale
       // pre-load value within this same closure (React state updates async).
       const loadedStates = await problemState.loadAll()
-      // Merge SQL-truncated recall candidates (LIMIT recall*3) into the map.
-      if (!drillParams) {
-        const blockIds = settings.selectedBlocks.map((b) => b.id)
-        const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
-        const recall = await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot)
-        for (const s of recall) {
-          if (!loadedStates.has(s.signature)) loadedStates.set(s.signature, s)
-        }
-      }
+      // Mistakes MUST be in the store before reconcile / carry — the hook's
+      // `mistakes` state may still be empty on a cold visit to /calc/session.
+      await calcMistakesStore.ensureLoaded(user.id)
       // Reconcile hanging mistakes vs mastered (deadlock repair)
       await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+      // Reconcile may have resolved/demoted rows — refresh the local snapshot.
+      const reconciledStates = calcProblemStateStore.getSessionData(user.id) ?? {}
+      for (const [sig, st] of Object.entries(reconciledStates)) {
+        loadedStates.set(sig, st)
+      }
 
       loadedStatesRef.current = loadedStates
 
@@ -281,10 +283,26 @@ export default function CalcSessionPage() {
         setPlannedCount(session.length)
         setQuestions(session)
       } else {
+        // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
+        const blockIds = settings.selectedBlocks.map((b) => b.id)
+        const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
+        const recallCandidates = await fetchMasteredRecallCandidates(
+          user.id,
+          blockIds,
+          recallSlot,
+        )
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
-        const carried = lastSessionUnresolved(settings.sessionCounter)
-        const session = buildSession(settings, { problemStates: loadedStates }, carried)
+        // Read from the store snapshot (post-reconcile), not the hook's state.
+        const mistakesNow = calcMistakesStore.getSessionData(user.id) ?? []
+        const carried = unresolvedMistakes(mistakesNow, loadedStates).filter(
+          (m) => m.sessionNo === settings.sessionCounter,
+        )
+        const session = buildSession(
+          settings,
+          { problemStates: loadedStates, recallCandidates },
+          carried,
+        )
         setQuestions(session)
         plannedCountRef.current = session.length
         setPlannedCount(session.length)

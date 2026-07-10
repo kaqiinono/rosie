@@ -53,13 +53,7 @@ export function reconcileMistakesAndStates(
     if (!st || st.status !== 'mastered') continue
 
     if (m.lastWrongAt > st.updatedAt) {
-      nextStates[m.signature] = {
-        ...st,
-        status: 'active',
-        consecutiveCorrect: 0,
-        proficiency: Math.max(0, st.proficiency - 2),
-        updatedAt: new Date().toISOString(),
-      }
+      nextStates[m.signature] = demoteFromMastered(st)
       dirty.add(m.signature)
     } else {
       nextMistakes[i] = {
@@ -84,11 +78,26 @@ function promoteToMastered(prev: CalcProblemState): CalcProblemState {
   }
 }
 
+/** Cross-session repair (reconcile 3b): no applyAttempt runs, so the -2 lives here. */
 function demoteFromMastered(prev: CalcProblemState): CalcProblemState {
   return {
     ...prev,
     consecutiveCorrect: 0,
     proficiency: Math.max(0, prev.proficiency - 2),
+    status: 'active',
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+/**
+ * In-session wrong answer: reset streak / pull out of mastered, but do NOT
+ * touch proficiency — the session-finish fold (applyAttempt) is the single
+ * owner of the -2 penalty, otherwise one wrong answer costs -4.
+ */
+export function pullBackFromMastered(prev: CalcProblemState): CalcProblemState {
+  return {
+    ...prev,
+    consecutiveCorrect: 0,
     status: 'active',
     updatedAt: new Date().toISOString(),
   }
@@ -198,7 +207,7 @@ export async function applyMasterySideEffects(
     }
     const prev = nextStates[q.signature] ?? defaultProblemState(q.signature, q.level)
     nextStates[q.signature] = {
-      ...demoteFromMastered(prev),
+      ...pullBackFromMastered(prev),
       blockId: q.sourceBlockId ?? prev.blockId,
       mixedOpId: q.sourceMixedOpId ?? prev.mixedOpId,
     }

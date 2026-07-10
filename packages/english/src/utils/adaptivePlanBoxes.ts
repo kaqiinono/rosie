@@ -7,9 +7,12 @@ type BoxIndex = keyof typeof BOX_INTERVALS_DAYS
 
 /** Calendar-day add only. Use for *writing* nextReviewDate. Due checks use string compare — see Task 3. */
 export function addCalendarDays(isoDate: string, days: number): string {
-  const d = new Date(isoDate + 'T12:00:00') // noon avoids DST edge when computing the next DATE
-  d.setDate(d.getDate() + days)
-  return d.toISOString().slice(0, 10)
+  const [y, m, d] = isoDate.split('-').map(Number)
+  // Local-calendar arithmetic at noon (DST-safe). Never use toISOString here:
+  // it converts to UTC and shifts the DATE for UTC+13/+14 users (spec §4.4).
+  const date = new Date(y, (m ?? 1) - 1, (d ?? 1) + days, 12)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
 /**

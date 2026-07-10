@@ -6,6 +6,7 @@ import type {
 import {
   isDue,
   countDueLearning,
+  countActivatedToday,
   pickActivations,
   resolveMode,
   buildDailyTask,
@@ -225,6 +226,41 @@ describe('buildDailyTask', () => {
     const task = buildDailyTask(plan, rows, TODAY)
     expect(task.activateKeys).toEqual(['p3', 'ns'])
     expect(task.bossKeys).toEqual([])
+  })
+
+  it('deducts words already activated today from the daily quota', () => {
+    const plan = basePlan({ newWordsPerDay: 3 })
+    const rows = [
+      // Two words already introduced today in an earlier round…
+      row('done1', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
+      row('done2', { status: 'MASTERED', introducedOn: TODAY }),
+      // …plus a backlog of fresh candidates.
+      row('ns1', { status: 'NOT_STARTED' }),
+      row('ns2', { status: 'NOT_STARTED' }),
+      row('ns3', { status: 'NOT_STARTED' }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.activateKeys).toEqual(['ns1'])
+  })
+
+  it('stops pulling new words once the daily quota is exhausted', () => {
+    const plan = basePlan({ newWordsPerDay: 2 })
+    const rows = [
+      row('done1', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
+      row('done2', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY, nextReviewDate: TODAY }),
+      row('ns', { status: 'NOT_STARTED' }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.activateKeys).toEqual([])
+  })
+
+  it('counts activations only for today (yesterday does not consume quota)', () => {
+    const rows = [
+      row('yesterday', { status: 'LEARNING', boxIndex: 2, introducedOn: '2026-07-08' }),
+      row('today', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY }),
+      row('archived', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY, archivedAt: TODAY }),
+    ]
+    expect(countActivatedToday(rows, TODAY)).toBe(1)
   })
 
   it('clears activateKeys in review_only mode', () => {

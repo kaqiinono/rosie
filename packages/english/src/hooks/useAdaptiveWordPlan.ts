@@ -242,7 +242,7 @@ export function useAdaptiveWordPlan(user: User | null) {
           countError,
         })
         throw countError ?? new Error(
-          `计划单词进度写入不完整（期望 ${progressRows.length}，实际 ${count ?? 0}）。请确认已在 Supabase 执行 docs/sql/adaptive-word-plans.sql`,
+          `计划单词进度写入不完整（期望 ${progressRows.length}，实际 ${count ?? 0}）。请确认已在 Supabase 执行 packages/english/sql/adaptive-word-plans.sql`,
         )
       }
 
@@ -306,11 +306,11 @@ export function useAdaptiveWordPlan(user: User | null) {
   )
 
   const completePlanIfEligible = useCallback(
-    async (planId: string): Promise<boolean> => {
+    async (planId: string, hasOpenSession = false): Promise<boolean> => {
       if (!user) return false
 
       const progressRows = await loadProgress(planId)
-      if (!isPlanCompletable(progressRows, false)) return false
+      if (!isPlanCompletable(progressRows, hasOpenSession)) return false
 
       const plan = plans.find((item) => item.id === planId) ?? (await loadPlanFromCloud(user.id, planId))
       if (!plan) return false

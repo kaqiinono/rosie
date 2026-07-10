@@ -14,11 +14,13 @@ export type EffectiveLimitInput = {
 
 /**
  * Cognitive speed threshold (seconds). Decoupled from UI countdown:
- * explicit > 0 else TIME_TARGETS.fluent[1] else group default (see resolveTargetSec).
+ * (timedAnswerEnabled ? explicit > 0 : ignore) else TIME_TARGETS.fluent[1]
+ * else group default (see resolveTargetSec). When the countdown toggle is
+ * off, a stale explicit setting must not stretch the cognitive threshold.
  */
 export function effectiveLimitSec(input: EffectiveLimitInput): number {
   return resolveTargetSec({
-    explicitSeconds: input.explicitSeconds,
+    explicitSeconds: input.timedAnswerEnabled ? input.explicitSeconds : null,
     sourceId: input.sourceId,
   })
 }

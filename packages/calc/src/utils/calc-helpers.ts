@@ -29,6 +29,13 @@ export function coinReward(question: CalcQuestion, streak: number): number {
 
 export interface BuildCtx {
   problemStates: Map<string, CalcProblemState>
+  /**
+   * Pre-truncated mastered rows for the recall slot (fetched via a LIMITed
+   * SQL query — see fetchMasteredRecallCandidates). When absent (drills,
+   * tests) the recall slot is skipped; generateBlock never scans/sorts the
+   * full mastered set in memory.
+   */
+  recallCandidates?: CalcProblemState[]
 }
 
 type Source =
@@ -105,7 +112,7 @@ export function buildSession(
     const n = alloc[i]
     if (n <= 0) return
     if (src.kind === 'block') {
-      out.push(...generateBlock(src.block, n, states))
+      out.push(...generateBlock(src.block, n, states, ctx.recallCandidates))
     } else {
       for (let k = 0; k < n; k++) {
         const q = assembleMixed(src.op)
@@ -200,7 +207,12 @@ function allocate(count: number, weights: number[]): number[] {
 }
 
 /** Generate `n` questions for a single block: coverage / weak / maintenance / cold-start. */
-function generateBlock(block: CalcBlock, n: number, states: CalcProblemState[]): CalcQuestion[] {
+function generateBlock(
+  block: CalcBlock,
+  n: number,
+  states: CalcProblemState[],
+  recallCandidates?: CalcProblemState[],
+): CalcQuestion[] {
   const category: CalcCategory = block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
   const coinBase = category === 'addsub' ? 1 : 2
   const tag = (q: CalcQuestion): CalcQuestion => ({ ...q, sourceBlockId: block.id })
@@ -212,7 +224,15 @@ function generateBlock(block: CalcBlock, n: number, states: CalcProblemState[]):
     return Array.from({ length: n }, () => tag(block.generateSingle()))
   }
 
-  const recallN = Math.max(0, Math.floor(0.05 * n))
+  // Spec: recallSlot = max(1, floor(0.05*n)) — but only when SQL-truncated
+  // candidates for this block are actually available (and n leaves room).
+  const blockRecallPool = block.noResurface
+    ? []
+    : (recallCandidates ?? []).filter(
+        (s) => s.blockId === block.id && s.status === 'mastered',
+      )
+  const recallN =
+    blockRecallPool.length > 0 && n >= 2 ? Math.max(1, Math.floor(0.05 * n)) : 0
   const nWork = Math.max(0, n - recallN)
   let nCover = Math.round(0.4 * nWork)
   let nWeak = Math.round(0.4 * nWork)
@@ -302,14 +322,14 @@ function generateBlock(block: CalcBlock, n: number, states: CalcProblemState[]):
     maintTaken++
   }
 
-  // 4) Recall slot from mastered (in-memory; SQL truncation is Task 6)
+  // 4) Recall slot: score-rank only the SQL-truncated candidate window
+  //    (never the full mastered set — perf constraint from the spec).
   if (recallN > 0) {
-    const mastered = blockStates
-      .filter((s) => s.status === 'mastered' && !used.has(s.signature))
+    const mastered = blockRecallPool
+      .filter((s) => !used.has(s.signature))
       .sort((a, b) => recallScore(b) - recallScore(a))
       .slice(0, recallN)
     for (const s of mastered) {
-      if (block.noResurface) break
       try {
         const ast = parseSignature(s.signature)
         out.push(tag(makeQuestion(ast, 0, category, coinBase)))

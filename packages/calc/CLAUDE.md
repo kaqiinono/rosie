@@ -67,8 +67,8 @@ weakness weight. Per-signature state in `calc_problem_state`:
 | Concept | Mechanism |
 |---------|-----------|
 | **Unseen prefer** | Finite 2–9 mul/div + `add:100-comp`: coverage slot from `enumerateFinite` − practiced |
-| **Lagging** | `effectiveLimitSec` / `resolveTargetSec` — cognitive target; UI clock optional via `resolveClockSec` |
-| **Mastered** | Within-limit streak `consecutiveCorrect >= 3`; excluded from daily pool; ~5% recall |
+| **Lagging** | `effectiveLimitSec` / `resolveTargetSec` — cognitive target (explicit seconds honored only when `timedAnswerEnabled`); UI clock optional via `resolveClockSec` |
+| **Mastered** | Within-limit streak `consecutiveCorrect >= 3`; excluded from daily pool; ~5% recall via SQL-truncated candidates (`fetchMasteredRecallCandidates` → `BuildCtx.recallCandidates`; no full mastered scan in `generateBlock`) |
 | **Cold start** | Infinite blocks with `< 50` states: all `generateSingle` until pool grows |
 | **Sync** | `applyMasterySideEffects`: dual `patchSessionData` same stack, then remote upsert |
 | **Grandfather** | On-load memory: old `prof≥4 && attempt≥3` → mastered; upsert on next settle |
@@ -86,7 +86,11 @@ Three modes in `calc-session-policy.ts`:
 `withinLimit` always uses `T_target` (never inflated by bonus). `maxRetryCeiling(N) = max(3, floor(N×0.15))`;
 daily sessions use a capped retry pool + single-pass makeup (no re-enqueue from makeup).
 
-Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Tables:
+Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Session init
+awaits `calcMistakesStore.ensureLoaded` before reconcile/carry (no cold-visit race). Proficiency is
+settled ONLY by the finish fold (`applyAttempt`): a wrong answer at answer-time uses
+`pullBackFromMastered` (streak/status reset, no −2) so a single wrong costs −2, not −4; the −2 in
+`demoteFromMastered` applies only to cross-session reconcile repair. Tables:
 `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
 
 **NumberPad auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).

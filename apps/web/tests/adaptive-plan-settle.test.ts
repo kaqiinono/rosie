@@ -39,9 +39,9 @@ const stats = (overrides: Partial<AdaptivePlanStats> = {}): AdaptivePlanStats =>
 })
 
 const vocab: WordEntry[] = [
-  { unit: 'U1', lesson: 'L1', word: 'cat' },
-  { unit: 'U1', lesson: 'L1', word: 'dog' },
-  { unit: 'U1', lesson: 'L2', word: 'bird' },
+  { unit: 'U1', lesson: 'L1', word: 'cat', explanation: 'a cat' },
+  { unit: 'U1', lesson: 'L1', word: 'dog', explanation: 'a dog' },
+  { unit: 'U1', lesson: 'L2', word: 'bird', explanation: 'a bird' },
 ]
 
 const weeklyPlan: WeeklyPlan = {
@@ -50,6 +50,7 @@ const weeklyPlan: WeeklyPlan = {
   lesson: 'L1',
   weekStartDay: 4,
   newWordsPerDay: 3,
+  progress: {},
   days: [
     { date: '2026-07-03', newWordKeys: ['U1::L1::cat', 'U1::L1::dog'] },
     { date: '2026-07-04', newWordKeys: ['U1::L2::bird'] },
@@ -87,14 +88,11 @@ describe('buildConsolidateExemptSet', () => {
 })
 
 describe('settleStep3', () => {
-  it('applies one applyBoxAnswer per key using final outcome', () => {
+  it('promotes words that were never wrong in the session', () => {
     const key = 'U1::L1::cat'
     const out = settleStep3({
       progressRows: [row(key, { boxIndex: 2 })],
-      results: [
-        { wordKey: key, correct: false },
-        { wordKey: key, correct: true },
-      ],
+      results: [{ wordKey: key, correct: true }],
       masteryByKey: {},
       consolidateExemptSet: new Set(),
       today: TODAY,
@@ -104,7 +102,25 @@ describe('settleStep3', () => {
     expect(out.progressUpdates[0].streakWrong).toBe(0)
   })
 
-  it('wrong-then-correct emits advance only, never regress', () => {
+  it('demotes wrong-then-correct words to Box 1 with streakWrong++ (due today)', () => {
+    const key = 'U1::L1::cat'
+    const out = settleStep3({
+      progressRows: [row(key, { boxIndex: 3, streakWrong: 1 })],
+      results: [
+        { wordKey: key, correct: false },
+        { wordKey: key, correct: true },
+      ],
+      masteryByKey: {},
+      consolidateExemptSet: new Set(),
+      today: TODAY,
+    })
+    expect(out.progressUpdates).toHaveLength(1)
+    expect(out.progressUpdates[0].boxIndex).toBe(1)
+    expect(out.progressUpdates[0].streakWrong).toBe(2)
+    expect(out.progressUpdates[0].nextReviewDate).toBe(TODAY)
+  })
+
+  it('wrong-then-correct never regresses mastery (final outcome collapses to correct)', () => {
     const key = 'U1::L1::cat'
     const masteryByKey: WordMasteryMap = {
       [key]: { correct: 5, incorrect: 0, lastSeen: '2026-07-08', stage: 2 },
@@ -119,10 +135,25 @@ describe('settleStep3', () => {
       consolidateExemptSet: new Set(),
       today: TODAY,
     })
+    // Demoted to Box 1 → below the advance threshold, and never regressed.
+    expect(out.masteryPatches).toHaveLength(0)
+  })
+
+  it('clean correct at high box advances mastery', () => {
+    const key = 'U1::L1::cat'
+    const masteryByKey: WordMasteryMap = {
+      [key]: { correct: 5, incorrect: 0, lastSeen: '2026-07-08', stage: 2 },
+    }
+    const out = settleStep3({
+      progressRows: [row(key, { boxIndex: 2 })],
+      results: [{ wordKey: key, correct: true }],
+      masteryByKey,
+      consolidateExemptSet: new Set(),
+      today: TODAY,
+    })
     expect(out.masteryPatches).toHaveLength(1)
     expect(out.masteryPatches[0].wordKey).toBe(key)
     expect(out.masteryPatches[0].info.stage).toBe(3)
-    expect(out.masteryPatches.some(p => (p.info.stage ?? 0) < 2)).toBe(false)
   })
 
   it('exempt consolidate key blocks regress on final wrong', () => {
@@ -234,6 +265,25 @@ describe('settleBossFirstPass', () => {
     })
     expect(out.planStatsPatch.bossFailStreak).toBe(2)
     expect(out.planStatsPatch.bossQuestionTier).toBe(3)
+  })
+
+  it('increments bossFailStreak (but not tier) in the 60–85% band', () => {
+    const out = settleBossFirstPass({
+      progressRows: [row('a'), row('b'), row('c'), row('d'), row('e')],
+      firstPassResults: [
+        { wordKey: 'a', correct: true },
+        { wordKey: 'b', correct: true },
+        { wordKey: 'c', correct: true },
+        { wordKey: 'd', correct: false },
+        { wordKey: 'e', correct: false },
+      ],
+      masteryByKey: {},
+      consolidateExemptSet: new Set(),
+      currentStats: stats({ bossFailStreak: 1, bossQuestionTier: 2 }),
+      today: TODAY,
+    })
+    expect(out.planStatsPatch.bossFailStreak).toBe(2)
+    expect(out.planStatsPatch.bossQuestionTier).toBeUndefined()
   })
 
   it('resets bossFailStreak on pass >=85% with sink cleared', () => {

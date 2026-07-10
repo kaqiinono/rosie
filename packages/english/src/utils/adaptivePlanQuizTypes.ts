@@ -26,6 +26,27 @@ export function quizTypesForWord(
   return light ? ['B', 'C'] : ['C']
 }
 
+/**
+ * §5.3.1 Boss 题型降级阶梯（有底线，不可无限降）：
+ *   tier 1 — 全压力：按箱位直接考（高箱纯默写）
+ *   tier 2 — 弱提示：先垫一道选择再默写（light 变体）
+ *   tier 3 — 底线：四选一认读 +（高箱）常规看义拼写；到此不再降级
+ */
+export function bossQuizTypesForWord(
+  row: AdaptivePlanWordProgress | undefined,
+  mastery: WordMasteryInfo | undefined,
+  tier: number,
+): QuizType[] {
+  const t = tier <= 1 ? 1 : tier >= 3 ? 3 : 2
+  if (t === 1) return quizTypesForWord(row, mastery, { preferLight: false })
+  if (t === 2) return quizTypesForWord(row, mastery, { preferLight: true })
+
+  const box = resolveFamiliarityBox(row, mastery)
+  if (box >= 4) return ['A', 'C']
+  if (box === 3) return ['A', 'B']
+  return ['A']
+}
+
 /** Map plan row / mastery into a 1–5 familiarity band for quiz selection. */
 export function resolveFamiliarityBox(
   row: AdaptivePlanWordProgress | undefined,

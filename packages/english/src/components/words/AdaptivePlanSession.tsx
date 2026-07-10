@@ -25,7 +25,7 @@ import type {
   AdaptiveDailyTask,
 } from '../../utils/adaptivePlanScheduler'
 import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
-import { quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
+import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
 import { adaptiveStageLabel } from '../../utils/adaptivePlanStages'
 import type {
   AdaptivePlanWordProgress,
@@ -216,7 +216,9 @@ async function upsertMasteryPatches(
   const { error } = await supabase
     .from('word_mastery')
     .upsert(rows, { onConflict: 'user_id,word_key' })
-  if (error) console.error('[adaptive_word_plan] mastery upsert failed', error)
+  // Throw so the settle flow can surface a retry — the local store patch above
+  // is idempotent on retry (absolute values, not increments).
+  if (error) throw error
 }
 
 export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSessionProps) {
@@ -248,6 +250,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const [score, setScore] = useState(0)
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [settling, setSettling] = useState(false)
+  // Set when remote saves fail during settle — done screen offers a retry.
+  const [settleFailed, setSettleFailed] = useState<'normal' | 'boss' | null>(null)
   const [activationApplied, setActivationApplied] = useState(false)
   const [newStudyDone, setNewStudyDone] = useState(0)
   const [doneTitle, setDoneTitle] = useState('本轮完成')
@@ -320,7 +324,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           setRows([])
           setTask(null)
           setLoadError(
-            '计划单词进度为空。常见原因：尚未在 Supabase 执行 docs/sql/adaptive-word-plans.sql，或创建时进度写入失败。请到管理页删除后重建，或检查数据库表。',
+            '计划单词进度为空。常见原因：尚未在 Supabase 执行 packages/english/sql/adaptive-word-plans.sql，或创建时进度写入失败。请到管理页删除后重建，或检查数据库表。',
           )
           setIsLoadingRows(false)
           return
@@ -382,21 +386,28 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan])
 
   const buildSlots = useCallback(
-    (keys: string[], preferLight = false): QuizSlot[] => {
+    (keys: string[], opts?: { preferLight?: boolean; bossTier?: number }): QuizSlot[] => {
       const progressByKey = new Map(rows.map((row) => [row.wordKey, row]))
+      // Seeded rank per key gives a consistent comparator (hashing both sides
+      // with different seeds is not a total order and breaks Array.sort).
       const seed = Date.now()
-      const shuffledKeys = [...keys].sort((a, b) => {
-        let ha = seed
-        let hb = seed + 1
-        for (let i = 0; i < a.length; i++) ha = (ha * 31 + a.charCodeAt(i)) | 0
-        for (let i = 0; i < b.length; i++) hb = (hb * 31 + b.charCodeAt(i)) | 0
-        return (ha >>> 0) - (hb >>> 0)
-      })
+      const rankOf = (key: string): number => {
+        let h = seed
+        for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0
+        return h >>> 0
+      }
+      const ranks = new Map(keys.map((key) => [key, rankOf(key)]))
+      const shuffledKeys = [...keys].sort((a, b) => ranks.get(a)! - ranks.get(b)!)
 
       const ordered: QuizSlot[] = []
       for (const key of shuffledKeys) {
         if (!findWordByKey(vocab, key)) continue
-        const types = quizTypesForWord(progressByKey.get(key), masteryMap[key], { preferLight })
+        const types =
+          opts?.bossTier != null
+            ? bossQuizTypesForWord(progressByKey.get(key), masteryMap[key], opts.bossTier)
+            : quizTypesForWord(progressByKey.get(key), masteryMap[key], {
+                preferLight: opts?.preferLight === true,
+              })
         for (const type of types) ordered.push({ key, type })
       }
       return ordered
@@ -406,7 +417,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
 
   const startReview = useCallback(() => {
     const firstKeys = dayReviewKeys.slice(0, reviewCursor)
-    setQuizSlots(buildSlots(firstKeys, true))
+    setQuizSlots(buildSlots(firstKeys, { preferLight: true }))
     setCurQ(0)
     setScore(0)
     setHelpClicks({})
@@ -447,7 +458,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const startFinalQuiz = useCallback(
     (keys: string[]) => {
       finalPassWrongKeysRef.current = new Set()
-      setQuizSlots(buildSlots(keys, false))
+      setQuizSlots(buildSlots(keys))
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
@@ -467,15 +478,16 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       } else {
         bossSinkWrongKeysRef.current = new Set()
       }
-      // Boss: full writing pressure (no light pad)
-      setQuizSlots(buildSlots(keys, false))
+      // §5.3.1: question pressure follows the current downgrade tier
+      // (1 = full writing, 2 = light pad, 3 = floor — no further downgrade).
+      setQuizSlots(buildSlots(keys, { bossTier: plan?.stats.bossQuestionTier ?? 1 }))
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
       setIsImmersive(true)
       setPhase(phaseName)
     },
-    [buildSlots, setIsImmersive],
+    [buildSlots, plan?.stats.bossQuestionTier, setIsImmersive],
   )
 
   const resetRoundState = useCallback(
@@ -531,11 +543,14 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         today,
       })
 
+      // Remote writes first, local state after — a failure leaves local state
+      // untouched so the retry recomputes from the same inputs (idempotent).
       await saveProgressBatch(settleResult.progressUpdates)
+      await upsertMasteryPatches(user.id, settleResult.masteryPatches)
       const updateByKey = new Map(settleResult.progressUpdates.map((row) => [row.wordKey, row]))
       const nextRows = rows.map((row) => updateByKey.get(row.wordKey) ?? row)
       setRows(nextRows)
-      await upsertMasteryPatches(user.id, settleResult.masteryPatches)
+      setSettleFailed(null)
 
       let nextPlan = plan
       if (hasStatsPatch(settleResult.planStatsPatch)) {
@@ -598,6 +613,14 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       )
       setDoneTitle('本轮完成')
       setDoneMessage(note)
+      setIsImmersive(false)
+      setPhase('done')
+    } catch (err) {
+      console.error('[adaptive_word_plan] settle failed', err)
+      setSettleFailed('normal')
+      setRoundSummary(null)
+      setDoneTitle('保存失败')
+      setDoneMessage('本轮结果还没有保存成功，请检查网络后点「重试保存」。')
       setIsImmersive(false)
       setPhase('done')
     } finally {
@@ -687,9 +710,11 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         }
       }
 
+      // Remote writes first, local state after (see settleSession for rationale).
       await saveProgressBatch(progressUpdates)
-      setRows(nextRows)
       await upsertMasteryPatches(user.id, settleResult.masteryPatches)
+      setRows(nextRows)
+      setSettleFailed(null)
 
       const bossOutcomes = [...firstPassResults, ...sinkResults]
       const bossReviewKeys = uniqueKeys(firstPassResults.map((item) => item.wordKey))
@@ -757,6 +782,14 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         }),
       )
       setDoneMessage(note)
+      setIsImmersive(false)
+      setPhase('done')
+    } catch (err) {
+      console.error('[adaptive_word_plan] boss settle failed', err)
+      setSettleFailed('boss')
+      setRoundSummary(null)
+      setDoneTitle('保存失败')
+      setDoneMessage('Boss 结果还没有保存成功，请检查网络后点「重试保存」。')
       setIsImmersive(false)
       setPhase('done')
     } finally {
@@ -867,7 +900,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     }
     if (dayReviewKeys.length > 0) {
       const firstKeys = dayReviewKeys.slice(0, Math.max(reviewCursor, batchSize))
-      const slots = buildSlots(firstKeys, true)
+      const slots = buildSlots(firstKeys, { preferLight: true })
       if (slots.length === 0) {
         // Review keys present but no quiz slots (vocab miss) — skip to study
         startStudyOrFinal()
@@ -947,7 +980,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         const nextCursor = Math.min(reviewCursor + batchSize, dayReviewKeys.length)
         const nextKeys = dayReviewKeys.slice(reviewCursor, nextCursor)
         setReviewCursor(nextCursor)
-        setQuizSlots((prev) => [...prev, ...buildSlots(nextKeys, true)])
+        setQuizSlots((prev) => [...prev, ...buildSlots(nextKeys, { preferLight: true })])
         setCurQ(next)
         return
       }
@@ -1351,7 +1384,20 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           )}
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {canContinue && (
+            {settleFailed != null && (
+              <button
+                type="button"
+                disabled={settling}
+                onClick={() => {
+                  if (settleFailed === 'boss') void settleBossSession()
+                  else void settleSession()
+                }}
+                className="font-nunito cursor-pointer rounded-[12px] border-0 bg-gradient-to-br from-[#f97316] to-[#ef4444] px-6 py-3 text-sm font-extrabold text-white disabled:opacity-60"
+              >
+                {settling ? '保存中…' : '重试保存'}
+              </button>
+            )}
+            {settleFailed == null && canContinue && (
               <button
                 type="button"
                 onClick={() => {
@@ -1399,7 +1445,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
             {plan.title}
           </div>
           <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
-            每日至少练一轮：复习 → 新学（每轮最多 {plan.newWordsPerDay} 词）→ 闯关；同日可多轮，错词会继续出现
+            每日至少练一轮：复习 → 新学（每日最多 {plan.newWordsPerDay} 个新词）→ 闯关；同日可多轮，错词会继续出现
             <span className="mt-1 block text-[.72rem] font-bold text-[#93c5fd]">
               成长阶段：🥚蛋 → 🐛虫 → 🦋蝴蝶 → 🌸花 → 🌳树；题型随阶段递进
             </span>

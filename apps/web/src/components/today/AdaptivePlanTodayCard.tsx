@@ -33,6 +33,7 @@ export default function AdaptivePlanTodayCard({ user }: AdaptivePlanTodayCardPro
 
   useEffect(() => {
     if (!activePlan) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgressRows(null)
       return
     }

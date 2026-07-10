@@ -124,7 +124,7 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
       setCreateError(
         err instanceof Error
           ? err.message
-          : '创建失败。请确认已在 Supabase 执行 docs/sql/adaptive-word-plans.sql',
+          : '创建失败。请确认已在 Supabase 执行 packages/english/sql/adaptive-word-plans.sql',
       )
     } finally {
       setIsSubmitting(false)

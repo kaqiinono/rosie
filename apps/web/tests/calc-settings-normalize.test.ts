@@ -37,7 +37,7 @@ describe('normalizeSelectedBlocks', () => {
 describe('normalizeMixedOps', () => {
   const base = (blockIds: string[]): MixedOp => ({
     id: 'op-1',
-    skeleton: 'as_md',
+    skeleton: 'asmd',
     blockIds,
     enabled: true,
     count: 20,

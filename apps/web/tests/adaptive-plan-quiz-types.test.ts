@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { quizTypesForWord, resolveFamiliarityBox } from '../../../packages/english/src/utils/adaptivePlanQuizTypes'
+import {
+  bossQuizTypesForWord,
+  quizTypesForWord,
+  resolveFamiliarityBox,
+} from '../../../packages/english/src/utils/adaptivePlanQuizTypes'
 import type { AdaptivePlanWordProgress } from '../../../packages/english/src/utils/adaptivePlanTypes'
 
 function row(partial: Partial<AdaptivePlanWordProgress>): AdaptivePlanWordProgress {
@@ -40,5 +44,28 @@ describe('adaptivePlanQuizTypes', () => {
     expect(resolveFamiliarityBox(undefined, { correct: 0, incorrect: 0, lastSeen: '', stage: 0 })).toBe(1)
     expect(resolveFamiliarityBox(undefined, { correct: 0, incorrect: 0, lastSeen: '', stage: 3 })).toBe(3)
     expect(resolveFamiliarityBox(undefined, { correct: 0, incorrect: 0, lastSeen: '', stage: 5 })).toBe(5)
+  })
+})
+
+describe('bossQuizTypesForWord (§5.3.1 downgrade ladder)', () => {
+  it('tier 1 = full pressure (high box → pure writing)', () => {
+    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 1)).toEqual(['C'])
+    expect(bossQuizTypesForWord(row({ boxIndex: 3 }), undefined, 1)).toEqual(['B', 'C'])
+  })
+
+  it('tier 2 = light pad before writing', () => {
+    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 2)).toEqual(['B', 'C'])
+    expect(bossQuizTypesForWord(row({ boxIndex: 3 }), undefined, 2)).toEqual(['A', 'C'])
+  })
+
+  it('tier 3 = floor (recognition + regular writing for high boxes)', () => {
+    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 3)).toEqual(['A', 'C'])
+    expect(bossQuizTypesForWord(row({ boxIndex: 3 }), undefined, 3)).toEqual(['A', 'B'])
+    expect(bossQuizTypesForWord(row({ boxIndex: 1 }), undefined, 3)).toEqual(['A'])
+  })
+
+  it('clamps tiers outside 1–3 (no downgrade past the floor)', () => {
+    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 0)).toEqual(['C'])
+    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 7)).toEqual(['A', 'C'])
   })
 })

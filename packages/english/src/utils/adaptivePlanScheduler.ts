@@ -58,6 +58,14 @@ export function pickActivations(
   return picked
 }
 
+/** Words already activated today — they consume the daily new-word quota (§4.3). */
+export function countActivatedToday(
+  rows: AdaptivePlanWordProgress[],
+  today: string,
+): number {
+  return activeRows(rows).filter(row => row.introducedOn === today).length
+}
+
 function countStubbornLearning(rows: AdaptivePlanWordProgress[]): number {
   return activeRows(rows).filter(
     row => row.status === 'LEARNING' && row.streakWrong >= 2,
@@ -178,14 +186,16 @@ export function buildDailyTask(
     }
   }
 
+  // §4.3: newWordsPerDay is a PER-DAY quota. Same-day repeat rounds must not
+  // pull a fresh batch each time — deduct words already introduced today.
+  const perDay = Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10
+  const remainingToday = Math.max(0, perDay - countActivatedToday(rows, today))
+
   return {
     mode,
     reviewKeys,
     reviewBatchKeys,
-    activateKeys: pickActivations(
-      rows,
-      Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10,
-    ).map(row => row.wordKey),
+    activateKeys: pickActivations(rows, remainingToday).map(row => row.wordKey),
     bossKeys: [],
   }
 }
