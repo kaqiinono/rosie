@@ -308,6 +308,44 @@ const S9_PUZZLE: VerticalDigitPuzzleSpec = {
   result: [5, 2, 7, 2],
 }
 
+// ── 课前测竖式（2026暑09 数字谜初步）──
+const P1_PUZZLE: VerticalDigitPuzzleSpec = {
+  op: '+',
+  operands: [[null, null, null, 5], [null, 8, null]],
+  result: [2, 0, 1, 2],
+}
+
+const P2_PUZZLE: VerticalDigitPuzzleSpec = {
+  op: '-',
+  operands: [[C('△'), C('○'), C('○'), C('○')], [C('□'), C('○'), C('□')]],
+  result: ['spacer', 'spacer', C('□'), C('△')],
+}
+
+const P3_PUZZLE: VerticalDigitPuzzleSpec = {
+  op: '+',
+  operands: [[C('△'), C('□'), C('□'), C('○')], [C('○'), C('□'), C('□'), C('△')]],
+  result: [C('□'), C('□'), C('☆'), C('☆')],
+}
+
+const P4_PUZZLE: VerticalDigitPuzzleSpec = {
+  op: '+',
+  operands: [[null, null, null], [null, null, null]],
+  result: [1, 9, 9, 1],
+}
+
+const P5_PUZZLE: VerticalDigitPuzzleSpec = {
+  op: '+',
+  operands: [[null, null, null, null], [null, null, null]],
+  result: [4, 8, 3, 9],
+}
+
+const P6_PUZZLE: VerticalDigitPuzzleSpec = {
+  op: '+',
+  knownSymbols: { G: 5, A: 9, D: 0, H: 6 },
+  operands: [['spacer', C('A'), C('A'), C('B')], [C('C'), C('D'), C('E'), C('F')]],
+  result: [C('G'), C('D'), C('H'), C('I')],
+}
+
 export const LESSON_TIP =
   '数字谜：从个位起看进位/退位，相同符号同数字、不同符号不同数字；数字和分析时先定边界再求最大/最小。'
 
@@ -590,6 +628,114 @@ const SUPPLEMENT: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  {
+    id: '2-7-P1',
+    title: '课前测1 · 加得2012',
+    tag: 'type1',
+    tagLabel: '加法数字谜',
+    difficulty: 3,
+    text: '如图，一个四位数加上一个三位数和为 <strong>2012</strong>，这两个加数的数字和等于多少？',
+    ...withReadonlyPuzzle(P1_PUZZLE),
+    analysis: [
+      '个位 5+□ 得 2 → □=7（进 1）',
+      '十位 □+8+1 得 1 → 十位加数为 2',
+      '所有合法填法下，两加数各位数字之和恒为 <strong>32</strong>',
+    ],
+    type: 'none',
+    finalQ: '数字和等于',
+    finalUnit: '',
+    finalAns: 32,
+  },
+  {
+    id: '2-7-P2',
+    title: '课前测2 · 三角圆方减',
+    tag: 'type2',
+    tagLabel: '减法数字谜',
+    difficulty: 3,
+    text: '△、○、□ 代表 3 个不同的数字。四位数 △○○○ 减去三位数 □○□ 等于两位数 □△，求 △+□+○。',
+    ...withReadonlyPuzzle(P2_PUZZLE),
+    analysis: [
+      '唯一解：△=1，○=0，□=9',
+      '验算：1000 − 909 = 91',
+      '△+□+○ = 1+9+0 = <strong>10</strong>',
+    ],
+    type: 'none',
+    finalQ: '△+□+○=',
+    finalUnit: '',
+    finalAns: 10,
+  },
+  {
+    id: '2-7-P3',
+    title: '课前测3 · 符号加法',
+    tag: 'type1',
+    tagLabel: '加法数字谜',
+    difficulty: 4,
+    text: '相同符号同数字，不同符号不同数字。求 □+○+△+☆。',
+    ...withReadonlyPuzzle(P3_PUZZLE),
+    analysis: [
+      '□=9，☆=8，且 △+○=8（互异、≠9、≠8）',
+      '四符号之和恒为 <strong>25</strong>',
+    ],
+    type: 'none',
+    finalQ: '□+○+△+☆=',
+    finalUnit: '',
+    finalAns: 25,
+  },
+  {
+    id: '2-7-P4',
+    title: '课前测4 · 加得1991',
+    tag: 'type3',
+    tagLabel: '数字和分析',
+    difficulty: 3,
+    text: '每个方框代表一个数字。这 6 个方框中的数字的总和是多少？',
+    ...withReadonlyPuzzle(P4_PUZZLE),
+    analysis: [
+      '两三位加数之和为 1991',
+      '合法对如 992+999、993+998…',
+      '六位数字之和恒为 <strong>47</strong>',
+    ],
+    type: 'none',
+    finalQ: '6 个方框数字总和是',
+    finalUnit: '',
+    finalAns: 47,
+  },
+  {
+    id: '2-7-P5',
+    title: '课前测5 · 七数字和最大',
+    tag: 'type3',
+    tagLabel: '数字和分析',
+    difficulty: 4,
+    text: '各方格填入<strong>不同</strong>数字使等式成立，所填 7 个数字之和最大是多少？',
+    ...withReadonlyPuzzle(P5_PUZZLE),
+    analysis: [
+      '四位数 + 三位数 = 4839，七位互异',
+      '枚举得最大和为 <strong>42</strong>（如 3975+864）',
+    ],
+    type: 'none',
+    finalQ: '7 个数字之和最大是',
+    finalUnit: '',
+    finalAns: 42,
+  },
+  {
+    id: '2-7-P6',
+    title: '课前测6 · 字母I',
+    tag: 'type1',
+    tagLabel: '加法数字谜',
+    difficulty: 3,
+    text: '每个英文字母代表不同数字。已知 G=5、A=9、D=0、H=6，那么 I 代表的数字是多少？',
+    ...withReadonlyPuzzle(P6_PUZZLE),
+    analysis: [
+      '991+4072=5063 或 992+4071=5063',
+      '两种解中 I 均为 <strong>3</strong>',
+    ],
+    type: 'none',
+    finalQ: 'I 代表',
+    finalUnit: '',
+    finalAns: 3,
+  },
+]
+
 // ── 课后巩固 ──（模块1 例题1-19 作为课后练习，题面/竖式与校验逻辑复用课堂讲解）
 const HOMEWORK: Problem[] = LESSON.map((p, i) => ({
   ...p,
@@ -605,7 +751,7 @@ const SUPPLEMENT_EXTRA: Problem[] = SUPPLEMENT.map((p, i) => ({
 }))
 
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: [],

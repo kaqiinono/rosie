@@ -6,4 +6,48 @@ export { useCalcDaily } from './hooks/useCalcDaily'
 export { useCalcPracticeStats } from './hooks/useCalcPracticeStats'
 export { useCalcMistakes } from './hooks/useCalcMistakes'
 export { categoryLabel } from './utils/calc-helpers'
-export { formatAnswer } from './utils/calc-answer'
+export {
+  formatAnswer,
+  checkAnswer,
+  shouldAutoSubmitNumberPad,
+  intAnswer,
+  decimalAnswer,
+  remainderAnswer,
+  fractionAnswer,
+} from './utils/calc-answer'
+export {
+  digitsOf,
+  hasAnyCarry,
+  hasConsecutiveCarries,
+  needsDivMidRemainder,
+  enumerateComplementsTo100,
+  genMul3d1d,
+  genDiv2d1d,
+  genSubRound,
+  genZerosMul,
+  genZerosDiv,
+  genAdd100Comp,
+  genMul2d1d,
+} from './utils/calc-block-gens'
+export {
+  blockById,
+  BLOCKS,
+  VERTICAL_BLOCK_IDS,
+} from './utils/calc-blocks'
+export {
+  isFiniteBlock,
+  enumerateFinite,
+} from './utils/calc-finite'
+export { missingTargetIds } from './utils/calc-time-targets'
+export { normalizeMixedOps, normalizeSelectedBlocks } from './utils/calc-settings-normalize'
+export {
+  type CalcTimingMode,
+  maxRetryCeiling,
+  clampBonusSec,
+  resolveTargetSec,
+  resolveClockSec,
+  tryEnqueueRetry,
+  isInMakeupPhase,
+  sessionStarMultiplier,
+  applySessionStarMultiplier,
+} from './utils/calc-session-policy'

@@ -425,6 +425,8 @@ export interface BlockSel {
 
 export type CalcCountMode = 'auto' | 'manual'
 
+export type CalcTimingMode = 'relaxed' | 'strict' | 'bonus'
+
 export interface CalcSettings {
   countMode: CalcCountMode   // 'auto' 全局总量加权 / 'manual' 按题型
   selectedBlocks: BlockSel[] // 单运算练习选中的积木块（内联 count/seconds）
@@ -436,13 +438,17 @@ export interface CalcSettings {
   immersiveMode: boolean     // 沉浸：无答题反馈，提交后直接下一题（错题仍进补练）
   lastCount: number          // auto 模式的全局总题量 (10/20/30/50/100)
   sessionCounter: number     // 每次 session 完成自增
+  timingMode: CalcTimingMode // 默认会话计时模式：宽松 / 严格 / 自定义加成
+  bonusSec: number           // 自定义加成秒数（0–15，仅 bonus 模式）
+  autoSubmitOnMatch: boolean   // 数字键盘答对即过；默认 true
 }
 
 // ─────────────────────────────────────────────────────────────────────────
 // 口算 mastery system (per master.md)
 // ─────────────────────────────────────────────────────────────────────────
 
-export type CalcProblemStatus = 'active' | 'review' | 'mastered' | 'forced'
+/** `review` is legacy read-only; new writes use `lagging` for correct-but-slow. */
+export type CalcProblemStatus = 'active' | 'lagging' | 'mastered' | 'forced' | 'review'
 
 export interface QuestionAttempt {
   correct: boolean
@@ -461,6 +467,10 @@ export interface CalcProblemState {
   recentResults: QuestionAttempt[] // most-recent at the end, capped at 10
   status: CalcProblemStatus
   consecutiveWrong: number
+  /** Per-fact streak of within-limit correct answers (K=3 → mastered). */
+  consecutiveCorrect: number
+  /** Last attempt's withinLimit flag; null/undefined when unknown. */
+  lastWithinLimit?: boolean | null
   updatedAt: string
   /** Attribution: which building block this problem was drawn from. */
   blockId?: string

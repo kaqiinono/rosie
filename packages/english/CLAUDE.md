@@ -23,6 +23,15 @@ audio, flipbook).
   `getWeekStart` from `@rosie/core`), `english-data*`, `phonics`, `reading-data`
   (`readingPassages`/`buildWordMatchRegex`/`resolveMatchedWord`/`findPassage`/`parseFocusLessonKey`),
   `reading-audio-types`, weekly-plan payload/progress/report builders, `word-enrich`, `speak`.
+- **Adaptive word plan (`utils/adaptivePlan*` + `components/words/AdaptivePlan*`)** — task-oriented
+  Leitner 5-box plan (spec `docs/superpowers/specs/2026-07-09-adaptive-word-plan-design.md`, gitignored).
+  Key semantics: `newWordsPerDay` is a **per-day** quota (`countActivatedToday` deducts by
+  `introducedOn`); box moves at settle use "wrong at least once this session" (→ Box 1 +
+  `streakWrong++`, due today) while global mastery write-back uses the collapsed final outcome;
+  Boss question pressure follows `stats.bossQuestionTier` via `bossQuizTypesForWord` (3 = floor);
+  any failed Boss submission increments `bossFailStreak` (tier downgrade only < 60%). Settle does
+  remote writes before local state and surfaces a「重试保存」button on failure. DDL lives in
+  **`sql/adaptive-word-plans.sql`** (tracked mirror of the gitignored `docs/sql` copy).
 
 ## Adding phonics rules
 

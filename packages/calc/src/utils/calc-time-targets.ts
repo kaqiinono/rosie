@@ -30,6 +30,7 @@ export const TIME_TARGETS: Record<string, TimeTarget> = {
   'add:20b': { entry: [10, 12], stable: [7, 8], fluent: [5, 6], auto: [3, 4] },
   'add:100a': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'add:100b': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
+  'add:100-comp': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'add:1000': { entry: [15, 20], stable: [12, 15], fluent: [8, 12], auto: [6, 8] },
   'add:10000': { entry: [15, 20], stable: [12, 15], fluent: [8, 12], auto: [6, 8] },
   // 减法
@@ -38,6 +39,7 @@ export const TIME_TARGETS: Record<string, TimeTarget> = {
   'sub:20b': { entry: [10, 12], stable: [7, 8], fluent: [5, 6], auto: [3, 4] },
   'sub:100a': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'sub:100b': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
+  'sub:round': { entry: [15, 20], stable: [12, 15], fluent: [8, 12], auto: [6, 8] },
   'sub:1000': { entry: [15, 20], stable: [12, 15], fluent: [8, 12], auto: [6, 8] },
   'sub:10000': { entry: [15, 20], stable: [12, 15], fluent: [8, 12], auto: [6, 8] },
   // 乘法
@@ -49,7 +51,11 @@ export const TIME_TARGETS: Record<string, TimeTarget> = {
   'mul:1012': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'mul:1319': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'mul:219': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
-  'mul:2d1d': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
+  'mul:2d1d-nc': { entry: [10, 12], stable: [7, 8], fluent: [5, 6], auto: [3, 4] },
+  'mul:2d1d-c': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
+  'mul:3d1d-nc': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
+  'mul:3d1d-c': { entry: [15, 18], stable: [10, 12], fluent: [8, 10], auto: [5, 6] },
+  'mul:zeros': { entry: [10, 12], stable: [7, 8], fluent: [5, 6], auto: [3, 4] },
   'mul:2d': { entry: [20, 25], stable: [15, 18], fluent: [12, 15], auto: [8, 10] },
   // 除法
   'div:25': { entry: [10, 12], stable: [7, 8], fluent: [5, 6], auto: [3, 4] },
@@ -60,6 +66,8 @@ export const TIME_TARGETS: Record<string, TimeTarget> = {
   'div:1319': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'div:219': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'div:multi': { entry: [18, 22], stable: [12, 15], fluent: [10, 12], auto: [8, 8] },
+  'div:2d1d-borrow': { entry: [18, 22], stable: [12, 15], fluent: [10, 12], auto: [8, 8] },
+  'div:zeros': { entry: [12, 15], stable: [8, 10], fluent: [6, 8], auto: [4, 5] },
   'div:rem': { entry: [15, 18], stable: [12, 15], fluent: [10, 12], auto: [8, 8] },
   // 小数
   'dec:add1': { entry: [12, 15], stable: [10, 12], fluent: [8, 10], auto: [6, 8] },

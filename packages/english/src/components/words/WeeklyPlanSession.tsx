@@ -489,7 +489,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
       if (info.finalCorrect) {
         const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
         starsAwardedThisRunRef.current += amount
-        void awardStars('red', amount)
+        void awardStars('red', amount, { soundOnly: true })
       }
     },
     [quizQs, curQ, awardStars, rescue],

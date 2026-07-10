@@ -178,7 +178,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         if (info.finalCorrect) {
           // 单选题 (A/B) +1 红星; 填空题 (C) / 课文语境填空 (D) +2 红星
           const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
-          void awardStars('red', amount)
+          void awardStars('red', amount, { soundOnly: true })
         }
       }
     },

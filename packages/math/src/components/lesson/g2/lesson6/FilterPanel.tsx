@@ -25,6 +25,7 @@ export default createFilterPanel({
     accentClass: 'text-teal-700',
   },
   sourceBtns: [
+    { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },

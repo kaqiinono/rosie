@@ -7,7 +7,14 @@ import { useCalcSettings } from '../hooks/useCalcSettings'
 import { useCalcWallet } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
-import { useCalcProblemState, applyAttempt } from '../hooks/useCalcProblemState'
+import { useCalcProblemState } from '../hooks/useCalcProblemState'
+import { applyAttempt } from '../utils/calc-apply-attempt'
+import { applyMasterySideEffects, unresolvedMistakes } from '../utils/calc-mastery-sync'
+import { calcMistakesStore } from '../utils/calc-mistakes-store'
+import {
+  calcProblemStateStore,
+  fetchMasteredRecallCandidates,
+} from '../utils/calc-problem-state-store'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcQuestionStage from '../components/CalcQuestionStage'
 import CalcSessionStatusBar from '../components/CalcSessionStatusBar'
@@ -16,15 +23,26 @@ import ChallengeBanner from '../components/ChallengeBanner'
 import SessionSummary from '../components/SessionSummary'
 import DrillSummary from '../components/DrillSummary'
 import { buildSession, buildDrillSession, coinReward, type DrillParams } from '../utils/calc-helpers'
+import {
+  applySessionStarMultiplier,
+  clampBonusSec,
+  isInMakeupPhase,
+  maxRetryCeiling,
+  resolveClockSec,
+  resolveTargetSec,
+  tryEnqueueRetry,
+} from '../utils/calc-session-policy'
 import { tierOf, nextTierGap, suggestedTiers } from '../utils/calc-time-targets'
-import { checkAnswer, formatAnswer } from '../utils/calc-answer'
+import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-limit'
+import { checkAnswer, formatAnswer, shouldAutoSubmitNumberPad } from '../utils/calc-answer'
 import { diagnose } from '../utils/calc-diagnose'
 import { blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
 import { todayStr } from '@rosie/core'
-import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, QuestionLogEntry } from '@rosie/core'
+import SessionPrepScreen from '../components/SessionPrepScreen'
+import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, CalcTimingMode, QuestionLogEntry } from '@rosie/core'
 
 interface AttemptStat {
   signature: string
@@ -55,9 +73,9 @@ export default function CalcSessionPage() {
   const { refresh: refreshStarHud } = useStarHud()
   const {
     mistakes,
+    unresolved,
     addMistake,
     recordCorrect,
-    lastSessionUnresolved,
     refresh: refreshMistakes,
   } = useCalcMistakes(user)
   const problemState = useCalcProblemState(user)
@@ -86,13 +104,78 @@ export default function CalcSessionPage() {
   const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
   const loadedStatesRef = useRef<Map<string, CalcProblemState>>(new Map())
 
-  // Per-question target seconds for the current question's source (null/0 → no countdown).
+  // ── Prep gate (daily only) ──────────────────────────────────────
+  // Drills and mistakes-only sessions skip the prep screen entirely and keep
+  // today's behavior (relaxed clock, no end-of-session star multiplier).
+  const needsPrep = mode === 'daily' && !drillParams
+  const [prepConfirmed, setPrepConfirmed] = useState(false)
+  // Editable prep selections default to the persisted settings until the user
+  // overrides them for this run only; "设为默认" writes the override back to settings.
+  const [prepModeOverride, setPrepModeOverride] = useState<CalcTimingMode | null>(null)
+  const [prepBonusOverride, setPrepBonusOverride] = useState<number | null>(null)
+  const prepTimingMode = prepModeOverride ?? settings.timingMode
+  const prepBonusSec = prepBonusOverride ?? settings.bonusSec
+  // Frozen at confirm time — the session's timing authority for its whole run,
+  // read from refs inside stable callbacks (clock, auto-advance, star multiplier).
+  const sessionTimingModeRef = useRef<CalcTimingMode>('relaxed')
+  const sessionBonusSecRef = useRef<number>(0)
+
+  const manualTotalEstimate =
+    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
+    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
+  const plannedEstimate = settings.countMode === 'manual' ? manualTotalEstimate : settings.lastCount
+
+  const handlePrepStart = useCallback(() => {
+    sessionTimingModeRef.current = prepTimingMode
+    sessionBonusSecRef.current = clampBonusSec(prepBonusSec)
+    playSfx('coin', settings.soundEnabled)
+    setPrepConfirmed(true)
+  }, [prepTimingMode, prepBonusSec, settings.soundEnabled])
+
+  // UI countdown: clock time per the confirmed session timing mode (relaxed
+  // sessions — including drills/mistakes which never set the mode ref — fall
+  // back to today's "timed mode + explicit seconds" behavior).
   const secondsForQuestion = useCallback(
     (q: CalcQuestion): number | null => {
-      if (!settings.timedAnswerEnabled) return null
-      if (q.sourceBlockId) return settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds ?? null
-      if (q.sourceMixedOpId) return settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)?.seconds ?? null
-      return null
+      let explicit: number | null | undefined = null
+      let sourceId = sourceIdForLimit(q)
+      if (q.sourceBlockId) {
+        explicit = settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds
+      } else if (q.sourceMixedOpId) {
+        const op = settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)
+        explicit = op?.seconds
+        if (op) sourceId = op.skeleton
+      }
+      const targetSec = resolveTargetSec({ explicitSeconds: explicit, sourceId })
+      return resolveClockSec({
+        mode: sessionTimingModeRef.current,
+        targetSec,
+        bonusSec: sessionBonusSecRef.current,
+        timedAnswerEnabled: settings.timedAnswerEnabled,
+        explicitSeconds: explicit,
+      })
+    },
+    [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
+  )
+
+  /** Cognitive withinLimit — always has a threshold (explicit ∥ TIME_TARGETS.fluent). */
+  const withinLimitForQuestion = useCallback(
+    (q: CalcQuestion, elapsedMs: number): boolean => {
+      let explicit: number | null | undefined = null
+      let sourceId = sourceIdForLimit(q)
+      if (q.sourceBlockId) {
+        explicit = settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds
+      } else if (q.sourceMixedOpId) {
+        const op = settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)
+        explicit = op?.seconds
+        // TIME_TARGETS keys are skeleton ids for mixed ops
+        if (op) sourceId = op.skeleton
+      }
+      return elapsedMs <= effectiveLimitSec({
+        timedAnswerEnabled: settings.timedAnswerEnabled,
+        explicitSeconds: explicit,
+        sourceId,
+      }) * 1000
     },
     [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
   )
@@ -105,11 +188,15 @@ export default function CalcSessionPage() {
   const [idx, setIdx] = useState(0)
   // Wrong questions collected during the session, appended to the tail for make-up.
   const wrongQueueRef = useRef<CalcQuestion[]>([])
+  const maxRetryRef = useRef(0)
   // Number of originally-planned questions (excludes make-up tail).
   // Ref for use inside event-handler closures; state mirror for render.
   const plannedCountRef = useRef(0)
   const [plannedCount, setPlannedCount] = useState(0)
   const [input, setInput] = useState('')
+  // Guards NumberPad auto-submit from double-settling while a settle (correct/retry/wrong)
+  // is already in flight for the current question; cleared when advancing to the next one.
+  const settleLockRef = useRef(false)
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0)
   const [feedback, setFeedback] = useState<FeedbackKind>(null)
   const [revealAnswer, setRevealAnswer] = useState<string | null>(null)
@@ -162,6 +249,7 @@ export default function CalcSessionPage() {
     if (initRef.current) return
     if (settingsLoading) return
     if (!user) return
+    if (needsPrep && !prepConfirmed) return
     initRef.current = true
 
     const init = async () => {
@@ -169,6 +257,17 @@ export default function CalcSessionPage() {
       // Use the returned map directly — `problemState.states` is still the stale
       // pre-load value within this same closure (React state updates async).
       const loadedStates = await problemState.loadAll()
+      // Mistakes MUST be in the store before reconcile / carry — the hook's
+      // `mistakes` state may still be empty on a cold visit to /calc/session.
+      await calcMistakesStore.ensureLoaded(user.id)
+      // Reconcile hanging mistakes vs mastered (deadlock repair)
+      await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+      // Reconcile may have resolved/demoted rows — refresh the local snapshot.
+      const reconciledStates = calcProblemStateStore.getSessionData(user.id) ?? {}
+      for (const [sig, st] of Object.entries(reconciledStates)) {
+        loadedStates.set(sig, st)
+      }
+
       loadedStatesRef.current = loadedStates
 
       if (drillParams) {
@@ -184,13 +283,30 @@ export default function CalcSessionPage() {
         setPlannedCount(session.length)
         setQuestions(session)
       } else {
+        // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
+        const blockIds = settings.selectedBlocks.map((b) => b.id)
+        const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
+        const recallCandidates = await fetchMasteredRecallCandidates(
+          user.id,
+          blockIds,
+          recallSlot,
+        )
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
-        const carried = lastSessionUnresolved(settings.sessionCounter)
-        const session = buildSession(settings, { problemStates: loadedStates }, carried)
+        // Read from the store snapshot (post-reconcile), not the hook's state.
+        const mistakesNow = calcMistakesStore.getSessionData(user.id) ?? []
+        const carried = unresolvedMistakes(mistakesNow, loadedStates).filter(
+          (m) => m.sessionNo === settings.sessionCounter,
+        )
+        const session = buildSession(
+          settings,
+          { problemStates: loadedStates, recallCandidates },
+          carried,
+        )
         setQuestions(session)
         plannedCountRef.current = session.length
         setPlannedCount(session.length)
+        maxRetryRef.current = maxRetryCeiling(session.length)
       }
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
@@ -201,7 +317,7 @@ export default function CalcSessionPage() {
     }
     void init()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, settingsLoading, drillParams, sessionKey])
+  }, [user, settingsLoading, drillParams, sessionKey, needsPrep, prepConfirmed])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -302,8 +418,12 @@ export default function CalcSessionPage() {
       if (first.sourceMixedOpId) state.mixedOpId = first.sourceMixedOpId
       nextStates.push(state)
     }
-    if (nextStates.length) {
-      await problemState.upsertStates(nextStates)
+    if (nextStates.length && user) {
+      await applyMasterySideEffects(user.id, {
+        kind: 'main_path_states',
+        states: nextStates,
+        sessionNo: nextSessionNo,
+      })
       // Refresh loadedStatesRef so DrillSummary reads updated proficiency (not pre-drill snapshot).
       for (const state of nextStates) {
         loadedStatesRef.current.set(state.signature, state)
@@ -387,6 +507,15 @@ export default function CalcSessionPage() {
       nextFocus,
     })
 
+    // End-of-session star multiplier (daily main path only — drills/mistakes
+    // never confirmed a prep mode, so they stay at the ×1.0 default).
+    if (!drillParams && mode === 'daily') {
+      const raw = coinsTotalRef.current
+      const finalStars = applySessionStarMultiplier(raw, sessionTimingModeRef.current, sessionBonusSecRef.current)
+      coinsTotalRef.current = finalStars
+      setCoinsTotal(finalStars)
+    }
+
     // 1. Persist session row (unchanged)
     await wallet.recordSession({
       date: todayStr(),
@@ -430,6 +559,7 @@ export default function CalcSessionPage() {
     startedTsMs,
     startedAtIso,
     problemState,
+    user,
   ])
 
   // ── Submit answer ────────────────────────────────────────────────
@@ -446,6 +576,7 @@ export default function CalcSessionPage() {
       userAnswer: string,
     ) => {
       const goNext = () => {
+        settleLockRef.current = false
         setFeedback(null)
         setInput('')
         setAttemptsForCurrent(0)
@@ -526,7 +657,19 @@ export default function CalcSessionPage() {
         sourceMixedOpId: q.sourceMixedOpId,
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
       })
-      if (!q.isChallenge && mode !== 'mistakes') wrongQueueRef.current.push({ ...q })
+      const inMakeup = isInMakeupPhase(idx, plannedCountRef.current)
+      if (!q.isChallenge && mode !== 'mistakes') {
+        if (drillParams) {
+          wrongQueueRef.current.push({ ...q })
+        } else if (!inMakeup) {
+          const { pool } = tryEnqueueRetry(
+            wrongQueueRef.current,
+            { ...q },
+            maxRetryRef.current,
+          )
+          wrongQueueRef.current = pool
+        }
+      }
       if (settings.immersiveMode) {
         goNext()
       } else {
@@ -549,19 +692,41 @@ export default function CalcSessionPage() {
     ],
   )
 
+  // Strict/bonus auto-advance: clock hits 0 → settle as final wrong (unanswered),
+  // once per question. Relaxed mode never auto-advances (ref stays 'relaxed').
+  const autoAdvancedIdxRef = useRef<number>(-1)
+  useEffect(() => {
+    if (done || !questions || idx >= questions.length) return
+    const timingMode = sessionTimingModeRef.current
+    if (timingMode !== 'strict' && timingMode !== 'bonus') return
+    if (feedback) return
+    if (remainingSec === null || remainingSec > 0) return
+    if (autoAdvancedIdxRef.current === idx) return
+    autoAdvancedIdxRef.current = idx
+
+    const q = questions[idx]
+    const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+    const withinLimit = withinLimitForQuestion(q, elapsedMs)
+    if (attemptsForCurrent === 0) {
+      questionTimesRef.current.push(elapsedMs)
+      questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: false })
+    }
+    const wasMistake = unresolved.some((m) => m.signature === q.signature)
+    settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, '')
+  }, [done, questions, idx, feedback, remainingSec, attemptsForCurrent, unresolved, withinLimitForQuestion, settleQuestion])
+
   // Self-grading pads (竖式 / 余数 / 分数) lock + show inline 红/绿 on submit. They
   // run the SAME two-try loop as the number pad: first wrong → retry (竖式 keeps the
   // current grid + keypad; other pads remount via padKey); second wrong → final wrong.
   const settleSelfGraded = useCallback(
     (q: CalcQuestion, isCorrect: boolean, userAnswer: string) => {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-      const sec = secondsForQuestion(q)
-      const withinLimit = sec && sec > 0 ? elapsedMs <= sec * 1000 : true
+      const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
         questionTimesRef.current.push(elapsedMs)
         questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
       }
-      const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+      const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
       if (isCorrect) {
         settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, userAnswer)
@@ -572,7 +737,8 @@ export default function CalcSessionPage() {
         return
       }
       // first miss → 竖式: wrong cells in place + inline hint; others: brief retry banner.
-      if (attemptsForCurrent === 0) {
+      // makeup is single-pass: no soft retry when idx >= plannedCount.
+      if (!isInMakeupPhase(idx, plannedCountRef.current) && attemptsForCurrent === 0) {
         setStreak(0)
         playSfx('retry', settings.soundEnabled)
         setFeedback('retry')
@@ -582,7 +748,7 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [attemptsForCurrent, mistakes, settings, settleQuestion, secondsForQuestion],
+    [idx, attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -615,35 +781,38 @@ export default function CalcSessionPage() {
     [questions, done, feedback, idx, settleSelfGraded],
   )
 
-  const handleSubmit = useCallback(() => {
+  // Shared NumberPad settle path — takes an explicit `raw` string rather than closing over
+  // `input` state, so the auto-submit path (which fires from onInputChange with the just-typed
+  // value) never races a stale `input` that hasn't re-rendered yet.
+  const submitNumberPadAnswer = useCallback((raw: string) => {
     if (!questions || done || feedback) return
     const q = questions[idx]
-    const userAns = Number(input)
+    const userAns = Number(raw)
     if (!Number.isFinite(userAns)) return
 
-    const isCorrect = checkAnswer(input, q.answer)
-    const wasMistake = mistakes.some((m) => !m.resolved && m.signature === q.signature)
+    const isCorrect = checkAnswer(raw, q.answer)
+    const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-    const sec = secondsForQuestion(q)
-    const withinLimit = sec && sec > 0 ? elapsedMs <= sec * 1000 : true
+    const withinLimit = withinLimitForQuestion(q, elapsedMs)
     if (attemptsForCurrent === 0) {
       questionTimesRef.current.push(elapsedMs)
       questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
     }
 
     if (isCorrect) {
-      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, input)
+      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, raw)
       return
     }
 
     if (settings.immersiveMode) {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
       return
     }
 
     // wrong: first miss → retry; second miss → settle as final wrong.
-    if (attemptsForCurrent === 0) {
+    // makeup is single-pass: no soft retry when idx >= plannedCount.
+    if (!isInMakeupPhase(idx, plannedCountRef.current) && attemptsForCurrent === 0) {
       setFeedback('retry')
       setStreak(0)
       playSfx('retry', settings.soundEnabled)
@@ -653,20 +822,40 @@ export default function CalcSessionPage() {
         setAttemptsForCurrent(1)
       }, 700)
     } else {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, input)
+      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
     }
   }, [
     questions,
     done,
     feedback,
     idx,
-    input,
     attemptsForCurrent,
-    mistakes,
+    unresolved,
     settings,
     settleQuestion,
-    secondsForQuestion,
+    withinLimitForQuestion,
   ])
+
+  const handleSubmit = useCallback(() => {
+    submitNumberPadAnswer(input)
+  }, [submitNumberPadAnswer, input])
+
+  // NumberPad only: as the child types, auto-settle once the input matches the answer
+  // (gated by settings.autoSubmitOnMatch) so a correct entry doesn't need an explicit tap.
+  const handleNumberPadInputChange = useCallback((next: string) => {
+    setInput(next)
+    if (!settings.autoSubmitOnMatch) return
+    if (!questions || done) return
+    const q = questions[idx]
+    if (!q) return
+    if (q.answerMode === 'vertical') return
+    if (q.answer.kind !== 'int' && q.answer.kind !== 'decimal') return
+    if (feedback) return
+    if (settleLockRef.current) return
+    if (!shouldAutoSubmitNumberPad(next, q.answer)) return
+    settleLockRef.current = true
+    submitNumberPadAnswer(next)
+  }, [settings.autoSubmitOnMatch, questions, done, idx, feedback, submitNumberPadAnswer])
 
   // Compute breakthrough drill summary values from the just-completed session's log.
   // Must use questionLogRef.current — wallet.sessions[0] is stale at this point because
@@ -695,7 +884,54 @@ export default function CalcSessionPage() {
     return nextT[currentTier ?? 'entry'] ?? '进阶'
   })()
 
-  if (settingsLoading || !questions || questions.length === 0) {
+  if (settingsLoading) {
+    return (
+      <>
+        <CalcAppHeader
+          balance={wallet.balance}
+          soundEnabled={settings.soundEnabled}
+          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+          title="练习中"
+          backHref="/calc"
+          backLabel="返回"
+        />
+        <div
+          className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
+          style={{ color: 'rgba(196,181,253,0.5)' }}
+        >
+          准备题目中…
+        </div>
+      </>
+    )
+  }
+
+  if (needsPrep && !prepConfirmed) {
+    return (
+      <>
+        <CalcAppHeader
+          balance={wallet.balance}
+          soundEnabled={settings.soundEnabled}
+          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+          title="准备练习"
+          backHref="/calc"
+          backLabel="返回"
+        />
+        <SessionPrepScreen
+          plannedEstimate={plannedEstimate}
+          maxRetry={maxRetryCeiling(plannedEstimate)}
+          timingMode={prepTimingMode}
+          bonusSec={prepBonusSec}
+          onChangeMode={setPrepModeOverride}
+          onChangeBonus={setPrepBonusOverride}
+          onSaveDefault={() => update({ timingMode: prepTimingMode, bonusSec: clampBonusSec(prepBonusSec) })}
+          onStart={handlePrepStart}
+          onBack={() => router.push('/calc')}
+        />
+      </>
+    )
+  }
+
+  if (!questions || questions.length === 0) {
     return (
       <>
         <CalcAppHeader
@@ -761,7 +997,7 @@ export default function CalcSessionPage() {
           immersive={settings.immersiveMode}
           className=""
           input={input}
-          onInputChange={setInput}
+          onInputChange={handleNumberPadInputChange}
           onNumberSubmit={handleSubmit}
           onFractionSubmit={handleFractionSubmit}
           onRemainderSubmit={handleRemainderSubmit}
@@ -838,6 +1074,7 @@ export default function CalcSessionPage() {
               setQuestions(null)
               setIdx(0)
               wrongQueueRef.current = []
+              maxRetryRef.current = 0
               plannedCountRef.current = 0
               setPlannedCount(0)
               setInput('')
@@ -859,6 +1096,11 @@ export default function CalcSessionPage() {
               setDone(false)
               setFinalStats(null)
               initRef.current = false
+              autoAdvancedIdxRef.current = -1
+              settleLockRef.current = false
+              setPrepConfirmed(false)
+              setPrepModeOverride(null)
+              setPrepBonusOverride(null)
               setSessionKey((k) => k + 1)
             }}
           />

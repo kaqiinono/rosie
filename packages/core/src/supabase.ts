@@ -171,6 +171,93 @@ export type Database = {
           updated_at?: string
         }
       }
+      adaptive_word_plans: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          scope: unknown
+          new_words_per_day: number
+          review_cap: number
+          review_batch_size: number
+          backlog_fuse: number
+          boss_every_n_new: number
+          boss_stubborn_threshold: number
+          mode: string
+          status: string
+          stats: unknown
+          created_at: string
+          updated_at: string
+          archived_at: string | null
+        }
+        Insert: {
+          user_id: string
+          title: string
+          scope: unknown
+          new_words_per_day?: number
+          review_cap?: number
+          review_batch_size?: number
+          backlog_fuse?: number
+          boss_every_n_new?: number
+          boss_stubborn_threshold?: number
+          mode?: string
+          status?: string
+          stats?: unknown
+        }
+        Update: {
+          title?: string
+          scope?: unknown
+          new_words_per_day?: number
+          review_cap?: number
+          review_batch_size?: number
+          backlog_fuse?: number
+          boss_every_n_new?: number
+          boss_stubborn_threshold?: number
+          mode?: string
+          status?: string
+          stats?: unknown
+          updated_at?: string
+          archived_at?: string | null
+        }
+      }
+      adaptive_plan_word_progress: {
+        Row: {
+          id: string
+          plan_id: string
+          user_id: string
+          word_key: string
+          status: string
+          box_index: number | null
+          target_box: number | null
+          streak_wrong: number
+          next_review_date: string | null
+          introduced_on: string | null
+          created_at: string
+          updated_at: string
+          archived_at: string | null
+        }
+        Insert: {
+          plan_id: string
+          user_id: string
+          word_key: string
+          status?: string
+          box_index?: number | null
+          target_box?: number | null
+          streak_wrong?: number
+          next_review_date?: string | null
+          introduced_on?: string | null
+        }
+        Update: {
+          status?: string
+          box_index?: number | null
+          target_box?: number | null
+          streak_wrong?: number
+          next_review_date?: string | null
+          introduced_on?: string | null
+          updated_at?: string
+          archived_at?: string | null
+        }
+      }
     }
   }
 }

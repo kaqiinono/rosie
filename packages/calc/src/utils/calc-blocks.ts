@@ -3,6 +3,15 @@ import {
 } from './calc-ast'
 import type { CalcCategory, CalcQuestion } from '@rosie/core'
 import { decimalAnswer, fractionAnswer, remainderAnswer } from './calc-answer'
+import {
+  genAdd100Comp,
+  genSubRound,
+  genMul2d1d,
+  genMul3d1d,
+  genZerosMul,
+  genDiv2d1d,
+  genZerosDiv,
+} from './calc-block-gens'
 
 export interface CalcBlock {
   id: string
@@ -219,6 +228,7 @@ export const BLOCKS: CalcBlock[] = [
   addBlock('add:20b', '20 以内进位', addGen.r20b),
   addBlock('add:100a', '100 以内不进位', addGen.r100a),
   addBlock('add:100b', '100 以内进位', addGen.r100b),
+  addBlock('add:100-comp', '100 以内凑整', genAdd100Comp),
   addBlock('add:1000', '1000 以内', addGen.r1000),
   addBlock('add:10000', '万以内', addGen.r10000),
   subBlock('sub:10', '10 以内', subGen.r10),
@@ -226,6 +236,7 @@ export const BLOCKS: CalcBlock[] = [
   subBlock('sub:20b', '20 以内退位', subGen.r20b),
   subBlock('sub:100a', '100 以内不退位', subGen.r100a),
   subBlock('sub:100b', '100 以内退位', subGen.r100b),
+  subBlock('sub:round', '整百/整千减多位数', genSubRound),
   subBlock('sub:1000', '1000 以内', subGen.r1000),
   subBlock('sub:10000', '万以内', subGen.r10000),
   mulBlock('mul:25', '×2、5', mulKey([2, 5], 2, 9)),
@@ -236,7 +247,11 @@ export const BLOCKS: CalcBlock[] = [
   mulBlock('mul:1012', '×10-12', mulKey([10, 11, 12], 2, 12)),
   mulBlock('mul:1319', '×13-19', mulKey([13, 14, 15, 16, 17, 18, 19], 2, 19)),
   mulBlock('mul:219', '2-19 综合', mulBoth(2, 19)),
-  mulBlock('mul:2d1d', '两位数×一位数', () => [randInt(11, 99), randInt(2, 9)]),
+  mulBlock('mul:2d1d-nc', '两位数×一位数（不进位）', () => genMul2d1d(false)),
+  mulBlock('mul:2d1d-c', '两位数×一位数（进位）', () => genMul2d1d(true)),
+  mulBlock('mul:3d1d-nc', '三位数×一位数（不进位）', () => genMul3d1d(false)),
+  mulBlock('mul:3d1d-c', '三位数×一位数（进位）', () => genMul3d1d(true)),
+  mulBlock('mul:zeros', '整十/整百乘法', genZerosMul),
   mulBlock('mul:2d', '两位数×两位数', mulBoth(11, 99)),
   divBlock('div:25', '÷2、5', divKey([2, 5], 2, 9)),
   divBlock('div:34', '÷3、4', divKey([3, 4], 2, 9)),
@@ -245,7 +260,9 @@ export const BLOCKS: CalcBlock[] = [
   divBlock('div:1012', '÷10-12', divKey([10, 11, 12], 2, 12)),
   divBlock('div:1319', '÷13-19', divKey([13, 14, 15, 16, 17, 18, 19], 2, 19)),
   divBlock('div:219', '÷2-19 综合', divRange(2, 19, 2, 19)),
-  divBlock('div:multi', '多位数÷一位数', divRange(2, 9, 11, 99)),
+  divBlock('div:multi', '多位数÷一位数', () => genDiv2d1d(false)),
+  divBlock('div:2d1d-borrow', '两位数÷一位数（满十）', () => genDiv2d1d(true)),
+  divBlock('div:zeros', '整十/整百除法', genZerosDiv),
   remainderBlock('div:rem', '有余数除法', () => {
     const divisor = randInt(2, 9)
     const quotient = randInt(2, 9)
@@ -353,10 +370,10 @@ export const BLOCK_GROUPS: { group: CalcBlock['group']; label: string }[] = [
  *  div: multi-digit ÷ one-digit. VerticalCalc only grades the final result row
  *  (carry scaffolding is optional/ungraded), so two-digit operands work fine. */
 export const VERTICAL_BLOCK_IDS = new Set<string>([
-  'add:100a', 'add:100b', 'add:1000', 'add:10000',
-  'sub:100a', 'sub:100b', 'sub:1000', 'sub:10000',
-  'mul:2d1d', 'mul:2d',
-  'div:multi',
+  'add:100a', 'add:100b', 'add:100-comp', 'add:1000', 'add:10000',
+  'sub:100a', 'sub:100b', 'sub:round', 'sub:1000', 'sub:10000',
+  'mul:2d1d-nc', 'mul:2d1d-c', 'mul:3d1d-nc', 'mul:3d1d-c', 'mul:2d',
+  'div:multi', 'div:2d1d-borrow',
 ])
 
 /** Blocks whose answers need the商/余 RemainderPad — excluded from the number-pad-only modal. */

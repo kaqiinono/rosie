@@ -38,7 +38,7 @@ function ExpandedProblemCard({
   const level = getMasteryLevel(count)
 
   return (
-    <div className={`rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${MASTERY_BORDER[level]}`}>
+    <div className={`self-start w-full rounded-[12px] border-[1.5px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${MASTERY_BORDER[level]}`}>
       <button
         type="button"
         onClick={onToggle}

@@ -24,6 +24,14 @@ export function formatAnswer(a: CalcAnswer): string {
   }
 }
 
+/** True when NumberPad input is long enough and grades correct for int/decimal. */
+export function shouldAutoSubmitNumberPad(input: string, answer: CalcAnswer): boolean {
+  if (answer.kind !== 'int' && answer.kind !== 'decimal') return false
+  const s = input.trim()
+  if (s.length < formatAnswer(answer).length) return false
+  return checkAnswer(s, answer)
+}
+
 /** Grade a raw user-entered string against the canonical answer. */
 export function checkAnswer(input: string, a: CalcAnswer): boolean {
   const s = input.trim()

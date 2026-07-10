@@ -2,143 +2,19 @@
 
 import { useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, supabase } from '@rosie/core'
-import type {
-  CalcLevel,
-  CalcProblemState,
-  CalcProblemStatus,
-  QuestionAttempt,
-} from '@rosie/core'
+import { supabase } from '@rosie/core'
+import type { CalcLevel, CalcProblemState } from '@rosie/core'
+import { applyAttempt, defaultProblemState } from '../utils/calc-apply-attempt'
+import {
+  calcProblemStateStore,
+  levelToInt,
+  PROBLEM_STATE_SELECT_COLS,
+  problemStateToRow,
+  rowToProblemState,
+} from '../utils/calc-problem-state-store'
+import { applyMasterySideEffects } from '../utils/calc-mastery-sync'
 
-interface ProblemStateRow {
-  signature: string
-  level: number
-  proficiency: number
-  attempt_count: number
-  appearance_count: number
-  recent_results: QuestionAttempt[]
-  status: CalcProblemStatus
-  consecutive_wrong: number
-  updated_at: string
-  block_id?: string | null
-  mixed_op_id?: string | null
-}
-
-const SELECT_COLS =
-  'signature,level,proficiency,attempt_count,appearance_count,recent_results,status,consecutive_wrong,updated_at,block_id,mixed_op_id'
-
-function rowToState(r: ProblemStateRow): CalcProblemState {
-  return {
-    signature: r.signature,
-    level: r.level === 99 ? 'C' : r.level,
-    proficiency: r.proficiency,
-    attemptCount: r.attempt_count,
-    appearanceCount: r.appearance_count,
-    recentResults: Array.isArray(r.recent_results) ? r.recent_results : [],
-    status: r.status,
-    consecutiveWrong: r.consecutive_wrong,
-    updatedAt: r.updated_at,
-    blockId: r.block_id ?? undefined,
-    mixedOpId: r.mixed_op_id ?? undefined,
-  }
-}
-
-function levelToInt(level: CalcLevel): number {
-  return level === 'C' ? 99 : level
-}
-
-function stateToRow(s: CalcProblemState, userId: string) {
-  return {
-    user_id: userId,
-    signature: s.signature,
-    level: levelToInt(s.level),
-    proficiency: s.proficiency,
-    attempt_count: s.attemptCount,
-    appearance_count: s.appearanceCount,
-    recent_results: s.recentResults,
-    status: s.status,
-    consecutive_wrong: s.consecutiveWrong,
-    updated_at: new Date().toISOString(),
-    block_id: s.blockId ?? null,
-    mixed_op_id: s.mixedOpId ?? null,
-  }
-}
-
-function defaultState(signature: string, level: CalcLevel): CalcProblemState {
-  return {
-    signature,
-    level,
-    proficiency: 0,
-    attemptCount: 0,
-    appearanceCount: 0,
-    recentResults: [],
-    status: 'active',
-    consecutiveWrong: 0,
-    updatedAt: new Date().toISOString(),
-  }
-}
-
-const RECENT_CAP = 10
-
-export function applyAttempt(
-  prev: CalcProblemState,
-  attempt: QuestionAttempt,
-  withinLimit: boolean,
-  _sessionNo: number,
-  _today: string,
-): CalcProblemState {
-  const attemptWithLimit: QuestionAttempt = { ...attempt, withinLimit }
-  const nextRecent = [...prev.recentResults, attemptWithLimit].slice(-RECENT_CAP)
-  const nextAttemptCount = prev.attemptCount + 1
-
-  let nextProf = prev.proficiency
-  let nextConsecutiveWrong = prev.consecutiveWrong
-  if (attempt.correct) {
-    nextProf = withinLimit
-      ? Math.min(5, nextProf + 1)
-      : Math.min(5, Math.round(nextProf + 0.5))
-    nextConsecutiveWrong = 0
-  } else {
-    nextProf = Math.max(0, nextProf - 2)
-    nextConsecutiveWrong = prev.consecutiveWrong + 1
-  }
-
-  const nextStatus: CalcProblemStatus =
-    nextProf >= 4 && nextAttemptCount >= 3 ? 'mastered' : 'active'
-
-  return {
-    ...prev,
-    proficiency: nextProf,
-    attemptCount: nextAttemptCount,
-    appearanceCount: prev.appearanceCount + 1,
-    recentResults: nextRecent,
-    status: nextStatus,
-    consecutiveWrong: nextConsecutiveWrong,
-    updatedAt: new Date().toISOString(),
-  }
-}
-
-type ProblemStateRecord = Record<string, CalcProblemState>
-
-async function fetchAllProblemStates(userId: string): Promise<ProblemStateRecord> {
-  const { data } = await supabase
-    .from('calc_problem_state')
-    .select(SELECT_COLS)
-    .eq('user_id', userId)
-  const record: ProblemStateRecord = {}
-  for (const r of (data ?? []) as ProblemStateRow[]) {
-    record[r.signature] = rowToState(r)
-  }
-  return record
-}
-
-export const calcProblemStateStore = createUserSessionStore<ProblemStateRecord>(
-  'calc_problem_states',
-  {
-    fetch: fetchAllProblemStates,
-    empty: {},
-  },
-)
+export { applyAttempt, calcProblemStateStore }
 
 export interface UseCalcProblemStateReturn {
   states: Map<string, CalcProblemState>
@@ -164,13 +40,13 @@ export function useCalcProblemState(user: User | null): UseCalcProblemStateRetur
       const intLevels = levels.map(levelToInt)
       const { data } = await supabase
         .from('calc_problem_state')
-        .select(SELECT_COLS)
+        .select(PROBLEM_STATE_SELECT_COLS)
         .eq('user_id', userId)
         .in('level', intLevels)
-      const rows = (data ?? []) as ProblemStateRow[]
+      const rows = (data ?? []) as Parameters<typeof rowToProblemState>[0][]
       calcProblemStateStore.patchSessionData(userId, (prev) => {
         const next = { ...prev }
-        for (const r of rows) next[r.signature] = rowToState(r)
+        for (const r of rows) next[r.signature] = rowToProblemState(r)
         return next
       })
     },
@@ -186,29 +62,20 @@ export function useCalcProblemState(user: User | null): UseCalcProblemStateRetur
 
   const getState = useCallback(
     (signature: string, level: CalcLevel): CalcProblemState => {
-      return stateRecord[signature] ?? defaultState(signature, level)
+      return stateRecord[signature] ?? defaultProblemState(signature, level)
     },
     [stateRecord],
   )
 
   const upsertStates = useCallback(
     async (nextStates: CalcProblemState[]) => {
-      if (nextStates.length === 0) return
-      if (userId) {
-        calcProblemStateStore.patchSessionData(userId, (prev) => {
-          const next = { ...prev }
-          for (const s of nextStates) next[s.signature] = s
-          return next
-        })
-        const rows = nextStates.map((s) => stateToRow(s, userId))
-        try {
-          await supabase
-            .from('calc_problem_state')
-            .upsert(rows, { onConflict: 'user_id,signature' })
-        } catch {
-          /* ignore */
-        }
-      }
+      if (nextStates.length === 0 || !userId) return
+      // Prefer mastery sync so mistakes stay in frame when promoting to mastered
+      await applyMasterySideEffects(userId, {
+        kind: 'main_path_states',
+        states: nextStates,
+        sessionNo: 0,
+      })
     },
     [userId],
   )
@@ -225,3 +92,6 @@ export function useCalcProblemState(user: User | null): UseCalcProblemStateRetur
     [states, isLoading, loadForLevels, loadAll, getState, upsertStates],
   )
 }
+
+// Re-export for callers that built rows manually
+export { problemStateToRow }

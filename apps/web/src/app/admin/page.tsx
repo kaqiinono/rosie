@@ -25,6 +25,15 @@ const TOOLS: AdminTool[] = [
     ring: 'rgba(245,158,11,0.30)',
   },
   {
+    href: '/admin/plans',
+    emoji: '🗂️',
+    title: '计划中心',
+    description: '为数学、英语等模块创建与修改学习计划，按日期与题型分配每日任务。',
+    from: 'rgba(249,115,22,0.14)',
+    to: 'rgba(251,191,36,0.10)',
+    ring: 'rgba(249,115,22,0.28)',
+  },
+  {
     href: '/admin/words',
     emoji: '📚',
     title: '词库管理',
