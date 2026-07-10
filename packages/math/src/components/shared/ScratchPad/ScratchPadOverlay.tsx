@@ -10,6 +10,7 @@ import ScratchPadToolbar from './ScratchPadToolbar'
 import ScratchPadEdgeNav from './ScratchPadEdgeNav'
 import type { ScratchObject } from './scratch-pad-types'
 import { useScratchPad } from './useScratchPad'
+import './scratch-pad.css'
 
 type EdgeNavConfig = {
   hasPrev: boolean
@@ -80,6 +81,7 @@ export default function ScratchPadOverlay({
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
+    handleLostPointerCapture,
     handlePointerLeave,
     canUndo,
     undo,
@@ -101,10 +103,10 @@ export default function ScratchPadOverlay({
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
 
   useEffect(() => {
-    const prev = document.body.style.overflow
+    const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = prev
+      document.body.style.overflow = prevOverflow
     }
   }, [])
 
@@ -179,10 +181,10 @@ export default function ScratchPadOverlay({
         {showCanvas && (
           <div
             ref={containerRef}
-            className="absolute inset-0 overflow-auto overscroll-contain"
+            className={`scratch-pad-draw-surface absolute inset-0 overflow-auto overscroll-contain select-none${tool !== 'pan' ? ' touch-none' : ''}`}
           >
             <div
-              className="relative"
+              className="scratch-pad-draw-surface relative select-none"
               style={{
                 width: canvasW,
                 height: canvasH,
@@ -192,11 +194,12 @@ export default function ScratchPadOverlay({
             >
               <canvas
                 ref={canvasRef}
-                className={`block touch-none${readOnly ? ' pointer-events-none' : ''}${tool === 'pan' ? ' cursor-grab active:cursor-grabbing' : ''}`}
+                className={`block touch-none select-none${readOnly ? ' pointer-events-none' : ''}${tool === 'pan' ? ' cursor-grab active:cursor-grabbing' : ''}`}
                 onPointerDown={readOnly ? undefined : handlePointerDown}
                 onPointerMove={readOnly ? undefined : handlePointerMove}
                 onPointerUp={readOnly ? undefined : handlePointerUp}
                 onPointerCancel={readOnly ? undefined : handlePointerUp}
+                onLostPointerCapture={readOnly ? undefined : handleLostPointerCapture}
                 onPointerLeave={readOnly ? undefined : handlePointerLeave}
               />
               {!readOnly && hasSelection && selectionBoundsRect && selectionW > 0 && (

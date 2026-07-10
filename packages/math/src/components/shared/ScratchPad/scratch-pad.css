@@ -1,0 +1,7 @@
+/* iPad / Apple Pencil: block Copy · Look Up · Translate callout on the drawing layer */
+.scratch-pad-draw-surface {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}

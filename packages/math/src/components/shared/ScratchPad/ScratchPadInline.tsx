@@ -8,6 +8,7 @@ import ScratchPadInsertFigureButton from './ScratchPadInsertFigureButton'
 import ScratchPadSelectionActions from './ScratchPadSelectionActions'
 import ScratchPadToolbar from './ScratchPadToolbar'
 import { useScratchPad } from './useScratchPad'
+import './scratch-pad.css'
 
 type ScratchPadInlineProps = {
   problem: Problem
@@ -90,6 +91,7 @@ function ScratchPadInlineEditor({
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
+    handleLostPointerCapture,
     handlePointerLeave,
     canUndo,
     undo,
@@ -146,14 +148,19 @@ function ScratchPadInlineEditor({
         onInsertFigure={insertImage}
         onCollapse={onCollapse}
       />
-      <div ref={containerRef} className="relative w-full" style={{ height: EDITOR_FIT_HEIGHT }}>
+      <div
+        ref={containerRef}
+        className="scratch-pad-draw-surface relative w-full touch-none select-none"
+        style={{ height: EDITOR_FIT_HEIGHT }}
+      >
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 touch-none"
+          className="absolute inset-0 touch-none select-none"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
+          onLostPointerCapture={handleLostPointerCapture}
           onPointerLeave={handlePointerLeave}
         />
         {hasSelection && selectionBoundsRect && canvasSize.width > 0 && (

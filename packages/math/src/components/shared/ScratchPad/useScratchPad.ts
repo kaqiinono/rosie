@@ -179,6 +179,7 @@ export function useScratchPad(
   const selectedIdsRef = useRef<Set<string>>(new Set())
   const historyRef = useRef<ScratchSnapshot[]>([])
   const dragRef = useRef<DragMode>({ kind: 'none' })
+  const activePointerIdRef = useRef<number | null>(null)
   const eraserCursorRef = useRef<ScratchPoint | null>(null)
   const previewRef = useRef<{
     box?: { x1: number; y1: number; x2: number; y2: number }
@@ -228,6 +229,7 @@ export function useScratchPad(
     selectedIdsRef.current = new Set()
     historyRef.current = []
     dragRef.current = { kind: 'none' }
+    activePointerIdRef.current = null
     previewRef.current = {}
     pendingLocalFingerprintRef.current = null
   }, [])
@@ -405,9 +407,21 @@ export function useScratchPad(
 
   useEffect(() => {
     resizeCanvas()
+    const el = containerRef.current
+    const blockNativeGesture = (e: Event) => e.preventDefault()
+    if (el) {
+      el.addEventListener('selectstart', blockNativeGesture)
+      el.addEventListener('contextmenu', blockNativeGesture)
+    }
     const ro = new ResizeObserver(() => resizeCanvas())
-    if (containerRef.current) ro.observe(containerRef.current)
-    return () => ro.disconnect()
+    if (el) ro.observe(el)
+    return () => {
+      if (el) {
+        el.removeEventListener('selectstart', blockNativeGesture)
+        el.removeEventListener('contextmenu', blockNativeGesture)
+      }
+      ro.disconnect()
+    }
   }, [resizeCanvas])
 
   useEffect(() => {
@@ -442,6 +456,7 @@ export function useScratchPad(
     selectedIdsRef.current = new Set()
     historyRef.current = []
     dragRef.current = { kind: 'none' }
+    activePointerIdRef.current = null
     previewRef.current = {}
     objectsRef.current = incoming.length > 0 ? deepCloneObjects(incoming) : []
     pendingLocalFingerprintRef.current = null
@@ -588,6 +603,7 @@ export function useScratchPad(
     )
     setHistoryLen(historyRef.current.length)
     dragRef.current = { kind: 'none' }
+    activePointerIdRef.current = null
     previewRef.current = {}
     forceRender()
     paint()
@@ -627,7 +643,18 @@ export function useScratchPad(
   }, [eraserWidth, paint])
 
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (activePointerIdRef.current !== null && activePointerIdRef.current !== e.pointerId) {
+      return
+    }
+
+    // Block scroll, zoom, and iOS text-selection gestures (Copy / Look Up / Translate).
+    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+      e.preventDefault()
+      window.getSelection()?.removeAllRanges()
+    }
+
     e.currentTarget.setPointerCapture(e.pointerId)
+    activePointerIdRef.current = e.pointerId
 
     if (tool === 'pan') {
       const container = containerRef.current
@@ -741,6 +768,14 @@ export function useScratchPad(
   }, [colorId, strokeWidth, highlightColorId, highlightWidth, tool, findTopmostHit, getCanvasPoint, pushHistory, setSelection, forceRender, applyEraser])
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) {
+      return
+    }
+
+    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+      e.preventDefault()
+    }
+
     const drag = dragRef.current
     if (drag.kind === 'pan-view') {
       const container = containerRef.current
@@ -844,7 +879,12 @@ export function useScratchPad(
     }
   }, [getCanvasPoint, paint, tool, eraserWidth])
 
-  const handlePointerUp = useCallback(() => {
+  const finishPointer = useCallback((e?: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e && activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) {
+      return
+    }
+    activePointerIdRef.current = null
+
     const drag = dragRef.current
     dragRef.current = { kind: 'none' }
 
@@ -922,6 +962,17 @@ export function useScratchPad(
     forceRender()
   }, [colorId, strokeWidth, shapeFillEnabled, triangleVariant, pushHistory, setSelection, forceRender, notifyChange, paint, refreshSelectionBounds, switchToPenIfCanvasEmpty])
 
+  const handlePointerUp = finishPointer
+
+  const handleLostPointerCapture = useCallback(
+    (e: React.PointerEvent<HTMLCanvasElement>) => {
+      if (dragRef.current.kind === 'none') return
+      if (activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) return
+      finishPointer(e)
+    },
+    [finishPointer],
+  )
+
   const handlePointerLeave = useCallback(() => {
     if (dragRef.current.kind !== 'none') return
     if (eraserCursorRef.current) {
@@ -958,6 +1009,7 @@ export function useScratchPad(
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
+    handleLostPointerCapture,
     handlePointerLeave,
     undo,
     canUndo,
