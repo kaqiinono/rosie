@@ -92,6 +92,63 @@ export function chunkPool(sorted: QuizEntry[], size: number): QuizEntry[][] {
   return chunks
 }
 
+/**
+ * Build exactly `volumeCount` chunks of size `countPerVolume`.
+ * Unique problems are assigned first (no replacement); once exhausted,
+ * later volumes recycle from the same priority-sorted pool. Within a
+ * single chunk, duplicates are avoided until the pool is smaller than
+ * `countPerVolume`.
+ */
+export function buildPaddedLessonChunks(
+  sorted: QuizEntry[],
+  countPerVolume: number,
+  volumeCount: number,
+): QuizEntry[][] {
+  const n = Math.max(1, countPerVolume)
+  const target = Math.max(0, volumeCount)
+  if (sorted.length === 0 || target === 0) return []
+
+  const chunks: QuizEntry[][] = chunkPool(sorted, n)
+  let recycleCursor = 0
+
+  const takePadded = (seed: QuizEntry[]): QuizEntry[] => {
+    const result = [...seed]
+    const inChunk = new Set(result.map((e) => e.problem.id))
+
+    while (result.length < n) {
+      let found: QuizEntry | null = null
+      for (let step = 0; step < sorted.length; step++) {
+        const e = sorted[(recycleCursor + step) % sorted.length]!
+        if (!inChunk.has(e.problem.id)) {
+          found = e
+          recycleCursor = (recycleCursor + step + 1) % sorted.length
+          break
+        }
+      }
+      if (found) {
+        result.push(found)
+        inChunk.add(found.problem.id)
+        continue
+      }
+      // Pool smaller than countPerVolume — allow within-volume repeats.
+      const e = sorted[recycleCursor % sorted.length]!
+      result.push(e)
+      recycleCursor = (recycleCursor + 1) % sorted.length
+    }
+    return result
+  }
+
+  for (let i = 0; i < chunks.length; i++) {
+    if (chunks[i]!.length < n) {
+      chunks[i] = takePadded(chunks[i]!)
+    }
+  }
+  while (chunks.length < target) {
+    chunks.push(takePadded([]))
+  }
+  return chunks.slice(0, target)
+}
+
 export function pickByPriority(
   pool: QuizEntry[],
   exclude: Set<string>,
@@ -104,16 +161,15 @@ export function pickByPriority(
   return sorted[0] ?? null
 }
 
-function lessonChunks(
+function lessonSortedPool(
   lessonId: string,
   sections: QuizSection[],
   types: string[],
-  countPerVolume: number,
   ctx: AllocationContext,
   usedIds: Set<string>,
-): QuizEntry[][] {
+): QuizEntry[] {
   const pool = buildQuizPool(lessonId, sections, types).filter((e) => !usedIds.has(e.problem.id))
-  return chunkPool(sortPoolByPriority(pool, ctx), countPerVolume)
+  return sortPoolByPriority(pool, ctx)
 }
 
 export function computeQuizPoolStats(
@@ -185,16 +241,27 @@ export function allocateInitialBatch(
   ctx: AllocationContext,
   usedIds: Set<string> = new Set(),
 ): { volumes: QuizVolumePlan[]; config: QuizBatchConfig } {
-  const chunkMap: Record<string, QuizEntry[][]> = {}
+  const sortedPools: Record<string, QuizEntry[]> = {}
+  const counts: Record<string, number> = {}
   let maxVolumes = 0
   let config: QuizBatchConfig = { sections, lessons: {} }
 
   for (const lessonId of lessonIds) {
     const types = typesByLesson[lessonId] ?? []
     const count = Math.max(1, countsByLesson[lessonId] ?? 1)
-    const chunks = lessonChunks(lessonId, sections, types, count, ctx, usedIds)
+    counts[lessonId] = count
+    const sorted = lessonSortedPool(lessonId, sections, types, ctx, usedIds)
+    sortedPools[lessonId] = sorted
+    if (sorted.length > 0) {
+      maxVolumes = Math.max(maxVolumes, Math.ceil(sorted.length / count))
+    }
+  }
+
+  const chunkMap: Record<string, QuizEntry[][]> = {}
+  for (const lessonId of lessonIds) {
+    const count = counts[lessonId]!
+    const chunks = buildPaddedLessonChunks(sortedPools[lessonId] ?? [], count, maxVolumes)
     chunkMap[lessonId] = chunks
-    maxVolumes = Math.max(maxVolumes, chunks.length)
     const assignedIds = chunks.flat().map((e) => e.problem.id)
     config = mergeLessonConfig(config, lessonId, count, assignedIds)
   }
@@ -226,16 +293,27 @@ export function allocateAppendLessons(
     for (const p of paper.problems) usedIds.add(p.problemId)
   }
 
-  const chunkMap: Record<string, QuizEntry[][]> = {}
+  const sortedPools: Record<string, QuizEntry[]> = {}
+  const counts: Record<string, number> = {}
   let maxVolumes = 0
   let config = { ...batchConfig, sections, lessons: { ...batchConfig.lessons } }
 
   for (const lessonId of newLessonIds) {
     const types = typesByLesson[lessonId] ?? []
     const count = Math.max(1, countsByLesson[lessonId] ?? 1)
-    const chunks = lessonChunks(lessonId, sections, types, count, ctx, usedIds)
+    counts[lessonId] = count
+    const sorted = lessonSortedPool(lessonId, sections, types, ctx, usedIds)
+    sortedPools[lessonId] = sorted
+    if (sorted.length > 0) {
+      maxVolumes = Math.max(maxVolumes, Math.ceil(sorted.length / count))
+    }
+  }
+
+  const chunkMap: Record<string, QuizEntry[][]> = {}
+  for (const lessonId of newLessonIds) {
+    const count = counts[lessonId]!
+    const chunks = buildPaddedLessonChunks(sortedPools[lessonId] ?? [], count, maxVolumes)
     chunkMap[lessonId] = chunks
-    maxVolumes = Math.max(maxVolumes, chunks.length)
     const assignedIds = chunks.flat().map((e) => e.problem.id)
     config = mergeLessonConfig(config, lessonId, count, assignedIds)
   }

@@ -134,7 +134,11 @@ export default function QuizProblemPrintWidget({ problem, interactiveState }: Pr
         {renderWidgetSource(problem, interactiveState)}
       </div>
       {dataUrl ? (
-        <img src={dataUrl} alt="" className="quiz-print-raster block h-auto max-w-full" />
+        <img
+          src={dataUrl}
+          alt=""
+          className="quiz-print-raster block h-auto w-auto max-h-[200px] max-w-[200px] object-contain"
+        />
       ) : (
         <p className="text-xs text-slate-400 no-print">题面生成中…</p>
       )}

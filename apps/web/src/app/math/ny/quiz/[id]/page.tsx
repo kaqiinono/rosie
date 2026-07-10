@@ -926,8 +926,11 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
         .quiz-problem-text p:last-child { margin-bottom: 0; }
         .quiz-problem-text img {
           display: block;
-          max-width: 100%;
+          max-width: 200px;
+          max-height: 200px;
+          width: auto;
           height: auto;
+          object-fit: contain;
           margin: .5rem auto;
           border-radius: .5rem;
         }

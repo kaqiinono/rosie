@@ -1421,6 +1421,9 @@ export default function QuizPage() {
                   <span className="text-xs text-slate-400">
                     已选 {modalLessons.length} 个课题 · 每卷 {modalTotal} 题 · 题库{' '}
                     {modalPoolStats.totalPool} 题 · 可出 {modalPoolStats.volumeCount} 卷
+                    <span className="mt-0.5 block text-[11px] text-slate-300">
+                      某讲次题不够时，后续卷自动复用该讲次题目
+                    </span>
                   </span>
                   <div className="flex shrink-0 items-center gap-2">
                     <button
@@ -1448,6 +1451,9 @@ export default function QuizPage() {
                   <span className="text-xs text-slate-400">
                     新增 {modalLessons.length} 个讲次 · 每卷 {modalTotal} 题 · 题库{' '}
                     {appendPoolStats.totalPool} 题 · 预计新卷 {appendPoolStats.volumeCount} 卷
+                    <span className="mt-0.5 block text-[11px] text-slate-300">
+                      某讲次题不够时，后续卷自动复用该讲次题目
+                    </span>
                   </span>
                   <button
                     disabled={modalLessons.length === 0 || appendPoolStats.totalPool === 0 || batchSaving}

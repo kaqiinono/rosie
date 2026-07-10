@@ -271,7 +271,10 @@ export const QUIZ_PRINT_STYLE = `
     justify-content: center;
   }
   .quiz-print-raster {
-    max-height: 420px;
+    max-width: 200px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
     object-fit: contain;
   }
   .solution-space { height: 9em; }
@@ -305,6 +308,9 @@ export const QUIZ_PRINT_STYLE = `
     }
     .solution-space { height: 8em; }
     .print-scratch-img { max-height: none; }
-    .quiz-print-raster { max-height: none; }
+    .quiz-print-raster {
+      max-width: 200px;
+      max-height: 200px;
+    }
   }
 `
