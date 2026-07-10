@@ -57,7 +57,7 @@ export default function EnglishQuickLinkGrid() {
   const hardCount = wrongKeys.size
 
   return (
-    <div className="grid grid-cols-2 items-stretch gap-3 min-[501px]:grid-cols-3">
+    <div className="grid grid-cols-2 items-stretch gap-4 min-[501px]:gap-5 min-[768px]:grid-cols-3">
       {STATIC_LINKS.map(link => (
         <EnglishQuickLinkCard key={link.href} {...link} />
       ))}

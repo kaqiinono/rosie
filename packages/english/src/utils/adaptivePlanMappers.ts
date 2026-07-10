@@ -19,6 +19,7 @@ export type AdaptiveWordPlanRow = {
   backlog_fuse: number
   boss_every_n_new: number
   boss_stubborn_threshold: number
+  boss_pack_limit: number
   mode: string
   status: string
   stats: unknown
@@ -134,6 +135,7 @@ export function mapPlanRowToModel(row: AdaptiveWordPlanRow): AdaptiveWordPlan {
     backlogFuse: numberOrDefault(row.backlog_fuse, 50),
     bossEveryNNew: numberOrDefault(row.boss_every_n_new, 50),
     bossStubbornThreshold: numberOrDefault(row.boss_stubborn_threshold, 15),
+    bossPackLimit: numberOrDefault(row.boss_pack_limit, 50),
     mode: parseMode(row.mode),
     status: parsePlanStatus(row.status),
     stats: parseStats(row.stats),
@@ -173,6 +175,7 @@ export function mapPlanModelToRow(plan: AdaptiveWordPlan): Record<string, unknow
     backlog_fuse: plan.backlogFuse,
     boss_every_n_new: plan.bossEveryNNew,
     boss_stubborn_threshold: plan.bossStubbornThreshold,
+    boss_pack_limit: plan.bossPackLimit,
     mode: plan.mode,
     status: plan.status,
     stats: plan.stats,

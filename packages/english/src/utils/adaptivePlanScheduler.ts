@@ -6,13 +6,19 @@ import type {
 
 export type AdaptiveDailyTask = {
   mode: AdaptivePlanMode
+  /** Due today (nextReviewDate <= today). */
   reviewKeys: string[]
   reviewBatchKeys: string[]
   activateKeys: string[]
   bossKeys: string[]
 }
 
-const BOSS_PACK_LIMIT = 50
+const BOSS_PACK_LIMIT_FALLBACK = 50
+
+function bossPackLimit(plan: AdaptiveWordPlan): number {
+  const n = plan.bossPackLimit
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : BOSS_PACK_LIMIT_FALLBACK
+}
 
 /** Active rows only — excludes soft-archived progress. */
 function activeRows(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
@@ -150,10 +156,11 @@ function pickDueReviewKeys(
   return due.slice(0, reviewCap).map(row => row.wordKey)
 }
 
-function pickBossKeys(rows: AdaptivePlanWordProgress[]): string[] {
+function pickBossKeys(rows: AdaptivePlanWordProgress[], limit: number): string[] {
+  const cap = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : BOSS_PACK_LIMIT_FALLBACK
   const learning = activeRows(rows).filter(row => row.status === 'LEARNING')
   return sortBossCandidates(learning)
-    .slice(0, BOSS_PACK_LIMIT)
+    .slice(0, cap)
     .map(row => row.wordKey)
 }
 
@@ -163,24 +170,23 @@ export function buildDailyTask(
   today: string,
 ): AdaptiveDailyTask {
   const mode = resolveMode(plan, rows, today)
-  const reviewKeys = pickDueReviewKeys(rows, today, plan.reviewCap)
-  const reviewBatchKeys = reviewKeys.slice(0, plan.reviewBatchSize)
+  const dueReviewKeys = pickDueReviewKeys(rows, today, plan.reviewCap)
 
   if (mode === 'boss') {
     return {
       mode,
-      reviewKeys,
-      reviewBatchKeys,
+      reviewKeys: dueReviewKeys,
+      reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
       activateKeys: [],
-      bossKeys: pickBossKeys(rows),
+      bossKeys: pickBossKeys(rows, bossPackLimit(plan)),
     }
   }
 
   if (mode === 'review_only') {
     return {
       mode,
-      reviewKeys,
-      reviewBatchKeys,
+      reviewKeys: dueReviewKeys,
+      reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
       activateKeys: [],
       bossKeys: [],
     }
@@ -190,12 +196,15 @@ export function buildDailyTask(
   // pull a fresh batch each time — deduct words already introduced today.
   const perDay = Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10
   const remainingToday = Math.max(0, perDay - countActivatedToday(rows, today))
+  const activateKeys = pickActivations(rows, remainingToday).map(row => row.wordKey)
 
+  // Reviews are due-date only — never pull future-box words forward on idle days
+  // (that collapses Leitner intervals, e.g. Box5 7-day gap).
   return {
     mode,
-    reviewKeys,
-    reviewBatchKeys,
-    activateKeys: pickActivations(rows, remainingToday).map(row => row.wordKey),
+    reviewKeys: dueReviewKeys,
+    reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
+    activateKeys,
     bossKeys: [],
   }
 }

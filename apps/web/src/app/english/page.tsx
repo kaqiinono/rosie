@@ -25,7 +25,7 @@ export default function EnglishPage() {
           </p>
         </section>
 
-        <section className="w-full max-w-[680px]">
+        <section className="w-full max-w-[840px]">
           <EnglishQuickLinkGrid />
         </section>
 

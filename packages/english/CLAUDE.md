@@ -30,8 +30,18 @@ audio, flipbook).
   `streakWrong++`, due today) while global mastery write-back uses the collapsed final outcome;
   Boss question pressure follows `stats.bossQuestionTier` via `bossQuizTypesForWord` (3 = floor);
   any failed Boss submission increments `bossFailStreak` (tier downgrade only < 60%). Settle does
-  remote writes before local state and surfaces a「重试保存」button on failure. DDL lives in
-  **`sql/adaptive-word-plans.sql`** (tracked mirror of the gitignored `docs/sql` copy).
+  remote writes before local state and surfaces a「重试保存」button on failure. In-progress rounds
+  are snapshotted to sessionStorage (`adaptivePlanSessionSnapshot.ts`, same-day restore; kept on
+  settle failure so answers survive a reload). Plan list views use the batched
+  `loadProgressForPlans`. **Vocab↔plan consistency is maintained at the write side**: `useWordData`'s
+  `deleteWord`/`deleteStage` call `archiveAdaptiveProgressForDeletedKeys` (archives matching progress
+  rows across all plans + auto-completes plans that become finishable) and `updateWord` calls
+  `migrateAdaptiveProgressKey` on unit/lesson/word renames (carries progress to the new key) — both
+  only fire when the key truly left the vocab (`keysRemovedFromVocab`; wordKey ignores stage) and
+  never throw so word CRUD can't fail on plan cleanup. As a safety net for historical/missed orphans,
+  the admin manage page still auto-detects orphaned rows and shows「清理 N 个失效词」
+  (`archiveOrphanWords`) only when found. DDL lives in **`sql/adaptive-word-plans.sql`** (tracked
+  mirror of the gitignored `docs/sql` copy).
 
 ## Adding phonics rules
 

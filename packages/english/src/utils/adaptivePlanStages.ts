@@ -33,8 +33,8 @@ export function adaptiveBoxStage(box: number | null | undefined): AdaptiveBoxSta
 export function adaptiveStageLabel(row: AdaptivePlanWordProgress | undefined): string {
   if (!row) return '未知'
   if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.shortLabel
-  if (row.status === 'LEARNING_PENDING') return '⏳ 待激活'
-  if (row.status === 'NOT_STARTED') return '💤 未开始'
+  if (row.status === 'LEARNING_PENDING') return '🐣 激活'
+  if (row.status === 'NOT_STARTED') return '🥚 待启程'
   const stage = adaptiveBoxStage(row.boxIndex)
   return `${stage.shortLabel} · ${stage.hint}`
 }

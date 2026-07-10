@@ -26,6 +26,7 @@ const basePlan = (overrides: Partial<AdaptiveWordPlan> = {}): AdaptiveWordPlan =
   backlogFuse: 50,
   bossEveryNNew: 50,
   bossStubbornThreshold: 15,
+  bossPackLimit: 50,
   mode: 'normal',
   status: 'active',
   stats: {
@@ -310,7 +311,50 @@ describe('buildDailyTask', () => {
     expect(task.bossKeys[2]).toBe('low')
   })
 
-  it('caps bossKeys at 50', () => {
+  it('leaves idle days empty when nothing is due and no new words remain', () => {
+    const plan = basePlan({ reviewCap: 2 })
+    const rows = [
+      row('future1', {
+        status: 'LEARNING',
+        boxIndex: 5,
+        nextReviewDate: '2026-07-12',
+        introducedOn: '2026-07-01',
+      }),
+      row('future2', {
+        status: 'LEARNING',
+        boxIndex: 4,
+        nextReviewDate: '2026-07-11',
+        introducedOn: '2026-07-02',
+      }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.mode).toBe('normal')
+    expect(task.activateKeys).toEqual([])
+    expect(task.reviewKeys).toEqual([])
+  })
+
+  it('only schedules due reviews — never pulls future-box words forward', () => {
+    const plan = basePlan({ reviewCap: 5 })
+    const rows = [
+      row('due', { status: 'LEARNING', boxIndex: 2, nextReviewDate: TODAY }),
+      row('future', { status: 'LEARNING', boxIndex: 5, nextReviewDate: '2026-07-12' }),
+      row('ns', { status: 'NOT_STARTED' }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.reviewKeys).toEqual(['due'])
+    expect(task.activateKeys).toEqual(['ns'])
+  })
+
+  it('caps bossKeys at plan bossPackLimit', () => {
+    const plan = basePlan({ mode: 'boss', bossPackLimit: 25 })
+    const rows = Array.from({ length: 60 }, (_, i) =>
+      row(`w${i}`, { status: 'LEARNING', boxIndex: 1, nextReviewDate: TODAY }),
+    )
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.bossKeys).toHaveLength(25)
+  })
+
+  it('caps bossKeys at 50 by default', () => {
     const plan = basePlan({ mode: 'boss' })
     const rows = Array.from({ length: 60 }, (_, i) =>
       row(`w${i}`, { status: 'LEARNING', boxIndex: 1, nextReviewDate: TODAY }),

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { QuizQuestion, WordEntry } from '@rosie/core'
 import { supabase, todayStr, useAuth, useImmersive } from '@rosie/core'
@@ -26,6 +27,13 @@ import type {
 } from '../../utils/adaptivePlanScheduler'
 import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
 import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
+import {
+  ADAPTIVE_SESSION_SNAPSHOT_VERSION,
+  clearAdaptiveSessionSnapshot,
+  readAdaptiveSessionSnapshot,
+  writeAdaptiveSessionSnapshot,
+  type AdaptiveSnapshotPhase,
+} from '../../utils/adaptivePlanSessionSnapshot'
 import { adaptiveStageLabel } from '../../utils/adaptivePlanStages'
 import type {
   AdaptivePlanWordProgress,
@@ -34,6 +42,7 @@ import type {
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanProgressBar from './AdaptivePlanProgressBar'
 import AdaptivePlanStageBoard from './AdaptivePlanStageBoard'
+import AdaptivePlanStageRoadmap from './AdaptivePlanStageRoadmap'
 import QuizQuestionBody from './QuizQuestionBody'
 import StudyPhase from './StudyPhase'
 import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
@@ -200,14 +209,16 @@ async function upsertMasteryPatches(
     return next
   })
 
+  // Empty-string dates crash Postgres DATE columns (error 22007) — coerce to
+  // today/null so a fresh mastery record (lastSeen '') can never break the save.
   const rows = patches.map(({ wordKey: key, info }) => ({
     user_id: userId,
     word_key: key,
     correct: info.correct,
     incorrect: info.incorrect,
-    last_seen: info.lastSeen,
+    last_seen: info.lastSeen || todayStr(),
     stage: info.stage ?? null,
-    next_review_date: info.nextReviewDate ?? null,
+    next_review_date: info.nextReviewDate || null,
     is_hard: info.isHard ?? false,
     review_history: info.reviewHistory ?? [],
     updated_at: new Date().toISOString(),
@@ -254,6 +265,10 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const [settleFailed, setSettleFailed] = useState<'normal' | 'boss' | null>(null)
   const [activationApplied, setActivationApplied] = useState(false)
   const [newStudyDone, setNewStudyDone] = useState(0)
+  // Session-scoped study list restored from a snapshot. Needed because after a
+  // reload the recomputed dailyTask deducts today's activations from the quota,
+  // so task.activateKeys no longer contains the words mid-study.
+  const [restoredActivateKeys, setRestoredActivateKeys] = useState<string[] | null>(null)
   const [doneTitle, setDoneTitle] = useState('本轮完成')
   const [doneMessage, setDoneMessage] = useState('已保存自适应计划进度。')
   const [roundSummary, setRoundSummary] = useState<RoundSummary | null>(null)
@@ -278,13 +293,16 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const batchSize = Math.max(1, plan?.reviewBatchSize ?? 20)
   const visibleReviewKeys = dayReviewKeys.slice(0, reviewCursor)
   const activateKeys = useMemo(() => {
+    // A restored session keeps its own study list (already quota-capped when
+    // the round began) — the fresh dailyTask would have deducted these words.
+    if (restoredActivateKeys != null) return restoredActivateKeys
     const keys = task?.activateKeys ?? []
     const cap = Number.isFinite(plan?.newWordsPerDay)
       ? Math.max(1, Math.floor(plan!.newWordsPerDay))
       : 10
     // Belt-and-suspenders: never study more than the plan's daily new-word quota.
     return keys.slice(0, cap)
-  }, [plan, task?.activateKeys])
+  }, [plan, restoredActivateKeys, task?.activateKeys])
   const activateEntries = useMemo(
     () =>
       activateKeys
@@ -301,6 +319,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     sessionStartedRef.current = false
     loadedPlanIdRef.current = null
     setLoadError(null)
+    setRestoredActivateKeys(null)
   }, [planId])
 
   useEffect(() => {
@@ -340,6 +359,45 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         setPlan(modePlan)
         setRows(loadedRows)
         setTask(dailyTask)
+
+        // Resume an interrupted round from sessionStorage (same day only).
+        // Requires vocab to build questions; without it fall back to hub and
+        // keep the snapshot for the next mount.
+        const snap = readAdaptiveSessionSnapshot(planSnapshot.id, today)
+        if (snap && vocab.length > 0) {
+          setPhase(snap.phase)
+          setReviewCursor(snap.reviewCursor)
+          setReviewDoneKeys(new Set(snap.reviewDoneKeys))
+          setStudyIdx(snap.studyIdx)
+          setQuizSlots(snap.quizSlots)
+          setCurQ(Math.min(snap.curQ, Math.max(0, snap.quizSlots.length - 1)))
+          setScore(snap.score)
+          setHelpClicks({})
+          setActivationApplied(snap.activationApplied)
+          setNewStudyDone(snap.newStudyDone)
+          setRestoredActivateKeys(snap.roundActivateKeys)
+          setDoneTitle('本轮完成')
+          setDoneMessage('已保存自适应计划进度。')
+          setRoundSummary(null)
+          starsAwardedThisRoundRef.current = snap.starsAwarded
+          roundActivateKeysRef.current = snap.roundActivateKeys
+          roundReviewKeysRef.current = snap.roundReviewKeys
+          reviewOutcomesRef.current = snap.reviewOutcomes
+          finalOutcomesRef.current = snap.finalOutcomes
+          bossFirstPassOutcomesRef.current = snap.bossFirstPassOutcomes
+          bossSinkOutcomesRef.current = snap.bossSinkOutcomes
+          finalPassWrongKeysRef.current = new Set(snap.finalPassWrongKeys)
+          bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
+          bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
+          sessionStartedRef.current = true
+          setIsImmersive(snap.phase !== 'study')
+          setIsLoadingRows(false)
+          if (dailyTask.mode !== planSnapshot.mode) {
+            void updatePlan(modePlan)
+          }
+          return
+        }
+
         setPhase('hub')
         setReviewCursor(Math.min(modePlan.reviewBatchSize, dailyTask.reviewKeys.length))
         setReviewDoneKeys(new Set())
@@ -350,6 +408,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         setHelpClicks({})
         setActivationApplied(false)
         setNewStudyDone(0)
+        setRestoredActivateKeys(null)
         setDoneTitle('本轮完成')
         setDoneMessage('已保存自适应计划进度。')
         setRoundSummary(null)
@@ -383,7 +442,58 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     return () => {
       cancelled = true
     }
-  }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan])
+  }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan, vocab, setIsImmersive])
+
+  // Persist the in-progress round so a refresh / accidental exit can resume.
+  // Cleared only when a round settles successfully; kept on settle failure so
+  // the outcomes survive a reload and can be re-settled.
+  useEffect(() => {
+    if (!plan) return
+    if (phase === 'done') {
+      if (settleFailed == null) clearAdaptiveSessionSnapshot(plan.id)
+      return
+    }
+    if (phase === 'hub') return
+    writeAdaptiveSessionSnapshot({
+      version: ADAPTIVE_SESSION_SNAPSHOT_VERSION,
+      planId: plan.id,
+      date: today,
+      phase: phase as AdaptiveSnapshotPhase,
+      quizSlots,
+      curQ,
+      score,
+      reviewCursor,
+      reviewDoneKeys: [...reviewDoneKeys],
+      studyIdx,
+      activationApplied,
+      newStudyDone,
+      starsAwarded: starsAwardedThisRoundRef.current,
+      roundActivateKeys:
+        roundActivateKeysRef.current.length > 0 ? roundActivateKeysRef.current : activateKeys,
+      roundReviewKeys: roundReviewKeysRef.current,
+      reviewOutcomes: reviewOutcomesRef.current,
+      finalOutcomes: finalOutcomesRef.current,
+      bossFirstPassOutcomes: bossFirstPassOutcomesRef.current,
+      bossSinkOutcomes: bossSinkOutcomesRef.current,
+      finalPassWrongKeys: [...finalPassWrongKeysRef.current],
+      bossPassWrongKeys: [...bossPassWrongKeysRef.current],
+      bossSinkWrongKeys: [...bossSinkWrongKeysRef.current],
+    })
+  }, [
+    activateKeys,
+    activationApplied,
+    curQ,
+    newStudyDone,
+    phase,
+    plan,
+    quizSlots,
+    reviewCursor,
+    reviewDoneKeys,
+    score,
+    settleFailed,
+    studyIdx,
+    today,
+  ])
 
   const buildSlots = useCallback(
     (keys: string[], opts?: { preferLight?: boolean; bossTier?: number }): QuizSlot[] => {
@@ -508,6 +618,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       setHelpClicks({})
       setActivationApplied(false)
       setNewStudyDone(0)
+      setRestoredActivateKeys(null)
       reviewOutcomesRef.current = []
       finalOutcomesRef.current = []
       bossFirstPassOutcomesRef.current = []
@@ -1434,8 +1545,16 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         >
           ← 返回
         </button>
-        <div className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-3 py-1 text-[.72rem] font-extrabold text-[#93c5fd]">
-          {task.mode === 'review_only' ? 'Review Only' : 'Normal'}
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={`/english/words/adaptive/${planId}/preview`}
+            className="font-nunito rounded-full border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.08)] px-4 py-2 text-sm font-bold text-[#c4b5fd] no-underline"
+          >
+            学习轨迹预览
+          </Link>
+          <div className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-3 py-1 text-[.72rem] font-extrabold text-[#93c5fd]">
+            {task.mode === 'review_only' ? 'Review Only' : 'Normal'}
+          </div>
         </div>
       </div>
 
@@ -1457,6 +1576,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         </div>
 
         <div className="mb-5">
+          <AdaptivePlanStageRoadmap rows={rows} className="mb-4" />
           <AdaptivePlanProgressBar rows={rows} />
         </div>
 

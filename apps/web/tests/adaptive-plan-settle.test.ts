@@ -156,6 +156,21 @@ describe('settleStep3', () => {
     expect(out.masteryPatches[0].info.stage).toBe(3)
   })
 
+  it('patch for a word with no prior mastery record stamps lastSeen (never empty string)', () => {
+    // A brand-new record defaults to lastSeen '' — sent as-is it breaks the
+    // Postgres DATE column (error 22007 "invalid input syntax for type date").
+    const key = 'U1::L1::cat'
+    const out = settleStep3({
+      progressRows: [row(key, { boxIndex: 3 })],
+      results: [{ wordKey: key, correct: true }],
+      masteryByKey: {},
+      consolidateExemptSet: new Set(),
+      today: TODAY,
+    })
+    expect(out.masteryPatches).toHaveLength(1)
+    expect(out.masteryPatches[0].info.lastSeen).toBe(TODAY)
+  })
+
   it('exempt consolidate key blocks regress on final wrong', () => {
     const key = 'U1::L1::cat'
     const masteryByKey: WordMasteryMap = {

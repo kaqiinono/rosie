@@ -11,13 +11,13 @@ import {
 function EnglishPlanManageBody() {
   const { vocab } = useWordsContext()
   return (
-    <>
+    <div className="mx-auto max-w-[800px] px-4 py-6">
       <EnglishWeeklyPlanManage vocab={vocab} />
-      <div className="mx-auto max-w-[1280px] px-4">
-        <div className="border-t border-[var(--wm-border)]" />
-      </div>
+
+      <div className="my-8 border-t border-[var(--wm-border)]" />
+
       <AdaptivePlanManage />
-    </>
+    </div>
   )
 }
 
@@ -32,10 +32,10 @@ export default function AdminEnglishPlansPage() {
           className="sticky top-0 z-30 border-b border-[var(--wm-border)]"
           style={{ background: 'rgba(15,23,42,0.92)', backdropFilter: 'blur(12px)' }}
         >
-          <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-3 px-4">
+          <div className="mx-auto flex h-14 max-w-[800px] items-center gap-3 px-4">
             <Link
               href="/admin/plans"
-              className="flex h-9 w-9 items-center justify-center rounded-full no-underline text-[#93c5fd]"
+              className="flex h-9 w-9 items-center justify-center rounded-full no-underline text-[#93c5fd] transition-colors hover:text-[#bfdbfe]"
               style={{ background: 'rgba(96,165,250,.12)', border: '1.5px solid rgba(96,165,250,.3)' }}
             >
               <span className="text-[14px] font-bold">←</span>

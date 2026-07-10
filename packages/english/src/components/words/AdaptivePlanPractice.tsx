@@ -3,21 +3,20 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import type { WordEntry } from '@rosie/core'
 import { todayStr, useAuth } from '@rosie/core'
+import { useWordsContext } from '../../WordsContext'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
-import { buildDailyTask } from '../../utils/adaptivePlanScheduler'
-import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
-
-function scopeLabel(plan: AdaptiveWordPlan): string {
-  const parts: string[] = []
-  if (plan.scope.stages && plan.scope.stages.length > 0) {
-    parts.push(`词库 ${plan.scope.stages.join('、')}`)
-  }
-  if (plan.scope.lessonKeys && plan.scope.lessonKeys.length > 0) {
-    parts.push(`课程 ${plan.scope.lessonKeys.map((key) => key.replace('::', ' · ')).join('、')}`)
-  }
-  return parts.join(' / ') || '未限定范围'
-}
+import { findWordByKey } from '../../utils/english-helpers'
+import {
+  buildDailyTask,
+  type AdaptiveDailyTask,
+} from '../../utils/adaptivePlanScheduler'
+import {
+  ADAPTIVE_MASTERED_STAGE,
+  adaptiveBoxStage,
+} from '../../utils/adaptivePlanStages'
+import type { AdaptivePlanWordProgress } from '../../utils/adaptivePlanTypes'
 
 function progressStats(rows: AdaptivePlanWordProgress[]) {
   const activeRows = rows.filter((row) => row.archivedAt == null)
@@ -26,18 +25,72 @@ function progressStats(rows: AdaptivePlanWordProgress[]) {
   return { total, mastered }
 }
 
-type PlanTodayInfo = {
-  newCount: number
-  reviewCount: number
+type PlanDaySnapshot = {
+  dailyTask: AdaptiveDailyTask
   mastered: number
   total: number
+}
+
+type DailyWordCapsule = {
+  wordKey: string
+  word: string
+  boxEmoji: string
+  kind: 'new' | 'review' | 'boss'
+}
+
+function boxEmojiForRow(row: AdaptivePlanWordProgress | undefined): string {
+  if (!row) return '🥚'
+  if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.emoji
+  if (row.status === 'LEARNING_PENDING') return '🐣'
+  if (row.status === 'NOT_STARTED') return '🥚'
+  return adaptiveBoxStage(row.boxIndex).emoji
+}
+
+function buildDailyWordCapsules(
+  dailyTask: AdaptiveDailyTask,
+  rows: AdaptivePlanWordProgress[],
+  vocab: WordEntry[],
+): DailyWordCapsule[] {
+  const byKey = new Map(
+    rows.filter((row) => row.archivedAt == null).map((row) => [row.wordKey, row]),
+  )
+  const seen = new Set<string>()
+  const capsules: DailyWordCapsule[] = []
+
+  const add = (keys: string[], kind: DailyWordCapsule['kind']) => {
+    for (const key of keys) {
+      if (seen.has(key)) continue
+      seen.add(key)
+      const entry = findWordByKey(vocab, key)
+      const word = entry?.word ?? key.split('::').pop() ?? key
+      capsules.push({
+        wordKey: key,
+        word,
+        boxEmoji: boxEmojiForRow(byKey.get(key)),
+        kind,
+      })
+    }
+  }
+
+  add(dailyTask.activateKeys, 'new')
+  add(dailyTask.reviewKeys, 'review')
+  add(dailyTask.bossKeys, 'boss')
+  return capsules
+}
+
+const CAPSULE_KIND_CLASS: Record<DailyWordCapsule['kind'], string> = {
+  new: 'border-[rgba(139,92,246,.4)] bg-[rgba(139,92,246,.1)] text-[#c4b5fd]',
+  review: 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] text-[#93c5fd]',
+  boss: 'border-[rgba(245,158,11,.4)] bg-[rgba(245,158,11,.1)] text-[#fbbf24]',
 }
 
 export default function AdaptivePlanPractice() {
   const router = useRouter()
   const { user } = useAuth()
-  const { plans, isLoading, loadProgress } = useAdaptiveWordPlan(user)
-  const [todayByPlanId, setTodayByPlanId] = useState<Record<string, PlanTodayInfo>>({})
+  const { vocab } = useWordsContext()
+  const { plans, isLoading, loadProgressForPlans } = useAdaptiveWordPlan(user)
+  const [dayByPlanId, setDayByPlanId] = useState<Record<string, PlanDaySnapshot>>({})
+  const [rowsByPlanId, setRowsByPlanId] = useState<Record<string, AdaptivePlanWordProgress[]>>({})
 
   const sortedPlans = useMemo(
     () =>
@@ -57,37 +110,41 @@ export default function AdaptivePlanPractice() {
 
   useEffect(() => {
     if (activePlans.length === 0) {
-      setTodayByPlanId({})
+      setDayByPlanId({})
+      setRowsByPlanId({})
       return
     }
 
     let cancelled = false
     const today = todayStr()
 
-    void Promise.all(
-      activePlans.map(async (plan) => {
-        const rows = await loadProgress(plan.id)
-        const stats = progressStats(rows)
-        const dailyTask = buildDailyTask(plan, rows, today)
-        return [
-          plan.id,
-          {
-            newCount: dailyTask.activateKeys.length,
-            reviewCount: dailyTask.reviewKeys.length,
-            mastered: stats.mastered,
-            total: stats.total,
-          } satisfies PlanTodayInfo,
-        ] as const
-      }),
-    ).then((entries) => {
-      if (cancelled) return
-      setTodayByPlanId(Object.fromEntries(entries))
-    })
+    void loadProgressForPlans(activePlans.map((plan) => plan.id))
+      .then((rowsByPlanId) => {
+        if (cancelled) return
+        const entries = activePlans.map((plan) => {
+          const rows = rowsByPlanId[plan.id] ?? []
+          const stats = progressStats(rows)
+          const dailyTask = buildDailyTask(plan, rows, today)
+          return [
+            plan.id,
+            {
+              dailyTask,
+              mastered: stats.mastered,
+              total: stats.total,
+            } satisfies PlanDaySnapshot,
+          ] as const
+        })
+        setDayByPlanId(Object.fromEntries(entries))
+        setRowsByPlanId(rowsByPlanId)
+      })
+      .catch((err) => {
+        console.error('[adaptive_word_plan] practice list progress load failed', err)
+      })
 
     return () => {
       cancelled = true
     }
-  }, [activePlans, loadProgress])
+  }, [activePlans, loadProgressForPlans])
 
   if (isLoading) {
     return (
@@ -124,16 +181,21 @@ export default function AdaptivePlanPractice() {
         ) : (
           <div className="flex flex-col gap-2.5">
             {sortedPlans.map((plan) => {
-              const todayInfo = todayByPlanId[plan.id]
+              const daySnapshot = dayByPlanId[plan.id]
+              const rows = rowsByPlanId[plan.id]
+              const capsules =
+                plan.status === 'active' && daySnapshot && rows
+                  ? buildDailyWordCapsules(daySnapshot.dailyTask, rows, vocab)
+                  : []
               return (
                 <div
                   key={plan.id}
-                  className="group flex flex-col rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)] sm:flex-row sm:items-stretch"
+                  className="group flex flex-col rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)]"
                 >
                   <button
                     type="button"
                     onClick={() => router.push(`/english/words/adaptive/${plan.id}`)}
-                    className="min-h-0 min-w-0 flex-1 cursor-pointer rounded-t-[14px] px-3 py-3 text-left sm:rounded-l-[14px] sm:rounded-tr-none sm:px-5 sm:py-4"
+                    className="min-h-0 min-w-0 w-full cursor-pointer rounded-t-[14px] px-3 py-3 text-left sm:px-5 sm:py-4"
                   >
                     <div className="mb-1 flex flex-wrap items-center gap-2 text-[1rem] font-bold text-[var(--wm-text)]">
                       {plan.title}
@@ -147,25 +209,57 @@ export default function AdaptivePlanPractice() {
                         {plan.status === 'completed' ? '已完成' : '进行中'}
                       </span>
                     </div>
-                    <div className="mb-1 text-[.74rem] font-bold text-[#c4b5fd]">
-                      {scopeLabel(plan)}
-                    </div>
                     <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
                       <span>每日新词 {plan.newWordsPerDay}</span>
                       <span>复习上限 {plan.reviewCap}</span>
-                      {plan.status === 'active' && todayInfo && (
+                      {plan.status === 'active' && daySnapshot && (
                         <>
                           <span>
-                            已掌握 {todayInfo.mastered}/{todayInfo.total}
+                            已掌握 {daySnapshot.mastered}/{daySnapshot.total}
                           </span>
                           <span>
-                            今日新学 {todayInfo.newCount} · 复习 {todayInfo.reviewCount}
+                            今日新学 {daySnapshot.dailyTask.activateKeys.length} · 复习{' '}
+                            {daySnapshot.dailyTask.reviewKeys.length}
                           </span>
                         </>
                       )}
                     </div>
+                    {plan.status === 'active' && (
+                      <div className="mt-2.5">
+                        {!daySnapshot || !rows ? (
+                          <div className="text-[.72rem] text-[var(--wm-text-dim)]">
+                            加载今日单词…
+                          </div>
+                        ) : capsules.length === 0 ? (
+                          <div className="text-[.72rem] text-[var(--wm-text-dim)]">
+                            今日暂无待练单词
+                          </div>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5">
+                            {capsules.map((capsule) => (
+                              <span
+                                key={capsule.wordKey}
+                                className={`inline-flex items-center rounded-2xl border-[1.5px] px-2.5 py-1 text-[0.875rem] font-bold leading-tight ${CAPSULE_KIND_CLASS[capsule.kind]}`}
+                              >
+                                <span className="mr-1 text-[.75rem] leading-none">
+                                  {capsule.boxEmoji}
+                                </span>
+                                {capsule.word}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </button>
-                  <div className="flex flex-row flex-wrap items-center justify-end gap-1.5 px-3 pt-1 pb-3 sm:flex-none sm:flex-nowrap sm:gap-2 sm:self-center sm:px-4 sm:py-4 sm:pt-4 sm:pl-0">
+                  <div className="flex flex-row flex-wrap items-center justify-end gap-1.5 px-3 pb-3 sm:gap-2 sm:px-5 sm:pb-4">
+                    <Link
+                      href={`/english/words/adaptive/${plan.id}/preview`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline sm:px-3 sm:text-[.75rem]"
+                    >
+                      轨迹预览
+                    </Link>
                     <span className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] sm:px-3 sm:text-[.75rem]">
                       开始练习 →
                     </span>

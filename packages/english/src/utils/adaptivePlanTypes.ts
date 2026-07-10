@@ -30,6 +30,7 @@ export type AdaptiveWordPlan = {
   backlogFuse: number
   bossEveryNNew: number
   bossStubbornThreshold: number
+  bossPackLimit: number
   mode: AdaptivePlanMode
   status: AdaptivePlanStatus
   stats: AdaptivePlanStats

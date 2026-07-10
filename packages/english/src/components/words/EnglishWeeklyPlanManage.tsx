@@ -45,17 +45,17 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 pt-6 pb-2">
-      <div className="mb-6 flex items-center justify-between gap-3">
+    <div>
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-            英语周计划
-          </h1>
-          <p className="mt-1 text-[12px] text-[var(--wm-text-dim)]">创建、修改与删除英语每日单词计划</p>
+          <h2 className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-xl font-extrabold text-transparent">
+            周计划
+          </h2>
+          <p className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">按课程与日期分配每日单词</p>
         </div>
         <Link
           href="/admin/plans/english/new"
-          className="font-nunito shrink-0 cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[.88rem] font-extrabold text-white no-underline shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
+          className="font-nunito shrink-0 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
         >
           + 创建周计划
         </Link>
@@ -63,23 +63,23 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
 
       {sortedAllPlans.length === 0 ? (
         <div
-          className="rounded-[20px] px-5 py-10 text-center"
+          className="rounded-2xl px-5 py-10 text-center"
           style={{
             background: 'rgba(15,23,42,0.35)',
-            border: '2px dashed rgba(96,165,250,.35)',
+            border: '2px dashed rgba(245,158,11,.35)',
           }}
         >
           <div className="mb-2 text-4xl">📅</div>
-          <div className="mb-4 text-[14px] font-bold text-[#93c5fd]">还没有英语周计划</div>
+          <div className="mb-4 text-[14px] font-bold text-[#fbbf24]">还没有周计划</div>
           <Link
             href="/admin/plans/english/new"
-            className="font-nunito inline-block rounded-[10px] bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[.88rem] font-extrabold text-white no-underline"
+            className="font-nunito inline-block rounded-xl bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
           >
             创建第一个计划
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {sortedAllPlans.map((plan) => {
             const doneDays = plan.days.filter((d) => plan.progress[d.date]?.quizDone === true).length
             const showWeekExpiry = !plan.weekCompletion
@@ -93,35 +93,46 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
               ? `${units[0]} · ${lessons.join(', ')}`
               : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
             return (
-              <div
+              <article
                 key={plan.id ?? plan.weekStart}
-                className="flex flex-col rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] sm:flex-row sm:items-stretch"
+                className="overflow-hidden rounded-2xl border border-[var(--wm-border)] bg-[var(--wm-surface2)]"
               >
-                <div className="min-w-0 flex-1 px-5 py-4">
-                  <div className="mb-1 flex flex-wrap items-center gap-2 text-[1rem] font-bold text-[var(--wm-text)]">
+                <div className="h-1 bg-gradient-to-r from-[#d97706] via-[#f59e0b] to-[#fbbf24]" />
+                <div className="px-5 py-4">
+                  <h3 className="text-[1rem] font-extrabold leading-snug text-[var(--wm-text)]">
                     {lessonLabel}
+                  </h3>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
+                      {fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}
+                    </span>
+                    <span className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-2.5 py-0.5 text-[12px] font-bold text-[#93c5fd]">
+                      {doneDays}/7 天完成
+                    </span>
+                    {showWeekExpiry && (
+                      <span
+                        className={`rounded-full border px-2.5 py-0.5 text-[12px] font-bold ${
+                          isExpired
+                            ? 'border-[rgba(248,113,113,.35)] bg-[rgba(248,113,113,.1)] text-[#f87171]'
+                            : 'border-[rgba(251,191,36,.35)] bg-[rgba(251,191,36,.1)] text-[#fbbf24]'
+                        }`}
+                      >
+                        {isExpired ? `已过期 ${Math.abs(remaining)} 天` : `还剩 ${remaining} 天`}
+                      </span>
+                    )}
                     {plan.weekCompletion && (
-                      <span className="rounded-full border border-[rgba(74,222,128,.35)] bg-[rgba(74,222,128,.1)] px-2 py-0.5 text-[.62rem] font-extrabold text-[#86efac]">
+                      <span className="rounded-full border border-[rgba(74,222,128,.35)] bg-[rgba(74,222,128,.1)] px-2.5 py-0.5 text-[12px] font-extrabold text-[#86efac]">
                         已结课
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
-                    <span>{fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}</span>
-                    <span>{doneDays}/7 天完成</span>
-                    {showWeekExpiry && (
-                      <span className={isExpired ? 'text-[#f87171]' : 'text-[#fbbf24]'}>
-                        {isExpired ? `已过期 ${Math.abs(remaining)} 天` : `还剩 ${remaining} 天`}
-                      </span>
-                    )}
-                  </div>
                 </div>
-                <div className="flex flex-row flex-wrap items-center justify-end gap-2 px-4 py-4">
+                <div className="flex flex-wrap items-center gap-2 border-t border-[var(--wm-border)] bg-[rgba(0,0,0,.12)] px-5 py-3">
                   {!plan.weekCompletion && plan.id && (
                     <button
                       type="button"
                       onClick={() => router.push(`/admin/plans/english/${plan.id}`)}
-                      className="font-nunito cursor-pointer rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-3 py-2.5 text-[.75rem] font-extrabold text-[#93c5fd]"
+                      className="font-nunito cursor-pointer rounded-xl border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#93c5fd] transition-colors hover:bg-[rgba(96,165,250,.15)]"
                     >
                       编辑计划
                     </button>
@@ -130,7 +141,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                     <button
                       type="button"
                       onClick={() => { void handleMarkWeekComplete(plan) }}
-                      className="font-nunito cursor-pointer rounded-[10px] border border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] px-3 py-2.5 text-[.75rem] font-extrabold text-[#4ade80]"
+                      className="font-nunito cursor-pointer rounded-xl border border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] px-3.5 py-2 text-[13px] font-extrabold text-[#4ade80] transition-colors hover:bg-[rgba(74,222,128,.18)]"
                     >
                       完成本周
                     </button>
@@ -138,7 +149,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                   {plan.weekCompletion && plan.id && (
                     <Link
                       href={`/english/words/weekly/${plan.id}/report`}
-                      className="font-nunito rounded-[10px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3 py-2.5 text-[.75rem] font-extrabold text-[#c4b5fd] no-underline"
+                      className="font-nunito rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3.5 py-2 text-[13px] font-extrabold text-[#c4b5fd] no-underline transition-colors hover:border-[rgba(196,181,253,.4)]"
                     >
                       结课报告
                     </Link>
@@ -150,12 +161,12 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                         void deletePlan(plan.weekStart)
                       }
                     }}
-                    className="cursor-pointer rounded-[10px] border border-[var(--wm-border)] px-3 py-2.5 text-[.75rem] text-[var(--wm-text-dim)] hover:border-[#f87171] hover:text-[#f87171]"
+                    className="ml-auto cursor-pointer rounded-xl border border-[var(--wm-border)] px-3.5 py-2 text-[13px] font-bold text-[var(--wm-text-dim)] transition-colors hover:border-[#f87171] hover:text-[#f87171]"
                   >
                     删除
                   </button>
                 </div>
-              </div>
+              </article>
             )
           })}
         </div>

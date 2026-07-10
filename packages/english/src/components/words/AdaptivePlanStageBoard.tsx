@@ -108,8 +108,8 @@ export default function AdaptivePlanStageBoard({
           return {
             progress,
             entry,
-            stageEmoji: '⏳',
-            stageName: target ? `待激活→${target.name}` : '待激活',
+            stageEmoji: '🐣',
+            stageName: target ? `激活→${target.name}` : '激活',
             due: { label: '—', urgent: 'none' as const },
             statusLabel: '排队中',
             stubborn: false,
@@ -118,8 +118,8 @@ export default function AdaptivePlanStageBoard({
         return {
           progress,
           entry,
-          stageEmoji: '💤',
-          stageName: '未开始',
+          stageEmoji: '🥚',
+          stageName: '待启程',
           due: { label: '—', urgent: 'none' as const },
           statusLabel: '未练习',
           stubborn: false,

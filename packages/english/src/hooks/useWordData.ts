@@ -4,11 +4,16 @@ import { useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
 import type { WordEntry } from '@rosie/core'
+import { wordKey } from '../utils/english-helpers'
+import {
+  archiveAdaptiveProgressForDeletedKeys,
+  migrateAdaptiveProgressKey,
+} from './useAdaptiveWordPlan'
 
 const SELECT_COLS =
   'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
 
-const CACHE_VER = 'word_cache_v1'
+const CACHE_VER = 'word_cache_v2'
 const NULL_STAGE = '__null__'
 
 function stageKey(stage: string | undefined) {
@@ -95,6 +100,16 @@ function isSameWordEntry(a: WordEntry, b: WordEntry): boolean {
     a.lesson === b.lesson &&
     a.word === b.word
   )
+}
+
+/**
+ * wordKey (unit::lesson::word) ignores stage, so a key only leaves the vocab
+ * when no other stage still carries the same word. Only those keys should have
+ * their adaptive-plan progress archived.
+ */
+export function keysRemovedFromVocab(deleted: WordEntry[], remaining: WordEntry[]): string[] {
+  const remainingKeys = new Set(remaining.map((x) => wordKey(x)))
+  return [...new Set(deleted.map((x) => wordKey(x)))].filter((k) => !remainingKeys.has(k))
 }
 
 async function deleteWordRow(w: WordEntry): Promise<void> {
@@ -196,7 +211,12 @@ export function useWordData(user: User | null) {
     const snapshot = wordEntriesStore.getSnapshot(userId)
     if (snapshot.status === 'idle') {
       const cached = readCachedVocab(userId)
-      if (cached) wordEntriesStore.replaceSessionData(userId, cached)
+      if (cached) {
+        // Optimistic hydrate — always follow with a network refresh so a stale
+        // 1000-row cache (Supabase default page size) cannot block full vocab.
+        wordEntriesStore.replaceSessionData(userId, cached)
+        wordEntriesStore.invalidate(userId)
+      }
     }
   }, [userId])
 
@@ -252,6 +272,16 @@ export function useWordData(user: User | null) {
         writeCacheByStage(user.id, next)
         return next
       })
+      // Renaming unit/lesson/word changes the wordKey — carry adaptive-plan
+      // progress to the new key (only when the old key truly left the vocab).
+      const oldKey = wordKey(original)
+      const newKey = wordKey(updated)
+      if (oldKey !== newKey) {
+        const remaining = wordEntriesStore.getSessionData(user.id) ?? []
+        if (keysRemovedFromVocab([original], remaining).length > 0) {
+          await migrateAdaptiveProgressKey(user.id, oldKey, newKey)
+        }
+      }
     },
     [user],
   )
@@ -267,6 +297,11 @@ export function useWordData(user: User | null) {
           writeCacheByStage(user.id, prev)
           return prev
         })
+        const remaining = wordEntriesStore.getSessionData(user.id) ?? []
+        await archiveAdaptiveProgressForDeletedKeys(
+          user.id,
+          keysRemovedFromVocab([w], remaining),
+        )
       } catch (err) {
         invalidateSessionStore('word_entries')
         await reloadWordEntries(user.id)
@@ -279,6 +314,9 @@ export function useWordData(user: User | null) {
   const deleteStage = useCallback(
     async (stage: string) => {
       if (!user || !stage) return
+      const deleted = (wordEntriesStore.getSessionData(user.id) ?? []).filter(
+        (x) => (x.stage ?? '') === stage,
+      )
       wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => (x.stage ?? '') !== stage))
       try {
         const { error } = await supabase.from('word_entries').delete().eq('stage', stage)
@@ -288,6 +326,11 @@ export function useWordData(user: User | null) {
           writeCacheByStage(user.id, prev)
           return prev
         })
+        const remaining = wordEntriesStore.getSessionData(user.id) ?? []
+        await archiveAdaptiveProgressForDeletedKeys(
+          user.id,
+          keysRemovedFromVocab(deleted, remaining),
+        )
       } catch (err) {
         invalidateSessionStore('word_entries')
         await reloadWordEntries(user.id)

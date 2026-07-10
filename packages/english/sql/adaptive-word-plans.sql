@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS public.adaptive_word_plans (
   backlog_fuse INT NOT NULL DEFAULT 50,
   boss_every_n_new INT NOT NULL DEFAULT 50,
   boss_stubborn_threshold INT NOT NULL DEFAULT 15,
+  boss_pack_limit INT NOT NULL DEFAULT 50,
   -- runtime
   mode VARCHAR(50) NOT NULL DEFAULT 'normal',
   status VARCHAR(50) NOT NULL DEFAULT 'active',
@@ -80,3 +81,7 @@ ALTER TABLE public.adaptive_plan_word_progress ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS adaptive_plan_word_progress_own ON public.adaptive_plan_word_progress;
 CREATE POLICY adaptive_plan_word_progress_own ON public.adaptive_plan_word_progress
   FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- Incremental: existing deployments (idempotent)
+ALTER TABLE public.adaptive_word_plans
+  ADD COLUMN IF NOT EXISTS boss_pack_limit INT NOT NULL DEFAULT 50;

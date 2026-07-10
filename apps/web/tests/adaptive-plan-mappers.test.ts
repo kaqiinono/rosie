@@ -19,6 +19,7 @@ describe('adaptive plan mappers', () => {
       backlog_fuse: 40,
       boss_every_n_new: 25,
       boss_stubborn_threshold: 6,
+      boss_pack_limit: 30,
       mode: 'boss',
       status: 'active',
       stats: {
@@ -46,6 +47,7 @@ describe('adaptive plan mappers', () => {
       backlogFuse: 40,
       bossEveryNNew: 25,
       bossStubbornThreshold: 6,
+      bossPackLimit: 30,
       mode: 'boss',
       status: 'active',
       stats: {

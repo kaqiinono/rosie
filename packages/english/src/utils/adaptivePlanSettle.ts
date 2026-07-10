@@ -68,10 +68,12 @@ function buildMasteryPatches(
     const shouldRegress =
       !finalCorrect && row.streakWrong >= 2 && !consolidateExemptSet.has(wordKey)
 
+    // Stamp lastSeen: the word was just practiced, and a brand-new mastery
+    // record starts with lastSeen '' which Postgres rejects for the DATE column.
     if (shouldAdvance) {
-      patches.push({ wordKey, info: advanceStage(cur, today, wordKey) })
+      patches.push({ wordKey, info: { ...advanceStage(cur, today, wordKey), lastSeen: today } })
     } else if (shouldRegress) {
-      patches.push({ wordKey, info: regressStage(cur, today) })
+      patches.push({ wordKey, info: { ...regressStage(cur, today), lastSeen: today } })
     }
   }
 
