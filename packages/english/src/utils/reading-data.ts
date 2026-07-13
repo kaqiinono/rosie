@@ -270,7 +270,8 @@ export const readingPassages: ReadingPassage[] = [
         word: 'advert',
         ipa: '/ˈædvɜːt/',
         meaningCn: 'n. 广告（advertisement 的缩写形式，英式英语中常用）',
-        meaningEn: 'a short notice promoting a product, job, or service (British shortening of advertisement)',
+        meaningEn:
+          'a short notice promoting a product, job, or service (British shortening of advertisement)',
         category: '超纲词汇',
       },
       {
@@ -369,7 +370,7 @@ export const readingPassages: ReadingPassage[] = [
     title: 'The Mystery of Ötzi the Iceman',
     paragraphs: [
       "In 1991, two hikers made an amazing discovery: a 5,300-year-old mummy. Called Ötzi, because he was found in the Ötztal Alps of Italy, this mummy was in ice for thousands of years. Because of this, scientists have been able to learn a lot from Ötzi's ancient body.",
-      "When he died, Ötzi was aged about 45, an old man. He was in poor health. His lungs were black and he had worm eggs in his stomach, which probably made him ill. His bones were weak, especially in his shoulders, knees and ankles. Ötzi had 61 tattoos on his skin.",
+      'When he died, Ötzi was aged about 45, an old man. He was in poor health. His lungs were black and he had worm eggs in his stomach, which probably made him ill. His bones were weak, especially in his shoulders, knees and ankles. Ötzi had 61 tattoos on his skin.',
       "Studying Ötzi's body helps scientists understand life back then. Scientists found clothing and equipment that show Ötzi was an important man. Studies of his teeth tell scientists where he lived. They even learnt that Ötzi ate just two hours before he died.",
       "What scientists cannot fully understand is Ötzi's death. After much testing, they learnt that somebody killed Ötzi. They found an arrowhead in his left shoulder that caused bleeding. He also had a head injury. Scientists have got a lot of information, but there are still questions: Why was Ötzi in the mountains? Why was he killed? Perhaps we'll never know.",
     ],
@@ -424,7 +425,7 @@ export const readingPassages: ReadingPassage[] = [
       "Stay active! Don't spend all your time in front of a screen. Your body gets weak if you don't use it. Play a sport, go running or simply go for a walk, but get outside.",
       "Be careful of what you put in your school bag! Too many books can give you backache. Try to take only two or three books home at a time. And leave anything you don't need at school. If your bag is still too heavy, ask a friend to help you carry something.",
       "Make sure you eat different types of healthy foods, including lots of fruit and vegetables. And drink lots of water to keep your body hydrated, especially when you're exercising or outside in the sun!",
-      "When you do exercise, make sure you stretch. If body parts like your ankles, knees and wrists are weak, you can injure them easily. Regular stretching helps make these body parts strong.",
+      'When you do exercise, make sure you stretch. If body parts like your ankles, knees and wrists are weak, you can injure them easily. Regular stretching helps make these body parts strong.',
       "Get enough sleep. Try to sleep at least nine hours each night. And make sure you visit the doctor every year. Even if you don't feel ill, it's important that your doctor sees you. She might discover a problem that you didn't know about. You should also talk to your doctor about things like trying new sports.",
     ],
     glossary: [
@@ -458,10 +459,22 @@ export const readingPassages: ReadingPassage[] = [
     lesson: 'Lesson 1',
     title: 'A Trip to Costa Rica',
     paragraphs: [
-      "Rosa: Bruno, I'm so excited. We're going to visit Costa Rica this summer.\nBruno: Cool! Where are you going in Costa Rica?\nRosa: We're going to explore a huge national park, Parque Tortuguero.\nBruno: How long will you be there?\nRosa: We're going to spend four days there.",
-      "Bruno: What are you going to do there?\nRosa: Well, there's a jungle, a volcano and a beach. We'll explore all three.\nBruno: How are you going to explore the jungle?\nRosa: Well, on the first day, we'll walk through the jungle. I'm going to take lots of photos. There's amazing wildlife, like the red-eyed tree frog and the green iguana. It's going to be awesome!",
-      "Bruno: And on the second day?\nRosa: We're going on a boat tour through the jungle. I'm sure we'll see monkeys and crocodiles – they're everywhere. On the third day, we'll explore the area near the Arenal Volcano. It's one of the most active volcanoes on Earth!",
-      "Bruno: Really? Will you be safe?\nRosa: Of course. They're not going to take us if it's erupting.\nBruno: I hope not! And what will you do on the fourth day?\nRosa: This is the day I'm most excited about. We're going to visit the beach to see where the turtles lay their eggs. We're going to see some baby turtles in the sand.\nBruno: Sounds great, Rosa!",
+      "Rosa: Bruno, I'm so excited. We're going to visit Costa Rica this summer.",
+      'Bruno: Cool! Where are you going in Costa Rica?',
+      "Rosa: We're going to explore a huge national park, Parque Tortuguero.",
+      'Bruno: How long will you be there?',
+      "Rosa: We're going to spend four days there.",
+      'Bruno: What are you going to do there?',
+      "Rosa: Well, there's a jungle, a volcano and a beach. We'll explore all three.",
+      'Bruno: How are you going to explore the jungle?',
+      "Rosa: Well, on the first day, we'll walk through the jungle. I'm going to take lots of photos. There's amazing wildlife, like the red-eyed tree frog and the green iguana. It's going to be awesome!",
+      'Bruno: And on the second day?',
+      "Rosa: We're going on a boat tour through the jungle. I'm sure we'll see monkeys and crocodiles – they're everywhere. On the third day, we'll explore the area near the Arenal Volcano. It's one of the most active volcanoes on Earth!",
+      'Bruno: Really? Will you be safe?',
+      "Rosa: Of course. They're not going to take us if it's erupting.",
+      'Bruno: I hope not! And what will you do on the fourth day?',
+      "Rosa: This is the day I'm most excited about. We're going to visit the beach to see where the turtles lay their eggs. We're going to see some baby turtles in the sand.",
+      'Bruno: Sounds great, Rosa!',
     ],
     glossary: [
       {
@@ -497,7 +510,7 @@ export const readingPassages: ReadingPassage[] = [
       "What do plants need to grow? If you said light, soil and water, you're right! But some plants have got different needs — they eat meat! Meat-eating plants usually grow in areas with poor soil. This soil can't give them enough food, so they've found another way to get it: eating insects and other small creatures. (Don't worry, though. Plants only eat people in books and films!)",
       "One well-known meat-eating plant is the Venus flytrap. It grows in very humid climates with lots of insects. Insects fly into the plant because it's got a bright, red colour and a fruity smell. When the insect lands, the leaves close together and trap it inside.",
       "Another meat-eating plant is the pitcher plant. There are several varieties of pitcher plant, and some of them can become very big, with stems up to 6 m. (20 ft.) long, and flowers 1 m. (3.3 ft.) high. They can hold up to two litres of sweet, sticky liquid. Curious animals go inside for a drink, but then they slide down the plant's slippery side and become its next meal. And it's not always thirsty insects that go into pitcher plants. Finding a mouse or a lizard inside a pitcher plant is not too unusual.",
-      "These beautiful plants attract animals with their sweet smells, and then they eat them. Who knew that plants could be so clever?",
+      'These beautiful plants attract animals with their sweet smells, and then they eat them. Who knew that plants could be so clever?',
     ],
     glossary: [
       {
@@ -532,7 +545,7 @@ export const readingPassages: ReadingPassage[] = [
     paragraphs: [
       "Turtles are amazing creatures, aren't they? Turtles have been on Earth for millions of years, but now nearly 70 per cent of turtle species are endangered.",
       "Some of the reasons that turtles are endangered include:\nPeople want to have turtles as pets, but they're not surviving and having babies like they do in the wild.\nMore and more people are eating turtle meat, which causes population loss.\nTurtles get caught in fishing nets by accident and are dying.\nHungry turtles are eating plastic that's in the ocean, which is making them sick.",
-      "Around the world, people have opened turtle sanctuaries — protected areas that help turtles stay alive and protect their eggs. One example is in Bora Bora. In 1991, a tourist at the Hotel Le Méridien brought an injured turtle to the hotel. After that, the hotel opened a turtle protection centre.",
+      'Around the world, people have opened turtle sanctuaries — protected areas that help turtles stay alive and protect their eggs. One example is in Bora Bora. In 1991, a tourist at the Hotel Le Méridien brought an injured turtle to the hotel. After that, the hotel opened a turtle protection centre.',
       "It works to help turtles protect their babies, treat injured turtles and teach hotel visitors about the danger turtles are in. The sanctuary is a success, and it's growing. Visitors are returning home and sharing the message about endangered turtles. And this is just one example. By sharing information and helping turtles, we can make a difference, can't we?",
     ],
     glossary: [
