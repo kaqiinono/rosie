@@ -43,8 +43,8 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
 
   const passage = findPassageByKey(key)
   const [stripSelected, setStripSelected] = useState<WordEntry | null>(null)
-  /** Two reading modes per design 2C. Defaults to 学习模式 (with recall quizzes). */
-  const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('learn')
+  /** Two reading modes per design 2C. Defaults to 专注模式 (distraction-free reading). */
+  const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
   const [preReadingOpen, setPreReadingOpen] = useState(false)
   const [glossaryOpen, setGlossaryOpen] = useState(false)
 
