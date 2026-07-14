@@ -18,6 +18,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [pathname, setIsImmersive, setPreviewCards])
 
   const isPracticePage = pathname.includes('/practice')
+  const isPrintPage = pathname.includes('/practice/print')
   const isDaily = pathname.includes('/daily')
   const isWeeklyPage = pathname.includes('/weekly/')
   const isAdaptivePage = pathname.includes('/adaptive/')
@@ -40,7 +41,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         className="fixed inset-0 pointer-events-none z-0"
         style={{ background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)' }}
       />
-      {(!isImmersive || isReading) && (
+      {(!isImmersive || isReading) && !isPrintPage && (
         <AppHeader onImmersive={enterImmersive} />
       )}
       {children}

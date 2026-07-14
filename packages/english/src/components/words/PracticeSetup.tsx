@@ -10,6 +10,7 @@ interface PracticeSetupProps {
     preview: boolean,
     buttonStyle: SpellButtonStyle,
   ) => void
+  onPrint: (types: ('A' | 'B' | 'C' | 'D')[]) => void
   /** When true, the Type D toggle (课文语境填空) is shown — set when at least one
    *  filtered word comes from the focus lesson and has a passage sentence. */
   typeDAvailable?: boolean
@@ -20,6 +21,7 @@ interface PracticeSetupProps {
 export default function PracticeSetup({
   scopeLabel,
   onStart,
+  onPrint,
   typeDAvailable,
   initialButtonStyle = 'candy',
 }: PracticeSetupProps) {
@@ -30,17 +32,31 @@ export default function PracticeSetup({
   const [preview, setPreview] = useState(false)
   const [buttonStyle, setButtonStyle] = useState<SpellButtonStyle>(initialButtonStyle)
 
-  const handleStart = () => {
+  const collectTypes = (): ('A' | 'B' | 'C' | 'D')[] => {
     const types: ('A' | 'B' | 'C' | 'D')[] = []
     if (typeA) types.push('A')
     if (typeB) types.push('B')
     if (typeC) types.push('C')
     if (typeD && typeDAvailable) types.push('D')
+    return types
+  }
+
+  const handleStart = () => {
+    const types = collectTypes()
     if (!types.length) {
       alert('请至少选一种题型！')
       return
     }
     onStart(types, preview, buttonStyle)
+  }
+
+  const handlePrint = () => {
+    const types = collectTypes()
+    if (!types.length) {
+      alert('请至少选一种题型！')
+      return
+    }
+    onPrint(types)
   }
 
   const baseTypes = [
@@ -152,12 +168,21 @@ export default function PracticeSetup({
         </span>
       </div>
 
-      <button
-        onClick={handleStart}
-        className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] px-7 py-3 text-[.95rem] font-extrabold text-white shadow-[0_4px_14px_rgba(233,69,96,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(233,69,96,.5)]"
-      >
-        🚀 开始练习
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={handleStart}
+          className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] px-7 py-3 text-[.95rem] font-extrabold text-white shadow-[0_4px_14px_rgba(233,69,96,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(233,69,96,.5)]"
+        >
+          🚀 开始练习
+        </button>
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="font-nunito cursor-pointer rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] px-7 py-3 text-[.95rem] font-extrabold text-[var(--wm-text)] transition-all hover:-translate-y-0.5 hover:border-[var(--wm-accent2)] hover:text-[var(--wm-accent2)]"
+        >
+          🖨️ 打印
+        </button>
+      </div>
     </div>
   )
 }

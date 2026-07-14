@@ -59,6 +59,8 @@ export { default as PassageHintModal } from './components/words/PassageHintModal
 export { default as PhonicsLegend } from './components/words/PhonicsLegend'
 export { default as PhonicsWord } from './components/words/PhonicsWord'
 export { default as PracticeSetup } from './components/words/PracticeSetup'
+export { default as EnglishPracticePrintPage } from './components/words/EnglishPracticePrintPage'
+export * from './utils/english-practice-print-helpers'
 export { default as QuizResults } from './components/words/QuizResults'
 export { default as RescueCompletionView } from './components/words/RescueCompletionView'
 export { default as RescueListBadge } from './components/words/RescueListBadge'

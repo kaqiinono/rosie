@@ -7,6 +7,7 @@ import { useImmersive } from '@rosie/core'
 import { findPassage, findPassageByKey, findSentenceForWord, findWordByKey, wordKey } from '@rosie/english'
 import { FilterBar } from '@rosie/english'
 import { PracticeSetup } from '@rosie/english'
+import { serializePrintTypes } from '@rosie/english'
 import type { SpellButtonStyle } from '@rosie/english'
 
 export default function PracticePage() {
@@ -113,6 +114,24 @@ export default function PracticePage() {
     [filteredWords.length, setPracticeTypes, setPreviewCards, setPracticeButtonStyle, setIsImmersive],
   )
 
+  const openPrint = useCallback(
+    (types: ('A' | 'B' | 'C' | 'D')[]) => {
+      if (!filteredWords.length) {
+        alert('请先选择单词范围！')
+        return
+      }
+      const params = new URLSearchParams()
+      params.set('stage', selStage)
+      if (selUnits.size) params.set('units', [...selUnits].sort().join(','))
+      if (selLessons.size) params.set('lessons', [...selLessons].join(','))
+      if (selWords.size) params.set('words', [...selWords].join(','))
+      if (masteryFilter !== null) params.set('mastery', String(masteryFilter))
+      params.set('types', serializePrintTypes(types))
+      window.open(`/english/words/practice/print?${params.toString()}`, '_blank')
+    },
+    [filteredWords.length, selStage, selUnits, selLessons, selWords, masteryFilter],
+  )
+
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
       const next = new Set(prev)
@@ -166,6 +185,7 @@ export default function PracticePage() {
         <PracticeSetup
           scopeLabel={scopeLabel}
           onStart={startPractice}
+          onPrint={openPrint}
           typeDAvailable={typeDAvailable}
           initialButtonStyle={practiceButtonStyle}
         />
