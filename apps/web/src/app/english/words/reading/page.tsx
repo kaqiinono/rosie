@@ -143,7 +143,7 @@ export default function ReadingIndexPage() {
         </div>
       </div>
       {isLoading && (
-        <div className="mb-3 text-[11px] text-[var(--wm-text-dim)]">载入本周计划…</div>
+        <div className="mb-3 text-[11px] text-[var(--wm-text-dim)]">载入多日计划…</div>
       )}
 
       {cards.length === 0 ? (

@@ -24,7 +24,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
       const { progress, weekCompletion, pendingSession } = decodeWeeklyPlanProgress(
         row.progress_data,
       )
-      const { days, previewLessonKeys, wordKinds, focusLessonKey } = parsePlanDataFromSupabase(
+      const { days, previewLessonKeys, wordKinds, focusLessonKey, batchMode } = parsePlanDataFromSupabase(
         row.plan_data,
       )
       return {
@@ -42,6 +42,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
         ...(previewLessonKeys !== undefined ? { previewLessonKeys } : {}),
         ...(wordKinds !== undefined ? { wordKinds } : {}),
         ...(focusLessonKey !== undefined ? { focusLessonKey } : {}),
+        ...(batchMode !== undefined ? { batchMode } : {}),
         progress,
         weekCompletion,
         ...(pendingSession !== undefined ? { pendingSession } : {}),

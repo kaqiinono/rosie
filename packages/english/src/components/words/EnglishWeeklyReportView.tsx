@@ -27,7 +27,7 @@ export default function EnglishWeeklyReportView({ report, completedAtLabel, clas
   return (
     <div className={`text-[.88rem] leading-relaxed text-[var(--wm-text)] ${className}`}>
       <div className="mb-4">
-        <h1 className="font-fredoka text-2xl text-[var(--wm-text)]">周计划结课报告</h1>
+        <h1 className="font-fredoka text-2xl text-[var(--wm-text)]">多日计划结课报告</h1>
         <p className="mt-1 text-[.75rem] text-[var(--wm-text-dim)]">
           {report.weekRangeLabel} · 标记于 {completedAtLabel}
         </p>

@@ -286,6 +286,8 @@ export interface WeeklyPlan {
    * passage sentence on word cards. Must be a 必记 lesson (not preview).
    */
   focusLessonKey?: string
+  /** When false, every plan day includes all selected words (no per-day batching). */
+  batchMode?: boolean
   /** Active practice stash from cloud (`progress_data`); undefined when none saved. */
   pendingSession?: WeeklyPlanSessionStash
 }

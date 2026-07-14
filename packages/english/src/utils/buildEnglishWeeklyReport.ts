@@ -1,18 +1,15 @@
 import type { EnglishWeeklyReport } from '@rosie/core'
 import type { WordEntry, WeeklyPlan, WordMasteryMap } from '@rosie/core'
-import { ALL_CN_DAYS, classifyPlanWords, fmtDate, fmtWeekRange, wordKey } from './english-helpers'
+import {
+  ALL_CN_DAYS,
+  classifyPlanWords,
+  fmtDate,
+  fmtWeekRange,
+  formatPlanLessonLabel,
+  wordKey,
+} from './english-helpers'
 import { ensureStageInit, getWordMasteryLevel } from '@rosie/core'
 import { todayStr } from '@rosie/core'
-
-function formatUnitLesson(plan: WeeklyPlan): string {
-  const units = plan.unit.split(', ')
-  const lessons = plan.lesson.split(', ')
-  const allSameUnit = units.every((u) => u === units[0])
-  if (allSameUnit) {
-    return `${units[0]} · ${lessons.join(', ')}`
-  }
-  return units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join('，')
-}
 
 /**
  * Build a detailed end-of-week report for the English weekly plan (display + persistence).
@@ -24,7 +21,7 @@ export function buildEnglishWeeklyReport(
 ): EnglishWeeklyReport {
   const today = todayStr()
   const weekRangeLabel = fmtWeekRange(plan.weekStart, plan.weekStartDay)
-  const unitLessonLabel = formatUnitLesson(plan)
+  const unitLessonLabel = formatPlanLessonLabel(plan.unit, plan.lesson)
   const generatedAt = new Date().toISOString()
   const planClassification = classifyPlanWords(plan, vocab)
   const daysInWeek = plan.days.length

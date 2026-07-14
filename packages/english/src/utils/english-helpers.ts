@@ -515,6 +515,9 @@ export function fmtWeekRange(weekStart: string, startDay: number): string {
 // `./english-helpers` importers keep working.
 export { getWeekStart } from '@rosie/core'
 
+/** Sentinel quota: assign all words in the group across the plan window. */
+export const QUOTA_ALL = -1
+
 /**
  * Distributes words across 7 days in parallel across lessons.
  *
@@ -531,6 +534,7 @@ export function buildWeeklyPlan(
   newPerDay?: number,
   lessonGroups?: WordEntry[][],
   quotasPerDay?: number[],
+  planEnd?: string,
 ): { days: WeeklyPlanDay[]; unassigned: string[] } {
   const [year, month, day] = weekStart.split('-').map(Number)
 
@@ -562,7 +566,21 @@ export function buildWeeklyPlan(
 
   const pointers = groups.map(() => 0)
 
-  const days = Array.from({ length: 7 }, (_, i) => {
+  let numDays = 7
+  if (planEnd && planEnd >= weekStart) {
+    const [ey, em, ed] = planEnd.split('-').map(Number)
+    const startDt = new Date(year, month - 1, day)
+    const endDt = new Date(ey, em - 1, ed)
+    numDays = 0
+    const cur = new Date(startDt)
+    while (cur <= endDt) {
+      numDays += 1
+      cur.setDate(cur.getDate() + 1)
+    }
+    if (numDays <= 0) numDays = 7
+  }
+
+  const days = Array.from({ length: numDays }, (_, i) => {
     const d = new Date(year, month - 1, day + i)
     const keys: string[] = []
     for (let g = 0; g < groups.length; g++) {
@@ -573,7 +591,7 @@ export function buildWeeklyPlan(
     return { date: toLocalDateStr(d), newWordKeys: keys }
   })
 
-  // Collect words that didn't fit in 7 days
+  // Collect words that didn't fit in the plan window
   const assignedSet = new Set(days.flatMap(d => d.newWordKeys))
   const unassigned = groups
     .flatMap(g => g)
@@ -581,6 +599,100 @@ export function buildWeeklyPlan(
     .filter(k => !assignedSet.has(k))
 
   return { days, unassigned }
+}
+
+/**
+ * Auto-assign words across the plan window. Groups with `QUOTA_ALL` spread all
+ * words evenly across days; other groups use fixed per-day quotas (parallel per day).
+ */
+export function buildAutoAssignedPlan(
+  lessonGroups: WordEntry[][],
+  quotasPerDay: number[],
+  weekStart: string,
+  planEnd: string,
+): { days: WeeklyPlanDay[]; unassigned: string[] } {
+  const [year, month, day] = weekStart.split('-').map(Number)
+
+  let numDays = 7
+  if (planEnd && planEnd >= weekStart) {
+    const [ey, em, ed] = planEnd.split('-').map(Number)
+    const startDt = new Date(year, month - 1, day)
+    const endDt = new Date(ey, em - 1, ed)
+    numDays = 0
+    const cur = new Date(startDt)
+    while (cur <= endDt) {
+      numDays += 1
+      cur.setDate(cur.getDate() + 1)
+    }
+    if (numDays <= 0) numDays = 7
+  }
+
+  const days: WeeklyPlanDay[] = Array.from({ length: numDays }, (_, i) => ({
+    date: toLocalDateStr(new Date(year, month - 1, day + i)),
+    newWordKeys: [],
+  }))
+
+  const pointers = lessonGroups.map(() => 0)
+
+  for (let dayIdx = 0; dayIdx < numDays; dayIdx++) {
+    for (let g = 0; g < lessonGroups.length; g++) {
+      const quota = quotasPerDay[g] ?? 3
+      if (quota === QUOTA_ALL) continue
+      const group = lessonGroups[g]
+      const slice = group.slice(pointers[g], pointers[g] + quota)
+      slice.forEach(w => days[dayIdx]!.newWordKeys.push(wordKey(w)))
+      pointers[g] += slice.length
+    }
+  }
+
+  for (let g = 0; g < lessonGroups.length; g++) {
+    const quota = quotasPerDay[g] ?? 3
+    if (quota !== QUOTA_ALL) continue
+    const group = lessonGroups[g]
+    const keys = group.slice(pointers[g]).map(w => wordKey(w))
+    keys.forEach((k, i) => days[i % numDays]!.newWordKeys.push(k))
+    pointers[g] = group.length
+  }
+
+  const assignedSet = new Set(days.flatMap(d => d.newWordKeys))
+  const unassigned = lessonGroups
+    .flatMap(g => g)
+    .map(w => wordKey(w))
+    .filter(k => !assignedSet.has(k))
+
+  return { days, unassigned }
+}
+
+/** Every plan day gets the full word set (non-batch / 不分批 mode). */
+export function buildDailyFullWordPlan(
+  lessonGroups: WordEntry[][],
+  weekStart: string,
+  planEnd: string,
+  extraKeys: string[] = [],
+): WeeklyPlanDay[] {
+  const [year, month, day] = weekStart.split('-').map(Number)
+
+  let numDays = 7
+  if (planEnd && planEnd >= weekStart) {
+    const [ey, em, ed] = planEnd.split('-').map(Number)
+    const startDt = new Date(year, month - 1, day)
+    const endDt = new Date(ey, em - 1, ed)
+    numDays = 0
+    const cur = new Date(startDt)
+    while (cur <= endDt) {
+      numDays += 1
+      cur.setDate(cur.getDate() + 1)
+    }
+    if (numDays <= 0) numDays = 7
+  }
+
+  const baseKeys = lessonGroups.flat().map(w => wordKey(w))
+  const allKeys = [...new Set([...baseKeys, ...extraKeys])]
+
+  return Array.from({ length: numDays }, (_, i) => ({
+    date: toLocalDateStr(new Date(year, month - 1, day + i)),
+    newWordKeys: [...allKeys],
+  }))
 }
 
 /**
@@ -642,6 +754,19 @@ export function unitAbbr(unit: string): string {
 /** Combined word-chip sub-label: unit abbr + lesson abbr, e.g. "ANL1" / "U2L1". */
 export function lessonChipTag(unit: string, lesson: string): string {
   return `${unitAbbr(unit)}${lessonAbbr(lesson)}`
+}
+
+/** Plan title from comma-separated unit/lesson fields: "U7L2 · U7L3 · U8L1". */
+export function formatPlanLessonLabel(unitField: string, lessonField: string): string {
+  const units = unitField.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
+  const lessons = lessonField.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
+  if (units.length === 0) return ''
+  const n = Math.max(units.length, lessons.length)
+  const tags: string[] = []
+  for (let i = 0; i < n; i++) {
+    tags.push(lessonChipTag(units[i] ?? units[0]!, lessons[i] ?? lessons[lessons.length - 1] ?? ''))
+  }
+  return tags.join(' · ')
 }
 
 export function getOrderedLessons(vocab: WordEntry[]): { unit: string; lesson: string }[] {

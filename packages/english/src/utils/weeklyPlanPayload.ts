@@ -9,6 +9,7 @@ export function parsePlanDataFromSupabase(raw: unknown): {
   previewLessonKeys?: string[]
   wordKinds?: Record<string, 'consolidate' | 'preview'>
   focusLessonKey?: string
+  batchMode?: boolean
 } {
   if (Array.isArray(raw)) {
     return { days: raw as WeeklyPlan['days'] }
@@ -19,6 +20,7 @@ export function parsePlanDataFromSupabase(raw: unknown): {
       previewLessonKeys?: unknown
       wordKinds?: unknown
       focusLessonKey?: unknown
+      batchMode?: unknown
     }
     if (Array.isArray(o.days)) {
       const wordKindsRaw = o.wordKinds
@@ -37,6 +39,7 @@ export function parsePlanDataFromSupabase(raw: unknown): {
           : undefined,
         wordKinds,
         focusLessonKey: typeof o.focusLessonKey === 'string' ? o.focusLessonKey : undefined,
+        batchMode: typeof o.batchMode === 'boolean' ? o.batchMode : undefined,
       }
     }
   }
@@ -50,19 +53,22 @@ export type PlanDataRow =
       previewLessonKeys?: string[]
       wordKinds?: Record<string, 'consolidate' | 'preview'>
       focusLessonKey?: string
+      batchMode?: boolean
     }
 
 export function serializePlanDataForSupabase(plan: WeeklyPlan): PlanDataRow {
   if (
     plan.previewLessonKeys !== undefined ||
     plan.wordKinds !== undefined ||
-    plan.focusLessonKey !== undefined
+    plan.focusLessonKey !== undefined ||
+    plan.batchMode !== undefined
   ) {
     return {
       days: plan.days,
       ...(plan.previewLessonKeys !== undefined ? { previewLessonKeys: plan.previewLessonKeys } : {}),
       ...(plan.wordKinds !== undefined ? { wordKinds: plan.wordKinds } : {}),
       ...(plan.focusLessonKey !== undefined ? { focusLessonKey: plan.focusLessonKey } : {}),
+      ...(plan.batchMode !== undefined ? { batchMode: plan.batchMode } : {}),
     }
   }
   return plan.days

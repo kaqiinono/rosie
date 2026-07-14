@@ -55,7 +55,7 @@ export default function WeeklyPlanReportPage() {
           href="/english/words/daily"
           className="mt-4 inline-block font-nunito text-[#fbbf24] underline"
         >
-          返回周计划列表
+          返回多日计划列表
         </Link>
       </div>
     )
@@ -80,7 +80,7 @@ export default function WeeklyPlanReportPage() {
           href="/english/words/daily"
           className="rounded-full border border-[var(--wm-border)] px-3 py-1.5 font-bold text-[var(--wm-text-dim)] hover:border-[#fbbf24] hover:text-[#fbbf24]"
         >
-          周计划列表
+          多日计划列表
         </Link>
         {plan.id && (
           <Link
@@ -107,15 +107,15 @@ export default function WeeklyPlanReportPage() {
         </>
       ) : (
         <div className="rounded-[16px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-8 text-center">
-          <p className="text-[.9rem] text-[var(--wm-text-dim)]">尚未生成本周的结课报告</p>
+          <p className="text-[.9rem] text-[var(--wm-text-dim)]">尚未生成本计划的结课报告</p>
           <p className="mt-2 text-[.8rem] text-[var(--wm-text-dim)]">
-            请在「每日学习 → 周计划」列表中点击「完成本周」生成报告后再查看本页。
+            请在「每日学习 → 多日计划」列表中点击「完成计划」生成报告后再查看本页。
           </p>
           <Link
             href="/english/words/daily"
             className="mt-5 inline-block rounded-[10px] bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white"
           >
-            前往周计划列表
+            前往多日计划列表
           </Link>
         </div>
       )}

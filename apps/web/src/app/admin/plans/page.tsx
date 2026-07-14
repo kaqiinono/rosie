@@ -16,7 +16,7 @@ const PLAN_MODULES = [
     href: '/admin/plans/english',
     emoji: '📖',
     title: '英语计划',
-    description: '周计划与自适应计划：按词库、课程分配，或按掌握度自动推进',
+    description: '多日计划与自适应计划：按词库、课程分配，或按掌握度自动推进',
     color: '#2563eb',
     bg: 'rgba(59,130,246,.08)',
     border: 'rgba(59,130,246,.25)',

@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WeeklyPlan } from '@rosie/core'
-import { fmtDate } from '../../utils/english-helpers'
+import { fmtDate, formatPlanLessonLabel } from '../../utils/english-helpers'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
 import { buildEnglishWeeklyReport } from '../../utils/buildEnglishWeeklyReport'
-import { getWeekEnd, daysUntilExpiry } from './english-weekly-plan-shared'
+import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-plan-shared'
 import type { WordEntry } from '@rosie/core'
 
 interface Props {
@@ -25,7 +25,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
 
   const handleMarkWeekComplete = async (plan: WeeklyPlan) => {
     if (plan.weekCompletion) return
-    if (!window.confirm('确定将本周标记为已结束？将根据当前进度与掌握度生成结课报告并保存。')) return
+    if (!window.confirm('确定将本计划标记为已结束？将根据当前进度与掌握度生成结课报告并保存。')) return
     const report = buildEnglishWeeklyReport(plan, vocab, masteryMap)
     const weekCompletion = { completedAt: new Date().toISOString(), report }
     const updated: WeeklyPlan = { ...plan, weekCompletion }
@@ -49,7 +49,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-xl font-extrabold text-transparent">
-            周计划
+            多日计划
           </h2>
           <p className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">按课程与日期分配每日单词</p>
         </div>
@@ -57,7 +57,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
           href="/admin/plans/english/new"
           className="font-nunito shrink-0 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
         >
-          + 创建周计划
+          + 创建多日计划
         </Link>
       </div>
 
@@ -70,7 +70,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
           }}
         >
           <div className="mb-2 text-4xl">📅</div>
-          <div className="mb-4 text-[14px] font-bold text-[#fbbf24]">还没有周计划</div>
+          <div className="mb-4 text-[14px] font-bold text-[#fbbf24]">还没有多日计划</div>
           <Link
             href="/admin/plans/english/new"
             className="font-nunito inline-block rounded-xl bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
@@ -83,15 +83,11 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
           {sortedAllPlans.map((plan) => {
             const doneDays = plan.days.filter((d) => plan.progress[d.date]?.quizDone === true).length
             const showWeekExpiry = !plan.weekCompletion
-            const remaining = showWeekExpiry ? daysUntilExpiry(plan.weekStart) : 0
+            const totalDays = planDayCount(plan)
+            const remaining = showWeekExpiry ? daysUntilExpiry(planEndDate(plan)) : 0
             const isExpired = showWeekExpiry && remaining < 0
-            const weekEnd = getWeekEnd(plan.weekStart)
-            const units = plan.unit.split(', ')
-            const lessons = plan.lesson.split(', ')
-            const allSameUnit = units.every((u) => u === units[0])
-            const lessonLabel = allSameUnit
-              ? `${units[0]} · ${lessons.join(', ')}`
-              : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
+            const weekEnd = planEndDate(plan)
+            const lessonLabel = formatPlanLessonLabel(plan.unit, plan.lesson)
             return (
               <article
                 key={plan.id ?? plan.weekStart}
@@ -107,7 +103,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                       {fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}
                     </span>
                     <span className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-2.5 py-0.5 text-[12px] font-bold text-[#93c5fd]">
-                      {doneDays}/7 天完成
+                      {doneDays}/{totalDays} 天完成
                     </span>
                     {showWeekExpiry && (
                       <span
@@ -143,7 +139,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                       onClick={() => { void handleMarkWeekComplete(plan) }}
                       className="font-nunito cursor-pointer rounded-xl border border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] px-3.5 py-2 text-[13px] font-extrabold text-[#4ade80] transition-colors hover:bg-[rgba(74,222,128,.18)]"
                     >
-                      完成本周
+                      完成计划
                     </button>
                   )}
                   {plan.weekCompletion && plan.id && (
@@ -157,7 +153,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                   <button
                     type="button"
                     onClick={() => {
-                      if (window.confirm(`确定删除「${lessonLabel}」周计划？`)) {
+                      if (window.confirm(`确定删除「${lessonLabel}」多日计划？`)) {
                         void deletePlan(plan.weekStart)
                       }
                     }}

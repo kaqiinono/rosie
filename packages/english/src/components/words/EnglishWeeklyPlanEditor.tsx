@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
-import { buildWeeklyPlan, classifyPlanWords, getOrderedLessons, getAllStages, getWeekStart, fmtWeekRange, wordKey, lessonChipTag } from '../../utils/english-helpers'
+import { buildAutoAssignedPlan, buildDailyFullWordPlan, classifyPlanWords, getOrderedLessons, getAllStages, wordKey, lessonChipTag } from '../../utils/english-helpers'
 import { CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -18,13 +18,29 @@ import {
   buildArrangeBaselineKey,
   loadCachedLessons,
   saveCachedLessons,
-  loadCachedStages,
   saveCachedStages,
   getDayLabel,
   fmtShortDate,
   QuotaPicker,
-  ALL_DAY_OPTIONS,
+  addPlanDays,
+  countPlanDays,
+  fmtPlanRange,
+  planEndDate,
+  getOccupiedPlanDates,
+  planRangeOverlapsOccupied,
+  suggestAvailablePlanRange,
+  inferBatchModeFromPlan,
 } from './english-weekly-plan-shared'
+import PlanDateRangePicker from './PlanDateRangePicker'
+import VocabRangeFilter from './vocab-range-filter/VocabRangeFilter'
+import {
+  lessonKeysToPendingLessons,
+  pendingLessonsToLessonKeys,
+  pruneLessonsForStages,
+  pruneUnitsForStages,
+  toggleUnitSelection,
+  useVocabRangeFilter,
+} from './vocab-range-filter/useVocabRangeFilter'
 
 interface Props {
   vocab: WordEntry[]
@@ -36,7 +52,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   const { user } = useAuth()
   const { masteryMap } = useWordsContext()
 
-  const { allPlans, defaultParams, savePlan, isLoading } = useWeeklyPlan(user)
+  const { allPlans, savePlan, deletePlan, isLoading } = useWeeklyPlan(user)
 
   // step: 'list' | 'params' | 'arrange'
   const [step, setStep] = useState<'params' | 'arrange'>('params')
@@ -45,10 +61,10 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   const [editingPlan, setEditingPlan] = useState<WeeklyPlan | null>(null)
   /** When unchanged from open-edit, arrange step reuses existing `days` layout. */
   const [editArrangeBaselineKey, setEditArrangeBaselineKey] = useState<string | null>(null)
-  const [showLessonPicker, setShowLessonPicker] = useState(false)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
   /** Selected vocab libraries (stage) that filter the lesson picker. Multi-select, cached. */
   const [selectedStages, setSelectedStages] = useState<Set<string>>(new Set())
+  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set())
   // per-lesson daily quota: key = "unit::lesson"
   const [lessonQuotas, setLessonQuotas] = useState<Record<string, number>>({})
   /** User picks 必记/预习 per lesson; keys may include deselected lessons (ignored below). */
@@ -58,15 +74,11 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   /** Single lesson key marked as this week's 重点 (focus). Mutually exclusive across lessons,
    *  must be a 必记 lesson; auto-clears when the lesson is removed or flipped to 预习. */
   const [focusLessonOverride, setFocusLessonOverride] = useState<string | null>(null)
-  const [weekStartDay, setWeekStartDay] = useState<number>(4)
-  const [pendingDate, setPendingDate] = useState<string>(todayStr())
-  const [syncedDefaultParams, setSyncedDefaultParams] = useState(defaultParams)
-  if (syncedDefaultParams !== defaultParams) {
-    setSyncedDefaultParams(defaultParams)
-    if (defaultParams) {
-      setWeekStartDay(defaultParams.weekStartDay)
-    }
-  }
+  const [planStartDate, setPlanStartDate] = useState<string>(todayStr())
+  const [planEndDateStr, setPlanEndDateStr] = useState(() => addPlanDays(todayStr(), 6))
+  const [editingPlanStart, setEditingPlanStart] = useState<string | null>(null)
+  /** When false, every day includes all selected words — skip manual arrange. */
+  const [batchMode, setBatchMode] = useState(false)
 
   // arrange-step state
   const [draftDays, setDraftDays] = useState<WeeklyPlanDay[]>([])
@@ -99,19 +111,60 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     return map
   }, [orderedLessonsFull])
 
-  // Lessons shown in the picker: filtered by the selected stages (all when none selected).
-  const pickerLessons = useMemo(() => {
-    if (selectedStages.size === 0) return orderedLessonsFull
-    return orderedLessonsFull.filter(l => selectedStages.has(l.stage))
-  }, [orderedLessonsFull, selectedStages])
-
-  const baseLessons = useMemo(
-    () => (pendingLessons.length > 0 ? pendingLessons : suggestedLesson ? [suggestedLesson] : []),
-    [pendingLessons, suggestedLesson],
+  const filterLessonKeys = useMemo(
+    () => pendingLessonsToLessonKeys(pendingLessons),
+    [pendingLessons],
   )
 
+  const { baseWords: scopedWords } = useVocabRangeFilter({
+    vocab,
+    stageMode: 'multi',
+    selectedStages,
+    selectedUnits,
+    selectedLessons: filterLessonKeys,
+    emptyStagesShowAllLessons: true,
+  })
+
+  const handlePlanStagesChange = useCallback(
+    (value: string | Set<string>) => {
+      const nextStages = value as Set<string>
+      setSelectedStages(nextStages)
+      setSelectedUnits((prev) => pruneUnitsForStages(prev, vocab, nextStages))
+      setPendingLessons((prev) => {
+        const nextKeys = pruneLessonsForStages(
+          pendingLessonsToLessonKeys(prev),
+          orderedLessonsFull,
+          nextStages,
+        )
+        setFocusLessonOverride((focus) => (focus && nextKeys.has(focus) ? focus : null))
+        return lessonKeysToPendingLessons(nextKeys)
+      })
+    },
+    [vocab, orderedLessonsFull],
+  )
+
+  const handlePlanToggleUnit = useCallback(
+    (unit: string) => {
+      const next = toggleUnitSelection(selectedUnits, filterLessonKeys, unit)
+      setSelectedUnits(next.units)
+      setPendingLessons(lessonKeysToPendingLessons(next.lessons))
+      setFocusLessonOverride((prev) => (prev && next.lessons.has(prev) ? prev : null))
+    },
+    [selectedUnits, filterLessonKeys],
+  )
+
+  const handlePlanLessonsChange = useCallback((keys: Set<string>) => {
+    setPendingLessons(lessonKeysToPendingLessons(keys))
+    setFocusLessonOverride((prev) => (prev && keys.has(prev) ? prev : null))
+  }, [])
+
+  const baseLessons = useMemo(() => pendingLessons, [pendingLessons])
+
+  /** Stable unit/lesson order for params UI — must not resort when 必记/预习 toggles. */
+  const displayLessons = useMemo(() => [...baseLessons].sort(cmpLesson), [baseLessons])
+
   // Active lessons in *display* order: 必记 first, then 预习, each ascending by
-  // unit/lesson. Drives the params dialog summary/pickers only.
+  // unit/lesson. Used for plan persistence / arrange baseline only (not params UI).
   const activeLessons = useMemo(() => {
     return [...baseLessons].sort((a, b) => {
       const ra = (lessonKindOverrides[lessonKey(a)] ?? 'consolidate') === 'preview' ? 1 : 0
@@ -119,7 +172,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       return ra - rb || cmpLesson(a, b)
     })
   }, [baseLessons, lessonKindOverrides])
-  const activeLesson = activeLessons[0] ?? null
+  const activeLesson = baseLessons[0] ?? null
 
   const lessonKinds = useMemo(() => {
     const out: Record<string, 'consolidate' | 'preview'> = {}
@@ -133,12 +186,12 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // 必记 lessons in *selection order* (earlier-selected = higher priority); 预习
   // lessons keep unit/lesson order so preview behavior stays unchanged.
   const consolidateLessons = useMemo(
-    () => baseLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'consolidate'),
-    [baseLessons, lessonKinds],
+    () => displayLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'consolidate'),
+    [displayLessons, lessonKinds],
   )
   const previewLessons = useMemo(
-    () => activeLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview'),
-    [activeLessons, lessonKinds],
+    () => displayLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview'),
+    [displayLessons, lessonKinds],
   )
 
   // 必记 words: one group per 必记 lesson (selection order). Each lesson is ordered
@@ -195,9 +248,31 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
   const totalPerDay = useMemo(() => planQuotas.reduce((s, q) => s + q, 0), [planQuotas])
 
-  const dialogWeekStart = useMemo(
-    () => getWeekStart(new Date(pendingDate + 'T12:00:00'), weekStartDay),
-    [pendingDate, weekStartDay],
+  const planDays = useMemo(
+    () => countPlanDays(planStartDate, planEndDateStr),
+    [planStartDate, planEndDateStr],
+  )
+
+  const occupiedDatesInForm = useMemo(
+    () => getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined),
+    [allPlans, editingPlanStart],
+  )
+
+  const rangeHasOverlap = useMemo(
+    () => planRangeOverlapsOccupied(planStartDate, planEndDateStr, occupiedDatesInForm),
+    [planStartDate, planEndDateStr, occupiedDatesInForm],
+  )
+
+  const applySuggestedDateRange = useCallback(
+    (fromDate: string) => {
+      const occupied = getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined)
+      const suggested = suggestAvailablePlanRange(occupied, fromDate, 7)
+      if (suggested) {
+        setPlanStartDate(suggested.start)
+        setPlanEndDateStr(suggested.end)
+      }
+    },
+    [allPlans, editingPlanStart],
   )
 
   // Lookup map wordKey → WordEntry
@@ -214,12 +289,18 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     const parsed = parsePlanLessons(plan)
     const lkinds = hydrateLessonKindOverridesFromPlan(plan, parsed, vocab)
     const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
-    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas)
+    const planWordKeys = parsed.flatMap(l =>
+      vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson).map(w => wordKey(w)),
+    )
+    const inferredBatch = inferBatchModeFromPlan(plan, planWordKeys)
+    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas, inferredBatch)
     const planStages = new Set(
       parsed.map(l => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean),
     )
-    setPendingDate(plan.weekStart)
-    setWeekStartDay(plan.weekStartDay)
+    setPlanStartDate(plan.weekStart)
+    setPlanEndDateStr(planEndDate(plan))
+    setEditingPlanStart(plan.weekStart)
+    setBatchMode(inferredBatch)
     setSelectedStages(planStages)
     setPendingLessons(parsed)
     setLessonQuotas(quotas)
@@ -228,7 +309,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     setEditArrangeBaselineKey(baseline)
     setEditingPlan(plan)
     setIsEditingPlan(true)
-    setShowLessonPicker(true)
+    setSelectedUnits(new Set(parsed.map((lesson) => lesson.unit)))
     setStep('params')
   }, [vocab, lessonStageMap])
 
@@ -237,18 +318,19 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     const cached = loadCachedLessons().filter(c =>
       orderedLessons.some(o => o.unit === c.unit && o.lesson === c.lesson),
     )
-    const cachedStages = loadCachedStages().filter(s => allStages.includes(s))
-    setSelectedStages(new Set(cachedStages))
+    setSelectedStages(new Set(allStages[0] ? [allStages[0]] : []))
     setPendingLessons(cached)
     setLessonKindOverrides({})
     setLessonQuotas({})
     setFocusLessonOverride(null)
-    setPendingDate(todayStr())
+    setBatchMode(false)
     setIsEditingPlan(false)
     setEditingPlan(null)
+    setEditingPlanStart(null)
     setEditArrangeBaselineKey(null)
     setStep('params')
-  }, [isLoading, editPlanId, orderedLessons, allStages])
+    applySuggestedDateRange(todayStr())
+  }, [isLoading, editPlanId, orderedLessons, allStages, applySuggestedDateRange])
 
   useEffect(() => {
     if (!editPlanId || isLoading) return
@@ -256,9 +338,123 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     if (plan) openEditPlan(plan)
   }, [editPlanId, isLoading, allPlans, openEditPlan])
 
+  const computeRolloverKeys = useCallback(
+    (days: WeeklyPlanDay[], unassigned: string[]) => {
+      if (isEditingPlan) return []
+      const prevPlan = allPlans
+        .filter(p => planEndDate(p) < planStartDate)
+        .sort((a, b) => planEndDate(b).localeCompare(planEndDate(a)))[0]
+      if (!prevPlan) return []
+      const prevKindMap = classifyPlanWords(prevPlan, vocab)
+      return [...prevKindMap.entries()]
+        .filter(([key, kind]) => {
+          if (kind !== 'consolidate') return false
+          const m = masteryMap[key]
+          return !m || (m.stage ?? 0) < CONSOLIDATE_PASS_STAGE
+        })
+        .map(([key]) => key)
+        .filter(k => !days.some(d => d.newWordKeys.includes(k)) && !unassigned.includes(k))
+    },
+    [isEditingPlan, allPlans, planStartDate, vocab, masteryMap],
+  )
+
+  const persistPlan = useCallback(
+    async (days: WeeklyPlanDay[]) => {
+      if (!activeLesson) return
+      const wasEditing = isEditingPlan
+      const previewLessonKeys = activeLessons
+        .filter((l) => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview')
+        .map((l) => lessonKey(l))
+      const activeKeys = new Set(activeLessons.map(lessonKey))
+      const previewSet = new Set(previewLessonKeys)
+      const validFocus =
+        focusLessonOverride &&
+        activeKeys.has(focusLessonOverride) &&
+        !previewSet.has(focusLessonOverride)
+          ? focusLessonOverride
+          : undefined
+      const weekStartDay = new Date(planStartDate + 'T12:00:00').getDay()
+      const planBase: WeeklyPlan = {
+        weekStart: planStartDate,
+        unit: activeLessons.map((l) => l.unit).join(', '),
+        lesson: activeLessons.map((l) => l.lesson).join(', '),
+        weekStartDay,
+        newWordsPerDay: batchMode ? totalPerDay : lessonWords.length,
+        days,
+        progress: wasEditing && editingPlan ? editingPlan.progress : {},
+        previewLessonKeys,
+        batchMode,
+        ...(validFocus !== undefined ? { focusLessonKey: validFocus } : {}),
+        ...(wasEditing && editingPlan?.weekCompletion
+          ? { weekCompletion: editingPlan.weekCompletion }
+          : {}),
+        ...(wasEditing && editingPlan?.id ? { id: editingPlan.id } : {}),
+      }
+      const kindMap = classifyPlanWords(planBase, vocab)
+      const plan: WeeklyPlan = {
+        ...planBase,
+        wordKinds: Object.fromEntries(kindMap),
+      }
+      if (wasEditing && editingPlanStart && editingPlanStart !== planStartDate) {
+        await deletePlan(editingPlanStart)
+      }
+      await savePlan(plan)
+      saveCachedLessons(activeLessons)
+      saveCachedStages([...selectedStages])
+      setCarryoverCount(0)
+      setIsEditingPlan(false)
+      setEditingPlan(null)
+      setEditingPlanStart(null)
+      setEditArrangeBaselineKey(null)
+      router.push('/admin/plans/english')
+    },
+    [
+      activeLesson,
+      activeLessons,
+      planStartDate,
+      totalPerDay,
+      batchMode,
+      lessonWords.length,
+      savePlan,
+      deletePlan,
+      editingPlanStart,
+      router,
+      lessonKinds,
+      focusLessonOverride,
+      vocab,
+      isEditingPlan,
+      editingPlan,
+      selectedStages,
+    ],
+  )
+
+  const handleDirectCreate = useCallback(async () => {
+    if (!activeLesson || batchMode) return
+    if (planEndDateStr < planStartDate || rangeHasOverlap) return
+
+    const rolloverKeys = computeRolloverKeys([], [])
+    const finalDays = buildDailyFullWordPlan(
+      planGroups,
+      planStartDate,
+      planEndDateStr,
+      rolloverKeys,
+    )
+    await persistPlan(finalDays)
+  }, [
+    activeLesson,
+    batchMode,
+    planEndDateStr,
+    planStartDate,
+    rangeHasOverlap,
+    planGroups,
+    computeRolloverKeys,
+    persistPlan,
+  ])
+
   const handleGoToArrange = useCallback(() => {
     if (!activeLesson) return
-    const snap = buildArrangeBaselineKey(dialogWeekStart, activeLessons, lessonKinds, lessonQuotas)
+    if (planEndDateStr < planStartDate || rangeHasOverlap) return
+    const snap = buildArrangeBaselineKey(planStartDate, activeLessons, lessonKinds, lessonQuotas, batchMode)
     if (isEditingPlan && editingPlan && snap === editArrangeBaselineKey) {
       setDraftDays(editingPlan.days.map(d => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
       const wordSet = new Set(lessonWords.map(w => wordKey(w)))
@@ -271,35 +467,16 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       return
     }
 
-    const { days, unassigned } = buildWeeklyPlan(
-      lessonWords,
-      dialogWeekStart,
-      totalPerDay,
+    const { days, unassigned } = buildAutoAssignedPlan(
       planGroups,
       planQuotas,
+      planStartDate,
+      planEndDateStr,
     )
 
-    // Carryover: previous-week plan's consolidate words with stage < CONSOLIDATE_PASS_STAGE (§3.7)
-    let rolloverKeys: string[] = []
-    let rolloverCount = 0
-    if (!isEditingPlan) {
-      const [ny, nm, nd] = dialogWeekStart.split('-').map(Number)
-      const prevWeekStart = new Date(ny, nm - 1, nd - 7)
-      const prevWeekStartStr = `${prevWeekStart.getFullYear()}-${String(prevWeekStart.getMonth() + 1).padStart(2, '0')}-${String(prevWeekStart.getDate()).padStart(2, '0')}`
-      const prevPlan = allPlans.find(p => p.weekStart === prevWeekStartStr)
-      if (prevPlan) {
-        const prevKindMap = classifyPlanWords(prevPlan, vocab)
-        rolloverKeys = [...prevKindMap.entries()]
-          .filter(([key, kind]) => {
-            if (kind !== 'consolidate') return false
-            const m = masteryMap[key]
-            return !m || (m.stage ?? 0) < CONSOLIDATE_PASS_STAGE
-          })
-          .map(([key]) => key)
-          .filter(k => !days.some(d => d.newWordKeys.includes(k)) && !unassigned.includes(k))
-        rolloverCount = rolloverKeys.length
-      }
-    }
+    // Carryover: previous plan's consolidate words with stage < CONSOLIDATE_PASS_STAGE (§3.7)
+    const rolloverKeys = computeRolloverKeys(days, unassigned)
+    const rolloverCount = rolloverKeys.length
 
     setDraftDays(days)
     setUnassignedKeys([...unassigned, ...rolloverKeys])
@@ -315,20 +492,19 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     activeLessons,
     lessonKinds,
     lessonQuotas,
+    batchMode,
     editArrangeBaselineKey,
     editingPlan,
     isEditingPlan,
     lessonWords,
     planGroups,
     planQuotas,
-    totalPerDay,
-    dialogWeekStart,
-    allPlans,
-    vocab,
-    masteryMap,
+    planStartDate,
+    planEndDateStr,
+    rangeHasOverlap,
+    computeRolloverKeys,
   ])
 
-  // Move selected keys to a day (or to unassigned pool if dayIdx === -1)
   const handleMoveWords = useCallback((keys: Set<string>, targetDayIdx: number) => {
     setDraftDays(prev => {
       const next = prev.map(d => ({ ...d, newWordKeys: [...d.newWordKeys] }))
@@ -346,64 +522,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   }, [])
 
   const handleConfirmArrange = useCallback(async () => {
-    if (!activeLesson) return
-    const wasEditing = isEditingPlan
-    const previewLessonKeys = activeLessons
-      .filter((l) => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview')
-      .map((l) => lessonKey(l))
-    // Only persist focusLessonKey if it points to an active 必记 lesson
-    const activeKeys = new Set(activeLessons.map(lessonKey))
-    const previewSet = new Set(previewLessonKeys)
-    const validFocus =
-      focusLessonOverride &&
-      activeKeys.has(focusLessonOverride) &&
-      !previewSet.has(focusLessonOverride)
-        ? focusLessonOverride
-        : undefined
-    const planBase: WeeklyPlan = {
-      weekStart: dialogWeekStart,
-      unit: activeLessons.map((l) => l.unit).join(', '),
-      lesson: activeLessons.map((l) => l.lesson).join(', '),
-      weekStartDay,
-      newWordsPerDay: totalPerDay,
-      days: draftDays,
-      progress: wasEditing && editingPlan ? editingPlan.progress : {},
-      previewLessonKeys,
-      ...(validFocus !== undefined ? { focusLessonKey: validFocus } : {}),
-      ...(wasEditing && editingPlan?.weekCompletion
-        ? { weekCompletion: editingPlan.weekCompletion }
-        : {}),
-      ...(wasEditing && editingPlan?.id ? { id: editingPlan.id } : {}),
-    }
-    const kindMap = classifyPlanWords(planBase, vocab)
-    const plan: WeeklyPlan = {
-      ...planBase,
-      wordKinds: Object.fromEntries(kindMap),
-    }
-    const saved = await savePlan(plan)
-    saveCachedLessons(activeLessons)
-    saveCachedStages([...selectedStages])
-    setCarryoverCount(0)
-    setIsEditingPlan(false)
-    setEditingPlan(null)
-    setEditArrangeBaselineKey(null)
-    router.push('/admin/plans/english')
-  }, [
-    activeLesson,
-    activeLessons,
-    dialogWeekStart,
-    draftDays,
-    totalPerDay,
-    weekStartDay,
-    savePlan,
-    router,
-    lessonKinds,
-    focusLessonOverride,
-    vocab,
-    isEditingPlan,
-    editingPlan,
-    selectedStages,
-  ])
+    await persistPlan(draftDays)
+  }, [persistPlan, draftDays])
 
   if (isLoading) {
     return (
@@ -420,208 +540,76 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       previewGroups.filter(g => g.length > 0).length
 
     return (
-      <div className="mx-auto max-w-[560px] px-4 py-6">
+      <>
+        <VocabRangeFilter
+          vocab={vocab}
+          variant="bar"
+          stageMode="multi"
+          selectedStages={selectedStages}
+          onStagesChange={handlePlanStagesChange}
+          emptyStagesShowAllLessons
+          showUnits
+          selectedUnits={selectedUnits}
+          onToggleUnit={handlePlanToggleUnit}
+          lessonLayout="cascade"
+          selectedLessons={filterLessonKeys}
+          onLessonsChange={handlePlanLessonsChange}
+          scopeCount={scopedWords.length}
+          hint="在上方选 Stage / Unit / Lesson；下方可设置必记、预习与本周重点。"
+        />
+
+        <div className="mx-auto max-w-[560px] px-4 py-6">
           <div className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-7">
             <div className="font-fredoka mb-4 bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-              {isEditingPlan ? '修改周计划' : '创建周计划'}
+              {isEditingPlan ? '修改多日计划' : '创建多日计划'}
             </div>
 
-            {/* Date picker */}
+            {/* Date range picker */}
             <div className="mb-4">
-              <div className="mb-1.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                选择日期
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <input
-                  type="date"
-                  value={pendingDate}
-                  disabled={isEditingPlan}
-                  onChange={(e) => e.target.value && setPendingDate(e.target.value)}
-                  className={`rounded-[10px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3 py-1.5 text-[.88rem] font-bold text-[var(--wm-text)] outline-none focus:border-[var(--wm-accent)] ${
-                    isEditingPlan ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-                  }`}
-                />
-                <span className="text-[.75rem] font-bold text-[var(--wm-text-dim)]">
-                  → 周 {fmtWeekRange(dialogWeekStart, weekStartDay)}
+              <div className="mb-3 flex items-center justify-between">
+                <div className="text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                  计划时间段
+                </div>
+                <span className="text-[.75rem] font-bold text-[#fbbf24]">
+                  {fmtPlanRange(planStartDate, planEndDateStr)} · {planDays} 天
                 </span>
               </div>
-              {isEditingPlan && (
-                <p className="mt-1.5 text-[.65rem] text-[var(--wm-text-dim)]">
-                  编辑已有计划时不能更改周起始日，以免与已存进度错位。
-                </p>
+              <PlanDateRangePicker
+                key={editingPlanStart ?? 'new'}
+                startDate={planStartDate}
+                endDate={planEndDateStr}
+                occupiedDates={occupiedDatesInForm}
+                onRangeChange={(start, end) => {
+                  setPlanStartDate(start)
+                  setPlanEndDateStr(end)
+                }}
+              />
+              {rangeHasOverlap && (
+                <div className="mt-3 text-[.72rem] font-medium text-[#f87171]">
+                  所选时间段与已有计划重叠，请选择空闲日期
+                </div>
+              )}
+              {occupiedDatesInForm.size > 0 && !rangeHasOverlap && !isEditingPlan && (
+                <div className="mt-3 text-[.68rem] font-medium text-[var(--wm-text-dim)]">
+                  灰色划线的日期已有计划，不可选择
+                </div>
+              )}
+              {planEndDateStr < planStartDate && (
+                <div className="mt-3 text-[.72rem] font-medium text-[#f87171]">
+                  结束日期不能早于开始日期
+                </div>
               )}
             </div>
 
             {activeLesson ? (
               <>
-                {/* Stage (词库) selector — pick libraries first, then units/lessons below */}
-                {allStages.length > 0 && (
-                  <div className="mb-3">
-                    <div className="mb-1.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                      选择词库（可多选）
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {allStages.map((s) => {
-                        const on = selectedStages.has(s)
-                        return (
-                          <button
-                            key={s}
-                            type="button"
-                            onClick={() =>
-                              setSelectedStages((prev) => {
-                                const next = new Set(prev)
-                                if (next.has(s)) next.delete(s)
-                                else next.add(s)
-                                return next
-                              })
-                            }
-                            className={`cursor-pointer rounded-full border-[1.5px] px-3 py-1 text-[.78rem] font-bold transition-all ${
-                              on
-                                ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
-                            }`}
-                          >
-                            {s}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Lesson picker toggle */}
-                <div className="mb-3">
-                  <button
-                    onClick={() => {
-                      if (!showLessonPicker && pendingLessons.length === 0 && suggestedLesson) {
-                        setPendingLessons([suggestedLesson])
-                      }
-                      setShowLessonPicker((v) => !v)
-                    }}
-                    className="font-nunito cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-4 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
-                  >
-                    选择课程{pendingLessons.length > 0 ? ` (${pendingLessons.length})` : ''}{' '}
-                    {showLessonPicker ? '▴' : '▾'}
-                  </button>
-                </div>
-
-                {showLessonPicker && (
-                  <div className="mb-4 max-h-[280px] overflow-hidden overflow-y-auto rounded-xl border border-[var(--wm-border)]">
-                    {pickerLessons.length === 0 && (
-                      <div className="px-4 py-3 text-[.8rem] text-[var(--wm-text-dim)]">
-                        该词库下暂无课程
-                      </div>
-                    )}
-                    {pickerLessons.map((l) => {
-                      const lk = lessonKey(l)
-                      const isActive = activeLessons.some(
-                        (al) => al.unit === l.unit && al.lesson === l.lesson,
-                      )
-                      const kind = lessonKinds[lk] ?? 'consolidate'
-                      return (
-                        <div
-                          key={lk}
-                          className={`flex w-full items-stretch border-b border-[var(--wm-border)] last:border-0 ${
-                            isActive ? 'bg-[rgba(245,158,11,.12)]' : 'bg-[var(--wm-surface2)]'
-                          }`}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPendingLessons((prev) => {
-                                const exists = prev.some(
-                                  (p) => p.unit === l.unit && p.lesson === l.lesson,
-                                )
-                                if (exists) {
-                                  if (focusLessonOverride === lk) setFocusLessonOverride(null)
-                                  return prev.filter(
-                                    (p) => !(p.unit === l.unit && p.lesson === l.lesson),
-                                  )
-                                }
-                                return [...prev, l]
-                              })
-                            }}
-                            className={`flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 px-4 py-2.5 text-left text-[1rem] font-bold transition-all ${
-                              isActive
-                                ? 'text-[#fbbf24]'
-                                : 'text-[var(--wm-text)] hover:bg-[var(--wm-surface)]'
-                            }`}
-                          >
-                            <span
-                              className={`inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center rounded-[4px] border text-[.6rem] font-black transition-all ${
-                                isActive
-                                  ? 'border-[#f59e0b] bg-[rgba(245,158,11,.3)] text-[#fbbf24]'
-                                  : 'border-[var(--wm-border)] bg-transparent'
-                              }`}
-                            >
-                              {isActive && '✓'}
-                            </span>
-                            {l.unit} · {l.lesson}
-                            {focusLessonOverride === lk && (
-                              <span className="ml-1 text-[.85rem]" title="本周重点">⭐</span>
-                            )}
-                          </button>
-                          {isActive && (
-                            <div className="flex shrink-0 items-center gap-1 border-l border-[var(--wm-border)] px-2 py-2">
-                              <button
-                                type="button"
-                                disabled={kind !== 'consolidate'}
-                                title={kind !== 'consolidate' ? '只有必记课才能设为本周重点' : '设为本周重点（启用阅读+课文题型）'}
-                                onClick={() =>
-                                  setFocusLessonOverride((prev) => (prev === lk ? null : lk))
-                                }
-                                className={`flex h-[22px] w-[22px] items-center justify-center rounded-full border-[1.5px] text-[.8rem] transition-all ${
-                                  focusLessonOverride === lk
-                                    ? 'border-[#f59e0b] bg-gradient-to-br from-[#fbbf24] to-[#f59e0b] text-white shadow-[0_2px_8px_rgba(245,158,11,.4)]'
-                                    : kind === 'consolidate'
-                                      ? 'cursor-pointer border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[#f59e0b] hover:text-[#f59e0b]'
-                                      : 'cursor-not-allowed border-[var(--wm-border)]/40 bg-transparent text-[var(--wm-text-dim)]/40'
-                                }`}
-                              >
-                                ⭐
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))
-                                }}
-                                className={`rounded-full border-[1.5px] px-2 py-0.5 text-[.62rem] font-extrabold transition-all ${
-                                  kind === 'consolidate'
-                                    ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
-                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(96,165,250,.35)]'
-                                }`}
-                              >
-                                必记
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))
-                                  if (focusLessonOverride === lk) setFocusLessonOverride(null)
-                                }}
-                                className={`rounded-full border-[1.5px] px-2 py-0.5 text-[.62rem] font-extrabold transition-all ${
-                                  kind === 'preview'
-                                    ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
-                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(249,115,22,.35)]'
-                                }`}
-                              >
-                                预习
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-
-                {!showLessonPicker && activeLessons.length > 0 && (
+                {displayLessons.length > 0 && (
                   <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-3">
                     <div className="mb-2 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
                       本周类型（必记 / 预习 / ⭐重点）
                     </div>
                     <div className="space-y-1">
-                      {activeLessons.map((l) => {
+                      {displayLessons.map((l) => {
                         const lk = lessonKey(l)
                         const kind = lessonKinds[lk] ?? 'consolidate'
                         const isFocus = focusLessonOverride === lk
@@ -657,7 +645,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                                 onClick={() => {
                                   setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))
                                 }}
-                                className={`rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
+                                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
                                   kind === 'consolidate'
                                     ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
                                     : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(96,165,250,.35)]'
@@ -671,7 +659,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                                   setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))
                                   if (focusLessonOverride === lk) setFocusLessonOverride(null)
                                 }}
-                                className={`rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
+                                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
                                   kind === 'preview'
                                     ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
                                     : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(249,115,22,.35)]'
@@ -690,8 +678,48 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                   </div>
                 )}
 
-                {/* 必记: per-lesson daily quota (spreads daily load across lessons) */}
-                {consolidateLessons.length > 0 && (
+                <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
+                        是否分批
+                      </div>
+                      <p className="mt-1 text-[.72rem] leading-snug text-[var(--wm-text-dim)]">
+                        {batchMode
+                          ? '开启：按天分配必记新词，可手动调整'
+                          : '关闭：计划期内每天记忆全部单词'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={batchMode}
+                      onClick={() => setBatchMode(v => !v)}
+                      className={`relative h-7 w-12 shrink-0 cursor-pointer rounded-full border-[1.5px] transition-all ${
+                        batchMode
+                          ? 'border-[#f59e0b] bg-[rgba(245,158,11,.25)]'
+                          : 'border-[var(--wm-border)] bg-[var(--wm-surface)]'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 h-5 w-5 rounded-full transition-all ${
+                          batchMode
+                            ? 'left-[calc(100%-1.375rem)] bg-[#fbbf24]'
+                            : 'left-0.5 bg-[var(--wm-text-dim)]'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {!batchMode && (
+                  <div className="mb-4 rounded-xl border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-4 py-3 text-[.75rem] font-bold text-[#fbbf24]">
+                    不分批：{planDays} 天内每天记忆全部 {lessonWords.length} 个单词
+                  </div>
+                )}
+
+                {/* 必记: per-lesson daily quota (only when batching) */}
+                {batchMode && consolidateLessons.length > 0 && (
                   <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-4">
                     <div className="mb-3 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
                       每天必记新词数量{consolidateLessons.length > 1 ? '（每课程）' : ''}
@@ -701,7 +729,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                         const lkey = `${l.unit}::${l.lesson}`
                         const q = lessonQuotas[lkey] ?? 3
                         const groupSize = consolidateGroups[gi]?.length ?? 0
-                        const totalAssigned = Math.min(q * 7, groupSize)
+                        const totalAssigned = Math.min(q * planDays, groupSize)
                         return (
                           <div key={lkey}>
                             {consolidateLessons.length > 1 && (
@@ -710,13 +738,13 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                                   {l.unit} · {l.lesson}
                                 </span>
                                 <span className="text-[.68rem] text-[var(--wm-text-dim)]">
-                                  共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                                  共 {groupSize} 词 · {planDays}天可分配 {totalAssigned} 词
                                 </span>
                               </div>
                             )}
                             {consolidateLessons.length === 1 && (
                               <div className="mb-1.5 text-[.72rem] text-[var(--wm-text-dim)]">
-                                共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                                共 {groupSize} 词 · {planDays}天可分配 {totalAssigned} 词
                               </div>
                             )}
                             <QuotaPicker
@@ -732,8 +760,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                   </div>
                 )}
 
-                {/* 预习: per-lesson daily quota (same per-lesson model as 必记) */}
-                {previewLessons.length > 0 && (
+                {/* 预习: per-lesson daily quota (only when batching) */}
+                {batchMode && previewLessons.length > 0 && (
                   <div className="mb-4 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-4">
                     <div className="mb-3 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
                       每天预习新词数量{previewLessons.length > 1 ? '（每课程）' : ''}
@@ -743,7 +771,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                         const lkey = `${l.unit}::${l.lesson}`
                         const q = lessonQuotas[lkey] ?? 3
                         const groupSize = previewGroups[gi]?.length ?? 0
-                        const totalAssigned = Math.min(q * 7, groupSize)
+                        const totalAssigned = Math.min(q * planDays, groupSize)
                         return (
                           <div key={lkey}>
                             {previewLessons.length > 1 && (
@@ -752,13 +780,13 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                                   {l.unit} · {l.lesson}
                                 </span>
                                 <span className="text-[.68rem] text-[var(--wm-text-dim)]">
-                                  共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                                  共 {groupSize} 词 · {planDays}天可分配 {totalAssigned} 词
                                 </span>
                               </div>
                             )}
                             {previewLessons.length === 1 && (
                               <div className="mb-1.5 text-[.72rem] text-[var(--wm-text-dim)]">
-                                共 {groupSize} 词 · 7天可分配 {totalAssigned} 词
+                                共 {groupSize} 词 · {planDays}天可分配 {totalAssigned} 词
                               </div>
                             )}
                             <QuotaPicker
@@ -774,36 +802,16 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                   </div>
                 )}
 
-                {sourceCount > 1 && (
+                {batchMode && sourceCount > 1 && (
                   <div className="mb-4 -mt-1 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
                     合计每天 {totalPerDay} 个新词
                   </div>
                 )}
-
-                {/* Week start day */}
-                <div className="mb-4">
-                  <div className="mb-2.5 text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                    每周开始于
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {ALL_DAY_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        disabled={isEditingPlan}
-                        onClick={() => { if (!isEditingPlan) setWeekStartDay(opt.value) }}
-                        className={`rounded-full border-[1.5px] px-3 py-1.5 text-[0.875rem] font-bold transition-all ${
-                          weekStartDay === opt.value
-                            ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                            : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
-                        } ${isEditingPlan ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </>
+            ) : orderedLessons.length > 0 ? (
+              <div className="mb-4 text-sm text-[var(--wm-text-dim)]">
+                请在上方 Stage / Unit / Lesson 筛选器中选择至少一节课。
+              </div>
             ) : (
               <div className="text-sm text-[var(--wm-text-dim)]">
                 没有找到课程数据，请先导入单词。
@@ -820,15 +828,19 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                   取消
                 </button>
                 <button
-                  onClick={handleGoToArrange}
-                  className="font-nunito flex-[2] cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
+                  onClick={batchMode ? handleGoToArrange : handleDirectCreate}
+                  disabled={planDays <= 0 || planEndDateStr < planStartDate || rangeHasOverlap}
+                  className="font-nunito flex-[2] cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                 >
-                  下一步：编辑分配 ▶
+                  {batchMode
+                    ? '下一步：编辑分配 ▶'
+                    : (isEditingPlan ? '保存修改' : '创建计划')}
                 </button>
               </div>
             )}
           </div>
         </div>
+      </>
     )
   }
 
@@ -936,7 +948,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
             {/* Header */}
             <div className="mb-1 flex items-center justify-between">
               <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-                {isEditingPlan ? '编辑周计划 · 分配' : '编辑单词分配'}
+                {isEditingPlan ? '编辑多日计划 · 分配' : '编辑单词分配'}
               </div>
               <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)]">
                 已分配 {totalAssigned} / {lessonWords.length} 词
@@ -1084,7 +1096,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                 onClick={handleConfirmArrange}
                 className="font-nunito flex-[2] cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
               >
-                {isEditingPlan ? '保存修改' : '创建周计划'}
+                {isEditingPlan ? '保存修改' : '创建多日计划'}
               </button>
             </div>
           </div>

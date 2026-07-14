@@ -19,6 +19,7 @@ import {
   ALL_CN_DAYS,
   fmtDate,
   fmtWeekRange,
+  formatPlanLessonLabel,
   lessonChipTag,
 } from '../../utils/english-helpers'
 import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
@@ -694,14 +695,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-                  {(() => {
-                    const units = plan.unit.split(', ')
-                    const lessons = plan.lesson.split(', ')
-                    const allSameUnit = units.every((u) => u === units[0])
-                    return allSameUnit
-                      ? `${units[0]} · ${lessons.join(', ')}`
-                      : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
-                  })()}
+                  {formatPlanLessonLabel(plan.unit, plan.lesson)}
                 </div>
                 <div className="mt-1 text-[.75rem] font-bold text-[var(--wm-text-dim)]">
                   {fmtWeekRange(plan.weekStart, plan.weekStartDay)}
@@ -1333,7 +1327,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 onClick={() => { rescue.clear(); setPhase('week-view') }}
                 className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[var(--wm-text-dim)]"
               >
-                返回周计划
+                返回多日计划
               </button>
               {isSubTask && hasOtherWords && !otherAlreadyDone && selectedDate && (
                 <button

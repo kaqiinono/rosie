@@ -32,7 +32,7 @@ const STATIC_LINKS = [
     href: `${BASE}/daily`,
     icon: '📅',
     label: '计划',
-    description: '每日新词 · 周计划 · 进度追踪',
+    description: '每日新词 · 多日计划 · 进度追踪',
     gradient: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%)',
     border: 'rgba(59,130,246,.35)',
     shadow: '0 4px 20px rgba(59,130,246,.12)',

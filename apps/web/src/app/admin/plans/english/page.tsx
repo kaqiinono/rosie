@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import {
   AdaptivePlanManage,
   EnglishWeeklyPlanManage,
@@ -8,15 +9,49 @@ import {
   useWordsContext,
 } from '@rosie/english'
 
+type PlanTab = 'multi' | 'adaptive'
+
 function EnglishPlanManageBody() {
   const { vocab } = useWordsContext()
+  const [tab, setTab] = useState<PlanTab>('multi')
+
   return (
     <div className="mx-auto max-w-[800px] px-4 py-6">
-      <EnglishWeeklyPlanManage vocab={vocab} />
+      <div
+        className="mb-6 inline-flex rounded-xl border border-[var(--wm-border)] bg-white/[.03] p-1"
+        role="tablist"
+        aria-label="英语计划类型"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'multi'}
+          onClick={() => setTab('multi')}
+          className={`cursor-pointer rounded-lg px-4 py-2 text-[13px] font-extrabold transition-colors ${
+            tab === 'multi'
+              ? 'bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+              : 'text-[var(--wm-text-dim)] hover:text-[#fbbf24]'
+          }`}
+        >
+          多日计划
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'adaptive'}
+          onClick={() => setTab('adaptive')}
+          className={`cursor-pointer rounded-lg px-4 py-2 text-[13px] font-extrabold transition-colors ${
+            tab === 'adaptive'
+              ? 'bg-[rgba(139,92,246,.15)] text-[#c4b5fd]'
+              : 'text-[var(--wm-text-dim)] hover:text-[#c4b5fd]'
+          }`}
+        >
+          自适应计划
+        </button>
+      </div>
 
-      <div className="my-8 border-t border-[var(--wm-border)]" />
-
-      <AdaptivePlanManage />
+      {tab === 'multi' ? <EnglishWeeklyPlanManage vocab={vocab} /> : null}
+      {tab === 'adaptive' ? <AdaptivePlanManage /> : null}
     </div>
   )
 }

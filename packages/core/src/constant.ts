@@ -25,7 +25,7 @@ export const STORAGE_KEYS = {
   ENGLISH_SEL_UNITS: 'english-sel-units',
   ENGLISH_SEL_LESSONS: 'english-sel-lessons',
   WEEKLY_PLAN_LAST_LESSONS: 'weekly-plan-last-lessons',
-  /** 创建周计划时上次选择的词库（stage）集合，下次进入直接预选 */
+  /** 创建多日计划时上次选择的词库（stage）集合，下次进入直接预选 */
   WEEKLY_PLAN_LAST_STAGES: 'weekly-plan-last-stages',
   /** Session 中间态：拯救队列。仅当前 session 有效，phase=done 时清除。spec §11.6 例外 */
   RESCUE_QUEUE: 'rescue_queue_v1',

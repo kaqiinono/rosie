@@ -1,9 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { WordEntry, WordMasteryInfo, WordMasteryMap } from '@rosie/core'
 import { wordKey } from '../../utils/english-helpers'
 import { ensureStageInit, isGraduated, MASTERY_ICON, getWordMasteryLevel } from '@rosie/core'
+
+const DEFAULT_PAGE_SIZE = 20
 
 export type MasteryStatusPanelLayout = 'collapsible' | 'alwaysOpen'
 
@@ -20,6 +22,8 @@ interface MasteryStatusPanelProps {
   orderedWordsInScope?: WordEntry[]
   layout?: MasteryStatusPanelLayout
   className?: string
+  /** Rows per page when the table is expanded. Default 20. */
+  pageSize?: number
 }
 
 function formatDue(nextReviewDate: string | undefined, today: string): { label: string; urgent: 'today' | 'tomorrow' | 'future' | 'none' } {
@@ -47,8 +51,10 @@ export default function MasteryStatusPanel({
   orderedWordsInScope,
   layout = 'collapsible',
   className,
+  pageSize = DEFAULT_PAGE_SIZE,
 }: MasteryStatusPanelProps) {
   const [open, setOpen] = useState(layout === 'alwaysOpen')
+  const [page, setPage] = useState(1)
   const today = new Date().toISOString().slice(0, 10)
 
   const rows: PanelRow[] = useMemo(() => {
@@ -84,6 +90,23 @@ export default function MasteryStatusPanel({
       })
   }, [vocab, masteryMap, orderedWordsInScope, today])
 
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize))
+  const safePage = Math.min(page, totalPages)
+  const pageRows = useMemo(() => {
+    const start = (safePage - 1) * pageSize
+    return rows.slice(start, start + pageSize)
+  }, [rows, pageSize, safePage])
+  const rangeStart = rows.length === 0 ? 0 : (safePage - 1) * pageSize + 1
+  const rangeEnd = Math.min(safePage * pageSize, rows.length)
+
+  useEffect(() => {
+    setPage(1)
+  }, [rows])
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages)
+  }, [page, totalPages])
+
   const hardCount = rows.filter(
     (r): r is Extract<PanelRow, { unpracticed: false }> =>
       !r.unpracticed && r.m.isHard === true && !r.graduated,
@@ -110,103 +133,133 @@ export default function MasteryStatusPanel({
   const isScoped = orderedWordsInScope !== undefined
 
   const tableBody = (
-    <div className="overflow-x-auto border-t border-[var(--wm-border)]">
-      <table className="w-full border-collapse text-[12px]">
-        <thead>
-          <tr className="bg-[var(--wm-surface)]">
-            <th className="px-4 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">单词</th>
-            <th className="px-3 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">课程</th>
-            <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">阶段</th>
-            <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">下次复习</th>
-            <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">复习记录</th>
-            <th className="px-4 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            if (row.unpracticed) {
-              const w = row.w
+    <div className="border-t border-[var(--wm-border)]">
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-[12px]">
+          <thead>
+            <tr className="bg-[var(--wm-surface)]">
+              <th className="px-4 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">单词</th>
+              <th className="px-3 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">课程</th>
+              <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">阶段</th>
+              <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">下次复习</th>
+              <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">复习记录</th>
+              <th className="px-4 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pageRows.map((row) => {
+              if (row.unpracticed) {
+                const w = row.w
+                return (
+                  <tr key={wordKey(w)} className="border-t border-[var(--wm-border)]">
+                    <td className="px-4 py-2 font-bold text-[var(--wm-text)]">{w.word}</td>
+                    <td className="px-3 py-2 text-[11px] text-[var(--wm-text-dim)]">
+                      {w.unit.replace(/\D+(\d+)/, 'U$1')} {w.lesson.replace(/\D+(\d+)/, 'L$1')}
+                    </td>
+                    <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">—</td>
+                    <td className="px-3 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">—</td>
+                    <td className="px-3 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">—</td>
+                    <td className="px-4 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">未练习</td>
+                  </tr>
+                )
+              }
+              const { w, m, graduated, due } = row
+              const level = getWordMasteryLevel(m.correct ?? 0)
               return (
-                <tr key={wordKey(w)} className="border-t border-[var(--wm-border)]">
-                  <td className="px-4 py-2 font-bold text-[var(--wm-text)]">{w.word}</td>
+                <tr
+                  key={wordKey(w)}
+                  className="border-t border-[var(--wm-border)]"
+                  style={{ opacity: graduated ? 0.6 : 1 }}
+                >
+                  <td className="px-4 py-2 font-bold" style={{ color: graduated ? '#4ade80' : 'var(--wm-text)' }}>
+                    {w.word}
+                  </td>
                   <td className="px-3 py-2 text-[11px] text-[var(--wm-text-dim)]">
                     {w.unit.replace(/\D+(\d+)/, 'U$1')} {w.lesson.replace(/\D+(\d+)/, 'L$1')}
                   </td>
-                  <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">—</td>
-                  <td className="px-3 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">—</td>
-                  <td className="px-3 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">—</td>
-                  <td className="px-4 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">未练习</td>
+                  <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">
+                    {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    {due.urgent === 'today' && (
+                      <span className="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
+                    )}
+                    {due.urgent === 'tomorrow' && (
+                      <span className="bg-orange-500/20 text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
+                    )}
+                    {due.urgent === 'future' && (
+                      <span className="text-[var(--wm-text-dim)] text-[10px] font-bold">{due.label}</span>
+                    )}
+                    {due.urgent === 'none' && (
+                      <span className="text-green-400 text-[10px] font-bold">{due.label}</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center justify-center gap-0.5 flex-wrap">
+                      {(m.reviewHistory ?? []).slice(-12).map((r, i) => (
+                        <span
+                          key={i}
+                          title={`${r.date} ${r.correct ? '✓' : '✗'}`}
+                          className={`h-2 w-2 rounded-full ${r.correct ? 'bg-green-400' : 'bg-red-400'}`}
+                        />
+                      ))}
+                      {!m.reviewHistory?.length && (
+                        <span className="text-[var(--wm-text-dim)] text-[10px]">—</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    {graduated ? (
+                      <span className="text-green-400 text-[10px] font-bold">✓ 毕业</span>
+                    ) : m.isHard ? (
+                      <span className="text-red-400 text-[10px] font-bold">🔥 难</span>
+                    ) : (
+                      <span className="text-[var(--wm-text-dim)]">—</span>
+                    )}
+                  </td>
                 </tr>
               )
-            }
-            const { w, m, graduated, due } = row
-            const level = getWordMasteryLevel(m.correct ?? 0)
-            return (
-              <tr
-                key={wordKey(w)}
-                className="border-t border-[var(--wm-border)]"
-                style={{ opacity: graduated ? 0.6 : 1 }}
-              >
-                <td className="px-4 py-2 font-bold" style={{ color: graduated ? '#4ade80' : 'var(--wm-text)' }}>
-                  {w.word}
-                </td>
-                <td className="px-3 py-2 text-[11px] text-[var(--wm-text-dim)]">
-                  {w.unit.replace(/\D+(\d+)/, 'U$1')} {w.lesson.replace(/\D+(\d+)/, 'L$1')}
-                </td>
-                <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">
-                  {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
-                </td>
-                <td className="px-3 py-2 text-center">
-                  {due.urgent === 'today' && (
-                    <span className="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
-                  )}
-                  {due.urgent === 'tomorrow' && (
-                    <span className="bg-orange-500/20 text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
-                  )}
-                  {due.urgent === 'future' && (
-                    <span className="text-[var(--wm-text-dim)] text-[10px] font-bold">{due.label}</span>
-                  )}
-                  {due.urgent === 'none' && (
-                    <span className="text-green-400 text-[10px] font-bold">{due.label}</span>
-                  )}
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex items-center justify-center gap-0.5 flex-wrap">
-                    {(m.reviewHistory ?? []).slice(-12).map((r, i) => (
-                      <span
-                        key={i}
-                        title={`${r.date} ${r.correct ? '✓' : '✗'}`}
-                        className={`h-2 w-2 rounded-full ${r.correct ? 'bg-green-400' : 'bg-red-400'}`}
-                      />
-                    ))}
-                    {!m.reviewHistory?.length && (
-                      <span className="text-[var(--wm-text-dim)] text-[10px]">—</span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-2 text-center">
-                  {graduated ? (
-                    <span className="text-green-400 text-[10px] font-bold">✓ 毕业</span>
-                  ) : m.isHard ? (
-                    <span className="text-red-400 text-[10px] font-bold">🔥 难</span>
-                  ) : (
-                    <span className="text-[var(--wm-text-dim)]">—</span>
-                  )}
+            })}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center text-[var(--wm-text-dim)] text-[12px]">
+                  {orderedWordsInScope !== undefined
+                    ? '多日计划暂无分配单词'
+                    : '还没有练习过的词 — 完成一次练习后这里会显示数据'}
                 </td>
               </tr>
-            )
-          })}
-          {rows.length === 0 && (
-            <tr>
-              <td colSpan={6} className="px-4 py-6 text-center text-[var(--wm-text-dim)] text-[12px]">
-                {orderedWordsInScope !== undefined
-                  ? '本周计划暂无分配单词'
-                  : '还没有练习过的词 — 完成一次练习后这里会显示数据'}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {rows.length > pageSize && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--wm-border)] bg-[var(--wm-surface)] px-4 py-2.5">
+          <div className="text-[11px] font-bold text-[var(--wm-text-dim)]">
+            第 {rangeStart}–{rangeEnd} 词 · 共 {rows.length} 词
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={safePage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#93c5fd] hover:text-[#93c5fd]"
+            >
+              ← 上一页
+            </button>
+            <span className="min-w-[4.5rem] text-center text-[11px] font-extrabold text-[var(--wm-text)]">
+              {safePage} / {totalPages}
+            </span>
+            <button
+              type="button"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#93c5fd] hover:text-[#93c5fd]"
+            >
+              下一页 →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 

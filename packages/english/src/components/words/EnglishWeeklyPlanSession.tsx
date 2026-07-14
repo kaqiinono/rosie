@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WordEntry } from '@rosie/core'
-import { fmtDate, getOldReviewWords } from '../../utils/english-helpers'
+import { fmtDate, formatPlanLessonLabel, getOldReviewWords } from '../../utils/english-helpers'
 import AdaptivePlanPractice from './AdaptivePlanPractice'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import OldReviewSession from './OldReviewSession'
@@ -12,13 +12,15 @@ import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
 import { todayStr } from '@rosie/core'
-import { getWeekEnd, daysUntilExpiry } from './english-weekly-plan-shared'
+import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-plan-shared'
 
 interface Props {
   vocab: WordEntry[]
 }
 
-export default function EnglishWeeklyPlanSession({ vocab }: Props) {
+type PlanTab = 'multi' | 'adaptive'
+
+function MultiDayPlanPractice({ vocab }: Props) {
   const router = useRouter()
   const { user } = useAuth()
   const { masteryMap } = useWordsContext()
@@ -63,7 +65,7 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
+      <div className="flex min-h-[40vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
         加载中…
       </div>
     )
@@ -71,11 +73,11 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
 
   return (
     <>
-      <div className="mx-auto max-w-[1280px] px-4 pt-5 pb-3">
+      <div className="mx-auto max-w-[1280px] px-4 pt-2 pb-3">
         <div className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-7">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-              周计划
+              多日计划
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               {oldReviewWords.length > 0 && (
@@ -94,8 +96,8 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
           {sortedAllPlans.length === 0 ? (
             <div className="py-12 text-center text-sm text-[var(--wm-text-dim)]">
               <div className="flex flex-col items-center gap-3">
-                <span>暂无周计划</span>
-                <span className="text-[.75rem]">请家长在管理后台创建英语周计划</span>
+                <span>暂无多日计划</span>
+                <span className="text-[.75rem]">请家长在管理后台创建英语多日计划</span>
                 <Link
                   href="/admin/plans/english"
                   className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-[.8rem] font-extrabold text-[#93c5fd] no-underline"
@@ -111,15 +113,11 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
                   (d) => plan.progress[d.date]?.quizDone === true,
                 ).length
                 const showWeekExpiry = !plan.weekCompletion
-                const remaining = showWeekExpiry ? daysUntilExpiry(plan.weekStart) : 0
+                const totalDays = planDayCount(plan)
+                const remaining = showWeekExpiry ? daysUntilExpiry(planEndDate(plan)) : 0
                 const isExpired = showWeekExpiry && remaining < 0
-                const weekEnd = getWeekEnd(plan.weekStart)
-                const units = plan.unit.split(', ')
-                const lessons = plan.lesson.split(', ')
-                const allSameUnit = units.every((u) => u === units[0])
-                const lessonLabel = allSameUnit
-                  ? `${units[0]} · ${lessons.join(', ')}`
-                  : units.map((u, i) => `${u} · ${lessons[i] ?? ''}`).join(', ')
+                const weekEnd = planEndDate(plan)
+                const lessonLabel = formatPlanLessonLabel(plan.unit, plan.lesson)
                 return (
                   <div
                     key={plan.id ?? plan.weekStart}
@@ -143,7 +141,7 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
                         <span>
                           {fmtDate(plan.weekStart)} – {fmtDate(weekEnd)}
                         </span>
-                        <span>{doneDays}/7 天完成</span>
+                        <span>{doneDays}/{totalDays} 天完成</span>
                         {showWeekExpiry && (
                           <span className={isExpired ? 'text-[#f87171]' : 'text-[#fbbf24]'}>
                             {isExpired
@@ -175,10 +173,6 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
           )}
         </div>
       </div>
-      <AdaptivePlanPractice />
-      <div className="mx-auto max-w-[1280px] px-4 pt-2">
-        <div className="mb-2 border-t border-[var(--wm-border)]" />
-      </div>
       <div className="mx-auto max-w-[1280px]">
         <MasteryStatusPanel
           vocab={vocab}
@@ -186,6 +180,52 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
           panelTitle="全局词汇学习状态"
         />
       </div>
+    </>
+  )
+}
+
+export default function EnglishWeeklyPlanSession({ vocab }: Props) {
+  const [tab, setTab] = useState<PlanTab>('multi')
+
+  return (
+    <>
+      <div className="mx-auto max-w-[1280px] px-4 pt-5 pb-1">
+        <div
+          className="inline-flex rounded-xl border border-[var(--wm-border)] bg-white/[.03] p-1"
+          role="tablist"
+          aria-label="练习计划类型"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'multi'}
+            onClick={() => setTab('multi')}
+            className={`cursor-pointer rounded-lg px-4 py-2 text-[13px] font-extrabold transition-colors ${
+              tab === 'multi'
+                ? 'bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
+                : 'text-[var(--wm-text-dim)] hover:text-[#fbbf24]'
+            }`}
+          >
+            多日计划
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'adaptive'}
+            onClick={() => setTab('adaptive')}
+            className={`cursor-pointer rounded-lg px-4 py-2 text-[13px] font-extrabold transition-colors ${
+              tab === 'adaptive'
+                ? 'bg-[rgba(139,92,246,.15)] text-[#c4b5fd]'
+                : 'text-[var(--wm-text-dim)] hover:text-[#c4b5fd]'
+            }`}
+          >
+            自适应计划
+          </button>
+        </div>
+      </div>
+
+      {tab === 'multi' ? <MultiDayPlanPractice vocab={vocab} /> : null}
+      {tab === 'adaptive' ? <AdaptivePlanPractice /> : null}
     </>
   )
 }

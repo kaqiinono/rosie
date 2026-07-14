@@ -50,6 +50,27 @@ export { default as DoneSummary } from './components/words/DoneSummary'
 export { default as EnglishWeeklyReportView } from './components/words/EnglishWeeklyReportView'
 export { default as EnglishWeeklyReportWordTable } from './components/words/EnglishWeeklyReportWordTable'
 export { default as FilterBar } from './components/words/FilterBar'
+export {
+  FilterChip,
+  FilterRow,
+  VocabRangeFilter,
+  useVocabRangeFilter,
+  toggleUnitSelection,
+  pruneLessonsForStages,
+  pruneUnitsForStages,
+  lessonKeysToPendingLessons,
+  pendingLessonsToLessonKeys,
+  lessonCompositeKey,
+  buildOrderedLessons,
+} from './components/words/vocab-range-filter'
+export type {
+  FilterChipTone,
+  LessonLayout,
+  LessonOption,
+  StageMode,
+  VocabRangeFilterVariant,
+  UseVocabRangeFilterOptions,
+} from './components/words/vocab-range-filter'
 export { default as FlashCard } from './components/words/FlashCard'
 export { default as ImmersiveMode } from './components/words/ImmersiveMode'
 export { default as ImportModal } from './components/words/ImportModal'

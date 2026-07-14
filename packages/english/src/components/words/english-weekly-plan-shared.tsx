@@ -1,6 +1,6 @@
 'use client'
 
-import type { WeeklyPlan } from '@rosie/core'
+import type { WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
 import { STORAGE_KEYS } from '@rosie/core'
 
 import type { WordEntry } from '@rosie/core'
@@ -120,6 +120,7 @@ export function buildArrangeBaselineKey(
   lessons: { unit: string; lesson: string }[],
   kinds: Record<string, 'consolidate' | 'preview'>,
   quotas: Record<string, number>,
+  batchMode = true,
 ): string {
   const sorted = [...lessons].sort((a, b) => lessonKey(a).localeCompare(lessonKey(b)))
   const parts = sorted.map(l => {
@@ -127,13 +128,102 @@ export function buildArrangeBaselineKey(
     const kind = kinds[lk] ?? 'consolidate'
     return `${lk}:${kind}:${quotas[lk] ?? 3}`
   })
-  return `${weekStart}|${parts.join('|')}`
+  return `${weekStart}|batch:${batchMode ? 1 : 0}|${parts.join('|')}`
+}
+
+export function inferBatchModeFromPlan(plan: WeeklyPlan, planWordKeys: string[]): boolean {
+  if (plan.batchMode !== undefined) return plan.batchMode
+  if (plan.days.length === 0 || planWordKeys.length === 0) return true
+  const expected = [...planWordKeys].sort().join(',')
+  return !plan.days.every(day => [...day.newWordKeys].sort().join(',') === expected)
 }
 
 export function getWeekEnd(weekStart: string): string {
   const [y, m, d] = weekStart.split('-').map(Number)
   const end = new Date(y, m - 1, d + 6)
   return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
+}
+
+export function addPlanDays(dateStr: string, offset: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const dt = new Date(y, m - 1, d + offset)
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+}
+
+export function countPlanDays(start: string, end: string): number {
+  if (!start || !end || end < start) return 0
+  const [y, m, d] = start.split('-').map(Number)
+  const [ey, em, ed] = end.split('-').map(Number)
+  const cur = new Date(y, m - 1, d)
+  const endDt = new Date(ey, em - 1, ed)
+  let n = 0
+  while (cur <= endDt) {
+    n += 1
+    cur.setDate(cur.getDate() + 1)
+  }
+  return n
+}
+
+export function fmtPlanRange(start: string, end: string): string {
+  return `${fmtShortDate(start)} — ${fmtShortDate(end)}`
+}
+
+export function planEndDate(plan: { planEnd?: string; weekStart: string; days: WeeklyPlanDay[] }): string {
+  if (plan.planEnd) return plan.planEnd
+  if (plan.days.length > 0) return plan.days[plan.days.length - 1]!.date
+  return getWeekEnd(plan.weekStart)
+}
+
+export function getOccupiedPlanDates(
+  plans: { weekStart: string; days: WeeklyPlanDay[]; planEnd?: string }[],
+  excludeWeekStart?: string,
+): Set<string> {
+  const occupied = new Set<string>()
+  for (const plan of plans) {
+    if (excludeWeekStart && plan.weekStart === excludeWeekStart) continue
+    const end = planEndDate(plan)
+    for (const day of plan.days) {
+      // Allow the next plan to start on this plan's last day (shared boundary).
+      if (day.date === end) continue
+      occupied.add(day.date)
+    }
+  }
+  return occupied
+}
+
+export function planRangeOverlapsOccupied(
+  startDate: string,
+  endDate: string,
+  occupied: Set<string>,
+): boolean {
+  if (!startDate || !endDate || endDate < startDate) return false
+  let cur = startDate
+  while (cur <= endDate) {
+    if (occupied.has(cur)) return true
+    cur = addPlanDays(cur, 1)
+  }
+  return false
+}
+
+export function suggestAvailablePlanRange(
+  occupied: Set<string>,
+  fromDate: string,
+  defaultDays = 7,
+): { start: string; end: string } | null {
+  let start = fromDate
+  for (let guard = 0; guard < 730; guard++) {
+    if (!occupied.has(start)) break
+    start = addPlanDays(start, 1)
+  }
+  if (occupied.has(start)) return null
+
+  let end = start
+  for (let i = 1; i < defaultDays; i++) {
+    const next = addPlanDays(end, 1)
+    if (occupied.has(next)) break
+    end = next
+  }
+  return { start, end }
 }
 
 export function loadCachedLessons(): { unit: string; lesson: string }[] {
@@ -184,21 +274,30 @@ export function saveCachedStages(stages: string[]): void {
   }
 }
 
-export function daysUntilExpiry(weekStart: string): number {
+export function planDayCount(plan: { weekStart: string; days: WeeklyPlanDay[]; planEnd?: string }): number {
+  return plan.days.length > 0 ? plan.days.length : countPlanDays(plan.weekStart, planEndDate(plan))
+}
+
+export function daysUntilExpiry(endDate: string): number {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const [y, m, d] = weekStart.split('-').map(Number)
-  const expiry = new Date(y, m - 1, d + 6)
+  const [y, m, d] = endDate.split('-').map(Number)
+  const expiry = new Date(y, m - 1, d)
   return Math.ceil((expiry.getTime() - today.getTime()) / 86400000)
 }
 
-// Small number picker used for per-lesson quota
+const QUOTA_PRESETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
+
+// Small number picker used for per-lesson daily quota
 export function QuotaPicker({ value, onChange }: { value: number; onChange: (n: number) => void }) {
+  const isCustom = !QUOTA_PRESETS.includes(value as (typeof QUOTA_PRESETS)[number])
+
   return (
-    <div className="flex flex-wrap gap-1">
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {QUOTA_PRESETS.map(n => (
         <button
           key={n}
+          type="button"
           onClick={() => onChange(n)}
           className={`h-7 w-7 cursor-pointer rounded-full border-[1.5px] text-[.8rem] font-extrabold transition-all ${
             value === n
@@ -209,6 +308,27 @@ export function QuotaPicker({ value, onChange }: { value: number; onChange: (n: 
           {n}
         </button>
       ))}
+      <div className="ml-1 flex items-center gap-1.5">
+        <span className="text-[.68rem] font-bold text-[var(--wm-text-dim)]">自定义</span>
+        <input
+          type="number"
+          min={1}
+          max={99}
+          value={value}
+          onChange={(e) => {
+            const raw = e.target.value
+            if (raw === '') return
+            const n = Number(raw)
+            if (!Number.isFinite(n)) return
+            onChange(Math.min(99, Math.max(1, Math.floor(n))))
+          }}
+          className={`h-7 w-14 rounded-full border-[1.5px] bg-[var(--wm-surface2)] px-2 text-center text-[.8rem] font-extrabold outline-none focus:border-[#f59e0b] ${
+            isCustom
+              ? 'border-[#f59e0b] text-[#fbbf24]'
+              : 'border-[var(--wm-border)] text-[var(--wm-text)]'
+          }`}
+        />
+      </div>
     </div>
   )
 }
