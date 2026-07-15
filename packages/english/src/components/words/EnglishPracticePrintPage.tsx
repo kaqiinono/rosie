@@ -340,30 +340,63 @@ export default function EnglishPracticePrintPage() {
           flex: 0 0 auto;
           min-width: 16.5rem;
         }
+        /* Borders / ::before|after — not background-image — so lines survive
+           Chrome print with「背景图形」unchecked. */
         .en-print-four-line-grid {
           display: block;
+          position: relative;
           width: 100%;
           height: 2.625rem;
-          background-image:
-            linear-gradient(#b45309, #b45309),
-            linear-gradient(#78716c, #78716c),
-            linear-gradient(#78716c, #78716c),
-            linear-gradient(#b45309, #b45309);
-          background-size: 100% 1px;
-          background-repeat: no-repeat;
-          background-position:
-            0 0,
-            0 33.333%,
-            0 66.666%,
-            0 100%;
+          box-sizing: border-box;
+          border-top: 1px solid #b45309;
+          border-bottom: 1px solid #b45309;
         }
+        .en-print-four-line-grid::before,
+        .en-print-four-line-grid::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          border-top: 1px solid #78716c;
+        }
+        .en-print-four-line-grid::before { top: 33.333%; }
+        .en-print-four-line-grid::after { top: 66.666%; }
 
         @media print {
           @page { size: A4; margin: 14mm 12mm; }
-          html, body { background: #ffffff !important; }
+          html, body {
+            background: #ffffff !important;
+            color: #1c1917 !important;
+          }
+          .en-words-print-layout,
+          .en-print-root {
+            background: #ffffff !important;
+            color: #1c1917 !important;
+            min-height: 0 !important;
+          }
           .en-no-print { display: none !important; }
-          .en-print-root { background: #ffffff !important; min-height: 0 !important; }
-          .en-print-sheet { box-shadow: none !important; padding: 0 !important; }
+          .en-print-sheet {
+            box-shadow: none !important;
+            padding: 0 !important;
+            color: #1c1917 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .en-print-doc-title,
+          .en-print-prompt,
+          .en-print-spell-prompt,
+          .en-print-qnum,
+          .en-print-option-text { color: #1c1917 !important; }
+          .en-print-doc-meta,
+          .en-print-option-label,
+          .en-print-ipa { color: #44403c !important; }
+          .en-print-section-title {
+            color: #312e81 !important;
+            background: #eef2ff !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .en-print-lesson-tag { color: #78716c !important; }
         }
 
         @media (max-width: 640px) {
