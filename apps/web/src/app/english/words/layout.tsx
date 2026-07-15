@@ -38,7 +38,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [filteredWords.length, setIsImmersive])
 
   // Print pages need dark ink on white; do not inherit the immersive dark-theme
-  // text color (#f0f0ff) or Chrome print preview shows blank pages.
+  // text color (#f0f0ff). Never mount the fixed pink/blue glow layer on print
+  // routes — iOS Safari paints position:fixed decorations onto page 1 of PDFs.
   return (
     <div
       className={`min-h-screen font-nunito ${isPrintPage ? 'en-words-print-layout' : ''}`}
@@ -50,7 +51,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
     >
       {!isPrintPage && (
         <div
-          className="fixed inset-0 pointer-events-none z-0"
+          className="en-words-bg-deco en-no-print fixed inset-0 pointer-events-none z-0"
+          aria-hidden
           style={{ background: 'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)' }}
         />
       )}

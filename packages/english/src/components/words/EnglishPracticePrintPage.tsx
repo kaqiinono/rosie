@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getWordMasteryLevel } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -87,9 +87,32 @@ function PrintQuestionBlock({
   )
 }
 
+function runPrint() {
+  // Mark <html> before the dialog opens so WebKit drops fixed chrome
+  // even if @media print application is delayed on iOS.
+  document.documentElement.classList.add('en-printing')
+  let cleaned = false
+  const cleanup = () => {
+    if (cleaned) return
+    cleaned = true
+    document.documentElement.classList.remove('en-printing')
+    window.removeEventListener('afterprint', cleanup)
+  }
+  window.addEventListener('afterprint', cleanup)
+  window.print()
+  // iOS sometimes never fires afterprint; keep class until dialog is long gone.
+  window.setTimeout(cleanup, 60_000)
+}
+
 export default function EnglishPracticePrintPage() {
   const { vocab, masteryMap } = useWordsContext()
   const searchParams = useSearchParams()
+
+  useEffect(() => {
+    return () => {
+      document.documentElement.classList.remove('en-printing')
+    }
+  }, [])
 
   const stage = searchParams.get('stage') ?? '4A'
   const selUnits = useMemo(
@@ -182,7 +205,7 @@ export default function EnglishPracticePrintPage() {
           </h1>
           <button
             type="button"
-            onClick={() => window.print()}
+            onClick={runPrint}
             className="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 sm:px-4"
           >
             打印
@@ -362,19 +385,44 @@ export default function EnglishPracticePrintPage() {
         .en-print-four-line-grid::before { top: 33.333%; }
         .en-print-four-line-grid::after { top: 66.666%; }
 
+        html.en-printing .en-words-bg-deco,
+        html.en-printing .en-no-print {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        html.en-printing,
+        html.en-printing body,
+        html.en-printing .en-words-print-layout,
+        html.en-printing .en-print-root {
+          background: #ffffff !important;
+          color: #1c1917 !important;
+          height: auto !important;
+          min-height: 0 !important;
+          overflow: visible !important;
+        }
+
         @media print {
           @page { size: A4; margin: 14mm 12mm; }
           html, body {
             background: #ffffff !important;
             color: #1c1917 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+          }
+          .en-words-bg-deco,
+          .en-no-print {
+            display: none !important;
+            visibility: hidden !important;
           }
           .en-words-print-layout,
           .en-print-root {
             background: #ffffff !important;
             color: #1c1917 !important;
+            height: auto !important;
             min-height: 0 !important;
+            overflow: visible !important;
           }
-          .en-no-print { display: none !important; }
           .en-print-sheet {
             box-shadow: none !important;
             padding: 0 !important;

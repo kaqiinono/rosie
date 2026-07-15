@@ -155,3 +155,44 @@
   .recall-mark-correct::after { right: 4px; font-size: 10px; }
   .recall-mark-wrong::after { right: 3px; font-size: 11px; }
 }
+
+/* Print: drop dark-theme chrome / fixed glow. iOS Safari otherwise stamps
+   position:fixed layers onto page 1 of the PDF (black + pink ellipse). */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #1c1917 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  .en-words-bg-deco,
+  .en-no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  .en-words-print-layout {
+    background: #ffffff !important;
+    color: #1c1917 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+}
+
+/* Same resets while window.print() is in flight (html.en-printing). */
+html.en-printing,
+html.en-printing body,
+html.en-printing .en-words-print-layout {
+  background: #ffffff !important;
+  color: #1c1917 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+html.en-printing .en-words-bg-deco,
+html.en-printing .en-no-print {
+  display: none !important;
+  visibility: hidden !important;
+}
