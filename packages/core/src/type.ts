@@ -139,6 +139,9 @@ export type PageName =
   | 'pretest'
   | 'detail'
 
+/** Oxford flashcard band: Target / Context / Extension vocabulary. */
+export type WordVocabType = 'Target' | 'Context' | 'Extension'
+
 export interface WordEntry {
   stage?: string
   unit: string
@@ -151,6 +154,8 @@ export interface WordEntry {
   phonics?: string
   syllables?: string[]
   keywords?: [string, string][]
+  /** Target / Context / Extension (from Oxford flashcard labels). */
+  vocabType?: WordVocabType
 }
 
 export interface DailyRecord {

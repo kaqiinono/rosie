@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { WordEntry } from '@rosie/core'
+import type { WordEntry, WordVocabType } from '@rosie/core'
 import { enrichWord, type EnrichResult } from '@rosie/english'
 import { hilite } from '@rosie/english'
 import { KW_COLORS, DEFAULT_KW_COLOR, type StageTree } from './types'
@@ -109,6 +109,7 @@ export default function WordFormModal({
   const [unit, setUnit] = useState(initial?.unit ?? '')
   const [lesson, setLesson] = useState(initial?.lesson ?? '')
   const [word, setWord] = useState(initial?.word ?? '')
+  const [vocabType, setVocabType] = useState<WordVocabType | ''>(initial?.vocabType ?? '')
   const [explanation, setExplanation] = useState(initial?.explanation ?? '')
   const [chineseDef, setChineseDef] = useState(initial?.chineseDef ?? '')
   const [ipa, setIpa] = useState(initial?.ipa ?? '')
@@ -183,6 +184,7 @@ export default function WordFormModal({
         phonics: phonics.trim() || undefined,
         syllables: cleanedSyllables.length ? cleanedSyllables : undefined,
         keywords: cleanedKeywords.length ? cleanedKeywords : undefined,
+        vocabType: vocabType || undefined,
       }
       await onSubmit(entry, initial)
     } finally {
@@ -270,6 +272,20 @@ export default function WordFormModal({
                 {enriching ? '生成中…' : '✨ 自动填充'}
               </button>
             </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>词汇带 (Target / Context / Extension)</label>
+            <select
+              className={selectCls}
+              value={vocabType}
+              onChange={(e) => setVocabType((e.target.value || '') as WordVocabType | '')}
+            >
+              <option value="">（未设置）</option>
+              <option value="Target">Target</option>
+              <option value="Context">Context</option>
+              <option value="Extension">Extension</option>
+            </select>
           </div>
 
           {enrichInfo && (

@@ -11,9 +11,9 @@ import {
 } from './useAdaptiveWordPlan'
 
 const SELECT_COLS =
-  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords'
+  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type'
 
-const CACHE_VER = 'word_cache_v2'
+const CACHE_VER = 'word_cache_v3'
 const NULL_STAGE = '__null__'
 
 function stageKey(stage: string | undefined) {
@@ -174,10 +174,12 @@ function toRow(creator: string, w: WordEntry) {
     phonics: w.phonics ?? null,
     syllables: w.syllables ?? null,
     keywords: w.keywords ?? null,
+    vocab_type: w.vocabType ?? null,
   }
 }
 
 function fromRow(row: Record<string, unknown>): WordEntry {
+  const vt = row.vocab_type
   return {
     stage: (row.stage as string) ?? undefined,
     unit: row.unit as string,
@@ -190,6 +192,8 @@ function fromRow(row: Record<string, unknown>): WordEntry {
     phonics: (row.phonics as string) ?? undefined,
     syllables: (row.syllables as string[]) ?? undefined,
     keywords: (row.keywords as [string, string][]) ?? undefined,
+    vocabType:
+      vt === 'Target' || vt === 'Context' || vt === 'Extension' ? vt : undefined,
   }
 }
 

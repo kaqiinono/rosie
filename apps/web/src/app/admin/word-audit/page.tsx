@@ -4,8 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import { SAMPLE_WORDS, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@rosie/english'
+import { SAMPLE_WORDS, SAMPLE_WORDS_4B, SAMPLE_WORDS_5A, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
+
+/** Offline backup files used for file↔DB audit (DB remains canonical at runtime). */
+function fileBackupWords(): WordEntry[] {
+  return [...SAMPLE_WORDS, ...SAMPLE_WORDS_4B, ...SAMPLE_WORDS_5A]
+}
 
 type DbRow = {
   stage: string | null
@@ -19,6 +24,7 @@ type DbRow = {
   phonics: string | null
   syllables: string[] | null
   keywords: [string, string][] | null
+  vocab_type: string | null
 }
 
 type FieldGap = {
@@ -67,7 +73,7 @@ export default function WordAuditPage() {
       while (true) {
         const { data, error: qErr } = await supabase
           .from('word_entries')
-          .select('stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords')
+          .select('stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type')
           .range(from, from + pageSize - 1)
         if (qErr) throw qErr
         if (!data || data.length === 0) break
@@ -76,16 +82,18 @@ export default function WordAuditPage() {
         from += pageSize
       }
 
+      const FILE_WORDS = fileBackupWords()
+
       const dbMap = new Map<string, DbRow>()
       for (const r of all) {
         dbMap.set(keyOf({ stage: r.stage, unit: r.unit, lesson: r.lesson, word: r.word }), r)
       }
 
       const fileMap = new Map<string, WordEntry>()
-      for (const w of SAMPLE_WORDS) fileMap.set(keyOf(w), w)
+      for (const w of FILE_WORDS) fileMap.set(keyOf(w), w)
 
       const fileByStage: Record<string, number> = {}
-      for (const w of SAMPLE_WORDS) {
+      for (const w of FILE_WORDS) {
         const s = w.stage ?? '(none)'
         fileByStage[s] = (fileByStage[s] ?? 0) + 1
       }
@@ -97,7 +105,7 @@ export default function WordAuditPage() {
 
       const missingInDb: WordEntry[] = []
       const fieldGaps: FieldGap[] = []
-      for (const w of SAMPLE_WORDS) {
+      for (const w of FILE_WORDS) {
         const k = keyOf(w)
         const row = dbMap.get(k)
         if (!row) {
@@ -112,6 +120,7 @@ export default function WordAuditPage() {
         if (w.syllables && w.syllables.length > 0 && (!row.syllables || row.syllables.length === 0)) gaps.push('syllables')
         if (w.keywords && w.keywords.length > 0 && (!row.keywords || row.keywords.length === 0)) gaps.push('keywords')
         if (w.phonics && !row.phonics) gaps.push('phonics')
+        if (w.vocabType && !row.vocab_type) gaps.push('vocab_type')
         if (gaps.length > 0) {
           fieldGaps.push({
             key: k,
@@ -131,7 +140,7 @@ export default function WordAuditPage() {
       }
 
       setReport({
-        fileTotal: SAMPLE_WORDS.length,
+        fileTotal: FILE_WORDS.length,
         dbTotal: all.length,
         fileByStage,
         dbByStage,
@@ -159,8 +168,9 @@ export default function WordAuditPage() {
 
   const downloadGaps = () => {
     if (!report) return
+    const fileWords = fileBackupWords()
     const payload = report.fieldGaps.map((g) => {
-      const w = SAMPLE_WORDS.find((sw) => keyOf(sw) === g.key)
+      const w = fileWords.find((sw) => keyOf(sw) === g.key)
       return { ...g, fileValues: w }
     })
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })

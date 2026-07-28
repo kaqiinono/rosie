@@ -13,6 +13,7 @@ import {
   parsePrintTypes,
   parsePrintUnits,
   parsePrintWords,
+  sanitizePrintDocumentTitle,
 } from '../../utils/english-practice-print-helpers'
 import { getFilteredWords, lessonChipTag, letterCount, wordKey } from '../../utils/english-helpers'
 
@@ -87,10 +88,11 @@ function PrintQuestionBlock({
   )
 }
 
-function runPrint() {
+function runPrint(title: string) {
   // Mark <html> before the dialog opens so WebKit drops fixed chrome
   // even if @media print application is delayed on iOS.
   document.documentElement.classList.add('en-printing')
+  document.title = sanitizePrintDocumentTitle(title)
   let cleaned = false
   const cleanup = () => {
     if (cleaned) return
@@ -168,6 +170,15 @@ export default function EnglishPracticePrintPage() {
   const questionCount = sections.reduce((n, s) => n + s.questions.length, 0)
   const hasPrintContent = questionCount > 0
 
+  useEffect(() => {
+    if (!hasPrintContent) return
+    const prev = document.title
+    document.title = sanitizePrintDocumentTitle(title)
+    return () => {
+      document.title = prev
+    }
+  }, [title, hasPrintContent])
+
   if (!vocab.length) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-stone-500">
@@ -205,7 +216,7 @@ export default function EnglishPracticePrintPage() {
           </h1>
           <button
             type="button"
-            onClick={runPrint}
+            onClick={() => runPrint(title)}
             className="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 sm:px-4"
           >
             打印

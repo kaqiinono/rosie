@@ -83,6 +83,15 @@ export function buildPracticePrintTitle(
   return `英语单词练习 · ${stage} · ${units} / ${lessons} · ${wordCount}词 · 题型 ${typeLabels}`
 }
 
+/** Safe for browser PDF default filename (derived from document.title). */
+export function sanitizePrintDocumentTitle(title: string): string {
+  return title
+    .replace(/[/\\:*?"<>|]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 120)
+}
+
 function sortWords(words: WordEntry[]): WordEntry[] {
   return [...words].sort((a, b) => {
     const ka = `${a.unit}\0${a.lesson}\0${a.word}`

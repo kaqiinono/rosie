@@ -130,6 +130,19 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
           <span className="rounded-full border border-[rgba(96,165,250,.22)] bg-[rgba(96,165,250,.14)] px-2 py-0.5 text-[.58rem] font-extrabold tracking-wider text-[#93c5fd] uppercase">
             {entry.lesson}
           </span>
+          {entry.vocabType && (
+            <span
+              className={
+                entry.vocabType === 'Target'
+                  ? 'rounded-full border border-[rgba(52,211,153,.28)] bg-[rgba(52,211,153,.14)] px-2 py-0.5 text-[.58rem] font-extrabold tracking-wider text-[#6ee7b7] uppercase'
+                  : entry.vocabType === 'Context'
+                    ? 'rounded-full border border-[rgba(251,191,36,.28)] bg-[rgba(251,191,36,.14)] px-2 py-0.5 text-[.58rem] font-extrabold tracking-wider text-[#fcd34d] uppercase'
+                    : 'rounded-full border border-[rgba(167,139,250,.28)] bg-[rgba(167,139,250,.14)] px-2 py-0.5 text-[.58rem] font-extrabold tracking-wider text-[#c4b5fd] uppercase'
+              }
+            >
+              {entry.vocabType}
+            </span>
+          )}
         </div>
         {level > 0 && (
           <span className={`rounded-full px-2 py-0.5 text-[.65rem] font-extrabold`}>
