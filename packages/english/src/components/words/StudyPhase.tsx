@@ -151,6 +151,19 @@ export default function StudyPhase({
             <span className="rounded-full border border-[rgba(233,69,96,.3)] bg-[rgba(233,69,96,.2)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[var(--wm-accent)] uppercase">
               {entry.unit}
             </span>
+            {entry.vocabType && (
+              <span
+                className={
+                  entry.vocabType === 'Target'
+                    ? 'rounded-full border border-[rgba(52,211,153,.28)] bg-[rgba(52,211,153,.14)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[#6ee7b7] uppercase'
+                    : entry.vocabType === 'Context'
+                      ? 'rounded-full border border-[rgba(251,191,36,.28)] bg-[rgba(251,191,36,.14)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[#fcd34d] uppercase'
+                      : 'rounded-full border border-[rgba(167,139,250,.28)] bg-[rgba(167,139,250,.14)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[#c4b5fd] uppercase'
+                }
+              >
+                {entry.vocabType}
+              </span>
+            )}
           </div>
           <div className="relative z-[1] flex items-center gap-3">
             <div className="font-nunito text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">

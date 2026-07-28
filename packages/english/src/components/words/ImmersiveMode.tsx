@@ -443,6 +443,19 @@ export default function ImmersiveMode({
                   <span className="rounded-full border border-[rgba(96,165,250,.2)] bg-[rgba(96,165,250,.12)] px-2.5 py-1 text-[.6rem] font-extrabold tracking-wider text-[#60a5fa] uppercase">
                     {v.lesson}
                   </span>
+                  {v.vocabType && (
+                    <span
+                      className={
+                        v.vocabType === 'Target'
+                          ? 'rounded-full border border-[rgba(52,211,153,.28)] bg-[rgba(52,211,153,.14)] px-2.5 py-1 text-[.6rem] font-extrabold tracking-wider text-[#6ee7b7] uppercase'
+                          : v.vocabType === 'Context'
+                            ? 'rounded-full border border-[rgba(251,191,36,.28)] bg-[rgba(251,191,36,.14)] px-2.5 py-1 text-[.6rem] font-extrabold tracking-wider text-[#fcd34d] uppercase'
+                            : 'rounded-full border border-[rgba(167,139,250,.28)] bg-[rgba(167,139,250,.14)] px-2.5 py-1 text-[.6rem] font-extrabold tracking-wider text-[#c4b5fd] uppercase'
+                      }
+                    >
+                      {v.vocabType}
+                    </span>
+                  )}
                 </div>
                 <div
                   className={`font-nunito ${wordSizeClass} text-center leading-tight font-black break-words`}
