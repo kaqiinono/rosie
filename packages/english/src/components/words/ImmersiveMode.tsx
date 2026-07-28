@@ -514,6 +514,23 @@ export default function ImmersiveMode({
                   }`}
                   dangerouslySetInnerHTML={{ __html: hilite(v.explanation, v.keywords) }}
                 />
+                {v.chineseDef && (
+                  <div className="mt-1 flex w-full flex-col items-center gap-2.5">
+                    <div
+                      className="h-px w-12 rounded-full"
+                      style={{ background: 'rgba(96,165,250,.2)' }}
+                    />
+                    <p
+                      className={`font-semibold tracking-wide text-white/45 transition-[font-size] duration-350 ease-out ${
+                        topVisible
+                          ? 'text-[clamp(.95rem,1.8vw,1.25rem)]'
+                          : 'text-[clamp(1.1rem,2.2vw,1.45rem)]'
+                      }`}
+                    >
+                      {v.chineseDef}
+                    </p>
+                  </div>
+                )}
               </div>
               {defOnly && (
                 <div className="pointer-events-none absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 text-[.65rem] font-bold whitespace-nowrap text-white/20">
