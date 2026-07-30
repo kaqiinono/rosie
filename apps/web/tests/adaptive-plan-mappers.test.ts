@@ -95,4 +95,36 @@ describe('adaptive plan mappers', () => {
     })
     expect(mapProgressModelToRow(model)).toEqual(row)
   })
+
+  it('round-trips a paused adaptive word plan', () => {
+    const row = {
+      id: 'plan-paused',
+      user_id: 'user-1',
+      title: 'Paused Plan',
+      scope: { stages: ['4B'] },
+      new_words_per_day: 10,
+      review_cap: 40,
+      review_batch_size: 20,
+      backlog_fuse: 50,
+      boss_every_n_new: 50,
+      boss_stubborn_threshold: 15,
+      boss_pack_limit: 50,
+      mode: 'normal',
+      status: 'paused',
+      stats: {
+        bossFailStreak: 0,
+        bossQuestionTier: 1,
+        everActivatedCount: 0,
+        totalActivatedCount: 0,
+        lastBossActivatedCount: 0,
+      },
+      created_at: '2026-07-01T00:00:00.000Z',
+      updated_at: '2026-07-02T00:00:00.000Z',
+      archived_at: null,
+    }
+
+    const model = mapPlanRowToModel(row)
+    expect(model.status).toBe('paused')
+    expect(mapPlanModelToRow(model).status).toBe('paused')
+  })
 })

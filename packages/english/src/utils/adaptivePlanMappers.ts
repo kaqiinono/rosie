@@ -104,7 +104,10 @@ function parseMode(value: string): AdaptivePlanMode {
 }
 
 function parsePlanStatus(value: string): AdaptivePlanStatus {
-  return value === 'completed' || value === 'archived' ? value : 'active'
+  if (value === 'completed' || value === 'archived' || value === 'paused') {
+    return value
+  }
+  return 'active'
 }
 
 function parseWordStatus(value: string): AdaptiveWordStatus {

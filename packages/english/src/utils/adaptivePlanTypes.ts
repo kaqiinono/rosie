@@ -1,5 +1,5 @@
 export type AdaptivePlanMode = 'normal' | 'review_only' | 'boss'
-export type AdaptivePlanStatus = 'active' | 'completed' | 'archived'
+export type AdaptivePlanStatus = 'active' | 'paused' | 'completed' | 'archived'
 export type AdaptiveWordStatus =
   | 'NOT_STARTED'
   | 'LEARNING_PENDING'
