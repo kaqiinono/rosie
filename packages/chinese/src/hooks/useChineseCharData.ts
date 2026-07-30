@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import type {
   ChineseCharProfile,
   ChineseLessonCharRow,
@@ -189,7 +189,10 @@ export function useChineseCharData(user: User | null) {
     const snapshot = chineseCharDataStore.getSnapshot(userId)
     if (snapshot.status === 'idle') {
       const cached = readCache(userId)
-      if (cached) chineseCharDataStore.replaceSessionData(userId, cached)
+      if (cached) {
+        chineseCharDataStore.replaceSessionData(userId, cached)
+        void chineseCharDataStore.refreshInBackground(userId)
+      }
     }
   }, [userId])
 
@@ -197,8 +200,7 @@ export function useChineseCharData(user: User | null) {
 
   const refresh = useCallback(async () => {
     if (!user) return
-    invalidateSessionStore('chinese_chars')
-    chineseCharDataStore.ensureLoaded(user.id)
+    await chineseCharDataStore.refreshInBackground(user.id)
   }, [user])
 
   const charByKey = useMemo(() => new Map(data.chars.map((c) => [c.charKey, c])), [data.chars])

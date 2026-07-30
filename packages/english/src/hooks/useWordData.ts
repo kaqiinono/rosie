@@ -230,7 +230,7 @@ export function useWordData(user: User | null) {
         // Optimistic hydrate — always follow with a network refresh so a stale
         // 1000-row cache (Supabase default page size) cannot block full vocab.
         wordEntriesStore.replaceSessionData(userId, cached)
-        wordEntriesStore.invalidate(userId)
+        void wordEntriesStore.refreshInBackground(userId)
       }
     }
   }, [userId])
