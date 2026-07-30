@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { allMathProblemStats } from '@rosie/math/utils/grade-stats'
 import { G1B_RECOGNIZE_TOTAL } from '@rosie/chinese'
@@ -47,20 +47,37 @@ export function useHomeStats(user: User | null) {
   const { vocab, isLoading: vocabLoading } = useWordData(user)
   const { masteryMap: chineseMastery, isLoading: cmLoading } = useCharMastery(user)
   const { totalProblems, practiceDays, isLoading: calcLoading } = useCalcPracticeStats(user)
-  const { rows: mathWrong, isLoading: mwLoading } = useMathWrong(user)
-  const { mistakes: calcMistakes, isLoading: cmistLoading } = useCalcMistakes(user)
-  const { rows: englishWrong, isLoading: ewLoading } = useEnglishWrong(user)
+
+  const [mistakesEnabled, setMistakesEnabled] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    let cancelled = false
+    const run = () => {
+      if (!cancelled) setMistakesEnabled(true)
+    }
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(run, { timeout: 1500 })
+      return () => {
+        cancelled = true
+        window.cancelIdleCallback(id)
+      }
+    }
+    const t = setTimeout(run, 0)
+    return () => {
+      cancelled = true
+      clearTimeout(t)
+    }
+  }, [user])
+
+  const mistakeUser = mistakesEnabled ? user : null
+  const { rows: mathWrong, isLoading: mwLoading } = useMathWrong(mistakeUser)
+  const { mistakes: calcMistakes, isLoading: cmistLoading } = useCalcMistakes(mistakeUser)
+  const { rows: englishWrong, isLoading: ewLoading } = useEnglishWrong(mistakeUser)
 
   const isLoading =
     user !== null &&
-    (mathLoading ||
-      wmLoading ||
-      vocabLoading ||
-      cmLoading ||
-      calcLoading ||
-      mwLoading ||
-      cmistLoading ||
-      ewLoading)
+    (mathLoading || wmLoading || vocabLoading || cmLoading || calcLoading)
 
   const stats = useMemo((): HomeStats => {
     if (!user) return EMPTY_STATS
@@ -90,9 +107,11 @@ export function useHomeStats(user: User | null) {
       calcTotal: totalProblems,
       calcPracticeDays: practiceDays,
       mistakesUnresolved:
-        countUnresolved(mathWrong) +
-        countUnresolved(calcMistakes) +
-        countUnresolved(englishWrong),
+        !mistakesEnabled || mwLoading || cmistLoading || ewLoading
+          ? 0
+          : countUnresolved(mathWrong) +
+            countUnresolved(calcMistakes) +
+            countUnresolved(englishWrong),
     }
   }, [
     user,
@@ -102,6 +121,10 @@ export function useHomeStats(user: User | null) {
     chineseMastery,
     totalProblems,
     practiceDays,
+    mistakesEnabled,
+    mwLoading,
+    cmistLoading,
+    ewLoading,
     mathWrong,
     calcMistakes,
     englishWrong,
