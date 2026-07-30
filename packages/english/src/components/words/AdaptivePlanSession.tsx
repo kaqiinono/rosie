@@ -1184,6 +1184,23 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     )
   }
 
+  if (plan?.status === 'paused') {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <div className="text-sm text-[var(--wm-text-dim)]">计划已暂停</div>
+        <div className="max-w-[420px] text-center text-[12px] font-bold text-[var(--wm-text-dim)]">
+          家长可在管理后台点「恢复」后继续练习。同一时间只能有一个进行中的自适应计划。
+        </div>
+        <button
+          onClick={onBack}
+          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
+        >
+          ← 返回
+        </button>
+      </div>
+    )
+  }
+
   if (!plan || !task) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">

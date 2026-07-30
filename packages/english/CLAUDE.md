@@ -25,6 +25,9 @@ audio, flipbook).
   `reading-audio-types`, weekly-plan payload/progress/report builders, `word-enrich`, `speak`.
 - **Adaptive word plan (`utils/adaptivePlan*` + `components/words/AdaptivePlan*`)** — task-oriented
   Leitner 5-box plan (spec `docs/superpowers/specs/2026-07-09-adaptive-word-plan-design.md`, gitignored).
+  Plan lifecycle statuses: `active` | `paused` | `completed` | `archived`. At most one `active` per
+  user; admin pause/resume via `pausePlan`/`activatePlan`; create-while-active yields `paused`;
+  `/today` and practice only surface `active`.
   Key semantics: `newWordsPerDay` is a **per-day** quota (`countActivatedToday` deducts by
   `introducedOn`); box moves at settle use "wrong at least once this session" (→ Box 1 +
   `streakWrong++`, due today) while global mastery write-back uses the collapsed final outcome;
