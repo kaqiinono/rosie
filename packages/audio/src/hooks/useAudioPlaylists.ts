@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import type {
   AddPlaylistItemInput,
   AudioPlaylist,
@@ -35,6 +35,11 @@ type RawItem = {
   created_at: string
 }
 
+type AudioPlaylistsData = {
+  playlists: AudioPlaylist[]
+  itemsByPlaylist: Record<string, AudioPlaylistItem[]>
+}
+
 function rowToPlaylist(r: RawPlaylist): AudioPlaylist {
   return {
     id: r.id,
@@ -64,28 +69,35 @@ function rowToItem(r: RawItem): AudioPlaylistItem {
   }
 }
 
+async function fetchAudioPlaylists(_userId: string): Promise<AudioPlaylistsData> {
+  const [{ data: pRows }, { data: iRows }] = await Promise.all([
+    supabase.from('audio_playlists').select('*').order('sort_order').order('created_at'),
+    supabase.from('audio_playlist_items').select('*').order('sort_order').order('created_at'),
+  ])
+  const playlists = ((pRows ?? []) as RawPlaylist[]).map(rowToPlaylist)
+  const itemsByPlaylist: Record<string, AudioPlaylistItem[]> = {}
+  for (const r of (iRows ?? []) as RawItem[]) {
+    const item = rowToItem(r)
+    ;(itemsByPlaylist[item.playlistId] ??= []).push(item)
+  }
+  return { playlists, itemsByPlaylist }
+}
+
+export const audioPlaylistsStore = createUserSessionStore<AudioPlaylistsData>('audio_playlists', {
+  fetch: fetchAudioPlaylists,
+  empty: { playlists: [], itemsByPlaylist: {} },
+})
+
 export function useAudioPlaylists(user: User | null) {
-  const [playlists, setPlaylists] = useState<AudioPlaylist[]>([])
-  const [itemsByPlaylist, setItemsByPlaylist] = useState<Record<string, AudioPlaylistItem[]>>({})
+  const { data } = audioPlaylistsStore.useSessionData(user)
+  const playlists = data.playlists
+  const itemsByPlaylist = data.itemsByPlaylist
 
   const reload = useCallback(async () => {
     if (!user) return
-    const [{ data: pRows }, { data: iRows }] = await Promise.all([
-      supabase.from('audio_playlists').select('*').order('sort_order').order('created_at'),
-      supabase.from('audio_playlist_items').select('*').order('sort_order').order('created_at'),
-    ])
-    setPlaylists(((pRows ?? []) as RawPlaylist[]).map(rowToPlaylist))
-    const map: Record<string, AudioPlaylistItem[]> = {}
-    for (const r of (iRows ?? []) as RawItem[]) {
-      const item = rowToItem(r)
-      ;(map[item.playlistId] ??= []).push(item)
-    }
-    setItemsByPlaylist(map)
+    audioPlaylistsStore.invalidate(user.id)
+    await audioPlaylistsStore.ensureLoaded(user.id)
   }, [user])
-
-  useEffect(() => {
-    if (user) void reload()
-  }, [reload, user])
 
   const createPlaylist = useCallback(
     async (name: string): Promise<AudioPlaylist | null> => {
@@ -97,34 +109,49 @@ export function useAudioPlaylists(user: User | null) {
         .single()
       if (error || !data) return null
       const p = rowToPlaylist(data as RawPlaylist)
-      setPlaylists((prev) => [...prev, p])
-      setItemsByPlaylist((prev) => ({ ...prev, [p.id]: [] }))
+      audioPlaylistsStore.patchSessionData(user.id, (prev) => ({
+        playlists: [...prev.playlists, p],
+        itemsByPlaylist: { ...prev.itemsByPlaylist, [p.id]: [] },
+      }))
       return p
     },
     [user, playlists.length],
   )
 
-  const renamePlaylist = useCallback(async (id: string, name: string): Promise<boolean> => {
-    const { error } = await supabase
-      .from('audio_playlists')
-      .update({ name, updated_at: new Date().toISOString() })
-      .eq('id', id)
-    if (error) return false
-    setPlaylists((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)))
-    return true
-  }, [])
+  const renamePlaylist = useCallback(
+    async (id: string, name: string): Promise<boolean> => {
+      if (!user) return false
+      const { error } = await supabase
+        .from('audio_playlists')
+        .update({ name, updated_at: new Date().toISOString() })
+        .eq('id', id)
+      if (error) return false
+      audioPlaylistsStore.patchSessionData(user.id, (prev) => ({
+        ...prev,
+        playlists: prev.playlists.map((p) => (p.id === id ? { ...p, name } : p)),
+      }))
+      return true
+    },
+    [user],
+  )
 
-  const deletePlaylist = useCallback(async (id: string): Promise<boolean> => {
-    const { error } = await supabase.from('audio_playlists').delete().eq('id', id)
-    if (error) return false
-    setPlaylists((prev) => prev.filter((p) => p.id !== id))
-    setItemsByPlaylist((prev) => {
-      const n = { ...prev }
-      delete n[id]
-      return n
-    })
-    return true
-  }, [])
+  const deletePlaylist = useCallback(
+    async (id: string): Promise<boolean> => {
+      if (!user) return false
+      const { error } = await supabase.from('audio_playlists').delete().eq('id', id)
+      if (error) return false
+      audioPlaylistsStore.patchSessionData(user.id, (prev) => {
+        const nextItems = { ...prev.itemsByPlaylist }
+        delete nextItems[id]
+        return {
+          playlists: prev.playlists.filter((p) => p.id !== id),
+          itemsByPlaylist: nextItems,
+        }
+      })
+      return true
+    },
+    [user],
+  )
 
   const addItem = useCallback(
     async (playlistId: string, input: AddPlaylistItemInput): Promise<boolean> => {
@@ -156,24 +183,36 @@ export function useAudioPlaylists(user: User | null) {
         .single()
       if (error || !data) return false
       const item = rowToItem(data as RawItem)
-      setItemsByPlaylist((prev) => ({
+      audioPlaylistsStore.patchSessionData(user.id, (prev) => ({
         ...prev,
-        [playlistId]: [...(prev[playlistId] ?? []), item],
+        itemsByPlaylist: {
+          ...prev.itemsByPlaylist,
+          [playlistId]: [...(prev.itemsByPlaylist[playlistId] ?? []), item],
+        },
       }))
       return true
     },
     [user, itemsByPlaylist],
   )
 
-  const removeItem = useCallback(async (item: AudioPlaylistItem): Promise<boolean> => {
-    const { error } = await supabase.from('audio_playlist_items').delete().eq('id', item.id)
-    if (error) return false
-    setItemsByPlaylist((prev) => ({
-      ...prev,
-      [item.playlistId]: (prev[item.playlistId] ?? []).filter((i) => i.id !== item.id),
-    }))
-    return true
-  }, [])
+  const removeItem = useCallback(
+    async (item: AudioPlaylistItem): Promise<boolean> => {
+      if (!user) return false
+      const { error } = await supabase.from('audio_playlist_items').delete().eq('id', item.id)
+      if (error) return false
+      audioPlaylistsStore.patchSessionData(user.id, (prev) => ({
+        ...prev,
+        itemsByPlaylist: {
+          ...prev.itemsByPlaylist,
+          [item.playlistId]: (prev.itemsByPlaylist[item.playlistId] ?? []).filter(
+            (i) => i.id !== item.id,
+          ),
+        },
+      }))
+      return true
+    },
+    [user],
+  )
 
   return {
     playlists,
