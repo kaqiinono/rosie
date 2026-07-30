@@ -22,6 +22,7 @@ import {
   type AdaptivePlanProgressRow,
   type AdaptiveWordPlanRow,
 } from '../utils/adaptivePlanMappers'
+import { resolveAdaptiveCreateStatus } from '../utils/adaptivePlanCreateStatus'
 import { isPlanCompletable } from '../utils/adaptivePlanScheduler'
 import type {
   AdaptivePlanScope,
@@ -47,7 +48,9 @@ type CreatePlanInput = {
   backlogFuse?: number
 }
 
-type CreatePlanResult = { ok: true; planId: string } | { ok: false; reason: 'all_mastered' }
+type CreatePlanResult =
+  | { ok: true; planId: string; status: 'active' | 'paused' }
+  | { ok: false; reason: 'all_mastered' }
 
 const PLAN_SELECT =
   'id, user_id, title, scope, new_words_per_day, review_cap, review_batch_size, backlog_fuse, boss_every_n_new, boss_stubborn_threshold, boss_pack_limit, mode, status, stats, created_at, updated_at, archived_at'
@@ -353,6 +356,8 @@ export function useAdaptiveWordPlan(user: User | null) {
       const backlogFuse = clampBacklogFuse(
         input.backlogFuse ?? PLAN_DEFAULTS.backlogFuse,
       )
+      const hasActivePlan = plans.some((item) => item.status === 'active')
+      const initialStatus = resolveAdaptiveCreateStatus(hasActivePlan)
       const plan: AdaptiveWordPlan = {
         id: createUuid(),
         userId: user.id,
@@ -366,7 +371,7 @@ export function useAdaptiveWordPlan(user: User | null) {
         bossStubbornThreshold,
         bossPackLimit,
         mode: 'normal',
-        status: 'active',
+        status: initialStatus,
         stats: {
           bossFailStreak: 0,
           bossQuestionTier: 1,
@@ -413,9 +418,70 @@ export function useAdaptiveWordPlan(user: User | null) {
 
       adaptiveWordPlansStore.patchSessionData(user.id, (prev) => [savedPlan, ...prev])
 
-      return { ok: true, planId: savedPlan.id }
+      return {
+        ok: true,
+        planId: savedPlan.id,
+        status: savedPlan.status === 'paused' ? 'paused' : 'active',
+      }
     },
-    [user],
+    [plans, user],
+  )
+
+  const pausePlan = useCallback(
+    async (planId: string): Promise<void> => {
+      if (!user) return
+      const plan = plans.find((item) => item.id === planId) ?? (await loadPlanFromCloud(user.id, planId))
+      if (!plan || plan.status !== 'active') return
+
+      const savedPlan = await upsertPlanToCloud({
+        ...plan,
+        userId: user.id,
+        status: 'paused',
+        updatedAt: new Date().toISOString(),
+      })
+
+      adaptiveWordPlansStore.patchSessionData(user.id, (prev) =>
+        prev.map((item) => (item.id === savedPlan.id ? savedPlan : item)),
+      )
+    },
+    [plans, user],
+  )
+
+  const activatePlan = useCallback(
+    async (planId: string): Promise<void> => {
+      if (!user) return
+      const target =
+        plans.find((item) => item.id === planId) ?? (await loadPlanFromCloud(user.id, planId))
+      if (!target || target.status === 'archived' || target.status === 'completed') return
+      if (target.status === 'active') return
+
+      const now = new Date().toISOString()
+      const others = plans.filter((item) => item.id !== planId && item.status === 'active')
+
+      for (const other of others) {
+        const paused = await upsertPlanToCloud({
+          ...other,
+          userId: user.id,
+          status: 'paused',
+          updatedAt: now,
+        })
+        adaptiveWordPlansStore.patchSessionData(user.id, (prev) =>
+          prev.map((item) => (item.id === paused.id ? paused : item)),
+        )
+      }
+
+      const savedPlan = await upsertPlanToCloud({
+        ...target,
+        userId: user.id,
+        status: 'active',
+        updatedAt: new Date().toISOString(),
+      })
+
+      adaptiveWordPlansStore.patchSessionData(user.id, (prev) =>
+        prev.map((item) => (item.id === savedPlan.id ? savedPlan : item)),
+      )
+    },
+    [plans, user],
   )
 
   const updatePlan = useCallback(
@@ -531,6 +597,8 @@ export function useAdaptiveWordPlan(user: User | null) {
     loadProgress,
     loadProgressForPlans,
     createPlan,
+    pausePlan,
+    activatePlan,
     updatePlan,
     deletePlan,
     saveProgressBatch,
