@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import { compressAudioToMp3 } from '@rosie/player'
 import {
   AUDIO_MEDIA_BUCKET,
@@ -35,29 +35,27 @@ function rowToAsset(r: RawRow): AudioAsset {
   }
 }
 
+async function fetchAudioAssets(_userId: string): Promise<AudioAsset[]> {
+  const { data } = await supabase
+    .from('audio_assets')
+    .select('*')
+    .order('created_at', { ascending: false })
+  return ((data ?? []) as RawRow[]).map(rowToAsset)
+}
+
+export const audioAssetsStore = createUserSessionStore<AudioAsset[]>('audio_assets', {
+  fetch: fetchAudioAssets,
+  empty: [],
+})
+
 export function useAudioAssets(user: User | null) {
-  const [assets, setAssets] = useState<AudioAsset[]>([])
-  const [isLoading, setIsLoading] = useState(() => user !== null)
+  const { data: assets, isLoading } = audioAssetsStore.useSessionData(user)
 
   const reload = useCallback(async () => {
     if (!user) return
-    const { data } = await supabase
-      .from('audio_assets')
-      .select('*')
-      .order('created_at', { ascending: false })
-    setAssets(((data ?? []) as RawRow[]).map(rowToAsset))
+    audioAssetsStore.invalidate(user.id)
+    await audioAssetsStore.ensureLoaded(user.id)
   }, [user])
-
-  useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      await reload()
-      if (!cancelled) setIsLoading(false)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [reload])
 
   const getAssetUrl = useCallback((storagePath: string): string => {
     const { data } = supabase.storage.from(AUDIO_MEDIA_BUCKET).getPublicUrl(storagePath)
@@ -117,31 +115,41 @@ export function useAudioAssets(user: User | null) {
       if (updateErr || !updated) return { error: updateErr?.message ?? '更新失败', asset: null }
 
       const asset = rowToAsset(updated as RawRow)
-      setAssets((prev) => [asset, ...prev])
+      audioAssetsStore.patchSessionData(user.id, (prev) => [asset, ...prev])
       return { error: null, asset }
     },
     [user],
   )
 
-  const updateLabel = useCallback(async (assetId: string, label: string): Promise<boolean> => {
-    const { error } = await supabase
-      .from('audio_assets')
-      .update({ label, updated_at: new Date().toISOString() })
-      .eq('id', assetId)
-    if (error) return false
-    setAssets((prev) => prev.map((a) => (a.id === assetId ? { ...a, label } : a)))
-    return true
-  }, [])
+  const updateLabel = useCallback(
+    async (assetId: string, label: string): Promise<boolean> => {
+      if (!user) return false
+      const { error } = await supabase
+        .from('audio_assets')
+        .update({ label, updated_at: new Date().toISOString() })
+        .eq('id', assetId)
+      if (error) return false
+      audioAssetsStore.patchSessionData(user.id, (prev) =>
+        prev.map((a) => (a.id === assetId ? { ...a, label } : a)),
+      )
+      return true
+    },
+    [user],
+  )
 
-  const deleteAsset = useCallback(async (asset: AudioAsset): Promise<boolean> => {
-    if (asset.storagePath !== 'pending') {
-      await supabase.storage.from(AUDIO_MEDIA_BUCKET).remove([asset.storagePath])
-    }
-    const { error } = await supabase.from('audio_assets').delete().eq('id', asset.id)
-    if (error) return false
-    setAssets((prev) => prev.filter((a) => a.id !== asset.id))
-    return true
-  }, [])
+  const deleteAsset = useCallback(
+    async (asset: AudioAsset): Promise<boolean> => {
+      if (!user) return false
+      if (asset.storagePath !== 'pending') {
+        await supabase.storage.from(AUDIO_MEDIA_BUCKET).remove([asset.storagePath])
+      }
+      const { error } = await supabase.from('audio_assets').delete().eq('id', asset.id)
+      if (error) return false
+      audioAssetsStore.patchSessionData(user.id, (prev) => prev.filter((a) => a.id !== asset.id))
+      return true
+    },
+    [user],
+  )
 
   return { assets, isLoading, reload, getAssetUrl, uploadAsset, updateLabel, deleteAsset }
 }
