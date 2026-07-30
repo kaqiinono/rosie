@@ -1,0 +1,49 @@
+---
+description: User-scoped Supabase data must use createUserSessionStore — no remount refetch, patch on write
+alwaysApply: true
+---
+
+# 数据请求：优先 Session Store
+
+用户态 Supabase 数据的默认缓存是 `@rosie/core` 的 `createUserSessionStore`（见 `packages/core/src/sessionStore.ts`）。**不要**为少重复请求新加 Zustand / TanStack Query，除非用户明确要求换栈。
+
+## 读数据
+
+```ts
+// ❌ BAD — 每次进页 / remount 都打网
+const [rows, setRows] = useState([])
+useEffect(() => {
+  if (!user) return
+  void supabase.from('…').select('*').then(({ data }) => setRows(data ?? []))
+}, [user])
+
+// ✅ GOOD
+export const fooStore = createUserSessionStore<Foo[]>('foo_key', {
+  fetch: async (userId) => { /* supabase select */ },
+  empty: [],
+})
+export function useFoo(user: User | null) {
+  const { data, isLoading } = fooStore.useSessionData(user)
+  return { data, isLoading }
+}
+```
+
+- 同一 `storeKey` 在 SPA 会话内 `ready` 后，路由切换 **不得** 再自动 refetch。
+- 页面/组件里直接 `supabase.from(…).select` 拉「会复用的用户列表」也不行 — 放进 hook + store。
+
+## 写数据
+
+1. 先写 Supabase，再 **`patchSessionData` / `replaceSessionData`**（已知下一份数据时）。
+2. **`invalidate` + `ensureLoaded`** 仅用于未知增量、整表重载、无法安全 patch 时。
+3. localStorage / 乐观 hydrate 后若需校对网络数据：用 **`refreshInBackground`**（保持 `ready`，不把 `isLoading` 打成 true），禁止 hydrate 后立刻 `invalidate`。
+4. 禁止无必要的 `invalidateSessionStore()`（无 key = 清全部 store）。
+
+## 允许的例外（须在代码旁短注释说明）
+
+- 一次性 RPC / 导出 / 明确的 fire-and-forget
+- 纯 UI 状态（filter、modal、练习队列）— Context / `useState` 即可
+- `(userId, resourceId)` 参数化资源：用 `Record<id, T>` 进一个 store，或按现有 keyed 缓存模式；不要再发明第三套全局缓存
+
+## 新功能检查
+
+加用户数据 hook 前：是否已有同 key 的 store？能否复用？首页是否必须立刻挂这个 store（能懒挂则懒挂）？

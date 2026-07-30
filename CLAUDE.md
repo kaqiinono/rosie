@@ -162,7 +162,17 @@ Adding a new math lesson is a guided flow — see `.claude/skills/add-lesson` + 
 
 All data hooks (`useWordMastery`, `useMathSolved`, `useWordData`, `useWeeklyPlan`, etc.) read and write Supabase directly. Each hook receives `user: User | null` from `AuthContext` and does nothing when `user` is null.
 
-`localStorage` is used only for UI preferences — never for user data. The only remaining key is `MATH_SIDEBAR_COLLAPSED` (sidebar collapse state) in `STORAGE_KEYS` (`@rosie/core` constants). All other user configuration (including plan generation parameters) is stored in Supabase.
+**Caching:** user-scoped lists/maps go through `createUserSessionStore` in `@rosie/core` (module-level
+per-user cache + inflight dedupe). Remounting a page after `ready` must not refetch the same store.
+Prefer `patchSessionData` on mutation; after localStorage hydrate use `refreshInBackground` (not
+`invalidate`). Avoid remount-`useEffect` selects and avoid adding Zustand/TanStack Query for this
+unless explicitly requested. See `.cursor/rules/session-store-data-fetch.mdc` and
+`packages/core/CLAUDE.md`.
+
+`localStorage` is used only for UI preferences — never for user data (exception: optional optimistic
+hydrate for large catalogs like vocab, reconciled via `refreshInBackground`). The only remaining
+UI-pref key is `MATH_SIDEBAR_COLLAPSED` (sidebar collapse state) in `STORAGE_KEYS` (`@rosie/core`
+constants). All other user configuration (including plan generation parameters) is stored in Supabase.
 
 `AuthContext` (in `@rosie/core`) wraps the entire app and exposes `user`. Per-subject state lives in
 its own context (e.g. `WordsContext` for English; per-lesson `LessonNProvider` for math, built by the
