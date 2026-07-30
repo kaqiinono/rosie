@@ -201,7 +201,13 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
         return
       }
 
-      router.push('/admin/plans/english')
+      if (result.ok) {
+        if (result.status === 'paused') {
+          window.alert('已创建（暂停）。当前已有进行中的计划，可在列表中点「恢复」来切换。')
+        }
+        router.push('/admin/plans/english')
+        return
+      }
     } catch (err) {
       console.error('[adaptive_word_plan] create failed', err)
       setCreateError(

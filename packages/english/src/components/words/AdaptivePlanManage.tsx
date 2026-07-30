@@ -20,9 +20,10 @@ function fmtDateTime(value: string): string {
 export default function AdaptivePlanManage() {
   const { user } = useAuth()
   const { vocab } = useWordsContext()
-  const { plans, deletePlan, updatePlan, archiveOrphanWords, loadProgressForPlans, loadProgress, isLoading } =
+  const { plans, deletePlan, updatePlan, pausePlan, activatePlan, archiveOrphanWords, loadProgressForPlans, loadProgress, isLoading } =
     useAdaptiveWordPlan(user)
   const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null)
+  const [togglingPlanId, setTogglingPlanId] = useState<string | null>(null)
   const [settingsPlanId, setSettingsPlanId] = useState<string | null>(null)
   const [savingQuotaPlanId, setSavingQuotaPlanId] = useState<string | null>(null)
   const [savingTuningPlanId, setSavingTuningPlanId] = useState<string | null>(null)
@@ -35,16 +36,25 @@ export default function AdaptivePlanManage() {
   const vocabKeySet = useMemo(() => new Set(vocab.map((entry) => wordKey(entry))), [vocab])
 
   const sortedPlans = [...plans]
-    .filter((plan) => plan.status === 'active' || plan.status === 'completed')
+    .filter(
+      (plan) =>
+        plan.status === 'active' || plan.status === 'paused' || plan.status === 'completed',
+    )
     .sort((a, b) => {
-      if (a.status !== b.status) return a.status === 'active' ? -1 : 1
+      const rank = (s: typeof a.status) =>
+        s === 'active' ? 0 : s === 'paused' ? 1 : 2
+      const diff = rank(a.status) - rank(b.status)
+      if (diff !== 0) return diff
       return b.updatedAt.localeCompare(a.updatedAt)
     })
 
   const displayPlanIds = useMemo(
     () =>
       plans
-        .filter((plan) => plan.status === 'active' || plan.status === 'completed')
+        .filter(
+          (plan) =>
+            plan.status === 'active' || plan.status === 'paused' || plan.status === 'completed',
+        )
         .map((plan) => plan.id)
         .sort(),
     [plans],
@@ -89,6 +99,30 @@ export default function AdaptivePlanManage() {
       setSettingsPlanId((prev) => (prev === plan.id ? null : prev))
     } finally {
       setDeletingPlanId(null)
+    }
+  }
+
+  const handlePause = async (plan: AdaptiveWordPlan) => {
+    setTogglingPlanId(plan.id)
+    try {
+      await pausePlan(plan.id)
+    } catch (err) {
+      console.error('[adaptive_word_plan] pause failed', err)
+      window.alert('暂停失败，请检查网络后重试。')
+    } finally {
+      setTogglingPlanId(null)
+    }
+  }
+
+  const handleActivate = async (plan: AdaptiveWordPlan) => {
+    setTogglingPlanId(plan.id)
+    try {
+      await activatePlan(plan.id)
+    } catch (err) {
+      console.error('[adaptive_word_plan] activate failed', err)
+      window.alert('恢复失败，请检查网络后重试。')
+    } finally {
+      setTogglingPlanId(null)
     }
   }
 
@@ -264,10 +298,16 @@ export default function AdaptivePlanManage() {
                     className={`rounded-full border px-2.5 py-0.5 text-[12px] font-extrabold ${
                       plan.status === 'completed'
                         ? 'border-[rgba(74,222,128,.35)] bg-[rgba(74,222,128,.1)] text-[#86efac]'
-                        : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.1)] text-[#93c5fd]'
+                        : plan.status === 'paused'
+                          ? 'border-[rgba(148,163,184,.4)] bg-[rgba(148,163,184,.1)] text-[#cbd5e1]'
+                          : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.1)] text-[#93c5fd]'
                     }`}
                   >
-                    {plan.status === 'completed' ? '已完成' : '进行中'}
+                    {plan.status === 'completed'
+                      ? '已完成'
+                      : plan.status === 'paused'
+                        ? '已暂停'
+                        : '进行中'}
                   </span>
                   <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
                     每日新词 {plan.newWordsPerDay}
@@ -320,6 +360,26 @@ export default function AdaptivePlanManage() {
                     }`}
                   >
                     {settingsOpen ? '收起设置' : '设置'}
+                  </button>
+                )}
+                {plan.status === 'active' && (
+                  <button
+                    type="button"
+                    disabled={togglingPlanId === plan.id}
+                    onClick={() => { void handlePause(plan) }}
+                    className="cursor-pointer rounded-xl border border-[rgba(148,163,184,.45)] bg-[rgba(148,163,184,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#cbd5e1] disabled:cursor-wait disabled:opacity-50"
+                  >
+                    {togglingPlanId === plan.id ? '处理中…' : '暂停'}
+                  </button>
+                )}
+                {plan.status === 'paused' && (
+                  <button
+                    type="button"
+                    disabled={togglingPlanId === plan.id}
+                    onClick={() => { void handleActivate(plan) }}
+                    className="cursor-pointer rounded-xl border border-[rgba(74,222,128,.45)] bg-[rgba(74,222,128,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#86efac] disabled:cursor-wait disabled:opacity-50"
+                  >
+                    {togglingPlanId === plan.id ? '处理中…' : '恢复'}
                   </button>
                 )}
                 {plan.status === 'active' && (orphanCountByPlanId[plan.id] ?? 0) > 0 && (
