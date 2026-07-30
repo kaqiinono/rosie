@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import type { QuizBatchConfig } from '@rosie/math/utils/quiz-allocate'
 import { quizBatchVolumeTitle } from '@rosie/math/utils/quiz-allocate'
 
@@ -53,6 +53,11 @@ export type QuizPaperAppendUpdate = {
   problems: QuizProblemItem[]
 }
 
+type MathQuizData = {
+  papers: QuizPaper[]
+  batches: QuizBatch[]
+}
+
 /**
  * Distribute 100 points across `n` problems. Base points = floor(100/n);
  * the remainder is added to the last `extra` problems so the total is
@@ -90,36 +95,33 @@ function rowToBatch(row: Record<string, unknown>): QuizBatch {
   }
 }
 
-export function useMathQuiz(user: User | null) {
-  const [papers, setPapers] = useState<QuizPaper[]>([])
-  const [batches, setBatches] = useState<QuizBatch[]>([])
-  const [loading, setLoading] = useState(false)
+async function fetchMathQuiz(userId: string): Promise<MathQuizData> {
+  const [papersRes, batchesRes] = await Promise.all([
+    supabase
+      .from('math_quiz_papers')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('math_quiz_batches')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false }),
+  ])
+  return {
+    papers: (papersRes.data ?? []).map((r) => rowToPaper(r as Record<string, unknown>)),
+    batches: (batchesRes.data ?? []).map((r) => rowToBatch(r as Record<string, unknown>)),
+  }
+}
 
-  useEffect(() => {
-    if (!user) return
-    void (async () => {
-      setLoading(true)
-      const [papersRes, batchesRes] = await Promise.all([
-        supabase
-          .from('math_quiz_papers')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('math_quiz_batches')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
-      ])
-      if (papersRes.data) {
-        setPapers(papersRes.data.map((r) => rowToPaper(r as Record<string, unknown>)))
-      }
-      if (batchesRes.data) {
-        setBatches(batchesRes.data.map((r) => rowToBatch(r as Record<string, unknown>)))
-      }
-      setLoading(false)
-    })()
-  }, [user])
+export const mathQuizStore = createUserSessionStore<MathQuizData>('math_quiz', {
+  fetch: fetchMathQuiz,
+  empty: { papers: [], batches: [] },
+})
+
+export function useMathQuiz(user: User | null) {
+  const { data, isLoading: loading } = mathQuizStore.useSessionData(user)
+  const { papers, batches } = data
 
   const savePaper = useCallback(async (
     problems: QuizProblemItem[],
@@ -139,7 +141,10 @@ export function useMathQuiz(user: User | null) {
       .single()
     if (error || !data) return null
     const paper = rowToPaper(data as Record<string, unknown>)
-    setPapers(prev => [paper, ...prev])
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      papers: [paper, ...prev.papers],
+    }))
     return paper.id
   }, [user])
 
@@ -184,8 +189,11 @@ export function useMathQuiz(user: User | null) {
     }
 
     const newPapers = insertedPapers.map((r) => rowToPaper(r as Record<string, unknown>))
-    setBatches((prev) => [batch, ...prev])
-    setPapers((prev) => [...newPapers, ...prev])
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      batches: [batch, ...prev.batches],
+      papers: [...newPapers, ...prev.papers],
+    }))
     return batch.id
   }, [user])
 
@@ -250,13 +258,16 @@ export function useMathQuiz(user: User | null) {
     if (batchError || !batchRow) return false
 
     const batch = rowToBatch(batchRow as Record<string, unknown>)
-    setBatches((prev) => prev.map((b) => (b.id === batchId ? batch : b)))
     const batchPaperIds = new Set(refreshedPapers.map((r) => r.id))
     const refreshed = refreshedPapers.map((r) => rowToPaper(r as Record<string, unknown>))
-    setPapers((prev) => {
-      const rest = prev.filter((p) => !batchPaperIds.has(p.id))
-      return [...refreshed, ...rest]
-    })
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      batches: prev.batches.map((b) => (b.id === batchId ? batch : b)),
+      papers: (() => {
+        const rest = prev.papers.filter((p) => !batchPaperIds.has(p.id))
+        return [...refreshed, ...rest]
+      })(),
+    }))
     return true
   }, [user])
 
@@ -271,9 +282,10 @@ export function useMathQuiz(user: User | null) {
       .eq('id', id)
       .eq('user_id', user.id)
     if (error) return false
-    setPapers(prev =>
-      prev.map(p => p.id === id ? { ...p, answers } : p),
-    )
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      papers: prev.papers.map((p) => (p.id === id ? { ...p, answers } : p)),
+    }))
     return true
   }, [user])
 
@@ -289,9 +301,10 @@ export function useMathQuiz(user: User | null) {
       .eq('user_id', user.id)
       .is('completed_at', null)
     if (error) return false
-    setPapers(prev =>
-      prev.map(p => p.id === id ? { ...p, answers } : p),
-    )
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      papers: prev.papers.map((p) => (p.id === id ? { ...p, answers } : p)),
+    }))
     return true
   }, [user])
 
@@ -307,9 +320,12 @@ export function useMathQuiz(user: User | null) {
       .update({ score, answers, completed_at: completedAt })
       .eq('id', id)
       .eq('user_id', user.id)
-    setPapers(prev =>
-      prev.map(p => p.id === id ? { ...p, score, answers, completedAt } : p),
-    )
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      papers: prev.papers.map((p) =>
+        p.id === id ? { ...p, score, answers, completedAt } : p,
+      ),
+    }))
   }, [user])
 
   const renamePaper = useCallback(async (id: string, title: string) => {
@@ -321,48 +337,67 @@ export function useMathQuiz(user: User | null) {
       .update({ title: trimmed })
       .eq('id', id)
       .eq('user_id', user.id)
-    setPapers(prev => prev.map(p => p.id === id ? { ...p, title: trimmed } : p))
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      ...prev,
+      papers: prev.papers.map((p) => (p.id === id ? { ...p, title: trimmed } : p)),
+    }))
   }, [user])
 
   const deletePaper = useCallback(async (id: string) => {
     if (!user) return
-    const paper = papers.find((p) => p.id === id)
+    const current = mathQuizStore.getSessionData(user.id)
+    const currentPapers = current?.papers ?? []
+    const paper = currentPapers.find((p) => p.id === id)
     await supabase
       .from('math_quiz_papers')
       .delete()
       .eq('id', id)
       .eq('user_id', user.id)
-    setPapers(prev => prev.filter(p => p.id !== id))
 
     if (paper?.batchId) {
-      const remaining = papers.filter((p) => p.batchId === paper.batchId && p.id !== id)
+      const remaining = currentPapers.filter((p) => p.batchId === paper.batchId && p.id !== id)
       if (remaining.length === 0) {
         await supabase.from('math_quiz_batches').delete().eq('id', paper.batchId)
-        setBatches((prev) => prev.filter((b) => b.id !== paper.batchId))
+        mathQuizStore.patchSessionData(user.id, (prev) => ({
+          papers: prev.papers.filter((p) => p.id !== id),
+          batches: prev.batches.filter((b) => b.id !== paper.batchId),
+        }))
       } else {
         const maxIndex = remaining.reduce((max, p) => Math.max(max, p.batchIndex ?? 0), 0)
         await supabase
           .from('math_quiz_batches')
           .update({ volume_count: maxIndex })
           .eq('id', paper.batchId)
-        setBatches((prev) =>
-          prev.map((b) => (b.id === paper.batchId ? { ...b, volumeCount: maxIndex } : b)),
-        )
+        mathQuizStore.patchSessionData(user.id, (prev) => ({
+          papers: prev.papers.filter((p) => p.id !== id),
+          batches: prev.batches.map((b) =>
+            b.id === paper.batchId ? { ...b, volumeCount: maxIndex } : b,
+          ),
+        }))
       }
+    } else {
+      mathQuizStore.patchSessionData(user.id, (prev) => ({
+        ...prev,
+        papers: prev.papers.filter((p) => p.id !== id),
+      }))
     }
-  }, [user, papers])
+  }, [user])
 
   const renameBatch = useCallback(async (batchId: string, titleBase: string) => {
     if (!user) return false
     const trimmed = titleBase.trim()
     if (!trimmed) return false
 
-    const batchPapers = papers
+    const current = mathQuizStore.getSessionData(user.id)
+    const currentPapers = current?.papers ?? []
+    const currentBatches = current?.batches ?? []
+
+    const batchPapers = currentPapers
       .filter((p) => p.batchId === batchId)
       .sort((a, b) => (a.batchIndex ?? 0) - (b.batchIndex ?? 0))
     const total = Math.max(
       ...batchPapers.map((p) => p.batchIndex ?? 0),
-      batches.find((b) => b.id === batchId)?.volumeCount ?? 0,
+      currentBatches.find((b) => b.id === batchId)?.volumeCount ?? 0,
       1,
     )
 
@@ -384,11 +419,9 @@ export function useMathQuiz(user: User | null) {
       if (error) return false
     }
 
-    setBatches((prev) =>
-      prev.map((b) => (b.id === batchId ? { ...b, titleBase: trimmed } : b)),
-    )
-    setPapers((prev) =>
-      prev.map((p) => {
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      batches: prev.batches.map((b) => (b.id === batchId ? { ...b, titleBase: trimmed } : b)),
+      papers: prev.papers.map((p) => {
         if (p.batchId !== batchId) return p
         const index = p.batchIndex ?? 1
         return {
@@ -396,9 +429,9 @@ export function useMathQuiz(user: User | null) {
           title: quizBatchVolumeTitle(trimmed, index, total),
         }
       }),
-    )
+    }))
     return true
-  }, [user, papers, batches])
+  }, [user])
 
   const deleteBatch = useCallback(async (batchId: string) => {
     if (!user) return false
@@ -416,8 +449,10 @@ export function useMathQuiz(user: User | null) {
       .eq('user_id', user.id)
     if (batchError) return false
 
-    setPapers((prev) => prev.filter((p) => p.batchId !== batchId))
-    setBatches((prev) => prev.filter((b) => b.id !== batchId))
+    mathQuizStore.patchSessionData(user.id, (prev) => ({
+      papers: prev.papers.filter((p) => p.batchId !== batchId),
+      batches: prev.batches.filter((b) => b.id !== batchId),
+    }))
     return true
   }, [user])
 
