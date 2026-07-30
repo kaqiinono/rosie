@@ -34,6 +34,8 @@ export interface UserSessionStore<T> {
   invalidate: (userId?: string) => void
   invalidateAll: () => void
   ensureLoaded: (userId: string) => Promise<void>
+  /** Re-fetch while keeping status `ready` and current data visible (isLoading stays false). */
+  refreshInBackground: (userId: string) => Promise<void>
 }
 
 const globalRegistry = new Map<string, UserSessionStore<unknown>>()
@@ -139,6 +141,39 @@ export function createUserSessionStore<T>(
       .catch((err: unknown) => {
         if (slot.inflight !== promise) throw err
         slot.status = 'error'
+        slot.error = err
+        slot.inflight = null
+        bump(slot, key)
+        throw err
+      })
+
+    slot.inflight = promise
+    return promise.then(() => undefined)
+  }
+
+  function refreshInBackground(userId: string): Promise<void> {
+    const key = toUserKey(userId)
+    const slot = getOrCreateSlot(key)
+    if (slot.status === 'loading' && slot.inflight) {
+      return slot.inflight.then(() => undefined)
+    }
+    if (slot.status !== 'ready') {
+      return ensureLoaded(userId)
+    }
+
+    const promise = options
+      .fetch(userId)
+      .then((data) => {
+        if (slot.inflight !== promise) return data
+        slot.data = data
+        slot.status = 'ready'
+        slot.error = null
+        slot.inflight = null
+        bump(slot, key)
+        return data
+      })
+      .catch((err: unknown) => {
+        if (slot.inflight !== promise) throw err
         slot.error = err
         slot.inflight = null
         bump(slot, key)
@@ -256,6 +291,7 @@ export function createUserSessionStore<T>(
     invalidate,
     invalidateAll,
     ensureLoaded,
+    refreshInBackground,
   }
 
   globalRegistry.set(storeKey, store as UserSessionStore<unknown>)
