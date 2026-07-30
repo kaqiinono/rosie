@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import type { VoucherTemplate } from '@rosie/core'
 
 interface TemplateRow {
@@ -53,33 +53,31 @@ function shortId(): string {
   return Math.random().toString(36).slice(2, 8)
 }
 
+async function fetchVoucherTemplates(_userId: string): Promise<VoucherTemplate[]> {
+  const { data, error } = await supabase
+    .from('voucher_templates')
+    .select('category,label,emoji,gradient,price_yellow,price_red,price_blue,sort_order,archived,created_at,updated_at')
+    .order('sort_order', { ascending: true })
+  if (error) {
+    console.error('[voucher_templates] select failed', error)
+    throw error
+  }
+  return ((data ?? []) as TemplateRow[]).map(rowToTemplate)
+}
+
+export const voucherTemplatesStore = createUserSessionStore<VoucherTemplate[]>('voucher_templates', {
+  fetch: fetchVoucherTemplates,
+  empty: [],
+})
+
 export function useVoucherCatalog(user: User | null) {
-  const [templates, setTemplates] = useState<VoucherTemplate[]>([])
-  const [isLoading, setIsLoading] = useState(() => user !== null)
+  const { data: templates, isLoading } = voucherTemplatesStore.useSessionData(user)
 
   const refresh = useCallback(async () => {
     if (!user) return
-    const { data, error } = await supabase
-      .from('voucher_templates')
-      .select('category,label,emoji,gradient,price_yellow,price_red,price_blue,sort_order,archived,created_at,updated_at')
-      .order('sort_order', { ascending: true })
-    if (error) {
-      console.error('[voucher_templates] select failed', error)
-      return
-    }
-    setTemplates(((data ?? []) as TemplateRow[]).map(rowToTemplate))
+    voucherTemplatesStore.invalidate(user.id)
+    await voucherTemplatesStore.ensureLoaded(user.id)
   }, [user])
-
-  useEffect(() => {
-    if (!user) return
-    let cancelled = false
-    const init = async () => {
-      await refresh()
-      if (!cancelled) setIsLoading(false)
-    }
-    void init()
-    return () => { cancelled = true }
-  }, [user, refresh])
 
   const byCategory = useMemo(() => {
     const map = new Map<string, VoucherTemplate>()
@@ -109,7 +107,8 @@ export function useVoucherCatalog(user: User | null) {
     async (draft: VoucherTemplateDraft): Promise<VoucherTemplate | null> => {
       if (!user) return null
       const category = nextSlug(draft.label)
-      const maxSort = templates.reduce((m, t) => Math.max(m, t.sortOrder), 0)
+      const current = voucherTemplatesStore.getSessionData(user.id) ?? []
+      const maxSort = current.reduce((m, t) => Math.max(m, t.sortOrder), 0)
       const { data, error } = await supabase
         .from('voucher_templates')
         .insert({
@@ -129,16 +128,19 @@ export function useVoucherCatalog(user: User | null) {
         return null
       }
       const t = rowToTemplate(data as TemplateRow)
-      setTemplates(prev => [...prev, t].sort((a, b) => a.sortOrder - b.sortOrder))
+      voucherTemplatesStore.patchSessionData(user.id, (prev) =>
+        [...prev, t].sort((a, b) => a.sortOrder - b.sortOrder),
+      )
       return t
     },
-    [user, nextSlug, templates],
+    [user, nextSlug],
   )
 
   const update = useCallback(
     async (category: string, patch: Partial<VoucherTemplateDraft>): Promise<boolean> => {
       if (!user) return false
-      const dbPatch: Record<string, unknown> = { updated_at: new Date().toISOString() }
+      const updatedAt = new Date().toISOString()
+      const dbPatch: Record<string, unknown> = { updated_at: updatedAt }
       if (patch.label !== undefined) dbPatch.label = patch.label
       if (patch.emoji !== undefined) dbPatch.emoji = patch.emoji
       if (patch.gradient !== undefined) dbPatch.gradient = patch.gradient
@@ -153,10 +155,25 @@ export function useVoucherCatalog(user: User | null) {
         console.error('[voucher_templates] update failed', error)
         return false
       }
-      await refresh()
+      voucherTemplatesStore.patchSessionData(user.id, (prev) =>
+        prev.map((t) =>
+          t.category === category
+            ? {
+                ...t,
+                ...(patch.label !== undefined && { label: patch.label }),
+                ...(patch.emoji !== undefined && { emoji: patch.emoji }),
+                ...(patch.gradient !== undefined && { gradient: patch.gradient }),
+                ...(patch.priceYellow !== undefined && { priceYellow: patch.priceYellow }),
+                ...(patch.priceRed !== undefined && { priceRed: patch.priceRed }),
+                ...(patch.priceBlue !== undefined && { priceBlue: patch.priceBlue }),
+                updatedAt,
+              }
+            : t,
+        ),
+      )
       return true
     },
-    [user, refresh],
+    [user],
   )
 
   const setArchived = useCallback(
@@ -170,7 +187,7 @@ export function useVoucherCatalog(user: User | null) {
         console.error('[voucher_templates] archive failed', error)
         return false
       }
-      setTemplates(prev =>
+      voucherTemplatesStore.patchSessionData(user.id, (prev) =>
         prev.map(t => (t.category === category ? { ...t, archived: archivedFlag } : t)),
       )
       return true
