@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.adaptive_word_plans (
   CONSTRAINT adaptive_word_plans_mode_chk
     CHECK (mode IN ('normal', 'review_only', 'boss')),
   CONSTRAINT adaptive_word_plans_status_chk
-    CHECK (status IN ('active', 'completed', 'archived'))
+    CHECK (status IN ('active', 'paused', 'completed', 'archived'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_adaptive_plans_user
