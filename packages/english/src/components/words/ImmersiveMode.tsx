@@ -13,6 +13,7 @@ import {
   wordKey,
 } from '../../utils/english-helpers'
 import { getWordSizeClass } from '../../utils/phonics'
+import { getWordImagePublicUrl } from '../../utils/word-image'
 import { findPassage, findSentenceForWord } from '../../utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import { useStarHud } from '@rosie/rewards'
@@ -457,6 +458,16 @@ export default function ImmersiveMode({
                     </span>
                   )}
                 </div>
+                {v.imagePath && (
+                  <div className="max-h-[160px] w-full overflow-hidden rounded-2xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getWordImagePublicUrl(v.imagePath)}
+                      alt=""
+                      className="mx-auto max-h-[160px] w-auto max-w-full object-cover"
+                    />
+                  </div>
+                )}
                 <div
                   className={`font-nunito ${wordSizeClass} text-center leading-tight font-black break-words`}
                 >

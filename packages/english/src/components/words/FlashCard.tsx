@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, type CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import { getWordSizeClass } from '../../utils/phonics'
 import { hilite } from '../../utils/english-helpers'
+import { getWordImagePublicUrl } from '../../utils/word-image'
 import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@rosie/core'
 import { findPassage, findSentenceForWord } from '../../utils/reading-data'
 import PhonicsWord from './PhonicsWord'
@@ -35,6 +36,7 @@ function highlightWordInSentence(sentence: string, word: string) {
 
 export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, dualMode }: FlashCardProps) {
   const [sentenceExpanded, setSentenceExpanded] = useState(false)
+  const [imagePreview, setImagePreview] = useState(false)
   const sz = getWordSizeClass(entry.word)
   const level = getWordMasteryLevel(masteryInfo?.correct ?? 0)
   // Bumped ~15% across the scale so the word reads as the clear focal point.
@@ -48,6 +50,21 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
 
   const delay = Math.min(index * 0.03, 0.25)
   const explHtml = hilite(entry.explanation, entry.keywords)
+  const imageSrc = entry.imagePath ? getWordImagePublicUrl(entry.imagePath) : ''
+
+  useEffect(() => {
+    if (!imagePreview) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setImagePreview(false)
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [imagePreview])
 
   // Show 课文原句 for any word whose lesson has a passage — independent of
   // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;
@@ -229,6 +246,25 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
       className={backShellClass}
       style={backFaceStyle}
     >
+      {imageSrc && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            setImagePreview(true)
+          }}
+          className="group mb-3 flex max-h-[168px] w-full shrink-0 cursor-zoom-in items-center justify-center overflow-hidden rounded-xl bg-black/20"
+          aria-label={`放大预览 ${entry.word}`}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageSrc}
+            alt=""
+            className="max-h-[168px] w-auto max-w-full object-contain"
+          />
+        </button>
+      )}
+
       {/* English definition */}
       <div
         className="text-center text-[1.15rem] leading-relaxed font-bold text-[#dde8ff] [&_strong]:font-extrabold [&_strong]:text-[#60a5fa]"
@@ -254,6 +290,38 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
     </div>
   )
 
+  const imageLightbox = imagePreview && imageSrc ? (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${entry.word} 配图预览`}
+      onClick={(e) => {
+        e.stopPropagation()
+        setImagePreview(false)
+      }}
+      className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={imageSrc}
+        alt={entry.word}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain shadow-2xl"
+      />
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation()
+          setImagePreview(false)
+        }}
+        className="absolute top-4 right-4 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/95 text-xl font-bold text-gray-700 shadow-lg transition hover:bg-white"
+        aria-label="关闭"
+      >
+        ×
+      </button>
+    </div>
+  ) : null
+
   if (dualMode) {
     // Ticket-stub layout: both faces sit flush inside ONE outer card so the
     // pairing is unmistakable. A dashed seam separates them and a gold
@@ -261,46 +329,52 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
     // "word → meaning" relationship for young readers. Stacks vertically on
     // narrow screens (<sm: 640px) so each face stays legible.
     return (
-      <div
-        className={`relative flex min-h-[256px] flex-col overflow-hidden rounded-2xl border-2 ${MASTERY_BORDER[level]} sm:flex-row`}
-        style={{
-          boxShadow: '0 4px 24px rgba(0,0,0,.35)',
-          animation: `card-flip-fade-up .3s ease ${delay}s backwards`,
-        }}
-      >
-        {frontFace}
-        {backFace}
-        {/* Connector chip — sits over the dashed seam at the center of the card,
-            rotating its arrow to match the active axis (down on stacked mobile,
-            right on side-by-side desktop). */}
-        <span
-          aria-hidden
-          className="font-fredoka pointer-events-none absolute top-1/2 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 rotate-90 items-center justify-center rounded-full border-2 border-amber-200/70 bg-gradient-to-br from-amber-300 to-amber-500 text-[.85rem] leading-none font-black text-amber-900 shadow-[0_2px_8px_rgba(245,158,11,.55),inset_0_1px_0_rgba(255,255,255,.5)] sm:rotate-0"
+      <>
+        <div
+          className={`relative flex min-h-[256px] flex-col overflow-hidden rounded-2xl border-2 ${MASTERY_BORDER[level]} sm:flex-row`}
+          style={{
+            boxShadow: '0 4px 24px rgba(0,0,0,.35)',
+            animation: `card-flip-fade-up .3s ease ${delay}s backwards`,
+          }}
         >
-          →
-        </span>
-      </div>
+          {frontFace}
+          {backFace}
+          {/* Connector chip — sits over the dashed seam at the center of the card,
+              rotating its arrow to match the active axis (down on stacked mobile,
+              right on side-by-side desktop). */}
+          <span
+            aria-hidden
+            className="font-fredoka pointer-events-none absolute top-1/2 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 rotate-90 items-center justify-center rounded-full border-2 border-amber-200/70 bg-gradient-to-br from-amber-300 to-amber-500 text-[.85rem] leading-none font-black text-amber-900 shadow-[0_2px_8px_rgba(245,158,11,.55),inset_0_1px_0_rgba(255,255,255,.5)] sm:rotate-0"
+          >
+            →
+          </span>
+        </div>
+        {imageLightbox}
+      </>
     )
   }
 
   return (
-    <div
-      className="min-h-[256px] rounded-2xl"
-      style={{ perspective: '1200px', animation: `card-flip-fade-up .3s ease ${delay}s backwards` }}
-    >
+    <>
       <div
-        onClick={onFlip}
-        className="relative min-h-[256px] w-full cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
-        style={{
-          transformStyle: 'preserve-3d',
-          WebkitTransformStyle: 'preserve-3d',
-          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          WebkitTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        }}
+        className="min-h-[256px] rounded-2xl"
+        style={{ perspective: '1200px', animation: `card-flip-fade-up .3s ease ${delay}s backwards` }}
       >
-        {frontFace}
-        {backFace}
+        <div
+          onClick={onFlip}
+          className="relative min-h-[256px] w-full cursor-pointer transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
+          style={{
+            transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
+            transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            WebkitTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          }}
+        >
+          {frontFace}
+          {backFace}
+        </div>
       </div>
-    </div>
+      {imageLightbox}
+    </>
   )
 }

@@ -45,6 +45,22 @@ export type Database = {
         Row: { user_id: string; problem_id: string; added_at: string; resolved: boolean; resolved_at: string | null }
         Insert: { user_id: string; problem_id: string; added_at?: string; resolved?: boolean; resolved_at?: string | null }
       }
+      math_skipped: {
+        Row: {
+          user_id: string
+          problem_id: string
+          reason: string
+          note: string | null
+          added_at: string
+        }
+        Insert: {
+          user_id: string
+          problem_id: string
+          reason?: string
+          note?: string | null
+          added_at?: string
+        }
+      }
       math_quiz_batches: {
         Row: {
           id: string

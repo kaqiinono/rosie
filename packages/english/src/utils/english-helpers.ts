@@ -159,8 +159,26 @@ export function parseWordRows(
   return out
 }
 
+export function compareStages(a: string, b: string): number {
+  const parse = (s: string) => {
+    const m = s.match(/^(\d+)(.*)$/)
+    return m ? { n: parseInt(m[1], 10), rest: m[2] ?? '' } : null
+  }
+  const pa = parse(a)
+  const pb = parse(b)
+  // Numbered stages (5A, 4A, …): higher grade first, then letter A→Z
+  if (pa && pb) {
+    if (pa.n !== pb.n) return pb.n - pa.n
+    return pa.rest.localeCompare(pb.rest, undefined, { sensitivity: 'base' })
+  }
+  // Numbered before named (KET / story / …)
+  if (pa && !pb) return -1
+  if (!pa && pb) return 1
+  return a.localeCompare(b, undefined, { sensitivity: 'base' })
+}
+
 export function getAllStages(vocab: WordEntry[]): string[] {
-  return [...new Set(vocab.map(v => v.stage).filter((s): s is string => !!s))].sort()
+  return [...new Set(vocab.map(v => v.stage).filter((s): s is string => !!s))].sort(compareStages)
 }
 
 export function getAllUnits(vocab: WordEntry[], selStage?: string): string[] {

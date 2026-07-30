@@ -14,7 +14,7 @@ export { default as EnglishQuickLinkGrid } from './components/EnglishQuickLinkGr
 export { default as EnglishQuickLinkCard } from './components/EnglishQuickLinkCard'
 
 // Hooks
-export { useWordData } from './hooks/useWordData'
+export { useWordData, wordEntriesStore } from './hooks/useWordData'
 export { useWordMastery } from './hooks/useWordMastery'
 export { useEnglishWrong } from './hooks/useEnglishWrong'
 export { useWeeklyPlan } from './hooks/useWeeklyPlan'
@@ -42,6 +42,7 @@ export { buildDailyTask } from './utils/adaptivePlanScheduler'
 export type { AdaptiveDailyTask } from './utils/adaptivePlanScheduler'
 export * from './utils/adaptivePlanSimulate'
 export * from './utils/word-enrich'
+export * from './utils/word-image'
 export * from './utils/speak'
 
 // Words components (default exports → named barrel exports)

@@ -11,9 +11,9 @@ import {
 } from './useAdaptiveWordPlan'
 
 const SELECT_COLS =
-  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type'
+  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
 
-const CACHE_VER = 'word_cache_v3'
+const CACHE_VER = 'word_cache_v4'
 const NULL_STAGE = '__null__'
 
 function stageKey(stage: string | undefined) {
@@ -175,11 +175,17 @@ function toRow(creator: string, w: WordEntry) {
     syllables: w.syllables ?? null,
     keywords: w.keywords ?? null,
     vocab_type: w.vocabType ?? null,
+    image_path: w.imagePath ?? null,
+    image_match_score: w.imageMatchScore ?? null,
+    image_match_query: w.imageMatchQuery ?? null,
+    image_source: w.imageSource ?? null,
+    image_pexels_id: w.imagePexelsId ?? null,
   }
 }
 
 function fromRow(row: Record<string, unknown>): WordEntry {
   const vt = row.vocab_type
+  const src = row.image_source
   return {
     stage: (row.stage as string) ?? undefined,
     unit: row.unit as string,
@@ -194,6 +200,11 @@ function fromRow(row: Record<string, unknown>): WordEntry {
     keywords: (row.keywords as [string, string][]) ?? undefined,
     vocabType:
       vt === 'Target' || vt === 'Context' || vt === 'Extension' ? vt : undefined,
+    imagePath: (row.image_path as string) ?? undefined,
+    imageMatchScore: (row.image_match_score as number) ?? undefined,
+    imageMatchQuery: (row.image_match_query as string) ?? undefined,
+    imageSource: src === 'pexels' || src === 'upload' ? src : undefined,
+    imagePexelsId: (row.image_pexels_id as string) ?? undefined,
   }
 }
 

@@ -16,9 +16,7 @@ import { mathWrongStore } from '@rosie/math/hooks/useMathWrong'
 import { syncWrongBookFromAttempts } from '@rosie/math/utils/math-scratch-db'
 import { lessonDisplayLabelFromRegistry } from '@rosie/math/utils/lesson-registry'
 import { useLessonRoute } from './LessonRouteContext'
-
-type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
-type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
+import type { MasteryFilter, PracticeFilter, SkipReasonFilter } from '@rosie/math/components/shared/FilterPanel'
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
 
@@ -160,6 +158,7 @@ function AlltestContent() {
       type: typeParam ? new Set([typeParam]) : allTags,
       mastery: 'all' as MasteryFilter,
       practice: 'all' as PracticeFilter,
+      skipReason: 'all' as SkipReasonFilter,
       difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
     }
   })
@@ -191,6 +190,7 @@ function AlltestContent() {
       onToggleFilter={toggleFilter}
       onSetMastery={(value: MasteryFilter) => setFilters((f) => ({ ...f, mastery: value }))}
       onSetPractice={(value: PracticeFilter) => setFilters((f) => ({ ...f, practice: value }))}
+      onSetSkipReason={(value: SkipReasonFilter) => setFilters((f) => ({ ...f, skipReason: value }))}
     />
   )
 }

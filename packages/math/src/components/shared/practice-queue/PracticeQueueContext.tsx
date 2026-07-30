@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth, useImmersive, STORAGE_KEYS } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import { useMathSkipped } from '@rosie/math/hooks/useMathSkipped'
+import type { MathSkipReason } from '@rosie/math/utils/math-skip-reasons'
 import {
   buildPracticeQueue,
   initialIndexForProblem,
@@ -31,6 +33,7 @@ type PracticeQueueContextValue = {
   restart: () => void
   onAnswerCorrect: () => void
   onAnswerWrong: () => void
+  onSkip: (reason: MathSkipReason, note?: string) => void
   setImmersive: (value: boolean) => void
   toggleImmersive: () => void
 }
@@ -53,6 +56,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   const { setIsImmersive } = useImmersive()
   const { solveCount, handleSolve } = useMathSolved(user)
   const { markResolved } = useMathWrong(user)
+  const { addSkipped, clearSkipped } = useMathSkipped(user)
 
   const [isActive, setIsActive] = useState(false)
   const [phase, setPhase] = useState<PracticeQueuePhase>('answering')
@@ -125,6 +129,20 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     // wrong book updated in submitPracticeAttempt
   }, [])
 
+  const onSkip = useCallback(
+    (reason: MathSkipReason, note?: string) => {
+      const item = items[currentIndex]
+      if (!item) return
+      addSkipped(item.problem.id, reason, note)
+      if (currentIndex >= items.length - 1) {
+        setPhase('celebration')
+        return
+      }
+      setCurrentIndex((i) => i + 1)
+    },
+    [items, currentIndex, addSkipped],
+  )
+
   const onAnswerCorrect = useCallback(async () => {
     const item = items[currentIndex]
     if (!item) return
@@ -132,6 +150,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     try {
       await handleSolve(item.problem.id)
       void markResolved(item.problem.id)
+      clearSkipped(item.problem.id)
     } catch {
       // Sync failure must not block advancing to the next problem.
     }
@@ -143,7 +162,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       return
     }
     setCurrentIndex((i) => i + 1)
-  }, [items, currentIndex, handleSolve, markResolved])
+  }, [items, currentIndex, handleSolve, markResolved, clearSkipped])
 
   const handleExit = useCallback(() => {
     const href = returnHref
@@ -176,6 +195,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       restart,
       onAnswerCorrect,
       onAnswerWrong,
+      onSkip,
       setImmersive,
       toggleImmersive,
     }),
@@ -194,6 +214,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       restart,
       onAnswerCorrect,
       onAnswerWrong,
+      onSkip,
       setImmersive,
       toggleImmersive,
     ],
@@ -214,6 +235,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
           onExit={handleExit}
           onAnswerCorrect={onAnswerCorrect}
           onAnswerWrong={onAnswerWrong}
+          onSkip={onSkip}
           onRestart={restart}
           onToggleImmersive={toggleImmersive}
           onSetImmersive={setImmersive}

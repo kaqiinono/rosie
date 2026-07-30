@@ -156,6 +156,11 @@ export interface WordEntry {
   keywords?: [string, string][]
   /** Target / Context / Extension (from Oxford flashcard labels). */
   vocabType?: WordVocabType
+  imagePath?: string
+  imageMatchScore?: number
+  imageMatchQuery?: string
+  imageSource?: 'pexels' | 'upload'
+  imagePexelsId?: string
 }
 
 export interface DailyRecord {
@@ -306,6 +311,8 @@ export interface MathPlanProblem {
   index: number // 1-based, used to construct URL e.g. /math/ny/1/35/lesson/1
   title: string // problem title
   problemId: string // original Problem.id e.g. "36-L1"
+  /** Problem type label e.g. 凑整法; optional for legacy stored plans */
+  tagLabel?: string
 }
 
 export interface MathWeeklyPlanDay {
@@ -322,6 +329,8 @@ export interface MathDayProgress {
 export interface MathWeeklyPlan {
   weekStart: string // plan start date (ISO)
   planEnd?: string // plan end date (ISO); falls back to last day in `days`
+  /** Optional parent-set display title; stored in progress_data.__planMeta. */
+  name?: string
   lessonId: string // primary lesson for display / legacy single-lesson plans
   lessonIds?: string[] // multi-lesson selection
   sectionFilters?: Record<string, string[]> // lessonId → enabled sections

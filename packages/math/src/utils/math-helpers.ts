@@ -22,6 +22,7 @@ export function makeProblem(
     index,
     title: problem.title,
     problemId: problem.id,
+    tagLabel: problem.tagLabel,
   }
 }
 
@@ -184,6 +185,7 @@ export function countFilteredPlanProblems(
 /**
  * Build a flexible-date plan with type-aware daily allocation.
  * Types (Problem.tag) are ordered easy→hard; each day prioritizes types with fewer prior allocations.
+ * Within a day, prefer spreading across lessons (avoid stacking the same lesson) before balancing tags.
  * Within each type, unpracticed problems (solveCount === 0) are picked before practiced ones, then by difficulty asc.
  */
 export function buildMathFlexiblePlan(
@@ -239,6 +241,7 @@ export function buildMathFlexiblePlan(
 
   const tagMeta = [...byTag.entries()].map(([tag, items]) => ({
     tag,
+    lessonId: items[0]!.prob.lessonId,
     typeOrder: items[0]!.typeOrder,
     minDiff: Math.min(...items.map(i => i.difficulty)),
   }))
@@ -257,11 +260,17 @@ export function buildMathFlexiblePlan(
   for (let dayIdx = 0; dayIdx < numDays && remaining > 0; dayIdx++) {
     const quota = Math.min(problemsPerDay, remaining)
     const dayProbs: MathPlanProblem[] = []
+    const lessonCountOnDay = new Map<string, number>()
 
     while (dayProbs.length < quota) {
       const sortedTags = tagMeta
         .filter(({ tag }) => (tagPointers[tag] ?? 0) < (byTag.get(tag)?.length ?? 0))
         .sort((a, b) => {
+          // Prefer lessons with fewer picks already on this day (0 = not yet used).
+          const lessonDiff =
+            (lessonCountOnDay.get(a.lessonId) ?? 0) - (lessonCountOnDay.get(b.lessonId) ?? 0)
+          if (lessonDiff !== 0) return lessonDiff
+
           const countDiff = (typeAllocationCount[a.tag] ?? 0) - (typeAllocationCount[b.tag] ?? 0)
           if (countDiff !== 0) return countDiff
           const itemsA = byTag.get(a.tag)!
@@ -276,11 +285,12 @@ export function buildMathFlexiblePlan(
 
       if (sortedTags.length === 0) break
 
-      const { tag } = sortedTags[0]!
+      const { tag, lessonId } = sortedTags[0]!
       const ptr = tagPointers[tag] ?? 0
       const picked = byTag.get(tag)![ptr]!
       tagPointers[tag] = ptr + 1
       dayProbs.push(picked.prob)
+      lessonCountOnDay.set(lessonId, (lessonCountOnDay.get(lessonId) ?? 0) + 1)
       typeAllocationCount[tag] = (typeAllocationCount[tag] ?? 0) + 1
       remaining -= 1
     }

@@ -44,6 +44,15 @@ const TOOLS: AdminTool[] = [
     ring: 'rgba(59,130,246,0.28)',
   },
   {
+    href: '/admin/word-images',
+    emoji: '🖼️',
+    title: '单词配图',
+    description: '为词库自动匹配图片、查看匹配度并人工换图 / 上传。',
+    from: 'rgba(52,211,153,0.14)',
+    to: 'rgba(96,165,250,0.10)',
+    ring: 'rgba(52,211,153,0.28)',
+  },
+  {
     href: '/admin/chinese',
     emoji: '字',
     title: '语文字词',

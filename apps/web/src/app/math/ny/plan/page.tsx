@@ -63,7 +63,7 @@ export default function MathDailyPage() {
           boxShadow: '0 2px 20px rgba(251,146,60,.1)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[800px] items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-6">
           <Link
             href="/math"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline transition-all hover:scale-105 sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-2"
@@ -93,7 +93,7 @@ export default function MathDailyPage() {
         </div>
       </div>
 
-      <div className="relative mx-auto max-w-[800px]">
+      <div className="relative mx-auto w-full max-w-6xl">
         <MathWeeklyPlanSession problemSets={MATH_PLAN_PROBLEM_SETS} />
       </div>
     </div>

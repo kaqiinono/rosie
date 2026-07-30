@@ -62,6 +62,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   const [tagFilters, setTagFilters] = useState<Record<string, string[]>>({})
   const [planStartDate, setPlanStartDate] = useState(today)
   const [planEndDateStr, setPlanEndDateStr] = useState(() => addPlanDays(today, 6))
+  const [planName, setPlanName] = useState('')
   const [editingPlanStart, setEditingPlanStart] = useState<string | null>(editWeekStart ?? null)
   const [collapsedGrades, setCollapsedGrades] = useState<Set<number>>(() => new Set())
 
@@ -178,6 +179,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       }
       setPlanStartDate(plan.weekStart)
       setPlanEndDateStr(planEndDate(plan))
+      setPlanName(plan.name ?? '')
       setEditingPlanStart(plan.weekStart)
     },
     [problemSets, syncTagsForLesson],
@@ -207,6 +209,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     const plan: MathWeeklyPlan = {
       weekStart: planStartDate,
       planEnd: planEndDateStr,
+      name: planName.trim() || undefined,
       lessonId: primaryLesson,
       lessonIds: selectedLessonIds,
       sectionFilters,
@@ -235,6 +238,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     problemSets,
     planStartDate,
     planEndDateStr,
+    planName,
     previewDays,
     previewTotal,
     editingPlanStart,
@@ -325,6 +329,21 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
             className="mb-5 rounded-xl px-4 py-4"
             style={{ background: 'rgba(255,255,255,.7)', border: '1.5px solid rgba(0,0,0,.06)' }}
           >
+            <div className="mb-3">
+              <label className="mb-1.5 block text-[11px] font-extrabold tracking-widest text-gray-400 uppercase" htmlFor="math-plan-name">
+                计划名称（选填）
+              </label>
+              <input
+                id="math-plan-name"
+                type="text"
+                value={planName}
+                onChange={(e) => setPlanName(e.target.value)}
+                placeholder="例如：暑假第 1 周 · 表内除法"
+                maxLength={40}
+                className="w-full rounded-lg px-3 py-2.5 text-[13px] font-bold text-gray-800 outline-none placeholder:font-medium placeholder:text-gray-300"
+                style={{ background: 'rgba(255,255,255,.9)', border: '1.5px solid rgba(0,0,0,.08)' }}
+              />
+            </div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">
                 计划时间段

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { WordEntry, WordVocabType } from '@rosie/core'
 import { enrichWord, type EnrichResult } from '@rosie/english'
-import { hilite } from '@rosie/english'
+import { getWordImagePublicUrl, hilite } from '@rosie/english'
 import { KW_COLORS, DEFAULT_KW_COLOR, type StageTree } from './types'
 
 type Props = {
@@ -185,6 +185,12 @@ export default function WordFormModal({
         syllables: cleanedSyllables.length ? cleanedSyllables : undefined,
         keywords: cleanedKeywords.length ? cleanedKeywords : undefined,
         vocabType: vocabType || undefined,
+        // Preserve image metadata — toRow nulls omitted optional fields
+        imagePath: initial?.imagePath,
+        imageMatchScore: initial?.imageMatchScore,
+        imageMatchQuery: initial?.imageMatchQuery,
+        imageSource: initial?.imageSource,
+        imagePexelsId: initial?.imagePexelsId,
       }
       await onSubmit(entry, initial)
     } finally {
@@ -287,6 +293,26 @@ export default function WordFormModal({
               <option value="Extension">Extension</option>
             </select>
           </div>
+
+          {initial?.imagePath && (
+            <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getWordImagePublicUrl(initial.imagePath)}
+                alt=""
+                className="h-14 w-14 rounded-lg object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">配图</div>
+                <a
+                  href={`/admin/word-images`}
+                  className="text-[12px] font-bold text-indigo-600 hover:underline"
+                >
+                  在配图页管理 →
+                </a>
+              </div>
+            </div>
+          )}
 
           {enrichInfo && (
             <div

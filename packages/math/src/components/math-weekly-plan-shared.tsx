@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
@@ -8,10 +8,11 @@ import { MATH_PLAN_SECTIONS, planEndDate } from '@rosie/math/utils/math-helpers'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import { todayStr } from '@rosie/core'
-import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
+import { lessonDisplayLabel, lessonDisplayNum } from '@rosie/math/utils/lesson-grade'
 import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
-import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
+import type { MathWeeklyPlan, MathPlanProblem, ProblemSet, Problem } from '@rosie/core'
 import type { MathPlanSectionKey } from '@rosie/math/utils/math-helpers'
+import { sanitizeRichHtml } from '@rosie/math/utils/sanitize-summary-html'
 
 export function problemDetailHref(lessonId: string, section: string, index: number): string {
   const entry = lessonByKey(lessonId)
@@ -317,6 +318,24 @@ export function fmtDate(dateStr: string): string {
   return `${Number(m)}/${Number(d)}`
 }
 
+/** Monday–Sunday ISO dates for the week that contains `isoDate` (local calendar). */
+export function mondayWeekDates(isoDate: string): string[] {
+  const [y, m, d] = isoDate.split('-').map(Number)
+  const dt = new Date(y!, m! - 1, d!)
+  const dow = dt.getDay() // 0 = Sunday
+  const toMonday = dow === 0 ? -6 : 1 - dow
+  dt.setDate(dt.getDate() + toMonday)
+  const out: string[] = []
+  for (let i = 0; i < 7; i++) {
+    const yy = dt.getFullYear()
+    const mm = String(dt.getMonth() + 1).padStart(2, '0')
+    const dd = String(dt.getDate()).padStart(2, '0')
+    out.push(`${yy}-${mm}-${dd}`)
+    dt.setDate(dt.getDate() + 1)
+  }
+  return out
+}
+
 export function countPlanDays(start: string, end: string): number {
   if (!start || !end || end < start) return 0
   const [y, m, d] = start.split('-').map(Number)
@@ -351,6 +370,362 @@ export function defaultSectionsForLesson(ps: ProblemSet | undefined): string[] {
 
 export function fmtPlanRange(start: string, end: string): string {
   return `${fmtDate(start)} — ${fmtDate(end)}`
+}
+
+/** Prefer parent-set name; otherwise single-lesson short label or "N 个关卡". */
+export function mathPlanDisplayName(plan: MathWeeklyPlan): string {
+  const trimmed = plan.name?.trim()
+  if (trimmed) return trimmed
+  const ids = plan.lessonIds ?? [plan.lessonId]
+  if (ids.length === 1) {
+    return MATH_PLAN_LESSONS.find(l => l.id === ids[0])?.short
+      ?? MATH_PLAN_LESSONS.find(l => l.id === plan.lessonId)?.short
+      ?? ids[0]!
+  }
+  return `${ids.length} 个关卡`
+}
+
+const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六']
+const LOOKUP_SECTIONS: MathPlanSectionKey[] = ['lesson', 'homework', 'pretest', 'workbook', 'supplement']
+
+function monthsCoveredByPlan(start: string, end: string): string[] {
+  const keys: string[] = []
+  let y = Number(start.slice(0, 4))
+  let m = Number(start.slice(5, 7))
+  const ey = Number(end.slice(0, 4))
+  const em = Number(end.slice(5, 7))
+  while (y < ey || (y === ey && m <= em)) {
+    keys.push(`${y}-${String(m).padStart(2, '0')}`)
+    m += 1
+    if (m > 12) {
+      m = 1
+      y += 1
+    }
+  }
+  return keys.length > 0 ? keys : [start.slice(0, 7)]
+}
+
+function sectionProblems(ps: ProblemSet, section: MathPlanSectionKey): Problem[] {
+  if (section === 'supplement') return ps.supplement ?? []
+  if (section === 'lesson') return ps.lesson
+  if (section === 'homework') return ps.homework
+  if (section === 'pretest') return ps.pretest
+  if (section === 'workbook') return ps.workbook
+  return []
+}
+
+function resolveTagLabel(
+  prob: MathPlanProblem,
+  problemSets?: Record<string, ProblemSet>,
+): string | undefined {
+  if (prob.tagLabel?.trim()) return prob.tagLabel.trim()
+  const ps = problemSets?.[prob.lessonId]
+  if (!ps) return undefined
+  for (const section of LOOKUP_SECTIONS) {
+    const found = sectionProblems(ps, section).find((p) => p.id === prob.problemId)
+    if (found?.tagLabel) return found.tagLabel
+  }
+  return undefined
+}
+
+/** e.g. "12巧算加减法-凑整法" */
+export function mathPlanProblemTypeChip(
+  prob: MathPlanProblem,
+  problemSets?: Record<string, ProblemSet>,
+): string {
+  const seq = lessonDisplayNum(prob.lessonId)
+  const short = MATH_PLAN_LESSONS.find((l) => l.id === prob.lessonId)?.short ?? ''
+  const head = seq != null ? `${seq}${short}` : short || prob.lessonId
+  const tag = resolveTagLabel(prob, problemSets)
+  return tag ? `${head}-${tag}` : head
+}
+
+function uniqueDayTypeChips(
+  problems: MathPlanProblem[],
+  problemSets?: Record<string, ProblemSet>,
+): string[] {
+  const seen = new Set<string>()
+  const chips: string[] = []
+  for (const p of problems) {
+    const chip = mathPlanProblemTypeChip(p, problemSets)
+    if (seen.has(chip)) continue
+    seen.add(chip)
+    chips.push(chip)
+  }
+  return chips
+}
+
+function resolveFullProblem(
+  prob: MathPlanProblem,
+  problemSets?: Record<string, ProblemSet>,
+): Problem | undefined {
+  const ps = problemSets?.[prob.lessonId]
+  if (!ps) return undefined
+  for (const section of LOOKUP_SECTIONS) {
+    const found = sectionProblems(ps, section).find((p) => p.id === prob.problemId)
+    if (found) return found
+  }
+  return undefined
+}
+
+export type PlanPreviewCalendarProps = {
+  plan: MathWeeklyPlan
+  problemSets?: Record<string, ProblemSet>
+  /** Controlled selection (learner map). When omitted with no onSelectDate, uses internal state. */
+  selectedDate?: string | null
+  onSelectDate?: (date: string | null) => void
+  /** Admin preview embeds a read-only problem list; learner map sets false. Default true. */
+  showDayDetail?: boolean
+}
+
+export function PlanPreviewCalendar({
+  plan,
+  problemSets,
+  selectedDate: controlledSelected,
+  onSelectDate,
+  showDayDetail = true,
+}: PlanPreviewCalendarProps) {
+  const controlled = onSelectDate != null
+  const end = planEndDate(plan)
+  const months = useMemo(() => monthsCoveredByPlan(plan.weekStart, end), [plan.weekStart, end])
+  const [monthIdx, setMonthIdx] = useState(0)
+  const [internalSelected, setInternalSelected] = useState<string | null>(null)
+  const selectedDate = controlled ? (controlledSelected ?? null) : internalSelected
+
+  const setSelectedDate = (next: string | null) => {
+    if (controlled) onSelectDate(next)
+    else setInternalSelected(next)
+  }
+
+  const monthsKey = months.join(',')
+  const [syncedMonthsKey, setSyncedMonthsKey] = useState('')
+  if (syncedMonthsKey !== monthsKey) {
+    setSyncedMonthsKey(monthsKey)
+    const prefer = (controlledSelected ?? todayStr()).slice(0, 7)
+    const idx = months.indexOf(prefer)
+    setMonthIdx(idx >= 0 ? idx : 0)
+  }
+
+  const viewMonth = months[Math.min(monthIdx, months.length - 1)] ?? months[0]!
+  const [year, month] = viewMonth.split('-').map(Number) as [number, number]
+
+  const dayMap = useMemo(() => {
+    const map = new Map<string, MathPlanProblem[]>()
+    for (const day of plan.days) map.set(day.date, day.problems)
+    return map
+  }, [plan.days])
+
+  /** Only plan days in this month; pad leading/trailing nulls to keep 日–六 columns aligned. */
+  const cells = useMemo(() => {
+    const prefix = `${year}-${String(month).padStart(2, '0')}-`
+    const planDates = plan.days
+      .map((d) => d.date)
+      .filter((date) => date.startsWith(prefix))
+      .sort()
+    const list: { date: string | null; dayNum: number | null }[] = []
+    if (planDates.length === 0) return list
+
+    const first = planDates[0]!
+    const leadPad = new Date(`${first}T00:00:00`).getDay()
+    for (let i = 0; i < leadPad; i++) list.push({ date: null, dayNum: null })
+
+    for (const date of planDates) {
+      list.push({ date, dayNum: Number(date.slice(8, 10)) })
+    }
+
+    const trailNeeded = (7 - (list.length % 7)) % 7
+    for (let i = 0; i < trailNeeded; i++) list.push({ date: null, dayNum: null })
+    return list
+  }, [year, month, plan.days])
+
+  const selectedProblems = selectedDate ? (dayMap.get(selectedDate) ?? []) : []
+
+  const canPrev = monthIdx > 0
+  const canNext = monthIdx < months.length - 1
+
+  const shiftMonth = (delta: number) => {
+    setMonthIdx((i) => {
+      const next = Math.min(months.length - 1, Math.max(0, i + delta))
+      return next
+    })
+    if (!controlled) setInternalSelected(null)
+  }
+
+  return (
+    <div
+      className="mt-3 rounded-xl px-3 py-3 md:px-4 md:py-4"
+      style={{ background: 'rgba(255,255,255,.7)', border: '1px solid rgba(0,0,0,.06)' }}
+    >
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          disabled={!canPrev}
+          onClick={() => shiftMonth(-1)}
+          className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-bold text-gray-500 disabled:cursor-default disabled:opacity-30"
+          style={{ background: 'rgba(0,0,0,.04)' }}
+        >
+          ‹
+        </button>
+        <span className="text-[13px] font-extrabold text-gray-700">
+          {year}年{month}月
+        </span>
+        <button
+          type="button"
+          disabled={!canNext}
+          onClick={() => shiftMonth(1)}
+          className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-bold text-gray-500 disabled:cursor-default disabled:opacity-30"
+          style={{ background: 'rgba(0,0,0,.04)' }}
+        >
+          ›
+        </button>
+      </div>
+      <div className="mb-1.5 grid grid-cols-7 gap-1.5">
+        {WEEKDAY_LABELS.map((w) => (
+          <div key={w} className="py-1 text-center text-[11px] font-bold text-gray-400">
+            {w}
+          </div>
+        ))}
+      </div>
+      {cells.length === 0 ? (
+        <div className="py-6 text-center text-[12px] font-bold text-gray-400">本月无计划日</div>
+      ) : (
+        <div className="grid grid-cols-7 gap-1.5">
+          {cells.map((cell, i) => {
+            if (!cell.date) {
+              return <div key={`e-${i}`} className="min-h-2" />
+            }
+            const problems = dayMap.get(cell.date) ?? []
+            const chips = uniqueDayTypeChips(problems, problemSets)
+            const shown = chips.slice(0, 4)
+            const extra = chips.length - shown.length
+            const isSelected = selectedDate === cell.date
+            return (
+              <button
+                type="button"
+                key={cell.date}
+                onClick={() => {
+                  if (controlled && !showDayDetail) {
+                    setSelectedDate(cell.date)
+                    return
+                  }
+                  setSelectedDate(selectedDate === cell.date ? null : cell.date)
+                }}
+                className="min-h-24 cursor-pointer rounded-lg px-1 py-1 text-left transition-all md:min-h-32 md:px-1.5 md:py-1.5"
+                style={{
+                  background: isSelected
+                    ? 'rgba(251,146,60,.22)'
+                    : problems.length > 0
+                      ? 'rgba(251,146,60,.1)'
+                      : 'rgba(251,146,60,.04)',
+                  border: isSelected
+                    ? '2px solid rgba(234,88,12,.55)'
+                    : '1px solid rgba(251,146,60,.22)',
+                  boxShadow: isSelected ? '0 2px 10px rgba(249,115,22,.2)' : 'none',
+                }}
+              >
+                <div className="text-[11px] font-bold text-orange-700 md:text-[12px]">
+                  {cell.dayNum}
+                  {problems.length > 0 && (
+                    <span className="ml-1 text-[9px] font-medium text-orange-500/80">
+                      {problems.length}题
+                    </span>
+                  )}
+                </div>
+                <div className="mt-1 flex flex-col gap-0.5 md:gap-1">
+                  {shown.map((chip) => (
+                    <div
+                      key={chip}
+                      className="rounded px-1 py-0.5 text-[9px] leading-snug font-bold break-words text-orange-900 md:text-[10px]"
+                      style={{ background: 'rgba(255,255,255,.85)' }}
+                      title={chip}
+                    >
+                      {chip}
+                    </div>
+                  ))}
+                  {extra > 0 && (
+                    <div className="text-[9px] font-bold text-orange-500">+{extra}</div>
+                  )}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {showDayDetail && selectedDate && (
+        <div
+          className="mt-4 space-y-3 rounded-xl px-3 py-3 md:px-4"
+          style={{ background: 'rgba(255,248,240,.9)', border: '1.5px solid rgba(251,146,60,.25)' }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-[13px] font-extrabold text-orange-900">
+              {dayLabel(selectedDate)} · {fmtDate(selectedDate)}
+              <span className="ml-2 text-[11px] font-bold text-orange-500">
+                {selectedProblems.length} 道题
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedDate(null)}
+              className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 hover:text-gray-600"
+              style={{ background: 'rgba(0,0,0,.05)' }}
+            >
+              关闭
+            </button>
+          </div>
+          {selectedProblems.length === 0 ? (
+            <div className="py-4 text-center text-[12px] font-bold text-gray-400">当日无必做题</div>
+          ) : (
+            selectedProblems.map((prob, idx) => {
+              const full = resolveFullProblem(prob, problemSets)
+              const typeChip = mathPlanProblemTypeChip(prob, problemSets)
+              const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
+              return (
+                <article
+                  key={prob.key}
+                  className="rounded-xl px-3.5 py-3"
+                  style={{
+                    background: 'rgba(255,255,255,.92)',
+                    border: '1.5px solid rgba(0,0,0,.06)',
+                  }}
+                >
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <span className="text-[12px] font-extrabold text-gray-500">{idx + 1}.</span>
+                    <span className="text-[13px] font-extrabold text-gray-800">{prob.title}</span>
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+                      style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}
+                    >
+                      {MATH_PLAN_SECTIONS.find((s) => s.key === prob.section)?.label ?? prob.section}
+                    </span>
+                    <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-bold text-orange-700">
+                      {typeChip}
+                    </span>
+                  </div>
+                  {full?.text ? (
+                    <div
+                      className="text-[13px] leading-relaxed text-gray-700 [&_strong]:font-extrabold [&_strong]:text-orange-800"
+                      dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(full.text) }}
+                    />
+                  ) : (
+                    <div className="text-[12px] font-medium text-gray-400">
+                      暂无题目正文（缺少题库数据）
+                    </div>
+                  )}
+                  {full && (
+                    <div className="mt-2 text-[11px] font-bold text-gray-400">
+                      问：{full.finalQ}
+                      {full.finalUnit ? `（${full.finalUnit}）` : ''}
+                    </div>
+                  )}
+                </article>
+              )
+            })
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function dayLabel(dateStr: string): string {
@@ -409,13 +784,14 @@ export function ProblemCard({
   done,
   isReview,
   isWrong,
-  onCheck,
+  onPractice,
 }: {
   prob: MathPlanProblem
   done: boolean
   isReview?: boolean
   isWrong?: boolean
-  onCheck?: () => void
+  /** When set,「做题」starts immersive practice instead of navigating to detail. */
+  onPractice?: () => void
 }) {
   const { user } = useAuth()
   const { solveCount } = useMathSolved(user)
@@ -431,21 +807,18 @@ export function ProblemCard({
         boxShadow: done ? 'none' : '0 2px 10px rgba(0,0,0,.04)',
       }}
     >
-      {/* Done indicator / clickable checkbox */}
-      <button
-        type="button"
-        onClick={onCheck}
-        disabled={done || !onCheck}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all"
+      {/* Done indicator — display only; completion comes from practice sync */}
+      <div
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
         style={{
           background: done ? 'linear-gradient(135deg, #22c55e, #4ade80)' : 'rgba(0,0,0,.05)',
           border: done ? 'none' : '2px solid rgba(0,0,0,.1)',
           boxShadow: done ? '0 2px 8px rgba(34,197,94,.4)' : 'none',
-          cursor: done ? 'default' : onCheck ? 'pointer' : 'default',
         }}
+        aria-hidden
       >
         {done && <span className="text-[14px] font-extrabold text-white">✓</span>}
-      </button>
+      </div>
 
       {/* Section badge */}
       <div
@@ -487,7 +860,17 @@ export function ProblemCard({
       </div>
 
       {/* Do button */}
-      {!done && (
+      {!done && onPractice && (
+        <button
+          type="button"
+          onClick={onPractice}
+          className="flex shrink-0 cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(249,115,22,.4)]"
+          style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+        >
+          做题 ✨
+        </button>
+      )}
+      {!done && !onPractice && (
         <Link
           href={problemDetailHref(prob.lessonId, prob.section, prob.index)}
           className="flex shrink-0 items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(249,115,22,.4)]"
@@ -510,6 +893,7 @@ export function WeeklyLessonSection({
   totalCount,
   isDone,
   onSkip,
+  onPractice,
 }: {
   problem: MathPlanProblem
   lessonId: string
@@ -518,6 +902,7 @@ export function WeeklyLessonSection({
   totalCount: number
   isDone: boolean
   onSkip: () => void
+  onPractice?: () => void
 }) {
   const sc = SECTION_COLOR[problem.section] ?? SECTION_COLOR.lesson
 
@@ -602,13 +987,24 @@ export function WeeklyLessonSection({
           <span className="animate-star-pop inline-block shrink-0 text-[20px]">⭐</span>
         ) : (
           <div className="flex shrink-0 items-center gap-2">
-            <Link
-              href={problemDetailHref(problem.lessonId, problem.section, problem.index)}
-              className="flex items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
-              style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
-            >
-              做题 ✨
-            </Link>
+            {onPractice ? (
+              <button
+                type="button"
+                onClick={onPractice}
+                className="flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
+              >
+                做题 ✨
+              </button>
+            ) : (
+              <Link
+                href={problemDetailHref(problem.lessonId, problem.section, problem.index)}
+                className="flex items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
+              >
+                做题 ✨
+              </Link>
+            )}
             <button
               type="button"
               onClick={onSkip}
@@ -627,11 +1023,11 @@ export function WeeklyLessonSection({
 export function OptionalSection({
   problems,
   doneKeys,
-  onCheck,
+  onPractice,
 }: {
   problems: MathPlanProblem[]
   doneKeys: Set<string>
-  onCheck?: (key: string) => void
+  onPractice?: (prob: MathPlanProblem) => void
 }) {
   const [expanded, setExpanded] = useState(false)
   const doneCount = problems.filter((p) => doneKeys.has(p.key)).length
@@ -667,7 +1063,9 @@ export function OptionalSection({
               key={prob.key}
               prob={prob}
               done={doneKeys.has(prob.key)}
-              onCheck={doneKeys.has(prob.key) ? undefined : () => onCheck?.(prob.key)}
+              onPractice={
+                doneKeys.has(prob.key) || !onPractice ? undefined : () => onPractice(prob)
+              }
             />
           ))}
         </div>
@@ -678,10 +1076,11 @@ export function OptionalSection({
 
 export function AllPlansList({
   plans,
-  currentWeekStart,
+  currentWeekStart: _currentWeekStart,
   onDelete,
   onEdit,
   defaultExpanded = false,
+  problemSets,
 }: {
   plans: MathWeeklyPlan[]
   currentWeekStart: string
@@ -689,8 +1088,20 @@ export function AllPlansList({
   onEdit: (plan: MathWeeklyPlan) => void
   /** 管理页应设为 true，避免计划列表默认折叠看不见 */
   defaultExpanded?: boolean
+  /** Used to resolve tagLabel for legacy plans missing it on stored problems */
+  problemSets?: Record<string, ProblemSet>
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded)
+  const [openDays, setOpenDays] = useState<Set<string>>(() => new Set())
+
+  const toggleDayPreview = (weekStart: string) => {
+    setOpenDays((prev) => {
+      const next = new Set(prev)
+      if (next.has(weekStart)) next.delete(weekStart)
+      else next.add(weekStart)
+      return next
+    })
+  }
 
   return (
     <div className="mb-5">
@@ -716,18 +1127,18 @@ export function AllPlansList({
           {plans.map((plan) => {
             const ids = plan.lessonIds ?? [plan.lessonId]
             const lessonInfo = MATH_PLAN_LESSONS.find(l => l.id === plan.lessonId) ?? MATH_PLAN_LESSONS[0]
-            const label =
-              ids.length === 1
-                ? (MATH_PLAN_LESSONS.find(l => l.id === ids[0])?.short ?? lessonInfo.short)
-                : `${ids.length} 个关卡`
+            const title = mathPlanDisplayName(plan)
             const t = todayStr()
             const isCurrent = plan.weekStart <= t && t <= planEndDate(plan)
             const endDate = planEndDate(plan)
             const isPast = endDate < todayStr()
+            const totalProblems = plan.days.reduce((sum, d) => sum + d.problems.length, 0)
+            const dayCount = plan.days.length
+            const daysOpen = openDays.has(plan.weekStart)
             return (
               <div
                 key={plan.weekStart}
-                className="flex items-center gap-3 rounded-lg px-3.5 py-3"
+                className="rounded-lg px-3.5 py-3"
                 style={{
                   background: isCurrent
                     ? `linear-gradient(135deg, ${lessonInfo.bg}, rgba(255,255,255,.6))`
@@ -736,46 +1147,61 @@ export function AllPlansList({
                   opacity: isPast && !isCurrent ? 0.7 : 1,
                 }}
               >
-                <span className="shrink-0 text-xl">{lessonInfo.emoji}</span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[12px] font-bold text-gray-700">
-                    {label}
-                    {isCurrent && (
-                      <span className="ml-1.5 rounded-full bg-orange-100 px-1.5 py-px text-[9px] font-extrabold text-orange-600">
-                        进行中
-                      </span>
-                    )}
-                    {isPast && !isCurrent && (
-                      <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-px text-[9px] font-bold text-gray-400">
-                        已过期
-                      </span>
-                    )}
+                <div className="flex items-center gap-3">
+                  <span className="shrink-0 text-xl">{ids.length === 1 ? lessonInfo.emoji : '📚'}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] font-bold text-gray-700">
+                      {title}
+                      {isCurrent && (
+                        <span className="ml-1.5 rounded-full bg-orange-100 px-1.5 py-px text-[9px] font-extrabold text-orange-600">
+                          进行中
+                        </span>
+                      )}
+                      {isPast && !isCurrent && (
+                        <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-px text-[9px] font-bold text-gray-400">
+                          已过期
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-0.5 text-[10px] text-gray-400">
+                      {fmtDate(plan.weekStart)} — {fmtDate(endDate)}
+                      <span className="mx-1 text-gray-300">·</span>
+                      截止 {fmtDate(endDate)}
+                    </div>
+                    <div className="mt-1 text-[10px] font-bold text-orange-600/80">
+                      {totalProblems} 题 · {dayCount} 天 · 每天约 {plan.problemsPerDay} 题
+                    </div>
                   </div>
-                  <div className="mt-0.5 text-[10px] text-gray-400">
-                    {fmtDate(plan.weekStart)} — {fmtDate(endDate)}
-                    <span className="mx-1 text-gray-300">·</span>
-                    截止 {fmtDate(endDate)}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleDayPreview(plan.weekStart)}
+                    className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 transition-all hover:scale-105 hover:text-gray-600"
+                    style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.07)' }}
+                    aria-expanded={daysOpen}
+                  >
+                    {daysOpen ? '收起' : '预览'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onEdit(plan)}
+                    className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 transition-all hover:scale-105 hover:text-gray-600"
+                    style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.07)' }}
+                  >
+                    编辑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(plan.weekStart)}
+                    className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-red-300 transition-all hover:scale-105 hover:text-red-500"
+                    style={{
+                      background: 'rgba(239,68,68,.06)',
+                      border: '1px solid rgba(239,68,68,.15)',
+                    }}
+                  >
+                    删除
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onEdit(plan)}
-                  className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 transition-all hover:scale-105 hover:text-gray-600"
-                  style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.07)' }}
-                >
-                  编辑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onDelete(plan.weekStart)}
-                  className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-red-300 transition-all hover:scale-105 hover:text-red-500"
-                  style={{
-                    background: 'rgba(239,68,68,.06)',
-                    border: '1px solid rgba(239,68,68,.15)',
-                  }}
-                >
-                  删除
-                </button>
+                {daysOpen && <PlanPreviewCalendar plan={plan} problemSets={problemSets} />}
               </div>
             )
           })}

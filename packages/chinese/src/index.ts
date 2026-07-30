@@ -11,6 +11,7 @@ export { useChineseCharData, buildLessonGroups } from './hooks/useChineseCharDat
 export { useChineseCharAdmin } from './hooks/useChineseCharAdmin'
 export type { CharEntryPatch, LessonPatch } from './hooks/useChineseCharAdmin'
 export { useChineseWeeklyPlan } from './hooks/useChineseWeeklyPlan'
+export { useActiveChineseBook } from './hooks/useActiveChineseBook'
 export { useChineseWrong } from './hooks/useChineseWrong'
 export type { ChineseWrongRow, ChineseWrongKind, ChineseWrongItemType } from './hooks/useChineseWrong'
 

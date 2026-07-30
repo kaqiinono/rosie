@@ -2,11 +2,16 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import type { ProblemSet } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { AllPlansList } from './math-weekly-plan-shared'
 
-export default function MathWeeklyPlanManage() {
+type Props = {
+  problemSets?: Record<string, ProblemSet>
+}
+
+export default function MathWeeklyPlanManage({ problemSets }: Props) {
   const router = useRouter()
   const { user } = useAuth()
   const { allPlans, currentWeekStart, deletePlan, isLoading } = useMathWeeklyPlan(user)
@@ -21,7 +26,7 @@ export default function MathWeeklyPlanManage() {
   }
 
   return (
-    <div className="mx-auto max-w-160 px-4 py-6">
+    <div className="mx-auto max-w-6xl px-4 py-6 md:px-6">
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
           <h1 className="text-[20px] font-extrabold text-orange-900">数学计划</h1>
@@ -62,6 +67,7 @@ export default function MathWeeklyPlanManage() {
           plans={allPlans}
           currentWeekStart={currentWeekStart ?? ''}
           defaultExpanded
+          problemSets={problemSets}
           onDelete={deletePlan}
           onEdit={(plan) => {
             router.push(`/admin/plans/math/${encodeURIComponent(plan.weekStart)}`)

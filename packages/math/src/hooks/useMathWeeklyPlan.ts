@@ -8,7 +8,7 @@ import { planEndDate } from '@rosie/math/utils/math-helpers'
 
 const SYSTEM_DEFAULTS = { weekStartDay: 4, problemsPerDay: 3 }
 
-type PlanMeta = Pick<MathWeeklyPlan, 'planEnd' | 'lessonIds' | 'sectionFilters' | 'tagFilters'>
+type PlanMeta = Pick<MathWeeklyPlan, 'planEnd' | 'name' | 'lessonIds' | 'sectionFilters' | 'tagFilters'>
 
 type ProgressPayload = Record<string, MathDayProgress | PlanMeta | undefined> & {
   __planMeta?: PlanMeta
@@ -25,6 +25,7 @@ function withPlanMeta(plan: MathWeeklyPlan): ProgressPayload {
     ...plan.progress,
     __planMeta: {
       planEnd: plan.planEnd,
+      name: plan.name,
       lessonIds: plan.lessonIds,
       sectionFilters: plan.sectionFilters,
       tagFilters: plan.tagFilters,
@@ -45,6 +46,7 @@ async function loadAllPlansFromCloud(userId: string): Promise<MathWeeklyPlan[]> 
       return {
         weekStart: row.week_start,
         planEnd: meta?.planEnd,
+        name: meta?.name,
         lessonId: row.lesson_id,
         lessonIds: meta?.lessonIds,
         sectionFilters: meta?.sectionFilters,

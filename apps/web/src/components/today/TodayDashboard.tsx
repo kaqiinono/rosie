@@ -18,6 +18,7 @@ import { todayStr } from '@rosie/core'
 import { findPassage, parseFocusLessonKey } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
 import AdaptivePlanTodayCard from './AdaptivePlanTodayCard'
+import { buildTodayPlanCards, TodayPlanOverviewCards } from './TodayPlanOverview'
 
 function wordKeyStr(e: WordEntry): string {
   return `${e.unit}::${e.lesson}::${e.word}`
@@ -340,150 +341,46 @@ function TodayDashboardInner() {
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
   const calcAccuracy = calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
+  const overviewCards = buildTodayPlanCards({
+    calc: {
+      done: calcDoneCount,
+      target: calcTargetCount,
+      coins: calcDaily.todayCoins,
+      accuracy: calcAccuracy,
+      allDone: calcAllDone,
+    },
+    english: {
+      doneCount: englishDone ? todayWords.length : 0,
+      total: todayWords.length,
+      lastScore: englishProgress?.lastScore,
+      allDone: englishDone,
+      href: englishPlan?.id ? `/english/words/weekly/${englishPlan.id}` : '/english/words/daily',
+    },
+    math: {
+      done: mathDoneCount,
+      total: mathProblems.length,
+      allDone: mathAllDone,
+    },
+    chinese: {
+      done: chinese.allDone ? '✓' : chinese.done,
+      total: chinese.allDone ? null : chinese.total,
+      subtitle: chinese.allDone
+        ? '本册通关 🎉'
+        : chinese.lessonDone
+          ? '本关完成 🎉'
+          : (chinese.currentNode?.lessonTitle ?? '当前关卡'),
+      pct: chinesePct,
+      allDone: chineseDone,
+      href: chineseRoute(chinese.bookSlug, 'daily'),
+    },
+  })
+
   return (
     <div className="mx-auto max-w-[640px] px-4 pb-12">
 
       {/* Stats cards row */}
       {(hasMath || hasEnglish || hasChinese) && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          {/* Math card */}
-          <div
-            className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
-            style={{
-              background: mathAllDone
-                ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
-                : 'linear-gradient(135deg, #fff7ed, #fef3c7)',
-              border: `1.5px solid ${mathAllDone ? 'rgba(34,197,94,.3)' : 'rgba(251,146,60,.25)'}`,
-              boxShadow: mathAllDone ? '0 4px 16px rgba(34,197,94,.12)' : '0 4px 16px rgba(251,146,60,.1)',
-            }}
-          >
-            <div className="absolute -right-2 -top-2 text-3xl opacity-15">📐</div>
-            <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: mathAllDone ? '#16a34a' : '#c2410c' }}>
-              数学
-            </div>
-            <div className="text-[26px] font-black leading-none" style={{ color: mathAllDone ? '#15803d' : '#ea580c' }}>
-              {mathDoneCount}<span className="text-[16px] font-semibold opacity-60">/{mathProblems.length}</span>
-            </div>
-            <div className="text-[10px] mt-1 font-medium" style={{ color: mathAllDone ? '#16a34a' : '#9a3412' }}>
-              {mathAllDone ? '全部完成 🎉' : `还剩 ${mathProblems.length - mathDoneCount} 题`}
-            </div>
-            {/* progress bar */}
-            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,.08)' }}>
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${mathProblems.length > 0 ? (mathDoneCount / mathProblems.length) * 100 : 0}%`,
-                  background: mathAllDone ? '#22c55e' : '#f97316',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* English card */}
-          <div
-            className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
-            style={{
-              background: englishDone
-                ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
-                : 'linear-gradient(135deg, #f0fdf4, #ecfdf5)',
-              border: `1.5px solid ${englishDone ? 'rgba(34,197,94,.3)' : 'rgba(16,185,129,.2)'}`,
-              boxShadow: englishDone ? '0 4px 16px rgba(34,197,94,.12)' : '0 4px 16px rgba(16,185,129,.08)',
-            }}
-          >
-            <div className="absolute -right-2 -top-2 text-3xl opacity-15">📖</div>
-            <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: englishDone ? '#16a34a' : '#0f766e' }}>
-              英语
-            </div>
-            <div className="text-[26px] font-black leading-none" style={{ color: englishDone ? '#15803d' : '#0d9488' }}>
-              {englishDone ? todayWords.length : 0}<span className="text-[16px] font-semibold opacity-60">/{todayWords.length}</span>
-            </div>
-            <div className="text-[10px] mt-1 font-medium" style={{ color: englishDone ? '#16a34a' : '#115e59' }}>
-              {englishDone ? `得分 ${englishProgress?.lastScore ?? 0}% 🎉` : `${todayWords.length} 个新词待学`}
-            </div>
-            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,.08)' }}>
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: englishDone ? '100%' : '0%',
-                  background: '#10b981',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Chinese card — roadmap current level */}
-          {hasChinese && (
-            <div
-              className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
-              style={{
-                background: chineseDone
-                  ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
-                  : 'linear-gradient(135deg, #fffbeb, #fef3c7)',
-                border: `1.5px solid ${chineseDone ? 'rgba(34,197,94,.3)' : 'rgba(245,158,11,.25)'}`,
-                boxShadow: chineseDone ? '0 4px 16px rgba(34,197,94,.12)' : '0 4px 16px rgba(245,158,11,.1)',
-              }}
-            >
-              <div className="absolute -right-2 -top-2 text-3xl opacity-15">📜</div>
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: chineseDone ? '#16a34a' : '#b45309' }}>
-                语文
-              </div>
-              <div className="text-[26px] font-black leading-none" style={{ color: chineseDone ? '#15803d' : '#d97706' }}>
-                {chinese.allDone ? '✓' : chinese.done}
-                {!chinese.allDone && (
-                  <span className="text-[16px] font-semibold opacity-60">/{chinese.total}</span>
-                )}
-              </div>
-              <div className="text-[10px] mt-1 font-medium truncate" style={{ color: chineseDone ? '#16a34a' : '#92400e' }}>
-                {chinese.allDone
-                  ? '本册通关 🎉'
-                  : chinese.lessonDone
-                    ? '本关完成 🎉'
-                    : chinese.currentNode?.lessonTitle ?? '当前关卡'}
-              </div>
-              <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,.08)' }}>
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{
-                    width: `${chinesePct}%`,
-                    background: chineseDone ? '#22c55e' : '#f59e0b',
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Calc card */}
-          <div
-            className="rounded-2xl px-4 py-3.5 relative overflow-hidden"
-            style={{
-              background: calcAllDone
-                ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
-                : 'linear-gradient(135deg, #f3e8ff, #fae8ff)',
-              border: `1.5px solid ${calcAllDone ? 'rgba(34,197,94,.3)' : 'rgba(139,92,246,.25)'}`,
-              boxShadow: calcAllDone ? '0 4px 16px rgba(34,197,94,.12)' : '0 4px 16px rgba(139,92,246,.1)',
-            }}
-          >
-            <div className="absolute -right-2 -top-2 text-3xl opacity-15">🧮</div>
-            <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: calcAllDone ? '#16a34a' : '#7c3aed' }}>
-              口算
-            </div>
-            <div className="text-[26px] font-black leading-none" style={{ color: calcAllDone ? '#15803d' : '#8b5cf6' }}>
-              {calcDoneCount}<span className="text-[16px] font-semibold opacity-60">/{calcTargetCount}</span>
-            </div>
-            <div className="text-[10px] mt-1 font-medium" style={{ color: calcAllDone ? '#16a34a' : '#6d28d9' }}>
-              {calcAllDone ? `🎉 完成 · 得 ${calcDaily.todayCoins}⭐` : (calcDoneCount > 0 ? `正确率 ${calcAccuracy}%` : '今日还未练习')}
-            </div>
-            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,.08)' }}>
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${calcTargetCount > 0 ? Math.min(100, (calcDoneCount / calcTargetCount) * 100) : 0}%`,
-                  background: calcAllDone ? '#22c55e' : '#8b5cf6',
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <TodayPlanOverviewCards cards={overviewCards} className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4" />
       )}
 
       {/* English section */}

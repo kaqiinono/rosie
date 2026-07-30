@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathSkipped } from '@rosie/math/hooks/useMathSkipped'
+import { MATH_SKIP_REASON_OPTIONS, type MathSkipReason } from '@rosie/math/utils/math-skip-reasons'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
 import { SOURCE_LABELS } from '@rosie/core'
@@ -341,10 +343,13 @@ function SeaGrid({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
+type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
+type SkipReasonFilter = 'all' | MathSkipReason
 
 export default function MathSeaPage() {
   const { user } = useAuth()
   const { solveCount, solvedAt } = useMathSolved(user)
+  const { skippedMap } = useMathSkipped(user)
   const startPractice = useStartPracticeQueue()
   const searchParams = useSearchParams()
 
@@ -377,6 +382,8 @@ export default function MathSeaPage() {
     new Set(['pretest', 'lesson', 'homework', 'workbook', 'supplement'])
   )
   const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all')
+  const [practiceFilter, setPracticeFilter] = useState<PracticeFilter>('all')
+  const [skipReasonFilter, setSkipReasonFilter] = useState<SkipReasonFilter>('all')
   const [selectedDifficulties, setSelectedDifficulties] = useState<Set<ProblemDifficulty>>(
     () => new Set(ALL_DIFFICULTY_LEVELS),
   )
@@ -539,13 +546,16 @@ export default function MathSeaPage() {
       if (masteryFilter === 'unstarted' && c > 0) return false
       if (masteryFilter === 'reinforce' && (c === 0 || c >= 3)) return false
       if (masteryFilter === 'mastered' && c < 3) return false
+      if (practiceFilter === 'unpracticed' && c > 0) return false
+      if (practiceFilter === 'practiced' && c === 0) return false
+      if (skipReasonFilter !== 'all' && skippedMap[sp.problem.id]?.reason !== skipReasonFilter) return false
       if (q) {
         const hay = `${sp.problem.title} ${sp.problem.text} ${sp.problem.tagLabel}`.toLowerCase()
         if (!hay.includes(q)) return false
       }
       return true
     })
-  }, [search, selectedLessons, selectedSections, selectedTypes, selectedDifficulties, masteryFilter, solveCount])
+  }, [search, selectedLessons, selectedSections, selectedTypes, selectedDifficulties, masteryFilter, practiceFilter, skipReasonFilter, solveCount, skippedMap])
 
   const stats = useMemo(() => {
     const total = filtered.length
@@ -568,6 +578,17 @@ export default function MathSeaPage() {
     { key: 'unstarted', label: '⬛ 未做' },
     { key: 'reinforce', label: '🌱 需巩固' },
     { key: 'mastered', label: '🦋 已掌握' },
+  ]
+
+  const PRACTICE_BTNS: { key: PracticeFilter; label: string }[] = [
+    { key: 'all', label: '全部' },
+    { key: 'unpracticed', label: '✨ 未练习' },
+    { key: 'practiced', label: '练过' },
+  ]
+
+  const SKIP_BTNS: { key: SkipReasonFilter; label: string }[] = [
+    { key: 'all', label: '全部' },
+    ...MATH_SKIP_REASON_OPTIONS.map((o) => ({ key: o.key as SkipReasonFilter, label: o.label })),
   ]
 
   const beginPractice = useCallback(
@@ -830,6 +851,36 @@ export default function MathSeaPage() {
                         </button>
                       ))}
                     </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="sea-section-label mb-2">练习</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PRACTICE_BTNS.map(b => (
+                      <button
+                        key={b.key}
+                        onClick={() => { setPracticeFilter(b.key); setPage(1) }}
+                        className={`sea-chip-${practiceFilter === b.key ? 'on' : 'off'} cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-semibold transition-all active:scale-95`}
+                      >
+                        {b.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="sea-section-label mb-2">跳过</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {SKIP_BTNS.map(b => (
+                      <button
+                        key={b.key}
+                        onClick={() => { setSkipReasonFilter(b.key); setPage(1) }}
+                        className={`sea-chip-${skipReasonFilter === b.key ? 'on' : 'off'} cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-semibold transition-all active:scale-95`}
+                      >
+                        {b.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

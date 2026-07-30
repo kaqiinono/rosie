@@ -5,6 +5,7 @@ import { ModuleCard } from '@rosie/ui'
 import { useGreeting } from '@/hooks/useGreeting'
 import { useHomeStats } from '@/hooks/useHomeStats'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
+import HomeTodayPanel from '@/components/HomeTodayPanel'
 import { useAuth } from '@rosie/core'
 import type { ModuleCardData } from '@rosie/core'
 
@@ -48,16 +49,6 @@ const baseModules: ModuleCardData[] = [
     stats: ['加减乘除闯关', '金币兑换奖券', '错题本'],
     enterText: '开始口算',
     icon: '🧮',
-  },
-  {
-    href: '/today',
-    title: '今日计划',
-    description: '一键查看今天的数学题目和英语单词，高效完成每日任务。',
-    tag: 'TODAY',
-    variant: 'today',
-    stats: ['数学每日一练', '英语每日一练', '进度追踪'],
-    enterText: '查看今日计划',
-    icon: '🗓️',
   },
   {
     href: '/mistakes',
@@ -134,6 +125,8 @@ export default function HomePage() {
             {username ?? 'Rosie'} 的学习乐园
           </h1>
         </section>
+
+        <HomeTodayPanel />
 
         {user && <HomeStatsPanel stats={stats} isLoading={statsLoading} />}
 

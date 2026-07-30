@@ -9,18 +9,28 @@ import MasonryGrid from '@rosie/math/components/shared/MasonryGrid'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
 import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
 import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
+import { useAuth } from '@rosie/core'
+import { useMathSkipped } from '@rosie/math/hooks/useMathSkipped'
+import {
+  MATH_SKIP_REASON_OPTIONS,
+  type MathSkipReason,
+} from '@rosie/math/utils/math-skip-reasons'
 import type { SeaProblem } from '@rosie/math/utils/sea-data'
 import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
+import type { MathSkippedMap } from '@rosie/math/hooks/useMathSkipped'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 export type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
+/** `all` = no skip filter; otherwise only problems skipped with that reason. */
+export type SkipReasonFilter = 'all' | MathSkipReason
 
 export interface Filters {
   source: Set<string>
   type: Set<string>
   mastery: MasteryFilter
   practice: PracticeFilter
+  skipReason: SkipReasonFilter
   difficulty: Set<ProblemDifficulty>
 }
 
@@ -31,6 +41,7 @@ export interface FilterPanelProps {
   onToggleFilter: (axis: 'source' | 'type' | 'difficulty', value: string) => void
   onSetMastery: (value: MasteryFilter) => void
   onSetPractice: (value: PracticeFilter) => void
+  onSetSkipReason: (value: SkipReasonFilter) => void
 }
 
 interface FilterPanelTheme {
@@ -72,6 +83,11 @@ const PRACTICE_BTNS: { key: PracticeFilter; label: string }[] = [
   { key: 'practiced',   label: '练过' },
 ]
 
+const SKIP_BTNS: { key: SkipReasonFilter; label: string }[] = [
+  { key: 'all', label: '全部' },
+  ...MATH_SKIP_REASON_OPTIONS.map((o) => ({ key: o.key as SkipReasonFilter, label: o.label })),
+]
+
 function matchesMastery(count: number, mastery: MasteryFilter): boolean {
   if (mastery === 'all') return true
   if (mastery === 'unstarted') return count === 0
@@ -87,6 +103,15 @@ function matchesPractice(count: number, practice: PracticeFilter): boolean {
   return true
 }
 
+function matchesSkipReason(
+  problemId: string,
+  skipReason: SkipReasonFilter,
+  skippedMap: MathSkippedMap,
+): boolean {
+  if (skipReason === 'all') return true
+  return skippedMap[problemId]?.reason === skipReason
+}
+
 export function createFilterPanel(
   config: FilterPanelConfig,
   ProblemDetailComponent: ProblemDetailInlineComponent,
@@ -98,8 +123,18 @@ export function createFilterPanel(
     return `${base}/${setName}/${indexInSet + 1}`
   }
 
-  return function FilterPanel({ problems, solveCount, filters, onToggleFilter, onSetMastery, onSetPractice }: FilterPanelProps) {
+  return function FilterPanel({
+    problems,
+    solveCount,
+    filters,
+    onToggleFilter,
+    onSetMastery,
+    onSetPractice,
+    onSetSkipReason,
+  }: FilterPanelProps) {
+    const { user } = useAuth()
     const { favorites } = useMathFavoritesContext()
+    const { skippedMap } = useMathSkipped(user)
     const startPractice = useStartPracticeQueue()
     const [favOnly, setFavOnly] = useState(false)
     const [autoExpand, setAutoExpand] = useState(false)
@@ -117,6 +152,7 @@ export function createFilterPanel(
         filters.difficulty.has(p.difficulty) &&
         matchesMastery(solveCount[p.id] ?? 0, filters.mastery) &&
         matchesPractice(solveCount[p.id] ?? 0, filters.practice) &&
+        matchesSkipReason(p.id, filters.skipReason, skippedMap) &&
         (!favOnly || favorites.has(p.id)),
     )
     const total = filtered.length
@@ -217,6 +253,16 @@ export function createFilterPanel(
               {PRACTICE_BTNS.map(b => (
                 <button key={b.key} onClick={() => onSetPractice(b.key)}
                   className={`${btnBase} ${filters.practice === b.key ? btnOn : btnOff}`}>{b.label}</button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-2">
+            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>⏭ 跳过</div>
+            <div className="flex flex-wrap gap-1.5">
+              {SKIP_BTNS.map(b => (
+                <button key={b.key} onClick={() => onSetSkipReason(b.key)}
+                  className={`${btnBase} ${filters.skipReason === b.key ? btnOn : btnOff}`}>{b.label}</button>
               ))}
             </div>
           </div>

@@ -19,8 +19,11 @@ import ProblemMasteryPanel from './ProblemMasteryPanel'
 import { todayStr } from '@rosie/core'
 import { compareLessonIds } from '@rosie/math/utils/lesson-registry'
 import type { MathPlanProblem, ProblemSet } from '@rosie/core'
+import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { mathPlanProblemsToQueueItems } from '@rosie/math/utils/practice-queue-from-plan'
 import {
   MATH_PLAN_LESSONS,
+  mathPlanDisplayName,
   fmtDate,
   fmtPlanRange,
   dayLabel,
@@ -30,6 +33,7 @@ import {
   WeeklyLessonSection,
   OptionalSection,
 } from './math-weekly-plan-shared'
+import MathPlanMap from './MathPlanMap'
 
 // ── Main Component ────────────────────────────────────────────────────────────
 interface Props {
@@ -49,6 +53,7 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
   const { solveCount } = useMathSolved(user)
   const { wrongIds } = useMathWrong(user)
+  const startPractice = useStartPracticeQueue()
 
   const today = todayStr()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -110,12 +115,18 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
     }
   }, [weeklyPlan, solveCount, isLoading, addDoneKey, recordProblemResult])
 
-  const handleCheckProblem = useCallback(
-    async (date: string, key: string) => {
-      await addDoneKey(date, key)
-      recordProblemResult(key, true)
+  const beginPractice = useCallback(
+    (pool: MathPlanProblem[], initialProblemId: string, title = '每日一练') => {
+      const items = mathPlanProblemsToQueueItems(pool, problemSets)
+      if (items.length === 0) return
+      startPractice({
+        pool: items,
+        title,
+        initialProblemId,
+        returnHref: '/math/ny/plan',
+      })
     },
-    [addDoneKey, recordProblemResult],
+    [problemSets, startPractice],
   )
 
   const allPlanProblems: MathPlanProblem[] = useMemo(() => {
@@ -268,7 +279,7 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
 
     return (
       <>
-        <div className="mx-auto max-w-160 px-4 py-6">
+        <div className="mx-auto w-full px-4 py-6 md:px-6">
           <div
             className="mb-5 rounded-2xl px-5 py-10 text-center"
             style={{
@@ -349,10 +360,7 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
   // ── Week View ───────────────────────────────────────────────────────────────
   const planLessonIds = activePlanLessonIds
   const lessonInfo = MATH_PLAN_LESSONS.find(l => l.id === weeklyPlan.lessonId) ?? MATH_PLAN_LESSONS[0]
-  const headerTitle =
-    planLessonIds.length === 1
-      ? (MATH_PLAN_LESSONS.find(l => l.id === planLessonIds[0])?.short ?? lessonInfo.short)
-      : `${planLessonIds.length} 个关卡`
+  const headerTitle = mathPlanDisplayName(weeklyPlan)
   const headerEmoji = planLessonIds.length === 1 ? lessonInfo.emoji : '📚'
   const dayPlan = selectedDate ? weeklyPlan.days.find((d) => d.date === selectedDate) : null
   const dayProgress = weeklyPlan.progress[selectedDate ?? ''] ?? { doneKeys: [] }
@@ -364,7 +372,7 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
 
   return (
     <>
-      <div className="mx-auto max-w-160 px-4 py-6">
+      <div className="mx-auto w-full px-4 py-6 md:px-6">
         {/* Week header */}
         <div
           className="mb-5 rounded-2xl px-5 py-4"
@@ -388,81 +396,14 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
           </div>
         </div>
 
-        {/* 7-day stepping stones */}
-        <div className="mb-5">
-          <div className="mb-3 flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-orange-400 uppercase">
-            <span>🗺️</span> 计划地图
-          </div>
-          <div className={weeklyPlan.days.length > 7 ? 'overflow-x-auto pb-1' : ''}>
-          <div
-            className={`grid gap-1.5 ${weeklyPlan.days.length <= 7 ? 'grid-cols-7' : ''}`}
-            style={
-              weeklyPlan.days.length > 7
-                ? { gridTemplateColumns: `repeat(${weeklyPlan.days.length}, minmax(44px, 1fr))`, minWidth: `${weeklyPlan.days.length * 52}px` }
-                : undefined
-            }
-          >
-            {weeklyPlan.days.map((day) => {
-              const prog = weeklyPlan.progress[day.date] ?? { doneKeys: [] }
-              const total = day.problems.length
-              const done = prog.doneKeys.filter((k) => day.problems.some((p) => p.key === k)).length
-              const isToday = day.date === today
-              const isPast = day.date < today
-              const isSelected = day.date === selectedDate
-              const isComplete = total > 0 && done >= total
-
-              let bg = 'rgba(255,255,255,.7)'
-              let border = 'rgba(0,0,0,.08)'
-              let textClr = '#9ca3af'
-              let shadow = 'none'
-
-              if (isComplete) {
-                bg = 'linear-gradient(135deg,#86efac,#4ade80)'
-                border = '#22c55e'
-                textClr = '#166534'
-                shadow = '0 2px 8px rgba(34,197,94,.25)'
-              } else if (isToday) {
-                bg = 'linear-gradient(135deg,#fed7aa,#fbbf24)'
-                border = '#f97316'
-                textClr = '#92400e'
-                shadow = '0 3px 12px rgba(249,115,22,.3)'
-              } else if (isPast && total > 0) {
-                bg = 'rgba(254,202,202,.5)'
-                border = 'rgba(239,68,68,.3)'
-                textClr = '#ef4444'
-              }
-              if (isSelected) {
-                shadow = `0 4px 16px ${isComplete ? 'rgba(34,197,94,.4)' : isToday ? 'rgba(249,115,22,.4)' : 'rgba(0,0,0,.12)'}`
-              }
-
-              return (
-                <button
-                  key={day.date}
-                  type="button"
-                  onClick={() => setSelectedDate(day.date)}
-                  className="flex cursor-pointer flex-col items-center rounded-[14px] px-1 py-2.5 text-center transition-all duration-200 hover:scale-105"
-                  style={{
-                    background: bg,
-                    border: `2px solid ${border}`,
-                    boxShadow: shadow,
-                    transform: isSelected ? 'scale(1.08)' : undefined,
-                  }}
-                >
-                  <div className="mb-0.5 text-[9px] font-bold" style={{ color: textClr }}>
-                    {dayLabel(day.date)}
-                  </div>
-                  <div className="text-[14px] font-extrabold" style={{ color: textClr }}>
-                    {fmtDate(day.date).split('/')[1]}
-                  </div>
-                  <div className="mt-0.5 text-[10px] font-bold" style={{ color: textClr }}>
-                    {isComplete ? '⭐' : total > 0 ? `${done}/${total}` : '—'}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-          </div>
-        </div>
+        {/* Plan map: week (Mon–Sun) / month calendar */}
+        <MathPlanMap
+          plan={weeklyPlan}
+          problemSets={problemSets}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+          today={today}
+        />
 
         {/* Today shortcut */}
         {selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) && (
@@ -573,10 +514,10 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                       prob={prob}
                       done={doneKeys.has(prob.key)}
                       isWrong={wrongIds.has(prob.problemId)}
-                      onCheck={
+                      onPractice={
                         doneKeys.has(prob.key)
                           ? undefined
-                          : () => handleCheckProblem(selectedDate!, prob.key)
+                          : () => beginPractice(dayPlan.problems, prob.problemId)
                       }
                     />
                   ))}
@@ -607,6 +548,11 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                           prob={prob}
                           done={!wrongIds.has(prob.problemId)}
                           isWrong
+                          onPractice={
+                            wrongIds.has(prob.problemId)
+                              ? () => beginPractice(extraWrong, prob.problemId, '错题巩固')
+                              : undefined
+                          }
                         />
                       ))}
                     </div>
@@ -636,6 +582,11 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                           prob={prob}
                           done={isCompletedToday(prob.key)}
                           isReview
+                          onPractice={
+                            isCompletedToday(prob.key)
+                              ? undefined
+                              : () => beginPractice(rotatingReviews, prob.problemId, '知识点复习')
+                          }
                         />
                       ))}
                     </div>
@@ -653,8 +604,21 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                       {reviewKeys[selectedDate!].map((key) => {
                         const found = allProblemMap[key]
                         if (!found) return null
+                        const reviewPool = reviewKeys[selectedDate!]
+                          .map((k) => allProblemMap[k])
+                          .filter((p): p is MathPlanProblem => p != null)
                         return (
-                          <ProblemCard key={key} prob={found} done={doneKeys.has(key)} isReview />
+                          <ProblemCard
+                            key={key}
+                            prob={found}
+                            done={doneKeys.has(key)}
+                            isReview
+                            onPractice={
+                              doneKeys.has(key)
+                                ? undefined
+                                : () => beginPractice(reviewPool, found.problemId, '旧讲复习')
+                            }
+                          />
                         )
                       })}
                     </div>
@@ -675,6 +639,16 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                 totalCount={(priorLessonProbs[weeklyLessonId!] ?? []).length}
                 isDone={weeklyLessonIsDone}
                 onSkip={markWeeklyLessonSkipped}
+                onPractice={
+                  weeklyLessonIsDone
+                    ? undefined
+                    : () =>
+                        beginPractice(
+                          [weeklyLessonProblem],
+                          weeklyLessonProblem.problemId,
+                          '本周旧讲',
+                        )
+                }
               />
             )}
 
@@ -683,7 +657,9 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
               <OptionalSection
                 problems={dayPlan.optionalProblems}
                 doneKeys={doneKeys}
-                onCheck={(key) => handleCheckProblem(selectedDate!, key)}
+                onPractice={(prob) =>
+                  beginPractice(dayPlan.optionalProblems, prob.problemId, '选做题')
+                }
               />
             )}
 

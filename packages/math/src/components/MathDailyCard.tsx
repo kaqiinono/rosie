@@ -4,11 +4,7 @@ import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { todayStr } from '@rosie/core'
-
-const LESSON_INFO: Record<string, { emoji: string; short: string }> = {
-  '35': { emoji: '🐦', short: '归一问题' },
-  '36': { emoji: '📅', short: '星期几问题' },
-}
+import { MATH_PLAN_LESSONS, mathPlanDisplayName } from './math-weekly-plan-shared'
 
 export default function MathDailyCard() {
   const { user } = useAuth()
@@ -21,7 +17,10 @@ export default function MathDailyCard() {
   const done = progress.doneKeys.filter((k) => todayPlan?.problems.some((p) => p.key === k)).length
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
   const allDone = total > 0 && done >= total
-  const info = LESSON_INFO[weeklyPlan?.lessonId ?? ''] ?? null
+  const lessonInfo = weeklyPlan
+    ? (MATH_PLAN_LESSONS.find((l) => l.id === weeklyPlan.lessonId) ?? MATH_PLAN_LESSONS[0])
+    : null
+  const displayName = weeklyPlan ? mathPlanDisplayName(weeklyPlan) : null
 
   return (
     <Link
@@ -41,18 +40,18 @@ export default function MathDailyCard() {
       <div className="relative px-5 py-4">
         {/* Header row */}
         <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="animate-wiggle inline-block text-xl">⭐</span>
-            <span className="text-[14px] font-extrabold tracking-tight text-orange-800">
+            <span className="shrink-0 text-[14px] font-extrabold tracking-tight text-orange-800">
               周计划
             </span>
-            {info && (
-              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
-                {info.emoji} {info.short}
+            {displayName && (
+              <span className="truncate rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
+                {lessonInfo?.emoji ? `${lessonInfo.emoji} ` : ''}{displayName}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1 text-[12px] font-bold text-orange-500 transition-transform group-hover:translate-x-0.5">
+          <div className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-orange-500 transition-transform group-hover:translate-x-0.5">
             {(() => {
               if (isLoading) return '…'
               if (!weeklyPlan) return '暂无计划'

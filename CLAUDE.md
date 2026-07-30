@@ -99,6 +99,17 @@ ANTHROPIC_MODEL=   # optional, defaults to claude-haiku-4-5-20251001
 
 If `ANTHROPIC_API_KEY` is unset, the `/api/word-enrich` route returns 503 and the client auto-fill falls back to the free dictionary API (dictionaryapi.dev).
 
+Optional (enables Pexels auto-fill for word images, `/api/word-image`, used by the word-library「自动配图」flow):
+
+```
+PEXELS_API_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` is also used by `/api/forgot-password`. Both keys are server-only —
+never expose them with a `NEXT_PUBLIC_` prefix. If `PEXELS_API_KEY` or `SUPABASE_SERVICE_ROLE_KEY`
+is unset, `/api/word-image` returns 503 (`no_pexels_key` / `no_service_role`).
+
 Locally, env lives in `apps/web/.env.local` (moved there with the app in the monorepo migration).
 
 ## Deploying to Vercel
@@ -126,6 +137,7 @@ This is a Next.js 15 App Router PWA for elementary school math and English learn
 `/admin` is a parent/admin hub (card menu). Sub-pages:
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.
+- `/admin/word-images` — Pexels auto-match + match-score review / replace / upload for vocabulary illustrations (Storage bucket `word-images`).
 - `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
 - `/admin/word-audit` — read-only data audit
 

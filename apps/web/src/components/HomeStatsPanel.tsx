@@ -16,13 +16,13 @@ type StatItem = {
 function buildItems(stats: HomeStats): StatItem[] {
   return [
     {
-      href: '/math',
-      icon: '🔢',
-      label: '数学',
-      value: `${stats.mathPracticed}/${stats.mathTotal}`,
-      hint: '已练 / 总题',
-      accent: 'text-indigo-700',
-      accentBg: 'from-blue-50 to-indigo-50 border-indigo-100',
+      href: '/calc',
+      icon: '🧮',
+      label: '口算',
+      value: String(stats.calcTotal),
+      hint: stats.calcPracticeDays > 0 ? `累计题 · ${stats.calcPracticeDays} 天` : '累计题',
+      accent: 'text-violet-700',
+      accentBg: 'from-violet-50 to-fuchsia-50 border-violet-100',
     },
     {
       href: '/english',
@@ -32,6 +32,15 @@ function buildItems(stats: HomeStats): StatItem[] {
       hint: stats.englishTotal > 0 ? `已练 · 词库 ${stats.englishTotal}` : '已练单词',
       accent: 'text-emerald-700',
       accentBg: 'from-emerald-50 to-cyan-50 border-emerald-100',
+    },
+    {
+      href: '/math',
+      icon: '🔢',
+      label: '数学',
+      value: `${stats.mathPracticed}/${stats.mathTotal}`,
+      hint: '已练 / 总题',
+      accent: 'text-indigo-700',
+      accentBg: 'from-blue-50 to-indigo-50 border-indigo-100',
     },
     {
       href: '/chinese',
@@ -44,15 +53,6 @@ function buildItems(stats: HomeStats): StatItem[] {
       hint: stats.chineseRecognizeTotal > 0 ? '已认 / 会认' : '已认字',
       accent: 'text-orange-700',
       accentBg: 'from-orange-50 to-rose-50 border-orange-100',
-    },
-    {
-      href: '/calc',
-      icon: '🧮',
-      label: '口算',
-      value: String(stats.calcTotal),
-      hint: stats.calcPracticeDays > 0 ? `累计题 · ${stats.calcPracticeDays} 天` : '累计题',
-      accent: 'text-violet-700',
-      accentBg: 'from-violet-50 to-fuchsia-50 border-violet-100',
     },
     {
       href: '/mistakes',

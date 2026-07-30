@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import MathWeeklyPlanManage from '@rosie/math/components/MathWeeklyPlanManage'
+import { MATH_PLAN_PROBLEM_SETS } from '@/lib/math-plan-problem-sets'
 
 export default function AdminMathPlansPage() {
   return (
@@ -20,7 +21,7 @@ export default function AdminMathPlansPage() {
           borderBottom: '2px solid rgba(251,146,60,.2)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[800px] items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-6">
           <Link
             href="/admin/plans"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline"
@@ -31,7 +32,7 @@ export default function AdminMathPlansPage() {
           <span className="text-[17px] font-extrabold text-orange-800">数学计划管理</span>
         </div>
       </div>
-      <MathWeeklyPlanManage />
+      <MathWeeklyPlanManage problemSets={MATH_PLAN_PROBLEM_SETS} />
     </div>
   )
 }
