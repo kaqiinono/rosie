@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { createUserSessionStore, supabase } from '@rosie/core'
 import {
   FLIPBOOK_BUCKET,
   flipbookAudioPath,
@@ -70,37 +70,27 @@ function rowToBook(row: RawBookRow): FlipbookBook {
   }
 }
 
+async function fetchFlipbookBooks(_userId: string): Promise<FlipbookBook[]> {
+  const { data, error } = await supabase
+    .from('flipbook_books')
+    .select('*')
+    .order('updated_at', { ascending: false })
+  if (error || !data) return []
+  return (data as RawBookRow[]).map(rowToBook)
+}
+
+export const flipbookBooksStore = createUserSessionStore<FlipbookBook[]>('flipbook_books', {
+  fetch: fetchFlipbookBooks,
+  empty: [],
+})
+
 export function useFlipbookBooks(user: User | null) {
-  const [books, setBooks] = useState<FlipbookBook[]>([])
-  const [isLoading, setIsLoading] = useState(() => user !== null)
+  const { data: books, isLoading } = flipbookBooksStore.useSessionData(user)
 
   const reload = useCallback(async () => {
     if (!user) return
-    const { data, error } = await supabase
-      .from('flipbook_books')
-      .select('*')
-      .order('updated_at', { ascending: false })
-    if (!error && data) {
-      setBooks((data as RawBookRow[]).map(rowToBook))
-    }
-  }, [user])
-
-  useEffect(() => {
-    if (!user) return
-    let cancelled = false
-    void (async () => {
-      const { data, error } = await supabase
-        .from('flipbook_books')
-        .select('*')
-        .order('updated_at', { ascending: false })
-      if (!cancelled) {
-        if (!error && data) setBooks((data as RawBookRow[]).map(rowToBook))
-        setIsLoading(false)
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
+    flipbookBooksStore.invalidate(user.id)
+    await flipbookBooksStore.ensureLoaded(user.id)
   }, [user])
 
   const getSignedAudioUrl = useCallback(async (audioPath: string): Promise<string | null> => {
@@ -334,10 +324,25 @@ export function useFlipbookBooks(user: User | null) {
 
       if (dbErr) return { error: dbErr.message, outcome: 'aborted' }
 
-      await reload()
+      const updatedAt = new Date().toISOString()
+      const book: FlipbookBook = {
+        id: bookId,
+        userId: user.id,
+        slug,
+        title: input.title.trim(),
+        description: input.description?.trim() || null,
+        pageCount: pageBlobs.length,
+        pagesPath,
+        audioPath,
+        syncManifest: input.syncManifest ?? null,
+        status: 'ready',
+        createdAt: updatedAt,
+        updatedAt,
+      }
+      flipbookBooksStore.patchSessionData(user.id, (prev) => [book, ...prev])
       return { error: null, outcome: 'created' }
     },
-    [user, reload, removeBookStorageAndRow],
+    [user, removeBookStorageAndRow],
   )
 
   const deleteBook = useCallback(
@@ -345,10 +350,10 @@ export function useFlipbookBooks(user: User | null) {
       if (!user) return { error: '请先登录' }
       const result = await removeBookStorageAndRow(book)
       if (result.error) return result
-      await reload()
+      flipbookBooksStore.patchSessionData(user.id, (prev) => prev.filter((b) => b.id !== book.id))
       return { error: null }
     },
-    [user, reload, removeBookStorageAndRow],
+    [user, removeBookStorageAndRow],
   )
 
   return {
