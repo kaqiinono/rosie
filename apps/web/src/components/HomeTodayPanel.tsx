@@ -116,6 +116,12 @@ export default function HomeTodayPanel() {
             </button>
           )}
           <Link
+            href="/today/records"
+            className="text-[12px] font-bold text-slate-600 no-underline transition-opacity hover:opacity-70"
+          >
+            练习记录
+          </Link>
+          <Link
             href="/today"
             className="text-[12px] font-bold text-amber-700 no-underline transition-opacity hover:opacity-70"
           >

@@ -336,6 +336,7 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
         console.error('[recordSession] unexpected error', err)
       }
       invalidateSessionStore('calc_session_summaries')
+      invalidateSessionStore('calc_sessions_today')
       await refresh()
     },
     [user, refresh],

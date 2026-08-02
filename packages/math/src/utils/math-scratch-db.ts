@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from '@rosie/core'
+import { invalidateSessionStore, supabase } from '@rosie/core'
 import { lessonIdFromProblemId } from '@rosie/math/constants'
 import type { ScratchObject } from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
 import type {
@@ -279,6 +279,7 @@ export async function insertPracticeAttempt(
     .select('id')
     .single()
   if (error || !data) throw error ?? new Error('attempt insert failed')
+  invalidateSessionStore('math_practice_attempts_today')
   return data.id as string
 }
 

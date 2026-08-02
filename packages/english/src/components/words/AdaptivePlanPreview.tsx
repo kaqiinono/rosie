@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { WordEntry } from '@rosie/core'
+import type { QuizType, WordEntry } from '@rosie/core'
 import { todayStr, useAuth } from '@rosie/core'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { findWordByKey } from '../../utils/english-helpers'
@@ -11,6 +11,8 @@ import {
   wordLabelFromKey,
   type AdaptiveStageMatrix,
   type SimDaySnapshot,
+  type SimWordPhase,
+  type SimWordTouch,
   type SimulateAdaptivePlanResult,
 } from '../../utils/adaptivePlanSimulate'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
@@ -23,6 +25,14 @@ type DetailViewMode = 'list' | 'calendar'
 type AdaptivePlanPreviewProps = {
   planId: string
   onBack: () => void
+}
+
+type DayWordRow = {
+  wordKey: string
+  phases: SimWordPhase[]
+  stageLabels: string[]
+  quizTypes: QuizType[]
+  questionCount: number
 }
 
 const MODE_LABELS = {
@@ -38,6 +48,9 @@ const PHASE_LABELS = {
   boss: 'Boss 考核',
 } as const
 
+/** Session order: 复习 → 新学 → 闯关 → Boss */
+const PHASE_ORDER: SimWordPhase[] = ['step1_review', 'study', 'step3_final', 'boss']
+
 function scopeLabel(plan: AdaptiveWordPlan): string {
   const parts: string[] = []
   if (plan.scope.stages && plan.scope.stages.length > 0) {
@@ -52,6 +65,39 @@ function scopeLabel(plan: AdaptiveWordPlan): string {
 function displayWord(key: string, vocab: WordEntry[]): string {
   const entry = findWordByKey(vocab, key)
   return entry?.word ?? wordLabelFromKey(key)
+}
+
+function joinStacked(parts: string[]): string {
+  return parts.length > 0 ? parts.join(' + ') : '—'
+}
+
+/** One row per word; stack phases / stages / quiz types like「题型」. */
+function groupTouchesByWord(touches: SimWordTouch[]): DayWordRow[] {
+  const byKey = new Map<string, SimWordTouch[]>()
+  for (const touch of touches) {
+    const list = byKey.get(touch.wordKey)
+    if (list) list.push(touch)
+    else byKey.set(touch.wordKey, [touch])
+  }
+
+  return [...byKey.entries()].map(([wordKey, wordTouches]) => {
+    const phases = PHASE_ORDER.filter((phase) => wordTouches.some((t) => t.phase === phase))
+    const stageLabels: string[] = []
+    for (const touch of wordTouches) {
+      if (touch.stageLabel && !stageLabels.includes(touch.stageLabel)) {
+        stageLabels.push(touch.stageLabel)
+      }
+    }
+    const quizTypes: QuizType[] = []
+    for (const touch of wordTouches) {
+      if (touch.phase === 'study') continue
+      for (const type of touch.quizTypes) {
+        if (!quizTypes.includes(type)) quizTypes.push(type)
+      }
+    }
+    const questionCount = wordTouches.reduce((sum, t) => sum + t.questionCount, 0)
+    return { wordKey, phases, stageLabels, quizTypes, questionCount }
+  })
 }
 
 function DayCard({
@@ -75,7 +121,7 @@ function DayCard({
     day.bossWordKeys.length > 0 ||
     day.totalQuestions > 0
 
-  const uniqueWordCount = new Set(day.touches.map((t) => t.wordKey)).size
+  const wordRows = useMemo(() => groupTouchesByWord(day.touches), [day.touches])
 
   return (
     <div className="rounded-[16px] border border-[var(--wm-border)] bg-[var(--wm-surface2)]">
@@ -134,7 +180,7 @@ function DayCard({
                 className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2.5 text-left"
               >
                 <span className="text-[.75rem] font-extrabold text-[#c4b5fd]">
-                  单词明细 · {uniqueWordCount} 词 · {day.touches.length} 条记录
+                  单词明细 · {wordRows.length} 词
                 </span>
                 <span className="shrink-0 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
                   {wordsOpen ? '收起 ▴' : '展开 ▾'}
@@ -154,22 +200,22 @@ function DayCard({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/[.05]">
-                      {day.touches.map((touch) => (
-                        <tr key={`${touch.wordKey}-${touch.phase}`}>
+                      {wordRows.map((row) => (
+                        <tr key={row.wordKey}>
                           <td className="px-3 py-2 font-extrabold text-[var(--wm-text)]">
-                            {displayWord(touch.wordKey, vocab)}
+                            {displayWord(row.wordKey, vocab)}
                           </td>
                           <td className="px-3 py-2 font-bold text-[#c4b5fd]">
-                            {PHASE_LABELS[touch.phase]}
+                            {joinStacked(row.phases.map((phase) => PHASE_LABELS[phase]))}
                           </td>
                           <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
-                            {touch.stageLabel}
+                            {joinStacked(row.stageLabels)}
                           </td>
                           <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
-                            {touch.phase === 'study' ? '—' : formatQuizTypes(touch.quizTypes)}
+                            {formatQuizTypes(row.quizTypes)}
                           </td>
                           <td className="px-3 py-2 text-right font-extrabold text-[#86efac]">
-                            {touch.questionCount > 0 ? touch.questionCount : '—'}
+                            {row.questionCount > 0 ? row.questionCount : '—'}
                           </td>
                         </tr>
                       ))}
@@ -532,6 +578,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           基于<strong className="text-[#e9d5ff]">当前进度</strong>
           {resumedFromProgress ? '（已保存的真实数据）' : ''}，假设之后
           <strong className="text-[#e9d5ff]">每天练一轮且全对</strong>，推算后续每日任务。
+          若今日目标已完成，D1 回放今天已学的词，再从明天起推演（不含「提前学」）。
           练习后进度变化，刷新即可看到更新后的发展路径。
         </div>
 

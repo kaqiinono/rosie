@@ -77,6 +77,73 @@ describe('simulateAdaptivePlan', () => {
     )
   })
 
+  it('when today\'s goal is already done, replays today then projects from tomorrow', () => {
+    const keys = Array.from({ length: 15 }, (_, i) => `U1::L1::w${i}`)
+    const today = '2026-08-01'
+    const tomorrow = '2026-08-02'
+    const progressedRows: AdaptivePlanWordProgress[] = keys.map((key, i) => {
+      if (i < 5) {
+        return {
+          planId: PLAN.id,
+          userId: 'user-1',
+          wordKey: key,
+          status: 'LEARNING',
+          boxIndex: 2,
+          targetBox: null,
+          streakWrong: 0,
+          nextReviewDate: tomorrow,
+          introducedOn: today,
+        }
+      }
+      return {
+        planId: PLAN.id,
+        userId: 'user-1',
+        wordKey: key,
+        status: 'NOT_STARTED',
+        boxIndex: null,
+        targetBox: null,
+        streakWrong: 0,
+        nextReviewDate: null,
+        introducedOn: null,
+      }
+    })
+
+    const result = simulateAdaptivePlan({
+      plan: {
+        ...PLAN,
+        newWordsPerDay: 5,
+        stats: {
+          ...PLAN.stats,
+          totalActivatedCount: 5,
+          everActivatedCount: 5,
+        },
+      },
+      wordKeys: keys,
+      initialRows: progressedRows,
+      startDate: today,
+      maxDays: 30,
+    })
+
+    expect(result.resumedFromProgress).toBe(true)
+    expect(result.baseline.date).toBe(today)
+
+    const day1 = result.days[0]
+    expect(day1.date).toBe(today)
+    expect(day1.newWordKeys).toHaveLength(5)
+    expect(day1.reviewWordKeys).toHaveLength(0)
+    expect(day1.note).toContain('已完成')
+    expect(day1.cumulative.totalActivated).toBe(5)
+
+    const day2 = result.days[1]
+    expect(day2.date).toBe(tomorrow)
+    expect(day2.reviewWordKeys).toHaveLength(5)
+    expect(day2.newWordKeys).toHaveLength(5)
+    expect(day2.cumulative.totalActivated).toBe(10)
+    // 10 unique words × (study/review + step3) → 20 touch rows, not 20 words
+    expect(new Set(day2.touches.map((t) => t.wordKey)).size).toBe(10)
+    expect(day2.touches).toHaveLength(20)
+  })
+
   it('resumes from saved progress and projects fewer remaining days', () => {
     const keys = ['U1::L1::a', 'U1::L1::b', 'U1::L1::c']
     const fresh = simulateAdaptivePlan({
