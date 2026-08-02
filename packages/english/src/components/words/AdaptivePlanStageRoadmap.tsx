@@ -4,6 +4,8 @@ import { useMemo } from 'react'
 import {
   ADAPTIVE_BOX_STAGES,
   ADAPTIVE_MASTERED_STAGE,
+  ADAPTIVE_NOT_STARTED_STAGE,
+  ADAPTIVE_PENDING_STAGE,
 } from '../../utils/adaptivePlanStages'
 import {
   computeAdaptivePlanStageCounts,
@@ -31,8 +33,8 @@ type RoadmapNode = {
 }
 
 function focusLabel(focus: AdaptivePlanFocusStage): string {
-  if (focus === 'not_started') return '🥚 待启程'
-  if (focus === 'pending') return '🐣 激活'
+  if (focus === 'not_started') return ADAPTIVE_NOT_STARTED_STAGE.shortLabel
+  if (focus === 'pending') return ADAPTIVE_PENDING_STAGE.shortLabel
   if (focus === 'mastered') return '全部毕业'
   const stage = ADAPTIVE_BOX_STAGES[focus - 1]
   return stage ? `${stage.emoji} ${stage.name}关` : '当前关卡'
@@ -47,23 +49,23 @@ function buildNodes(
   if (showPreStages) {
     nodes.push({
       key: 'not_started',
-      emoji: '🥚',
-      name: '待启程',
+      emoji: ADAPTIVE_NOT_STARTED_STAGE.emoji,
+      name: ADAPTIVE_NOT_STARTED_STAGE.name,
       count: counts.notStarted,
       dueToday: 0,
       focus: counts.focus === 'not_started',
       dimmed: counts.notStarted === 0,
-      hint: '尚未进入计划',
+      hint: ADAPTIVE_NOT_STARTED_STAGE.hint,
     })
     nodes.push({
       key: 'pending',
-      emoji: '🐣',
-      name: '激活',
+      emoji: ADAPTIVE_PENDING_STAGE.emoji,
+      name: ADAPTIVE_PENDING_STAGE.name,
       count: counts.pending,
       dueToday: 0,
       focus: counts.focus === 'pending',
       dimmed: counts.pending === 0,
-      hint: '排队待认读',
+      hint: ADAPTIVE_PENDING_STAGE.hint,
     })
   }
 

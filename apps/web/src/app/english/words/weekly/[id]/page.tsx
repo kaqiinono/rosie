@@ -1,21 +1,33 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '@rosie/english'
 import type { WeeklyPlan } from '@rosie/core'
 import { WeeklyPlanSession } from '@rosie/english'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 
-export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ id: string }> }) {
+function WeeklyPlanPageInner() {
   const router = useRouter()
   const routeParams = useParams()
+  const searchParams = useSearchParams()
   const planId = typeof routeParams.id === 'string' ? routeParams.id : ''
   const { user } = useAuth()
   const { vocab } = useWordsContext()
   const [plan, setPlan] = useState<WeeklyPlan | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  // Capture once so clearing `?start=1` from the URL doesn't cancel auto-start.
+  const [autoStart] = useState(() => searchParams.get('start') === '1')
+
+  useEffect(() => {
+    if (!autoStart) return
+    if (searchParams.get('start') !== '1') return
+    const next = new URLSearchParams(searchParams.toString())
+    next.delete('start')
+    const qs = next.toString()
+    router.replace(`/english/words/weekly/${planId}${qs ? `?${qs}` : ''}`, { scroll: false })
+  }, [autoStart, searchParams, router, planId])
 
   useEffect(() => {
     if (!user || !planId) return
@@ -58,7 +70,22 @@ export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ 
       key={plan.id ?? plan.weekStart}
       initialPlan={plan}
       vocab={vocab}
+      autoStart={autoStart}
       onBack={() => router.push('/english/words/daily')}
     />
+  )
+}
+
+export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
+          加载中…
+        </div>
+      }
+    >
+      <WeeklyPlanPageInner />
+    </Suspense>
   )
 }

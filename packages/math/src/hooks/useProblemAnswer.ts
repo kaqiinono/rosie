@@ -24,6 +24,8 @@ export function useProblemAnswer(
 ) {
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<AnswerCheckResult | null>(null)
+  /** Sticks after first real check/submit so 查看题解 stays available while editing. */
+  const [hasAttempted, setHasAttempted] = useState(false)
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
 
@@ -31,6 +33,7 @@ export function useProblemAnswer(
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswer('')
     setFeedback(null)
+    setHasAttempted(false)
   }, [problem.id])
 
   const archiveWorkingScratch = useCallback(
@@ -62,6 +65,8 @@ export function useProblemAnswer(
         return result
       }
 
+      setHasAttempted(true)
+
       void (async () => {
         await archiveWorkingScratch(result.ok, input)
         setFeedback(result)
@@ -84,5 +89,5 @@ export function useProblemAnswer(
 
   const check = useCallback(() => submit(answer), [submit, answer])
 
-  return { answer, setAnswer, feedback, submit, check, clearFeedback }
+  return { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted }
 }

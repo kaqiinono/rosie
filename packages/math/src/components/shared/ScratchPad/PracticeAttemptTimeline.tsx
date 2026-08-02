@@ -26,13 +26,14 @@ export default function PracticeAttemptTimeline({
   const [attempts, setAttempts] = useState<MathPracticeAttemptRow[]>([])
   const [previewId, setPreviewId] = useState<string | null>(null)
 
+  const userId = user?.id
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setAttempts([])
       return
     }
-    void fetchPracticeAttemptsForProblem(user.id, problemId).then(setAttempts)
-  }, [user, problemId, refreshKey])
+    void fetchPracticeAttemptsForProblem(userId, problemId).then(setAttempts)
+  }, [userId, problemId, refreshKey])
 
   if (attempts.length === 0) return null
 

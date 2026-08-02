@@ -2,28 +2,25 @@
 
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { useChineseContext } from '../context/ChineseContext'
 import { chineseRoute } from '../utils/chinese-routes'
-import { buildChineseRoadmap } from '../utils/chinese-roadmap'
 import { getLessonDisplayInfo } from '../utils/chinese-lesson-display'
 import { charKey, masteryKey } from '../utils/chinese-helpers'
+import { useChineseRoadmapProgress } from '../hooks/useChineseRoadmapProgress'
 
 export default function ChineseDailyCard() {
   const {
     lessons,
-    lessonGroups,
     masteryMap,
     isCharDataReady,
     isCharDataLoading,
     bookSlug,
     bookLabel,
-  } = useChineseContext()
-
-  const roadmap = useMemo(
-    () => (isCharDataReady ? buildChineseRoadmap(lessons, lessonGroups, masteryMap, bookSlug) : null),
-    [isCharDataReady, lessons, lessonGroups, masteryMap, bookSlug],
-  )
-  const currentNode = roadmap?.nodes.find((n) => n.state === 'current') ?? null
+    currentNode,
+    allDone,
+    done,
+    total,
+    lessonDone,
+  } = useChineseRoadmapProgress()
 
   const display = useMemo(() => {
     if (!currentNode) return null
@@ -58,11 +55,7 @@ export default function ChineseDailyCard() {
 
   const href = chineseRoute(bookSlug, 'daily')
   const isLoading = isCharDataLoading && !isCharDataReady
-  const allDone = isCharDataReady && !currentNode
-  const total = currentNode?.status.total ?? 0
-  const done = currentNode?.status.correct ?? 0
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
-  const lessonDone = total > 0 && done >= total
 
   return (
     <Link

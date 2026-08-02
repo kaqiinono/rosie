@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, createContext, useContext, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth, useImmersive, STORAGE_KEYS } from '@rosie/core'
+import { useAuth, useImmersive, STORAGE_KEYS, todayStr, usePracticePendingLifecycle } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import { useMathSkipped } from '@rosie/math/hooks/useMathSkipped'
@@ -16,6 +16,16 @@ import type {
   PracticeQueuePhase,
   PracticeQueueStartOpts,
 } from '@rosie/math/utils/practice-queue-types'
+import {
+  clearMathPendingEverywhere,
+  MATH_PENDING_KIND,
+  MATH_PENDING_SCOPE,
+  readMathPracticeSnapshot,
+  writeMathPracticeSnapshot,
+  wrapMathEnvelope,
+  type MathPracticeQueueItemRef,
+  type MathPracticeSnapshot,
+} from '@rosie/math/utils/practice-queue-snapshot'
 import MathPracticePortal from './MathPracticePortal'
 
 type PracticeQueueContextValue = {
@@ -29,10 +39,35 @@ type PracticeQueueContextValue = {
   title: string
   currentItem: PracticeQueueItem | null
   start: (opts: PracticeQueueStartOpts) => void
+  /** Restore a previously snapshotted queue (same-tab mid-exit resume). */
+  resume: (opts: {
+    items: PracticeQueueItem[]
+    currentIndex: number
+    sessionCorrect: number
+    phase: PracticeQueuePhase
+    returnHref: string
+    title: string
+    immersive: boolean
+  }) => void
+  /** Read pending snapshot refs without clearing (caller rehydrates Problems). */
+  peekPendingSnapshot: () => {
+    items: MathPracticeQueueItemRef[]
+    currentIndex: number
+    sessionCorrect: number
+    phase: PracticeQueuePhase
+    returnHref: string
+    title: string
+    immersive: boolean
+  } | null
   end: () => void
+  /** Flush cloud pending then exit to returnHref (answering phase). */
+  stash: () => void
+  flushCloudNow: () => Promise<void>
   restart: () => void
   onAnswerCorrect: () => void
   onAnswerWrong: () => void
+  /** Advance without marking correct (e.g. after 不会 + review 题解). */
+  onAdvance: () => void
   onSkip: (reason: MathSkipReason, note?: string) => void
   setImmersive: (value: boolean) => void
   toggleImmersive: () => void
@@ -71,7 +106,70 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
 
   const currentItem = items[currentIndex] ?? null
 
-  const end = useCallback(() => {
+  const getEnvelope = useCallback(() => {
+    if (!isActive || phase !== 'answering' || items.length === 0) return null
+    const snap: MathPracticeSnapshot = {
+      version: 1,
+      date: todayStr(),
+      items: items.map((item) => ({
+        problemId: item.problem.id,
+        lessonId: item.lessonId,
+        section: item.section,
+        detailHref: item.detailHref,
+      })),
+      currentIndex,
+      sessionCorrect,
+      phase: 'answering',
+      returnHref,
+      title,
+      immersive,
+    }
+    return wrapMathEnvelope(snap)
+  }, [isActive, phase, items, currentIndex, sessionCorrect, returnHref, title, immersive])
+
+  const { flushCloudNow } = usePracticePendingLifecycle<MathPracticeSnapshot>({
+    enabled: isActive && phase === 'answering',
+    userId: user?.id,
+    kind: MATH_PENDING_KIND,
+    scopeKey: MATH_PENDING_SCOPE,
+    getEnvelope,
+  })
+
+  const persistSnapshot = useCallback(
+    (
+      activeItems: PracticeQueueItem[],
+      index: number,
+      correct: number,
+      nextPhase: PracticeQueuePhase,
+      href: string,
+      sessionTitle: string,
+      immersiveMode: boolean,
+    ) => {
+      if (nextPhase === 'celebration' || activeItems.length === 0) {
+        void clearMathPendingEverywhere(user?.id)
+        return
+      }
+      writeMathPracticeSnapshot({
+        version: 1,
+        date: todayStr(),
+        items: activeItems.map((item) => ({
+          problemId: item.problem.id,
+          lessonId: item.lessonId,
+          section: item.section,
+          detailHref: item.detailHref,
+        })),
+        currentIndex: index,
+        sessionCorrect: correct,
+        phase: nextPhase,
+        returnHref: href,
+        title: sessionTitle,
+        immersive: immersiveMode,
+      })
+    },
+    [user?.id],
+  )
+
+  const tearDown = useCallback(() => {
     setIsActive(false)
     setPhase('answering')
     setItems([])
@@ -102,9 +200,65 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       setImmersiveState(immersivePref)
       setIsActive(true)
       setIsImmersive(true)
+      persistSnapshot(queue, idx, 0, 'answering', opts.returnHref, opts.title ?? '练习', immersivePref)
     },
-    [user, solveCount, setIsImmersive],
+    [user, solveCount, setIsImmersive, persistSnapshot],
   )
+
+  const resume = useCallback(
+    (opts: {
+      items: PracticeQueueItem[]
+      currentIndex: number
+      sessionCorrect: number
+      phase: PracticeQueuePhase
+      returnHref: string
+      title: string
+      immersive: boolean
+    }) => {
+      if (!user || opts.items.length === 0) return
+      rawPoolRef.current = opts.items
+      startOptsRef.current = {
+        pool: opts.items,
+        returnHref: opts.returnHref,
+        title: opts.title,
+        immersive: opts.immersive,
+      }
+      const idx = Math.min(opts.currentIndex, opts.items.length - 1)
+      setItems(opts.items)
+      setCurrentIndex(idx)
+      setSessionCorrect(opts.sessionCorrect)
+      setPhase(opts.phase)
+      setReturnHref(opts.returnHref)
+      setTitle(opts.title)
+      setImmersiveState(opts.immersive)
+      setIsActive(true)
+      setIsImmersive(true)
+      persistSnapshot(
+        opts.items,
+        idx,
+        opts.sessionCorrect,
+        opts.phase,
+        opts.returnHref,
+        opts.title,
+        opts.immersive,
+      )
+    },
+    [user, setIsImmersive, persistSnapshot],
+  )
+
+  const peekPendingSnapshot = useCallback(() => {
+    const snap = readMathPracticeSnapshot()
+    if (!snap) return null
+    return {
+      items: snap.items,
+      currentIndex: snap.currentIndex,
+      sessionCorrect: snap.sessionCorrect,
+      phase: snap.phase,
+      returnHref: snap.returnHref,
+      title: snap.title,
+      immersive: snap.immersive,
+    }
+  }, [])
 
   const restart = useCallback(() => {
     const opts = startOptsRef.current
@@ -129,18 +283,25 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     // wrong book updated in submitPracticeAttempt
   }, [])
 
+  const onAdvance = useCallback(() => {
+    if (currentIndex >= items.length - 1) {
+      setPhase('celebration')
+      void clearMathPendingEverywhere(user?.id)
+      return
+    }
+    const nextIndex = currentIndex + 1
+    setCurrentIndex(nextIndex)
+    persistSnapshot(items, nextIndex, sessionCorrect, 'answering', returnHref, title, immersive)
+  }, [items, currentIndex, user?.id, sessionCorrect, returnHref, title, immersive, persistSnapshot])
+
   const onSkip = useCallback(
     (reason: MathSkipReason, note?: string) => {
       const item = items[currentIndex]
       if (!item) return
       addSkipped(item.problem.id, reason, note)
-      if (currentIndex >= items.length - 1) {
-        setPhase('celebration')
-        return
-      }
-      setCurrentIndex((i) => i + 1)
+      onAdvance()
     },
-    [items, currentIndex, addSkipped],
+    [items, currentIndex, addSkipped, onAdvance],
   )
 
   const onAnswerCorrect = useCallback(async () => {
@@ -155,20 +316,80 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       // Sync failure must not block advancing to the next problem.
     }
 
-    setSessionCorrect((n) => n + 1)
+    const nextCorrect = sessionCorrect + 1
+    setSessionCorrect(nextCorrect)
 
     if (currentIndex >= items.length - 1) {
       setPhase('celebration')
+      void clearMathPendingEverywhere(user?.id)
       return
     }
-    setCurrentIndex((i) => i + 1)
-  }, [items, currentIndex, handleSolve, markResolved, clearSkipped])
+    const nextIndex = currentIndex + 1
+    setCurrentIndex(nextIndex)
+    persistSnapshot(items, nextIndex, nextCorrect, 'answering', returnHref, title, immersive)
+  }, [
+    items,
+    currentIndex,
+    user?.id,
+    handleSolve,
+    markResolved,
+    clearSkipped,
+    sessionCorrect,
+    returnHref,
+    title,
+    immersive,
+    persistSnapshot,
+  ])
 
   const handleExit = useCallback(() => {
-    const href = returnHref
-    end()
-    router.push(href)
-  }, [end, router, returnHref])
+    void (async () => {
+      if (isActive && phase === 'answering' && items.length > 0) {
+        persistSnapshot(items, currentIndex, sessionCorrect, phase, returnHref, title, immersive)
+        await flushCloudNow()
+      }
+      const href = returnHref
+      tearDown()
+      router.push(href)
+    })()
+  }, [
+    isActive,
+    phase,
+    items,
+    currentIndex,
+    sessionCorrect,
+    returnHref,
+    title,
+    immersive,
+    persistSnapshot,
+    flushCloudNow,
+    tearDown,
+    router,
+  ])
+
+  const handleStash = useCallback(() => {
+    void (async () => {
+      if (isActive && phase === 'answering' && items.length > 0) {
+        persistSnapshot(items, currentIndex, sessionCorrect, phase, returnHref, title, immersive)
+        await flushCloudNow()
+      }
+      const href = returnHref
+      tearDown()
+      router.push(href)
+    })()
+  }, [
+    isActive,
+    phase,
+    items,
+    currentIndex,
+    sessionCorrect,
+    returnHref,
+    title,
+    immersive,
+    persistSnapshot,
+    flushCloudNow,
+    tearDown,
+    router,
+  ])
 
   useEffect(() => {
     if (!isActive) return
@@ -191,10 +412,15 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       title,
       currentItem,
       start,
+      resume,
+      peekPendingSnapshot,
       end: handleExit,
+      stash: handleStash,
+      flushCloudNow,
       restart,
       onAnswerCorrect,
       onAnswerWrong,
+      onAdvance,
       onSkip,
       setImmersive,
       toggleImmersive,
@@ -210,10 +436,15 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       title,
       currentItem,
       start,
+      resume,
+      peekPendingSnapshot,
       handleExit,
+      handleStash,
+      flushCloudNow,
       restart,
       onAnswerCorrect,
       onAnswerWrong,
+      onAdvance,
       onSkip,
       setImmersive,
       toggleImmersive,
@@ -233,8 +464,10 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
           title={title}
           returnHref={returnHref}
           onExit={handleExit}
+          onStash={handleStash}
           onAnswerCorrect={onAnswerCorrect}
           onAnswerWrong={onAnswerWrong}
+          onAdvance={onAdvance}
           onSkip={onSkip}
           onRestart={restart}
           onToggleImmersive={toggleImmersive}

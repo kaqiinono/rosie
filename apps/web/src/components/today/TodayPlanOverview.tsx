@@ -1,23 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { useAuth, todayStr } from '@rosie/core'
-import { useWeeklyPlan, useWordData } from '@rosie/english'
+import {
+  useAuth,
+  todayStr,
+  getTodayPlanSyncStatus,
+  PRACTICE_PENDING_CHANGED_EVENT,
+  type TodayPlanSubjectKey,
+  type TodayPlanSyncStatus,
+} from '@rosie/core'
+import { useWeeklyPlan, useAdaptiveWordPlan } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useCalcDaily } from '@rosie/calc'
-import {
-  ChineseProvider,
-  useChineseContext,
-  buildChineseRoadmap,
-  chineseRoute,
-} from '@rosie/chinese'
-import type { WordEntry } from '@rosie/core'
-
-function wordKeyStr(e: WordEntry): string {
-  return `${e.unit}::${e.lesson}::${e.word}`
-}
+import { useChineseRoadmapProgress, chineseRoute } from '@rosie/chinese'
 
 export type TodayPlanCardModel = {
   key: 'calc' | 'english' | 'math' | 'chinese'
@@ -56,6 +53,7 @@ export type BuildTodayPlanCardsInput = {
     coins: number
     accuracy: number
     allDone: boolean
+    href?: string
   }
   english: {
     doneCount: number
@@ -63,11 +61,14 @@ export type BuildTodayPlanCardsInput = {
     lastScore?: number
     allDone: boolean
     href: string
+    /** Overrides default 「N 个新词待学」 when set */
+    subtitle?: string
   }
   math: {
     done: number
     total: number
     allDone: boolean
+    href?: string
   }
   chinese: {
     done: number | string
@@ -87,7 +88,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       key: 'calc',
       label: '口算',
       icon: '🧮',
-      href: `/calc?count=${calc.target}`,
+      href: calc.href ?? '/calc/session?mode=daily&start=1',
       done: calc.done,
       total: calc.target,
       subtitle: calc.allDone
@@ -117,7 +118,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       total: english.total,
       subtitle: english.allDone
         ? `得分 ${english.lastScore ?? 0}% 🎉`
-        : `${english.total} 个新词待学`,
+        : (english.subtitle ?? `${english.total} 个新词待学`),
       pct: english.allDone ? 100 : 0,
       tone: english.allDone
         ? DONE_TONE
@@ -135,7 +136,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       key: 'math',
       label: '数学',
       icon: '📐',
-      href: '/math/ny/plan',
+      href: math.href ?? '/math/ny/plan?start=1',
       done: math.done,
       total: math.total,
       subtitle: math.allDone ? '全部完成 🎉' : `还剩 ${Math.max(0, math.total - math.done)} 题`,
@@ -182,19 +183,69 @@ type TodayPlanOverviewCardsProps = {
   className?: string
 }
 
+const EMPTY_SYNC: Record<TodayPlanSubjectKey, TodayPlanSyncStatus> = {
+  calc: 'none',
+  english: 'none',
+  math: 'none',
+  chinese: 'none',
+}
+
+function SyncStatusChip({ status }: { status: TodayPlanSyncStatus }) {
+  if (status === 'none') return null
+  const unsynced = status === 'unsynced'
+  return (
+    <span
+      className={`pointer-events-none absolute top-1.5 right-1.5 z-[1] rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide shadow-sm ${
+        unsynced
+          ? 'bg-amber-500/90 text-white'
+          : 'bg-emerald-600/85 text-white'
+      }`}
+      title={unsynced ? '本机有未备份进度' : '进行中进度已备份到云端'}
+    >
+      {unsynced ? '未备份' : '已备份'}
+    </span>
+  )
+}
+
 export function TodayPlanOverviewCards({
   cards,
   linkable = false,
   className,
 }: TodayPlanOverviewCardsProps) {
+  const [syncBySubject, setSyncBySubject] = useState(EMPTY_SYNC)
+
+  const refreshSync = useCallback(() => {
+    setSyncBySubject(getTodayPlanSyncStatus())
+  }, [])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refreshSync()
+    const onVis = () => {
+      if (document.visibilityState === 'visible') refreshSync()
+    }
+    window.addEventListener('storage', refreshSync)
+    window.addEventListener(PRACTICE_PENDING_CHANGED_EVENT, refreshSync)
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      window.removeEventListener('storage', refreshSync)
+      window.removeEventListener(PRACTICE_PENDING_CHANGED_EVENT, refreshSync)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [refreshSync])
+
   return (
     <div className={className ?? 'grid grid-cols-2 gap-3 sm:grid-cols-4'}>
       {cards.map((card) => {
+        const sync = syncBySubject[card.key]
         const body = (
           <>
-            <div className="absolute -right-2 -top-2 text-3xl opacity-15">{card.icon}</div>
+            <div className="pointer-events-none absolute -right-1 -bottom-1 text-3xl opacity-15">
+              {card.icon}
+            </div>
+            <SyncStatusChip status={sync} />
             <div
-              className="mb-1 text-[11px] font-bold tracking-widest uppercase"
+              className="mb-1 pr-12 text-[11px] font-bold tracking-widest uppercase"
               style={{ color: card.tone.label }}
             >
               {card.label}
@@ -252,55 +303,23 @@ export function TodayPlanOverviewCards({
   )
 }
 
-function useChineseRoadmapProgress() {
-  const {
-    lessons,
-    lessonGroups,
-    masteryMap,
-    isCharDataReady,
-    isCharDataLoading,
-    bookSlug,
-  } = useChineseContext()
-
-  const roadmap = useMemo(
-    () => (isCharDataReady ? buildChineseRoadmap(lessons, lessonGroups, masteryMap, bookSlug) : null),
-    [isCharDataReady, lessons, lessonGroups, masteryMap, bookSlug],
-  )
-  const currentNode = roadmap?.nodes.find((n) => n.state === 'current') ?? null
-  const allDone = isCharDataReady && !currentNode
-  const done = currentNode?.status.correct ?? 0
-  const total = currentNode?.status.total ?? 0
-  const lessonDone = total > 0 && done >= total
-
-  return {
-    bookSlug,
-    isCharDataLoading,
-    isCharDataReady,
-    currentNode,
-    allDone,
-    done,
-    total,
-    lessonDone,
-    hasChinese: isCharDataReady,
-  }
-}
-
-/** Must be used under ChineseProvider. */
 export function useTodayPlanOverview() {
   const { user } = useAuth()
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
+  const { plans: adaptivePlans, isLoading: adaptiveLoading } = useAdaptiveWordPlan(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
-  const { vocab } = useWordData(user)
   const calcDaily = useCalcDaily(user)
-  const chinese = useChineseRoadmapProgress()
+  const chinese = useChineseRoadmapProgress(user)
 
   const today = todayStr()
+  const activeAdaptive = useMemo(
+    () => adaptivePlans.find((plan) => plan.status === 'active') ?? null,
+    [adaptivePlans],
+  )
 
   const englishToday = englishPlan?.days.find((d) => d.date === today)
   const englishProgress = englishPlan?.progress[today]
   const newWordKeys = englishToday?.newWordKeys ?? []
-  const vocabByKey = Object.fromEntries(vocab.map((w) => [wordKeyStr(w), w]))
-  const todayWords = newWordKeys.map((k) => vocabByKey[k]).filter(Boolean) as WordEntry[]
   const englishDone = !!englishProgress?.quizDone
 
   const mathToday = mathPlan?.days.find((d) => d.date === today)
@@ -319,8 +338,18 @@ export function useTodayPlanOverview() {
   const calcAccuracy =
     calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
+  // Prefer this week's weekly plan; otherwise active adaptive; else create page.
+  const englishHref = englishPlan?.id
+    ? `/english/words/weekly/${englishPlan.id}?start=1`
+    : activeAdaptive
+      ? `/english/words/adaptive/${activeAdaptive.id}?start=1`
+      : '/english/words/daily'
+
   const isLoading =
-    englishLoading || mathLoading || (chinese.isCharDataLoading && !chinese.isCharDataReady)
+    englishLoading ||
+    mathLoading ||
+    (chinese.isCharDataLoading && !chinese.isCharDataReady) ||
+    (!englishPlan && adaptiveLoading)
 
   const cards = buildTodayPlanCards({
     calc: {
@@ -329,18 +358,35 @@ export function useTodayPlanOverview() {
       coins: calcDaily.todayCoins,
       accuracy: calcAccuracy,
       allDone: calcAllDone,
+      href: '/calc/session?mode=daily&start=1',
     },
     english: {
-      doneCount: englishDone ? todayWords.length : 0,
-      total: todayWords.length,
+      // Prefer plan keys (not vocab-resolved todayWords) so counts stay correct
+      // while word library is still hydrating or a key is temporarily missing.
+      doneCount: englishPlan
+        ? englishDone
+          ? newWordKeys.length
+          : 0
+        : 0,
+      total: englishPlan
+        ? newWordKeys.length
+        : activeAdaptive
+          ? activeAdaptive.newWordsPerDay
+          : 0,
       lastScore: englishProgress?.lastScore,
-      allDone: englishDone,
-      href: englishPlan?.id ? `/english/words/weekly/${englishPlan.id}` : '/english/words/daily',
+      allDone: englishPlan ? englishDone : false,
+      href: englishHref,
+      subtitle: englishPlan
+        ? undefined
+        : activeAdaptive
+          ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+          : '去创建计划',
     },
     math: {
       done: mathDoneCount,
       total: mathProblems.length,
       allDone: mathAllDone,
+      href: '/math/ny/plan?start=1',
     },
     chinese: {
       done: chinese.allDone ? '✓' : chinese.done,
@@ -352,7 +398,9 @@ export function useTodayPlanOverview() {
           : (chinese.currentNode?.lessonTitle ?? '当前关卡'),
       pct: chinesePct,
       allDone: chineseDone,
-      href: chineseRoute(chinese.bookSlug, 'daily'),
+      href: chinese.currentNode
+        ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+        : chineseRoute(chinese.bookSlug, 'daily'),
     },
   })
 
@@ -360,7 +408,7 @@ export function useTodayPlanOverview() {
     isLoading,
     cards,
     hasMath: !!(mathPlan && mathProblems.length > 0),
-    hasEnglish: !!(englishPlan && newWordKeys.length > 0),
+    hasEnglish: !!(englishPlan && newWordKeys.length > 0) || !!activeAdaptive,
     hasChinese: chinese.hasChinese,
   }
 }
@@ -386,11 +434,7 @@ function TodayPlanOverviewInner({
   return <TodayPlanOverviewCards cards={cards} linkable={linkable} className={className} />
 }
 
-/** Self-contained overview (wraps ChineseProvider) — for homepage. */
+/** Self-contained overview for homepage / today — no full ChineseProvider. */
 export default function TodayPlanOverview(props: TodayPlanOverviewInnerProps) {
-  return (
-    <ChineseProvider>
-      <TodayPlanOverviewInner {...props} />
-    </ChineseProvider>
-  )
+  return <TodayPlanOverviewInner {...props} />
 }

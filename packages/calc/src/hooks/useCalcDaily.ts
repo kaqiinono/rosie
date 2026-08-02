@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, supabase, todayStr } from '@rosie/core'
+import { useCalcWallet } from '@rosie/rewards'
 import { calcSettingsStore } from './useCalcSettings'
 
 export type CalcSessionSummaryRow = {
@@ -14,36 +15,22 @@ export type CalcSessionSummaryRow = {
 
 type CalcDailyData = {
   sessions: CalcSessionSummaryRow[]
-  todayCoins: number
 }
 
 async function fetchCalcDailyData(userId: string): Promise<CalcDailyData> {
-  const today = todayStr()
-  const [sessionsRes, starsRes] = await Promise.all([
-    supabase
-      .from('calc_sessions')
-      .select('date,correct_count,retry_count,wrong_count')
-      .eq('user_id', userId),
-    supabase
-      .from('star_sessions')
-      .select('coins_earned')
-      .eq('user_id', userId)
-      .eq('source', 'calc')
-      .eq('date', today),
-  ])
-  const sessions = (sessionsRes.data ?? []) as CalcSessionSummaryRow[]
-  const todayCoins = ((starsRes.data ?? []) as { coins_earned: number | null }[]).reduce(
-    (sum, r) => sum + (r.coins_earned ?? 0),
-    0,
-  )
-  return { sessions, todayCoins }
+  const { data, error } = await supabase
+    .from('calc_sessions')
+    .select('date,correct_count,retry_count,wrong_count')
+    .eq('user_id', userId)
+  if (error) console.error('[calc_session_summaries] fetch failed', error)
+  return { sessions: (data ?? []) as CalcSessionSummaryRow[] }
 }
 
 export const calcSessionSummariesStore = createUserSessionStore<CalcDailyData>(
   'calc_session_summaries',
   {
     fetch: fetchCalcDailyData,
-    empty: { sessions: [], todayCoins: 0 },
+    empty: { sessions: [] },
   },
 )
 
@@ -53,6 +40,8 @@ export function useCalcDaily(user: User | null) {
   const { data: dailyData, isLoading: sessionsLoading } =
     calcSessionSummariesStore.useSessionData(user)
   const { data: settings, isLoading: settingsLoading } = calcSettingsStore.useSessionData(user)
+  // Reuse StarHud wallet star_sessions — avoids a second today-coins query.
+  const wallet = useCalcWallet(user)
 
   const summary = useMemo(() => {
     const today = todayStr()
@@ -67,10 +56,17 @@ export function useCalcDaily(user: User | null) {
       todayDone: done,
       todayCorrect: correct,
       todayTarget: settings.lastCount ?? DEFAULT_TARGET,
-      todayCoins: dailyData.todayCoins,
-      isLoading: sessionsLoading || settingsLoading,
+      todayCoins: wallet.todayCoinsEarned,
+      isLoading: sessionsLoading || settingsLoading || wallet.isLoading,
     }
-  }, [dailyData, settings.lastCount, sessionsLoading, settingsLoading])
+  }, [
+    dailyData,
+    settings.lastCount,
+    sessionsLoading,
+    settingsLoading,
+    wallet.todayCoinsEarned,
+    wallet.isLoading,
+  ])
 
   return summary
 }

@@ -4,6 +4,7 @@ import type {
   EnglishWeeklyReport,
   WeeklyPlanSessionStash,
 } from '@rosie/core'
+import { clearWeeklyLocalSyncedMarker } from '@rosie/core'
 
 /** Embedded in `weekly_plans.progress_data` JSON; never a valid YYYY-MM-DD date. */
 export const WEEKLY_PLAN_STORAGE_META_KEY = '__rosie_wk' as const
@@ -47,12 +48,32 @@ export function weeklySessionStorageKey(planId: string): string {
 export function loadLocalSessionSnapshot(planId: string | undefined): WeeklyPlanSessionStash | null {
   if (!planId || typeof window === 'undefined') return null
   try {
-    const raw = sessionStorage.getItem(weeklySessionStorageKey(planId))
+    const raw = localStorage.getItem(weeklySessionStorageKey(planId))
     if (!raw) return null
     const snap = JSON.parse(raw) as unknown
     return isValidSessionStash(snap) ? snap : null
   } catch {
     return null
+  }
+}
+
+export function writeLocalSessionSnapshot(planId: string, stash: WeeklyPlanSessionStash): void {
+  if (!planId || typeof window === 'undefined') return
+  try {
+    localStorage.setItem(weeklySessionStorageKey(planId), JSON.stringify(stash))
+    clearWeeklyLocalSyncedMarker(planId)
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+export function clearLocalSessionSnapshot(planId: string | undefined): void {
+  if (!planId || typeof window === 'undefined') return
+  try {
+    localStorage.removeItem(weeklySessionStorageKey(planId))
+    clearWeeklyLocalSyncedMarker(planId)
+  } catch {
+    /* noop */
   }
 }
 

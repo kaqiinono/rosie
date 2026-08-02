@@ -8,6 +8,14 @@ export { ChineseProvider, useChineseContext } from './context/ChineseContext'
 export { useCharMastery } from './hooks/useCharMastery'
 export type { CharMasteryMap, CharMasteryResult } from './hooks/useCharMastery'
 export { useChineseCharData, buildLessonGroups } from './hooks/useChineseCharData'
+export {
+  useChineseRoadmapProgress,
+  chineseRoadmapCatalogStore,
+} from './hooks/useChineseRoadmapProgress'
+export type {
+  ChineseRoadmapProgress,
+  ChineseRoadmapCatalog,
+} from './hooks/useChineseRoadmapProgress'
 export { useChineseCharAdmin } from './hooks/useChineseCharAdmin'
 export type { CharEntryPatch, LessonPatch } from './hooks/useChineseCharAdmin'
 export { useChineseWeeklyPlan } from './hooks/useChineseWeeklyPlan'

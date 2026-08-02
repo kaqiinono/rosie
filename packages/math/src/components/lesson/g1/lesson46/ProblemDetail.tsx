@@ -35,7 +35,7 @@ export default function ProblemDetail({
   const count = solveCount[problem.id] ?? 0
   const level = getMasteryLevel(count)
 
-  const { answer, setAnswer, feedback, check } = useProblemAnswer(
+  const { answer, setAnswer, feedback, check, hasAttempted } = useProblemAnswer(
     problem,
     {
       handleSolve,
@@ -89,6 +89,7 @@ export default function ProblemDetail({
         />
       )}
       <QuestionLayout
+        solutionAvailable={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}

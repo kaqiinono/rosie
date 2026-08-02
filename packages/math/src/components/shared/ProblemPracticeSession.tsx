@@ -8,6 +8,8 @@ import { SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
 import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
+import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
+import InteractiveAnswerFeedback from '@rosie/math/components/shared/InteractiveAnswerFeedback'
 import { injectFigureGridCallbacks } from '@rosie/math/components/shared/injectFigureSubmit'
 import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
 import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
@@ -241,7 +243,7 @@ function PracticeProblem({
     )
   }, [awardStars])
 
-  const { answer, setAnswer, feedback, submit, check, clearFeedback } = useProblemAnswer(
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(
     problem,
     {
       handleSolve: (id) => {
@@ -300,18 +302,13 @@ function PracticeProblem({
         dangerouslySetInnerHTML={{ __html: problem.text }}
       />
       {figure && <div>{figure}</div>}
-      {interactive && displayFeedback?.text && (
-        <div className={`text-[13px] font-medium ${displayFeedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
-          {displayFeedback.text}
-        </div>
-      )}
     </div>
   )
 
   const solution = <ProblemSolutionPanel problem={problem} variant="amber" />
 
   const masteryRow = (
-    <div className="flex items-center gap-2 text-xs text-gray-400">
+    <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
       <span style={skin.badgeStyle(count)} className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
         {skin.masteryLabel(count)}
       </span>
@@ -327,40 +324,30 @@ function PracticeProblem({
   )
 
   const answerDom = interactive ? (
-    masteryRow
+    <>
+      <InteractiveAnswerFeedback
+        feedback={
+          displayFeedback
+            ? { ok: displayFeedback.ok, message: displayFeedback.text }
+            : null
+        }
+      />
+      {masteryRow}
+    </>
   ) : (
     <>
-      <div className="mb-3 flex items-center gap-2">
-        <div className="h-px flex-1 bg-gray-200" />
-        <div className="whitespace-nowrap text-xs font-semibold text-gray-400">✏️ 写出答案</div>
-        <div className="h-px flex-1 bg-gray-200" />
-      </div>
-      <div className="mb-3 rounded-lg border border-dashed border-gray-200 bg-gray-50 p-3.5">
-        <div className="text-[13px] text-gray-600">{problem.finalQ}</div>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-          <input
-            type="number"
-            className="w-[72px] rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-center text-sm text-gray-800 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
-            placeholder="？"
-            value={answer}
-            onChange={e => setAnswer(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && checkAnswer(e)}
-          />
-          <span className="text-gray-600">{problem.finalUnit}</span>
-          <button
-            onClick={e => checkAnswer(e)}
-            className="cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-semibold text-white transition-all active:scale-95"
-            style={{ background: 'linear-gradient(135deg, #0891b2, #0284c7)', boxShadow: '0 3px 10px rgba(8,145,178,0.35)' }}
-          >
-            检查答案
-          </button>
-        </div>
-        {displayFeedback && (
-          <div className={`mt-2 text-[13px] font-medium ${displayFeedback.ok ? 'text-emerald-600' : 'text-rose-500'}`}>
-            {displayFeedback.text}
-          </div>
-        )}
-      </div>
+      <NumericAnswerPanel
+        problem={problem}
+        answer={answer}
+        onAnswerChange={setAnswer}
+        onCheck={() => checkAnswer()}
+        feedback={
+          displayFeedback
+            ? { ok: displayFeedback.ok, message: displayFeedback.text }
+            : null
+        }
+        buttonClassName="bg-cyan-600 shadow-[0_3px_10px_rgba(8,145,178,0.35)]"
+      />
       {masteryRow}
     </>
   )
@@ -368,7 +355,14 @@ function PracticeProblem({
   return (
     <div className="practice-overlay-enter">
       <div className="mb-3 text-[15px] font-bold text-gray-800">{problem.title}</div>
-      <QuestionLayout question={question} solution={solution} answer={answerDom} problemId={problem.id} problem={problem} />
+      <QuestionLayout
+        question={question}
+        solution={solution}
+        answer={answerDom}
+        solutionAvailable={hasAttempted}
+        problemId={problem.id}
+        problem={problem}
+      />
     </div>
   )
 }

@@ -12,6 +12,7 @@ import PracticeProblemBody from './PracticeProblemBody'
 import PracticeCelebration from './PracticeCelebration'
 import PracticeViewDraftButton from './PracticeViewDraftButton'
 import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
+import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 
 type Props = {
   items: PracticeQueueItem[]
@@ -22,8 +23,10 @@ type Props = {
   title: string
   returnHref: string
   onExit: () => void
+  onStash?: () => void
   onAnswerCorrect: () => void
   onAnswerWrong: () => void
+  onAdvance: () => void
   onSkip: (reason: MathSkipReason, note?: string) => void
   onRestart: () => void
   onToggleImmersive: () => void
@@ -39,11 +42,14 @@ export default function MathPracticePortal({
   title,
   returnHref,
   onExit,
+  onStash,
   onAnswerCorrect,
   onAnswerWrong,
+  onAdvance,
   onSkip,
   onRestart,
   onToggleImmersive,
+  onSetImmersive,
 }: Props) {
   const [mounted, setMounted] = useState(false)
   const current = items[currentIndex]
@@ -91,6 +97,11 @@ export default function MathPracticePortal({
     void Promise.resolve(onAnswerCorrect()).then(() => bumpDraftRefresh())
   }, [onAnswerCorrect, bumpDraftRefresh])
 
+  const handleAdvance = useCallback(() => {
+    onAdvance()
+    bumpDraftRefresh()
+  }, [onAdvance, bumpDraftRefresh])
+
   const commitSkip = useCallback(
     (reason: MathSkipReason, note?: string) => {
       onSkip(reason, note)
@@ -105,7 +116,7 @@ export default function MathPracticePortal({
   const shell = (
     <div className="fixed inset-0 z-[200] flex flex-col bg-[#f8fafc]">
       <header
-        className="flex shrink-0 flex-col gap-2 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-md"
+        className="relative z-20 flex shrink-0 flex-col gap-2 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-md"
         style={{ paddingTop: 'max(12px, env(safe-area-inset-top))' }}
       >
         <div className="flex items-center gap-2">
@@ -117,6 +128,16 @@ export default function MathPracticePortal({
           >
             ✕
           </button>
+          {phase === 'answering' && onStash && (
+            <button
+              type="button"
+              onClick={onStash}
+              title="暂存进度并返回"
+              className="shrink-0 cursor-pointer rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800 transition-all hover:bg-amber-100 active:scale-95"
+            >
+              💾 暂存
+            </button>
+          )}
           <div className="min-w-0 flex-1">
             <div className="truncate text-[14px] font-extrabold text-text-primary">{title}</div>
             {phase === 'answering' && total > 0 && (
@@ -142,7 +163,7 @@ export default function MathPracticePortal({
                 </button>
                 {skipMenuOpen && (
                   <div
-                    className="absolute top-full right-0 z-10 mt-1.5 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-lg"
+                    className="absolute top-full right-0 z-30 mt-1.5 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-lg"
                     style={{ minWidth: 200 }}
                   >
                     <div className="mb-1.5 px-1 text-[10px] font-bold text-slate-400">
@@ -202,6 +223,20 @@ export default function MathPracticePortal({
                   </div>
                 )}
               </div>
+              {!immersive && (
+                <ScratchPadTrigger
+                  problem={current.problem}
+                  problems={[current.problem]}
+                  problemIndex={0}
+                  section={current.section}
+                  variant="compact"
+                  onSolve={async () => {
+                    bumpDraftRefresh()
+                    await handleCorrect()
+                  }}
+                  onWrong={handleWrong}
+                />
+              )}
               <PracticeViewDraftButton problem={current.problem} refreshKey={draftRefreshKey} />
             </>
           )}
@@ -245,15 +280,14 @@ export default function MathPracticePortal({
             items={items.map((it) => ({ problem: it.problem, section: it.section }))}
             controlledIndex={currentIndex}
             mode="practice"
-            blankCanvasOnLoad
             disableEdgeNav
             embedded
-            closeEndsSession
             onAnswerCorrect={handleCorrect}
             onWrong={handleWrong}
             onClose={() => {
+              // 「完成」只退出沉浸画板并落库，回到详情答题；退出整场练习用顶栏 ✕ / 暂存
               bumpDraftRefresh()
-              onExit()
+              onSetImmersive(false)
             }}
           />
         ) : current ? (
@@ -264,6 +298,8 @@ export default function MathPracticePortal({
                 item={current}
                 onAnswerCorrect={handleCorrect}
                 onAnswerWrong={handleWrong}
+                onAdvance={handleAdvance}
+                isLast={currentIndex >= total - 1}
               />
             </div>
           </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { QuizQuestion, WordEntry } from '@rosie/core'
-import { supabase, todayStr, useAuth, useImmersive } from '@rosie/core'
+import { supabase, todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { StarProgressBar, useStarHud } from '@rosie/rewards'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
@@ -28,10 +28,13 @@ import type {
 import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
 import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
 import {
+  ADAPTIVE_PENDING_KIND,
   ADAPTIVE_SESSION_SNAPSHOT_VERSION,
-  clearAdaptiveSessionSnapshot,
-  readAdaptiveSessionSnapshot,
+  clearAdaptivePendingEverywhere,
+  resolveAdaptiveSessionSnapshot,
   writeAdaptiveSessionSnapshot,
+  wrapAdaptiveEnvelope,
+  type AdaptiveSessionSnapshot,
   type AdaptiveSnapshotPhase,
 } from '../../utils/adaptivePlanSessionSnapshot'
 import { adaptiveStageLabel } from '../../utils/adaptivePlanStages'
@@ -50,6 +53,8 @@ import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
 type AdaptivePlanSessionProps = {
   planId: string
   onBack: () => void
+  /** Homepage「今日计划」英语卡：进入后立刻开始本轮练习 */
+  autoStart?: boolean
 }
 
 type Phase = 'hub' | 'review' | 'study' | 'final' | 'boss' | 'boss_sink' | 'done'
@@ -232,7 +237,7 @@ async function upsertMasteryPatches(
   if (error) throw error
 }
 
-export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSessionProps) {
+export default function AdaptivePlanSession({ planId, onBack, autoStart = false }: AdaptivePlanSessionProps) {
   const { user } = useAuth()
   const { vocab, masteryMap } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
@@ -261,6 +266,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const [score, setScore] = useState(0)
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [settling, setSettling] = useState(false)
+  const [isStashing, setIsStashing] = useState(false)
+  const [stashToast, setStashToast] = useState<string | null>(null)
   // Set when remote saves fail during settle — done screen offers a retry.
   const [settleFailed, setSettleFailed] = useState<'normal' | 'boss' | null>(null)
   const [activationApplied, setActivationApplied] = useState(false)
@@ -314,10 +321,90 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const loadGenRef = useRef(0)
   const sessionStartedRef = useRef(false)
   const loadedPlanIdRef = useRef<string | null>(null)
+  const autoStartDoneRef = useRef(false)
+
+  useEffect(() => {
+    if (!stashToast) return
+    const timer = window.setTimeout(() => setStashToast(null), 3500)
+    return () => window.clearTimeout(timer)
+  }, [stashToast])
+
+  const buildCurrentAdaptiveSnapshot = useCallback((): AdaptiveSessionSnapshot | null => {
+    if (!plan || phase === 'hub' || phase === 'done') return null
+    return {
+      version: ADAPTIVE_SESSION_SNAPSHOT_VERSION,
+      planId: plan.id,
+      date: today,
+      phase: phase as AdaptiveSnapshotPhase,
+      quizSlots,
+      curQ,
+      score,
+      reviewCursor,
+      reviewDoneKeys: [...reviewDoneKeys],
+      studyIdx,
+      activationApplied,
+      newStudyDone,
+      starsAwarded: starsAwardedThisRoundRef.current,
+      roundActivateKeys:
+        roundActivateKeysRef.current.length > 0 ? roundActivateKeysRef.current : activateKeys,
+      roundReviewKeys: roundReviewKeysRef.current,
+      reviewOutcomes: reviewOutcomesRef.current,
+      finalOutcomes: finalOutcomesRef.current,
+      bossFirstPassOutcomes: bossFirstPassOutcomesRef.current,
+      bossSinkOutcomes: bossSinkOutcomesRef.current,
+      finalPassWrongKeys: [...finalPassWrongKeysRef.current],
+      bossPassWrongKeys: [...bossPassWrongKeysRef.current],
+      bossSinkWrongKeys: [...bossSinkWrongKeysRef.current],
+    }
+  }, [
+    activateKeys,
+    activationApplied,
+    curQ,
+    newStudyDone,
+    phase,
+    plan,
+    quizSlots,
+    reviewCursor,
+    reviewDoneKeys,
+    score,
+    studyIdx,
+    today,
+  ])
+
+  const { flushCloudNow } = usePracticePendingLifecycle({
+    enabled: phase !== 'hub' && phase !== 'done' && Boolean(plan?.id),
+    userId: user?.id,
+    kind: ADAPTIVE_PENDING_KIND,
+    scopeKey: planId,
+    getEnvelope: () => {
+      const snap = buildCurrentAdaptiveSnapshot()
+      return snap ? wrapAdaptiveEnvelope(snap) : null
+    },
+  })
+
+  const backToHub = useCallback(async () => {
+    await flushCloudNow()
+    setIsImmersive(false)
+    setPhase('hub')
+  }, [flushCloudNow, setIsImmersive])
+
+  const stashSession = useCallback(async () => {
+    if (!plan) return
+    setIsStashing(true)
+    try {
+      await flushCloudNow()
+      setStashToast('已暂存到云端，换设备也可继续')
+      setIsImmersive(false)
+      setPhase('hub')
+    } finally {
+      setIsStashing(false)
+    }
+  }, [plan, flushCloudNow, setIsImmersive])
 
   useEffect(() => {
     sessionStartedRef.current = false
     loadedPlanIdRef.current = null
+    autoStartDoneRef.current = false
     setLoadError(null)
     setRestoredActivateKeys(null)
   }, [planId])
@@ -360,10 +447,10 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         setRows(loadedRows)
         setTask(dailyTask)
 
-        // Resume an interrupted round from sessionStorage (same day only).
+        // Resume an interrupted round from localStorage + cloud (same day only).
         // Requires vocab to build questions; without it fall back to hub and
         // keep the snapshot for the next mount.
-        const snap = readAdaptiveSessionSnapshot(planSnapshot.id, today)
+        const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
         if (snap && vocab.length > 0) {
           setPhase(snap.phase)
           setReviewCursor(snap.reviewCursor)
@@ -442,7 +529,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     return () => {
       cancelled = true
     }
-  }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan, vocab, setIsImmersive])
+  }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan, user?.id, vocab, setIsImmersive])
 
   // Persist the in-progress round so a refresh / accidental exit can resume.
   // Cleared only when a round settles successfully; kept on settle failure so
@@ -450,50 +537,13 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   useEffect(() => {
     if (!plan) return
     if (phase === 'done') {
-      if (settleFailed == null) clearAdaptiveSessionSnapshot(plan.id)
+      if (settleFailed == null) void clearAdaptivePendingEverywhere(user?.id, plan.id)
       return
     }
     if (phase === 'hub') return
-    writeAdaptiveSessionSnapshot({
-      version: ADAPTIVE_SESSION_SNAPSHOT_VERSION,
-      planId: plan.id,
-      date: today,
-      phase: phase as AdaptiveSnapshotPhase,
-      quizSlots,
-      curQ,
-      score,
-      reviewCursor,
-      reviewDoneKeys: [...reviewDoneKeys],
-      studyIdx,
-      activationApplied,
-      newStudyDone,
-      starsAwarded: starsAwardedThisRoundRef.current,
-      roundActivateKeys:
-        roundActivateKeysRef.current.length > 0 ? roundActivateKeysRef.current : activateKeys,
-      roundReviewKeys: roundReviewKeysRef.current,
-      reviewOutcomes: reviewOutcomesRef.current,
-      finalOutcomes: finalOutcomesRef.current,
-      bossFirstPassOutcomes: bossFirstPassOutcomesRef.current,
-      bossSinkOutcomes: bossSinkOutcomesRef.current,
-      finalPassWrongKeys: [...finalPassWrongKeysRef.current],
-      bossPassWrongKeys: [...bossPassWrongKeysRef.current],
-      bossSinkWrongKeys: [...bossSinkWrongKeysRef.current],
-    })
-  }, [
-    activateKeys,
-    activationApplied,
-    curQ,
-    newStudyDone,
-    phase,
-    plan,
-    quizSlots,
-    reviewCursor,
-    reviewDoneKeys,
-    score,
-    settleFailed,
-    studyIdx,
-    today,
-  ])
+    const snap = buildCurrentAdaptiveSnapshot()
+    if (snap) writeAdaptiveSessionSnapshot(snap)
+  }, [buildCurrentAdaptiveSnapshot, phase, plan, settleFailed, user?.id])
 
   const buildSlots = useCallback(
     (keys: string[], opts?: { preferLight?: boolean; bossTier?: number }): QuizSlot[] => {
@@ -1034,6 +1084,16 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     task,
   ])
 
+  // Homepage today-plan card: jump straight into this round (unless restoring a snapshot).
+  useEffect(() => {
+    if (!autoStart || autoStartDoneRef.current) return
+    if (isLoadingRows || !task || settling) return
+    if (phase !== 'hub') return
+    if (sessionStartedRef.current) return
+    autoStartDoneRef.current = true
+    beginSession()
+  }, [autoStart, isLoadingRows, task, settling, phase, beginSession])
+
   const currentQuestion = useMemo<QuizQuestion | null>(() => {
     const slot = quizSlots[curQ]
     if (!slot) return null
@@ -1296,7 +1356,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         studyDefOnly={studyDefOnly}
         onStudyDefOnlyChange={setStudyDefOnly}
         isImmersive={isImmersive}
-        onExitImmersive={() => setIsImmersive(false)}
+        onExitImmersive={() => void flushCloudNow().then(() => setIsImmersive(false))}
         progressGradientClasses="from-[#60a5fa] via-[#a78bfa] to-[#f0abfc]"
         nextButtonGradientClasses="from-[#2563eb] to-[#a855f7]"
         nextButtonShadowClass="shadow-[0_3px_12px_rgba(96,165,250,.35)]"
@@ -1305,7 +1365,9 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
             新学
           </span>
         }
-        onBack={() => setPhase('hub')}
+        onBack={() => void backToHub()}
+        onStash={() => void stashSession()}
+        isStashing={isStashing}
         onPrev={() => setStudyIdx((idx) => Math.max(0, idx - 1))}
         onNext={() => {
           setNewStudyDone((done) => Math.max(done, studyIdx + 1))
@@ -1331,9 +1393,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           type="button"
           className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
           onClick={() => {
-            setIsImmersive(false)
+            void backToHub()
             sessionStartedRef.current = false
-            setPhase('hub')
           }}
         >
           ← 返回计划首页
@@ -1359,13 +1420,18 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-3 py-2">
           <button
-            onClick={() => {
-              setIsImmersive(false)
-              setPhase('hub')
-            }}
+            onClick={() => void backToHub()}
             className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
           >
             ← 回到计划
+          </button>
+          <button
+            type="button"
+            onClick={() => void stashSession()}
+            disabled={isStashing}
+            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
+          >
+            {isStashing ? '暂存中…' : '💾 暂存'}
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">{title}</div>
           <div className="ml-auto text-[.78rem] font-bold text-[var(--wm-text-dim)]">
@@ -1576,6 +1642,11 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       </div>
 
       <div className="mb-4 rounded-[24px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6">
+        {stashToast && (
+          <div className="mb-4 rounded-[12px] border border-[rgba(74,222,128,.45)] bg-[rgba(74,222,128,.1)] px-4 py-2.5 text-[.8rem] font-bold text-[#86efac]">
+            ✓ {stashToast}
+          </div>
+        )}
         <div className="mb-5">
           <div className="font-fredoka bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
             {plan.title}

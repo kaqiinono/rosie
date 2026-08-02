@@ -7,7 +7,6 @@ import { G1B_RECOGNIZE_TOTAL } from '@rosie/chinese'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import { useWordMastery } from '@rosie/english'
-import { useWordData } from '@rosie/english'
 import { useEnglishWrong } from '@rosie/english'
 import { useCharMastery } from '@rosie/chinese'
 import { useCalcMistakes } from '@rosie/calc'
@@ -17,7 +16,6 @@ export type HomeStats = {
   mathPracticed: number
   mathTotal: number
   englishPracticed: number
-  englishTotal: number
   chineseRecognized: number
   chineseRecognizeTotal: number
   calcTotal: number
@@ -29,7 +27,6 @@ const EMPTY_STATS: HomeStats = {
   mathPracticed: 0,
   mathTotal: 0,
   englishPracticed: 0,
-  englishTotal: 0,
   chineseRecognized: 0,
   chineseRecognizeTotal: 0,
   calcTotal: 0,
@@ -41,29 +38,38 @@ function countUnresolved(rows: { resolved?: boolean | null }[]): number {
   return rows.filter((r) => !(r.resolved ?? false)).length
 }
 
+/**
+ * Homepage learning-overview stats.
+ * Pass `user` only after the overview panel is near the viewport so cold
+ * loads skip math_solved / word_mastery / wrong-book fetches.
+ */
 export function useHomeStats(user: User | null) {
   const { solveCount, isLoading: mathLoading } = useMathSolved(user)
   const { masteryMap, isLoading: wmLoading } = useWordMastery(user)
-  const { vocab, isLoading: vocabLoading } = useWordData(user)
   const { masteryMap: chineseMastery, isLoading: cmLoading } = useCharMastery(user)
   const { totalProblems, practiceDays, isLoading: calcLoading } = useCalcPracticeStats(user)
 
   const [mistakesEnabled, setMistakesEnabled] = useState(false)
 
   useEffect(() => {
-    if (!user) return
+    if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMistakesEnabled(false)
+      return
+    }
     let cancelled = false
     const run = () => {
       if (!cancelled) setMistakesEnabled(true)
     }
+    // Wrong-book trio is lower priority than practiced/total counts.
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(run, { timeout: 1500 })
+      const id = window.requestIdleCallback(run, { timeout: 2500 })
       return () => {
         cancelled = true
         window.cancelIdleCallback(id)
       }
     }
-    const t = setTimeout(run, 0)
+    const t = setTimeout(run, 400)
     return () => {
       cancelled = true
       clearTimeout(t)
@@ -72,12 +78,14 @@ export function useHomeStats(user: User | null) {
 
   const mistakeUser = mistakesEnabled ? user : null
   const { rows: mathWrong, isLoading: mwLoading } = useMathWrong(mistakeUser)
-  const { mistakes: calcMistakes, isLoading: cmistLoading } = useCalcMistakes(mistakeUser)
+  const { mistakes: calcMistakes, isLoading: cmistLoading } = useCalcMistakes(mistakeUser, {
+    loadProblemState: false,
+  })
   const { rows: englishWrong, isLoading: ewLoading } = useEnglishWrong(mistakeUser)
 
   const isLoading =
     user !== null &&
-    (mathLoading || wmLoading || vocabLoading || cmLoading || calcLoading)
+    (mathLoading || wmLoading || cmLoading || calcLoading)
 
   const stats = useMemo((): HomeStats => {
     if (!user) return EMPTY_STATS
@@ -101,7 +109,6 @@ export function useHomeStats(user: User | null) {
       mathPracticed,
       mathTotal,
       englishPracticed,
-      englishTotal: vocab.length,
       chineseRecognized,
       chineseRecognizeTotal: G1B_RECOGNIZE_TOTAL,
       calcTotal: totalProblems,
@@ -117,7 +124,6 @@ export function useHomeStats(user: User | null) {
     user,
     solveCount,
     masteryMap,
-    vocab.length,
     chineseMastery,
     totalProblems,
     practiceDays,

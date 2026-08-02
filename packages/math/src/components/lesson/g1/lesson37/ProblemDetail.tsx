@@ -45,7 +45,7 @@ export default function ProblemDetail({
       <AssumptionDiagram problem={problem} />
     )
 
-  const { answer, setAnswer, feedback, check } = useProblemAnswer(problem, {
+  const { answer, setAnswer, feedback, check, hasAttempted } = useProblemAnswer(problem, {
     handleSolve,
     addWrong,
   })
@@ -115,6 +115,7 @@ export default function ProblemDetail({
         />
       )}
       <QuestionLayout
+        solutionAvailable={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}

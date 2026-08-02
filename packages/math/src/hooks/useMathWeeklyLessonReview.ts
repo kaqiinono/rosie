@@ -22,7 +22,7 @@ async function loadFromCloud(userId: string, planLessonId: string): Promise<Math
       .from('math_weekly_lesson_review')
       .select('state_data')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
     if (error || !data) return null
     const s = data.state_data as MathWeeklyLessonReviewState
     if (s.planLessonId !== planLessonId) return null
@@ -71,22 +71,30 @@ export function useMathWeeklyLessonReview(
   const stateRef = useRef(state)
   useEffect(() => { stateRef.current = state }, [state])
 
+  const userId = user?.id ?? null
+  // Stabilize Set/object identity from parents that recreate every render.
+  const excludeKeysSig = [...excludeKeys].sort().join('\0')
+  const priorLessonsSig = Object.keys(priorLessonProbs)
+    .sort()
+    .map((id) => `${id}:${priorLessonProbs[id]?.length ?? 0}`)
+    .join('|')
+
   // Load from cloud on mount / user change
   useEffect(() => {
-    if (!user) return
-    void loadFromCloud(user.id, activeLessonId).then(cloud => {
+    if (!userId) return
+    void loadFromCloud(userId, activeLessonId).then((cloud) => {
       if (cloud) setState(cloud)
     })
-  }, [user, activeLessonId])
+  }, [userId, activeLessonId])
 
   // Reset state when switching to a different lesson plan
   useEffect(() => {
     if (stateRef.current.planLessonId !== activeLessonId) {
       const fresh = initialState(activeLessonId)
       setState(fresh)
-      if (user) void saveToCloud(user.id, fresh)
+      if (userId) void saveToCloud(userId, fresh)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeLessonId])
 
   // Assign problem for selectedDate when first viewed; re-pick if current assignment conflicts with excludeKeys
@@ -98,19 +106,28 @@ export function useMathWeeklyLessonReview(
     // Skip if already assigned and not excluded by rotating review
     if (existing !== undefined && !excludeKeys.has(existing)) return
 
-    const hasProblems = Object.values(priorLessonProbs).some(p => p.length > 0)
+    const hasProblems = Object.values(priorLessonProbs).some((p) => p.length > 0)
     if (!hasProblems) return
 
-    const result = pickWeeklyLessonProblem(priorLessonProbs, stateRef.current.reviewCounts, excludeKeys)
+    const result = pickWeeklyLessonProblem(
+      priorLessonProbs,
+      stateRef.current.reviewCounts,
+      excludeKeys,
+    )
     if (!result) return
 
     const newState: MathWeeklyLessonReviewState = {
       ...stateRef.current,
-      dailyAssignments: { ...stateRef.current.dailyAssignments, [selectedDate]: result.problem.key },
+      dailyAssignments: {
+        ...stateRef.current.dailyAssignments,
+        [selectedDate]: result.problem.key,
+      },
     }
     setState(newState)
-    if (user) void saveToCloud(user.id, newState)
-  }, [activeLessonId, selectedDate, priorLessonProbs, excludeKeys, user])
+    if (userId) void saveToCloud(userId, newState)
+    // priorLessonProbs / excludeKeys read via refs of current render; sigs gate re-runs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeLessonId, selectedDate, priorLessonsSig, excludeKeysSig, userId])
 
   const assignedKey = selectedDate ? state.dailyAssignments[selectedDate] : undefined
   const allProbs = Object.values(priorLessonProbs).flat()

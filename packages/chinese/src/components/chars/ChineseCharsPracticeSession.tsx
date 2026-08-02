@@ -1,9 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
-import { useImmersive } from '@rosie/core'
+import { todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { useStarHud, StarProgressBar, ColoredStar } from '@rosie/rewards'
 import { useChineseContext } from '../../context/ChineseContext'
 import {
@@ -13,9 +13,18 @@ import {
   parseQuizTypesParam,
   type CharPracticeQuestion,
   type PracticePhase,
+  type PracticeSessionPlan,
 } from '../../utils/chinese-chars-session-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
 import { shuffle } from '../../utils/chinese-helpers'
+import {
+  CHINESE_PENDING_KIND,
+  chinesePracticeScopeKey,
+  clearChinesePendingEverywhere,
+  resolveChinesePracticeSnapshot,
+  wrapChineseEnvelope,
+  writeChinesePracticeSnapshot,
+} from '../../utils/chinese-practice-session-snapshot'
 import CharFlashCard from './CharFlashCard'
 import CharWriter from './CharWriter'
 import PinyinWriteRunner from './PinyinWriteRunner'
@@ -73,6 +82,7 @@ function WrongAnswerPanel({
 export default function ChineseCharsPracticeSession() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { user } = useAuth()
   const { setIsImmersive } = useImmersive()
   const { awardStars, session: starSession } = useStarHud()
   const { lessons, lessonGroups, charByKey, getCharProfile, recordBatch, isCharDataReady, bookSlug } =
@@ -85,6 +95,17 @@ export default function ChineseCharsPracticeSession() {
     [searchParams],
   )
   const cardPreviewEnabled = searchParams.get('cardPreview') !== '0'
+  const scopeKey = useMemo(
+    () =>
+      chinesePracticeScopeKey({
+        bookSlug,
+        units: [...selUnits].sort((a, b) => a - b).join(','),
+        lessons: [...selLessons].join(','),
+        types: searchParams.get('types') ?? '',
+        cardPreview: cardPreviewEnabled ? '1' : '0',
+      }),
+    [bookSlug, selUnits, selLessons, searchParams, cardPreviewEnabled],
+  )
 
   const filtered = useMemo(
     () =>
@@ -94,10 +115,14 @@ export default function ChineseCharsPracticeSession() {
     [isCharDataReady, lessons, lessonGroups, selUnits, selLessons],
   )
 
-  const plan = useMemo(
+  const builtPlan = useMemo(
     () => buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug),
     [filtered, charByKey, quizTypes, lessons, bookSlug],
   )
+
+  // Frozen plan for this run (preserves shuffle order across mid-exit restore).
+  const [plan, setPlan] = useState<PracticeSessionPlan | null>(null)
+  const hydrateDoneRef = useRef(false)
 
   const [phase, setPhase] = useState<PracticePhase>(() =>
     cardPreviewEnabled ? 'cards' : 'chars',
@@ -117,16 +142,162 @@ export default function ChineseCharsPracticeSession() {
   const [strokeWrongMistakes, setStrokeWrongMistakes] = useState<number | null>(null)
   const [earnedMoons, setEarnedMoons] = useState(0)
   const [correctCounts, setCorrectCounts] = useState({ total: 0, correct: 0 })
+  const [isStashing, setIsStashing] = useState(false)
+  const [stashToast, setStashToast] = useState<string | null>(null)
+
+  useEffect(() => {
+    hydrateDoneRef.current = false
+    setPlan(null)
+  }, [scopeKey, bookSlug])
+
+  useEffect(() => {
+    if (!isCharDataReady || hydrateDoneRef.current) return
+    hydrateDoneRef.current = true
+
+    void (async () => {
+      const snap = await resolveChinesePracticeSnapshot(user?.id, bookSlug, scopeKey)
+      if (snap && snap.phase !== 'done') {
+        setPlan(snap.plan)
+        setPhase(snap.phase)
+        setCardIdx(snap.cardIdx)
+        setCharQIdx(snap.charQIdx)
+        setPhraseIdx(snap.phraseIdx)
+        setPoemIdx(snap.poemIdx)
+        setAccIdx(snap.accIdx)
+        setPassageIdx(snap.passageIdx)
+        setPinyinWriteIdx(snap.pinyinWriteIdx)
+        setEarnedMoons(snap.earnedMoons)
+        setCorrectCounts(snap.correctCounts)
+        return
+      }
+      setPlan(builtPlan)
+      setPhase(cardPreviewEnabled ? 'cards' : 'chars')
+      setCardIdx(0)
+      setCharQIdx(0)
+      setPhraseIdx(0)
+      setPoemIdx(0)
+      setAccIdx(0)
+      setPassageIdx(0)
+      setPinyinWriteIdx(0)
+      setEarnedMoons(0)
+      setCorrectCounts({ total: 0, correct: 0 })
+    })()
+  }, [isCharDataReady, builtPlan, bookSlug, scopeKey, cardPreviewEnabled, user?.id])
+
+  const getEnvelope = useCallback(() => {
+    if (!plan || phase === 'done') return null
+    return wrapChineseEnvelope({
+      version: 1,
+      date: todayStr(),
+      bookSlug,
+      scopeKey,
+      phase,
+      cardIdx,
+      charQIdx,
+      phraseIdx,
+      poemIdx,
+      accIdx,
+      passageIdx,
+      pinyinWriteIdx,
+      earnedMoons,
+      correctCounts,
+      plan,
+    })
+  }, [
+    plan,
+    phase,
+    bookSlug,
+    scopeKey,
+    cardIdx,
+    charQIdx,
+    phraseIdx,
+    poemIdx,
+    accIdx,
+    passageIdx,
+    pinyinWriteIdx,
+    earnedMoons,
+    correctCounts,
+  ])
+
+  const { flushCloudNow } = usePracticePendingLifecycle({
+    enabled: !!plan && phase !== 'done',
+    userId: user?.id,
+    kind: CHINESE_PENDING_KIND,
+    scopeKey,
+    getEnvelope,
+  })
+
+  useEffect(() => {
+    if (!stashToast) return
+    const timer = window.setTimeout(() => setStashToast(null), 3500)
+    return () => window.clearTimeout(timer)
+  }, [stashToast])
 
   useEffect(() => {
     setIsImmersive(true)
     return () => setIsImmersive(false)
   }, [setIsImmersive])
 
+  // Persist mid-session progress (same browser tab / refresh).
+  useEffect(() => {
+    if (!plan || phase === 'done') {
+      if (phase === 'done') void clearChinesePendingEverywhere(user?.id, scopeKey)
+      return
+    }
+    writeChinesePracticeSnapshot({
+      version: 1,
+      date: todayStr(),
+      bookSlug,
+      scopeKey,
+      phase,
+      cardIdx,
+      charQIdx,
+      phraseIdx,
+      poemIdx,
+      accIdx,
+      passageIdx,
+      pinyinWriteIdx,
+      earnedMoons,
+      correctCounts,
+      plan,
+    })
+  }, [
+    plan,
+    phase,
+    bookSlug,
+    scopeKey,
+    cardIdx,
+    charQIdx,
+    phraseIdx,
+    poemIdx,
+    accIdx,
+    passageIdx,
+    pinyinWriteIdx,
+    earnedMoons,
+    correctCounts,
+    user?.id,
+  ])
+
   const exitPractice = useCallback(() => {
     setIsImmersive(false)
-    router.push('/chinese/chars')
-  }, [router, setIsImmersive])
+    void flushCloudNow().then(() => {
+      router.push('/chinese/chars')
+    })
+  }, [router, setIsImmersive, flushCloudNow])
+
+  const stashAndExit = useCallback(async () => {
+    setIsStashing(true)
+    try {
+      await flushCloudNow()
+      setStashToast('已暂存到云端，换设备也可继续')
+      setIsImmersive(false)
+      window.setTimeout(() => {
+        router.push('/chinese/chars')
+      }, 900)
+    } finally {
+      setIsStashing(false)
+    }
+  }, [flushCloudNow, router, setIsImmersive])
 
   const awardMoon = useCallback(
     async (amount: number, correct: boolean) => {
@@ -144,6 +315,7 @@ export default function ChineseCharsPracticeSession() {
 
   const goNextPhase = useCallback(
     (from: PracticePhase) => {
+      if (!plan) return
       const order: PracticePhase[] = [
         'cards',
         'chars',
@@ -173,7 +345,7 @@ export default function ChineseCharsPracticeSession() {
   )
 
   useEffect(() => {
-    if (!isCharDataReady) return
+    if (!isCharDataReady || !plan) return
     if (phase === 'cards' && (!cardPreviewEnabled || plan.cards.length === 0)) {
       goNextPhase('cards')
       return
@@ -183,20 +355,19 @@ export default function ChineseCharsPracticeSession() {
     }
   }, [
     isCharDataReady,
-    plan.cards.length,
-    plan.charQuestions.length,
+    plan,
     phase,
     goNextPhase,
     cardPreviewEnabled,
   ])
 
-  const currentCard = plan.cards[cardIdx]
-  const currentCharQ = plan.charQuestions[charQIdx] as CharPracticeQuestion | undefined
-  const currentPhrase = plan.phraseItems[phraseIdx]
-  const currentPoem = plan.poems[poemIdx]
-  const currentAcc = plan.accumulationItems[accIdx]
-  const currentPassage = plan.passageItems[passageIdx]
-  const currentPinyinWrite = plan.pinyinWriteItems[pinyinWriteIdx]
+  const currentCard = plan?.cards[cardIdx]
+  const currentCharQ = plan?.charQuestions[charQIdx] as CharPracticeQuestion | undefined
+  const currentPhrase = plan?.phraseItems[phraseIdx]
+  const currentPoem = plan?.poems[poemIdx]
+  const currentAcc = plan?.accumulationItems[accIdx]
+  const currentPassage = plan?.passageItems[passageIdx]
+  const currentPinyinWrite = plan?.pinyinWriteItems[pinyinWriteIdx]
 
   const phraseOptions = useMemo(() => {
     if (!currentPhrase) return []
@@ -221,6 +392,7 @@ export default function ChineseCharsPracticeSession() {
   }, [])
 
   const advanceCharQuestion = useCallback(() => {
+    if (!plan) return
     clearQuestionFeedback()
     if (charQIdx + 1 >= plan.charQuestions.length) {
       goNextPhase('chars')
@@ -228,9 +400,10 @@ export default function ChineseCharsPracticeSession() {
     } else {
       setCharQIdx((i) => i + 1)
     }
-  }, [charQIdx, clearQuestionFeedback, goNextPhase, plan.charQuestions.length])
+  }, [charQIdx, clearQuestionFeedback, goNextPhase, plan])
 
   const advancePhraseQuestion = useCallback(() => {
+    if (!plan) return
     clearQuestionFeedback()
     if (phraseIdx + 1 >= plan.phraseItems.length) {
       goNextPhase('phrases')
@@ -238,9 +411,10 @@ export default function ChineseCharsPracticeSession() {
     } else {
       setPhraseIdx((i) => i + 1)
     }
-  }, [clearQuestionFeedback, goNextPhase, phraseIdx, plan.phraseItems.length])
+  }, [clearQuestionFeedback, goNextPhase, phraseIdx, plan])
 
   const advancePassageQuestion = useCallback(() => {
+    if (!plan) return
     clearQuestionFeedback()
     if (passageIdx + 1 >= plan.passageItems.length) {
       goNextPhase('passage')
@@ -248,9 +422,10 @@ export default function ChineseCharsPracticeSession() {
     } else {
       setPassageIdx((i) => i + 1)
     }
-  }, [clearQuestionFeedback, goNextPhase, passageIdx, plan.passageItems.length])
+  }, [clearQuestionFeedback, goNextPhase, passageIdx, plan])
 
   const advanceAccQuestion = useCallback(() => {
+    if (!plan) return
     clearQuestionFeedback()
     if (accIdx + 1 >= plan.accumulationItems.length) {
       goNextPhase('accumulation')
@@ -258,7 +433,7 @@ export default function ChineseCharsPracticeSession() {
     } else {
       setAccIdx((i) => i + 1)
     }
-  }, [accIdx, clearQuestionFeedback, goNextPhase, plan.accumulationItems.length])
+  }, [accIdx, clearQuestionFeedback, goNextPhase, plan])
 
   const handleChoiceAnswer = useCallback(
     async (
@@ -298,7 +473,7 @@ export default function ChineseCharsPracticeSession() {
     [advanceCharQuestion, awardMoon, recordBatch],
   )
 
-  if (!isCharDataReady) {
+  if (!isCharDataReady || !plan) {
     return <p className="p-6 text-center text-sm text-amber-900/50">字库未就绪</p>
   }
 
@@ -320,6 +495,12 @@ export default function ChineseCharsPracticeSession() {
   return (
     <div className="cn-immersive-bg fixed inset-0 z-30 overflow-y-auto">
       <div className="mx-auto flex min-h-full max-w-2xl flex-col px-4 py-4">
+        {stashToast && (
+          <div className="fixed left-1/2 top-4 z-50 -translate-x-1/2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800 shadow-md">
+            {stashToast}
+          </div>
+        )}
+
         <header className="mb-3 flex items-center gap-2">
           <button
             type="button"
@@ -328,6 +509,16 @@ export default function ChineseCharsPracticeSession() {
           >
             ← 退出
           </button>
+          {phase !== 'done' && (
+            <button
+              type="button"
+              onClick={() => void stashAndExit()}
+              disabled={isStashing}
+              className="cursor-pointer rounded-full border border-amber-300/80 bg-amber-50/90 px-3 py-1 text-sm font-bold text-amber-800 hover:border-amber-400 disabled:cursor-wait disabled:opacity-60"
+            >
+              {isStashing ? '暂存中…' : '💾 暂存'}
+            </button>
+          )}
           <span className="text-sm font-extrabold text-stone-800">{PHASE_LABEL[phase]}</span>
           <div className="ml-auto flex items-center gap-1 text-xs font-bold text-rose-700">
             <ColoredStar color="red" size={16} />

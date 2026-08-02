@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import MathWeeklyPlanSession from '@rosie/math/components/MathWeeklyPlanSession'
 import { MATH_PLAN_PROBLEM_SETS } from '@/lib/math-plan-problem-sets'
 import Link from 'next/link'
@@ -94,7 +95,15 @@ export default function MathDailyPage() {
       </div>
 
       <div className="relative mx-auto w-full max-w-6xl">
-        <MathWeeklyPlanSession problemSets={MATH_PLAN_PROBLEM_SETS} />
+        <Suspense
+          fallback={
+            <div className="mx-auto w-full px-4 py-10 text-center text-[13px] text-orange-400/70">
+              加载中…
+            </div>
+          }
+        >
+          <MathWeeklyPlanSession problemSets={MATH_PLAN_PROBLEM_SETS} />
+        </Suspense>
       </div>
     </div>
   )

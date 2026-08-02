@@ -3,9 +3,10 @@
 import { useState, useMemo, useCallback, useRef, useEffect, type MutableRefObject } from 'react'
 import type { WordEntry, WeeklyPlan, WeekDayProgress, RescueRole, WeeklyPlanSessionStash } from '@rosie/core'
 import {
+  clearLocalSessionSnapshot,
   encodeWeeklyPlanProgress,
   pickBestPendingSnapshot,
-  weeklySessionStorageKey,
+  writeLocalSessionSnapshot,
 } from '../../utils/weeklyPlanProgress'
 import {
   buildQuizOptions,
@@ -38,6 +39,11 @@ import DoneSummary from './DoneSummary'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useImmersive } from '@rosie/core'
+import {
+  clearLocalPending,
+  usePracticePendingLifecycle,
+  type PracticePendingEnvelope,
+} from '@rosie/core'
 import { useStarHud } from '@rosie/rewards'
 import { StarProgressBar } from '@rosie/rewards'
 import { supabase } from '@rosie/core'
@@ -47,6 +53,8 @@ interface WeeklyPlanSessionProps {
   initialPlan: WeeklyPlan
   vocab: WordEntry[]
   onBack: () => void
+  /** Homepage「今日计划」英语卡：进入后立刻开始今日学习 */
+  autoStart?: boolean
 }
 
 type Phase = 'week-view' | 'study' | 'quiz' | 'done'
@@ -125,7 +133,7 @@ async function saveProgressToCloud(
   }
 }
 
-export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: WeeklyPlanSessionProps) {
+export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStart = false }: WeeklyPlanSessionProps) {
   const { user } = useAuth()
   const { masteryMap, recordBatch, practiceButtonStyle, setPracticeButtonStyle } =
     useWordsContext()
@@ -139,7 +147,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     planRef.current = plan
   }, [plan])
 
-  // Read sessionStorage exactly once via a lazy-init state (immutable after mount, not a ref)
+  // Read localStorage exactly once via a lazy-init state (immutable after mount, not a ref)
   const [snap0] = useState(() =>
     pickBestPendingSnapshot(initialPlan.id, initialPlan.pendingSession),
   )
@@ -257,36 +265,79 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     setIsImmersive(true)
   }, [snap0, vocab, setIsImmersive])
 
-  // Persist active session to sessionStorage on every relevant state change.
+  const buildCurrentStash = useCallback((): WeeklyPlanSessionStash | null => {
+    if (phase !== 'study' && phase !== 'quiz') return null
+    return {
+      version: 3,
+      savedAt: new Date().toISOString(),
+      phase,
+      selectedDate: selectedDate ?? '',
+      subTask: currentSubTask,
+      studyIdx,
+      words: wordKeys,
+      quizQs: quizQKeys,
+      curQ,
+      quizResults: quizResultBuffer.current
+        .slice(0, curQ)
+        .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+    }
+  }, [phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
+
+  const cloudUpsertWeekly = useCallback(
+    async (env: PracticePendingEnvelope<WeeklyPlanSessionStash>) => {
+      if (!user || !plan.id) return
+      const stash = env.stash
+      const updated: WeeklyPlan = { ...planRef.current, pendingSession: stash }
+      planRef.current = updated
+      setPlan(updated)
+      await saveProgressToCloud(user.id, updated, stash)
+    },
+    [user, plan.id],
+  )
+
+  const { flushCloudNow } = usePracticePendingLifecycle({
+    enabled: (phase === 'study' || phase === 'quiz') && Boolean(plan.id),
+    userId: user?.id,
+    kind: 'english_weekly',
+    scopeKey: plan.id ?? '',
+    getEnvelope: () => {
+      const stash = buildCurrentStash()
+      if (!stash) return null
+      return {
+        version: 1,
+        savedAt: stash.savedAt,
+        date: todayStr(),
+        stash,
+      }
+    },
+    cloudUpsert: cloudUpsertWeekly,
+  })
+
+  const exitMidSession = useCallback(async () => {
+    await flushCloudNow()
+    exitImmersive()
+  }, [flushCloudNow, exitImmersive])
+
+  const backToWeekView = useCallback(async () => {
+    await flushCloudNow()
+    setPhase('week-view')
+  }, [flushCloudNow])
+
+  // Persist active session to localStorage on every relevant state change.
   // Only clear on completion — returning to week-view (e.g. study ← 返回) must
   // keep the snapshot so leaving the page and coming back resumes progress.
   useEffect(() => {
     if (!plan.id) return
-    const key = weeklySessionStorageKey(plan.id)
     if (phase === 'done') {
-      try { sessionStorage.removeItem(key) } catch { /* noop */ }
+      clearLocalSessionSnapshot(plan.id)
+      clearLocalPending('english_weekly', plan.id)
       return
     }
     if (phase === 'week-view') return
     if (phase !== 'study' && phase !== 'quiz') return
-    try {
-      const stash: WeeklyPlanSessionStash = {
-        version: 3,
-        savedAt: new Date().toISOString(),
-        phase,
-        selectedDate: selectedDate ?? '',
-        subTask: currentSubTask,
-        studyIdx,
-        words: wordKeys,
-        quizQs: quizQKeys,
-        curQ,
-        quizResults: quizResultBuffer.current
-          .slice(0, curQ)
-          .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
-      }
-      sessionStorage.setItem(key, JSON.stringify(stash))
-    } catch { /* noop */ }
-  }, [plan.id, phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
+    const stash = buildCurrentStash()
+    if (stash) writeLocalSessionSnapshot(plan.id, stash)
+  }, [plan.id, phase, buildCurrentStash])
 
   const cnDays = useMemo(() => getWeekDayLabels(plan.weekStartDay), [plan.weekStartDay])
 
@@ -331,7 +382,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
 
   const clearPendingSession = useCallback(async () => {
     if (!plan.id) return
-    try { sessionStorage.removeItem(weeklySessionStorageKey(plan.id)) } catch { /* noop */ }
+    clearLocalSessionSnapshot(plan.id)
+    clearLocalPending('english_weekly', plan.id)
     if (!planRef.current.pendingSession) return
     const updated: WeeklyPlan = { ...planRef.current, pendingSession: undefined }
     planRef.current = updated
@@ -339,42 +391,21 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     if (user) await saveProgressToCloud(user.id, updated, null)
   }, [user, plan.id])
 
-  const buildCurrentStash = useCallback((): WeeklyPlanSessionStash | null => {
-    if (phase !== 'study' && phase !== 'quiz') return null
-    return {
-      version: 3,
-      savedAt: new Date().toISOString(),
-      phase,
-      selectedDate: selectedDate ?? '',
-      subTask: currentSubTask,
-      studyIdx,
-      words: wordKeys,
-      quizQs: quizQKeys,
-      curQ,
-      quizResults: quizResultBuffer.current
-        .slice(0, curQ)
-        .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
-    }
-  }, [phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
-
   const stashSession = useCallback(async () => {
     if (!user || !plan.id) return
     const stash = buildCurrentStash()
     if (!stash) return
     setIsStashing(true)
     try {
-      sessionStorage.setItem(weeklySessionStorageKey(plan.id), JSON.stringify(stash))
-      const updated: WeeklyPlan = { ...planRef.current, pendingSession: stash }
-      planRef.current = updated
-      setPlan(updated)
-      await saveProgressToCloud(user.id, updated, stash)
+      writeLocalSessionSnapshot(plan.id, stash)
+      await flushCloudNow()
       setStashToast('已暂存到云端，换设备也可继续')
       setPhase('week-view')
       exitImmersive()
     } finally {
       setIsStashing(false)
     }
-  }, [user, plan.id, buildCurrentStash, exitImmersive])
+  }, [user, plan.id, buildCurrentStash, flushCloudNow, exitImmersive])
 
   useEffect(() => {
     if (!stashToast) return
@@ -420,6 +451,18 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
     },
     [consolidateTypes, previewTypes, buildSessionWords, setIsImmersive, clearPendingSession],
   )
+
+  // Homepage today-plan card: jump straight into today's study (unless a pending session is restoring).
+  const autoStartDoneRef = useRef(false)
+  useEffect(() => {
+    if (!autoStart || autoStartDoneRef.current || snap0) return
+    if (phase !== 'week-view') return
+    const today = todayStr()
+    if (!plan.days.some((d) => d.date === today)) return
+    if (buildSessionWords(today).length === 0) return
+    autoStartDoneRef.current = true
+    startStudy(today)
+  }, [autoStart, snap0, phase, plan.days, buildSessionWords, startStudy])
 
   const resumePendingSession = useCallback(() => {
     const snap = pickBestPendingSnapshot(plan.id, plan.pendingSession)
@@ -710,7 +753,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
                 </button>
                 {isImmersive && (
                   <button
-                    onClick={exitImmersive}
+                    onClick={() => void exitMidSession()}
                     className="cursor-pointer rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[.72rem] font-bold text-white/55 transition-all hover:bg-white/20 hover:text-white/80"
                   >
                     ✕ 退出沉浸
@@ -1162,7 +1205,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
         studyDefOnly={studyDefOnly}
         onStudyDefOnlyChange={setStudyDefOnly}
         isImmersive={isImmersive}
-        onExitImmersive={exitImmersive}
+        onExitImmersive={() => void exitMidSession()}
         progressGradientClasses="from-[#d97706] via-[#f59e0b] to-[#fbbf24]"
         nextButtonGradientClasses="from-[#d97706] to-[#f59e0b]"
         nextButtonShadowClass="shadow-[0_3px_12px_rgba(217,119,6,.4)]"
@@ -1177,7 +1220,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack }: Weekly
             {w.kind === 'consolidate' ? '必记' : '预习'}
           </span>
         }
-        onBack={() => setPhase('week-view')}
+        onBack={() => void backToWeekView()}
         onStash={() => void stashSession()}
         isStashing={isStashing}
         onPrev={() => setStudyIdx(studyIdx - 1)}

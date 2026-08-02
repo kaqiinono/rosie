@@ -119,18 +119,38 @@ export async function upsertScratchWorking(
   objects: ScratchObject[],
   answerDraft: unknown | null,
 ): Promise<void> {
-  const row: Record<string, unknown> = {
-    user_id: userId,
-    problem_id: problemId,
-    paper_scope: toPaperScope(paperId),
-    objects,
-    answer_draft: answerDraft,
-    updated_at: new Date().toISOString(),
+  const paperScope = toPaperScope(paperId)
+
+  // Prefer SECURITY DEFINER RPC (packages/math/sql/math-scratch-working-fix.sql)
+  // so writes use auth.uid() and are not blocked by broken INSERT RLS on upsert.
+  const { error: rpcError } = await supabase.rpc('upsert_math_scratch_working', {
+    p_problem_id: problemId,
+    p_paper_scope: paperScope,
+    p_objects: objects,
+    p_answer_draft: answerDraft,
+  })
+  if (!rpcError) return
+
+  // Fallback when RPC not deployed yet.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  const uid = session?.user?.id ?? userId
+  if (!session?.user?.id) {
+    throw rpcError
   }
 
-  const { error } = await supabase.from('math_scratch_working').upsert(row, {
-    onConflict: 'user_id,problem_id,paper_scope',
-  })
+  const { error } = await supabase.from('math_scratch_working').upsert(
+    {
+      user_id: uid,
+      problem_id: problemId,
+      paper_scope: paperScope,
+      objects,
+      answer_draft: answerDraft,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'user_id,problem_id,paper_scope' },
+  )
   if (error) throw error
 }
 
@@ -450,26 +470,114 @@ export async function seedWorkingFromWrongAttempt(
   return { hasScratch: true, answerDraft: attempt.answerSnapshot }
 }
 
-/** Working scratch or latest wrong-attempt archived draft — whichever has canvas objects. */
+/** Latest archived attempt draft for a problem (wrong or correct), if any. */
+async function fetchLatestAttemptDraftObjects(
+  userId: string,
+  problemId: string,
+): Promise<ScratchObject[]> {
+  const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .select('draft_id')
+    .eq('user_id', userId)
+    .eq('problem_id', problemId)
+    .not('draft_id', 'is', null)
+    .order('attempted_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error || !data?.draft_id) return []
+  const draft = await fetchScratchDraft(data.draft_id as string)
+  return draft?.objects ?? []
+}
+
+/**
+ * Working scratch or latest archived attempt draft — whichever has canvas objects.
+ * Includes correct-attempt drafts so completed plan items can still show 📝 草稿.
+ */
 export async function fetchViewableDraftObjects(
   userId: string,
   problemId: string,
 ): Promise<ScratchObject[]> {
   const working = await fetchScratchWorking(userId, problemId, null)
   if (working?.objects && working.objects.length > 0) return working.objects
+  return fetchLatestAttemptDraftObjects(userId, problemId)
+}
 
-  const attemptId = await resolveWrongAttemptId(userId, problemId)
-  if (!attemptId) return []
-  const attempt = await fetchPracticeAttempt(attemptId)
-  if (!attempt?.draftId) return []
-  const draft = await fetchScratchDraft(attempt.draftId)
-  return draft?.objects ?? []
+const viewableDraftInflight = new Map<string, Promise<Set<string>>>()
+
+/**
+ * Batch presence check for plan pages — 2–3 light queries total, never N×full draft downloads.
+ * A problem is "viewable" if working canvas is non-empty OR an attempt has a draft with objects.
+ */
+export async function fetchViewableDraftProblemIds(
+  userId: string,
+  problemIds: string[],
+): Promise<Set<string>> {
+  if (problemIds.length === 0) return new Set()
+  const unique = [...new Set(problemIds)].sort()
+  const cacheKey = `${userId}:${unique.join(',')}`
+  const existing = viewableDraftInflight.get(cacheKey)
+  if (existing) return existing
+
+  const promise = (async (): Promise<Set<string>> => {
+    const out = new Set<string>()
+
+    // Do NOT select `objects` here — canvas JSON is huge and caused request storms / bandwidth spikes.
+    // Empty working rows are rare (cleared on correct); open-time load still verifies content.
+    const [{ data: workingRows }, { data: attemptRows }] = await Promise.all([
+      supabase
+        .from('math_scratch_working')
+        .select('problem_id')
+        .eq('user_id', userId)
+        .eq('paper_scope', '')
+        .in('problem_id', unique)
+        .not('objects', 'eq', '[]'),
+      supabase
+        .from('math_practice_attempts')
+        .select('problem_id, draft_id')
+        .eq('user_id', userId)
+        .not('draft_id', 'is', null)
+        .in('problem_id', unique),
+    ])
+
+    for (const row of workingRows ?? []) {
+      out.add(row.problem_id as string)
+    }
+
+    const draftIds = [
+      ...new Set(
+        (attemptRows ?? [])
+          .map((r) => r.draft_id as string | null)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ]
+    if (draftIds.length === 0) return out
+
+    const { data: drafts } = await supabase
+      .from('math_scratch_drafts')
+      .select('id, object_count')
+      .in('id', draftIds)
+      .gt('object_count', 0)
+
+    const goodDrafts = new Set((drafts ?? []).map((d) => d.id as string))
+    for (const row of attemptRows ?? []) {
+      const draftId = row.draft_id as string | null
+      if (draftId && goodDrafts.has(draftId)) {
+        out.add(row.problem_id as string)
+      }
+    }
+    return out
+  })().finally(() => {
+    viewableDraftInflight.delete(cacheKey)
+  })
+
+  viewableDraftInflight.set(cacheKey, promise)
+  return promise
 }
 
 export async function problemHasViewableDraft(
   userId: string,
   problemId: string,
 ): Promise<boolean> {
-  const objects = await fetchViewableDraftObjects(userId, problemId)
-  return objects.length > 0
+  const ids = await fetchViewableDraftProblemIds(userId, [problemId])
+  return ids.has(problemId)
 }

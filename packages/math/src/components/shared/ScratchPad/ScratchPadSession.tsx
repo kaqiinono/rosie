@@ -27,8 +27,13 @@ type ScratchPadSessionProps = {
   blankCanvasOnLoad?: boolean
   disableEdgeNav?: boolean
   embedded?: boolean
-  /** When true, toolbar 完成 ends the session via onClose */
+  /** When true, toolbar shows「结束」instead of「完成」(caller owns onClose meaning). */
   closeEndsSession?: boolean
+  /**
+   * Readonly view: load working scratch or latest archived attempt draft
+   * (same source as plan-page 📝 草稿), without writing back.
+   */
+  preferViewableDraft?: boolean
   onClose: () => void
   onSolve?: (problemId: string) => void | Promise<void>
   onWrong?: (problemId: string) => void
@@ -59,6 +64,7 @@ export default function ScratchPadSession({
   disableEdgeNav = false,
   embedded = false,
   closeEndsSession = false,
+  preferViewableDraft = false,
   onClose,
   onSolve,
   onWrong,
@@ -92,25 +98,30 @@ export default function ScratchPadSession({
     setLoading(false)
   }, [showCanvasInitial])
 
+  const userId = user?.id
+  const problemId = problem?.id
+
   useEffect(() => {
-    if (!problem) return
+    if (!problemId) return
     if (blankCanvasOnLoad) {
       resetBlank()
       return
     }
     setLoading(true)
     void (async () => {
-      if (!user) {
+      if (!userId) {
         resetBlank()
         return
       }
-      const { fetchScratchWorking, seedWorkingFromWrongAttempt } = await import(
-        '@rosie/math/utils/math-scratch-db'
-      )
+      const {
+        fetchScratchWorking,
+        fetchViewableDraftObjects,
+        seedWorkingFromWrongAttempt,
+      } = await import('@rosie/math/utils/math-scratch-db')
       if (seedWrongAttemptId && index === initialIndex) {
-        const seeded = await seedWorkingFromWrongAttempt(user.id, problem.id, seedWrongAttemptId)
+        const seeded = await seedWorkingFromWrongAttempt(userId, problemId, seedWrongAttemptId)
         setShowCanvas(seeded.hasScratch)
-        const row = await fetchScratchWorking(user.id, problem.id, paperId)
+        const row = await fetchScratchWorking(userId, problemId, paperId)
         const loaded = row?.objects ?? []
         objectsRef.current = loaded
         setObjects(loaded)
@@ -118,7 +129,16 @@ export default function ScratchPadSession({
         setLoading(false)
         return
       }
-      const row = await fetchScratchWorking(user.id, problem.id, paperId)
+      if (preferViewableDraft && readOnly) {
+        const loaded = await fetchViewableDraftObjects(userId, problemId)
+        objectsRef.current = loaded
+        setObjects(loaded)
+        setAnswerDraft(null)
+        setShowCanvas(loaded.length > 0)
+        setLoading(false)
+        return
+      }
+      const row = await fetchScratchWorking(userId, problemId, paperId)
       const loaded = row?.objects ?? []
       objectsRef.current = loaded
       setObjects(loaded)
@@ -127,35 +147,36 @@ export default function ScratchPadSession({
       setLoading(false)
     })()
   }, [
-    problem?.id,
-    user,
+    problemId,
+    userId,
     paperId,
     blankCanvasOnLoad,
     seedWrongAttemptId,
+    preferViewableDraft,
+    readOnly,
     index,
     initialIndex,
     resetBlank,
-    problem,
   ])
 
   const persistWorking = useCallback(
     (objs: ScratchObject[], answer: unknown) => {
-      if (!user || !problem || readOnly) return
+      if (!userId || !problemId || readOnly) return
       if (persistTimer.current) clearTimeout(persistTimer.current)
       persistTimer.current = setTimeout(() => {
-        void upsertScratchWorking(user.id, problem.id, paperId, objs, answer).catch(() => {})
+        void upsertScratchWorking(userId, problemId, paperId, objs, answer).catch(() => {})
       }, 500)
     },
-    [user, problem, paperId, readOnly],
+    [userId, problemId, paperId, readOnly],
   )
 
   const flushCurrent = useCallback(() => {
-    if (!readOnly && user && problem) {
-      void upsertScratchWorking(user.id, problem.id, paperId, objectsRef.current, answerDraft).catch(
+    if (!readOnly && userId && problemId) {
+      void upsertScratchWorking(userId, problemId, paperId, objectsRef.current, answerDraft).catch(
         () => {},
       )
     }
-  }, [readOnly, user, problem, paperId, answerDraft])
+  }, [readOnly, userId, problemId, paperId, answerDraft])
 
   const flushAndGo = useCallback(
     (nextIndex: number) => {

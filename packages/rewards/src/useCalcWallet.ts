@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
 import type { CalcSession, CalcMode, CalcLevel, VoucherCategory } from '@rosie/core'
@@ -64,6 +64,7 @@ interface StarSessionRow {
   coins_earned: number
   source: 'english' | 'math' | 'calc'
   ref_id: string | null
+  date: string | null
 }
 
 interface VoucherRecord {
@@ -72,43 +73,43 @@ interface VoucherRecord {
 }
 
 type WalletData = {
+  /** Detail rows (limit 200) — loaded lazily via loadSessions. */
   sessions: CalcSession[]
+  sessionsReady: boolean
   voucherRecords: VoucherRecord[]
   yellowEarned: number
   redEarned: number
   blueEarned: number
   priceEntries: [string, [number, number, number]][]
+  /** Today's calc coins from star_sessions (no calc_sessions join needed). */
+  todayCalcCoins: number
+  /** ref_id → coins; used when hydrating session detail rows. */
+  coinsBySessionId: [string, number][]
 }
 
 const EMPTY_WALLET: WalletData = {
   sessions: [],
+  sessionsReady: false,
   voucherRecords: [],
   yellowEarned: 0,
   redEarned: 0,
   blueEarned: 0,
   priceEntries: [],
+  todayCalcCoins: 0,
+  coinsBySessionId: [],
 }
 
+/** Balances + templates only — skips heavy calc_sessions (homepage HUD). */
 async function fetchWalletData(userId: string): Promise<WalletData> {
   const [
-    { data: sessionRows, error: sessErr },
     { data: voucherRows, error: vouchErr },
     { data: starRows, error: starErr },
     { data: templateRows, error: tmplErr },
   ] = await Promise.all([
-    supabase
-      .from('calc_sessions')
-      .select(
-        'id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms,question_log',
-      )
-      .eq('user_id', userId)
-      .order('finished_at', { ascending: false })
-      .limit(200),
     supabase.from('calc_vouchers').select('category,free').eq('user_id', userId),
-    supabase.from('star_sessions').select('coins_earned,source,ref_id').eq('user_id', userId),
+    supabase.from('star_sessions').select('coins_earned,source,ref_id,date').eq('user_id', userId),
     supabase.from('voucher_templates').select('category,price_yellow,price_red,price_blue'),
   ])
-  if (sessErr) console.error('[wallet] calc_sessions fetch failed', sessErr)
   if (vouchErr) console.error('[wallet] calc_vouchers fetch failed', vouchErr)
   if (starErr) console.error('[wallet] star_sessions fetch failed', starErr)
   if (tmplErr) console.error('[wallet] voucher_templates fetch failed', tmplErr)
@@ -118,14 +119,17 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
     priceEntries.push([r.category, [r.price_yellow, r.price_red, r.price_blue]])
   }
 
+  const today = todayStr()
   let yellowEarned = 0
   let redEarned = 0
   let blueEarned = 0
+  let todayCalcCoins = 0
   const coinsBySessionId = new Map<string, number>()
   for (const r of (starRows ?? []) as StarSessionRow[]) {
     const amt = r.coins_earned ?? 0
     if (r.source === 'calc') {
       yellowEarned += amt
+      if (r.date === today) todayCalcCoins += amt
       if (r.ref_id) {
         coinsBySessionId.set(r.ref_id, (coinsBySessionId.get(r.ref_id) ?? 0) + amt)
       }
@@ -136,15 +140,59 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
     }
   }
 
-  const sessions = (sessionRows ?? []).map((r) => {
-    const row = r as SessionRow
-    return rowToSession(row, coinsBySessionId.get(row.id) ?? 0)
-  })
   const voucherRecords = ((voucherRows ?? []) as VoucherCategoryRow[]).map((v) => ({
     category: v.category,
     free: v.free === true,
   }))
-  return { sessions, voucherRecords, yellowEarned, redEarned, blueEarned, priceEntries }
+  return {
+    sessions: [],
+    sessionsReady: false,
+    voucherRecords,
+    yellowEarned,
+    redEarned,
+    blueEarned,
+    priceEntries,
+    todayCalcCoins,
+    coinsBySessionId: [...coinsBySessionId.entries()],
+  }
+}
+
+const sessionsInflight = new Map<string, Promise<void>>()
+
+async function loadWalletSessions(userId: string): Promise<void> {
+  const existing = calcWalletStore.getSessionData(userId)
+  if (existing?.sessionsReady) return
+
+  const inflight = sessionsInflight.get(userId)
+  if (inflight) return inflight
+
+  const promise = (async () => {
+    const { data: sessionRows, error: sessErr } = await supabase
+      .from('calc_sessions')
+      .select(
+        'id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms,question_log',
+      )
+      .eq('user_id', userId)
+      .order('finished_at', { ascending: false })
+      .limit(200)
+    if (sessErr) console.error('[wallet] calc_sessions fetch failed', sessErr)
+
+    const coinsMap = new Map(calcWalletStore.getSessionData(userId)?.coinsBySessionId ?? [])
+    const sessions = (sessionRows ?? []).map((r) => {
+      const row = r as SessionRow
+      return rowToSession(row, coinsMap.get(row.id) ?? 0)
+    })
+    calcWalletStore.patchSessionData(userId, (prev) => ({
+      ...prev,
+      sessions,
+      sessionsReady: true,
+    }))
+  })().finally(() => {
+    sessionsInflight.delete(userId)
+  })
+
+  sessionsInflight.set(userId, promise)
+  return promise
 }
 
 export const calcWalletStore = createUserSessionStore<WalletData>('calc_wallet', {
@@ -152,8 +200,20 @@ export const calcWalletStore = createUserSessionStore<WalletData>('calc_wallet',
   empty: EMPTY_WALLET,
 })
 
-export function useCalcWallet(user: User | null) {
+export type UseCalcWalletOptions = {
+  /** Load recent calc_sessions detail (report / session / calc home). Default false. */
+  loadSessions?: boolean
+}
+
+export function useCalcWallet(user: User | null, options: UseCalcWalletOptions = {}) {
+  const loadSessions = options.loadSessions === true
   const { data: wallet, isLoading } = calcWalletStore.useSessionData(user)
+
+  useEffect(() => {
+    // Wait until balance slot is ready so ensureLoaded replace can't wipe sessions.
+    if (!user || !loadSessions || isLoading || wallet.sessionsReady) return
+    void loadWalletSessions(user.id)
+  }, [user, loadSessions, isLoading, wallet.sessionsReady])
 
   const priceByCategory = useMemo(
     () => new Map(wallet.priceEntries),
@@ -163,8 +223,9 @@ export function useCalcWallet(user: User | null) {
   const refresh = useCallback(async () => {
     if (!user) return
     calcWalletStore.invalidate(user.id)
-    calcWalletStore.ensureLoaded(user.id)
-  }, [user])
+    await calcWalletStore.ensureLoaded(user.id)
+    if (loadSessions) await loadWalletSessions(user.id)
+  }, [user, loadSessions])
 
   const { yellowSpent, redSpent, blueSpent } = useMemo(() => {
     let y = 0
@@ -201,11 +262,6 @@ export function useCalcWallet(user: User | null) {
 
   const todayCorrect = useMemo(
     () => todaySessions.reduce((sum, s) => sum + s.correctCount + s.retryCount, 0),
-    [todaySessions],
-  )
-
-  const todayCoinsEarned = useMemo(
-    () => todaySessions.reduce((sum, s) => sum + s.coinsEarned, 0),
     [todaySessions],
   )
 
@@ -270,6 +326,7 @@ export function useCalcWallet(user: User | null) {
 
   return {
     sessions: wallet.sessions,
+    sessionsReady: wallet.sessionsReady,
     balance: yellowBalance,
     yellowBalance,
     redBalance,
@@ -282,10 +339,10 @@ export function useCalcWallet(user: User | null) {
     blueSpent,
     todayQuestionsDone,
     todayCorrect,
-    todayCoinsEarned,
+    todayCoinsEarned: wallet.todayCalcCoins,
     recordSession,
     spendVoucher,
     refresh,
-    isLoading,
+    isLoading: isLoading || (loadSessions && !wallet.sessionsReady),
   }
 }

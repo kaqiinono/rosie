@@ -3,7 +3,6 @@
 import { OrbBackground } from '@rosie/ui'
 import { ModuleCard } from '@rosie/ui'
 import { useGreeting } from '@/hooks/useGreeting'
-import { useHomeStats } from '@/hooks/useHomeStats'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
 import HomeTodayPanel from '@/components/HomeTodayPanel'
 import { useAuth } from '@rosie/core'
@@ -105,7 +104,6 @@ const baseModules: ModuleCardData[] = [
 export default function HomePage() {
   const greeting = useGreeting()
   const { user } = useAuth()
-  const { stats, isLoading: statsLoading } = useHomeStats(user)
   const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
 
@@ -128,7 +126,7 @@ export default function HomePage() {
 
         <HomeTodayPanel />
 
-        {user && <HomeStatsPanel stats={stats} isLoading={statsLoading} />}
+        <HomeStatsPanel />
 
         <section className="grid w-full max-w-[1040px] grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((mod) => (
