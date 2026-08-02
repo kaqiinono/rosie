@@ -61,10 +61,14 @@ export const SOURCE_LABELS: Record<string, string> = {
   supplement: '📒 补充题',
 }
 
+/** Local (not UTC) YYYY-MM-DD for a date. `toISOString().slice(0,10)` is off by a day west of UTC. */
+export function localDateStr(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
 /** Returns today's date as YYYY-MM-DD. Used across math/english weekly planners. */
 export function todayStr(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return localDateStr(new Date())
 }
 
 // Shared Thursday-start (startDay=4) week convention used by both the math and

@@ -76,13 +76,19 @@ type WalletData = {
   /** Detail rows (limit 200) — loaded lazily via loadSessions. */
   sessions: CalcSession[]
   sessionsReady: boolean
+  /** The lazy detail fetch failed; don't retry-loop, and don't claim to be loading. */
+  sessionsFailed: boolean
   voucherRecords: VoucherRecord[]
   yellowEarned: number
   redEarned: number
   blueEarned: number
   priceEntries: [string, [number, number, number]][]
-  /** Today's calc coins from star_sessions (no calc_sessions join needed). */
-  todayCalcCoins: number
+  /**
+   * Calc coins per YYYY-MM-DD from star_sessions (no calc_sessions join needed).
+   * Kept per-date rather than pre-summed for today so a PWA left open across
+   * midnight doesn't show yesterday's coins next to a reset question count.
+   */
+  calcCoinsByDate: [string, number][]
   /** ref_id → coins; used when hydrating session detail rows. */
   coinsBySessionId: [string, number][]
 }
@@ -90,12 +96,13 @@ type WalletData = {
 const EMPTY_WALLET: WalletData = {
   sessions: [],
   sessionsReady: false,
+  sessionsFailed: false,
   voucherRecords: [],
   yellowEarned: 0,
   redEarned: 0,
   blueEarned: 0,
   priceEntries: [],
-  todayCalcCoins: 0,
+  calcCoinsByDate: [],
   coinsBySessionId: [],
 }
 
@@ -119,17 +126,16 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
     priceEntries.push([r.category, [r.price_yellow, r.price_red, r.price_blue]])
   }
 
-  const today = todayStr()
   let yellowEarned = 0
   let redEarned = 0
   let blueEarned = 0
-  let todayCalcCoins = 0
+  const calcCoinsByDate = new Map<string, number>()
   const coinsBySessionId = new Map<string, number>()
   for (const r of (starRows ?? []) as StarSessionRow[]) {
     const amt = r.coins_earned ?? 0
     if (r.source === 'calc') {
       yellowEarned += amt
-      if (r.date === today) todayCalcCoins += amt
+      if (r.date) calcCoinsByDate.set(r.date, (calcCoinsByDate.get(r.date) ?? 0) + amt)
       if (r.ref_id) {
         coinsBySessionId.set(r.ref_id, (coinsBySessionId.get(r.ref_id) ?? 0) + amt)
       }
@@ -147,45 +153,56 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
   return {
     sessions: [],
     sessionsReady: false,
+    sessionsFailed: false,
     voucherRecords,
     yellowEarned,
     redEarned,
     blueEarned,
     priceEntries,
-    todayCalcCoins,
+    calcCoinsByDate: [...calcCoinsByDate.entries()],
     coinsBySessionId: [...coinsBySessionId.entries()],
   }
 }
 
 const sessionsInflight = new Map<string, Promise<void>>()
 
-async function loadWalletSessions(userId: string): Promise<void> {
+async function loadWalletSessions(userId: string, force = false): Promise<void> {
   const existing = calcWalletStore.getSessionData(userId)
-  if (existing?.sessionsReady) return
+  if (!force && (existing?.sessionsReady || existing?.sessionsFailed)) return
 
   const inflight = sessionsInflight.get(userId)
   if (inflight) return inflight
 
   const promise = (async () => {
-    const { data: sessionRows, error: sessErr } = await supabase
-      .from('calc_sessions')
-      .select(
-        'id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms,question_log',
-      )
-      .eq('user_id', userId)
-      .order('finished_at', { ascending: false })
-      .limit(200)
-    if (sessErr) console.error('[wallet] calc_sessions fetch failed', sessErr)
+    let sessions: CalcSession[] = []
+    let failed = false
+    try {
+      const { data: sessionRows, error: sessErr } = await supabase
+        .from('calc_sessions')
+        .select(
+          'id,date,started_at,finished_at,count,correct_count,retry_count,wrong_count,challenge_correct,time_spent_sec,mode,max_streak,top_level,question_times_ms,question_log',
+        )
+        .eq('user_id', userId)
+        .order('finished_at', { ascending: false })
+        .limit(200)
+      if (sessErr) throw sessErr
 
-    const coinsMap = new Map(calcWalletStore.getSessionData(userId)?.coinsBySessionId ?? [])
-    const sessions = (sessionRows ?? []).map((r) => {
-      const row = r as SessionRow
-      return rowToSession(row, coinsMap.get(row.id) ?? 0)
-    })
+      const coinsMap = new Map(calcWalletStore.getSessionData(userId)?.coinsBySessionId ?? [])
+      sessions = (sessionRows ?? []).map((r) => {
+        const row = r as SessionRow
+        return rowToSession(row, coinsMap.get(row.id) ?? 0)
+      })
+    } catch (err) {
+      // Settle either way — leaving `sessionsReady` false would pin consumers in
+      // `isLoading` forever, since nothing re-triggers the effect.
+      console.error('[wallet] calc_sessions fetch failed', err)
+      failed = true
+    }
     calcWalletStore.patchSessionData(userId, (prev) => ({
       ...prev,
-      sessions,
-      sessionsReady: true,
+      sessions: failed ? prev.sessions : sessions,
+      sessionsReady: !failed,
+      sessionsFailed: failed,
     }))
   })().finally(() => {
     sessionsInflight.delete(userId)
@@ -211,9 +228,9 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
 
   useEffect(() => {
     // Wait until balance slot is ready so ensureLoaded replace can't wipe sessions.
-    if (!user || !loadSessions || isLoading || wallet.sessionsReady) return
+    if (!user || !loadSessions || isLoading || wallet.sessionsReady || wallet.sessionsFailed) return
     void loadWalletSessions(user.id)
-  }, [user, loadSessions, isLoading, wallet.sessionsReady])
+  }, [user, loadSessions, isLoading, wallet.sessionsReady, wallet.sessionsFailed])
 
   const priceByCategory = useMemo(
     () => new Map(wallet.priceEntries),
@@ -223,8 +240,16 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
   const refresh = useCallback(async () => {
     if (!user) return
     calcWalletStore.invalidate(user.id)
-    await calcWalletStore.ensureLoaded(user.id)
-    if (loadSessions) await loadWalletSessions(user.id)
+    try {
+      await calcWalletStore.ensureLoaded(user.id)
+    } catch (err) {
+      // recordSession awaits this; a wallet refetch failure must not fail the session.
+      console.error('[wallet] refresh failed', err)
+      return
+    }
+    // force: the caller just invalidated, so a previously-ready (or failed) slot
+    // must be re-fetched rather than short-circuited.
+    if (loadSessions) await loadWalletSessions(user.id, true)
   }, [user, loadSessions])
 
   const { yellowSpent, redSpent, blueSpent } = useMemo(() => {
@@ -324,9 +349,17 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
     }))
   }, [user])
 
+  // Derived per render (not cached at fetch time) so a PWA left open across
+  // midnight rolls over instead of showing yesterday's coins.
+  const todayCoinsEarned = useMemo(() => {
+    const t = todayStr()
+    return wallet.calcCoinsByDate.find(([date]) => date === t)?.[1] ?? 0
+  }, [wallet.calcCoinsByDate])
+
   return {
     sessions: wallet.sessions,
     sessionsReady: wallet.sessionsReady,
+    sessionsFailed: wallet.sessionsFailed,
     balance: yellowBalance,
     yellowBalance,
     redBalance,
@@ -339,10 +372,10 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
     blueSpent,
     todayQuestionsDone,
     todayCorrect,
-    todayCoinsEarned: wallet.todayCalcCoins,
+    todayCoinsEarned,
     recordSession,
     spendVoucher,
     refresh,
-    isLoading: isLoading || (loadSessions && !wallet.sessionsReady),
+    isLoading: isLoading || (loadSessions && !wallet.sessionsReady && !wallet.sessionsFailed),
   }
 }

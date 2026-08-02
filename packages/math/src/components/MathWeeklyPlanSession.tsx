@@ -189,33 +189,35 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
     }
 
     const local = readMathPracticeSnapshot()
-    if (local) {
-      // Need auth to open the portal; retry when userId arrives.
-      if (!userId) return
-      tryResume(local)
-      setResumeChecked(true)
-      return
-    }
 
     if (!userId) {
+      // The portal needs auth. Wait for it if there's something to resume.
+      if (local) return
       setResumeChecked(true)
       return
     }
 
+    let timer: number | undefined
+
     void (async () => {
+      // Always go through resolve so pickBestPending can prefer a newer revision
+      // from another device; the sync local read is only the timeout fallback.
       const pending = await Promise.race([
         resolveMathPracticeSnapshot(userId),
         new Promise<null>((resolve) => {
-          window.setTimeout(() => resolve(null), 2000)
+          timer = window.setTimeout(() => resolve(null), 2000)
         }),
       ])
+      if (timer !== undefined) window.clearTimeout(timer)
       if (cancelled) return
-      if (pending) tryResume(pending)
+      const winner = pending ?? local
+      if (winner) tryResume(winner)
       setResumeChecked(true)
     })()
 
     return () => {
       cancelled = true
+      if (timer !== undefined) window.clearTimeout(timer)
     }
   }, [practiceActive, isLoading, resumeChecked, userId, problemSets, resume])
 

@@ -288,8 +288,10 @@ export default function ChineseCharsPracticeSession() {
   const stashAndExit = useCallback(async () => {
     setIsStashing(true)
     try {
-      await flushCloudNow()
-      setStashToast('已暂存到云端，换设备也可继续')
+      const synced = await flushCloudNow()
+      setStashToast(
+        synced ? '已暂存到云端，换设备也可继续' : '已暂存在本机，云端备份失败，可稍后在首页重试',
+      )
       setIsImmersive(false)
       window.setTimeout(() => {
         router.push('/chinese/chars')

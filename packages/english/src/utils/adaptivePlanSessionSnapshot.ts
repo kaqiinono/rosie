@@ -5,6 +5,7 @@ import type { QuizQuestion } from '@rosie/core'
 import {
   clearLocalPending,
   clearPendingEverywhere,
+  mirrorResolvedPending,
   readLocalPending,
   resolvePending,
   writeLocalPending,
@@ -68,10 +69,6 @@ function isValidSnap(snap: unknown): snap is AdaptiveSessionSnapshot {
   )
 }
 
-export function adaptiveSessionStorageKey(planId: string): string {
-  return planId
-}
-
 export function wrapAdaptiveEnvelope(
   snap: AdaptiveSessionSnapshot,
 ): PracticePendingEnvelope<AdaptiveSessionSnapshot> {
@@ -119,6 +116,6 @@ export async function resolveAdaptiveSessionSnapshot(
   if (!env || !isValidSnap(env.stash) || env.stash.planId !== planId || env.stash.date !== today) {
     return null
   }
-  writeLocalPending(ADAPTIVE_PENDING_KIND, planId, env)
+  mirrorResolvedPending(ADAPTIVE_PENDING_KIND, planId, env)
   return env.stash
 }

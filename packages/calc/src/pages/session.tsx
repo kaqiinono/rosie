@@ -260,6 +260,8 @@ export default function CalcSessionPage() {
   const questionStartRef = useRef<number>(0)
   const [startedTsMs, setStartedTsMs] = useState<number>(0)
   const [startedAtIso, setStartedAtIso] = useState<string>('')
+  /** Active time from earlier runs of a resumed session (excludes idle time). */
+  const carriedElapsedMsRef = useRef(0)
 
   const [now, setNow] = useState<number>(() => Date.now())
   const [questionStartWall, setQuestionStartWall] = useState<number>(0)
@@ -288,6 +290,9 @@ export default function CalcSessionPage() {
 
   const buildCurrentSnapshot = useCallback((): CalcSessionSnapshot | null => {
     if (done || !questions || questions.length === 0 || !startedAtIso) return null
+    // Nothing answered yet is not a resumable session — snapshotting it would skip
+    // the prep screen and replay this frozen question list for the rest of the day.
+    if (idx === 0 && attemptsLogRef.current.length === 0) return null
     const snapAttempts: CalcAttemptStatSnapshot[] = attemptsLogRef.current.map((a) => ({
       signature: a.signature,
       level: a.level,
@@ -319,6 +324,7 @@ export default function CalcSessionPage() {
       questionLog: questionLogRef.current,
       startedAtIso,
       startedTsMs,
+      carriedElapsedMs: carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs),
       timingMode: sessionTimingModeRef.current,
       bonusSec: sessionBonusSecRef.current,
       drillTargetSignatures,
@@ -358,8 +364,8 @@ export default function CalcSessionPage() {
   }, [flushCloudNow, router])
 
   const handleStash = useCallback(async () => {
-    await flushCloudNow()
-    setStashToast('已暂存到云端')
+    const synced = await flushCloudNow()
+    setStashToast(synced ? '已暂存到云端' : '已暂存在本机，云端备份失败')
     router.push('/calc')
   }, [flushCloudNow, router])
 
@@ -423,7 +429,10 @@ export default function CalcSessionPage() {
         questionTimesRef.current = pendingSnap.questionTimesMs
         questionLogRef.current = pendingSnap.questionLog
         setStartedAtIso(pendingSnap.startedAtIso)
-        setStartedTsMs(pendingSnap.startedTsMs)
+        // Restart the clock and carry the earlier active time, so the hours between
+        // stash and resume don't land in `time_spent_sec`.
+        carriedElapsedMsRef.current = pendingSnap.carriedElapsedMs ?? 0
+        setStartedTsMs(Date.now())
         setDrillTargetSignatures(pendingSnap.drillTargetSignatures)
         questionStartRef.current = performance.now()
         return
@@ -486,6 +495,7 @@ export default function CalcSessionPage() {
       }
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
+      carriedElapsedMsRef.current = 0
       questionStartRef.current = performance.now()
       questionTimesRef.current = []
       questionLogRef.current = []
@@ -542,8 +552,9 @@ export default function CalcSessionPage() {
   const finishSession = useCallback(async () => {
     if (done) return
     setDone(true)
-    void clearCalcPendingEverywhere(user?.id, mode, drillKey)
-    const finalElapsed = Math.floor((Date.now() - startedTsMs) / 1000)
+    const finalElapsed = Math.floor(
+      (carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs)) / 1000,
+    )
     const log = attemptsLogRef.current
     const correctCount = log.filter((a) => a.firstTryCorrect).length
     const retryCount = log.filter((a) => !a.firstTryCorrect && a.finallyCorrect).length
@@ -718,6 +729,9 @@ export default function CalcSessionPage() {
       questionTimesMs: qTimes,
       questionLog: questionLogRef.current,
     })
+    // Only now — clearing before the row is persisted would leave a failed insert
+    // with neither a session row nor a resumable snapshot.
+    void clearCalcPendingEverywhere(user?.id, mode, drillKey)
     // Sync the global StarHud balance so the top-left chip updates immediately.
     void refreshStarHud()
 
@@ -1235,6 +1249,9 @@ export default function CalcSessionPage() {
               onContinue: () => {
                 // Reset session state so the init useEffect re-runs for the next round.
                 void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+                // Init reads this state, not storage — without it the next round
+                // restores the round that just finished.
+                setPendingSnap(null)
                 initRef.current = false
                 setQuestions(null)
                 setIdx(0)
@@ -1255,6 +1272,7 @@ export default function CalcSessionPage() {
                   // sessionKey bump is required here because URL doesn't change (same blockId),
                   // so drillParams won't change and the useEffect won't re-fire without it.
                   void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+                  setPendingSnap(null)
                   initRef.current = false
                   setQuestions(null)
                   setIdx(0)

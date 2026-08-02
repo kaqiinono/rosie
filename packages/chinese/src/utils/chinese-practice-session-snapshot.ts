@@ -5,6 +5,7 @@ import type { PracticePhase, PracticeSessionPlan } from './chinese-chars-session
 import {
   clearLocalPending,
   clearPendingEverywhere,
+  mirrorResolvedPending,
   readLocalPending,
   resolvePending,
   writeLocalPending,
@@ -100,6 +101,6 @@ export async function resolveChinesePracticeSnapshot(
 ): Promise<ChinesePracticeSnapshot | null> {
   const env = await resolvePending<ChinesePracticeSnapshot>(userId, CHINESE_PENDING_KIND, scopeKey)
   if (!env || !isValidSnap(env.stash) || env.stash.bookSlug !== bookSlug) return null
-  writeLocalPending(CHINESE_PENDING_KIND, scopeKey, env)
+  mirrorResolvedPending(CHINESE_PENDING_KIND, scopeKey, env)
   return env.stash
 }

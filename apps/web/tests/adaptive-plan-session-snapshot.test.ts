@@ -1,15 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
+  ADAPTIVE_PENDING_KIND,
   ADAPTIVE_SESSION_SNAPSHOT_VERSION,
-  adaptiveSessionStorageKey,
   clearAdaptiveSessionSnapshot,
   readAdaptiveSessionSnapshot,
   writeAdaptiveSessionSnapshot,
   type AdaptiveSessionSnapshot,
 } from '../../../packages/english/src/utils/adaptivePlanSessionSnapshot'
+import { practicePendingLocalKey, todayStr } from '../../../packages/core/src/index'
 
-const TODAY = '2026-07-10'
 const PLAN_ID = 'plan-1'
+const TODAY = todayStr()
+const STORAGE_KEY = practicePendingLocalKey(ADAPTIVE_PENDING_KIND, PLAN_ID)
 
 function snapshot(overrides: Partial<AdaptiveSessionSnapshot> = {}): AdaptiveSessionSnapshot {
   return {
@@ -40,7 +42,7 @@ function snapshot(overrides: Partial<AdaptiveSessionSnapshot> = {}): AdaptiveSes
 }
 
 beforeEach(() => {
-  sessionStorage.clear()
+  localStorage.clear()
 })
 
 describe('adaptive plan session snapshot', () => {
@@ -54,9 +56,9 @@ describe('adaptive plan session snapshot', () => {
   })
 
   it('discards stale-day snapshots and removes them from storage', () => {
-    writeAdaptiveSessionSnapshot(snapshot({ date: '2026-07-09' }))
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
-    expect(sessionStorage.getItem(adaptiveSessionStorageKey(PLAN_ID))).toBeNull()
+    writeAdaptiveSessionSnapshot(snapshot())
+    expect(readAdaptiveSessionSnapshot(PLAN_ID, '2026-07-09')).toBeNull()
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull()
   })
 
   it('discards version mismatches', () => {
@@ -70,8 +72,9 @@ describe('adaptive plan session snapshot', () => {
     )
     expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
 
-    sessionStorage.setItem(adaptiveSessionStorageKey(PLAN_ID), '{not json')
+    localStorage.setItem(STORAGE_KEY, '{not json')
     expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull()
   })
 
   it('returns null for missing snapshots and clears cleanly', () => {
@@ -79,5 +82,10 @@ describe('adaptive plan session snapshot', () => {
     writeAdaptiveSessionSnapshot(snapshot())
     clearAdaptiveSessionSnapshot(PLAN_ID)
     expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+  })
+
+  it('does not resurrect a snapshot for a different plan', () => {
+    writeAdaptiveSessionSnapshot(snapshot())
+    expect(readAdaptiveSessionSnapshot('plan-2', TODAY)).toBeNull()
   })
 })

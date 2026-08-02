@@ -62,7 +62,7 @@ type PracticeQueueContextValue = {
   end: () => void
   /** Flush cloud pending then exit to returnHref (answering phase). */
   stash: () => void
-  flushCloudNow: () => Promise<void>
+  flushCloudNow: () => Promise<boolean>
   restart: () => void
   onAnswerCorrect: () => void
   onAnswerWrong: () => void
@@ -103,6 +103,13 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   const [title, setTitle] = useState('练习')
   const rawPoolRef = useRef<PracticeQueueItem[]>([])
   const startOptsRef = useRef<PracticeQueueStartOpts | null>(null)
+  // Read after awaits, where the render closure's copies are already stale.
+  const currentIndexRef = useRef(currentIndex)
+  const sessionCorrectRef = useRef(sessionCorrect)
+  useEffect(() => {
+    currentIndexRef.current = currentIndex
+    sessionCorrectRef.current = sessionCorrect
+  }, [currentIndex, sessionCorrect])
 
   const currentItem = items[currentIndex] ?? null
 
@@ -307,6 +314,9 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   const onAnswerCorrect = useCallback(async () => {
     const item = items[currentIndex]
     if (!item) return
+    // Index/score are captured before an await, so anything that advanced the queue
+    // meanwhile (跳过, a second submit) would be silently rolled back. Bail instead.
+    const indexAtEntry = currentIndex
 
     try {
       await handleSolve(item.problem.id)
@@ -316,15 +326,17 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       // Sync failure must not block advancing to the next problem.
     }
 
-    const nextCorrect = sessionCorrect + 1
+    if (currentIndexRef.current !== indexAtEntry) return
+
+    const nextCorrect = sessionCorrectRef.current + 1
     setSessionCorrect(nextCorrect)
 
-    if (currentIndex >= items.length - 1) {
+    if (indexAtEntry >= items.length - 1) {
       setPhase('celebration')
       void clearMathPendingEverywhere(user?.id)
       return
     }
-    const nextIndex = currentIndex + 1
+    const nextIndex = indexAtEntry + 1
     setCurrentIndex(nextIndex)
     persistSnapshot(items, nextIndex, nextCorrect, 'answering', returnHref, title, immersive)
   }, [
@@ -334,39 +346,17 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     handleSolve,
     markResolved,
     clearSkipped,
-    sessionCorrect,
     returnHref,
     title,
     immersive,
     persistSnapshot,
   ])
 
+  /**
+   * Exit and 暂存 behave identically: snapshot, best-effort cloud push, leave.
+   * `flushCloudNow` never rejects, so a network failure can't strand the child here.
+   */
   const handleExit = useCallback(() => {
-    void (async () => {
-      if (isActive && phase === 'answering' && items.length > 0) {
-        persistSnapshot(items, currentIndex, sessionCorrect, phase, returnHref, title, immersive)
-        await flushCloudNow()
-      }
-      const href = returnHref
-      tearDown()
-      router.push(href)
-    })()
-  }, [
-    isActive,
-    phase,
-    items,
-    currentIndex,
-    sessionCorrect,
-    returnHref,
-    title,
-    immersive,
-    persistSnapshot,
-    flushCloudNow,
-    tearDown,
-    router,
-  ])
-
-  const handleStash = useCallback(() => {
     void (async () => {
       if (isActive && phase === 'answering' && items.length > 0) {
         persistSnapshot(items, currentIndex, sessionCorrect, phase, returnHref, title, immersive)
@@ -415,7 +405,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       resume,
       peekPendingSnapshot,
       end: handleExit,
-      stash: handleStash,
+      stash: handleExit,
       flushCloudNow,
       restart,
       onAnswerCorrect,
@@ -439,7 +429,6 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       resume,
       peekPendingSnapshot,
       handleExit,
-      handleStash,
       flushCloudNow,
       restart,
       onAnswerCorrect,
@@ -464,7 +453,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
           title={title}
           returnHref={returnHref}
           onExit={handleExit}
-          onStash={handleStash}
+          onStash={handleExit}
           onAnswerCorrect={onAnswerCorrect}
           onAnswerWrong={onAnswerWrong}
           onAdvance={onAdvance}

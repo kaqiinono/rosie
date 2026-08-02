@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { AnswerCheckResult, Problem } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import {
@@ -28,12 +28,14 @@ export function useProblemAnswer(
   const [hasAttempted, setHasAttempted] = useState(false)
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
+  /** The settle below is async; without this a double-tap files two attempts. */
+  const submittingRef = useRef(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswer('')
     setFeedback(null)
     setHasAttempted(false)
+    submittingRef.current = false
   }, [problem.id])
 
   const archiveWorkingScratch = useCallback(
@@ -66,15 +68,22 @@ export function useProblemAnswer(
       }
 
       setHasAttempted(true)
+      if (submittingRef.current) return result
+      submittingRef.current = true
 
       void (async () => {
-        await archiveWorkingScratch(result.ok, input)
-        setFeedback(result)
-        if (result.ok) {
-          await ctx.handleSolve(problem.id)
-          options?.onCorrect?.(result)
-        } else {
-          ctx.addWrong(problem.id)
+        try {
+          await archiveWorkingScratch(result.ok, input)
+          setFeedback(result)
+          if (result.ok) {
+            await ctx.handleSolve(problem.id)
+            options?.onCorrect?.(result)
+          } else {
+            ctx.addWrong(problem.id)
+          }
+        } finally {
+          // A correct answer advances the queue; the problem.id effect re-arms it there.
+          if (!result.ok) submittingRef.current = false
         }
       })()
 

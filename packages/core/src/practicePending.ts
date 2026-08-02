@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useRef } from 'react'
 import { supabase } from './supabase'
-import { todayStr } from './constant'
+import { localDateStr, todayStr } from './constant'
 
 export type PracticePendingKind =
   | 'calc'
@@ -69,12 +69,19 @@ function bumpSubjectSync(
   if (map[subject] !== 'unsynced') map[subject] = 'synced'
 }
 
+const LOCAL_PENDING_PREFIX = 'practice-pending:'
+/** Legacy English-weekly stash key, written directly by `weeklyPlanProgress`. */
+const WEEKLY_SESSION_PREFIX = 'weekly_session_'
+const WEEKLY_SYNCED_PREFIX = 'weekly_session_synced_'
+/** Must match english `WEEKLY_PLAN_SESSION_META_KEY` — embedded in weekly_plans.progress_data. */
+const WEEKLY_SESSION_META_KEY = '__rosie_session'
+
 export function practicePendingLocalKey(kind: PracticePendingKind, scopeKey: string): string {
-  return `practice-pending:${kind}:${scopeKey}`
+  return `${LOCAL_PENDING_PREFIX}${kind}:${scopeKey}`
 }
 
 function weeklySyncedMarkerKey(planId: string): string {
-  return `weekly_session_synced_${planId}`
+  return `${WEEKLY_SYNCED_PREFIX}${planId}`
 }
 
 /** Local write always clears syncedAt — new progress needs another cloud push. */
@@ -116,17 +123,6 @@ function markWeeklyLocalSynced(planId: string, savedAt: string): void {
   if (typeof window === 'undefined' || !planId) return
   try {
     localStorage.setItem(weeklySyncedMarkerKey(planId), savedAt)
-    notifyPracticePendingChanged()
-  } catch {
-    /* noop */
-  }
-}
-
-/** Call when weekly local stash changes so homepage badge shows unsynced. */
-export function clearWeeklyLocalSyncedMarker(planId: string): void {
-  if (typeof window === 'undefined' || !planId) return
-  try {
-    localStorage.removeItem(weeklySyncedMarkerKey(planId))
     notifyPracticePendingChanged()
   } catch {
     /* noop */
@@ -179,6 +175,9 @@ export function clearLocalPending(kind: PracticePendingKind, scopeKey: string): 
   try {
     localStorage.removeItem(practicePendingLocalKey(kind, scopeKey))
     if (kind === 'english_weekly') {
+      // English weekly also keeps the legacy `weekly_session_<planId>` stash; leaving
+      // it behind would resurrect a finished session as pending.
+      localStorage.removeItem(`${WEEKLY_SESSION_PREFIX}${scopeKey}`)
       localStorage.removeItem(weeklySyncedMarkerKey(scopeKey))
     }
     notifyPracticePendingChanged()
@@ -232,7 +231,8 @@ export async function fetchCloudPending<T>(
   ) {
     return null
   }
-  return env
+  // Anything read back from the table is by definition already uploaded.
+  return { ...env, syncedAt: env.savedAt }
 }
 
 export async function clearCloudPending(
@@ -274,6 +274,26 @@ export async function resolvePending<T>(
   }
 }
 
+/**
+ * Cache the envelope `resolvePending` picked so the next open is instant.
+ *
+ * Unlike `writeLocalPending` this keeps the revision marked as synced: it either
+ * came from the cloud or was already the local copy, so flagging it unsynced would
+ * make the homepage badge cry wolf and re-upload identical data.
+ */
+export function mirrorResolvedPending<T>(
+  kind: PracticePendingKind,
+  scopeKey: string,
+  envelope: PracticePendingEnvelope<T>,
+): void {
+  if (typeof window === 'undefined' || !scopeKey) return
+  const wasSynced = !isPendingUnsynced(envelope)
+  writeLocalPending(kind, scopeKey, envelope)
+  if (!wasSynced) return
+  markLocalPendingSynced(kind, scopeKey, envelope.savedAt)
+  if (kind === 'english_weekly') markWeeklyLocalSynced(scopeKey, envelope.savedAt)
+}
+
 export async function clearPendingEverywhere(
   userId: string | null | undefined,
   kind: PracticePendingKind,
@@ -288,11 +308,6 @@ export async function clearPendingEverywhere(
     }
   }
 }
-
-const LOCAL_PENDING_PREFIX = 'practice-pending:'
-const WEEKLY_SESSION_PREFIX = 'weekly_session_'
-/** Must match english `WEEKLY_PLAN_SESSION_META_KEY` — embedded in weekly_plans.progress_data. */
-const WEEKLY_SESSION_META_KEY = '__rosie_session'
 
 export type SyncLocalPendingResult = {
   synced: number
@@ -336,7 +351,11 @@ function isEnvelopeForToday(raw: unknown, today: string): PracticePendingEnvelop
 }
 
 function savedAtIsToday(savedAt: string, today: string): boolean {
-  return savedAt.slice(0, 10) === today
+  const t = new Date(savedAt)
+  if (Number.isNaN(t.getTime())) return false
+  // savedAt is a UTC ISO string; compare in local time so evening sessions west
+  // of UTC aren't mistaken for tomorrow's.
+  return localDateStr(t) === today
 }
 
 async function syncWeeklyPendingToCloud(
@@ -406,8 +425,7 @@ export function countLocalPendingSessions(today = todayStr()): LocalPendingCount
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
       if (!key?.startsWith(WEEKLY_SESSION_PREFIX)) continue
-      // skip companion marker keys if any collide — prefix is weekly_session_ not weekly_session_synced_
-      if (key.startsWith('weekly_session_synced_')) continue
+      if (key.startsWith(WEEKLY_SYNCED_PREFIX)) continue
       const planId = key.slice(WEEKLY_SESSION_PREFIX.length)
       if (!planId || seenWeekly.has(planId)) continue
       try {
@@ -457,7 +475,7 @@ export function getTodayPlanSyncStatus(
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
       if (!key?.startsWith(WEEKLY_SESSION_PREFIX)) continue
-      if (key.startsWith('weekly_session_synced_')) continue
+      if (key.startsWith(WEEKLY_SYNCED_PREFIX)) continue
       const planId = key.slice(WEEKLY_SESSION_PREFIX.length)
       if (!planId || seenWeekly.has(planId)) continue
       try {
@@ -501,7 +519,7 @@ export async function syncAllLocalPendingToCloud(
       const key = localStorage.key(i)
       if (!key) continue
       if (key.startsWith(LOCAL_PENDING_PREFIX)) pendingKeys.push(key)
-      else if (key.startsWith(WEEKLY_SESSION_PREFIX) && !key.startsWith('weekly_session_synced_')) {
+      else if (key.startsWith(WEEKLY_SESSION_PREFIX) && !key.startsWith(WEEKLY_SYNCED_PREFIX)) {
         weeklyKeys.push(key)
       }
     }
@@ -599,9 +617,13 @@ type LifecycleOpts<T> = {
 /**
  * While `enabled`, on tab hide / pagehide: write localStorage and debounce cloud sync.
  * Call `flushCloudNow` on explicit exit / stash button.
+ *
+ * `flushCloudNow` never rejects — callers use it to gate navigation, and a
+ * transient cloud failure must not trap the user inside a session. It resolves
+ * `false` when the local write succeeded but the cloud copy did not.
  */
 export function usePracticePendingLifecycle<T>(opts: LifecycleOpts<T>): {
-  flushCloudNow: () => Promise<void>
+  flushCloudNow: () => Promise<boolean>
   persistLocalNow: () => void
 } {
   const {
@@ -626,21 +648,27 @@ export function usePracticePendingLifecycle<T>(opts: LifecycleOpts<T>): {
     writeLocalPending(kind, scopeKey, env)
   }, [enabled, kind, scopeKey])
 
-  const flushCloudNow = useCallback(async () => {
-    if (!enabled || !scopeKey) return
+  const flushCloudNow = useCallback(async (): Promise<boolean> => {
+    if (!enabled || !scopeKey) return true
     const env = getEnvelopeRef.current()
-    if (!env) return
+    if (!env) return true
     writeLocalPending(kind, scopeKey, env)
-    if (!userId) return
-    if (cloudUpsert) {
-      await cloudUpsert(env)
-    } else {
-      await upsertCloudPending(userId, kind, scopeKey, env)
+    if (!userId) return false
+    try {
+      if (cloudUpsert) {
+        await cloudUpsert(env)
+      } else {
+        await upsertCloudPending(userId, kind, scopeKey, env)
+      }
+    } catch {
+      // Progress is already safe in localStorage; the homepage「备份进度」button retries.
+      return false
     }
     markLocalPendingSynced(kind, scopeKey, env.savedAt)
     if (kind === 'english_weekly') {
       markWeeklyLocalSynced(scopeKey, env.savedAt)
     }
+    return true
   }, [enabled, scopeKey, userId, kind, cloudUpsert])
 
   const scheduleBackgroundCloud = useCallback(() => {
@@ -649,9 +677,7 @@ export function usePracticePendingLifecycle<T>(opts: LifecycleOpts<T>): {
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
       timerRef.current = null
-      void flushCloudNow().catch(() => {
-        /* silent */
-      })
+      void flushCloudNow()
     }, backgroundDebounceMs)
   }, [persistLocalNow, userId, flushCloudNow, backgroundDebounceMs])
 
@@ -661,8 +687,15 @@ export function usePracticePendingLifecycle<T>(opts: LifecycleOpts<T>): {
     const onVis = () => {
       if (document.visibilityState === 'hidden') scheduleBackgroundCloud()
     }
+    // A debounced timer would never fire on unload — write locally, then try the
+    // cloud immediately and let the browser deliver it if it can.
     const onPageHide = () => {
-      scheduleBackgroundCloud()
+      persistLocalNow()
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
+      void flushCloudNow()
     }
 
     document.addEventListener('visibilitychange', onVis)
@@ -672,7 +705,7 @@ export function usePracticePendingLifecycle<T>(opts: LifecycleOpts<T>): {
       window.removeEventListener('pagehide', onPageHide)
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [enabled, scheduleBackgroundCloud])
+  }, [enabled, scheduleBackgroundCloud, persistLocalNow, flushCloudNow])
 
   return { flushCloudNow, persistLocalNow }
 }

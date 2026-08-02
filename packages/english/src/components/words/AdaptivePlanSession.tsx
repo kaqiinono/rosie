@@ -322,6 +322,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   const sessionStartedRef = useRef(false)
   const loadedPlanIdRef = useRef<string | null>(null)
   const autoStartDoneRef = useRef(false)
+  /** A same-day snapshot exists but vocab wasn't ready to rebuild it. */
+  const unappliedSnapshotRef = useRef(false)
 
   useEffect(() => {
     if (!stashToast) return
@@ -392,8 +394,10 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     if (!plan) return
     setIsStashing(true)
     try {
-      await flushCloudNow()
-      setStashToast('已暂存到云端，换设备也可继续')
+      const synced = await flushCloudNow()
+      setStashToast(
+        synced ? '已暂存到云端，换设备也可继续' : '已暂存在本机，云端备份失败，可稍后在首页重试',
+      )
       setIsImmersive(false)
       setPhase('hub')
     } finally {
@@ -405,6 +409,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     sessionStartedRef.current = false
     loadedPlanIdRef.current = null
     autoStartDoneRef.current = false
+    unappliedSnapshotRef.current = false
     setLoadError(null)
     setRestoredActivateKeys(null)
   }, [planId])
@@ -451,6 +456,12 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         // Requires vocab to build questions; without it fall back to hub and
         // keep the snapshot for the next mount.
         const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
+        // Another network hop happened above — bail before touching app-wide state
+        // (setIsImmersive in particular would follow the user to the next page).
+        if (cancelled || gen !== loadGenRef.current) return
+        // A snapshot we couldn't apply must still block autoStart, or the fresh
+        // round it starts will overwrite the stash before the child sees it.
+        unappliedSnapshotRef.current = Boolean(snap) && vocab.length === 0
         if (snap && vocab.length > 0) {
           setPhase(snap.phase)
           setReviewCursor(snap.reviewCursor)
@@ -1089,7 +1100,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     if (!autoStart || autoStartDoneRef.current) return
     if (isLoadingRows || !task || settling) return
     if (phase !== 'hub') return
-    if (sessionStartedRef.current) return
+    if (sessionStartedRef.current || unappliedSnapshotRef.current) return
     autoStartDoneRef.current = true
     beginSession()
   }, [autoStart, isLoadingRows, task, settling, phase, beginSession])

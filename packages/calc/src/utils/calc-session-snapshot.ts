@@ -11,6 +11,7 @@ import type {
 import {
   clearLocalPending,
   clearPendingEverywhere,
+  mirrorResolvedPending,
   readLocalPending,
   resolvePending,
   writeLocalPending,
@@ -54,6 +55,11 @@ export type CalcSessionSnapshot = {
   questionLog: QuestionLogEntry[]
   startedAtIso: string
   startedTsMs: number
+  /**
+   * Active practice time accumulated before the current run. `startedTsMs` restarts
+   * on resume, so the hours a stashed session spends idle are not billed as practice.
+   */
+  carriedElapsedMs?: number
   timingMode: CalcTimingMode
   bonusSec: number
   drillTargetSignatures: string[]
@@ -88,7 +94,10 @@ function isValidCalcSnap(snap: unknown): snap is CalcSessionSnapshot {
     s.questions.length > 0 &&
     typeof s.idx === 'number' &&
     s.idx >= 0 &&
-    s.idx < s.questions.length
+    s.idx < s.questions.length &&
+    // Zero-progress snapshots are not resumable; ignore any already written by
+    // an older build so they can't keep hijacking the prep screen.
+    (s.idx > 0 || (Array.isArray(s.attemptsLog) && s.attemptsLog.length > 0))
   )
 }
 
@@ -153,6 +162,6 @@ export async function resolveCalcSessionSnapshot(
   if (!env || !isValidCalcSnap(env.stash)) return null
   if (env.stash.mode !== mode || (env.stash.drillKey ?? null) !== (drillKey ?? null)) return null
   // Mirror winning snapshot to local for fast next open.
-  writeLocalPending(CALC_PENDING_KIND, calcPendingScopeKey(mode, drillKey), env)
+  mirrorResolvedPending(CALC_PENDING_KIND, calcPendingScopeKey(mode, drillKey), env)
   return env.stash
 }

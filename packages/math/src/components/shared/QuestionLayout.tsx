@@ -15,7 +15,8 @@ import ProblemNotesPanel from '@rosie/math/components/shared/ProblemNotesPanel'
 
 type SolutionToggleContextValue = {
   node: React.ReactNode
-  claim: () => void
+  /** Registers a renderer of the toggle; returns the unregister function. */
+  claim: () => () => void
 }
 
 const SolutionToggleContext = createContext<SolutionToggleContextValue | null>(null)
@@ -28,7 +29,8 @@ const SolutionToggleContext = createContext<SolutionToggleContextValue | null>(n
 export function useClaimSolutionToggle(claim = true): React.ReactNode {
   const ctx = useContext(SolutionToggleContext)
   useLayoutEffect(() => {
-    if (claim && ctx?.node) ctx.claim()
+    if (!claim || !ctx?.node) return
+    return ctx.claim()
   }, [claim, ctx])
   return ctx?.node ?? null
 }
@@ -67,15 +69,16 @@ export default function QuestionLayout({
   const [solutionOpen, setSolutionOpen] = useState(defaultSolutionOpen && solutionAvailable)
   const solutionRef = useRef<HTMLDivElement>(null)
   const [solutionHeight, setSolutionHeight] = useState(0)
-  const [toggleClaimed, setToggleClaimed] = useState(false)
+  // Reference-counted rather than a boolean reset by an effect: the claim happens in a
+  // child's layout effect while any reset would run in the parent's, which always comes
+  // later — so a boolean settles on "unclaimed" and the fallback row renders a second
+  // 查看题解 button next to the claimed one.
+  const [claimCount, setClaimCount] = useState(0)
+  const toggleClaimed = claimCount > 0
 
   useEffect(() => {
     setSolutionOpen(solutionAvailable ? defaultSolutionOpen : false)
   }, [defaultSolutionOpen, solutionAvailable])
-
-  useEffect(() => {
-    setToggleClaimed(false)
-  }, [problemId, solutionAvailable, showSolutionToggle])
 
   useEffect(() => {
     const el = solutionRef.current
@@ -102,7 +105,8 @@ export default function QuestionLayout({
   }, [problemId, solutionOpen])
 
   const claim = useCallback(() => {
-    setToggleClaimed(true)
+    setClaimCount((c) => c + 1)
+    return () => setClaimCount((c) => c - 1)
   }, [])
 
   const toggleEnabled = solutionAvailable && showSolutionToggle

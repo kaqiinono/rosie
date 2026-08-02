@@ -109,14 +109,19 @@ function applySnapshotToState(
   handlers.setPhase(snap.phase)
 }
 
+/**
+ * Returns false when the write did not land. supabase-js resolves with `{ error }`
+ * instead of throwing, so callers that care about durability must check the result
+ * rather than rely on a try/catch.
+ */
 async function saveProgressToCloud(
   userId: string,
   plan: WeeklyPlan,
   pendingSession?: WeeklyPlanSessionStash | null,
-): Promise<void> {
-  if (!plan.id) return
+): Promise<boolean> {
+  if (!plan.id) return false
   try {
-    await supabase
+    const { error } = await supabase
       .from('weekly_plans')
       .update({
         progress_data: encodeWeeklyPlanProgress(
@@ -128,8 +133,14 @@ async function saveProgressToCloud(
       })
       .eq('user_id', userId)
       .eq('id', plan.id)
-  } catch {
-    /* ignore */
+    if (error) {
+      console.error('[weekly-plan] progress save failed', error)
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('[weekly-plan] progress save threw', err)
+    return false
   }
 }
 
@@ -290,7 +301,11 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
       const updated: WeeklyPlan = { ...planRef.current, pendingSession: stash }
       planRef.current = updated
       setPlan(updated)
-      await saveProgressToCloud(user.id, updated, stash)
+      // Throwing here is how flushCloudNow learns the upload failed and leaves the
+      // revision marked unsynced so the homepage「备份进度」button can retry it.
+      if (!(await saveProgressToCloud(user.id, updated, stash))) {
+        throw new Error('weekly plan progress save failed')
+      }
     },
     [user, plan.id],
   )
@@ -303,6 +318,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
     getEnvelope: () => {
       const stash = buildCurrentStash()
       if (!stash) return null
+      // Keep the legacy stash key on the same revision as the envelope the flush
+      // is about to upload, so a later resume can't pick up an older local copy.
+      if (plan.id) writeLocalSessionSnapshot(plan.id, stash)
       return {
         version: 1,
         savedAt: stash.savedAt,
@@ -330,7 +348,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
     if (!plan.id) return
     if (phase === 'done') {
       clearLocalSessionSnapshot(plan.id)
-      clearLocalPending('english_weekly', plan.id)
       return
     }
     if (phase === 'week-view') return
@@ -383,7 +400,6 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
   const clearPendingSession = useCallback(async () => {
     if (!plan.id) return
     clearLocalSessionSnapshot(plan.id)
-    clearLocalPending('english_weekly', plan.id)
     if (!planRef.current.pendingSession) return
     const updated: WeeklyPlan = { ...planRef.current, pendingSession: undefined }
     planRef.current = updated
@@ -398,8 +414,10 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
     setIsStashing(true)
     try {
       writeLocalSessionSnapshot(plan.id, stash)
-      await flushCloudNow()
-      setStashToast('已暂存到云端，换设备也可继续')
+      const synced = await flushCloudNow()
+      setStashToast(
+        synced ? '已暂存到云端，换设备也可继续' : '已暂存在本机，云端备份失败，可稍后在首页重试',
+      )
       setPhase('week-view')
       exitImmersive()
     } finally {
@@ -413,8 +431,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
     return () => window.clearTimeout(timer)
   }, [stashToast])
 
+  // Clear the cloud stash unconditionally: another tab/device or the homepage bulk
+  // sync can have written `progress_data.__rosie_session` without this component's
+  // `pendingSession` ever being set, and leaving it behind would restore a finished
+  // day and re-award its stars on the next open.
   useEffect(() => {
-    if (phase !== 'done' || !plan.id || !planRef.current.pendingSession) return
+    if (phase !== 'done' || !plan.id) return
     const updated: WeeklyPlan = { ...planRef.current, pendingSession: undefined }
     planRef.current = updated
     setPlan(updated)

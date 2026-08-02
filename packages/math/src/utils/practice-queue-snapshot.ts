@@ -5,6 +5,7 @@ import { todayStr } from '@rosie/core'
 import {
   clearLocalPending,
   clearPendingEverywhere,
+  mirrorResolvedPending,
   readLocalPending,
   resolvePending,
   writeLocalPending,
@@ -93,6 +94,6 @@ export async function resolveMathPracticeSnapshot(
     MATH_PENDING_SCOPE,
   )
   if (!env || !isValidSnap(env.stash)) return null
-  writeLocalPending(MATH_PENDING_KIND, MATH_PENDING_SCOPE, env)
+  mirrorResolvedPending(MATH_PENDING_KIND, MATH_PENDING_SCOPE, env)
   return env.stash
 }
