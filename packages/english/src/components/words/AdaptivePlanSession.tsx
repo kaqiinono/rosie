@@ -328,6 +328,12 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   const autoStartDoneRef = useRef(false)
   /** A same-day snapshot exists but vocab wasn't ready to rebuild it. */
   const unappliedSnapshotRef = useRef(false)
+  // Keep latest vocab/setIsImmersive out of the load-effect dep list so a
+  // background vocab refresh can't cancel an in-flight load and strand the spinner.
+  const vocabRef = useRef(vocab)
+  vocabRef.current = vocab
+  const setIsImmersiveRef = useRef(setIsImmersive)
+  setIsImmersiveRef.current = setIsImmersive
 
   useEffect(() => {
     if (!stashToast) return
@@ -449,8 +455,10 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
 
   useEffect(() => {
     if (plansLoading || !sourcePlan) return
-    // Only full-reset load once per planId (or after explicit planId change).
-    if (loadedPlanIdRef.current === sourcePlan.id && plan) return
+    // Dedup by plan id only — do NOT also require `plan` state. setPlan used to
+    // be in this effect's deps, which re-ran (and cancelled) the in-flight load
+    // the moment state was committed, stranding isLoadingRows at true.
+    if (loadedPlanIdRef.current === sourcePlan.id) return
 
     const planSnapshot = sourcePlan
     const gen = ++loadGenRef.current
@@ -483,26 +491,26 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
 
         // Resume an interrupted round from localStorage + cloud (same day only).
         // Requires vocab to build questions; without it fall back to hub and
-        // keep the snapshot for the next mount.
+        // keep the snapshot for when vocab arrives (see effect below).
         //
-        // Nothing may be committed before this await: `plan` is a dependency of
-        // this effect, so an early setPlan re-runs it, and the cleanup would set
-        // `cancelled` while we're still waiting here — the bail below would then
-        // strand `isLoadingRows` at true and the page never leaves「加载中…」.
+        // Commit NOTHING before this await that would re-trigger this effect
+        // (plan/rows/task). A mid-await cancel + bail used to leave the page on
+        // 「加载中…」forever.
         const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
         // Another network hop happened above — bail before touching app-wide state
         // (setIsImmersive in particular would follow the user to the next page).
         // Safe now: nothing was committed, so the re-run redoes the whole load.
         if (cancelled || gen !== loadGenRef.current) return
 
+        const vocabNow = vocabRef.current
         loadedPlanIdRef.current = planSnapshot.id
         setPlan(modePlan)
         setRows(loadedRows)
         setTask(dailyTask)
         // A snapshot we couldn't apply must still block autoStart, or the fresh
         // round it starts will overwrite the stash before the child sees it.
-        unappliedSnapshotRef.current = Boolean(snap) && vocab.length === 0
-        if (snap && vocab.length > 0) {
+        unappliedSnapshotRef.current = Boolean(snap) && vocabNow.length === 0
+        if (snap && vocabNow.length > 0) {
           setPhase(snap.phase)
           setReviewCursor(snap.reviewCursor)
           setReviewDoneKeys(new Set(snap.reviewDoneKeys))
@@ -528,7 +536,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
           bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
           bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
           sessionStartedRef.current = true
-          setIsImmersive(snap.phase !== 'study')
+          setIsImmersiveRef.current(snap.phase !== 'study')
           setIsLoadingRows(false)
           if (dailyTask.mode !== planSnapshot.mode) {
             void updatePlan(modePlan)
@@ -580,7 +588,9 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     return () => {
       cancelled = true
     }
-  }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan, user?.id, vocab, setIsImmersive])
+    // Intentionally omit plan/vocab/setIsImmersive: committing those mid-load
+    // used to cancel this effect and leave isLoadingRows stuck true.
+  }, [loadProgress, plansLoading, sourcePlan, today, updatePlan, user?.id])
 
   // Persist the in-progress round so a refresh / accidental exit can resume.
   // Cleared only when a round settles successfully; kept on settle failure so
