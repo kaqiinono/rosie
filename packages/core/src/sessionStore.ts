@@ -267,7 +267,9 @@ export function createUserSessionStore<T>(
     )
 
     useEffect(() => {
-      if (userId) ensureLoaded(userId)
+      // The rejection is already recorded as `status: 'error'` on the slot;
+      // swallow it here so a failed fetch isn't also an unhandled rejection.
+      if (userId) void ensureLoaded(userId).catch(() => undefined)
     }, [userId])
 
     const isLoading =

@@ -89,6 +89,8 @@ type RoundSummary = {
 
 const BOSS_PASS_PCT = 85
 const BOSS_FORCE_UNLOCK_STREAK = 3
+/** How long the loading screen waits before offering a manual retry. */
+const LOAD_STALL_MS = 8000
 
 function uniqueKeys(keys: string[]): string[] {
   return [...new Set(keys)]
@@ -245,6 +247,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   const {
     plans,
     isLoading: plansLoading,
+    error: plansError,
+    reloadPlans,
     loadProgress,
     saveProgressBatch,
     updatePlan,
@@ -414,6 +418,35 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     setRestoredActivateKeys(null)
   }, [planId])
 
+  // Row loading only counts while there IS a plan to load rows for: when the
+  // list resolves without this id (deleted / archived / list fetch failed)
+  // nothing ever clears `isLoadingRows`, and the page would sit on「加载中…」
+  // forever instead of reaching the not-found screen.
+  const isLoading = plansLoading || (sourcePlan != null && isLoadingRows)
+
+  const retryLoad = useCallback(() => {
+    // Orphan any in-flight load so its late resolve can't clear the new one.
+    loadGenRef.current += 1
+    loadedPlanIdRef.current = null
+    setLoadError(null)
+    setPlan(null)
+    setIsLoadingRows(true)
+    void reloadPlans()
+  }, [reloadPlans])
+
+  // A Supabase request that never settles (dropped connection, suspended tab)
+  // would otherwise leave the page on a spinner with no way out.
+  const [loadingStalled, setLoadingStalled] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading) {
+      setLoadingStalled(false)
+      return
+    }
+    const timer = window.setTimeout(() => setLoadingStalled(true), LOAD_STALL_MS)
+    return () => window.clearTimeout(timer)
+  }, [isLoading])
+
   useEffect(() => {
     if (plansLoading || !sourcePlan) return
     // Only full-reset load once per planId (or after explicit planId change).
@@ -431,6 +464,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         if (cancelled || gen !== loadGenRef.current) return
 
         if (loadedRows.length === 0) {
+          loadedPlanIdRef.current = planSnapshot.id
           setPlan(planSnapshot)
           setRows([])
           setTask(null)
@@ -447,18 +481,24 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
             ? planSnapshot
             : { ...planSnapshot, mode: dailyTask.mode }
 
+        // Resume an interrupted round from localStorage + cloud (same day only).
+        // Requires vocab to build questions; without it fall back to hub and
+        // keep the snapshot for the next mount.
+        //
+        // Nothing may be committed before this await: `plan` is a dependency of
+        // this effect, so an early setPlan re-runs it, and the cleanup would set
+        // `cancelled` while we're still waiting here — the bail below would then
+        // strand `isLoadingRows` at true and the page never leaves「加载中…」.
+        const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
+        // Another network hop happened above — bail before touching app-wide state
+        // (setIsImmersive in particular would follow the user to the next page).
+        // Safe now: nothing was committed, so the re-run redoes the whole load.
+        if (cancelled || gen !== loadGenRef.current) return
+
         loadedPlanIdRef.current = planSnapshot.id
         setPlan(modePlan)
         setRows(loadedRows)
         setTask(dailyTask)
-
-        // Resume an interrupted round from localStorage + cloud (same day only).
-        // Requires vocab to build questions; without it fall back to hub and
-        // keep the snapshot for the next mount.
-        const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
-        // Another network hop happened above — bail before touching app-wide state
-        // (setIsImmersive in particular would follow the user to the next page).
-        if (cancelled || gen !== loadGenRef.current) return
         // A snapshot we couldn't apply must still block autoStart, or the fresh
         // round it starts will overwrite the stash before the child sees it.
         unappliedSnapshotRef.current = Boolean(snap) && vocab.length === 0
@@ -1228,10 +1268,33 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     allowRetry: phase !== 'boss' && phase !== 'boss_sink',
   })
 
-  if (plansLoading || isLoadingRows) {
+  if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
-        加载中…
+      <div className="mx-auto flex min-h-[60vh] max-w-[420px] flex-col items-center justify-center gap-3 px-4 text-center">
+        <div className="text-sm text-[var(--wm-text-dim)]">加载中…</div>
+        {loadingStalled && (
+          <>
+            <div className="text-[.75rem] font-bold text-[var(--wm-text-dim)]">
+              网络似乎不太顺畅，计划数据还没回来。
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={retryLoad}
+                className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
+              >
+                重新加载
+              </button>
+              <button
+                type="button"
+                onClick={onBack}
+                className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
+              >
+                ← 返回
+              </button>
+            </div>
+          </>
+        )}
       </div>
     )
   }
@@ -1274,14 +1337,31 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
 
   if (!plan || !task) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <div className="text-sm text-[var(--wm-text-dim)]">自适应计划不存在或已删除</div>
-        <button
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-        >
-          ← 返回
-        </button>
+      <div className="mx-auto flex min-h-[60vh] max-w-[460px] flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="text-sm text-[var(--wm-text-dim)]">
+          {plansError ? '计划列表加载失败' : '自适应计划不存在或已删除'}
+        </div>
+        {plansError != null && (
+          <div className="text-[.75rem] font-bold text-[var(--wm-text-dim)]">
+            没能读到计划列表，请检查网络后重试。
+            {plansError instanceof Error ? `（${plansError.message}）` : ''}
+          </div>
+        )}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={retryLoad}
+            className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
+          >
+            重试
+          </button>
+          <button
+            onClick={onBack}
+            className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
+          >
+            ← 返回
+          </button>
+        </div>
       </div>
     )
   }

@@ -455,7 +455,10 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     [rows],
   )
 
-  if (plansLoading || isLoadingRows) {
+  // `isLoadingRows` only ever clears from the row load, which never runs when
+  // the plan list resolves without this id — gate on the plan so a missing /
+  // deleted plan lands on the not-found screen instead of a stuck spinner.
+  if (plansLoading || (plan != null && isLoadingRows)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
         加载计划预览…
