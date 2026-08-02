@@ -262,7 +262,7 @@ export default function AdaptivePlanPractice() {
                       轨迹预览
                     </Link>
                     <Link
-                      href={`/english/words/adaptive/${plan.id}`}
+                      href={`/english/words/adaptive/${plan.id}/practice`}
                       className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline sm:px-3 sm:text-[.75rem]"
                     >
                       开始练习 →

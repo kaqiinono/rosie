@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useProblemMastery } from '@rosie/math/hooks/useProblemMastery'
@@ -49,11 +48,11 @@ import MathPlanMap from './MathPlanMap'
 // ── Main Component ────────────────────────────────────────────────────────────
 interface Props {
   problemSets: Record<string, ProblemSet>
+  /** Practice route (`/math/ny/plan/practice`): jump into today's first unfinished problem. */
+  autoStart?: boolean
 }
 
-export default function MathWeeklyPlanSession({ problemSets }: Props) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+export default function MathWeeklyPlanSession({ problemSets, autoStart = false }: Props) {
   const { user } = useAuth()
   const {
     weeklyPlan,
@@ -71,7 +70,6 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
 
   const today = todayStr()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const autoStart = searchParams.get('start') === '1'
   const autoStartDoneRef = useRef(false)
   /** Resume lookup finished (success, empty, or skipped). Auto-start must wait on this. */
   const [resumeChecked, setResumeChecked] = useState(false)
@@ -86,14 +84,6 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
       setSelectedDate(todayDay ? today : (weeklyPlan.days[0]?.date ?? null))
     }
   }
-
-  const clearStartParam = useCallback(() => {
-    const next = new URLSearchParams(searchParams.toString())
-    if (!next.has('start')) return
-    next.delete('start')
-    const qs = next.toString()
-    router.replace(`/math/ny/plan${qs ? `?${qs}` : ''}`, { scroll: false })
-  }, [router, searchParams])
 
   // Derived: review keys per day
   const reviewKeys = useMemo(() => {
@@ -221,22 +211,20 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
     }
   }, [practiceActive, isLoading, resumeChecked, userId, problemSets, resume])
 
-  // Homepage today-plan card: jump straight into today's first unfinished required problem.
+  // Practice route: jump straight into today's first unfinished required problem.
   useEffect(() => {
     if (!autoStart || autoStartDoneRef.current || !resumeChecked || isLoading || !weeklyPlan) return
     if (practiceActive) {
       autoStartDoneRef.current = true
-      clearStartParam()
       return
     }
-    // start() / resume() no-op without auth — keep ?start until user is ready.
+    // start() / resume() no-op without auth — retry when user is ready.
     if (!user) return
 
     const date = selectedDate ?? today
     const dayPlan = weeklyPlan.days.find((d) => d.date === date)
     if (!dayPlan || dayPlan.problems.length === 0) {
       autoStartDoneRef.current = true
-      clearStartParam()
       return
     }
     const doneKeys = new Set((weeklyPlan.progress[date] ?? { doneKeys: [] }).doneKeys)
@@ -244,14 +232,12 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
     // All required problems done — stay on the plan page; do not re-enter practice.
     if (!firstUndone) {
       autoStartDoneRef.current = true
-      clearStartParam()
       return
     }
 
     const started = beginPractice(dayPlan.problems, firstUndone.problemId)
     if (!started) return
     autoStartDoneRef.current = true
-    clearStartParam()
   }, [
     autoStart,
     resumeChecked,
@@ -260,7 +246,6 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
     selectedDate,
     today,
     beginPractice,
-    clearStartParam,
     practiceActive,
     user,
   ])

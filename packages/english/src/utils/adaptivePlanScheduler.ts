@@ -226,10 +226,12 @@ export function buildDailyTask(
 }
 
 /**
- * Homepage / today-card progress for an adaptive plan's daily new-word *goal*.
- * `done` counts activations that have actually been settled today — words that
- * were only 「开始」-activated (unfinished mid-round) do not count.
- * Meeting the goal does not block further rounds (ahead-of-schedule learning).
+ * Homepage / today-card progress for an adaptive plan's **mandatory** daily work.
+ *
+ * - New-word progress: settled activations today (「开始」but not settled → 0).
+ * - Due reviews / Boss pack count toward `total` until cleared, so the card never
+ *   shows e.g. 5/5 while reviews remain (done + remaining === total).
+ * - Meeting the goal does not block 提前学; `allDone` ignores ahead batches.
  */
 export function summarizeAdaptiveTodayProgress(
   plan: AdaptiveWordPlan,
@@ -245,14 +247,14 @@ export function summarizeAdaptiveTodayProgress(
   subtitle: string
 } {
   const perDay = Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10
-  const total = Math.max(1, Math.floor(perDay))
+  const newGoal = Math.max(1, Math.floor(perDay))
   const unfinishedCount = activeRows(rows).filter((row) =>
     isUnfinishedSameDayActivation(row, today),
   ).length
   const activated = countActivatedToday(rows, today)
   const settled = Math.max(0, activated - unfinishedCount)
   const task = buildDailyTask(plan, rows, today)
-  const goalMet = settled >= total && unfinishedCount === 0
+  const goalMet = settled >= newGoal && unfinishedCount === 0
   // Goal met + no mandatory review/boss work. Extra activateKeys (提前学) do
   // not keep the card in an incomplete state.
   const allDone =
@@ -260,7 +262,17 @@ export function summarizeAdaptiveTodayProgress(
     unfinishedCount === 0 &&
     task.reviewKeys.length === 0 &&
     task.mode !== 'boss'
-  const done = goalMet ? total : Math.min(total, settled)
+
+  const newDone = Math.min(newGoal, settled)
+  const newRemaining = Math.max(0, newGoal - newDone)
+  const dueRemaining =
+    task.mode === 'boss' ? task.bossKeys.length : task.reviewKeys.length
+
+  // When finished, show the new-word goal as the completed quota. While work
+  // remains, keep done + remaining === total (reviews inflate the denominator).
+  const done = allDone ? newGoal : newDone
+  const total = allDone ? newGoal : newDone + newRemaining + dueRemaining
+
   const canAhead = allDone && task.activateKeys.length > 0
 
   let subtitle: string

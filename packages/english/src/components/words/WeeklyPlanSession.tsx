@@ -53,7 +53,7 @@ interface WeeklyPlanSessionProps {
   initialPlan: WeeklyPlan
   vocab: WordEntry[]
   onBack: () => void
-  /** Homepage「今日计划」英语卡：进入后立刻开始今日学习 */
+  /** Practice route (`/weekly/[id]/practice`): enter and start today's study immediately */
   autoStart?: boolean
 }
 

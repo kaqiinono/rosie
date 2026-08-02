@@ -3,18 +3,17 @@
 import { useParams, useRouter } from 'next/navigation'
 import { AdaptivePlanSession } from '@rosie/english'
 
-/** Plan hub / detail — tap「开始」to practice; never auto-starts. */
-export default function AdaptivePlanPage() {
+/** Practice entry — opens in session (not the plan hub/detail). */
+export default function AdaptivePlanPracticePage() {
   const router = useRouter()
   const params = useParams()
   const planId = typeof params.planId === 'string' ? params.planId : ''
 
-  // WordsProvider already wraps english/words via layout — don't nest another.
   return (
     <AdaptivePlanSession
       planId={planId}
-      autoStart={false}
-      onBack={() => router.push('/english/words/daily')}
+      autoStart
+      onBack={() => router.push(`/english/words/adaptive/${planId}`)}
     />
   )
 }

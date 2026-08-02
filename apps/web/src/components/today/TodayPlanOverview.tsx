@@ -117,8 +117,10 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       done: english.doneCount,
       total: english.total,
       subtitle: english.allDone
-        ? `得分 ${english.lastScore ?? 0}% 🎉`
-        : (english.subtitle ?? `${english.total} 个新词待学`),
+        ? english.lastScore !== undefined
+          ? `得分 ${english.lastScore}% 🎉`
+          : (english.subtitle ?? '今日任务已完成 🎉')
+        : (english.subtitle ?? `${english.total} 个词待练`),
       pct:
         english.allDone
           ? 100
@@ -141,7 +143,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       key: 'math',
       label: '数学',
       icon: '📐',
-      href: math.href ?? '/math/ny/plan?start=1',
+      href: math.href ?? '/math/ny/plan/practice',
       done: math.done,
       total: math.total,
       subtitle: math.allDone ? '全部完成 🎉' : `还剩 ${Math.max(0, math.total - math.done)} 题`,
@@ -343,18 +345,24 @@ export function useTodayPlanOverview() {
   const calcAccuracy =
     calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
-  // Prefer this week's weekly plan; otherwise active adaptive; else create page.
-  const englishHref = englishPlan?.id
-    ? `/english/words/weekly/${englishPlan.id}?start=1`
-    : activeAdaptive
+  // Active adaptive wins over weekly — otherwise a leftover weekly plan keeps the
+  // card on /weekly/…/practice even when today's adaptive goal is done.
+  // Done today → detail/hub; incomplete → practice.
+  const englishHref = activeAdaptive
+    ? adaptiveToday?.allDone
       ? `/english/words/adaptive/${activeAdaptive.id}`
+      : `/english/words/adaptive/${activeAdaptive.id}/practice`
+    : englishPlan?.id
+      ? englishDone
+        ? `/english/words/weekly/${englishPlan.id}`
+        : `/english/words/weekly/${englishPlan.id}/practice`
       : '/english/words/daily'
 
   const isLoading =
     englishLoading ||
     mathLoading ||
     (chinese.isCharDataLoading && !chinese.isCharDataReady) ||
-    (!englishPlan && adaptiveLoading)
+    (!!activeAdaptive && adaptiveLoading)
 
   const cards = buildTodayPlanCards({
     calc: {
@@ -368,31 +376,30 @@ export function useTodayPlanOverview() {
     english: {
       // Prefer plan keys (not vocab-resolved todayWords) so counts stay correct
       // while word library is still hydrating or a key is temporarily missing.
-      // Adaptive: count settled new words only — mid-round activations stay at 0.
-      doneCount: englishPlan
-        ? englishDone
+      doneCount: activeAdaptive
+        ? (adaptiveToday?.done ?? 0)
+        : englishDone
           ? newWordKeys.length
-          : 0
-        : (adaptiveToday?.done ?? 0),
-      total: englishPlan
-        ? newWordKeys.length
-        : (adaptiveToday?.total ?? activeAdaptive?.newWordsPerDay ?? 0),
-      lastScore: englishProgress?.lastScore,
-      allDone: englishPlan ? englishDone : (adaptiveToday?.allDone ?? false),
+          : 0,
+      total: activeAdaptive
+        ? (adaptiveToday?.total ?? activeAdaptive.newWordsPerDay)
+        : newWordKeys.length,
+      lastScore: activeAdaptive ? undefined : englishProgress?.lastScore,
+      allDone: activeAdaptive
+        ? (adaptiveToday?.allDone ?? false)
+        : englishDone,
       href: englishHref,
-      subtitle: englishPlan
-        ? undefined
-        : adaptiveToday
+      subtitle: activeAdaptive
+        ? adaptiveToday
           ? `自适应 · ${adaptiveToday.subtitle}`
-          : activeAdaptive
-            ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
-            : '去创建计划',
+          : `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+        : undefined,
     },
     math: {
       done: mathDoneCount,
       total: mathProblems.length,
       allDone: mathAllDone,
-      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan?start=1',
+      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
       done: chinese.allDone ? '✓' : chinese.done,

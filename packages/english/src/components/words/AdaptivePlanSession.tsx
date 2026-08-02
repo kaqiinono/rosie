@@ -53,7 +53,7 @@ import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
 type AdaptivePlanSessionProps = {
   planId: string
   onBack: () => void
-  /** Homepage「今日计划」英语卡：进入后立刻开始本轮练习 */
+  /** Practice route (`/adaptive/[id]/practice`): enter and start this round immediately */
   autoStart?: boolean
 }
 
@@ -507,10 +507,13 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         setPlan(modePlan)
         setRows(loadedRows)
         setTask(dailyTask)
+        // Detail hub must stay on hub — only the practice route resumes a stash
+        // (otherwise「已完成」card → detail still drops into mid-round practice).
         // A snapshot we couldn't apply must still block autoStart, or the fresh
         // round it starts will overwrite the stash before the child sees it.
-        unappliedSnapshotRef.current = Boolean(snap) && vocabNow.length === 0
-        if (snap && vocabNow.length > 0) {
+        const canResumeSnap = Boolean(autoStart && snap && vocabNow.length > 0)
+        unappliedSnapshotRef.current = Boolean(autoStart && snap && vocabNow.length === 0)
+        if (canResumeSnap && snap) {
           setPhase(snap.phase)
           setReviewCursor(snap.reviewCursor)
           setReviewDoneKeys(new Set(snap.reviewDoneKeys))
@@ -1160,7 +1163,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     vocab.length,
   ])
 
-  // Optional `?start=1`: jump into this round once plan rows AND vocab are ready.
+  // Practice entry (`autoStart`): jump into this round once plan rows AND vocab are ready.
   // Starting before vocab loads builds zero quiz slots → stuck on「题目准备中…」.
   useEffect(() => {
     if (!autoStart || autoStartDoneRef.current) return

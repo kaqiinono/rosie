@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { todayStr } from '@rosie/core'
 import { summarizeAdaptiveTodayProgress } from '../utils/adaptivePlanScheduler'
@@ -10,7 +10,7 @@ import { useAdaptiveWordPlan } from './useAdaptiveWordPlan'
 export type AdaptiveTodayProgressSummary = ReturnType<typeof summarizeAdaptiveTodayProgress>
 
 /**
- * Active adaptive plan + today's new-word progress for homepage /today cards.
+ * Active adaptive plan + today's mandatory progress for homepage /today cards.
  * Progress rows are fetched on demand (not session-cached): the card is small
  * and must reflect mid-day settles without inventing a second global store.
  */
@@ -27,7 +27,24 @@ export function useAdaptiveTodayProgress(user: User | null): {
 
   const [rows, setRows] = useState<AdaptivePlanWordProgress[] | null>(null)
   const [rowsLoading, setRowsLoading] = useState(false)
+  const [reloadToken, setReloadToken] = useState(0)
   const today = todayStr()
+
+  const reload = useCallback(() => {
+    setReloadToken((t) => t + 1)
+  }, [])
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') reload()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    window.addEventListener('focus', reload)
+    return () => {
+      document.removeEventListener('visibilitychange', onVis)
+      window.removeEventListener('focus', reload)
+    }
+  }, [reload])
 
   useEffect(() => {
     if (!activePlan) {
@@ -54,7 +71,7 @@ export function useAdaptiveTodayProgress(user: User | null): {
     return () => {
       cancelled = true
     }
-  }, [activePlan, loadProgress])
+  }, [activePlan, loadProgress, reloadToken])
 
   const summary = useMemo(() => {
     if (!activePlan || rows == null) return null

@@ -7,8 +7,8 @@ import { useWordsContext, WeeklyPlanSession } from '@rosie/english'
 import type { WeeklyPlan } from '@rosie/core'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 
-/** Weekly plan detail / week view — does not auto-start practice. */
-export default function WeeklyPlanPage() {
+/** Practice entry — load plan and start today's study immediately. */
+export default function WeeklyPlanPracticePage() {
   const router = useRouter()
   const routeParams = useParams()
   const planId = typeof routeParams.id === 'string' ? routeParams.id : ''
@@ -61,8 +61,8 @@ export default function WeeklyPlanPage() {
       key={plan.id ?? plan.weekStart}
       initialPlan={plan}
       vocab={vocab}
-      autoStart={false}
-      onBack={() => router.push('/english/words/daily')}
+      autoStart
+      onBack={() => router.push(`/english/words/weekly/${planId}`)}
     />
   )
 }

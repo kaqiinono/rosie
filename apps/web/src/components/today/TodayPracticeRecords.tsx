@@ -178,10 +178,14 @@ export default function TodayPracticeRecords() {
 
   const englishProgress = englishPlan?.progress[today]
   const englishDay = englishPlan?.days.find((d) => d.date === today)
-  const englishContinueHref = englishPlan?.id
-    ? `/english/words/weekly/${englishPlan.id}`
-    : activeAdaptive
+  const englishContinueHref = activeAdaptive
+    ? adaptiveToday?.allDone
       ? `/english/words/adaptive/${activeAdaptive.id}`
+      : `/english/words/adaptive/${activeAdaptive.id}/practice`
+    : englishPlan?.id
+      ? englishProgress?.quizDone
+        ? `/english/words/weekly/${englishPlan.id}`
+        : `/english/words/weekly/${englishPlan.id}/practice`
       : '/english/words/daily'
   const englishReportHref =
     englishPlan?.id && englishPlan.weekCompletion
@@ -430,14 +434,25 @@ export default function TodayPracticeRecords() {
         tone="#d97706"
         footer={
           <Link
-            href="/math/ny/plan"
+            href={
+              mathPlan && mathProblems.length > 0 && mathDoneCount >= mathProblems.length
+                ? '/math/ny/plan'
+                : '/math/ny/plan/practice'
+            }
             className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1.5 text-[12px] font-bold text-amber-900 no-underline transition-opacity hover:opacity-80"
           >
             打开周计划 →
           </Link>
         }
       >
-        <PendingBanner sync={syncBySubject.math} href="/math/ny/plan" />
+        <PendingBanner
+          sync={syncBySubject.math}
+          href={
+            mathPlan && mathProblems.length > 0 && mathDoneCount >= mathProblems.length
+              ? '/math/ny/plan'
+              : '/math/ny/plan/practice'
+          }
+        />
         {mathPlan && mathProblems.length > 0 && (
           <div className="mb-2 rounded-xl border border-amber-100 bg-amber-50/50 px-3 py-2.5">
             <div className="text-[13px] font-bold text-amber-900">

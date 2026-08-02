@@ -490,6 +490,39 @@ describe('summarizeAdaptiveTodayProgress', () => {
     expect(summary.activateCount).toBe(2)
     expect(summary.subtitle).toContain('可提前继续学')
   })
+
+  it('includes due reviews in total so done/total stay consistent', () => {
+    const plan = basePlan({ newWordsPerDay: 5 })
+    const rows = [
+      // 5 new words settled today
+      ...Array.from({ length: 5 }, (_, i) =>
+        row(`new${i}`, {
+          status: 'LEARNING',
+          boxIndex: 2,
+          introducedOn: TODAY,
+          nextReviewDate: '2026-07-10',
+          streakWrong: 0,
+        }),
+      ),
+      // 5 older words due for review today
+      ...Array.from({ length: 5 }, (_, i) =>
+        row(`rev${i}`, {
+          status: 'LEARNING',
+          boxIndex: 2,
+          introducedOn: '2026-07-01',
+          nextReviewDate: TODAY,
+          streakWrong: 0,
+        }),
+      ),
+      row('ns', { status: 'NOT_STARTED' }),
+    ]
+    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
+    expect(summary.allDone).toBe(false)
+    expect(summary.done).toBe(5)
+    expect(summary.total).toBe(10)
+    expect(summary.reviewCount).toBe(5)
+    expect(summary.done + summary.reviewCount).toBe(summary.total)
+  })
 })
 
 describe('isPlanCompletable', () => {

@@ -306,10 +306,16 @@ export default function TodayDashboard() {
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
   const calcAccuracy = calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
-  const englishHref = englishPlan?.id
-    ? `/english/words/weekly/${englishPlan.id}?start=1`
-    : activeAdaptive
+  // Active adaptive wins over weekly (same as homepage overview).
+  // Done today → detail/hub; incomplete → practice.
+  const englishHref = activeAdaptive
+    ? adaptiveToday?.allDone
       ? `/english/words/adaptive/${activeAdaptive.id}`
+      : `/english/words/adaptive/${activeAdaptive.id}/practice`
+    : englishPlan?.id
+      ? englishDone
+        ? `/english/words/weekly/${englishPlan.id}`
+        : `/english/words/weekly/${englishPlan.id}/practice`
       : '/english/words/daily'
 
   const overviewCards = buildTodayPlanCards({
@@ -322,30 +328,30 @@ export default function TodayDashboard() {
       href: '/calc/session?mode=daily&start=1',
     },
     english: {
-      doneCount: englishPlan
-        ? englishDone
+      doneCount: activeAdaptive
+        ? (adaptiveToday?.done ?? 0)
+        : englishDone
           ? newWordKeys.length
-          : 0
-        : (adaptiveToday?.done ?? 0),
-      total: englishPlan
-        ? newWordKeys.length
-        : (adaptiveToday?.total ?? activeAdaptive?.newWordsPerDay ?? 0),
-      lastScore: englishProgress?.lastScore,
-      allDone: englishPlan ? englishDone : (adaptiveToday?.allDone ?? false),
+          : 0,
+      total: activeAdaptive
+        ? (adaptiveToday?.total ?? activeAdaptive.newWordsPerDay)
+        : newWordKeys.length,
+      lastScore: activeAdaptive ? undefined : englishProgress?.lastScore,
+      allDone: activeAdaptive
+        ? (adaptiveToday?.allDone ?? false)
+        : englishDone,
       href: englishHref,
-      subtitle: englishPlan
-        ? undefined
-        : adaptiveToday
+      subtitle: activeAdaptive
+        ? adaptiveToday
           ? `自适应 · ${adaptiveToday.subtitle}`
-          : activeAdaptive
-            ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
-            : '去创建计划',
+          : `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+        : undefined,
     },
     math: {
       done: mathDoneCount,
       total: mathProblems.length,
       allDone: mathAllDone,
-      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan?start=1',
+      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
       done: chinese.allDone ? '✓' : chinese.done,
@@ -382,7 +388,7 @@ export default function TodayDashboard() {
           </h2>
           {englishPlan?.id && (
             <Link
-              href={`/english/words/weekly/${englishPlan.id}?start=1`}
+              href={`/english/words/weekly/${englishPlan.id}/practice`}
               className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
             >
               前往练习 →
@@ -568,7 +574,7 @@ export default function TodayDashboard() {
             今日数学题目
           </h2>
           <Link
-            href={mathAllDone ? '/math/ny/plan' : '/math/ny/plan?start=1'}
+            href={mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice'}
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
           >
             {mathAllDone ? '查看计划 →' : '前往做题 →'}
