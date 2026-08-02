@@ -1050,10 +1050,11 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
       return
     }
 
-    // activateKeys exist in plan but vocab not loaded / key mismatch — still try final quiz by key
+    // activateKeys exist but none resolve in vocab yet — do NOT open an empty
+    // final quiz (that sticks on「题目准备中…»). Leave hub; autoStart retries
+    // once vocab arrives. Manual start can tap again after the library loads.
     if ((task?.activateKeys.length ?? 0) > 0 && activateEntries.length === 0) {
-      void applyActivations()
-      startFinalQuiz(task!.activateKeys)
+      sessionStartedRef.current = false
       return
     }
 
@@ -1117,6 +1118,14 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         setPhase('done')
         return
       }
+      const bossSlots = buildSlots(task.bossKeys, {
+        bossTier: plan?.stats.bossQuestionTier ?? 1,
+      })
+      if (bossSlots.length === 0) {
+        // Vocab still loading — stay on hub; autoStart retries when ready.
+        sessionStartedRef.current = false
+        return
+      }
       startBossQuiz(task.bossKeys, 'boss')
       return
     }
@@ -1124,7 +1133,11 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
       const firstKeys = dayReviewKeys.slice(0, Math.max(reviewCursor, batchSize))
       const slots = buildSlots(firstKeys, { preferLight: true })
       if (slots.length === 0) {
-        // Review keys present but no quiz slots (vocab miss) — skip to study
+        if (vocab.length === 0) {
+          sessionStartedRef.current = false
+          return
+        }
+        // Vocab ready but keys missing from library — skip to study
         startStudyOrFinal()
         return
       }
@@ -1137,23 +1150,27 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     batchSize,
     buildSlots,
     dayReviewKeys,
+    plan?.stats.bossQuestionTier,
     reviewCursor,
     settling,
     startBossQuiz,
     startReview,
     startStudyOrFinal,
     task,
+    vocab.length,
   ])
 
-  // Homepage today-plan card: jump straight into this round (unless restoring a snapshot).
+  // Optional `?start=1`: jump into this round once plan rows AND vocab are ready.
+  // Starting before vocab loads builds zero quiz slots → stuck on「题目准备中…」.
   useEffect(() => {
     if (!autoStart || autoStartDoneRef.current) return
     if (isLoadingRows || !task || settling) return
+    if (vocab.length === 0) return
     if (phase !== 'hub') return
     if (sessionStartedRef.current || unappliedSnapshotRef.current) return
     autoStartDoneRef.current = true
     beginSession()
-  }, [autoStart, isLoadingRows, task, settling, phase, beginSession])
+  }, [autoStart, isLoadingRows, task, settling, phase, beginSession, vocab.length])
 
   const currentQuestion = useMemo<QuizQuestion | null>(() => {
     const slot = quizSlots[curQ]
@@ -1161,6 +1178,54 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     const entry = findWordByKey(vocab, slot.key)
     return entry ? { word: entry, type: slot.type } : null
   }, [curQ, quizSlots, vocab])
+
+  // Recover a race that already entered quiz/final with empty slots (vocab was
+  // empty at beginSession). Rebuild when vocab arrives; otherwise return to hub.
+  useEffect(() => {
+    if (phase !== 'review' && phase !== 'final' && phase !== 'boss' && phase !== 'boss_sink') {
+      return
+    }
+    if (quizSlots.length > 0 && currentQuestion) return
+    if (vocab.length === 0 || !task) return
+
+    const keys =
+      phase === 'boss' || phase === 'boss_sink'
+        ? task.bossKeys
+        : phase === 'review'
+          ? dayReviewKeys.slice(0, Math.max(reviewCursor, batchSize))
+          : uniqueKeys([
+              ...activateKeys,
+              ...[...collapseSessionOutcomes(reviewOutcomesRef.current)]
+                .filter(([, correct]) => !correct)
+                .map(([key]) => key),
+            ])
+    const slots = buildSlots(keys, {
+      preferLight: phase === 'review',
+      bossTier: phase === 'boss' || phase === 'boss_sink' ? plan?.stats.bossQuestionTier : undefined,
+    })
+    if (slots.length > 0) {
+      setQuizSlots(slots)
+      setCurQ(0)
+      return
+    }
+
+    setPhase('hub')
+    setIsImmersive(false)
+    sessionStartedRef.current = false
+  }, [
+    activateKeys,
+    batchSize,
+    buildSlots,
+    currentQuestion,
+    dayReviewKeys,
+    phase,
+    plan?.stats.bossQuestionTier,
+    quizSlots.length,
+    reviewCursor,
+    setIsImmersive,
+    task,
+    vocab.length,
+  ])
 
   const quizOptions = useMemo(() => {
     if (!currentQuestion) return []

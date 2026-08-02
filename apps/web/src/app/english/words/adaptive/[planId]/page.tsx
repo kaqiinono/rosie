@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { AdaptivePlanSession, WordsProvider } from '@rosie/english'
+import { AdaptivePlanSession } from '@rosie/english'
 
 function AdaptivePlanPageInner() {
   const router = useRouter()
@@ -31,17 +31,17 @@ function AdaptivePlanPageInner() {
 }
 
 export default function AdaptivePlanPage() {
+  // WordsProvider already wraps english/words via layout — don't nest another
+  // (a fresh inner provider remounts with empty vocab and races autoStart).
   return (
-    <WordsProvider>
-      <Suspense
-        fallback={
-          <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
-            加载中…
-          </div>
-        }
-      >
-        <AdaptivePlanPageInner />
-      </Suspense>
-    </WordsProvider>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
+          加载中…
+        </div>
+      }
+    >
+      <AdaptivePlanPageInner />
+    </Suspense>
   )
 }

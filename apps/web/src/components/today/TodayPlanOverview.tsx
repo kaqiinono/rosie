@@ -347,7 +347,7 @@ export function useTodayPlanOverview() {
   const englishHref = englishPlan?.id
     ? `/english/words/weekly/${englishPlan.id}?start=1`
     : activeAdaptive
-      ? `/english/words/adaptive/${activeAdaptive.id}?start=1`
+      ? `/english/words/adaptive/${activeAdaptive.id}`
       : '/english/words/daily'
 
   const isLoading =
