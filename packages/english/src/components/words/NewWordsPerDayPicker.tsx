@@ -61,11 +61,12 @@ export default function NewWordsPerDayPicker({
     <div>
       <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <span className="text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-          每日新词数量
+          每日新词目标
         </span>
         <span className="text-[.62rem] font-bold text-[var(--wm-text-dim)]">
-          默认 {ADAPTIVE_PLAN_DEFAULTS.newWordsPerDay} · 范围 1–{NEW_WORDS_PER_DAY_MAX}
+          每轮批量 / 今日目标 · 默认 {ADAPTIVE_PLAN_DEFAULTS.newWordsPerDay} · 范围 1–{NEW_WORDS_PER_DAY_MAX}
           {savingLabel ? ` · ${savingLabel}` : ''}
+          · 完成后可提前继续学
         </span>
       </div>
       <div className="flex flex-wrap items-center gap-1.5">

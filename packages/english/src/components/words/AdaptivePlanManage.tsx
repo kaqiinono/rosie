@@ -310,7 +310,7 @@ export default function AdaptivePlanManage() {
                         : '进行中'}
                   </span>
                   <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
-                    每日新词 {plan.newWordsPerDay}
+                    每日目标 {plan.newWordsPerDay} 词/轮
                   </span>
                   <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
                     更新 {fmtDateTime(plan.updatedAt)}

@@ -212,7 +212,7 @@ export default function AdaptivePlanPractice() {
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
-                      <span>每日新词 {plan.newWordsPerDay}</span>
+                      <span>每日目标 {plan.newWordsPerDay} 词/轮</span>
                       <span>复习上限 {plan.reviewCap}</span>
                       {plan.status === 'active' && daySnapshot && (
                         <>

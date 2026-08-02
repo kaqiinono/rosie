@@ -782,8 +782,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         }
       }
 
-      const noteIfMore = '今天还可以再练一轮：错词会继续出现，也可以继续拉新词。'
-      const noteIfDone = '今天暂无更多到期复习或可拉新词，明天再来继续推进。'
+      const noteIfMore = '今天还可以再练一轮：错词会继续出现，也可以提前学下一批新词。'
+      const noteIfDone = '今天没有到期复习，也没有更多可学的新词了。'
       const starsEarned = starsAwardedThisRoundRef.current
       const activateSnapshot = [...roundActivateKeysRef.current]
       const reviewSnapshot = [...roundReviewKeysRef.current]
@@ -1753,7 +1753,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
             {plan.title}
           </div>
           <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
-            每日至少练一轮：复习 → 新学（每日最多 {plan.newWordsPerDay} 个新词）→ 闯关；同日可多轮，错词会继续出现
+            每日建议练一轮：复习 → 新学（每轮约 {plan.newWordsPerDay} 个新词）→ 闯关；目标完成后还可提前学下一批
             <span className="mt-1 block text-[.72rem] font-bold text-[#93c5fd]">
               成长阶段：🥚蛋 → 🐛虫 → 🦋蝴蝶 → 🌸花 → 🌳树；题型随阶段递进
             </span>

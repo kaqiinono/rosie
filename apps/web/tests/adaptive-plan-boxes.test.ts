@@ -73,7 +73,7 @@ describe('applyBoxAnswer', () => {
 })
 
 describe('activateWord', () => {
-  it('activates NOT_STARTED at box 1 with due tomorrow', () => {
+  it('activates NOT_STARTED at box 1 due today (until first settle)', () => {
     const out = activateWord(
       {
         ...row({ status: 'NOT_STARTED', boxIndex: null, nextReviewDate: null, introducedOn: null }),
@@ -85,11 +85,11 @@ describe('activateWord', () => {
     expect(out.boxIndex).toBe(1)
     expect(out.targetBox).toBeNull()
     expect(out.introducedOn).toBe(TODAY)
-    expect(out.nextReviewDate).toBe(addCalendarDays(TODAY, 1))
-    expect(out.nextReviewDate).not.toBe(TODAY)
+    // Stay due today so abandoning mid-round doesn't hide the words until tomorrow.
+    expect(out.nextReviewDate).toBe(TODAY)
   })
 
-  it('activates LEARNING_PENDING with target_box 3 at box 3', () => {
+  it('activates LEARNING_PENDING with target_box 3 at box 3 due today', () => {
     const out = activateWord(
       row({
         status: 'LEARNING_PENDING',
@@ -101,6 +101,6 @@ describe('activateWord', () => {
       TODAY,
     )
     expect(out.boxIndex).toBe(3)
-    expect(out.nextReviewDate).toBe(addCalendarDays(TODAY, BOX_INTERVALS_DAYS[3]))
+    expect(out.nextReviewDate).toBe(TODAY)
   })
 })

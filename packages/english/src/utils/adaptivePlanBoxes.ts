@@ -78,7 +78,27 @@ export function activateWord(
     boxIndex: box,
     targetBox: null,
     introducedOn: today,
-    nextReviewDate: addCalendarDays(today, BOX_INTERVALS_DAYS[box]),
+    // Due today until the activating session settles. Writing tomorrow here used
+    // to burn the daily quota on「开始」and then hide the words if the child
+    // left before 闯关 — looking like「今天暂无新任务」with unpracticed new words.
+    nextReviewDate: today,
     streakWrong: 0,
   }
+}
+
+/**
+ * Activated today but not yet settled (still on the landing box, no wrongs).
+ * Includes the legacy shape where activateWord used to push nextReviewDate to
+ * today+interval before any practice happened.
+ */
+export function isUnfinishedSameDayActivation(
+  row: AdaptivePlanWordProgress,
+  today: string,
+): boolean {
+  if (row.status !== 'LEARNING' || row.archivedAt != null) return false
+  if (row.introducedOn !== today || row.streakWrong !== 0) return false
+  const box = row.boxIndex
+  if (box !== 1 && box !== 3) return false
+  if (row.nextReviewDate === today) return true
+  return row.nextReviewDate === addCalendarDays(today, BOX_INTERVALS_DAYS[box])
 }

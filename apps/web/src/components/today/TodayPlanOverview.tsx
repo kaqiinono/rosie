@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   useAuth,
@@ -11,7 +11,7 @@ import {
   type TodayPlanSubjectKey,
   type TodayPlanSyncStatus,
 } from '@rosie/core'
-import { useWeeklyPlan, useAdaptiveWordPlan } from '@rosie/english'
+import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useCalcDaily } from '@rosie/calc'
 import { useChineseRoadmapProgress, chineseRoute } from '@rosie/chinese'
@@ -119,7 +119,12 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       subtitle: english.allDone
         ? `得分 ${english.lastScore ?? 0}% 🎉`
         : (english.subtitle ?? `${english.total} 个新词待学`),
-      pct: english.allDone ? 100 : 0,
+      pct:
+        english.allDone
+          ? 100
+          : english.total > 0
+            ? Math.min(100, (english.doneCount / english.total) * 100)
+            : 0,
       tone: english.allDone
         ? DONE_TONE
         : {
@@ -306,16 +311,16 @@ export function TodayPlanOverviewCards({
 export function useTodayPlanOverview() {
   const { user } = useAuth()
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
-  const { plans: adaptivePlans, isLoading: adaptiveLoading } = useAdaptiveWordPlan(user)
+  const {
+    activePlan: activeAdaptive,
+    summary: adaptiveToday,
+    isLoading: adaptiveLoading,
+  } = useAdaptiveTodayProgress(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const calcDaily = useCalcDaily(user)
   const chinese = useChineseRoadmapProgress(user)
 
   const today = todayStr()
-  const activeAdaptive = useMemo(
-    () => adaptivePlans.find((plan) => plan.status === 'active') ?? null,
-    [adaptivePlans],
-  )
 
   const englishToday = englishPlan?.days.find((d) => d.date === today)
   const englishProgress = englishPlan?.progress[today]
@@ -363,30 +368,31 @@ export function useTodayPlanOverview() {
     english: {
       // Prefer plan keys (not vocab-resolved todayWords) so counts stay correct
       // while word library is still hydrating or a key is temporarily missing.
+      // Adaptive: count settled new words only — mid-round activations stay at 0.
       doneCount: englishPlan
         ? englishDone
           ? newWordKeys.length
           : 0
-        : 0,
+        : (adaptiveToday?.done ?? 0),
       total: englishPlan
         ? newWordKeys.length
-        : activeAdaptive
-          ? activeAdaptive.newWordsPerDay
-          : 0,
+        : (adaptiveToday?.total ?? activeAdaptive?.newWordsPerDay ?? 0),
       lastScore: englishProgress?.lastScore,
-      allDone: englishPlan ? englishDone : false,
+      allDone: englishPlan ? englishDone : (adaptiveToday?.allDone ?? false),
       href: englishHref,
       subtitle: englishPlan
         ? undefined
-        : activeAdaptive
-          ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
-          : '去创建计划',
+        : adaptiveToday
+          ? `自适应 · ${adaptiveToday.subtitle}`
+          : activeAdaptive
+            ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+            : '去创建计划',
     },
     math: {
       done: mathDoneCount,
       total: mathProblems.length,
       allDone: mathAllDone,
-      href: '/math/ny/plan?start=1',
+      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan?start=1',
     },
     chinese: {
       done: chinese.allDone ? '✓' : chinese.done,

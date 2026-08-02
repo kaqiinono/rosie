@@ -1,9 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
 import { useAuth } from '@rosie/core'
-import { useWeeklyPlan, useAdaptiveWordPlan } from '@rosie/english'
+import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useWordData } from '@rosie/english'
 import { useCalcDaily } from '@rosie/calc'
@@ -217,17 +216,17 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
 export default function TodayDashboard() {
   const { user } = useAuth()
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
-  const { plans: adaptivePlans, isLoading: adaptiveLoading } = useAdaptiveWordPlan(user)
+  const {
+    activePlan: activeAdaptive,
+    summary: adaptiveToday,
+    isLoading: adaptiveLoading,
+  } = useAdaptiveTodayProgress(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
   const calcDaily = useCalcDaily(user)
   const chinese = useChineseRoadmapProgress(user)
 
   const today = todayStr()
-  const activeAdaptive = useMemo(
-    () => adaptivePlans.find((plan) => plan.status === 'active') ?? null,
-    [adaptivePlans],
-  )
 
   // English: today's word keys -> full WordEntry objects
   const englishToday = englishPlan?.days.find(d => d.date === today)
@@ -323,26 +322,30 @@ export default function TodayDashboard() {
       href: '/calc/session?mode=daily&start=1',
     },
     english: {
-      doneCount: englishPlan ? (englishDone ? newWordKeys.length : 0) : 0,
+      doneCount: englishPlan
+        ? englishDone
+          ? newWordKeys.length
+          : 0
+        : (adaptiveToday?.done ?? 0),
       total: englishPlan
         ? newWordKeys.length
-        : activeAdaptive
-          ? activeAdaptive.newWordsPerDay
-          : 0,
+        : (adaptiveToday?.total ?? activeAdaptive?.newWordsPerDay ?? 0),
       lastScore: englishProgress?.lastScore,
-      allDone: englishPlan ? englishDone : false,
+      allDone: englishPlan ? englishDone : (adaptiveToday?.allDone ?? false),
       href: englishHref,
       subtitle: englishPlan
         ? undefined
-        : activeAdaptive
-          ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
-          : '去创建计划',
+        : adaptiveToday
+          ? `自适应 · ${adaptiveToday.subtitle}`
+          : activeAdaptive
+            ? `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+            : '去创建计划',
     },
     math: {
       done: mathDoneCount,
       total: mathProblems.length,
       allDone: mathAllDone,
-      href: '/math/ny/plan?start=1',
+      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan?start=1',
     },
     chinese: {
       done: chinese.allDone ? '✓' : chinese.done,
@@ -565,10 +568,10 @@ export default function TodayDashboard() {
             今日数学题目
           </h2>
           <Link
-            href="/math/ny/plan?start=1"
+            href={mathAllDone ? '/math/ny/plan' : '/math/ny/plan?start=1'}
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
           >
-            前往做题 →
+            {mathAllDone ? '查看计划 →' : '前往做题 →'}
           </Link>
         </div>
 

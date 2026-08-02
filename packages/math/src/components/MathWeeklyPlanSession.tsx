@@ -240,7 +240,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
       return
     }
     const doneKeys = new Set((weeklyPlan.progress[date] ?? { doneKeys: [] }).doneKeys)
-    const firstUndone = dayPlan.problems.find((p) => !doneKeys.has(p.key)) ?? dayPlan.problems[0]
+    const firstUndone = dayPlan.problems.find((p) => !doneKeys.has(p.key))
+    // All required problems done — stay on the plan page; do not re-enter practice.
     if (!firstUndone) {
       autoStartDoneRef.current = true
       clearStartParam()
