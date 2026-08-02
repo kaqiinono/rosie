@@ -6,6 +6,8 @@ import { findWordByKey } from '../../utils/english-helpers'
 import {
   ADAPTIVE_BOX_STAGES,
   ADAPTIVE_MASTERED_STAGE,
+  ADAPTIVE_NOT_STARTED_STAGE,
+  ADAPTIVE_PENDING_STAGE,
   adaptiveBoxStage,
   adaptiveStageSortKey,
 } from '../../utils/adaptivePlanStages'
@@ -108,8 +110,8 @@ export default function AdaptivePlanStageBoard({
           return {
             progress,
             entry,
-            stageEmoji: '🐣',
-            stageName: target ? `激活→${target.name}` : '激活',
+            stageEmoji: ADAPTIVE_PENDING_STAGE.emoji,
+            stageName: target ? `激活→${target.name}` : ADAPTIVE_PENDING_STAGE.name,
             due: { label: '—', urgent: 'none' as const },
             statusLabel: '排队中',
             stubborn: false,
@@ -118,8 +120,8 @@ export default function AdaptivePlanStageBoard({
         return {
           progress,
           entry,
-          stageEmoji: '🥚',
-          stageName: '待启程',
+          stageEmoji: ADAPTIVE_NOT_STARTED_STAGE.emoji,
+          stageName: ADAPTIVE_NOT_STARTED_STAGE.name,
           due: { label: '—', urgent: 'none' as const },
           statusLabel: '未练习',
           stubborn: false,

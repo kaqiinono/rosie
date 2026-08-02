@@ -1,13 +1,35 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
+/**
+ * In-memory mutex replacing the default Web Locks-based `lock` — avoids the
+ * "Lock broken by steal" AbortErrors Web Locks throws when many hooks issue
+ * concurrent Supabase calls on one page, WITHOUT dropping serialization.
+ *
+ * supabase-js calls this to guard token refresh. A no-op passthrough (the
+ * previous implementation) let every concurrent caller trigger its own
+ * `token?grant_type=refresh_token` at once; since GoTrue refresh tokens are
+ * single-use/rotating, only the first succeeds and the rest fail/retry —
+ * a thundering herd that trips GoTrue's rate limit ("Request rate limit
+ * reached") whenever a page mounts many data hooks at once (e.g. entering
+ * math practice from the homepage card).
+ */
+const lockChains = new Map<string, Promise<unknown>>()
+
+async function serialLock<R>(name: string, fn: () => Promise<R>): Promise<R> {
+  const prior = lockChains.get(name) ?? Promise.resolve()
+  // Chain onto prior regardless of its outcome so one failed refresh can't wedge the queue.
+  const run = prior.then(fn, fn)
+  lockChains.set(name, run.catch(() => undefined))
+  return run
+}
+
 const supabaseAuthOptions = {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
-    // Single-tab app — bypass Web Locks to prevent "Lock broken by steal" AbortErrors
-    // when multiple hooks issue concurrent Supabase requests on the same page.
-    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn(),
+    lock: async <R>(name: string, _acquireTimeout: number, fn: () => Promise<R>) =>
+      serialLock(name, fn),
   },
 } as const
 
@@ -272,6 +294,26 @@ export type Database = {
           introduced_on?: string | null
           updated_at?: string
           archived_at?: string | null
+        }
+      }
+      practice_pending_sessions: {
+        Row: {
+          user_id: string
+          kind: string
+          scope_key: string
+          stash: unknown
+          saved_at: string
+        }
+        Insert: {
+          user_id: string
+          kind: string
+          scope_key: string
+          stash: unknown
+          saved_at?: string
+        }
+        Update: {
+          stash?: unknown
+          saved_at?: string
         }
       }
     }

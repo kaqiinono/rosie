@@ -1,6 +1,8 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import type { AnswerCheckResult, Problem } from '@rosie/core'
+import { useClaimSolutionToggle } from '@rosie/math/components/shared/QuestionLayout'
 
 interface NumericAnswerPanelProps {
   problem: Problem
@@ -9,6 +11,8 @@ interface NumericAnswerPanelProps {
   onCheck: () => void
   feedback: AnswerCheckResult | null
   buttonClassName: string
+  /** Extra actions after 检查答案 (e.g. 不会); 查看题解 still comes from QuestionLayout. */
+  trailingActions?: ReactNode
 }
 
 export default function NumericAnswerPanel({
@@ -18,7 +22,10 @@ export default function NumericAnswerPanel({
   onCheck,
   feedback,
   buttonClassName,
+  trailingActions,
 }: NumericAnswerPanelProps) {
+  const contextToggle = useClaimSolutionToggle(true)
+
   return (
     <>
       <div className="mb-3 flex items-center gap-2">
@@ -45,6 +52,8 @@ export default function NumericAnswerPanel({
           >
             检查答案
           </button>
+          {trailingActions}
+          {contextToggle}
         </div>
         {feedback?.message && (
           <div

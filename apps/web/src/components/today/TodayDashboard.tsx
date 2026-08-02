@@ -1,17 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
 import { useAuth } from '@rosie/core'
-import { useWeeklyPlan } from '@rosie/english'
+import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useWordData } from '@rosie/english'
 import { useCalcDaily } from '@rosie/calc'
 import {
-  ChineseProvider,
   ChineseDailyCard,
-  useChineseContext,
-  buildChineseRoadmap,
+  useChineseRoadmapProgress,
   chineseRoute,
 } from '@rosie/chinese'
 import { todayStr } from '@rosie/core'
@@ -216,54 +213,18 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
   )
 }
 
-function useChineseRoadmapProgress() {
-  const {
-    lessons,
-    lessonGroups,
-    masteryMap,
-    isCharDataReady,
-    isCharDataLoading,
-    bookSlug,
-  } = useChineseContext()
-
-  const roadmap = useMemo(
-    () => (isCharDataReady ? buildChineseRoadmap(lessons, lessonGroups, masteryMap, bookSlug) : null),
-    [isCharDataReady, lessons, lessonGroups, masteryMap, bookSlug],
-  )
-  const currentNode = roadmap?.nodes.find((n) => n.state === 'current') ?? null
-  const allDone = isCharDataReady && !currentNode
-  const done = currentNode?.status.correct ?? 0
-  const total = currentNode?.status.total ?? 0
-  const lessonDone = total > 0 && done >= total
-
-  return {
-    bookSlug,
-    isCharDataLoading,
-    isCharDataReady,
-    currentNode,
-    allDone,
-    done,
-    total,
-    lessonDone,
-    hasChinese: isCharDataReady,
-  }
-}
-
 export default function TodayDashboard() {
-  return (
-    <ChineseProvider>
-      <TodayDashboardInner />
-    </ChineseProvider>
-  )
-}
-
-function TodayDashboardInner() {
   const { user } = useAuth()
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
+  const {
+    activePlan: activeAdaptive,
+    summary: adaptiveToday,
+    isLoading: adaptiveLoading,
+  } = useAdaptiveTodayProgress(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
   const calcDaily = useCalcDaily(user)
-  const chinese = useChineseRoadmapProgress()
+  const chinese = useChineseRoadmapProgress(user)
 
   const today = todayStr()
 
@@ -329,17 +290,33 @@ function TodayDashboardInner() {
   const chineseDone = chinese.allDone || chinese.lessonDone
   const chinesePct = chinese.total > 0 ? Math.round((chinese.done / chinese.total) * 100) : chinese.allDone ? 100 : 0
 
-  const isLoading = englishLoading || mathLoading || (chinese.isCharDataLoading && !chinese.isCharDataReady)
+  const isLoading =
+    englishLoading ||
+    mathLoading ||
+    (chinese.isCharDataLoading && !chinese.isCharDataReady) ||
+    (!englishPlan && adaptiveLoading)
 
   if (isLoading) return <LoadingState />
 
   const hasMath = mathPlan && mathProblems.length > 0
-  const hasEnglish = englishPlan && newWordKeys.length > 0
+  const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!activeAdaptive
   const hasChinese = chinese.hasChinese
   const calcDoneCount = calcDaily.todayDone
   const calcTargetCount = calcDaily.todayTarget
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
   const calcAccuracy = calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
+
+  // Active adaptive wins over weekly (same as homepage overview).
+  // Done today → detail/hub; incomplete → practice.
+  const englishHref = activeAdaptive
+    ? adaptiveToday?.allDone
+      ? `/english/words/adaptive/${activeAdaptive.id}`
+      : `/english/words/adaptive/${activeAdaptive.id}/practice`
+    : englishPlan?.id
+      ? englishDone
+        ? `/english/words/weekly/${englishPlan.id}`
+        : `/english/words/weekly/${englishPlan.id}/practice`
+      : '/english/words/daily'
 
   const overviewCards = buildTodayPlanCards({
     calc: {
@@ -348,18 +325,33 @@ function TodayDashboardInner() {
       coins: calcDaily.todayCoins,
       accuracy: calcAccuracy,
       allDone: calcAllDone,
+      href: '/calc/session?mode=daily&start=1',
     },
     english: {
-      doneCount: englishDone ? todayWords.length : 0,
-      total: todayWords.length,
-      lastScore: englishProgress?.lastScore,
-      allDone: englishDone,
-      href: englishPlan?.id ? `/english/words/weekly/${englishPlan.id}` : '/english/words/daily',
+      doneCount: activeAdaptive
+        ? (adaptiveToday?.done ?? 0)
+        : englishDone
+          ? newWordKeys.length
+          : 0,
+      total: activeAdaptive
+        ? (adaptiveToday?.total ?? activeAdaptive.newWordsPerDay)
+        : newWordKeys.length,
+      lastScore: activeAdaptive ? undefined : englishProgress?.lastScore,
+      allDone: activeAdaptive
+        ? (adaptiveToday?.allDone ?? false)
+        : englishDone,
+      href: englishHref,
+      subtitle: activeAdaptive
+        ? adaptiveToday
+          ? `自适应 · ${adaptiveToday.subtitle}`
+          : `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+        : undefined,
     },
     math: {
       done: mathDoneCount,
       total: mathProblems.length,
       allDone: mathAllDone,
+      href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
       done: chinese.allDone ? '✓' : chinese.done,
@@ -371,7 +363,9 @@ function TodayDashboardInner() {
           : (chinese.currentNode?.lessonTitle ?? '当前关卡'),
       pct: chinesePct,
       allDone: chineseDone,
-      href: chineseRoute(chinese.bookSlug, 'daily'),
+      href: chinese.currentNode
+        ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+        : chineseRoute(chinese.bookSlug, 'daily'),
     },
   })
 
@@ -394,7 +388,7 @@ function TodayDashboardInner() {
           </h2>
           {englishPlan?.id && (
             <Link
-              href={`/english/words/weekly/${englishPlan.id}`}
+              href={`/english/words/weekly/${englishPlan.id}/practice`}
               className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
             >
               前往练习 →
@@ -498,7 +492,11 @@ function TodayDashboardInner() {
             今日语文
           </h2>
           <Link
-            href={chineseRoute(chinese.bookSlug, 'daily')}
+            href={
+              chinese.currentNode
+                ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+                : chineseRoute(chinese.bookSlug, 'daily')
+            }
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-amber-700"
           >
             前往学习 →
@@ -518,7 +516,7 @@ function TodayDashboardInner() {
             今日口算挑战
           </h2>
           <Link
-            href={`/calc?count=${calcTargetCount}`}
+            href="/calc/session?mode=daily&start=1"
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-violet-600"
           >
             {calcAllDone ? '再练一组 →' : '前往练习 →'}
@@ -576,10 +574,10 @@ function TodayDashboardInner() {
             今日数学题目
           </h2>
           <Link
-            href="/math/ny/plan"
+            href={mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice'}
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
           >
-            前往做题 →
+            {mathAllDone ? '查看计划 →' : '前往做题 →'}
           </Link>
         </div>
 

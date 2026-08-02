@@ -11,6 +11,25 @@ export const ADAPTIVE_BOX_STAGES = [
 
 export type AdaptiveBoxStage = (typeof ADAPTIVE_BOX_STAGES)[number]
 
+/**
+ * Queue / gate stages before a word enters the Leitner growth chain.
+ * Icons intentionally avoid 🥚/🐣 so the roadmap reads:
+ * 💤 → ⏳ → 🥚 → 🐛 → 🦋 → 🌸 → 🌳 → 👑
+ */
+export const ADAPTIVE_NOT_STARTED_STAGE = {
+  emoji: '💤',
+  name: '待启程',
+  shortLabel: '💤 待启程',
+  hint: '尚未进入计划',
+} as const
+
+export const ADAPTIVE_PENDING_STAGE = {
+  emoji: '⏳',
+  name: '激活',
+  shortLabel: '⏳ 激活',
+  hint: '排队待认读',
+} as const
+
 export const ADAPTIVE_MASTERED_STAGE = {
   emoji: '✨',
   name: '已掌握',
@@ -33,8 +52,8 @@ export function adaptiveBoxStage(box: number | null | undefined): AdaptiveBoxSta
 export function adaptiveStageLabel(row: AdaptivePlanWordProgress | undefined): string {
   if (!row) return '未知'
   if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.shortLabel
-  if (row.status === 'LEARNING_PENDING') return '🐣 激活'
-  if (row.status === 'NOT_STARTED') return '🥚 待启程'
+  if (row.status === 'LEARNING_PENDING') return ADAPTIVE_PENDING_STAGE.shortLabel
+  if (row.status === 'NOT_STARTED') return ADAPTIVE_NOT_STARTED_STAGE.shortLabel
   const stage = adaptiveBoxStage(row.boxIndex)
   return `${stage.shortLabel} · ${stage.hint}`
 }

@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import type { AnswerCheckResult } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
@@ -12,6 +13,7 @@ import { getProblemAnswerMode } from '@rosie/math/utils/problem-answer-mode'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
+import { fetchScratchWorking } from '@rosie/math/utils/math-scratch-db'
 import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
 import ProblemAnswerSection from '@rosie/math/components/shared/ProblemAnswerSection'
 
@@ -19,12 +21,27 @@ type Props = {
   item: PracticeQueueItem
   onAnswerCorrect: () => void
   onAnswerWrong: () => void
+  onAdvance: () => void
+  isLast?: boolean
+}
+
+type AttemptReveal = {
+  problemId: string
+  /** Auto-expand 题解 (e.g. after 不会). */
+  openSolution: boolean
+}
+
+type DontKnowFeedback = {
+  problemId: string
+  result: AnswerCheckResult
 }
 
 export default function PracticeProblemBody({
   item,
   onAnswerCorrect,
   onAnswerWrong,
+  onAdvance,
+  isLast = false,
 }: Props) {
   const { problem, section, lessonId } = item
   const lesson = SEA_LESSON_MAP[lessonId]
@@ -38,12 +55,14 @@ export default function PracticeProblemBody({
     async (correct: boolean, snapshot: unknown) => {
       if (!user) return
       try {
+        // Attach working scratch so plan/detail practice archives the same canvas as 详情页草稿纸
+        const working = await fetchScratchWorking(user.id, problem.id, null)
         await submitPracticeAttempt({
           userId: user.id,
           problem,
           section,
           correct,
-          objects: [],
+          objects: working?.objects ?? [],
           answerSnapshot: snapshot,
           paperId: null,
         })
@@ -73,14 +92,96 @@ export default function PracticeProblemBody({
     },
   )
 
+  // Stick after first real submit so editing the answer does not hide 查看题解 again.
+  const [reveal, setReveal] = useState<AttemptReveal | null>(null)
+  const [dontKnowFeedback, setDontKnowFeedback] = useState<DontKnowFeedback | null>(null)
+  const hasAttempted = reveal?.problemId === problem.id
+  const autoOpenSolution = reveal?.problemId === problem.id && reveal.openSolution
+  const panelFeedback =
+    feedback ?? (dontKnowFeedback?.problemId === problem.id ? dontKnowFeedback.result : null)
+
+  const markAttempted = useCallback(
+    (openSolution = false) => {
+      setReveal({ problemId: problem.id, openSolution })
+    },
+    [problem.id],
+  )
+
+  const submitAndReveal = useCallback(
+    (input: unknown) => {
+      const result = submit(input)
+      if (result.ok || result.message) {
+        setDontKnowFeedback(null)
+        markAttempted(false)
+      }
+      return result
+    },
+    [submit, markAttempted],
+  )
+
+  const checkAndReveal = useCallback(() => {
+    const result = check()
+    if (result.ok || result.message) {
+      setDontKnowFeedback(null)
+      markAttempted(false)
+    }
+    return result
+  }, [check, markAttempted])
+
+  const handleDontKnow = useCallback(() => {
+    if (hasAttempted) return
+    addWrong(problem.id)
+    void persistAttempt(false, { reason: 'dont_know' })
+    onAnswerWrong()
+    setDontKnowFeedback({
+      problemId: problem.id,
+      result: { ok: false, message: '已加入错题集，看看题解吧' },
+    })
+    markAttempted(true)
+  }, [hasAttempted, addWrong, problem.id, persistAttempt, onAnswerWrong, markAttempted])
+
+  const handleAnswerChange = useCallback(
+    (value: string) => {
+      setAnswer(value)
+      setDontKnowFeedback(null)
+      clearFeedback()
+    },
+    [setAnswer, clearFeedback],
+  )
+
+  const handleStateChange = useCallback(() => {
+    clearFeedback()
+    setDontKnowFeedback(null)
+  }, [clearFeedback])
+
   const figure = !isCustomWidget && problem.figureNode ? problem.figureNode : null
 
-  const displayFeedback = feedback
+  const displayFeedback = panelFeedback
     ? {
-        ok: feedback.ok,
-        text: feedback.ok ? '🎉 完全正确！' : feedback.message,
+        ok: panelFeedback.ok,
+        text: panelFeedback.ok ? '🎉 完全正确！' : panelFeedback.message,
       }
     : null
+
+  const usedDontKnow = hasAttempted && autoOpenSolution
+
+  const trailingAction = !hasAttempted ? (
+    <button
+      type="button"
+      onClick={handleDontKnow}
+      className="cursor-pointer rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[13px] font-semibold text-rose-600 transition-all hover:bg-rose-100 active:scale-[0.96]"
+    >
+      不会
+    </button>
+  ) : usedDontKnow ? (
+    <button
+      type="button"
+      onClick={onAdvance}
+      className="cursor-pointer rounded-full bg-app-blue px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(59,130,246,0.3)] transition-all hover:brightness-105 active:scale-[0.96]"
+    >
+      {isLast ? '完成' : '下一题'}
+    </button>
+  ) : null
 
   const question = (
     <div className="flex flex-col gap-1.5">
@@ -114,31 +215,33 @@ export default function PracticeProblemBody({
   const solution = <ProblemSolutionPanel problem={problem} variant="amber" />
 
   const answerDom = (
-    <>
-      <ProblemAnswerSection
-        problem={problem}
-        answer={answer}
-        onAnswerChange={setAnswer}
-        feedback={feedback}
-        onSubmit={submit}
-        onCheck={check}
-        onStateChange={clearFeedback}
-        buttonClassName="bg-app-blue shadow-[0_3px_10px_rgba(59,130,246,0.3)]"
-        puzzleWrapperClassName="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-3.5"
-      />
-      <div className="mt-3 flex justify-end">
-        <FavoriteHeart problemId={problem.id} size="sm" />
-      </div>
-    </>
+    <ProblemAnswerSection
+      problem={problem}
+      answer={answer}
+      onAnswerChange={handleAnswerChange}
+      feedback={panelFeedback}
+      onSubmit={submitAndReveal}
+      onCheck={checkAndReveal}
+      onStateChange={handleStateChange}
+      buttonClassName="bg-app-blue shadow-[0_3px_10px_rgba(59,130,246,0.3)]"
+      puzzleWrapperClassName="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-3.5"
+      trailingActions={trailingAction}
+    />
   )
 
   return (
     <div className="practice-overlay-enter">
-      <div className="mb-3 text-[15px] font-bold text-text-primary">{problem.title}</div>
+      <div className="mb-3 flex items-center gap-2">
+        <div className="min-w-0 flex-1 text-[15px] font-bold text-text-primary">{problem.title}</div>
+        <FavoriteHeart problemId={problem.id} size="sm" />
+      </div>
       <QuestionLayout
         question={question}
         solution={solution}
         answer={answerDom}
+        solutionAvailable={hasAttempted}
+        showSolutionToggle={!usedDontKnow}
+        defaultSolutionOpen={autoOpenSolution}
         problemId={problem.id}
         problem={problem}
       />

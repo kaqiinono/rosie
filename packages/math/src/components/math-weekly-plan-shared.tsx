@@ -7,6 +7,8 @@ import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { MATH_PLAN_SECTIONS, planEndDate } from '@rosie/math/utils/math-helpers'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
+import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
 import { todayStr } from '@rosie/core'
 import { lessonDisplayLabel, lessonDisplayNum } from '@rosie/math/utils/lesson-grade'
 import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
@@ -785,6 +787,8 @@ export function ProblemCard({
   isReview,
   isWrong,
   onPractice,
+  problemSets,
+  hasDraft,
 }: {
   prob: MathPlanProblem
   done: boolean
@@ -792,11 +796,16 @@ export function ProblemCard({
   isWrong?: boolean
   /** When set,「做题」starts immersive practice instead of navigating to detail. */
   onPractice?: () => void
+  /** Resolve live Problem for draft pad (plan page). */
+  problemSets?: Record<string, ProblemSet>
+  /** Batched draft presence from plan page — avoids per-card fetches. */
+  hasDraft?: boolean
 }) {
   const { user } = useAuth()
   const { solveCount } = useMathSolved(user)
   const practiceCount = solveCount[prob.problemId] ?? 0
   const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
+  const draftProblem = problemSets ? resolveMathPlanProblem(prob, problemSets) : undefined
 
   return (
     <div
@@ -879,6 +888,15 @@ export function ProblemCard({
           做题 ✨
         </Link>
       )}
+      {done && (
+        <PracticeViewDraftButton
+          problem={draftProblem ?? undefined}
+          problemId={prob.problemId}
+          section={prob.section}
+          hasDraft={hasDraft}
+          className="shrink-0"
+        />
+      )}
       {done && <span className="animate-star-pop inline-block shrink-0 text-[20px]">⭐</span>}
       <FavoriteHeart problemId={prob.problemId} size="sm" />
     </div>
@@ -894,6 +912,8 @@ export function WeeklyLessonSection({
   isDone,
   onSkip,
   onPractice,
+  problemSets,
+  hasDraft,
 }: {
   problem: MathPlanProblem
   lessonId: string
@@ -903,6 +923,8 @@ export function WeeklyLessonSection({
   isDone: boolean
   onSkip: () => void
   onPractice?: () => void
+  problemSets?: Record<string, ProblemSet>
+  hasDraft?: boolean
 }) {
   const sc = SECTION_COLOR[problem.section] ?? SECTION_COLOR.lesson
 
@@ -984,7 +1006,15 @@ export function WeeklyLessonSection({
 
         {/* Actions */}
         {isDone ? (
-          <span className="animate-star-pop inline-block shrink-0 text-[20px]">⭐</span>
+          <div className="flex shrink-0 items-center gap-2">
+            <PracticeViewDraftButton
+              problem={problemSets ? resolveMathPlanProblem(problem, problemSets) ?? undefined : undefined}
+              problemId={problem.problemId}
+              section={problem.section}
+              hasDraft={hasDraft}
+            />
+            <span className="animate-star-pop inline-block text-[20px]">⭐</span>
+          </div>
         ) : (
           <div className="flex shrink-0 items-center gap-2">
             {onPractice ? (
@@ -1024,10 +1054,14 @@ export function OptionalSection({
   problems,
   doneKeys,
   onPractice,
+  problemSets,
+  draftProblemIds,
 }: {
   problems: MathPlanProblem[]
   doneKeys: Set<string>
   onPractice?: (prob: MathPlanProblem) => void
+  problemSets?: Record<string, ProblemSet>
+  draftProblemIds?: Set<string>
 }) {
   const [expanded, setExpanded] = useState(false)
   const doneCount = problems.filter((p) => doneKeys.has(p.key)).length
@@ -1063,6 +1097,8 @@ export function OptionalSection({
               key={prob.key}
               prob={prob}
               done={doneKeys.has(prob.key)}
+              problemSets={problemSets}
+              hasDraft={draftProblemIds?.has(prob.problemId) ?? false}
               onPractice={
                 doneKeys.has(prob.key) || !onPractice ? undefined : () => onPractice(prob)
               }

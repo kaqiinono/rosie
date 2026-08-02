@@ -1,3 +1,4 @@
+import { isUnfinishedSameDayActivation } from './adaptivePlanBoxes'
 import type {
   AdaptivePlanMode,
   AdaptivePlanWordProgress,
@@ -170,7 +171,16 @@ export function buildDailyTask(
   today: string,
 ): AdaptiveDailyTask {
   const mode = resolveMode(plan, rows, today)
-  const dueReviewKeys = pickDueReviewKeys(rows, today, plan.reviewCap)
+  // New words activated earlier today but never settled (child left mid-round)
+  // must stay on today's plate — preferably as activateKeys so study → 闯关
+  // runs again, not buried as "due tomorrow".
+  const unfinishedKeys = activeRows(rows)
+    .filter((row) => isUnfinishedSameDayActivation(row, today))
+    .map((row) => row.wordKey)
+  const unfinishedSet = new Set(unfinishedKeys)
+  const dueReviewKeys = pickDueReviewKeys(rows, today, plan.reviewCap).filter(
+    (key) => !unfinishedSet.has(key),
+  )
 
   if (mode === 'boss') {
     return {
@@ -183,20 +193,26 @@ export function buildDailyTask(
   }
 
   if (mode === 'review_only') {
+    // Can't pull brand-new words, but unfinished same-day activations still need practice.
+    const reviewKeys = [...unfinishedKeys, ...dueReviewKeys].slice(0, plan.reviewCap)
     return {
       mode,
-      reviewKeys: dueReviewKeys,
-      reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
+      reviewKeys,
+      reviewBatchKeys: reviewKeys.slice(0, plan.reviewBatchSize),
       activateKeys: [],
       bossKeys: [],
     }
   }
 
-  // §4.3: newWordsPerDay is a PER-DAY quota. Same-day repeat rounds must not
-  // pull a fresh batch each time — deduct words already introduced today.
+  // newWordsPerDay is a per-round batch size + daily *goal*, not a hard ceiling.
+  // After today's goal is met, another round can still pull a fresh batch so the
+  // child can get ahead (提前学). Unfinished mid-round activations fill the
+  // batch first so「开始」resumes them instead of piling on more new words.
   const perDay = Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10
-  const remainingToday = Math.max(0, perDay - countActivatedToday(rows, today))
-  const activateKeys = pickActivations(rows, remainingToday).map(row => row.wordKey)
+  const batchSize = Math.max(1, Math.floor(perDay))
+  const freshSlots = Math.max(0, batchSize - unfinishedKeys.length)
+  const freshKeys = pickActivations(rows, freshSlots).map((row) => row.wordKey)
+  const activateKeys = [...unfinishedKeys, ...freshKeys]
 
   // Reviews are due-date only — never pull future-box words forward on idle days
   // (that collapses Leitner intervals, e.g. Box5 7-day gap).
@@ -206,6 +222,80 @@ export function buildDailyTask(
     reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
     activateKeys,
     bossKeys: [],
+  }
+}
+
+/**
+ * Homepage / today-card progress for an adaptive plan's **mandatory** daily work.
+ *
+ * - New-word progress: settled activations today (「开始」but not settled → 0).
+ * - Due reviews / Boss pack count toward `total` until cleared, so the card never
+ *   shows e.g. 5/5 while reviews remain (done + remaining === total).
+ * - Meeting the goal does not block 提前学; `allDone` ignores ahead batches.
+ */
+export function summarizeAdaptiveTodayProgress(
+  plan: AdaptiveWordPlan,
+  rows: AdaptivePlanWordProgress[],
+  today: string,
+): {
+  done: number
+  total: number
+  allDone: boolean
+  activateCount: number
+  reviewCount: number
+  unfinishedCount: number
+  subtitle: string
+} {
+  const perDay = Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10
+  const newGoal = Math.max(1, Math.floor(perDay))
+  const unfinishedCount = activeRows(rows).filter((row) =>
+    isUnfinishedSameDayActivation(row, today),
+  ).length
+  const activated = countActivatedToday(rows, today)
+  const settled = Math.max(0, activated - unfinishedCount)
+  const task = buildDailyTask(plan, rows, today)
+  const goalMet = settled >= newGoal && unfinishedCount === 0
+  // Goal met + no mandatory review/boss work. Extra activateKeys (提前学) do
+  // not keep the card in an incomplete state.
+  const allDone =
+    goalMet &&
+    unfinishedCount === 0 &&
+    task.reviewKeys.length === 0 &&
+    task.mode !== 'boss'
+
+  const newDone = Math.min(newGoal, settled)
+  const newRemaining = Math.max(0, newGoal - newDone)
+  const dueRemaining =
+    task.mode === 'boss' ? task.bossKeys.length : task.reviewKeys.length
+
+  // When finished, show the new-word goal as the completed quota. While work
+  // remains, keep done + remaining === total (reviews inflate the denominator).
+  const done = allDone ? newGoal : newDone
+  const total = allDone ? newGoal : newDone + newRemaining + dueRemaining
+
+  const canAhead = allDone && task.activateKeys.length > 0
+
+  let subtitle: string
+  if (canAhead) {
+    subtitle = '今日目标已完成，可提前继续学'
+  } else if (allDone) {
+    subtitle = '今日任务已完成'
+  } else if (unfinishedCount > 0) {
+    subtitle = `还有 ${unfinishedCount} 个新词待练完`
+  } else if (task.mode === 'boss') {
+    subtitle = `Boss 挑战 · ${task.bossKeys.length} 词`
+  } else {
+    subtitle = `今日新学 ${task.activateKeys.length} · 复习 ${task.reviewKeys.length}`
+  }
+
+  return {
+    done,
+    total,
+    allDone,
+    activateCount: task.activateKeys.length,
+    reviewCount: task.reviewKeys.length,
+    unfinishedCount,
+    subtitle,
   }
 }
 

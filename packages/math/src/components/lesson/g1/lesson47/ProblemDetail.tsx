@@ -39,7 +39,7 @@ export default function ProblemDetail({
   const level = getMasteryLevel(count)
   const interactive = isInteractiveProblem(problem)
 
-  const { answer, setAnswer, feedback, submit, check, clearFeedback } = useProblemAnswer(problem, {
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(problem, {
     handleSolve,
     addWrong,
   })
@@ -102,6 +102,7 @@ export default function ProblemDetail({
         />
       )}
       <QuestionLayout
+        solutionAvailable={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}

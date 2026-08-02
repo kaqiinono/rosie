@@ -1,5 +1,6 @@
 import type { MathPlanProblem, ProblemSet, Problem } from '@rosie/core'
 import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
+import type { MathPracticeQueueItemRef } from '@rosie/math/utils/practice-queue-snapshot'
 import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
 
 const SECTIONS = ['lesson', 'homework', 'pretest', 'workbook', 'supplement'] as const
@@ -15,24 +16,41 @@ function detailHref(lessonId: string, section: string, index: number): string {
   return `${base}/${section}/${index}`
 }
 
+export function findProblemInSets(
+  problemSets: Record<string, ProblemSet>,
+  lessonId: string,
+  problemId: string,
+): { problem: Problem; section: string; index: number } | null {
+  const ps = problemSets[lessonId]
+  if (!ps) return null
+  for (const section of SECTIONS) {
+    const list = sectionProblems(ps, section)
+    const index = list.findIndex((p) => p.id === problemId)
+    if (index >= 0) return { problem: list[index], section, index }
+  }
+  return null
+}
+
+/** Resolve a stored plan row to the live Problem (for draft pad / practice). */
+export function resolveMathPlanProblem(
+  mp: MathPlanProblem,
+  problemSets: Record<string, ProblemSet>,
+): Problem | null {
+  return findProblemInSets(problemSets, mp.lessonId, mp.problemId)?.problem ?? null
+}
+
 export function mathPlanProblemToQueueItem(
   mp: MathPlanProblem,
   problemSets: Record<string, ProblemSet>,
 ): PracticeQueueItem | null {
-  const ps = problemSets[mp.lessonId]
-  if (!ps) return null
-  for (const section of SECTIONS) {
-    const found = sectionProblems(ps, section).find((p) => p.id === mp.problemId)
-    if (found) {
-      return {
-        problem: found,
-        section: mp.section,
-        lessonId: mp.lessonId,
-        detailHref: detailHref(mp.lessonId, mp.section, mp.index),
-      }
-    }
+  const found = findProblemInSets(problemSets, mp.lessonId, mp.problemId)
+  if (!found) return null
+  return {
+    problem: found.problem,
+    section: mp.section,
+    lessonId: mp.lessonId,
+    detailHref: detailHref(mp.lessonId, found.section, found.index),
   }
-  return null
 }
 
 export function mathPlanProblemsToQueueItems(
@@ -46,6 +64,25 @@ export function mathPlanProblemsToQueueItems(
     if (!item || seen.has(item.problem.id)) continue
     seen.add(item.problem.id)
     items.push(item)
+  }
+  return items
+}
+
+/** Rebuild queue items from a sessionStorage snapshot (problem refs only). */
+export function rehydratePracticeQueueItems(
+  refs: MathPracticeQueueItemRef[],
+  problemSets: Record<string, ProblemSet>,
+): PracticeQueueItem[] {
+  const items: PracticeQueueItem[] = []
+  for (const ref of refs) {
+    const found = findProblemInSets(problemSets, ref.lessonId, ref.problemId)
+    if (!found) continue
+    items.push({
+      problem: found.problem,
+      section: ref.section || found.section,
+      lessonId: ref.lessonId,
+      detailHref: ref.detailHref || detailHref(ref.lessonId, found.section, found.index),
+    })
   }
   return items
 }

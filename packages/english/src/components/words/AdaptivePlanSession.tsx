@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { QuizQuestion, WordEntry } from '@rosie/core'
-import { supabase, todayStr, useAuth, useImmersive } from '@rosie/core'
+import { supabase, todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { StarProgressBar, useStarHud } from '@rosie/rewards'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
@@ -28,10 +28,13 @@ import type {
 import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
 import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
 import {
+  ADAPTIVE_PENDING_KIND,
   ADAPTIVE_SESSION_SNAPSHOT_VERSION,
-  clearAdaptiveSessionSnapshot,
-  readAdaptiveSessionSnapshot,
+  clearAdaptivePendingEverywhere,
+  resolveAdaptiveSessionSnapshot,
   writeAdaptiveSessionSnapshot,
+  wrapAdaptiveEnvelope,
+  type AdaptiveSessionSnapshot,
   type AdaptiveSnapshotPhase,
 } from '../../utils/adaptivePlanSessionSnapshot'
 import { adaptiveStageLabel } from '../../utils/adaptivePlanStages'
@@ -50,6 +53,8 @@ import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
 type AdaptivePlanSessionProps = {
   planId: string
   onBack: () => void
+  /** Practice route (`/adaptive/[id]/practice`): enter and start this round immediately */
+  autoStart?: boolean
 }
 
 type Phase = 'hub' | 'review' | 'study' | 'final' | 'boss' | 'boss_sink' | 'done'
@@ -84,6 +89,8 @@ type RoundSummary = {
 
 const BOSS_PASS_PCT = 85
 const BOSS_FORCE_UNLOCK_STREAK = 3
+/** How long the loading screen waits before offering a manual retry. */
+const LOAD_STALL_MS = 8000
 
 function uniqueKeys(keys: string[]): string[] {
   return [...new Set(keys)]
@@ -232,7 +239,7 @@ async function upsertMasteryPatches(
   if (error) throw error
 }
 
-export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSessionProps) {
+export default function AdaptivePlanSession({ planId, onBack, autoStart = false }: AdaptivePlanSessionProps) {
   const { user } = useAuth()
   const { vocab, masteryMap } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
@@ -240,6 +247,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const {
     plans,
     isLoading: plansLoading,
+    error: plansError,
+    reloadPlans,
     loadProgress,
     saveProgressBatch,
     updatePlan,
@@ -261,6 +270,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const [score, setScore] = useState(0)
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [settling, setSettling] = useState(false)
+  const [isStashing, setIsStashing] = useState(false)
+  const [stashToast, setStashToast] = useState<string | null>(null)
   // Set when remote saves fail during settle — done screen offers a retry.
   const [settleFailed, setSettleFailed] = useState<'normal' | 'boss' | null>(null)
   const [activationApplied, setActivationApplied] = useState(false)
@@ -314,18 +325,140 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   const loadGenRef = useRef(0)
   const sessionStartedRef = useRef(false)
   const loadedPlanIdRef = useRef<string | null>(null)
+  const autoStartDoneRef = useRef(false)
+  /** A same-day snapshot exists but vocab wasn't ready to rebuild it. */
+  const unappliedSnapshotRef = useRef(false)
+  // Keep latest vocab/setIsImmersive out of the load-effect dep list so a
+  // background vocab refresh can't cancel an in-flight load and strand the spinner.
+  const vocabRef = useRef(vocab)
+  vocabRef.current = vocab
+  const setIsImmersiveRef = useRef(setIsImmersive)
+  setIsImmersiveRef.current = setIsImmersive
+
+  useEffect(() => {
+    if (!stashToast) return
+    const timer = window.setTimeout(() => setStashToast(null), 3500)
+    return () => window.clearTimeout(timer)
+  }, [stashToast])
+
+  const buildCurrentAdaptiveSnapshot = useCallback((): AdaptiveSessionSnapshot | null => {
+    if (!plan || phase === 'hub' || phase === 'done') return null
+    return {
+      version: ADAPTIVE_SESSION_SNAPSHOT_VERSION,
+      planId: plan.id,
+      date: today,
+      phase: phase as AdaptiveSnapshotPhase,
+      quizSlots,
+      curQ,
+      score,
+      reviewCursor,
+      reviewDoneKeys: [...reviewDoneKeys],
+      studyIdx,
+      activationApplied,
+      newStudyDone,
+      starsAwarded: starsAwardedThisRoundRef.current,
+      roundActivateKeys:
+        roundActivateKeysRef.current.length > 0 ? roundActivateKeysRef.current : activateKeys,
+      roundReviewKeys: roundReviewKeysRef.current,
+      reviewOutcomes: reviewOutcomesRef.current,
+      finalOutcomes: finalOutcomesRef.current,
+      bossFirstPassOutcomes: bossFirstPassOutcomesRef.current,
+      bossSinkOutcomes: bossSinkOutcomesRef.current,
+      finalPassWrongKeys: [...finalPassWrongKeysRef.current],
+      bossPassWrongKeys: [...bossPassWrongKeysRef.current],
+      bossSinkWrongKeys: [...bossSinkWrongKeysRef.current],
+    }
+  }, [
+    activateKeys,
+    activationApplied,
+    curQ,
+    newStudyDone,
+    phase,
+    plan,
+    quizSlots,
+    reviewCursor,
+    reviewDoneKeys,
+    score,
+    studyIdx,
+    today,
+  ])
+
+  const { flushCloudNow } = usePracticePendingLifecycle({
+    enabled: phase !== 'hub' && phase !== 'done' && Boolean(plan?.id),
+    userId: user?.id,
+    kind: ADAPTIVE_PENDING_KIND,
+    scopeKey: planId,
+    getEnvelope: () => {
+      const snap = buildCurrentAdaptiveSnapshot()
+      return snap ? wrapAdaptiveEnvelope(snap) : null
+    },
+  })
+
+  const backToHub = useCallback(async () => {
+    await flushCloudNow()
+    setIsImmersive(false)
+    setPhase('hub')
+  }, [flushCloudNow, setIsImmersive])
+
+  const stashSession = useCallback(async () => {
+    if (!plan) return
+    setIsStashing(true)
+    try {
+      const synced = await flushCloudNow()
+      setStashToast(
+        synced ? '已暂存到云端，换设备也可继续' : '已暂存在本机，云端备份失败，可稍后在首页重试',
+      )
+      setIsImmersive(false)
+      setPhase('hub')
+    } finally {
+      setIsStashing(false)
+    }
+  }, [plan, flushCloudNow, setIsImmersive])
 
   useEffect(() => {
     sessionStartedRef.current = false
     loadedPlanIdRef.current = null
+    autoStartDoneRef.current = false
+    unappliedSnapshotRef.current = false
     setLoadError(null)
     setRestoredActivateKeys(null)
   }, [planId])
 
+  // Row loading only counts while there IS a plan to load rows for: when the
+  // list resolves without this id (deleted / archived / list fetch failed)
+  // nothing ever clears `isLoadingRows`, and the page would sit on「加载中…」
+  // forever instead of reaching the not-found screen.
+  const isLoading = plansLoading || (sourcePlan != null && isLoadingRows)
+
+  const retryLoad = useCallback(() => {
+    // Orphan any in-flight load so its late resolve can't clear the new one.
+    loadGenRef.current += 1
+    loadedPlanIdRef.current = null
+    setLoadError(null)
+    setPlan(null)
+    setIsLoadingRows(true)
+    void reloadPlans()
+  }, [reloadPlans])
+
+  // A Supabase request that never settles (dropped connection, suspended tab)
+  // would otherwise leave the page on a spinner with no way out.
+  const [loadingStalled, setLoadingStalled] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading) {
+      setLoadingStalled(false)
+      return
+    }
+    const timer = window.setTimeout(() => setLoadingStalled(true), LOAD_STALL_MS)
+    return () => window.clearTimeout(timer)
+  }, [isLoading])
+
   useEffect(() => {
     if (plansLoading || !sourcePlan) return
-    // Only full-reset load once per planId (or after explicit planId change).
-    if (loadedPlanIdRef.current === sourcePlan.id && plan) return
+    // Dedup by plan id only — do NOT also require `plan` state. setPlan used to
+    // be in this effect's deps, which re-ran (and cancelled) the in-flight load
+    // the moment state was committed, stranding isLoadingRows at true.
+    if (loadedPlanIdRef.current === sourcePlan.id) return
 
     const planSnapshot = sourcePlan
     const gen = ++loadGenRef.current
@@ -339,6 +472,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         if (cancelled || gen !== loadGenRef.current) return
 
         if (loadedRows.length === 0) {
+          loadedPlanIdRef.current = planSnapshot.id
           setPlan(planSnapshot)
           setRows([])
           setTask(null)
@@ -355,16 +489,31 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
             ? planSnapshot
             : { ...planSnapshot, mode: dailyTask.mode }
 
+        // Resume an interrupted round from localStorage + cloud (same day only).
+        // Requires vocab to build questions; without it fall back to hub and
+        // keep the snapshot for when vocab arrives (see effect below).
+        //
+        // Commit NOTHING before this await that would re-trigger this effect
+        // (plan/rows/task). A mid-await cancel + bail used to leave the page on
+        // 「加载中…」forever.
+        const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
+        // Another network hop happened above — bail before touching app-wide state
+        // (setIsImmersive in particular would follow the user to the next page).
+        // Safe now: nothing was committed, so the re-run redoes the whole load.
+        if (cancelled || gen !== loadGenRef.current) return
+
+        const vocabNow = vocabRef.current
         loadedPlanIdRef.current = planSnapshot.id
         setPlan(modePlan)
         setRows(loadedRows)
         setTask(dailyTask)
-
-        // Resume an interrupted round from sessionStorage (same day only).
-        // Requires vocab to build questions; without it fall back to hub and
-        // keep the snapshot for the next mount.
-        const snap = readAdaptiveSessionSnapshot(planSnapshot.id, today)
-        if (snap && vocab.length > 0) {
+        // Detail hub must stay on hub — only the practice route resumes a stash
+        // (otherwise「已完成」card → detail still drops into mid-round practice).
+        // A snapshot we couldn't apply must still block autoStart, or the fresh
+        // round it starts will overwrite the stash before the child sees it.
+        const canResumeSnap = Boolean(autoStart && snap && vocabNow.length > 0)
+        unappliedSnapshotRef.current = Boolean(autoStart && snap && vocabNow.length === 0)
+        if (canResumeSnap && snap) {
           setPhase(snap.phase)
           setReviewCursor(snap.reviewCursor)
           setReviewDoneKeys(new Set(snap.reviewDoneKeys))
@@ -390,7 +539,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
           bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
           sessionStartedRef.current = true
-          setIsImmersive(snap.phase !== 'study')
+          setIsImmersiveRef.current(snap.phase !== 'study')
           setIsLoadingRows(false)
           if (dailyTask.mode !== planSnapshot.mode) {
             void updatePlan(modePlan)
@@ -442,7 +591,9 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     return () => {
       cancelled = true
     }
-  }, [loadProgress, plansLoading, sourcePlan, plan, today, updatePlan, vocab, setIsImmersive])
+    // Intentionally omit plan/vocab/setIsImmersive: committing those mid-load
+    // used to cancel this effect and leave isLoadingRows stuck true.
+  }, [loadProgress, plansLoading, sourcePlan, today, updatePlan, user?.id])
 
   // Persist the in-progress round so a refresh / accidental exit can resume.
   // Cleared only when a round settles successfully; kept on settle failure so
@@ -450,50 +601,13 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
   useEffect(() => {
     if (!plan) return
     if (phase === 'done') {
-      if (settleFailed == null) clearAdaptiveSessionSnapshot(plan.id)
+      if (settleFailed == null) void clearAdaptivePendingEverywhere(user?.id, plan.id)
       return
     }
     if (phase === 'hub') return
-    writeAdaptiveSessionSnapshot({
-      version: ADAPTIVE_SESSION_SNAPSHOT_VERSION,
-      planId: plan.id,
-      date: today,
-      phase: phase as AdaptiveSnapshotPhase,
-      quizSlots,
-      curQ,
-      score,
-      reviewCursor,
-      reviewDoneKeys: [...reviewDoneKeys],
-      studyIdx,
-      activationApplied,
-      newStudyDone,
-      starsAwarded: starsAwardedThisRoundRef.current,
-      roundActivateKeys:
-        roundActivateKeysRef.current.length > 0 ? roundActivateKeysRef.current : activateKeys,
-      roundReviewKeys: roundReviewKeysRef.current,
-      reviewOutcomes: reviewOutcomesRef.current,
-      finalOutcomes: finalOutcomesRef.current,
-      bossFirstPassOutcomes: bossFirstPassOutcomesRef.current,
-      bossSinkOutcomes: bossSinkOutcomesRef.current,
-      finalPassWrongKeys: [...finalPassWrongKeysRef.current],
-      bossPassWrongKeys: [...bossPassWrongKeysRef.current],
-      bossSinkWrongKeys: [...bossSinkWrongKeysRef.current],
-    })
-  }, [
-    activateKeys,
-    activationApplied,
-    curQ,
-    newStudyDone,
-    phase,
-    plan,
-    quizSlots,
-    reviewCursor,
-    reviewDoneKeys,
-    score,
-    settleFailed,
-    studyIdx,
-    today,
-  ])
+    const snap = buildCurrentAdaptiveSnapshot()
+    if (snap) writeAdaptiveSessionSnapshot(snap)
+  }, [buildCurrentAdaptiveSnapshot, phase, plan, settleFailed, user?.id])
 
   const buildSlots = useCallback(
     (keys: string[], opts?: { preferLight?: boolean; bossTier?: number }): QuizSlot[] => {
@@ -671,8 +785,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         }
       }
 
-      const noteIfMore = '今天还可以再练一轮：错词会继续出现，也可以继续拉新词。'
-      const noteIfDone = '今天暂无更多到期复习或可拉新词，明天再来继续推进。'
+      const noteIfMore = '今天还可以再练一轮：错词会继续出现，也可以提前学下一批新词。'
+      const noteIfDone = '今天没有到期复习，也没有更多可学的新词了。'
       const starsEarned = starsAwardedThisRoundRef.current
       const activateSnapshot = [...roundActivateKeysRef.current]
       const reviewSnapshot = [...roundReviewKeysRef.current]
@@ -939,10 +1053,11 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       return
     }
 
-    // activateKeys exist in plan but vocab not loaded / key mismatch — still try final quiz by key
+    // activateKeys exist but none resolve in vocab yet — do NOT open an empty
+    // final quiz (that sticks on「题目准备中…»). Leave hub; autoStart retries
+    // once vocab arrives. Manual start can tap again after the library loads.
     if ((task?.activateKeys.length ?? 0) > 0 && activateEntries.length === 0) {
-      void applyActivations()
-      startFinalQuiz(task!.activateKeys)
+      sessionStartedRef.current = false
       return
     }
 
@@ -1006,6 +1121,14 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         setPhase('done')
         return
       }
+      const bossSlots = buildSlots(task.bossKeys, {
+        bossTier: plan?.stats.bossQuestionTier ?? 1,
+      })
+      if (bossSlots.length === 0) {
+        // Vocab still loading — stay on hub; autoStart retries when ready.
+        sessionStartedRef.current = false
+        return
+      }
       startBossQuiz(task.bossKeys, 'boss')
       return
     }
@@ -1013,7 +1136,11 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       const firstKeys = dayReviewKeys.slice(0, Math.max(reviewCursor, batchSize))
       const slots = buildSlots(firstKeys, { preferLight: true })
       if (slots.length === 0) {
-        // Review keys present but no quiz slots (vocab miss) — skip to study
+        if (vocab.length === 0) {
+          sessionStartedRef.current = false
+          return
+        }
+        // Vocab ready but keys missing from library — skip to study
         startStudyOrFinal()
         return
       }
@@ -1026,13 +1153,27 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     batchSize,
     buildSlots,
     dayReviewKeys,
+    plan?.stats.bossQuestionTier,
     reviewCursor,
     settling,
     startBossQuiz,
     startReview,
     startStudyOrFinal,
     task,
+    vocab.length,
   ])
+
+  // Practice entry (`autoStart`): jump into this round once plan rows AND vocab are ready.
+  // Starting before vocab loads builds zero quiz slots → stuck on「题目准备中…」.
+  useEffect(() => {
+    if (!autoStart || autoStartDoneRef.current) return
+    if (isLoadingRows || !task || settling) return
+    if (vocab.length === 0) return
+    if (phase !== 'hub') return
+    if (sessionStartedRef.current || unappliedSnapshotRef.current) return
+    autoStartDoneRef.current = true
+    beginSession()
+  }, [autoStart, isLoadingRows, task, settling, phase, beginSession, vocab.length])
 
   const currentQuestion = useMemo<QuizQuestion | null>(() => {
     const slot = quizSlots[curQ]
@@ -1040,6 +1181,54 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     const entry = findWordByKey(vocab, slot.key)
     return entry ? { word: entry, type: slot.type } : null
   }, [curQ, quizSlots, vocab])
+
+  // Recover a race that already entered quiz/final with empty slots (vocab was
+  // empty at beginSession). Rebuild when vocab arrives; otherwise return to hub.
+  useEffect(() => {
+    if (phase !== 'review' && phase !== 'final' && phase !== 'boss' && phase !== 'boss_sink') {
+      return
+    }
+    if (quizSlots.length > 0 && currentQuestion) return
+    if (vocab.length === 0 || !task) return
+
+    const keys =
+      phase === 'boss' || phase === 'boss_sink'
+        ? task.bossKeys
+        : phase === 'review'
+          ? dayReviewKeys.slice(0, Math.max(reviewCursor, batchSize))
+          : uniqueKeys([
+              ...activateKeys,
+              ...[...collapseSessionOutcomes(reviewOutcomesRef.current)]
+                .filter(([, correct]) => !correct)
+                .map(([key]) => key),
+            ])
+    const slots = buildSlots(keys, {
+      preferLight: phase === 'review',
+      bossTier: phase === 'boss' || phase === 'boss_sink' ? plan?.stats.bossQuestionTier : undefined,
+    })
+    if (slots.length > 0) {
+      setQuizSlots(slots)
+      setCurQ(0)
+      return
+    }
+
+    setPhase('hub')
+    setIsImmersive(false)
+    sessionStartedRef.current = false
+  }, [
+    activateKeys,
+    batchSize,
+    buildSlots,
+    currentQuestion,
+    dayReviewKeys,
+    phase,
+    plan?.stats.bossQuestionTier,
+    quizSlots.length,
+    reviewCursor,
+    setIsImmersive,
+    task,
+    vocab.length,
+  ])
 
   const quizOptions = useMemo(() => {
     if (!currentQuestion) return []
@@ -1157,10 +1346,33 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
     allowRetry: phase !== 'boss' && phase !== 'boss_sink',
   })
 
-  if (plansLoading || isLoadingRows) {
+  if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-[var(--wm-text-dim)]">
-        加载中…
+      <div className="mx-auto flex min-h-[60vh] max-w-[420px] flex-col items-center justify-center gap-3 px-4 text-center">
+        <div className="text-sm text-[var(--wm-text-dim)]">加载中…</div>
+        {loadingStalled && (
+          <>
+            <div className="text-[.75rem] font-bold text-[var(--wm-text-dim)]">
+              网络似乎不太顺畅，计划数据还没回来。
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={retryLoad}
+                className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
+              >
+                重新加载
+              </button>
+              <button
+                type="button"
+                onClick={onBack}
+                className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
+              >
+                ← 返回
+              </button>
+            </div>
+          </>
+        )}
       </div>
     )
   }
@@ -1203,14 +1415,31 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
 
   if (!plan || !task) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <div className="text-sm text-[var(--wm-text-dim)]">自适应计划不存在或已删除</div>
-        <button
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-        >
-          ← 返回
-        </button>
+      <div className="mx-auto flex min-h-[60vh] max-w-[460px] flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="text-sm text-[var(--wm-text-dim)]">
+          {plansError ? '计划列表加载失败' : '自适应计划不存在或已删除'}
+        </div>
+        {plansError != null && (
+          <div className="text-[.75rem] font-bold text-[var(--wm-text-dim)]">
+            没能读到计划列表，请检查网络后重试。
+            {plansError instanceof Error ? `（${plansError.message}）` : ''}
+          </div>
+        )}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={retryLoad}
+            className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
+          >
+            重试
+          </button>
+          <button
+            onClick={onBack}
+            className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
+          >
+            ← 返回
+          </button>
+        </div>
       </div>
     )
   }
@@ -1296,7 +1525,7 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
         studyDefOnly={studyDefOnly}
         onStudyDefOnlyChange={setStudyDefOnly}
         isImmersive={isImmersive}
-        onExitImmersive={() => setIsImmersive(false)}
+        onExitImmersive={() => void flushCloudNow().then(() => setIsImmersive(false))}
         progressGradientClasses="from-[#60a5fa] via-[#a78bfa] to-[#f0abfc]"
         nextButtonGradientClasses="from-[#2563eb] to-[#a855f7]"
         nextButtonShadowClass="shadow-[0_3px_12px_rgba(96,165,250,.35)]"
@@ -1305,7 +1534,9 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
             新学
           </span>
         }
-        onBack={() => setPhase('hub')}
+        onBack={() => void backToHub()}
+        onStash={() => void stashSession()}
+        isStashing={isStashing}
         onPrev={() => setStudyIdx((idx) => Math.max(0, idx - 1))}
         onNext={() => {
           setNewStudyDone((done) => Math.max(done, studyIdx + 1))
@@ -1331,9 +1562,8 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
           type="button"
           className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
           onClick={() => {
-            setIsImmersive(false)
+            void backToHub()
             sessionStartedRef.current = false
-            setPhase('hub')
           }}
         >
           ← 返回计划首页
@@ -1359,13 +1589,18 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-3 py-2">
           <button
-            onClick={() => {
-              setIsImmersive(false)
-              setPhase('hub')
-            }}
+            onClick={() => void backToHub()}
             className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
           >
             ← 回到计划
+          </button>
+          <button
+            type="button"
+            onClick={() => void stashSession()}
+            disabled={isStashing}
+            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
+          >
+            {isStashing ? '暂存中…' : '💾 暂存'}
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">{title}</div>
           <div className="ml-auto text-[.78rem] font-bold text-[var(--wm-text-dim)]">
@@ -1576,12 +1811,17 @@ export default function AdaptivePlanSession({ planId, onBack }: AdaptivePlanSess
       </div>
 
       <div className="mb-4 rounded-[24px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6">
+        {stashToast && (
+          <div className="mb-4 rounded-[12px] border border-[rgba(74,222,128,.45)] bg-[rgba(74,222,128,.1)] px-4 py-2.5 text-[.8rem] font-bold text-[#86efac]">
+            ✓ {stashToast}
+          </div>
+        )}
         <div className="mb-5">
           <div className="font-fredoka bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
             {plan.title}
           </div>
           <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
-            每日至少练一轮：复习 → 新学（每日最多 {plan.newWordsPerDay} 个新词）→ 闯关；同日可多轮，错词会继续出现
+            每日建议练一轮：复习 → 新学（每轮约 {plan.newWordsPerDay} 个新词）→ 闯关；目标完成后还可提前学下一批
             <span className="mt-1 block text-[.72rem] font-bold text-[#93c5fd]">
               成长阶段：🥚蛋 → 🐛虫 → 🦋蝴蝶 → 🌸花 → 🌳树；题型随阶段递进
             </span>

@@ -41,8 +41,19 @@ import { skeletonMeta } from '../utils/calc-mixed'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
 import { todayStr } from '@rosie/core'
+import { usePracticePendingLifecycle } from '@rosie/core'
 import SessionPrepScreen from '../components/SessionPrepScreen'
 import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, CalcTimingMode, QuestionLogEntry } from '@rosie/core'
+import {
+  calcPendingScopeKey,
+  calcSessionDrillKey,
+  clearCalcPendingEverywhere,
+  resolveCalcSessionSnapshot,
+  writeCalcSessionSnapshot,
+  wrapCalcEnvelope,
+  type CalcAttemptStatSnapshot,
+  type CalcSessionSnapshot,
+} from '../utils/calc-session-snapshot'
 
 interface AttemptStat {
   signature: string
@@ -69,7 +80,7 @@ export default function CalcSessionPage() {
   const router = useRouter()
   const { user } = useAuth()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
-  const wallet = useCalcWallet(user)
+  const wallet = useCalcWallet(user, { loadSessions: true })
   const { refresh: refreshStarHud } = useStarHud()
   const {
     mistakes,
@@ -84,6 +95,13 @@ export default function CalcSessionPage() {
     const m = params.get('mode')
     return m === 'free' || m === 'mistakes' ? m : 'daily'
   }, [params])
+
+  /** Homepage「今日计划」口算卡：跳过准备页，直接开练 */
+  const autoStart = params.get('start') === '1'
+  const drillKey = useMemo(
+    () => calcSessionDrillKey(mode, params.get('drill'), params.get('blockId')),
+    [mode, params],
+  )
 
   const drillParams = useMemo<DrillParams | null>(() => {
     const d = params.get('drill')
@@ -101,14 +119,33 @@ export default function CalcSessionPage() {
     return r ? parseInt(r, 10) : 1
   }, [params])
 
+  // Client-only peek for mid-exit resume (avoid SSR/hydration mismatch).
+  const [snapChecked, setSnapChecked] = useState(false)
+  const [pendingSnap, setPendingSnap] = useState<CalcSessionSnapshot | null>(null)
+  useEffect(() => {
+    if (!user) return
+    let cancelled = false
+    void (async () => {
+      const snap = await resolveCalcSessionSnapshot(user.id, mode, drillKey)
+      if (cancelled) return
+      setPendingSnap(snap)
+      setSnapChecked(true)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [user, mode, drillKey])
+  const resumeFromSnap = pendingSnap != null
+
   const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
   const loadedStatesRef = useRef<Map<string, CalcProblemState>>(new Map())
 
   // ── Prep gate (daily only) ──────────────────────────────────────
   // Drills and mistakes-only sessions skip the prep screen entirely and keep
   // today's behavior (relaxed clock, no end-of-session star multiplier).
-  const needsPrep = mode === 'daily' && !drillParams
-  const [prepConfirmed, setPrepConfirmed] = useState(false)
+  // autoStart (from homepage today cards) and mid-session resume also skip prep.
+  const needsPrep = mode === 'daily' && !drillParams && !autoStart && !resumeFromSnap
+  const [prepConfirmed, setPrepConfirmed] = useState(autoStart)
   // Editable prep selections default to the persisted settings until the user
   // overrides them for this run only; "设为默认" writes the override back to settings.
   const [prepModeOverride, setPrepModeOverride] = useState<CalcTimingMode | null>(null)
@@ -119,6 +156,11 @@ export default function CalcSessionPage() {
   // read from refs inside stable callbacks (clock, auto-advance, star multiplier).
   const sessionTimingModeRef = useRef<CalcTimingMode>('relaxed')
   const sessionBonusSecRef = useRef<number>(0)
+
+  // When a same-day snapshot exists, skip prep as soon as we've checked storage.
+  useEffect(() => {
+    if (resumeFromSnap) setPrepConfirmed(true)
+  }, [resumeFromSnap])
 
   const manualTotalEstimate =
     settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
@@ -218,6 +260,8 @@ export default function CalcSessionPage() {
   const questionStartRef = useRef<number>(0)
   const [startedTsMs, setStartedTsMs] = useState<number>(0)
   const [startedAtIso, setStartedAtIso] = useState<string>('')
+  /** Active time from earlier runs of a resumed session (excludes idle time). */
+  const carriedElapsedMsRef = useRef(0)
 
   const [now, setNow] = useState<number>(() => Date.now())
   const [questionStartWall, setQuestionStartWall] = useState<number>(0)
@@ -242,17 +286,158 @@ export default function CalcSessionPage() {
   } | null>(null)
 
   const [sessionKey, setSessionKey] = useState(0)
+  const [stashToast, setStashToast] = useState<string | null>(null)
+
+  const buildCurrentSnapshot = useCallback((): CalcSessionSnapshot | null => {
+    if (done || !questions || questions.length === 0 || !startedAtIso) return null
+    // Nothing answered yet is not a resumable session — snapshotting it would skip
+    // the prep screen and replay this frozen question list for the rest of the day.
+    if (idx === 0 && attemptsLogRef.current.length === 0) return null
+    const snapAttempts: CalcAttemptStatSnapshot[] = attemptsLogRef.current.map((a) => ({
+      signature: a.signature,
+      level: a.level,
+      isChallenge: a.isChallenge,
+      firstTryCorrect: a.firstTryCorrect,
+      finallyCorrect: a.finallyCorrect,
+      wasMistake: a.wasMistake,
+      timeMs: a.timeMs,
+      withinLimit: a.withinLimit,
+      sourceBlockId: a.sourceBlockId,
+      sourceMixedOpId: a.sourceMixedOpId,
+      display: a.display,
+    }))
+    return {
+      version: 1,
+      date: todayStr(),
+      mode,
+      drillKey,
+      questions,
+      idx,
+      wrongQueue: wrongQueueRef.current,
+      plannedCount: plannedCountRef.current,
+      maxRetry: maxRetryRef.current,
+      coinsTotal: coinsTotalRef.current,
+      streak,
+      maxStreak: maxStreakRef.current,
+      attemptsLog: snapAttempts,
+      questionTimesMs: questionTimesRef.current,
+      questionLog: questionLogRef.current,
+      startedAtIso,
+      startedTsMs,
+      carriedElapsedMs: carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs),
+      timingMode: sessionTimingModeRef.current,
+      bonusSec: sessionBonusSecRef.current,
+      drillTargetSignatures,
+    }
+  }, [
+    done,
+    questions,
+    idx,
+    streak,
+    mode,
+    drillKey,
+    startedAtIso,
+    startedTsMs,
+    drillTargetSignatures,
+    coinsTotal,
+    maxStreak,
+  ])
+
+  const pendingScopeKey = calcPendingScopeKey(mode, drillKey)
+  const pendingEnabled = !!questions && questions.length > 0 && !done && !!startedAtIso
+
+  const getEnvelope = useCallback(() => {
+    const snap = buildCurrentSnapshot()
+    return snap ? wrapCalcEnvelope(snap) : null
+  }, [buildCurrentSnapshot])
+
+  const { flushCloudNow } = usePracticePendingLifecycle({
+    enabled: pendingEnabled,
+    userId: user?.id,
+    kind: 'calc',
+    scopeKey: pendingScopeKey,
+    getEnvelope,
+  })
+
+  const handleSessionExit = useCallback(() => {
+    void flushCloudNow().then(() => router.push('/calc'))
+  }, [flushCloudNow, router])
+
+  const handleStash = useCallback(async () => {
+    const synced = await flushCloudNow()
+    setStashToast(synced ? '已暂存到云端' : '已暂存在本机，云端备份失败')
+    router.push('/calc')
+  }, [flushCloudNow, router])
+
+  useEffect(() => {
+    if (!stashToast) return
+    const timer = window.setTimeout(() => setStashToast(null), 3500)
+    return () => window.clearTimeout(timer)
+  }, [stashToast])
 
   // Initialize session ONCE after settings + mistakes ready, AND user is loaded
   const initRef = useRef(false)
   useEffect(() => {
     if (initRef.current) return
+    if (!snapChecked) return
     if (settingsLoading) return
     if (!user) return
     if (needsPrep && !prepConfirmed) return
     initRef.current = true
 
+    // Homepage auto-start / resume: freeze timing.
+    if (pendingSnap) {
+      sessionTimingModeRef.current = pendingSnap.timingMode
+      sessionBonusSecRef.current = clampBonusSec(pendingSnap.bonusSec)
+    } else if (autoStart) {
+      sessionTimingModeRef.current = settings.timingMode
+      sessionBonusSecRef.current = clampBonusSec(settings.bonusSec)
+    }
+    if (autoStart || pendingSnap) {
+      // Drop ?start=1 so refresh doesn't re-trigger auto-start mid-session edge cases.
+      const next = new URLSearchParams(params.toString())
+      if (next.has('start')) {
+        next.delete('start')
+        const qs = next.toString()
+        router.replace(`/calc/session${qs ? `?${qs}` : ''}`, { scroll: false })
+      }
+    }
+
     const init = async () => {
+      if (pendingSnap) {
+        await problemState.loadAll()
+        await calcMistakesStore.ensureLoaded(user.id)
+        const reconciledStates = calcProblemStateStore.getSessionData(user.id) ?? {}
+        const loadedStates = new Map<string, CalcProblemState>()
+        for (const [sig, st] of Object.entries(reconciledStates)) {
+          loadedStates.set(sig, st)
+        }
+        loadedStatesRef.current = loadedStates
+
+        setQuestions(pendingSnap.questions)
+        setIdx(pendingSnap.idx)
+        wrongQueueRef.current = pendingSnap.wrongQueue
+        plannedCountRef.current = pendingSnap.plannedCount
+        setPlannedCount(pendingSnap.plannedCount)
+        maxRetryRef.current = pendingSnap.maxRetry
+        coinsTotalRef.current = pendingSnap.coinsTotal
+        setCoinsTotal(pendingSnap.coinsTotal)
+        setStreak(pendingSnap.streak)
+        maxStreakRef.current = pendingSnap.maxStreak
+        setMaxStreak(pendingSnap.maxStreak)
+        attemptsLogRef.current = pendingSnap.attemptsLog as AttemptStat[]
+        questionTimesRef.current = pendingSnap.questionTimesMs
+        questionLogRef.current = pendingSnap.questionLog
+        setStartedAtIso(pendingSnap.startedAtIso)
+        // Restart the clock and carry the earlier active time, so the hours between
+        // stash and resume don't land in `time_spent_sec`.
+        carriedElapsedMsRef.current = pendingSnap.carriedElapsedMs ?? 0
+        setStartedTsMs(Date.now())
+        setDrillTargetSignatures(pendingSnap.drillTargetSignatures)
+        questionStartRef.current = performance.now()
+        return
+      }
+
       // Load all of the user's problem states so buildSession can weight toward weak ones.
       // Use the returned map directly — `problemState.states` is still the stale
       // pre-load value within this same closure (React state updates async).
@@ -310,6 +495,7 @@ export default function CalcSessionPage() {
       }
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
+      carriedElapsedMsRef.current = 0
       questionStartRef.current = performance.now()
       questionTimesRef.current = []
       questionLogRef.current = []
@@ -317,7 +503,14 @@ export default function CalcSessionPage() {
     }
     void init()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, settingsLoading, drillParams, sessionKey, needsPrep, prepConfirmed])
+  }, [user, settingsLoading, drillParams, sessionKey, needsPrep, prepConfirmed, snapChecked, pendingSnap])
+
+  // Persist in-progress session so mid-exit / refresh can resume.
+  useEffect(() => {
+    const snap = buildCurrentSnapshot()
+    if (!snap) return
+    writeCalcSessionSnapshot(snap)
+  }, [buildCurrentSnapshot])
 
   // Reset question-start timestamp whenever idx changes
   useEffect(() => {
@@ -359,7 +552,9 @@ export default function CalcSessionPage() {
   const finishSession = useCallback(async () => {
     if (done) return
     setDone(true)
-    const finalElapsed = Math.floor((Date.now() - startedTsMs) / 1000)
+    const finalElapsed = Math.floor(
+      (carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs)) / 1000,
+    )
     const log = attemptsLogRef.current
     const correctCount = log.filter((a) => a.firstTryCorrect).length
     const retryCount = log.filter((a) => !a.firstTryCorrect && a.finallyCorrect).length
@@ -534,6 +729,9 @@ export default function CalcSessionPage() {
       questionTimesMs: qTimes,
       questionLog: questionLogRef.current,
     })
+    // Only now — clearing before the row is persisted would leave a failed insert
+    // with neither a session row nor a resumable snapshot.
+    void clearCalcPendingEverywhere(user?.id, mode, drillKey)
     // Sync the global StarHud balance so the top-left chip updates immediately.
     void refreshStarHud()
 
@@ -560,6 +758,8 @@ export default function CalcSessionPage() {
     startedAtIso,
     problemState,
     user,
+    mode,
+    drillKey,
   ])
 
   // ── Submit answer ────────────────────────────────────────────────
@@ -884,7 +1084,7 @@ export default function CalcSessionPage() {
     return nextT[currentTier ?? 'entry'] ?? '进阶'
   })()
 
-  if (settingsLoading) {
+  if (settingsLoading || !snapChecked) {
     return (
       <>
         <CalcAppHeader
@@ -966,9 +1166,37 @@ export default function CalcSessionPage() {
         soundEnabled={settings.soundEnabled}
         onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
         title="练习中"
-        backHref="/calc"
         backLabel="退出"
+        onBack={handleSessionExit}
+        rightExtra={
+          !done ? (
+            <button
+              type="button"
+              onClick={() => void handleStash()}
+              className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-bold text-amber-300 transition-all hover:text-white"
+              style={{
+                background: 'rgba(245,158,11,0.15)',
+                border: '1px solid rgba(245,158,11,0.35)',
+              }}
+            >
+              💾 暂存
+            </button>
+          ) : undefined
+        }
       />
+
+      {stashToast && (
+        <div
+          className="fixed top-16 left-1/2 z-40 -translate-x-1/2 rounded-[12px] border px-4 py-2.5 text-[13px] font-bold"
+          style={{
+            borderColor: 'rgba(74,222,128,0.45)',
+            background: 'rgba(74,222,128,0.1)',
+            color: '#86efac',
+          }}
+        >
+          ✓ {stashToast}
+        </div>
+      )}
 
       <main
         // Fill the viewport below the sticky CalcAppHeader (h-14 = 56px) so the
@@ -1020,6 +1248,10 @@ export default function CalcSessionPage() {
               round: drillRound,
               onContinue: () => {
                 // Reset session state so the init useEffect re-runs for the next round.
+                void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+                // Init reads this state, not storage — without it the next round
+                // restores the round that just finished.
+                setPendingSnap(null)
                 initRef.current = false
                 setQuestions(null)
                 setIdx(0)
@@ -1039,6 +1271,8 @@ export default function CalcSessionPage() {
                   // Reset session state so the init useEffect re-runs.
                   // sessionKey bump is required here because URL doesn't change (same blockId),
                   // so drillParams won't change and the useEffect won't re-fire without it.
+                  void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+                  setPendingSnap(null)
                   initRef.current = false
                   setQuestions(null)
                   setIdx(0)
@@ -1071,6 +1305,8 @@ export default function CalcSessionPage() {
             nextSessionAssault={false}
             onAgain={() => {
               void refreshMistakes()
+              void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+              setPendingSnap(null)
               setQuestions(null)
               setIdx(0)
               wrongQueueRef.current = []

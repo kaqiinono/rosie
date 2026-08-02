@@ -14,6 +14,8 @@ import {
 } from '../../utils/adaptivePlanScheduler'
 import {
   ADAPTIVE_MASTERED_STAGE,
+  ADAPTIVE_NOT_STARTED_STAGE,
+  ADAPTIVE_PENDING_STAGE,
   adaptiveBoxStage,
 } from '../../utils/adaptivePlanStages'
 import type { AdaptivePlanWordProgress } from '../../utils/adaptivePlanTypes'
@@ -39,10 +41,10 @@ type DailyWordCapsule = {
 }
 
 function boxEmojiForRow(row: AdaptivePlanWordProgress | undefined): string {
-  if (!row) return '🥚'
+  if (!row) return ADAPTIVE_NOT_STARTED_STAGE.emoji
   if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.emoji
-  if (row.status === 'LEARNING_PENDING') return '🐣'
-  if (row.status === 'NOT_STARTED') return '🥚'
+  if (row.status === 'LEARNING_PENDING') return ADAPTIVE_PENDING_STAGE.emoji
+  if (row.status === 'NOT_STARTED') return ADAPTIVE_NOT_STARTED_STAGE.emoji
   return adaptiveBoxStage(row.boxIndex).emoji
 }
 
@@ -210,7 +212,7 @@ export default function AdaptivePlanPractice() {
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
-                      <span>每日新词 {plan.newWordsPerDay}</span>
+                      <span>每日目标 {plan.newWordsPerDay} 词/轮</span>
                       <span>复习上限 {plan.reviewCap}</span>
                       {plan.status === 'active' && daySnapshot && (
                         <>
@@ -255,14 +257,16 @@ export default function AdaptivePlanPractice() {
                   <div className="flex flex-row flex-wrap items-center justify-end gap-1.5 px-3 pb-3 sm:gap-2 sm:px-5 sm:pb-4">
                     <Link
                       href={`/english/words/adaptive/${plan.id}/preview`}
-                      onClick={(e) => e.stopPropagation()}
                       className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline sm:px-3 sm:text-[.75rem]"
                     >
                       轨迹预览
                     </Link>
-                    <span className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] sm:px-3 sm:text-[.75rem]">
+                    <Link
+                      href={`/english/words/adaptive/${plan.id}/practice`}
+                      className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2.5 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline sm:px-3 sm:text-[.75rem]"
+                    >
                       开始练习 →
-                    </span>
+                    </Link>
                   </div>
                 </div>
               )

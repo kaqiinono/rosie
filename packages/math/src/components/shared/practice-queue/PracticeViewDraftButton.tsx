@@ -1,147 +1,130 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
-import ScratchPadContentPreview from '@rosie/math/components/shared/ScratchPad/ScratchPadContentPreview'
-import type { ScratchObject } from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
-import {
-  fetchViewableDraftObjects,
-  problemHasViewableDraft,
-} from '@rosie/math/utils/math-scratch-db'
+import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
+import { SEA_POOL } from '@rosie/math/utils/sea-data'
+import { problemHasViewableDraft } from '@rosie/math/utils/math-scratch-db'
 
 type Props = {
-  problem: Problem
+  /** Full problem (practice portal / plan card with resolved Problem). */
+  problem?: Problem
+  /** When Problem is unavailable (fallback id only). */
+  problemId?: string
   className?: string
-  /** Bump after submit so draft button visibility refreshes */
+  /** Bump after submit so draft button visibility refreshes (solo-check mode). */
   refreshKey?: number
+  /**
+   * When provided, skip the per-button network check (plan page batch load).
+   * Pass a boolean always on plan pages — never leave undefined there.
+   */
+  hasDraft?: boolean
+  section?: string
 }
 
+function resolveProblem(problem: Problem | undefined, problemId: string | undefined): Problem | null {
+  if (problem) return problem
+  if (!problemId) return null
+  return SEA_POOL.find((sp) => sp.problem.id === problemId)?.problem ?? null
+}
+
+function resolveSection(problemId: string | undefined, sectionProp?: string): string {
+  if (sectionProp) return sectionProp
+  if (!problemId) return 'lesson'
+  return SEA_POOL.find((sp) => sp.problem.id === problemId)?.section ?? 'lesson'
+}
+
+/**
+ * Open the same readonly ScratchPad canvas as the lesson detail「查看草稿」.
+ * Close is always local「完成」— never practice-queue exit / stash.
+ *
+ * On plan pages, pass `hasDraft` from a batched `useViewableDraftIds` load.
+ */
 export default function PracticeViewDraftButton({
-  problem,
+  problem: problemProp,
+  problemId: problemIdProp,
   className = '',
   refreshKey = 0,
+  hasDraft: hasDraftProp,
+  section: sectionProp,
 }: Props) {
+  const problemId = problemIdProp ?? problemProp?.id
+  const problem = useMemo(
+    () => resolveProblem(problemProp, problemId),
+    [problemProp, problemId],
+  )
+  const section = useMemo(
+    () => resolveSection(problemId, sectionProp),
+    [problemId, sectionProp],
+  )
   const { user } = useAuth()
-  const [hasDraft, setHasDraft] = useState(false)
-  const [checking, setChecking] = useState(true)
+  const batched = hasDraftProp !== undefined
+  const [hasDraftLocal, setHasDraftLocal] = useState(false)
+  const [checking, setChecking] = useState(!batched)
   const [open, setOpen] = useState(false)
-  const [previewObjects, setPreviewObjects] = useState<ScratchObject[] | null>(null)
-  const [mounted, setMounted] = useState(false)
+  const [soloRefresh, setSoloRefresh] = useState(0)
+
+  const hasDraft = batched ? hasDraftProp : hasDraftLocal
+
+  const userId = user?.id
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const refreshHasDraft = useCallback(async () => {
-    if (!user) {
-      setHasDraft(false)
+    if (batched) {
       setChecking(false)
       return
     }
-    setChecking(true)
-    const ok = await problemHasViewableDraft(user.id, problem.id)
-    setHasDraft(ok)
-    setChecking(false)
-  }, [user, problem.id, refreshKey])
-
-  useEffect(() => {
-    void refreshHasDraft()
-  }, [refreshHasDraft])
-
-  const handleClose = useCallback(() => {
-    setOpen(false)
-    setPreviewObjects(null)
-    void refreshHasDraft()
-  }, [refreshHasDraft])
-
-  useEffect(() => {
-    if (!open || !user) return
+    if (!userId || !problemId) {
+      setHasDraftLocal(false)
+      setChecking(false)
+      return
+    }
     let cancelled = false
-    void fetchViewableDraftObjects(user.id, problem.id).then((objects) => {
-      if (!cancelled) setPreviewObjects(objects)
+    setChecking(true)
+    void problemHasViewableDraft(userId, problemId).then((ok) => {
+      if (cancelled) return
+      setHasDraftLocal(ok)
+      setChecking(false)
     })
     return () => {
       cancelled = true
     }
-  }, [open, user, problem.id])
+  }, [batched, userId, problemId, refreshKey, soloRefresh])
 
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopImmediatePropagation()
-        e.preventDefault()
-        handleClose()
-      }
-    }
-    window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
-  }, [open, handleClose])
+  function handleClose() {
+    setOpen(false)
+    if (!batched) setSoloRefresh((n) => n + 1)
+  }
 
-  async function handleOpen() {
-    if (!user || !hasDraft) return
-    setPreviewObjects(null)
+  function handleOpen() {
+    if (!user || !hasDraft || !problem) return
     setOpen(true)
   }
 
-  if (!user || checking || !hasDraft) return null
-
-  const modal =
-    open && mounted ? (
-      <div
-        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-label="练习草稿"
-        onClick={handleClose}
-      >
-        <div
-          className="max-h-[85vh] w-full max-w-lg overflow-auto rounded-2xl bg-white p-4 shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
-        >
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <span className="text-sm font-bold text-slate-800">练习草稿</span>
-            <button
-              type="button"
-              onClick={handleClose}
-              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-slate-100 text-base font-bold text-slate-600 transition-colors hover:bg-slate-200"
-              aria-label="关闭"
-            >
-              ×
-            </button>
-          </div>
-          {previewObjects === null ? (
-            <p className="py-10 text-center text-xs text-slate-400">加载中…</p>
-          ) : previewObjects.length === 0 ? (
-            <p className="py-10 text-center text-xs text-slate-400">暂无草稿</p>
-          ) : (
-            <ScratchPadContentPreview objects={previewObjects} />
-          )}
-          <button
-            type="button"
-            onClick={handleClose}
-            className="mt-4 w-full cursor-pointer rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200"
-          >
-            关闭
-          </button>
-        </div>
-      </div>
-    ) : null
+  if (!user || !problemId || !problem || checking || !hasDraft) return null
 
   return (
     <>
       <button
         type="button"
-        onClick={() => void handleOpen()}
+        onClick={handleOpen}
         title="查看草稿"
         className={`cursor-pointer rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-all hover:bg-indigo-100 active:scale-95 ${className}`}
       >
         📝 草稿
       </button>
-      {modal && createPortal(modal, document.body)}
+      {open && (
+        <ScratchPadSession
+          problems={[problem]}
+          initialIndex={0}
+          section={section}
+          mode="readonly"
+          preferViewableDraft
+          showCanvas
+          disableEdgeNav
+          onClose={handleClose}
+        />
+      )}
     </>
   )
 }

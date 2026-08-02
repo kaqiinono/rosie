@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { AnswerCheckResult, Problem } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import {
@@ -24,13 +24,18 @@ export function useProblemAnswer(
 ) {
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<AnswerCheckResult | null>(null)
+  /** Sticks after first real check/submit so 查看题解 stays available while editing. */
+  const [hasAttempted, setHasAttempted] = useState(false)
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
+  /** The settle below is async; without this a double-tap files two attempts. */
+  const submittingRef = useRef(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswer('')
     setFeedback(null)
+    setHasAttempted(false)
+    submittingRef.current = false
   }, [problem.id])
 
   const archiveWorkingScratch = useCallback(
@@ -62,14 +67,23 @@ export function useProblemAnswer(
         return result
       }
 
+      setHasAttempted(true)
+      if (submittingRef.current) return result
+      submittingRef.current = true
+
       void (async () => {
-        await archiveWorkingScratch(result.ok, input)
-        setFeedback(result)
-        if (result.ok) {
-          await ctx.handleSolve(problem.id)
-          options?.onCorrect?.(result)
-        } else {
-          ctx.addWrong(problem.id)
+        try {
+          await archiveWorkingScratch(result.ok, input)
+          setFeedback(result)
+          if (result.ok) {
+            await ctx.handleSolve(problem.id)
+            options?.onCorrect?.(result)
+          } else {
+            ctx.addWrong(problem.id)
+          }
+        } finally {
+          // A correct answer advances the queue; the problem.id effect re-arms it there.
+          if (!result.ok) submittingRef.current = false
         }
       })()
 
@@ -84,5 +98,5 @@ export function useProblemAnswer(
 
   const check = useCallback(() => submit(answer), [submit, answer])
 
-  return { answer, setAnswer, feedback, submit, check, clearFeedback }
+  return { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted }
 }

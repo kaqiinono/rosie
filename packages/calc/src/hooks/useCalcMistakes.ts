@@ -12,9 +12,24 @@ import {
 
 export { calcMistakesStore }
 
-export function useCalcMistakes(user: User | null) {
+export type UseCalcMistakesOptions = {
+  /**
+   * When false, skip loading `calc_problem_state` (homepage count-only).
+   * `unresolved` then falls back to `!mistake.resolved` without mastery reconcile.
+   * Default true — session / mistakes pages need reconcile.
+   */
+  loadProblemState?: boolean
+}
+
+export function useCalcMistakes(
+  user: User | null,
+  options: UseCalcMistakesOptions = {},
+) {
+  const loadProblemState = options.loadProblemState !== false
   const { data: mistakes, isLoading } = calcMistakesStore.useSessionData(user)
-  const { data: stateRecord } = calcProblemStateStore.useSessionData(user)
+  const { data: stateRecord } = calcProblemStateStore.useSessionData(
+    loadProblemState ? user : null,
+  )
 
   const states = useMemo(() => new Map(Object.entries(stateRecord)), [stateRecord])
 

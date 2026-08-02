@@ -82,19 +82,20 @@ function chunkRows<T>(rows: T[], size: number): T[][] {
 }
 
 async function loadAllPlansFromCloud(userId: string): Promise<AdaptiveWordPlan[]> {
-  try {
-    const { data, error } = await supabase
-      .from('adaptive_word_plans')
-      .select(PLAN_SELECT)
-      .eq('user_id', userId)
-      .is('archived_at', null)
-      .order('updated_at', { ascending: false })
+  // Must throw on failure: swallowing it here makes an unreachable network /
+  // missing column look like "this plan doesn't exist" to every consumer.
+  const { data, error } = await supabase
+    .from('adaptive_word_plans')
+    .select(PLAN_SELECT)
+    .eq('user_id', userId)
+    .is('archived_at', null)
+    .order('updated_at', { ascending: false })
 
-    if (error || !data) return []
-    return (data as AdaptiveWordPlanRow[]).map(mapPlanRowToModel)
-  } catch {
-    return []
+  if (error) {
+    console.error('[adaptive_word_plan] load plans failed', error)
+    throw error
   }
+  return ((data ?? []) as AdaptiveWordPlanRow[]).map(mapPlanRowToModel)
 }
 
 async function loadPlanFromCloud(
@@ -298,7 +299,18 @@ export async function migrateAdaptiveProgressKey(
 }
 
 export function useAdaptiveWordPlan(user: User | null) {
-  const { data: plans, isLoading } = adaptiveWordPlansStore.useSessionData(user)
+  const { data: plans, isLoading, error } = adaptiveWordPlansStore.useSessionData(user)
+
+  /** Re-fetch the plan list after a failed / stale load (next payload unknown). */
+  const reloadPlans = useCallback(async (): Promise<void> => {
+    if (!user) return
+    adaptiveWordPlansStore.invalidate(user.id)
+    try {
+      await adaptiveWordPlansStore.ensureLoaded(user.id)
+    } catch {
+      /* status/error already recorded in the store */
+    }
+  }, [user])
 
   const loadProgress = useCallback(
     async (planId: string): Promise<AdaptivePlanWordProgress[]> => {
@@ -594,6 +606,8 @@ export function useAdaptiveWordPlan(user: User | null) {
   return {
     plans,
     isLoading,
+    error,
+    reloadPlans,
     loadProgress,
     loadProgressForPlans,
     createPlan,

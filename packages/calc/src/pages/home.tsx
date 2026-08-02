@@ -22,7 +22,7 @@ export default function CalcHomePage() {
   const { user } = useAuth()
   const router = useRouter()
   const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
-  const wallet = useCalcWallet(user)
+  const wallet = useCalcWallet(user, { loadSessions: true })
   const { totalProblems, practiceDays, weekProblems, monthProblems, yearProblems, isLoading: practiceStatsLoading } = useCalcPracticeStats(user)
   const { unresolved: unresolvedMistakes } = useCalcMistakes(user)
 

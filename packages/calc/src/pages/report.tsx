@@ -673,7 +673,7 @@ function Section6({ sessions }: { sessions: CalcSession[] }) {
 export default function CalcReportPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const wallet = useCalcWallet(user)
+  const wallet = useCalcWallet(user, { loadSessions: true })
   const { settings } = useCalcSettings(user)
   const problemState = useCalcProblemState(user)
 

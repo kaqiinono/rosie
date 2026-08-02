@@ -3,6 +3,11 @@
 export { default as VoucherCard } from './components/VoucherCard'
 export { playSfx } from './components/audio'
 export { useCalcDaily } from './hooks/useCalcDaily'
+export {
+  useCalcTodaySessions,
+  calcTodaySessionsStore,
+} from './hooks/useCalcTodaySessions'
+export type { CalcTodaySessionRow } from './hooks/useCalcTodaySessions'
 export { useCalcPracticeStats } from './hooks/useCalcPracticeStats'
 export { useCalcMistakes } from './hooks/useCalcMistakes'
 export { categoryLabel } from './utils/calc-helpers'

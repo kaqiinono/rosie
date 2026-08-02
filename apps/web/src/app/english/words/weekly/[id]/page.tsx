@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useWordsContext } from '@rosie/english'
+import { useWordsContext, WeeklyPlanSession } from '@rosie/english'
 import type { WeeklyPlan } from '@rosie/core'
-import { WeeklyPlanSession } from '@rosie/english'
 import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 
-export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ id: string }> }) {
+/** Weekly plan detail / week view — does not auto-start practice. */
+export default function WeeklyPlanPage() {
   const router = useRouter()
   const routeParams = useParams()
   const planId = typeof routeParams.id === 'string' ? routeParams.id : ''
@@ -28,7 +28,9 @@ export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ 
         setIsLoading(false)
       }
     })()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [user, planId])
 
   if (isLoading) {
@@ -44,6 +46,7 @@ export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ 
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <div className="text-sm text-[var(--wm-text-dim)]">计划不存在或已删除</div>
         <button
+          type="button"
           onClick={() => router.push('/english/words/daily')}
           className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm text-[var(--wm-text-dim)]"
         >
@@ -58,6 +61,7 @@ export default function WeeklyPlanPage({ params: _params }: { params: Promise<{ 
       key={plan.id ?? plan.weekStart}
       initialPlan={plan}
       vocab={vocab}
+      autoStart={false}
       onBack={() => router.push('/english/words/daily')}
     />
   )

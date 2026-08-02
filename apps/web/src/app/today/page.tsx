@@ -65,6 +65,13 @@ export default function TodayPage() {
               <div className="text-[10px] font-semibold text-text-muted leading-none">{label}</div>
             </div>
           </div>
+
+          <Link
+            href="/today/records"
+            className="text-[12px] font-bold text-amber-700 no-underline transition-opacity hover:opacity-70"
+          >
+            练习记录 →
+          </Link>
         </div>
       </div>
 

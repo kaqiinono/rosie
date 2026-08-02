@@ -28,8 +28,10 @@ audio, flipbook).
   Plan lifecycle statuses: `active` | `paused` | `completed` | `archived`. At most one `active` per
   user; admin pause/resume via `pausePlan`/`activatePlan`; create-while-active yields `paused`;
   `/today` and practice only surface `active`.
-  Key semantics: `newWordsPerDay` is a **per-day** quota (`countActivatedToday` deducts by
-  `introducedOn`); box moves at settle use "wrong at least once this session" (→ Box 1 +
+  Key semantics: `newWordsPerDay` is a **per-round batch size + daily goal** (not a hard
+  ceiling — after the goal is met, another round can still pull a fresh batch to get ahead;
+  unfinished same-day activations fill the batch first); box moves at settle use "wrong at
+  least once this session" (→ Box 1 +
   `streakWrong++`, due today) while global mastery write-back uses the collapsed final outcome;
   Boss question pressure follows `stats.bossQuestionTier` via `bossQuizTypesForWord` (3 = floor);
   any failed Boss submission increments `bossFailStreak` (tier downgrade only < 60%). Settle does

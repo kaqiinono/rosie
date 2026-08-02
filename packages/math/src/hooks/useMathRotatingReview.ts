@@ -30,7 +30,7 @@ async function loadFromCloud(userId: string, planLessonId: string, priorLessonPr
       .from('math_rotating_review')
       .select('state_data')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
     if (error || !data) return null
     const s = data.state_data as MathRotatingReviewState
     if (s.planLessonId !== planLessonId) return null

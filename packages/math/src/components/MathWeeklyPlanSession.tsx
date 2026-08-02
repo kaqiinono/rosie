@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
@@ -20,7 +20,17 @@ import { todayStr } from '@rosie/core'
 import { compareLessonIds } from '@rosie/math/utils/lesson-registry'
 import type { MathPlanProblem, ProblemSet } from '@rosie/core'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
-import { mathPlanProblemsToQueueItems } from '@rosie/math/utils/practice-queue-from-plan'
+import { usePracticeQueue } from '@rosie/math/components/shared/practice-queue/PracticeQueueContext'
+import { useViewableDraftIds } from '@rosie/math/hooks/useViewableDraftIds'
+import {
+  mathPlanProblemsToQueueItems,
+  rehydratePracticeQueueItems,
+} from '@rosie/math/utils/practice-queue-from-plan'
+import {
+  clearMathPendingEverywhere,
+  readMathPracticeSnapshot,
+  resolveMathPracticeSnapshot,
+} from '@rosie/math/utils/practice-queue-snapshot'
 import {
   MATH_PLAN_LESSONS,
   mathPlanDisplayName,
@@ -38,9 +48,11 @@ import MathPlanMap from './MathPlanMap'
 // ── Main Component ────────────────────────────────────────────────────────────
 interface Props {
   problemSets: Record<string, ProblemSet>
+  /** Practice route (`/math/ny/plan/practice`): jump into today's first unfinished problem. */
+  autoStart?: boolean
 }
 
-export default function MathWeeklyPlanSession({ problemSets }: Props) {
+export default function MathWeeklyPlanSession({ problemSets, autoStart = false }: Props) {
   const { user } = useAuth()
   const {
     weeklyPlan,
@@ -54,9 +66,13 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
   const { solveCount } = useMathSolved(user)
   const { wrongIds } = useMathWrong(user)
   const startPractice = useStartPracticeQueue()
+  const { resume, isActive: practiceActive } = usePracticeQueue()
 
   const today = todayStr()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const autoStartDoneRef = useRef(false)
+  /** Resume lookup finished (success, empty, or skipped). Auto-start must wait on this. */
+  const [resumeChecked, setResumeChecked] = useState(false)
 
   // Auto-select date when plan loads (during-render).
   const [autoSelectKey, setAutoSelectKey] = useState('')
@@ -116,18 +132,123 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
   }, [weeklyPlan, solveCount, isLoading, addDoneKey, recordProblemResult])
 
   const beginPractice = useCallback(
-    (pool: MathPlanProblem[], initialProblemId: string, title = '每日一练') => {
+    (pool: MathPlanProblem[], initialProblemId: string, title = '每日一练'): boolean => {
       const items = mathPlanProblemsToQueueItems(pool, problemSets)
-      if (items.length === 0) return
+      if (items.length === 0 || !user) return false
       startPractice({
         pool: items,
         title,
         initialProblemId,
         returnHref: '/math/ny/plan',
       })
+      return true
     },
-    [problemSets, startPractice],
+    [problemSets, startPractice, user],
   )
+
+  // Resume mid-exit practice queue before auto-starting a new one.
+  // Local snapshot is sync (instant). Cloud reconcile is bounded so ?start=1
+  // cannot hang if practice_pending_sessions is slow / missing.
+  const userId = user?.id
+  useEffect(() => {
+    if (practiceActive) {
+      setResumeChecked(true)
+      return
+    }
+    if (isLoading || resumeChecked) return
+
+    let cancelled = false
+
+    const tryResume = (pending: NonNullable<ReturnType<typeof readMathPracticeSnapshot>>) => {
+      const items = rehydratePracticeQueueItems(pending.items, problemSets)
+      if (items.length === 0) {
+        void clearMathPendingEverywhere(userId)
+        return false
+      }
+      if (!userId) return false
+      resume({
+        items,
+        currentIndex: Math.min(pending.currentIndex, items.length - 1),
+        sessionCorrect: pending.sessionCorrect,
+        phase: pending.phase,
+        returnHref: pending.returnHref || '/math/ny/plan',
+        title: pending.title || '每日一练',
+        immersive: pending.immersive,
+      })
+      return true
+    }
+
+    const local = readMathPracticeSnapshot()
+
+    if (!userId) {
+      // The portal needs auth. Wait for it if there's something to resume.
+      if (local) return
+      setResumeChecked(true)
+      return
+    }
+
+    let timer: number | undefined
+
+    void (async () => {
+      // Always go through resolve so pickBestPending can prefer a newer revision
+      // from another device; the sync local read is only the timeout fallback.
+      const pending = await Promise.race([
+        resolveMathPracticeSnapshot(userId),
+        new Promise<null>((resolve) => {
+          timer = window.setTimeout(() => resolve(null), 2000)
+        }),
+      ])
+      if (timer !== undefined) window.clearTimeout(timer)
+      if (cancelled) return
+      const winner = pending ?? local
+      if (winner) tryResume(winner)
+      setResumeChecked(true)
+    })()
+
+    return () => {
+      cancelled = true
+      if (timer !== undefined) window.clearTimeout(timer)
+    }
+  }, [practiceActive, isLoading, resumeChecked, userId, problemSets, resume])
+
+  // Practice route: jump straight into today's first unfinished required problem.
+  useEffect(() => {
+    if (!autoStart || autoStartDoneRef.current || !resumeChecked || isLoading || !weeklyPlan) return
+    if (practiceActive) {
+      autoStartDoneRef.current = true
+      return
+    }
+    // start() / resume() no-op without auth — retry when user is ready.
+    if (!user) return
+
+    const date = selectedDate ?? today
+    const dayPlan = weeklyPlan.days.find((d) => d.date === date)
+    if (!dayPlan || dayPlan.problems.length === 0) {
+      autoStartDoneRef.current = true
+      return
+    }
+    const doneKeys = new Set((weeklyPlan.progress[date] ?? { doneKeys: [] }).doneKeys)
+    const firstUndone = dayPlan.problems.find((p) => !doneKeys.has(p.key))
+    // All required problems done — stay on the plan page; do not re-enter practice.
+    if (!firstUndone) {
+      autoStartDoneRef.current = true
+      return
+    }
+
+    const started = beginPractice(dayPlan.problems, firstUndone.problemId)
+    if (!started) return
+    autoStartDoneRef.current = true
+  }, [
+    autoStart,
+    resumeChecked,
+    isLoading,
+    weeklyPlan,
+    selectedDate,
+    today,
+    beginPractice,
+    practiceActive,
+    user,
+  ])
 
   const allPlanProblems: MathPlanProblem[] = useMemo(() => {
     const cur = weeklyPlan
@@ -256,6 +377,45 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
       markWeeklyLessonDone(weeklyLessonProblem.key)
     }
   }, [solveCount, weeklyLessonProblem, weeklyLessonIsDone, markWeeklyLessonDone])
+
+  // One batched draft-presence load for the selected day (avoids N per-card fetches).
+  // Must stay above early returns (Rules of Hooks).
+  const dayDraftProblemIds = useMemo(() => {
+    if (!weeklyPlan || !selectedDate) return [] as string[]
+    const day = weeklyPlan.days.find((d) => d.date === selectedDate)
+    if (!day) return [] as string[]
+    const ids: string[] = [
+      ...day.problems.map((p) => p.problemId),
+      ...day.optionalProblems.map((p) => p.problemId),
+      ...(wrongByDay[selectedDate] ?? []).map((p) => p.problemId),
+      ...rotatingReviews.map((p) => p.problemId),
+    ]
+    for (const key of reviewKeys[selectedDate] ?? []) {
+      const found = allProblemMap[key]
+      if (found) ids.push(found.problemId)
+    }
+    if (weeklyLessonProblem) ids.push(weeklyLessonProblem.problemId)
+    return ids
+  }, [
+    weeklyPlan,
+    selectedDate,
+    wrongByDay,
+    rotatingReviews,
+    reviewKeys,
+    allProblemMap,
+    weeklyLessonProblem,
+  ])
+
+  const [draftRefreshKey, setDraftRefreshKey] = useState(0)
+  const wasPracticeActive = useRef(false)
+  useEffect(() => {
+    if (wasPracticeActive.current && !practiceActive) {
+      setDraftRefreshKey((k) => k + 1)
+    }
+    wasPracticeActive.current = practiceActive
+  }, [practiceActive])
+
+  const { draftProblemIds } = useViewableDraftIds(user, dayDraftProblemIds, draftRefreshKey)
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {
@@ -514,6 +674,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                       prob={prob}
                       done={doneKeys.has(prob.key)}
                       isWrong={wrongIds.has(prob.problemId)}
+                      problemSets={problemSets}
+                      hasDraft={draftProblemIds.has(prob.problemId)}
                       onPractice={
                         doneKeys.has(prob.key)
                           ? undefined
@@ -548,6 +710,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                           prob={prob}
                           done={!wrongIds.has(prob.problemId)}
                           isWrong
+                          problemSets={problemSets}
+                          hasDraft={draftProblemIds.has(prob.problemId)}
                           onPractice={
                             wrongIds.has(prob.problemId)
                               ? () => beginPractice(extraWrong, prob.problemId, '错题巩固')
@@ -582,6 +746,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                           prob={prob}
                           done={isCompletedToday(prob.key)}
                           isReview
+                          problemSets={problemSets}
+                          hasDraft={draftProblemIds.has(prob.problemId)}
                           onPractice={
                             isCompletedToday(prob.key)
                               ? undefined
@@ -613,6 +779,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                             prob={found}
                             done={doneKeys.has(key)}
                             isReview
+                            problemSets={problemSets}
+                            hasDraft={draftProblemIds.has(found.problemId)}
                             onPractice={
                               doneKeys.has(key)
                                 ? undefined
@@ -639,6 +807,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
                 totalCount={(priorLessonProbs[weeklyLessonId!] ?? []).length}
                 isDone={weeklyLessonIsDone}
                 onSkip={markWeeklyLessonSkipped}
+                problemSets={problemSets}
+                hasDraft={draftProblemIds.has(weeklyLessonProblem.problemId)}
                 onPractice={
                   weeklyLessonIsDone
                     ? undefined
@@ -657,6 +827,8 @@ export default function MathWeeklyPlanSession({ problemSets }: Props) {
               <OptionalSection
                 problems={dayPlan.optionalProblems}
                 doneKeys={doneKeys}
+                problemSets={problemSets}
+                draftProblemIds={draftProblemIds}
                 onPractice={(prob) =>
                   beginPractice(dayPlan.optionalProblems, prob.problemId, '选做题')
                 }

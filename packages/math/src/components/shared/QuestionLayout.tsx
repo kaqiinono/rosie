@@ -1,14 +1,55 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type { Problem } from '@rosie/core'
 import ProblemNotesPanel from '@rosie/math/components/shared/ProblemNotesPanel'
+
+type SolutionToggleContextValue = {
+  node: React.ReactNode
+  /** Registers a renderer of the toggle; returns the unregister function. */
+  claim: () => () => void
+}
+
+const SolutionToggleContext = createContext<SolutionToggleContextValue | null>(null)
+
+/**
+ * Place the 查看题解 control next to 检查答案 (or other answer actions).
+ * Pass `claim: true` only from the component that will render the control,
+ * so QuestionLayout can hide its fallback row.
+ */
+export function useClaimSolutionToggle(claim = true): React.ReactNode {
+  const ctx = useContext(SolutionToggleContext)
+  useLayoutEffect(() => {
+    if (!claim || !ctx?.node) return
+    return ctx.claim()
+  }, [claim, ctx])
+  return ctx?.node ?? null
+}
 
 interface QuestionLayoutProps {
   question: React.ReactNode
   solution: React.ReactNode
   answer: React.ReactNode
   defaultSolutionOpen?: boolean
+  /**
+   * When false, hides the 查看题解 toggle until the first answer attempt.
+   * Practice and lesson detail should pass `hasAttempted`; defaults to true for legacy pages.
+   */
+  solutionAvailable?: boolean
+  /**
+   * When false, keeps the solution panel (if available) but hides 查看/收起题解.
+   * Used after 不会 when 题解 is already open and 下一题 replaces the toggle.
+   */
+  showSolutionToggle?: boolean
   /** When set, loads DB-backed notes for this problem below the answer area. */
   problemId?: string
   /** Enables in-place note editing on problem detail for logged-in users. */
@@ -20,16 +61,24 @@ export default function QuestionLayout({
   solution,
   answer,
   defaultSolutionOpen = false,
+  solutionAvailable = true,
+  showSolutionToggle = true,
   problemId,
   problem,
 }: QuestionLayoutProps) {
-  const [solutionOpen, setSolutionOpen] = useState(defaultSolutionOpen)
+  const [solutionOpen, setSolutionOpen] = useState(defaultSolutionOpen && solutionAvailable)
   const solutionRef = useRef<HTMLDivElement>(null)
   const [solutionHeight, setSolutionHeight] = useState(0)
+  // Reference-counted rather than a boolean reset by an effect: the claim happens in a
+  // child's layout effect while any reset would run in the parent's, which always comes
+  // later — so a boolean settles on "unclaimed" and the fallback row renders a second
+  // 查看题解 button next to the claimed one.
+  const [claimCount, setClaimCount] = useState(0)
+  const toggleClaimed = claimCount > 0
 
   useEffect(() => {
-    setSolutionOpen(defaultSolutionOpen)
-  }, [defaultSolutionOpen])
+    setSolutionOpen(solutionAvailable ? defaultSolutionOpen : false)
+  }, [defaultSolutionOpen, solutionAvailable])
 
   useEffect(() => {
     const el = solutionRef.current
@@ -55,48 +104,69 @@ export default function QuestionLayout({
     }
   }, [problemId, solutionOpen])
 
+  const claim = useCallback(() => {
+    setClaimCount((c) => c + 1)
+    return () => setClaimCount((c) => c - 1)
+  }, [])
+
+  const toggleEnabled = solutionAvailable && showSolutionToggle
+
+  const toggleCtx = useMemo((): SolutionToggleContextValue | null => {
+    if (!toggleEnabled) return null
+    return {
+      claim,
+      node: (
+        <button
+          type="button"
+          className={`ql-toggle-btn ${solutionOpen ? 'ql-toggle-btn--open' : ''}`}
+          onClick={() => setSolutionOpen((v) => !v)}
+          aria-expanded={solutionOpen}
+        >
+          <span className="ql-toggle-text">{solutionOpen ? '收起题解' : '查看题解'}</span>
+          <span className="ql-toggle-icon" aria-hidden="true">
+            {solutionOpen ? '▲' : '▼'}
+          </span>
+        </button>
+      ),
+    }
+  }, [toggleEnabled, solutionOpen, claim])
+
+  const toggleButton = toggleCtx?.node ?? null
+
   return (
-    <div className="question-layout">
-      {/* ── Section 1: 题目 ── */}
-      <section className="ql-question">
-        <div className="ql-question-body">{question}</div>
+    <SolutionToggleContext.Provider value={toggleCtx}>
+      <div className="question-layout">
+        {/* ── Section 1: 题目 ── */}
+        <section className="ql-question">
+          <div className="ql-question-body">{question}</div>
+        </section>
 
-        {/* Toggle 按钮 */}
-        <div className="ql-toggle-row">
-          <button
-            className={`ql-toggle-btn ${solutionOpen ? 'ql-toggle-btn--open' : ''}`}
-            onClick={() => setSolutionOpen((v) => !v)}
-            aria-expanded={solutionOpen}
+        {/* ── Section 2: 答案（查看题解紧挨检查答案，由 NumericAnswerPanel 认领） ── */}
+        <section className="ql-answer">
+          <div className="ql-answer-body">{answer}</div>
+          {toggleEnabled && !toggleClaimed ? (
+            <div className="ql-toggle-row">{toggleButton}</div>
+          ) : null}
+        </section>
+
+        {/* ── Section 3: 题解（答题区下方折叠展开） ── */}
+        {solutionAvailable ? (
+          <section
+            className="ql-solution"
+            style={{
+              maxHeight: solutionOpen ? `${solutionHeight}px` : '0px',
+            }}
+            aria-hidden={!solutionOpen}
           >
-            <span className="ql-toggle-text">{solutionOpen ? '收起题解' : '查看题解'}</span>
-            <span className="ql-toggle-icon" aria-hidden="true">
-              {solutionOpen ? '▲' : '▼'}
-            </span>
-          </button>
-        </div>
-      </section>
+            <div className="ql-solution-inner" ref={solutionRef}>
+              <div className="ql-solution-body">{solution}</div>
+            </div>
+          </section>
+        ) : null}
 
-      {/* ── Section 2: 题解（折叠动画） ── */}
-      <section
-        className="ql-solution"
-        style={{
-          maxHeight: solutionOpen ? `${solutionHeight}px` : '0px',
-        }}
-        aria-hidden={!solutionOpen}
-      >
-        <div className="ql-solution-inner" ref={solutionRef}>
-          <div className="ql-solution-body">{solution}</div>
-        </div>
-      </section>
+        {problemId ? <ProblemNotesPanel problemId={problemId} problem={problem} /> : null}
 
-      {/* ── Section 3: 答案 ── */}
-      <section className="ql-answer">
-        <div className="ql-answer-body">{answer}</div>
-      </section>
-
-      {problemId ? <ProblemNotesPanel problemId={problemId} problem={problem} /> : null}
-
-      <style>{`
+        <style>{`
         /* ─── 容器 ─── */
         .question-layout {
           display: flex;
@@ -157,6 +227,7 @@ export default function QuestionLayout({
         }
         .ql-toggle-row {
           width: 100%;
+          margin-top: 12px;
           text-align: right;
           flex-shrink: 0;
         }
@@ -208,7 +279,7 @@ export default function QuestionLayout({
           overflow: hidden;
           transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
           background: #fffdf4;
-          border-bottom: 1.5px solid #f5e8c0;
+          border-top: 1.5px solid #f5e8c0;
         }
         .ql-solution-inner {
           padding: 22px 28px 20px;
@@ -243,7 +314,7 @@ export default function QuestionLayout({
           .ql-toggle-btn { background: #2e2940; border-color: #5040a0; color: #b8a8ff; }
           .ql-toggle-btn:hover { background: #3a3355; }
           .ql-toggle-btn--open { background: #6c4fff; border-color: #6c4fff; color: #fff; }
-          .ql-solution { background: #26231a; border-bottom-color: #3a3222; }
+          .ql-solution { background: #26231a; border-top-color: #3a3222; }
           .ql-solution-body { color: #e8d8a0; }
           .ql-answer { background: #1a2420; }
           .ql-answer-body { color: #7adea8; }
@@ -260,6 +331,7 @@ export default function QuestionLayout({
           .ql-answer-body { font-size: 14.5px; }
         }
       `}</style>
-    </div>
+      </div>
+    </SolutionToggleContext.Provider>
   )
 }

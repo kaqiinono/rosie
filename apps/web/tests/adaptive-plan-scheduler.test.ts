@@ -11,6 +11,7 @@ import {
   resolveMode,
   buildDailyTask,
   isPlanCompletable,
+  summarizeAdaptiveTodayProgress,
 } from '../../../packages/english/src/utils/adaptivePlanScheduler'
 
 const TODAY = '2026-07-09'
@@ -229,30 +230,83 @@ describe('buildDailyTask', () => {
     expect(task.bossKeys).toEqual([])
   })
 
-  it('deducts words already activated today from the daily quota', () => {
+  it('still offers a full fresh batch after today\'s goal was already settled (ahead learning)', () => {
     const plan = basePlan({ newWordsPerDay: 3 })
     const rows = [
-      // Two words already introduced today in an earlier round…
-      row('done1', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
+      // Settled earlier today — goal progress, but must not block the next round.
+      row('done1', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
       row('done2', { status: 'MASTERED', introducedOn: TODAY }),
-      // …plus a backlog of fresh candidates.
+      row('done3', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
       row('ns1', { status: 'NOT_STARTED' }),
       row('ns2', { status: 'NOT_STARTED' }),
       row('ns3', { status: 'NOT_STARTED' }),
+      row('ns4', { status: 'NOT_STARTED' }),
     ]
     const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual(['ns1'])
+    expect(task.activateKeys).toEqual(['ns1', 'ns2', 'ns3'])
   })
 
-  it('stops pulling new words once the daily quota is exhausted', () => {
+  it('keeps unfinished same-day activations on today\'s activate list', () => {
+    // Unfinished fill the batch first — no room for fresh ns1.
+    const plan = basePlan({ newWordsPerDay: 2 })
+    const rows = [
+      // Legacy abandoned activate: still Box 1, next pushed to tomorrow, never settled.
+      row('stuck1', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+        streakWrong: 0,
+      }),
+      row('stuck2', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        introducedOn: TODAY,
+        nextReviewDate: TODAY,
+        streakWrong: 0,
+      }),
+      row('ns1', { status: 'NOT_STARTED' }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.activateKeys).toEqual(['stuck1', 'stuck2'])
+    expect(task.reviewKeys).not.toContain('stuck1')
+    expect(task.reviewKeys).not.toContain('stuck2')
+  })
+
+  it('fills remaining batch slots with fresh words when some activations are unfinished', () => {
+    const plan = basePlan({ newWordsPerDay: 3 })
+    const rows = [
+      row('stuck', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        introducedOn: TODAY,
+        nextReviewDate: TODAY,
+        streakWrong: 0,
+      }),
+      row('ns1', { status: 'NOT_STARTED' }),
+      row('ns2', { status: 'NOT_STARTED' }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.activateKeys).toEqual(['stuck', 'ns1', 'ns2'])
+  })
+
+  it('still pulls a fresh batch even when today\'s goal count is already met', () => {
     const plan = basePlan({ newWordsPerDay: 2 })
     const rows = [
       row('done1', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
-      row('done2', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY, nextReviewDate: TODAY }),
+      // Settled wrong earlier today — due again, but not an unfinished activation.
+      row('done2', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        introducedOn: TODAY,
+        nextReviewDate: TODAY,
+        streakWrong: 1,
+      }),
       row('ns', { status: 'NOT_STARTED' }),
     ]
     const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual([])
+    expect(task.activateKeys).toEqual(['ns'])
+    expect(task.reviewKeys).toContain('done2')
   })
 
   it('counts activations only for today (yesterday does not consume quota)', () => {
@@ -361,6 +415,113 @@ describe('buildDailyTask', () => {
     )
     const task = buildDailyTask(plan, rows, TODAY)
     expect(task.bossKeys).toHaveLength(50)
+  })
+})
+
+describe('summarizeAdaptiveTodayProgress', () => {
+  it('counts 0 when today\'s activations were never settled', () => {
+    const plan = basePlan({ newWordsPerDay: 5 })
+    const rows = Array.from({ length: 5 }, (_, i) =>
+      row(`w${i}`, {
+        status: 'LEARNING',
+        boxIndex: 1,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+        streakWrong: 0,
+      }),
+    )
+    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
+    expect(summary.done).toBe(0)
+    expect(summary.total).toBe(5)
+    expect(summary.allDone).toBe(false)
+    expect(summary.unfinishedCount).toBe(5)
+    expect(summary.subtitle).toContain('待练完')
+  })
+
+  it('counts settled activations toward done', () => {
+    const plan = basePlan({ newWordsPerDay: 5 })
+    const rows = [
+      row('a', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+        streakWrong: 0,
+      }),
+      row('b', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+        streakWrong: 0,
+      }),
+      row('ns', { status: 'NOT_STARTED' }),
+    ]
+    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
+    expect(summary.done).toBe(2)
+    expect(summary.total).toBe(5)
+    expect(summary.allDone).toBe(false)
+  })
+
+  it('marks the daily goal done while still offering ahead-learning batches', () => {
+    const plan = basePlan({ newWordsPerDay: 2 })
+    const rows = [
+      row('a', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+        streakWrong: 0,
+      }),
+      row('b', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+        streakWrong: 0,
+      }),
+      row('ns1', { status: 'NOT_STARTED' }),
+      row('ns2', { status: 'NOT_STARTED' }),
+    ]
+    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
+    expect(summary.done).toBe(2)
+    expect(summary.total).toBe(2)
+    expect(summary.allDone).toBe(true)
+    expect(summary.activateCount).toBe(2)
+    expect(summary.subtitle).toContain('可提前继续学')
+  })
+
+  it('includes due reviews in total so done/total stay consistent', () => {
+    const plan = basePlan({ newWordsPerDay: 5 })
+    const rows = [
+      // 5 new words settled today
+      ...Array.from({ length: 5 }, (_, i) =>
+        row(`new${i}`, {
+          status: 'LEARNING',
+          boxIndex: 2,
+          introducedOn: TODAY,
+          nextReviewDate: '2026-07-10',
+          streakWrong: 0,
+        }),
+      ),
+      // 5 older words due for review today
+      ...Array.from({ length: 5 }, (_, i) =>
+        row(`rev${i}`, {
+          status: 'LEARNING',
+          boxIndex: 2,
+          introducedOn: '2026-07-01',
+          nextReviewDate: TODAY,
+          streakWrong: 0,
+        }),
+      ),
+      row('ns', { status: 'NOT_STARTED' }),
+    ]
+    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
+    expect(summary.allDone).toBe(false)
+    expect(summary.done).toBe(5)
+    expect(summary.total).toBe(10)
+    expect(summary.reviewCount).toBe(5)
+    expect(summary.done + summary.reviewCount).toBe(summary.total)
   })
 })
 

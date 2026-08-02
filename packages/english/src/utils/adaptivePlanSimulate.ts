@@ -2,7 +2,7 @@ import type { QuizType } from '@rosie/core'
 import { activateWord } from './adaptivePlanBoxes'
 import { mapWordToPlanInit } from './adaptivePlanInit'
 import { bossQuizTypesForWord, quizTypesForWord } from './adaptivePlanQuizTypes'
-import { buildDailyTask } from './adaptivePlanScheduler'
+import { buildDailyTask, summarizeAdaptiveTodayProgress } from './adaptivePlanScheduler'
 import { settleBossFirstPass, settleStep3 } from './adaptivePlanSettle'
 import { adaptiveBoxStage } from './adaptivePlanStages'
 import type {
@@ -303,8 +303,90 @@ function buildTouches(args: {
 }
 
 /**
+ * Replay a day that is already finished in saved progress (no forward scheduler call).
+ * New words = settled activations dated today. Same-day reviews are not logged in progress
+ * rows, so reviewKeys stay empty unless the caller passes them.
+ */
+function buildCompletedDayFromProgress(args: {
+  dayIndex: number
+  date: string
+  plan: AdaptiveWordPlan
+  rows: AdaptivePlanWordProgress[]
+  activateKeys: string[]
+  reviewKeys?: string[]
+}): SimDaySnapshot {
+  const reviewKeys = args.reviewKeys ?? []
+  const activateKeys = args.activateKeys
+  const rowsAfter = new Map(args.rows.map((r) => [r.wordKey, r]))
+  const rowsBefore = new Map(
+    args.rows.map((r) => {
+      if (!activateKeys.includes(r.wordKey)) return [r.wordKey, r] as const
+      // Approximate pre-activation shape for touch labels.
+      return [
+        r.wordKey,
+        {
+          ...r,
+          status: 'NOT_STARTED' as const,
+          boxIndex: null,
+          targetBox: null,
+          nextReviewDate: null,
+          introducedOn: null,
+        },
+      ] as const
+    }),
+  )
+
+  const touches = buildTouches({
+    rowsBefore,
+    rowsAfter,
+    reviewKeys,
+    activateKeys,
+    bossKeys: [],
+    mode: 'normal',
+    bossTier: args.plan.stats.bossQuestionTier,
+    today: args.date,
+  })
+  const tallyNow = tally(args.rows)
+  const newN = activateKeys.length
+  const revN = reviewKeys.length
+  const note =
+    revN > 0
+      ? `今日目标已完成（按已保存进度回放）· 新学 ${newN} 词 + 复习 ${revN} 词`
+      : `今日目标已完成（按已保存进度回放）· 新学 ${newN} 词`
+
+  return {
+    dayIndex: args.dayIndex,
+    date: args.date,
+    mode: 'normal',
+    newWordKeys: activateKeys,
+    reviewWordKeys: reviewKeys,
+    bossWordKeys: [],
+    touches,
+    studyCount: newN,
+    totalQuestions: touches.reduce((sum, t) => sum + t.questionCount, 0),
+    promotedCount: 0,
+    masteredToday: args.rows
+      .filter((r) => r.status === 'MASTERED' && r.introducedOn === args.date)
+      .map((r) => r.wordKey),
+    cumulative: {
+      ...tallyNow,
+      totalActivated: args.plan.stats.totalActivatedCount,
+      everActivated: args.plan.stats.everActivatedCount,
+    },
+    planModeAfter: args.plan.mode,
+    bossFailStreak: args.plan.stats.bossFailStreak,
+    note,
+  }
+}
+
+/**
  * Deterministic ideal-path simulation: one full round per calendar day, all answers correct.
  * Uses the same scheduler + settle helpers as the live session.
+ *
+ * When resuming from live progress and today's daily goal is already settled (no remaining
+ * due review/Boss work), D1 is a **replay** of today's saved activations, then projection
+ * continues from tomorrow. Live `buildDailyTask` would still offer 提前学; counting that as
+ * tomorrow's prior day would inflate later review piles.
  */
 export function simulateAdaptivePlan(
   options: SimulateAdaptivePlanOptions,
@@ -313,7 +395,7 @@ export function simulateAdaptivePlan(
     plan: inputPlan,
     wordKeys,
     initialRows,
-    startDate = '2026-07-01',
+    startDate: inputStartDate = '2026-07-01',
     maxDays = 400,
     allCorrect = true,
     captureStageMatrix = false,
@@ -343,9 +425,38 @@ export function simulateAdaptivePlan(
     ? initialRows.map((row) => ({ ...row }))
     : initRowsFromKeys(plan, wordKeys)
 
+  const days: SimDaySnapshot[] = []
+  let forwardStartDate = inputStartDate
+  let dayIndexOffset = 0
+
+  if (resumedFromProgress) {
+    const todayProgress = summarizeAdaptiveTodayProgress(plan, rows, inputStartDate)
+    if (todayProgress.allDone) {
+      const activatedToday = rows
+        .filter(
+          (r) =>
+            r.archivedAt == null &&
+            r.introducedOn === inputStartDate &&
+            (r.status === 'LEARNING' || r.status === 'MASTERED'),
+        )
+        .map((r) => r.wordKey)
+      const completedDay = buildCompletedDayFromProgress({
+        dayIndex: 1,
+        date: inputStartDate,
+        plan,
+        rows,
+        activateKeys: activatedToday,
+      })
+      days.push(completedDay)
+      pushMatrixDay(1, inputStartDate, rows)
+      dayIndexOffset = 1
+      forwardStartDate = addDays(inputStartDate, 1)
+    }
+  }
+
   const baselineTally = tally(rows)
   const baseline: SimBaseline = {
-    date: startDate,
+    date: inputStartDate,
     mode: plan.mode,
     tally: {
       ...baselineTally,
@@ -356,7 +467,6 @@ export function simulateAdaptivePlan(
     bossQuestionTier: plan.stats.bossQuestionTier,
   }
 
-  const days: SimDaySnapshot[] = []
   const wordMasteryDay = new Map<string, number>()
 
   // Words already mastered before projection — anchor mastery day at 0.
@@ -364,8 +474,9 @@ export function simulateAdaptivePlan(
     if (row.status === 'MASTERED') wordMasteryDay.set(row.wordKey, 0)
   }
 
-  for (let dayIndex = 1; dayIndex <= maxDays; dayIndex += 1) {
-    const date = addDays(startDate, dayIndex - 1)
+  for (let step = 1; step <= maxDays; step += 1) {
+    const dayIndex = step + dayIndexOffset
+    const date = addDays(forwardStartDate, step - 1)
     const rowsBefore = new Map(rows.map((r) => [r.wordKey, { ...r }]))
     const task = buildDailyTask(plan, rows, date)
 
