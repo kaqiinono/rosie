@@ -1,0 +1,169 @@
+import { describe, it, expect } from 'vitest'
+import { buildSession } from '@rosie/calc'
+import type { CalcMistake, CalcProblemState, CalcSettings } from '@rosie/core'
+
+function baseSettings(over: Partial<CalcSettings> = {}): CalcSettings {
+  return {
+    countMode: 'manual',
+    selectedBlocks: [{ id: 'add:10', count: 1, seconds: 0 }],
+    mixedOps: [],
+    soundEnabled: false,
+    includeInverse: false,
+    verticalForBigNumbers: true,
+    timedAnswerEnabled: false,
+    immersiveMode: false,
+    lastCount: 1,
+    sessionCounter: 1,
+    timingMode: 'relaxed',
+    bonusSec: 0,
+    autoSubmitOnMatch: true,
+    ...over,
+  }
+}
+
+describe('buildSession carried 竖式 restore', () => {
+  it('restores vertical from problem_state.blockId', () => {
+    const sig = 'mul(346,7)'
+    const states = new Map<string, CalcProblemState>([
+      [
+        sig,
+        {
+          signature: sig,
+          level: 1,
+          proficiency: 1,
+          attemptCount: 2,
+          appearanceCount: 2,
+          recentResults: [],
+          status: 'practicing',
+          consecutiveWrong: 1,
+          consecutiveCorrect: 0,
+          updatedAt: new Date().toISOString(),
+          blockId: 'mul:3d1d-c',
+        },
+      ],
+    ])
+    const carried: CalcMistake[] = [
+      {
+        signature: sig,
+        display: '346 × 7',
+        answer: { kind: 'int', value: 2422 },
+        level: 1,
+        category: 'muldiv',
+        lastWrongAt: new Date().toISOString(),
+        consecutiveCorrect: 0,
+        resolved: false,
+        sessionNo: 1,
+      },
+    ]
+    const session = buildSession(baseSettings(), { problemStates: states }, carried)
+    const q = session.find((x) => x.signature === sig)
+    expect(q).toBeTruthy()
+    expect(q!.sourceBlockId).toBe('mul:3d1d-c')
+    expect(q!.answerMode).toBe('vertical')
+  })
+
+  it('infers vertical for 3d×1d when blockId is missing', () => {
+    const sig = 'mul(512,6)'
+    const carried: CalcMistake[] = [
+      {
+        signature: sig,
+        display: '512 × 6',
+        answer: { kind: 'int', value: 3072 },
+        level: 1,
+        category: 'muldiv',
+        lastWrongAt: new Date().toISOString(),
+        consecutiveCorrect: 0,
+        resolved: false,
+        sessionNo: 1,
+      },
+    ]
+    const session = buildSession(
+      baseSettings(),
+      { problemStates: new Map() },
+      carried,
+    )
+    const q = session.find((x) => x.signature === sig)
+    expect(q!.sourceBlockId).toBe('mul:3d1d-c')
+    expect(q!.answerMode).toBe('vertical')
+  })
+
+  it('1000-within add/sub: vertical only when carry/borrow', () => {
+    const states = new Map<string, CalcProblemState>()
+    const mkState = (sig: string, blockId: string): void => {
+      states.set(sig, {
+        signature: sig,
+        level: 1,
+        proficiency: 1,
+        attemptCount: 1,
+        appearanceCount: 1,
+        recentResults: [],
+        status: 'practicing',
+        consecutiveWrong: 0,
+        consecutiveCorrect: 0,
+        updatedAt: new Date().toISOString(),
+        blockId,
+      })
+    }
+    mkState('add(123,456)', 'add:1000') // no carry
+    mkState('add(178,256)', 'add:1000') // ones carry
+    mkState('sub(586,123)', 'sub:1000') // no borrow
+    mkState('sub(501,123)', 'sub:1000') // borrow
+    const carried: CalcMistake[] = [
+      { signature: 'add(123,456)', display: '123 + 456', answer: { kind: 'int', value: 579 }, level: 1, category: 'addsub', lastWrongAt: '', consecutiveCorrect: 0, resolved: false, sessionNo: 1 },
+      { signature: 'add(178,256)', display: '178 + 256', answer: { kind: 'int', value: 434 }, level: 1, category: 'addsub', lastWrongAt: '', consecutiveCorrect: 0, resolved: false, sessionNo: 1 },
+      { signature: 'sub(586,123)', display: '586 − 123', answer: { kind: 'int', value: 463 }, level: 1, category: 'addsub', lastWrongAt: '', consecutiveCorrect: 0, resolved: false, sessionNo: 1 },
+      { signature: 'sub(501,123)', display: '501 − 123', answer: { kind: 'int', value: 378 }, level: 1, category: 'addsub', lastWrongAt: '', consecutiveCorrect: 0, resolved: false, sessionNo: 1 },
+    ]
+    const session = buildSession(
+      baseSettings({
+        selectedBlocks: [{ id: 'add:10', count: 4, seconds: 0 }],
+        lastCount: 4,
+      }),
+      { problemStates: states },
+      carried,
+    )
+    expect(session.find((q) => q.signature === 'add(123,456)')!.answerMode).not.toBe('vertical')
+    expect(session.find((q) => q.signature === 'add(178,256)')!.answerMode).toBe('vertical')
+    expect(session.find((q) => q.signature === 'sub(586,123)')!.answerMode).not.toBe('vertical')
+    expect(session.find((q) => q.signature === 'sub(501,123)')!.answerMode).toBe('vertical')
+  })
+
+  it('keeps strategy carry on number pad even with vertical switch on', () => {
+    const sig = 'add(72,28)'
+    const states = new Map<string, CalcProblemState>([
+      [
+        sig,
+        {
+          signature: sig,
+          level: 1,
+          proficiency: 1,
+          attemptCount: 2,
+          appearanceCount: 2,
+          recentResults: [],
+          status: 'practicing',
+          consecutiveWrong: 1,
+          consecutiveCorrect: 0,
+          updatedAt: new Date().toISOString(),
+          blockId: 'add:100-comp',
+        },
+      ],
+    ])
+    const carried: CalcMistake[] = [
+      {
+        signature: sig,
+        display: '72 + 28',
+        answer: { kind: 'int', value: 100 },
+        level: 1,
+        category: 'addsub',
+        lastWrongAt: new Date().toISOString(),
+        consecutiveCorrect: 0,
+        resolved: false,
+        sessionNo: 1,
+      },
+    ]
+    const session = buildSession(baseSettings(), { problemStates: states }, carried)
+    const q = session.find((x) => x.signature === sig)
+    expect(q!.sourceBlockId).toBe('add:100-comp')
+    expect(q!.answerMode).not.toBe('vertical')
+  })
+})

@@ -70,7 +70,7 @@ weakness weight. Per-signature state in `calc_problem_state`:
 | Concept | Mechanism |
 |---------|-----------|
 | **Unseen prefer** | Finite 2–9 mul/div + `add:100-comp`: coverage slot from `enumerateFinite` − practiced |
-| **Lagging** | `effectiveLimitSec` / `resolveTargetSec` — cognitive target (explicit seconds honored only when `timedAnswerEnabled`); UI clock optional via `resolveClockSec` |
+| **Lagging** | `effectiveLimitSec` / `resolveTargetSec` — cognitive target (explicit seconds honored only when `timedAnswerEnabled`); UI clock via `resolveClockSec` (relaxed soft `T_target`) |
 | **Mastered** | Within-limit streak `consecutiveCorrect >= 3`; excluded from daily pool; ~5% recall via SQL-truncated candidates (`fetchMasteredRecallCandidates` → `BuildCtx.recallCandidates`; no full mastered scan in `generateBlock`) |
 | **Cold start** | Infinite blocks with `< 50` states: all `generateSingle` until pool grows |
 | **Sync** | `applyMasterySideEffects`: dual `patchSessionData` same stack, then remote upsert |
@@ -86,7 +86,7 @@ Three modes in `calc-session-policy.ts`:
 
 | Mode | Clock (`T_clock`) | At 0 | Star multiplier |
 |------|-------------------|------|-----------------|
-| `relaxed` | optional (timed toggle + explicit sec) | no auto-advance | ×1.0 |
+| `relaxed` | `T_target` (soft clock) | no auto-advance; past 0 keeps counting overtime (−m:ss) in red | ×1.0 |
 | `strict` | `T_target` | final wrong | ×1.2 |
 | `bonus` | `T_target + bonusSec` | final wrong | `max(1, 1.2 − 0.05×bonusSec)` |
 

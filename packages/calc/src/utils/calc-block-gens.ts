@@ -23,6 +23,37 @@ export function hasAnyCarry(a: number, k: number): boolean {
   return mulCarryMask(a, k).some(Boolean)
 }
 
+/** Column addition: any digit sum (with incoming carry) ≥ 10. */
+export function addHasCarry(a: number, b: number): boolean {
+  let x = Math.abs(Math.trunc(a))
+  let y = Math.abs(Math.trunc(b))
+  let carry = 0
+  while (x > 0 || y > 0) {
+    const s = (x % 10) + (y % 10) + carry
+    if (s >= 10) return true
+    carry = 0
+    x = Math.floor(x / 10)
+    y = Math.floor(y / 10)
+  }
+  return false
+}
+
+/** Column subtraction a − b (a ≥ b): any digit needs a borrow. */
+export function subHasBorrow(a: number, b: number): boolean {
+  let x = Math.abs(Math.trunc(a))
+  let y = Math.abs(Math.trunc(b))
+  let borrow = 0
+  while (x > 0 || y > 0) {
+    const da = (x % 10) - borrow
+    const db = y % 10
+    if (da < db) return true
+    borrow = 0
+    x = Math.floor(x / 10)
+    y = Math.floor(y / 10)
+  }
+  return false
+}
+
 /** Adjacent run of carries of length >= minRun (default 2). Zero digits never carry. */
 export function hasConsecutiveCarries(a: number, k: number, minRun = 2): boolean {
   const mask = mulCarryMask(a, k)

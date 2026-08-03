@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
+import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import { useCalcSettings } from '../hooks/useCalcSettings'
 import CalcAppHeader from '../components/CalcAppHeader'
 import { skeletonMeta } from '../utils/calc-mixed'
-import { supabase } from '@rosie/core'
 import {
   sourceStats,
   weeklyAggregates,
@@ -18,7 +18,9 @@ import {
   type OpGroupStat,
 } from '../utils/calc-report-stats'
 import { TIER_LABEL, TIER_ORDER, suggestedTiers, type Tier } from '../utils/calc-time-targets'
-import type { CalcProblemState, CalcSession } from '@rosie/core'
+import { signatureToDisplay } from '../utils/calc-ast'
+import { ERROR_TAG_LABELS } from '../utils/calc-diagnose'
+import type { CalcProblemState, CalcSession, ErrorTag } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
 // ── CSS animations ─────────────────────────────────────────────────────────────
@@ -29,6 +31,28 @@ const ANIMATIONS = `
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes drawLine { to { stroke-dashoffset: 0; } }
+@keyframes sprintFlow {
+  /* 光带从左向右冲刺 */
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes sprintPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(74,222,128,0.5)); }
+  50% { filter: drop-shadow(0 0 10px rgba(74,222,128,0.95)); }
+}
+.calc-sprint-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(22,163,74,0.85) 0%,
+    rgba(74,222,128,0.95) 35%,
+    rgba(187,247,208,1) 50%,
+    rgba(74,222,128,0.95) 65%,
+    rgba(22,163,74,0.85) 100%
+  );
+  background-size: 200% 100%;
+  animation: sprintFlow 1.2s linear infinite, sprintPulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(74,222,128,0.65), 0 0 14px rgba(34,197,94,0.4);
+}
 `
 
 // ── design tokens ──────────────────────────────────────────────────────────────
@@ -78,8 +102,6 @@ function thursdayWeekStart(date: Date): string {
   d.setDate(d.getDate() - (d.getDay() - 4 + 7) % 7)
   return `${d.getFullYear()}-${padTwo(d.getMonth() + 1)}-${padTwo(d.getDate())}`
 }
-
-interface MistakeRow { error_tag: string | null; resolved: boolean; created_at: string }
 
 // ── Section 1 · 推荐练习 ───────────────────────────────────────────────────────
 
@@ -386,27 +408,177 @@ const TIER_DARK: Record<Tier, { color: string; bg: string; border: string }> = {
   auto:   { color: '#22d3ee', bg: 'rgba(34,211,238,0.1)',   border: 'rgba(34,211,238,0.18)'  },
 }
 
-const BAR_COLOR: Record<Tier, string> = {
-  entry: 'rgba(248,113,113,0.7)',
-  stable: 'rgba(251,191,36,0.55)',
-  fluent: 'rgba(74,222,128,0.55)',
-  auto: 'rgba(34,211,238,0.55)',
+/**
+ * Color by how close actual speed is to target (target/actual).
+ * ≥80% 绿+冲刺光效 · ≥50% 黄 · 低于50% 红
+ */
+function speedProximityColor(actualSec: number, targetSec: number): string {
+  if (targetSec <= 0 || actualSec <= 0) return 'rgba(255,255,255,0.25)'
+  const pct = (targetSec / actualSec) * 100
+  if (pct >= 80) return 'rgba(74,222,128,0.85)'    // 绿（≥80 用 .calc-sprint-bar）
+  if (pct >= 50) return 'rgba(251,191,36,0.8)'     // 黄
+  return 'rgba(248,113,113,0.85)'                  // 红
 }
 
-function TierBadge({ tier, small = false }: { tier: Tier; small?: boolean }) {
+/** Single bar: fill = 接近度；≥80% 绿色发光，光带从左向右冲刺。 */
+function TargetProximityBar({ actualSec, targetSec }: { actualSec: number; targetSec: number }) {
+  const proximity = Math.min(100, Math.round((targetSec / Math.max(actualSec, 0.01)) * 100))
+  const isSprint = proximity >= 80
+  const color = speedProximityColor(actualSec, targetSec)
+
+  return (
+    <div
+      style={{
+        flex: 1,
+        minWidth: 0,
+        height: 7,
+        background: 'rgba(255,255,255,0.06)',
+        borderRadius: 3,
+        overflow: 'visible',
+      }}
+      title={`实际 ${actualSec}s · 目标 ${targetSec}s · 接近度 ${proximity}%`}
+    >
+      <div
+        className={isSprint ? 'calc-sprint-bar' : undefined}
+        style={{
+          width: `${Math.max(4, proximity)}%`,
+          height: '100%',
+          borderRadius: 3,
+          background: isSprint ? undefined : color,
+        }}
+      />
+    </div>
+  )
+}
+
+function tierThresholdSec(tier: Tier, targetId: string): number | null {
+  const target = suggestedTiers(targetId)
+  return target ? target[tier][1] : null
+}
+
+/** Next-tier hi (升档线); falls back to current tier hi. */
+function nextTierTargetSec(tier: Tier | null, targetId: string): number | null {
+  const target = suggestedTiers(targetId)
+  if (!target || !tier) return null
+  const next = TIER_ORDER[TIER_ORDER.indexOf(tier) + 1] as Tier | undefined
+  return next ? target[next][1] : target[tier][1]
+}
+
+function TierBadge({ tier, secHi, small = false }: { tier: Tier; secHi?: number | null; small?: boolean }) {
   const t = TIER_DARK[tier]
   return (
     <span style={{ fontSize: small ? 8 : 9, fontWeight: 800, borderRadius: 6, padding: small ? '1px 5px' : '2px 6px', textAlign: 'center', color: t.color, background: t.bg, border: `1px solid ${t.border}`, whiteSpace: 'nowrap' }}>
-      {TIER_LABEL[tier]}
+      {TIER_LABEL[tier]}{secHi != null ? `(${secHi}s)` : ''}
     </span>
   )
 }
 
-function Section3({ groupStats, stats }: { groupStats: OpGroupStat[]; stats: SourceStat[] }) {
+/** Per-source breakthrough progress (merged from former「下一个突破口」). */
+function SourceBreakthroughCard({
+  s,
+  highlight,
+  onDrill,
+}: {
+  s: SourceStat
+  highlight: boolean
+  onDrill?: (url: string) => void
+}) {
+  if (s.insufficient) {
+    return (
+      <div style={{ padding: '8px 10px 8px 14px', borderRadius: 10, marginTop: 4, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(196,181,253,0.72)' }}>{s.label}</div>
+        <div style={{ fontSize: 10, color: C.textFaint, marginTop: 2 }}>数据不足</div>
+      </div>
+    )
+  }
+
+  const tier = s.tier
+  const curIdx = tier ? TIER_ORDER.indexOf(tier) : -1
+  const nextTier = curIdx >= 0 ? (TIER_ORDER[curIdx + 1] as Tier | undefined) : undefined
+  const targets = suggestedTiers(s.targetId)
+  const atTop = !tier || tier === 'auto' || !nextTier || s.gapSec <= 0
+  const bid = s.key.startsWith('block:') ? s.key.slice(6) : ''
+
+  if (atTop) {
+    return (
+      <div style={{
+        padding: '10px 12px 10px 14px',
+        borderRadius: 10,
+        marginTop: 4,
+        background: highlight ? C.blueGlass : 'rgba(255,255,255,0.02)',
+        border: `1px solid ${highlight ? C.blueBorder : 'rgba(255,255,255,0.05)'}`,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{s.label}</span>
+          {tier && <TierBadge tier={tier} secHi={tierThresholdSec(tier, s.targetId)} small />}
+          <span style={{ fontSize: 11, color: C.textDim, marginLeft: 'auto' }}>{s.avgSec}s</span>
+        </div>
+        <div style={{ fontSize: 11, color: C.green, marginTop: 4 }}>已达最高档</div>
+      </div>
+    )
+  }
+
+  const nextTierHi = targets ? targets[nextTier][1] : +(s.avgSec - s.gapSec).toFixed(1)
+  const proximity = Math.min(100, Math.round((nextTierHi / Math.max(s.avgSec, 0.01)) * 100))
+
+  return (
+    <div style={{
+      padding: '10px 12px 10px 14px',
+      borderRadius: 10,
+      marginTop: 4,
+      background: highlight ? C.blueGlass : 'rgba(255,255,255,0.02)',
+      border: `1px solid ${highlight ? C.blueBorder : 'rgba(255,255,255,0.05)'}`,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{s.label}</span>
+            {highlight && (
+              <span style={{ fontSize: 9, fontWeight: 800, color: C.blue, letterSpacing: '0.06em' }}>下一突破口</span>
+            )}
+            {tier && <TierBadge tier={tier} secHi={tierThresholdSec(tier, s.targetId)} small />}
+          </div>
+          <div style={{ fontSize: 11, color: C.textDim, marginTop: 4, lineHeight: 1.5 }}>
+            实际 <span style={{ color: C.text, fontWeight: 600 }}>{s.avgSec}s</span>
+            {' · '}
+            目标 <span style={{ color: C.text, fontWeight: 600 }}>{nextTierHi}s</span>
+            （{TIER_LABEL[nextTier]}）
+            {' · '}
+            再快 <span style={{ color: highlight ? C.blue : C.yellow, fontWeight: 700 }}>{s.gapSec}s</span>
+            <span style={{ marginLeft: 6, fontSize: 10, color: speedProximityColor(s.avgSec, nextTierHi) }}>
+              接近 {proximity}%
+            </span>
+          </div>
+        </div>
+        {highlight && onDrill && bid && (
+          <button
+            type="button"
+            onClick={() => onDrill(`/calc/session?drill=breakthrough&blockId=${bid}`)}
+            style={{ fontSize: 11, fontWeight: 700, color: C.blue, background: 'rgba(125,211,252,0.12)', border: '1px solid rgba(125,211,252,0.28)', borderRadius: 14, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+          >
+            去练 →
+          </button>
+        )}
+      </div>
+      <TargetProximityBar actualSec={s.avgSec} targetSec={nextTierHi} />
+    </div>
+  )
+}
+
+function Section3({
+  groupStats,
+  stats,
+  breakthroughSource,
+  onDrill,
+}: {
+  groupStats: OpGroupStat[]
+  stats: SourceStat[]
+  breakthroughSource: SourceStat | null
+  onDrill: (url: string) => void
+}) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   if (!groupStats.some(g => !g.insufficient)) return null
 
-  const maxAvg = Math.max(...groupStats.map(g => g.avgSec), 0.1)
   const toggle = (op: string) => setExpanded(prev => {
     const n = new Set(prev); if (n.has(op)) n.delete(op); else n.add(op); return n
   })
@@ -419,38 +591,75 @@ function Section3({ groupStats, stats }: { groupStats: OpGroupStat[]; stats: Sou
     <div>
       <span style={SH}>题型进展</span>
       <div style={baseCard}>
+        <div style={{ fontSize: 10, color: C.textDim, marginBottom: 10, lineHeight: 1.45 }}>
+          进度条=接近升档目标的程度（目标÷实际）：红不足50% · 黄≥50% · 绿冲刺≥80%
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          {groupStats.map(g => (
-            <div key={g.op}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 11, padding: '9px 11px', background: C.surface, border: `1px solid ${C.border}` }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: C.text, minWidth: 28 }}>{g.label}法</span>
-                <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ width: `${Math.round((g.avgSec / maxAvg) * 100)}%`, height: '100%', background: g.tier ? BAR_COLOR[g.tier] : 'rgba(255,255,255,0.2)', borderRadius: 3 }} />
+          {groupStats.map(g => {
+            const worstBlock = g.tier
+              ? g.blocks.find(b => b.tier === g.tier && !b.insufficient) ?? g.blocks.find(b => b.tier === g.tier)
+              : undefined
+            const groupSecHi = g.tier && worstBlock ? tierThresholdSec(g.tier, worstBlock.targetId) : null
+            const goalSec = worstBlock ? nextTierTargetSec(g.tier, worstBlock.targetId) : null
+            const isBtGroup = !!breakthroughSource && g.blocks.some(b => b.key === breakthroughSource.key)
+            const open = expanded.has(g.op)
+            const bid = isBtGroup && breakthroughSource?.key.startsWith('block:')
+              ? breakthroughSource.key.slice(6)
+              : ''
+
+            return (
+              <div key={g.op}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 11,
+                  padding: '9px 11px',
+                  background: isBtGroup ? C.blueGlass : C.surface,
+                  border: `1px solid ${isBtGroup ? C.blueBorder : C.border}`,
+                }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text, minWidth: 28 }}>{g.label}法</span>
+                  {goalSec != null ? (
+                    <TargetProximityBar actualSec={g.avgSec} targetSec={goalSec} />
+                  ) : (
+                    <div style={{ flex: 1 }} />
+                  )}
+                  <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim, minWidth: 52, textAlign: 'right', lineHeight: 1.25 }}>
+                    <div>{g.avgSec}s</div>
+                    {goalSec != null && <div style={{ fontSize: 9, color: C.textFaint }}>目标{goalSec}s</div>}
+                  </span>
+                  {g.tier && <TierBadge tier={g.tier} secHi={groupSecHi} />}
+                  {isBtGroup && (
+                    <span style={{ fontSize: 8, fontWeight: 800, color: C.blue, whiteSpace: 'nowrap' }}>突破口</span>
+                  )}
+                  {isBtGroup && bid && !open && (
+                    <button
+                      type="button"
+                      onClick={() => onDrill(`/calc/session?drill=breakthrough&blockId=${bid}`)}
+                      style={{ fontSize: 10, fontWeight: 700, color: C.blue, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap' }}
+                    >
+                      去练
+                    </button>
+                  )}
+                  <button type="button" onClick={() => toggle(g.op)} style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 7, color: open ? 'rgba(196,181,253,0.7)' : 'rgba(196,181,253,0.4)', background: open ? 'rgba(196,181,253,0.14)' : 'rgba(196,181,253,0.06)', border: '1px solid rgba(196,181,253,0.12)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {open ? '▴' : '▾'} 详情
+                  </button>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim, minWidth: 34, textAlign: 'right' }}>{g.avgSec}s</span>
-                {g.tier && <TierBadge tier={g.tier} />}
-                <button onClick={() => toggle(g.op)} style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 7, color: expanded.has(g.op) ? 'rgba(196,181,253,0.7)' : 'rgba(196,181,253,0.4)', background: expanded.has(g.op) ? 'rgba(196,181,253,0.14)' : 'rgba(196,181,253,0.06)', border: '1px solid rgba(196,181,253,0.12)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  {expanded.has(g.op) ? '▴' : '▾'} 详情
-                </button>
+                {open && (
+                  <div style={{ marginTop: 2 }}>
+                    {g.blocks.map(b => (
+                      <SourceBreakthroughCard
+                        key={b.key}
+                        s={b}
+                        highlight={breakthroughSource?.key === b.key}
+                        onDrill={onDrill}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-              {expanded.has(g.op) && (
-                <div style={{ marginTop: 2 }}>
-                  {g.blocks.map(b => (
-                    <div key={b.key} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px 6px 18px', borderRadius: 8, marginTop: 3, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', fontSize: 11 }}>
-                      <span style={{ flex: 1, color: 'rgba(196,181,253,0.72)', fontWeight: 500 }}>{b.label}</span>
-                      <span style={{ color: C.textFaint, fontSize: 10 }}>{b.avgSec}s</span>
-                      {b.tier && <TierBadge tier={b.tier} small />}
-                      {b.deltaSec !== null && (
-                        <span style={{ color: b.deltaSec > 0 ? C.green : C.red, fontSize: 10, fontWeight: 700 }}>
-                          {b.deltaSec > 0 ? '↑' : '↓'}{Math.abs(b.deltaSec)}s
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {(improved.length > 0 || regressed.length > 0) && (
@@ -478,6 +687,39 @@ function Section3({ groupStats, stats }: { groupStats: OpGroupStat[]; stats: Sou
 
 // ── Section 4 · 薄弱算式 ───────────────────────────────────────────────────────
 
+type WeakReason = 'timeout' | 'errors' | 'both'
+
+function analyzeWeak(s: CalcProblemState) {
+  const recent = s.recentResults ?? []
+  const wrongCount = recent.filter(r => !r.correct).length
+  const slowCount = recent.filter(r => r.correct && r.withinLimit === false).length
+  const avgSec = recent.length > 0
+    ? +(recent.reduce((a, r) => a + r.timeMs, 0) / recent.length / 1000).toFixed(1)
+    : null
+
+  const timedOut = slowCount > 0 || s.status === 'lagging' || s.lastWithinLimit === false
+  const errored = wrongCount > 0 || s.consecutiveWrong > 0
+
+  let reason: WeakReason
+  if (timedOut && errored) reason = 'both'
+  else if (timedOut && !errored) reason = 'timeout'
+  else reason = 'errors'
+
+  const style = reason === 'timeout'
+    ? { reasonLabel: '超时偏慢', reasonColor: C.yellow, reasonBg: 'rgba(251,191,36,0.1)', reasonBorder: 'rgba(251,191,36,0.22)' }
+    : reason === 'both'
+    ? { reasonLabel: '又慢又错', reasonColor: C.red, reasonBg: 'rgba(248,113,113,0.1)', reasonBorder: 'rgba(248,113,113,0.22)' }
+    : { reasonLabel: '错误偏多', reasonColor: C.red, reasonBg: 'rgba(248,113,113,0.1)', reasonBorder: 'rgba(248,113,113,0.22)' }
+
+  const basis = reason === 'timeout'
+    ? '对了但经常超过目标时间，熟练度被扣低'
+    : reason === 'both'
+    ? '既有算错，又有超时；两项都会拉低熟练度'
+    : '算错次数偏多，熟练度被扣低'
+
+  return { ...style, wrongCount, slowCount, recentCount: recent.length, avgSec, basis }
+}
+
 function Section4({ weakStates, recentMastered, onDrill }: { weakStates: CalcProblemState[]; recentMastered: CalcProblemState[]; onDrill: () => void }) {
   return (
     <div>
@@ -487,68 +729,54 @@ function Section4({ weakStates, recentMastered, onDrill }: { weakStates: CalcPro
           <p style={{ color: C.green, fontSize: 13 }}>太棒了，暂时没有薄弱算式！继续保持 🎉</p>
         ) : (
           <>
-            {weakStates.length > 0 && <div style={{ fontSize: 11, color: C.textDim, marginBottom: 10 }}>这些算式出错率高，多练几次就熟了～</div>}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {weakStates.map(s => (
-                <span key={s.signature} style={{ fontSize: 14, fontWeight: 600, padding: '5px 12px', borderRadius: 10, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.22)', color: 'rgba(248,113,113,0.9)', fontFamily: 'monospace' }}>
-                  {s.signature}
-                </span>
-              ))}
-              {recentMastered.map(s => (
-                <span key={s.signature} style={{ fontSize: 14, fontWeight: 600, padding: '5px 12px', borderRadius: 10, background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.18)', color: 'rgba(74,222,128,0.65)', fontFamily: 'monospace' }}>
-                  ✓ {s.signature}
-                </span>
-              ))}
-            </div>
-            <div style={{ fontSize: 10, color: C.textDim, marginTop: 6 }}>红色 = 还需多练 · 绿色 = 最近已掌握</div>
             {weakStates.length > 0 && (
-              <button onClick={onDrill} style={{ marginTop: 12, width: '100%', padding: '11px 0', borderRadius: 14, background: C.violetGlass, border: `1px solid ${C.violetBorder}`, color: C.violet, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              <div style={{ fontSize: 11, color: C.textDim, marginBottom: 10, lineHeight: 1.55 }}>
+                列入标准：练过 ≥3 次，且熟练度 ≤2（满分 5）。超时与算错都会扣熟练度。
+              </div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {weakStates.map(s => {
+                const insight = analyzeWeak(s)
+                return (
+                  <div key={s.signature} style={{ borderRadius: 12, padding: '10px 12px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.22)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: 'rgba(248,113,113,0.95)' }}>{signatureToDisplay(s.signature)}</span>
+                      <span style={{ fontSize: 10, fontWeight: 800, borderRadius: 6, padding: '2px 7px', color: insight.reasonColor, background: insight.reasonBg, border: `1px solid ${insight.reasonBorder}` }}>
+                        {insight.reasonLabel}
+                      </span>
+                      <span style={{ fontSize: 10, color: C.textDim, marginLeft: 'auto' }}>熟练度 {s.proficiency}/5</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: C.textDim }}>
+                      {insight.recentCount > 0 ? (
+                        <>近 {insight.recentCount} 次：错 {insight.wrongCount} · 超时对 {insight.slowCount}{insight.avgSec != null ? ` · 均速 ${insight.avgSec}s` : ''}</>
+                      ) : (
+                        <>练过 {s.attemptCount} 次 · 连错 {s.consecutiveWrong}</>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 10, color: 'rgba(245,243,255,0.32)', marginTop: 2 }}>{insight.basis}</div>
+                  </div>
+                )
+              })}
+            </div>
+            {recentMastered.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontSize: 10, color: C.textDim, marginBottom: 6 }}>最近已掌握</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {recentMastered.map(s => (
+                    <span key={s.signature} style={{ fontSize: 13, fontWeight: 600, padding: '4px 10px', borderRadius: 10, background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.18)', color: 'rgba(74,222,128,0.75)' }}>
+                      ✓ {signatureToDisplay(s.signature)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {weakStates.length > 0 && (
+              <button type="button" onClick={onDrill} style={{ marginTop: 12, width: '100%', padding: '11px 0', borderRadius: 14, background: C.violetGlass, border: `1px solid ${C.violetBorder}`, color: C.violet, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                 针对练习 →
               </button>
             )}
           </>
         )}
-      </div>
-    </div>
-  )
-}
-
-// ── Section Breakthrough · 下一个突破口 ───────────────────────────────────────
-
-function SectionBreakthrough({ breakthroughSource }: { breakthroughSource: SourceStat | null }) {
-  if (!breakthroughSource || breakthroughSource.gapSec <= 0 || !breakthroughSource.tier) return null
-
-  const curIdx = TIER_ORDER.indexOf(breakthroughSource.tier)
-  const nextTier = TIER_ORDER[curIdx + 1] as Tier | undefined
-  if (!nextTier) return null
-
-  const targets = suggestedTiers(breakthroughSource.targetId)
-  const currentTierHi = targets ? targets[breakthroughSource.tier][1] : breakthroughSource.avgSec + 2
-  const nextTierHi = targets ? targets[nextTier][1] : +(breakthroughSource.avgSec - breakthroughSource.gapSec).toFixed(1)
-  const range = currentTierHi - nextTierHi
-  const fill = Math.max(0.05, Math.min(0.95, range > 0 ? (currentTierHi - breakthroughSource.avgSec) / range : 0.5))
-
-  return (
-    <div>
-      <span style={SH}>下一个突破口</span>
-      <div style={{ ...baseCard, background: C.blueGlass, border: `1px solid ${C.blueBorder}` }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ fontSize: 26, flexShrink: 0, marginTop: 1 }}>🎯</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 2 }}>{breakthroughSource.label}</div>
-            <div style={{ fontSize: 11, color: C.textDim, marginBottom: 10 }}>
-              当前平均 {breakthroughSource.avgSec}s · 目标 {nextTierHi}s → {TIER_LABEL[nextTier]}档
-            </div>
-            <div style={{ height: 8, background: 'rgba(255,255,255,0.07)', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ width: `${Math.round(fill * 100)}%`, height: '100%', borderRadius: 4, background: 'linear-gradient(90deg,rgba(125,211,252,0.55),#7dd3fc)', transition: 'width 0.5s ease' }} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: C.textFaint, marginTop: 3 }}>
-              <span>{TIER_LABEL[breakthroughSource.tier]} {currentTierHi}s</span>
-              <span style={{ color: C.blue, fontWeight: 600 }}>还差 {breakthroughSource.gapSec}s ✦</span>
-              <span>{TIER_LABEL[nextTier]} {nextTierHi}s</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
@@ -597,7 +825,9 @@ function Section5({ mistakeStats }: { mistakeStats: { netResolved: number; total
             <div style={{ fontSize: 10, color: C.textDim, marginBottom: 6 }}>常见错误类型</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {topTags.map(tag => (
-                <span key={tag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 8, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.15)', color: C.red }}>{tag}</span>
+                <span key={tag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 8, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.15)', color: C.red }}>
+                  {ERROR_TAG_LABELS[tag as ErrorTag] ?? tag}
+                </span>
               ))}
             </div>
           </div>
@@ -675,25 +905,9 @@ export default function CalcReportPage() {
   const { user } = useAuth()
   const wallet = useCalcWallet(user, { loadSessions: true })
   const { settings } = useCalcSettings(user)
-  const problemState = useCalcProblemState(user)
-
-  const [problemStates, setProblemStates] = useState<Map<string, CalcProblemState>>(new Map())
-  const [mistakeRows, setMistakeRows] = useState<MistakeRow[]>([])
-
-  useEffect(() => {
-    if (!user) return
-    void problemState.loadAll().then(setProblemStates)
-  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!user) return
-    void supabase
-      .from('calc_mistakes')
-      .select('error_tag, resolved, created_at')
-      .eq('user_id', user.id)
-      .not('error_tag', 'is', null)
-      .then(({ data }) => { if (data) setMistakeRows(data as MistakeRow[]) })
-  }, [user])
+  const { states: problemStates } = useCalcProblemState(user)
+  // Same session stores — no bare supabase select; skip duplicate problem-state load
+  const { mistakes } = useCalcMistakes(user, { loadProblemState: false })
 
   const mixedLabels = useMemo(() => {
     const m = new Map<string, string>()
@@ -715,7 +929,10 @@ export default function CalcReportPage() {
   const groupStats = useMemo(() => opGroupStats(stats), [stats])
   const weekStart = useMemo(() => thursdayWeekStart(new Date()), [])
 
-  const weakStates = useMemo(() => [...problemStates.values()].filter(s => s.proficiency <= 2 && s.attemptCount >= 3), [problemStates])
+  const weakStates = useMemo(
+    () => [...problemStates.values()].filter(s => s.proficiency <= 2 && s.attemptCount >= 3),
+    [problemStates],
+  )
   const recentMastered = useMemo(() => {
     const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7)
     return [...problemStates.values()].filter(s => s.status === 'mastered' && s.updatedAt && new Date(s.updatedAt) >= cutoff)
@@ -723,13 +940,21 @@ export default function CalcReportPage() {
 
   const mistakeStats = useMemo(() => {
     const weekCutoff = new Date(weekStart + 'T00:00:00')
-    const resolved = mistakeRows.filter(r => r.resolved && new Date(r.created_at) >= weekCutoff).length
-    const added = mistakeRows.filter(r => !r.resolved && new Date(r.created_at) >= weekCutoff).length
+    const resolved = mistakes.filter(r => r.resolved && new Date(r.lastWrongAt) >= weekCutoff).length
+    const added = mistakes.filter(r => !r.resolved && new Date(r.lastWrongAt) >= weekCutoff).length
     const tagCounts = new Map<string, number>()
-    for (const r of mistakeRows) { if (!r.error_tag) continue; tagCounts.set(r.error_tag, (tagCounts.get(r.error_tag) ?? 0) + 1) }
+    for (const r of mistakes) {
+      if (!r.errorTag) continue
+      tagCounts.set(r.errorTag, (tagCounts.get(r.errorTag) ?? 0) + 1)
+    }
     const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([tag]) => tag)
-    return { netResolved: resolved - added, totalResolved: mistakeRows.filter(r => r.resolved).length, total: mistakeRows.length, topTags }
-  }, [mistakeRows, weekStart])
+    return {
+      netResolved: resolved - added,
+      totalResolved: mistakes.filter(r => r.resolved).length,
+      total: mistakes.length,
+      topTags,
+    }
+  }, [mistakes, weekStart])
 
   const breakthroughSource = useMemo(
     () => stats.filter(s => !s.insufficient && s.tier !== 'auto' && s.gapSec > 0).sort((a, b) => a.gapSec - b.gapSec)[0] ?? null,
@@ -755,11 +980,17 @@ export default function CalcReportPage() {
       <div style={{ maxWidth: 640, margin: '0 auto', padding: '20px 16px 80px', display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={ani(0.04)}><Section1 breakthroughSource={breakthroughSource} slowestGroup={slowestGroup} onDrill={handleDrill} /></div>
         <div style={ani(0.11)}><Section2 sessions={wallet.sessions} periodData={periodData} weekStart={weekStart} /></div>
-        <div style={ani(0.18)}><Section3 groupStats={groupStats} stats={stats} /></div>
+        <div style={ani(0.18)}>
+          <Section3
+            groupStats={groupStats}
+            stats={stats}
+            breakthroughSource={breakthroughSource}
+            onDrill={handleDrill}
+          />
+        </div>
         <div style={ani(0.25)}><Section4 weakStates={weakStates} recentMastered={recentMastered} onDrill={() => router.push('/calc/session?drill=weak-formulas')} /></div>
-        <div style={ani(0.32)}><SectionBreakthrough breakthroughSource={breakthroughSource} /></div>
-        <div style={ani(0.39)}><Section5 mistakeStats={mistakeStats} /></div>
-        <div style={ani(0.46)}><Section6 sessions={wallet.sessions} /></div>
+        <div style={ani(0.32)}><Section5 mistakeStats={mistakeStats} /></div>
+        <div style={ani(0.39)}><Section6 sessions={wallet.sessions} /></div>
       </div>
     </>
   )

@@ -38,6 +38,10 @@ import { checkAnswer, formatAnswer, shouldAutoSubmitNumberPad } from '../utils/c
 import { diagnose } from '../utils/calc-diagnose'
 import { blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
+import {
+  buildBySourceFromLog,
+  buildNewWeakFromLog,
+} from '../utils/calc-session-summary'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
 import { todayStr } from '@rosie/core'
@@ -225,6 +229,59 @@ export default function CalcSessionPage() {
   const sourceKeyForLog = (q: CalcQuestion): string =>
     q.sourceBlockId ? `block:${q.sourceBlockId}` : q.sourceMixedOpId ? `mixed:${q.sourceMixedOpId}` : 'unknown'
 
+  const targetSecForLog = useCallback(
+    (q: CalcQuestion): number | null => {
+      if (!settings.timedAnswerEnabled) return null
+      let sec: number | null | undefined = null
+      if (q.sourceBlockId) {
+        sec = settings.selectedBlocks.find((b) => b.id === q.sourceBlockId)?.seconds
+      } else if (q.sourceMixedOpId) {
+        sec = settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)?.seconds
+      }
+      return sec && sec > 0 ? sec : null
+    },
+    [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
+  )
+
+  const labelForLog = useCallback(
+    (q: CalcQuestion): string | undefined => {
+      if (q.sourceBlockId) return blockById(q.sourceBlockId)?.label
+      if (q.sourceMixedOpId) {
+        const op = settings.mixedOps.find((m) => m.id === q.sourceMixedOpId)
+        if (!op) return undefined
+        return op.label ?? skeletonMeta(op.skeleton).label
+      }
+      return undefined
+    },
+    [settings.mixedOps],
+  )
+
+  const pushQuestionLog = useCallback(
+    (q: CalcQuestion, elapsedMs: number, ok: boolean) => {
+      const entry: QuestionLogEntry = {
+        key: sourceKeyForLog(q),
+        ms: elapsedMs,
+        ok,
+        display: q.display.replace(/\s*=\s*\?\s*$/, ''),
+        targetSec: targetSecForLog(q),
+        label: labelForLog(q),
+      }
+      questionLogRef.current.push(entry)
+    },
+    [targetSecForLog, labelForLog],
+  )
+
+  const patchQuestionLogFinallyOk = useCallback((q: CalcQuestion, finallyOk: boolean) => {
+    const key = sourceKeyForLog(q)
+    const log = questionLogRef.current
+    for (let i = log.length - 1; i >= 0; i--) {
+      if (log[i].key === key && log[i].finallyOk === undefined) {
+        log[i] = { ...log[i], finallyOk }
+        return
+      }
+    }
+  }, [])
+
   // ── Session state ────────────────────────────────────────────────
   const [questions, setQuestions] = useState<CalcQuestion[] | null>(null)
   const [idx, setIdx] = useState(0)
@@ -258,6 +315,9 @@ export default function CalcSessionPage() {
   // Tagged per-question first-attempt log (atomic per-题型 records).
   const questionLogRef = useRef<QuestionLogEntry[]>([])
   const questionStartRef = useRef<number>(0)
+  /** Which `idx` the countdown wall/ref are bound to. Prevents stale wall from
+   *  the previous question from zeroing `remainingSec` on the advance render. */
+  const clockBoundIdxRef = useRef<number>(-1)
   const [startedTsMs, setStartedTsMs] = useState<number>(0)
   const [startedAtIso, setStartedAtIso] = useState<string>('')
   /** Active time from earlier runs of a resumed session (excludes idle time). */
@@ -265,6 +325,13 @@ export default function CalcSessionPage() {
 
   const [now, setNow] = useState<number>(() => Date.now())
   const [questionStartWall, setQuestionStartWall] = useState<number>(0)
+
+  /** Bind the per-question clock to `forIdx` (sync — safe to call inside goNext). */
+  const bindQuestionClock = useCallback((forIdx: number) => {
+    questionStartRef.current = performance.now()
+    clockBoundIdxRef.current = forIdx
+    setQuestionStartWall(Date.now())
+  }, [])
   const [done, setDone] = useState(false)
   const [finalStats, setFinalStats] = useState<{
     correct: number
@@ -512,14 +579,13 @@ export default function CalcSessionPage() {
     writeCalcSessionSnapshot(snap)
   }, [buildCurrentSnapshot])
 
-  // Reset question-start timestamp whenever idx changes
+  // Bind clock on idx/questions change when goNext hasn't already (init / resume).
   useEffect(() => {
-    if (questions && idx < questions.length) {
-      questionStartRef.current = performance.now()
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setQuestionStartWall(Date.now())
-    }
-  }, [idx, questions])
+    if (!questions || idx >= questions.length) return
+    if (clockBoundIdxRef.current === idx) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    bindQuestionClock(idx)
+  }, [idx, questions, bindQuestionClock])
 
   // Timer tick (subscribe to clock)
   useEffect(() => {
@@ -541,12 +607,30 @@ export default function CalcSessionPage() {
   }, [questions, idx, settings.soundEnabled])
 
   const currentSeconds = questions && idx < questions.length ? secondsForQuestion(questions[idx]) : null
+  // Clock must be bound to the current idx — otherwise a just-advanced question
+  // briefly inherits the previous question's wall and looks already timed out.
+  const clockReady = questionStartWall !== 0 && clockBoundIdxRef.current === idx
+  const elapsedSec =
+    clockReady && !feedback ? Math.floor((now - questionStartWall) / 1000) : 0
+  const isRelaxedClock = sessionTimingModeRef.current === 'relaxed'
   const remainingSec =
     currentSeconds && currentSeconds > 0
-      ? feedback || questionStartWall === 0
+      ? feedback || !clockReady
         ? currentSeconds
-        : Math.max(0, currentSeconds - Math.floor((now - questionStartWall) / 1000))
+        : // Relaxed soft clock keeps ticking past 0 (negative = overtime seconds).
+          // Strict/bonus clamp at 0 — auto-advance settles the question.
+          isRelaxedClock
+          ? currentSeconds - elapsedSec
+          : Math.max(0, currentSeconds - elapsedSec)
       : null
+  // Relaxed soft clock: stay on the question past 0, count overtime, light red.
+  const timerOvertime =
+    !!currentSeconds &&
+    currentSeconds > 0 &&
+    clockReady &&
+    !feedback &&
+    elapsedSec >= currentSeconds &&
+    isRelaxedClock
 
   // ── Finish handler ───────────────────────────────────────────────
   const finishSession = useCallback(async () => {
@@ -607,8 +691,8 @@ export default function CalcSessionPage() {
         )
       }
       // Only (re)assign attribution when this question carried a source. Carried
-      // make-up mistakes have no source — keep the signature's existing block/mixed
-      // attribution instead of wiping it to null.
+      // make-up usually restores source from problem_state in buildSession; if a
+      // question still has none, keep the signature's existing block/mixed ids.
       if (first.sourceBlockId) state.blockId = first.sourceBlockId
       if (first.sourceMixedOpId) state.mixedOpId = first.sourceMixedOpId
       nextStates.push(state)
@@ -625,64 +709,9 @@ export default function CalcSessionPage() {
       }
     }
 
-    // ── Per-source breakdown for this session's summary ──
-    const sourceKeyOf = (a: AttemptStat): string | null => {
-      if (a.sourceBlockId) return `block:${a.sourceBlockId}`
-      if (a.sourceMixedOpId) return `mixed:${a.sourceMixedOpId}`
-      return null
-    }
-    const sourceLabelOf = (key: string): string => {
-      const [kind, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
-      if (kind === 'block') return blockById(id)?.label ?? id
-      const mixedOp = settings.mixedOps.find((m) => m.id === id)
-      return mixedOp?.label ?? (mixedOp ? skeletonMeta(mixedOp.skeleton).label : id)
-    }
-    const sourceGroups = new Map<string, AttemptStat[]>()
-    for (const a of log) {
-      const key = sourceKeyOf(a)
-      if (!key) continue
-      const arr = sourceGroups.get(key)
-      if (arr) arr.push(a)
-      else sourceGroups.set(key, [a])
-    }
-    const logByKey = new Map<string, { sumMs: number; n: number; ok: number }>()
-    for (const e of questionLogRef.current) {
-      const a = logByKey.get(e.key) ?? { sumMs: 0, n: 0, ok: 0 }
-      a.sumMs += e.ms; a.n += 1; if (e.ok) a.ok += 1
-      logByKey.set(e.key, a)
-    }
-    const bySource = Array.from(sourceGroups.entries()).map(([key, attempts]) => {
-      const [kind, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
-      const logKey = `${kind}:${id}`
-      const agg = logByKey.get(logKey)
-      const avgSec = agg && agg.n > 0 ? +(agg.sumMs / agg.n / 1000).toFixed(1) : 0
-      const perMinute = agg && agg.sumMs > 0 ? +(agg.n / (agg.sumMs / 60000)).toFixed(1) : 0
-      const targetSec = settings.timedAnswerEnabled
-        ? kind === 'block'
-          ? settings.selectedBlocks.find((b) => b.id === id)?.seconds ?? null
-          : settings.mixedOps.find((m) => m.id === id)?.seconds ?? null
-        : null
-      return {
-        label: sourceLabelOf(key),
-        total: attempts.length,
-        firstTryCorrect: attempts.filter((a) => a.firstTryCorrect).length,
-        perMinute,
-        avgSec,
-        targetSec: targetSec && targetSec > 0 ? targetSec : null,
-      }
-    })
-
-    // ── Newly-exposed weak spots: distinct wrong-final question displays ──
-    const newWeak = Array.from(
-      new Set(
-        log
-          .filter((a) => !a.finallyCorrect)
-          .map((a) => a.display)
-          .filter((d): d is string => !!d),
-      ),
-    ).slice(0, 8)
-
-    // ── Next-focus preview: weakest-accuracy sources, ascending ──
+    // Per-source / weak / next-focus — same helpers as home history replay
+    const bySource = buildBySourceFromLog(questionLogRef.current)
+    const newWeak = buildNewWeakFromLog(questionLogRef.current)
     const nextFocus = [...bySource]
       .sort((a, b) => a.firstTryCorrect / Math.max(1, a.total) - b.firstTryCorrect / Math.max(1, b.total))
       .slice(0, 5)
@@ -749,10 +778,7 @@ export default function CalcSessionPage() {
     refreshStarHud,
     mode,
     settings.soundEnabled,
-    settings.timedAnswerEnabled,
     settings.sessionCounter,
-    settings.mixedOps,
-    settings.selectedBlocks,
     update,
     startedTsMs,
     startedAtIso,
@@ -775,6 +801,8 @@ export default function CalcSessionPage() {
       wasMistake: boolean,
       userAnswer: string,
     ) => {
+      patchQuestionLogFinallyOk(q, isCorrect)
+
       const goNext = () => {
         settleLockRef.current = false
         setFeedback(null)
@@ -784,6 +812,8 @@ export default function CalcSessionPage() {
         setRevealAnswer(null)
         if (!questions) return
         if (idx + 1 < questions.length) {
+          // Sync-bind before setIdx so the advance render never sees a stale wall.
+          bindQuestionClock(idx + 1)
           setIdx((i) => i + 1)
           return
         }
@@ -791,6 +821,7 @@ export default function CalcSessionPage() {
           const drained = wrongQueueRef.current
           wrongQueueRef.current = []
           setQuestions((prev) => (prev ? [...prev, ...drained] : prev))
+          bindQuestionClock(idx + 1)
           setIdx((i) => i + 1)
           return
         }
@@ -889,6 +920,8 @@ export default function CalcSessionPage() {
       recordCorrect,
       finishSession,
       secondsForQuestion,
+      patchQuestionLogFinallyOk,
+      bindQuestionClock,
     ],
   )
 
@@ -900,6 +933,8 @@ export default function CalcSessionPage() {
     const timingMode = sessionTimingModeRef.current
     if (timingMode !== 'strict' && timingMode !== 'bonus') return
     if (feedback) return
+    // Stale wall from the previous question must not auto-advance the next one.
+    if (clockBoundIdxRef.current !== idx) return
     if (remainingSec === null || remainingSec > 0) return
     if (autoAdvancedIdxRef.current === idx) return
     autoAdvancedIdxRef.current = idx
@@ -909,11 +944,11 @@ export default function CalcSessionPage() {
     const withinLimit = withinLimitForQuestion(q, elapsedMs)
     if (attemptsForCurrent === 0) {
       questionTimesRef.current.push(elapsedMs)
-      questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: false })
+      pushQuestionLog(q, elapsedMs, false)
     }
     const wasMistake = unresolved.some((m) => m.signature === q.signature)
     settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, '')
-  }, [done, questions, idx, feedback, remainingSec, attemptsForCurrent, unresolved, withinLimitForQuestion, settleQuestion])
+  }, [done, questions, idx, feedback, remainingSec, attemptsForCurrent, unresolved, withinLimitForQuestion, settleQuestion, pushQuestionLog])
 
   // Self-grading pads (竖式 / 余数 / 分数) lock + show inline 红/绿 on submit. They
   // run the SAME two-try loop as the number pad: first wrong → retry (竖式 keeps the
@@ -924,7 +959,7 @@ export default function CalcSessionPage() {
       const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
         questionTimesRef.current.push(elapsedMs)
-        questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
+        pushQuestionLog(q, elapsedMs, isCorrect)
       }
       const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
@@ -948,7 +983,7 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [idx, attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion],
+    [idx, attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion, pushQuestionLog],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -997,7 +1032,7 @@ export default function CalcSessionPage() {
     const withinLimit = withinLimitForQuestion(q, elapsedMs)
     if (attemptsForCurrent === 0) {
       questionTimesRef.current.push(elapsedMs)
-      questionLogRef.current.push({ key: sourceKeyForLog(q), ms: elapsedMs, ok: isCorrect })
+      pushQuestionLog(q, elapsedMs, isCorrect)
     }
 
     if (isCorrect) {
@@ -1034,6 +1069,7 @@ export default function CalcSessionPage() {
     settings,
     settleQuestion,
     withinLimitForQuestion,
+    pushQuestionLog,
   ])
 
   const handleSubmit = useCallback(() => {
@@ -1196,6 +1232,7 @@ export default function CalcSessionPage() {
       >
         <CalcSessionStatusBar
           remainingSec={remainingSec}
+          timerOvertime={timerOvertime}
           idx={idx}
           planned={planned}
           total={questions.length}
@@ -1240,6 +1277,7 @@ export default function CalcSessionPage() {
                 // restores the round that just finished.
                 setPendingSnap(null)
                 initRef.current = false
+                clockBoundIdxRef.current = -1
                 setQuestions(null)
                 setIdx(0)
                 setDone(false)
@@ -1261,6 +1299,7 @@ export default function CalcSessionPage() {
                   void clearCalcPendingEverywhere(user?.id, mode, drillKey)
                   setPendingSnap(null)
                   initRef.current = false
+                  clockBoundIdxRef.current = -1
                   setQuestions(null)
                   setIdx(0)
                   setDone(false)
@@ -1320,6 +1359,7 @@ export default function CalcSessionPage() {
               setFinalStats(null)
               initRef.current = false
               autoAdvancedIdxRef.current = -1
+              clockBoundIdxRef.current = -1
               settleLockRef.current = false
               setPrepConfirmed(false)
               setPrepModeOverride(null)

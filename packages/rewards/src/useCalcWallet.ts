@@ -31,7 +31,15 @@ interface SessionRow {
   max_streak: number
   top_level: string
   question_times_ms: number[] | null
-  question_log: { key: string; ms: number; ok: boolean }[] | null
+  question_log: {
+    key: string
+    ms: number
+    ok: boolean
+    display?: string
+    targetSec?: number | null
+    label?: string
+    finallyOk?: boolean
+  }[] | null
 }
 
 function rowToSession(r: SessionRow, coinsEarned: number): CalcSession {

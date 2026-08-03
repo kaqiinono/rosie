@@ -13,6 +13,11 @@ type LastResult = { stars: number; bonus: number } | null
 type Props = {
   /** Remaining seconds, or null for an untimed (∞) session. */
   remainingSec: number | null
+  /**
+   * Soft-clock overtime (relaxed past T_target while still answering).
+   * `remainingSec` goes negative (−0:05 = 5s overtime) and pulses red.
+   */
+  timerOvertime?: boolean
   /** Zero-based index of the current question. */
   idx: number
   /** Planned (configured) question count, before the make-up tail. */
@@ -25,14 +30,16 @@ type Props = {
 }
 
 function formatTimer(s: number) {
-  if (s < 0) s = 0
-  const m = Math.floor(s / 60)
-  const r = s % 60
-  return `${m}:${String(r).padStart(2, '0')}`
+  const neg = s < 0
+  const abs = Math.abs(s)
+  const m = Math.floor(abs / 60)
+  const r = abs % 60
+  return `${neg ? '-' : ''}${m}:${String(r).padStart(2, '0')}`
 }
 
 export default function CalcSessionStatusBar({
   remainingSec,
+  timerOvertime = false,
   idx,
   planned,
   total,
@@ -50,7 +57,20 @@ export default function CalcSessionStatusBar({
         className="mb-2 flex items-center justify-between text-[12px] font-bold tabular-nums"
         style={{ color: 'rgba(196,181,253,0.6)' }}
       >
-        <div>{remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}</div>
+        <div
+          className={timerOvertime ? 'animate-pulse' : undefined}
+          style={
+            timerOvertime
+              ? {
+                  color: '#f87171',
+                  textShadow:
+                    '0 0 8px rgba(248,113,113,0.95), 0 0 18px rgba(239,68,68,0.7), 0 0 28px rgba(220,38,38,0.45)',
+                }
+              : undefined
+          }
+        >
+          {remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}
+        </div>
         {inMakeupTail ? (
           <div style={{ color: 'rgba(251,191,36,0.7)' }}>
             💪 错题补做 {idx - planned + 1} / {total - planned}

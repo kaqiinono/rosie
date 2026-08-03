@@ -159,7 +159,7 @@ function SectionHeading({ children, suffix }: SectionHeadingProps) {
 }
 
 const MODE_META: Record<CalcTimingMode, { label: string; emoji: string; desc: string }> = {
-  relaxed: { label: '宽松', emoji: '🌤️', desc: '按需显示倒计时，超时不强制交卷' },
+  relaxed: { label: '宽松', emoji: '🌤️', desc: '显示目标倒计时，超时标红、不强制交卷' },
   strict: { label: '严格', emoji: '⏱️', desc: '始终显示倒计时，超时算最终错误' },
   bonus: { label: '自定义加成', emoji: '➕', desc: '目标时间基础上多给几秒缓冲，超时算最终错误' },
 }
@@ -422,13 +422,13 @@ export default function CalcSettingsPage() {
             />
             <ToggleRow
               label="多位数题用竖式作答"
-              description="百以内 / 千以内 / 万以内加减、两·三位数×一位数、两位数×两位数、多位数÷一位数（含满十）用竖式格子作答"
+              description="竖式：千以内进位/退位加减、万以内加减、两·三位数×一位数、两位数×两位数、多位数÷一位数。100以内加减、千以内不进位/不退位、凑整等仍用数字键盘"
               value={settings.verticalForBigNumbers}
               onChange={(v) => update({ verticalForBigNumbers: v })}
             />
             <ToggleRow
               label="限时答题"
-              description="控制是否可编辑各题型目标时间；关闭后每场开始前仍可选计时模式，宽松模式下按需显示倒计时"
+              description="控制是否可编辑各题型目标时间；关闭后仍可用系统目标时间；宽松模式显示软倒计时（超时标红）"
               value={settings.timedAnswerEnabled}
               onChange={(v) => update({ timedAnswerEnabled: v })}
             />

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   digitsOf,
   hasAnyCarry,
+  addHasCarry,
+  subHasBorrow,
   hasConsecutiveCarries,
   needsDivMidRemainder,
   enumerateComplementsTo100,
@@ -25,6 +27,13 @@ describe('digitsOf / carry', () => {
   it('38×3 has a carry; 42×2 has none', () => {
     expect(hasAnyCarry(38, 3)).toBe(true)
     expect(hasAnyCarry(42, 2)).toBe(false)
+  })
+
+  it('addHasCarry / subHasBorrow detect column carry and borrow', () => {
+    expect(addHasCarry(123, 456)).toBe(false)
+    expect(addHasCarry(178, 256)).toBe(true)
+    expect(subHasBorrow(586, 123)).toBe(false)
+    expect(subHasBorrow(501, 123)).toBe(true)
   })
 
   it('144×3 has consecutive carries', () => {

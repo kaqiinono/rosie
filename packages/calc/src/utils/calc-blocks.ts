@@ -365,13 +365,12 @@ export const BLOCK_GROUPS: { group: CalcBlock['group']; label: string }[] = [
   { group: 'fraction', label: '分数' },
 ]
 
-/** Block ids whose questions can be answered in a column ("竖式") layout.
- *  add/sub: two-digit (百以内) and up; mul: two-digit × one/two-digit;
- *  div: multi-digit ÷ one-digit. VerticalCalc only grades the final result row
- *  (carry scaffolding is optional/ungraded), so two-digit operands work fine. */
+/** Block ids eligible for 竖式 when `verticalForBigNumbers` is on.
+ *  Excludes within-100 add/sub and strategy blocks. `add:1000` / `sub:1000`
+ *  are further filtered per-question (only carry/borrow → vertical). */
 export const VERTICAL_BLOCK_IDS = new Set<string>([
-  'add:100a', 'add:100b', 'add:100-comp', 'add:1000', 'add:10000',
-  'sub:100a', 'sub:100b', 'sub:round', 'sub:1000', 'sub:10000',
+  'add:1000', 'add:10000',
+  'sub:1000', 'sub:10000',
   'mul:2d1d-nc', 'mul:2d1d-c', 'mul:3d1d-nc', 'mul:3d1d-c', 'mul:2d',
   'div:multi', 'div:2d1d-borrow',
 ])

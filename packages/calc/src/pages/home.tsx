@@ -9,9 +9,11 @@ import { useCalcPracticeStats } from '../hooks/useCalcPracticeStats'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import CalcAppHeader from '../components/CalcAppHeader'
+import SessionSummary from '../components/SessionSummary'
 import { playSfx } from '../components/audio'
 import { BLOCK_GROUPS, blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
+import { buildSessionSummaryProps } from '../utils/calc-session-summary'
 
 const GROUP_LABEL = Object.fromEntries(BLOCK_GROUPS.map((g) => [g.group, g.label])) as Record<
   string,
@@ -36,7 +38,22 @@ export default function CalcHomePage() {
 
   const [recentOpen, setRecentOpen] = useState(false)
   const [sessionsRequested, setSessionsRequested] = useState(false)
+  const [selectedRecentIdx, setSelectedRecentIdx] = useState<number | null>(null)
   const wallet = useCalcWallet(user, { loadSessions: sessionsRequested })
+
+  const recentSessions = wallet.sessionsReady ? wallet.sessions.slice(0, 5) : []
+  let selectedSummary: ReturnType<typeof buildSessionSummaryProps> | null = null
+  if (selectedRecentIdx != null && recentSessions[selectedRecentIdx]) {
+    const mixedLabels = new Map<string, string>()
+    for (const op of settings.mixedOps) {
+      mixedLabels.set(op.id, op.label ?? skeletonMeta(op.skeleton).label)
+    }
+    selectedSummary = buildSessionSummaryProps(
+      recentSessions[selectedRecentIdx],
+      recentSessions[selectedRecentIdx + 1] ?? null,
+      { mixedLabels },
+    )
+  }
 
   const handleToggleRecent = () => {
     setRecentOpen((o) => !o)
@@ -394,10 +411,12 @@ export default function CalcHomePage() {
                 </div>
               )}
               {wallet.sessionsReady &&
-                wallet.sessions.slice(0, 5).map((s) => (
-                  <div
+                recentSessions.map((s, i) => (
+                  <button
                     key={s.id}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-[12px]"
+                    type="button"
+                    onClick={() => setSelectedRecentIdx(i)}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-[12px] transition-colors"
                     style={{
                       background: 'rgba(255,255,255,0.03)',
                       border: '1px solid rgba(255,255,255,0.07)',
@@ -419,12 +438,28 @@ export default function CalcHomePage() {
                     >
                       ⭐ +{s.coinsEarned}
                     </span>
-                  </div>
+                  </button>
                 ))}
             </div>
           )}
         </section>
       </main>
+
+      {selectedSummary && (
+        <SessionSummary
+          {...selectedSummary}
+          levelUpTo={null}
+          levelDownTo={null}
+          reviewMilestone={null}
+          nextSessionAssault={false}
+          onClose={() => setSelectedRecentIdx(null)}
+          onAgain={() => {
+            setSelectedRecentIdx(null)
+            playSfx('coin', settings.soundEnabled)
+            router.push('/calc/session?mode=daily')
+          }}
+        />
+      )}
     </>
   )
 }

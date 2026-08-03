@@ -34,7 +34,7 @@ describe('resolveTargetSec / resolveClockSec', () => {
     expect(resolveTargetSec({ explicitSeconds: null, sourceId: 'mul:25' })).toBe(4)
   })
 
-  it('clock: strict=target, bonus=target+bonus, relaxed optional', () => {
+  it('clock: strict=target, bonus=target+bonus, relaxed soft target', () => {
     expect(resolveClockSec({
       mode: 'strict', targetSec: 5, bonusSec: 3,
       timedAnswerEnabled: false, explicitSeconds: null,
@@ -43,14 +43,15 @@ describe('resolveTargetSec / resolveClockSec', () => {
       mode: 'bonus', targetSec: 5, bonusSec: 3,
       timedAnswerEnabled: false, explicitSeconds: null,
     })).toBe(8)
+    // Soft clock always at T_target (no auto-advance); ignore timed/explicit gates.
     expect(resolveClockSec({
       mode: 'relaxed', targetSec: 5, bonusSec: 3,
-      timedAnswerEnabled: false, explicitSeconds: 6,
-    })).toBeNull()
+      timedAnswerEnabled: false, explicitSeconds: null,
+    })).toBe(5)
     expect(resolveClockSec({
       mode: 'relaxed', targetSec: 5, bonusSec: 3,
       timedAnswerEnabled: true, explicitSeconds: 6,
-    })).toBe(6)
+    })).toBe(5)
   })
 })
 

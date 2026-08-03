@@ -562,7 +562,19 @@ export type CalcMode = 'daily' | 'free' | 'mistakes'
 export interface QuestionLogEntry {
   key: string
   ms: number
+  /** First-attempt correctness (report `sourceStats` uses this). */
   ok: boolean
+  /** Question display with trailing "= ?" stripped. */
+  display?: string
+  /** Target seconds frozen at write time (null/omit when timed-off). */
+  targetSec?: number | null
+  /** Source label frozen at write time. */
+  label?: string
+  /**
+   * Final outcome including retries. First-wrong then retry-correct →
+   * `ok=false`, `finallyOk=true`. Weak list must use `!finallyOk`, not `!ok`.
+   */
+  finallyOk?: boolean
 }
 
 export interface CalcSession {

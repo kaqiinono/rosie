@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import ActualVsTargetBar from './ActualVsTargetBar'
 
 interface Props {
   correctCount: number
@@ -27,6 +28,8 @@ interface Props {
   /** Source labels the next session will focus on, weakest-first. */
   nextFocus?: string[]
   onAgain: () => void
+  /** When set, history mode: backdrop/关闭 dismiss; keep 再来一组 via onAgain. */
+  onClose?: () => void
 }
 
 function formatTime(s: number) {
@@ -67,39 +70,117 @@ export default function SessionSummary({
   newWeak,
   nextFocus,
   onAgain,
+  onClose,
 }: Props) {
   const accuracy = total > 0 ? Math.round(((correctCount + retryCount) / total) * 100) : 0
   const trophy = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🌟' : '💪'
   const totalCoins = coinsEarned
+  const history = !!onClose
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4"
       style={{ background: 'rgba(6,7,26,0.85)', backdropFilter: 'blur(16px)' }}
+      onClick={history ? onClose : undefined}
     >
-      <div
-        className="mx-4 w-full max-w-[420px] rounded-3xl p-7 text-center"
-        style={{
-          background: 'rgba(13,11,38,0.98)',
-          border: '1px solid rgba(139,92,246,0.25)',
-          boxShadow: '0 24px 60px rgba(139,92,246,0.2), 0 0 0 1px rgba(255,255,255,0.04)',
-          animation: 'pop-in 0.35s cubic-bezier(.34,1.56,.64,1)',
-        }}
-      >
-        <div className="text-[48px]">{trophy}</div>
+      <div className="flex min-h-full items-center justify-center py-4">
         <div
-          className="mt-1 font-fredoka text-[26px] font-black"
+          className="w-full max-w-[420px] rounded-3xl p-7 text-center md:max-w-[560px] lg:max-w-[640px]"
           style={{
-            background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            background: 'rgba(13,11,38,0.98)',
+            border: '1px solid rgba(139,92,246,0.25)',
+            boxShadow: '0 24px 60px rgba(139,92,246,0.2), 0 0 0 1px rgba(255,255,255,0.04)',
+            animation: 'pop-in 0.35s cubic-bezier(.34,1.56,.64,1)',
           }}
+          onClick={history ? (e) => e.stopPropagation() : undefined}
         >
-          练习完成！
-        </div>
-        <div className="text-[12px] mt-0.5" style={{ color: 'rgba(245,243,255,0.4)' }}>
-          用时 {formatTime(timeSpentSec)}
-        </div>
+        {history && (
+          <div className="mb-2 flex justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="关闭"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-[16px] font-black transition-all active:scale-90"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                color: 'rgba(245,243,255,0.5)',
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        {history ? (() => {
+          const deltaMs = avgMs != null && prevAvgMs != null ? prevAvgMs - avgMs : null
+          const faster = deltaMs !== null && deltaMs > 0
+          const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100
+          let avgHint: string | null = null
+          let avgHintColor = 'rgba(125,211,252,0.5)'
+          if (avgMs != null) {
+            if (meaningful) {
+              avgHint = `${faster ? '↑' : '↓'} 每题${faster ? '快' : '慢'} ${formatSeconds(Math.abs(deltaMs!))}`
+              avgHintColor = faster ? '#4ade80' : '#fbbf24'
+            } else if (prevAvgMs != null) {
+              avgHint = '≈ 与上次持平'
+            } else {
+              avgHint = '首场基准'
+            }
+          }
+          return (
+            <div className="grid grid-cols-2 gap-2">
+              <div
+                className="rounded-xl px-3 py-2.5"
+                style={{
+                  background: 'rgba(125,211,252,0.1)',
+                  border: '1px solid rgba(125,211,252,0.22)',
+                }}
+              >
+                <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(125,211,252,0.55)' }}>
+                  总用时
+                </div>
+                <div className="font-fredoka text-[20px] font-black tabular-nums" style={{ color: '#7dd3fc' }}>
+                  {formatTimeChinese(timeSpentSec)}
+                </div>
+              </div>
+              <div
+                className="rounded-xl px-3 py-2.5"
+                style={{
+                  background: 'rgba(125,211,252,0.1)',
+                  border: '1px solid rgba(125,211,252,0.22)',
+                }}
+              >
+                <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(125,211,252,0.55)' }}>
+                  平均每题
+                </div>
+                <div className="font-fredoka text-[20px] font-black tabular-nums" style={{ color: '#7dd3fc' }}>
+                  {avgMs != null ? formatSeconds(avgMs) : '—'}
+                </div>
+                {avgHint && (
+                  <div className="mt-0.5 text-[10px] font-bold" style={{ color: avgHintColor }}>
+                    {avgHint}
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })() : (
+          <>
+            <div className="text-[48px]">{trophy}</div>
+            <div
+              className="mt-1 font-fredoka text-[26px] font-black"
+              style={{
+                background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              练习完成！
+            </div>
+            <div className="text-[12px] mt-0.5" style={{ color: 'rgba(245,243,255,0.4)' }}>
+              用时 {formatTime(timeSpentSec)}
+            </div>
+          </>
+        )}
 
         {levelUpTo && (
           <div
@@ -207,8 +288,8 @@ export default function SessionSummary({
           </div>
         </div>
 
-        {/* Timing analysis — total time, avg per question, and trend vs last session */}
-        {avgMs !== null && (() => {
+        {/* Timing analysis — live only; history folds avg + trend into the top「平均每题」cell */}
+        {!history && avgMs !== null && (() => {
           const deltaMs = prevAvgMs !== null ? prevAvgMs - avgMs : null // +ve = faster = 进步
           const faster = deltaMs !== null && deltaMs > 0
           const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100 // ignore <0.1s noise
@@ -220,8 +301,8 @@ export default function SessionSummary({
                 border: '1px solid rgba(125,211,252,0.2)',
               }}
             >
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
                   <div
                     className="text-[10px] font-extrabold uppercase tracking-widest"
                     style={{ color: 'rgba(125,211,252,0.6)' }}
@@ -286,21 +367,28 @@ export default function SessionSummary({
             >
               📊 本次各项表现
             </div>
-            <div className="mt-2 flex flex-col gap-1.5">
+            <div className="mt-2 flex flex-col gap-2">
               {bySource.map((s) => (
-                <div key={s.label} className="flex items-center justify-between gap-2">
-                  <div className="min-w-0 flex-1 truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>
-                    {s.label}
+                <div key={s.label}>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1 truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>
+                      {s.label}
+                    </div>
+                    <div className="shrink-0 text-[11px] font-semibold tabular-nums" style={{ color: 'rgba(245,243,255,0.5)' }}>
+                      {s.firstTryCorrect}/{s.total} 对
+                    </div>
+                    <div className="shrink-0 text-[11px] font-extrabold tabular-nums" style={{ color: '#7dd3fc' }}>
+                      {s.perMinute} 题/分
+                    </div>
+                    <div className="shrink-0 text-[10px] tabular-nums" style={{ color: 'rgba(245,243,255,0.45)' }}>
+                      {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
+                    </div>
                   </div>
-                  <div className="shrink-0 text-[11px] font-semibold tabular-nums" style={{ color: 'rgba(245,243,255,0.5)' }}>
-                    {s.firstTryCorrect}/{s.total} 对
-                  </div>
-                  <div className="shrink-0 text-[11px] font-extrabold tabular-nums" style={{ color: '#7dd3fc' }}>
-                    {s.perMinute} 题/分
-                  </div>
-                  <div className="shrink-0 text-[10px] tabular-nums" style={{ color: 'rgba(245,243,255,0.45)' }}>
-                    {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
-                  </div>
+                  {s.targetSec != null && s.targetSec > 0 && s.avgSec > 0 && (
+                    <div className="mt-1.5">
+                      <ActualVsTargetBar actualSec={s.avgSec} targetSec={s.targetSec} />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -373,29 +461,46 @@ export default function SessionSummary({
           </div>
         )}
 
-        <div className="mt-6 flex gap-2">
-          <Link
-            href="/calc"
-            className="flex-1 rounded-xl py-2.5 text-[14px] font-extrabold no-underline transition-all"
+        {history ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="mt-6 w-full rounded-xl py-2.5 text-[14px] font-extrabold transition-all"
             style={{
               background: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(245,243,255,0.6)',
+              color: 'rgba(245,243,255,0.7)',
             }}
           >
-            返回
-          </Link>
-          <button
-            onClick={onAgain}
-            className="flex-[2] rounded-xl py-2.5 text-[14px] font-extrabold text-white transition-all hover:-translate-y-0.5"
-            style={{
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
-            }}
-          >
-            再来一组 →
+            关闭
           </button>
-        </div>
+        ) : (
+          <div className="mt-6 flex gap-2">
+            <Link
+              href="/calc"
+              className="flex-1 rounded-xl py-2.5 text-[14px] font-extrabold no-underline transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: 'rgba(245,243,255,0.6)',
+              }}
+            >
+              返回
+            </Link>
+            <button
+              type="button"
+              onClick={onAgain}
+              className="flex-[2] rounded-xl py-2.5 text-[14px] font-extrabold text-white transition-all hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
+              }}
+            >
+              再来一组 →
+            </button>
+          </div>
+        )}
+      </div>
       </div>
     </div>
   )

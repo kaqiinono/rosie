@@ -76,6 +76,23 @@ export function renderAst(n: AstNode, parentPrec = 0): string {
   return p < parentPrec ? `(${inner})` : inner
 }
 
+/**
+ * Turn a stored problem signature into a parent-readable equation.
+ * e.g. `mul(6,7)` → `6 × 7`, `frac:add(1/2,1/3)` → `1/2 + 1/3`.
+ */
+export function signatureToDisplay(sig: string): string {
+  if (sig.startsWith('frac:')) {
+    const m = sig.match(/^frac:(add|sub|mul|div)\((.+),(.+)\)$/)
+    if (m) return `${m[2]} ${OP_SYMBOL[m[1] as CalcOp]} ${m[3]}`
+    return sig
+  }
+  try {
+    return renderAst(parseSignature(sig))
+  } catch {
+    return sig
+  }
+}
+
 export function arityOf(n: AstNode): number {
   if (typeof n === 'number') return 0
   return 1 + arityOf(n.left) + arityOf(n.right)

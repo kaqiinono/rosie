@@ -1,4 +1,5 @@
 import { BLOCKS, blockById, VERTICAL_BLOCK_IDS, type CalcBlock } from './calc-blocks'
+import { addHasCarry, subHasBorrow } from './calc-block-gens'
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
 import { toInverseQuestion } from './calc-inverse'
@@ -124,10 +125,7 @@ export function buildSession(
   // 4.4 Tag questions from vertical-capable blocks so the session renders a 竖式 layout.
   if (settings.verticalForBigNumbers) {
     for (let i = 0; i < out.length; i++) {
-      const q = out[i]
-      if (q.sourceBlockId && VERTICAL_BLOCK_IDS.has(q.sourceBlockId)) {
-        out[i] = { ...q, answerMode: 'vertical' }
-      }
+      out[i] = applyVerticalAnswerMode(out[i])
     }
   }
 
@@ -145,13 +143,17 @@ export function buildSession(
   }
 
   // 5. Append carried-over make-up questions (capped at `count` for safety).
+  // Restore source + 竖式 from problem-state attribution (mistakes table has neither).
   const carry = carried.slice(0, count)
   for (const m of carry) {
     // Inverse mistakes are stored as a complete blank equation ("48 + □ = 105");
     // normal mistakes are stored as a bare LHS needing "= ?". Detect by the blank glyph.
     const expr = m.display.replace(/\s*=\s*\?\s*$/, '')
-    const display = expr.includes('□') ? expr : `${expr} = ?`
-    out.push({
+    const isInverse = expr.includes('□')
+    const display = isInverse ? expr : `${expr} = ?`
+    const state = ctx.problemStates.get(m.signature)
+    const sourceBlockId = state?.blockId ?? inferVerticalBlockId(m.signature)
+    const q: CalcQuestion = {
       display,
       signature: m.signature,
       arity: 1,
@@ -160,7 +162,12 @@ export function buildSession(
       isChallenge: false,
       category: m.category,
       coinBase: 1,
-    })
+      sourceBlockId,
+      sourceMixedOpId: state?.mixedOpId,
+    }
+    out.push(
+      settings.verticalForBigNumbers && !isInverse ? applyVerticalAnswerMode(q) : q,
+    )
   }
 
   // 6. Shuffle the WHOLE thing (Fisher-Yates) so carried ones aren't predictably first.
@@ -169,6 +176,54 @@ export function buildSession(
     ;[out[i], out[j]] = [out[j], out[i]]
   }
   return out
+}
+
+/** Tag a block-sourced multi-digit drill as 竖式 when its source is in VERTICAL_BLOCK_IDS. */
+function applyVerticalAnswerMode(q: CalcQuestion): CalcQuestion {
+  if (!q.sourceBlockId || !VERTICAL_BLOCK_IDS.has(q.sourceBlockId)) return q
+  if (q.answer.kind !== 'int' && q.answer.kind !== 'decimal') return q
+  if (q.display.includes('□')) return q
+  // 1000 以内：只有真正进位/退位才走竖式；不进位/不退位用数字键盘。
+  if (q.sourceBlockId === 'add:1000' || q.sourceBlockId === 'sub:1000') {
+    try {
+      const ast = parseSignature(q.signature)
+      if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
+        return q
+      }
+      if (q.sourceBlockId === 'add:1000' && !addHasCarry(ast.left, ast.right)) return q
+      if (q.sourceBlockId === 'sub:1000' && !subHasBorrow(ast.left, ast.right)) return q
+    } catch {
+      return q
+    }
+  }
+  return { ...q, answerMode: 'vertical' }
+}
+
+/**
+ * When problem_state has no blockId (legacy / incomplete attribution), infer a
+ * vertical-capable block id from digit shape. Avoids add/sub-within-100 heuristics
+ * so strategy blocks (凑整 / 整百减) stay on the number pad.
+ */
+function inferVerticalBlockId(signature: string): string | undefined {
+  try {
+    const ast = parseSignature(signature)
+    if (typeof ast === 'number') return undefined
+    if (typeof ast.left !== 'number' || typeof ast.right !== 'number') return undefined
+    const a = ast.left
+    const b = ast.right
+    if (ast.op === 'mul') {
+      if (a >= 100 && a <= 999 && b >= 2 && b <= 9) return 'mul:3d1d-c'
+      if (a >= 10 && a <= 99 && b >= 2 && b <= 9) return 'mul:2d1d-c'
+      // Exclude trailing-zero facts (mul:zeros) from the 2d×2d 竖式 path.
+      if (a >= 10 && a <= 99 && b >= 10 && b <= 99 && a % 10 !== 0 && b % 10 !== 0) {
+        return 'mul:2d'
+      }
+    }
+    if (ast.op === 'div' && a >= 10 && b >= 2 && b <= 9) return 'div:multi'
+  } catch {
+    /* ignore malformed signatures */
+  }
+  return undefined
 }
 
 /** Allocate `count` units across sources weighted by `weights`. Sum === count. */

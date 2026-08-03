@@ -34,15 +34,16 @@ export function resolveClockSec(args: {
   mode: CalcTimingMode
   targetSec: number
   bonusSec: number
+  /** Kept for call-site compatibility; relaxed no longer gates the soft clock on this. */
   timedAnswerEnabled: boolean
+  /** Kept for call-site compatibility; prefer resolving into `targetSec` upstream. */
   explicitSeconds: number | null | undefined
 }): number | null {
-  const { mode, targetSec, bonusSec, timedAnswerEnabled, explicitSeconds } = args
+  const { mode, targetSec, bonusSec } = args
   if (mode === 'strict') return targetSec
   if (mode === 'bonus') return targetSec + clampBonusSec(bonusSec)
-  // relaxed
-  if (timedAnswerEnabled && explicitSeconds != null && explicitSeconds > 0) return explicitSeconds
-  return null
+  // relaxed: always show soft clock at T_target (no auto-advance at 0)
+  return targetSec
 }
 
 export function tryEnqueueRetry<T>(pool: T[], item: T, maxRetry: number): { pool: T[]; enqueued: boolean } {

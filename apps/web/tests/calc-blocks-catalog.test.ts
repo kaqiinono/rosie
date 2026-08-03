@@ -30,12 +30,21 @@ describe('mid-late catalog', () => {
     expect(U.filter((s) => s === 'add(50,50)')).toHaveLength(1)
   })
 
-  it('vertical set includes multi-digit drills but not zeros', () => {
+  it('vertical set includes multi-digit drills but not within-100 / strategy / zeros', () => {
     expect(VERTICAL_BLOCK_IDS.has('mul:2d1d-nc')).toBe(true)
     expect(VERTICAL_BLOCK_IDS.has('mul:3d1d-c')).toBe(true)
     expect(VERTICAL_BLOCK_IDS.has('div:2d1d-borrow')).toBe(true)
-    expect(VERTICAL_BLOCK_IDS.has('add:100-comp')).toBe(true)
-    expect(VERTICAL_BLOCK_IDS.has('sub:round')).toBe(true)
+    expect(VERTICAL_BLOCK_IDS.has('add:1000')).toBe(true)
+    expect(VERTICAL_BLOCK_IDS.has('sub:1000')).toBe(true)
+    expect(VERTICAL_BLOCK_IDS.has('add:10000')).toBe(true)
+    // Within-100 add/sub always stay on the number pad.
+    expect(VERTICAL_BLOCK_IDS.has('add:100a')).toBe(false)
+    expect(VERTICAL_BLOCK_IDS.has('add:100b')).toBe(false)
+    expect(VERTICAL_BLOCK_IDS.has('sub:100a')).toBe(false)
+    expect(VERTICAL_BLOCK_IDS.has('sub:100b')).toBe(false)
+    // Strategy blocks stay on the number pad even when verticalForBigNumbers is on.
+    expect(VERTICAL_BLOCK_IDS.has('add:100-comp')).toBe(false)
+    expect(VERTICAL_BLOCK_IDS.has('sub:round')).toBe(false)
     expect(VERTICAL_BLOCK_IDS.has('mul:zeros')).toBe(false)
     expect(VERTICAL_BLOCK_IDS.has('div:zeros')).toBe(false)
     expect(VERTICAL_BLOCK_IDS.has('mul:2d1d')).toBe(false)
