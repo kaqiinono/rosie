@@ -33,10 +33,10 @@ function parseBookSlug(value: string): ChineseBookSlug {
 }
 
 function parseQuizTypes(value: string[] | null | undefined): ChinesePlanQuizType[] {
-  if (!Array.isArray(value)) return [...CHINESE_PLAN_QUIZ_TYPES]
+  // Default only when column is null/absent — preserve explicit [] (and invalid-only → []).
+  if (value == null || !Array.isArray(value)) return [...CHINESE_PLAN_QUIZ_TYPES]
   const allowed = new Set<string>(CHINESE_PLAN_QUIZ_TYPES)
-  const parsed = value.filter((t): t is ChinesePlanQuizType => allowed.has(t))
-  return parsed.length > 0 ? parsed : [...CHINESE_PLAN_QUIZ_TYPES]
+  return value.filter((t): t is ChinesePlanQuizType => allowed.has(t))
 }
 
 function parseStringArray(value: string[] | null | undefined): string[] {
