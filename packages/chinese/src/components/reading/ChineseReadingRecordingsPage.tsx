@@ -100,7 +100,9 @@ export default function ChineseReadingRecordingsPage() {
 
   const [signedUrls, setSignedUrls] = useState<Map<string, string>>(() => new Map())
   const signedUrlsRef = useRef(signedUrls)
-  signedUrlsRef.current = signedUrls
+  useEffect(() => {
+    signedUrlsRef.current = signedUrls
+  }, [signedUrls])
   const fetchingRef = useRef<Set<string>>(new Set())
 
   const bookRecordings = useMemo(
