@@ -140,6 +140,7 @@ This is a Next.js 15 App Router PWA for elementary school math and English learn
 - `/admin/word-images` — Pexels auto-match + match-score review / replace / upload for vocabulary illustrations (Storage bucket `word-images`).
 - `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
 - `/admin/word-audit` — read-only data audit
+- `/admin/plans` — plan hub (math, English, Chinese roadmap plans)
 
 ### Subject modules — read the package CLAUDE.md, not here
 
