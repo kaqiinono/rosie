@@ -201,6 +201,8 @@ type Props = {
   attempt?: number
   /** 沉浸模式：竖式不显示对错着色，无文字反馈。 */
   immersive?: boolean
+  /** 答对即过：竖式结果格填满且正确则自动提交。 */
+  autoSubmitOnMatch?: boolean
 }
 
 export default function CalcQuestionStage({
@@ -219,6 +221,7 @@ export default function CalcQuestionStage({
   revealAnswer = null,
   attempt = 0,
   immersive = false,
+  autoSubmitOnMatch = false,
 }: Props) {
   const outer = `flex min-h-0 flex-1 flex-col ${className}`
 
@@ -243,6 +246,7 @@ export default function CalcQuestionStage({
       feedback={immersive ? null : feedback}
       revealAnswer={immersive ? null : revealAnswer}
       immersive={immersive}
+      autoSubmitOnMatch={autoSubmitOnMatch}
     />
   )
 

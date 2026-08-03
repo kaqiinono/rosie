@@ -65,7 +65,7 @@ export default function ChineseLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname()
   const hideNav =
     isImmersive ||
-    pathname.startsWith('/chinese/chars/practice') ||
+    pathname.includes('/chars/practice') ||
     pathname.includes('/chars/print') ||
     isChineseHomePath(pathname)
 

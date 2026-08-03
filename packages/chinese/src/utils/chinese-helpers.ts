@@ -115,16 +115,27 @@ export function normalizeMasteryMapForBook(map: CharMasteryMap, slug: string): C
   return next
 }
 
+/** Stable uint32 hash for deterministic shuffle seeds (avoids float overflow → 0). */
+export function hashSeed(input: string, salt = 0): number {
+  let s = salt >>> 0
+  for (let i = 0; i < input.length; i++) {
+    s = (Math.imul(s, 31) + input.charCodeAt(i)) >>> 0
+  }
+  return s
+}
+
 export function shuffle<T>(arr: T[], seed?: number): T[] {
   const a = [...arr]
   let s = (seed ?? Date.now()) >>> 0
   const rng = () => {
-    s = (s * 1664525 + 1013904223) >>> 0
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0
     return s / 0x100000000
   }
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]]
+    const j = Math.floor(rng() * (i + 1))
+    const tmp = a[i]
+    a[i] = a[j]
+    a[j] = tmp
   }
   return a
 }

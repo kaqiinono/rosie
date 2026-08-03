@@ -34,7 +34,11 @@ function toggleQuizType(
   if (current.includes(type)) {
     return current.filter((t) => t !== type)
   }
-  return CHINESE_PLAN_QUIZ_TYPES.filter((t) => current.includes(t) || t === type)
+  // 阅读题已含填空回想：选中阅读题时去掉填空，避免重复
+  let next = [...current, type]
+  if (type === 'passage') next = next.filter((t) => t !== 'blank')
+  if (type === 'blank' && next.includes('passage')) return current
+  return CHINESE_PLAN_QUIZ_TYPES.filter((t) => next.includes(t))
 }
 
 function accuracyLabel(run: ChineseRoadmapPlanLessonRun): string {
@@ -381,15 +385,22 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
           <div className="flex flex-wrap gap-2">
             {CHINESE_PLAN_QUIZ_TYPES.map((type) => {
               const on = quizTypes.includes(type)
+              const disabled = type === 'blank' && quizTypes.includes('passage')
               return (
                 <button
                   key={type}
                   type="button"
-                  onClick={() => setQuizTypes((prev) => toggleQuizType(prev, type))}
-                  className={`cursor-pointer rounded-full border px-3 py-1.5 text-[12px] font-extrabold transition ${
-                    on
-                      ? 'border-amber-400 bg-amber-500 text-white'
-                      : 'border-amber-200 bg-white text-amber-800 hover:border-amber-300'
+                  disabled={disabled}
+                  onClick={() => {
+                    if (disabled) return
+                    setQuizTypes((prev) => toggleQuizType(prev, type))
+                  }}
+                  className={`rounded-full border px-3 py-1.5 text-[12px] font-extrabold transition ${
+                    disabled
+                      ? 'cursor-not-allowed border-amber-100 bg-amber-50/60 text-amber-900/35'
+                      : on
+                        ? 'cursor-pointer border-amber-400 bg-amber-500 text-white'
+                        : 'cursor-pointer border-amber-200 bg-white text-amber-800 hover:border-amber-300'
                   }`}
                 >
                   {PLAN_QUIZ_TYPE_LABELS[type]}
@@ -397,6 +408,9 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
               )
             })}
           </div>
+          {quizTypes.includes('passage') && (
+            <p className="mt-1.5 text-[11px] font-semibold text-amber-900/45">填空已含在阅读题中</p>
+          )}
           {quizTypes.length === 0 && (
             <p className="mt-1.5 text-[11px] font-semibold text-red-500">请至少选择一种题型</p>
           )}

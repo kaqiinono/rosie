@@ -1,5 +1,5 @@
 import type { AccumulationKind, AccumulationUnit } from './g1b/types'
-import { shuffle } from './chinese-helpers'
+import { hashSeed, shuffle } from './chinese-helpers'
 
 export const ACCUMULATION_KIND_LABEL: Record<AccumulationKind, string> = {
   poem: '古诗',
@@ -47,7 +47,7 @@ function buildFromUnit(unit: AccumulationUnit, allAnswers: string[]): Accumulati
 
   unit.items.forEach((item, index) => {
     const id = `u${unit.unit}::${unit.kind}::${index}`
-    const seed = id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 3) >>> 0
+    const seed = hashSeed(id, 3)
 
     if (unit.kind === 'xiehouyu' && item.answer) {
       const prompt = `${item.text}——□`

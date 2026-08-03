@@ -16,6 +16,7 @@ import {
   currentBatchLessonKeys,
   orderedPlanLessonKeys,
 } from '../utils/chineseRoadmapPlanLogic'
+import { chineseRoute } from '../utils/chinese-routes'
 import type { CharTrack } from '../utils/chinese-helpers'
 import { formatPlanQuizTypes } from './plans/chinese-roadmap-plan-shared'
 
@@ -187,7 +188,10 @@ export default function ChineseDailyPage() {
       return
     }
     if (currentNode) {
-      router.push(`/chinese/chars/practice?lessons=${currentNode.lessonKey}`)
+      setActiveChineseBook(bookSlug)
+      router.push(
+        `${chineseRoute(bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(currentNode.lessonKey)}`,
+      )
     }
   }
 

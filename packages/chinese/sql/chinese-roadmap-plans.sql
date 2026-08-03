@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.chinese_roadmap_plans (
   start_lesson_key VARCHAR(64) NOT NULL,
   current_lesson_key VARCHAR(64) NOT NULL,
   lessons_per_batch INT NOT NULL DEFAULT 1,
-  quiz_types TEXT[] NOT NULL DEFAULT ARRAY['recognize','stroke','phrase','passage','pinyin-write']::text[],
+  quiz_types TEXT[] NOT NULL DEFAULT ARRAY['recognize','stroke','phrase','blank','passage','pinyin-write']::text[],
   status VARCHAR(32) NOT NULL DEFAULT 'active',
   completed_lesson_keys TEXT[] NOT NULL DEFAULT '{}',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -64,3 +64,8 @@ ALTER TABLE public.chinese_roadmap_plan_lesson_runs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS chinese_roadmap_plan_lesson_runs_own ON public.chinese_roadmap_plan_lesson_runs;
 CREATE POLICY chinese_roadmap_plan_lesson_runs_own ON public.chinese_roadmap_plan_lesson_runs
   FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- Incremental: include 填空题 (blank) in default quiz_types for new rows.
+ALTER TABLE public.chinese_roadmap_plans
+  ALTER COLUMN quiz_types
+  SET DEFAULT ARRAY['recognize','stroke','phrase','blank','passage','pinyin-write']::text[];

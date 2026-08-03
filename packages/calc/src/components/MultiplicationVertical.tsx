@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import QuestionFeedbackHint from './QuestionFeedbackHint'
 import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
 import { type FeedbackKind } from './FeedbackOverlay'
@@ -21,6 +21,8 @@ type MultiplicationVerticalProps = {
   feedback?: FeedbackKind
   revealAnswer?: string | null
   immersive?: boolean
+  /** Same as number-pad: when all answer cells are complete and correct, submit without tapping ✓. */
+  autoSubmitOnMatch?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
 }
@@ -69,7 +71,18 @@ function placeDigits(value: number, endCol: number, totalCols: number): (number 
 
 type ActiveCell = { row: number; idx: number }
 
-function MultiplicationVertical({ a, b, onSubmit, disabled = false, attempt = 0, feedback = null, revealAnswer = null, immersive = false, fill = false }: MultiplicationVerticalProps) {
+function MultiplicationVertical({
+  a,
+  b,
+  onSubmit,
+  disabled = false,
+  attempt = 0,
+  feedback = null,
+  revealAnswer = null,
+  immersive = false,
+  autoSubmitOnMatch = false,
+  fill = false,
+}: MultiplicationVerticalProps) {
   // ── Correct layout (memoised) ────────────────────────────────────────────
   const layout = useMemo(() => {
     const result = a * b
@@ -116,6 +129,7 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, attempt = 0,
   const [active, setActive] = useState<ActiveCell>(() => cellOrder[0] ?? { row: 0, idx: totalCols - 1 })
   const [graded, setGraded] = useState(false)
   const [locked, setLocked] = useState(false)
+  const autoSubmittedRef = useRef(false)
 
   const getVal = (c: ActiveCell): number | null =>
     c.row === resultRowIdx ? userResult[c.idx] : userPartials[c.row]?.[c.idx] ?? null
@@ -151,6 +165,31 @@ function MultiplicationVertical({ a, b, onSubmit, disabled = false, attempt = 0,
   }
 
   const allFilled = cellOrder.every((c) => getVal(c) !== null)
+
+  useEffect(() => {
+    if (!autoSubmitOnMatch || locked || disabled || autoSubmittedRef.current) return
+    if (!allFilled) return
+    const partialsCorrect = partials.every((row, r) =>
+      row.every((d, col) => (d === null ? true : userPartials[r][col] === d)),
+    )
+    const resultCorrect = hasSumRow
+      ? resultRow.every((d, col) => (d === null ? true : userResult[col] === d))
+      : partialsCorrect
+    if (!(resultCorrect && partialsCorrect)) return
+    autoSubmittedRef.current = true
+    handleCheck()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    autoSubmitOnMatch,
+    locked,
+    disabled,
+    allFilled,
+    userPartials,
+    userResult,
+    partials,
+    resultRow,
+    hasSumRow,
+  ])
 
   const handleCheck = () => {
     if (locked) return

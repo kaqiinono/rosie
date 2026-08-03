@@ -2,6 +2,7 @@ import type { ChineseLessonRow, LessonCharGroup } from '../types/chineseCharData
 import type { ChineseBookSlug } from './chinese-books'
 import { parseBookSlug } from './chinese-helpers'
 import { getLessonDisplayInfo, sortLessonsPedagogically } from './chinese-lesson-display'
+import { chineseRoute } from './chinese-routes'
 import type { RoadmapNode, RoadmapNodeState } from './chinese-roadmap'
 import type {
   ChinesePlanQuizType,
@@ -14,10 +15,15 @@ export function resolveChinesePlanCreateStatus(hasActive: boolean): 'active' | '
 
 /** Practice session URL driven by an active roadmap plan (lessons + types + planId). */
 export function buildChinesePlanPracticeHref(
-  plan: Pick<ChineseRoadmapPlan, 'id' | 'quizTypes'>,
+  plan: Pick<ChineseRoadmapPlan, 'id' | 'quizTypes' | 'bookSlug'>,
   batchKeys: string[],
 ): string {
-  return `/chinese/chars/practice?lessons=${batchKeys.join(',')}&types=${plan.quizTypes.join(',')}&planId=${plan.id}`
+  const q = new URLSearchParams({
+    lessons: batchKeys.join(','),
+    types: plan.quizTypes.join(','),
+    planId: plan.id,
+  })
+  return `${chineseRoute(plan.bookSlug, 'chars/practice')}?${q.toString()}`
 }
 
 /** Pedagogical lesson-key order for a plan's book (excludes happy_reading). */
@@ -104,6 +110,7 @@ type PracticePlanForPhases = {
   phraseItems: { lessonKey: string }[]
   poems: { unit: number; source?: string; lesson?: number }[]
   accumulationItems: { unit: number }[]
+  blankItems: { lessonKey: string }[]
   readingLessons: { lessonKey: string }[]
   pinyinWriteItems: { lessonKey: string }[]
 }
@@ -149,6 +156,10 @@ export function presentPhasesForLesson(
     plan.accumulationItems.some((item) => item.unit === lessonMeta.unit)
   ) {
     phases.add('accumulation')
+  }
+
+  if (plan.blankItems.some((item) => item.lessonKey === lessonKey)) {
+    phases.add('blank')
   }
 
   if (plan.readingLessons.some((item) => item.lessonKey === lessonKey)) {

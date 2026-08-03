@@ -19,7 +19,7 @@ import {
   type PracticeSessionPlan,
 } from '../../utils/chinese-chars-session-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
-import { findLessonRow, getLessonGroup, parseBookSlug, shuffle } from '../../utils/chinese-helpers'
+import { findLessonRow, getLessonGroup, hashSeed, parseBookSlug, shuffle } from '../../utils/chinese-helpers'
 import { getLessonPassage } from '../../utils/chinese-lesson-passage-helpers'
 import { getLessonDisplayInfo, sortLessonsPedagogically } from '../../utils/chinese-lesson-display'
 import {
@@ -47,6 +47,7 @@ import PoemRecite from '../poems/PoemRecite'
 import LessonPassageReader from '../reading/LessonPassageReader'
 import PassageRecorder from '../reading/PassageRecorder'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'
+import { chineseRoute } from '../../utils/chinese-routes'
 
 const PHASE_LABEL: Record<PracticePhase, string> = {
   cards: '生字卡片',
@@ -101,6 +102,7 @@ function enrichPlanForPhases(plan: PracticeSessionPlan) {
     phraseItems: plan.phraseItems,
     poems: plan.poems,
     accumulationItems: plan.accumulationItems,
+    blankItems: plan.blankItems,
     readingLessons: plan.readingLessons,
     pinyinWriteItems: plan.pinyinWriteItems,
   }
@@ -144,32 +146,33 @@ export default function ChineseCharsPracticeSession() {
     useChineseContext()
   const { plans, appendLessonRuns, advanceAfterSession } = useChineseRoadmapPlan(user)
 
-  const selUnits = useMemo(() => parseUnits(searchParams.get('units')), [searchParams])
-  const selLessons = useMemo(() => parseLessons(searchParams.get('lessons')), [searchParams])
-  const quizTypes = useMemo(
-    () => parseQuizTypesParam(searchParams.get('types')),
-    [searchParams],
-  )
+  const unitsParam = searchParams.get('units')
+  const lessonsParam = searchParams.get('lessons')
+  const typesParam = searchParams.get('types')
   const planId = searchParams.get('planId')
   const cardPreviewEnabled = searchParams.get('cardPreview') !== '0'
+
+  const selUnits = useMemo(() => parseUnits(unitsParam), [unitsParam])
+  const selLessons = useMemo(() => parseLessons(lessonsParam), [lessonsParam])
+  const quizTypes = useMemo(() => parseQuizTypesParam(typesParam), [typesParam])
   const scopeKey = useMemo(
     () =>
       chinesePracticeScopeKey({
         bookSlug,
         units: [...selUnits].sort((a, b) => a - b).join(','),
         lessons: [...selLessons].join(','),
-        types: searchParams.get('types') ?? '',
+        types: typesParam ?? '',
         cardPreview: cardPreviewEnabled ? '1' : '0',
       }),
-    [bookSlug, selUnits, selLessons, searchParams, cardPreviewEnabled],
+    [bookSlug, selUnits, selLessons, typesParam, cardPreviewEnabled],
   )
 
   const filtered = useMemo(
     () =>
       isCharDataReady
-        ? filterLessons(lessons, lessonGroups, selUnits, selLessons)
+        ? filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug)
         : [],
-    [isCharDataReady, lessons, lessonGroups, selUnits, selLessons],
+    [isCharDataReady, lessons, lessonGroups, selUnits, selLessons, bookSlug],
   )
 
   const builtPlan = useMemo(
@@ -208,6 +211,7 @@ export default function ChineseCharsPracticeSession() {
   const [isStashing, setIsStashing] = useState(false)
   const [stashToast, setStashToast] = useState<string | null>(null)
 
+  // Reset hydrate gate when the practice scope changes (not when builtPlan identity churns).
   useEffect(() => {
     hydrateDoneRef.current = false
     planSettleDoneRef.current = false
@@ -218,45 +222,51 @@ export default function ChineseCharsPracticeSession() {
     if (!isCharDataReady || hydrateDoneRef.current) return
     hydrateDoneRef.current = true
 
+    let cancelled = false
+    // Show a plan immediately so a slow pending restore cannot block the session.
+    setPlan(builtPlan)
+    setPhase(cardPreviewEnabled ? 'cards' : 'chars')
+    setCardIdx(0)
+    setCharQIdx(0)
+    setPhraseIdx(0)
+    setPoemIdx(0)
+    setAccIdx(0)
+    setBlankIdx(0)
+    setPassageLessonIdx(0)
+    setPassageStep('read')
+    setPassageBlankIdx(0)
+    setPinyinWriteIdx(0)
+    setEarnedMoons(0)
+    setCorrectCounts({ total: 0, correct: 0 })
+    setByLessonStats({})
+    sessionStartedAtRef.current = new Date().toISOString()
+    planSettleDoneRef.current = false
+
     void (async () => {
       const snap = await resolveChinesePracticeSnapshot(user?.id, bookSlug, scopeKey)
-      if (snap && snap.phase !== 'done') {
-        setPlan(snap.plan)
-        setPhase(snap.phase)
-        setCardIdx(snap.cardIdx)
-        setCharQIdx(snap.charQIdx)
-        setPhraseIdx(snap.phraseIdx)
-        setPoemIdx(snap.poemIdx)
-        setAccIdx(snap.accIdx)
-        setBlankIdx(snap.blankIdx)
-        setPassageLessonIdx(snap.passageLessonIdx)
-        setPassageStep(snap.passageStep)
-        setPassageBlankIdx(snap.passageBlankIdx)
-        setPinyinWriteIdx(snap.pinyinWriteIdx)
-        setEarnedMoons(snap.earnedMoons)
-        setCorrectCounts(snap.correctCounts)
-        setByLessonStats(snap.byLessonStats ?? {})
-        sessionStartedAtRef.current = snap.sessionStartedAt ?? new Date().toISOString()
-        return
-      }
-      setPlan(builtPlan)
-      setPhase(cardPreviewEnabled ? 'cards' : 'chars')
-      setCardIdx(0)
-      setCharQIdx(0)
-      setPhraseIdx(0)
-      setPoemIdx(0)
-      setAccIdx(0)
-      setBlankIdx(0)
-      setPassageLessonIdx(0)
-      setPassageStep('read')
-      setPassageBlankIdx(0)
-      setPinyinWriteIdx(0)
-      setEarnedMoons(0)
-      setCorrectCounts({ total: 0, correct: 0 })
-      setByLessonStats({})
-      sessionStartedAtRef.current = new Date().toISOString()
-      planSettleDoneRef.current = false
+      if (cancelled) return
+      if (!snap || snap.phase === 'done') return
+      setPlan(snap.plan)
+      setPhase(snap.phase)
+      setCardIdx(snap.cardIdx)
+      setCharQIdx(snap.charQIdx)
+      setPhraseIdx(snap.phraseIdx)
+      setPoemIdx(snap.poemIdx)
+      setAccIdx(snap.accIdx)
+      setBlankIdx(snap.blankIdx)
+      setPassageLessonIdx(snap.passageLessonIdx)
+      setPassageStep(snap.passageStep)
+      setPassageBlankIdx(snap.passageBlankIdx)
+      setPinyinWriteIdx(snap.pinyinWriteIdx)
+      setEarnedMoons(snap.earnedMoons)
+      setCorrectCounts(snap.correctCounts)
+      setByLessonStats(snap.byLessonStats ?? {})
+      sessionStartedAtRef.current = snap.sessionStartedAt ?? new Date().toISOString()
     })()
+
+    return () => {
+      cancelled = true
+    }
   }, [isCharDataReady, builtPlan, bookSlug, scopeKey, cardPreviewEnabled, user?.id])
 
   const getEnvelope = useCallback(() => {
@@ -378,9 +388,9 @@ export default function ChineseCharsPracticeSession() {
   const exitPractice = useCallback(() => {
     setIsImmersive(false)
     void flushCloudNow().then(() => {
-      router.push('/chinese/chars')
+      router.push(chineseRoute(bookSlug, 'chars'))
     })
-  }, [router, setIsImmersive, flushCloudNow])
+  }, [router, setIsImmersive, flushCloudNow, bookSlug])
 
   const stashAndExit = useCallback(async () => {
     setIsStashing(true)
@@ -391,12 +401,12 @@ export default function ChineseCharsPracticeSession() {
       )
       setIsImmersive(false)
       window.setTimeout(() => {
-        router.push('/chinese/chars')
+        router.push(chineseRoute(bookSlug, 'chars'))
       }, 900)
     } finally {
       setIsStashing(false)
     }
-  }, [flushCloudNow, router, setIsImmersive])
+  }, [flushCloudNow, router, setIsImmersive, bookSlug])
 
   const recordLessonAnswer = useCallback((lessonKey: string | null, phaseName: string, correct: boolean) => {
     if (!lessonKey) return
@@ -555,21 +565,18 @@ export default function ChineseCharsPracticeSession() {
   )
 
   useEffect(() => {
-    if (!isCharDataReady || !plan) return
-    if (phase === 'cards' && (!cardPreviewEnabled || plan.cards.length === 0)) {
-      goNextPhase('cards')
-      return
-    }
-    if (!cardPreviewEnabled && phase === 'chars' && plan.charQuestions.length === 0) {
-      goNextPhase('chars')
-    }
-  }, [
-    isCharDataReady,
-    plan,
-    phase,
-    goNextPhase,
-    cardPreviewEnabled,
-  ])
+    if (!isCharDataReady || !plan || phase === 'done') return
+    const empty =
+      (phase === 'cards' && (!cardPreviewEnabled || plan.cards.length === 0)) ||
+      (phase === 'chars' && plan.charQuestions.length === 0) ||
+      (phase === 'phrases' && plan.phraseItems.length === 0) ||
+      (phase === 'poems' && plan.poems.length === 0) ||
+      (phase === 'accumulation' && plan.accumulationItems.length === 0) ||
+      (phase === 'passage' && plan.readingLessons.length === 0) ||
+      (phase === 'blank' && plan.blankItems.length === 0) ||
+      (phase === 'pinyin-write' && plan.pinyinWriteItems.length === 0)
+    if (empty) goNextPhase(phase)
+  }, [isCharDataReady, plan, phase, goNextPhase, cardPreviewEnabled])
 
   const currentCard = plan?.cards[cardIdx]
   const currentCharQ = plan?.charQuestions[charQIdx] as CharPracticeQuestion | undefined
@@ -584,7 +591,7 @@ export default function ChineseCharsPracticeSession() {
   const phraseOptions = useMemo(() => {
     if (!currentPhrase) return []
     const pool = filtered.flatMap((f) => [...f.group.recognize, ...f.group.write])
-    const seed = currentPhrase.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 11) >>> 0
+    const seed = hashSeed(currentPhrase.id, 11)
     return buildPhraseOptions(currentPhrase, [...new Set(pool)], seed)
   }, [currentPhrase, filtered])
 
@@ -611,8 +618,7 @@ export default function ChineseCharsPracticeSession() {
   const phraseCharOptions = useMemo(() => {
     if (!currentCharQ || currentCharQ.kind !== 'phrase-char') return []
     const pool = filtered.flatMap((f) => [...f.group.recognize, ...f.group.write])
-    const seed =
-      currentCharQ.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 11) >>> 0
+    const seed = hashSeed(currentCharQ.id, 11)
     return buildPhraseOptions(currentCharQ.item, [...new Set(pool)], seed)
   }, [currentCharQ, filtered])
 
@@ -882,8 +888,7 @@ export default function ChineseCharsPracticeSession() {
                 <div className="grid grid-cols-2 gap-3">
                   {(() => {
                     const pool = [...new Set(plan.cards.map((c) => c.pinyin))]
-                    const seed =
-                      currentCharQ.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 7) >>> 0
+                    const seed = hashSeed(currentCharQ.id, 7)
                     const distractors = shuffle(
                       pool.filter((p) => p !== currentCharQ.pinyin),
                       seed,

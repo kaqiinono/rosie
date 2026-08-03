@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { useChineseContext } from '../context/ChineseContext'
+import { setActiveChineseBook } from '../hooks/useActiveChineseBook'
+import { chineseRoute } from '../utils/chinese-routes'
 import {
   buildChineseRoadmap,
   listGradeSemesters,
@@ -101,9 +103,10 @@ export default function ChineseWeeklyPage() {
       if (node.state === 'locked') return
       const query = new URLSearchParams({ lessons: node.lessonKey })
       if (node.state === 'completed') query.set('review', '1')
-      router.push(`/chinese/chars/practice?${query.toString()}`)
+      setActiveChineseBook(bookSlug)
+      router.push(`${chineseRoute(bookSlug, 'chars/practice')}?${query.toString()}`)
     },
-    [router],
+    [router, bookSlug],
   )
 
   if (!isCharDataReady) {

@@ -2,7 +2,7 @@ import type { ChineseCharProfile, ChineseLessonRow } from '../types/chineseCharD
 import type { ChineseBookSlug } from './chinese-books'
 import { getBookPinyinWriteWords } from './chinese-book-content'
 import type { FilteredLesson } from './chinese-chars-session-helpers'
-import { shuffle } from './chinese-helpers'
+import { hashSeed, shuffle } from './chinese-helpers'
 import { getLessonPassage } from './chinese-lesson-passage-helpers'
 import { buildLessonPhraseItems } from './chinese-phrase-helpers'
 import type { LessonCharGroup } from './g1b/types'
@@ -20,7 +20,7 @@ export interface PassageQuizItem {
 }
 
 function seedFromId(id: string, salt = 13): number {
-  return id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), salt) >>> 0
+  return hashSeed(id, salt)
 }
 
 function buildCharOptions(answer: string, pool: string[], seed: number): string[] {

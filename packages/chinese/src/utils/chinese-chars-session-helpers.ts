@@ -12,7 +12,7 @@ import {
   type PhraseQuizItem,
 } from './chinese-phrase-helpers'
 import { getLessonPassage } from './chinese-lesson-passage-helpers'
-import { charKey, shuffle } from './chinese-helpers'
+import { charKey, lessonKeysMatch, shuffle } from './chinese-helpers'
 import { buildLessonDisplayMap, sortLessonsPedagogically } from './chinese-lesson-display'
 import {
   buildPassageQuizItems,
@@ -163,12 +163,18 @@ export function filterLessons(
   lessonGroups: LessonCharGroup[],
   selUnits: Set<number>,
   selLessons: Set<string>,
+  bookSlug?: ChineseBookSlug,
 ): FilteredLesson[] {
   const groupMap = new Map(lessonGroups.map((g) => [g.lessonKey, g]))
   return sortLessonsPedagogically(lessons)
     .filter((l) => {
       if (selUnits.size > 0 && !selUnits.has(l.unit)) return false
-      if (selLessons.size > 0 && !selLessons.has(l.lessonKey)) return false
+      if (
+        selLessons.size > 0 &&
+        ![...selLessons].some((key) => lessonKeysMatch(l.lessonKey, key, bookSlug))
+      ) {
+        return false
+      }
       return true
     })
     .map((lesson) => {

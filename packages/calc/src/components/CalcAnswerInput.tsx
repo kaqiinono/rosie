@@ -85,6 +85,8 @@ type Props = {
   feedback?: FeedbackKind
   revealAnswer?: string | null
   immersive?: boolean
+  /** When true, 竖式 auto-submits once the answer cells are complete and correct. */
+  autoSubmitOnMatch?: boolean
 }
 
 export default function CalcAnswerInput({
@@ -102,6 +104,7 @@ export default function CalcAnswerInput({
   feedback = null,
   revealAnswer = null,
   immersive = false,
+  autoSubmitOnMatch = false,
 }: Props) {
   if (question.answer.kind === 'fraction') {
     const spec = fractionPieSpec(question)
@@ -138,6 +141,7 @@ export default function CalcAnswerInput({
           feedback={feedback}
           revealAnswer={revealAnswer}
           immersive={immersive}
+          autoSubmitOnMatch={autoSubmitOnMatch}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.quotient.join(''))}
         />
       )
@@ -156,6 +160,7 @@ export default function CalcAnswerInput({
           feedback={feedback}
           revealAnswer={revealAnswer}
           immersive={immersive}
+          autoSubmitOnMatch={autoSubmitOnMatch}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.userResult.join(''))}
         />
       )
@@ -172,6 +177,7 @@ export default function CalcAnswerInput({
         feedback={feedback}
         revealAnswer={revealAnswer}
         immersive={immersive}
+        autoSubmitOnMatch={autoSubmitOnMatch}
         onSubmit={(r) => onVerticalSubmit(r.resultCorrect, r.userResult.join(''))}
       />
     )

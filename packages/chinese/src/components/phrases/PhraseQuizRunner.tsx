@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import type { PhraseQuizItem } from '../../utils/chinese-phrase-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
+import { hashSeed } from '../../utils/chinese-helpers'
 import QuizBlankSentence from '../chars/QuizBlankSentence'
 
 interface PhraseQuizRunnerProps {
@@ -23,7 +24,7 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
   const current = items[idx]
   const options = useMemo(() => {
     if (!current) return []
-    const seed = current.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 11) >>> 0
+    const seed = hashSeed(current.id, 11)
     return buildPhraseOptions(current, charPool, seed)
   }, [current, charPool])
 

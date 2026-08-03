@@ -31,8 +31,8 @@ describe('mid-late catalog', () => {
   })
 
   it('vertical set includes multi-digit drills but not within-100 / strategy / zeros', () => {
+    expect(VERTICAL_BLOCK_IDS.has('mul:2d1d-c')).toBe(true)
     expect(VERTICAL_BLOCK_IDS.has('mul:3d1d-c')).toBe(true)
-    expect(VERTICAL_BLOCK_IDS.has('mul:2d1d-c')).toBe(false)
     expect(VERTICAL_BLOCK_IDS.has('mul:2d1d-nc')).toBe(false)
     expect(VERTICAL_BLOCK_IDS.has('mul:3d1d-nc')).toBe(false)
     expect(VERTICAL_BLOCK_IDS.has('div:2d1d-borrow')).toBe(true)

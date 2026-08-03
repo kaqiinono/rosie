@@ -62,14 +62,13 @@ describe('parseQuizTypes via mapPlanRowToModel', () => {
   it('[] → []', () => {
     expect(mapPlanRowToModel(basePlanRow({ quiz_types: [] })).quizTypes).toEqual([])
   })
-  it('unknown-only / blank → []', () => {
-    expect(mapPlanRowToModel(basePlanRow({ quiz_types: ['blank'] })).quizTypes).toEqual([])
+  it('unknown-only → []', () => {
     expect(mapPlanRowToModel(basePlanRow({ quiz_types: ['nope', 'x'] })).quizTypes).toEqual([])
   })
-  it('valid subset preserved', () => {
+  it('valid subset preserved including blank', () => {
     expect(
       mapPlanRowToModel(basePlanRow({ quiz_types: ['recognize', 'stroke', 'blank'] })).quizTypes,
-    ).toEqual(['recognize', 'stroke'])
+    ).toEqual(['recognize', 'stroke', 'blank'])
   })
 })
 
@@ -109,6 +108,7 @@ const emptyPlanContent = {
   phraseItems: [] as { lessonKey: string }[],
   poems: [] as { unit: number; source?: string; lesson?: number }[],
   accumulationItems: [] as { unit: number }[],
+  blankItems: [] as { lessonKey: string }[],
   readingLessons: [] as { lessonKey: string }[],
   pinyinWriteItems: [] as { lessonKey: string }[],
 }
@@ -126,13 +126,14 @@ describe('presentPhasesForLesson', () => {
           { lessonKey: 'g1b-l02', kind: 'recognize' },
         ],
         phraseItems: [{ lessonKey: 'g1b-l01' }],
+        blankItems: [{ lessonKey: 'g1b-l01' }],
         readingLessons: [{ lessonKey: 'g1b-l01' }],
         pinyinWriteItems: [{ lessonKey: 'g1b-l01' }],
       },
       { unit: 1, lesson: 1 },
     )
     expect(phases.sort()).toEqual(
-      ['passage', 'phrase', 'pinyin-write', 'recognize', 'stroke'].sort(),
+      ['blank', 'passage', 'phrase', 'pinyin-write', 'recognize', 'stroke'].sort(),
     )
   })
 

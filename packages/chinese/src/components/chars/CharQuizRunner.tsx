@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { shuffle } from '../../utils/chinese-helpers'
+import { hashSeed, shuffle } from '../../utils/chinese-helpers'
 
 export interface CharQuizItem {
   char: string
@@ -37,7 +37,7 @@ export default function CharQuizRunner({ items, pinyinPool, onComplete }: CharQu
   const current = items[idx]
   const options = useMemo(() => {
     if (!current) return []
-    const seed = current.charKey.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 7) >>> 0
+    const seed = hashSeed(current.charKey, 7)
     return buildOptions(current.pinyin, pool, seed)
   }, [current, pool])
 

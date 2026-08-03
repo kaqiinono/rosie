@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { shuffle } from '../../utils/chinese-helpers'
+import { hashSeed, shuffle } from '../../utils/chinese-helpers'
 import CharSpeakButton from '../chars/CharSpeakButton'
 
 export interface RecognizeRecallChar {
@@ -48,7 +48,7 @@ function RecognizeCard({
   const [picked, setPicked] = useState<string | null>(null)
 
   const options = useMemo(() => {
-    const seed = item.charKey.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 7) >>> 0
+    const seed = hashSeed(item.charKey, 7)
     return buildPinyinOptions(item.pinyin, pinyinPool, seed)
   }, [item.charKey, item.pinyin, pinyinPool])
 

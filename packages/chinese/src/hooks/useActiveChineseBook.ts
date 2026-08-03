@@ -11,7 +11,18 @@ const DEFAULT_BOOK: ChineseBookSlug = 'g1b'
 type BookListener = (slug: ChineseBookSlug) => void
 const bookListeners = new Set<BookListener>()
 
-/** Persist active book for practice routes without a book slug in the path. */
+function readStoredBook(): ChineseBookSlug | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = sessionStorage.getItem(STORAGE_KEY)
+    if (stored && isChineseBookSlug(stored)) return stored
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
+/** Persist active book for legacy practice routes without a book slug in the path. */
 export function setActiveChineseBook(bookSlug: ChineseBookSlug): void {
   try {
     sessionStorage.setItem(STORAGE_KEY, bookSlug)
@@ -23,7 +34,13 @@ export function setActiveChineseBook(bookSlug: ChineseBookSlug): void {
 
 export function useActiveChineseBook(): ChineseBookSlug {
   const pathname = usePathname()
-  const [bookSlug, setBookSlug] = useState<ChineseBookSlug>(DEFAULT_BOOK)
+  const [bookSlug, setBookSlug] = useState<ChineseBookSlug>(() => {
+    const fromPath =
+      typeof window !== 'undefined'
+        ? parseBookSlugFromPath(window.location.pathname)
+        : parseBookSlugFromPath(pathname)
+    return fromPath ?? readStoredBook() ?? DEFAULT_BOOK
+  })
 
   useEffect(() => {
     bookListeners.add(setBookSlug)
@@ -43,12 +60,8 @@ export function useActiveChineseBook(): ChineseBookSlug {
       }
       return
     }
-    try {
-      const stored = sessionStorage.getItem(STORAGE_KEY)
-      if (stored && isChineseBookSlug(stored)) setBookSlug(stored)
-    } catch {
-      /* ignore */
-    }
+    const stored = readStoredBook()
+    if (stored) setBookSlug(stored)
   }, [pathname])
 
   return bookSlug

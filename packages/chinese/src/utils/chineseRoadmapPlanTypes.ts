@@ -6,6 +6,7 @@ export type ChinesePlanQuizType =
   | 'recognize'
   | 'stroke'
   | 'phrase'
+  | 'blank'
   | 'passage'
   | 'pinyin-write'
 
@@ -13,6 +14,7 @@ export const CHINESE_PLAN_QUIZ_TYPES: ChinesePlanQuizType[] = [
   'recognize',
   'stroke',
   'phrase',
+  'blank',
   'passage',
   'pinyin-write',
 ]

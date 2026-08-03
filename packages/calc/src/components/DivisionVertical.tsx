@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import QuestionFeedbackHint from './QuestionFeedbackHint'
 import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
 import { type FeedbackKind } from './FeedbackOverlay'
@@ -14,6 +14,8 @@ type DivisionVerticalProps = {
   feedback?: FeedbackKind
   revealAnswer?: string | null
   immersive?: boolean
+  /** Same as number-pad: when 商 is complete and correct, submit without tapping ✓. */
+  autoSubmitOnMatch?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
 }
@@ -72,7 +74,18 @@ const BORDER = 'rgba(196,181,253,0.55)'
 // mode keeps fixed pixels for the settings preview.
 const CELL_BASE = 'flex items-center justify-center font-black'
 
-function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, attempt = 0, feedback = null, revealAnswer = null, immersive = false, fill = false }: DivisionVerticalProps) {
+function DivisionVertical({
+  dividend,
+  divisor,
+  onSubmit,
+  disabled = false,
+  attempt = 0,
+  feedback = null,
+  revealAnswer = null,
+  immersive = false,
+  autoSubmitOnMatch = false,
+  fill = false,
+}: DivisionVerticalProps) {
   const { digits, n, quotient, steps, remainder } = useMemo(
     () => longDivision(dividend, divisor),
     [dividend, divisor],
@@ -87,6 +100,7 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, attem
   const [graded, setGraded] = useState(false)
   const [locked, setLocked] = useState(false)
   const [lastCorrect, setLastCorrect] = useState(false)
+  const autoSubmittedRef = useRef(false)
 
   const activeCol = quotientCols[activeIdx]
 
@@ -146,6 +160,17 @@ function DivisionVertical({ dividend, divisor, onSubmit, disabled = false, attem
   // becomes '✓' once every 商 cell is filled — so tapping cells out of order never
   // surfaces ✓ with blanks still open.
   const quotientComplete = quotientCols.every((c) => userQuotient[c] !== null)
+
+  useEffect(() => {
+    if (!autoSubmitOnMatch || locked || disabled || autoSubmittedRef.current) return
+    if (!quotientComplete) return
+    const allCorrect = quotientCols.every((c) => userQuotient[c] === quotient[c])
+    if (!allCorrect) return
+    autoSubmittedRef.current = true
+    handleCheck()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSubmitOnMatch, locked, disabled, quotientComplete, userQuotient, quotient, quotientCols])
+
   const handleAction = () => {
     if (quotientComplete) {
       handleCheck()

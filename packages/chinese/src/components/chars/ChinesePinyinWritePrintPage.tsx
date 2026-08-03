@@ -149,9 +149,9 @@ export default function ChinesePinyinWritePrintPage() {
   const filtered = useMemo(
     () =>
       isCharDataReady
-        ? filterLessons(lessons, lessonGroups, selUnits, selLessons)
+        ? filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug)
         : [],
-    [isCharDataReady, lessons, lessonGroups, selUnits, selLessons],
+    [isCharDataReady, lessons, lessonGroups, selUnits, selLessons, bookSlug],
   )
 
   const charSections = useMemo(() => {

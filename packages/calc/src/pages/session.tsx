@@ -1252,6 +1252,7 @@ export default function CalcSessionPage() {
           isChallenge={currentQ.isChallenge}
           disabled={stageDisabled}
           immersive={settings.immersiveMode}
+          autoSubmitOnMatch={settings.autoSubmitOnMatch}
           className=""
           input={input}
           onInputChange={handleNumberPadInputChange}

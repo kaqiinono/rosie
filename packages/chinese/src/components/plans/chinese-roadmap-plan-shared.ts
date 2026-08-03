@@ -4,6 +4,7 @@ export const PLAN_QUIZ_TYPE_LABELS: Record<ChinesePlanQuizType, string> = {
   recognize: '认字',
   stroke: '笔顺',
   phrase: '词语检测',
+  blank: '填空题',
   passage: '阅读题',
   'pinyin-write': '看拼写字',
 }

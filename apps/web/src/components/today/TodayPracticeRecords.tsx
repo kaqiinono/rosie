@@ -292,7 +292,7 @@ export default function TodayPracticeRecords() {
     : chineseActivePlan && chineseBatchKeys.length > 0
       ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
       : chinese.currentNode
-        ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+        ? `${chineseRoute(chinese.bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
         : chineseRoute(chinese.bookSlug, 'daily')
 
   const englishLoading =

@@ -100,10 +100,10 @@ settled ONLY by the finish fold (`applyAttempt`): a wrong answer at answer-time 
 `demoteFromMastered` applies only to cross-session reconcile repair. Tables:
 `calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
 
-**NumberPad auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).
-`shouldAutoSubmitNumberPad` in `calc-answer.ts` gates int/decimal only (length ≥ `formatAnswer`,
-then `checkAnswer`); session calls it from `handleNumberPadInputChange` with `settleLockRef`.
-SQL: `sql/calc-autosubmit-on-match.sql` (`auto_submit_on_match` column).
+**NumberPad / 竖式 auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).
+`shouldAutoSubmitNumberPad` in `calc-answer.ts` gates int/decimal number-pad; vertical surfaces
+(`VerticalCalc` / `MultiplicationVertical` / `DivisionVertical`) auto-submit when answer cells are
+complete and correct. Session passes the flag via `CalcQuestionStage`.
 
 **Block registry notes:** `mul:2d1d` was removed (replaced by split `mul:2d1d-nc` / `mul:2d1d-c` blocks).
 `calc-block-gens` holds per-block generators; `calc-settings-normalize` migrates legacy settings keys.

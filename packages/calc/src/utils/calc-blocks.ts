@@ -371,8 +371,8 @@ export const BLOCK_GROUPS: { group: CalcBlock['group']; label: string }[] = [
 export const VERTICAL_BLOCK_IDS = new Set<string>([
   'add:1000', 'add:10000',
   'sub:1000', 'sub:10000',
-  // 3d×1d carry only; 2d×1d (carry or not) stays on the number pad.
-  'mul:3d1d-c', 'mul:2d',
+  // 2d×1d / 3d×1d: carry only — no-carry stays on the number pad.
+  'mul:2d1d-c', 'mul:3d1d-c', 'mul:2d',
   'div:multi', 'div:2d1d-borrow',
 ])
 

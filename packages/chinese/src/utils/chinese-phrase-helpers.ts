@@ -1,7 +1,7 @@
 import type { ChineseCharProfile } from '../types/chineseCharData'
 import type { ChineseLessonRow } from '../types/chineseCharData'
 import type { LessonCharGroup } from './g1b/types'
-import { charKey, shuffle } from './chinese-helpers'
+import { charKey, hashSeed, shuffle } from './chinese-helpers'
 
 export type PhraseSource = 'compound' | 'recall'
 
@@ -108,9 +108,7 @@ export function buildPhraseOptions(
   charPool: string[],
   seed?: number,
 ): string[] {
-  const baseSeed =
-    seed ??
-    (item.id.split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 0) >>> 0)
+  const baseSeed = seed ?? hashSeed(item.id, 0)
   const distractors = shuffle(
     charPool.filter((c) => c !== item.answer),
     baseSeed,

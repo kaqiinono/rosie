@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import QuestionFeedbackHint from './QuestionFeedbackHint'
 import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
 import { type FeedbackKind } from './FeedbackOverlay'
@@ -24,6 +24,8 @@ type VerticalCalcProps = {
   feedback?: FeedbackKind
   revealAnswer?: string | null
   immersive?: boolean
+  /** Same as number-pad: when result row is complete and correct, submit without tapping ✓. */
+  autoSubmitOnMatch?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
 }
@@ -135,7 +137,19 @@ function computeMultiplication(a: number, b: number) {
   return { result, carries, resultDigits: getDigits(result) }
 }
 
-function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedback = null, revealAnswer = null, immersive = false, fill = false }: VerticalCalcProps) {
+function VerticalCalc({
+  a,
+  b,
+  op,
+  onSubmit,
+  disabled = false,
+  attempt = 0,
+  feedback = null,
+  revealAnswer = null,
+  immersive = false,
+  autoSubmitOnMatch = false,
+  fill = false,
+}: VerticalCalcProps) {
   const { carries: correctCarries, resultDigits: correctResult } = useMemo(() => {
     if (op === '+') return computeAddition(a, b)
     if (op === '-') return computeSubtraction(a, b)
@@ -164,6 +178,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedb
   const [locked, setLocked] = useState(false)
   // 进位/退位 row is optional scaffolding (never graded); shown by default.
   const [showCarry, setShowCarry] = useState(true)
+  const autoSubmittedRef = useRef(false)
 
   // Plain handlers — React Compiler memoizes these; hand-tuned useCallback deps
   // here disagreed with its inference and forced it to skip the whole component.
@@ -246,6 +261,20 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedb
   const resultCols: number[] = []
   for (let i = totalCols - 1; i >= leftmostResult; i--) resultCols.push(i)
   const resultComplete = resultCols.every((c) => userResult[c] !== null)
+
+  // Mirror number-pad「答对即过」: full correct result row → submit without tapping ✓.
+  useEffect(() => {
+    if (!autoSubmitOnMatch || locked || disabled || autoSubmittedRef.current) return
+    if (!resultComplete) return
+    const correctResultFull = padLeft(correctResult, totalCols)
+    const ur = userResult.map((v) => v ?? 0)
+    const resultCorrect = ur.every((v, i) => v === (correctResultFull[i] ?? 0))
+    if (!resultCorrect) return
+    autoSubmittedRef.current = true
+    handleCheck()
+    // handleCheck closes over latest state; intentional once-per-complete trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSubmitOnMatch, locked, disabled, resultComplete, userResult, correctResult, totalCols])
 
   // Action key is value-based: 'Enter' jumps to the next empty cell (advancing left
   // through carry cells too) and only becomes '✓' once the result row is complete —

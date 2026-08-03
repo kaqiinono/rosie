@@ -212,8 +212,9 @@ function inferVerticalBlockId(signature: string): string | undefined {
     const a = ast.left
     const b = ast.right
     if (ast.op === 'mul') {
-      // Only carry 3d×1d → vertical; 2d×1d (any) stays on the pad.
+      // Carry 2d/3d×1d → vertical; no-carry stays on the pad.
       if (a >= 100 && a <= 999 && b >= 2 && b <= 9 && hasAnyCarry(a, b)) return 'mul:3d1d-c'
+      if (a >= 10 && a <= 99 && b >= 2 && b <= 9 && hasAnyCarry(a, b)) return 'mul:2d1d-c'
       // Exclude trailing-zero facts (mul:zeros) from the 2d×2d 竖式 path.
       if (a >= 10 && a <= 99 && b >= 10 && b <= 99 && a % 10 !== 0 && b % 10 !== 0) {
         return 'mul:2d'

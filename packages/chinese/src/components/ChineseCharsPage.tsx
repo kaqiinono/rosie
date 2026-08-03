@@ -27,6 +27,7 @@ import ChineseCharsContentPreview from './chars/ChineseCharsContentPreview'
 import ChineseCharsCardsGrid from './chars/ChineseCharsCardsGrid'
 import ChineseWordsCardsGrid from './chars/ChineseWordsCardsGrid'
 import { buildWordCardItems } from '../utils/chinese-pinyin-write-helpers'
+import { setActiveChineseBook } from '../hooks/useActiveChineseBook'
 import { chineseRoute } from '../utils/chinese-routes'
 
 export default function ChineseCharsPage() {
@@ -53,8 +54,8 @@ export default function ChineseCharsPage() {
   )
 
   const filtered = useMemo(
-    () => filterLessons(lessons, lessonGroups, selUnits, selLessons),
-    [lessons, lessonGroups, selUnits, selLessons],
+    () => filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug),
+    [lessons, lessonGroups, selUnits, selLessons, bookSlug],
   )
 
   const contentBlocks = useMemo(
@@ -201,8 +202,9 @@ export default function ChineseCharsPage() {
     if (selLessons.size > 0) params.set('lessons', [...selLessons].join(','))
     params.set('types', serializeQuizTypes(quizTypes))
     if (!cardPreviewEnabled) params.set('cardPreview', '0')
-    router.push(`/chinese/chars/practice?${params.toString()}`)
-  }, [router, selUnits, selLessons, quizTypes, cardPreviewEnabled])
+    setActiveChineseBook(bookSlug)
+    router.push(`${chineseRoute(bookSlug, 'chars/practice')}?${params.toString()}`)
+  }, [router, bookSlug, selUnits, selLessons, quizTypes, cardPreviewEnabled])
 
   const openPrint = useCallback(
     (type: 'words' | 'chars' | 'all') => {
