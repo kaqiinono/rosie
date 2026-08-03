@@ -25,12 +25,19 @@ import {
 
 export type { PassageQuizItem } from './chinese-passage-quiz-helpers'
 
-export type CharQuizType = 'recognize' | 'stroke' | 'phrase' | 'passage' | 'pinyin-write'
+export type CharQuizType =
+  | 'recognize'
+  | 'stroke'
+  | 'phrase'
+  | 'blank'
+  | 'passage'
+  | 'pinyin-write'
 
 export const ALL_CHAR_QUIZ_TYPES: CharQuizType[] = [
   'recognize',
   'stroke',
   'phrase',
+  'blank',
   'passage',
   'pinyin-write',
 ]
@@ -40,7 +47,7 @@ export const MOON_REWARDS = {
   phrase: 2,
   poem: 3,
   accumulation: 3,
-  passage: 5,
+  blank: 5,
   pinyinWrite: 2,
 } as const
 
@@ -50,9 +57,18 @@ export type PracticePhase =
   | 'phrases'
   | 'poems'
   | 'accumulation'
+  | 'blank'
   | 'passage'
   | 'pinyin-write'
   | 'done'
+
+export type PassageStep = 'read' | 'blank'
+
+export interface ReadingLessonPlan {
+  lessonKey: string
+  lessonTitle: string
+  blankItems: PassageQuizItem[]
+}
 
 export interface UnitOption {
   unit: number
@@ -123,7 +139,8 @@ export interface PracticeSessionPlan {
   phraseItems: PhraseQuizItem[]
   poems: PoemEntry[]
   accumulationItems: AccumulationQuizItem[]
-  passageItems: PassageQuizItem[]
+  blankItems: PassageQuizItem[]
+  readingLessons: ReadingLessonPlan[]
   pinyinWriteItems: PinyinWriteQuizItem[]
   possibleMoons: number
 }
@@ -329,6 +346,32 @@ export function buildCharPracticeQuestions(
   return questions
 }
 
+export function buildReadingLessons(
+  filtered: FilteredLesson[],
+  charByKey: Map<string, ChineseCharProfile>,
+  bookSlug: ChineseBookSlug = 'g1b',
+): ReadingLessonPlan[] {
+  const allBlanks = buildPassageQuizItems(filtered, charByKey, bookSlug)
+  const byLesson = new Map<string, PassageQuizItem[]>()
+  for (const item of allBlanks) {
+    const list = byLesson.get(item.lessonKey) ?? []
+    list.push(item)
+    byLesson.set(item.lessonKey, list)
+  }
+
+  const out: ReadingLessonPlan[] = []
+  for (const { lesson } of filtered) {
+    const passage = getLessonPassage(lesson.lessonKey, bookSlug)
+    if (!passage?.paragraphs.length) continue
+    out.push({
+      lessonKey: lesson.lessonKey,
+      lessonTitle: lesson.lessonTitle,
+      blankItems: byLesson.get(lesson.lessonKey) ?? [],
+    })
+  }
+  return out
+}
+
 export function buildPracticeSessionPlan(
   filtered: FilteredLesson[],
   charByKey: Map<string, ChineseCharProfile>,
@@ -346,19 +389,30 @@ export function buildPracticeSessionPlan(
   const accumulationItems = buildAccumulationQuizItems(getBookAccumulation(bookSlug)).filter((item) =>
     units.has(item.unit),
   )
-  const passageItems = quizTypes.has('passage')
+  const wantPassage = quizTypes.has('passage')
+  const wantBlank = quizTypes.has('blank') && !wantPassage
+
+  const readingLessons = wantPassage
+    ? buildReadingLessons(filtered, charByKey, bookSlug)
+    : []
+  const blankItems = wantBlank
     ? buildPassageQuizItems(filtered, charByKey, bookSlug)
     : []
+
   const pinyinWriteItems = quizTypes.has('pinyin-write')
     ? buildPinyinWriteItems(filtered, allLessons, bookSlug)
     : []
+
+  const blankQuestionCount = wantPassage
+    ? readingLessons.reduce((n, l) => n + l.blankItems.length, 0)
+    : blankItems.length
 
   const possibleMoons =
     charQuestions.length * MOON_REWARDS.char +
     phraseItems.length * MOON_REWARDS.phrase +
     poems.length * MOON_REWARDS.poem +
     accumulationItems.length * MOON_REWARDS.accumulation +
-    passageItems.length * MOON_REWARDS.passage +
+    blankQuestionCount * MOON_REWARDS.blank +
     pinyinWriteItems.length * MOON_REWARDS.pinyinWrite
 
   return {
@@ -367,7 +421,8 @@ export function buildPracticeSessionPlan(
     phraseItems,
     poems,
     accumulationItems,
-    passageItems,
+    blankItems,
+    readingLessons,
     pinyinWriteItems,
     possibleMoons,
   }
