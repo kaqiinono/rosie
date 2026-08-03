@@ -428,11 +428,19 @@ export function buildPracticeSessionPlan(
   }
 }
 
+export function normalizeQuizTypes(types: Set<CharQuizType>): Set<CharQuizType> {
+  const next = new Set(types)
+  if (next.has('passage')) next.delete('blank')
+  return next
+}
+
 export function parseQuizTypesParam(raw: string | null): Set<CharQuizType> {
-  if (!raw) return new Set(ALL_CHAR_QUIZ_TYPES)
+  if (!raw) return normalizeQuizTypes(new Set(ALL_CHAR_QUIZ_TYPES))
   const parts = raw.split(',').filter(Boolean) as CharQuizType[]
   const valid = parts.filter((p) => ALL_CHAR_QUIZ_TYPES.includes(p))
-  return valid.length > 0 ? new Set(valid) : new Set(ALL_CHAR_QUIZ_TYPES)
+  return normalizeQuizTypes(
+    valid.length > 0 ? new Set(valid) : new Set(ALL_CHAR_QUIZ_TYPES),
+  )
 }
 
 export function serializeQuizTypes(types: Set<CharQuizType>): string {

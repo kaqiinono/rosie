@@ -3,6 +3,8 @@ import {
   ALL_CHAR_QUIZ_TYPES,
   buildPracticeSessionPlan,
   buildReadingLessons,
+  normalizeQuizTypes,
+  parseQuizTypesParam,
   type ChineseCharProfile,
   type ChineseLessonRow,
   type FilteredLesson,
@@ -119,5 +121,26 @@ describe('ALL_CHAR_QUIZ_TYPES', () => {
       'passage',
       'pinyin-write',
     ])
+  })
+})
+
+describe('normalizeQuizTypes / parseQuizTypesParam', () => {
+  it('strips blank when passage is present', () => {
+    const types = normalizeQuizTypes(new Set(ALL_CHAR_QUIZ_TYPES))
+    expect(types.has('passage')).toBe(true)
+    expect(types.has('blank')).toBe(false)
+  })
+
+  it('parseQuizTypesParam(null) excludes blank when passage is included', () => {
+    const types = parseQuizTypesParam(null)
+    expect(types.has('passage')).toBe(true)
+    expect(types.has('blank')).toBe(false)
+  })
+
+  it('parseQuizTypesParam strips blank from explicit passage+blank list', () => {
+    const types = parseQuizTypesParam('passage,blank,recognize')
+    expect(types.has('passage')).toBe(true)
+    expect(types.has('recognize')).toBe(true)
+    expect(types.has('blank')).toBe(false)
   })
 })

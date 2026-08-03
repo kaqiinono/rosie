@@ -11,6 +11,7 @@ import {
   filterLessons,
   getLessonsForUnits,
   getUnitOptions,
+  normalizeQuizTypes,
   serializeQuizTypes,
   type CharQuizType,
 } from '../utils/chinese-chars-session-helpers'
@@ -39,7 +40,9 @@ export default function ChineseCharsPage() {
   const skipPersistRef = useRef(true)
   const [selDisplayType, setSelDisplayType] = useState<'library' | 'cards' | 'all'>('library')
   const [cardPreviewEnabled, setCardPreviewEnabled] = useState(true)
-  const [quizTypes, setQuizTypes] = useState<Set<CharQuizType>>(new Set(ALL_CHAR_QUIZ_TYPES))
+  const [quizTypes, setQuizTypes] = useState<Set<CharQuizType>>(() =>
+    normalizeQuizTypes(new Set(ALL_CHAR_QUIZ_TYPES)),
+  )
   const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set())
   const [wordFlippedSet, setWordFlippedSet] = useState<Set<number>>(new Set())
 
