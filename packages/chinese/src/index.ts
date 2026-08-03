@@ -30,7 +30,7 @@ export type {
 export { useChineseCharAdmin } from './hooks/useChineseCharAdmin'
 export type { CharEntryPatch, LessonPatch } from './hooks/useChineseCharAdmin'
 export { useChineseWeeklyPlan } from './hooks/useChineseWeeklyPlan'
-export { useActiveChineseBook } from './hooks/useActiveChineseBook'
+export { useActiveChineseBook, setActiveChineseBook } from './hooks/useActiveChineseBook'
 export { useChineseWrong } from './hooks/useChineseWrong'
 export type { ChineseWrongRow, ChineseWrongKind, ChineseWrongItemType } from './hooks/useChineseWrong'
 export {
@@ -74,6 +74,8 @@ export {
 } from './utils/chineseRoadmapPlanMappers'
 export {
   resolveChinesePlanCreateStatus,
+  buildChinesePlanPracticeHref,
+  orderedPlanLessonKeys,
   currentBatchLessonKeys,
   isLessonCompleteForPlan,
   poemMatchesLessonMeta,
@@ -130,6 +132,11 @@ export { default as ChineseWeeklyPage } from './components/ChineseWeeklyPage'
 export { default as ChineseRoadmapPlanManage } from './components/plans/ChineseRoadmapPlanManage'
 export { default as ChineseRoadmapPlanEditor } from './components/plans/ChineseRoadmapPlanEditor'
 export { default as ChinesePlanRoadmapPreview } from './components/plans/ChinesePlanRoadmapPreview'
+export {
+  formatPlanQuizTypes,
+  PLAN_QUIZ_TYPE_LABELS,
+  planStatusLabel,
+} from './components/plans/chinese-roadmap-plan-shared'
 export * from './utils/chinese-chars-session-helpers'
 export * from './utils/chinese-pinyin-write-helpers'
 export * from './utils/chinese-pinyin-write-print-helpers'

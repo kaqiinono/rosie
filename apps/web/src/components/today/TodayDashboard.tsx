@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useMemo } from 'react'
 import { useAuth } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
@@ -9,7 +10,13 @@ import { useCalcDaily } from '@rosie/calc'
 import {
   ChineseDailyCard,
   useChineseRoadmapProgress,
+  useChineseRoadmapPlan,
   chineseRoute,
+  setActiveChineseBook,
+  buildChinesePlanPracticeHref,
+  currentBatchLessonKeys,
+  orderedPlanLessonKeys,
+  formatPlanQuizTypes,
 } from '@rosie/chinese'
 import { todayStr } from '@rosie/core'
 import { findPassage, parseFocusLessonKey } from '@rosie/english'
@@ -225,6 +232,12 @@ export default function TodayDashboard() {
   const { vocab } = useWordData(user)
   const calcDaily = useCalcDaily(user)
   const chinese = useChineseRoadmapProgress(user)
+  const { activePlan: chineseActivePlan, isLoading: chinesePlanLoading } =
+    useChineseRoadmapPlan(user)
+
+  useEffect(() => {
+    if (chineseActivePlan) setActiveChineseBook(chineseActivePlan.bookSlug)
+  }, [chineseActivePlan])
 
   const today = todayStr()
 
@@ -287,12 +300,65 @@ export default function TodayDashboard() {
   const mathDoneCount = mathProblems.filter(p => mathProgress.doneKeys.includes(p.key)).length
   const mathAllDone = mathProblems.length > 0 && mathDoneCount >= mathProblems.length
 
-  const chineseDone = chinese.allDone || chinese.lessonDone
-  const chinesePct = chinese.total > 0 ? Math.round((chinese.done / chinese.total) * 100) : chinese.allDone ? 100 : 0
+  const chineseOrderedKeys = useMemo(
+    () =>
+      orderedPlanLessonKeys(
+        chinese.lessons,
+        chineseActivePlan?.bookSlug ?? chinese.bookSlug,
+      ),
+    [chinese.lessons, chineseActivePlan?.bookSlug, chinese.bookSlug],
+  )
+  const chineseBatchKeys = useMemo(() => {
+    if (!chineseActivePlan) return []
+    return currentBatchLessonKeys(
+      chineseOrderedKeys,
+      chineseActivePlan.currentLessonKey,
+      chineseActivePlan.lessonsPerBatch,
+      new Set(chineseActivePlan.completedLessonKeys),
+    )
+  }, [chineseActivePlan, chineseOrderedKeys])
+  const chinesePlanLesson = useMemo(() => {
+    if (!chineseActivePlan) return null
+    return (
+      chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null
+    )
+  }, [chineseActivePlan, chinese.lessons])
+
+  const chineseDone =
+    chineseActivePlan?.status === 'completed' || chinese.allDone || chinese.lessonDone
+  const chinesePct =
+    chineseActivePlan?.status === 'completed'
+      ? 100
+      : chinese.total > 0
+        ? Math.round((chinese.done / chinese.total) * 100)
+        : chinese.allDone
+          ? 100
+          : 0
+
+  const chineseHref =
+    chineseActivePlan?.status === 'completed'
+      ? '/chinese/weekly'
+      : chineseActivePlan && chineseBatchKeys.length > 0
+        ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
+        : chinese.currentNode
+          ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+          : chineseRoute(chinese.bookSlug, 'daily')
+
+  const chineseSubtitle =
+    chineseActivePlan?.status === 'completed'
+      ? '计划通关 🎉'
+      : chineseActivePlan
+        ? `${chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey} · ${formatPlanQuizTypes(chineseActivePlan.quizTypes)}`
+        : chinese.allDone
+          ? '本册通关 🎉'
+          : chinese.lessonDone
+            ? '本关完成 🎉'
+            : (chinese.currentNode?.lessonTitle ?? '当前关卡')
 
   const isLoading =
     englishLoading ||
     mathLoading ||
+    chinesePlanLoading ||
     (chinese.isCharDataLoading && !chinese.isCharDataReady) ||
     (!englishPlan && adaptiveLoading)
 
@@ -300,7 +366,7 @@ export default function TodayDashboard() {
 
   const hasMath = mathPlan && mathProblems.length > 0
   const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!activeAdaptive
-  const hasChinese = chinese.hasChinese
+  const hasChinese = !!chineseActivePlan || chinese.hasChinese
   const calcDoneCount = calcDaily.todayDone
   const calcTargetCount = calcDaily.todayTarget
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
@@ -354,18 +420,22 @@ export default function TodayDashboard() {
       href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
-      done: chinese.allDone ? '✓' : chinese.done,
-      total: chinese.allDone ? null : chinese.total,
-      subtitle: chinese.allDone
-        ? '本册通关 🎉'
-        : chinese.lessonDone
-          ? '本关完成 🎉'
-          : (chinese.currentNode?.lessonTitle ?? '当前关卡'),
+      done:
+        chineseActivePlan?.status === 'completed' || chinese.allDone
+          ? '✓'
+          : chineseActivePlan
+            ? chineseBatchKeys.length
+            : chinese.done,
+      total:
+        chineseActivePlan?.status === 'completed' || chinese.allDone
+          ? null
+          : chineseActivePlan
+            ? chineseBatchKeys.length
+            : chinese.total,
+      subtitle: chineseSubtitle,
       pct: chinesePct,
       allDone: chineseDone,
-      href: chinese.currentNode
-        ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
-        : chineseRoute(chinese.bookSlug, 'daily'),
+      href: chineseHref,
     },
   })
 
@@ -492,11 +562,10 @@ export default function TodayDashboard() {
             今日语文
           </h2>
           <Link
-            href={
-              chinese.currentNode
-                ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
-                : chineseRoute(chinese.bookSlug, 'daily')
-            }
+            href={chineseHref}
+            onClick={() => {
+              if (chineseActivePlan) setActiveChineseBook(chineseActivePlan.bookSlug)
+            }}
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-amber-700"
           >
             前往学习 →

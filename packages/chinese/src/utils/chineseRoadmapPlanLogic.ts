@@ -12,6 +12,28 @@ export function resolveChinesePlanCreateStatus(hasActive: boolean): 'active' | '
   return hasActive ? 'paused' : 'active'
 }
 
+/** Practice session URL driven by an active roadmap plan (lessons + types + planId). */
+export function buildChinesePlanPracticeHref(
+  plan: Pick<ChineseRoadmapPlan, 'id' | 'quizTypes'>,
+  batchKeys: string[],
+): string {
+  return `/chinese/chars/practice?lessons=${batchKeys.join(',')}&types=${plan.quizTypes.join(',')}&planId=${plan.id}`
+}
+
+/** Pedagogical lesson-key order for a plan's book (excludes happy_reading). */
+export function orderedPlanLessonKeys(
+  lessons: ChineseLessonRow[],
+  bookSlug: ChineseBookSlug,
+): string[] {
+  const parsed = parseBookSlug(bookSlug)
+  const bookLessons = parsed
+    ? lessons.filter((l) => l.grade === parsed.grade && l.semester === parsed.semester)
+    : lessons
+  return sortLessonsPedagogically(bookLessons)
+    .filter((l) => l.lessonKind !== 'happy_reading')
+    .map((l) => l.lessonKey)
+}
+
 /**
  * Batch of K lessons starting at `currentLessonKey`.
  * Always includes current (even if already completed), then following incomplete keys.
