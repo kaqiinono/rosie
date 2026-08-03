@@ -12,13 +12,17 @@ import {
   filterLessons,
   parseQuizTypesParam,
   type CharPracticeQuestion,
+  type PassageStep,
   type PracticePhase,
   type PracticeSessionPlan,
 } from '../../utils/chinese-chars-session-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
-import { shuffle } from '../../utils/chinese-helpers'
+import { findLessonRow, getLessonGroup, shuffle } from '../../utils/chinese-helpers'
+import { getLessonPassage } from '../../utils/chinese-lesson-passage-helpers'
+import { getLessonDisplayInfo } from '../../utils/chinese-lesson-display'
 import {
   CHINESE_PENDING_KIND,
+  CHINESE_PRACTICE_SNAPSHOT_VERSION,
   chinesePracticeScopeKey,
   clearChinesePendingEverywhere,
   resolveChinesePracticeSnapshot,
@@ -30,6 +34,7 @@ import CharWriter from './CharWriter'
 import PinyinWriteRunner from './PinyinWriteRunner'
 import QuizBlankSentence from './QuizBlankSentence'
 import PoemRecite from '../poems/PoemRecite'
+import LessonPassageReader from '../reading/LessonPassageReader'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'
 
 const PHASE_LABEL: Record<PracticePhase, string> = {
@@ -38,6 +43,7 @@ const PHASE_LABEL: Record<PracticePhase, string> = {
   phrases: '词汇练习',
   poems: '古诗词',
   accumulation: '日积月累',
+  blank: '填空题',
   passage: '阅读题',
   'pinyin-write': '看拼写字',
   done: '练习结算',
@@ -132,7 +138,10 @@ export default function ChineseCharsPracticeSession() {
   const [phraseIdx, setPhraseIdx] = useState(0)
   const [poemIdx, setPoemIdx] = useState(0)
   const [accIdx, setAccIdx] = useState(0)
-  const [passageIdx, setPassageIdx] = useState(0)
+  const [blankIdx, setBlankIdx] = useState(0)
+  const [passageLessonIdx, setPassageLessonIdx] = useState(0)
+  const [passageStep, setPassageStep] = useState<PassageStep>('read')
+  const [passageBlankIdx, setPassageBlankIdx] = useState(0)
   const [pinyinWriteIdx, setPinyinWriteIdx] = useState(0)
   const [flipped, setFlipped] = useState(true)
   const [wrongFeedback, setWrongFeedback] = useState<{
@@ -164,7 +173,10 @@ export default function ChineseCharsPracticeSession() {
         setPhraseIdx(snap.phraseIdx)
         setPoemIdx(snap.poemIdx)
         setAccIdx(snap.accIdx)
-        setPassageIdx(snap.passageIdx)
+        setBlankIdx(snap.blankIdx)
+        setPassageLessonIdx(snap.passageLessonIdx)
+        setPassageStep(snap.passageStep)
+        setPassageBlankIdx(snap.passageBlankIdx)
         setPinyinWriteIdx(snap.pinyinWriteIdx)
         setEarnedMoons(snap.earnedMoons)
         setCorrectCounts(snap.correctCounts)
@@ -177,7 +189,10 @@ export default function ChineseCharsPracticeSession() {
       setPhraseIdx(0)
       setPoemIdx(0)
       setAccIdx(0)
-      setPassageIdx(0)
+      setBlankIdx(0)
+      setPassageLessonIdx(0)
+      setPassageStep('read')
+      setPassageBlankIdx(0)
       setPinyinWriteIdx(0)
       setEarnedMoons(0)
       setCorrectCounts({ total: 0, correct: 0 })
@@ -187,7 +202,7 @@ export default function ChineseCharsPracticeSession() {
   const getEnvelope = useCallback(() => {
     if (!plan || phase === 'done') return null
     return wrapChineseEnvelope({
-      version: 1,
+      version: CHINESE_PRACTICE_SNAPSHOT_VERSION,
       date: todayStr(),
       bookSlug,
       scopeKey,
@@ -197,7 +212,10 @@ export default function ChineseCharsPracticeSession() {
       phraseIdx,
       poemIdx,
       accIdx,
-      passageIdx,
+      blankIdx,
+      passageLessonIdx,
+      passageStep,
+      passageBlankIdx,
       pinyinWriteIdx,
       earnedMoons,
       correctCounts,
@@ -213,7 +231,10 @@ export default function ChineseCharsPracticeSession() {
     phraseIdx,
     poemIdx,
     accIdx,
-    passageIdx,
+    blankIdx,
+    passageLessonIdx,
+    passageStep,
+    passageBlankIdx,
     pinyinWriteIdx,
     earnedMoons,
     correctCounts,
@@ -245,7 +266,7 @@ export default function ChineseCharsPracticeSession() {
       return
     }
     writeChinesePracticeSnapshot({
-      version: 1,
+      version: CHINESE_PRACTICE_SNAPSHOT_VERSION,
       date: todayStr(),
       bookSlug,
       scopeKey,
@@ -255,7 +276,10 @@ export default function ChineseCharsPracticeSession() {
       phraseIdx,
       poemIdx,
       accIdx,
-      passageIdx,
+      blankIdx,
+      passageLessonIdx,
+      passageStep,
+      passageBlankIdx,
       pinyinWriteIdx,
       earnedMoons,
       correctCounts,
@@ -271,7 +295,10 @@ export default function ChineseCharsPracticeSession() {
     phraseIdx,
     poemIdx,
     accIdx,
-    passageIdx,
+    blankIdx,
+    passageLessonIdx,
+    passageStep,
+    passageBlankIdx,
     pinyinWriteIdx,
     earnedMoons,
     correctCounts,
@@ -325,6 +352,7 @@ export default function ChineseCharsPracticeSession() {
         'poems',
         'accumulation',
         'passage',
+        'blank',
         'pinyin-write',
         'done',
       ]
@@ -336,7 +364,8 @@ export default function ChineseCharsPracticeSession() {
         if (next === 'phrases' && plan.phraseItems.length === 0) continue
         if (next === 'poems' && plan.poems.length === 0) continue
         if (next === 'accumulation' && plan.accumulationItems.length === 0) continue
-        if (next === 'passage' && plan.passageItems.length === 0) continue
+        if (next === 'passage' && plan.readingLessons.length === 0) continue
+        if (next === 'blank' && plan.blankItems.length === 0) continue
         if (next === 'pinyin-write' && plan.pinyinWriteItems.length === 0) continue
         setPhase(next)
         return
@@ -368,7 +397,9 @@ export default function ChineseCharsPracticeSession() {
   const currentPhrase = plan?.phraseItems[phraseIdx]
   const currentPoem = plan?.poems[poemIdx]
   const currentAcc = plan?.accumulationItems[accIdx]
-  const currentPassage = plan?.passageItems[passageIdx]
+  const currentBlank = plan?.blankItems[blankIdx]
+  const currentReading = plan?.readingLessons[passageLessonIdx]
+  const currentPassageBlank = currentReading?.blankItems[passageBlankIdx]
   const currentPinyinWrite = plan?.pinyinWriteItems[pinyinWriteIdx]
 
   const phraseOptions = useMemo(() => {
@@ -378,7 +409,25 @@ export default function ChineseCharsPracticeSession() {
     return buildPhraseOptions(currentPhrase, [...new Set(pool)], seed)
   }, [currentPhrase, filtered])
 
-  const passageOptions = currentPassage?.options ?? []
+  const blankOptions = currentBlank?.options ?? []
+  const passageBlankOptions = currentPassageBlank?.options ?? []
+
+  const currentReadingMeta = useMemo(() => {
+    if (!currentReading) return null
+    const lessonRow = findLessonRow(lessons, currentReading.lessonKey, bookSlug)
+    const group = getLessonGroup(lessonGroups, currentReading.lessonKey, bookSlug)
+    const passage = getLessonPassage(currentReading.lessonKey, bookSlug)
+    const unitLessons = lessonRow
+      ? lessons.filter((l) => l.unit === lessonRow.unit)
+      : []
+    const display = lessonRow ? getLessonDisplayInfo(lessonRow, unitLessons) : null
+    return {
+      lessonRow,
+      group,
+      paragraphs: passage?.paragraphs ?? [],
+      bookLessonNo: display?.bookLessonNo ?? null,
+    }
+  }, [bookSlug, currentReading, lessonGroups, lessons])
 
   const phraseCharOptions = useMemo(() => {
     if (!currentCharQ || currentCharQ.kind !== 'phrase-char') return []
@@ -415,16 +464,51 @@ export default function ChineseCharsPracticeSession() {
     }
   }, [clearQuestionFeedback, goNextPhase, phraseIdx, plan])
 
-  const advancePassageQuestion = useCallback(() => {
+  const advanceBlankQuestion = useCallback(() => {
     if (!plan) return
     clearQuestionFeedback()
-    if (passageIdx + 1 >= plan.passageItems.length) {
-      goNextPhase('passage')
-      setPassageIdx(0)
+    if (blankIdx + 1 >= plan.blankItems.length) {
+      goNextPhase('blank')
+      setBlankIdx(0)
     } else {
-      setPassageIdx((i) => i + 1)
+      setBlankIdx((i) => i + 1)
     }
-  }, [clearQuestionFeedback, goNextPhase, passageIdx, plan])
+  }, [blankIdx, clearQuestionFeedback, goNextPhase, plan])
+
+  const finishReadingLesson = useCallback(() => {
+    if (!plan) return
+    clearQuestionFeedback()
+    if (passageLessonIdx + 1 >= plan.readingLessons.length) {
+      goNextPhase('passage')
+      setPassageLessonIdx(0)
+      setPassageStep('read')
+      setPassageBlankIdx(0)
+    } else {
+      setPassageLessonIdx((i) => i + 1)
+      setPassageStep('read')
+      setPassageBlankIdx(0)
+    }
+  }, [clearQuestionFeedback, goNextPhase, passageLessonIdx, plan])
+
+  const onFinishedRead = useCallback(() => {
+    if (!currentReading) return
+    if (currentReading.blankItems.length === 0) {
+      finishReadingLesson()
+      return
+    }
+    setPassageStep('blank')
+    setPassageBlankIdx(0)
+  }, [currentReading, finishReadingLesson])
+
+  const advancePassageBlankQuestion = useCallback(() => {
+    if (!plan || !currentReading) return
+    clearQuestionFeedback()
+    if (passageBlankIdx + 1 >= currentReading.blankItems.length) {
+      finishReadingLesson()
+    } else {
+      setPassageBlankIdx((i) => i + 1)
+    }
+  }, [clearQuestionFeedback, currentReading, finishReadingLesson, passageBlankIdx, plan])
 
   const advanceAccQuestion = useCallback(() => {
     if (!plan) return
@@ -861,25 +945,55 @@ export default function ChineseCharsPracticeSession() {
           </div>
         )}
 
-        {phase === 'passage' && currentPassage && (
+        {phase === 'passage' && currentReading && passageStep === 'read' && currentReadingMeta && (
+          <div className="flex flex-1 flex-col">
+            <p className="mb-3 text-center text-xs font-semibold text-amber-900/45">
+              阅读 {passageLessonIdx + 1} / {plan.readingLessons.length}
+            </p>
+            <LessonPassageReader
+              lessonKey={currentReading.lessonKey}
+              bookSlug={bookSlug}
+              lessonTitle={currentReading.lessonTitle}
+              unit={currentReadingMeta.lessonRow?.unit ?? null}
+              bookLessonNo={currentReadingMeta.bookLessonNo}
+              paragraphs={currentReadingMeta.paragraphs}
+              recognize={currentReadingMeta.group?.recognize ?? []}
+              write={currentReadingMeta.group?.write ?? []}
+              recallPhrases={currentReadingMeta.lessonRow?.recallPhrases ?? []}
+              footer={
+                <div className="mt-6 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={onFinishedRead}
+                    className="cn-start-btn rounded-xl border-0 px-6 py-2.5 text-sm font-bold text-white"
+                  >
+                    {currentReading.blankItems.length > 0 ? '读完了，开始回想' : '读完了'}
+                  </button>
+                </div>
+              }
+            />
+          </div>
+        )}
+
+        {phase === 'passage' && currentPassageBlank && passageStep === 'blank' && currentReading && (
           <div className="flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
-              阅读题 {passageIdx + 1} / {plan.passageItems.length}
+              回想 {passageBlankIdx + 1} / {currentReading.blankItems.length}
+              {' · '}
+              {currentReading.lessonTitle}
             </p>
             <p className="text-center text-sm font-semibold text-amber-800/70">
-              {currentPassage.blankKind === 'word'
+              {currentPassageBlank.blankKind === 'word'
                 ? '选出句子里彩色小空格里应该填的词语'
                 : '选出句子里彩色小空格里应该填的字'}
-              {' · '}
-              {currentPassage.lessonTitle}
             </p>
             <div className="rounded-2xl border border-amber-200/70 bg-white/85 p-4 shadow-sm">
-              <QuizBlankSentence display={currentPassage.prompt} size="md" align="start" />
+              <QuizBlankSentence display={currentPassageBlank.prompt} size="md" align="start" />
             </div>
             <div className="grid grid-cols-4 gap-3">
-              {passageOptions.map((opt) => {
+              {passageBlankOptions.map((opt) => {
                 const locked = wrongFeedback !== null
-                const isCorrect = opt === currentPassage.answer
+                const isCorrect = opt === currentPassageBlank.answer
                 const isChosen = wrongFeedback?.selected === opt
                 return (
                   <button
@@ -888,12 +1002,12 @@ export default function ChineseCharsPracticeSession() {
                     disabled={locked}
                     onClick={() => {
                       void handleChoiceAnswer(
-                        opt === currentPassage.answer,
-                        MOON_REWARDS.passage,
-                        advancePassageQuestion,
-                        opt === currentPassage.answer
+                        opt === currentPassageBlank.answer,
+                        MOON_REWARDS.blank,
+                        advancePassageBlankQuestion,
+                        opt === currentPassageBlank.answer
                           ? undefined
-                          : { selected: opt, correct: currentPassage.answer },
+                          : { selected: opt, correct: currentPassageBlank.answer },
                       )
                     }}
                     className={clsx(
@@ -912,7 +1026,64 @@ export default function ChineseCharsPracticeSession() {
             {wrongFeedback && (
               <WrongAnswerPanel
                 correct={wrongFeedback.correct}
-                onNext={advancePassageQuestion}
+                onNext={advancePassageBlankQuestion}
+              />
+            )}
+          </div>
+        )}
+
+        {phase === 'blank' && currentBlank && (
+          <div className="flex flex-1 flex-col gap-4">
+            <p className="text-center text-xs font-semibold text-amber-900/45">
+              填空题 {blankIdx + 1} / {plan.blankItems.length}
+            </p>
+            <p className="text-center text-sm font-semibold text-amber-800/70">
+              {currentBlank.blankKind === 'word'
+                ? '选出句子里彩色小空格里应该填的词语'
+                : '选出句子里彩色小空格里应该填的字'}
+              {' · '}
+              {currentBlank.lessonTitle}
+            </p>
+            <div className="rounded-2xl border border-amber-200/70 bg-white/85 p-4 shadow-sm">
+              <QuizBlankSentence display={currentBlank.prompt} size="md" align="start" />
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {blankOptions.map((opt) => {
+                const locked = wrongFeedback !== null
+                const isCorrect = opt === currentBlank.answer
+                const isChosen = wrongFeedback?.selected === opt
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    disabled={locked}
+                    onClick={() => {
+                      void handleChoiceAnswer(
+                        opt === currentBlank.answer,
+                        MOON_REWARDS.blank,
+                        advanceBlankQuestion,
+                        opt === currentBlank.answer
+                          ? undefined
+                          : { selected: opt, correct: currentBlank.answer },
+                      )
+                    }}
+                    className={clsx(
+                      'rounded-xl border-2 py-3 text-xl font-bold',
+                      !locked && 'border-amber-300 bg-white',
+                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
+                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
+                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
+                    )}
+                  >
+                    {opt}
+                  </button>
+                )
+              })}
+            </div>
+            {wrongFeedback && (
+              <WrongAnswerPanel
+                correct={wrongFeedback.correct}
+                onNext={advanceBlankQuestion}
               />
             )}
           </div>

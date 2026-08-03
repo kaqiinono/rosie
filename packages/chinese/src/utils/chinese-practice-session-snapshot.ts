@@ -1,7 +1,11 @@
 /**
  * Chinese chars practice pending via @rosie/core practicePending.
  */
-import type { PracticePhase, PracticeSessionPlan } from './chinese-chars-session-helpers'
+import type {
+  PassageStep,
+  PracticePhase,
+  PracticeSessionPlan,
+} from './chinese-chars-session-helpers'
 import {
   clearLocalPending,
   clearPendingEverywhere,
@@ -13,7 +17,7 @@ import {
 } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
-export const CHINESE_PRACTICE_SNAPSHOT_VERSION = 1
+export const CHINESE_PRACTICE_SNAPSHOT_VERSION = 3
 export const CHINESE_PENDING_KIND = 'chinese' as const
 
 export type ChinesePracticeSnapshot = {
@@ -27,7 +31,10 @@ export type ChinesePracticeSnapshot = {
   phraseIdx: number
   poemIdx: number
   accIdx: number
-  passageIdx: number
+  blankIdx: number
+  passageLessonIdx: number
+  passageStep: PassageStep
+  passageBlankIdx: number
   pinyinWriteIdx: number
   earnedMoons: number
   correctCounts: { total: number; correct: number }

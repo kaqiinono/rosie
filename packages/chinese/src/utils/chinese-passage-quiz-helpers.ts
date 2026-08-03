@@ -123,7 +123,7 @@ export function buildPassageQuizItems(
         if (!hit) continue
 
         const blankKind: PassageBlankKind = wordHit ? 'word' : 'char'
-        const id = `${lesson.lessonKey}::passage::${blankKind}::${items.length}`
+        const id = `${lesson.lessonKey}::blank::${blankKind}::${items.length}`
         const seed = seedFromId(id)
         const prompt = makeBlankDisplay(sentence, hit.start, hit.answer.length).trim()
         const options =
