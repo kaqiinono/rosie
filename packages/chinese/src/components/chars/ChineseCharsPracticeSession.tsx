@@ -6,20 +6,22 @@ import clsx from 'clsx'
 import { todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { useStarHud, StarProgressBar, ColoredStar } from '@rosie/rewards'
 import { useChineseContext } from '../../context/ChineseContext'
+import { useChineseRoadmapPlan } from '../../hooks/useChineseRoadmapPlan'
 import {
   MOON_REWARDS,
   buildPracticeSessionPlan,
   filterLessons,
   parseQuizTypesParam,
+  type CharCardItem,
   type CharPracticeQuestion,
   type PassageStep,
   type PracticePhase,
   type PracticeSessionPlan,
 } from '../../utils/chinese-chars-session-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
-import { findLessonRow, getLessonGroup, shuffle } from '../../utils/chinese-helpers'
+import { findLessonRow, getLessonGroup, parseBookSlug, shuffle } from '../../utils/chinese-helpers'
 import { getLessonPassage } from '../../utils/chinese-lesson-passage-helpers'
-import { getLessonDisplayInfo } from '../../utils/chinese-lesson-display'
+import { getLessonDisplayInfo, sortLessonsPedagogically } from '../../utils/chinese-lesson-display'
 import {
   CHINESE_PENDING_KIND,
   CHINESE_PRACTICE_SNAPSHOT_VERSION,
@@ -28,7 +30,15 @@ import {
   resolveChinesePracticeSnapshot,
   wrapChineseEnvelope,
   writeChinesePracticeSnapshot,
+  type LessonTypeStats,
 } from '../../utils/chinese-practice-session-snapshot'
+import {
+  computeAdvanceAfterBatch,
+  isLessonCompleteForPlan,
+  poemMatchesLessonMeta,
+  summarizeLessonPhases,
+} from '../../utils/chineseRoadmapPlanLogic'
+import type { PoemEntry } from '../../utils/g1b/types'
 import CharFlashCard from './CharFlashCard'
 import CharWriter from './CharWriter'
 import PinyinWriteRunner from './PinyinWriteRunner'
@@ -65,6 +75,44 @@ function parseLessons(raw: string | null): Set<string> {
   return new Set(raw.split(',').filter(Boolean))
 }
 
+function lessonKeyForCharQuestion(
+  q: CharPracticeQuestion,
+  cards: CharCardItem[],
+): string | null {
+  if (q.kind === 'phrase-char') return q.item.lessonKey
+  const card =
+    cards.find((c) => c.charKey === q.charKey && c.lessonTitle === q.lessonTitle) ??
+    cards.find((c) => c.charKey === q.charKey)
+  return card?.lessonKey ?? null
+}
+
+function phaseForCharQuestion(q: CharPracticeQuestion): string {
+  if (q.kind === 'phrase-char') return 'phrase'
+  return q.kind
+}
+
+function enrichPlanForPhases(plan: PracticeSessionPlan) {
+  return {
+    charQuestions: plan.charQuestions.map((q) => ({
+      lessonKey: lessonKeyForCharQuestion(q, plan.cards) ?? '',
+      kind: q.kind,
+      quizType: phaseForCharQuestion(q),
+    })),
+    phraseItems: plan.phraseItems,
+    poems: plan.poems,
+    accumulationItems: plan.accumulationItems,
+    readingLessons: plan.readingLessons,
+    pinyinWriteItems: plan.pinyinWriteItems,
+  }
+}
+
+function lessonKeyForPoem(poem: PoemEntry, lessons: { lessonKey: string; unit: number; lesson: number; lessonKind: string }[]): string | null {
+  const match = lessons.find((lesson) =>
+    poemMatchesLessonMeta(poem, lesson.lessonKind, { unit: lesson.unit, lesson: lesson.lesson }),
+  )
+  return match?.lessonKey ?? null
+}
+
 function WrongAnswerPanel({
   correct,
   onNext,
@@ -94,6 +142,7 @@ export default function ChineseCharsPracticeSession() {
   const { awardStars, session: starSession } = useStarHud()
   const { lessons, lessonGroups, charByKey, getCharProfile, recordBatch, isCharDataReady, bookSlug } =
     useChineseContext()
+  const { plans, appendLessonRuns, advanceAfterSession } = useChineseRoadmapPlan(user)
 
   const selUnits = useMemo(() => parseUnits(searchParams.get('units')), [searchParams])
   const selLessons = useMemo(() => parseLessons(searchParams.get('lessons')), [searchParams])
@@ -101,6 +150,7 @@ export default function ChineseCharsPracticeSession() {
     () => parseQuizTypesParam(searchParams.get('types')),
     [searchParams],
   )
+  const planId = searchParams.get('planId')
   const cardPreviewEnabled = searchParams.get('cardPreview') !== '0'
   const scopeKey = useMemo(
     () =>
@@ -130,6 +180,8 @@ export default function ChineseCharsPracticeSession() {
   // Frozen plan for this run (preserves shuffle order across mid-exit restore).
   const [plan, setPlan] = useState<PracticeSessionPlan | null>(null)
   const hydrateDoneRef = useRef(false)
+  const planSettleDoneRef = useRef(false)
+  const sessionStartedAtRef = useRef<string>(new Date().toISOString())
 
   const [phase, setPhase] = useState<PracticePhase>(() =>
     cardPreviewEnabled ? 'cards' : 'chars',
@@ -152,11 +204,13 @@ export default function ChineseCharsPracticeSession() {
   const [strokeWrongMistakes, setStrokeWrongMistakes] = useState<number | null>(null)
   const [earnedMoons, setEarnedMoons] = useState(0)
   const [correctCounts, setCorrectCounts] = useState({ total: 0, correct: 0 })
+  const [byLessonStats, setByLessonStats] = useState<Record<string, LessonTypeStats>>({})
   const [isStashing, setIsStashing] = useState(false)
   const [stashToast, setStashToast] = useState<string | null>(null)
 
   useEffect(() => {
     hydrateDoneRef.current = false
+    planSettleDoneRef.current = false
     setPlan(null)
   }, [scopeKey, bookSlug])
 
@@ -181,6 +235,8 @@ export default function ChineseCharsPracticeSession() {
         setPinyinWriteIdx(snap.pinyinWriteIdx)
         setEarnedMoons(snap.earnedMoons)
         setCorrectCounts(snap.correctCounts)
+        setByLessonStats(snap.byLessonStats ?? {})
+        sessionStartedAtRef.current = snap.sessionStartedAt ?? new Date().toISOString()
         return
       }
       setPlan(builtPlan)
@@ -197,6 +253,9 @@ export default function ChineseCharsPracticeSession() {
       setPinyinWriteIdx(0)
       setEarnedMoons(0)
       setCorrectCounts({ total: 0, correct: 0 })
+      setByLessonStats({})
+      sessionStartedAtRef.current = new Date().toISOString()
+      planSettleDoneRef.current = false
     })()
   }, [isCharDataReady, builtPlan, bookSlug, scopeKey, cardPreviewEnabled, user?.id])
 
@@ -221,6 +280,9 @@ export default function ChineseCharsPracticeSession() {
       earnedMoons,
       correctCounts,
       plan,
+      planId,
+      byLessonStats,
+      sessionStartedAt: sessionStartedAtRef.current,
     })
   }, [
     plan,
@@ -239,6 +301,8 @@ export default function ChineseCharsPracticeSession() {
     pinyinWriteIdx,
     earnedMoons,
     correctCounts,
+    planId,
+    byLessonStats,
   ])
 
   const { flushCloudNow } = usePracticePendingLifecycle({
@@ -285,6 +349,9 @@ export default function ChineseCharsPracticeSession() {
       earnedMoons,
       correctCounts,
       plan,
+      planId,
+      byLessonStats,
+      sessionStartedAt: sessionStartedAtRef.current,
     })
   }, [
     plan,
@@ -303,6 +370,8 @@ export default function ChineseCharsPracticeSession() {
     pinyinWriteIdx,
     earnedMoons,
     correctCounts,
+    planId,
+    byLessonStats,
     user?.id,
   ])
 
@@ -329,6 +398,24 @@ export default function ChineseCharsPracticeSession() {
     }
   }, [flushCloudNow, router, setIsImmersive])
 
+  const recordLessonAnswer = useCallback((lessonKey: string | null, phaseName: string, correct: boolean) => {
+    if (!lessonKey) return
+    setByLessonStats((prev) => {
+      const lesson = prev[lessonKey] ?? {}
+      const cur = lesson[phaseName] ?? { total: 0, correct: 0 }
+      return {
+        ...prev,
+        [lessonKey]: {
+          ...lesson,
+          [phaseName]: {
+            total: cur.total + 1,
+            correct: cur.correct + (correct ? 1 : 0),
+          },
+        },
+      }
+    })
+  }, [])
+
   const awardMoon = useCallback(
     async (amount: number, correct: boolean) => {
       setCorrectCounts((prev) => ({
@@ -342,6 +429,97 @@ export default function ChineseCharsPracticeSession() {
     },
     [awardStars],
   )
+
+  // Plan settle: write lesson runs + advance pointer once when reaching done.
+  useEffect(() => {
+    if (phase !== 'done' || !plan || !planId || planSettleDoneRef.current) return
+
+    const roadmapPlan = plans.find((p) => p.id === planId)
+    if (!roadmapPlan) return // wait until plans store is ready
+
+    planSettleDoneRef.current = true
+
+    const parsed = parseBookSlug(bookSlug)
+    const bookLessons = parsed
+      ? lessons.filter((l) => l.grade === parsed.grade && l.semester === parsed.semester)
+      : lessons
+    const orderedKeys = sortLessonsPedagogically(bookLessons)
+      .filter((l) => l.lessonKind !== 'happy_reading')
+      .map((l) => l.lessonKey)
+
+    const phasePlan = enrichPlanForPhases(plan)
+    const finishedAt = new Date().toISOString()
+    const startedAt = sessionStartedAtRef.current
+    const sessionLessons = filtered.map((f) => f.lesson)
+    const completedInBatch: string[] = []
+
+    const runs = sessionLessons.map((lesson) => {
+      const { presentPhases, finishedPhases } = summarizeLessonPhases({
+        lessonKey: lesson.lessonKey,
+        lessonKind: lesson.lessonKind,
+        plan: phasePlan,
+        lessonMeta: { unit: lesson.unit, lesson: lesson.lesson },
+        sessionReachedDone: true,
+      })
+      const completed = isLessonCompleteForPlan({
+        lessonKind: lesson.lessonKind,
+        planQuizTypes: roadmapPlan.quizTypes,
+        presentPhases,
+        finishedPhases,
+      })
+      if (completed) completedInBatch.push(lesson.lessonKey)
+
+      const byType = byLessonStats[lesson.lessonKey] ?? {}
+      let total = 0
+      let correct = 0
+      for (const row of Object.values(byType)) {
+        total += row.total
+        correct += row.correct
+      }
+      return {
+        lessonKey: lesson.lessonKey,
+        startedAt,
+        finishedAt,
+        completed,
+        total,
+        correct,
+        accuracy: total > 0 ? Math.round((correct / total) * 10000) / 10000 : null,
+        byType,
+        quizTypes: presentPhases,
+      }
+    })
+
+    const { nextCurrentLessonKey, bookFinished } = computeAdvanceAfterBatch({
+      orderedKeys,
+      completedLessonKeys: roadmapPlan.completedLessonKeys,
+      newlyCompletedKeys: completedInBatch,
+    })
+
+    void (async () => {
+      try {
+        await appendLessonRuns(planId, runs)
+        await advanceAfterSession(planId, {
+          completedLessonKeysInBatch: completedInBatch,
+          nextCurrentLessonKey,
+          bookFinished,
+        })
+      } catch (err) {
+        console.error('[chinese_roadmap_plan] settle failed', err)
+        planSettleDoneRef.current = false
+      }
+    })()
+  }, [
+    phase,
+    plan,
+    planId,
+    plans,
+    bookSlug,
+    lessons,
+    filtered,
+    byLessonStats,
+    appendLessonRuns,
+    advanceAfterSession,
+  ])
 
   const goNextPhase = useCallback(
     (from: PracticePhase) => {
@@ -528,7 +706,9 @@ export default function ChineseCharsPracticeSession() {
       reward: number,
       advance: () => void,
       wrong?: { selected: string; correct: string },
+      track?: { lessonKey: string | null; phaseName: string },
     ) => {
+      if (track) recordLessonAnswer(track.lessonKey, track.phaseName, correct)
       await awardMoon(reward, correct)
       if (correct) {
         advance()
@@ -536,7 +716,7 @@ export default function ChineseCharsPracticeSession() {
         setWrongFeedback(wrong)
       }
     },
-    [awardMoon],
+    [awardMoon, recordLessonAnswer],
   )
 
   const handleCharAnswer = useCallback(
@@ -550,6 +730,13 @@ export default function ChineseCharsPracticeSession() {
       } else if (q.kind === 'stroke') {
         recordBatch([{ charKey: q.charKey, track: 'write', correct }])
       }
+      if (plan) {
+        recordLessonAnswer(
+          lessonKeyForCharQuestion(q, plan.cards),
+          phaseForCharQuestion(q),
+          correct,
+        )
+      }
       await awardMoon(MOON_REWARDS.char, correct)
       if (correct) {
         advanceCharQuestion()
@@ -557,7 +744,7 @@ export default function ChineseCharsPracticeSession() {
         setWrongFeedback(wrong)
       }
     },
-    [advanceCharQuestion, awardMoon, recordBatch],
+    [advanceCharQuestion, awardMoon, plan, recordBatch, recordLessonAnswer],
   )
 
   if (!isCharDataReady || !plan) {
@@ -760,6 +947,11 @@ export default function ChineseCharsPracticeSession() {
                               { charKey: currentCharQ.charKey, track: 'write', correct: false },
                             ])
                           }
+                          recordLessonAnswer(
+                            lessonKeyForCharQuestion(currentCharQ, plan.cards),
+                            'stroke',
+                            false,
+                          )
                           await awardMoon(MOON_REWARDS.char, false)
                           setStrokeWrongMistakes(totalMistakes)
                         })()
@@ -853,6 +1045,7 @@ export default function ChineseCharsPracticeSession() {
                         opt === currentPhrase.answer
                           ? undefined
                           : { selected: opt, correct: currentPhrase.answer },
+                        { lessonKey: currentPhrase.lessonKey, phaseName: 'phrase' },
                       )
                     }}
                     className={clsx(
@@ -885,7 +1078,16 @@ export default function ChineseCharsPracticeSession() {
             <PoemRecite
               poem={currentPoem}
               onComplete={async (score) => {
-                await awardMoon(MOON_REWARDS.poem, score >= 60)
+                const correct = score >= 60
+                recordLessonAnswer(
+                  lessonKeyForPoem(
+                    currentPoem,
+                    filtered.map((f) => f.lesson),
+                  ),
+                  'poems',
+                  correct,
+                )
+                await awardMoon(MOON_REWARDS.poem, correct)
                 if (poemIdx + 1 >= plan.poems.length) {
                   goNextPhase('poems')
                   setPoemIdx(0)
@@ -915,6 +1117,12 @@ export default function ChineseCharsPracticeSession() {
                     type="button"
                     disabled={locked}
                     onClick={() => {
+                      const gardenKey =
+                        filtered.find(
+                          (f) =>
+                            f.lesson.unit === currentAcc.unit &&
+                            f.lesson.lessonKind === 'garden',
+                        )?.lesson.lessonKey ?? null
                       void handleChoiceAnswer(
                         opt === currentAcc.answer,
                         MOON_REWARDS.accumulation,
@@ -922,6 +1130,7 @@ export default function ChineseCharsPracticeSession() {
                         opt === currentAcc.answer
                           ? undefined
                           : { selected: opt, correct: currentAcc.answer },
+                        { lessonKey: gardenKey, phaseName: 'accumulation' },
                       )
                     }}
                     className={clsx(
@@ -1016,6 +1225,7 @@ export default function ChineseCharsPracticeSession() {
                         opt === currentPassageBlank.answer
                           ? undefined
                           : { selected: opt, correct: currentPassageBlank.answer },
+                        { lessonKey: currentReading.lessonKey, phaseName: 'passage' },
                       )
                     }}
                     className={clsx(
@@ -1073,6 +1283,7 @@ export default function ChineseCharsPracticeSession() {
                         opt === currentBlank.answer
                           ? undefined
                           : { selected: opt, correct: currentBlank.answer },
+                        { lessonKey: currentBlank.lessonKey, phaseName: 'passage' },
                       )
                     }}
                     className={clsx(
@@ -1107,6 +1318,7 @@ export default function ChineseCharsPracticeSession() {
               key={currentPinyinWrite.id}
               item={currentPinyinWrite}
               onComplete={async (correct) => {
+                recordLessonAnswer(currentPinyinWrite.lessonKey, 'pinyin-write', correct)
                 await awardMoon(MOON_REWARDS.pinyinWrite, correct)
                 if (pinyinWriteIdx + 1 >= plan.pinyinWriteItems.length) {
                   goNextPhase('pinyin-write')

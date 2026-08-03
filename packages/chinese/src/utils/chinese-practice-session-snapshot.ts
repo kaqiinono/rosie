@@ -17,8 +17,10 @@ import {
 } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
-export const CHINESE_PRACTICE_SNAPSHOT_VERSION = 3
+export const CHINESE_PRACTICE_SNAPSHOT_VERSION = 4
 export const CHINESE_PENDING_KIND = 'chinese' as const
+
+export type LessonTypeStats = Record<string, { total: number; correct: number }>
 
 export type ChinesePracticeSnapshot = {
   version: number
@@ -39,6 +41,11 @@ export type ChinesePracticeSnapshot = {
   earnedMoons: number
   correctCounts: { total: number; correct: number }
   plan: PracticeSessionPlan
+  /** Roadmap plan id when launched with ?planId= */
+  planId?: string | null
+  /** Per-lesson per-phase answer tallies for plan settle */
+  byLessonStats?: Record<string, LessonTypeStats>
+  sessionStartedAt?: string
 }
 
 export function chinesePracticeScopeKey(args: {

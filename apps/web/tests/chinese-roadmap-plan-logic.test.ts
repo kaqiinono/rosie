@@ -4,6 +4,9 @@ import {
   resolveChinesePlanCreateStatus,
   currentBatchLessonKeys,
   isLessonCompleteForPlan,
+  presentPhasesForLesson,
+  summarizeLessonPhases,
+  computeAdvanceAfterBatch,
   mapPlanRowToModel,
   type ChineseRoadmapPlanRow,
 } from '@rosie/chinese'
@@ -97,6 +100,97 @@ describe('isLessonCompleteForPlan', () => {
         presentPhases: ['poems', 'accumulation'],
         finishedPhases: ['poems', 'accumulation'],
       }),
+    ).toBe(true)
+  })
+})
+
+const emptyPlanContent = {
+  charQuestions: [] as { lessonKey: string; quizType?: string; kind?: string }[],
+  phraseItems: [] as { lessonKey: string }[],
+  poems: [] as { unit: number; source?: string; lesson?: number }[],
+  accumulationItems: [] as { unit: number }[],
+  readingLessons: [] as { lessonKey: string }[],
+  pinyinWriteItems: [] as { lessonKey: string }[],
+}
+
+describe('presentPhasesForLesson', () => {
+  it('collects quiz phases belonging to the lesson', () => {
+    const phases = presentPhasesForLesson(
+      'g1b-l01',
+      'lesson',
+      {
+        ...emptyPlanContent,
+        charQuestions: [
+          { lessonKey: 'g1b-l01', kind: 'recognize' },
+          { lessonKey: 'g1b-l01', kind: 'stroke' },
+          { lessonKey: 'g1b-l02', kind: 'recognize' },
+        ],
+        phraseItems: [{ lessonKey: 'g1b-l01' }],
+        readingLessons: [{ lessonKey: 'g1b-l01' }],
+        pinyinWriteItems: [{ lessonKey: 'g1b-l01' }],
+      },
+      { unit: 1, lesson: 1 },
+    )
+    expect(phases.sort()).toEqual(
+      ['passage', 'phrase', 'pinyin-write', 'recognize', 'stroke'].sort(),
+    )
+  })
+
+  it('matches poems and garden accumulation only', () => {
+    const plan = {
+      ...emptyPlanContent,
+      poems: [
+        { unit: 1, source: 'lesson' as const, lesson: 1 },
+        { unit: 1, source: 'garden' as const },
+      ],
+      accumulationItems: [{ unit: 1 }],
+    }
+    expect(
+      presentPhasesForLesson('g1b-l01', 'lesson', plan, { unit: 1, lesson: 1 }).sort(),
+    ).toEqual(['poems'])
+    expect(
+      presentPhasesForLesson('g1b-g01', 'garden', plan, { unit: 1, lesson: 0 }).sort(),
+    ).toEqual(['accumulation', 'poems'].sort())
+  })
+})
+
+describe('summarizeLessonPhases', () => {
+  it('marks all present phases finished when sessionReachedDone', () => {
+    const summary = summarizeLessonPhases({
+      lessonKey: 'g1b-l01',
+      lessonKind: 'lesson',
+      plan: {
+        ...emptyPlanContent,
+        charQuestions: [{ lessonKey: 'g1b-l01', quizType: 'recognize' }],
+      },
+      lessonMeta: { unit: 1, lesson: 1 },
+      sessionReachedDone: true,
+    })
+    expect(summary.presentPhases).toEqual(['recognize'])
+    expect(summary.finishedPhases).toEqual(['recognize'])
+  })
+})
+
+describe('computeAdvanceAfterBatch', () => {
+  const ordered = ['a', 'b', 'c', 'd']
+  it('advances to first incomplete and detects book finish', () => {
+    expect(
+      computeAdvanceAfterBatch({
+        orderedKeys: ordered,
+        completedLessonKeys: ['a'],
+        newlyCompletedKeys: ['b'],
+      }),
+    ).toEqual({
+      mergedCompleted: ['a', 'b'],
+      nextCurrentLessonKey: 'c',
+      bookFinished: false,
+    })
+    expect(
+      computeAdvanceAfterBatch({
+        orderedKeys: ordered,
+        completedLessonKeys: ['a', 'b', 'c'],
+        newlyCompletedKeys: ['d'],
+      }).bookFinished,
     ).toBe(true)
   })
 })

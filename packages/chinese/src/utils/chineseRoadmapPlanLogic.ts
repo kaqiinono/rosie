@@ -61,6 +61,140 @@ export function isLessonCompleteForPlan(args: {
   return true
 }
 
+/** Thin poem↔lesson match (mirrors chinese-chars-session-helpers). */
+export function poemMatchesLessonMeta(
+  poem: { unit: number; source?: string; lesson?: number },
+  lessonKind: string,
+  lessonMeta: { unit: number; lesson: number },
+): boolean {
+  if (poem.unit !== lessonMeta.unit) return false
+  if (poem.source === 'garden') return lessonKind === 'garden'
+  return lessonMeta.lesson === poem.lesson
+}
+
+type PracticePlanForPhases = {
+  charQuestions: {
+    lessonKey: string
+    quizType?: string
+    track?: string
+    kind?: string
+  }[]
+  phraseItems: { lessonKey: string }[]
+  poems: { unit: number; source?: string; lesson?: number }[]
+  accumulationItems: { unit: number }[]
+  readingLessons: { lessonKey: string }[]
+  pinyinWriteItems: { lessonKey: string }[]
+}
+
+function phaseNameFromCharQuestion(q: {
+  quizType?: string
+  track?: string
+  kind?: string
+}): string | null {
+  const raw = q.quizType ?? q.kind ?? q.track
+  if (!raw) return null
+  if (raw === 'phrase-char' || raw === 'phrase') return 'phrase'
+  if (raw === 'write' || raw === 'stroke') return 'stroke'
+  if (raw === 'recognize') return 'recognize'
+  return raw
+}
+
+/** Map PracticeSessionPlan content for one lessonKey → present phase names */
+export function presentPhasesForLesson(
+  lessonKey: string,
+  lessonKind: string,
+  plan: PracticePlanForPhases,
+  lessonMeta: { unit: number; lesson: number },
+): string[] {
+  const phases = new Set<string>()
+
+  for (const q of plan.charQuestions) {
+    if (q.lessonKey !== lessonKey) continue
+    const phase = phaseNameFromCharQuestion(q)
+    if (phase) phases.add(phase)
+  }
+
+  if (plan.phraseItems.some((item) => item.lessonKey === lessonKey)) {
+    phases.add('phrase')
+  }
+
+  if (plan.poems.some((poem) => poemMatchesLessonMeta(poem, lessonKind, lessonMeta))) {
+    phases.add('poems')
+  }
+
+  if (
+    lessonKind === 'garden' &&
+    plan.accumulationItems.some((item) => item.unit === lessonMeta.unit)
+  ) {
+    phases.add('accumulation')
+  }
+
+  if (plan.readingLessons.some((item) => item.lessonKey === lessonKey)) {
+    phases.add('passage')
+  }
+
+  if (plan.pinyinWriteItems.some((item) => item.lessonKey === lessonKey)) {
+    phases.add('pinyin-write')
+  }
+
+  return [...phases]
+}
+
+/**
+ * Present + finished phases for one lesson after a practice session.
+ * When `sessionReachedDone`, every present phase is treated as finished.
+ */
+export function summarizeLessonPhases(args: {
+  lessonKey: string
+  lessonKind: string
+  plan: PracticePlanForPhases
+  lessonMeta: { unit: number; lesson: number }
+  sessionReachedDone?: boolean
+  finishedPhases?: string[]
+}): { presentPhases: string[]; finishedPhases: string[] } {
+  const presentPhases = presentPhasesForLesson(
+    args.lessonKey,
+    args.lessonKind,
+    args.plan,
+    args.lessonMeta,
+  )
+  const finishedPhases = args.finishedPhases
+    ? [...args.finishedPhases]
+    : args.sessionReachedDone
+      ? [...presentPhases]
+      : []
+  return { presentPhases, finishedPhases }
+}
+
+/** Next pointer + book-finished after merging newly completed batch keys. */
+export function computeAdvanceAfterBatch(args: {
+  orderedKeys: string[]
+  completedLessonKeys: string[]
+  newlyCompletedKeys: string[]
+}): {
+  mergedCompleted: string[]
+  nextCurrentLessonKey: string
+  bookFinished: boolean
+} {
+  const seen = new Set(args.completedLessonKeys)
+  const mergedCompleted = [...args.completedLessonKeys]
+  for (const key of args.newlyCompletedKeys) {
+    if (seen.has(key)) continue
+    seen.add(key)
+    mergedCompleted.push(key)
+  }
+
+  const nextCurrentLessonKey =
+    args.orderedKeys.find((key) => !seen.has(key)) ??
+    args.orderedKeys[args.orderedKeys.length - 1] ??
+    ''
+
+  const bookFinished =
+    args.orderedKeys.length > 0 && args.orderedKeys.every((key) => seen.has(key))
+
+  return { mergedCompleted, nextCurrentLessonKey, bookFinished }
+}
+
 /**
  * Plan-local roadmap nodes: completed / current / locked from plan progress
  * (not global char mastery).

@@ -76,6 +76,10 @@ export {
   resolveChinesePlanCreateStatus,
   currentBatchLessonKeys,
   isLessonCompleteForPlan,
+  poemMatchesLessonMeta,
+  presentPhasesForLesson,
+  summarizeLessonPhases,
+  computeAdvanceAfterBatch,
   buildPlanRoadmapNodes,
 } from './utils/chineseRoadmapPlanLogic'
 /** TS backup only — runtime reads Supabase via useChineseCharData */
