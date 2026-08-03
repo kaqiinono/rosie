@@ -11,7 +11,7 @@ export type PassageRecorderProps = {
   lessonTitle: string
 }
 
-type RecorderPhase = 'idle' | 'recording' | 'preview' | 'uploading' | 'saved'
+type RecorderPhase = 'idle' | 'starting' | 'recording' | 'preview' | 'uploading' | 'saved'
 
 const MAX_RECORD_MS = 10 * 60 * 1000
 
@@ -53,6 +53,9 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
   const autoStopRef = useRef(false)
   const previewUrlRef = useRef<string | null>(null)
   const mimeTypeRef = useRef('audio/webm')
+  const mountedRef = useRef(true)
+  const startInFlightRef = useRef(false)
+  const savedTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
     setSupported(typeof MediaRecorder !== 'undefined')
@@ -93,17 +96,28 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
   }, [clearTimer, revokePreview, stopTracks])
 
   useEffect(() => {
+    mountedRef.current = true
     return () => {
+      mountedRef.current = false
       clearTimer()
-      stopTracks()
+      if (savedTimeoutRef.current != null) {
+        clearTimeout(savedTimeoutRef.current)
+        savedTimeoutRef.current = null
+      }
       const rec = mediaRecorderRef.current
-      if (rec && rec.state !== 'inactive') {
-        try {
-          rec.stop()
-        } catch {
-          /* ignore */
+      if (rec) {
+        rec.onstop = null
+        rec.onerror = null
+        rec.ondataavailable = null
+        if (rec.state !== 'inactive') {
+          try {
+            rec.stop()
+          } catch {
+            /* ignore */
+          }
         }
       }
+      stopTracks()
       if (previewUrlRef.current) {
         URL.revokeObjectURL(previewUrlRef.current)
         previewUrlRef.current = null
@@ -113,6 +127,7 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
 
   const finishRecording = useCallback(
     (recorder: MediaRecorder) => {
+      if (!mountedRef.current) return
       clearTimer()
       const duration = Math.max(0, Date.now() - startedAtRef.current)
       setElapsedMs(duration)
@@ -151,14 +166,21 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
   }, [resetToIdle])
 
   const startRecording = useCallback(async () => {
+    if (startInFlightRef.current) return
+    startInFlightRef.current = true
+    setPhase('starting')
     setError(null)
     setCapNote(null)
     if (typeof MediaRecorder === 'undefined') {
       setError('当前浏览器不支持录音')
+      setPhase('idle')
+      startInFlightRef.current = false
       return
     }
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
       setError('无法访问麦克风')
+      setPhase('idle')
+      startInFlightRef.current = false
       return
     }
 
@@ -184,6 +206,7 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
         if (e.data.size > 0) chunksRef.current.push(e.data)
       }
       recorder.onerror = () => {
+        if (!mountedRef.current) return
         setError('录音出错')
         resetToIdle()
       }
@@ -215,8 +238,12 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       }, 200)
     } catch {
       stopTracks()
-      setError('无法使用麦克风，请检查权限后重试')
-      setPhase('idle')
+      if (mountedRef.current) {
+        setError('无法使用麦克风，请检查权限后重试')
+        setPhase('idle')
+      }
+    } finally {
+      startInFlightRef.current = false
     }
   }, [clearTimer, finishRecording, resetToIdle, stopTracks])
 
@@ -242,7 +269,9 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       return
     }
     setPhase('saved')
-    window.setTimeout(() => {
+    if (savedTimeoutRef.current != null) clearTimeout(savedTimeoutRef.current)
+    savedTimeoutRef.current = window.setTimeout(() => {
+      savedTimeoutRef.current = null
       resetToIdle()
     }, 1200)
   }, [
@@ -275,15 +304,15 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
         )}
       </div>
 
-      {phase === 'idle' && (
+      {(phase === 'idle' || phase === 'starting') && (
         <div className="flex justify-center">
           <button
             type="button"
             onClick={() => void startRecording()}
-            disabled={!hydrated}
+            disabled={!hydrated || phase === 'starting'}
             className="cursor-pointer rounded-full bg-amber-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-700 disabled:opacity-50"
           >
-            开始录音
+            {phase === 'starting' ? '准备中…' : '开始录音'}
           </button>
         </div>
       )}
