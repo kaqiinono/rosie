@@ -11,6 +11,7 @@ const QUIZ_TYPE_LABEL: Record<CharQuizType, string> = {
   recognize: '认字',
   stroke: '笔顺',
   phrase: '词语检测',
+  blank: '填空题',
   passage: '阅读题',
   'pinyin-write': '看拼写字',
 }
@@ -76,11 +77,13 @@ function FilterLabel({ children }: { children: ReactNode }) {
 
 function PillButton({
   active,
+  disabled,
   onClick,
   activeClass,
   children,
 }: {
   active: boolean
+  disabled?: boolean
   onClick: () => void
   activeClass: string
   children: ReactNode
@@ -88,8 +91,13 @@ function PillButton({
   return (
     <button
       type="button"
-      onClick={onClick}
-      className={`cursor-pointer rounded-lg border-[1.5px] px-2.5 py-1 text-[13px] font-bold whitespace-nowrap transition-all select-none ${
+      disabled={disabled}
+      onClick={disabled ? undefined : onClick}
+      className={`rounded-lg border-[1.5px] px-2.5 py-1 text-[13px] font-bold whitespace-nowrap transition-all select-none ${
+        disabled
+          ? 'cursor-not-allowed opacity-40'
+          : 'cursor-pointer'
+      } ${
         active
           ? activeClass
           : 'border-amber-200/70 bg-white/80 text-amber-900/55 hover:border-amber-300 hover:text-amber-900'
@@ -181,16 +189,23 @@ export default function ChineseCharsFilterBar({
         <div className="mt-2.5 flex flex-col gap-2 border-t border-amber-900/[0.06] pt-2.5">
           <div className="flex w-full flex-wrap items-center gap-1.5">
             <FilterLabel>题型</FilterLabel>
-            {ALL_CHAR_QUIZ_TYPES.map((type) => (
-              <PillButton
-                key={type}
-                active={quizTypes.has(type)}
-                onClick={() => onToggleQuizType(type)}
-                activeClass="border-emerald-500 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_2px_8px_rgba(16,185,129,.25)]"
-              >
-                {QUIZ_TYPE_LABEL[type]}
-              </PillButton>
-            ))}
+            {ALL_CHAR_QUIZ_TYPES.map((type) => {
+              const disabled = type === 'blank' && quizTypes.has('passage')
+              return (
+                <PillButton
+                  key={type}
+                  active={quizTypes.has(type)}
+                  disabled={disabled}
+                  onClick={() => onToggleQuizType(type)}
+                  activeClass="border-emerald-500 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_2px_8px_rgba(16,185,129,.25)]"
+                >
+                  {QUIZ_TYPE_LABEL[type]}
+                </PillButton>
+              )
+            })}
+            {quizTypes.has('passage') && (
+              <span className="text-[10px] font-bold text-amber-900/40">填空已含在阅读题中</span>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">

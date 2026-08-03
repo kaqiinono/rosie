@@ -67,12 +67,14 @@ export default function ChineseCharsPage() {
 
   const contentCount = useMemo(() => {
     const plan = buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug)
+    const readingBlankCount = plan.readingLessons.reduce((n, l) => n + l.blankItems.length, 0)
     return (
       plan.cards.length +
       plan.phraseItems.length +
       plan.poems.length +
       plan.accumulationItems.length +
-      plan.passageItems.length +
+      plan.blankItems.length +
+      readingBlankCount +
       plan.pinyinWriteItems.length
     )
   }, [filtered, charByKey, quizTypes, lessons, bookSlug])
@@ -134,9 +136,11 @@ export default function ChineseCharsPage() {
       if (next.has(type)) {
         if (next.size <= 1) return prev
         next.delete(type)
-      } else {
-        next.add(type)
+        return next
       }
+      next.add(type)
+      if (type === 'passage') next.delete('blank')
+      if (type === 'blank' && next.has('passage')) next.delete('blank') // no-op safety
       return next
     })
   }, [])
