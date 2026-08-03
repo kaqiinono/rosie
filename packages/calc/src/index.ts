@@ -9,6 +9,7 @@ export {
 } from './hooks/useCalcTodaySessions'
 export type { CalcTodaySessionRow } from './hooks/useCalcTodaySessions'
 export { useCalcPracticeStats } from './hooks/useCalcPracticeStats'
+export { todayProgressFromSummaries } from './utils/calc-today-from-summaries'
 export { useCalcMistakes } from './hooks/useCalcMistakes'
 export { categoryLabel } from './utils/calc-helpers'
 export {

@@ -2,8 +2,9 @@
 
 import { useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { getWeekStart } from '@rosie/core'
+import { getWeekStart, todayStr } from '@rosie/core'
 import { calcSessionSummariesStore, type CalcSessionSummaryRow } from './useCalcDaily'
+import { todayProgressFromSummaries } from '../utils/calc-today-from-summaries'
 
 function questionCount(row: CalcSessionSummaryRow): number {
   return (row.correct_count ?? 0) + (row.retry_count ?? 0) + (row.wrong_count ?? 0)
@@ -34,12 +35,16 @@ export function useCalcPracticeStats(user: User | null) {
       if (row.date.startsWith(yearPrefix)) yearTotal += count
     }
 
+    const { todayProblems, todayCorrect } = todayProgressFromSummaries(sessions, todayStr())
+
     return {
       totalProblems: total,
       practiceDays: days.size,
       weekProblems: weekTotal,
       monthProblems: monthTotal,
       yearProblems: yearTotal,
+      todayProblems,
+      todayCorrect,
     }
   }, [sessions])
 
