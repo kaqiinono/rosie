@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getWeekStart, useAuth } from '@rosie/core'
+import { useState } from 'react'
+import { useAuth } from '@rosie/core'
 import { useCalcSettings } from '../hooks/useCalcSettings'
 import { useCalcPracticeStats } from '../hooks/useCalcPracticeStats'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import CalcAppHeader from '../components/CalcAppHeader'
-import CalcConfigBar from '../components/CalcConfigBar'
 import { playSfx } from '../components/audio'
 import { BLOCK_GROUPS, blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
@@ -21,10 +21,27 @@ const GROUP_LABEL = Object.fromEntries(BLOCK_GROUPS.map((g) => [g.group, g.label
 export default function CalcHomePage() {
   const { user } = useAuth()
   const router = useRouter()
-  const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
-  const wallet = useCalcWallet(user, { loadSessions: true })
-  const { totalProblems, practiceDays, weekProblems, monthProblems, yearProblems, isLoading: practiceStatsLoading } = useCalcPracticeStats(user)
+  const { settings, isLoading: settingsLoading } = useCalcSettings(user)
+  const {
+    totalProblems,
+    practiceDays,
+    weekProblems,
+    monthProblems,
+    yearProblems,
+    todayProblems,
+    todayCorrect,
+    isLoading: practiceStatsLoading,
+  } = useCalcPracticeStats(user)
   const { unresolved: unresolvedMistakes } = useCalcMistakes(user)
+
+  const [recentOpen, setRecentOpen] = useState(false)
+  const [sessionsRequested, setSessionsRequested] = useState(false)
+  const wallet = useCalcWallet(user, { loadSessions: sessionsRequested })
+
+  const handleToggleRecent = () => {
+    setRecentOpen((o) => !o)
+    setSessionsRequested(true) // sticky for page lifetime
+  }
 
   const blockCount = settings.selectedBlocks.length
   const enabledMixed = settings.mixedOps.filter((m) => m.enabled)
@@ -47,7 +64,7 @@ export default function CalcHomePage() {
   const todayTarget = totalQuestions
 
   const todayProgressPct = todayTarget > 0
-    ? Math.min(100, Math.round((wallet.todayQuestionsDone / todayTarget) * 100))
+    ? Math.min(100, Math.round((todayProblems / todayTarget) * 100))
     : 0
 
   const handleStart = () => {
@@ -55,13 +72,13 @@ export default function CalcHomePage() {
     router.push('/calc/session?mode=daily')
   }
 
-  if (settingsLoading || wallet.isLoading || practiceStatsLoading) {
+  if (settingsLoading || practiceStatsLoading) {
     return (
       <>
         <CalcAppHeader
           balance={wallet.balance}
           soundEnabled={settings.soundEnabled}
-          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+          onToggleSound={() => {}}
         />
         <div className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]" style={{ color: 'rgba(196,181,253,0.5)' }}>
           加载中…
@@ -70,22 +87,16 @@ export default function CalcHomePage() {
     )
   }
 
-  const todayAccuracy = wallet.todayQuestionsDone > 0
-    ? Math.round((wallet.todayCorrect / wallet.todayQuestionsDone) * 100)
+  const todayAccuracy = todayProblems > 0
+    ? Math.round((todayCorrect / todayProblems) * 100)
     : 0
-
-  const weekStart = getWeekStart()
-  const weeklyCoins = wallet.sessions.reduce(
-    (sum, s) => (s.date >= weekStart ? sum + s.coinsEarned : sum),
-    0,
-  )
 
   return (
     <>
       <CalcAppHeader
         balance={wallet.balance}
         soundEnabled={settings.soundEnabled}
-        onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+        onToggleSound={() => {}}
       />
 
       <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
@@ -123,17 +134,6 @@ export default function CalcHomePage() {
                 </div>
               )}
             </div>
-            <Link
-              href="/calc/settings"
-              className="rounded-full px-3 py-1.5 text-[11px] font-extrabold no-underline transition-all shrink-0"
-              style={{
-                background: 'rgba(139,92,246,0.15)',
-                border: '1px solid rgba(139,92,246,0.3)',
-                color: '#c4b5fd',
-              }}
-            >
-              ⚙ 设置
-            </Link>
           </div>
 
           {(selectedBlockLabels.length > 0 || selectedMixedLabels.length > 0) && (
@@ -182,7 +182,7 @@ export default function CalcHomePage() {
                 今日
               </div>
               <div className="font-fredoka text-[22px] font-black leading-none" style={{ color: '#f5f3ff' }}>
-                {wallet.todayQuestionsDone}
+                {todayProblems}
                 <span className="text-[12px] font-semibold ml-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>
                   /{todayTarget}
                 </span>
@@ -218,9 +218,6 @@ export default function CalcHomePage() {
               <div className="font-fredoka text-[22px] font-black leading-none" style={{ color: '#f5f3ff' }}>
                 {weekProblems}
                 <span className="text-[13px] font-semibold ml-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>题</span>
-              </div>
-              <div className="text-[10px] font-medium mt-1" style={{ color: 'rgba(245,158,11,0.7)' }}>
-                ⭐ {weeklyCoins} 星星
               </div>
             </div>
 
@@ -272,21 +269,6 @@ export default function CalcHomePage() {
           </div>
         </section>
 
-        {/* Config */}
-        <section>
-          <div className="mb-2 flex items-center gap-2 text-[11px] font-extrabold tracking-widest uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-md text-[11px]" style={{ background: 'rgba(139,92,246,0.25)' }}>📐</span>
-            练习题量 · 共 {totalQuestions} 题
-          </div>
-          {settings.countMode === 'auto' ? (
-            <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
-          ) : (
-            <Link href="/calc/settings" className="block rounded-2xl px-4 py-3 text-[12px] font-bold no-underline" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.12)', color: 'rgba(196,181,253,0.6)' }}>
-              精准模式：各题型题量在设置里调整 →
-            </Link>
-          )}
-        </section>
-
         {/* CTA */}
         <button
           type="button"
@@ -331,7 +313,7 @@ export default function CalcHomePage() {
             <div className="min-w-0 flex-1">
               <div className="text-[12px] font-extrabold" style={{ color: '#f9a8d4' }}>我的奖券</div>
               <div className="text-[11px] truncate" style={{ color: 'rgba(249,168,212,0.55)' }}>
-                ⭐ {wallet.balance} 星星
+                去兑换
               </div>
             </div>
             <span style={{ color: 'rgba(249,168,212,0.5)' }}>→</span>
@@ -375,45 +357,64 @@ export default function CalcHomePage() {
         </Link>
 
         {/* Recent sessions */}
-        {wallet.sessions.length > 0 && (
-          <section>
-            <div
-              className="mb-2 text-[11px] font-extrabold tracking-widest uppercase"
-              style={{ color: 'rgba(196,181,253,0.4)' }}
-            >
-              最近练习
-            </div>
+        <section>
+          <button
+            type="button"
+            onClick={handleToggleRecent}
+            className="mb-2 flex w-full items-center justify-between text-left text-[11px] font-extrabold tracking-widest uppercase"
+            style={{ color: 'rgba(196,181,253,0.4)' }}
+          >
+            <span>最近练习</span>
+            <span aria-hidden>{recentOpen ? '▾' : '▸'}</span>
+          </button>
+          {recentOpen && (
             <div className="space-y-1.5">
-              {wallet.sessions.slice(0, 5).map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-[12px]"
-                  style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.07)',
-                  }}
-                >
-                  <span className="font-semibold tabular-nums" style={{ color: '#a78bfa' }}>
-                    {s.date.slice(5).replace('-', '/')}
-                  </span>
-                  <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-                  <span style={{ color: 'rgba(245,243,255,0.45)' }}>
-                    {s.count} 题 {s.correctCount + s.retryCount} 对
-                  </span>
-                  <span
-                    className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-extrabold tabular-nums"
+              {sessionsRequested && !wallet.sessionsReady && !wallet.sessionsFailed && (
+                <div className="px-3 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                  加载中…
+                </div>
+              )}
+              {wallet.sessionsFailed && (
+                <div className="px-3 py-2 text-[12px]" style={{ color: 'rgba(251,191,36,0.7)' }}>
+                  加载失败，刷新页面后重试
+                </div>
+              )}
+              {wallet.sessionsReady && wallet.sessions.length === 0 && (
+                <div className="px-3 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                  暂无练习记录
+                </div>
+              )}
+              {wallet.sessionsReady &&
+                wallet.sessions.slice(0, 5).map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-[12px]"
                     style={{
-                      background: 'rgba(245,158,11,0.15)',
-                      color: '#fbbf24',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.07)',
                     }}
                   >
-                    ⭐ +{s.coinsEarned}
-                  </span>
-                </div>
-              ))}
+                    <span className="font-semibold tabular-nums" style={{ color: '#a78bfa' }}>
+                      {s.date.slice(5).replace('-', '/')}
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+                    <span style={{ color: 'rgba(245,243,255,0.45)' }}>
+                      {s.count} 题 {s.correctCount + s.retryCount} 对
+                    </span>
+                    <span
+                      className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-extrabold tabular-nums"
+                      style={{
+                        background: 'rgba(245,158,11,0.15)',
+                        color: '#fbbf24',
+                      }}
+                    >
+                      ⭐ +{s.coinsEarned}
+                    </span>
+                  </div>
+                ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
       </main>
     </>
   )
