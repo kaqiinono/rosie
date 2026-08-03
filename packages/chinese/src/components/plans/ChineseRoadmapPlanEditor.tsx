@@ -18,6 +18,8 @@ import {
   PLAN_QUIZ_TYPE_LABELS,
   clampK,
   fmtPlanDateTime,
+  formatPlanRunByType,
+  planRunTypeLabel,
   planStatusLabel,
 } from './chinese-roadmap-plan-shared'
 
@@ -511,11 +513,32 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
                       <div className="mt-1 text-[12px] font-bold text-slate-500">
                         正确率 {accuracyLabel(run)}
                       </div>
-                      {run.quizTypes.length > 0 && (
-                        <div className="mt-0.5 text-[11px] text-slate-400">
-                          {run.quizTypes.join(' · ')}
-                        </div>
-                      )}
+                      {(() => {
+                        const byTypeRows = formatPlanRunByType(run.byType)
+                        if (byTypeRows.length === 0) {
+                          return run.quizTypes.length > 0 ? (
+                            <div className="mt-0.5 text-[11px] text-slate-400">
+                              {run.quizTypes.map((t) => planRunTypeLabel(t)).join(' · ')}
+                            </div>
+                          ) : null
+                        }
+                        return (
+                          <ul className="mt-1.5 flex flex-col gap-0.5">
+                            {byTypeRows.map((row) => (
+                              <li
+                                key={row.key}
+                                className="flex items-center justify-between gap-2 text-[11px] text-slate-500"
+                              >
+                                <span>{row.label}</span>
+                                <span className="tabular-nums">
+                                  {row.correct}/{row.total}
+                                  {row.accuracyPct != null ? ` · ${row.accuracyPct}%` : ''}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        )
+                      })()}
                     </div>
                   ))}
                 </div>

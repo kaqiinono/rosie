@@ -134,7 +134,10 @@ export { default as ChineseRoadmapPlanEditor } from './components/plans/ChineseR
 export { default as ChinesePlanRoadmapPreview } from './components/plans/ChinesePlanRoadmapPreview'
 export {
   formatPlanQuizTypes,
+  formatPlanRunByType,
   PLAN_QUIZ_TYPE_LABELS,
+  PLAN_RUN_TYPE_LABELS,
+  planRunTypeLabel,
   planStatusLabel,
 } from './components/plans/chinese-roadmap-plan-shared'
 export * from './utils/chinese-chars-session-helpers'

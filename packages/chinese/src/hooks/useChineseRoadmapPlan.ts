@@ -223,43 +223,57 @@ export function useChineseRoadmapPlan(user: User | null) {
   const { data: runsByPlanId } = chineseRoadmapPlanRunsStore.useSessionData(user)
 
   const activePlan = plans.find((item) => item.status === 'active') ?? null
+  /** Most recently updated completed plan (plans are ordered by updated_at desc). */
+  const completedPlan = plans.find((item) => item.status === 'completed') ?? null
 
   const pauseActivePlansInDb = useCallback(
     async (exceptPlanId?: string): Promise<void> => {
       if (!user) return
       const now = new Date().toISOString()
-      const others = plans.filter(
-        (item) => item.status === 'active' && item.id !== exceptPlanId,
-      )
 
-      for (const other of others) {
-        const paused = await upsertPlanToCloud({
-          ...other,
-          userId: user.id,
-          status: 'paused',
-          updatedAt: now,
-        })
-        chineseRoadmapPlansStore.patchSessionData(user.id, (prev) =>
-          prev.map((item) => (item.id === paused.id ? paused : item)),
-        )
+      // Pause ALL DB actives for this user (not only in-memory `plans`), so a
+      // stale/missing session cache cannot leave a second active row.
+      let query = supabase
+        .from('chinese_roadmap_plans')
+        .update({ status: 'paused', updated_at: now })
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .is('archived_at', null)
+
+      if (exceptPlanId) {
+        query = query.neq('id', exceptPlanId)
       }
+
+      const { error } = await query
+      if (error) {
+        console.error('[chinese_roadmap_plan] pause actives failed', error)
+        throw error
+      }
+
+      chineseRoadmapPlansStore.patchSessionData(user.id, (prev) =>
+        prev.map((item) =>
+          item.status === 'active' && item.id !== exceptPlanId
+            ? { ...item, status: 'paused' as const, updatedAt: now }
+            : item,
+        ),
+      )
     },
-    [plans, user],
+    [user],
   )
 
   const createPlan = useCallback(
     async (input: CreateChineseRoadmapPlanInput): Promise<CreateChineseRoadmapPlanResult> => {
       if (!user) throw new Error('Cannot create chinese roadmap plan without a user')
 
-      const hasActive = plans.some((item) => item.status === 'active')
       const activateNow = input.activateNow === true
 
-      // activateNow + existing active: pause others first, then insert as active
-      // (unique partial index requires no other active row at insert time).
-      if (activateNow && hasActive) {
+      // activateNow: pause every DB active first (unique partial index), even if
+      // the session cache is missing a row.
+      if (activateNow) {
         await pauseActivePlansInDb()
       }
 
+      const hasActive = plans.some((item) => item.status === 'active')
       const initialStatus = activateNow
         ? 'active'
         : resolveChinesePlanCreateStatus(hasActive)
@@ -478,6 +492,7 @@ export function useChineseRoadmapPlan(user: User | null) {
   return {
     plans,
     activePlan,
+    completedPlan,
     isLoading,
     createPlan,
     savePlan,

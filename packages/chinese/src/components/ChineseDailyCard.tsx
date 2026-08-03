@@ -31,11 +31,13 @@ export default function ChineseDailyCard() {
     total,
     lessonDone,
   } = useChineseRoadmapProgress()
-  const { activePlan, isLoading: plansLoading } = useChineseRoadmapPlan(user)
+  const { activePlan, completedPlan, isLoading: plansLoading } = useChineseRoadmapPlan(user)
+  const planCompleted = !activePlan && !!completedPlan
+  const focusPlan = activePlan ?? completedPlan
 
   useEffect(() => {
-    if (activePlan) setActiveChineseBook(activePlan.bookSlug)
-  }, [activePlan])
+    if (focusPlan) setActiveChineseBook(focusPlan.bookSlug)
+  }, [focusPlan])
 
   const orderedKeys = useMemo(
     () => orderedPlanLessonKeys(lessons, activePlan?.bookSlug ?? bookSlug),
@@ -96,9 +98,8 @@ export default function ChineseDailyCard() {
     return items
   }, [currentNode, masteryMap, bookSlug])
 
-  const planCompleted = activePlan?.status === 'completed'
   const planHref =
-    activePlan && !planCompleted && batchKeys.length > 0
+    activePlan && batchKeys.length > 0
       ? buildChinesePlanPracticeHref(activePlan, batchKeys)
       : null
   const href = planCompleted
@@ -112,7 +113,7 @@ export default function ChineseDailyCard() {
     <Link
       href={href}
       onClick={() => {
-        if (activePlan) setActiveChineseBook(activePlan.bookSlug)
+        if (focusPlan) setActiveChineseBook(focusPlan.bookSlug)
       }}
       className="group relative flex w-full flex-col overflow-hidden rounded-2xl border-2 border-amber-200/80 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
@@ -123,7 +124,7 @@ export default function ChineseDailyCard() {
             <span className="shrink-0 text-lg">📖</span>
             <span className="truncate text-sm font-extrabold text-amber-900">今日任务</span>
             <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">
-              {activePlan ? activePlan.title || bookLabel : bookLabel}
+              {focusPlan ? focusPlan.title || bookLabel : bookLabel}
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-1 text-xs font-bold text-amber-600 transition-transform group-hover:translate-x-0.5">
@@ -142,7 +143,8 @@ export default function ChineseDailyCard() {
           <div className="h-2 w-full animate-pulse rounded-full bg-amber-100" />
         ) : planCompleted ? (
           <p className="text-xs font-medium text-amber-800/70">
-            计划已通关，可到路线图复习任意一课 ✨
+            {completedPlan?.title ? `「${completedPlan.title}」已通关` : '计划已通关'}
+            ，可到路线图复习任意一课 ✨
           </p>
         ) : activePlan ? (
           <>

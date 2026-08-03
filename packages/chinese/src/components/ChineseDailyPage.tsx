@@ -41,14 +41,16 @@ export default function ChineseDailyPage() {
     bookSlug,
     charKeyForBook,
   } = useChineseContext()
-  const { activePlan, isLoading: plansLoading } = useChineseRoadmapPlan(user)
+  const { activePlan, completedPlan, isLoading: plansLoading } = useChineseRoadmapPlan(user)
+  const planCompleted = !activePlan && !!completedPlan
   const today = todayStr()
   const [flipped, setFlipped] = useState(false)
   const [previewIdx, setPreviewIdx] = useState(0)
 
   useEffect(() => {
     if (activePlan) setActiveChineseBook(activePlan.bookSlug)
-  }, [activePlan])
+    else if (completedPlan) setActiveChineseBook(completedPlan.bookSlug)
+  }, [activePlan, completedPlan])
 
   const orderedKeys = useMemo(
     () => orderedPlanLessonKeys(lessons, activePlan?.bookSlug ?? bookSlug),
@@ -120,7 +122,6 @@ export default function ChineseDailyPage() {
   const preview = lessonChars[previewIdx] ?? lessonChars[0]
   const previewProfile = preview ? getCharProfile(preview.charKey) : undefined
 
-  const planCompleted = activePlan?.status === 'completed'
   const headerTitle = activePlan
     ? (planLesson?.lessonTitle ?? activePlan.currentLessonKey)
     : (currentNode?.lessonTitle ?? '')
@@ -149,7 +150,10 @@ export default function ChineseDailyPage() {
       <div className="mx-auto max-w-md p-6 text-center">
         <p className="text-4xl">🎉</p>
         <p className="mt-3 text-lg font-extrabold text-slate-900">计划已通关！</p>
-        <p className="mt-1 text-sm text-slate-500">可以回到路线图复习任意一课。</p>
+        <p className="mt-1 text-sm text-slate-500">
+          {completedPlan?.title ? `「${completedPlan.title}」` : '本计划'}
+          已完成，可以回到路线图复习任意一课。
+        </p>
         <Link
           href="/chinese/weekly"
           className="mt-6 inline-block rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-emerald-700"

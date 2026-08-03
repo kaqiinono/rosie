@@ -30,6 +30,7 @@ import {
   buildChinesePlanPracticeHref,
   currentBatchLessonKeys,
   orderedPlanLessonKeys,
+  formatPlanRunByType,
 } from '@rosie/chinese'
 
 function formatClock(iso: string | null | undefined): string | null {
@@ -235,17 +236,20 @@ export default function TodayPracticeRecords() {
   const chinese = useChineseRoadmapProgress(user)
   const {
     activePlan: chineseActivePlan,
+    completedPlan: chineseCompletedPlan,
     loadRunsForPlan,
     runsByPlanId,
     isLoading: chinesePlanLoading,
   } = useChineseRoadmapPlan(user)
+  const chinesePlanCleared = !chineseActivePlan && !!chineseCompletedPlan
+  const chineseFocusPlan = chineseActivePlan ?? chineseCompletedPlan
 
   useEffect(() => {
-    if (chineseActivePlan) {
-      setActiveChineseBook(chineseActivePlan.bookSlug)
-      void loadRunsForPlan(chineseActivePlan.id)
+    if (chineseFocusPlan) {
+      setActiveChineseBook(chineseFocusPlan.bookSlug)
+      void loadRunsForPlan(chineseFocusPlan.id)
     }
-  }, [chineseActivePlan, loadRunsForPlan])
+  }, [chineseFocusPlan, loadRunsForPlan])
 
   const chineseOrderedKeys = useMemo(
     () =>
@@ -265,25 +269,31 @@ export default function TodayPracticeRecords() {
     )
   }, [chineseActivePlan, chineseOrderedKeys])
 
-  const chineseRuns = chineseActivePlan
-    ? (runsByPlanId[chineseActivePlan.id] ?? [])
+  const chineseRuns = chineseFocusPlan
+    ? (runsByPlanId[chineseFocusPlan.id] ?? [])
     : []
-  // Only the current lesson's run — never fall back to another lesson's stats.
+  // Active: current lesson only. Completed: latest run on the finished plan.
   const chineseLatestRun = chineseActivePlan
     ? (chineseRuns.find((r) => r.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
-    : null
+    : chinesePlanCleared
+      ? (chineseRuns[0] ?? null)
+      : null
   const chinesePlanLesson = chineseActivePlan
     ? (chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
-    : null
+    : chineseLatestRun
+      ? (chinese.lessons.find((l) => l.lessonKey === chineseLatestRun.lessonKey) ?? null)
+      : null
+  const chineseByTypeRows = chineseLatestRun
+    ? formatPlanRunByType(chineseLatestRun.byType)
+    : []
 
-  const chineseContinueHref =
-    chineseActivePlan?.status === 'completed'
-      ? '/chinese/weekly'
-      : chineseActivePlan && chineseBatchKeys.length > 0
-        ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
-        : chinese.currentNode
-          ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
-          : chineseRoute(chinese.bookSlug, 'daily')
+  const chineseContinueHref = chinesePlanCleared
+    ? '/chinese/weekly'
+    : chineseActivePlan && chineseBatchKeys.length > 0
+      ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
+      : chinese.currentNode
+        ? `/chinese/chars/practice?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+        : chineseRoute(chinese.bookSlug, 'daily')
 
   const englishLoading =
     englishPlanLoading || masteryLoading || vocabLoading || (!englishPlan && adaptiveLoading)
@@ -620,6 +630,22 @@ export default function TodayPracticeRecords() {
                     </>
                   )}
                 </div>
+                {chineseByTypeRows.length > 0 && (
+                  <ul className="mt-2 flex flex-col gap-0.5 border-t border-emerald-100/80 pt-2">
+                    {chineseByTypeRows.map((row) => (
+                      <li
+                        key={row.key}
+                        className="flex items-center justify-between gap-2 text-[11px] font-medium text-emerald-800/90"
+                      >
+                        <span>{row.label}</span>
+                        <span className="tabular-nums text-emerald-900/80">
+                          {row.correct}/{row.total}
+                          {row.accuracyPct != null ? ` · ${row.accuracyPct}%` : ''}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ) : chineseActivePlan ? (
               <p className="rounded-xl border border-emerald-100 bg-emerald-50/50 px-3 py-2.5 text-center text-[12px] font-medium text-slate-400">
@@ -628,17 +654,20 @@ export default function TodayPracticeRecords() {
               </p>
             ) : null}
 
-            {chineseActivePlan ? (
+            {chinesePlanCleared ? (
+              <div className="rounded-xl border border-emerald-100 bg-white px-3 py-2.5">
+                <div className="text-[13px] font-bold text-emerald-900">计划通关</div>
+                <div className="mt-1 text-[11px] font-medium text-emerald-800/80">
+                  {chineseCompletedPlan?.title}
+                </div>
+              </div>
+            ) : chineseActivePlan ? (
               <div className="rounded-xl border border-emerald-100 bg-white px-3 py-2.5">
                 <div className="text-[13px] font-bold text-emerald-900">
-                  {chineseActivePlan.status === 'completed'
-                    ? '计划通关'
-                    : (chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey)}
+                  {chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey}
                 </div>
                 <div className="mt-1 text-[11px] font-medium text-emerald-800/80">
-                  {chineseActivePlan.status === 'completed'
-                    ? chineseActivePlan.title
-                    : `本批 ${chineseBatchKeys.length} 关 · ${chineseActivePlan.title}`}
+                  本批 {chineseBatchKeys.length} 关 · {chineseActivePlan.title}
                 </div>
               </div>
             ) : chinese.hasChinese ? (
