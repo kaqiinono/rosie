@@ -348,31 +348,48 @@ export default function CalcHomePage() {
           <span style={{ color: 'rgba(196,181,253,0.5)' }}>→</span>
         </Link>
 
-        {/* Recent sessions */}
-        <section>
+        {/* Recent sessions — card toggle; sessions load on first expand only */}
+        <section
+          className="rounded-2xl overflow-hidden"
+          style={{
+            background: 'rgba(167,139,250,0.06)',
+            border: '1px solid rgba(167,139,250,0.18)',
+          }}
+        >
           <button
             type="button"
             onClick={handleToggleRecent}
-            className="mb-2 flex w-full items-center justify-between text-left text-[11px] font-extrabold tracking-widest uppercase"
-            style={{ color: 'rgba(196,181,253,0.4)' }}
+            aria-expanded={recentOpen}
+            className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-all"
           >
-            <span>最近练习</span>
-            <span aria-hidden>{recentOpen ? '▾' : '▸'}</span>
+            <span className="text-xl" aria-hidden>🕐</span>
+            <div className="min-w-0 flex-1">
+              <div className="text-[12px] font-extrabold" style={{ color: '#c4b5fd' }}>最近练习</div>
+              <div className="text-[11px] truncate" style={{ color: 'rgba(196,181,253,0.55)' }}>
+                {recentOpen ? '点击收起' : '点击查看近期记录'}
+              </div>
+            </div>
+            <span style={{ color: 'rgba(196,181,253,0.5)' }} aria-hidden>
+              {recentOpen ? '▾' : '→'}
+            </span>
           </button>
           {recentOpen && (
-            <div className="space-y-1.5">
+            <div
+              className="space-y-1.5 px-3 pt-2.5 pb-3"
+              style={{ borderTop: '1px solid rgba(167,139,250,0.12)' }}
+            >
               {sessionsRequested && !wallet.sessionsReady && !wallet.sessionsFailed && (
-                <div className="px-3 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                <div className="px-1 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
                   加载中…
                 </div>
               )}
               {wallet.sessionsFailed && (
-                <div className="px-3 py-2 text-[12px]" style={{ color: 'rgba(251,191,36,0.7)' }}>
+                <div className="px-1 py-2 text-[12px]" style={{ color: 'rgba(251,191,36,0.7)' }}>
                   加载失败，刷新页面后重试
                 </div>
               )}
               {wallet.sessionsReady && wallet.sessions.length === 0 && (
-                <div className="px-3 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                <div className="px-1 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
                   暂无练习记录
                 </div>
               )}
