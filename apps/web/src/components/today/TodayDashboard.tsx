@@ -324,16 +324,28 @@ export default function TodayDashboard() {
     )
   }, [chineseActivePlan, chinese.lessons])
 
-  const chineseDone =
-    chineseActivePlan?.status === 'completed' || chinese.allDone || chinese.lessonDone
-  const chinesePct =
-    chineseActivePlan?.status === 'completed'
+  // Active plan: batch completion vs completed_lesson_keys (not char mastery N/N).
+  const chineseBatchDoneCount = useMemo(() => {
+    if (!chineseActivePlan || chineseBatchKeys.length === 0) return 0
+    const completed = new Set(chineseActivePlan.completedLessonKeys)
+    return chineseBatchKeys.filter((k) => completed.has(k)).length
+  }, [chineseActivePlan, chineseBatchKeys])
+
+  const chineseDone = chineseActivePlan
+    ? chineseActivePlan.status === 'completed' ||
+      (chineseBatchKeys.length > 0 && chineseBatchDoneCount >= chineseBatchKeys.length)
+    : chinese.allDone || chinese.lessonDone
+  const chinesePct = chineseActivePlan
+    ? chineseActivePlan.status === 'completed'
       ? 100
-      : chinese.total > 0
-        ? Math.round((chinese.done / chinese.total) * 100)
-        : chinese.allDone
-          ? 100
-          : 0
+      : chineseBatchKeys.length > 0
+        ? Math.round((chineseBatchDoneCount / chineseBatchKeys.length) * 100)
+        : 0
+    : chinese.total > 0
+      ? Math.round((chinese.done / chinese.total) * 100)
+      : chinese.allDone
+        ? 100
+        : 0
 
   const chineseHref =
     chineseActivePlan?.status === 'completed'
@@ -421,13 +433,15 @@ export default function TodayDashboard() {
     },
     chinese: {
       done:
-        chineseActivePlan?.status === 'completed' || chinese.allDone
+        chineseActivePlan?.status === 'completed' ||
+        (!chineseActivePlan && chinese.allDone)
           ? '✓'
           : chineseActivePlan
-            ? chineseBatchKeys.length
+            ? chineseBatchDoneCount
             : chinese.done,
       total:
-        chineseActivePlan?.status === 'completed' || chinese.allDone
+        chineseActivePlan?.status === 'completed' ||
+        (!chineseActivePlan && chinese.allDone)
           ? null
           : chineseActivePlan
             ? chineseBatchKeys.length

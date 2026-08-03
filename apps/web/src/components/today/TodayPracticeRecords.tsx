@@ -268,10 +268,9 @@ export default function TodayPracticeRecords() {
   const chineseRuns = chineseActivePlan
     ? (runsByPlanId[chineseActivePlan.id] ?? [])
     : []
+  // Only the current lesson's run — never fall back to another lesson's stats.
   const chineseLatestRun = chineseActivePlan
-    ? (chineseRuns.find((r) => r.lessonKey === chineseActivePlan.currentLessonKey) ??
-      chineseRuns[0] ??
-      null)
+    ? (chineseRuns.find((r) => r.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
     : null
   const chinesePlanLesson = chineseActivePlan
     ? (chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
@@ -622,6 +621,11 @@ export default function TodayPracticeRecords() {
                   )}
                 </div>
               </div>
+            ) : chineseActivePlan ? (
+              <p className="rounded-xl border border-emerald-100 bg-emerald-50/50 px-3 py-2.5 text-center text-[12px] font-medium text-slate-400">
+                {chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey}
+                <span className="ml-2">尚未练习</span>
+              </p>
             ) : null}
 
             {chineseActivePlan ? (
