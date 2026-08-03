@@ -11,11 +11,13 @@ export { useChineseCharData, buildLessonGroups } from './hooks/useChineseCharDat
 export {
   useChineseRoadmapProgress,
   chineseRoadmapCatalogStore,
+  ensureBookCatalog,
 } from './hooks/useChineseRoadmapProgress'
 export type {
   ChineseRoadmapProgress,
   ChineseRoadmapCatalog,
 } from './hooks/useChineseRoadmapProgress'
+export { useChineseBookLessons } from './hooks/useChineseBookLessons'
 export {
   useChineseRoadmapPlan,
   chineseRoadmapPlansStore,
@@ -120,6 +122,9 @@ export { default as ChineseCharCardsPage } from './components/ChineseCharCardsPa
 export { default as ChineseCharsPracticeSession } from './components/chars/ChineseCharsPracticeSession'
 export { default as ChinesePinyinWritePrintPage } from './components/chars/ChinesePinyinWritePrintPage'
 export { default as ChineseWeeklyPage } from './components/ChineseWeeklyPage'
+export { default as ChineseRoadmapPlanManage } from './components/plans/ChineseRoadmapPlanManage'
+export { default as ChineseRoadmapPlanEditor } from './components/plans/ChineseRoadmapPlanEditor'
+export { default as ChinesePlanRoadmapPreview } from './components/plans/ChinesePlanRoadmapPreview'
 export * from './utils/chinese-chars-session-helpers'
 export * from './utils/chinese-pinyin-write-helpers'
 export * from './utils/chinese-pinyin-write-print-helpers'

@@ -107,7 +107,11 @@ export const chineseRoadmapCatalogStore = createUserSessionStore<RoadmapCatalogC
 
 const bookInflight = new Map<string, Promise<ChineseRoadmapCatalog>>()
 
-function ensureBookCatalog(userId: string, bookSlug: ChineseBookSlug): Promise<ChineseRoadmapCatalog> {
+/** Lazy-load + cache one book's lessons + lessonGroups (shared by progress + admin). */
+export function ensureBookCatalog(
+  userId: string,
+  bookSlug: ChineseBookSlug,
+): Promise<ChineseRoadmapCatalog> {
   const cached = chineseRoadmapCatalogStore.getSessionData(userId)?.[bookSlug]
   if (cached) return Promise.resolve(cached)
 

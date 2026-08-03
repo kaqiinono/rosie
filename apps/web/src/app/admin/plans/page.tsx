@@ -21,6 +21,15 @@ const PLAN_MODULES = [
     bg: 'rgba(59,130,246,.08)',
     border: 'rgba(59,130,246,.25)',
   },
+  {
+    href: '/admin/plans/chinese',
+    emoji: '📜',
+    title: '语文计划',
+    description: '按教材路线图推进：控制关卡与题型，暂停/恢复，查看每关练习记录',
+    color: '#b45309',
+    bg: 'rgba(245,158,11,.08)',
+    border: 'rgba(245,158,11,.25)',
+  },
 ] as const
 
 export default function AdminPlansHubPage() {
