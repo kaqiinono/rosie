@@ -34,6 +34,15 @@ const TOOLS: AdminTool[] = [
     ring: 'rgba(249,115,22,0.28)',
   },
   {
+    href: '/admin/calc',
+    emoji: '🧮',
+    title: '口算设置',
+    description: '选择题型与题量、计时模式、音效与答题偏好。孩子端只练习，不在此改设置。',
+    from: 'rgba(139,92,246,0.14)',
+    to: 'rgba(236,72,153,0.10)',
+    ring: 'rgba(139,92,246,0.28)',
+  },
+  {
     href: '/admin/words',
     emoji: '📚',
     title: '词库管理',

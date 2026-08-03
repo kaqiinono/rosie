@@ -6,7 +6,6 @@ import { useAuth } from '@rosie/core'
 import type { CalcTimingMode } from '@rosie/core'
 import { useCalcSettings } from '../hooks/useCalcSettings'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
-import { useCalcWallet } from '@rosie/rewards'
 import CalcAppHeader from '../components/CalcAppHeader'
 import BlockPicker from '../components/BlockPicker'
 import MixedOpList from '../components/MixedOpList'
@@ -299,7 +298,6 @@ export default function CalcSettingsPage() {
   const { user } = useAuth()
   const router = useRouter()
   const { settings, update, setSettings, isLoading } = useCalcSettings(user)
-  const wallet = useCalcWallet(user)
   const [saved, setSaved] = useState(false)
 
   // Settings already persist on every `update()`; this button is an explicit
@@ -353,12 +351,12 @@ export default function CalcSettingsPage() {
     return (
       <>
         <CalcAppHeader
-          balance={wallet.balance}
+          balance={0}
           soundEnabled={settings.soundEnabled}
-          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+          onToggleSound={() => {}}
           title="设置"
-          backHref="/calc"
-          backLabel="口算"
+          backHref="/admin"
+          backLabel="管理"
         />
         <div
           className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
@@ -381,12 +379,12 @@ export default function CalcSettingsPage() {
   return (
     <>
       <CalcAppHeader
-        balance={wallet.balance}
+        balance={0}
         soundEnabled={settings.soundEnabled}
-        onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
+        onToggleSound={() => {}}
         title="口算设置"
-        backHref="/calc"
-        backLabel="口算"
+        backHref="/admin"
+        backLabel="管理"
       />
 
       <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
