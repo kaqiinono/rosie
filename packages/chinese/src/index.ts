@@ -39,6 +39,28 @@ export * from './utils/chinese-lesson-passage-helpers'
 export * from './utils/chinese-lesson-display'
 export * from './utils/chinese-mastery-stats'
 export * from './utils/chinese-roadmap'
+export {
+  CHINESE_PLAN_QUIZ_TYPES,
+  type ChineseRoadmapPlanStatus,
+  type ChinesePlanQuizType,
+  type PlanSessionPhase,
+  type ChineseRoadmapPlan,
+  type ChineseRoadmapPlanLessonRun,
+  type ChineseRoadmapPlanRow,
+  type ChineseRoadmapPlanLessonRunRow,
+} from './utils/chineseRoadmapPlanTypes'
+export {
+  mapPlanRowToModel,
+  mapPlanModelToRow,
+  mapRunRowToModel,
+  mapRunModelToRow,
+} from './utils/chineseRoadmapPlanMappers'
+export {
+  resolveChinesePlanCreateStatus,
+  currentBatchLessonKeys,
+  isLessonCompleteForPlan,
+  buildPlanRoadmapNodes,
+} from './utils/chineseRoadmapPlanLogic'
 /** TS backup only — runtime reads Supabase via useChineseCharData */
 export * from './utils/g1b'
 export { CHINESE_BOOKS, getChineseBook, isChineseBookSlug, type ChineseBookSlug } from './utils/chinese-books'
