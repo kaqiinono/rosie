@@ -22,6 +22,12 @@ export { useChineseWeeklyPlan } from './hooks/useChineseWeeklyPlan'
 export { useActiveChineseBook } from './hooks/useActiveChineseBook'
 export { useChineseWrong } from './hooks/useChineseWrong'
 export type { ChineseWrongRow, ChineseWrongKind, ChineseWrongItemType } from './hooks/useChineseWrong'
+export {
+  useChineseReadingRecordings,
+  chineseReadingRecordingsStore,
+} from './hooks/useChineseReadingRecordings'
+export * from './utils/chinese-reading-recording-helpers'
+export type { ChineseReadingRecording } from './utils/chinese-reading-recording-helpers'
 
 // Types
 export type {
