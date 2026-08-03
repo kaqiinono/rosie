@@ -56,10 +56,20 @@ export default function ChineseReadingIndexPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 pt-5 pb-24">
       <header className="mb-4">
-        <h1 className="text-xl font-extrabold text-slate-900">📖 课文阅读</h1>
-        <p className="mt-0.5 text-sm text-amber-900/50">
-          读课文 · 会认字会写字高亮 · 读完做回想测试
-        </p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-extrabold text-slate-900">📖 课文阅读</h1>
+            <p className="mt-0.5 text-sm text-amber-900/50">
+              读课文 · 会认字会写字高亮 · 读完做回想测试
+            </p>
+          </div>
+          <Link
+            href={chineseRoute(bookSlug, 'recordings')}
+            className="shrink-0 rounded-full bg-amber-50 px-3 py-1.5 text-[12px] font-bold text-amber-800 no-underline ring-1 ring-amber-200 transition hover:bg-amber-100"
+          >
+            我的朗读
+          </Link>
+        </div>
       </header>
 
       {cards.length === 0 ? (

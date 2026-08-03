@@ -35,6 +35,7 @@ import PinyinWriteRunner from './PinyinWriteRunner'
 import QuizBlankSentence from './QuizBlankSentence'
 import PoemRecite from '../poems/PoemRecite'
 import LessonPassageReader from '../reading/LessonPassageReader'
+import PassageRecorder from '../reading/PassageRecorder'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'
 
 const PHASE_LABEL: Record<PracticePhase, string> = {
@@ -961,14 +962,21 @@ export default function ChineseCharsPracticeSession() {
               write={currentReadingMeta.group?.write ?? []}
               recallPhrases={currentReadingMeta.lessonRow?.recallPhrases ?? []}
               footer={
-                <div className="mt-6 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={onFinishedRead}
-                    className="cn-start-btn rounded-xl border-0 px-6 py-2.5 text-sm font-bold text-white"
-                  >
-                    {currentReading.blankItems.length > 0 ? '读完了，开始回想' : '读完了'}
-                  </button>
+                <div className="mt-6 flex flex-col gap-4">
+                  <PassageRecorder
+                    bookSlug={bookSlug}
+                    lessonKey={currentReading.lessonKey}
+                    lessonTitle={currentReading.lessonTitle}
+                  />
+                  <div className="flex justify-center">
+                    <button
+                      type="button"
+                      onClick={onFinishedRead}
+                      className="cn-start-btn rounded-xl border-0 px-6 py-2.5 text-sm font-bold text-white"
+                    >
+                      {currentReading.blankItems.length > 0 ? '读完了，开始回想' : '读完了'}
+                    </button>
+                  </div>
                 </div>
               }
             />

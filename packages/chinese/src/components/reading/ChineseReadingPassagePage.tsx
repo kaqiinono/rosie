@@ -10,6 +10,7 @@ import { getLessonDisplayInfo } from '../../utils/chinese-lesson-display'
 import CharRecognizeRecall, { type RecognizeRecallChar } from './CharRecognizeRecall'
 import CharWriteRecall, { type WriteRecallChar } from './CharWriteRecall'
 import LessonPassageReader from './LessonPassageReader'
+import PassageRecorder from './PassageRecorder'
 
 interface Props {
   lessonKey: string
@@ -134,9 +135,14 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
           </Link>
         }
         footer={
-          recallCount > 0 ? (
-            <div className="mt-6">
-              {!recallOpen ? (
+          <div className="mt-6 flex flex-col gap-4">
+            <PassageRecorder
+              bookSlug={bookSlug}
+              lessonKey={lessonKey}
+              lessonTitle={lessonRow?.lessonTitle ?? lessonKey}
+            />
+            {recallCount > 0 ? (
+              !recallOpen ? (
                 <button
                   type="button"
                   onClick={() => setRecallOpen(true)}
@@ -177,9 +183,9 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
                     onAnswer={handleWriteAnswer}
                   />
                 </div>
-              )}
-            </div>
-          ) : null
+              )
+            ) : null}
+          </div>
         }
       />
     </main>
