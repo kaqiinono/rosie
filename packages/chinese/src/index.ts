@@ -106,8 +106,6 @@ export { default as LessonPassageView } from './components/units/LessonPassageVi
 export { default as ChineseReadingIndexPage } from './components/reading/ChineseReadingIndexPage'
 export { default as ChineseReadingPassagePage } from './components/reading/ChineseReadingPassagePage'
 export { default as LessonPassageReader } from './components/reading/LessonPassageReader'
-export { default as PassageRecorder } from './components/reading/PassageRecorder'
-export type { PassageRecorderProps } from './components/reading/PassageRecorder'
 export { default as ChineseWrongPage } from './components/ChineseWrongPage'
 export { default as ChineseHomePage } from './components/ChineseHomePage'
 export { default as ChineseDailyCard } from './components/ChineseDailyCard'
