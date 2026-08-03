@@ -56,6 +56,9 @@ tsconfig aliases are honored at build time.
 - Routes stay in `apps/web/src/app/calc/` as thin shells:
   `export { default } from '@rosie/calc/pages/<name>'`. `layout.tsx` (pure dark chrome) and
   `vouchers/page.tsx` (redirect to `/vouchers`) remain in the app — they hold no calc logic.
+- Calc settings UI is parent/admin-hosted at `/admin/calc`; the child route `/calc/settings`
+  has been removed. Child pages read `settings.soundEnabled` for SFX but do not expose a sound
+  toggle.
 - External consumers of the public API: `today` dashboard (`useCalcDaily`) and the `/vouchers`
   page (`VoucherCard`, `playSfx`).
 
@@ -73,8 +76,12 @@ weakness weight. Per-signature state in `calc_problem_state`:
 | **Sync** | `applyMasterySideEffects`: dual `patchSessionData` same stack, then remote upsert |
 | **Grandfather** | On-load memory: old `prof≥4 && attempt≥3` → mastered; upsert on next settle |
 
+**Home:** `/calc` is practice-only for children. The recent sessions list lazy-loads wallet
+sessions only after the accordion is opened, then reuses the session cache while mounted.
+
 **Session prep (`mode=daily`):** `/calc/session` shows `SessionPrepScreen` before `buildSession`.
-Settings defaults (`timingMode`, `bonusSec`) preload; user can override per session or「设为默认」.
+Settings defaults (`timingMode`, `bonusSec`) preload from `/admin/calc`; user can override them
+for the current session only.
 Three modes in `calc-session-policy.ts`:
 
 | Mode | Clock (`T_clock`) | At 0 | Star multiplier |

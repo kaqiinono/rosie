@@ -75,11 +75,7 @@ export default function CalcHomePage() {
   if (settingsLoading || practiceStatsLoading) {
     return (
       <>
-        <CalcAppHeader
-          balance={wallet.balance}
-          soundEnabled={settings.soundEnabled}
-          onToggleSound={() => {}}
-        />
+        <CalcAppHeader />
         <div className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]" style={{ color: 'rgba(196,181,253,0.5)' }}>
           加载中…
         </div>
@@ -93,11 +89,7 @@ export default function CalcHomePage() {
 
   return (
     <>
-      <CalcAppHeader
-        balance={wallet.balance}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => {}}
-      />
+      <CalcAppHeader />
 
       <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
 

@@ -3,9 +3,6 @@
 import Link from 'next/link'
 
 interface Props {
-  balance: number
-  soundEnabled: boolean
-  onToggleSound: () => void
   title?: string
   backHref?: string
   backLabel?: string
@@ -15,9 +12,6 @@ interface Props {
 }
 
 export default function CalcAppHeader({
-  // balance,
-  // soundEnabled,
-  // onToggleSound,
   title = '口算天地',
   backHref = '/',
   backLabel = '首页',
@@ -77,20 +71,6 @@ export default function CalcAppHeader({
           </div>
         </div>
         {rightExtra}
-
-        {/*<button*/}
-        {/*  type="button"*/}
-        {/*  onClick={onToggleSound}*/}
-        {/*  className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] text-violet-300 transition-all hover:text-white"*/}
-        {/*  style={{*/}
-        {/*    background: 'rgba(139,92,246,0.15)',*/}
-        {/*    border: '1px solid rgba(139,92,246,0.2)',*/}
-        {/*  }}*/}
-        {/*  aria-label={soundEnabled ? '关闭音效' : '开启音效'}*/}
-        {/*  title={soundEnabled ? '关闭音效' : '开启音效'}*/}
-        {/*>*/}
-        {/*  {soundEnabled ? '🔊' : '🔇'}*/}
-        {/*</button>*/}
       </div>
     </header>
   )

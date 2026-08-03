@@ -1,9 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@rosie/core'
-import { useCalcSettings } from '../hooks/useCalcSettings'
-import { useCalcWallet } from '@rosie/rewards'
 import CalcAppHeader from '../components/CalcAppHeader'
 
 type FaqBlock = {
@@ -30,7 +27,7 @@ const SECTIONS: { heading: string; blocks: FaqBlock[] }[] = [
       {
         title: '先选练什么',
         body: [
-          '打开「设置」：勾选题型（如 20 以内进位、×6×7、100 以内凑整、三位数×一位数进位）。',
+          '打开「管理后台 → 口算设置」：勾选题型（如 20 以内进位、×6×7、100 以内凑整、三位数×一位数进位）。孩子口算首页不再放设置入口。',
           '题量可选「自动分配」（往弱的题型多给几道）或「精准设置」（每种题型自己填题数）。',
           '「限时答题」控制是否编辑各题型目标时间；关掉后每场开始前仍可选计时模式，宽松模式下按需显示倒计时。',
           '「数字键盘答对即过」（默认开）：整数/小数输满正确答案自动提交，答错仍须确认。',
@@ -190,16 +187,9 @@ const SECTIONS: { heading: string; blocks: FaqBlock[] }[] = [
 ]
 
 export default function CalcFaqPage() {
-  const { user } = useAuth()
-  const { settings, update } = useCalcSettings(user)
-  const wallet = useCalcWallet(user)
-
   return (
     <>
       <CalcAppHeader
-        balance={wallet.balance}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
         title="口算说明"
         backHref="/calc"
         backLabel="口算"
@@ -252,7 +242,7 @@ export default function CalcFaqPage() {
 
         <div className="flex flex-wrap gap-2 pt-2">
           <Link
-            href="/calc/settings"
+            href="/admin/calc"
             className="rounded-full px-4 py-2 text-[12px] font-extrabold no-underline"
             style={{
               background: 'rgba(139,92,246,0.2)',
@@ -260,7 +250,7 @@ export default function CalcFaqPage() {
               color: '#c4b5fd',
             }}
           >
-            去设置
+            家长设置
           </Link>
           <Link
             href="/calc"

@@ -748,9 +748,6 @@ export default function CalcReportPage() {
     <>
       <style>{ANIMATIONS}</style>
       <CalcAppHeader
-        balance={wallet.balance}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => {}}
         title="成长报告"
         backHref="/calc"
         backLabel="口算"

@@ -351,9 +351,6 @@ export default function CalcSettingsPage() {
     return (
       <>
         <CalcAppHeader
-          balance={0}
-          soundEnabled={settings.soundEnabled}
-          onToggleSound={() => {}}
           title="设置"
           backHref="/admin"
           backLabel="管理"
@@ -379,9 +376,6 @@ export default function CalcSettingsPage() {
   return (
     <>
       <CalcAppHeader
-        balance={0}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => {}}
         title="口算设置"
         backHref="/admin"
         backLabel="管理"

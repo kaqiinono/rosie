@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useCalcSettings } from '../hooks/useCalcSettings'
-import { useCalcWallet } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import CalcAppHeader from '../components/CalcAppHeader'
 import MistakeRow from '../components/MistakeRow'
@@ -14,8 +13,7 @@ import type { CalcCategory, CalcMistake } from '@rosie/core'
 export default function CalcMistakesPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const { settings, update } = useCalcSettings(user)
-  const wallet = useCalcWallet(user)
+  const { settings } = useCalcSettings(user)
   const { mistakes, unresolved, isLoading } = useCalcMistakes(user)
   const [showResolved, setShowResolved] = useState(false)
 
@@ -42,9 +40,6 @@ export default function CalcMistakesPage() {
   return (
     <>
       <CalcAppHeader
-        balance={wallet.balance}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
         title="错题本"
         backHref="/calc"
         backLabel="口算"

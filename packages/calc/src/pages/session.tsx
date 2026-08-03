@@ -1088,9 +1088,6 @@ export default function CalcSessionPage() {
     return (
       <>
         <CalcAppHeader
-          balance={wallet.balance}
-          soundEnabled={settings.soundEnabled}
-          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
           title="练习中"
           backHref="/calc"
           backLabel="返回"
@@ -1109,9 +1106,6 @@ export default function CalcSessionPage() {
     return (
       <>
         <CalcAppHeader
-          balance={wallet.balance}
-          soundEnabled={settings.soundEnabled}
-          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
           title="准备练习"
           backHref="/calc"
           backLabel="返回"
@@ -1134,9 +1128,6 @@ export default function CalcSessionPage() {
     return (
       <>
         <CalcAppHeader
-          balance={wallet.balance}
-          soundEnabled={settings.soundEnabled}
-          onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
           title="练习中"
           backHref="/calc"
           backLabel="返回"
@@ -1161,9 +1152,6 @@ export default function CalcSessionPage() {
   return (
     <>
       <CalcAppHeader
-        balance={wallet.balance + coinsTotal}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => update({ soundEnabled: !settings.soundEnabled })}
         title="练习中"
         backLabel="退出"
         onBack={handleSessionExit}
