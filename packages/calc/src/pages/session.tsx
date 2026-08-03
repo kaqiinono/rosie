@@ -523,7 +523,12 @@ export default function CalcSessionPage() {
       loadedStatesRef.current = loadedStates
 
       if (drillParams) {
-        const session = buildDrillSession(drillParams, loadedStates)
+        const session = buildDrillSession(
+          drillParams,
+          loadedStates,
+          20,
+          settings.verticalForBigNumbers,
+        )
         if (session.length === 0) {
           router.replace('/calc/report')
           return

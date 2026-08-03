@@ -1,5 +1,5 @@
 import { BLOCKS, blockById, VERTICAL_BLOCK_IDS, type CalcBlock } from './calc-blocks'
-import { addHasCarry, subHasBorrow } from './calc-block-gens'
+import { addHasCarry, hasAnyCarry, subHasBorrow } from './calc-block-gens'
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
 import { toInverseQuestion } from './calc-inverse'
@@ -212,8 +212,8 @@ function inferVerticalBlockId(signature: string): string | undefined {
     const a = ast.left
     const b = ast.right
     if (ast.op === 'mul') {
-      if (a >= 100 && a <= 999 && b >= 2 && b <= 9) return 'mul:3d1d-c'
-      if (a >= 10 && a <= 99 && b >= 2 && b <= 9) return 'mul:2d1d-c'
+      // Only carry 3d×1d → vertical; 2d×1d (any) stays on the pad.
+      if (a >= 100 && a <= 999 && b >= 2 && b <= 9 && hasAnyCarry(a, b)) return 'mul:3d1d-c'
       // Exclude trailing-zero facts (mul:zeros) from the 2d×2d 竖式 path.
       if (a >= 10 && a <= 99 && b >= 10 && b <= 99 && a % 10 !== 0 && b % 10 !== 0) {
         return 'mul:2d'
@@ -471,7 +471,12 @@ export function buildDrillSession(
   params: DrillParams,
   problemStates: Map<string, CalcProblemState>,
   count = 20,
+  /** Honor the same 竖式 switch as daily sessions (default on). */
+  verticalForBigNumbers = true,
 ): CalcQuestion[] {
+  const tagVertical = (q: CalcQuestion): CalcQuestion =>
+    verticalForBigNumbers ? applyVerticalAnswerMode(q) : q
+
   if (params.type === 'weak-formulas') {
     const weak = [...problemStates.values()].filter(
       (s) =>
@@ -487,7 +492,7 @@ export function buildDrillSession(
       const ast = parseSignature(state.signature)
       const category: CalcCategory = (block.group === 'add' || block.group === 'sub') ? 'addsub' : 'muldiv'
       const q = makeQuestion(ast, state.level as CalcLevel, category, 1, false)
-      out.push({ ...q, sourceBlockId: block.id })
+      out.push(tagVertical({ ...q, sourceBlockId: block.id }))
     }
 
     // Fisher-Yates shuffle
@@ -504,7 +509,7 @@ export function buildDrillSession(
     const out: CalcQuestion[] = []
     for (let i = 0; i < count; i++) {
       const q = block.generateSingle()
-      out.push({ ...q, sourceBlockId: block.id })
+      out.push(tagVertical({ ...q, sourceBlockId: block.id }))
     }
     return out
   }

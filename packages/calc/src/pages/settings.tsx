@@ -422,7 +422,7 @@ export default function CalcSettingsPage() {
             />
             <ToggleRow
               label="多位数题用竖式作答"
-              description="竖式：千以内进位/退位加减、万以内加减、两·三位数×一位数、两位数×两位数、多位数÷一位数。100以内加减、千以内不进位/不退位、凑整等仍用数字键盘"
+              description="竖式：千以内进位/退位加减、万以内加减、三位数×一位数（进位）、两位数×两位数、多位数÷一位数。100以内加减、千以内不进位/不退位、两位数×一位数、三位数×一位数不进位、凑整等仍用数字键盘"
               value={settings.verticalForBigNumbers}
               onChange={(v) => update({ verticalForBigNumbers: v })}
             />

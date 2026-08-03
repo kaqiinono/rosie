@@ -62,13 +62,25 @@ describe('buildSession carried 竖式 restore', () => {
     expect(q!.answerMode).toBe('vertical')
   })
 
-  it('infers vertical for 3d×1d when blockId is missing', () => {
-    const sig = 'mul(512,6)'
+  it('infers vertical for carry 3d×1d when blockId is missing; skips no-carry', () => {
+    const carrySig = 'mul(144,3)' // consecutive carry → vertical
+    const noCarrySig = 'mul(234,2)' // no carry → pad
     const carried: CalcMistake[] = [
       {
-        signature: sig,
-        display: '512 × 6',
-        answer: { kind: 'int', value: 3072 },
+        signature: carrySig,
+        display: '144 × 3',
+        answer: { kind: 'int', value: 432 },
+        level: 1,
+        category: 'muldiv',
+        lastWrongAt: new Date().toISOString(),
+        consecutiveCorrect: 0,
+        resolved: false,
+        sessionNo: 1,
+      },
+      {
+        signature: noCarrySig,
+        display: '234 × 2',
+        answer: { kind: 'int', value: 468 },
         level: 1,
         category: 'muldiv',
         lastWrongAt: new Date().toISOString(),
@@ -78,13 +90,15 @@ describe('buildSession carried 竖式 restore', () => {
       },
     ]
     const session = buildSession(
-      baseSettings(),
+      baseSettings({ lastCount: 2, selectedBlocks: [{ id: 'add:10', count: 2, seconds: 0 }] }),
       { problemStates: new Map() },
       carried,
     )
-    const q = session.find((x) => x.signature === sig)
-    expect(q!.sourceBlockId).toBe('mul:3d1d-c')
-    expect(q!.answerMode).toBe('vertical')
+    const carryQ = session.find((x) => x.signature === carrySig)
+    const noCarryQ = session.find((x) => x.signature === noCarrySig)
+    expect(carryQ!.sourceBlockId).toBe('mul:3d1d-c')
+    expect(carryQ!.answerMode).toBe('vertical')
+    expect(noCarryQ!.answerMode).not.toBe('vertical')
   })
 
   it('1000-within add/sub: vertical only when carry/borrow', () => {

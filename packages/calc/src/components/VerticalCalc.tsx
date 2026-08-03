@@ -162,8 +162,8 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedb
   }))
   const [graded, setGraded] = useState(false)
   const [locked, setLocked] = useState(false)
-  // 进位/退位 row is optional scaffolding (never graded); hidden by default.
-  const [showCarry, setShowCarry] = useState(false)
+  // 进位/退位 row is optional scaffolding (never graded); shown by default.
+  const [showCarry, setShowCarry] = useState(true)
 
   // Plain handlers — React Compiler memoizes these; hand-tuned useCallback deps
   // here disagreed with its inference and forced it to skip the whole component.
@@ -287,7 +287,7 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedb
         }
         style={fill ? { containerType: 'size' } : undefined}
       >
-        {/* 进位格 toggle — auxiliary scaffolding, off by default, never graded */}
+        {/* 进位格 toggle — auxiliary scaffolding, on by default, never graded */}
         <button
           type="button"
           onClick={() => setShowCarry((v) => !v)}
@@ -310,51 +310,6 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedb
             border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          {/* 进位/退位 row — optional scaffolding; every column, never graded/colored */}
-          {showCarry && (
-            <div className="mb-0.5 flex justify-end gap-1">
-              <div style={{ width: geo.lead }} />
-              {userCarries.map((val, i) => {
-                const isActive = activeCell.type === 'carry' && activeCell.idx === i
-                return (
-                  <button
-                    key={`c${i}`}
-                    type="button"
-                    onClick={() =>
-                      !disabled && !locked && setActiveCell({ type: 'carry', idx: i })
-                    }
-                    className="flex items-center justify-center rounded leading-none font-black transition-all select-none active:scale-[0.93]"
-                    style={{
-                      width: geo.cell.width,
-                      height: geo.carryH,
-                      fontSize: geo.carryFont,
-                      border: isActive
-                        ? '1px solid rgba(139,92,246,0.6)'
-                        : '1px dashed rgba(196,181,253,0.4)',
-                      background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
-                      color: isActive
-                        ? '#c4b5fd'
-                        : val !== null
-                          ? '#c4b5fd'
-                          : 'rgba(196,181,253,0.4)',
-                    }}
-                  >
-                    {val !== null ? (
-                      <>
-                        <span style={{ opacity: 0.5, marginRight: '2px', marginBottom: '2px' }}>
-                          {carrySign}
-                        </span>
-                        {val}
-                      </>
-                    ) : (
-                      '·'
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
           {/* First operand row */}
           <div className="flex justify-end gap-1">
             <div style={{ width: geo.lead }} />
@@ -393,8 +348,64 @@ function VerticalCalc({ a, b, op, onSubmit, disabled = false, attempt = 0, feedb
             ))}
           </div>
 
-          {/* Divider */}
-          <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
+          {/* 进位/退位 — sit flush on the divider (paper habit: above the line, not in it) */}
+          {showCarry && (
+            <div className="mt-0.5 mb-0 flex justify-end gap-1">
+              <div style={{ width: geo.lead }} />
+              {userCarries.map((val, i) => {
+                const isActive = activeCell.type === 'carry' && activeCell.idx === i
+                return (
+                  <button
+                    key={`c${i}`}
+                    type="button"
+                    onClick={() =>
+                      !disabled && !locked && setActiveCell({ type: 'carry', idx: i })
+                    }
+                    className="flex items-center justify-center rounded-t leading-none font-black transition-all select-none active:scale-[0.93]"
+                    style={{
+                      width: geo.cell.width,
+                      height: geo.carryH,
+                      fontSize: geo.carryFont,
+                      borderTop: isActive
+                        ? '1px solid rgba(139,92,246,0.6)'
+                        : '1px dashed rgba(196,181,253,0.4)',
+                      borderLeft: isActive
+                        ? '1px solid rgba(139,92,246,0.6)'
+                        : '1px dashed rgba(196,181,253,0.4)',
+                      borderRight: isActive
+                        ? '1px solid rgba(139,92,246,0.6)'
+                        : '1px dashed rgba(196,181,253,0.4)',
+                      borderBottom: 'none',
+                      borderRadius: '6px 6px 0 0',
+                      background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
+                      color: isActive
+                        ? '#c4b5fd'
+                        : val !== null
+                          ? '#c4b5fd'
+                          : 'rgba(196,181,253,0.4)',
+                    }}
+                  >
+                    {val !== null ? (
+                      <>
+                        <span style={{ opacity: 0.5, marginRight: '2px', marginBottom: '2px' }}>
+                          {carrySign}
+                        </span>
+                        {val}
+                      </>
+                    ) : (
+                      '·'
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Divider — flush under carry cells when shown */}
+          <div
+            className={showCarry ? 'mb-1 border-t-2' : 'my-1 border-t-2'}
+            style={{ borderColor: 'rgba(196,181,253,0.25)' }}
+          />
 
           {/* Result row */}
           <div className="flex justify-end gap-1">
