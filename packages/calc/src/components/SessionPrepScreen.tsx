@@ -11,7 +11,6 @@ type Props = {
   bonusSec: number
   onChangeMode: (m: CalcTimingMode) => void
   onChangeBonus: (n: number) => void
-  onSaveDefault: () => void
   onStart: () => void
   onBack: () => void
 }
@@ -45,18 +44,10 @@ export default function SessionPrepScreen({
   bonusSec,
   onChangeMode,
   onChangeBonus,
-  onSaveDefault,
   onStart,
   onBack,
 }: Props) {
-  const [saved, setSaved] = useState(false)
   const [customOpen, setCustomOpen] = useState(!BONUS_PRESETS.includes(bonusSec))
-
-  const handleSaveDefault = () => {
-    onSaveDefault()
-    setSaved(true)
-    window.setTimeout(() => setSaved(false), 1800)
-  }
 
   return (
     <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
@@ -214,18 +205,6 @@ export default function SessionPrepScreen({
           }}
         >
           ← 返回
-        </button>
-        <button
-          type="button"
-          onClick={handleSaveDefault}
-          className="min-w-0 flex-1 rounded-2xl px-3 py-3.5 text-[13px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
-          style={{
-            background: saved ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
-            color: saved ? '#4ade80' : 'rgba(245,243,255,0.7)',
-          }}
-        >
-          {saved ? '已设为默认 ✓' : '设为默认'}
         </button>
         <button
           type="button"

@@ -147,7 +147,7 @@ export default function CalcSessionPage() {
   const needsPrep = mode === 'daily' && !drillParams && !autoStart && !resumeFromSnap
   const [prepConfirmed, setPrepConfirmed] = useState(autoStart)
   // Editable prep selections default to the persisted settings until the user
-  // overrides them for this run only; "设为默认" writes the override back to settings.
+  // overrides them for this run only (admin settings page owns persisted defaults).
   const [prepModeOverride, setPrepModeOverride] = useState<CalcTimingMode | null>(null)
   const [prepBonusOverride, setPrepBonusOverride] = useState<number | null>(null)
   const prepTimingMode = prepModeOverride ?? settings.timingMode
@@ -1123,7 +1123,6 @@ export default function CalcSessionPage() {
           bonusSec={prepBonusSec}
           onChangeMode={setPrepModeOverride}
           onChangeBonus={setPrepBonusOverride}
-          onSaveDefault={() => update({ timingMode: prepTimingMode, bonusSec: clampBonusSec(prepBonusSec) })}
           onStart={handlePrepStart}
           onBack={() => router.push('/calc')}
         />
