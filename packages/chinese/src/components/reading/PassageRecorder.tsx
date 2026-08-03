@@ -190,6 +190,10 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      if (!mountedRef.current) {
+        stream.getTracks().forEach((t) => t.stop())
+        return
+      }
       streamRef.current = stream
       chunksRef.current = []
 
@@ -264,15 +268,18 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       durationMs: elapsedMs > 0 ? elapsedMs : null,
     })
     if (uploadErr) {
-      setError(uploadErr)
-      setPhase('preview')
+      if (mountedRef.current) {
+        setError(uploadErr)
+        setPhase('preview')
+      }
       return
     }
+    if (!mountedRef.current) return
     setPhase('saved')
     if (savedTimeoutRef.current != null) clearTimeout(savedTimeoutRef.current)
     savedTimeoutRef.current = window.setTimeout(() => {
       savedTimeoutRef.current = null
-      resetToIdle()
+      if (mountedRef.current) resetToIdle()
     }, 1200)
   }, [
     blob,
