@@ -7,6 +7,7 @@ import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
 import { fetchPracticeAttemptsForProblems } from '@rosie/math/utils/math-scratch-db'
+import { attemptRowHasViewableCanvas } from '@rosie/math/utils/math-practice-attempt'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
 import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
 import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
@@ -189,7 +190,7 @@ export default function ProblemMasteryPanel({
     [pageRows],
   )
 
-  // Resolve attempts for the visible page (row → attempt.draft_id for the button).
+  // Resolve attempts for the visible page (row → attempt id for the draft button).
   const userId = user?.id
   useEffect(() => {
     if (!open || !userId || !pageProblemIdsKey) {
@@ -314,12 +315,12 @@ export default function ProblemMasteryPanel({
                         >
                           <div className="flex min-w-0 items-center gap-2">
                             <span className="truncate">{p.title}</span>
-                            {problemSets && attempt?.draftId && (
+                            {problemSets && attempt && attemptRowHasViewableCanvas(attempt) && (
                               <PracticeViewDraftButton
                                 problem={draftProblem ?? undefined}
                                 problemId={p.problemId}
                                 section={p.section}
-                                draftId={attempt.draftId}
+                                attemptId={attempt.id}
                                 className="shrink-0"
                               />
                             )}

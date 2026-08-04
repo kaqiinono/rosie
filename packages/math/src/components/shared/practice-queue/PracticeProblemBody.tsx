@@ -13,7 +13,7 @@ import { getProblemAnswerMode } from '@rosie/math/utils/problem-answer-mode'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
-import { fetchScratchWorking } from '@rosie/math/utils/math-scratch-db'
+import { findInProgressAttempt } from '@rosie/math/utils/math-scratch-db'
 import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
 import ProblemAnswerSection from '@rosie/math/components/shared/ProblemAnswerSection'
 
@@ -55,16 +55,16 @@ export default function PracticeProblemBody({
     async (correct: boolean, snapshot: unknown) => {
       if (!user) return
       try {
-        // Attach working scratch so plan/detail practice archives the same canvas as 详情页草稿纸
-        const working = await fetchScratchWorking(user.id, problem.id, null)
+        const inProgress = await findInProgressAttempt(user.id, problem.id, null)
         await submitPracticeAttempt({
           userId: user.id,
           problem,
           section,
           correct,
-          objects: working?.objects ?? [],
+          objects: inProgress?.objects ?? [],
           answerSnapshot: snapshot,
           paperId: null,
+          attemptId: inProgress?.id ?? null,
         })
       } catch {
         // Draft/attempt persistence must not block advancing the practice queue.

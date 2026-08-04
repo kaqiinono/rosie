@@ -53,6 +53,7 @@ export default function PaperDraftUploadButton({
         file,
         correct,
         paperId,
+        scratchCtx?.section ?? 'lesson',
       )
       if (error) lastError = error
       else ok++

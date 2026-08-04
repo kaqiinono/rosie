@@ -7,7 +7,8 @@ import type { Problem, ProblemSet } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
 import ScratchPadContentPreview from '@rosie/math/components/shared/ScratchPad/ScratchPadContentPreview'
-import { fetchLessonDraftAttempts, fetchScratchDraft } from '@rosie/math/utils/math-scratch-db'
+import { fetchLessonDraftAttempts, fetchAttemptCanvas } from '@rosie/math/utils/math-scratch-db'
+import { attemptRowHasViewableCanvas } from '@rosie/math/utils/math-practice-attempt'
 import {
   findProblemInSet,
   problemDetailHref,
@@ -62,13 +63,24 @@ function buildDraftEntries(
   })
 }
 
-function DraftPreview({ draftId }: { draftId: string }) {
-  const [objects, setObjects] = useState<import('@rosie/math/components/shared/ScratchPad/scratch-pad-types').ScratchObject[] | null>(null)
+function DraftPreview({ attempt }: { attempt: MathPracticeAttemptRow }) {
+  const hasEmbedded = attempt.objects.length > 0
+  const [fetched, setFetched] = useState<
+    import('@rosie/math/components/shared/ScratchPad/scratch-pad-types').ScratchObject[] | null
+  >(null)
 
   useEffect(() => {
-    void fetchScratchDraft(draftId).then((d) => setObjects(d?.objects ?? []))
-  }, [draftId])
+    if (hasEmbedded) return
+    let cancelled = false
+    void fetchAttemptCanvas(attempt.id).then((loaded) => {
+      if (!cancelled) setFetched(loaded)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [attempt.id, hasEmbedded])
 
+  const objects = hasEmbedded ? attempt.objects : fetched
   if (!objects) return <p className="p-2 text-[11px] text-slate-400">加载中…</p>
   if (objects.length === 0) return <p className="p-2 text-[11px] text-slate-400">无画布内容</p>
   return <ScratchPadContentPreview objects={objects} />
@@ -161,7 +173,7 @@ export default function LessonDraftsPage({ basePath, lessonId, problems }: Props
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
-                    {attempt.draftId && (
+                    {attemptRowHasViewableCanvas(attempt) && (
                       <button
                         type="button"
                         onClick={() => setPreviewId(expanded ? null : attempt.id)}
@@ -192,7 +204,7 @@ export default function LessonDraftsPage({ basePath, lessonId, problems }: Props
                   </p>
                 )}
 
-                {expanded && attempt.draftId && (
+                {expanded && attemptRowHasViewableCanvas(attempt) && (
                   <div className="mt-2 overflow-hidden rounded-lg border border-slate-100 bg-slate-50/50">
                     {problem?.text && (
                       <div
@@ -201,7 +213,7 @@ export default function LessonDraftsPage({ basePath, lessonId, problems }: Props
                       />
                     )}
                     <div className="p-1">
-                      <DraftPreview draftId={attempt.draftId} />
+                      <DraftPreview attempt={attempt} />
                     </div>
                   </div>
                 )}

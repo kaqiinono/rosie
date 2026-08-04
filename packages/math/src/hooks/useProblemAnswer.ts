@@ -9,7 +9,7 @@ import {
   type CheckProblemAnswerOptions,
 } from '@rosie/math/utils/check-problem-answer'
 import { useProblemScratchContext } from '@rosie/math/components/shared/ScratchPad/ProblemScratchContext'
-import { fetchScratchWorking } from '@rosie/math/utils/math-scratch-db'
+import { findInProgressAttempt } from '@rosie/math/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
 
 export interface ProblemAnswerContext {
@@ -41,16 +41,17 @@ export function useProblemAnswer(
   const archiveWorkingScratch = useCallback(
     async (correct: boolean, answerSnapshot: unknown) => {
       if (!user || !scratchCtx?.section) return
-      const row = await fetchScratchWorking(user.id, problem.id, null)
-      if (!row?.objects?.length) return
+      const inProgress = await findInProgressAttempt(user.id, problem.id, null)
+      if (!inProgress?.objects?.length) return
       await submitPracticeAttempt({
         userId: user.id,
         problem,
         section: scratchCtx.section,
         correct,
-        objects: row.objects,
+        objects: inProgress.objects,
         answerSnapshot,
         paperId: null,
+        attemptId: inProgress.id,
       })
     },
     [user, scratchCtx, problem],

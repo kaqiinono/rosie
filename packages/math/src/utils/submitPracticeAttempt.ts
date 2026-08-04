@@ -3,10 +3,9 @@
 import type { Problem } from '@rosie/core'
 import type { ScratchObject } from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
 import {
-  clearScratchWorking,
-  insertPracticeAttempt,
-  insertScratchDraft,
-  upsertQuizScratchLink,
+  completePracticeAttempt,
+  findInProgressAttempt,
+  insertCompletedAttempt,
   upsertWrongWithAttempt,
 } from '@rosie/math/utils/math-scratch-db'
 import { mathWrongStore } from '@rosie/math/hooks/useMathWrong'
@@ -20,6 +19,8 @@ export type SubmitPracticeAttemptInput = {
   objects: ScratchObject[]
   answerSnapshot: unknown | null
   paperId?: string | null
+  /** When caller already has the in-progress id */
+  attemptId?: string | null
 }
 
 export type SubmitPracticeAttemptResult = {
@@ -31,18 +32,42 @@ export async function submitPracticeAttempt(
   input: SubmitPracticeAttemptInput,
 ): Promise<SubmitPracticeAttemptResult> {
   const { userId, problem, section, correct, objects, answerSnapshot, paperId = null } = input
+  let attemptId = input.attemptId ?? null
 
-  const draftId = await insertScratchDraft(userId, problem.id, section, objects)
+  if (!attemptId) {
+    const existing = await findInProgressAttempt(userId, problem.id, paperId)
+    attemptId = existing?.id ?? null
+  }
 
-  const attemptId = await insertPracticeAttempt(
-    userId,
-    problem.id,
-    section,
-    correct,
-    draftId,
-    answerSnapshot,
-    paperId,
-  )
+  if (attemptId) {
+    const completed = await completePracticeAttempt({
+      attemptId,
+      correct,
+      objects,
+      answerSnapshot,
+    })
+    if (!completed) {
+      attemptId = await insertCompletedAttempt(
+        userId,
+        problem.id,
+        section,
+        correct,
+        objects,
+        answerSnapshot,
+        paperId,
+      )
+    }
+  } else {
+    attemptId = await insertCompletedAttempt(
+      userId,
+      problem.id,
+      section,
+      correct,
+      objects,
+      answerSnapshot,
+      paperId,
+    )
+  }
 
   if (!correct) {
     await upsertWrongWithAttempt(userId, problem.id, attemptId)
@@ -71,13 +96,5 @@ export async function submitPracticeAttempt(
       .eq('problem_id', problem.id)
   }
 
-  if (paperId && draftId) {
-    await upsertQuizScratchLink(userId, paperId, problem.id, draftId)
-  }
-
-  if (correct) {
-    await clearScratchWorking(userId, problem.id, paperId)
-  }
-
-  return { attemptId, draftId }
+  return { attemptId, draftId: null }
 }

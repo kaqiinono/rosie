@@ -5,7 +5,7 @@ import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
 import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
 import { SEA_POOL } from '@rosie/math/utils/sea-data'
-import { problemHasViewableDraft } from '@rosie/math/utils/math-scratch-db'
+import { problemHasViewableDraft, resolveViewableAttemptId } from '@rosie/math/utils/math-scratch-db'
 
 type Props = {
   /** Full problem (practice portal / plan card with resolved Problem). */
@@ -20,12 +20,9 @@ type Props = {
    * Pass a boolean always on plan pages — never leave undefined there.
    */
   hasDraft?: boolean
+  /** When set, skip presence check and open this attempt readonly. */
+  attemptId?: string | null
   section?: string
-  /**
-   * Archived draft id from `math_practice_attempts.draft_id`.
-   * When set, button visibility = this id is non-null; open uses it directly.
-   */
-  draftId?: string | null
 }
 
 function resolveProblem(problem: Problem | undefined, problemId: string | undefined): Problem | null {
@@ -44,8 +41,7 @@ function resolveSection(problemId: string | undefined, sectionProp?: string): st
  * Open the same readonly ScratchPad canvas as the lesson detail「查看草稿」.
  * Close is always local「完成」— never practice-queue exit / stash.
  *
- * Plan day cards: pass `hasDraft` from batched presence.
- * Mastery / attempt rows: pass `draftId` from the attempt record (`draft_id` column).
+ * On plan pages, pass `hasDraft` from a batched `useViewableDraftIds` load.
  */
 export default function PracticeViewDraftButton({
   problem: problemProp,
@@ -53,8 +49,8 @@ export default function PracticeViewDraftButton({
   className = '',
   refreshKey = 0,
   hasDraft: hasDraftProp,
+  attemptId: attemptIdProp = null,
   section: sectionProp,
-  draftId = null,
 }: Props) {
   const problemId = problemIdProp ?? problemProp?.id
   const problem = useMemo(
@@ -66,23 +62,20 @@ export default function PracticeViewDraftButton({
     [problemId, sectionProp],
   )
   const { user } = useAuth()
-  const fromAttempt = draftId !== null && draftId !== undefined
-  const batched = !fromAttempt && hasDraftProp !== undefined
+  const fromAttempt = Boolean(attemptIdProp)
+  const batched = hasDraftProp !== undefined
   const [hasDraftLocal, setHasDraftLocal] = useState(false)
-  const [checking, setChecking] = useState(!fromAttempt && !batched)
+  const [checking, setChecking] = useState(!batched && !fromAttempt)
   const [open, setOpen] = useState(false)
   const [soloRefresh, setSoloRefresh] = useState(0)
+  const [viewAttemptId, setViewAttemptId] = useState<string | null>(null)
 
-  const hasDraft = fromAttempt ? Boolean(draftId) : batched ? hasDraftProp : hasDraftLocal
+  const hasDraft = fromAttempt ? true : batched ? hasDraftProp : hasDraftLocal
 
   const userId = user?.id
 
   useEffect(() => {
-    if (fromAttempt) {
-      setChecking(false)
-      return
-    }
-    if (batched) {
+    if (batched || fromAttempt) {
       setChecking(false)
       return
     }
@@ -101,7 +94,7 @@ export default function PracticeViewDraftButton({
     return () => {
       cancelled = true
     }
-  }, [fromAttempt, batched, userId, problemId, refreshKey, soloRefresh])
+  }, [batched, fromAttempt, userId, problemId, refreshKey, soloRefresh])
 
   function handleClose() {
     setOpen(false)
@@ -109,38 +102,38 @@ export default function PracticeViewDraftButton({
   }
 
   function handleOpen() {
-    if (!user || !hasDraft) return
-    if (!problem) return
-    setOpen(true)
+    if (!user || !hasDraft || !problem || !userId || !problemId) return
+    if (fromAttempt && attemptIdProp) {
+      setViewAttemptId(attemptIdProp)
+      setOpen(true)
+      return
+    }
+    void resolveViewableAttemptId(userId, problemId).then((id) => {
+      if (!id) return
+      setViewAttemptId(id)
+      setOpen(true)
+    })
   }
 
-  // With an attempt draft id, show the button even before Problem resolves
-  // (open still needs a Problem for the pad chrome).
-  if (!user || !problemId || checking || !hasDraft) return null
-  if (!fromAttempt && !problem) return null
-  if (fromAttempt && !problem) {
-    // Still show the control; click no-ops until problem is available.
-  }
+  if (!user || !problemId || !problem || checking || !hasDraft) return null
 
   return (
     <>
       <button
         type="button"
         onClick={handleOpen}
-        disabled={!problem}
-        title={problem ? '查看本次练习草稿' : '题目数据加载中'}
-        className={`cursor-pointer rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-all hover:bg-indigo-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+        title="查看草稿"
+        className={`cursor-pointer rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-all hover:bg-indigo-100 active:scale-95 ${className}`}
       >
         📝 草稿
       </button>
-      {open && problem && (
+      {open && viewAttemptId && (
         <ScratchPadSession
           problems={[problem]}
           initialIndex={0}
           section={section}
           mode="readonly"
-          viewDraftId={draftId}
-          preferViewableDraft={!draftId}
+          viewAttemptId={viewAttemptId}
           showCanvas
           disableEdgeNav
           onClose={handleClose}

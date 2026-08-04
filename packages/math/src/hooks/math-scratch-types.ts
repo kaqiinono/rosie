@@ -21,6 +21,8 @@ export type MathScratchDraftRow = {
   submittedAt: string
 }
 
+export type PracticeAttemptStatus = 'in_progress' | 'completed'
+
 export type MathPracticeAttemptRow = {
   id: string
   userId: string
@@ -28,8 +30,11 @@ export type MathPracticeAttemptRow = {
   lessonId: string
   section: string
   paperId: string | null
-  correct: boolean
+  status: PracticeAttemptStatus
+  /** null while in_progress */
+  correct: boolean | null
   draftId: string | null
+  objects: ScratchObject[]
   answerSnapshot: unknown | null
   attemptedAt: string
 }

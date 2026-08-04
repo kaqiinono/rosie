@@ -5,7 +5,7 @@ import type { Problem } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useProblemScratchContext } from './ProblemScratchContext'
 import ScratchPadSession from './ScratchPadSession'
-import { fetchPracticeAttempt, fetchWrongAttemptId, resolveWrongAttemptId } from '@rosie/math/utils/math-scratch-db'
+import { resolveWrongAttemptId } from '@rosie/math/utils/math-scratch-db'
 import type { ScratchSessionMode } from '@rosie/math/hooks/math-scratch-types'
 
 type ScratchPadTriggerProps = {
@@ -18,7 +18,8 @@ type ScratchPadTriggerProps = {
   section?: string
   mode?: ScratchSessionMode
   paperId?: string | null
-  seedWrongAttemptId?: string | null
+  attemptId?: string | null
+  viewAttemptId?: string | null
   onSolve?: (problemId: string) => void | Promise<void>
   onWrong?: (problemId: string) => void
   onResolved?: (problemId: string) => void | Promise<void>
@@ -34,7 +35,8 @@ export default function ScratchPadTrigger({
   section: sectionProp,
   mode = 'practice',
   paperId = null,
-  seedWrongAttemptId = null,
+  attemptId = null,
+  viewAttemptId = null,
   onSolve,
   onWrong,
   onResolved,
@@ -80,7 +82,8 @@ export default function ScratchPadTrigger({
           section={section}
           mode={readOnly ? 'readonly' : mode}
           paperId={paperId}
-          seedWrongAttemptId={seedWrongAttemptId}
+          attemptId={attemptId}
+          viewAttemptId={readOnly ? viewAttemptId : null}
           onClose={() => setOpen(false)}
           onSolve={onSolve}
           onWrong={onWrong}
@@ -110,13 +113,13 @@ export function WrongDraftViewButton({
 }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
-  const [seedId, setSeedId] = useState<string | null>(null)
+  const [viewId, setViewId] = useState<string | null>(null)
 
   async function handleOpen() {
     if (!user) return
     const attemptId = await resolveWrongAttemptId(user.id, ...draftLookupIds)
     if (!attemptId) return
-    setSeedId(attemptId)
+    setViewId(attemptId)
     setOpen(true)
   }
 
@@ -132,14 +135,14 @@ export function WrongDraftViewButton({
       >
         📝
       </button>
-      {open && seedId && (
+      {open && viewId && (
         <ScratchPadSession
           problems={problems ?? [problem]}
           initialIndex={problemIndex}
           section="mistakes"
           mode="readonly"
           paperId={null}
-          seedWrongAttemptId={seedId}
+          viewAttemptId={viewId}
           showCanvas
           onClose={() => setOpen(false)}
         />
@@ -148,10 +151,9 @@ export function WrongDraftViewButton({
   )
 }
 
-/** Open mistake scratch pad — always available; seeds wrong-attempt draft when present. */
+/** Open mistake scratch pad for a fresh retry (no copy from wrong attempt). */
 export function MistakeDraftButton({
   problem,
-  draftLookupIds,
   problems,
   problemIndex,
   onSolve,
@@ -170,23 +172,7 @@ export function MistakeDraftButton({
 }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
-  const [seedId, setSeedId] = useState<string | null>(null)
-  const [showCanvas, setShowCanvas] = useState(true)
   const pendingResolvedRef = useRef<string[]>([])
-
-  async function handleOpen() {
-    if (!user) return
-    const attemptId = await resolveWrongAttemptId(user.id, ...draftLookupIds)
-    setSeedId(attemptId)
-    if (attemptId) {
-      const attempt = await fetchPracticeAttempt(attemptId)
-      setShowCanvas(Boolean(attempt?.draftId))
-    } else {
-      setShowCanvas(true)
-    }
-    pendingResolvedRef.current = []
-    setOpen(true)
-  }
 
   if (!user) return null
 
@@ -206,7 +192,7 @@ export function MistakeDraftButton({
     <>
       <button
         type="button"
-        onClick={() => void handleOpen()}
+        onClick={() => setOpen(true)}
         title="草稿纸"
         className={`flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-sm transition-all hover:bg-indigo-100 active:scale-95 sm:h-8 sm:w-8 ${className}`}
       >
@@ -219,8 +205,6 @@ export function MistakeDraftButton({
           section="mistakes"
           mode="practice"
           paperId={null}
-          seedWrongAttemptId={seedId}
-          showCanvas={showCanvas}
           disableEdgeNav
           onClose={handleClose}
           onSolve={onSolve}
@@ -232,9 +216,8 @@ export function MistakeDraftButton({
   )
 }
 
-/** Open scratch from mistake list — resolves wrong attempt draft id first. */
+/** Open scratch from mistake list for a fresh retry (no copy from wrong attempt). */
 export function MistakeScratchButton({
-  problem,
   problems,
   problemIndex,
   onSolve,
@@ -250,22 +233,6 @@ export function MistakeScratchButton({
 }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
-  const [seedId, setSeedId] = useState<string | null>(null)
-  const [hasDraft, setHasDraft] = useState(true)
-
-  async function handleOpen() {
-    if (!user) return
-    const attemptId = await fetchWrongAttemptId(user.id, problem.id)
-    setSeedId(attemptId)
-    if (attemptId) {
-      const { fetchPracticeAttempt } = await import('@rosie/math/utils/math-scratch-db')
-      const attempt = await fetchPracticeAttempt(attemptId)
-      setHasDraft(Boolean(attempt?.draftId))
-    } else {
-      setHasDraft(false)
-    }
-    setOpen(true)
-  }
 
   if (!user) return null
 
@@ -273,7 +240,7 @@ export function MistakeScratchButton({
     <>
       <button
         type="button"
-        onClick={() => void handleOpen()}
+        onClick={() => setOpen(true)}
         className="rounded-full bg-orange-500 px-3 py-1.5 text-[11px] font-semibold text-white no-underline"
       >
         继续练
@@ -285,8 +252,6 @@ export function MistakeScratchButton({
           section="mistakes"
           mode="practice"
           paperId={null}
-          seedWrongAttemptId={hasDraft ? seedId : null}
-          showCanvas={hasDraft}
           onClose={() => setOpen(false)}
           onSolve={onSolve}
           onWrong={onWrong}

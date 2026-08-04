@@ -12,10 +12,17 @@ type AttemptDbRow = {
   lesson_id: string
   section: string
   paper_id: string | null
-  correct: boolean
+  status?: string | null
+  correct: boolean | null
   draft_id: string | null
+  objects?: unknown
   answer_snapshot: unknown | null
   attempted_at: string
+}
+
+function parseObjects(raw: unknown): MathPracticeAttemptRow['objects'] {
+  if (!Array.isArray(raw)) return []
+  return raw as MathPracticeAttemptRow['objects']
 }
 
 function rowToAttempt(r: AttemptDbRow): MathPracticeAttemptRow {
@@ -26,8 +33,10 @@ function rowToAttempt(r: AttemptDbRow): MathPracticeAttemptRow {
     lessonId: r.lesson_id,
     section: r.section,
     paperId: r.paper_id,
+    status: r.status === 'in_progress' ? 'in_progress' : 'completed',
     correct: r.correct,
     draftId: r.draft_id,
+    objects: parseObjects(r.objects),
     answerSnapshot: r.answer_snapshot,
     attemptedAt: r.attempted_at,
   }
@@ -45,9 +54,10 @@ async function fetchMathTodayAttempts(userId: string): Promise<MathPracticeAttem
   const { data, error } = await supabase
     .from('math_practice_attempts')
     .select(
-      'id,user_id,problem_id,lesson_id,section,paper_id,correct,draft_id,answer_snapshot,attempted_at',
+      'id,user_id,problem_id,lesson_id,section,paper_id,status,correct,draft_id,objects,answer_snapshot,attempted_at',
     )
     .eq('user_id', userId)
+    .eq('status', 'completed')
     .gte('attempted_at', start)
     .lte('attempted_at', end)
     .order('attempted_at', { ascending: false })

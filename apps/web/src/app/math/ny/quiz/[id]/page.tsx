@@ -44,10 +44,7 @@ import ScratchPadCustomAnswerWidget from '@rosie/math/components/shared/ScratchP
 import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 import QuizProblemSolution from '@rosie/math/components/shared/QuizProblemSolution'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
-import {
-  clearAllScratchWorkingForPaper,
-  fetchAllScratchWorkingForPaper,
-} from '@rosie/math/utils/math-scratch-db'
+import { fetchAllScratchWorkingForPaper } from '@rosie/math/utils/math-scratch-db'
 import { mathWrongStore } from '@rosie/math/hooks/useMathWrong'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
@@ -377,8 +374,6 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
         mathWrongStore.invalidate(user.id)
       }
     }
-
-    await clearAllScratchWorkingForPaper(user.id, paper.id)
 
     const score = paper.problems.reduce(
       (sum, item, idx) => sum + (newResults[item.problemId] ? pointsArr[idx] : 0),
