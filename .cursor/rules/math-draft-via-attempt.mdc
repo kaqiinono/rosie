@@ -1,0 +1,40 @@
+---
+description: Math drafts must be resolved via practice attempts, never by problemId alone
+globs: packages/math/**/*.{ts,tsx},apps/web/src/app/math/**/*.{ts,tsx},apps/web/src/components/today/**/*.{ts,tsx},apps/web/tests/math-*.ts
+alwaysApply: false
+---
+
+# 数学草稿：必须经练习记录（attempt）查找
+
+草稿挂在 **`math_practice_attempts`（练习记录）** 上，不按题目猜「最新草稿」。
+
+## 查找顺序（强制）
+
+1. 用 `problemId`（+ 时间 / 对错 / `paper_id` 等上下文）**先定位正确的练习记录** `attemptId`
+2. 再读**该条** attempt 的画布：`attempt.objects`，若空再回退 `attempt.draft_id` → `math_scratch_drafts`
+3. UI「查看草稿」必须传入 **`attemptId`**（或打开已绑定该 id 的只读会话）
+
+```ts
+// ❌ BAD — 按题猜草稿 / 打开「该题任意一次」草稿
+problemHasViewableDraft(userId, problemId)
+resolveViewableAttemptId(userId, problemId) // 仅作无上下文时的遗留兜底，新 UI 勿依赖
+<PracticeViewDraftButton problemId={id} hasDraft={draftProblemIds.has(id)} />
+
+// ✅ GOOD — 先绑定本次练习，再看该练习草稿
+const attempt = pickPracticeAttemptForRow(attempts, practiceTime, preferWrong)
+attempt && attemptRowHasViewableCanvas(attempt) && (
+  <PracticeViewDraftButton attemptId={attempt.id} problem={…} />
+)
+```
+
+## 禁止
+
+- 用 `problemId` 直接当草稿主键，或「同题任意有画布的 attempt」顶替当前练习
+- 新写按题 upsert `math_scratch_working` / 新建 `math_scratch_drafts` 作为练习画布主路径（历史只读兼容除外）
+- 列表行显示草稿却打开另一条 attempt 的画布
+
+## 相关
+
+- 类型/纯函数：`math-practice-attempt.ts`（`attemptRowHasViewableCanvas`、`pickPracticeAttemptForRow`）
+- 读写：`math-scratch-db.ts`（`fetchAttemptCanvas`、`fetchPracticeAttemptsForProblems`）
+- 设计：`docs/superpowers/specs/2026-08-04-math-practice-attempt-draft-design.md`
