@@ -224,20 +224,22 @@ export default function MathPracticePortal({
                 )}
               </div>
               {!immersive && (
-                <ScratchPadTrigger
-                  problem={current.problem}
-                  problems={[current.problem]}
-                  problemIndex={0}
-                  section={current.section}
-                  variant="compact"
-                  onSolve={async () => {
-                    bumpDraftRefresh()
-                    await handleCorrect()
-                  }}
-                  onWrong={handleWrong}
-                />
+                <>
+                  <ScratchPadTrigger
+                    problem={current.problem}
+                    problems={[current.problem]}
+                    problemIndex={0}
+                    section={current.section}
+                    variant="compact"
+                    onSolve={async () => {
+                      bumpDraftRefresh()
+                      await handleCorrect()
+                    }}
+                    onWrong={handleWrong}
+                  />
+                  <PracticeViewDraftButton problem={current.problem} refreshKey={draftRefreshKey} />
+                </>
               )}
-              <PracticeViewDraftButton problem={current.problem} refreshKey={draftRefreshKey} />
             </>
           )}
           <button

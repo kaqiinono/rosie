@@ -163,6 +163,7 @@ export async function fetchPracticeAttemptsForProblems(
     .select('*')
     .eq('user_id', userId)
     .eq('status', 'completed')
+    .is('paper_id', null)
     .in('problem_id', unique)
     .order('attempted_at', { ascending: false })
   if (error || !data) return []

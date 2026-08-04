@@ -22,6 +22,14 @@ only for the shared primitives below. You should not need to read other subject 
 Math must never depend on another subject-module package, and `core`/`ui`/`rewards` must
 never depend on math.
 
+## Drafts / scratch（练习记录驱动）
+
+**草稿一定通过对应的练习记录（`math_practice_attempts`）查找。** 需要按题目查时：先用
+`problemId`（+ 时间/对错/`paper_id` 等）定位**正确的那一条 attempt**，再读该 attempt 的
+`objects`（空则回退 `draft_id`）。UI 打开草稿必须带 `attemptId`，禁止用「该题任意一次有画布
+的练习」顶替当前练习。详见 `.cursor/rules/math-draft-via-attempt.mdc` 与
+`docs/superpowers/specs/2026-08-04-math-practice-attempt-draft-design.md`。
+
 ## Layout
 
 ```

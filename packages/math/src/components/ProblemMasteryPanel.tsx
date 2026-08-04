@@ -7,7 +7,7 @@ import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
 import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
 import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
 import { fetchPracticeAttemptsForProblems } from '@rosie/math/utils/math-scratch-db'
-import { attemptRowHasViewableCanvas } from '@rosie/math/utils/math-practice-attempt'
+import { attemptRowHasViewableCanvas, pickPracticeAttemptForRow } from '@rosie/math/utils/math-practice-attempt'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
 import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
 import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
@@ -89,40 +89,6 @@ function PracticeStatusLabel({
     )
   }
   return <span className="text-[10px] font-bold text-text-muted">未练</span>
-}
-
-/**
- * Bind the mastery summary row to one practice attempt (the record this row represents).
- * Prefer time match with the row's practice timestamp; otherwise the newest attempt
- * for that problem (attempts are ordered attempted_at DESC).
- */
-function pickAttemptForRow(
-  attempts: MathPracticeAttemptRow[],
-  practiceTime: string | undefined,
-  preferWrong: boolean,
-): MathPracticeAttemptRow | null {
-  if (attempts.length === 0) return null
-  const pool = preferWrong ? attempts.filter((a) => !a.correct) : attempts
-  const list = pool.length > 0 ? pool : attempts
-
-  if (practiceTime) {
-    const t = Date.parse(practiceTime)
-    if (!Number.isNaN(t)) {
-      let best: MathPracticeAttemptRow | null = null
-      let bestDiff = Infinity
-      for (const a of list) {
-        const diff = Math.abs(Date.parse(a.attemptedAt) - t)
-        if (diff < bestDiff) {
-          bestDiff = diff
-          best = a
-        }
-      }
-      if (best && bestDiff <= 24 * 60 * 60 * 1000) return best
-    }
-  }
-
-  // Summary row → newest attempt for this problem (list is DESC).
-  return list[0] ?? null
 }
 
 export default function ProblemMasteryPanel({
@@ -265,7 +231,7 @@ export default function ProblemMasteryPanel({
         {open && (
           <div className="border-t border-gray-200">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] border-collapse text-[12px]">
+              <table className="w-full min-w-[780px] border-collapse text-[12px]">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="px-4 py-2 text-left text-[10px] font-bold tracking-wider text-text-muted">
@@ -283,6 +249,9 @@ export default function ProblemMasteryPanel({
                     <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
                       练习状态
                     </th>
+                    <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                      草稿
+                    </th>
                     <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
                       下次复习
                     </th>
@@ -297,12 +266,18 @@ export default function ProblemMasteryPanel({
                     const draftProblem = problemSets
                       ? resolveMathPlanProblem(p, problemSets)
                       : null
-                    const attempt = pickAttemptForRow(
+                    const practiceAttempt = pickPracticeAttemptForRow(
                       attemptsByProblem[p.problemId] ?? [],
                       practiceTime,
                       practiceStatus === 'wrong',
                     )
-                    const displayTime = attempt?.attemptedAt ?? practiceTime
+                    const displayTime = practiceAttempt?.attemptedAt ?? practiceTime
+                    const canOpenDraft = Boolean(
+                      problemSets &&
+                        draftProblem &&
+                        practiceAttempt &&
+                        attemptRowHasViewableCanvas(practiceAttempt),
+                    )
                     return (
                       <tr
                         key={p.key}
@@ -310,21 +285,10 @@ export default function ProblemMasteryPanel({
                         style={{ opacity: graduated ? 0.6 : 1 }}
                       >
                         <td
-                          className="max-w-[260px] px-4 py-2 font-medium"
+                          className="max-w-[260px] truncate px-4 py-2 font-medium"
                           style={{ color: graduated ? '#16a34a' : undefined }}
                         >
-                          <div className="flex min-w-0 items-center gap-2">
-                            <span className="truncate">{p.title}</span>
-                            {problemSets && attempt && attemptRowHasViewableCanvas(attempt) && (
-                              <PracticeViewDraftButton
-                                problem={draftProblem ?? undefined}
-                                problemId={p.problemId}
-                                section={p.section}
-                                attemptId={attempt.id}
-                                className="shrink-0"
-                              />
-                            )}
-                          </div>
+                          {p.title}
                         </td>
                         <td className="whitespace-nowrap px-3 py-2 text-[11px] text-text-muted">
                           {lessonDisplayLabel(p.lessonId, true)} ·{' '}
@@ -345,6 +309,19 @@ export default function ProblemMasteryPanel({
                         <td className="whitespace-nowrap px-3 py-2 text-center">
                           <PracticeStatusLabel status={practiceStatus} count={count} />
                         </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-center">
+                          {canOpenDraft && practiceAttempt ? (
+                            <PracticeViewDraftButton
+                              problem={draftProblem ?? undefined}
+                              problemId={p.problemId}
+                              section={p.section}
+                              attemptId={practiceAttempt.id}
+                              className="shrink-0"
+                            />
+                          ) : (
+                            <span className="text-text-muted">—</span>
+                          )}
+                        </td>
                         <td className="px-3 py-2 text-center">
                           <DueLabel due={due} />
                         </td>
@@ -364,7 +341,7 @@ export default function ProblemMasteryPanel({
                   })}
                   {rows.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-4 py-6 text-center text-[12px] text-text-muted">
+                      <td colSpan={8} className="px-4 py-6 text-center text-[12px] text-text-muted">
                         还没有练习记录 — 完成题目后这里会显示状态
                       </td>
                     </tr>
