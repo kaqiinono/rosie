@@ -25,6 +25,7 @@ import { getLessonDisplayInfo, sortLessonsPedagogically } from '../../utils/chin
 import {
   CHINESE_PENDING_KIND,
   CHINESE_PRACTICE_SNAPSHOT_VERSION,
+  chinesePracticeLegacyScopeKey,
   chinesePracticeScopeKey,
   clearChinesePendingEverywhere,
   resolveChinesePracticeSnapshot,
@@ -163,6 +164,18 @@ export default function ChineseCharsPracticeSession() {
         lessons: [...selLessons].join(','),
         types: typesParam ?? '',
         cardPreview: cardPreviewEnabled ? '1' : '0',
+        planId,
+      }),
+    [bookSlug, selUnits, selLessons, typesParam, cardPreviewEnabled, planId],
+  )
+  const legacyScopeKey = useMemo(
+    () =>
+      chinesePracticeLegacyScopeKey({
+        bookSlug,
+        units: [...selUnits].sort((a, b) => a - b).join(','),
+        lessons: [...selLessons].join(','),
+        types: typesParam ?? '',
+        cardPreview: cardPreviewEnabled ? '1' : '0',
       }),
     [bookSlug, selUnits, selLessons, typesParam, cardPreviewEnabled],
   )
@@ -180,7 +193,8 @@ export default function ChineseCharsPracticeSession() {
     [filtered, charByKey, quizTypes, lessons, bookSlug],
   )
 
-  // Frozen plan for this run (preserves shuffle order across mid-exit restore).
+  // Frozen at hydrate from builtPlan. Mid-exit restore keeps this plan (not snap.plan):
+  // option order is deterministic via hashSeed, and old snapshots may bake broken shuffles.
   const [plan, setPlan] = useState<PracticeSessionPlan | null>(null)
   const hydrateDoneRef = useRef(false)
   const planSettleDoneRef = useRef(false)
@@ -243,10 +257,17 @@ export default function ChineseCharsPracticeSession() {
     planSettleDoneRef.current = false
 
     void (async () => {
-      const snap = await resolveChinesePracticeSnapshot(user?.id, bookSlug, scopeKey)
+      const snap = await resolveChinesePracticeSnapshot(
+        user?.id,
+        bookSlug,
+        scopeKey,
+        legacyScopeKey,
+        planId,
+      )
       if (cancelled) return
       if (!snap || snap.phase === 'done') return
-      setPlan(snap.plan)
+      // Progress only — keep builtPlan so choices are not restored from a poisoned snap.plan
+      // (pre-hashSeed seeds overflowed to 0 and pinned every correct answer at D).
       setPhase(snap.phase)
       setCardIdx(snap.cardIdx)
       setCharQIdx(snap.charQIdx)
@@ -267,7 +288,7 @@ export default function ChineseCharsPracticeSession() {
     return () => {
       cancelled = true
     }
-  }, [isCharDataReady, builtPlan, bookSlug, scopeKey, cardPreviewEnabled, user?.id])
+  }, [isCharDataReady, builtPlan, bookSlug, scopeKey, legacyScopeKey, cardPreviewEnabled, user?.id, planId])
 
   const getEnvelope = useCallback(() => {
     if (!plan || phase === 'done') return null

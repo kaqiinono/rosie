@@ -11,6 +11,7 @@ import {
   makeProblem,
   planEndDate,
   buildProblemIdMap,
+  collectOverduePlanProblems,
 } from '@rosie/math/utils/math-helpers'
 import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
@@ -31,6 +32,7 @@ import {
   readMathPracticeSnapshot,
   resolveMathPracticeSnapshot,
 } from '@rosie/math/utils/practice-queue-snapshot'
+import { canAutoEnterMathPlanPractice } from '@rosie/math/utils/math-plan-practice-entry'
 import {
   MATH_PLAN_LESSONS,
   mathPlanDisplayName,
@@ -43,7 +45,7 @@ import {
   WeeklyLessonSection,
   OptionalSection,
 } from './math-weekly-plan-shared'
-import MathPlanMap from './MathPlanMap'
+import MathPlanMap, { type MapMode } from './MathPlanMap'
 
 // ── Main Component ────────────────────────────────────────────────────────────
 interface Props {
@@ -70,6 +72,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
   const today = todayStr()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [mapMode, setMapMode] = useState<MapMode>('week')
   const autoStartDoneRef = useRef(false)
   /** Resume lookup finished (success, empty, or skipped). Auto-start must wait on this. */
   const [resumeChecked, setResumeChecked] = useState(false)
@@ -146,11 +149,15 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     [problemSets, startPractice, user],
   )
 
-  // Resume mid-exit practice queue before auto-starting a new one.
-  // Local snapshot is sync (instant). Cloud reconcile is bounded so ?start=1
-  // cannot hang if practice_pending_sessions is slow / missing.
+  // Resume / auto-start only on `/math/ny/plan/practice` (autoStart).
+  // Hub `/math/ny/plan` must stay on the overview — mid-exit returnHref lands here,
+  // and resuming would immediately drop the child back into practice.
   const userId = user?.id
   useEffect(() => {
+    if (!canAutoEnterMathPlanPractice(autoStart)) {
+      setResumeChecked(true)
+      return
+    }
     if (practiceActive) {
       setResumeChecked(true)
       return
@@ -209,11 +216,19 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       cancelled = true
       if (timer !== undefined) window.clearTimeout(timer)
     }
-  }, [practiceActive, isLoading, resumeChecked, userId, problemSets, resume])
+  }, [autoStart, practiceActive, isLoading, resumeChecked, userId, problemSets, resume])
 
   // Practice route: jump straight into today's first unfinished required problem.
   useEffect(() => {
-    if (!autoStart || autoStartDoneRef.current || !resumeChecked || isLoading || !weeklyPlan) return
+    if (
+      !canAutoEnterMathPlanPractice(autoStart) ||
+      autoStartDoneRef.current ||
+      !resumeChecked ||
+      isLoading ||
+      !weeklyPlan
+    ) {
+      return
+    }
     if (practiceActive) {
       autoStartDoneRef.current = true
       return
@@ -417,6 +432,12 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
   const { draftProblemIds } = useViewableDraftIds(user, dayDraftProblemIds, draftRefreshKey)
 
+  const overdueItems = useMemo(
+    () => (weeklyPlan ? collectOverduePlanProblems(weeklyPlan, today) : []),
+    [weeklyPlan, today],
+  )
+  const overduePool = useMemo(() => overdueItems.map((item) => item.problem), [overdueItems])
+
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {
     return (
@@ -510,7 +531,11 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
         {allPlanProblems.length > 0 && (
           <div className="mt-4">
-            <ProblemMasteryPanel problems={allPlanProblems} masteryMap={masteryMap} />
+            <ProblemMasteryPanel
+              problems={allPlanProblems}
+              masteryMap={masteryMap}
+              problemSets={problemSets}
+            />
           </div>
         )}
       </>
@@ -541,11 +566,11 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
             border: `2px solid ${lessonInfo.border}`,
           }}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">{headerEmoji}</span>
-              <div>
-                <div className="text-[16px] font-extrabold text-gray-800">{headerTitle}</div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="shrink-0 text-3xl">{headerEmoji}</span>
+              <div className="min-w-0">
+                <div className="truncate text-[16px] font-extrabold text-gray-800">{headerTitle}</div>
                 <div className="mt-0.5 text-[11px] font-medium text-gray-500">
                   {fmtPlanRange(weeklyPlan.weekStart, planEndDate(weeklyPlan))}
                   <span className="mx-1 text-gray-300">·</span>
@@ -553,6 +578,18 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                 </div>
               </div>
             </div>
+            {!autoStart && (
+              <Link
+                href="/math/ny/plan/practice"
+                className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white no-underline transition-all hover:scale-105 sm:px-4 sm:text-[13px]"
+                style={{
+                  background: 'linear-gradient(135deg, #ea580c, #f59e0b)',
+                  boxShadow: '0 2px 10px rgba(234,88,12,.35)',
+                }}
+              >
+                执行计划
+              </Link>
+            )}
           </div>
         </div>
 
@@ -563,7 +600,52 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
           today={today}
+          mode={mapMode}
+          onModeChange={setMapMode}
+          onPracticeProblem={(prob, dayProblems) => {
+            beginPractice(dayProblems, prob.problemId)
+          }}
         />
+
+        {/* Overdue make-up: past unfinished required problems */}
+        {overdueItems.length > 0 && (
+          <div className="mb-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <SectionHeader icon="⏰" label="待补做" count={overdueItems.length} accent="#ef4444" />
+              <button
+                type="button"
+                onClick={() => {
+                  const first = overduePool[0]
+                  if (first) beginPractice(overduePool, first.problemId, '待补做')
+                }}
+                className="cursor-pointer rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white transition-all hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444, #f97316)',
+                  boxShadow: '0 2px 10px rgba(239,68,68,.3)',
+                }}
+              >
+                一键补做
+              </button>
+            </div>
+            <p className="px-1 text-[12px] font-medium text-gray-500">
+              过去日期尚未完成的必做题；做完后进度仍记回原来的那天。
+            </p>
+            <div className="space-y-2.5">
+              {overdueItems.map(({ date, problem }) => (
+                <ProblemCard
+                  key={`${date}::${problem.key}`}
+                  prob={problem}
+                  done={false}
+                  isWrong={wrongIds.has(problem.problemId)}
+                  overdueDate={date}
+                  problemSets={problemSets}
+                  hasDraft={draftProblemIds.has(problem.problemId)}
+                  onPractice={() => beginPractice(overduePool, problem.problemId, '待补做')}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Today shortcut */}
         {selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) && (
@@ -581,113 +663,122 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           </button>
         )}
 
-        {/* Day detail */}
+        {/* Day detail — month mode shows required list inside the calendar */}
         {dayPlan && (
           <div className="space-y-5">
-            {/* Day section header */}
-            <div className="flex items-center gap-2.5">
-              <span className="text-[12px] font-extrabold tracking-widest text-gray-400 uppercase">
-                {dayLabel(selectedDate!)} · {fmtDate(selectedDate!)}
-              </span>
-              <div className="h-px flex-1 bg-black/6" />
-            </div>
+            {mapMode === 'week' && (
+              <>
+                {/* Day section header */}
+                <div className="flex items-center gap-2.5">
+                  <span className="text-[12px] font-extrabold tracking-widest text-gray-400 uppercase">
+                    {dayLabel(selectedDate!)} · {fmtDate(selectedDate!)}
+                  </span>
+                  <div className="h-px flex-1 bg-black/6" />
+                </div>
 
-            {/* Progress bar */}
-            {todayRequired.length > 0 && (
-              <div
-                className="rounded-xl px-4 py-4"
-                style={{
-                  background: 'rgba(255,255,255,.8)',
-                  border: '1.5px solid rgba(0,0,0,.06)',
-                  boxShadow: '0 2px 12px rgba(0,0,0,.04)',
-                }}
-              >
-                {justCompleted ? (
-                  <div className="flex items-center justify-center gap-3 py-1">
-                    <span className="animate-star-pop inline-block text-2xl">🎉</span>
-                    <div>
-                      <div className="text-[15px] font-extrabold text-green-600">
-                        今天全部完成啦！
-                      </div>
-                      <div className="text-[12px] font-medium text-green-500">
-                        你真棒！明天继续加油 ⭐
-                      </div>
-                    </div>
-                    <span
-                      className="animate-star-pop inline-block text-2xl"
-                      style={{ animationDelay: '.15s' }}
-                    >
-                      ⭐
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="text-[12px] font-extrabold text-gray-500">今日进度</div>
-                      <div
-                        className="text-[13px] font-extrabold"
-                        style={{ color: pct === 100 ? '#16a34a' : '#f97316' }}
-                      >
-                        {todayDone}/{todayRequired.length} 题
-                      </div>
-                    </div>
-                    <div
-                      className="relative h-4 w-full overflow-hidden rounded-full"
-                      style={{ background: 'rgba(0,0,0,.06)' }}
-                    >
-                      <div
-                        className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                        style={{
-                          width: `${pct}%`,
-                          background: 'linear-gradient(90deg, #f97316, #fbbf24)',
-                          boxShadow: pct > 0 ? '0 0 8px rgba(249,115,22,.5)' : 'none',
-                        }}
-                      />
-                      {/* Star runner */}
-                      {pct > 5 && pct < 100 && (
-                        <div
-                          className="absolute top-1/2 -translate-y-1/2 text-[12px] transition-all duration-700"
-                          style={{ left: `calc(${pct}% - 10px)` }}
+                {/* Progress bar */}
+                {todayRequired.length > 0 && (
+                  <div
+                    className="rounded-xl px-4 py-4"
+                    style={{
+                      background: 'rgba(255,255,255,.8)',
+                      border: '1.5px solid rgba(0,0,0,.06)',
+                      boxShadow: '0 2px 12px rgba(0,0,0,.04)',
+                    }}
+                  >
+                    {justCompleted ? (
+                      <div className="flex items-center justify-center gap-3 py-1">
+                        <span className="animate-star-pop inline-block text-2xl">🎉</span>
+                        <div>
+                          <div className="text-[15px] font-extrabold text-green-600">
+                            今天全部完成啦！
+                          </div>
+                          <div className="text-[12px] font-medium text-green-500">
+                            你真棒！明天继续加油 ⭐
+                          </div>
+                        </div>
+                        <span
+                          className="animate-star-pop inline-block text-2xl"
+                          style={{ animationDelay: '.15s' }}
                         >
                           ⭐
-                        </div>
-                      )}
-                    </div>
-                    {pct > 0 && pct < 100 && (
-                      <div className="mt-1.5 text-[11px] font-medium text-orange-400">
-                        再做 {todayRequired.length - todayDone} 题就完成啦！
+                        </span>
                       </div>
+                    ) : (
+                      <>
+                        <div className="mb-2 flex items-center justify-between">
+                          <div className="text-[12px] font-extrabold text-gray-500">今日进度</div>
+                          <div
+                            className="text-[13px] font-extrabold"
+                            style={{ color: pct === 100 ? '#16a34a' : '#f97316' }}
+                          >
+                            {todayDone}/{todayRequired.length} 题
+                          </div>
+                        </div>
+                        <div
+                          className="relative h-4 w-full overflow-hidden rounded-full"
+                          style={{ background: 'rgba(0,0,0,.06)' }}
+                        >
+                          <div
+                            className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                            style={{
+                              width: `${pct}%`,
+                              background: 'linear-gradient(90deg, #f97316, #fbbf24)',
+                              boxShadow: pct > 0 ? '0 0 8px rgba(249,115,22,.5)' : 'none',
+                            }}
+                          />
+                          {/* Star runner */}
+                          {pct > 5 && pct < 100 && (
+                            <div
+                              className="absolute top-1/2 -translate-y-1/2 text-[12px] transition-all duration-700"
+                              style={{ left: `calc(${pct}% - 10px)` }}
+                            >
+                              ⭐
+                            </div>
+                          )}
+                        </div>
+                        {pct > 0 && pct < 100 && (
+                          <div className="mt-1.5 text-[11px] font-medium text-orange-400">
+                            再做 {todayRequired.length - todayDone} 题就完成啦！
+                          </div>
+                        )}
+                      </>
                     )}
-                  </>
+                  </div>
                 )}
-              </div>
-            )}
 
-            {/* Required problems */}
-            <div>
-              <SectionHeader icon="🎯" label="必做题" count={dayPlan.problems.length} />
-              {dayPlan.problems.length > 0 ? (
-                <div className="space-y-2.5">
-                  {dayPlan.problems.map((prob) => (
-                    <ProblemCard
-                      key={prob.key}
-                      prob={prob}
-                      done={doneKeys.has(prob.key)}
-                      isWrong={wrongIds.has(prob.problemId)}
-                      problemSets={problemSets}
-                      hasDraft={draftProblemIds.has(prob.problemId)}
-                      onPractice={
-                        doneKeys.has(prob.key)
-                          ? undefined
-                          : () => beginPractice(dayPlan.problems, prob.problemId)
-                      }
-                    />
-                  ))}
+                {/* Required problems */}
+                <div>
+                  <SectionHeader icon="🎯" label="必做题" count={dayPlan.problems.length} />
+                  {dayPlan.problems.length > 0 ? (
+                    <div className="space-y-2.5">
+                      {dayPlan.problems.map((prob) => (
+                        <ProblemCard
+                          key={prob.key}
+                          prob={prob}
+                          done={doneKeys.has(prob.key)}
+                          isWrong={wrongIds.has(prob.problemId)}
+                          overdueDate={
+                            selectedDate && selectedDate < today && !doneKeys.has(prob.key)
+                              ? selectedDate
+                              : undefined
+                          }
+                          problemSets={problemSets}
+                          hasDraft={draftProblemIds.has(prob.problemId)}
+                          onPractice={
+                            doneKeys.has(prob.key)
+                              ? undefined
+                              : () => beginPractice(dayPlan.problems, prob.problemId)
+                          }
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyDay />
+                  )}
                 </div>
-              ) : (
-                <EmptyDay />
-              )}
-            </div>
+              </>
+            )}
 
             {/* Wrong-answer reinforcement */}
             {(() => {
@@ -838,14 +929,17 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           </div>
         )}
 
+        {/* Mastery panel — same width as plan content above */}
+        {allPlanProblems.length > 0 && (
+          <div className="mt-6">
+            <ProblemMasteryPanel
+              problems={allPlanProblems}
+              masteryMap={masteryMap}
+              problemSets={problemSets}
+            />
+          </div>
+        )}
       </div>
-
-      {/* Mastery panel */}
-      {allPlanProblems.length > 0 && (
-        <div className="mt-4">
-          <ProblemMasteryPanel problems={allPlanProblems} masteryMap={masteryMap} />
-        </div>
-      )}
     </>
   )
 }

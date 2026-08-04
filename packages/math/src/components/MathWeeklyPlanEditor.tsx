@@ -192,6 +192,12 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       return
     }
 
+    const targetStart = editingPlanStart ?? planStartDate
+    const existingPlan = allPlans.find(p => p.weekStart === targetStart)
+    const primaryLesson = selectedLessonIds[selectedLessonIds.length - 1] ?? selectedLessonIds[0]!
+
+    // Edit: freeze past / completed days; rebuild only open days from the *current*
+    // filter pool, excluding problems already scheduled on kept frozen days.
     const { days, problemsPerDay } = buildMathFlexiblePlan(
       selectedLessonIds,
       sectionFilters,
@@ -200,11 +206,21 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       planEndDateStr,
       tagFilters,
       solveCount,
+      existingPlan
+        ? {
+            existingDays: existingPlan.days,
+            freezeDate: today,
+            progress: existingPlan.progress,
+          }
+        : {},
     )
 
-    const targetStart = editingPlanStart ?? planStartDate
-    const existingPlan = allPlans.find(p => p.weekStart === targetStart)
-    const primaryLesson = selectedLessonIds[selectedLessonIds.length - 1] ?? selectedLessonIds[0]!
+    const keepDates = new Set(days.map((d) => d.date))
+    const progress = existingPlan
+      ? Object.fromEntries(
+          Object.entries(existingPlan.progress ?? {}).filter(([date]) => keepDates.has(date)),
+        )
+      : {}
 
     const plan: MathWeeklyPlan = {
       weekStart: planStartDate,
@@ -217,11 +233,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       weekStartDay: existingPlan?.weekStartDay ?? defaultParams.weekStartDay,
       problemsPerDay,
       days,
-      progress:
-        existingPlan &&
-        JSON.stringify(existingPlan.lessonIds ?? [existingPlan.lessonId]) === JSON.stringify(selectedLessonIds)
-          ? (existingPlan.progress ?? {})
-          : {},
+      progress,
     }
 
     if (editingPlanStart && editingPlanStart !== planStartDate) {
@@ -247,6 +259,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     savePlan,
     deletePlan,
     solveCount,
+    today,
     router,
   ])
 
@@ -607,6 +620,11 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
               <span className="mx-1.5 text-orange-300">·</span>
               按题型均衡分配（易→难）
             </div>
+            {isEditing && (
+              <div className="mt-2 text-[12px] font-medium text-orange-600/90">
+                保存时：今天之前与已完成的天保持原题单；仅把当前筛选下、尚未排过的题重新分到未完成的天。
+              </div>
+            )}
             {previewTotal === 0 && (
               <div className="mt-2 text-[12px] font-medium text-red-400">请至少选择一个关卡并勾选题目来源</div>
             )}
@@ -632,7 +650,11 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
           </div>
 
         {allPlanProblems.length > 0 && (
-          <ProblemMasteryPanel problems={allPlanProblems} masteryMap={masteryMap} />
+          <ProblemMasteryPanel
+            problems={allPlanProblems}
+            masteryMap={masteryMap}
+            problemSets={problemSets}
+          />
         )}
       </div>
   )

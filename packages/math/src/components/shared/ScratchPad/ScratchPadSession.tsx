@@ -34,6 +34,11 @@ type ScratchPadSessionProps = {
    * (same source as plan-page 📝 草稿), without writing back.
    */
   preferViewableDraft?: boolean
+  /**
+   * Readonly view of one archived attempt draft (`math_scratch_drafts.id`
+   * from `math_practice_attempts.draft_id`). Takes precedence over preferViewableDraft.
+   */
+  viewDraftId?: string | null
   onClose: () => void
   onSolve?: (problemId: string) => void | Promise<void>
   onWrong?: (problemId: string) => void
@@ -65,6 +70,7 @@ export default function ScratchPadSession({
   embedded = false,
   closeEndsSession = false,
   preferViewableDraft = false,
+  viewDraftId = null,
   onClose,
   onSolve,
   onWrong,
@@ -115,6 +121,7 @@ export default function ScratchPadSession({
       }
       const {
         fetchScratchWorking,
+        fetchScratchDraft,
         fetchViewableDraftObjects,
         seedWorkingFromWrongAttempt,
       } = await import('@rosie/math/utils/math-scratch-db')
@@ -126,6 +133,17 @@ export default function ScratchPadSession({
         objectsRef.current = loaded
         setObjects(loaded)
         setAnswerDraft(row?.answerDraft ?? seeded.answerDraft)
+        setLoading(false)
+        return
+      }
+      // Exact attempt draft (math_practice_attempts.draft_id) — not "latest for problem".
+      if (viewDraftId && readOnly) {
+        const draft = await fetchScratchDraft(viewDraftId)
+        const loaded = draft?.objects ?? []
+        objectsRef.current = loaded
+        setObjects(loaded)
+        setAnswerDraft(null)
+        setShowCanvas(loaded.length > 0)
         setLoading(false)
         return
       }
@@ -153,6 +171,7 @@ export default function ScratchPadSession({
     blankCanvasOnLoad,
     seedWrongAttemptId,
     preferViewableDraft,
+    viewDraftId,
     readOnly,
     index,
     initialIndex,

@@ -139,6 +139,8 @@ export default function HomeTodayPanel() {
       )}
       <TodayPlanOverview
         linkable
+        allowReset
+        onResetToast={setToast}
         className="grid grid-cols-2 gap-3 sm:grid-cols-4"
         loadingFallback={
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

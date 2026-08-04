@@ -1,15 +1,16 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { MathWeeklyPlan, ProblemSet } from '@rosie/core'
+import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 import {
   PlanPreviewCalendar,
   mondayWeekDates,
   dayLabel,
   fmtDate,
+  uniqueDayTypeChips,
 } from './math-weekly-plan-shared'
 
-type MapMode = 'week' | 'month'
+export type MapMode = 'week' | 'month'
 
 type Props = {
   plan: MathWeeklyPlan
@@ -17,9 +18,58 @@ type Props = {
   selectedDate: string | null
   onSelectDate: (date: string) => void
   today: string
+  mode?: MapMode
+  onModeChange?: (mode: MapMode) => void
+  onPracticeProblem?: (prob: MathPlanProblem, dayProblems: MathPlanProblem[]) => void
 }
 
 const WEEK_HEADER = ['一', '二', '三', '四', '五', '六', '日']
+
+function WeekDayChipStack({
+  chips,
+  className,
+  isComplete,
+  textClr,
+  total,
+  max = 4,
+}: {
+  chips: string[]
+  className?: string
+  isComplete: boolean
+  textClr: string
+  total: number
+  max?: number
+}) {
+  const shown = chips.slice(0, max)
+  const extra = chips.length - shown.length
+  return (
+    <div className={className}>
+      {shown.map((chip) => (
+        <div
+          key={chip}
+          className="rounded px-0.5 py-0.5 text-[8px] leading-snug font-bold break-words md:text-[9px]"
+          style={{
+            background: isComplete ? 'rgba(255,255,255,.75)' : 'rgba(255,255,255,.85)',
+            color: isComplete ? '#166534' : '#7c2d12',
+          }}
+          title={chip}
+        >
+          {chip}
+        </div>
+      ))}
+      {extra > 0 && (
+        <div className="text-[8px] font-bold" style={{ color: textClr }}>
+          +{extra}
+        </div>
+      )}
+      {total > 0 && shown.length === 0 && (
+        <div className="text-[9px] font-medium" style={{ color: textClr }}>
+          {total} 题
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function MathPlanMap({
   plan,
@@ -27,8 +77,16 @@ export default function MathPlanMap({
   selectedDate,
   onSelectDate,
   today,
+  mode: controlledMode,
+  onModeChange,
+  onPracticeProblem,
 }: Props) {
-  const [mode, setMode] = useState<MapMode>('week')
+  const [internalMode, setInternalMode] = useState<MapMode>('week')
+  const mode = controlledMode ?? internalMode
+  const setMode = (next: MapMode) => {
+    onModeChange?.(next)
+    if (controlledMode == null) setInternalMode(next)
+  }
   const weekDates = useMemo(() => mondayWeekDates(today), [today])
   const dayByDate = useMemo(() => {
     const map = new Map(plan.days.map((d) => [d.date, d]))
@@ -85,16 +143,21 @@ export default function MathPlanMap({
           <div className="grid grid-cols-7 gap-1.5">
             {weekDates.map((date) => {
               const day = dayByDate.get(date)
-              const total = day?.problems.length ?? 0
+              const problems = day?.problems ?? []
+              const total = problems.length
               const hasPlan = Boolean(day)
               const prog = plan.progress[date] ?? { doneKeys: [] }
               const done = hasPlan
-                ? prog.doneKeys.filter((k) => day!.problems.some((p) => p.key === k)).length
+                ? prog.doneKeys.filter((k) => problems.some((p) => p.key === k)).length
                 : 0
               const isToday = date === today
               const isPast = date < today
               const isSelected = date === selectedDate
               const isComplete = hasPlan && total > 0 && done >= total
+              const compactChips = hasPlan
+                ? uniqueDayTypeChips(problems, problemSets, { compact: true })
+                : []
+              const fullChips = hasPlan ? uniqueDayTypeChips(problems, problemSets) : []
 
               let bg = 'rgba(255,255,255,.7)'
               let border = 'rgba(0,0,0,.08)'
@@ -115,12 +178,17 @@ export default function MathPlanMap({
                 border = '#f97316'
                 textClr = '#92400e'
                 shadow = '0 3px 12px rgba(249,115,22,.3)'
-              } else if (isPast && total > 0) {
+              } else if (isPast && total > 0 && done < total) {
                 bg = 'rgba(254,202,202,.5)'
                 border = 'rgba(239,68,68,.3)'
                 textClr = '#ef4444'
+              } else if (hasPlan) {
+                bg = 'rgba(251,146,60,.1)'
+                border = 'rgba(251,146,60,.22)'
+                textClr = '#c2410c'
               }
               if (isSelected && hasPlan) {
+                border = isComplete ? '#16a34a' : '#ea580c'
                 shadow = `0 4px 16px ${isComplete ? 'rgba(34,197,94,.4)' : isToday ? 'rgba(249,115,22,.4)' : 'rgba(0,0,0,.12)'}`
               }
 
@@ -132,25 +200,53 @@ export default function MathPlanMap({
                   onClick={() => {
                     if (hasPlan) onSelectDate(date)
                   }}
-                  className="flex flex-col items-center rounded-[14px] px-1 py-2.5 text-center transition-all duration-200 disabled:cursor-default enabled:cursor-pointer enabled:hover:scale-105"
+                  className="flex min-h-24 flex-col rounded-[14px] px-1 py-1.5 text-left transition-all duration-200 disabled:cursor-default enabled:cursor-pointer md:min-h-28 md:px-1.5 md:py-2"
                   style={{
                     background: bg,
                     border: `2px solid ${border}`,
                     boxShadow: shadow,
-                    transform: isSelected && hasPlan ? 'scale(1.08)' : undefined,
+                    transform: isSelected && hasPlan ? 'scale(1.03)' : undefined,
                     opacity: hasPlan ? 1 : 0.7,
                   }}
                   title={hasPlan ? dayLabel(date) : '本日无计划'}
                 >
-                  <div className="mb-0.5 text-[9px] font-bold" style={{ color: textClr }}>
-                    {dayLabel(date)}
+                  <div className="flex items-baseline justify-between gap-0.5">
+                    <span className="text-[10px] font-bold md:text-[11px]" style={{ color: textClr }}>
+                      {dayLabel(date)}
+                      <span className="ml-0.5 font-extrabold">
+                        {fmtDate(date).split('/')[1]}
+                      </span>
+                    </span>
+                    {hasPlan && total > 0 && (
+                      <span className="shrink-0 text-[9px] font-bold" style={{ color: textClr }}>
+                        {isComplete ? '⭐' : `${done}/${total}`}
+                      </span>
+                    )}
                   </div>
-                  <div className="text-[14px] font-extrabold" style={{ color: textClr }}>
-                    {fmtDate(date).split('/')[1]}
-                  </div>
-                  <div className="mt-0.5 text-[10px] font-bold" style={{ color: textClr }}>
-                    {!hasPlan ? '—' : isComplete ? '⭐' : total > 0 ? `${done}/${total}` : '—'}
-                  </div>
+                  {hasPlan ? (
+                    <>
+                      {/* Mobile: 讲次短名 only, e.g. 7数字谜 */}
+                      <WeekDayChipStack
+                        chips={compactChips}
+                        className="mt-1 flex min-h-0 flex-1 flex-col gap-0.5 md:hidden"
+                        isComplete={isComplete}
+                        textClr={textClr}
+                        total={total}
+                      />
+                      {/* Desktop: include specific tagLabel */}
+                      <WeekDayChipStack
+                        chips={fullChips}
+                        className="mt-1 hidden min-h-0 flex-1 flex-col gap-0.5 md:flex"
+                        isComplete={isComplete}
+                        textClr={textClr}
+                        total={total}
+                      />
+                    </>
+                  ) : (
+                    <div className="mt-2 text-center text-[10px] font-bold" style={{ color: textClr }}>
+                      —
+                    </div>
+                  )}
                 </button>
               )
             })}
@@ -164,7 +260,8 @@ export default function MathPlanMap({
           onSelectDate={(date) => {
             if (date) onSelectDate(date)
           }}
-          showDayDetail={false}
+          showDayDetail
+          onPracticeProblem={onPracticeProblem}
         />
       )}
     </div>

@@ -1,10 +1,16 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { MATH_PLAN_SECTIONS, planEndDate } from '@rosie/math/utils/math-helpers'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import {
+  MATH_PLAN_SECTIONS,
+  planEndDate,
+  planProblemAnswerStatus,
+  planProblemExecStatus,
+} from '@rosie/math/utils/math-helpers'
 import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
@@ -430,26 +436,34 @@ function resolveTagLabel(
   return undefined
 }
 
-/** e.g. "12巧算加减法-凑整法" */
+/** e.g. "12巧算加减法" — lesson seq + short title only */
+export function mathPlanLessonChip(prob: MathPlanProblem): string {
+  const seq = lessonDisplayNum(prob.lessonId)
+  const short = MATH_PLAN_LESSONS.find((l) => l.id === prob.lessonId)?.short ?? ''
+  return seq != null ? `${seq}${short}` : short || prob.lessonId
+}
+
+/** e.g. "12巧算加减法-凑整法"；`compact` omits the specific tagLabel (mobile calendar). */
 export function mathPlanProblemTypeChip(
   prob: MathPlanProblem,
   problemSets?: Record<string, ProblemSet>,
+  opts?: { compact?: boolean },
 ): string {
-  const seq = lessonDisplayNum(prob.lessonId)
-  const short = MATH_PLAN_LESSONS.find((l) => l.id === prob.lessonId)?.short ?? ''
-  const head = seq != null ? `${seq}${short}` : short || prob.lessonId
+  const head = mathPlanLessonChip(prob)
+  if (opts?.compact) return head
   const tag = resolveTagLabel(prob, problemSets)
   return tag ? `${head}-${tag}` : head
 }
 
-function uniqueDayTypeChips(
+export function uniqueDayTypeChips(
   problems: MathPlanProblem[],
   problemSets?: Record<string, ProblemSet>,
+  opts?: { compact?: boolean },
 ): string[] {
   const seen = new Set<string>()
   const chips: string[] = []
   for (const p of problems) {
-    const chip = mathPlanProblemTypeChip(p, problemSets)
+    const chip = mathPlanProblemTypeChip(p, problemSets, opts)
     if (seen.has(chip)) continue
     seen.add(chip)
     chips.push(chip)
@@ -478,6 +492,63 @@ export type PlanPreviewCalendarProps = {
   onSelectDate?: (date: string | null) => void
   /** Admin preview embeds a read-only problem list; learner map sets false. Default true. */
   showDayDetail?: boolean
+  /** Learner: start practice for an unfinished problem on the selected day. */
+  onPracticeProblem?: (prob: MathPlanProblem, dayProblems: MathPlanProblem[]) => void
+}
+
+function StatusChip({
+  label,
+  bg,
+  color,
+  border,
+}: {
+  label: string
+  bg: string
+  color: string
+  border: string
+}) {
+  return (
+    <span
+      className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+      style={{ background: bg, color, border: `1px solid ${border}` }}
+    >
+      {label}
+    </span>
+  )
+}
+
+function DayCellChipStack({
+  chips,
+  className,
+  chipClassName,
+  chipStyle,
+  max = 4,
+}: {
+  chips: string[]
+  className?: string
+  chipClassName?: string
+  chipStyle?: CSSProperties
+  max?: number
+}) {
+  const shown = chips.slice(0, max)
+  const extra = chips.length - shown.length
+  return (
+    <div className={className}>
+      {shown.map((chip) => (
+        <div
+          key={chip}
+          className={chipClassName}
+          style={{ background: 'rgba(255,255,255,.85)', ...chipStyle }}
+          title={chip}
+        >
+          {chip}
+        </div>
+      ))}
+      {extra > 0 && (
+        <div className="text-[9px] font-bold text-orange-500">+{extra}</div>
+      )}
+    </div>
+  )
 }
 
 export function PlanPreviewCalendar({
@@ -486,13 +557,21 @@ export function PlanPreviewCalendar({
   selectedDate: controlledSelected,
   onSelectDate,
   showDayDetail = true,
+  onPracticeProblem,
 }: PlanPreviewCalendarProps) {
+  const { user } = useAuth()
+  const { solveCount } = useMathSolved(user)
+  const { wrongIds } = useMathWrong(user)
   const controlled = onSelectDate != null
   const end = planEndDate(plan)
   const months = useMemo(() => monthsCoveredByPlan(plan.weekStart, end), [plan.weekStart, end])
   const [monthIdx, setMonthIdx] = useState(0)
   const [internalSelected, setInternalSelected] = useState<string | null>(null)
   const selectedDate = controlled ? (controlledSelected ?? null) : internalSelected
+  const selectedDoneKeys = useMemo(() => {
+    if (!selectedDate) return new Set<string>()
+    return new Set((plan.progress[selectedDate] ?? { doneKeys: [] }).doneKeys)
+  }, [plan.progress, selectedDate])
 
   const setSelectedDate = (next: string | null) => {
     if (controlled) onSelectDate(next)
@@ -597,9 +676,8 @@ export function PlanPreviewCalendar({
               return <div key={`e-${i}`} className="min-h-2" />
             }
             const problems = dayMap.get(cell.date) ?? []
-            const chips = uniqueDayTypeChips(problems, problemSets)
-            const shown = chips.slice(0, 4)
-            const extra = chips.length - shown.length
+            const compactChips = uniqueDayTypeChips(problems, problemSets, { compact: true })
+            const fullChips = uniqueDayTypeChips(problems, problemSets)
             const isSelected = selectedDate === cell.date
             return (
               <button
@@ -633,21 +711,17 @@ export function PlanPreviewCalendar({
                     </span>
                   )}
                 </div>
-                <div className="mt-1 flex flex-col gap-0.5 md:gap-1">
-                  {shown.map((chip) => (
-                    <div
-                      key={chip}
-                      className="rounded px-1 py-0.5 text-[9px] leading-snug font-bold break-words text-orange-900 md:text-[10px]"
-                      style={{ background: 'rgba(255,255,255,.85)' }}
-                      title={chip}
-                    >
-                      {chip}
-                    </div>
-                  ))}
-                  {extra > 0 && (
-                    <div className="text-[9px] font-bold text-orange-500">+{extra}</div>
-                  )}
-                </div>
+                {/* Mobile: lesson only (e.g. 7数字谜). Desktop: include tagLabel. */}
+                <DayCellChipStack
+                  chips={compactChips}
+                  className="mt-1 flex flex-col gap-0.5 md:hidden"
+                  chipClassName="rounded px-1 py-0.5 text-[9px] leading-snug font-bold break-words text-orange-900"
+                />
+                <DayCellChipStack
+                  chips={fullChips}
+                  className="mt-1 hidden flex-col gap-1 md:flex"
+                  chipClassName="rounded px-1 py-0.5 text-[10px] leading-snug font-bold break-words text-orange-900"
+                />
               </button>
             )
           })}
@@ -682,6 +756,9 @@ export function PlanPreviewCalendar({
               const full = resolveFullProblem(prob, problemSets)
               const typeChip = mathPlanProblemTypeChip(prob, problemSets)
               const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
+              const exec = planProblemExecStatus(prob.key, selectedDoneKeys)
+              const answer = planProblemAnswerStatus(prob.problemId, { wrongIds, solveCount })
+              const isOverdue = Boolean(selectedDate && selectedDate < todayStr() && exec === 'pending')
               return (
                 <article
                   key={prob.key}
@@ -703,6 +780,34 @@ export function PlanPreviewCalendar({
                     <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-bold text-orange-700">
                       {typeChip}
                     </span>
+                    <StatusChip
+                      label={exec === 'done' ? '执行·已完成' : isOverdue ? '执行·过期未做' : '执行·未做'}
+                      bg={exec === 'done' ? 'rgba(34,197,94,.12)' : 'rgba(249,115,22,.12)'}
+                      color={exec === 'done' ? '#15803d' : '#c2410c'}
+                      border={exec === 'done' ? 'rgba(34,197,94,.35)' : 'rgba(249,115,22,.35)'}
+                    />
+                    <StatusChip
+                      label={
+                        answer === 'wrong' ? '答题·错题' : answer === 'practiced' ? '答题·已练' : '答题·未练'
+                      }
+                      bg={
+                        answer === 'wrong'
+                          ? 'rgba(239,68,68,.12)'
+                          : answer === 'practiced'
+                            ? 'rgba(59,130,246,.12)'
+                            : 'rgba(0,0,0,.05)'
+                      }
+                      color={
+                        answer === 'wrong' ? '#dc2626' : answer === 'practiced' ? '#1d4ed8' : '#6b7280'
+                      }
+                      border={
+                        answer === 'wrong'
+                          ? 'rgba(239,68,68,.35)'
+                          : answer === 'practiced'
+                            ? 'rgba(59,130,246,.35)'
+                            : 'rgba(0,0,0,.1)'
+                      }
+                    />
                   </div>
                   {full?.text ? (
                     <div
@@ -719,6 +824,16 @@ export function PlanPreviewCalendar({
                       问：{full.finalQ}
                       {full.finalUnit ? `（${full.finalUnit}）` : ''}
                     </div>
+                  )}
+                  {onPracticeProblem && exec === 'pending' && (
+                    <button
+                      type="button"
+                      onClick={() => onPracticeProblem(prob, selectedProblems)}
+                      className="mt-3 cursor-pointer rounded-md px-3 py-2 text-[12px] font-extrabold text-white transition-all hover:scale-105"
+                      style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+                    >
+                      做题 ✨
+                    </button>
                   )}
                 </article>
               )
@@ -789,6 +904,7 @@ export function ProblemCard({
   onPractice,
   problemSets,
   hasDraft,
+  overdueDate,
 }: {
   prob: MathPlanProblem
   done: boolean
@@ -800,19 +916,23 @@ export function ProblemCard({
   problemSets?: Record<string, ProblemSet>
   /** Batched draft presence from plan page — avoids per-card fetches. */
   hasDraft?: boolean
+  /** ISO date when this card is an overdue make-up item. */
+  overdueDate?: string
 }) {
   const { user } = useAuth()
   const { solveCount } = useMathSolved(user)
   const practiceCount = solveCount[prob.problemId] ?? 0
   const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
   const draftProblem = problemSets ? resolveMathPlanProblem(prob, problemSets) : undefined
+  const answerLabel = isWrong ? '答题·错题' : practiceCount > 0 ? '答题·已练' : '答题·未练'
+  const execLabel = done ? '执行·已完成' : overdueDate ? '执行·过期未做' : '执行·未做'
 
   return (
     <div
       className="group flex items-center gap-3 rounded-[14px] px-4 py-3 transition-all duration-300"
       style={{
         background: done ? 'rgba(220,252,231,.6)' : 'rgba(255,255,255,.85)',
-        border: `1.5px solid ${done ? '#86efac' : 'rgba(0,0,0,.07)'}`,
+        border: `1.5px solid ${done ? '#86efac' : overdueDate ? 'rgba(239,68,68,.28)' : 'rgba(0,0,0,.07)'}`,
         boxShadow: done ? 'none' : '0 2px 10px rgba(0,0,0,.04)',
       }}
     >
@@ -844,10 +964,18 @@ export function ProblemCard({
         >
           {prob.title}
         </div>
-        <div className="mt-0.5 flex items-center gap-1.5">
+        <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
           <span className="text-[10px] font-medium" style={{ color: sc.text }}>
             {lessonDisplayLabel(prob.lessonId, true)}
           </span>
+          {overdueDate && (
+            <span
+              className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+              style={{ background: 'rgba(239,68,68,.12)', color: '#dc2626' }}
+            >
+              {fmtDate(overdueDate)} 欠
+            </span>
+          )}
           {isReview && (
             <span
               className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
@@ -856,14 +984,28 @@ export function ProblemCard({
               复习
             </span>
           )}
-          {isWrong && (
-            <span
-              className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
-              style={{ background: 'rgba(239,68,68,.12)', color: '#dc2626' }}
-            >
-              错题
-            </span>
-          )}
+          <span
+            className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+            style={{
+              background: done ? 'rgba(34,197,94,.12)' : 'rgba(249,115,22,.12)',
+              color: done ? '#15803d' : '#c2410c',
+            }}
+          >
+            {execLabel}
+          </span>
+          <span
+            className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+            style={{
+              background: isWrong
+                ? 'rgba(239,68,68,.12)'
+                : practiceCount > 0
+                  ? 'rgba(59,130,246,.12)'
+                  : 'rgba(0,0,0,.05)',
+              color: isWrong ? '#dc2626' : practiceCount > 0 ? '#1d4ed8' : '#6b7280',
+            }}
+          >
+            {answerLabel}
+          </span>
           <PracticeCountBadge count={practiceCount} />
         </div>
       </div>

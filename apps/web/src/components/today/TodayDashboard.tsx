@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
@@ -222,6 +222,7 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
 
 export default function TodayDashboard() {
   const { user } = useAuth()
+  const [resetToast, setResetToast] = useState<string | null>(null)
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
   const {
     activePlan: activeAdaptive,
@@ -243,6 +244,12 @@ export default function TodayDashboard() {
     if (chineseActivePlan) setActiveChineseBook(chineseActivePlan.bookSlug)
     else if (chineseCompletedPlan) setActiveChineseBook(chineseCompletedPlan.bookSlug)
   }, [chineseActivePlan, chineseCompletedPlan])
+
+  useEffect(() => {
+    if (!resetToast) return
+    const t = window.setTimeout(() => setResetToast(null), 3200)
+    return () => window.clearTimeout(t)
+  }, [resetToast])
 
   const today = todayStr()
 
@@ -458,7 +465,22 @@ export default function TodayDashboard() {
 
       {/* Stats cards row */}
       {(hasMath || hasEnglish || hasChinese) && (
-        <TodayPlanOverviewCards cards={overviewCards} className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4" />
+        <>
+          {resetToast && (
+            <div
+              className="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] font-bold text-amber-900"
+              role="status"
+            >
+              {resetToast}
+            </div>
+          )}
+          <TodayPlanOverviewCards
+            cards={overviewCards}
+            allowReset
+            onResetToast={setResetToast}
+            className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4"
+          />
+        </>
       )}
 
       {/* English section */}

@@ -53,6 +53,14 @@ function kindToSubject(kind: PracticePendingKind): TodayPlanSubjectKey | null {
   return null
 }
 
+/**
+ * Chinese free practice scopes end with `|p=free`. Those must not light the
+ * today-plan chinese card (continue href is roadmap-plan practice).
+ */
+export function isChineseFreePracticeScope(scopeKey: string): boolean {
+  return /(?:^|\|)p=free(?:\||$)/.test(scopeKey)
+}
+
 function emptySubjectSync(): Record<TodayPlanSubjectKey, TodayPlanSyncStatus> {
   return { calc: 'none', english: 'none', math: 'none', chinese: 'none' }
 }
@@ -241,12 +249,13 @@ export async function clearCloudPending(
   scopeKey: string,
 ): Promise<void> {
   if (!scopeKey) return
-  await supabase
+  const { error } = await supabase
     .from('practice_pending_sessions')
     .delete()
     .eq('user_id', userId)
     .eq('kind', kind)
     .eq('scope_key', scopeKey)
+  if (error) throw error
 }
 
 export function pickBestPending<T>(
@@ -463,6 +472,7 @@ export function getTodayPlanSyncStatus(
       if (!parsed) continue
       const subject = kindToSubject(parsed.kind)
       if (!subject) continue
+      if (parsed.kind === 'chinese' && isChineseFreePracticeScope(parsed.scopeKey)) continue
       try {
         const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
         if (!env) continue
@@ -491,6 +501,118 @@ export function getTodayPlanSyncStatus(
     return map
   }
   return map
+}
+
+type PendingRef = { kind: PracticePendingKind; scopeKey: string }
+
+function subjectMatchesKind(subject: TodayPlanSubjectKey, kind: PracticePendingKind): boolean {
+  const mapped = kindToSubject(kind)
+  return mapped === subject
+}
+
+/** Same-day pending refs that light the today-plan card for `subject`. */
+export function listTodayPendingForSubject(
+  subject: TodayPlanSubjectKey,
+  today = todayStr(),
+): PendingRef[] {
+  const out: PendingRef[] = []
+  const seenWeekly = new Set<string>()
+  if (typeof window === 'undefined') return out
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key?.startsWith(LOCAL_PENDING_PREFIX)) continue
+      const parsed = parsePendingKey(key)
+      if (!parsed || !subjectMatchesKind(subject, parsed.kind)) continue
+      if (parsed.kind === 'chinese' && isChineseFreePracticeScope(parsed.scopeKey)) continue
+      try {
+        const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
+        if (!env) continue
+        out.push(parsed)
+        if (parsed.kind === 'english_weekly') seenWeekly.add(parsed.scopeKey)
+      } catch {
+        /* skip */
+      }
+    }
+    if (subject === 'english') {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (!key?.startsWith(WEEKLY_SESSION_PREFIX)) continue
+        if (key.startsWith(WEEKLY_SYNCED_PREFIX)) continue
+        const planId = key.slice(WEEKLY_SESSION_PREFIX.length)
+        if (!planId || seenWeekly.has(planId)) continue
+        try {
+          const stash = JSON.parse(localStorage.getItem(key) ?? '') as { savedAt?: string }
+          if (stash && typeof stash.savedAt === 'string' && savedAtIsToday(stash.savedAt, today)) {
+            out.push({ kind: 'english_weekly', scopeKey: planId })
+          }
+        } catch {
+          /* skip */
+        }
+      }
+    }
+  } catch {
+    return out
+  }
+  return out
+}
+
+async function clearWeeklyCloudSession(userId: string, planId: string): Promise<void> {
+  const { data, error } = await supabase
+    .from('weekly_plans')
+    .select('progress_data')
+    .eq('id', planId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (error) throw error
+  if (!data) return
+  const progress =
+    data.progress_data !== null &&
+    typeof data.progress_data === 'object' &&
+    !Array.isArray(data.progress_data)
+      ? { ...(data.progress_data as Record<string, unknown>) }
+      : {}
+  if (!(WEEKLY_SESSION_META_KEY in progress)) return
+  delete progress[WEEKLY_SESSION_META_KEY]
+  const { error: upErr } = await supabase
+    .from('weekly_plans')
+    .update({
+      progress_data: progress,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', planId)
+    .eq('user_id', userId)
+  if (upErr) throw upErr
+}
+
+/**
+ * Discard same-day mid-session pending for one today-plan subject (local + cloud).
+ * Does not touch completed daily progress.
+ */
+export async function clearTodayPlanSubjectPending(
+  userId: string | null | undefined,
+  subject: TodayPlanSubjectKey,
+  today = todayStr(),
+): Promise<{ cleared: number; failed: number }> {
+  const refs = listTodayPendingForSubject(subject, today)
+  let cleared = 0
+  let failed = 0
+  for (const { kind, scopeKey } of refs) {
+    if (userId) {
+      try {
+        if (kind === 'english_weekly') {
+          await clearWeeklyCloudSession(userId, scopeKey)
+        } else {
+          await clearCloudPending(userId, kind, scopeKey)
+        }
+      } catch {
+        failed += 1
+      }
+    }
+    clearLocalPending(kind, scopeKey)
+    cleared += 1
+  }
+  return { cleared, failed }
 }
 
 /**

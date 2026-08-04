@@ -1,19 +1,31 @@
 'use client'
 
-import { useState } from 'react'
-import type { MathPlanProblem, ProblemMasteryMap } from '@rosie/core'
-import { ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@rosie/core'
+import { useEffect, useMemo, useState } from 'react'
+import type { MathPlanProblem, ProblemMasteryMap, ProblemSet, WordMasteryInfo } from '@rosie/core'
+import { useAuth, ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@rosie/core'
+import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
+import { fetchPracticeAttemptsForProblems } from '@rosie/math/utils/math-scratch-db'
+import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
+import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
+import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
 
 interface Props {
   problems: MathPlanProblem[]
   masteryMap: ProblemMasteryMap
+  /** Needed to open the scratch-pad draft viewer. */
+  problemSets?: Record<string, ProblemSet>
 }
+
+const PAGE_SIZE = 10
 
 const SECTION_LABEL: Record<string, string> = {
   lesson: '课堂',
   homework: '课后',
   workbook: '练习册',
   pretest: '课前测',
+  supplement: '附加',
 }
 
 function formatDue(nextReviewDate: string | undefined, today: string) {
@@ -24,6 +36,25 @@ function formatDue(nextReviewDate: string | undefined, today: string) {
   if (diff <= 0) return { label: `今天 (${dateStr})`, urgent: 'today' as const }
   if (diff === 1) return { label: `明天 (${dateStr})`, urgent: 'tomorrow' as const }
   return { label: `${diff}天后 (${dateStr})`, urgent: 'future' as const }
+}
+
+function formatPracticeTime(iso: string | undefined): string {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) {
+    // YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+      const [, m, day] = iso.split('-')
+      return `${Number(m)}/${Number(day)}`
+    }
+    return iso
+  }
+  const m = d.getMonth() + 1
+  const day = d.getDate()
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  const hasTime = iso.includes('T') || iso.includes(':')
+  return hasTime ? `${m}/${day} ${hh}:${mm}` : `${m}/${day}`
 }
 
 const DUE_STYLES: Record<string, string> = {
@@ -37,126 +68,339 @@ function DueLabel({ due }: { due: { label: string; urgent: string } }) {
   return <span className={DUE_STYLES[due.urgent] ?? ''}>{due.label}</span>
 }
 
-export default function ProblemMasteryPanel({ problems, masteryMap }: Props) {
+type PracticeStatus = 'wrong' | 'practiced' | 'unseen'
+
+function PracticeStatusLabel({
+  status,
+  count,
+}: {
+  status: PracticeStatus
+  count: number
+}) {
+  if (status === 'wrong') {
+    return <span className="text-[10px] font-bold text-red-500">错题</span>
+  }
+  if (status === 'practiced') {
+    return (
+      <span className="text-[10px] font-bold text-blue-600">
+        已练{count > 1 ? `×${count}` : ''}
+      </span>
+    )
+  }
+  return <span className="text-[10px] font-bold text-text-muted">未练</span>
+}
+
+/**
+ * Bind the mastery summary row to one practice attempt (the record this row represents).
+ * Prefer time match with the row's practice timestamp; otherwise the newest attempt
+ * for that problem (attempts are ordered attempted_at DESC).
+ */
+function pickAttemptForRow(
+  attempts: MathPracticeAttemptRow[],
+  practiceTime: string | undefined,
+  preferWrong: boolean,
+): MathPracticeAttemptRow | null {
+  if (attempts.length === 0) return null
+  const pool = preferWrong ? attempts.filter((a) => !a.correct) : attempts
+  const list = pool.length > 0 ? pool : attempts
+
+  if (practiceTime) {
+    const t = Date.parse(practiceTime)
+    if (!Number.isNaN(t)) {
+      let best: MathPracticeAttemptRow | null = null
+      let bestDiff = Infinity
+      for (const a of list) {
+        const diff = Math.abs(Date.parse(a.attemptedAt) - t)
+        if (diff < bestDiff) {
+          bestDiff = diff
+          best = a
+        }
+      }
+      if (best && bestDiff <= 24 * 60 * 60 * 1000) return best
+    }
+  }
+
+  // Summary row → newest attempt for this problem (list is DESC).
+  return list[0] ?? null
+}
+
+export default function ProblemMasteryPanel({
+  problems,
+  masteryMap,
+  problemSets,
+}: Props) {
+  const { user } = useAuth()
+  const { solveCount, solvedAt } = useMathSolved(user)
+  const { wrongIds } = useMathWrong(user)
   const [open, setOpen] = useState(false)
+  const [page, setPage] = useState(1)
+  const [attemptsByProblem, setAttemptsByProblem] = useState<
+    Record<string, MathPracticeAttemptRow[]>
+  >({})
   const today = new Date().toISOString().slice(0, 10)
 
-  const rows = problems
-    .filter(p => masteryMap[p.key] !== undefined)
-    .map(p => {
-      const raw = masteryMap[p.key]!
-      const m = ensureStageInit(raw, today)
-      const graduated = isGraduated(m)
-      const due = graduated ? { label: '已毕业', urgent: 'none' as const } : formatDue(m.nextReviewDate, today)
-      return { p, m, graduated, due }
-    })
-    .sort((a, b) => {
-      if (a.graduated && !b.graduated) return 1
-      if (!a.graduated && b.graduated) return -1
-      const da = a.m.nextReviewDate ?? '9999-12-31'
-      const db = b.m.nextReviewDate ?? '9999-12-31'
-      return da.localeCompare(db)
-    })
+  const rows = useMemo(() => {
+    return problems
+      .map((p) => {
+        const raw = masteryMap[p.key]
+        const m: WordMasteryInfo | null = raw ? ensureStageInit(raw, today) : null
+        const graduated = m ? isGraduated(m) : false
+        const due = graduated
+          ? { label: '已毕业', urgent: 'none' as const }
+          : m
+            ? formatDue(m.nextReviewDate, today)
+            : { label: '—', urgent: 'none' as const }
+        const count = solveCount[p.problemId] ?? 0
+        const practiceStatus: PracticeStatus = wrongIds.has(p.problemId)
+          ? 'wrong'
+          : count > 0
+            ? 'practiced'
+            : 'unseen'
+        const practiceTime = solvedAt[p.problemId] ?? m?.lastSeen
+        return { p, m, graduated, due, count, practiceStatus, practiceTime }
+      })
+      .filter((r) => r.m != null || r.count > 0 || r.practiceStatus === 'wrong')
+      .sort((a, b) => {
+        if (a.graduated && !b.graduated) return 1
+        if (!a.graduated && b.graduated) return -1
+        const statusRank = (s: PracticeStatus) => (s === 'wrong' ? 0 : s === 'unseen' ? 1 : 2)
+        const sr = statusRank(a.practiceStatus) - statusRank(b.practiceStatus)
+        if (sr !== 0) return sr
+        const da = a.m?.nextReviewDate ?? '9999-12-31'
+        const db = b.m?.nextReviewDate ?? '9999-12-31'
+        return da.localeCompare(db)
+      })
+  }, [problems, masteryMap, solveCount, solvedAt, wrongIds, today])
 
-  const hardCount = rows.filter(r => r.m.isHard && !r.graduated).length
-  const graduatedCount = rows.filter(r => r.graduated).length
+  const hardCount = rows.filter((r) => r.m?.isHard && !r.graduated).length
+  const graduatedCount = rows.filter((r) => r.graduated).length
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const pageRows = useMemo(() => {
+    const start = (safePage - 1) * PAGE_SIZE
+    return rows.slice(start, start + PAGE_SIZE)
+  }, [rows, safePage])
+  const rangeStart = rows.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1
+  const rangeEnd = Math.min(safePage * PAGE_SIZE, rows.length)
+
+  const pageProblemIdsKey = useMemo(
+    () => pageRows.map((r) => r.p.problemId).join('\0'),
+    [pageRows],
+  )
+
+  // Resolve attempts for the visible page (row → attempt.draft_id for the button).
+  const userId = user?.id
+  useEffect(() => {
+    if (!open || !userId || !pageProblemIdsKey) {
+      setAttemptsByProblem({})
+      return
+    }
+    const ids = pageProblemIdsKey.split('\0').filter(Boolean)
+    let cancelled = false
+    void fetchPracticeAttemptsForProblems(userId, ids).then((attempts) => {
+      if (cancelled) return
+      const map: Record<string, MathPracticeAttemptRow[]> = {}
+      for (const a of attempts) {
+        ;(map[a.problemId] ??= []).push(a)
+      }
+      setAttemptsByProblem(map)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, userId, pageProblemIdsKey])
+
+  useEffect(() => {
+    setPage(1)
+  }, [rows.length])
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages)
+  }, [page, totalPages])
 
   return (
-    <div className="mx-auto max-w-[640px] px-4 pb-8">
-      <div className="border border-gray-200 rounded-[14px] overflow-hidden bg-white">
-
+    <div className="w-full px-0 pb-8">
+      <div className="overflow-hidden rounded-[14px] border border-gray-200 bg-white">
         {/* Header / toggle */}
         <button
           type="button"
-          onClick={() => setOpen(v => !v)}
-          className="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition-colors text-left cursor-pointer"
+          onClick={() => setOpen((v) => !v)}
+          className="flex w-full cursor-pointer items-center justify-between bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50"
         >
           <div className="flex items-center gap-2">
             <span className="text-[15px]">📊</span>
             <span className="text-text-primary text-[13px] font-bold">题目学习状态</span>
-            <span className="bg-gray-100 text-text-muted text-[10px] font-bold px-2 py-0.5 rounded-full">
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-text-muted">
               {rows.length} 道题
             </span>
           </div>
           <div className="flex items-center gap-2">
             {hardCount > 0 && (
-              <span className="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">
+              <span className="rounded-full border border-red-100 bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-500">
                 🔥 {hardCount} 难题
               </span>
             )}
             {graduatedCount > 0 && (
-              <span className="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-100">
+              <span className="rounded-full border border-green-100 bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-600">
                 ✓ {graduatedCount} 毕业
               </span>
             )}
             <svg
-              className={`transition-transform duration-200 text-text-muted ${open ? 'rotate-180' : ''}`}
-              width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.5"
+              className={`text-text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
             >
-              <path d="M6 9l6 6 6-6"/>
+              <path d="M6 9l6 6 6-6" />
             </svg>
           </div>
         </button>
 
         {/* Table */}
         {open && (
-          <div className="overflow-x-auto border-t border-gray-200">
-            <table className="w-full border-collapse text-[12px]">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted tracking-wider">题目</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-bold text-text-muted tracking-wider">类型</th>
-                  <th className="px-3 py-2 text-center text-[10px] font-bold text-text-muted tracking-wider">阶段</th>
-                  <th className="px-3 py-2 text-center text-[10px] font-bold text-text-muted tracking-wider">下次复习</th>
-                  <th className="px-4 py-2 text-center text-[10px] font-bold text-text-muted tracking-wider">状态</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(({ p, m, graduated, due }) => {
-                  const level = getMasteryLevel(m.correct ?? 0)
-                  return (
-                    <tr
-                      key={p.key}
-                      className="border-t border-gray-100"
-                      style={{ opacity: graduated ? 0.6 : 1 }}
-                    >
-                      <td className="px-4 py-2 font-medium max-w-[180px] truncate" style={{ color: graduated ? '#16a34a' : undefined }}>
-                        {p.title}
-                      </td>
-                      <td className="px-3 py-2 text-[11px] text-text-muted whitespace-nowrap">
-                        第{p.lessonId}讲 · {SECTION_LABEL[p.section] ?? p.section}
-                      </td>
-                      <td className="px-3 py-2 text-center text-text-muted">
-                        {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
-                      </td>
-                      <td className="px-3 py-2 text-center">
-                        <DueLabel due={due} />
-                      </td>
-                      <td className="px-4 py-2 text-center">
-                        {graduated ? (
-                          <span className="text-green-600 text-[10px] font-bold">✓ 毕业</span>
-                        ) : m.isHard ? (
-                          <span className="text-red-500 text-[10px] font-bold">🔥 难</span>
-                        ) : (
-                          <span className="text-text-muted">—</span>
-                        )}
+          <div className="border-t border-gray-200">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] border-collapse text-[12px]">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-4 py-2 text-left text-[10px] font-bold tracking-wider text-text-muted">
+                      题目
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-bold tracking-wider text-text-muted">
+                      类型
+                    </th>
+                    <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                      阶段
+                    </th>
+                    <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                      练习时间
+                    </th>
+                    <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                      练习状态
+                    </th>
+                    <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                      下次复习
+                    </th>
+                    <th className="px-4 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                      掌握
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageRows.map(({ p, m, graduated, due, count, practiceStatus, practiceTime }) => {
+                    const level = getMasteryLevel(m?.correct ?? 0)
+                    const draftProblem = problemSets
+                      ? resolveMathPlanProblem(p, problemSets)
+                      : null
+                    const attempt = pickAttemptForRow(
+                      attemptsByProblem[p.problemId] ?? [],
+                      practiceTime,
+                      practiceStatus === 'wrong',
+                    )
+                    const displayTime = attempt?.attemptedAt ?? practiceTime
+                    return (
+                      <tr
+                        key={p.key}
+                        className="border-t border-gray-100"
+                        style={{ opacity: graduated ? 0.6 : 1 }}
+                      >
+                        <td
+                          className="max-w-[260px] px-4 py-2 font-medium"
+                          style={{ color: graduated ? '#16a34a' : undefined }}
+                        >
+                          <div className="flex min-w-0 items-center gap-2">
+                            <span className="truncate">{p.title}</span>
+                            {problemSets && attempt?.draftId && (
+                              <PracticeViewDraftButton
+                                problem={draftProblem ?? undefined}
+                                problemId={p.problemId}
+                                section={p.section}
+                                draftId={attempt.draftId}
+                                className="shrink-0"
+                              />
+                            )}
+                          </div>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-[11px] text-text-muted">
+                          {lessonDisplayLabel(p.lessonId, true)} ·{' '}
+                          {SECTION_LABEL[p.section] ?? p.section}
+                        </td>
+                        <td className="px-3 py-2 text-center text-text-muted">
+                          {m ? (
+                            <>
+                              {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
+                            </>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-center text-[11px] text-text-muted">
+                          {formatPracticeTime(displayTime)}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-center">
+                          <PracticeStatusLabel status={practiceStatus} count={count} />
+                        </td>
+                        <td className="px-3 py-2 text-center">
+                          <DueLabel due={due} />
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                          {graduated ? (
+                            <span className="text-[10px] font-bold text-green-600">✓ 毕业</span>
+                          ) : m?.isHard ? (
+                            <span className="text-[10px] font-bold text-red-500">🔥 难</span>
+                          ) : m ? (
+                            <span className="text-text-muted">学习中</span>
+                          ) : (
+                            <span className="text-text-muted">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {rows.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-6 text-center text-[12px] text-text-muted">
+                        还没有练习记录 — 完成题目后这里会显示状态
                       </td>
                     </tr>
-                  )
-                })}
-                {rows.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-4 py-6 text-center text-text-muted text-[12px]">
-                      还没有练习记录 — 完成题目后这里会显示状态
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {rows.length > PAGE_SIZE && (
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2.5">
+                <div className="text-[11px] font-bold text-text-muted">
+                  第 {rangeStart}–{rangeEnd} 题 · 共 {rows.length} 题
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={safePage <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="cursor-pointer rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-extrabold text-text-muted disabled:cursor-not-allowed disabled:opacity-40 hover:border-orange-300 hover:text-orange-600"
+                  >
+                    ← 上一页
+                  </button>
+                  <span className="min-w-[4.5rem] text-center text-[11px] font-extrabold text-gray-700">
+                    {safePage} / {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={safePage >= totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    className="cursor-pointer rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-extrabold text-text-muted disabled:cursor-not-allowed disabled:opacity-40 hover:border-orange-300 hover:text-orange-600"
+                  >
+                    下一页 →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
-
       </div>
     </div>
   )

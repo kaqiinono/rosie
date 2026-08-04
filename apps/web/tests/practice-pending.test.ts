@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
   clearLocalPending,
+  clearTodayPlanSubjectPending,
   countLocalPendingSessions,
   getTodayPlanSyncStatus,
+  isChineseFreePracticeScope,
   isPendingUnsynced,
   markLocalPendingSynced,
   mirrorResolvedPending,
@@ -107,5 +109,64 @@ describe('practice pending — local envelopes', () => {
     expect(localStorage.getItem('weekly_session_plan-3')).toBeNull()
     expect(localStorage.getItem('weekly_session_synced_plan-3')).toBeNull()
     expect(countLocalPendingSessions()).toEqual({ total: 0, unsynced: 0 })
+  })
+})
+
+describe('clearTodayPlanSubjectPending — local', () => {
+  it('clears only the requested subject and leaves others', async () => {
+    writeLocalPending('calc', 'daily', envelope({ n: 1 }))
+    writeLocalPending('math', 'active-queue', envelope({ n: 2 }))
+    writeLocalPending('chinese', 'g1b|u=1|p=plan', envelope({ n: 3 }))
+
+    const result = await clearTodayPlanSubjectPending(null, 'calc')
+    expect(result).toEqual({ cleared: 1, failed: 0 })
+    expect(getTodayPlanSyncStatus().calc).toBe('none')
+    expect(getTodayPlanSyncStatus().math).toBe('unsynced')
+    expect(getTodayPlanSyncStatus().chinese).toBe('unsynced')
+  })
+
+  it('clears both english adaptive and weekly (incl. legacy stash)', async () => {
+    writeLocalPending('english_adaptive', 'plan-a', envelope({ n: 1 }))
+    writeLocalPending('english_weekly', 'plan-w', envelope({ n: 2 }))
+    localStorage.setItem(
+      'weekly_session_plan-legacy',
+      JSON.stringify({ savedAt: new Date().toISOString() }),
+    )
+
+    const result = await clearTodayPlanSubjectPending(null, 'english')
+    expect(result.cleared).toBe(3)
+    expect(result.failed).toBe(0)
+    expect(getTodayPlanSyncStatus().english).toBe('none')
+    expect(localStorage.getItem('weekly_session_plan-legacy')).toBeNull()
+  })
+
+  it('skips chinese free practice scopes', async () => {
+    const freeScope = 'g1b|u=1|p=free'
+    expect(isChineseFreePracticeScope(freeScope)).toBe(true)
+    writeLocalPending('chinese', freeScope, envelope({ n: 1 }))
+    writeLocalPending('chinese', 'g1b|u=1|p=plan', envelope({ n: 2 }))
+
+    const result = await clearTodayPlanSubjectPending(null, 'chinese')
+    expect(result.cleared).toBe(1)
+    expect(localStorage.getItem(practicePendingLocalKey('chinese', freeScope))).not.toBeNull()
+    expect(getTodayPlanSyncStatus().chinese).toBe('none')
+  })
+
+  it('does not clear non-today envelopes', async () => {
+    const key = practicePendingLocalKey('math', 'active-queue')
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        savedAt: new Date().toISOString(),
+        date: '2020-01-01',
+        stash: {},
+      }),
+    )
+    const result = await clearTodayPlanSubjectPending(null, 'math')
+    // Stale envelopes are not "today pending"; leave key alone or let read-path clean —
+    // required: cleared === 0 and we must not treat stale as today-plan pending.
+    expect(result.cleared).toBe(0)
+    expect(getTodayPlanSyncStatus().math).toBe('none')
   })
 })

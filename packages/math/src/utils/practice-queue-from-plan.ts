@@ -36,7 +36,15 @@ export function resolveMathPlanProblem(
   mp: MathPlanProblem,
   problemSets: Record<string, ProblemSet>,
 ): Problem | null {
-  return findProblemInSets(problemSets, mp.lessonId, mp.problemId)?.problem ?? null
+  const direct = findProblemInSets(problemSets, mp.lessonId, mp.problemId)?.problem
+  if (direct) return direct
+  // Lesson id on the plan row can lag renames — fall back to scanning by problem id.
+  for (const lessonId of Object.keys(problemSets)) {
+    if (lessonId === mp.lessonId) continue
+    const hit = findProblemInSets(problemSets, lessonId, mp.problemId)?.problem
+    if (hit) return hit
+  }
+  return null
 }
 
 export function mathPlanProblemToQueueItem(

@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 import {
   useAuth,
   todayStr,
   getTodayPlanSyncStatus,
+  clearTodayPlanSubjectPending,
   PRACTICE_PENDING_CHANGED_EVENT,
   type TodayPlanSubjectKey,
   type TodayPlanSyncStatus,
@@ -197,6 +198,15 @@ type TodayPlanOverviewCardsProps = {
   cards: TodayPlanCardModel[]
   linkable?: boolean
   className?: string
+  allowReset?: boolean
+  onResetToast?: (message: string) => void
+}
+
+const SUBJECT_LABEL: Record<TodayPlanSubjectKey, string> = {
+  calc: '口算',
+  english: '英语',
+  math: '数学',
+  chinese: '语文',
 }
 
 const EMPTY_SYNC: Record<TodayPlanSubjectKey, TodayPlanSyncStatus> = {
@@ -211,10 +221,10 @@ function SyncStatusChip({ status }: { status: TodayPlanSyncStatus }) {
   const unsynced = status === 'unsynced'
   return (
     <span
-      className={`pointer-events-none absolute top-1.5 right-1.5 z-[1] rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide shadow-sm ${
+      className={`pointer-events-none inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold tracking-wide ${
         unsynced
-          ? 'bg-amber-500/90 text-white'
-          : 'bg-emerald-600/85 text-white'
+          ? 'border-amber-200/80 bg-amber-50 text-amber-800'
+          : 'border-emerald-200/80 bg-emerald-50 text-emerald-800'
       }`}
       title={unsynced ? '本机有未备份进度' : '进行中进度已备份到云端'}
     >
@@ -227,8 +237,13 @@ export function TodayPlanOverviewCards({
   cards,
   linkable = false,
   className,
+  allowReset = false,
+  onResetToast,
 }: TodayPlanOverviewCardsProps) {
+  const { user } = useAuth()
   const [syncBySubject, setSyncBySubject] = useState(EMPTY_SYNC)
+  const [resettingKey, setResettingKey] = useState<TodayPlanSubjectKey | null>(null)
+  const [confirmSubject, setConfirmSubject] = useState<TodayPlanSubjectKey | null>(null)
 
   const refreshSync = useCallback(() => {
     setSyncBySubject(getTodayPlanSyncStatus())
@@ -250,72 +265,205 @@ export function TodayPlanOverviewCards({
     }
   }, [refreshSync])
 
+  const openResetConfirm = (subject: TodayPlanSubjectKey, e: MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (resettingKey) return
+    setConfirmSubject(subject)
+  }
+
+  const closeResetConfirm = () => {
+    if (resettingKey) return
+    setConfirmSubject(null)
+  }
+
+  const confirmReset = async () => {
+    if (!confirmSubject || resettingKey) return
+    const subject = confirmSubject
+    setResettingKey(subject)
+    try {
+      const { cleared, failed } = await clearTodayPlanSubjectPending(user?.id, subject)
+      refreshSync()
+      if (failed > 0) {
+        onResetToast?.('清除失败，请重试')
+      } else if (cleared === 0) {
+        onResetToast?.('暂无中途进度')
+      }
+    } catch {
+      onResetToast?.('清除失败，请重试')
+    } finally {
+      setResettingKey(null)
+      setConfirmSubject(null)
+    }
+  }
+
   return (
-    <div className={className ?? 'grid grid-cols-2 gap-3 sm:grid-cols-4'}>
-      {cards.map((card) => {
-        const sync = syncBySubject[card.key]
-        const body = (
-          <>
-            <div className="pointer-events-none absolute -right-1 -bottom-1 text-3xl opacity-15">
-              {card.icon}
-            </div>
-            <SyncStatusChip status={sync} />
-            <div
-              className="mb-1 pr-12 text-[11px] font-bold tracking-widest uppercase"
-              style={{ color: card.tone.label }}
-            >
-              {card.label}
-            </div>
-            <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
-              {card.done}
-              {card.total !== null && (
-                <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
-              )}
-            </div>
-            <div
-              className="mt-1 truncate text-[10px] font-medium"
-              style={{ color: card.tone.subtitle }}
-            >
-              {card.subtitle}
-            </div>
-            <div
-              className="mt-2 h-1.5 overflow-hidden rounded-full"
-              style={{ background: 'rgba(0,0,0,.08)' }}
-            >
+    <>
+      <div className={className ?? 'grid grid-cols-2 gap-3 sm:grid-cols-4'}>
+        {cards.map((card) => {
+          const sync = syncBySubject[card.key]
+          const showActions = allowReset && sync !== 'none'
+          const style = {
+            background: card.tone.idleBg,
+            border: `1.5px solid ${card.tone.idleBorder}`,
+            boxShadow: card.tone.idleShadow,
+          }
+          const actionBorder = card.tone.idleBorder
+
+          const content = (
+            <>
+              <div className="pointer-events-none absolute -right-1 -bottom-1 text-3xl opacity-15">
+                {card.icon}
+              </div>
+              <div className="absolute top-1.5 right-1.5 z-[1]">
+                <SyncStatusChip status={sync} />
+              </div>
               <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${card.pct}%`, background: card.tone.bar }}
-              />
+                className={`mb-1 text-[11px] font-bold tracking-widest uppercase ${
+                  sync !== 'none' ? 'pr-14' : ''
+                }`}
+                style={{ color: card.tone.label }}
+              >
+                {card.label}
+              </div>
+              <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
+                {card.done}
+                {card.total !== null && (
+                  <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
+                )}
+              </div>
+              <div
+                className="mt-1 truncate text-[10px] font-medium"
+                style={{ color: card.tone.subtitle }}
+              >
+                {card.subtitle}
+              </div>
+              <div
+                className="mt-2 h-1.5 overflow-hidden rounded-full"
+                style={{ background: 'rgba(0,0,0,.08)' }}
+              >
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${card.pct}%`, background: card.tone.bar }}
+                />
+              </div>
+            </>
+          )
+
+          const actionCellClass =
+            'inline-flex min-h-[40px] flex-1 items-center justify-center gap-1 px-2 py-2 text-[11px] font-bold transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-60'
+
+          const actionBar = showActions ? (
+            <div
+              className="relative z-[2] grid grid-cols-2"
+              style={{ borderTop: `1px solid ${actionBorder}`, background: 'rgba(255,255,255,.45)' }}
+            >
+              <Link
+                href={card.href}
+                className={`${actionCellClass} no-underline`}
+                style={{ color: card.tone.value }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span aria-hidden>▶</span>
+                <span>继续练习</span>
+              </Link>
+              <button
+                type="button"
+                title="清除本轮中途进度"
+                aria-label={`清除${card.label}中途进度`}
+                disabled={resettingKey === card.key}
+                onClick={(e) => openResetConfirm(card.key, e)}
+                className={`${actionCellClass} cursor-pointer`}
+                style={{
+                  color: '#be123c',
+                  borderLeft: `1px solid ${actionBorder}`,
+                }}
+              >
+                <span aria-hidden>{resettingKey === card.key ? '⏳' : '↺'}</span>
+                <span>{resettingKey === card.key ? '清除中…' : '清除进度'}</span>
+              </button>
             </div>
-          </>
-        )
+          ) : null
 
-        const style = {
-          background: card.tone.idleBg,
-          border: `1.5px solid ${card.tone.idleBorder}`,
-          boxShadow: card.tone.idleShadow,
-        }
+          // Content-only clickable card when no action strip.
+          if (linkable && !showActions) {
+            return (
+              <Link
+                key={card.key}
+                href={card.href}
+                className="relative block overflow-hidden rounded-2xl px-4 py-3.5 no-underline transition-all hover:-translate-y-0.5"
+                style={style}
+              >
+                {content}
+              </Link>
+            )
+          }
 
-        if (linkable) {
           return (
-            <Link
+            <div
               key={card.key}
-              href={card.href}
-              className="relative block overflow-hidden rounded-2xl px-4 py-3.5 no-underline transition-all hover:-translate-y-0.5"
+              className="relative flex flex-col overflow-hidden rounded-2xl transition-all hover:-translate-y-0.5"
               style={style}
             >
-              {body}
-            </Link>
+              {linkable ? (
+                <Link
+                  href={card.href}
+                  className="relative block flex-1 px-4 py-3.5 no-underline"
+                  style={{ color: 'inherit' }}
+                >
+                  {content}
+                </Link>
+              ) : (
+                <div className="relative flex-1 px-4 py-3.5">{content}</div>
+              )}
+              {actionBar}
+            </div>
           )
-        }
+        })}
+      </div>
 
-        return (
-          <div key={card.key} className="relative overflow-hidden rounded-2xl px-4 py-3.5" style={style}>
-            {body}
+      {confirmSubject && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-[2px]"
+          role="presentation"
+          onClick={closeResetConfirm}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="today-plan-reset-title"
+            aria-describedby="today-plan-reset-desc"
+            className="w-full max-w-[360px] rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,.18)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-1 text-[15px] font-extrabold tracking-wide text-slate-800" id="today-plan-reset-title">
+              清除「{SUBJECT_LABEL[confirmSubject]}」中途进度？
+            </div>
+            <p className="mb-5 text-[13px] leading-relaxed font-medium text-slate-500" id="today-plan-reset-desc">
+              只会丢掉这一轮还没练完的进度，今日已完成的任务不会动。清除后需要重新开始。
+            </p>
+            <div className="flex gap-2.5">
+              <button
+                type="button"
+                onClick={closeResetConfirm}
+                disabled={!!resettingKey}
+                className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-full border border-slate-200/80 bg-slate-50 px-3 py-2.5 text-[13px] font-bold text-slate-600 transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-60"
+              >
+                先留着
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmReset()}
+                disabled={!!resettingKey}
+                className="inline-flex flex-[1.2] cursor-pointer items-center justify-center rounded-full border border-rose-200/80 bg-rose-50 px-3 py-2.5 text-[13px] font-bold text-rose-700 transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-60"
+              >
+                {resettingKey ? '清除中…' : '确认清除'}
+              </button>
+            </div>
           </div>
-        )
-      })}
-    </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -516,6 +664,8 @@ type TodayPlanOverviewInnerProps = {
   className?: string
   alwaysShow?: boolean
   loadingFallback?: ReactNode
+  allowReset?: boolean
+  onResetToast?: (message: string) => void
 }
 
 function TodayPlanOverviewInner({
@@ -523,13 +673,23 @@ function TodayPlanOverviewInner({
   className,
   alwaysShow = true,
   loadingFallback = null,
+  allowReset = false,
+  onResetToast,
 }: TodayPlanOverviewInnerProps) {
   const { isLoading, cards, hasMath, hasEnglish, hasChinese } = useTodayPlanOverview()
 
   if (isLoading) return <>{loadingFallback}</>
   if (!alwaysShow && !(hasMath || hasEnglish || hasChinese)) return null
 
-  return <TodayPlanOverviewCards cards={cards} linkable={linkable} className={className} />
+  return (
+    <TodayPlanOverviewCards
+      cards={cards}
+      linkable={linkable}
+      className={className}
+      allowReset={allowReset}
+      onResetToast={onResetToast}
+    />
+  )
 }
 
 /** Self-contained overview for homepage / today — no full ChineseProvider. */

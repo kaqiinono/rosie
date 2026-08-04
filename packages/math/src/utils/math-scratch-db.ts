@@ -226,6 +226,23 @@ export async function fetchPracticeAttemptsForProblem(
   return (data as AttemptDbRow[]).map(rowToAttempt)
 }
 
+/** Light list of attempts for many problems (newest first). Used to bind UI rows to attempt ids. */
+export async function fetchPracticeAttemptsForProblems(
+  userId: string,
+  problemIds: string[],
+): Promise<MathPracticeAttemptRow[]> {
+  const unique = [...new Set(problemIds)].filter(Boolean)
+  if (unique.length === 0) return []
+  const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .select('*')
+    .eq('user_id', userId)
+    .in('problem_id', unique)
+    .order('attempted_at', { ascending: false })
+  if (error || !data) return []
+  return (data as AttemptDbRow[]).map(rowToAttempt)
+}
+
 /** Lesson-wide draft history: attempts with archived drafts, newest first. */
 export async function fetchLessonDraftAttempts(
   userId: string,
@@ -491,8 +508,9 @@ async function fetchLatestAttemptDraftObjects(
 }
 
 /**
- * Working scratch or latest archived attempt draft — whichever has canvas objects.
- * Includes correct-attempt drafts so completed plan items can still show 📝 草稿.
+ * Working scratch or latest archived attempt draft for THIS problem.
+ * Multiple practices create multiple attempt drafts — always pick the newest
+ * attempt (or in-progress working canvas), never an older unrelated draft.
  */
 export async function fetchViewableDraftObjects(
   userId: string,
