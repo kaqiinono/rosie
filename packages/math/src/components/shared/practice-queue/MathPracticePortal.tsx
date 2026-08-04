@@ -10,9 +10,7 @@ import {
 } from '@rosie/math/utils/math-skip-reasons'
 import PracticeProblemBody from './PracticeProblemBody'
 import PracticeCelebration from './PracticeCelebration'
-import PracticeViewDraftButton from './PracticeViewDraftButton'
 import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
-import ScratchPadTrigger from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
 
 type Props = {
   items: PracticeQueueItem[]
@@ -55,7 +53,6 @@ export default function MathPracticePortal({
   const current = items[currentIndex]
   const total = items.length
   const progressPct = total > 0 ? Math.min(100, ((currentIndex + 1) / total) * 100) : 0
-  const [draftRefreshKey, setDraftRefreshKey] = useState(0)
   const [skipMenuOpen, setSkipMenuOpen] = useState(false)
   const [otherNote, setOtherNote] = useState('')
   const [showOtherInput, setShowOtherInput] = useState(false)
@@ -84,23 +81,17 @@ export default function MathPracticePortal({
     return () => window.removeEventListener('mousedown', onPointer)
   }, [skipMenuOpen])
 
-  const bumpDraftRefresh = useCallback(() => {
-    setDraftRefreshKey((k) => k + 1)
-  }, [])
-
   const handleWrong = useCallback(() => {
     onAnswerWrong()
-    bumpDraftRefresh()
-  }, [onAnswerWrong, bumpDraftRefresh])
+  }, [onAnswerWrong])
 
   const handleCorrect = useCallback(() => {
-    void Promise.resolve(onAnswerCorrect()).then(() => bumpDraftRefresh())
-  }, [onAnswerCorrect, bumpDraftRefresh])
+    void Promise.resolve(onAnswerCorrect())
+  }, [onAnswerCorrect])
 
   const handleAdvance = useCallback(() => {
     onAdvance()
-    bumpDraftRefresh()
-  }, [onAdvance, bumpDraftRefresh])
+  }, [onAdvance])
 
   const commitSkip = useCallback(
     (reason: MathSkipReason, note?: string) => {
@@ -108,9 +99,8 @@ export default function MathPracticePortal({
       setSkipMenuOpen(false)
       setShowOtherInput(false)
       setOtherNote('')
-      bumpDraftRefresh()
     },
-    [onSkip, bumpDraftRefresh],
+    [onSkip],
   )
 
   const shell = (
@@ -223,38 +213,21 @@ export default function MathPracticePortal({
                   </div>
                 )}
               </div>
-              {!immersive && (
-                <>
-                  <ScratchPadTrigger
-                    problem={current.problem}
-                    problems={[current.problem]}
-                    problemIndex={0}
-                    section={current.section}
-                    variant="compact"
-                    onSolve={async () => {
-                      bumpDraftRefresh()
-                      await handleCorrect()
-                    }}
-                    onWrong={handleWrong}
-                  />
-                  <PracticeViewDraftButton problem={current.problem} refreshKey={draftRefreshKey} />
-                </>
-              )}
+              <button
+                type="button"
+                onClick={onToggleImmersive}
+                className={clsx(
+                  'shrink-0 cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-bold transition-all active:scale-95',
+                  immersive
+                    ? 'border-slate-200 bg-slate-50 text-slate-600'
+                    : 'border-indigo-300 bg-indigo-100 text-indigo-800',
+                )}
+                title={immersive ? '返回详情答题' : '进入草稿答题'}
+              >
+                {immersive ? '📄 详情' : '📝 草稿'}
+              </button>
             </>
           )}
-          <button
-            type="button"
-            onClick={onToggleImmersive}
-            className={clsx(
-              'shrink-0 cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-bold transition-all active:scale-95',
-              immersive
-                ? 'border-indigo-300 bg-indigo-100 text-indigo-800'
-                : 'border-slate-200 bg-slate-50 text-slate-600',
-            )}
-            title="沉浸式草稿纸答题"
-          >
-            {immersive ? '📝 沉浸' : '📄 详情'}
-          </button>
         </div>
         {phase === 'answering' && total > 0 && (
           <div className="relative h-2 overflow-hidden rounded-full bg-slate-100">
@@ -288,7 +261,6 @@ export default function MathPracticePortal({
             onWrong={handleWrong}
             onClose={() => {
               // 「完成」只退出沉浸画板并落库，回到详情答题；退出整场练习用顶栏 ✕ / 暂存
-              bumpDraftRefresh()
               onSetImmersive(false)
             }}
           />

@@ -596,6 +596,7 @@ export default function MathSeaPage() {
       if (filtered.length === 0) return
       startPractice({
         pool: seaPoolToQueueItems(filtered),
+        source: 'sea',
         title: '题海练习',
         initialProblemId,
         returnHref: '/math/sea',

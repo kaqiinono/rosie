@@ -139,6 +139,7 @@ export default function LessonMistakesPage({
     if (mistakePool.length === 0) return
     startPractice({
       pool: mistakePool,
+      source: 'mistakes',
       title: '错题练习',
       initialProblemId,
       returnHref: `${basePath}/mistakes`,

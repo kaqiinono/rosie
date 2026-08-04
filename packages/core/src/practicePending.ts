@@ -61,6 +61,15 @@ export function isChineseFreePracticeScope(scopeKey: string): boolean {
   return /(?:^|\|)p=free(?:\||$)/.test(scopeKey)
 }
 
+/**
+ * Math mid-exit scopes are per entry (`queue:plan`, `queue:sea`, …).
+ * Today-plan card /「清除进度」only care about daily plan practice.
+ * `active-queue` is the pre-split legacy slot (treated as plan until migrated).
+ */
+export function isMathTodayPlanScope(scopeKey: string): boolean {
+  return scopeKey === 'queue:plan' || scopeKey === 'active-queue'
+}
+
 function emptySubjectSync(): Record<TodayPlanSubjectKey, TodayPlanSyncStatus> {
   return { calc: 'none', english: 'none', math: 'none', chinese: 'none' }
 }
@@ -473,6 +482,7 @@ export function getTodayPlanSyncStatus(
       const subject = kindToSubject(parsed.kind)
       if (!subject) continue
       if (parsed.kind === 'chinese' && isChineseFreePracticeScope(parsed.scopeKey)) continue
+      if (parsed.kind === 'math' && !isMathTodayPlanScope(parsed.scopeKey)) continue
       try {
         const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
         if (!env) continue
@@ -525,6 +535,7 @@ export function listTodayPendingForSubject(
       const parsed = parsePendingKey(key)
       if (!parsed || !subjectMatchesKind(subject, parsed.kind)) continue
       if (parsed.kind === 'chinese' && isChineseFreePracticeScope(parsed.scopeKey)) continue
+      if (parsed.kind === 'math' && !isMathTodayPlanScope(parsed.scopeKey)) continue
       try {
         const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
         if (!env) continue

@@ -152,6 +152,19 @@ describe('clearTodayPlanSubjectPending — local', () => {
     expect(getTodayPlanSyncStatus().chinese).toBe('none')
   })
 
+  it('math today-plan status ignores non-plan scopes', async () => {
+    writeLocalPending('math', 'queue:sea', envelope({ n: 1 }))
+    expect(getTodayPlanSyncStatus().math).toBe('none')
+
+    writeLocalPending('math', 'queue:plan', envelope({ n: 2 }))
+    expect(getTodayPlanSyncStatus().math).toBe('unsynced')
+
+    const result = await clearTodayPlanSubjectPending(null, 'math')
+    expect(result.cleared).toBe(1)
+    expect(localStorage.getItem(practicePendingLocalKey('math', 'queue:sea'))).not.toBeNull()
+    expect(localStorage.getItem(practicePendingLocalKey('math', 'queue:plan'))).toBeNull()
+  })
+
   it('does not clear non-today envelopes', async () => {
     const key = practicePendingLocalKey('math', 'active-queue')
     localStorage.setItem(

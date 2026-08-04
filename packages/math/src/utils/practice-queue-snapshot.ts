@@ -1,5 +1,9 @@
 /**
  * Math practice queue pending via @rosie/core practicePending.
+ *
+ * Each practice *source* has its own scope (`queue:plan`, `queue:sea`, …) so
+ * mid-exit stashes never overwrite or resume across entry points.
+ * `returnHref` is only the exit navigation target — not a source tag.
  */
 import { todayStr } from '@rosie/core'
 import {
@@ -13,10 +17,30 @@ import {
 } from '@rosie/core'
 import type { PracticeQueuePhase } from './practice-queue-types'
 
-export const MATH_PRACTICE_SNAPSHOT_VERSION = 1
+export const MATH_PRACTICE_SNAPSHOT_VERSION = 2
 export const MATH_PENDING_KIND = 'math' as const
-/** Single active math practice queue per user (plan / sea / etc. share one slot). */
-export const MATH_PENDING_SCOPE = 'active-queue'
+
+/** @deprecated Pre-source single slot; migrated on first read into `queue:<source>`. */
+export const MATH_PENDING_LEGACY_SCOPE = 'active-queue'
+
+export type MathPracticeSource = 'plan' | 'sea' | 'lesson' | 'mistakes' | 'favorites'
+
+export const MATH_PRACTICE_SOURCES: readonly MathPracticeSource[] = [
+  'plan',
+  'sea',
+  'lesson',
+  'mistakes',
+  'favorites',
+] as const
+
+export function mathPendingScope(source: MathPracticeSource): string {
+  return `queue:${source}`
+}
+
+/** Today-plan card / sync status: only plan (and legacy slot before migration). */
+export function isMathTodayPlanScope(scopeKey: string): boolean {
+  return scopeKey === mathPendingScope('plan') || scopeKey === MATH_PENDING_LEGACY_SCOPE
+}
 
 export type MathPracticeQueueItemRef = {
   problemId: string
@@ -26,7 +50,8 @@ export type MathPracticeQueueItemRef = {
 }
 
 export type MathPracticeSnapshot = {
-  version: number
+  version: typeof MATH_PRACTICE_SNAPSHOT_VERSION | 1
+  source: MathPracticeSource
   date: string
   items: MathPracticeQueueItemRef[]
   currentIndex: number
@@ -37,18 +62,70 @@ export type MathPracticeSnapshot = {
   immersive: boolean
 }
 
-function isValidSnap(snap: unknown): snap is MathPracticeSnapshot {
+function isMathPracticeSource(v: unknown): v is MathPracticeSource {
+  return typeof v === 'string' && (MATH_PRACTICE_SOURCES as readonly string[]).includes(v)
+}
+
+function inferSourceFromReturnHref(href: string): MathPracticeSource {
+  if (href === '/math/ny/plan' || href.startsWith('/math/ny/plan/')) return 'plan'
+  if (href === '/math/sea' || href.startsWith('/math/sea/')) return 'sea'
+  if (href === '/math/mistakes' || href.startsWith('/math/mistakes/')) return 'mistakes'
+  if (href === '/math/favorites' || href.startsWith('/math/favorites/')) return 'favorites'
+  return 'lesson'
+}
+
+function isValidSnap(snap: unknown): snap is Omit<MathPracticeSnapshot, 'source'> & {
+  source?: MathPracticeSource
+} {
   if (!snap || typeof snap !== 'object') return false
   const s = snap as MathPracticeSnapshot
+  const verOk = s.version === 1 || s.version === MATH_PRACTICE_SNAPSHOT_VERSION
   return (
-    s.version === MATH_PRACTICE_SNAPSHOT_VERSION &&
+    verOk &&
     Array.isArray(s.items) &&
     s.items.length > 0 &&
     typeof s.currentIndex === 'number' &&
     s.currentIndex >= 0 &&
     s.currentIndex < s.items.length &&
-    s.phase === 'answering'
+    s.phase === 'answering' &&
+    typeof s.returnHref === 'string'
   )
+}
+
+function normalizeSnap(
+  snap: Omit<MathPracticeSnapshot, 'source'> & { source?: MathPracticeSource },
+  fallbackSource: MathPracticeSource,
+): MathPracticeSnapshot {
+  const source = isMathPracticeSource(snap.source)
+    ? snap.source
+    : inferSourceFromReturnHref(snap.returnHref || '') || fallbackSource
+  return {
+    ...snap,
+    version: MATH_PRACTICE_SNAPSHOT_VERSION,
+    source,
+    date: todayStr(),
+  }
+}
+
+/** Move `active-queue` into `queue:<inferred source>` then delete legacy (idempotent). */
+export function migrateLegacyMathActiveQueue(): void {
+  if (typeof window === 'undefined') return
+
+  const env = readLocalPending<unknown>(MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
+  if (!env) return
+  if (!isValidSnap(env.stash)) {
+    clearLocalPending(MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
+    return
+  }
+
+  const snap = normalizeSnap(env.stash, 'lesson')
+  const scope = mathPendingScope(snap.source)
+  // Do not clobber a newer scoped stash.
+  const existing = readLocalPending<unknown>(MATH_PENDING_KIND, scope, todayStr())
+  if (!existing) {
+    writeLocalPending(MATH_PENDING_KIND, scope, wrapMathEnvelope(snap))
+  }
+  clearLocalPending(MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
 }
 
 export function wrapMathEnvelope(
@@ -58,42 +135,91 @@ export function wrapMathEnvelope(
     version: 1,
     savedAt: new Date().toISOString(),
     date: todayStr(),
-    stash: { ...snap, date: todayStr() },
+    stash: { ...snap, date: todayStr(), version: MATH_PRACTICE_SNAPSHOT_VERSION },
   }
 }
 
 export function writeMathPracticeSnapshot(snap: MathPracticeSnapshot): void {
-  writeLocalPending(MATH_PENDING_KIND, MATH_PENDING_SCOPE, wrapMathEnvelope(snap))
+  migrateLegacyMathActiveQueue()
+  const normalized = normalizeSnap(snap, snap.source)
+  writeLocalPending(
+    MATH_PENDING_KIND,
+    mathPendingScope(normalized.source),
+    wrapMathEnvelope(normalized),
+  )
 }
 
-export function clearMathPracticeSnapshot(): void {
-  clearLocalPending(MATH_PENDING_KIND, MATH_PENDING_SCOPE)
+export function clearMathPracticeSnapshot(source: MathPracticeSource): void {
+  migrateLegacyMathActiveQueue()
+  clearLocalPending(MATH_PENDING_KIND, mathPendingScope(source))
 }
 
 export async function clearMathPendingEverywhere(
   userId: string | null | undefined,
+  source: MathPracticeSource,
 ): Promise<void> {
-  await clearPendingEverywhere(userId, MATH_PENDING_KIND, MATH_PENDING_SCOPE)
+  migrateLegacyMathActiveQueue()
+  await clearPendingEverywhere(userId, MATH_PENDING_KIND, mathPendingScope(source))
+  // Drop leftover legacy slot if still present (e.g. cloud-only).
+  if (source === 'plan') {
+    await clearPendingEverywhere(userId, MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
+  }
 }
 
-export function readMathPracticeSnapshot(today = todayStr()): MathPracticeSnapshot | null {
-  const env = readLocalPending<MathPracticeSnapshot>(MATH_PENDING_KIND, MATH_PENDING_SCOPE, today)
+export function readMathPracticeSnapshot(
+  source: MathPracticeSource,
+  today = todayStr(),
+): MathPracticeSnapshot | null {
+  migrateLegacyMathActiveQueue()
+  const env = readLocalPending<unknown>(MATH_PENDING_KIND, mathPendingScope(source), today)
   if (!env || !isValidSnap(env.stash)) {
-    if (env) clearMathPracticeSnapshot()
+    if (env) clearMathPracticeSnapshot(source)
     return null
   }
-  return env.stash
+  const snap = normalizeSnap(env.stash, source)
+  if (snap.source !== source) return null
+  return snap
 }
 
 export async function resolveMathPracticeSnapshot(
   userId: string | null | undefined,
+  source: MathPracticeSource,
 ): Promise<MathPracticeSnapshot | null> {
-  const env = await resolvePending<MathPracticeSnapshot>(
-    userId,
-    MATH_PENDING_KIND,
-    MATH_PENDING_SCOPE,
-  )
-  if (!env || !isValidSnap(env.stash)) return null
-  mirrorResolvedPending(MATH_PENDING_KIND, MATH_PENDING_SCOPE, env)
-  return env.stash
+  migrateLegacyMathActiveQueue()
+  const scope = mathPendingScope(source)
+  const env = await resolvePending<unknown>(userId, MATH_PENDING_KIND, scope)
+  if (!env || !isValidSnap(env.stash)) {
+    // Legacy cloud row may still use active-queue — pull once for plan.
+    if (source === 'plan') {
+      const legacy = await resolvePending<unknown>(
+        userId,
+        MATH_PENDING_KIND,
+        MATH_PENDING_LEGACY_SCOPE,
+      )
+      if (legacy && isValidSnap(legacy.stash)) {
+        const snap = normalizeSnap(legacy.stash, 'plan')
+        if (snap.source === 'plan') {
+          const mirrored: PracticePendingEnvelope<MathPracticeSnapshot> = {
+            ...legacy,
+            stash: snap,
+          }
+          mirrorResolvedPending(MATH_PENDING_KIND, scope, mirrored)
+          void clearPendingEverywhere(userId, MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
+          return snap
+        }
+      }
+    }
+    return null
+  }
+  const snap = normalizeSnap(env.stash, source)
+  if (snap.source !== source) return null
+  const mirrored: PracticePendingEnvelope<MathPracticeSnapshot> = {
+    ...(env as PracticePendingEnvelope<MathPracticeSnapshot>),
+    stash: snap,
+  }
+  mirrorResolvedPending(MATH_PENDING_KIND, scope, mirrored)
+  return snap
 }
+
+/** @deprecated Use mathPendingScope(source). Kept for tests touching legacy keys. */
+export const MATH_PENDING_SCOPE = MATH_PENDING_LEGACY_SCOPE

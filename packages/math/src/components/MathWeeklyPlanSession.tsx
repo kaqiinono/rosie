@@ -32,7 +32,11 @@ import {
   readMathPracticeSnapshot,
   resolveMathPracticeSnapshot,
 } from '@rosie/math/utils/practice-queue-snapshot'
-import { canAutoEnterMathPlanPractice } from '@rosie/math/utils/math-plan-practice-entry'
+import {
+  canAutoEnterMathPlanPractice,
+  mathPlanPracticeReturnHref,
+  MATH_PLAN_PRACTICE_HREF,
+} from '@rosie/math/utils/math-plan-practice-entry'
 import {
   MATH_PLAN_LESSONS,
   mathPlanDisplayName,
@@ -140,9 +144,10 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       if (items.length === 0 || !user) return false
       startPractice({
         pool: items,
+        source: 'plan',
         title,
         initialProblemId,
-        returnHref: '/math/ny/plan',
+        returnHref: mathPlanPracticeReturnHref(),
       })
       return true
     },
@@ -169,7 +174,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     const tryResume = (pending: NonNullable<ReturnType<typeof readMathPracticeSnapshot>>) => {
       const items = rehydratePracticeQueueItems(pending.items, problemSets)
       if (items.length === 0) {
-        void clearMathPendingEverywhere(userId)
+        void clearMathPendingEverywhere(userId, 'plan')
         return false
       }
       if (!userId) return false
@@ -178,14 +183,15 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
         currentIndex: Math.min(pending.currentIndex, items.length - 1),
         sessionCorrect: pending.sessionCorrect,
         phase: pending.phase,
-        returnHref: pending.returnHref || '/math/ny/plan',
+        source: 'plan',
+        returnHref: mathPlanPracticeReturnHref(),
         title: pending.title || '每日一练',
         immersive: pending.immersive,
       })
       return true
     }
 
-    const local = readMathPracticeSnapshot()
+    const local = readMathPracticeSnapshot('plan')
 
     if (!userId) {
       // The portal needs auth. Wait for it if there's something to resume.
@@ -200,7 +206,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       // Always go through resolve so pickBestPending can prefer a newer revision
       // from another device; the sync local read is only the timeout fallback.
       const pending = await Promise.race([
-        resolveMathPracticeSnapshot(userId),
+        resolveMathPracticeSnapshot(userId, 'plan'),
         new Promise<null>((resolve) => {
           timer = window.setTimeout(() => resolve(null), 2000)
         }),
@@ -208,6 +214,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       if (timer !== undefined) window.clearTimeout(timer)
       if (cancelled) return
       const winner = pending ?? local
+      // Scope `queue:plan` only — sea/lesson stashes live elsewhere.
       if (winner) tryResume(winner)
       setResumeChecked(true)
     })()
@@ -236,13 +243,13 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     // start() / resume() no-op without auth — retry when user is ready.
     if (!user) return
 
-    const date = selectedDate ?? today
-    const dayPlan = weeklyPlan.days.find((d) => d.date === date)
+    // 「执行计划」always means today's required queue, not the calendar selection.
+    const dayPlan = weeklyPlan.days.find((d) => d.date === today)
     if (!dayPlan || dayPlan.problems.length === 0) {
       autoStartDoneRef.current = true
       return
     }
-    const doneKeys = new Set((weeklyPlan.progress[date] ?? { doneKeys: [] }).doneKeys)
+    const doneKeys = new Set((weeklyPlan.progress[today] ?? { doneKeys: [] }).doneKeys)
     const firstUndone = dayPlan.problems.find((p) => !doneKeys.has(p.key))
     // All required problems done — stay on the plan page; do not re-enter practice.
     if (!firstUndone) {
@@ -258,7 +265,6 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     resumeChecked,
     isLoading,
     weeklyPlan,
-    selectedDate,
     today,
     beginPractice,
     practiceActive,
@@ -580,7 +586,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
             </div>
             {!autoStart && (
               <Link
-                href="/math/ny/plan/practice"
+                href={MATH_PLAN_PRACTICE_HREF}
                 className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white no-underline transition-all hover:scale-105 sm:px-4 sm:text-[13px]"
                 style={{
                   background: 'linear-gradient(135deg, #ea580c, #f59e0b)',

@@ -176,6 +176,7 @@ export function createFilterPanel(
         if (practicePool.length === 0) return
         startPractice({
           pool: seaPoolToQueueItems(practicePool),
+          source: 'lesson',
           title: title,
           initialProblemId,
           returnHref: base,

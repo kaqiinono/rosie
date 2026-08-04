@@ -547,6 +547,7 @@ export default function GlobalMistakesPage() {
       if (pool.length === 0) return
       startPractice({
         pool,
+        source: 'mistakes',
         title: '错题练习',
         initialProblemId,
         returnHref: '/math/mistakes',

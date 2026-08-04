@@ -55,6 +55,7 @@ function SectionListPage({ section }: { section: SectionKey }) {
       if (practicePool.length === 0) return
       startPractice({
         pool: practicePool,
+        source: 'lesson',
         title: `${SECTION_LABELS[section]} · ${label}`,
         initialProblemId,
         returnHref: sectionPath,

@@ -29,6 +29,7 @@ export default function MathFavoritesPage() {
     if (queuePool.length === 0) return
     startPractice({
       pool: queuePool,
+      source: 'favorites',
       title: '收藏练习',
       initialProblemId,
       returnHref: '/math/favorites',
