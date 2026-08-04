@@ -5,7 +5,7 @@ import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
 import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
 import { SEA_POOL } from '@rosie/math/utils/sea-data'
-import { problemHasViewableDraft } from '@rosie/math/utils/math-scratch-db'
+import { problemHasViewableDraft, resolveViewableAttemptId } from '@rosie/math/utils/math-scratch-db'
 
 type Props = {
   /** Full problem (practice portal / plan card with resolved Problem). */
@@ -20,6 +20,8 @@ type Props = {
    * Pass a boolean always on plan pages — never leave undefined there.
    */
   hasDraft?: boolean
+  /** When set, skip presence check and open this attempt readonly. */
+  attemptId?: string | null
   section?: string
 }
 
@@ -47,6 +49,7 @@ export default function PracticeViewDraftButton({
   className = '',
   refreshKey = 0,
   hasDraft: hasDraftProp,
+  attemptId: attemptIdProp = null,
   section: sectionProp,
 }: Props) {
   const problemId = problemIdProp ?? problemProp?.id
@@ -59,18 +62,20 @@ export default function PracticeViewDraftButton({
     [problemId, sectionProp],
   )
   const { user } = useAuth()
+  const fromAttempt = Boolean(attemptIdProp)
   const batched = hasDraftProp !== undefined
   const [hasDraftLocal, setHasDraftLocal] = useState(false)
-  const [checking, setChecking] = useState(!batched)
+  const [checking, setChecking] = useState(!batched && !fromAttempt)
   const [open, setOpen] = useState(false)
   const [soloRefresh, setSoloRefresh] = useState(0)
+  const [viewAttemptId, setViewAttemptId] = useState<string | null>(null)
 
-  const hasDraft = batched ? hasDraftProp : hasDraftLocal
+  const hasDraft = fromAttempt ? true : batched ? hasDraftProp : hasDraftLocal
 
   const userId = user?.id
 
   useEffect(() => {
-    if (batched) {
+    if (batched || fromAttempt) {
       setChecking(false)
       return
     }
@@ -89,16 +94,25 @@ export default function PracticeViewDraftButton({
     return () => {
       cancelled = true
     }
-  }, [batched, userId, problemId, refreshKey, soloRefresh])
+  }, [batched, fromAttempt, userId, problemId, refreshKey, soloRefresh])
 
   function handleClose() {
     setOpen(false)
-    if (!batched) setSoloRefresh((n) => n + 1)
+    if (!batched && !fromAttempt) setSoloRefresh((n) => n + 1)
   }
 
   function handleOpen() {
-    if (!user || !hasDraft || !problem) return
-    setOpen(true)
+    if (!user || !hasDraft || !problem || !userId || !problemId) return
+    if (fromAttempt && attemptIdProp) {
+      setViewAttemptId(attemptIdProp)
+      setOpen(true)
+      return
+    }
+    void resolveViewableAttemptId(userId, problemId).then((id) => {
+      if (!id) return
+      setViewAttemptId(id)
+      setOpen(true)
+    })
   }
 
   if (!user || !problemId || !problem || checking || !hasDraft) return null
@@ -113,13 +127,13 @@ export default function PracticeViewDraftButton({
       >
         📝 草稿
       </button>
-      {open && (
+      {open && viewAttemptId && (
         <ScratchPadSession
           problems={[problem]}
           initialIndex={0}
           section={section}
           mode="readonly"
-          preferViewableDraft
+          viewAttemptId={viewAttemptId}
           showCanvas
           disableEdgeNav
           onClose={handleClose}

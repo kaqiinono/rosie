@@ -15,10 +15,11 @@ import {
   loadHtmlImage,
 } from '@rosie/math/components/shared/ScratchPad/scratch-pad-figure'
 import {
-  fetchScratchWorking,
+  ensureInProgressAttempt,
+  findInProgressAttempt,
   insertPracticeAttempt,
   insertScratchDraft,
-  upsertScratchWorking,
+  updateAttemptProgress,
   upsertWrongWithAttempt,
 } from '@rosie/math/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
@@ -26,7 +27,7 @@ import { getMathImagePublicUrl } from '@rosie/math/hooks/useMathProblemImages'
 
 export const SCRATCH_WORKING_CANVAS = { width: 390, height: 700 }
 
-/** Stored in `math_scratch_working.answer_draft` when paper photos are uploaded. */
+/** Stored in attempt answer_snapshot when paper photos are uploaded. */
 export const PAPER_MARKED_CORRECT_KEY = '__paperMarkedCorrect'
 
 const ACCEPTED_IMAGE_EXT = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif'])
@@ -122,41 +123,49 @@ export function createFullScratchImageObject(
   }
 }
 
-/** Detail page / scratch pad: append photo to in-progress working (not archived yet). */
+/** Detail page / scratch pad: append photo to in-progress attempt (not archived yet). */
 export async function appendPaperImageToWorking(
   userId: string,
   problemId: string,
   file: File,
   paperMarkedCorrect: boolean,
   paperId: string | null = null,
+  section = 'lesson',
 ): Promise<{ error: string | null }> {
   const lessonId = lessonIdFromProblemId(problemId)
   const { error, url } = await uploadScratchDraftImage(lessonId, problemId, file)
   if (error || !url) return { error: error ?? '上传失败' }
 
   const { width, height } = await loadImageNaturalSize(url)
-  const row = await fetchScratchWorking(userId, problemId, paperId)
-  const existing = row?.objects ?? []
+  let attempt = await findInProgressAttempt(userId, problemId, paperId)
+  if (!attempt) {
+    attempt = await ensureInProgressAttempt(userId, problemId, section, paperId)
+  }
+  const existing = attempt.objects
   const imageCount = existing.filter((o) => o.kind === 'image').length
   const imageObj = createScratchImageObject(url, width, height, imageCount)
-  const answerDraft = mergePaperMarkedCorrect(row?.answerDraft ?? null, paperMarkedCorrect)
+  const answerDraft = mergePaperMarkedCorrect(attempt.answerSnapshot ?? null, paperMarkedCorrect)
 
-  await upsertScratchWorking(userId, problemId, paperId, [...existing, imageObj], answerDraft)
+  await updateAttemptProgress(attempt.id, [...existing, imageObj], answerDraft)
   return { error: null }
 }
 
-/** Archive in-progress paper working using the marked 对/错 (no app answer check). */
+/** Archive in-progress paper attempt using the marked 对/错 (no app answer check). */
 export async function submitPaperWorkingArchive(input: {
   userId: string
   problemId: string
   section: string
   paperId?: string | null
 }): Promise<{ error: string | null; correct: boolean | null }> {
-  const row = await fetchScratchWorking(input.userId, input.problemId, input.paperId ?? null)
-  if (!row?.objects?.length || !workingHasPaperImages(row.objects)) {
+  const attempt = await findInProgressAttempt(
+    input.userId,
+    input.problemId,
+    input.paperId ?? null,
+  )
+  if (!attempt?.objects?.length || !workingHasPaperImages(attempt.objects)) {
     return { error: '没有可提交的纸质草稿', correct: null }
   }
-  const marked = readPaperMarkedCorrect(row.answerDraft)
+  const marked = readPaperMarkedCorrect(attempt.answerSnapshot)
   if (marked === null) {
     return { error: '请先标记这次练习做对或做错', correct: null }
   }
@@ -166,9 +175,10 @@ export async function submitPaperWorkingArchive(input: {
     problem: { id: input.problemId } as import('@rosie/core').Problem,
     section: input.section,
     correct: marked,
-    objects: row.objects,
-    answerSnapshot: row.answerDraft,
+    objects: attempt.objects,
+    answerSnapshot: attempt.answerSnapshot,
     paperId: input.paperId ?? null,
+    attemptId: attempt.id,
   })
 
   return { error: null, correct: marked }

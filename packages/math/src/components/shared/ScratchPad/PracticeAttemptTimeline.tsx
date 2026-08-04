@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
-import { fetchPracticeAttemptsForProblem } from '@rosie/math/utils/math-scratch-db'
+import { fetchPracticeAttemptsForProblem, fetchAttemptCanvas } from '@rosie/math/utils/math-scratch-db'
+import { attemptRowHasViewableCanvas } from '@rosie/math/utils/math-practice-attempt'
 import ScratchPadContentPreview from './ScratchPadContentPreview'
 
 type PracticeAttemptTimelineProps = {
@@ -48,7 +49,7 @@ export default function PracticeAttemptTimeline({
             <button
               type="button"
               onClick={() => {
-                if (a.draftId) {
+                if (attemptRowHasViewableCanvas(a)) {
                   setPreviewId(a.id === previewId ? null : a.id)
                   onViewDraft?.(a)
                 }
@@ -60,7 +61,7 @@ export default function PracticeAttemptTimeline({
                 第 {attempts.length - i} 次 · {a.correct ? '做对' : '做错'} ·{' '}
                 {formatAttemptTime(a.attemptedAt)}
               </span>
-              {a.draftId && (
+              {attemptRowHasViewableCanvas(a) && (
                 <span
                   className={`text-[10px] font-semibold ${a.correct ? 'text-indigo-500' : 'text-rose-500'}`}
                 >
@@ -68,7 +69,7 @@ export default function PracticeAttemptTimeline({
                 </span>
               )}
             </button>
-            {previewId === a.id && a.draftId && previewAttempt?.id === a.id && (
+            {previewId === a.id && attemptRowHasViewableCanvas(a) && previewAttempt?.id === a.id && (
               <div
                 className={`mt-1.5 overflow-hidden rounded-lg border bg-white p-1 ${a.correct ? 'border-slate-100' : 'border-rose-200'}`}
               >
@@ -77,7 +78,7 @@ export default function PracticeAttemptTimeline({
                     这次做错了，仅供参考演算过程，勿当作正确答案。
                   </p>
                 )}
-                <DraftPreview draftId={a.draftId} />
+                <DraftPreview attempt={a} />
               </div>
             )}
           </li>
@@ -87,15 +88,22 @@ export default function PracticeAttemptTimeline({
   )
 }
 
-function DraftPreview({ draftId }: { draftId: string }) {
-  const [objects, setObjects] = useState<import('./scratch-pad-types').ScratchObject[] | null>(null)
+function DraftPreview({ attempt }: { attempt: MathPracticeAttemptRow }) {
+  const hasEmbedded = attempt.objects.length > 0
+  const [fetched, setFetched] = useState<import('./scratch-pad-types').ScratchObject[] | null>(null)
 
   useEffect(() => {
-    void import('@rosie/math/utils/math-scratch-db').then(({ fetchScratchDraft }) =>
-      fetchScratchDraft(draftId).then((d) => setObjects(d?.objects ?? [])),
-    )
-  }, [draftId])
+    if (hasEmbedded) return
+    let cancelled = false
+    void fetchAttemptCanvas(attempt.id).then((loaded) => {
+      if (!cancelled) setFetched(loaded)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [attempt.id, hasEmbedded])
 
+  const objects = hasEmbedded ? attempt.objects : fetched
   if (!objects) return <p className="p-2 text-[11px] text-slate-400">加载中…</p>
   if (objects.length === 0) return <p className="p-2 text-[11px] text-slate-400">无画布内容</p>
   return <ScratchPadContentPreview objects={objects} />

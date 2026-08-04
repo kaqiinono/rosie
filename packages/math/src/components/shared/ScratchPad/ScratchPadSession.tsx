@@ -5,7 +5,12 @@ import type { Problem } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import type { ScratchObject } from './scratch-pad-types'
 import type { ScratchSessionMode } from '@rosie/math/hooks/math-scratch-types'
-import { upsertScratchWorking } from '@rosie/math/utils/math-scratch-db'
+import {
+  ensureInProgressAttempt,
+  fetchAttemptCanvas,
+  fetchPracticeAttempt,
+  updateAttemptProgress,
+} from '@rosie/math/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math/utils/submitPracticeAttempt'
 import ScratchPadOverlay from './ScratchPadOverlay'
 
@@ -22,18 +27,17 @@ type ScratchPadSessionProps = {
   section?: string
   mode?: ScratchSessionMode
   paperId?: string | null
-  seedWrongAttemptId?: string | null
+  /** Controlled in-progress attempt id (practice/quiz write). */
+  attemptId?: string | null
+  onAttemptId?: (id: string) => void
+  /** Readonly historical attempt (replaces legacy view-draft paths). */
+  viewAttemptId?: string | null
   showCanvas?: boolean
   blankCanvasOnLoad?: boolean
   disableEdgeNav?: boolean
   embedded?: boolean
   /** When true, toolbar shows「结束」instead of「完成」(caller owns onClose meaning). */
   closeEndsSession?: boolean
-  /**
-   * Readonly view: load working scratch or latest archived attempt draft
-   * (same source as plan-page 📝 草稿), without writing back.
-   */
-  preferViewableDraft?: boolean
   onClose: () => void
   onSolve?: (problemId: string) => void | Promise<void>
   onWrong?: (problemId: string) => void
@@ -58,13 +62,14 @@ export default function ScratchPadSession({
   section = 'lesson',
   mode = 'practice',
   paperId = null,
-  seedWrongAttemptId = null,
+  attemptId: attemptIdProp = null,
+  onAttemptId,
+  viewAttemptId = null,
   showCanvas: showCanvasInitial = true,
   blankCanvasOnLoad = false,
   disableEdgeNav = false,
   embedded = false,
   closeEndsSession = false,
-  preferViewableDraft = false,
   onClose,
   onSolve,
   onWrong,
@@ -82,8 +87,12 @@ export default function ScratchPadSession({
   const [showCanvas, setShowCanvas] = useState(showCanvasInitial)
   const [attemptRefresh, setAttemptRefresh] = useState(0)
   const [loading, setLoading] = useState(!blankCanvasOnLoad)
+  const [activeAttemptId, setActiveAttemptId] = useState<string | null>(attemptIdProp)
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const objectsRef = useRef<ScratchObject[]>([])
+  const activeAttemptIdRef = useRef<string | null>(attemptIdProp)
+  const prevProblemIdRef = useRef<string | undefined>(undefined)
+  const answerDraftRef = useRef<unknown>(null)
 
   const item = items[index]
   const problem = item?.problem
@@ -94,6 +103,7 @@ export default function ScratchPadSession({
     objectsRef.current = []
     setObjects([])
     setAnswerDraft(null)
+    answerDraftRef.current = null
     setShowCanvas(showCanvasInitial)
     setLoading(false)
   }, [showCanvasInitial])
@@ -102,47 +112,81 @@ export default function ScratchPadSession({
   const problemId = problem?.id
 
   useEffect(() => {
+    activeAttemptIdRef.current = activeAttemptId
+  }, [activeAttemptId])
+
+  useEffect(() => {
+    if (attemptIdProp !== undefined && attemptIdProp !== null) {
+      setActiveAttemptId(attemptIdProp)
+      activeAttemptIdRef.current = attemptIdProp
+    }
+  }, [attemptIdProp])
+
+  useEffect(() => {
     if (!problemId) return
     if (blankCanvasOnLoad) {
       resetBlank()
       return
     }
+    if (prevProblemIdRef.current !== undefined && prevProblemIdRef.current !== problemId) {
+      activeAttemptIdRef.current = null
+      if (attemptIdProp == null) setActiveAttemptId(null)
+    }
+    prevProblemIdRef.current = problemId
     setLoading(true)
     void (async () => {
       if (!userId) {
         resetBlank()
         return
       }
-      const {
-        fetchScratchWorking,
-        fetchViewableDraftObjects,
-        seedWorkingFromWrongAttempt,
-      } = await import('@rosie/math/utils/math-scratch-db')
-      if (seedWrongAttemptId && index === initialIndex) {
-        const seeded = await seedWorkingFromWrongAttempt(userId, problemId, seedWrongAttemptId)
-        setShowCanvas(seeded.hasScratch)
-        const row = await fetchScratchWorking(userId, problemId, paperId)
-        const loaded = row?.objects ?? []
+
+      if (viewAttemptId && readOnly) {
+        const [loaded, attempt] = await Promise.all([
+          fetchAttemptCanvas(viewAttemptId),
+          fetchPracticeAttempt(viewAttemptId),
+        ])
         objectsRef.current = loaded
         setObjects(loaded)
-        setAnswerDraft(row?.answerDraft ?? seeded.answerDraft)
-        setLoading(false)
-        return
-      }
-      if (preferViewableDraft && readOnly) {
-        const loaded = await fetchViewableDraftObjects(userId, problemId)
-        objectsRef.current = loaded
-        setObjects(loaded)
-        setAnswerDraft(null)
+        setAnswerDraft(attempt?.answerSnapshot ?? null)
+        answerDraftRef.current = attempt?.answerSnapshot ?? null
         setShowCanvas(loaded.length > 0)
         setLoading(false)
         return
       }
-      const row = await fetchScratchWorking(userId, problemId, paperId)
-      const loaded = row?.objects ?? []
+
+      const controlledId = attemptIdProp ?? activeAttemptIdRef.current
+      if (controlledId) {
+        const attempt = await fetchPracticeAttempt(controlledId)
+        if (attempt && attempt.problemId === problemId && (attempt.status === 'in_progress' || readOnly)) {
+          const loaded = attempt.objects.length > 0 ? attempt.objects : await fetchAttemptCanvas(controlledId)
+          objectsRef.current = loaded
+          setObjects(loaded)
+          setAnswerDraft(attempt.answerSnapshot)
+          answerDraftRef.current = attempt.answerSnapshot
+          setShowCanvas(true)
+          setLoading(false)
+          return
+        }
+        if (attempt && attempt.problemId !== problemId) {
+          activeAttemptIdRef.current = null
+          setActiveAttemptId(null)
+        }
+      }
+
+      if (readOnly) {
+        resetBlank()
+        return
+      }
+
+      const attempt = await ensureInProgressAttempt(userId, problemId, itemSection, paperId)
+      activeAttemptIdRef.current = attempt.id
+      setActiveAttemptId(attempt.id)
+      onAttemptId?.(attempt.id)
+      const loaded = attempt.objects.length > 0 ? attempt.objects : []
       objectsRef.current = loaded
       setObjects(loaded)
-      setAnswerDraft(row?.answerDraft ?? null)
+      setAnswerDraft(attempt.answerSnapshot)
+      answerDraftRef.current = attempt.answerSnapshot
       setShowCanvas(true)
       setLoading(false)
     })()
@@ -151,32 +195,56 @@ export default function ScratchPadSession({
     userId,
     paperId,
     blankCanvasOnLoad,
-    seedWrongAttemptId,
-    preferViewableDraft,
+    viewAttemptId,
     readOnly,
-    index,
-    initialIndex,
+    itemSection,
+    attemptIdProp,
     resetBlank,
+    onAttemptId,
   ])
 
-  const persistWorking = useCallback(
+  const ensureAttemptId = useCallback(async (): Promise<string | null> => {
+    if (!userId || !problemId || readOnly) return null
+    if (activeAttemptIdRef.current) return activeAttemptIdRef.current
+    const attempt = await ensureInProgressAttempt(userId, problemId, itemSection, paperId)
+    activeAttemptIdRef.current = attempt.id
+    setActiveAttemptId(attempt.id)
+    onAttemptId?.(attempt.id)
+    return attempt.id
+  }, [userId, problemId, readOnly, itemSection, paperId, onAttemptId])
+
+  const persistProgress = useCallback(
     (objs: ScratchObject[], answer: unknown) => {
       if (!userId || !problemId || readOnly) return
       if (persistTimer.current) clearTimeout(persistTimer.current)
       persistTimer.current = setTimeout(() => {
-        void upsertScratchWorking(userId, problemId, paperId, objs, answer).catch(() => {})
+        void (async () => {
+          try {
+            const id = await ensureAttemptId()
+            if (!id) return
+            await updateAttemptProgress(id, objs, answer)
+          } catch {
+            // Canvas autosave must not block drawing.
+          }
+        })()
       }, 500)
     },
-    [userId, problemId, paperId, readOnly],
+    [userId, problemId, readOnly, ensureAttemptId],
   )
 
   const flushCurrent = useCallback(() => {
-    if (!readOnly && userId && problemId) {
-      void upsertScratchWorking(userId, problemId, paperId, objectsRef.current, answerDraft).catch(
-        () => {},
-      )
+    if (persistTimer.current) {
+      clearTimeout(persistTimer.current)
+      persistTimer.current = null
     }
-  }, [readOnly, userId, problemId, paperId, answerDraft])
+    if (!readOnly && activeAttemptIdRef.current) {
+      void updateAttemptProgress(
+        activeAttemptIdRef.current,
+        objectsRef.current,
+        answerDraftRef.current,
+      ).catch(() => {})
+    }
+  }, [readOnly])
 
   const flushAndGo = useCallback(
     (nextIndex: number) => {
@@ -190,23 +258,25 @@ export default function ScratchPadSession({
     (next: ScratchObject[]) => {
       objectsRef.current = next
       setObjects(next)
-      persistWorking(next, answerDraft)
+      persistProgress(next, answerDraftRef.current)
     },
-    [answerDraft, persistWorking],
+    [persistProgress],
   )
 
   const handleAnswerDraftChange = useCallback(
     (snapshot: unknown) => {
       setAnswerDraft(snapshot)
-      persistWorking(objectsRef.current, snapshot)
+      answerDraftRef.current = snapshot
+      persistProgress(objectsRef.current, snapshot)
     },
-    [persistWorking],
+    [persistProgress],
   )
 
   const handleSubmitResult = useCallback(
     async (correct: boolean, snapshot: unknown, canvasObjects?: ScratchObject[]) => {
       if (!user || !problem || mode !== 'practice') return
       const snapshotObjects = canvasObjects ?? objectsRef.current
+      const attemptId = activeAttemptIdRef.current ?? (await ensureAttemptId())
       try {
         await submitPracticeAttempt({
           userId: user.id,
@@ -216,10 +286,13 @@ export default function ScratchPadSession({
           objects: snapshotObjects,
           answerSnapshot: snapshot,
           paperId,
+          attemptId,
         })
       } catch {
         // Draft/attempt persistence must not block advancing the practice queue.
       }
+      activeAttemptIdRef.current = null
+      setActiveAttemptId(null)
       setAttemptRefresh((n) => n + 1)
       if (correct) {
         await onSolve?.(problem.id)
@@ -227,6 +300,7 @@ export default function ScratchPadSession({
         objectsRef.current = []
         setObjects([])
         setAnswerDraft(null)
+        answerDraftRef.current = null
         if (onAnswerCorrect) {
           await onAnswerCorrect()
         } else if (!queueControlled && index < items.length - 1) {
@@ -234,7 +308,6 @@ export default function ScratchPadSession({
         }
       } else {
         onWrong?.(problem.id)
-        await upsertScratchWorking(user.id, problem.id, paperId, snapshotObjects, snapshot)
       }
     },
     [
@@ -251,18 +324,23 @@ export default function ScratchPadSession({
       onAnswerCorrect,
       queueControlled,
       flushAndGo,
+      ensureAttemptId,
     ],
   )
 
   const handleClose = useCallback(
     (canvasObjects?: ScratchObject[]) => {
-      if (!readOnly && user && problem) {
+      if (!readOnly && activeAttemptIdRef.current) {
         const snapshotObjects = canvasObjects ?? objectsRef.current
-        void upsertScratchWorking(user.id, problem.id, paperId, snapshotObjects, answerDraft)
+        void updateAttemptProgress(
+          activeAttemptIdRef.current,
+          snapshotObjects,
+          answerDraftRef.current,
+        ).catch(() => {})
       }
       onClose()
     },
-    [readOnly, user, problem, paperId, answerDraft, onClose],
+    [readOnly, onClose],
   )
 
   if (!problem || items.length === 0) return null
@@ -312,11 +390,6 @@ export default function ScratchPadSession({
               onPrev: () => void flushAndGo(index - 1),
               onNext: () => void flushAndGo(index + 1),
             }
-          : undefined
-      }
-      mistakeHint={
-        seedWrongAttemptId && index === initialIndex && showCanvas
-          ? '基于错题草稿继续'
           : undefined
       }
     />

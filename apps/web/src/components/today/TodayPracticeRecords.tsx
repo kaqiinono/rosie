@@ -19,7 +19,9 @@ import {
 import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
 import { useMathTodayAttempts } from '@rosie/math/hooks/useMathTodayAttempts'
 import { lessonDisplayLabel } from '@rosie/math'
-import { fetchScratchDraft } from '@rosie/math/utils/math-scratch-db'
+import { fetchAttemptCanvas } from '@rosie/math/utils/math-scratch-db'
+import { attemptRowHasViewableCanvas } from '@rosie/math/utils/math-practice-attempt'
+import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
 import ScratchPadContentPreview from '@rosie/math/components/shared/ScratchPad/ScratchPadContentPreview'
 import { useCalcTodaySessions } from '@rosie/calc'
 import {
@@ -130,15 +132,24 @@ function LoadingLine() {
   return <p className="py-2 text-center text-[12px] font-medium text-slate-400">加载中…</p>
 }
 
-function MathDraftPreview({ draftId }: { draftId: string }) {
-  const [objects, setObjects] = useState<
+function MathDraftPreview({ attempt }: { attempt: MathPracticeAttemptRow }) {
+  const hasEmbedded = attempt.objects.length > 0
+  const [fetched, setFetched] = useState<
     import('@rosie/math/components/shared/ScratchPad/scratch-pad-types').ScratchObject[] | null
   >(null)
 
   useEffect(() => {
-    void fetchScratchDraft(draftId).then((d) => setObjects(d?.objects ?? []))
-  }, [draftId])
+    if (hasEmbedded) return
+    let cancelled = false
+    void fetchAttemptCanvas(attempt.id).then((loaded) => {
+      if (!cancelled) setFetched(loaded)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [attempt.id, hasEmbedded])
 
+  const objects = hasEmbedded ? attempt.objects : fetched
   if (!objects) return <p className="p-2 text-[11px] text-slate-400">加载中…</p>
   if (objects.length === 0) return <p className="p-2 text-[11px] text-slate-400">无画布内容</p>
   return <ScratchPadContentPreview objects={objects} />
@@ -556,7 +567,7 @@ export default function TodayPracticeRecords() {
                         </span>
                       </div>
                     </div>
-                    {a.draftId && (
+                    {attemptRowHasViewableCanvas(a) && (
                       <button
                         type="button"
                         onClick={() => setMathPreviewId(expanded ? null : a.id)}
@@ -566,7 +577,7 @@ export default function TodayPracticeRecords() {
                       </button>
                     )}
                   </div>
-                  {expanded && a.draftId && (
+                  {expanded && attemptRowHasViewableCanvas(a) && (
                     <div className="mt-2 overflow-hidden rounded-lg border border-slate-100 bg-slate-50/50">
                       {!a.correct && (
                         <p className="border-b border-rose-100 bg-rose-50 px-2.5 py-1.5 text-[10px] font-semibold text-rose-700">
@@ -574,7 +585,7 @@ export default function TodayPracticeRecords() {
                         </p>
                       )}
                       <div className="p-1">
-                        <MathDraftPreview draftId={a.draftId} />
+                        <MathDraftPreview attempt={a} />
                       </div>
                     </div>
                   )}

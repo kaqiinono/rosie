@@ -7,7 +7,12 @@ import type {
   MathPracticeAttemptRow,
   MathScratchDraftRow,
   MathScratchWorkingRow,
+  PracticeAttemptStatus,
 } from '@rosie/math/hooks/math-scratch-types'
+import {
+  attemptRowHasViewableCanvas,
+  resolveAttemptCanvasObjects,
+} from '@rosie/math/utils/math-practice-attempt'
 
 function parseObjects(raw: unknown): ScratchObject[] {
   if (!Array.isArray(raw)) return []
@@ -21,11 +26,6 @@ type WorkingDbRow = {
   objects: unknown
   answer_draft: unknown | null
   updated_at: string
-}
-
-/** '' = practice working shared across lesson entry points */
-export function toPaperScope(paperId: string | null | undefined): string {
-  return paperId ?? ''
 }
 
 type DraftDbRow = {
@@ -46,8 +46,10 @@ type AttemptDbRow = {
   lesson_id: string
   section: string
   paper_id: string | null
-  correct: boolean
+  status?: string | null
+  correct: boolean | null
   draft_id: string | null
+  objects?: unknown
   answer_snapshot: unknown | null
   attempted_at: string
 }
@@ -77,6 +79,8 @@ function rowToDraft(r: DraftDbRow): MathScratchDraftRow {
 }
 
 function rowToAttempt(r: AttemptDbRow): MathPracticeAttemptRow {
+  const status: PracticeAttemptStatus =
+    r.status === 'in_progress' ? 'in_progress' : 'completed'
   return {
     id: r.id,
     userId: r.user_id,
@@ -84,8 +88,10 @@ function rowToAttempt(r: AttemptDbRow): MathPracticeAttemptRow {
     lessonId: r.lesson_id,
     section: r.section,
     paperId: r.paper_id,
+    status,
     correct: r.correct,
     draftId: r.draft_id,
+    objects: parseObjects(r.objects),
     answerSnapshot: r.answer_snapshot,
     attemptedAt: r.attempted_at,
   }
@@ -95,89 +101,7 @@ export function countScratchObjects(objects: ScratchObject[]): number {
   return objects.length
 }
 
-export async function fetchScratchWorking(
-  userId: string,
-  problemId: string,
-  paperId: string | null,
-): Promise<MathScratchWorkingRow | null> {
-  const paperScope = toPaperScope(paperId)
-  const { data, error } = await supabase
-    .from('math_scratch_working')
-    .select('user_id, problem_id, paper_scope, objects, answer_draft, updated_at')
-    .eq('user_id', userId)
-    .eq('problem_id', problemId)
-    .eq('paper_scope', paperScope)
-    .maybeSingle()
-  if (error || !data) return null
-  return rowToWorking(data as WorkingDbRow)
-}
-
-export async function upsertScratchWorking(
-  userId: string,
-  problemId: string,
-  paperId: string | null,
-  objects: ScratchObject[],
-  answerDraft: unknown | null,
-): Promise<void> {
-  const paperScope = toPaperScope(paperId)
-
-  // Prefer SECURITY DEFINER RPC (packages/math/sql/math-scratch-working-fix.sql)
-  // so writes use auth.uid() and are not blocked by broken INSERT RLS on upsert.
-  const { error: rpcError } = await supabase.rpc('upsert_math_scratch_working', {
-    p_problem_id: problemId,
-    p_paper_scope: paperScope,
-    p_objects: objects,
-    p_answer_draft: answerDraft,
-  })
-  if (!rpcError) return
-
-  // Fallback when RPC not deployed yet.
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const uid = session?.user?.id ?? userId
-  if (!session?.user?.id) {
-    throw rpcError
-  }
-
-  const { error } = await supabase.from('math_scratch_working').upsert(
-    {
-      user_id: uid,
-      problem_id: problemId,
-      paper_scope: paperScope,
-      objects,
-      answer_draft: answerDraft,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: 'user_id,problem_id,paper_scope' },
-  )
-  if (error) throw error
-}
-
-export async function clearScratchWorking(
-  userId: string,
-  problemId: string,
-  paperId: string | null,
-): Promise<void> {
-  await supabase
-    .from('math_scratch_working')
-    .delete()
-    .eq('user_id', userId)
-    .eq('problem_id', problemId)
-    .eq('paper_scope', toPaperScope(paperId))
-}
-
-export async function clearAllScratchWorkingForPaper(
-  userId: string,
-  paperId: string,
-): Promise<void> {
-  await supabase
-    .from('math_scratch_working')
-    .delete()
-    .eq('user_id', userId)
-    .eq('paper_scope', paperId)
-}
-
+/** @deprecated Admin/migration only (MathPdfSliceMatcher). Practice canvas lives on attempts. */
 export async function insertScratchDraft(
   userId: string,
   problemId: string,
@@ -221,12 +145,13 @@ export async function fetchPracticeAttemptsForProblem(
     .select('*')
     .eq('user_id', userId)
     .eq('problem_id', problemId)
+    .eq('status', 'completed')
     .order('attempted_at', { ascending: false })
   if (error || !data) return []
   return (data as AttemptDbRow[]).map(rowToAttempt)
 }
 
-/** Lesson-wide draft history: attempts with archived drafts, newest first. */
+/** Lesson-wide draft history: completed attempts with viewable canvas, newest first. */
 export async function fetchLessonDraftAttempts(
   userId: string,
   lessonId: string,
@@ -236,10 +161,12 @@ export async function fetchLessonDraftAttempts(
     .select('*')
     .eq('user_id', userId)
     .eq('lesson_id', lessonId)
-    .not('draft_id', 'is', null)
+    .eq('status', 'completed')
     .order('attempted_at', { ascending: false })
   if (error || !data) return []
-  return (data as AttemptDbRow[]).map(rowToAttempt)
+  return (data as AttemptDbRow[])
+    .map(rowToAttempt)
+    .filter((a) => attemptRowHasViewableCanvas(a))
 }
 
 export async function fetchPracticeAttempt(
@@ -252,6 +179,144 @@ export async function fetchPracticeAttempt(
     .maybeSingle()
   if (error || !data) return null
   return rowToAttempt(data as AttemptDbRow)
+}
+
+export async function findInProgressAttempt(
+  userId: string,
+  problemId: string,
+  paperId: string | null,
+): Promise<MathPracticeAttemptRow | null> {
+  let q = supabase
+    .from('math_practice_attempts')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('problem_id', problemId)
+    .eq('status', 'in_progress')
+  q = paperId ? q.eq('paper_id', paperId) : q.is('paper_id', null)
+  const { data, error } = await q.maybeSingle()
+  if (error || !data) return null
+  return rowToAttempt(data as AttemptDbRow)
+}
+
+export async function ensureInProgressAttempt(
+  userId: string,
+  problemId: string,
+  section: string,
+  paperId: string | null,
+): Promise<MathPracticeAttemptRow> {
+  const existing = await findInProgressAttempt(userId, problemId, paperId)
+  if (existing) return existing
+  const lessonId = lessonIdFromProblemId(problemId)
+  const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .insert({
+      user_id: userId,
+      problem_id: problemId,
+      lesson_id: lessonId,
+      section,
+      paper_id: paperId,
+      status: 'in_progress',
+      correct: null,
+      objects: [],
+      answer_snapshot: null,
+      draft_id: null,
+    })
+    .select('*')
+    .single()
+  if (error) {
+    // Race: unique partial index on in_progress — another insert won first.
+    if (error.code === '23505') {
+      const raced = await findInProgressAttempt(userId, problemId, paperId)
+      if (raced) return raced
+    }
+    throw error
+  }
+  if (!data) throw new Error('ensure in_progress failed')
+  invalidateSessionStore('math_practice_attempts_today')
+  return rowToAttempt(data as AttemptDbRow)
+}
+
+export async function updateAttemptProgress(
+  attemptId: string,
+  objects: ScratchObject[],
+  answerSnapshot: unknown | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('math_practice_attempts')
+    .update({
+      objects,
+      answer_snapshot: answerSnapshot,
+      attempted_at: new Date().toISOString(),
+    })
+    .eq('id', attemptId)
+    .eq('status', 'in_progress')
+  if (error) throw error
+}
+
+export async function completePracticeAttempt(input: {
+  attemptId: string
+  correct: boolean
+  objects: ScratchObject[]
+  answerSnapshot: unknown | null
+}): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .update({
+      status: 'completed',
+      correct: input.correct,
+      objects: input.objects,
+      answer_snapshot: input.answerSnapshot,
+      attempted_at: new Date().toISOString(),
+    })
+    .eq('id', input.attemptId)
+    .eq('status', 'in_progress')
+    .select('id')
+  if (error) throw error
+  const updated = (data?.length ?? 0) > 0
+  if (updated) invalidateSessionStore('math_practice_attempts_today')
+  return updated
+}
+
+export async function insertCompletedAttempt(
+  userId: string,
+  problemId: string,
+  section: string,
+  correct: boolean,
+  objects: ScratchObject[],
+  answerSnapshot: unknown | null,
+  paperId: string | null,
+): Promise<string> {
+  const lessonId = lessonIdFromProblemId(problemId)
+  const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .insert({
+      user_id: userId,
+      problem_id: problemId,
+      lesson_id: lessonId,
+      section,
+      paper_id: paperId,
+      status: 'completed',
+      correct,
+      objects,
+      draft_id: null,
+      answer_snapshot: answerSnapshot,
+    })
+    .select('id')
+    .single()
+  if (error || !data) throw error ?? new Error('completed attempt insert failed')
+  invalidateSessionStore('math_practice_attempts_today')
+  return data.id as string
+}
+
+export async function fetchAttemptCanvas(attemptId: string): Promise<ScratchObject[]> {
+  const attempt = await fetchPracticeAttempt(attemptId)
+  if (!attempt) return []
+  let fallbackDraftObjects: ScratchObject[] | null = null
+  if (attempt.draftId) {
+    const draft = await fetchScratchDraft(attempt.draftId)
+    fallbackDraftObjects = draft?.objects ?? null
+  }
+  return resolveAttemptCanvasObjects(attempt, fallbackDraftObjects)
 }
 
 export async function insertPracticeAttempt(
@@ -370,33 +435,90 @@ export async function fetchAllScratchWorkingForPaper(
   userId: string,
   paperId: string,
 ): Promise<Map<string, MathScratchWorkingRow>> {
+  const map = new Map<string, MathScratchWorkingRow>()
+
   const { data, error } = await supabase
+    .from('math_practice_attempts')
+    .select('user_id, problem_id, objects, answer_snapshot, attempted_at')
+    .eq('user_id', userId)
+    .eq('paper_id', paperId)
+    .eq('status', 'in_progress')
+
+  if (!error && data) {
+    for (const row of data as {
+      user_id: string
+      problem_id: string
+      objects: unknown
+      answer_snapshot: unknown | null
+      attempted_at: string
+    }[]) {
+      map.set(row.problem_id, {
+        userId: row.user_id,
+        problemId: row.problem_id,
+        paperScope: paperId,
+        objects: parseObjects(row.objects),
+        answerDraft: row.answer_snapshot,
+        updatedAt: row.attempted_at,
+      })
+    }
+  }
+
+  // Migration-only: read legacy math_scratch_working until backfill completes (see math-practice-attempts-status-objects.sql)
+  const { data: legacy, error: legacyErr } = await supabase
     .from('math_scratch_working')
     .select('user_id, problem_id, paper_scope, objects, answer_draft, updated_at')
     .eq('user_id', userId)
     .eq('paper_scope', paperId)
-  const map = new Map<string, MathScratchWorkingRow>()
-  if (error || !data) return map
-  for (const row of data as WorkingDbRow[]) {
-    const w = rowToWorking(row)
-    map.set(w.problemId, w)
+  if (!legacyErr && legacy) {
+    for (const row of legacy as WorkingDbRow[]) {
+      if (map.has(row.problem_id)) continue
+      map.set(row.problem_id, rowToWorking(row))
+    }
   }
+
   return map
 }
 
 export async function fetchQuizScratchObjectsMap(
   paperId: string,
 ): Promise<Map<string, ScratchObject[]>> {
-  const { data: links, error } = await supabase
+  const map = new Map<string, ScratchObject[]>()
+
+  const { data: attempts, error } = await supabase
+    .from('math_practice_attempts')
+    .select('problem_id, objects, draft_id')
+    .eq('paper_id', paperId)
+    .eq('status', 'completed')
+    .order('attempted_at', { ascending: false })
+
+  if (!error && attempts) {
+    for (const row of attempts as {
+      problem_id: string
+      objects: unknown
+      draft_id: string | null
+    }[]) {
+      if (map.has(row.problem_id)) continue
+      let objects = parseObjects(row.objects)
+      if (objects.length === 0 && row.draft_id) {
+        const draft = await fetchScratchDraft(row.draft_id)
+        objects = draft?.objects ?? []
+      }
+      if (objects.length > 0) map.set(row.problem_id, objects)
+    }
+  }
+
+  const { data: links, error: linkErr } = await supabase
     .from('math_quiz_scratch_links')
     .select('problem_id, draft_id')
     .eq('paper_id', paperId)
-  const map = new Map<string, ScratchObject[]>()
-  if (error || !links) return map
-  for (const link of links as { problem_id: string; draft_id: string }[]) {
-    const draft = await fetchScratchDraft(link.draft_id)
-    if (draft?.objects.length) map.set(link.problem_id, draft.objects)
+  if (!linkErr && links) {
+    for (const link of links as { problem_id: string; draft_id: string }[]) {
+      if (map.has(link.problem_id) && (map.get(link.problem_id)?.length ?? 0) > 0) continue
+      const draft = await fetchScratchDraft(link.draft_id)
+      if (draft?.objects.length) map.set(link.problem_id, draft.objects)
+    }
   }
+
   return map
 }
 
@@ -406,19 +528,21 @@ export async function fetchWrongAttemptId(
 ): Promise<string | null> {
   const { data, error } = await supabase
     .from('math_practice_attempts')
-    .select('id')
+    .select('id, objects, draft_id')
     .eq('user_id', userId)
     .eq('problem_id', problemId)
+    .eq('status', 'completed')
     .eq('correct', false)
-    .not('draft_id', 'is', null)
     .order('attempted_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
   if (error || !data) return null
-  return data.id as string
+  for (const row of data as { id: string; objects: unknown; draft_id: string | null }[]) {
+    const objects = parseObjects(row.objects)
+    if (objects.length > 0 || row.draft_id) return row.id
+  }
+  return null
 }
 
-/** Problem ids among wrong attempts that have an archived scratch draft. */
+/** Problem ids among wrong completed attempts that have viewable canvas. */
 export async function fetchWrongDraftProblemIds(
   userId: string,
   problemIds: string[],
@@ -426,13 +550,18 @@ export async function fetchWrongDraftProblemIds(
   if (problemIds.length === 0) return new Set()
   const { data, error } = await supabase
     .from('math_practice_attempts')
-    .select('problem_id')
+    .select('problem_id, objects, draft_id')
     .eq('user_id', userId)
+    .eq('status', 'completed')
     .eq('correct', false)
-    .not('draft_id', 'is', null)
     .in('problem_id', problemIds)
   if (error || !data) return new Set()
-  return new Set(data.map((r) => r.problem_id as string))
+  const out = new Set<string>()
+  for (const row of data as { problem_id: string; objects: unknown; draft_id: string | null }[]) {
+    const objects = parseObjects(row.objects)
+    if (objects.length > 0 || row.draft_id) out.add(row.problem_id)
+  }
+  return out
 }
 
 export async function resolveWrongAttemptId(
@@ -446,68 +575,12 @@ export async function resolveWrongAttemptId(
   return null
 }
 
-/** Seed practice working from the wrong attempt's draft (mistake retry). */
-export async function seedWorkingFromWrongAttempt(
-  userId: string,
-  problemId: string,
-  attemptId: string,
-): Promise<{ hasScratch: boolean; answerDraft: unknown | null }> {
-  const attempt = await fetchPracticeAttempt(attemptId)
-  if (!attempt?.draftId) {
-    await clearScratchWorking(userId, problemId, null)
-    return { hasScratch: false, answerDraft: attempt?.answerSnapshot ?? null }
-  }
-  const draft = await fetchScratchDraft(attempt.draftId)
-  if (!draft) {
-    return { hasScratch: false, answerDraft: attempt.answerSnapshot }
-  }
-  await upsertScratchWorking(
-    userId,
-    problemId,
-    null,
-    draft.objects,
-    attempt.answerSnapshot,
-  )
-  return { hasScratch: true, answerDraft: attempt.answerSnapshot }
-}
-
-/** Latest archived attempt draft for a problem (wrong or correct), if any. */
-async function fetchLatestAttemptDraftObjects(
-  userId: string,
-  problemId: string,
-): Promise<ScratchObject[]> {
-  const { data, error } = await supabase
-    .from('math_practice_attempts')
-    .select('draft_id')
-    .eq('user_id', userId)
-    .eq('problem_id', problemId)
-    .not('draft_id', 'is', null)
-    .order('attempted_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-  if (error || !data?.draft_id) return []
-  const draft = await fetchScratchDraft(data.draft_id as string)
-  return draft?.objects ?? []
-}
-
-/**
- * Working scratch or latest archived attempt draft — whichever has canvas objects.
- * Includes correct-attempt drafts so completed plan items can still show 📝 草稿.
- */
-export async function fetchViewableDraftObjects(
-  userId: string,
-  problemId: string,
-): Promise<ScratchObject[]> {
-  const working = await fetchScratchWorking(userId, problemId, null)
-  if (working?.objects && working.objects.length > 0) return working.objects
-  return fetchLatestAttemptDraftObjects(userId, problemId)
-}
-
 const viewableDraftInflight = new Map<string, Promise<Set<string>>>()
 
 /**
- * Batch presence check for plan pages — 2–3 light queries total, never N×full draft downloads.
- * A problem is "viewable" if working canvas is non-empty OR an attempt has a draft with objects.
+ * Batch presence check for plan pages — light queries only, never N×full canvas JSON downloads.
+ * A problem is "viewable" if it has an in_progress attempt, completed attempt with embedded
+ * objects, or a legacy completed attempt whose draft_id points at a non-empty draft.
  */
 export async function fetchViewableDraftProblemIds(
   userId: string,
@@ -522,48 +595,61 @@ export async function fetchViewableDraftProblemIds(
   const promise = (async (): Promise<Set<string>> => {
     const out = new Set<string>()
 
-    // Do NOT select `objects` here — canvas JSON is huge and caused request storms / bandwidth spikes.
-    // Empty working rows are rare (cleared on correct); open-time load still verifies content.
-    const [{ data: workingRows }, { data: attemptRows }] = await Promise.all([
-      supabase
-        .from('math_scratch_working')
-        .select('problem_id')
-        .eq('user_id', userId)
-        .eq('paper_scope', '')
-        .in('problem_id', unique)
-        .not('objects', 'eq', '[]'),
-      supabase
-        .from('math_practice_attempts')
-        .select('problem_id, draft_id')
-        .eq('user_id', userId)
-        .not('draft_id', 'is', null)
-        .in('problem_id', unique),
-    ])
+    const [{ data: inProgressRows }, { data: completedWithObjects }, { data: completedWithDraft }] =
+      await Promise.all([
+        supabase
+          .from('math_practice_attempts')
+          .select('problem_id')
+          .eq('user_id', userId)
+          .eq('status', 'in_progress')
+          .is('paper_id', null)
+          .in('problem_id', unique)
+          .not('objects', 'eq', '[]'),
+        supabase
+          .from('math_practice_attempts')
+          .select('problem_id')
+          .eq('user_id', userId)
+          .eq('status', 'completed')
+          .is('paper_id', null)
+          .in('problem_id', unique)
+          .not('objects', 'eq', '[]'),
+        supabase
+          .from('math_practice_attempts')
+          .select('problem_id, draft_id')
+          .eq('user_id', userId)
+          .eq('status', 'completed')
+          .is('paper_id', null)
+          .in('problem_id', unique)
+          .not('draft_id', 'is', null),
+      ])
 
-    for (const row of workingRows ?? []) {
+    for (const row of inProgressRows ?? []) {
+      out.add(row.problem_id as string)
+    }
+    for (const row of completedWithObjects ?? []) {
       out.add(row.problem_id as string)
     }
 
     const draftIds = [
       ...new Set(
-        (attemptRows ?? [])
+        (completedWithDraft ?? [])
           .map((r) => r.draft_id as string | null)
           .filter((id): id is string => Boolean(id)),
       ),
     ]
-    if (draftIds.length === 0) return out
+    if (draftIds.length > 0) {
+      const { data: drafts } = await supabase
+        .from('math_scratch_drafts')
+        .select('id, object_count')
+        .in('id', draftIds)
+        .gt('object_count', 0)
 
-    const { data: drafts } = await supabase
-      .from('math_scratch_drafts')
-      .select('id, object_count')
-      .in('id', draftIds)
-      .gt('object_count', 0)
-
-    const goodDrafts = new Set((drafts ?? []).map((d) => d.id as string))
-    for (const row of attemptRows ?? []) {
-      const draftId = row.draft_id as string | null
-      if (draftId && goodDrafts.has(draftId)) {
-        out.add(row.problem_id as string)
+      const goodDrafts = new Set((drafts ?? []).map((d) => d.id as string))
+      for (const row of completedWithDraft ?? []) {
+        const draftId = row.draft_id as string | null
+        if (draftId && goodDrafts.has(draftId)) {
+          out.add(row.problem_id as string)
+        }
       }
     }
     return out
@@ -581,4 +667,21 @@ export async function problemHasViewableDraft(
 ): Promise<boolean> {
   const ids = await fetchViewableDraftProblemIds(userId, [problemId])
   return ids.has(problemId)
+}
+
+/** Latest attempt id with viewable canvas (in_progress or completed with objects). */
+export async function resolveViewableAttemptId(
+  userId: string,
+  problemId: string,
+): Promise<string | null> {
+  const inProgress = await findInProgressAttempt(userId, problemId, null)
+  if (inProgress) return inProgress.id
+
+  const attempts = await fetchPracticeAttemptsForProblem(userId, problemId)
+  for (const a of attempts) {
+    if (a.status !== 'completed') continue
+    const canvas = await fetchAttemptCanvas(a.id)
+    if (canvas.length > 0) return a.id
+  }
+  return null
 }
