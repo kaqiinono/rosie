@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState, createContext, useContext, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth, useImmersive, STORAGE_KEYS, todayStr, usePracticePendingLifecycle } from '@rosie/core'
 import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
@@ -29,58 +29,16 @@ import {
   type MathPracticeSource,
 } from '@rosie/math-kit/utils/practice-queue-snapshot'
 import MathPracticePortal from './MathPracticePortal'
+import {
+  PracticeQueueContext,
+  type PracticeQueueContextValue,
+  type ResumeOpts,
+} from '@rosie/math-kit/components/shared/practice-queue/practice-queue-context'
 
-type ResumeOpts = {
-  items: PracticeQueueItem[]
-  currentIndex: number
-  sessionCorrect: number
-  phase: PracticeQueuePhase
-  source: MathPracticeSource
-  returnHref: string
-  title: string
-  immersive: boolean
-}
-
-type PracticeQueueContextValue = {
-  isActive: boolean
-  phase: PracticeQueuePhase
-  items: PracticeQueueItem[]
-  currentIndex: number
-  sessionCorrect: number
-  immersive: boolean
-  source: MathPracticeSource | null
-  returnHref: string
-  title: string
-  currentItem: PracticeQueueItem | null
-  start: (opts: PracticeQueueStartOpts) => void
-  /** Restore a previously snapshotted queue (same-tab mid-exit resume). */
-  resume: (opts: ResumeOpts) => void
-  /** Read pending snapshot refs without clearing (caller rehydrates Problems). */
-  peekPendingSnapshot: (source: MathPracticeSource) => {
-    items: MathPracticeQueueItemRef[]
-    currentIndex: number
-    sessionCorrect: number
-    phase: PracticeQueuePhase
-    source: MathPracticeSource
-    returnHref: string
-    title: string
-    immersive: boolean
-  } | null
-  end: () => void
-  /** Flush cloud pending then exit to returnHref (answering phase). */
-  stash: () => void
-  flushCloudNow: () => Promise<boolean>
-  restart: () => void
-  onAnswerCorrect: () => void
-  onAnswerWrong: () => void
-  /** Advance without marking correct (e.g. after 不会 + review 题解). */
-  onAdvance: () => void
-  onSkip: (reason: MathSkipReason, note?: string) => void
-  setImmersive: (value: boolean) => void
-  toggleImmersive: () => void
-}
-
-const PracticeQueueContext = createContext<PracticeQueueContextValue | null>(null)
+// Context object + consumer hooks now live in the aggregator-free kit module so
+// consumers don't pull in this Provider (which imports build-practice-queue).
+export { usePracticeQueue, usePracticeQueueOptional } from '@rosie/math-kit/components/shared/practice-queue/practice-queue-context'
+export type { PracticeQueueContextValue }
 
 function readImmersivePref(): boolean {
   if (typeof window === 'undefined') return false
@@ -523,14 +481,3 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function usePracticeQueue(): PracticeQueueContextValue {
-  const ctx = useContext(PracticeQueueContext)
-  if (!ctx) {
-    throw new Error('usePracticeQueue must be used within PracticeQueueProvider')
-  }
-  return ctx
-}
-
-export function usePracticeQueueOptional(): PracticeQueueContextValue | null {
-  return useContext(PracticeQueueContext)
-}

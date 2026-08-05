@@ -12,8 +12,8 @@ import {
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
 import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
-import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
-import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
+import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
+import { seaPoolToQueueItems } from '@rosie/math-kit/utils/practice-queue-from-sea'
 
 export default function MathFavoritesPage() {
   const { user } = useAuth()

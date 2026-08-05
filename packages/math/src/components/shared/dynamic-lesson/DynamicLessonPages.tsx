@@ -10,13 +10,13 @@ import LessonProblemList from '@rosie/math-kit/components/shared/LessonProblemLi
 import LessonMistakesPage from '@rosie/math/components/shared/LessonMistakesPage'
 import LessonNotesPage from '@rosie/math-kit/components/shared/LessonNotesPage'
 import LessonDraftsPage from '@rosie/math-kit/components/shared/LessonDraftsPage'
-import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import { mathWrongStore } from '@rosie/math-kit/hooks/useMathWrong'
 import { syncWrongBookFromAttempts } from '@rosie/math-kit/utils/math-scratch-db'
 import { lessonDisplayLabelFromRegistry } from '@rosie/math-kit/utils/lesson-registry'
 import { useLessonRoute } from './LessonRouteContext'
-import type { MasteryFilter, PracticeFilter, SkipReasonFilter } from '@rosie/math/components/shared/FilterPanel'
+import type { MasteryFilter, PracticeFilter, SkipReasonFilter } from '@rosie/math-kit/components/shared/FilterPanel'
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
 

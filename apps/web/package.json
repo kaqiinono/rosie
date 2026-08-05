@@ -23,6 +23,7 @@
     "@rosie/flipbook": "workspace:*",
     "@rosie/math": "workspace:*",
     "@rosie/math-kit": "workspace:*",
+    "@rosie/math-content": "workspace:*",
     "@rosie/player": "workspace:*",
     "@rosie/rewards": "workspace:*",
     "@rosie/ui": "workspace:*",

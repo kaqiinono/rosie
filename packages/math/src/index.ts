@@ -1,8 +1,9 @@
-// @rosie/math — public API for app consumers.
-// Most of the math surface (lesson components, data, hooks) is imported via deep
-// subpaths, e.g. '@rosie/math/components/lesson/g1/lesson35/ProblemDetail',
-// '@rosie/math/utils/g1/lesson35-data', '@rosie/math/hooks/useMathWeeklyPlan'.
-// A barrel for those would collide — every lesson exports the same names
+// @rosie/math — top-layer public API for app consumers (aggregators, cards, plan/
+// quiz/sea engine). Lesson content + data banks live in @rosie/math-content, and
+// shared foundation (hooks, primitives, ScratchPad) in @rosie/math-kit, both imported
+// via deep subpaths, e.g. '@rosie/math-content/components/lesson/g1/lesson35/ProblemDetail',
+// '@rosie/math-content/utils/g1/lesson35-data', '@rosie/math-kit/hooks/useMathWeeklyPlan'.
+// A barrel for content would collide — every lesson exports the same names
 // (HomePage / ProblemList / ProblemDetail / PROBLEMS). This index only re-exports
 // the top-level entry cards as a stable, non-colliding public surface.
 export { default as CourseCard } from './components/CourseCard'

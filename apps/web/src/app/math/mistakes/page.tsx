@@ -16,7 +16,7 @@ import { SEA_LESSONS, SEA_LESSON_MAP, SEA_POOL } from '@rosie/math/utils/sea-dat
 import { lookupMathProblem } from '@rosie/math/utils/math-problem-lookup'
 import { fetchWrongDraftProblemIds } from '@rosie/math-kit/utils/math-scratch-db'
 import { MistakeDraftButton } from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadTrigger'
-import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import { SOURCE_LABELS } from '@rosie/core'
 

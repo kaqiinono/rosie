@@ -1,13 +1,20 @@
 # @rosie/math
 
-The math module (人教版 lessons 12–44 + 海域 sea bank + catalog + quiz + weekly plan),
-extracted as a standalone workspace package so it can be worked on, type-checked, and
-reasoned about in isolation.
+The **top layer** of the math module (aggregators + entry cards + plan/quiz/海域 sea engine +
+catalog + the public API). The module was split into three packages
+(see `docs/math/math-package-split-design.md`):
 
-**Scope rule for agents:** to change math behavior you almost always only need files in
-this package. Read here first; reach into `@rosie/core` / `@rosie/ui` / `@rosie/rewards`
-only for the shared primitives below. You should not need to read other subject modules
-(calc, english, etc.) — math has no dependency on any of them.
+- **`@rosie/math`** (this package, ~15k LOC) — `index.ts` public surface, entry cards, the
+  cross-lesson aggregators (`lesson-module-registry`, `sea-data`, `courses-data`, `catalog-data`,
+  `quiz-*`), the practice-queue Provider + `dynamic-lesson`, weekly-plan/quiz components, `admin/`.
+- **`@rosie/math-content`** (~46k LOC) — lesson UI + `ProblemSet` data banks (the collision zone).
+- **`@rosie/math-kit`** (~17k LOC) — lesson-agnostic foundation: shared primitives, hooks, ScratchPad.
+
+**Scope rule for agents:** changing a specific lesson → `@rosie/math-content`; a shared primitive or
+hook → `@rosie/math-kit`; aggregators / cards / plan-quiz-sea engine → here. Each has its own CLAUDE.md.
+DAG: `math → math-content → math-kit → {core,ui,rewards,calc}` (acyclic, enforced by
+`scripts/check-package-cycles.mjs`). You should not need to read other subject modules except `@rosie/calc`
+(math-kit reuses its vertical-digit pad).
 
 ## Dependencies (the only things math imports from outside)
 

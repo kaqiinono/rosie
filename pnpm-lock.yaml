@@ -59,6 +59,9 @@ importers:
       '@rosie/math':
         specifier: workspace:*
         version: link:../../packages/math
+      '@rosie/math-content':
+        specifier: workspace:*
+        version: link:../../packages/math-content
       '@rosie/math-kit':
         specifier: workspace:*
         version: link:../../packages/math-kit
@@ -393,6 +396,9 @@ importers:
       '@rosie/core':
         specifier: workspace:*
         version: link:../core
+      '@rosie/math-content':
+        specifier: workspace:*
+        version: link:../math-content
       '@rosie/math-kit':
         specifier: workspace:*
         version: link:../math-kit
@@ -442,6 +448,43 @@ importers:
       '@types/dompurify':
         specifier: ^3.2.0
         version: 3.2.0
+      '@types/node':
+        specifier: ^22.13.14
+        version: 22.19.15
+      '@types/react':
+        specifier: ^19.0.12
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.2.3(@types/react@19.2.14)
+      next:
+        specifier: ^15.2.4
+        version: 15.5.13(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
+  packages/math-content:
+    dependencies:
+      '@rosie/core':
+        specifier: workspace:*
+        version: link:../core
+      '@rosie/math-kit':
+        specifier: workspace:*
+        version: link:../math-kit
+      '@supabase/supabase-js':
+        specifier: ^2.99.2
+        version: 2.99.2
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+    devDependencies:
       '@types/node':
         specifier: ^22.13.14
         version: 22.19.15

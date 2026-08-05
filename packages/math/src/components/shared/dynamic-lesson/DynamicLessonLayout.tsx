@@ -2,8 +2,8 @@
 
 import { usePathname } from 'next/navigation'
 import LessonInnerLayout from '@rosie/math-kit/components/shared/LessonInnerLayout'
-import CongratsModal from '@rosie/math/components/lesson/g1/lesson35/CongratsModal'
-import Toast from '@rosie/math/components/lesson/g1/lesson35/Toast'
+import CongratsModal from '@rosie/math-content/components/lesson/g1/lesson35/CongratsModal'
+import Toast from '@rosie/math-content/components/lesson/g1/lesson35/Toast'
 import { nextProblemHref } from '@rosie/math/utils/lesson-route-utils'
 import { LessonRouteProvider, useLessonRoute } from './LessonRouteContext'
 import { usePracticeQueueOptional } from '@rosie/math/components/shared/practice-queue/PracticeQueueContext'

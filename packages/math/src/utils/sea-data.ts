@@ -2,112 +2,112 @@ import {
   PROBLEMS as G1Lesson12PROBLEMS,
   PROBLEM_TYPES as G1Lesson12PT,
   TAG_STYLE as G1Lesson12TS,
-} from './g1/lesson12-data'
+} from '@rosie/math-content/utils/g1/lesson12-data'
 import {
   PROBLEMS as G1Lesson13PROBLEMS,
   PROBLEM_TYPES as G1Lesson13PT,
   TAG_STYLE as G1Lesson13TS,
-} from './g1/lesson13-data'
+} from '@rosie/math-content/utils/g1/lesson13-data'
 import {
   PROBLEMS as G1Lesson15PROBLEMS,
   PROBLEM_TYPES as G1Lesson15PT,
   TAG_STYLE as G1Lesson15TS,
-} from './g1/lesson15-data'
+} from '@rosie/math-content/utils/g1/lesson15-data'
 import {
   PROBLEMS as G1Lesson18PROBLEMS,
   PROBLEM_TYPES as G1Lesson18PT,
   TAG_STYLE as G1Lesson18TS,
-} from './g1/lesson18-data'
+} from '@rosie/math-content/utils/g1/lesson18-data'
 import {
   PROBLEMS as G1Lesson23PROBLEMS,
   PROBLEM_TYPES as G1Lesson23PT,
   TAG_STYLE as G1Lesson23TS,
-} from './g1/lesson23-data'
+} from '@rosie/math-content/utils/g1/lesson23-data'
 import {
   PROBLEMS as G1Lesson29PROBLEMS,
   PROBLEM_TYPES as G1Lesson29PT,
   TAG_STYLE as G1Lesson29TS,
-} from './g1/lesson29-data'
+} from '@rosie/math-content/utils/g1/lesson29-data'
 import {
   PROBLEMS as G1Lesson30PROBLEMS,
   PROBLEM_TYPES as G1Lesson30PT,
   TAG_STYLE as G1Lesson30TS,
-} from './g1/lesson30-data'
+} from '@rosie/math-content/utils/g1/lesson30-data'
 import {
   PROBLEMS as G1Lesson34PROBLEMS,
   PROBLEM_TYPES as G1Lesson34PT,
   TAG_STYLE as G1Lesson34TS,
-} from './g1/lesson34-data'
+} from '@rosie/math-content/utils/g1/lesson34-data'
 import {
   PROBLEMS as G1Lesson35PROBLEMS,
   PROBLEM_TYPES as G1Lesson35PT,
   TAG_STYLE as G1Lesson35TS,
-} from './g1/lesson35-data'
+} from '@rosie/math-content/utils/g1/lesson35-data'
 import {
   PROBLEMS as G1Lesson36PROBLEMS,
   PROBLEM_TYPES as G1Lesson36PT,
   TAG_STYLE as G1Lesson36TS,
-} from './g1/lesson36-data'
+} from '@rosie/math-content/utils/g1/lesson36-data'
 import {
   PROBLEMS as G1Lesson37PROBLEMS,
   PROBLEM_TYPES as G1Lesson37PT,
   TAG_STYLE as G1Lesson37TS,
-} from './g1/lesson37-data'
+} from '@rosie/math-content/utils/g1/lesson37-data'
 import {
   PROBLEMS as G1Lesson38PROBLEMS,
   PROBLEM_TYPES as G1Lesson38PT,
   TAG_STYLE as G1Lesson38TS,
-} from './g1/lesson38-data'
+} from '@rosie/math-content/utils/g1/lesson38-data'
 import {
   PROBLEMS as G1Lesson39PROBLEMS,
   PROBLEM_TYPES as G1Lesson39PT,
   TAG_STYLE as G1Lesson39TS,
-} from './g1/lesson39-data'
+} from '@rosie/math-content/utils/g1/lesson39-data'
 import {
   PROBLEMS as G1Lesson40PROBLEMS,
   PROBLEM_TYPES as G1Lesson40PT,
   TAG_STYLE as G1Lesson40TS,
-} from './g1/lesson40-data'
+} from '@rosie/math-content/utils/g1/lesson40-data'
 import {
   PROBLEMS as G1Lesson41PROBLEMS,
   PROBLEM_TYPES as G1Lesson41PT,
   TAG_STYLE as G1Lesson41TS,
-} from './g1/lesson41-data'
+} from '@rosie/math-content/utils/g1/lesson41-data'
 import {
   PROBLEMS as G1Lesson42PROBLEMS,
   PROBLEM_TYPES as G1Lesson42PT,
   TAG_STYLE as G1Lesson42TS,
-} from './g1/lesson42-data'
+} from '@rosie/math-content/utils/g1/lesson42-data'
 import {
   PROBLEMS as G1Lesson43PROBLEMS,
   PROBLEM_TYPES as G1Lesson43PT,
   TAG_STYLE as G1Lesson43TS,
-} from './g1/lesson43-data'
+} from '@rosie/math-content/utils/g1/lesson43-data'
 import {
   PROBLEMS as G1Lesson44PROBLEMS,
   PROBLEM_TYPES as G1Lesson44PT,
   TAG_STYLE as G1Lesson44TS,
-} from './g1/lesson44-data'
+} from '@rosie/math-content/utils/g1/lesson44-data'
 import {
   PROBLEMS as G1Lesson46PROBLEMS,
   PROBLEM_TYPES as G1Lesson46PT,
   TAG_STYLE as G1Lesson46TS,
-} from './g1/lesson46-data'
+} from '@rosie/math-content/utils/g1/lesson46-data'
 import {
   PROBLEMS as G1Lesson47PROBLEMS,
   PROBLEM_TYPES as G1Lesson47PT,
   TAG_STYLE as G1Lesson47TS,
-} from './g1/lesson47-data'
-import { PROBLEMS as G2Lesson1PROBLEMS, PROBLEM_TYPES as G2Lesson1PT, TAG_STYLE as G2Lesson1TS } from './g2/lesson1-data'
-import { PROBLEMS as G2Lesson6PROBLEMS, PROBLEM_TYPES as G2Lesson6PT, TAG_STYLE as G2Lesson6TS } from './g2/lesson6-data'
-import { PROBLEMS as G2Lesson7PROBLEMS, PROBLEM_TYPES as G2Lesson7PT, TAG_STYLE as G2Lesson7TS } from './g2/lesson7-data'
-import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT, TAG_STYLE as G2Lesson5TS } from './g2/lesson5-data'
-import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT, TAG_STYLE as G2Lesson4TS } from './g2/lesson4-data'
-import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT, TAG_STYLE as G2Lesson3TS } from './g2/lesson3-data'
-import { PROBLEMS as G2Lesson2PROBLEMS, PROBLEM_TYPES as G2Lesson2PT, TAG_STYLE as G2Lesson2TS } from './g2/lesson2-data'
+} from '@rosie/math-content/utils/g1/lesson47-data'
+import { PROBLEMS as G2Lesson1PROBLEMS, PROBLEM_TYPES as G2Lesson1PT, TAG_STYLE as G2Lesson1TS } from '@rosie/math-content/utils/g2/lesson1-data'
+import { PROBLEMS as G2Lesson6PROBLEMS, PROBLEM_TYPES as G2Lesson6PT, TAG_STYLE as G2Lesson6TS } from '@rosie/math-content/utils/g2/lesson6-data'
+import { PROBLEMS as G2Lesson7PROBLEMS, PROBLEM_TYPES as G2Lesson7PT, TAG_STYLE as G2Lesson7TS } from '@rosie/math-content/utils/g2/lesson7-data'
+import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT, TAG_STYLE as G2Lesson5TS } from '@rosie/math-content/utils/g2/lesson5-data'
+import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT, TAG_STYLE as G2Lesson4TS } from '@rosie/math-content/utils/g2/lesson4-data'
+import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT, TAG_STYLE as G2Lesson3TS } from '@rosie/math-content/utils/g2/lesson3-data'
+import { PROBLEMS as G2Lesson2PROBLEMS, PROBLEM_TYPES as G2Lesson2PT, TAG_STYLE as G2Lesson2TS } from '@rosie/math-content/utils/g2/lesson2-data'
 import type { Problem } from '@rosie/core'
 import { lessonByKey, routeForLesson } from '@rosie/math-kit/utils/lesson-registry'
-import type { SeaLessonMeta, SeaProblem } from './sea-types'
+import type { SeaLessonMeta, SeaProblem } from '@rosie/math-kit/utils/sea-types'
 
 // Re-exported for backward compatibility: existing consumers import these types
 // from `sea-data`. Their declarations now live in the aggregator-free `sea-types`.

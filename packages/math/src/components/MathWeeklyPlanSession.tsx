@@ -20,7 +20,7 @@ import ProblemMasteryPanel from './ProblemMasteryPanel'
 import { todayStr } from '@rosie/core'
 import { compareLessonIds } from '@rosie/math-kit/utils/lesson-registry'
 import type { MathPlanProblem, ProblemSet } from '@rosie/core'
-import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
 import { usePracticeQueue } from '@rosie/math/components/shared/practice-queue/PracticeQueueContext'
 import { useViewableDraftIds } from '@rosie/math-kit/hooks/useViewableDraftIds'
 import {

@@ -6,6 +6,7 @@
       "@/*": ["./src/*"],
       "@rosie/math/*": ["../../packages/math/src/*"],
       "@rosie/math-kit/*": ["../../packages/math-kit/src/*"],
+      "@rosie/math-content/*": ["../../packages/math-content/src/*"],
       "@rosie/calc/*": ["../../packages/calc/src/*"]
     }
   },

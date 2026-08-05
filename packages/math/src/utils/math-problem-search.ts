@@ -4,7 +4,7 @@ import {
   enumerateProblemSet,
   problemSectionLabel,
   problemSetSourceButtons,
-} from '@rosie/math/utils/problem-set-helpers'
+} from '@rosie/math-kit/utils/problem-set-helpers'
 
 export type SearchableProblem = {
   problem: Problem

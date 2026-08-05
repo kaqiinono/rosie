@@ -6,6 +6,7 @@
     "paths": {
       "@rosie/math/*": ["./src/*"],
       "@rosie/math-kit/*": ["../math-kit/src/*"],
+      "@rosie/math-content/*": ["../math-content/src/*"],
       "@rosie/calc/*": ["../calc/src/*"]
     }
   },

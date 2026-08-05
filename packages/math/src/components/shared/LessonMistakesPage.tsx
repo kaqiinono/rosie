@@ -9,7 +9,7 @@ import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from 
 import { MistakeDraftButton } from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadTrigger'
 import { useLessonScratchActions } from '@rosie/math-kit/components/shared/ScratchPad/LessonScratchActionsContext'
 import { fetchWrongDraftProblemIds } from '@rosie/math-kit/utils/math-scratch-db'
-import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
+import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
 import { lessonKeyFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 
