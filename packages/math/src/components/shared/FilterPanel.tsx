@@ -15,7 +15,7 @@ import {
   MATH_SKIP_REASON_OPTIONS,
   type MathSkipReason,
 } from '@rosie/math/utils/math-skip-reasons'
-import type { SeaProblem } from '@rosie/math/utils/sea-data'
+import type { SeaProblem } from '@rosie/math/utils/sea-types'
 import { problemSetSectionLabel } from '@rosie/math/utils/problem-set-helpers'
 import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
 import type { MathSkippedMap } from '@rosie/math/hooks/useMathSkipped'

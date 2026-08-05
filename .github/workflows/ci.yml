@@ -31,6 +31,10 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # Enforces the acyclic package DAG (CLAUDE.md). Guards the @rosie/math split.
+      - name: Package cycle check
+        run: node scripts/check-package-cycles.mjs
+
       - name: Typecheck
         run: pnpm typecheck
 

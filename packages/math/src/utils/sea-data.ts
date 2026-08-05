@@ -105,19 +105,13 @@ import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT, TAG_STYLE 
 import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT, TAG_STYLE as G2Lesson4TS } from './g2/lesson4-data'
 import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT, TAG_STYLE as G2Lesson3TS } from './g2/lesson3-data'
 import { PROBLEMS as G2Lesson2PROBLEMS, PROBLEM_TYPES as G2Lesson2PT, TAG_STYLE as G2Lesson2TS } from './g2/lesson2-data'
-import type { Problem, ProblemSet } from '@rosie/core'
+import type { Problem } from '@rosie/core'
 import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
+import type { SeaLessonMeta, SeaProblem } from './sea-types'
 
-export interface SeaLessonMeta {
-  id: string
-  title: string
-  shortTitle: string
-  icon: string
-  badgeClass: string // tailwind classes for lesson badge
-  tagStyle: Record<string, string>
-  types: { tag: string; label: string }[]
-  problems: ProblemSet
-}
+// Re-exported for backward compatibility: existing consumers import these types
+// from `sea-data`. Their declarations now live in the aggregator-free `sea-types`.
+export type { SeaLessonMeta, SeaProblem }
 
 export const SEA_LESSONS: SeaLessonMeta[] = [
   {
@@ -398,13 +392,6 @@ export const SEA_LESSON_MAP: Record<string, SeaLessonMeta> = Object.fromEntries(
 
 export function findSeaLesson(lessonKey: string): SeaLessonMeta | undefined {
   return SEA_LESSON_MAP[lessonKey]
-}
-
-export interface SeaProblem {
-  problem: Problem
-  lessonId: string
-  section: string
-  href: string
 }
 
 function buildPool(): SeaProblem[] {
