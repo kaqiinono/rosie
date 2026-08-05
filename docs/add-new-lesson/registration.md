@@ -6,6 +6,9 @@
 
 ## 0. lesson-registry.ts（最先）
 
+> 位置：`packages/math-kit/src/utils/lesson-registry.ts`（`lesson-grade.ts` 亦在 math-kit）。
+> 注册用的聚合器 `lesson-module-registry` / `sea-data` / `courses-data` / `catalog-data` 在 `packages/math/src/utils/`。
+
 ```ts
 { lessonKey: '2-8', grade: 2, seq: 8 },
 ```
@@ -22,9 +25,9 @@
 ## 1. lesson-module-registry.ts
 
 ```ts
-import { PROBLEMS as P2_8, TAG_STYLE as TS2_8 } from '@rosie/math/utils/g2/lesson8-data'
-import Provider28, { useG2Lesson8 } from '@rosie/math/components/lesson/g2/lesson8/G2Lesson8Provider'
-import HomePage28 from '@rosie/math/components/lesson/g2/lesson8/HomePage'
+import { PROBLEMS as P2_8, TAG_STYLE as TS2_8 } from '@rosie/math-content/utils/g2/lesson8-data'
+import Provider28, { useG2Lesson8 } from '@rosie/math-content/components/lesson/g2/lesson8/G2Lesson8Provider'
+import HomePage28 from '@rosie/math-content/components/lesson/g2/lesson8/HomePage'
 // … AppHeader / Sidebar / BottomNav / FilterPanel / ProblemList / ProblemDetail
 
 '2-8': {

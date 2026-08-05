@@ -1,6 +1,6 @@
 # 第二步：组件 wrapper（8 个）
 
-目录：`packages/math/src/components/lesson/g{grade}/lesson{seq}/`
+目录：`packages/math-content/src/components/lesson/g{grade}/lesson{seq}/`
 
 | lessonKey | 目录 |
 |-----------|------|
@@ -18,7 +18,7 @@
 |----|-----|
 | lessonKey | `2-8` |
 | BASE | `/math/ny/2/8` |
-| 数据 import | `@rosie/math/utils/g2/lesson8-data` |
+| 数据 import | `@rosie/math-content/utils/g2/lesson8-data` |
 | Provider 文件 | `G2Lesson8Provider.tsx` |
 | hook | `useG2Lesson8` |
 
@@ -30,7 +30,7 @@
 
 ```tsx
 'use client'
-import { createLessonProvider } from '@rosie/math/components/shared/createLessonProvider'
+import { createLessonProvider } from '@rosie/math-kit/components/shared/createLessonProvider'
 const { Provider, useLessonContext } = createLessonProvider('G2Lesson8')
 export default Provider
 export { useLessonContext as useG2Lesson8 }

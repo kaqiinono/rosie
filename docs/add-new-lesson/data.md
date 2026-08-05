@@ -1,6 +1,6 @@
 # 第一步：数据文件
 
-`packages/math/src/utils/g{grade}/lesson{seq}-data.ts(x)`
+`packages/math-content/src/utils/g{grade}/lesson{seq}-data.ts(x)`
 
 | lessonKey | 文件 |
 |-----------|------|

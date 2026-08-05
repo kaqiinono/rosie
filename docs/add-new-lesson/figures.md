@@ -15,13 +15,13 @@
 
 ## 目录
 
-在 `packages/math/src/components/lesson/g{grade}/lesson{seq}/` 下建子目录，如 `gong/`、`Figure/`。
+在 `packages/math-content/src/components/lesson/g{grade}/lesson{seq}/` 下建子目录，如 `gong/`、`Figure/`。
 
 ---
 
 ## 方格 / 数独类（custom-widget · 模板 A）
 
-复制 `packages/math/src/components/lesson/g1/lesson47/gong/` 整目录，**重命名**子目录与 CSS 类前缀。
+复制 `packages/math-content/src/components/lesson/g1/lesson47/gong/` 整目录，**重命名**子目录与 CSS 类前缀。
 
 数据层用 `create-gong-problem.tsx` 生成 `figureNode` + `checkAnswer`。
 

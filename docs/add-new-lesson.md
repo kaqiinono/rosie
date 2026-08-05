@@ -15,8 +15,8 @@
 | 用途 | 路径 |
 |------|------|
 | 本地题目源 | `docs/math/lessons/2-8.md` |
-| 数据 | `packages/math/src/utils/g2/lesson8-data.ts(x)` |
-| 组件 | `packages/math/src/components/lesson/g2/lesson8/` |
+| 数据 | `packages/math-content/src/utils/g2/lesson8-data.ts(x)` |
+| 组件 | `packages/math-content/src/components/lesson/g2/lesson8/` |
 | registry | `{ lessonKey: '2-8', grade: 2, seq: 8 }` |
 | href | `/math/ny/2/8` |
 | 题目 ID | `2-8-L1` |

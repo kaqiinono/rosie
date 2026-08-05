@@ -45,8 +45,8 @@ trigger: /add-lesson
 | href / basePath | `/math/ny/2/8` |
 | 题目 ID | `2-8-L1` |
 | 本地题目源 | `docs/math/lessons/2-8.md` |
-| 数据文件 | `packages/math/src/utils/g2/lesson8-data.ts(x)` |
-| 组件目录 | `packages/math/src/components/lesson/g2/lesson8/` |
+| 数据文件 | `packages/math-content/src/utils/g2/lesson8-data.ts(x)` |
+| 组件目录 | `packages/math-content/src/components/lesson/g2/lesson8/` |
 | module-registry 键 | `'2-8'` |
 
 **seq 规则：** 一年级 = 教材讲次号（`1-12` → seq 12）；二年级起 = 年级内从 1 递增（`2-8` → seq 8）。
@@ -69,17 +69,21 @@ trigger: /add-lesson
 ## 仓库结构
 
 ```
-packages/math/src/
+packages/math-content/src/                  # 课程内容层（讲次文件都在这）
   utils/g{grade}/lesson{seq}-data.ts(x)     # 题目数据
   components/lesson/g{grade}/lesson{seq}/   # 8 个 wrapper + Figure/
+packages/math/src/utils/                    # 顶层聚合器（注册讲次改这里）
+  lesson-module-registry.ts · sea-data.ts · courses-data.ts · catalog-data.ts
+packages/math-kit/src/utils/lesson-registry.ts   # ← 已移到 math-kit
 apps/web/src/app/math/ny/[grade]/[seq]/     # 动态路由（勿新建 ny/N/）
 ```
 
-import 示例：
+import 示例（讲次内容用 `@rosie/math-content/*`，共享原语/hooks 用 `@rosie/math-kit/*`）：
 
 ```ts
-import { PROBLEMS } from '@rosie/math/utils/g2/lesson8-data'
-import HomePage from '@rosie/math/components/lesson/g2/lesson8/HomePage'
+import { PROBLEMS } from '@rosie/math-content/utils/g2/lesson8-data'
+import HomePage from '@rosie/math-content/components/lesson/g2/lesson8/HomePage'
+import { createLessonProvider } from '@rosie/math-kit/components/shared/createLessonProvider'
 ```
 
 ---
