@@ -12,7 +12,7 @@ workspace package.
 - **Poems (`components/poems/`)** — poem list + fill-in-blank recite flow.
 - **`ChineseContext`** — aggregates `useCharMastery`, `useChineseCharData`, `useChineseWeeklyPlan` (legacy).
 - **Roadmap plans (`hooks/useChineseRoadmapPlan.ts`, `components/plans/`)** — parent-managed study plans; `/today` prefers active plan over mastery roadmap.
-- **`utils/g1b/`** — **backup only** (一年级下册 TS); used to generate SQL upserts, not runtime.
+- **`utils/g1b/` · `utils/g2a/` · `utils/g2b/`** — per-book textbook TS (一下 / 二上 / 二下). 生字/组词数据（`chars.ts`/`phrases.ts`）是 **备份**，用于生成 SQL upsert（运行时字表读 Supabase）；单元/课文/古诗/日积月累/类型（`units.ts`/`lesson-passages.ts`/`poems.ts`/`accumulation.ts`/`types.ts`/`stats.json`）在**运行时**通过 barrel 消费。
 - **`utils/chinese-helpers.ts`** — `charKey`, lesson char lookups, shuffle; re-exports `getWeekStart`.
 
 ## Data model (DB-first)

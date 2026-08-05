@@ -44,7 +44,8 @@ src/
                     #   calc-report-stats, calc-time-targets
 sql/
 ├── calc-cognitive-metrics.sql  # ADD COLUMN consecutive_correct + mastered index
-└── calc-session-timing-modes.sql  # timing_mode + bonus_sec on calc_settings
+├── calc-session-timing-modes.sql  # timing_mode + bonus_sec on calc_settings
+└── calc-autosubmit-on-match.sql  # ADD COLUMN auto_submit_on_match on calc_settings
 ```
 
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not

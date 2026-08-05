@@ -21,7 +21,7 @@ packages/
   english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
   flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
-  chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一年级下册首批）
+  chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一下 / 二上 / 二下）
 ```
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
