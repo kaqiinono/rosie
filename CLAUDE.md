@@ -170,10 +170,13 @@ Prefer `patchSessionData` on mutation; after localStorage hydrate use `refreshIn
 unless explicitly requested. See `.cursor/rules/session-store-data-fetch.mdc` and
 `packages/core/CLAUDE.md`.
 
-`localStorage` is used only for UI preferences — never for user data (exception: optional optimistic
-hydrate for large catalogs like vocab, reconciled via `refreshInBackground`). The only remaining
-UI-pref key is `MATH_SIDEBAR_COLLAPSED` (sidebar collapse state) in `STORAGE_KEYS` (`@rosie/core`
-constants). All other user configuration (including plan generation parameters) is stored in Supabase.
+`localStorage` is used only for UI preferences, filter/selection state, and a little transient
+session state — never for persistent user data (exception: optional optimistic hydrate for large
+catalogs like vocab, reconciled via `refreshInBackground`). These keys live in `STORAGE_KEYS`
+(`@rosie/core` constants) — e.g. `MATH_SIDEBAR_COLLAPSED`, English/Chinese filter + selection keys,
+`WEEKLY_PLAN_LAST_*`, flipbook prefs, and documented session-intermediate exceptions like
+`RESCUE_QUEUE` / `ADMIN_DRAFT_STAGES`. All persistent user configuration (including plan generation
+parameters) is stored in Supabase.
 
 `AuthContext` (in `@rosie/core`) wraps the entire app and exposes `user`. Per-subject state lives in
 its own context (e.g. `WordsContext` for English; per-lesson `LessonNProvider` for math, built by the
