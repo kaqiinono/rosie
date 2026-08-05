@@ -2,8 +2,8 @@
 
 import type { ComponentType, ReactNode } from 'react'
 import type { Problem, ProblemSet } from '@rosie/core'
-import type { LessonContextType } from '@rosie/math/components/shared/createLessonProvider'
-import type { ProblemDetailComponentProps } from '@rosie/math/components/shared/LessonProblemRoutePage'
+import type { LessonContextType } from '@rosie/math-kit/components/shared/createLessonProvider'
+import type { ProblemDetailComponentProps } from '@rosie/math-kit/components/shared/LessonProblemRoutePage'
 import type { FilterPanelProps } from '@rosie/math/components/shared/FilterPanel'
 import WeekdayMagic from '@rosie/math/components/lesson/g1/lesson36/WeekdayMagic'
 import YibihaMagicBook from '@rosie/math/components/lesson/g1/lesson38/YibihaMagicBook'

@@ -1,6 +1,6 @@
 'use client'
 
-import LessonBottomNav from '@rosie/math/components/shared/LessonBottomNav'
+import LessonBottomNav from '@rosie/math-kit/components/shared/LessonBottomNav'
 import { useG2Lesson2 } from './G2Lesson2Provider'
 
 const CONFIG = {

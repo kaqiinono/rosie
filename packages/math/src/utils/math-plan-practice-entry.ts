@@ -7,7 +7,7 @@
  * Plan mid-exit lives in scope `queue:plan` only — sea/lesson/mistakes use other scopes.
  */
 import { todayStr } from '@rosie/core'
-import type { MathPracticeSnapshot } from '@rosie/math/utils/practice-queue-snapshot'
+import type { MathPracticeSnapshot } from '@rosie/math-kit/utils/practice-queue-snapshot'
 
 export const MATH_PLAN_HUB_HREF = '/math/ny/plan'
 export const MATH_PLAN_PRACTICE_HREF = '/math/ny/plan/practice'

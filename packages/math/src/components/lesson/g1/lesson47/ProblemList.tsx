@@ -1,6 +1,6 @@
 'use client'
 
-import LessonProblemList from '@rosie/math/components/shared/LessonProblemList'
+import LessonProblemList from '@rosie/math-kit/components/shared/LessonProblemList'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math/utils/g1/lesson47-data'
 

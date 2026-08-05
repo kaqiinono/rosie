@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { ProblemSet } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { AllPlansList } from './math-weekly-plan-shared'
 
 type Props = {

@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { lessonSummaryProblemId } from '@rosie/math/constants'
+import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
 import { findSeaLesson } from '@rosie/math/utils/sea-data'
-import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
-import type { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
+import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
+import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import MathLessonSummaryPanel from '@rosie/math/admin/MathLessonSummaryPanel'
-import { isRichBodyEmpty } from '@rosie/math/utils/sanitize-summary-html'
+import { isRichBodyEmpty } from '@rosie/math-kit/utils/sanitize-summary-html'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 

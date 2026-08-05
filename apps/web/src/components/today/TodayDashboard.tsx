@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { useWordData } from '@rosie/english'
 import { useCalcDaily } from '@rosie/calc'
 import {

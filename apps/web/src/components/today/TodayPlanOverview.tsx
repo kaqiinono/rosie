@@ -13,7 +13,7 @@ import {
   type TodayPlanSyncStatus,
 } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { useCalcDaily } from '@rosie/calc'
 import {
   useChineseRoadmapProgress,

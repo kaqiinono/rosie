@@ -3,26 +3,26 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
-import { useProblemMastery } from '@rosie/math/hooks/useProblemMastery'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
+import { useProblemMastery } from '@rosie/math-kit/hooks/useProblemMastery'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
 import {
   getMathReviewProblemsForDay,
   makeProblem,
   planEndDate,
   buildProblemIdMap,
   collectOverduePlanProblems,
-} from '@rosie/math/utils/math-helpers'
-import { useMathRotatingReview } from '@rosie/math/hooks/useMathRotatingReview'
-import { useMathWeeklyLessonReview } from '@rosie/math/hooks/useMathWeeklyLessonReview'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+} from '@rosie/math-kit/utils/math-helpers'
+import { useMathRotatingReview } from '@rosie/math-kit/hooks/useMathRotatingReview'
+import { useMathWeeklyLessonReview } from '@rosie/math-kit/hooks/useMathWeeklyLessonReview'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import { todayStr } from '@rosie/core'
-import { compareLessonIds } from '@rosie/math/utils/lesson-registry'
+import { compareLessonIds } from '@rosie/math-kit/utils/lesson-registry'
 import type { MathPlanProblem, ProblemSet } from '@rosie/core'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
 import { usePracticeQueue } from '@rosie/math/components/shared/practice-queue/PracticeQueueContext'
-import { useViewableDraftIds } from '@rosie/math/hooks/useViewableDraftIds'
+import { useViewableDraftIds } from '@rosie/math-kit/hooks/useViewableDraftIds'
 import {
   mathPlanProblemsToQueueItems,
   rehydratePracticeQueueItems,
@@ -31,7 +31,7 @@ import {
   clearMathPendingEverywhere,
   readMathPracticeSnapshot,
   resolveMathPracticeSnapshot,
-} from '@rosie/math/utils/practice-queue-snapshot'
+} from '@rosie/math-kit/utils/practice-queue-snapshot'
 import {
   canAutoEnterMathPlanPractice,
   isResumablePlanPracticeSnapshot,

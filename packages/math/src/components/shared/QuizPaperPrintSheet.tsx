@@ -1,10 +1,10 @@
 'use client'
 
-import QuizProblemSolution from '@rosie/math/components/shared/QuizProblemSolution'
-import QuizProblemPrintWidget from '@rosie/math/components/shared/QuizProblemPrintWidget'
-import ScratchPadPrintBlock from '@rosie/math/components/shared/ScratchPad/ScratchPadPrintBlock'
-import { isInteractiveProblem } from '@rosie/math/utils/check-problem-answer'
-import { getProblemAnswerMode } from '@rosie/math/utils/problem-answer-mode'
+import QuizProblemSolution from '@rosie/math-kit/components/shared/QuizProblemSolution'
+import QuizProblemPrintWidget from '@rosie/math-kit/components/shared/QuizProblemPrintWidget'
+import ScratchPadPrintBlock from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadPrintBlock'
+import { isInteractiveProblem } from '@rosie/math-kit/utils/check-problem-answer'
+import { getProblemAnswerMode } from '@rosie/math-kit/utils/problem-answer-mode'
 import { PROBLEMS as G1Lesson12PROBLEMS } from '@rosie/math/utils/g1/lesson12-data'
 import { PROBLEMS as G1Lesson13PROBLEMS } from '@rosie/math/utils/g1/lesson13-data'
 import { PROBLEMS as G1Lesson15PROBLEMS } from '@rosie/math/utils/g1/lesson15-data'
@@ -38,7 +38,7 @@ import {
   type QuizAnswerRecord,
   type QuizPaper,
 } from '@rosie/math/hooks/useMathQuiz'
-import type { ScratchObject } from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
+import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 
 export type QuizPrintMode = 'blank' | 'complete'
 

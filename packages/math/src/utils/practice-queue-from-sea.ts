@@ -1,5 +1,5 @@
 import type { SeaProblem } from '@rosie/math/utils/sea-data'
-import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
+import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 
 export function seaProblemToQueueItem(sp: SeaProblem): PracticeQueueItem {
   return {

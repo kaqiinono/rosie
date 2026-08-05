@@ -3,8 +3,8 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
 import {
   buildMathFlexiblePlan,
   countFilteredPlanProblems,
@@ -16,14 +16,14 @@ import {
   getLessonTagStats,
   getLessonSectionStats,
   planEndDate,
-} from '@rosie/math/utils/math-helpers'
+} from '@rosie/math-kit/utils/math-helpers'
 import PlanDateRangePicker from './PlanDateRangePicker'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
-import { useProblemMastery } from '@rosie/math/hooks/useProblemMastery'
+import { useProblemMastery } from '@rosie/math-kit/hooks/useProblemMastery'
 import { todayStr } from '@rosie/core'
-import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
+import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math-kit/utils/lesson-grade'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
-import type { MathPlanSectionKey } from '@rosie/math/utils/math-helpers'
+import type { MathPlanSectionKey } from '@rosie/math-kit/utils/math-helpers'
 import {
   MATH_PLAN_LESSONS,
   countPlanDays,

@@ -4,12 +4,12 @@ import type { Problem } from '@rosie/core'
 import { TAG_STYLE, TYPE_TIP } from '@rosie/math/utils/g2/lesson7-data'
 import { useG2Lesson7 } from './G2Lesson7Provider'
 import { getMasteryLevel } from '@rosie/core'
-import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
-import ProblemAnswerSection from '@rosie/math/components/shared/ProblemAnswerSection'
-import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
-import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
-import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
-import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
+import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
+import ProblemAnswerSection from '@rosie/math-kit/components/shared/ProblemAnswerSection'
+import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
+import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
+import LessonProblemDetailHeader from '@rosie/math-kit/components/shared/LessonProblemDetailHeader'
+import LessonProblemNavBar from '@rosie/math-kit/components/shared/LessonProblemNavBar'
 
 interface ProblemDetailProps {
   problem: Problem

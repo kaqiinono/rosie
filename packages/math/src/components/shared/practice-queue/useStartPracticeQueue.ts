@@ -3,8 +3,8 @@
 import { useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { usePracticeQueue } from '@rosie/math/components/shared/practice-queue/PracticeQueueContext'
-import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
-import type { MathPracticeSource } from '@rosie/math/utils/practice-queue-snapshot'
+import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
+import type { MathPracticeSource } from '@rosie/math-kit/utils/practice-queue-snapshot'
 
 export function useStartPracticeQueue() {
   const pathname = usePathname()

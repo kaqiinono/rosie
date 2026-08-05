@@ -2,8 +2,8 @@
 
 import { OrbBackground, BackLink } from '@rosie/ui'
 import CourseCard from '@rosie/math/components/CourseCard'
-import { COURSES } from '@rosie/math/utils/courses-data'
-import { GRADE_LABEL, gradeOf, lessonIdFromHref } from '@rosie/math/utils/lesson-grade'
+import { COURSES } from '@rosie/math-kit/utils/courses-data'
+import { GRADE_LABEL, gradeOf, lessonIdFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import type { CourseCardData } from '@rosie/core'
 
 export default function GradeLessonList({ grade }: { grade: number }) {

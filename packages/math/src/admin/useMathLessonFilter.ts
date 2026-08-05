@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { gradesInOrder, lessonsForGrade } from '@rosie/math/utils/lesson-grade'
+import { gradesInOrder, lessonsForGrade } from '@rosie/math-kit/utils/lesson-grade'
 import {
   aggregateSourceButtons,
   aggregateTypeButtons,

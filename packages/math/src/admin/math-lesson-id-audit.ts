@@ -1,5 +1,5 @@
 import { supabase } from '@rosie/core'
-import { LESSONS, routeForLesson, type LessonEntry } from '@rosie/math/utils/lesson-registry'
+import { LESSONS, routeForLesson, type LessonEntry } from '@rosie/math-kit/utils/lesson-registry'
 import {
   LEGACY_ID_SET,
   LEGACY_TO_LESSON_KEY,

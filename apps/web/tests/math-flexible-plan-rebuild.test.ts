@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Problem, ProblemSet, MathWeeklyPlanDay, MathDayProgress } from '@rosie/core'
-import { buildMathFlexiblePlan } from '@rosie/math/utils/math-helpers'
+import { buildMathFlexiblePlan } from '@rosie/math-kit/utils/math-helpers'
 
 function stubProblem(id: string, tag = 'type1', difficulty = 1): Problem {
   return {

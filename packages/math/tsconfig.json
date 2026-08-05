@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@rosie/math/*": ["./src/*"],
+      "@rosie/math-kit/*": ["../math-kit/src/*"],
       "@rosie/calc/*": ["../calc/src/*"]
     }
   },

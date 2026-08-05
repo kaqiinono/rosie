@@ -1,6 +1,6 @@
 import type { Problem, ProblemSet } from '@rosie/core'
 import { SOURCE_LABELS } from '@rosie/core'
-import { lessonSourceButtons } from '@rosie/math/utils/lesson-source-btns'
+import { lessonSourceButtons } from '@rosie/math-kit/utils/lesson-source-btns'
 
 const SOURCE_ORDER = ['pretest', 'lesson', 'homework', 'workbook', 'supplement'] as const
 

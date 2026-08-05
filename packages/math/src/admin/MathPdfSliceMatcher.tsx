@@ -12,7 +12,7 @@ import {
   isProblemBoundSliceKind,
   lessonSummaryProblemId,
   type PdfSliceKind,
-} from '@rosie/math/constants'
+} from '@rosie/math-kit/constants'
 import { SEA_LESSONS, findSeaLesson } from '@rosie/math/utils/sea-data'
 import { cropImageBlob, rectIoU, type NormalizedRect } from '@rosie/math/utils/crop-image-blob'
 import { revokePageUrls, type PdfPageMeta } from '@rosie/math/utils/math-pdf'
@@ -21,18 +21,18 @@ import {
   isRasterImageMaterialFile,
   loadMaterialFilesToPageUrls,
 } from '@rosie/math/utils/math-material'
-import { submitArchivedPaperScratchDraft } from '@rosie/math/utils/paper-scratch'
+import { submitArchivedPaperScratchDraft } from '@rosie/math-kit/utils/paper-scratch'
 import {
   buildProblemPool,
   filterProblemPool,
   searchProblems,
   type SearchableProblem,
 } from '@rosie/math/utils/math-problem-search'
-import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
+import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 import MathLessonFilterPanel from '@rosie/math/admin/MathLessonFilterPanel'
 import { useMathLessonFilter } from '@rosie/math/admin/useMathLessonFilter'
-import { problemHasAnalysisImage } from '@rosie/math/utils/problem-analysis-image'
-import AnalysisGuideBadge from '@rosie/math/components/shared/AnalysisGuideBadge'
+import { problemHasAnalysisImage } from '@rosie/math-kit/utils/problem-analysis-image'
+import AnalysisGuideBadge from '@rosie/math-kit/components/shared/AnalysisGuideBadge'
 import {
   fetchLessonProblemImages,
   getMathImagePublicUrl,
@@ -41,7 +41,7 @@ import {
   uploadLessonSummaryContentImage,
   invalidateLessonImageCache,
   type MathProblemImage,
-} from '@rosie/math/hooks/useMathProblemImages'
+} from '@rosie/math-kit/hooks/useMathProblemImages'
 import {
   createMathProblemNote,
   loadLessonNotes,
@@ -49,8 +49,8 @@ import {
   updateMathProblemNote,
   invalidateLessonNotesCache,
   type MathProblemNote,
-} from '@rosie/math/hooks/useMathProblemNotes'
-import { appendRichInlineImage, richInlineImageHtml, sanitizeRichHtml } from '@rosie/math/utils/sanitize-summary-html'
+} from '@rosie/math-kit/hooks/useMathProblemNotes'
+import { appendRichInlineImage, richInlineImageHtml, sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
 
 type Props = { user: User; lessonFilter: ReturnType<typeof useMathLessonFilter> }
 

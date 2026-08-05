@@ -1,8 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import type { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
-import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
+import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
+import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 import MathLessonSummaryEditor from '@rosie/math/admin/MathLessonSummaryEditor'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>

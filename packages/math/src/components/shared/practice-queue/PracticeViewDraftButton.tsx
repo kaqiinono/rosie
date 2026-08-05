@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
-import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
+import ScratchPadSession from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadSession'
 import { SEA_POOL } from '@rosie/math/utils/sea-data'
-import { problemHasViewableDraft, resolveViewableAttemptId } from '@rosie/math/utils/math-scratch-db'
+import { problemHasViewableDraft, resolveViewableAttemptId } from '@rosie/math-kit/utils/math-scratch-db'
 
 type Props = {
   /** Full problem (practice portal / plan card with resolved Problem). */

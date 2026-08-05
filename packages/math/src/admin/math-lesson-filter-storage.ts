@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@rosie/core'
-import { defaultLessonForGrade, gradesInOrder, lessonsForGrade } from '@rosie/math/utils/lesson-grade'
+import { defaultLessonForGrade, gradesInOrder, lessonsForGrade } from '@rosie/math-kit/utils/lesson-grade'
 
 export type MathLessonFilterSaved = {
   selectedGrade: number

@@ -4,16 +4,16 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
-import { useProblemMastery } from '@rosie/math/hooks/useProblemMastery'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
+import { useProblemMastery } from '@rosie/math-kit/hooks/useProblemMastery'
 import { useMathQuiz, type QuizBatch, type QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 import {
   gradeOf,
   GRADE_LABEL,
   gradesInOrder,
   lessonDisplayLabel,
-} from '@rosie/math/utils/lesson-grade'
+} from '@rosie/math-kit/utils/lesson-grade'
 import {
   allocateAppendLessons,
   allocateInitialBatch,

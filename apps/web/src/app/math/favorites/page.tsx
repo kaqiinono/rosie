@@ -3,15 +3,15 @@
 import { useMemo } from 'react'
 import { useAuth, getMasteryLevel, MASTERY_ICON } from '@rosie/core'
 import { BackLink } from '@rosie/ui'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
 import {
   resolveFavoriteProblems,
   groupFavoritesByLesson,
 } from '@rosie/math/utils/favorites-helpers'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
-import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
-import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
 import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
 

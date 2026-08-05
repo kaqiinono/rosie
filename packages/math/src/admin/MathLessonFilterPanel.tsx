@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { GRADE_LABEL, lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
+import { GRADE_LABEL, lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 
 const FILTER_BTN_BASE =
   'rounded-full border px-2 py-0.5 text-[10px] font-semibold transition active:scale-95'

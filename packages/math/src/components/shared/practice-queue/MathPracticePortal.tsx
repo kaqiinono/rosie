@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import clsx from 'clsx'
-import type { PracticeQueueItem, PracticeQueuePhase } from '@rosie/math/utils/practice-queue-types'
+import type { PracticeQueueItem, PracticeQueuePhase } from '@rosie/math-kit/utils/practice-queue-types'
 import {
   MATH_SKIP_REASON_OPTIONS,
   type MathSkipReason,
-} from '@rosie/math/utils/math-skip-reasons'
+} from '@rosie/math-kit/utils/math-skip-reasons'
 import PracticeProblemBody from './PracticeProblemBody'
-import PracticeCelebration from './PracticeCelebration'
-import ScratchPadSession from '@rosie/math/components/shared/ScratchPad/ScratchPadSession'
+import PracticeCelebration from '@rosie/math-kit/components/shared/practice-queue/PracticeCelebration'
+import ScratchPadSession from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadSession'
 
 type Props = {
   items: PracticeQueueItem[]

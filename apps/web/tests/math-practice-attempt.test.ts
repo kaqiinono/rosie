@@ -4,7 +4,7 @@ import {
   pickPracticeAttemptForRow,
   resolveAttemptCanvasObjects,
   shouldInsertCompletedWithoutInProgress,
-} from '../../../packages/math/src/utils/math-practice-attempt'
+} from '../../../packages/math-kit/src/utils/math-practice-attempt'
 
 describe('resolveAttemptCanvasObjects', () => {
   it('prefers attempt.objects when non-empty', () => {

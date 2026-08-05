@@ -4,7 +4,7 @@ import React from 'react'
 import {
   MathQuizConfig,
   VerticalDigitPuzzle,
-} from '@rosie/math/components/shared/VerticalDigitPuzzle'
+} from '@rosie/math-kit/components/shared/VerticalDigitPuzzle'
 
 const MathDemoPage: React.FC = () => {
   // 模拟从后端或文档配置中解析出来的标准数字谜题库

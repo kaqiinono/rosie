@@ -1,7 +1,7 @@
 import type { MathPlanProblem, ProblemSet, Problem } from '@rosie/core'
-import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
-import type { MathPracticeQueueItemRef } from '@rosie/math/utils/practice-queue-snapshot'
-import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
+import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
+import type { MathPracticeQueueItemRef } from '@rosie/math-kit/utils/practice-queue-snapshot'
+import { lessonByKey, routeForLesson } from '@rosie/math-kit/utils/lesson-registry'
 
 const SECTIONS = ['lesson', 'homework', 'pretest', 'workbook', 'supplement'] as const
 

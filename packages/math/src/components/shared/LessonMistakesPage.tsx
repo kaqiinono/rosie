@@ -6,12 +6,12 @@ import type { Problem, ProblemSet } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
-import { MistakeDraftButton } from '@rosie/math/components/shared/ScratchPad/ScratchPadTrigger'
-import { useLessonScratchActions } from '@rosie/math/components/shared/ScratchPad/LessonScratchActionsContext'
-import { fetchWrongDraftProblemIds } from '@rosie/math/utils/math-scratch-db'
+import { MistakeDraftButton } from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadTrigger'
+import { useLessonScratchActions } from '@rosie/math-kit/components/shared/ScratchPad/LessonScratchActionsContext'
+import { fetchWrongDraftProblemIds } from '@rosie/math-kit/utils/math-scratch-db'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
-import { lessonKeyFromHref } from '@rosie/math/utils/lesson-grade'
-import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
+import { lessonKeyFromHref } from '@rosie/math-kit/utils/lesson-grade'
+import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 
 type TagStyleMap = Record<string, string>
 

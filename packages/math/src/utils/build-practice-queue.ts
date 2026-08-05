@@ -1,4 +1,4 @@
-import type { PracticeQueueItem } from '@rosie/math/utils/practice-queue-types'
+import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 
 /** Dedupe by problem.id, then sort by solve count ascending (stable tie-break). */
 export function buildPracticeQueue(

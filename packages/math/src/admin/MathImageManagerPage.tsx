@@ -19,15 +19,15 @@ import {
   persistImageKind,
   lessonSummaryProblemId,
   type MathImageKind,
-} from '@rosie/math/constants'
-import { useMathProblemImagesAdmin } from '@rosie/math/hooks/useMathProblemImagesAdmin'
-import { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
+} from '@rosie/math-kit/constants'
+import { useMathProblemImagesAdmin } from '@rosie/math-kit/hooks/useMathProblemImagesAdmin'
+import { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import MathPdfSliceMatcher from '@rosie/math/admin/MathPdfSliceMatcher'
-import MathProblemNotesPanel from '@rosie/math/admin/MathProblemNotesPanel'
+import MathProblemNotesPanel from '@rosie/math-kit/admin/MathProblemNotesPanel'
 import MathLessonSummariesPanel from '@rosie/math/admin/MathLessonSummariesPanel'
-import AnalysisGuideBadge from '@rosie/math/components/shared/AnalysisGuideBadge'
-import { problemHasAnalysisImage } from '@rosie/math/utils/problem-analysis-image'
-import { isRichBodyEmpty } from '@rosie/math/utils/sanitize-summary-html'
+import AnalysisGuideBadge from '@rosie/math-kit/components/shared/AnalysisGuideBadge'
+import { problemHasAnalysisImage } from '@rosie/math-kit/utils/problem-analysis-image'
+import { isRichBodyEmpty } from '@rosie/math-kit/utils/sanitize-summary-html'
 
 type Props = { user: User | null }
 

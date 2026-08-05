@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { todayStr } from '@rosie/core'
 import { MATH_PLAN_LESSONS, mathPlanDisplayName } from './math-weekly-plan-shared'
 

@@ -1,5 +1,5 @@
 import type { ProblemSet } from '@rosie/core'
-import { lessonByRoute, routeForLesson, type LessonEntry } from '@rosie/math/utils/lesson-registry'
+import { lessonByRoute, routeForLesson, type LessonEntry } from '@rosie/math-kit/utils/lesson-registry'
 import { lessonModuleByKey, type LessonModule } from '@rosie/math/utils/lesson-module-registry'
 
 export type ResolvedLessonRoute = {

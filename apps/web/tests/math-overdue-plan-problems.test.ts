@@ -4,7 +4,7 @@ import {
   collectOverduePlanProblems,
   planProblemAnswerStatus,
   planProblemExecStatus,
-} from '@rosie/math/utils/math-helpers'
+} from '@rosie/math-kit/utils/math-helpers'
 
 function prob(id: string): MathPlanProblem {
   return {

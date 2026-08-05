@@ -3,14 +3,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { MathPlanProblem, ProblemMasteryMap, ProblemSet, WordMasteryInfo } from '@rosie/core'
 import { useAuth, ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@rosie/core'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
-import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
-import { fetchPracticeAttemptsForProblems } from '@rosie/math/utils/math-scratch-db'
-import { attemptRowHasViewableCanvas, pickPracticeAttemptForRow } from '@rosie/math/utils/math-practice-attempt'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
+import type { MathPracticeAttemptRow } from '@rosie/math-kit/hooks/math-scratch-types'
+import { fetchPracticeAttemptsForProblems } from '@rosie/math-kit/utils/math-scratch-db'
+import { attemptRowHasViewableCanvas, pickPracticeAttemptForRow } from '@rosie/math-kit/utils/math-practice-attempt'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
 import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
-import { lessonDisplayLabel } from '@rosie/math/utils/lesson-grade'
+import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 
 interface Props {
   problems: MathPlanProblem[]

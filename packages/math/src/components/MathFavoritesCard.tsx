@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMathFavoritesContext } from '@rosie/math/components/MathFavoritesProvider'
+import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
 
 export default function MathFavoritesCard() {
   const { favorites } = useMathFavoritesContext()

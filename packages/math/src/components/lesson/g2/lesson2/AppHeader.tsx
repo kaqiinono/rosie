@@ -1,6 +1,6 @@
 'use client'
 
-import LessonAppHeader from '@rosie/math/components/shared/LessonAppHeader'
+import LessonAppHeader from '@rosie/math-kit/components/shared/LessonAppHeader'
 import type { ProblemSet } from '@rosie/core'
 import { useG2Lesson2 } from './G2Lesson2Provider'
 

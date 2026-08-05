@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import LessonInnerLayout from '@rosie/math/components/shared/LessonInnerLayout'
+import LessonInnerLayout from '@rosie/math-kit/components/shared/LessonInnerLayout'
 import CongratsModal from '@rosie/math/components/lesson/g1/lesson35/CongratsModal'
 import Toast from '@rosie/math/components/lesson/g1/lesson35/Toast'
 import { nextProblemHref } from '@rosie/math/utils/lesson-route-utils'

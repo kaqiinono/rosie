@@ -1,8 +1,8 @@
 import type { ProblemSet } from '@rosie/core'
-import { LESSONS, routeForLesson } from '@rosie/math/utils/lesson-registry'
+import { LESSONS, routeForLesson } from '@rosie/math-kit/utils/lesson-registry'
 import { LESSON_MODULES } from '@rosie/math/utils/lesson-module-registry'
 import { SEA_LESSONS, SEA_POOL } from '@rosie/math/utils/sea-data'
-import { LESSON_SOURCE_BTNS } from '@rosie/math/utils/lesson-source-btns'
+import { LESSON_SOURCE_BTNS } from '@rosie/math-kit/utils/lesson-source-btns'
 import { legacyPrefixFromProblemId } from '@rosie/math/admin/legacy-migration-map'
 
 export type SourceDirtyBucket = {

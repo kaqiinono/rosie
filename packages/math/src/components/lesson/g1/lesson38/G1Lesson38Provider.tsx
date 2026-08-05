@@ -1,6 +1,6 @@
 'use client'
 
-import { createLessonProvider } from '@rosie/math/components/shared/createLessonProvider'
+import { createLessonProvider } from '@rosie/math-kit/components/shared/createLessonProvider'
 
 const { Provider, useLessonContext } = createLessonProvider('G1Lesson38')
 

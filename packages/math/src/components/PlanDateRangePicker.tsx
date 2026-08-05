@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { addPlanDays } from '@rosie/math/utils/math-helpers'
+import { addPlanDays } from '@rosie/math-kit/utils/math-helpers'
 import { todayStr } from '@rosie/core'
 
 const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六']

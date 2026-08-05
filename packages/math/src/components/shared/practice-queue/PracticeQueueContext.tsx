@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, createContext, useContext, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth, useImmersive, STORAGE_KEYS, todayStr, usePracticePendingLifecycle } from '@rosie/core'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
-import { useMathSkipped } from '@rosie/math/hooks/useMathSkipped'
-import type { MathSkipReason } from '@rosie/math/utils/math-skip-reasons'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
+import { useMathSkipped } from '@rosie/math-kit/hooks/useMathSkipped'
+import type { MathSkipReason } from '@rosie/math-kit/utils/math-skip-reasons'
 import {
   buildPracticeQueue,
   initialIndexForProblem,
@@ -15,7 +15,7 @@ import type {
   PracticeQueueItem,
   PracticeQueuePhase,
   PracticeQueueStartOpts,
-} from '@rosie/math/utils/practice-queue-types'
+} from '@rosie/math-kit/utils/practice-queue-types'
 import {
   clearMathPendingEverywhere,
   MATH_PENDING_KIND,
@@ -27,7 +27,7 @@ import {
   type MathPracticeQueueItemRef,
   type MathPracticeSnapshot,
   type MathPracticeSource,
-} from '@rosie/math/utils/practice-queue-snapshot'
+} from '@rosie/math-kit/utils/practice-queue-snapshot'
 import MathPracticePortal from './MathPracticePortal'
 
 type ResumeOpts = {

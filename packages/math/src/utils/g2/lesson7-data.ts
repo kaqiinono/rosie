@@ -2,7 +2,7 @@ import type { Problem, ProblemSet, VerticalDigitPuzzleSpec, VerticalPuzzleSymbol
 import {
   makeVerticalPuzzleChecker,
   makeVerticalPuzzleSymChecker,
-} from '@rosie/math/utils/vertical-digit-puzzle'
+} from '@rosie/math-kit/utils/vertical-digit-puzzle'
 
 const C = (label: string, fixed?: number): VerticalPuzzleSymbolCell =>
   fixed !== undefined ? { sym: label, label, fixed } : { sym: label, label }

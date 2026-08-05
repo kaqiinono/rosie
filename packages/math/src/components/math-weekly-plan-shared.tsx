@@ -3,24 +3,24 @@
 import { useMemo, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import {
   MATH_PLAN_SECTIONS,
   planEndDate,
   planProblemAnswerStatus,
   planProblemExecStatus,
-} from '@rosie/math/utils/math-helpers'
-import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
-import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+} from '@rosie/math-kit/utils/math-helpers'
+import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
 import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
 import { todayStr } from '@rosie/core'
-import { lessonDisplayLabel, lessonDisplayNum } from '@rosie/math/utils/lesson-grade'
-import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
+import { lessonDisplayLabel, lessonDisplayNum } from '@rosie/math-kit/utils/lesson-grade'
+import { lessonByKey, routeForLesson } from '@rosie/math-kit/utils/lesson-registry'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet, Problem } from '@rosie/core'
-import type { MathPlanSectionKey } from '@rosie/math/utils/math-helpers'
-import { sanitizeRichHtml } from '@rosie/math/utils/sanitize-summary-html'
+import type { MathPlanSectionKey } from '@rosie/math-kit/utils/math-helpers'
+import { sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
 
 export function problemDetailHref(lessonId: string, section: string, index: number): string {
   const entry = lessonByKey(lessonId)

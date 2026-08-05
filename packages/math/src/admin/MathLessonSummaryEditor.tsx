@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { useAuth } from '@rosie/core'
-import { lessonSummaryProblemId } from '@rosie/math/constants'
-import { uploadLessonSummaryContentImage } from '@rosie/math/hooks/useMathProblemImages'
-import type { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
-import RichTextEditor from '@rosie/math/components/shared/RichTextEditor'
-import LessonSummaryBody from '@rosie/math/components/shared/LessonSummaryBody'
-import { isRichBodyEmpty, sanitizeRichHtml } from '@rosie/math/utils/sanitize-summary-html'
+import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
+import { uploadLessonSummaryContentImage } from '@rosie/math-kit/hooks/useMathProblemImages'
+import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
+import RichTextEditor from '@rosie/math-kit/components/shared/RichTextEditor'
+import LessonSummaryBody from '@rosie/math-kit/components/shared/LessonSummaryBody'
+import { isRichBodyEmpty, sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 

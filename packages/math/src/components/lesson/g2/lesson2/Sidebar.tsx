@@ -1,6 +1,6 @@
 'use client'
 
-import LessonSidebar from '@rosie/math/components/shared/LessonSidebar'
+import LessonSidebar from '@rosie/math-kit/components/shared/LessonSidebar'
 import type { ProblemSet } from '@rosie/core'
 import { useG2Lesson2 } from './G2Lesson2Provider'
 

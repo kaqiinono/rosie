@@ -4,36 +4,36 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 import { OrbBackground } from '@rosie/ui'
-import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math/components/shared/rich-text-image'
-import LessonSummaryBody from '@rosie/math/components/shared/LessonSummaryBody'
-import { lessonSummaryProblemId } from '@rosie/math/constants'
+import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math-kit/components/shared/rich-text-image'
+import LessonSummaryBody from '@rosie/math-kit/components/shared/LessonSummaryBody'
+import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
 import {
   loadLessonNotes,
   notesForProblem,
   type MathProblemNote,
-} from '@rosie/math/hooks/useMathProblemNotes'
+} from '@rosie/math-kit/hooks/useMathProblemNotes'
 import {
   buildLessonNoteEntries,
   type LessonNoteEntry,
-} from '@rosie/math/utils/lesson-note-entries'
+} from '@rosie/math-kit/utils/lesson-note-entries'
 import {
   GRADE_LABEL,
   gradeOf,
   gradesInOrder,
   highestGrade,
   lessonsForGrade,
-} from '@rosie/math/utils/lesson-grade'
+} from '@rosie/math-kit/utils/lesson-grade'
 import {
   compareLessonIds,
   lessonByKey,
   routeForLesson,
-} from '@rosie/math/utils/lesson-registry'
+} from '@rosie/math-kit/utils/lesson-registry'
 import { SEA_LESSON_MAP, type SeaLessonMeta } from '@rosie/math/utils/sea-data'
 import {
   isRichBodyEmpty,
   RICH_CONTENT_IMG_TW_COMPACT,
   sanitizeRichHtml,
-} from '@rosie/math/utils/sanitize-summary-html'
+} from '@rosie/math-kit/utils/sanitize-summary-html'
 
 type LessonNotesGroup = {
   lessonId: string

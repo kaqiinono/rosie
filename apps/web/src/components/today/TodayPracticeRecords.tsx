@@ -16,13 +16,13 @@ import {
   useWordData,
   findWordByKey,
 } from '@rosie/english'
-import { useMathWeeklyPlan } from '@rosie/math/hooks/useMathWeeklyPlan'
-import { useMathTodayAttempts } from '@rosie/math/hooks/useMathTodayAttempts'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
+import { useMathTodayAttempts } from '@rosie/math-kit/hooks/useMathTodayAttempts'
 import { lessonDisplayLabel } from '@rosie/math'
-import { fetchAttemptCanvas } from '@rosie/math/utils/math-scratch-db'
-import { attemptRowHasViewableCanvas } from '@rosie/math/utils/math-practice-attempt'
-import type { MathPracticeAttemptRow } from '@rosie/math/hooks/math-scratch-types'
-import ScratchPadContentPreview from '@rosie/math/components/shared/ScratchPad/ScratchPadContentPreview'
+import { fetchAttemptCanvas } from '@rosie/math-kit/utils/math-scratch-db'
+import { attemptRowHasViewableCanvas } from '@rosie/math-kit/utils/math-practice-attempt'
+import type { MathPracticeAttemptRow } from '@rosie/math-kit/hooks/math-scratch-types'
+import ScratchPadContentPreview from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadContentPreview'
 import { useCalcTodaySessions } from '@rosie/calc'
 import {
   useChineseRoadmapProgress,
@@ -135,7 +135,7 @@ function LoadingLine() {
 function MathDraftPreview({ attempt }: { attempt: MathPracticeAttemptRow }) {
   const hasEmbedded = attempt.objects.length > 0
   const [fetched, setFetched] = useState<
-    import('@rosie/math/components/shared/ScratchPad/scratch-pad-types').ScratchObject[] | null
+    import('@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types').ScratchObject[] | null
   >(null)
 
   useEffect(() => {

@@ -106,7 +106,7 @@ import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT, TAG_STYLE 
 import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT, TAG_STYLE as G2Lesson3TS } from './g2/lesson3-data'
 import { PROBLEMS as G2Lesson2PROBLEMS, PROBLEM_TYPES as G2Lesson2PT, TAG_STYLE as G2Lesson2TS } from './g2/lesson2-data'
 import type { Problem } from '@rosie/core'
-import { lessonByKey, routeForLesson } from '@rosie/math/utils/lesson-registry'
+import { lessonByKey, routeForLesson } from '@rosie/math-kit/utils/lesson-registry'
 import type { SeaLessonMeta, SeaProblem } from './sea-types'
 
 // Re-exported for backward compatibility: existing consumers import these types

@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { lessonSummaryProblemId } from '@rosie/math/constants'
-import type { useMathProblemNotesAdmin } from '@rosie/math/hooks/useMathProblemNotesAdmin'
+import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
+import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import MathLessonSummaryEditor from '@rosie/math/admin/MathLessonSummaryEditor'
 import MathLessonSummaryEditModal from '@rosie/math/admin/MathLessonSummaryEditModal'
 

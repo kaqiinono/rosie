@@ -1,5 +1,5 @@
 import GradeLessonList from '@rosie/math/components/GradeLessonList'
-import { gradesInOrder } from '@rosie/math/utils/lesson-grade'
+import { gradesInOrder } from '@rosie/math-kit/utils/lesson-grade'
 import { notFound } from 'next/navigation'
 
 type Props = {

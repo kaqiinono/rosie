@@ -4,11 +4,11 @@ import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
-import { useMathSkipped } from '@rosie/math/hooks/useMathSkipped'
-import { MATH_SKIP_REASON_OPTIONS, type MathSkipReason } from '@rosie/math/utils/math-skip-reasons'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathSkipped } from '@rosie/math-kit/hooks/useMathSkipped'
+import { MATH_SKIP_REASON_OPTIONS, type MathSkipReason } from '@rosie/math-kit/utils/math-skip-reasons'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
-import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math/utils/lesson-grade'
+import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math-kit/utils/lesson-grade'
 import { SOURCE_LABELS } from '@rosie/core'
 import { getMasteryLevel } from '@rosie/core'
 import {
@@ -17,8 +17,8 @@ import {
   allDifficultiesSelected,
   type ProblemDifficulty,
 } from '@rosie/core'
-import FavoriteHeart from '@rosie/math/components/shared/FavoriteHeart'
-import PracticeCountBadge from '@rosie/math/components/shared/PracticeCountBadge'
+import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
+import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
 import { useStartPracticeQueue } from '@rosie/math/components/shared/practice-queue/useStartPracticeQueue'
 import { seaPoolToQueueItems } from '@rosie/math/utils/practice-queue-from-sea'
 import {

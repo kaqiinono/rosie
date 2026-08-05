@@ -10,8 +10,8 @@ import {
   type QuizPrintMode,
 } from '@rosie/math/components/shared/QuizPaperPrintSheet'
 import type { QuizPaper } from '@rosie/math/hooks/useMathQuiz'
-import type { ScratchObject } from '@rosie/math/components/shared/ScratchPad/scratch-pad-types'
-import { fetchQuizScratchObjectsMap } from '@rosie/math/utils/math-scratch-db'
+import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
+import { fetchQuizScratchObjectsMap } from '@rosie/math-kit/utils/math-scratch-db'
 
 export default function QuizPrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

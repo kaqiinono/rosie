@@ -11,7 +11,7 @@ import {
   lessonDisplayLabel,
   highestGrade,
   gradeForNewLesson,
-} from '@rosie/math/utils/lesson-grade'
+} from '@rosie/math-kit/utils/lesson-grade'
 
 describe('lesson-grade', () => {
   it('一年级讲次登记正确', () => {

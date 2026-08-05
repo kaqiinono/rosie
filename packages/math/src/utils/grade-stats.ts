@@ -1,5 +1,5 @@
 import { SEA_POOL } from './sea-data'
-import { gradeOf } from './lesson-grade'
+import { gradeOf } from '@rosie/math-kit/utils/lesson-grade'
 
 export type GradeProblemStats = {
   total: number

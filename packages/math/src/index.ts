@@ -9,7 +9,7 @@ export { default as CourseCard } from './components/CourseCard'
 export { default as MathDailyCard } from './components/MathDailyCard'
 export { default as MathSeaCard } from './components/MathSeaCard'
 export { default as MathFavoritesCard } from './components/MathFavoritesCard'
-export { MathFavoritesProvider } from './components/MathFavoritesProvider'
+export { MathFavoritesProvider } from '@rosie/math-kit/components/MathFavoritesProvider'
 export { PracticeQueueProvider } from './components/shared/practice-queue/PracticeQueueContext'
 export { default as MathQuizCard } from './components/MathQuizCard'
 export { default as MathCatalogCard } from './components/MathCatalogCard'
@@ -31,7 +31,7 @@ export {
   lessonKeyFromHref,
   lessonDisplayNum,
   lessonDisplayLabel,
-} from './utils/lesson-grade'
+} from '@rosie/math-kit/utils/lesson-grade'
 export {
   LESSONS,
   type LessonEntry,
@@ -50,7 +50,7 @@ export {
   lessonsForGradeRegistry,
   gradesInOrderFromRegistry,
   highestGradeFromRegistry,
-} from './utils/lesson-registry'
+} from '@rosie/math-kit/utils/lesson-registry'
 
 // Admin
 export { default as MathImageManagerPage } from './admin/MathImageManagerPage'

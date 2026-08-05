@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useAuth } from '@rosie/core'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import { useCalcMistakes, categoryLabel, formatAnswer } from '@rosie/calc'
 import { useEnglishWrong, useWordData, findWordByKey, practiceHrefForWord } from '@rosie/english'
 import { lookupMathProblem } from '@rosie/math/utils/math-problem-lookup'

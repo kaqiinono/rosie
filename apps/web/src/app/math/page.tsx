@@ -9,10 +9,10 @@ import MathQuizCard from '@rosie/math/components/MathQuizCard'
 import MathCatalogCard from '@rosie/math/components/MathCatalogCard'
 import MathNotesCard from '@rosie/math/components/MathNotesCard'
 import MathMistakesCard from '@rosie/math/components/MathMistakesCard'
-import { gradesForLanding, GRADE_LABEL, lessonsForGrade } from '@rosie/math/utils/lesson-grade'
-import { gradeCourseSummary } from '@rosie/math/utils/courses-data'
+import { gradesForLanding, GRADE_LABEL, lessonsForGrade } from '@rosie/math-kit/utils/lesson-grade'
+import { gradeCourseSummary } from '@rosie/math-kit/utils/courses-data'
 import { gradeProblemStats } from '@rosie/math/utils/grade-stats'
-import { useMathSolved } from '@rosie/math/hooks/useMathSolved'
+import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
 import { useAuth } from '@rosie/core'
 
 export default function MathPage() {

@@ -1,18 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useProblemAnswer } from '@rosie/math/hooks/useProblemAnswer'
-import NumericAnswerPanel from '@rosie/math/components/shared/NumericAnswerPanel'
+import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
+import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerPanel'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math/utils/g1/lesson38-data'
 import { useG1Lesson38 } from './G1Lesson38Provider'
 import { getMasteryLevel } from '@rosie/core'
-import QuestionLayout from '@rosie/math/components/shared/QuestionLayout'
-import ProblemSolutionPanel from '@rosie/math/components/shared/ProblemSolutionPanel'
-import ProblemFigureImage from '@rosie/math/components/shared/ProblemFigureImage'
-import DifficultyStars from '@rosie/math/components/shared/DifficultyStars'
-import LessonProblemDetailHeader from '@rosie/math/components/shared/LessonProblemDetailHeader'
-import LessonProblemNavBar from '@rosie/math/components/shared/LessonProblemNavBar'
+import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
+import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
+import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
+import DifficultyStars from '@rosie/math-kit/components/shared/DifficultyStars'
+import LessonProblemDetailHeader from '@rosie/math-kit/components/shared/LessonProblemDetailHeader'
+import LessonProblemNavBar from '@rosie/math-kit/components/shared/LessonProblemNavBar'
 
 interface ProblemDetailProps {
   problem: Problem

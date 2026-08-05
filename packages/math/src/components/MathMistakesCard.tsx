@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useMathWrong } from '@rosie/math/hooks/useMathWrong'
+import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 
 export default function MathMistakesCard() {
   const { user } = useAuth()
