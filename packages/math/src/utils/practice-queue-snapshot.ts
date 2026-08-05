@@ -103,8 +103,13 @@ function normalizeSnap(
     ...snap,
     version: MATH_PRACTICE_SNAPSHOT_VERSION,
     source,
-    date: todayStr(),
+    // Preserve stash date for same-day checks — only wrapMathEnvelope stamps today on write.
+    date: typeof snap.date === 'string' && snap.date.length > 0 ? snap.date : todayStr(),
   }
+}
+
+function isSnapForToday(snap: MathPracticeSnapshot, today = todayStr()): boolean {
+  return snap.date === today
 }
 
 /** Move `active-queue` into `queue:<inferred source>` then delete legacy (idempotent). */
@@ -177,7 +182,10 @@ export function readMathPracticeSnapshot(
     return null
   }
   const snap = normalizeSnap(env.stash, source)
-  if (snap.source !== source) return null
+  if (snap.source !== source || !isSnapForToday(snap, today)) {
+    clearMathPracticeSnapshot(source)
+    return null
+  }
   return snap
 }
 
@@ -187,6 +195,7 @@ export async function resolveMathPracticeSnapshot(
 ): Promise<MathPracticeSnapshot | null> {
   migrateLegacyMathActiveQueue()
   const scope = mathPendingScope(source)
+  const today = todayStr()
   const env = await resolvePending<unknown>(userId, MATH_PENDING_KIND, scope)
   if (!env || !isValidSnap(env.stash)) {
     // Legacy cloud row may still use active-queue — pull once for plan.
@@ -198,7 +207,7 @@ export async function resolveMathPracticeSnapshot(
       )
       if (legacy && isValidSnap(legacy.stash)) {
         const snap = normalizeSnap(legacy.stash, 'plan')
-        if (snap.source === 'plan') {
+        if (snap.source === 'plan' && isSnapForToday(snap, today)) {
           const mirrored: PracticePendingEnvelope<MathPracticeSnapshot> = {
             ...legacy,
             stash: snap,
@@ -207,12 +216,16 @@ export async function resolveMathPracticeSnapshot(
           void clearPendingEverywhere(userId, MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
           return snap
         }
+        void clearPendingEverywhere(userId, MATH_PENDING_KIND, MATH_PENDING_LEGACY_SCOPE)
       }
     }
     return null
   }
   const snap = normalizeSnap(env.stash, source)
-  if (snap.source !== source) return null
+  if (snap.source !== source || !isSnapForToday(snap, today)) {
+    void clearMathPendingEverywhere(userId, source)
+    return null
+  }
   const mirrored: PracticePendingEnvelope<MathPracticeSnapshot> = {
     ...(env as PracticePendingEnvelope<MathPracticeSnapshot>),
     stash: snap,

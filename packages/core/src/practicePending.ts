@@ -246,6 +246,10 @@ export async function fetchCloudPending<T>(
     env.date !== today ||
     env.stash == null
   ) {
+    // Stale or corrupt cloud row — drop so it cannot resurrect after local expiry.
+    if (data) {
+      void clearCloudPending(userId, kind, scopeKey)
+    }
     return null
   }
   // Anything read back from the table is by definition already uploaded.

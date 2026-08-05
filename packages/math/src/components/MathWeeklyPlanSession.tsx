@@ -34,6 +34,7 @@ import {
 } from '@rosie/math/utils/practice-queue-snapshot'
 import {
   canAutoEnterMathPlanPractice,
+  isResumablePlanPracticeSnapshot,
   mathPlanPracticeReturnHref,
   MATH_PLAN_PRACTICE_HREF,
 } from '@rosie/math/utils/math-plan-practice-entry'
@@ -167,11 +168,19 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       setResumeChecked(true)
       return
     }
-    if (isLoading || resumeChecked) return
+    if (isLoading || resumeChecked || !weeklyPlan) return
 
     let cancelled = false
 
+    const todayProblemIds = (
+      weeklyPlan.days.find((d) => d.date === today)?.problems ?? []
+    ).map((p) => p.problemId)
+
     const tryResume = (pending: NonNullable<ReturnType<typeof readMathPracticeSnapshot>>) => {
+      if (!isResumablePlanPracticeSnapshot(pending, todayProblemIds, today)) {
+        void clearMathPendingEverywhere(userId, 'plan')
+        return false
+      }
       const items = rehydratePracticeQueueItems(pending.items, problemSets)
       if (items.length === 0) {
         void clearMathPendingEverywhere(userId, 'plan')
@@ -195,7 +204,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
     if (!userId) {
       // The portal needs auth. Wait for it if there's something to resume.
-      if (local) return
+      if (local && isResumablePlanPracticeSnapshot(local, todayProblemIds, today)) return
       setResumeChecked(true)
       return
     }
@@ -214,7 +223,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       if (timer !== undefined) window.clearTimeout(timer)
       if (cancelled) return
       const winner = pending ?? local
-      // Scope `queue:plan` only — sea/lesson stashes live elsewhere.
+      // Scope `queue:plan` only — and only if it is still today's required set.
       if (winner) tryResume(winner)
       setResumeChecked(true)
     })()
@@ -223,7 +232,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       cancelled = true
       if (timer !== undefined) window.clearTimeout(timer)
     }
-  }, [autoStart, practiceActive, isLoading, resumeChecked, userId, problemSets, resume])
+  }, [autoStart, practiceActive, isLoading, resumeChecked, userId, problemSets, resume, weeklyPlan, today])
 
   // Practice route: jump straight into today's first unfinished required problem.
   useEffect(() => {
