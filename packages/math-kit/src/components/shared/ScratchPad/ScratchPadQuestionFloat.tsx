@@ -8,6 +8,7 @@ import {
   getProblemAnswerMode,
   hasScratchExportableVisual,
 } from '@rosie/math-kit/utils/problem-answer-mode'
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 import ScratchPadInsertFigureButton from './ScratchPadInsertFigureButton'
 import ScratchPadAnswerPanel from './ScratchPadAnswerPanel'
 import PracticeAttemptTimeline from './PracticeAttemptTimeline'
@@ -109,7 +110,7 @@ export default function ScratchPadQuestionFloat({
         <div className="order-1 min-h-0 flex-1 overflow-x-auto overflow-y-auto px-3.5 py-3">
           <div
             className="text-[14px] leading-relaxed text-slate-600 [&>strong]:font-bold [&>strong]:text-slate-800"
-            dangerouslySetInnerHTML={{ __html: problem.text }}
+            dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
           />
           {hasQuestionFigure && (
             <div ref={figureHostRef} className="mt-3">

@@ -14,6 +14,7 @@ import {
   problemDetailHref,
   sectionSourceLabel,
 } from '@rosie/math-kit/utils/problem-location'
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 
 type Props = {
   basePath: string
@@ -35,7 +36,9 @@ function formatAttemptTime(iso: string): string {
 
 /** Text-only problem body for draft preview — no inline images or figure widgets. */
 function problemTextOnly(html: string): string {
-  return html.replace(/<img\b[^>]*\/?>/gi, '')
+  // sanitizeProblemText drops <img> (not in its allowed-tag list) and strips
+  // any other markup outside the problem-text whitelist.
+  return sanitizeProblemText(html)
 }
 
 function buildDraftEntries(

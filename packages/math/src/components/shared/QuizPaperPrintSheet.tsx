@@ -5,6 +5,7 @@ import QuizProblemPrintWidget from '@rosie/math-kit/components/shared/QuizProble
 import ScratchPadPrintBlock from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadPrintBlock'
 import { isInteractiveProblem } from '@rosie/math-kit/utils/check-problem-answer'
 import { getProblemAnswerMode } from '@rosie/math-kit/utils/problem-answer-mode'
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 import { PROBLEMS as G1Lesson12PROBLEMS } from '@rosie/math-content/utils/g1/lesson12-data'
 import { PROBLEMS as G1Lesson13PROBLEMS } from '@rosie/math-content/utils/g1/lesson13-data'
 import { PROBLEMS as G1Lesson15PROBLEMS } from '@rosie/math-content/utils/g1/lesson15-data'
@@ -171,7 +172,7 @@ export function QuizPaperPrintSheet({
               <div
                 className="problem-text text-[15px] text-slate-900"
                 dangerouslySetInnerHTML={{
-                  __html: `<span class="q-num">${i + 1}.</span><span class="q-pts">（${pts}分）</span> ${problem.text}`,
+                  __html: `<span class="q-num">${i + 1}.</span><span class="q-pts">（${pts}分）</span> ${sanitizeProblemText(problem.text)}`,
                 }}
               />
               <QuizProblemPrintWidget

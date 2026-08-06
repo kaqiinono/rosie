@@ -9,10 +9,11 @@ way to rebuild a fresh database**. This folder fixes that.
 
 ```
 supabase/
-  schema.sql              # full-schema snapshot (pg_dump --schema-only). The
-                          # "rebuild truth": one file recreates an empty DB.
+  schema.sql              # full-schema snapshot (pg_dump --schema-only) that
+                          # INCLUDES every migration. The "rebuild truth": one
+                          # file recreates an empty DB.
   migrations/
-    0001_baseline.sql     # frozen baseline == schema.sql at consolidation time
+    0001_baseline.sql     # frozen baseline == schema.sql BEFORE 0002+
     0002_*.sql            # every change AFTER the baseline, in filename order
   README.md               # this file
 ```
@@ -74,7 +75,10 @@ node scripts/apply-migrations.mjs up
 
 ### Refresh the snapshot after schema changes
 
-Keep `schema.sql` current so a fresh rebuild stays one-shot:
+Keep `schema.sql` current so a fresh rebuild stays one-shot. The snapshot must
+reflect the baseline PLUS every applied migration (prefer a real `pg_dump`
+after running `up`; if the DB is unreachable, hand-edit the snapshot in
+pg_dump format and note the source migration).
 
 ```bash
 /opt/homebrew/opt/libpq/bin/pg_dump --schema-only --no-owner --no-privileges \

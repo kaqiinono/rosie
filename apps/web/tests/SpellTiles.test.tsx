@@ -19,9 +19,11 @@ async function clickPoolLetter(user: ReturnType<typeof userEvent.setup>, letter:
 }
 
 function findSpaceTile(): HTMLButtonElement {
-  // The space tile is a <button> with no accessible name (no text content).
+  // The space tile renders the ␣ glyph (jelly mode also sets aria-label="空格").
   const buttons = Array.from(document.querySelectorAll('button')) as HTMLButtonElement[]
-  const space = buttons.find(b => !b.textContent || b.textContent.trim() === '')
+  const space = buttons.find(
+    (b) => b.textContent?.includes('␣') || b.getAttribute('aria-label') === '空格',
+  )
   if (!space) throw new Error('space tile not found')
   return space
 }

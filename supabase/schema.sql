@@ -2295,6 +2295,62 @@ CREATE POLICY "Public read math_problem_images" ON public.math_problem_images FO
 
 
 --
+-- Name: math_weekly_plans Users can delete own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can delete own math_weekly_plans" ON public.math_weekly_plans FOR DELETE TO authenticated USING ((auth.uid() = user_id));
+
+
+--
+-- Name: weekly_plans Users can delete own weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can delete own weekly_plans" ON public.weekly_plans FOR DELETE TO authenticated USING ((auth.uid() = user_id));
+
+
+--
+-- Name: math_weekly_plans Users can insert own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can insert own math_weekly_plans" ON public.math_weekly_plans FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: weekly_plans Users can insert own weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can insert own weekly_plans" ON public.weekly_plans FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: math_weekly_plans Users can read own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can read own math_weekly_plans" ON public.math_weekly_plans FOR SELECT TO authenticated USING ((auth.uid() = user_id));
+
+
+--
+-- Name: weekly_plans Users can read own weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can read own weekly_plans" ON public.weekly_plans FOR SELECT TO authenticated USING ((auth.uid() = user_id));
+
+
+--
+-- Name: math_weekly_plans Users can update own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can update own math_weekly_plans" ON public.math_weekly_plans FOR UPDATE TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: weekly_plans Users can update own weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can update own weekly_plans" ON public.weekly_plans FOR UPDATE TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
 -- Name: math_rotating_review Users can manage their own rotating review; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -2994,6 +3050,12 @@ CREATE POLICY math_weekly_lesson_review_own ON public.math_weekly_lesson_review 
 
 
 --
+-- Name: math_weekly_plans; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.math_weekly_plans ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: math_wrong; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -3196,6 +3258,12 @@ ALTER TABLE public.voucher_templates ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY voucher_templates_all_authenticated ON public.voucher_templates USING ((auth.role() = 'authenticated'::text)) WITH CHECK ((auth.role() = 'authenticated'::text));
 
+
+--
+-- Name: weekly_plans; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.weekly_plans ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: word_entries; Type: ROW SECURITY; Schema: public; Owner: -

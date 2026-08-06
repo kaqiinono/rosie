@@ -24,8 +24,9 @@ describe('lesson-grade', () => {
 
   it('二年级讲次登记正确', () => {
     expect(LESSON_GRADE['2-1']).toBe(2)
-    expect(LESSON_GRADE['49']).toBe(2) // legacy 键仍可用
-    expect(lessonsForGrade(2)).toEqual(['2-1', '2-2', '2-3', '2-4', '2-5', '2-6'])
+    // legacy 数字键已移出运行时注册表（仅 admin 审计页保留映射）
+    expect(LESSON_GRADE['49']).toBeUndefined()
+    expect(lessonsForGrade(2)).toEqual(['2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '2-7'])
     expect(lessonDisplayNum('2-1')).toBe(1)
     expect(lessonDisplayNum('2-4')).toBe(4)
     expect(lessonDisplayLabel('2-1')).toBe('第 1 讲')
@@ -45,7 +46,7 @@ describe('lesson-grade', () => {
   it('gradeOf 取讲次年级，未登记返回 undefined', () => {
     expect(gradeOf('1-35')).toBe(1)
     expect(gradeOf('2-4')).toBe(2)
-    expect(gradeOf('35')).toBe(1) // legacy
+    expect(gradeOf('35')).toBeUndefined() // legacy 键不再解析
     expect(gradeOf('999')).toBeUndefined()
   })
 

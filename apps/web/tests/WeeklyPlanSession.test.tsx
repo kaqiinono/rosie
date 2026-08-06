@@ -4,54 +4,77 @@ import userEvent from '@testing-library/user-event'
 import type { WordEntry, WeeklyPlan } from '@rosie/core'
 
 // ── External-system mocks ────────────────────────────────────────────────────
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: () => ({
-      update: () => ({
-        eq: () => ({ eq: () => Promise.resolve({ error: null }) }),
+vi.mock('@rosie/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@rosie/core')>()
+  return {
+    ...actual,
+    useAuth: () => ({ user: mockUser }),
+    useImmersive: () => ({ isImmersive: false, setIsImmersive: mockSetIsImmersive }),
+    supabase: {
+      from: () => ({
+        update: () => ({
+          eq: () => ({ eq: () => Promise.resolve({ error: null }) }),
+        }),
+        upsert: () => ({
+          eq: () => Promise.resolve({ error: null }),
+        }),
+        delete: () => ({
+          eq: () => Promise.resolve({ error: null }),
+        }),
+        select: () => ({
+          eq: () => ({ maybeSingle: () => Promise.resolve({ data: null, error: null }) }),
+        }),
       }),
-    }),
-  },
-}))
+    },
+  }
+})
 
 // ── Context mocks ────────────────────────────────────────────────────────────
 const mockUser = { id: 'user-1', email: 'test@example.com' }
-vi.mock('@/contexts/AuthContext', () => ({
-  useAuth: () => ({ user: mockUser }),
-}))
+const mockSetIsImmersive = vi.fn()
 
 const mockRecordBatch = vi.fn()
-vi.mock('@rosie/english', () => ({
-  useWordsContext: () => ({ masteryMap: {}, recordBatch: mockRecordBatch }),
-}))
-
-const mockSetIsImmersive = vi.fn()
-vi.mock('@/contexts/ImmersiveContext', () => ({
-  useImmersive: () => ({ isImmersive: false, setIsImmersive: mockSetIsImmersive }),
-}))
+// Mock the WordsContext module itself: WeeklyPlanSession imports useWordsContext
+// from '../../WordsContext' internally, so mocking the '@rosie/english' barrel
+// export would not intercept that call.
+vi.mock('@rosie/english/WordsContext', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@rosie/english/WordsContext')>()
+  return {
+    ...actual,
+    useWordsContext: () => ({
+      masteryMap: {},
+      recordBatch: mockRecordBatch,
+      practiceButtonStyle: 'candy',
+      setPracticeButtonStyle: vi.fn(),
+    }),
+  }
+})
 
 const mockAwardStars = vi.fn(() => Promise.resolve())
-vi.mock('@/components/stars/StarHudProvider', () => ({
-  useStarHud: () => ({
-    yellowBalance: 0,
-    redBalance: 0,
-    blueBalance: 0,
-    session: { yellow: 0, red: 0, blue: 0 },
-    bursts: [],
-    awardStars: mockAwardStars,
-    consumeBurst: vi.fn(),
-    refresh: vi.fn(() => Promise.resolve()),
-  }),
-}))
-
-vi.mock('@/components/stars/StarProgressBar', () => ({
-  default: () => <div data-testid="star-progress" />,
-}))
+vi.mock('@rosie/rewards', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@rosie/rewards')>()
+  return {
+    ...actual,
+    useStarHud: () => ({
+      yellowBalance: 0,
+      redBalance: 0,
+      blueBalance: 0,
+      session: { yellow: 0, red: 0, blue: 0 },
+      bursts: [],
+      awardStars: mockAwardStars,
+      consumeBurst: vi.fn(),
+      refresh: vi.fn(() => Promise.resolve()),
+    }),
+    StarProgressBar: () => <div data-testid="star-progress" />,
+  }
+})
 
 // ── Child-component mocks ────────────────────────────────────────────────────
+// These components are relative-imported inside @rosie/english, so the mocks
+// must target the same files via the package's subpath exports.
 type AnyProps = Record<string, unknown>
 
-vi.mock('@/components/english/words/StudyPhase', () => ({
+vi.mock('@rosie/english/components/words/StudyPhase', () => ({
   default: (props: AnyProps) => {
     const entry = props.entry as WordEntry
     return (
@@ -70,22 +93,28 @@ vi.mock('@/components/english/words/StudyPhase', () => ({
   },
 }))
 
-vi.mock('@/components/english/words/QuizCard', () => ({
+// QuizCard was replaced by QuizQuestionBody + useQuizRunner; keep the old test
+// surface by driving the runner directly.
+vi.mock('@rosie/english/components/words/QuizQuestionBody', () => ({
   default: (props: AnyProps) => {
     const question = props.question as { word: WordEntry; type: string }
+    const runner = props.runner as {
+      handleMCAnswer: (word: string) => void
+      requestAdvance: () => void
+    }
     return (
       <div data-testid="quiz-card">
         <div data-testid="quiz-word">{question.word.word}</div>
         <div data-testid="quiz-type">{question.type}</div>
-        <div data-testid="quiz-idx">{String(props.currentIndex)}</div>
-        <div data-testid="quiz-total">{String(props.totalCount)}</div>
+        <div data-testid="quiz-idx">{String(props.questionKey)}</div>
+        <div data-testid="quiz-total">{String(props.total)}</div>
         <button
           data-testid="quiz-answer-correct"
-          onClick={() => (props.onAnswer as (c: boolean) => void)(true)}
+          onClick={() => runner.handleMCAnswer(question.word.word)}
         >
           mark correct
         </button>
-        <button data-testid="quiz-next" onClick={props.onNext as () => void}>
+        <button data-testid="quiz-next" onClick={() => runner.requestAdvance()}>
           next
         </button>
       </div>
@@ -93,7 +122,7 @@ vi.mock('@/components/english/words/QuizCard', () => ({
   },
 }))
 
-vi.mock('@/components/english/words/DoneSummary', () => ({
+vi.mock('@rosie/english/components/words/DoneSummary', () => ({
   default: (props: AnyProps) => (
     <div data-testid="done-summary">
       <div data-testid="done-score">{String(props.score)}</div>
@@ -102,7 +131,7 @@ vi.mock('@/components/english/words/DoneSummary', () => ({
   ),
 }))
 
-vi.mock('@/components/english/words/MasteryStatusPanel', () => ({
+vi.mock('@rosie/english/components/words/MasteryStatusPanel', () => ({
   default: () => <div data-testid="mastery-panel" />,
 }))
 
@@ -148,7 +177,9 @@ const STORAGE_KEY = `weekly_session_plan-1`
 const onBack = vi.fn()
 
 beforeEach(() => {
+  // Session stashes moved from sessionStorage to localStorage (day-scoped TTL).
   sessionStorage.clear()
+  localStorage.clear()
   mockRecordBatch.mockClear()
   mockSetIsImmersive.mockClear()
   mockAwardStars.mockClear()
@@ -167,6 +198,7 @@ function makeQuizSnapshot(curQ: number) {
   }))
   return {
     version: 3,
+    savedAt: new Date().toISOString(),
     phase: 'quiz' as const,
     selectedDate: SELECTED_DATE,
     subTask: 'all' as const,
@@ -183,7 +215,7 @@ function makeQuizSnapshot(curQ: number) {
 
 describe('WeeklyPlanSession — session restore on accidental exit', () => {
   it('restores to the exact quiz question that was in progress', () => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(1)))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(1)))
 
     render(<WeeklyPlanSession initialPlan={makePlan()} vocab={vocab} onBack={onBack} />)
 
@@ -195,7 +227,7 @@ describe('WeeklyPlanSession — session restore on accidental exit', () => {
   })
 
   it('discards snapshots with a mismatched version', () => {
-    sessionStorage.setItem(
+    localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({ ...makeQuizSnapshot(2), version: 999 }),
     )
@@ -206,13 +238,13 @@ describe('WeeklyPlanSession — session restore on accidental exit', () => {
     expect(screen.queryByTestId('study-phase')).toBeNull()
   })
 
-  it('persists the active quiz to sessionStorage so reload picks up where you left off', () => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(1)))
+  it('persists the active quiz to localStorage so reload picks up where you left off', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(1)))
 
     render(<WeeklyPlanSession initialPlan={makePlan()} vocab={vocab} onBack={onBack} />)
 
     // After mount, the persistence effect re-writes the snapshot. Validate shape.
-    const persisted = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? '{}')
+    const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
     expect(persisted.version).toBe(3)
     expect(persisted.phase).toBe('quiz')
     expect(persisted.selectedDate).toBe(SELECTED_DATE)
@@ -224,7 +256,7 @@ describe('WeeklyPlanSession — session restore on accidental exit', () => {
 describe('WeeklyPlanSession — 回到记忆 restarts the quiz', () => {
   it('clears quizQs/curQ/score and returns to study word 0', async () => {
     const user = userEvent.setup()
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
 
     render(<WeeklyPlanSession initialPlan={makePlan()} vocab={vocab} onBack={onBack} />)
     expect(screen.getByTestId('quiz-card')).toBeInTheDocument()
@@ -236,7 +268,7 @@ describe('WeeklyPlanSession — 回到记忆 restarts the quiz', () => {
     expect(screen.getByTestId('study-idx')).toHaveTextContent('0')
     expect(screen.getByTestId('study-word')).toHaveTextContent('alpha')
 
-    const persisted = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? '{}')
+    const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
     expect(persisted.phase).toBe('study')
     expect(persisted.studyIdx).toBe(0)
     expect(persisted.quizQs).toEqual([])
@@ -248,7 +280,7 @@ describe('WeeklyPlanSession — 回到记忆 restarts the quiz', () => {
 
   it('after 回到记忆, a fresh mount (simulated reload) does NOT resume the prior quiz', async () => {
     const user = userEvent.setup()
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
 
     const { unmount } = render(
       <WeeklyPlanSession initialPlan={makePlan()} vocab={vocab} onBack={onBack} />,
@@ -264,7 +296,7 @@ describe('WeeklyPlanSession — 回到记忆 restarts the quiz', () => {
 
   it('生成全新题目 — starting the quiz after 回到记忆 builds a brand-new question list', async () => {
     const user = userEvent.setup()
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
 
     render(<WeeklyPlanSession initialPlan={makePlan()} vocab={vocab} onBack={onBack} />)
     await user.click(screen.getByRole('button', { name: /回到记忆/ }))
@@ -274,7 +306,7 @@ describe('WeeklyPlanSession — 回到记忆 restarts the quiz', () => {
     expect(screen.getByTestId('quiz-card')).toBeInTheDocument()
     expect(screen.getByTestId('quiz-idx')).toHaveTextContent('0')
 
-    const persisted = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? '{}')
+    const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
     expect(persisted.phase).toBe('quiz')
     expect(persisted.curQ).toBe(0)
     expect(persisted.quizResults).toEqual([])

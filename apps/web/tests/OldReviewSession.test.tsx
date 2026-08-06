@@ -5,19 +5,44 @@ import type { WordEntry } from '@rosie/core'
 
 // ── Context mocks ────────────────────────────────────────────────────────────
 const mockRecordBatch = vi.fn()
-vi.mock('@rosie/english', () => ({
-  useWordsContext: () => ({ masteryMap: {}, recordBatch: mockRecordBatch }),
-}))
+// Mock the WordsContext module itself: OldReviewSession imports useWordsContext
+// from '../../WordsContext' internally, so mocking the '@rosie/english' barrel
+// export would not intercept that call.
+vi.mock('@rosie/english/WordsContext', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@rosie/english/WordsContext')>()
+  return {
+    ...actual,
+    useWordsContext: () => ({ masteryMap: {}, recordBatch: mockRecordBatch }),
+  }
+})
 
 const mockSetIsImmersive = vi.fn()
-vi.mock('@/contexts/ImmersiveContext', () => ({
-  useImmersive: () => ({ isImmersive: false, setIsImmersive: mockSetIsImmersive }),
-}))
+// useImmersive/useStarHud are imported from the package roots inside the
+// english components, so override them on the real modules (spread actual to
+// keep every other export intact).
+vi.mock('@rosie/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@rosie/core')>()
+  return {
+    ...actual,
+    useImmersive: () => ({ isImmersive: false, setIsImmersive: mockSetIsImmersive }),
+  }
+})
+
+const mockAwardStars = vi.fn(() => Promise.resolve())
+vi.mock('@rosie/rewards', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@rosie/rewards')>()
+  return {
+    ...actual,
+    useStarHud: () => ({ awardStars: mockAwardStars }),
+  }
+})
 
 // ── Child-component mocks (expose key props as test surface) ────────────────
+// These components are relative-imported inside @rosie/english, so the mocks
+// must target the same files via the package's subpath exports.
 type AnyProps = Record<string, unknown>
 
-vi.mock('@/components/english/words/StudyPhase', () => ({
+vi.mock('@rosie/english/components/words/StudyPhase', () => ({
   default: (props: AnyProps) => {
     const entry = props.entry as WordEntry
     return (
@@ -36,22 +61,28 @@ vi.mock('@/components/english/words/StudyPhase', () => ({
   },
 }))
 
-vi.mock('@/components/english/words/QuizCard', () => ({
+// QuizCard was replaced by QuizQuestionBody + useQuizRunner; keep the old test
+// surface by driving the runner directly.
+vi.mock('@rosie/english/components/words/QuizQuestionBody', () => ({
   default: (props: AnyProps) => {
     const question = props.question as { word: WordEntry; type: string }
+    const runner = props.runner as {
+      handleMCAnswer: (word: string) => void
+      requestAdvance: () => void
+    }
     return (
       <div data-testid="quiz-card">
         <div data-testid="quiz-word">{question.word.word}</div>
         <div data-testid="quiz-type">{question.type}</div>
-        <div data-testid="quiz-idx">{String(props.currentIndex)}</div>
-        <div data-testid="quiz-total">{String(props.totalCount)}</div>
+        <div data-testid="quiz-idx">{String(props.questionKey)}</div>
+        <div data-testid="quiz-total">{String(props.total)}</div>
         <button
           data-testid="quiz-answer-correct"
-          onClick={() => (props.onAnswer as (c: boolean) => void)(true)}
+          onClick={() => runner.handleMCAnswer(question.word.word)}
         >
           mark correct
         </button>
-        <button data-testid="quiz-next" onClick={props.onNext as () => void}>
+        <button data-testid="quiz-next" onClick={() => runner.requestAdvance()}>
           next
         </button>
       </div>
@@ -59,7 +90,7 @@ vi.mock('@/components/english/words/QuizCard', () => ({
   },
 }))
 
-vi.mock('@/components/english/words/DoneSummary', () => ({
+vi.mock('@rosie/english/components/words/DoneSummary', () => ({
   default: (props: AnyProps) => (
     <div data-testid="done-summary">
       <div data-testid="done-score">{String(props.score)}</div>
@@ -68,7 +99,7 @@ vi.mock('@/components/english/words/DoneSummary', () => ({
   ),
 }))
 
-vi.mock('@/components/english/words/MasteryStatusPanel', () => ({
+vi.mock('@rosie/english/components/words/MasteryStatusPanel', () => ({
   default: () => <div data-testid="mastery-panel" />,
 }))
 
@@ -191,8 +222,8 @@ describe('OldReviewSession — session restore on accidental exit', () => {
   })
 })
 
-describe('OldReviewSession — 回到记忆 restarts the quiz', () => {
-  it('clears quizQs/curQ/score and returns to study word 0', async () => {
+describe('OldReviewSession — 回到记忆 keeps quiz progress for 继续测试', () => {
+  it('returns to study word 0 but keeps quiz progress for resume', async () => {
     const user = userEvent.setup()
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
 
@@ -205,17 +236,18 @@ describe('OldReviewSession — 回到记忆 restarts the quiz', () => {
     expect(screen.queryByTestId('quiz-card')).toBeNull()
     expect(screen.getByTestId('study-idx')).toHaveTextContent('0')
     expect(screen.getByTestId('study-word')).toHaveTextContent('alpha')
+    // Existing quiz progress survives so the complete button resumes it
+    expect(screen.getByTestId('study-complete')).toHaveTextContent('继续测试 →')
 
-    // The persisted snapshot must reflect cleared progress, not the previous quiz
+    // The persisted snapshot keeps the quiz queue; only the phase rewinds
     const persisted = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? '{}')
     expect(persisted.phase).toBe('study')
     expect(persisted.studyIdx).toBe(0)
-    expect(persisted.quizQs).toEqual([])
-    expect(persisted.curQ).toBe(0)
-    expect(persisted.quizResults).toEqual([])
+    expect(persisted.quizQs.length).toBe(3)
+    expect(persisted.curQ).toBe(2)
   })
 
-  it('after 回到记忆, a fresh mount (simulated reload) does NOT resume the prior quiz', async () => {
+  it('after 回到记忆, a fresh mount (simulated reload) does NOT jump back into the quiz', async () => {
     const user = userEvent.setup()
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
 
@@ -226,30 +258,30 @@ describe('OldReviewSession — 回到记忆 restarts the quiz', () => {
     unmount()
 
     render(<OldReviewSession words={words} vocab={vocab} onBack={onBack} />)
+    // Snapshot phase is 'study' now, so mount lands in study — not the quiz
     expect(screen.getByTestId('study-phase')).toBeInTheDocument()
     expect(screen.queryByTestId('quiz-card')).toBeNull()
     expect(screen.getByTestId('study-idx')).toHaveTextContent('0')
   })
 
-  it('生成全新题目 — starting the quiz after 回到记忆 builds a brand-new question list', async () => {
+  it('继续测试 — completing study after 回到记忆 resumes the retained quiz', async () => {
     const user = userEvent.setup()
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(makeQuizSnapshot(2)))
 
     render(<OldReviewSession words={words} vocab={vocab} onBack={onBack} />)
     await user.click(screen.getByRole('button', { name: /回到记忆/ }))
 
-    // Now in study with cleared progress; start a fresh quiz
+    // Resume the retained quiz instead of building a new one
     await user.click(screen.getByTestId('study-complete'))
 
     expect(screen.getByTestId('quiz-card')).toBeInTheDocument()
-    expect(screen.getByTestId('quiz-idx')).toHaveTextContent('0')
+    // curQ survived the detour through study
+    expect(screen.getByTestId('quiz-idx')).toHaveTextContent('2')
 
     const persisted = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? '{}')
     expect(persisted.phase).toBe('quiz')
-    expect(persisted.curQ).toBe(0)
-    expect(persisted.quizResults).toEqual([])
-    // Each session word gets one question per enabled type (A,B,C) → 9 total
-    expect(persisted.quizQs.length).toBe(words.length * 3)
+    expect(persisted.curQ).toBe(2)
+    expect(persisted.quizQs.length).toBe(3)
   })
 })
 

@@ -1,8 +1,9 @@
 -- 0001_baseline.sql
 -- Frozen full-schema baseline generated from a live pg_dump on 2026-08-05.
--- Purpose: rebuild an EMPTY database in one shot. Applied automatically only
--- when schema_migrations has no rows (fresh DB). On the existing prod DB this
--- migration is marked applied via 'apply-migrations baseline' and never runs.
+-- Purpose: rebuild an EMPTY database in one shot. The runner never applies it
+-- automatically: on a fresh DB, load supabase/schema.sql via psql, then run
+-- 'apply-migrations baseline' to record every current migration as applied.
+-- On the existing prod DB it is marked applied the same way and never runs.
 -- Do NOT edit; add new changes as 0002_*.sql, 0003_*.sql, ...
 --
 --

@@ -14,6 +14,7 @@ import {
   isRichBodyEmpty,
   sanitizeRichHtml,
 } from '@rosie/math-kit/utils/sanitize-summary-html'
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 
@@ -36,7 +37,7 @@ function ProblemContextCard({ problem }: { problem: Problem }) {
       </div>
       <div
         className="text-[12px] leading-relaxed text-slate-700 [&_strong]:font-bold [&_strong]:text-slate-900"
-        dangerouslySetInnerHTML={{ __html: problem.text }}
+        dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
       />
     </div>
   )

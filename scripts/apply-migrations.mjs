@@ -61,7 +61,8 @@ function psqlQuery(sql) {
 
 // Run a migration file wrapped in a single transaction, recording it atomically.
 function psqlApplyFile(version, filePath) {
-  const wrapped = `BEGIN;\n\\i ${filePath}\nINSERT INTO public.schema_migrations (version) VALUES ('${version}');\nCOMMIT;\n`
+  assertSafeVersion(version)
+  const wrapped = `BEGIN;\n\\i ${filePath}\nINSERT INTO public.schema_migrations (version) VALUES (${sqlQuote(version)});\nCOMMIT;\n`
   execFileSync(PSQL, [DATABASE_URL, '-v', 'ON_ERROR_STOP=1', '-q'], { input: wrapped, stdio: ['pipe', 'inherit', 'inherit'] })
 }
 
@@ -81,6 +82,22 @@ function migrationFiles() {
     .map((f) => ({ version: f.replace(/\.sql$/, ''), file: f, path: join(MIGRATIONS_DIR, f) }))
 }
 
+// Versions are interpolated into SQL literals and a psql \i path, so they must
+// never contain quotes or metacharacters. Enforce a strict whitelist even
+// though the filename filter above already constrains the shape.
+const VERSION_RE = /^\d{4}_[A-Za-z0-9._-]+$/
+function assertSafeVersion(version) {
+  if (!VERSION_RE.test(version)) {
+    console.error(`ERROR: unsafe migration version "${version}" (allowed: NNNN_[A-Za-z0-9._-]).`)
+    process.exit(1)
+  }
+}
+
+// Escape a value for use inside a single-quoted SQL literal.
+function sqlQuote(value) {
+  return `'${value.replace(/'/g, "''")}'`
+}
+
 function appliedVersions() {
   const out = psqlQuery('SELECT version FROM public.schema_migrations ORDER BY version;')
   return new Set(out ? out.split('\n').filter(Boolean) : [])
@@ -89,6 +106,7 @@ function appliedVersions() {
 const cmd = process.argv[2] ?? 'status'
 ensureTrackingTable()
 const all = migrationFiles()
+for (const m of all) assertSafeVersion(m.version)
 const applied = appliedVersions()
 const pending = all.filter((m) => !applied.has(m.version))
 
@@ -100,7 +118,7 @@ if (cmd === 'status') {
   if (applied.size > 0) {
     console.log(`schema_migrations already has ${applied.size} row(s); nothing to baseline.`)
   } else {
-    for (const m of all) psqlQuery(`INSERT INTO public.schema_migrations (version) VALUES ('${m.version}') ON CONFLICT DO NOTHING;`)
+    for (const m of all) psqlQuery(`INSERT INTO public.schema_migrations (version) VALUES (${sqlQuote(m.version)}) ON CONFLICT DO NOTHING;`)
     console.log(`marked ${all.length} migration(s) as applied without running them.`)
   }
 } else if (cmd === 'up') {
