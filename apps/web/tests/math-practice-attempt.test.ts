@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 import {
   attemptRowHasViewableCanvas,
   pickPracticeAttemptForRow,
@@ -6,17 +7,21 @@ import {
   shouldInsertCompletedWithoutInProgress,
 } from '../../../packages/math-kit/src/utils/math-practice-attempt'
 
+/** Minimal non-empty canvas stub — only `length` matters for these helpers. */
+const stroke: ScratchObject[] = [
+  { id: 's1', kind: 'stroke', color: '#334155', lineWidth: 2, points: [{ x: 0, y: 0 }] },
+]
+
 describe('resolveAttemptCanvasObjects', () => {
   it('prefers attempt.objects when non-empty', () => {
-    const stroke = [{ type: 'stroke', points: [] }] as never
-    expect(
-      resolveAttemptCanvasObjects({ objects: stroke, draftId: 'd1' }, [{ type: 'stroke', points: [1] }] as never),
-    ).toEqual(stroke)
+    const other: ScratchObject[] = [
+      { id: 's2', kind: 'stroke', color: '#334155', lineWidth: 2, points: [{ x: 1, y: 1 }] },
+    ]
+    expect(resolveAttemptCanvasObjects({ objects: stroke, draftId: 'd1' }, other)).toEqual(stroke)
   })
 
   it('falls back to draft objects when attempt.objects empty', () => {
-    const draft = [{ type: 'stroke', points: [1] }] as never
-    expect(resolveAttemptCanvasObjects({ objects: [], draftId: 'd1' }, draft)).toEqual(draft)
+    expect(resolveAttemptCanvasObjects({ objects: [], draftId: 'd1' }, stroke)).toEqual(stroke)
   })
 
   it('returns empty when both empty', () => {
@@ -39,7 +44,7 @@ type MiniAttempt = {
   id: string
   correct: boolean | null
   attemptedAt: string
-  objects?: { type: string }[]
+  objects?: ScratchObject[]
   draftId?: string | null
   paperId?: string | null
 }
@@ -67,7 +72,7 @@ describe('pickPracticeAttemptForRow', () => {
       id: 'other',
       correct: true,
       attemptedAt: '2026-08-01T10:00:00.000Z',
-      objects: [{ type: 'stroke' }],
+      objects: stroke,
     })
     const picked = pickPracticeAttemptForRow(
       [matched, otherWithCanvas],
@@ -88,7 +93,7 @@ describe('pickPracticeAttemptForRow', () => {
       id: 'older-draft',
       correct: false,
       attemptedAt: '2026-08-03T10:00:00.000Z',
-      objects: [{ type: 'stroke' }],
+      objects: stroke,
     })
     const picked = pickPracticeAttemptForRow(
       [thisPractice, olderDraft],
@@ -103,13 +108,13 @@ describe('pickPracticeAttemptForRow', () => {
       id: 'wrong',
       correct: false,
       attemptedAt: '2026-08-04T09:00:00.000Z',
-      objects: [{ type: 'stroke' }],
+      objects: stroke,
     })
     const correct = attempt({
       id: 'ok',
       correct: true,
       attemptedAt: '2026-08-04T11:00:00.000Z',
-      objects: [{ type: 'stroke' }],
+      objects: stroke,
     })
     const picked = pickPracticeAttemptForRow([correct, wrong], '2026-08-04T09:00:00.000Z', true)
     expect(picked?.id).toBe('wrong')
@@ -121,13 +126,13 @@ describe('pickPracticeAttemptForRow', () => {
       correct: true,
       attemptedAt: '2026-08-04T12:00:00.000Z',
       paperId: 'paper-1',
-      objects: [{ type: 'stroke' }],
+      objects: stroke,
     })
     const practice = attempt({
       id: 'practice',
       correct: true,
       attemptedAt: '2026-08-04T11:00:00.000Z',
-      objects: [{ type: 'stroke' }],
+      objects: stroke,
     })
     const picked = pickPracticeAttemptForRow([quiz, practice], '2026-08-04T12:00:00.000Z', false)
     expect(picked?.id).toBe('practice')
@@ -136,7 +141,7 @@ describe('pickPracticeAttemptForRow', () => {
 
 describe('attemptRowHasViewableCanvas', () => {
   it('is true for non-empty objects or draftId', () => {
-    expect(attemptRowHasViewableCanvas({ objects: [{ type: 'x' } as never] })).toBe(true)
+    expect(attemptRowHasViewableCanvas({ objects: stroke })).toBe(true)
     expect(attemptRowHasViewableCanvas({ objects: [], draftId: 'd1' })).toBe(true)
     expect(attemptRowHasViewableCanvas({ objects: [], draftId: null })).toBe(false)
   })
