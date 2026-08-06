@@ -15,8 +15,20 @@ function getAdminClient(): SupabaseClient {
   return adminClient
 }
 
+// Generic error to prevent user enumeration
+const GENERIC_ERROR = { error: '用户名或恢复邮箱不正确' }
+
 export async function POST(req: NextRequest) {
-  const { username, recoveryEmail } = await req.json()
+  let username: string
+  let recoveryEmail: string
+
+  try {
+    const body = await req.json()
+    username = body.username
+    recoveryEmail = body.recoveryEmail
+  } catch {
+    return NextResponse.json({ error: '请填写用户名和恢复邮箱' }, { status: 400 })
+  }
 
   if (!username || !recoveryEmail) {
     return NextResponse.json({ error: '请填写用户名和恢复邮箱' }, { status: 400 })
@@ -32,13 +44,14 @@ export async function POST(req: NextRequest) {
 
   const user = users.find(u => u.email === fakeEmail)
   if (!user) {
-    return NextResponse.json({ error: '用户名不存在' }, { status: 404 })
+    // Use same status/message as email mismatch to prevent enumeration
+    return NextResponse.json(GENERIC_ERROR, { status: 403 })
   }
 
   // Verify recovery email matches
   const storedRecovery = user.user_metadata?.recovery_email as string | undefined
   if (!storedRecovery || storedRecovery.toLowerCase() !== recoveryEmail.trim().toLowerCase()) {
-    return NextResponse.json({ error: '恢复邮箱不匹配' }, { status: 403 })
+    return NextResponse.json(GENERIC_ERROR, { status: 403 })
   }
 
   // Generate a password reset link

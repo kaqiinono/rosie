@@ -83,13 +83,44 @@ function normalizeAdjacentArrayLiterals(expr: string): string {
   return expr.replace(/\]([\s\n\r]*)\[/g, "],$1[");
 }
 
+/** Safe literal parser: only allows arrays, strings, numbers, booleans, null. */
+function safeParseLiteral(expr: string): unknown {
+  // Try JSON.parse first (handles double-quoted strings, numbers, arrays, objects)
+  try {
+    return JSON.parse(expr);
+  } catch {
+    // JSON.parse failed, try converting single quotes to double quotes
+  }
+
+  // Replace single-quoted strings with double-quoted for JSON compatibility
+  const converted = expr.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, (_match, content: string) => {
+    return JSON.stringify(content.replace(/\\'/g, "'"));
+  });
+
+  // Remove trailing commas (JS allows them, JSON doesn't)
+  const noTrailingCommas = converted.replace(/,\s*([\]}])/g, '$1');
+
+  try {
+    return JSON.parse(noTrailingCommas);
+  } catch {
+    // Final attempt: if it looks like a bare identifier (true/false/null) or number
+    if (expr === 'true') return true;
+    if (expr === 'false') return false;
+    if (expr === 'null') return null;
+    if (expr === 'undefined') return undefined;
+    const num = Number(expr);
+    if (!Number.isNaN(num)) return num;
+    throw new Error(`无法解析字面量：${expr.slice(0, 60)}`);
+  }
+}
+
 function evalJsExpression(expr: string): unknown {
   const trimmed = expr.trim();
   if (!trimmed) throw new Error("属性值不能为空");
   const normalized = normalizeAdjacentArrayLiterals(trimmed);
   try {
-    // Demo 调试专用：解析数组/字符串等字面量
-    return new Function(`return (${normalized})`)();
+    // Demo 调试专用：安全解析数组/字符串等字面量（不使用 new Function）
+    return safeParseLiteral(normalized);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "表达式无效";
     const missingCommaHint =

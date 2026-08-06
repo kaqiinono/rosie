@@ -1,5 +1,7 @@
 'use client'
 
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
+
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math-content/utils/g1/lesson34-data'
 import { useG1Lesson34 } from './G1Lesson34Provider'
@@ -53,7 +55,7 @@ export default function ProblemDetail({
 
         <div
           className="text-text-secondary [&>strong]:text-text-primary mb-3.5 rounded-lg border-l-3 border-amber-400 bg-amber-50 px-3.5 py-3 text-sm leading-relaxed [&>strong]:font-bold"
-          dangerouslySetInnerHTML={{ __html: problem.text }}
+          dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
         />
       </div>
     </div>

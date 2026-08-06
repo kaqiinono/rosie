@@ -1,5 +1,7 @@
 'use client'
 
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
+
 import { useState, useMemo, useCallback, type CSSProperties, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
@@ -299,7 +301,7 @@ function PracticeProblem({
       </div>
       <div
         className="mb-3.5 rounded-lg border-l-4 border-cyan-300 bg-cyan-50/60 px-3.5 py-3 text-sm leading-relaxed text-slate-700 [&>strong]:font-bold [&>strong]:text-slate-900"
-        dangerouslySetInnerHTML={{ __html: problem.text }}
+        dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
       />
       {figure && <div>{figure}</div>}
     </div>

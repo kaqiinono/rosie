@@ -1,5 +1,7 @@
 'use client'
 
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
+
 import { useMemo } from 'react'
 import type { Problem } from '@rosie/core'
 import { isInteractiveProblem } from '@rosie/math-kit/utils/check-problem-answer'
@@ -70,7 +72,7 @@ export default function ProblemDetail({
         <DifficultyStars level={problem.difficulty} size="md" />
         <div
           className="text-text-secondary [&_strong]:text-text-primary mb-3.5 rounded-lg border-l-3 border-fuchsia-300 bg-fuchsia-50 px-3.5 py-3 text-sm leading-relaxed [&_strong]:font-bold"
-          dangerouslySetInnerHTML={{ __html: problem.text }}
+          dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
         />
       </div>
       <div className="rounded-xl border border-fuchsia-100 bg-white p-3 sm:p-4">{figure}</div>

@@ -1,5 +1,7 @@
 'use client'
 
+import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
+
 import { use, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
@@ -685,7 +687,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                 <div
                   className="quiz-problem-text mb-4 text-sm text-slate-700"
                   style={{ lineHeight: '1.75' }}
-                  dangerouslySetInnerHTML={{ __html: problem.text }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
                 />
                 {problem.figureNode && !isInteractiveProblem(problem) && (
                   <div className="mb-4 flex justify-center">{problem.figureNode}</div>
