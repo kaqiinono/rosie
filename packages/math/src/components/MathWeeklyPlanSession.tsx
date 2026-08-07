@@ -44,7 +44,7 @@ import {
   fmtDate,
   fmtPlanRange,
   dayLabel,
-  SectionHeader,
+  CollapsibleSection,
   EmptyDay,
   ProblemCard,
   WeeklyLessonSection,
@@ -655,7 +655,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   return (
     <>
       <div className="mx-auto w-full px-4 py-6 md:px-6">
-        {/* Week header */}
+        {/* Week header — merged with today's progress */}
         <div
           className="mb-5 rounded-2xl px-5 py-4"
           style={{
@@ -688,6 +688,71 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               </Link>
             )}
           </div>
+          {/* Inline progress — selected day with required problems (week map only) */}
+          {dayPlan && todayRequired.length > 0 && mapMode === 'week' && (
+            <div className="mt-3 border-t border-white/40 pt-3">
+              {justCompleted ? (
+                <div className="flex items-center justify-center gap-3 py-1">
+                  <span className="animate-star-pop inline-block text-2xl">🎉</span>
+                  <div>
+                    <div className="text-[15px] font-extrabold text-green-600">
+                      {selectedDate === today ? '今天全部完成啦！' : '这天全部完成啦！'}
+                    </div>
+                    <div className="text-[12px] font-medium text-green-500">
+                      {selectedDate === today ? '你真棒！明天继续加油 ⭐' : '你真棒！继续加油 ⭐'}
+                    </div>
+                  </div>
+                  <span
+                    className="animate-star-pop inline-block text-2xl"
+                    style={{ animationDelay: '.15s' }}
+                  >
+                    ⭐
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <div className="text-[12px] font-extrabold text-gray-500">
+                      {selectedDate === today ? '今日进度' : '当日进度'}
+                    </div>
+                    <div
+                      className="text-[13px] font-extrabold"
+                      style={{ color: pct === 100 ? '#16a34a' : '#f97316' }}
+                    >
+                      {todayDone}/{todayRequired.length} 题
+                    </div>
+                  </div>
+                  <div
+                    className="relative h-4 w-full overflow-hidden rounded-full"
+                    style={{ background: 'rgba(0,0,0,.06)' }}
+                  >
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                      style={{
+                        width: `${pct}%`,
+                        background: 'linear-gradient(90deg, #f97316, #fbbf24)',
+                        boxShadow: pct > 0 ? '0 0 8px rgba(249,115,22,.5)' : 'none',
+                      }}
+                    />
+                    {/* Star runner */}
+                    {pct > 5 && pct < 100 && (
+                      <div
+                        className="absolute top-1/2 -translate-y-1/2 text-[12px] transition-all duration-700"
+                        style={{ left: `calc(${pct}% - 10px)` }}
+                      >
+                        ⭐
+                      </div>
+                    )}
+                  </div>
+                  {pct > 0 && pct < 100 && (
+                    <div className="mt-1.5 text-[11px] font-medium text-orange-400">
+                      再做 {todayRequired.length - todayDone} 题就完成啦！
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Plan map: week (Mon–Sun) / month calendar */}
@@ -702,86 +767,92 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           onPracticeProblem={(prob, dayProblems) => {
             beginPractice(dayProblems, prob.problemId, '每日一练', false, true)
           }}
+          headerExtra={
+            selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) ? (
+              <button
+                type="button"
+                onClick={() => setSelectedDate(today)}
+                className="cursor-pointer rounded-full px-3 py-1 text-[11px] font-bold transition-all hover:scale-105"
+                style={{
+                  background: 'rgba(249,115,22,.1)',
+                  color: '#ea580c',
+                  border: '1.5px solid rgba(249,115,22,.25)',
+                }}
+              >
+                📍 跳到今天
+              </button>
+            ) : undefined
+          }
         />
-
-        {/* Today shortcut */}
-        {selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) && (
-          <button
-            type="button"
-            onClick={() => setSelectedDate(today)}
-            className="mb-4 cursor-pointer rounded-full px-3.5 py-1.5 text-[12px] font-bold transition-all hover:scale-105"
-            style={{
-              background: 'rgba(249,115,22,.1)',
-              color: '#ea580c',
-              border: '1.5px solid rgba(249,115,22,.25)',
-            }}
-          >
-            📍 跳到今天
-          </button>
-        )}
 
         {/* Plan-scoped overdue make-up — independent of selected day / calendar mode */}
         {overdueUndoneItems.length > 0 && (
-          <div className="mb-5 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <SectionHeader icon="⏰" label="待补做" count={overdueUndoneItems.length} accent="#ef4444" />
-              <button
-                type="button"
-                onClick={() => {
-                  const first = overduePool[0]
-                  if (first) beginPractice(overduePool, first.problemId, '待补做', true, true)
-                }}
-                className="cursor-pointer rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white transition-all hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444, #f97316)',
-                  boxShadow: '0 2px 10px rgba(239,68,68,.3)',
-                }}
-              >
-                一键补做
-              </button>
-            </div>
-            <p className="px-1 text-[12px] font-medium text-gray-500">
-              过去日期尚未完成的必做题；做完后进度仍记回原来的那天。
-            </p>
-            <div className="space-y-2.5">
-              {overduePageItems.map(({ date, problem }) => (
-                <ProblemCard
-                  key={`${date}::${problem.key}`}
-                  prob={problem}
-                  done={false}
-                  isWrong={wrongIds.has(problem.problemId)}
-                  overdueDate={date}
-                  problemSets={problemSets}
-                  hasDraft={draftProblemIds.has(problem.problemId)}
-                  onPractice={() => beginPractice(overduePool, problem.problemId, '待补做', true, true)}
-                />
-              ))}
-            </div>
-            {overdueTotalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 pt-1">
+          <div className="mb-5">
+            <CollapsibleSection
+              icon="⏰"
+              label="待补做"
+              count={overdueUndoneItems.length}
+              accent="#ef4444"
+              headerRight={
                 <button
                   type="button"
-                  disabled={overduePage === 0}
-                  onClick={() => setOverduePage((p) => Math.max(0, p - 1))}
-                  className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
-                  style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                  onClick={() => {
+                    const first = overduePool[0]
+                    if (first) beginPractice(overduePool, first.problemId, '待补做', true, true)
+                  }}
+                  className="cursor-pointer rounded-full px-3 py-1 text-[10px] font-extrabold text-white transition-all hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(135deg, #ef4444, #f97316)',
+                    boxShadow: '0 2px 10px rgba(239,68,68,.3)',
+                  }}
                 >
-                  ← 上一页
+                  一键补做
                 </button>
-                <span className="text-[12px] font-bold text-gray-400">
-                  {overduePage + 1} / {overdueTotalPages}
-                </span>
-                <button
-                  type="button"
-                  disabled={overduePage >= overdueTotalPages - 1}
-                  onClick={() => setOverduePage((p) => Math.min(overdueTotalPages - 1, p + 1))}
-                  className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
-                  style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
-                >
-                  下一页 →
-                </button>
+              }
+            >
+              <p className="mb-2.5 px-1 text-[12px] font-medium text-gray-500">
+                过去日期尚未完成的必做题；做完后进度仍记回原来的那天。
+              </p>
+              <div className="space-y-2.5">
+                {overduePageItems.map(({ date, problem }) => (
+                  <ProblemCard
+                    key={`${date}::${problem.key}`}
+                    prob={problem}
+                    done={false}
+                    isWrong={wrongIds.has(problem.problemId)}
+                    overdueDate={date}
+                    problemSets={problemSets}
+                    hasDraft={draftProblemIds.has(problem.problemId)}
+                    onPractice={() => beginPractice(overduePool, problem.problemId, '待补做', true, true)}
+                  />
+                ))}
               </div>
-            )}
+              {overdueTotalPages > 1 && (
+                <div className="flex items-center justify-center gap-3 pt-1">
+                  <button
+                    type="button"
+                    disabled={overduePage === 0}
+                    onClick={() => setOverduePage((p) => Math.max(0, p - 1))}
+                    className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
+                    style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                  >
+                    ← 上一页
+                  </button>
+                  <span className="text-[12px] font-bold text-gray-400">
+                    {overduePage + 1} / {overdueTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={overduePage >= overdueTotalPages - 1}
+                    onClick={() => setOverduePage((p) => Math.min(overdueTotalPages - 1, p + 1))}
+                    className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
+                    style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                  >
+                    下一页 →
+                  </button>
+                </div>
+              )}
+            </CollapsibleSection>
           </div>
         )}
 
@@ -798,80 +869,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                   <div className="h-px flex-1 bg-black/6" />
                 </div>
 
-                {/* Progress bar */}
-                {todayRequired.length > 0 && (
-                  <div
-                    className="rounded-xl px-4 py-4"
-                    style={{
-                      background: 'rgba(255,255,255,.8)',
-                      border: '1.5px solid rgba(0,0,0,.06)',
-                      boxShadow: '0 2px 12px rgba(0,0,0,.04)',
-                    }}
-                  >
-                    {justCompleted ? (
-                      <div className="flex items-center justify-center gap-3 py-1">
-                        <span className="animate-star-pop inline-block text-2xl">🎉</span>
-                        <div>
-                          <div className="text-[15px] font-extrabold text-green-600">
-                            今天全部完成啦！
-                          </div>
-                          <div className="text-[12px] font-medium text-green-500">
-                            你真棒！明天继续加油 ⭐
-                          </div>
-                        </div>
-                        <span
-                          className="animate-star-pop inline-block text-2xl"
-                          style={{ animationDelay: '.15s' }}
-                        >
-                          ⭐
-                        </span>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="mb-2 flex items-center justify-between">
-                          <div className="text-[12px] font-extrabold text-gray-500">今日进度</div>
-                          <div
-                            className="text-[13px] font-extrabold"
-                            style={{ color: pct === 100 ? '#16a34a' : '#f97316' }}
-                          >
-                            {todayDone}/{todayRequired.length} 题
-                          </div>
-                        </div>
-                        <div
-                          className="relative h-4 w-full overflow-hidden rounded-full"
-                          style={{ background: 'rgba(0,0,0,.06)' }}
-                        >
-                          <div
-                            className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                            style={{
-                              width: `${pct}%`,
-                              background: 'linear-gradient(90deg, #f97316, #fbbf24)',
-                              boxShadow: pct > 0 ? '0 0 8px rgba(249,115,22,.5)' : 'none',
-                            }}
-                          />
-                          {/* Star runner */}
-                          {pct > 5 && pct < 100 && (
-                            <div
-                              className="absolute top-1/2 -translate-y-1/2 text-[12px] transition-all duration-700"
-                              style={{ left: `calc(${pct}% - 10px)` }}
-                            >
-                              ⭐
-                            </div>
-                          )}
-                        </div>
-                        {pct > 0 && pct < 100 && (
-                          <div className="mt-1.5 text-[11px] font-medium text-orange-400">
-                            再做 {todayRequired.length - todayDone} 题就完成啦！
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                )}
-
                 {/* Required problems */}
-                <div>
-                  <SectionHeader icon="🎯" label="必做题" count={dayPlan.problems.length} />
+                <CollapsibleSection icon="🎯" label="必做题" count={dayPlan.problems.length}>
                   {dayPlan.problems.length > 0 ? (
                     <div className="space-y-2.5">
                       {dayPlan.problems.map((prob) => (
@@ -898,7 +897,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                   ) : (
                     <EmptyDay />
                   )}
-                </div>
+                </CollapsibleSection>
               </>
             )}
 
@@ -908,13 +907,12 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               const wrongInRequired = dayPlan.problems.filter(p => wrongIds.has(p.problemId)).length
               if (extraWrong.length === 0 && wrongInRequired === 0) return null
               return (
-                <div>
-                  <SectionHeader
-                    icon="📕"
-                    label="错题巩固"
-                    count={extraWrong.length + wrongInRequired}
-                    accent="#ef4444"
-                  />
+                <CollapsibleSection
+                  icon="📕"
+                  label="错题巩固"
+                  count={extraWrong.length + wrongInRequired}
+                  accent="#ef4444"
+                >
                   {extraWrong.length > 0 ? (
                     <div className="space-y-2.5">
                       {extraWrong.map((prob) => (
@@ -938,20 +936,19 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                       今日 {wrongInRequired} 道错题已在必做题中，请优先完成标注「错题」的题目。
                     </p>
                   )}
-                </div>
+                </CollapsibleSection>
               )
             })()}
 
             {/* Review problems */}
             {weeklyPlan?.lessonId === '1-36'
               ? rotatingReviews.length > 0 && (
-                  <div>
-                    <SectionHeader
-                      icon="🔄"
-                      label="知识点复习"
-                      count={rotatingReviews.length}
-                      accent="#f59e0b"
-                    />
+                  <CollapsibleSection
+                    icon="🔄"
+                    label="知识点复习"
+                    count={rotatingReviews.length}
+                    accent="#f59e0b"
+                  >
                     <div className="space-y-2.5">
                       {rotatingReviews.map((prob) => (
                         <ProblemCard
@@ -969,16 +966,15 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                         />
                       ))}
                     </div>
-                  </div>
+                  </CollapsibleSection>
                 )
               : (reviewKeys[selectedDate!]?.length ?? 0) > 0 && (
-                  <div>
-                    <SectionHeader
-                      icon="🔄"
-                      label="旧讲复习"
-                      count={reviewKeys[selectedDate!].length}
-                      accent="#f59e0b"
-                    />
+                  <CollapsibleSection
+                    icon="🔄"
+                    label="旧讲复习"
+                    count={reviewKeys[selectedDate!].length}
+                    accent="#f59e0b"
+                  >
                     <div className="space-y-2.5">
                       {reviewKeys[selectedDate!].map((key) => {
                         const found = allProblemMap[key]
@@ -1003,7 +999,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                         )
                       })}
                     </div>
-                  </div>
+                  </CollapsibleSection>
                 )}
 
             {/* Weekly lesson review */}

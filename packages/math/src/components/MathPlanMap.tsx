@@ -21,6 +21,8 @@ type Props = {
   mode?: MapMode
   onModeChange?: (mode: MapMode) => void
   onPracticeProblem?: (prob: MathPlanProblem, dayProblems: MathPlanProblem[]) => void
+  /** Extra element rendered in the header row, next to the 周/月 tabs (e.g. "跳到今天" shortcut). */
+  headerExtra?: React.ReactNode
 }
 
 const WEEK_HEADER = ['一', '二', '三', '四', '五', '六', '日']
@@ -80,6 +82,7 @@ export default function MathPlanMap({
   mode: controlledMode,
   onModeChange,
   onPracticeProblem,
+  headerExtra,
 }: Props) {
   const [internalMode, setInternalMode] = useState<MapMode>('week')
   const mode = controlledMode ?? internalMode
@@ -99,10 +102,12 @@ export default function MathPlanMap({
         <div className="flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-orange-400 uppercase">
           <span>🗺️</span> 计划地图
         </div>
-        <div
-          className="flex rounded-full p-0.5"
-          style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.06)' }}
-        >
+        <div className="flex items-center gap-2">
+          {headerExtra}
+          <div
+            className="flex rounded-full p-0.5"
+            style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.06)' }}
+          >
           {([
             { key: 'week' as const, label: '周' },
             { key: 'month' as const, label: '月' },
@@ -125,6 +130,7 @@ export default function MathPlanMap({
               {opt.label}
             </button>
           ))}
+        </div>
         </div>
       </div>
 

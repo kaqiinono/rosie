@@ -884,6 +884,63 @@ export function SectionHeader({
   )
 }
 
+export function CollapsibleSection({
+  icon,
+  label,
+  count,
+  accent = '#6b7280',
+  defaultExpanded = true,
+  headerRight,
+  children,
+}: {
+  icon: string
+  label: string
+  count: number
+  accent?: string
+  defaultExpanded?: boolean
+  /** Extra element next to the toggle (sibling, not nested), e.g. action buttons. */
+  headerRight?: React.ReactNode
+  children: React.ReactNode
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded)
+  return (
+    <div>
+      {/* Toggle is its own button; headerRight stays a sibling so nested <button> is illegal HTML. */}
+      <div className="flex w-full items-center gap-2 rounded-lg py-1">
+        <button
+          type="button"
+          onClick={() => setExpanded((e) => !e)}
+          aria-expanded={expanded}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg text-left transition-all hover:bg-black/3"
+        >
+          <span className="text-base">{icon}</span>
+          <span
+            className="text-[12px] font-extrabold tracking-wider uppercase"
+            style={{ color: accent }}
+          >
+            {label}
+          </span>
+          <span
+            className="rounded-full px-2 py-0.5 text-[10px] font-extrabold"
+            style={{ background: `${accent}15`, color: accent }}
+          >
+            {count} 题
+          </span>
+          <div className="h-px flex-1" style={{ background: `${accent}20` }} />
+          <span
+            className="shrink-0 text-[10px] font-bold transition-transform duration-200"
+            style={{ color: accent, transform: expanded ? 'rotate(180deg)' : 'none' }}
+          >
+            ▾
+          </span>
+        </button>
+        {headerRight != null && <div className="shrink-0">{headerRight}</div>}
+      </div>
+      {expanded && <div className="mt-3">{children}</div>}
+    </div>
+  )
+}
+
 export function EmptyDay() {
   return (
     <div
@@ -931,22 +988,31 @@ export function ProblemCard({
     <div
       className="group flex items-center gap-3 rounded-[14px] px-4 py-3 transition-all duration-300"
       style={{
-        background: done ? 'rgba(220,252,231,.6)' : 'rgba(255,255,255,.85)',
-        border: `1.5px solid ${done ? '#86efac' : overdueDate ? 'rgba(239,68,68,.28)' : 'rgba(0,0,0,.07)'}`,
+        background: done ? 'rgba(220,252,231,.6)' : isWrong ? 'rgba(254,226,226,.5)' : 'rgba(255,255,255,.85)',
+        border: `1.5px solid ${done ? '#86efac' : isWrong ? 'rgba(239,68,68,.35)' : overdueDate ? 'rgba(239,68,68,.28)' : 'rgba(0,0,0,.07)'}`,
         boxShadow: done ? 'none' : '0 2px 10px rgba(0,0,0,.04)',
       }}
     >
-      {/* Done indicator — display only; completion comes from practice sync */}
+      {/* Done / wrong indicator — display only; completion comes from practice sync */}
       <div
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
         style={{
-          background: done ? 'linear-gradient(135deg, #22c55e, #4ade80)' : 'rgba(0,0,0,.05)',
-          border: done ? 'none' : '2px solid rgba(0,0,0,.1)',
-          boxShadow: done ? '0 2px 8px rgba(34,197,94,.4)' : 'none',
+          background: done
+            ? 'linear-gradient(135deg, #22c55e, #4ade80)'
+            : isWrong
+              ? 'linear-gradient(135deg, #ef4444, #f87171)'
+              : 'rgba(0,0,0,.05)',
+          border: done || isWrong ? 'none' : '2px solid rgba(0,0,0,.1)',
+          boxShadow: done
+            ? '0 2px 8px rgba(34,197,94,.4)'
+            : isWrong
+              ? '0 2px 8px rgba(239,68,68,.4)'
+              : 'none',
         }}
         aria-hidden
       >
         {done && <span className="text-[14px] font-extrabold text-white">✓</span>}
+        {!done && isWrong && <span className="text-[14px] font-extrabold text-white">✗</span>}
       </div>
 
       {/* Section badge */}
