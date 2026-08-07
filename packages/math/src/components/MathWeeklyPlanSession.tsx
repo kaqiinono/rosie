@@ -517,21 +517,23 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
   // Always-fresh checker: pool comes from beginPractice / resume; solveCount
   // from this render so celebration never sees a stale closure.
-  remainingCheckerRef.current = (() => {
-    const cfg = remainingPoolRef.current
-    if (!cfg || cfg.pool.length === 0) return null
-    const remaining = cfg.pool.filter((p) => (solveCount[p.problemId] ?? 0) === 0)
-    if (remaining.length === 0) return null
-    return {
-      count: remaining.length,
-      onStart: () => {
-        const first = remaining[0]
-        if (first) {
-          beginPractice(remaining, first.problemId, cfg.title, cfg.preserveOrder, true)
-        }
-      },
-    }
-  })
+  useEffect(() => {
+    remainingCheckerRef.current = (() => {
+      const cfg = remainingPoolRef.current
+      if (!cfg || cfg.pool.length === 0) return null
+      const remaining = cfg.pool.filter((p) => (solveCount[p.problemId] ?? 0) === 0)
+      if (remaining.length === 0) return null
+      return {
+        count: remaining.length,
+        onStart: () => {
+          const first = remaining[0]
+          if (first) {
+            beginPractice(remaining, first.problemId, cfg.title, cfg.preserveOrder, true)
+          }
+        },
+      }
+    })
+  }, [solveCount, beginPractice])
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {
