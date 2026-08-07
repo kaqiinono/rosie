@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 import type { PracticeQueueItem, PracticeQueuePhase } from '@rosie/math-kit/utils/practice-queue-types'
+import type { PracticeQueueStartOpts } from '@rosie/math-kit/utils/practice-queue-types'
 import {
   MATH_SKIP_REASON_OPTIONS,
   type MathSkipReason,
@@ -29,6 +30,7 @@ type Props = {
   onRestart: () => void
   onToggleImmersive: () => void
   onSetImmersive: (value: boolean) => void
+  checkRemaining?: PracticeQueueStartOpts['checkRemaining']
 }
 
 export default function MathPracticePortal({
@@ -48,6 +50,7 @@ export default function MathPracticePortal({
   onRestart,
   onToggleImmersive,
   onSetImmersive,
+  checkRemaining,
 }: Props) {
   const [mounted, setMounted] = useState(false)
   const current = items[currentIndex]
@@ -248,6 +251,7 @@ export default function MathPracticePortal({
             returnHref={returnHref}
             onExit={onExit}
             onRestart={onRestart}
+            checkRemaining={checkRemaining}
           />
         ) : immersive && current ? (
           <ScratchPadSession

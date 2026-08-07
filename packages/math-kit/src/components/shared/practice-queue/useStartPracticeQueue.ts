@@ -17,6 +17,8 @@ export function useStartPracticeQueue() {
       title?: string
       initialProblemId?: string
       immersive?: boolean
+      preserveOrder?: boolean
+      checkRemaining?: () => { count: number; onStart: () => void } | null
       returnHref?: string
     }) => {
       start({
@@ -25,6 +27,8 @@ export function useStartPracticeQueue() {
         title: opts.title,
         initialProblemId: opts.initialProblemId,
         immersive: opts.immersive,
+        preserveOrder: opts.preserveOrder,
+        checkRemaining: opts.checkRemaining,
         returnHref: opts.returnHref ?? pathname,
       })
     },

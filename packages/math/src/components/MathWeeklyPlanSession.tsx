@@ -52,6 +52,8 @@ import {
 } from './math-weekly-plan-shared'
 import MathPlanMap, { type MapMode } from './MathPlanMap'
 
+const OVERDUE_PAGE_SIZE = 5
+
 // ── Main Component ────────────────────────────────────────────────────────────
 interface Props {
   problemSets: Record<string, ProblemSet>
@@ -81,6 +83,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   const autoStartDoneRef = useRef(false)
   /** Resume lookup finished (success, empty, or skipped). Auto-start must wait on this. */
   const [resumeChecked, setResumeChecked] = useState(false)
+  const [overduePage, setOverduePage] = useState(0)
 
   // Auto-select date when plan loads (during-render).
   const [autoSelectKey, setAutoSelectKey] = useState('')
@@ -139,15 +142,37 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     }
   }, [weeklyPlan, solveCount, isLoading, addDoneKey, recordProblemResult])
 
+  // Session pool for celebration "继续练习". Ref so the checker always reads
+  // the latest solveCount (rebuilt every render below).
+  const remainingPoolRef = useRef<{
+    pool: MathPlanProblem[]
+    title: string
+    preserveOrder: boolean
+  } | null>(null)
+  const remainingCheckerRef = useRef<(() => { count: number; onStart: () => void } | null) | null>(null)
+
   const beginPractice = useCallback(
-    (pool: MathPlanProblem[], initialProblemId: string, title = '每日一练'): boolean => {
+    (
+      pool: MathPlanProblem[],
+      initialProblemId: string,
+      title = '每日一练',
+      preserveOrder = false,
+      checkRemaining?: boolean,
+    ): boolean => {
       const items = mathPlanProblemsToQueueItems(pool, problemSets)
       if (items.length === 0 || !user) return false
+      if (checkRemaining) {
+        remainingPoolRef.current = { pool, title, preserveOrder }
+      }
       startPractice({
         pool: items,
         source: 'plan',
         title,
         initialProblemId,
+        preserveOrder,
+        checkRemaining: checkRemaining
+          ? () => remainingCheckerRef.current?.() ?? null
+          : undefined,
         returnHref: mathPlanPracticeReturnHref(),
       })
       return true
@@ -187,6 +212,18 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
         return false
       }
       if (!userId) return false
+
+      // Resume is always today's plan session — pin the checker pool to today
+      // (not selectedDate). Fresh solveCount comes from the every-render rebuild.
+      const todayDay = weeklyPlan.days.find((d) => d.date === today)
+      if (todayDay && todayDay.problems.length > 0) {
+        remainingPoolRef.current = {
+          pool: todayDay.problems,
+          title: pending.title || '每日一练',
+          preserveOrder: false,
+        }
+      }
+
       resume({
         items,
         currentIndex: Math.min(pending.currentIndex, items.length - 1),
@@ -196,6 +233,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
         returnHref: mathPlanPracticeReturnHref(),
         title: pending.title || '每日一练',
         immersive: pending.immersive,
+        checkRemaining: () => remainingCheckerRef.current?.() ?? null,
       })
       return true
     }
@@ -266,7 +304,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       return
     }
 
-    const started = beginPractice(dayPlan.problems, firstUndone.problemId)
+    const started = beginPractice(dayPlan.problems, firstUndone.problemId, '每日一练', false, true)
     if (!started) return
     autoStartDoneRef.current = true
   }, [
@@ -447,11 +485,53 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
   const { draftProblemIds } = useViewableDraftIds(user, dayDraftProblemIds, draftRefreshKey)
 
+  // Problems with at least one solve — treated as done even before plan progress syncs.
+  const doneProblemIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const [id, count] of Object.entries(solveCount)) {
+      if (count > 0) ids.add(id)
+    }
+    return ids
+  }, [solveCount])
+
   const overdueItems = useMemo(
     () => (weeklyPlan ? collectOverduePlanProblems(weeklyPlan, today) : []),
     [weeklyPlan, today],
   )
-  const overduePool = useMemo(() => overdueItems.map((item) => item.problem), [overdueItems])
+  // Exclude already-solved problems so 补做 always starts from the first undone question.
+  const overdueUndoneItems = useMemo(
+    () => overdueItems.filter(({ problem }) => !doneProblemIds.has(problem.problemId)),
+    [overdueItems, doneProblemIds],
+  )
+  const overduePool = useMemo(() => overdueUndoneItems.map((item) => item.problem), [overdueUndoneItems])
+
+  // Reset overdue page when list shrinks
+  const overdueTotalPages = Math.max(1, Math.ceil(overdueUndoneItems.length / OVERDUE_PAGE_SIZE))
+  useEffect(() => {
+    if (overduePage >= overdueTotalPages) setOverduePage(0)
+  }, [overdueTotalPages, overduePage])
+  const overduePageItems = useMemo(
+    () => overdueUndoneItems.slice(overduePage * OVERDUE_PAGE_SIZE, (overduePage + 1) * OVERDUE_PAGE_SIZE),
+    [overdueUndoneItems, overduePage],
+  )
+
+  // Always-fresh checker: pool comes from beginPractice / resume; solveCount
+  // from this render so celebration never sees a stale closure.
+  remainingCheckerRef.current = (() => {
+    const cfg = remainingPoolRef.current
+    if (!cfg || cfg.pool.length === 0) return null
+    const remaining = cfg.pool.filter((p) => (solveCount[p.problemId] ?? 0) === 0)
+    if (remaining.length === 0) return null
+    return {
+      count: remaining.length,
+      onStart: () => {
+        const first = remaining[0]
+        if (first) {
+          beginPractice(remaining, first.problemId, cfg.title, cfg.preserveOrder, true)
+        }
+      },
+    }
+  })
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {
@@ -618,49 +698,9 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           mode={mapMode}
           onModeChange={setMapMode}
           onPracticeProblem={(prob, dayProblems) => {
-            beginPractice(dayProblems, prob.problemId)
+            beginPractice(dayProblems, prob.problemId, '每日一练', false, true)
           }}
         />
-
-        {/* Overdue make-up: past unfinished required problems */}
-        {overdueItems.length > 0 && (
-          <div className="mb-5 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <SectionHeader icon="⏰" label="待补做" count={overdueItems.length} accent="#ef4444" />
-              <button
-                type="button"
-                onClick={() => {
-                  const first = overduePool[0]
-                  if (first) beginPractice(overduePool, first.problemId, '待补做')
-                }}
-                className="cursor-pointer rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white transition-all hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444, #f97316)',
-                  boxShadow: '0 2px 10px rgba(239,68,68,.3)',
-                }}
-              >
-                一键补做
-              </button>
-            </div>
-            <p className="px-1 text-[12px] font-medium text-gray-500">
-              过去日期尚未完成的必做题；做完后进度仍记回原来的那天。
-            </p>
-            <div className="space-y-2.5">
-              {overdueItems.map(({ date, problem }) => (
-                <ProblemCard
-                  key={`${date}::${problem.key}`}
-                  prob={problem}
-                  done={false}
-                  isWrong={wrongIds.has(problem.problemId)}
-                  overdueDate={date}
-                  problemSets={problemSets}
-                  hasDraft={draftProblemIds.has(problem.problemId)}
-                  onPractice={() => beginPractice(overduePool, problem.problemId, '待补做')}
-                />
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Today shortcut */}
         {selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) && (
@@ -676,6 +716,71 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           >
             📍 跳到今天
           </button>
+        )}
+
+        {/* Plan-scoped overdue make-up — independent of selected day / calendar mode */}
+        {overdueUndoneItems.length > 0 && (
+          <div className="mb-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <SectionHeader icon="⏰" label="待补做" count={overdueUndoneItems.length} accent="#ef4444" />
+              <button
+                type="button"
+                onClick={() => {
+                  const first = overduePool[0]
+                  if (first) beginPractice(overduePool, first.problemId, '待补做', true, true)
+                }}
+                className="cursor-pointer rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white transition-all hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444, #f97316)',
+                  boxShadow: '0 2px 10px rgba(239,68,68,.3)',
+                }}
+              >
+                一键补做
+              </button>
+            </div>
+            <p className="px-1 text-[12px] font-medium text-gray-500">
+              过去日期尚未完成的必做题；做完后进度仍记回原来的那天。
+            </p>
+            <div className="space-y-2.5">
+              {overduePageItems.map(({ date, problem }) => (
+                <ProblemCard
+                  key={`${date}::${problem.key}`}
+                  prob={problem}
+                  done={false}
+                  isWrong={wrongIds.has(problem.problemId)}
+                  overdueDate={date}
+                  problemSets={problemSets}
+                  hasDraft={draftProblemIds.has(problem.problemId)}
+                  onPractice={() => beginPractice(overduePool, problem.problemId, '待补做', true, true)}
+                />
+              ))}
+            </div>
+            {overdueTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-1">
+                <button
+                  type="button"
+                  disabled={overduePage === 0}
+                  onClick={() => setOverduePage((p) => Math.max(0, p - 1))}
+                  className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
+                  style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                >
+                  ← 上一页
+                </button>
+                <span className="text-[12px] font-bold text-gray-400">
+                  {overduePage + 1} / {overdueTotalPages}
+                </span>
+                <button
+                  type="button"
+                  disabled={overduePage >= overdueTotalPages - 1}
+                  onClick={() => setOverduePage((p) => Math.min(overdueTotalPages - 1, p + 1))}
+                  className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
+                  style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                >
+                  下一页 →
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Day detail — month mode shows required list inside the calendar */}
@@ -783,7 +888,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                           onPractice={
                             doneKeys.has(prob.key)
                               ? undefined
-                              : () => beginPractice(dayPlan.problems, prob.problemId)
+                              : () => beginPractice(dayPlan.problems, prob.problemId, '每日一练', false, true)
                           }
                         />
                       ))}

@@ -1,6 +1,7 @@
 'use client'
 
-import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
+import { useMemo } from 'react'
+import type { PracticeQueueItem, PracticeQueueStartOpts } from '@rosie/math-kit/utils/practice-queue-types'
 
 type Props = {
   total: number
@@ -9,6 +10,7 @@ type Props = {
   returnHref: string
   onExit: () => void
   onRestart: () => void
+  checkRemaining?: PracticeQueueStartOpts['checkRemaining']
 }
 
 export default function PracticeCelebration({
@@ -18,7 +20,9 @@ export default function PracticeCelebration({
   returnHref,
   onExit,
   onRestart,
+  checkRemaining,
 }: Props) {
+  const remaining = useMemo(() => checkRemaining?.() ?? null, [checkRemaining])
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 text-center">
       <div className="mb-4 text-6xl">🎉</div>
@@ -37,6 +41,15 @@ export default function PracticeCelebration({
         >
           返回
         </button>
+        {remaining && remaining.count > 0 && (
+          <button
+            type="button"
+            onClick={remaining.onStart}
+            className="cursor-pointer rounded-full bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-transform active:scale-95"
+          >
+            继续练习（还有 {remaining.count} 题）
+          </button>
+        )}
         <button
           type="button"
           onClick={onRestart}

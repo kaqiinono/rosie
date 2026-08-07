@@ -19,4 +19,12 @@ export type PracticeQueueStartOpts = {
   title?: string
   initialProblemId?: string
   immersive?: boolean
+  /** Keep the original pool order (dedupe only, no solve-count sort). Respects initialProblemId. */
+  preserveOrder?: boolean
+  /**
+   * Shown on the celebration screen: returns remaining undone count and a
+   * callback to start a fresh session with only those problems.
+   * Return `null` or `{ count: 0 }` to hide the button.
+   */
+  checkRemaining?: () => { count: number; onStart: () => void } | null
 }

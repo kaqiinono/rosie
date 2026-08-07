@@ -26,6 +26,7 @@ export type ResumeOpts = {
   returnHref: string
   title: string
   immersive: boolean
+  checkRemaining?: PracticeQueueStartOpts['checkRemaining']
 }
 
 export type PracticeQueueContextValue = {

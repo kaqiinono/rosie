@@ -1,9 +1,10 @@
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 
-/** Dedupe by problem.id, then sort by solve count ascending (stable tie-break). */
+/** Dedupe by problem.id, then optionally sort by solve count ascending (stable tie-break). */
 export function buildPracticeQueue(
   pool: PracticeQueueItem[],
   solveCount: Record<string, number>,
+  preserveOrder?: boolean,
 ): PracticeQueueItem[] {
   const seen = new Set<string>()
   const unique: PracticeQueueItem[] = []
@@ -12,6 +13,8 @@ export function buildPracticeQueue(
     seen.add(item.problem.id)
     unique.push(item)
   }
+
+  if (preserveOrder) return unique
 
   return unique.sort((a, b) => {
     const ca = solveCount[a.problem.id] ?? 0

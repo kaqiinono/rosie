@@ -70,6 +70,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   const rawPoolRef = useRef<PracticeQueueItem[]>([])
   const startOptsRef = useRef<PracticeQueueStartOpts | null>(null)
   const sourceRef = useRef<MathPracticeSource | null>(null)
+  const checkRemainingRef = useRef<PracticeQueueStartOpts['checkRemaining'] | null>(null)
   // Read after awaits, where the render closure's copies are already stale.
   const currentIndexRef = useRef(currentIndex)
   const sessionCorrectRef = useRef(sessionCorrect)
@@ -160,16 +161,18 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     setIsImmersive(false)
     startOptsRef.current = null
     rawPoolRef.current = []
+    checkRemainingRef.current = null
   }, [setIsImmersive])
 
   const start = useCallback(
     (opts: PracticeQueueStartOpts) => {
       if (!user) return
-      const queue = buildPracticeQueue(opts.pool, solveCount)
+      const queue = buildPracticeQueue(opts.pool, solveCount, opts.preserveOrder)
       if (queue.length === 0) return
 
       rawPoolRef.current = opts.pool
       startOptsRef.current = opts
+      checkRemainingRef.current = opts.checkRemaining ?? null
       const idx = initialIndexForProblem(queue, opts.initialProblemId)
       const immersivePref = opts.immersive ?? readImmersivePref()
 
@@ -201,6 +204,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     (opts: ResumeOpts) => {
       if (!user || opts.items.length === 0) return
       rawPoolRef.current = opts.items
+      checkRemainingRef.current = opts.checkRemaining ?? null
       startOptsRef.current = {
         pool: opts.items,
         source: opts.source,
@@ -475,6 +479,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
           onRestart={restart}
           onToggleImmersive={toggleImmersive}
           onSetImmersive={setImmersive}
+          checkRemaining={checkRemainingRef.current ?? undefined}
         />
       )}
     </PracticeQueueContext.Provider>
