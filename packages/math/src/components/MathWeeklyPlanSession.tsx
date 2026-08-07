@@ -793,6 +793,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               label="待补做"
               count={overdueUndoneItems.length}
               accent="#ef4444"
+              defaultExpanded={false}
               headerRight={
                 <button
                   type="button"
@@ -856,50 +857,46 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           </div>
         )}
 
-        {/* Day detail — month mode shows required list inside the calendar */}
+        {/* Day detail — 必做题 list shared by week & month */}
         {dayPlan && (
           <div className="space-y-5">
-            {mapMode === 'week' && (
-              <>
-                {/* Day section header */}
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[12px] font-extrabold tracking-widest text-gray-400 uppercase">
-                    {dayLabel(selectedDate!)} · {fmtDate(selectedDate!)}
-                  </span>
-                  <div className="h-px flex-1 bg-black/6" />
-                </div>
+            {/* Day section header */}
+            <div className="flex items-center gap-2.5">
+              <span className="text-[12px] font-extrabold tracking-widest text-gray-400 uppercase">
+                {dayLabel(selectedDate!)} · {fmtDate(selectedDate!)}
+              </span>
+              <div className="h-px flex-1 bg-black/6" />
+            </div>
 
-                {/* Required problems */}
-                <CollapsibleSection icon="🎯" label="必做题" count={dayPlan.problems.length}>
-                  {dayPlan.problems.length > 0 ? (
-                    <div className="space-y-2.5">
-                      {dayPlan.problems.map((prob) => (
-                        <ProblemCard
-                          key={prob.key}
-                          prob={prob}
-                          done={doneKeys.has(prob.key)}
-                          isWrong={wrongIds.has(prob.problemId)}
-                          overdueDate={
-                            selectedDate && selectedDate < today && !doneKeys.has(prob.key)
-                              ? selectedDate
-                              : undefined
-                          }
-                          problemSets={problemSets}
-                          hasDraft={draftProblemIds.has(prob.problemId)}
-                          onPractice={
-                            doneKeys.has(prob.key)
-                              ? undefined
-                              : () => beginPractice(dayPlan.problems, prob.problemId, '每日一练', false, true)
-                          }
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyDay />
-                  )}
-                </CollapsibleSection>
-              </>
-            )}
+            {/* Required problems */}
+            <CollapsibleSection icon="🎯" label="必做题" count={dayPlan.problems.length}>
+              {dayPlan.problems.length > 0 ? (
+                <div className="space-y-2.5">
+                  {dayPlan.problems.map((prob) => (
+                    <ProblemCard
+                      key={prob.key}
+                      prob={prob}
+                      done={doneKeys.has(prob.key)}
+                      isWrong={wrongIds.has(prob.problemId)}
+                      overdueDate={
+                        selectedDate && selectedDate < today && !doneKeys.has(prob.key)
+                          ? selectedDate
+                          : undefined
+                      }
+                      problemSets={problemSets}
+                      hasDraft={draftProblemIds.has(prob.problemId)}
+                      onPractice={
+                        doneKeys.has(prob.key)
+                          ? undefined
+                          : () => beginPractice(dayPlan.problems, prob.problemId, '每日一练', false, true)
+                      }
+                    />
+                  ))}
+                </div>
+              ) : (
+                <EmptyDay />
+              )}
+            </CollapsibleSection>
 
             {/* Wrong-answer reinforcement */}
             {(() => {

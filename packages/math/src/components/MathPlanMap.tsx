@@ -266,7 +266,7 @@ export default function MathPlanMap({
           onSelectDate={(date) => {
             if (date) onSelectDate(date)
           }}
-          showDayDetail
+          showDayDetail={false}
           onPracticeProblem={onPracticeProblem}
         />
       )}
