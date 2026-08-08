@@ -1,11 +1,11 @@
 'use client'
 
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { todayStr, useAuth, type WordEntry } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
-import { wordKey } from '../../utils/english-helpers'
+import { getAllStages, wordKey } from '../../utils/english-helpers'
 import { simulateAdaptivePlan } from '../../utils/adaptivePlanSimulate'
 import { ADAPTIVE_PLAN_DEFAULTS, clampNewWordsPerDay, defaultReviewCap } from '../../utils/adaptivePlanDefaults'
 import type { AdaptivePlanScope, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
@@ -35,7 +35,8 @@ function buildTitle(stages: string[], lessons: LessonOption[], wordCount: number
         : `${lessons[0]?.unit ?? ''} 等 ${lessons.length} 课`
     return `自适应挑战：${lessonLabel}`
   }
-  if (stages.length > 0) return `自适应挑战：${stages.join('、')}`
+  if (stages.length === 1) return `自适应挑战：${stages[0]}`
+  if (stages.length > 1) return `自适应挑战：${stages.join('、')}`
   return `自适应挑战：${wordCount} 词`
 }
 
@@ -45,8 +46,10 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
   const { masteryMap } = useWordsContext()
   const { createPlan, isLoading } = useAdaptiveWordPlan(user)
 
+  const allStages = useMemo(() => getAllStages(vocab), [vocab])
+
   const [title, setTitle] = useState('')
-  const [selectedStages, setSelectedStages] = useState<Set<string>>(new Set())
+  const [selectedStage, setSelectedStage] = useState('')
   const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set())
   const [selectedLessonKeys, setSelectedLessonKeys] = useState<Set<string>>(new Set())
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -62,6 +65,15 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
   )
   const [bossPackLimit, setBossPackLimit] = useState<number>(ADAPTIVE_PLAN_DEFAULTS.bossPackLimit)
   const [previewSelectedDate, setPreviewSelectedDate] = useState<string | null>(null)
+
+  // Default to the newest textbook once vocab stages are known.
+  useEffect(() => {
+    if (allStages.length === 0) return
+    if (selectedStage && allStages.includes(selectedStage)) return
+    setSelectedStage(allStages[0])
+    setSelectedUnits(new Set())
+    setSelectedLessonKeys(new Set())
+  }, [allStages, selectedStage])
 
   const handleNewWordsPerDayChange = (n: number) => {
     const next = clampNewWordsPerDay(n)
@@ -86,15 +98,16 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
 
   const { baseWords } = useVocabRangeFilter({
     vocab,
-    stageMode: 'multi',
-    selectedStages,
+    stageMode: 'single',
+    selectedStages: selectedStage,
     selectedUnits,
     selectedLessons: selectedLessonKeys,
   })
 
   const handleStagesChange = (value: string | Set<string>) => {
-    const nextStages = value as Set<string>
-    setSelectedStages(nextStages)
+    const nextStage = value as string
+    const nextStages = nextStage ? new Set([nextStage]) : new Set<string>()
+    setSelectedStage(nextStage)
     setSelectedUnits((prev) => pruneUnitsForStages(prev, vocab, nextStages))
     setSelectedLessonKeys((prev) => pruneLessonsForStages(prev, orderedLessons, nextStages))
   }
@@ -111,19 +124,19 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
   )
 
   const wordKeys = useMemo(() => {
-    if (selectedStages.size === 0) return []
+    if (!selectedStage) return []
     return [...new Set(baseWords.map((entry) => wordKey(entry)))]
-  }, [baseWords, selectedStages.size])
+  }, [baseWords, selectedStage])
 
   const defaultTitle = useMemo(
-    () => buildTitle([...selectedStages], selectedLessons, wordKeys.length),
-    [selectedStages, selectedLessons, wordKeys.length],
+    () => buildTitle(selectedStage ? [selectedStage] : [], selectedLessons, wordKeys.length),
+    [selectedStage, selectedLessons, wordKeys.length],
   )
 
   const planScope = useMemo<AdaptivePlanScope>(() => ({
-    ...((selectedStages.size > 0) ? { stages: [...selectedStages] } : {}),
+    ...(selectedStage ? { stages: [selectedStage] } : {}),
     ...((selectedLessonKeys.size > 0) ? { lessonKeys: [...selectedLessonKeys] } : {}),
-  }), [selectedStages, selectedLessonKeys])
+  }), [selectedStage, selectedLessonKeys])
 
   const draftSimulation = useMemo(() => {
     if (wordKeys.length === 0) return null
@@ -238,8 +251,8 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
       <VocabRangeFilter
         vocab={vocab}
         variant="bar"
-        stageMode="multi"
-        selectedStages={selectedStages}
+        stageMode="single"
+        selectedStages={selectedStage}
         onStagesChange={handleStagesChange}
         requireStage
         showUnits
@@ -249,7 +262,7 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
         selectedLessons={selectedLessonKeys}
         onLessonsChange={setSelectedLessonKeys}
         scopeCount={wordKeys.length}
-        hint="只选词库不选 Unit/Lesson 时，会把该词库全部单词加入计划。"
+        hint="单选词库；不选 Unit/Lesson 时，会把该词库全部单词加入计划。"
       />
 
       <div className="mx-auto w-full max-w-[1200px] px-3 py-4 sm:px-5 sm:py-6">
@@ -311,8 +324,8 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
           <div className="mt-1 text-[.72rem] text-[var(--wm-text-dim)]">
             {selectedLessonKeys.size > 0
               ? `已选 ${selectedLessonKeys.size} 个课程 · 新词 ${newWordsPerDay} · 复习上限 ${reviewCap} · Boss 题包 ${bossPackLimit}`
-              : selectedStages.size > 0
-                ? `已选 ${selectedStages.size} 个词库 · 新词 ${newWordsPerDay} · 复习上限 ${reviewCap} · Boss 题包 ${bossPackLimit}`
+              : selectedStage
+                ? `词库 ${selectedStage} · 新词 ${newWordsPerDay} · 复习上限 ${reviewCap} · Boss 题包 ${bossPackLimit}`
                 : '请选择词库或课程后查看预览'}
           </div>
           {draftSimulation && draftSimulation.days.length > 0 ? (

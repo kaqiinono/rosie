@@ -7,8 +7,10 @@ import VocabRangeFilter from './vocab-range-filter/VocabRangeFilter'
 
 interface FilterBarProps {
   vocab: WordEntry[]
-  selStage: string
-  onSetStage: (stage: string) => void
+  selStage?: string
+  onSetStage?: (stage: string) => void
+  /** When false the Stage chip row is hidden (switching moves to the header). */
+  showStageFilter?: boolean
   selUnits: Set<string>
   selLessons: Set<string>
   selWords: Set<string>
@@ -29,8 +31,9 @@ interface FilterBarProps {
 
 export default function FilterBar({
   vocab,
-  selStage,
+  selStage = '',
   onSetStage,
+  showStageFilter = true,
   selUnits,
   selLessons,
   selWords,
@@ -53,7 +56,8 @@ export default function FilterBar({
       variant="bar"
       stageMode="single"
       selectedStages={selStage}
-      onStagesChange={(value) => onSetStage(value as string)}
+      onStagesChange={(value) => onSetStage?.(value as string)}
+      showStages={showStageFilter}
       showUnits
       selectedUnits={selUnits}
       onToggleUnit={onToggleUnit}

@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
-import { buildAutoAssignedPlan, buildDailyFullWordPlan, classifyPlanWords, getOrderedLessons, getAllStages, wordKey, lessonChipTag } from '../../utils/english-helpers'
+import { buildAutoAssignedPlan, buildDailyFullWordPlan, classifyPlanWords, getOrderedLessons, getAllStages, compareStages, wordKey, lessonChipTag } from '../../utils/english-helpers'
 import { CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -62,8 +62,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   /** When unchanged from open-edit, arrange step reuses existing `days` layout. */
   const [editArrangeBaselineKey, setEditArrangeBaselineKey] = useState<string | null>(null)
   const [pendingLessons, setPendingLessons] = useState<{ unit: string; lesson: string }[]>([])
-  /** Selected vocab libraries (stage) that filter the lesson picker. Multi-select, cached. */
-  const [selectedStages, setSelectedStages] = useState<Set<string>>(new Set())
+  /** Single vocab library (stage) that filters the lesson picker. */
+  const [selectedStage, setSelectedStage] = useState('')
   const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set())
   // per-lesson daily quota: key = "unit::lesson"
   const [lessonQuotas, setLessonQuotas] = useState<Record<string, number>>({})
@@ -118,17 +118,17 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
   const { baseWords: scopedWords } = useVocabRangeFilter({
     vocab,
-    stageMode: 'multi',
-    selectedStages,
+    stageMode: 'single',
+    selectedStages: selectedStage,
     selectedUnits,
     selectedLessons: filterLessonKeys,
-    emptyStagesShowAllLessons: true,
   })
 
   const handlePlanStagesChange = useCallback(
     (value: string | Set<string>) => {
-      const nextStages = value as Set<string>
-      setSelectedStages(nextStages)
+      const nextStage = value as string
+      const nextStages = nextStage ? new Set([nextStage]) : new Set<string>()
+      setSelectedStage(nextStage)
       setSelectedUnits((prev) => pruneUnitsForStages(prev, vocab, nextStages))
       setPendingLessons((prev) => {
         const nextKeys = pruneLessonsForStages(
@@ -294,32 +294,51 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     )
     const inferredBatch = inferBatchModeFromPlan(plan, planWordKeys)
     const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas, inferredBatch)
-    const planStages = new Set(
-      parsed.map(l => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean),
-    )
+    const planStages = [
+      ...new Set(
+        parsed.map((l) => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean),
+      ),
+    ].sort(compareStages)
+    // Plans are single-textbook; if an older plan spanned stages, keep the newest.
+    const stage = planStages[0] ?? ''
+    const stageLessons = stage
+      ? parsed.filter((l) => (lessonStageMap.get(lessonKey(l)) ?? '') === stage)
+      : parsed
     setPlanStartDate(plan.weekStart)
     setPlanEndDateStr(planEndDate(plan))
     setEditingPlanStart(plan.weekStart)
     setBatchMode(inferredBatch)
-    setSelectedStages(planStages)
-    setPendingLessons(parsed)
+    setSelectedStage(stage)
+    setPendingLessons(stageLessons)
     setLessonQuotas(quotas)
     setLessonKindOverrides(lkinds)
-    setFocusLessonOverride(plan.focusLessonKey ?? null)
+    const stageLessonKeys = new Set(stageLessons.map(lessonKey))
+    setFocusLessonOverride(
+      plan.focusLessonKey && stageLessonKeys.has(plan.focusLessonKey)
+        ? plan.focusLessonKey
+        : null,
+    )
     setEditArrangeBaselineKey(baseline)
     setEditingPlan(plan)
     setIsEditingPlan(true)
-    setSelectedUnits(new Set(parsed.map((lesson) => lesson.unit)))
+    setSelectedUnits(new Set(stageLessons.map((lesson) => lesson.unit)))
     setStep('params')
   }, [vocab, lessonStageMap])
 
   useEffect(() => {
     if (isLoading || editPlanId) return
-    const cached = loadCachedLessons().filter(c =>
-      orderedLessons.some(o => o.unit === c.unit && o.lesson === c.lesson),
+    const latest = allStages[0] ?? ''
+    const cached = loadCachedLessons().filter((c) =>
+      orderedLessonsFull.some(
+        (o) =>
+          o.unit === c.unit &&
+          o.lesson === c.lesson &&
+          (!latest || o.stage === latest),
+      ),
     )
-    setSelectedStages(new Set(allStages[0] ? [allStages[0]] : []))
+    setSelectedStage(latest)
     setPendingLessons(cached)
+    setSelectedUnits(new Set(cached.map((c) => c.unit)))
     setLessonKindOverrides({})
     setLessonQuotas({})
     setFocusLessonOverride(null)
@@ -330,7 +349,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     setEditArrangeBaselineKey(null)
     setStep('params')
     applySuggestedDateRange(todayStr())
-  }, [isLoading, editPlanId, orderedLessons, allStages, applySuggestedDateRange])
+  }, [isLoading, editPlanId, orderedLessonsFull, allStages, applySuggestedDateRange])
 
   useEffect(() => {
     if (!editPlanId || isLoading) return
@@ -400,7 +419,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       }
       await savePlan(plan)
       saveCachedLessons(activeLessons)
-      saveCachedStages([...selectedStages])
+      saveCachedStages(selectedStage ? [selectedStage] : [])
       setCarryoverCount(0)
       setIsEditingPlan(false)
       setEditingPlan(null)
@@ -424,7 +443,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       vocab,
       isEditingPlan,
       editingPlan,
-      selectedStages,
+      selectedStage,
     ],
   )
 
@@ -544,10 +563,10 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
         <VocabRangeFilter
           vocab={vocab}
           variant="bar"
-          stageMode="multi"
-          selectedStages={selectedStages}
+          stageMode="single"
+          selectedStages={selectedStage}
           onStagesChange={handlePlanStagesChange}
-          emptyStagesShowAllLessons
+          requireStage
           showUnits
           selectedUnits={selectedUnits}
           onToggleUnit={handlePlanToggleUnit}
@@ -555,7 +574,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
           selectedLessons={filterLessonKeys}
           onLessonsChange={handlePlanLessonsChange}
           scopeCount={scopedWords.length}
-          hint="在上方选 Stage / Unit / Lesson；下方可设置必记、预习与本周重点。"
+          hint="单选 Stage，再选 Unit / Lesson；下方可设置必记、预习与本周重点。"
         />
 
         <div className="mx-auto max-w-[560px] px-4 py-6">

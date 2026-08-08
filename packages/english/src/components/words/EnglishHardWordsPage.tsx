@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useWordsContext } from '../../WordsContext'
 import { useEnglishWrong } from '../../hooks/useEnglishWrong'
-import { findWordByKey, practiceHrefForWord } from '../../utils/english-helpers'
+import { findWordByKey, practiceHrefForWord, wordKey } from '../../utils/english-helpers'
 import { getWordMasteryLevel } from '@rosie/core'
 import SpeakButton from './SpeakButton'
 
@@ -28,10 +28,11 @@ function formatWhen(iso: string): string {
 }
 
 export default function EnglishHardWordsPage() {
-  const { user, vocab, masteryMap } = useWordsContext()
+  const { user, vocab, masteryMap, selStage, isVocabLoading } = useWordsContext()
   const { rows, removeWrong, refetch } = useEnglishWrong(user)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('unresolved')
 
+  // Single-textbook: only words that resolve in the active stage's vocab.
   const items = useMemo(() => {
     return rows
       .map(row => {
@@ -47,8 +48,13 @@ export default function EnglishHardWordsPage() {
       })
   }, [rows, vocab, statusFilter])
 
-  const unresolvedCount = rows.filter(r => !r.resolved).length
-  const resolvedCount = rows.filter(r => r.resolved).length
+  const stageRows = useMemo(() => {
+    const keys = new Set(vocab.map((w) => wordKey(w)))
+    return rows.filter((r) => keys.has(r.wordKey))
+  }, [rows, vocab])
+
+  const unresolvedCount = stageRows.filter(r => !r.resolved).length
+  const resolvedCount = stageRows.filter(r => r.resolved).length
 
   return (
     <div className="relative z-1 mx-auto max-w-[720px] px-4 py-6 pb-16">
@@ -69,7 +75,8 @@ export default function EnglishHardWordsPage() {
           )}
         </div>
         <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--wm-text-dim)]">
-          练习或阅读中答错的单词会收录在此 · 再练答对后自动标记已改正
+          仅当前教材{selStage ? `（${selStage}）` : ''} · 答错收录 · 再练答对后自动标记已改正
+          · 顶部可切换其它册
         </p>
       </div>
 
@@ -87,13 +94,15 @@ export default function EnglishHardWordsPage() {
           >
             {tab.label}
             <span className="ml-1 opacity-80">
-              {tab.key === 'unresolved' ? unresolvedCount : tab.key === 'resolved' ? resolvedCount : rows.length}
+              {tab.key === 'unresolved' ? unresolvedCount : tab.key === 'resolved' ? resolvedCount : stageRows.length}
             </span>
           </button>
         ))}
       </div>
 
-      {items.length === 0 ? (
+      {isVocabLoading ? (
+        <div className="py-16 text-center text-[13px] text-[var(--wm-text-dim)]">加载词库中…</div>
+      ) : items.length === 0 ? (
         <div
           className="flex flex-col items-center gap-3 rounded-[16px] border-2 border-dashed py-16 text-center"
           style={{ borderColor: 'var(--wm-border)' }}
@@ -103,7 +112,7 @@ export default function EnglishHardWordsPage() {
             {statusFilter === 'unresolved' ? '没有待改正的难词' : statusFilter === 'resolved' ? '还没有已改正记录' : '难词本是空的'}
           </div>
           <p className="max-w-[280px] text-[12px] text-[var(--wm-text-dim)]">
-            在练习、计划或阅读测验中答错会自动收录
+            本册练习答错会收录于此；其它教材请先切换顶部教材
           </p>
           <Link
             href="/english/words/practice"

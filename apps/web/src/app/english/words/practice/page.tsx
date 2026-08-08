@@ -12,7 +12,7 @@ import type { SpellButtonStyle } from '@rosie/english'
 
 export default function PracticePage() {
   const {
-    vocab, filteredWords,
+    vocab, filteredWords, isVocabLoading, lessonStage,
     selStage, setSelStage,
     selUnits, setSelUnits,
     selLessons, setSelLessons,
@@ -38,11 +38,18 @@ export default function PracticePage() {
 
   // Hard-word book: ?focus=<wordKey> → filter to one word and launch quiz.
   useEffect(() => {
-    if (!focusWordKey || focusLaunchedRef.current || vocab.length === 0) return
+    if (!focusWordKey || focusLaunchedRef.current || isVocabLoading) return
     const entry = findWordByKey(vocab, focusWordKey)
-    if (!entry) return
+    if (!entry) {
+      // The word may live in another textbook — switch to it and retry once
+      // that stage's vocab finishes loading.
+      const parts = focusWordKey.split('::')
+      const stage = lessonStage[`${parts[0]}::${parts[1]}`]
+      if (stage && stage !== selStage) setSelStage(stage)
+      return
+    }
     focusLaunchedRef.current = true
-    if (entry.stage) setSelStage(entry.stage)
+    if (entry.stage && entry.stage !== selStage) setSelStage(entry.stage)
     setSelUnits(new Set([entry.unit]))
     setSelLessons(new Set([`${entry.unit}::${entry.lesson}`]))
     setSelWords(new Set([wordKey(entry)]))
@@ -54,6 +61,9 @@ export default function PracticePage() {
   }, [
     focusWordKey,
     vocab,
+    isVocabLoading,
+    lessonStage,
+    selStage,
     setSelStage,
     setSelUnits,
     setSelLessons,
@@ -66,9 +76,14 @@ export default function PracticePage() {
   ])
 
   useEffect(() => {
-    if (!contextPassageKey || autoLaunchedRef.current || vocab.length === 0) return
+    if (!contextPassageKey || autoLaunchedRef.current || isVocabLoading) return
     const passage = findPassageByKey(contextPassageKey)
     if (!passage) return
+    const stage = lessonStage[`${passage.unit}::${passage.lesson}`]
+    if (stage && stage !== selStage) {
+      setSelStage(stage)
+      return
+    }
     autoLaunchedRef.current = true
     setSelUnits(new Set([passage.unit]))
     setSelLessons(new Set([`${passage.unit}::${passage.lesson}`]))
@@ -79,7 +94,7 @@ export default function PracticePage() {
     setIsImmersive(true)
     // Drop the query so a refresh doesn't re-launch.
     router.replace('/english/words/practice')
-  }, [contextPassageKey, vocab.length, setSelUnits, setSelLessons, setSelWords, setMasteryFilter, setPracticeTypes, setPreviewCards, setIsImmersive, router])
+  }, [contextPassageKey, isVocabLoading, lessonStage, selStage, setSelStage, setSelUnits, setSelLessons, setSelWords, setMasteryFilter, setPracticeTypes, setPreviewCards, setIsImmersive, router])
 
   // Type D is available whenever any filtered word's lesson has a passage
   // sentence for it — completely independent of the week-plan's ⭐ focus marker.
@@ -167,8 +182,7 @@ export default function PracticePage() {
     <>
       <FilterBar
         vocab={vocab}
-        selStage={selStage}
-        onSetStage={setSelStage}
+        showStageFilter={false}
         selUnits={selUnits}
         selLessons={selLessons}
         selWords={selWords}

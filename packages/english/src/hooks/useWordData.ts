@@ -1,10 +1,10 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
 import type { WordEntry } from '@rosie/core'
-import { wordKey } from '../utils/english-helpers'
+import { compareStages, wordKey } from '../utils/english-helpers'
 import {
   archiveAdaptiveProgressForDeletedKeys,
   migrateAdaptiveProgressKey,
@@ -13,8 +13,26 @@ import {
 const SELECT_COLS =
   'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
 
-const CACHE_VER = 'word_cache_v4'
+const CACHE_VER = 'word_cache_v5'
+/** v4 cached the entire word library locally; purge it on first use. */
+const LEGACY_CACHE_PREFIX = 'word_cache_v4_'
 const NULL_STAGE = '__null__'
+
+let legacyCachePurged = false
+function purgeLegacyFullCache() {
+  if (legacyCachePurged) return
+  legacyCachePurged = true
+  try {
+    const drop: string[] = []
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const k = localStorage.key(i)
+      if (k && k.startsWith(LEGACY_CACHE_PREFIX)) drop.push(k)
+    }
+    drop.forEach((k) => localStorage.removeItem(k))
+  } catch {
+    /* ignore */
+  }
+}
 
 function stageKey(stage: string | undefined) {
   return stage ?? NULL_STAGE
@@ -28,46 +46,34 @@ function cacheIndexKey(userId: string) {
   return `${CACHE_VER}_${userId}_stages`
 }
 
-function readCachedVocab(userId: string): WordEntry[] | null {
+function stageIndexCacheKey(userId: string) {
+  return `${CACHE_VER}_${userId}_stage_index`
+}
+
+function readCachedStageVocab(userId: string, stage: string): WordEntry[] | null {
   try {
-    const indexJson = localStorage.getItem(cacheIndexKey(userId))
-    if (!indexJson) return null
-    const stages: string[] = JSON.parse(indexJson)
-    const all: WordEntry[] = []
-    for (const stage of stages) {
-      const json = localStorage.getItem(cacheDataKey(userId, stage))
-      if (!json) return null
-      const { data } = JSON.parse(json) as { data: WordEntry[] }
-      all.push(...data)
-    }
-    return all
+    const json = localStorage.getItem(cacheDataKey(userId, stage))
+    if (!json) return null
+    const { data } = JSON.parse(json) as { data: WordEntry[] }
+    return data
   } catch {
     return null
   }
 }
 
-function writeCacheByStage(userId: string, words: WordEntry[]) {
+/**
+ * The local cache holds at most ONE textbook: writing a stage evicts every
+ * previously cached stage, so switching textbooks never accumulates data.
+ */
+function writeStageCache(userId: string, stage: string, words: WordEntry[]) {
   try {
-    const byStage = new Map<string, WordEntry[]>()
-    for (const w of words) {
-      const k = stageKey(w.stage)
-      if (!byStage.has(k)) byStage.set(k, [])
-      byStage.get(k)!.push(w)
-    }
-    const stages = [...byStage.keys()]
     const indexJson = localStorage.getItem(cacheIndexKey(userId))
-    if (indexJson) {
-      const oldStages: string[] = JSON.parse(indexJson)
-      for (const s of oldStages) {
-        if (!stages.includes(s)) {
-          localStorage.removeItem(cacheDataKey(userId, s))
-        }
-      }
+    const existing: string[] = indexJson ? JSON.parse(indexJson) : []
+    for (const s of existing) {
+      if (s !== stage) localStorage.removeItem(cacheDataKey(userId, s))
     }
-    localStorage.setItem(cacheIndexKey(userId), JSON.stringify(stages))
-    for (const [stage, stageWords] of byStage) {
-      localStorage.setItem(cacheDataKey(userId, stage), JSON.stringify({ data: stageWords }))
-    }
+    localStorage.setItem(cacheDataKey(userId, stage), JSON.stringify({ data: words }))
+    localStorage.setItem(cacheIndexKey(userId), JSON.stringify([stage]))
   } catch {
     /* ignore */
   }
@@ -145,10 +151,134 @@ async function fetchAllWordEntries(): Promise<WordEntry[]> {
   return all
 }
 
-async function fetchWordEntries(userId: string): Promise<WordEntry[]> {
-  const words = await fetchAllWordEntries()
-  writeCacheByStage(userId, words)
-  return words
+// Full-library loads are never written to localStorage — only the single
+// active textbook is cached (see writeStageCache).
+async function fetchWordEntries(_userId: string): Promise<WordEntry[]> {
+  return fetchAllWordEntries()
+}
+
+async function fetchStageWordEntries(stage: string): Promise<WordEntry[]> {
+  const all: WordEntry[] = []
+  let from = 0
+  while (true) {
+    let q = supabase.from('word_entries').select(SELECT_COLS)
+    q = stage === NULL_STAGE ? q.is('stage', null) : q.eq('stage', stage)
+    const { data, error } = await q
+      .order('unit')
+      .order('lesson')
+      .range(from, from + FETCH_PAGE_SIZE - 1)
+    if (error) throw error
+    if (!data || data.length === 0) break
+    all.push(...data.map(fromRow))
+    if (data.length < FETCH_PAGE_SIZE) break
+    from += FETCH_PAGE_SIZE
+  }
+  return all
+}
+
+const stageFetchInflight = new Map<string, Promise<WordEntry[]>>()
+
+/**
+ * Fetch one stage's vocab, dedupe concurrent requests, and cache the result
+ * locally. Called on every stage switch so the cache stays fresh.
+ */
+export function fetchStageVocab(userId: string, stage: string): Promise<WordEntry[]> {
+  const key = stageKey(stage)
+  const mapKey = `${userId}::${key}`
+  const existing = stageFetchInflight.get(mapKey)
+  if (existing) return existing
+  const promise = fetchStageWordEntries(key)
+    .then((words) => {
+      writeStageCache(userId, key, words)
+      stageFetchInflight.delete(mapKey)
+      return words
+    })
+    .catch((err) => {
+      stageFetchInflight.delete(mapKey)
+      throw err
+    })
+  stageFetchInflight.set(mapKey, promise)
+  return promise
+}
+
+/**
+ * Lightweight stage metadata: distinct stages + lesson→stage map. Powers the
+ * textbook switcher without downloading every word library.
+ */
+export interface StageIndex {
+  stages: string[]
+  lessonStage: Record<string, string>
+}
+
+export const EMPTY_STAGE_INDEX: StageIndex = { stages: [], lessonStage: {} }
+
+async function fetchStageIndex(): Promise<StageIndex> {
+  const lessonStage: Record<string, string> = {}
+  const stageSet = new Set<string>()
+  let from = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('word_entries')
+      .select('stage, unit, lesson')
+      .range(from, from + FETCH_PAGE_SIZE - 1)
+    if (error) throw error
+    if (!data || data.length === 0) break
+    for (const row of data) {
+      const st = (row.stage as string | null) ?? NULL_STAGE
+      stageSet.add(st)
+      const lessonKey = `${row.unit}::${row.lesson}`
+      if (!(lessonKey in lessonStage)) lessonStage[lessonKey] = st
+    }
+    if (data.length < FETCH_PAGE_SIZE) break
+    from += FETCH_PAGE_SIZE
+  }
+  return {
+    stages: [...stageSet].filter((s) => s !== NULL_STAGE).sort(compareStages),
+    lessonStage,
+  }
+}
+
+function readCachedStageIndex(userId: string): StageIndex | null {
+  try {
+    const json = localStorage.getItem(stageIndexCacheKey(userId))
+    if (!json) return null
+    return JSON.parse(json) as StageIndex
+  } catch {
+    return null
+  }
+}
+
+/** Stage list + lesson→stage map; hydrate from cache, refresh in background. */
+export function useStageIndex(user: User | null): StageIndex {
+  const userId = user?.id ?? null
+  const [index, setIndex] = useState<StageIndex>(() => {
+    if (!userId) return EMPTY_STAGE_INDEX
+    return readCachedStageIndex(userId) ?? EMPTY_STAGE_INDEX
+  })
+
+  useEffect(() => {
+    if (!userId) return
+    purgeLegacyFullCache()
+    const cached = readCachedStageIndex(userId)
+    if (cached) setIndex(cached)
+    let cancelled = false
+    void fetchStageIndex()
+      .then((fresh) => {
+        if (cancelled) return
+        try {
+          localStorage.setItem(stageIndexCacheKey(userId), JSON.stringify(fresh))
+        } catch {
+          /* ignore */
+        }
+        setIndex(fresh)
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [userId])
+
+  return index
 }
 
 async function upsertWordRows(creator: string, words: WordEntry[]) {
@@ -218,24 +348,64 @@ async function reloadWordEntries(userId: string): Promise<void> {
   wordEntriesStore.ensureLoaded(userId)
 }
 
-export function useWordData(user: User | null) {
+/**
+ * Pass `opts` to stay textbook-scoped (never loads the full library into the
+ * session store). `stage: null` waits for the caller to resolve a textbook;
+ * `stage: string` loads that one book (local cache keeps at most one).
+ * Omit `opts` for admin/full-library pages.
+ */
+export function useWordData(user: User | null, opts?: { stage: string | null }) {
   const userId = user?.id ?? null
+  const isStageScoped = opts !== undefined
+  const scopeStage = opts?.stage ?? null
 
   useEffect(() => {
-    if (!userId) return
-    const snapshot = wordEntriesStore.getSnapshot(userId)
-    if (snapshot.status === 'idle') {
-      const cached = readCachedVocab(userId)
-      if (cached) {
-        // Optimistic hydrate — always follow with a network refresh so a stale
-        // 1000-row cache (Supabase default page size) cannot block full vocab.
-        wordEntriesStore.replaceSessionData(userId, cached)
-        void wordEntriesStore.refreshInBackground(userId)
-      }
-    }
-  }, [userId])
+    if (!userId || isStageScoped) return
+    purgeLegacyFullCache()
+  }, [userId, isStageScoped])
 
-  const { data: vocab, isLoading } = wordEntriesStore.useSessionData(user)
+  // Stage mode must not trigger the full-library session-store fetch.
+  const { data: fullVocab, isLoading: fullLoading } = wordEntriesStore.useSessionData(
+    isStageScoped ? null : user,
+  )
+
+  const [stageVocab, setStageVocab] = useState<WordEntry[]>([])
+  const [stageLoading, setStageLoading] = useState(true)
+
+  useEffect(() => {
+    if (!userId || !isStageScoped) return
+    if (!scopeStage) {
+      setStageVocab([])
+      setStageLoading(true)
+      return
+    }
+    const key = stageKey(scopeStage)
+    let cancelled = false
+    setStageLoading(true)
+    // Cache-first hydrate, then always re-request so the cache stays fresh.
+    const cached = readCachedStageVocab(userId, key)
+    if (cached) {
+      setStageVocab(cached)
+      setStageLoading(false)
+    } else {
+      setStageVocab([])
+    }
+    void fetchStageVocab(userId, key)
+      .then((words) => {
+        if (cancelled) return
+        setStageVocab(words)
+        setStageLoading(false)
+      })
+      .catch(() => {
+        if (!cancelled) setStageLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [userId, isStageScoped, scopeStage])
+
+  const vocab = isStageScoped ? stageVocab : fullVocab
+  const isLoading = isStageScoped ? !scopeStage || stageLoading : fullLoading
 
   const upsertByStage = useCallback(
     async (words: WordEntry[]) => {
@@ -247,9 +417,14 @@ export function useWordData(user: User | null) {
       }
       await upsertWordRows(user.id, words)
       invalidateSessionStore('word_entries')
-      await reloadWordEntries(user.id)
+      if (scopeStage) {
+        const fresh = await fetchStageVocab(user.id, stageKey(scopeStage))
+        setStageVocab(fresh)
+      } else {
+        await reloadWordEntries(user.id)
+      }
     },
-    [user],
+    [user, scopeStage],
   )
 
   const addWords = useCallback(
@@ -264,7 +439,6 @@ export function useWordData(user: User | null) {
           if (idx >= 0) next[idx] = w
           else next.push(w)
         }
-        writeCacheByStage(user.id, next)
         return next
       })
     },
@@ -283,9 +457,7 @@ export function useWordData(user: User | null) {
       await (original.stage ? base.eq('stage', original.stage) : base.is('stage', null))
       clearCacheForStages(user.id, [stageKey(original.stage), stageKey(updated.stage)])
       wordEntriesStore.patchSessionData(user.id, (prev) => {
-        const next = prev.map((x) => (isSameWordEntry(x, original) ? updated : x))
-        writeCacheByStage(user.id, next)
-        return next
+        return prev.map((x) => (isSameWordEntry(x, original) ? updated : x))
       })
       // Renaming unit/lesson/word changes the wordKey — carry adaptive-plan
       // progress to the new key (only when the old key truly left the vocab).
@@ -308,10 +480,6 @@ export function useWordData(user: User | null) {
       try {
         await deleteWordRow(w)
         clearCacheForStages(user.id, [stageKey(w.stage)])
-        wordEntriesStore.patchSessionData(user.id, (prev) => {
-          writeCacheByStage(user.id, prev)
-          return prev
-        })
         const remaining = wordEntriesStore.getSessionData(user.id) ?? []
         await archiveAdaptiveProgressForDeletedKeys(
           user.id,
@@ -337,10 +505,6 @@ export function useWordData(user: User | null) {
         const { error } = await supabase.from('word_entries').delete().eq('stage', stage)
         if (error) throw error
         clearCacheForStages(user.id, [stageKey(stage)])
-        wordEntriesStore.patchSessionData(user.id, (prev) => {
-          writeCacheByStage(user.id, prev)
-          return prev
-        })
         const remaining = wordEntriesStore.getSessionData(user.id) ?? []
         await archiveAdaptiveProgressForDeletedKeys(
           user.id,
@@ -361,11 +525,9 @@ export function useWordData(user: User | null) {
       await supabase.from('word_entries').update({ stage: newStage }).eq('stage', oldStage)
       clearCacheForStages(user.id, [stageKey(oldStage), stageKey(newStage)])
       wordEntriesStore.patchSessionData(user.id, (prev) => {
-        const next = prev.map((x) =>
+        return prev.map((x) =>
           (x.stage ?? '') === oldStage ? { ...x, stage: newStage } : x,
         )
-        writeCacheByStage(user.id, next)
-        return next
       })
     },
     [user],

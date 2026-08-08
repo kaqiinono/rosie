@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 import { useAuth, supabase } from '@rosie/core'
@@ -19,12 +19,16 @@ import { type PlayerTrack } from '@rosie/player'
 export default function ReadingIndexPage() {
   const { user } = useAuth()
   const { weeklyPlan, isLoading } = useWeeklyPlan(user)
-  const { vocab, masteryMap } = useWordsContext()
+  const { vocab, masteryMap, selStage } = useWordsContext()
   const { hasAudio, uploadPassageAudio } = useReadingPassageMedia(user)
   const player = usePlaylistPlayer()
 
   // 选中集（用于"播放选中"）
   const [queueKeys, setQueueKeys] = useState<string[]>([])
+
+  useEffect(() => {
+    setQueueKeys([])
+  }, [selStage])
 
   const focusKey = weeklyPlan?.focusLessonKey ?? null
   const parsedFocus = useMemo(
@@ -32,10 +36,15 @@ export default function ReadingIndexPage() {
     [focusKey],
   )
 
+  // Single-textbook: only passages for the header-selected stage.
+  const stagePassages = useMemo(
+    () => (selStage ? readingPassages.filter((p) => p.stage === selStage) : []),
+    [selStage],
+  )
+
   const cards = useMemo(() => {
     const num = (s: string) => parseInt(s.match(/\d+/)?.[0] ?? '0', 10)
-    const sorted = [...readingPassages].sort((a, b) => {
-      if (a.stage !== b.stage) return b.stage.localeCompare(a.stage)
+    const sorted = [...stagePassages].sort((a, b) => {
       if (a.unit !== b.unit) return num(b.unit) - num(a.unit)
       return num(b.lesson) - num(a.lesson)
     })
@@ -59,13 +68,13 @@ export default function ReadingIndexPage() {
         isFocus,
       }
     })
-  }, [vocab, masteryMap, parsedFocus])
+  }, [stagePassages, vocab, masteryMap, parsedFocus])
 
   // 直接从 reading 自己的课文构建播放曲目（reading_passage_media / 'reading' bucket），
   // 按 passage key 建索引。不依赖 audio 模块的收藏夹聚合，连播留在 reading 自己范围内。
   const trackByKey = useMemo(() => {
     const map = new Map<string, PlayerTrack>()
-    for (const p of readingPassages) {
+    for (const p of stagePassages) {
       if (!hasAudio(p.key)) continue
       const { data } = supabase.storage
         .from(READING_AUDIO_BUCKET)
@@ -80,13 +89,14 @@ export default function ReadingIndexPage() {
       })
     }
     return map
-  }, [hasAudio])
+  }, [stagePassages, hasAudio])
 
   const audiobookKeys = useMemo(
-    () => readingPassages.filter((p) => hasAudio(p.key)).map((p) => p.key),
-    [hasAudio],
+    () => stagePassages.filter((p) => hasAudio(p.key)).map((p) => p.key),
+    [stagePassages, hasAudio],
   )
 
+  // Drop selection that belongs to another textbook after a stage switch.
   const selectedKeys = queueKeys.filter((k) => audiobookKeys.includes(k))
   const hasSelection = selectedKeys.length > 0
 
@@ -115,7 +125,7 @@ export default function ReadingIndexPage() {
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
         <h1 className="font-fredoka shrink-0 text-xl font-bold text-[var(--wm-text)] sm:text-2xl">
-          📚 阅读课文
+          📚 阅读课文{selStage ? ` · ${selStage}` : ''}
         </h1>
         <div className="flex items-center gap-2 sm:ml-auto">
           <button
@@ -149,8 +159,14 @@ export default function ReadingIndexPage() {
       {cards.length === 0 ? (
         <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-gray-200">
           <div className="mb-2 text-4xl">📭</div>
-          <div className="font-bold text-gray-800">还没有课文</div>
-          <div className="mt-1 text-[12px] text-gray-500">敬请期待新课文上线。</div>
+          <div className="font-bold text-gray-800">
+            {selStage ? `${selStage} 还没有课文` : '还没有课文'}
+          </div>
+          <div className="mt-1 text-[12px] text-gray-500">
+            {selStage
+              ? '可在顶部切换其它教材，或等待本册课文上线。'
+              : '敬请期待新课文上线。'}
+          </div>
         </div>
       ) : (
         <ul className="space-y-3">

@@ -15,6 +15,8 @@ type VocabRangeFilterProps = {
   stageMode: StageMode
   selectedStages: string | Set<string>
   onStagesChange: (value: string | Set<string>) => void
+  /** Hide the stage chip row (textbook switching lives in the page header). */
+  showStages?: boolean
   stageLabel?: string
   requireStage?: boolean
   emptyStagesShowAllLessons?: boolean
@@ -54,6 +56,7 @@ export default function VocabRangeFilter({
   stageMode,
   selectedStages,
   onStagesChange,
+  showStages = true,
   stageLabel,
   requireStage = false,
   emptyStagesShowAllLessons = false,
@@ -152,7 +155,7 @@ export default function VocabRangeFilter({
       selectedLessons.has(lessonCompositeKey(lesson.unit, lesson.lesson)),
     )
 
-  const stageSection = stages.length > 0 && (
+  const stageSection = showStages && stages.length > 0 && (
     variant === 'bar' ? (
       <FilterRow label="Stage">
         <div className="flex flex-1 flex-wrap gap-1.5">

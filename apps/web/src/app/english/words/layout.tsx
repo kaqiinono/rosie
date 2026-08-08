@@ -82,7 +82,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
 export default function WordsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <WordsProvider>
+    <WordsProvider vocabScope="stage">
       <LayoutInner>{children}</LayoutInner>
     </WordsProvider>
   )

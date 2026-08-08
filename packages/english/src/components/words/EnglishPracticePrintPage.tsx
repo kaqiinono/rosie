@@ -107,7 +107,7 @@ function runPrint(title: string) {
 }
 
 export default function EnglishPracticePrintPage() {
-  const { vocab, masteryMap } = useWordsContext()
+  const { vocab, masteryMap, selStage, setSelStage, isVocabLoading } = useWordsContext()
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -117,6 +117,15 @@ export default function EnglishPracticePrintPage() {
   }, [])
 
   const stage = searchParams.get('stage') ?? '4A'
+
+  // Vocab is loaded per textbook — make sure the active one matches the print
+  // request (the print tab may open with a different stage persisted).
+  useEffect(() => {
+    if (stage !== selStage) setSelStage(stage)
+  }, [stage, selStage, setSelStage])
+
+  const stageReady = stage === selStage && !isVocabLoading
+
   const selUnits = useMemo(
     () => parsePrintUnits(searchParams.get('units')),
     [searchParams],
@@ -179,7 +188,7 @@ export default function EnglishPracticePrintPage() {
     }
   }, [title, hasPrintContent])
 
-  if (!vocab.length) {
+  if (!stageReady) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-stone-500">
         加载词库中…

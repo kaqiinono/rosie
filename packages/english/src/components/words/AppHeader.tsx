@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
+import { useWordsContext } from '../../WordsContext'
 
 interface AppHeaderProps {
   onImmersive: () => void
@@ -21,6 +22,7 @@ export default function AppHeader({ onImmersive }: AppHeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { user } = useAuth()
+  const { availableStages, selStage, setSelStage, isVocabLoading } = useWordsContext()
   const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
 
@@ -32,6 +34,38 @@ export default function AppHeader({ onImmersive }: AppHeaderProps) {
             📚 {username ?? 'Rosie'} Fun
           </div>
         </Link>
+
+        {availableStages.length > 0 && (
+          <div
+            className="flex items-center gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1"
+            role="group"
+            aria-label="切换教材"
+          >
+            <span className="hidden px-1.5 text-[.7rem] font-extrabold text-[var(--wm-text-dim)] sm:inline">
+              📗 教材
+            </span>
+            {availableStages.map((stage) => {
+              const active = stage === selStage
+              return (
+                <button
+                  key={stage}
+                  type="button"
+                  onClick={() => setSelStage(stage)}
+                  disabled={active}
+                  title={`切换到 ${stage}`}
+                  className={`font-nunito flex shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-[9px] px-2.5 py-1.5 text-[0.8rem] font-bold transition-all ${
+                    active
+                      ? 'bg-gradient-to-br from-[#0ea5e9] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(99,102,241,.35)]'
+                      : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
+                  } ${active && isVocabLoading ? 'animate-pulse' : ''}`}
+                >
+                  {stage}
+                  {active && isVocabLoading && <span aria-hidden>·</span>}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         <nav className="flex gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1">
           {TABS.map((t) => {

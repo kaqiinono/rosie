@@ -11,7 +11,6 @@ import { CardsGrid } from '@rosie/english'
 export default function CardsPage() {
   const {
     vocab, filteredWords, masteryMap,
-    selStage, setSelStage,
     selUnits, setSelUnits,
     selLessons, setSelLessons,
     selWords, setSelWords,
@@ -108,8 +107,7 @@ export default function CardsPage() {
     <>
       <FilterBar
         vocab={vocab}
-        selStage={selStage}
-        onSetStage={setSelStage}
+        showStageFilter={false}
         selUnits={selUnits}
         selLessons={selLessons}
         selWords={selWords}

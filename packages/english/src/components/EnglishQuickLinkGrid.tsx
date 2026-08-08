@@ -1,8 +1,8 @@
 'use client'
 
-import { useAuth } from '@rosie/core'
+import { useEffect, useState } from 'react'
+import { supabase, useAuth } from '@rosie/core'
 import { useEnglishWrong } from '../hooks/useEnglishWrong'
-import { useWordData } from '../hooks/useWordData'
 import EnglishQuickLinkCard from './EnglishQuickLinkCard'
 
 const BASE = '/english/words'
@@ -53,8 +53,23 @@ const STATIC_LINKS = [
 export default function EnglishQuickLinkGrid() {
   const { user } = useAuth()
   const { wrongKeys } = useEnglishWrong(user)
-  const { vocab } = useWordData(user)
+  // Only a total count is needed for the badge — never pull the full vocab.
+  const [wordCount, setWordCount] = useState(0)
   const hardCount = wrongKeys.size
+
+  useEffect(() => {
+    if (!user) return
+    let cancelled = false
+    void supabase
+      .from('word_entries')
+      .select('word', { count: 'exact', head: true })
+      .then(({ count }) => {
+        if (!cancelled) setWordCount(count ?? 0)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
 
   return (
     <div className="grid grid-cols-2 items-stretch gap-4 min-[501px]:gap-5 min-[768px]:grid-cols-3">
@@ -85,7 +100,7 @@ export default function EnglishQuickLinkGrid() {
         border="rgba(245,158,11,.35)"
         shadow="0 4px 20px rgba(245,158,11,.12)"
         text="#92400e"
-        badge={vocab.length > 0 ? String(vocab.length) : undefined}
+        badge={wordCount > 0 ? String(wordCount) : undefined}
       />
     </div>
   )
