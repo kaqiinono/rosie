@@ -259,8 +259,6 @@ export function useStageIndex(user: User | null): StageIndex {
   useEffect(() => {
     if (!userId) return
     purgeLegacyFullCache()
-    const cached = readCachedStageIndex(userId)
-    if (cached) setIndex(cached)
     let cancelled = false
     void fetchStageIndex()
       .then((fresh) => {

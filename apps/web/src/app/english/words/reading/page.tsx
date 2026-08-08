@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 import { useAuth, supabase } from '@rosie/core'
@@ -23,12 +23,8 @@ export default function ReadingIndexPage() {
   const { hasAudio, uploadPassageAudio } = useReadingPassageMedia(user)
   const player = usePlaylistPlayer()
 
-  // 选中集（用于"播放选中"）
+  // 选中集（用于"播放选中"）。切教材后 audiobookKeys 会变，下面 selectedKeys 自动丢掉跨册项。
   const [queueKeys, setQueueKeys] = useState<string[]>([])
-
-  useEffect(() => {
-    setQueueKeys([])
-  }, [selStage])
 
   const focusKey = weeklyPlan?.focusLessonKey ?? null
   const parsedFocus = useMemo(

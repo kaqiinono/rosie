@@ -116,20 +116,15 @@ export function WordsProvider({
     [stageMode, indexStages, vocab],
   )
 
-  // Keep a valid localStorage pick; otherwise default to the newest book
-  // (availableStages[0] via compareStages). Never hardcode e.g. 4A.
-  useEffect(() => {
-    if (availableStages.length === 0) return
-    if (availableStages.includes(selStage)) return
+  // Snap invalid/missing pick to the newest textbook during render
+  // (avoids setState-in-effect). availableStages[0] is latest via compareStages.
+  if (availableStages.length > 0 && (!selStage || !availableStages.includes(selStage))) {
     const latest = availableStages[0]
     setSelStageState(latest)
     try {
       localStorage.setItem(STORAGE_KEYS.ENGLISH_SEL_STAGE, latest)
     } catch { /* ignore */ }
-    setSelUnitsRaw(new Set())
-    setSelLessons(new Set())
-    setSelWords(new Set())
-  }, [availableStages, selStage])
+  }
 
   const { masteryMap, recordBatch: recordBatchRaw, recordRecallAttempt: recordRecallRaw } = useWordMastery(user)
   const { addWrong, markResolved } = useEnglishWrong(user)

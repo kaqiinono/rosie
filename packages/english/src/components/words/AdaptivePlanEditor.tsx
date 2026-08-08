@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { todayStr, useAuth, type WordEntry } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -67,13 +67,11 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
   const [previewSelectedDate, setPreviewSelectedDate] = useState<string | null>(null)
 
   // Default to the newest textbook once vocab stages are known.
-  useEffect(() => {
-    if (allStages.length === 0) return
-    if (selectedStage && allStages.includes(selectedStage)) return
+  if (allStages.length > 0 && (!selectedStage || !allStages.includes(selectedStage))) {
     setSelectedStage(allStages[0])
     setSelectedUnits(new Set())
     setSelectedLessonKeys(new Set())
-  }, [allStages, selectedStage])
+  }
 
   const handleNewWordsPerDayChange = (n: number) => {
     const next = clampNewWordsPerDay(n)

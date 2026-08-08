@@ -250,7 +250,6 @@ export function TodayPlanOverviewCards({
   }, [])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshSync()
     const onVis = () => {
       if (document.visibilityState === 'visible') refreshSync()

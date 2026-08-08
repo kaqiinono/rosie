@@ -83,14 +83,12 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // arrange-step state
   const [draftDays, setDraftDays] = useState<WeeklyPlanDay[]>([])
   const [unassignedKeys, setUnassignedKeys] = useState<string[]>([])
-  const [carryoverCount, setCarryoverCount] = useState(0)
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set())
   // drag-and-drop state: dragOverIdx uses -1 for the unassigned pool, 0..N-1 for day rows
   const [draggedKeys, setDraggedKeys] = useState<string[] | null>(null)
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
 
   const orderedLessons = useMemo(() => getOrderedLessons(vocab), [vocab])
-  const suggestedLesson = useMemo(() => orderedLessons[0] ?? null, [orderedLessons])
 
   const allStages = useMemo(() => getAllStages(vocab), [vocab])
 
@@ -336,6 +334,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
           (!latest || o.stage === latest),
       ),
     )
+    // Reset create-form state when vocab/stages become ready (external load).
+    /* eslint-disable react-hooks/set-state-in-effect -- hydrate form from cache after plans finish loading */
     setSelectedStage(latest)
     setPendingLessons(cached)
     setSelectedUnits(new Set(cached.map((c) => c.unit)))
@@ -348,12 +348,14 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     setEditingPlanStart(null)
     setEditArrangeBaselineKey(null)
     setStep('params')
+    /* eslint-enable react-hooks/set-state-in-effect */
     applySuggestedDateRange(todayStr())
   }, [isLoading, editPlanId, orderedLessonsFull, allStages, applySuggestedDateRange])
 
   useEffect(() => {
     if (!editPlanId || isLoading) return
     const plan = allPlans.find(p => p.id === editPlanId)
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- open editor once plan id + plans are ready
     if (plan) openEditPlan(plan)
   }, [editPlanId, isLoading, allPlans, openEditPlan])
 
@@ -420,7 +422,6 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       await savePlan(plan)
       saveCachedLessons(activeLessons)
       saveCachedStages(selectedStage ? [selectedStage] : [])
-      setCarryoverCount(0)
       setIsEditingPlan(false)
       setEditingPlan(null)
       setEditingPlanStart(null)
@@ -480,7 +481,6 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       const assigned = new Set(editingPlan.days.flatMap(d => d.newWordKeys))
       const un = [...wordSet].filter(k => !assigned.has(k))
       setUnassignedKeys(un)
-      setCarryoverCount(0)
       setSelectedKeys(new Set())
       setStep('arrange')
       return

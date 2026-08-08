@@ -9,7 +9,7 @@ import { ImmersiveMode } from '@rosie/english'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { vocab, filteredWords, setSelUnits, setSelLessons, setSelWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
+  const { vocab, filteredWords, practiceTypes, recordBatch, previewCards, setPreviewCards, practiceButtonStyle } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
 
   useEffect(() => {
