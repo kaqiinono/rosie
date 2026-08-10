@@ -62,19 +62,42 @@ CREATE TABLE knowledge_documents (
 );
 
 -- 知识片段（Embedding 后的向量块）
+-- 冗余 user_id 用于简化 RLS 策略并提升查询性能
+-- 系统内置数据（db_sync）user_id 为 NULL，手动导入数据关联实际用户
 CREATE TABLE knowledge_chunks (
   id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   document_id uuid NOT NULL REFERENCES knowledge_documents(id) ON DELETE CASCADE,
+  user_id     uuid REFERENCES auth.users(id),  -- NULL = 系统内置数据
   subject     text NOT NULL,
   chunk_index smallint NOT NULL,
   content     text NOT NULL,
-  embedding   vector(1536),
+  embedding   vector(1536),  -- 维度取决于 Embedding 模型，当前以 1536 为基准；若后续模型变更需迁移
+  content_tsv tsvector,      -- 全文检索向量（用于 Hybrid Search）
   metadata    jsonb DEFAULT '{}' NOT NULL,
   created_at  timestamptz DEFAULT now()
 );
 
+-- 索引策略说明：
+-- 初期数据量小时（< 几万条），使用 HNSW 索引（精确检索，无需预热）
+-- 数据量增长后可切换为 IVFFlat（需 REINDEX 重建）
 CREATE INDEX knowledge_chunks_embedding_idx
-  ON knowledge_chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+  ON knowledge_chunks USING hnsw (embedding vector_cosine_ops);
+
+-- 全文检索索引（支持 Hybrid Search）
+CREATE INDEX knowledge_chunks_tsv_idx
+  ON knowledge_chunks USING gin (content_tsv);
+
+-- tsvector 自动更新触发器
+CREATE OR REPLACE FUNCTION update_content_tsv() RETURNS trigger AS $$
+BEGIN
+  NEW.content_tsv := to_tsvector('simple', NEW.content);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_content_tsv
+  BEFORE INSERT OR UPDATE ON knowledge_chunks
+  FOR EACH ROW EXECUTE FUNCTION update_content_tsv();
 
 -- 知识导入记录
 CREATE TABLE knowledge_imports (
@@ -157,24 +180,57 @@ CREATE TABLE ai_training_plans (
 );
 ```
 
-### 向量检索函数
+### 已有依赖表结构参考
+
+弱项分析和智能出题依赖以下已有表，此处列出关键字段供参考（完整结构见 `0001_baseline.sql`）：
+
+**掌握度表（mastery）**：
+
+| 表名 | 学科 | 关键字段 |
+|------|------|--------|
+| `word_mastery` | 英语 | `user_id`, `word_key`, `correct`, `incorrect`, `stage`, `next_review_date`, `is_hard` |
+| `problem_mastery` | 数学 | `user_id`, `problem_key`, `correct`, `incorrect`, `stage`, `next_review_date`, `is_hard` |
+| `chinese_char_mastery` | 语文 | `user_id`, `char_key`, `track`(recognize/write), `correct`, `incorrect`, `stage`, `next_review_date`, `is_hard` |
+
+**错题表（wrong）**：
+
+| 表名 | 学科 | 关键字段 |
+|------|------|--------|
+| `english_wrong` | 英语 | `user_id`, `word_key`, `added_at`, `resolved` |
+| `math_wrong` | 数学 | `user_id`, `problem_id`, `added_at`, `resolved` |
+| `chinese_wrong_items` | 语文 | `user_id`, `item_key`, `item_type`(char/phrase/accumulation/poem), `wrong_kind`, `resolved` |
+| `calc_mistakes` | 口算 | `user_id`, `signature`, `category`(addsub/muldiv/mixed), `consecutive_correct`, `resolved` |
+
+**弱项分析逻辑**：通过聚合上述表的 `is_hard`、`correct/(correct+incorrect)`、`resolved`、`last_seen` 等字段，结合知识库 chunks 检索，生成个性化训练任务。
+
+### 向量检索函数（Hybrid Search）
+
+支持向量相似度 + 全文检索混合检索，解决孩子搜索精确词汇（如特定单词、古诗名）时纯向量检索遗漏的问题。
 
 ```sql
 CREATE OR REPLACE FUNCTION search_knowledge(
-  query_embedding vector(1536),
+  query_embedding vector(1536),        -- 查询向量
+  query_text text DEFAULT NULL,         -- 原文关键词（用于全文检索）
   match_subject text DEFAULT NULL,
   match_grade smallint DEFAULT NULL,
   match_count int DEFAULT 10,
-  match_threshold float DEFAULT 0.7
+  match_threshold float DEFAULT 0.7,
+  text_weight float DEFAULT 0.3,        -- 全文检索权重（0-1）
+  vector_weight float DEFAULT 0.7       -- 向量检索权重（0-1）
 ) RETURNS TABLE (
   chunk_id uuid,
   document_id uuid,
   subject text,
   content text,
   metadata jsonb,
-  similarity float
-);
+  similarity float                       -- 加权综合分数
+)
 ```
+
+**Hybrid Search 策略**：
+- `query_text` 为空时：退化为纯向量检索
+- `query_text` 非空时：同时执行向量检索和 `tsvector` 全文检索，按 `vector_weight` / `text_weight` 加权合并排序
+- 去重：同一 chunk 被两种方式命中时取最高分
 
 ## 知识来源映射
 
@@ -192,6 +248,15 @@ CREATE OR REPLACE FUNCTION search_knowledge(
 - **结构化数据**（单词、汉字）：粒度细，每条记录 = 1 chunk，保留完整元数据
 - **长文本**（课文、导入文档）：按 300-500 字分块，相邻块有 50 字重叠
 - **数学题目**：按课时聚合，一个课时的所有题目 + 知识点摘要 = 1-2 chunks
+
+### 重叠区域处理
+
+长文本分块的 50 字重叠策略需要注意语意完整性：
+
+1. **句级对齐**：分块边界优先在句号/换行处切分，避免在词中间截断
+2. **重叠内容**：相邻 chunk 的重叠区域保留完整句子（而非固定 50 字硬切），确保上下文连贯
+3. **元数据继承**：重叠区域的元数据（如 grade、unit、lesson）由所属 document 统一继承，不因重叠而丢失
+4. **检索去重**：当同一文档的多个 chunk 被检索命中时，在应用层合并去重，避免重复内容干扰 LLM
 
 ## PDF 导入管道
 
@@ -251,13 +316,22 @@ npx tsx scripts/extract-pdf.ts \
 
 ### 表格检测
 
-启发式规则判断页面是否含表格：
+采用**两层检测**策略，减少误判导致的昂贵 Vision LLM 调用：
+
+**第一层：文本启发式规则（快速过滤）**
 - 文字中出现大量制表符/多空格分隔
 - 多行具有相似的列结构（≥ 3 列）
 - 包含"表格""合计""总计"等关键词
 - 文字密度异常（表格页通常文字少但排列规整）
 
-满足 ≥ 2 个信号则判定为含表格页，交由视觉 LLM 处理。
+**第二层：坐标布局分析（精确判定）**
+- 利用 `pdf-parse` 返回的文字绝对坐标（x, y 位置）
+- 分析行距均匀性：表格行的 y 坐标间距趋于等距
+- 分析列对齐：多行文字在相同 x 坐标处出现对齐断点
+- 检测网格线：页面中存在水平/垂直线条（部分 PDF 保留线条矢量信息）
+
+**判定逻辑**：第一层 ≥ 2 个信号命中 → 进入第二层坐标分析 → 坐标分析确认后才触发 Vision LLM。
+这种两层策略可有效过滤教材中常见的「看图填空」「情景图片」等密集排版页面的误判。
 
 ### 视觉 LLM 提取 Prompt
 
@@ -439,13 +513,17 @@ interface WeaknessAnalysis {
          RAG 检索相关知识
               │
               ▼
-         LLM 生成训练题目（每科 3-5 题）
+         SSE 流式逐科生成：
+           ├─ 英语完成 → 即时返回英语卡片
+           ├─ 数学完成 → 即时返回数学卡片
+           └─ 语文完成 → 即时返回语文卡片
               │
               ▼
-         写入 ai_training_plans
+         每科写入 ai_training_plans（按科分条）
               │
               ▼
-         首页显示「今日训练」卡片
+         首页显示「今日寻宝任务」卡片
+         （正向激励话术，不显示“弱项”字样）
 ```
 
 ## API 设计
@@ -506,7 +584,29 @@ Response: `{ quizId, subject, questions: [...] }`
 
 Request: `{ "date": "string (optional)" }`
 
-Response: `{ planId, planDate, subjects: [{ subject, weakPoints, questions }], totalQuestions }`
+**异步处理模式**（避免 Vercel 60s 超时）：
+
+该接口内部涉及「查询多科 mastery/wrong 数据 → RAG 检索 → LLM 生成 3 科题目 → 写入数据库」的长链路调用，在 Vercel Serverless 上极大概率超过 60s 限制。
+
+**采用 SSE 流式 + 分科返回策略**：
+
+```
+前端发起 POST → 服务端 SSE 流式响应
+  event: progress { subject: "english", status: "generating" }
+  event: subject_done { subject: "english", plan: {...}, questions: [...] }
+  event: progress { subject: "math", status: "generating" }
+  event: subject_done { subject: "math", plan: {...}, questions: [...] }
+  event: progress { subject: "chinese", status: "generating" }
+  event: subject_done { subject: "chinese", plan: {...}, questions: [...] }
+  event: done { totalQuestions: 9 }
+```
+
+- 每科独立生成并即时返回，避免等待全部完成
+- 前端收到每科数据后立即渲染对应科目卡片
+- 任一科失败不影响其他科，错误通过 `event: error` 事件返回
+- 写入 `ai_training_plans` 表按科分条创建
+
+Response（最终）: `{ plans: [{ subject, weakPoints, questions }], totalQuestions }`
 
 ### `POST /api/ai/training/complete`
 
@@ -561,9 +661,22 @@ Response: `{ results: [{ table, recordsProcessed, chunksCreated, errors }] }`
 
 ### 每日训练卡片（首页）
 
-- 显示 AI 识别的薄弱点摘要
+**儿童友好话术设计**：
+
+不直接展示「你的弱项是...」等挫败性语言，采用正向激励包装：
+
+| 内部概念 | 面向孩子的展示 |
+|---------|-------------|
+| 薄弱项 | 「技能升级挑战」「今日寻宝任务」 |
+| 正确率低 | 「快要掌握了，再练一练！」 |
+| 频繁出错 | 「这个知识点很调皮，我们一起攻克它！」 |
+| 遗忘退化 | 「好久没见面了，复习一下还记得吗？」 |
+
+卡片内容：
+- 显示今日挑战任务摘要（如「3 个寻宝任务等你完成！」）
+- 每个科目用 emoji + 鼓励语展示（如「🔢 数学：退位减法大冒险！」）
 - 显示待训练题目总数
-- 一键「开始训练」按钮
+- 一键「开始挑战」按钮
 
 ## 技术依赖
 
