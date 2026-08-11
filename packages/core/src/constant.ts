@@ -9,7 +9,15 @@ export const FRUIT_ITEMS: FruitItem[] = [
   { emoji: '🥝', name: '猕猴桃' },
 ]
 
-export const CONFETTI_COLORS = ['#f97316', '#ef4444', '#eab308', '#22c55e', '#3b82f6', '#a855f7', '#ec4899']
+export const CONFETTI_COLORS = [
+  '#f97316',
+  '#ef4444',
+  '#eab308',
+  '#22c55e',
+  '#3b82f6',
+  '#a855f7',
+  '#ec4899',
+]
 
 export const CONGRATS_MESSAGES = [
   { emoji: '🎉', title: '太棒了！', sub: '答对了！继续加油！' },
@@ -20,6 +28,10 @@ export const CONGRATS_MESSAGES = [
 ]
 
 export const STORAGE_KEYS = {
+  /** 当前浏览器标签页中的 AI 对话，仅用于恢复会话上下文。 */
+  AI_CONVERSATION_ID: 'ai-conversation-id-v1',
+  /** 当前浏览器标签页中的显式教学会话，不保存孩子的作答内容。 */
+  AI_TEACHING_SESSION_ID: 'ai-teaching-session-id-v1',
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
   ENGLISH_SEL_STAGE: 'english-sel-stage',
   ENGLISH_SEL_UNITS: 'english-sel-units',
@@ -134,7 +146,5 @@ export function pickMessage(
   vars: { word?: string; name?: string } = {},
 ): string {
   const tpl = pool[Math.floor(Math.random() * pool.length)]
-  return tpl
-    .replace('{word}', vars.word ?? '')
-    .replace('{name}', vars.name ?? '')
+  return tpl.replace('{word}', vars.word ?? '').replace('{name}', vars.name ?? '')
 }

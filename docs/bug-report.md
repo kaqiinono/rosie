@@ -131,3 +131,16 @@ sed did what you intended.
 7. Verify: `pnpm --filter @rosie/<x> typecheck` → `pnpm --filter web typecheck` → `pnpm build`
    → **open the affected pages in a browser** and look at them.
 8. Write `packages/<x>/CLAUDE.md`; commit.
+
+---
+
+## 8. Non-blocking diagnostics resolved (2026-08-11)
+
+These diagnostics were initially deferred, then resolved during the cleanup phase:
+
+- The 11 Web lint warnings were fixed (typographic Chinese quotes and one unused destructure).
+- Package lint now disables `@next/next/no-html-link-for-pages`; routes intentionally live only in
+  `apps/web`, so `@rosie/ai` no longer emits a missing-pages-directory notice.
+- Vitest now models jsdom canvas `getContext()` as a valid null result. This removes the noisy
+  not-implemented log without adding the native `canvas` dependency or pretending to render pixels.
+- Final verification: Web lint and AI lint have zero warnings/errors; 50 test files and 345 tests pass.

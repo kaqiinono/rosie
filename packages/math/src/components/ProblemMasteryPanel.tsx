@@ -128,14 +128,13 @@ export default function ProblemMasteryPanel({
       })
       .filter((r) => r.m != null || r.count > 0 || r.practiceStatus === 'wrong')
       .sort((a, b) => {
-        if (a.graduated && !b.graduated) return 1
-        if (!a.graduated && b.graduated) return -1
-        const statusRank = (s: PracticeStatus) => (s === 'wrong' ? 0 : s === 'unseen' ? 1 : 2)
-        const sr = statusRank(a.practiceStatus) - statusRank(b.practiceStatus)
-        if (sr !== 0) return sr
-        const da = a.m?.nextReviewDate ?? '9999-12-31'
-        const db = b.m?.nextReviewDate ?? '9999-12-31'
-        return da.localeCompare(db)
+        // 按练习时间倒序：最近练习的排最前；未练习的排最后
+        const ta = a.practiceTime ?? ''
+        const tb = b.practiceTime ?? ''
+        if (ta && tb) return tb.localeCompare(ta)
+        if (ta) return -1
+        if (tb) return 1
+        return a.p.key.localeCompare(b.p.key)
       })
   }, [problems, masteryMap, solveCount, solvedAt, wrongIds, today])
 

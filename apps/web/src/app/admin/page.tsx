@@ -16,6 +16,15 @@ interface AdminTool {
 
 const TOOLS: AdminTool[] = [
   {
+    href: '/admin/users',
+    emoji: '👥',
+    title: '用户管理',
+    description: '管理账户邮箱与恢复邮箱、管理员权限、密码重置和用户注销。',
+    from: 'rgba(99,102,241,0.14)',
+    to: 'rgba(168,85,247,0.10)',
+    ring: 'rgba(99,102,241,0.28)',
+  },
+  {
     href: '/admin/awards',
     emoji: '🎁',
     title: '星星与奖券',

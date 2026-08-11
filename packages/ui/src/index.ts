@@ -1,7 +1,11 @@
 // @rosie/ui — shared presentational components (chrome, buttons, backgrounds).
 export { default as AccountBar } from './AccountBar'
+export { default as AnalysisImage } from './AnalysisImage'
+export { default as ProblemSolutionView } from './ProblemSolutionView'
+export type { SolutionPanelVariant } from './ProblemSolutionView'
 export { default as ArrowIcon } from './ArrowIcon'
 export { default as AuthGuard } from './AuthGuard'
+export { default as AdminGuard } from './AdminGuard'
 export { default as BackLink } from './BackLink'
 export { default as LoadingOverlay } from './LoadingOverlay'
 export { default as ModuleCard } from './ModuleCard'

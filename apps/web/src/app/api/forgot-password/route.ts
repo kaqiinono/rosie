@@ -10,7 +10,9 @@ function getAdminClient(): SupabaseClient {
     if (!url || !key) {
       throw new Error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required')
     }
-    adminClient = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
+    adminClient = createClient(url, key, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    })
   }
   return adminClient
 }
@@ -30,19 +32,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '请填写用户名和恢复邮箱' }, { status: 400 })
   }
 
-  if (!username || !recoveryEmail) {
+  if (!username || !recoveryEmail || username.length > 100 || recoveryEmail.length > 254) {
     return NextResponse.json({ error: '请填写用户名和恢复邮箱' }, { status: 400 })
   }
 
   const fakeEmail = `${username.trim().toLowerCase()}@rosie.app`
 
   // Find the user by fake email
-  const { data: { users }, error: listError } = await getAdminClient().auth.admin.listUsers()
+  const {
+    data: { users },
+    error: listError,
+  } = await getAdminClient().auth.admin.listUsers()
   if (listError) {
     return NextResponse.json({ error: '服务器错误' }, { status: 500 })
   }
 
-  const user = users.find(u => u.email === fakeEmail)
+  const user = users.find((u) => u.email === fakeEmail)
   if (!user) {
     // Use same status/message as email mismatch to prevent enumeration
     return NextResponse.json(GENERIC_ERROR, { status: 403 })
@@ -55,7 +60,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Generate a password reset link
-  const origin = req.headers.get('origin') ?? ''
+  const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin
   const { data, error: linkError } = await getAdminClient().auth.admin.generateLink({
     type: 'recovery',
     email: fakeEmail,

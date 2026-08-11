@@ -19,7 +19,10 @@ async function serialLock<R>(name: string, fn: () => Promise<R>): Promise<R> {
   const prior = lockChains.get(name) ?? Promise.resolve()
   // Chain onto prior regardless of its outcome so one failed refresh can't wedge the queue.
   const run = prior.then(fn, fn)
-  lockChains.set(name, run.catch(() => undefined))
+  lockChains.set(
+    name,
+    run.catch(() => undefined),
+  )
   return run
 }
 
@@ -27,7 +30,9 @@ const supabaseAuthOptions = {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    // Password-recovery links return credentials in the URL. Supabase must
+    // consume them before the reset page can receive PASSWORD_RECOVERY.
+    detectSessionInUrl: true,
     lock: async <R>(name: string, _acquireTimeout: number, fn: () => Promise<R>) =>
       serialLock(name, fn),
   },
@@ -60,12 +65,30 @@ export type Database = {
   public: {
     Tables: {
       math_solved: {
-        Row: { id: string; user_id: string; problem_id: string; solved_at: string; solve_count: number }
+        Row: {
+          id: string
+          user_id: string
+          problem_id: string
+          solved_at: string
+          solve_count: number
+        }
         Insert: { user_id: string; problem_id: string; solved_at?: string; solve_count?: number }
       }
       math_wrong: {
-        Row: { user_id: string; problem_id: string; added_at: string; resolved: boolean; resolved_at: string | null }
-        Insert: { user_id: string; problem_id: string; added_at?: string; resolved?: boolean; resolved_at?: string | null }
+        Row: {
+          user_id: string
+          problem_id: string
+          added_at: string
+          resolved: boolean
+          resolved_at: string | null
+        }
+        Insert: {
+          user_id: string
+          problem_id: string
+          added_at?: string
+          resolved?: boolean
+          resolved_at?: string | null
+        }
       }
       math_skipped: {
         Row: {
@@ -185,8 +208,20 @@ export type Database = {
         }
       }
       english_wrong: {
-        Row: { user_id: string; word_key: string; added_at: string; resolved: boolean; resolved_at: string | null }
-        Insert: { user_id: string; word_key: string; added_at?: string; resolved?: boolean; resolved_at?: string | null }
+        Row: {
+          user_id: string
+          word_key: string
+          added_at: string
+          resolved: boolean
+          resolved_at: string | null
+        }
+        Insert: {
+          user_id: string
+          word_key: string
+          added_at?: string
+          resolved?: boolean
+          resolved_at?: string | null
+        }
       }
       weekly_plans: {
         Row: {

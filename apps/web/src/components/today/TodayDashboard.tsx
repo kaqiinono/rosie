@@ -405,7 +405,7 @@ export default function TodayDashboard() {
         : `/english/words/weekly/${englishPlan.id}/practice`
       : '/english/words/daily'
 
-  const overviewCards = buildTodayPlanCards({
+  const allOverviewCards = buildTodayPlanCards({
     calc: {
       done: calcDoneCount,
       target: calcTargetCount,
@@ -460,11 +460,20 @@ export default function TodayDashboard() {
     },
   })
 
+  // Hide subject cards when no plan/data — same filter as useTodayPlanOverview.
+  const overviewVisibility: Record<string, boolean> = {
+    calc: true,
+    english: hasEnglish,
+    math: !!hasMath,
+    chinese: hasChinese,
+  }
+  const overviewCards = allOverviewCards.filter((c) => overviewVisibility[c.key])
+
   return (
     <div className="mx-auto max-w-[640px] px-4 pb-12">
 
-      {/* Stats cards row */}
-      {(hasMath || hasEnglish || hasChinese) && (
+      {/* Stats cards row — calc is always present */}
+      {overviewCards.length > 0 && (
         <>
           {resetToast && (
             <div

@@ -9,6 +9,8 @@ export type PassageRecorderProps = {
   bookSlug: ChineseBookSlug
   lessonKey: string
   lessonTitle: string
+  /** Stops an in-flight recording when the containing surface is hidden. */
+  active?: boolean
 }
 
 type RecorderPhase = 'idle' | 'starting' | 'recording' | 'preview' | 'uploading' | 'saved'
@@ -27,11 +29,17 @@ function preferredMimeType(): string | undefined {
   if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) return 'audio/webm;codecs=opus'
   if (MediaRecorder.isTypeSupported('audio/webm')) return 'audio/webm'
   if (MediaRecorder.isTypeSupported('audio/mp4')) return 'audio/mp4'
-  if (MediaRecorder.isTypeSupported('audio/mp4;codecs=mp4a.40.2')) return 'audio/mp4;codecs=mp4a.40.2'
+  if (MediaRecorder.isTypeSupported('audio/mp4;codecs=mp4a.40.2'))
+    return 'audio/mp4;codecs=mp4a.40.2'
   return undefined
 }
 
-export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: PassageRecorderProps) {
+export default function PassageRecorder({
+  bookSlug,
+  lessonKey,
+  lessonTitle,
+  active = true,
+}: PassageRecorderProps) {
   const { user } = useAuth()
   const { uploadRecording } = useChineseReadingRecordings(user)
 
@@ -165,6 +173,10 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
     }
   }, [resetToIdle])
 
+  useEffect(() => {
+    if (!active) stopRecording()
+  }, [active, stopRecording])
+
   const startRecording = useCallback(async () => {
     if (startInFlightRef.current) return
     startInFlightRef.current = true
@@ -281,16 +293,7 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       savedTimeoutRef.current = null
       if (mountedRef.current) resetToIdle()
     }, 1200)
-  }, [
-    blob,
-    bookSlug,
-    elapsedMs,
-    lessonKey,
-    lessonTitle,
-    mimeType,
-    resetToIdle,
-    uploadRecording,
-  ])
+  }, [blob, bookSlug, elapsedMs, lessonKey, lessonTitle, mimeType, resetToIdle, uploadRecording])
 
   if (hydrated && !supported) {
     return (
@@ -305,7 +308,7 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       <div className="mb-2 flex items-center justify-between gap-2">
         <p className="text-[11px] font-bold text-amber-800">朗读录音（可选）</p>
         {(phase === 'recording' || phase === 'preview' || phase === 'uploading') && (
-          <span className="tabular-nums text-[11px] font-bold text-amber-700">
+          <span className="text-[11px] font-bold text-amber-700 tabular-nums">
             {formatElapsed(elapsedMs)}
           </span>
         )}
@@ -368,9 +371,7 @@ export default function PassageRecorder({ bookSlug, lessonKey, lessonTitle }: Pa
       {capNote && (
         <p className="mt-2 text-center text-[11px] font-semibold text-amber-800">{capNote}</p>
       )}
-      {error && (
-        <p className="mt-2 text-center text-[11px] font-semibold text-rose-600">{error}</p>
-      )}
+      {error && <p className="mt-2 text-center text-[11px] font-semibold text-rose-600">{error}</p>}
     </div>
   )
 }

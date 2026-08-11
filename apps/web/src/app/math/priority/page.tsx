@@ -102,7 +102,7 @@ function OverviewPanel() {
 
       <Card href="/math/sea?lessons=36">
         <TopicTitle>🔄 周期问题（第30、36讲）</TopicTitle>
-        <TopicDesc>利用余数求"第X个是什么"、日期星期推算。连接数列规律与实际应用。</TopicDesc>
+        <TopicDesc>利用余数求“第X个是什么”、日期星期推算。连接数列规律与实际应用。</TopicDesc>
         <Tag>余数原理</Tag>
         <Tag>日期推算</Tag>
         <Tag>周期识别</Tag>
@@ -150,7 +150,7 @@ function OverviewPanel() {
 
       <Card>
         <TopicTitle>📦 抽屉原理（第46讲）</TopicTitle>
-        <TopicDesc>"最不利情况＋1"模型，解决"至少保证"类问题。</TopicDesc>
+        <TopicDesc>“最不利情况＋1”模型，解决“至少保证”类问题。</TopicDesc>
         <Tag>最不利原则</Tag>
         <Tag>保证类问题</Tag>
       </Card>
@@ -259,7 +259,7 @@ const priorityItems = [
 function PriorityPanel() {
   return (
     <div>
-      <Tip>📌 根据"目标班独有"程度、应用题模型密度、覆盖讲次数，综合排定优先级。</Tip>
+      <Tip>📌 根据“目标班独有”程度、应用题模型密度、覆盖讲次数，综合排定优先级。</Tip>
       <div className="mt-3.5">
         {priorityItems.map((item) => (
           <div

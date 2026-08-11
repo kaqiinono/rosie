@@ -318,13 +318,13 @@ export default function WordFormModal({
             <div
               className="flex flex-wrap items-center gap-2 rounded-lg px-3 py-2 text-[12px]"
               style={
-                enrichInfo.source === 'claude'
+                enrichInfo.source === 'ai'
                   ? { background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.30)', color: '#4338ca' }
                   : { background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.35)', color: '#92400e' }
               }
             >
               <span className="rounded-full bg-white/70 px-2 py-0.5 font-extrabold">
-                {enrichInfo.source === 'claude' ? `🤖 Claude（${enrichInfo.model ?? 'AI'}）` : '📖 免费词典 (dictionaryapi.dev)'}
+                {enrichInfo.source === 'ai' ? `🤖 百炼（${enrichInfo.model ?? 'AI'}）` : '📖 免费词典 (dictionaryapi.dev)'}
               </span>
               <span className="font-bold">已填入下方字段，请确认或修改后再添加。</span>
               {enrichInfo.note && <span className="opacity-80">{enrichInfo.note}</span>}

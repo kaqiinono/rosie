@@ -322,7 +322,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
     for (const item of paper.problems) {
       const entry = PROBLEM_MAP.get(item.problemId)
       if (!entry) continue
-      const { problem, section } = entry
+      const { problem } = entry
       const working = workingMap.get(item.problemId)
 
       if (isInteractiveProblem(problem)) {

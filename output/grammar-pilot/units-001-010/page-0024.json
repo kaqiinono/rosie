@@ -1,0 +1,5833 @@
+{
+  "cacheKey": "6d2bf1cfa185da11ca967a9467820a53bb4ae48cf5591196b1abce6a93136f51",
+  "pdfPage": 24,
+  "image": "page-0024.png",
+  "textFile": "page-0024.txt",
+  "tsvFile": "page-0024.tsv",
+  "dimensions": {
+    "width": 2096,
+    "height": 3152
+  },
+  "stats": {
+    "characters": 1546,
+    "words": 331,
+    "lines": 98,
+    "meanConfidence": 88.55,
+    "lowConfidenceWords": 28
+  },
+  "warnings": [
+    "fill_blank_layout_present"
+  ],
+  "lines": [
+    {
+      "text": "Exercises",
+      "confidence": 96.6,
+      "bbox": {
+        "x": 25,
+        "y": 56,
+        "width": 357,
+        "height": 70
+      },
+      "words": [
+        {
+          "text": "Exercises",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 25,
+            "y": 56,
+            "width": 357,
+            "height": 70
+          },
+          "block": 1,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Unit 2",
+      "confidence": 95.8,
+      "bbox": {
+        "x": 1754,
+        "y": 62,
+        "width": 215,
+        "height": 64
+      },
+      "words": [
+        {
+          "text": "Unit",
+          "confidence": 95.8,
+          "bbox": {
+            "x": 1754,
+            "y": 63,
+            "width": 138,
+            "height": 58
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "2",
+          "confidence": 95.8,
+          "bbox": {
+            "x": 1928,
+            "y": 62,
+            "width": 41,
+            "height": 64
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "给 下 列 问题 找 出 恰当 的 回答",
+      "confidence": 91.73,
+      "bbox": {
+        "x": 157,
+        "y": 180,
+        "width": 534,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "给",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 157,
+            "y": 180,
+            "width": 35,
+            "height": 23
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "下",
+          "confidence": 93.22,
+          "bbox": {
+            "x": 215,
+            "y": 183,
+            "width": 47,
+            "height": 37
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "列",
+          "confidence": 92.23,
+          "bbox": {
+            "x": 269,
+            "y": 181,
+            "width": 37,
+            "height": 40
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "问题",
+          "confidence": 96.22,
+          "bbox": {
+            "x": 307,
+            "y": 181,
+            "width": 111,
+            "height": 41
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "找",
+          "confidence": 93.07,
+          "bbox": {
+            "x": 434,
+            "y": 189,
+            "width": 4,
+            "height": 14
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "出",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 440,
+            "y": 182,
+            "width": 19,
+            "height": 37
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "恰当",
+          "confidence": 68.02,
+          "bbox": {
+            "x": 479,
+            "y": 180,
+            "width": 70,
+            "height": 42
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "的",
+          "confidence": 96.4,
+          "bbox": {
+            "x": 573,
+            "y": 191,
+            "width": 24,
+            "height": 32
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "回答",
+          "confidence": 92.87,
+          "bbox": {
+            "x": 625,
+            "y": 180,
+            "width": 66,
+            "height": 39
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2.1",
+      "confidence": 93.07,
+      "bbox": {
+        "x": 25,
+        "y": 186,
+        "width": 47,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "2.1",
+          "confidence": 93.07,
+          "bbox": {
+            "x": 25,
+            "y": 186,
+            "width": 47,
+            "height": 32
+          },
+          "block": 3,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "A London",
+      "confidence": 95,
+      "bbox": {
+        "x": 840,
+        "y": 259,
+        "width": 197,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "A",
+          "confidence": 95,
+          "bbox": {
+            "x": 840,
+            "y": 260,
+            "width": 31,
+            "height": 31
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "London",
+          "confidence": 95,
+          "bbox": {
+            "x": 889,
+            "y": 259,
+            "width": 148,
+            "height": 33
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Where’s the camera?",
+      "confidence": 94.74,
+      "bbox": {
+        "x": 234,
+        "y": 260,
+        "width": 383,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "Where’s",
+          "confidence": 91.19,
+          "bbox": {
+            "x": 234,
+            "y": 260,
+            "width": 149,
+            "height": 34
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.63,
+          "bbox": {
+            "x": 399,
+            "y": 260,
+            "width": 56,
+            "height": 34
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "camera?",
+          "confidence": 96.4,
+          "bbox": {
+            "x": 471,
+            "y": 262,
+            "width": 146,
+            "height": 32
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "B No, I’m not",
+      "confidence": 86.59,
+      "bbox": {
+        "x": 840,
+        "y": 313,
+        "width": 279,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "B",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 840,
+            "y": 317,
+            "width": 27,
+            "height": 31
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "No,",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 890,
+            "y": 317,
+            "width": 60,
+            "height": 32
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 62.15,
+          "bbox": {
+            "x": 982,
+            "y": 313,
+            "width": 53,
+            "height": 45
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 94.98,
+          "bbox": {
+            "x": 1057,
+            "y": 324,
+            "width": 62,
+            "height": 25
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Is your car blue?",
+      "confidence": 96.75,
+      "bbox": {
+        "x": 230,
+        "y": 316,
+        "width": 305,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Is",
+          "confidence": 96.98,
+          "bbox": {
+            "x": 230,
+            "y": 319,
+            "width": 27,
+            "height": 31
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 271,
+            "y": 329,
+            "width": 88,
+            "height": 32
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "car",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 373,
+            "y": 329,
+            "width": 54,
+            "height": 21
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "blue?",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 440,
+            "y": 316,
+            "width": 95,
+            "height": 34
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Is Linda from London?",
+      "confidence": 95.9,
+      "bbox": {
+        "x": 230,
+        "y": 373,
+        "width": 429,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "Is",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 230,
+            "y": 375,
+            "width": 27,
+            "height": 32
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Linda",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 272,
+            "y": 373,
+            "width": 104,
+            "height": 34
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "from",
+          "confidence": 95.21,
+          "bbox": {
+            "x": 391,
+            "y": 373,
+            "width": 90,
+            "height": 34
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "London?",
+          "confidence": 95.21,
+          "bbox": {
+            "x": 495,
+            "y": 374,
+            "width": 164,
+            "height": 33
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "C Yes, you are",
+      "confidence": 95.29,
+      "bbox": {
+        "x": 841,
+        "y": 373,
+        "width": 281,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "C",
+          "confidence": 92.89,
+          "bbox": {
+            "x": 841,
+            "y": 373,
+            "width": 31,
+            "height": 33
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Yes,",
+          "confidence": 95.12,
+          "bbox": {
+            "x": 888,
+            "y": 373,
+            "width": 68,
+            "height": 33
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 982,
+            "y": 384,
+            "width": 71,
+            "height": 32
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 1069,
+            "y": 384,
+            "width": 53,
+            "height": 21
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Am I late?",
+      "confidence": 90.22,
+      "bbox": {
+        "x": 228,
+        "y": 430,
+        "width": 191,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "Am",
+          "confidence": 95.99,
+          "bbox": {
+            "x": 228,
+            "y": 431,
+            "width": 69,
+            "height": 32
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 78.33,
+          "bbox": {
+            "x": 313,
+            "y": 432,
+            "width": 11,
+            "height": 31
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "late?",
+          "confidence": 96.34,
+          "bbox": {
+            "x": 340,
+            "y": 430,
+            "width": 79,
+            "height": 33
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "D My sister",
+      "confidence": 95.42,
+      "bbox": {
+        "x": 840,
+        "y": 430,
+        "width": 220,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "D",
+          "confidence": 93.23,
+          "bbox": {
+            "x": 840,
+            "y": 430,
+            "width": 33,
+            "height": 31
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "My",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 889,
+            "y": 430,
+            "width": 65,
+            "height": 42
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sister",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 968,
+            "y": 437,
+            "width": 92,
+            "height": 25
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "E Black",
+      "confidence": 94.68,
+      "bbox": {
+        "x": 838,
+        "y": 484,
+        "width": 155,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "E",
+          "confidence": 92.58,
+          "bbox": {
+            "x": 838,
+            "y": 486,
+            "width": 27,
+            "height": 31
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Black",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 888,
+            "y": 484,
+            "width": 105,
+            "height": 34
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Where’s Ann from?",
+      "confidence": 94.58,
+      "bbox": {
+        "x": 228,
+        "y": 486,
+        "width": 370,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "Where’s",
+          "confidence": 90.71,
+          "bbox": {
+            "x": 228,
+            "y": 486,
+            "width": 155,
+            "height": 34
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Ann",
+          "confidence": 96.35,
+          "bbox": {
+            "x": 397,
+            "y": 487,
+            "width": 80,
+            "height": 32
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "from?",
+          "confidence": 96.68,
+          "bbox": {
+            "x": 493,
+            "y": 486,
+            "width": 105,
+            "height": 34
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "F No, it’s black",
+      "confidence": 95.43,
+      "bbox": {
+        "x": 841,
+        "y": 540,
+        "width": 300,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "F",
+          "confidence": 92.77,
+          "bbox": {
+            "x": 841,
+            "y": 542,
+            "width": 22,
+            "height": 32
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "No,",
+          "confidence": 95.74,
+          "bbox": {
+            "x": 890,
+            "y": 542,
+            "width": 60,
+            "height": 32
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it’s",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 978,
+            "y": 549,
+            "width": 51,
+            "height": 25
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "black",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 1044,
+            "y": 540,
+            "width": 97,
+            "height": 34
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "What colour is your bag?",
+      "confidence": 96.66,
+      "bbox": {
+        "x": 227,
+        "y": 542,
+        "width": 453,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "What",
+          "confidence": 96.65,
+          "bbox": {
+            "x": 227,
+            "y": 542,
+            "width": 102,
+            "height": 34
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "colour",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 342,
+            "y": 542,
+            "width": 116,
+            "height": 34
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 469,
+            "y": 555,
+            "width": 24,
+            "height": 21
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 505,
+            "y": 555,
+            "width": 86,
+            "height": 31
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bag?",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 603,
+            "y": 542,
+            "width": 77,
+            "height": 45
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "G In your bag",
+      "confidence": 95.56,
+      "bbox": {
+        "x": 841,
+        "y": 597,
+        "width": 268,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "G",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 841,
+            "y": 598,
+            "width": 32,
+            "height": 33
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "In",
+          "confidence": 96.01,
+          "bbox": {
+            "x": 890,
+            "y": 599,
+            "width": 38,
+            "height": 31
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 941,
+            "y": 609,
+            "width": 90,
+            "height": 32
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bag",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 1043,
+            "y": 597,
+            "width": 66,
+            "height": 45
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Are you hungry?",
+      "confidence": 96.53,
+      "bbox": {
+        "x": 228,
+        "y": 599,
+        "width": 316,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "Are",
+          "confidence": 96.61,
+          "bbox": {
+            "x": 228,
+            "y": 601,
+            "width": 67,
+            "height": 31
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 309,
+            "y": 611,
+            "width": 71,
+            "height": 32
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "hungry?",
+          "confidence": 96.43,
+          "bbox": {
+            "x": 395,
+            "y": 599,
+            "width": 149,
+            "height": 44
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "H No, she’s American",
+      "confidence": 95.74,
+      "bbox": {
+        "x": 840,
+        "y": 654,
+        "width": 420,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "H",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 840,
+            "y": 655,
+            "width": 36,
+            "height": 32
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "No,",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 890,
+            "y": 655,
+            "width": 60,
+            "height": 32
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "she’s",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 978,
+            "y": 654,
+            "width": 85,
+            "height": 33
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "American",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1077,
+            "y": 655,
+            "width": 183,
+            "height": 32
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "How is George?",
+      "confidence": 96.18,
+      "bbox": {
+        "x": 230,
+        "y": 657,
+        "width": 303,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "How",
+          "confidence": 96.07,
+          "bbox": {
+            "x": 230,
+            "y": 657,
+            "width": 94,
+            "height": 32
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.07,
+          "bbox": {
+            "x": 339,
+            "y": 667,
+            "width": 25,
+            "height": 22
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "George?",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 380,
+            "y": 657,
+            "width": 153,
+            "height": 42
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "I Very well",
+      "confidence": 91.76,
+      "bbox": {
+        "x": 841,
+        "y": 710,
+        "width": 231,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "I",
+          "confidence": 89.51,
+          "bbox": {
+            "x": 841,
+            "y": 712,
+            "width": 12,
+            "height": 31
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Very",
+          "confidence": 89.51,
+          "bbox": {
+            "x": 888,
+            "y": 711,
+            "width": 92,
+            "height": 43
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well",
+          "confidence": 96.27,
+          "bbox": {
+            "x": 993,
+            "y": 710,
+            "width": 79,
+            "height": 34
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Who’s that woman?",
+      "confidence": 80.87,
+      "bbox": {
+        "x": 227,
+        "y": 712,
+        "width": 378,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "Who’s",
+          "confidence": 50.21,
+          "bbox": {
+            "x": 227,
+            "y": 712,
+            "width": 123,
+            "height": 34
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "that",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 366,
+            "y": 712,
+            "width": 69,
+            "height": 33
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "woman?",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 449,
+            "y": 713,
+            "width": 156,
+            "height": 32
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "出 疑 间 各",
+      "confidence": 52.75,
+      "bbox": {
+        "x": 478,
+        "y": 818,
+        "width": 169,
+        "height": 53
+      },
+      "words": [
+        {
+          "text": "出",
+          "confidence": 93.08,
+          "bbox": {
+            "x": 478,
+            "y": 822,
+            "width": 165,
+            "height": 41
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "疑",
+          "confidence": 87.75,
+          "bbox": {
+            "x": 536,
+            "y": 818,
+            "width": 41,
+            "height": 53
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "间",
+          "confidence": 7.03,
+          "bbox": {
+            "x": 576,
+            "y": 818,
+            "width": 34,
+            "height": 53
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "各",
+          "confidence": 23.12,
+          "bbox": {
+            "x": 609,
+            "y": 818,
+            "width": 38,
+            "height": 53
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "根据 下 列 词 语 写",
+      "confidence": 90.84,
+      "bbox": {
+        "x": 159,
+        "y": 821,
+        "width": 301,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "根据",
+          "confidence": 93.68,
+          "bbox": {
+            "x": 159,
+            "y": 821,
+            "width": 123,
+            "height": 42
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "下",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 295,
+            "y": 835,
+            "width": 9,
+            "height": 25
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "列",
+          "confidence": 93.06,
+          "bbox": {
+            "x": 301,
+            "y": 822,
+            "width": 40,
+            "height": 41
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "词",
+          "confidence": 82.31,
+          "bbox": {
+            "x": 354,
+            "y": 824,
+            "width": 41,
+            "height": 40
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "语",
+          "confidence": 92.72,
+          "bbox": {
+            "x": 397,
+            "y": 824,
+            "width": 40,
+            "height": 39
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "写",
+          "confidence": 90.04,
+          "bbox": {
+            "x": 437,
+            "y": 824,
+            "width": 23,
+            "height": 36
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2.2",
+      "confidence": 91.87,
+      "bbox": {
+        "x": 25,
+        "y": 827,
+        "width": 52,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "2.2",
+          "confidence": 91.87,
+          "bbox": {
+            "x": 25,
+            "y": 827,
+            "width": 52,
+            "height": 32
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Is your mother at home",
+      "confidence": 87.35,
+      "bbox": {
+        "x": 868,
+        "y": 887,
+        "width": 445,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "Is",
+          "confidence": 67.71,
+          "bbox": {
+            "x": 868,
+            "y": 888,
+            "width": 29,
+            "height": 31
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 910,
+            "y": 897,
+            "width": 83,
+            "height": 32
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "mother",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 1008,
+            "y": 887,
+            "width": 136,
+            "height": 32
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 1158,
+            "y": 891,
+            "width": 43,
+            "height": 28
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "home",
+          "confidence": 79.15,
+          "bbox": {
+            "x": 1216,
+            "y": 888,
+            "width": 97,
+            "height": 31
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(is / at home / your mother)",
+      "confidence": 94.57,
+      "bbox": {
+        "x": 205,
+        "y": 899,
+        "width": 537,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "(is",
+          "confidence": 93.27,
+          "bbox": {
+            "x": 205,
+            "y": 900,
+            "width": 36,
+            "height": 42
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.08,
+          "bbox": {
+            "x": 267,
+            "y": 901,
+            "width": 8,
+            "height": 32
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.38,
+          "bbox": {
+            "x": 292,
+            "y": 908,
+            "width": 31,
+            "height": 25
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "home",
+          "confidence": 93.28,
+          "bbox": {
+            "x": 337,
+            "y": 899,
+            "width": 105,
+            "height": 34
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.28,
+          "bbox": {
+            "x": 459,
+            "y": 901,
+            "width": 18,
+            "height": 32
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 492,
+            "y": 912,
+            "width": 89,
+            "height": 32
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "mother)",
+          "confidence": 95.78,
+          "bbox": {
+            "x": 594,
+            "y": 899,
+            "width": 148,
+            "height": 44
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Are your parents well",
+      "confidence": 95.69,
+      "bbox": {
+        "x": 867,
+        "y": 943,
+        "width": 401,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "Are",
+          "confidence": 95.46,
+          "bbox": {
+            "x": 867,
+            "y": 943,
+            "width": 64,
+            "height": 32
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 95.46,
+          "bbox": {
+            "x": 944,
+            "y": 953,
+            "width": 83,
+            "height": 32
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "parents",
+          "confidence": 95.82,
+          "bbox": {
+            "x": 1043,
+            "y": 948,
+            "width": 148,
+            "height": 37
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well",
+          "confidence": 96,
+          "bbox": {
+            "x": 1206,
+            "y": 943,
+            "width": 62,
+            "height": 32
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(your parents / are / well)",
+      "confidence": 94.35,
+      "bbox": {
+        "x": 205,
+        "y": 956,
+        "width": 485,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "(your",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 205,
+            "y": 957,
+            "width": 99,
+            "height": 43
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "parents",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 316,
+            "y": 965,
+            "width": 131,
+            "height": 36
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 464,
+            "y": 958,
+            "width": 17,
+            "height": 32
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 93.17,
+          "bbox": {
+            "x": 498,
+            "y": 969,
+            "width": 53,
+            "height": 21
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.17,
+          "bbox": {
+            "x": 567,
+            "y": 958,
+            "width": 17,
+            "height": 32
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well)",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 600,
+            "y": 956,
+            "width": 90,
+            "height": 44
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(interesting / is / your job)",
+      "confidence": 94.24,
+      "bbox": {
+        "x": 205,
+        "y": 1013,
+        "width": 501,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(interesting",
+          "confidence": 93.23,
+          "bbox": {
+            "x": 205,
+            "y": 1014,
+            "width": 207,
+            "height": 43
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.23,
+          "bbox": {
+            "x": 427,
+            "y": 1014,
+            "width": 17,
+            "height": 32
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 460,
+            "y": 1025,
+            "width": 25,
+            "height": 21
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.37,
+          "bbox": {
+            "x": 502,
+            "y": 1015,
+            "width": 17,
+            "height": 31
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 534,
+            "y": 1025,
+            "width": 89,
+            "height": 31
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "job)",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 630,
+            "y": 1013,
+            "width": 76,
+            "height": 44
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(the shops / are / open today)",
+      "confidence": 94.65,
+      "bbox": {
+        "x": 204,
+        "y": 1069,
+        "width": 560,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(the",
+          "confidence": 96.28,
+          "bbox": {
+            "x": 204,
+            "y": 1069,
+            "width": 69,
+            "height": 43
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "shops",
+          "confidence": 93.22,
+          "bbox": {
+            "x": 289,
+            "y": 1069,
+            "width": 100,
+            "height": 44
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.15,
+          "bbox": {
+            "x": 405,
+            "y": 1071,
+            "width": 18,
+            "height": 32
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 439,
+            "y": 1082,
+            "width": 54,
+            "height": 21
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.03,
+          "bbox": {
+            "x": 509,
+            "y": 1071,
+            "width": 17,
+            "height": 32
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "open",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 543,
+            "y": 1081,
+            "width": 92,
+            "height": 32
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "today)",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 650,
+            "y": 1069,
+            "width": 114,
+            "height": 44
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(from / where / you / are)",
+      "confidence": 93.36,
+      "bbox": {
+        "x": 205,
+        "y": 1125,
+        "width": 501,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(from",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 205,
+            "y": 1125,
+            "width": 102,
+            "height": 43
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 321,
+            "y": 1127,
+            "width": 18,
+            "height": 32
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "where",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 355,
+            "y": 1125,
+            "width": 115,
+            "height": 34
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.88,
+          "bbox": {
+            "x": 487,
+            "y": 1127,
+            "width": 17,
+            "height": 32
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 93.27,
+          "bbox": {
+            "x": 520,
+            "y": 1138,
+            "width": 70,
+            "height": 31
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 91,
+          "bbox": {
+            "x": 608,
+            "y": 1127,
+            "width": 16,
+            "height": 33
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are)",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 641,
+            "y": 1127,
+            "width": 65,
+            "height": 42
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(interested in sport / you / are)",
+      "confidence": 94.63,
+      "bbox": {
+        "x": 205,
+        "y": 1178,
+        "width": 582,
+        "height": 52
+      },
+      "words": [
+        {
+          "text": "(interested",
+          "confidence": 96.63,
+          "bbox": {
+            "x": 205,
+            "y": 1182,
+            "width": 192,
+            "height": 43
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "in",
+          "confidence": 96.42,
+          "bbox": {
+            "x": 411,
+            "y": 1194,
+            "width": 35,
+            "height": 21
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sport",
+          "confidence": 93.06,
+          "bbox": {
+            "x": 461,
+            "y": 1191,
+            "width": 91,
+            "height": 35
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.06,
+          "bbox": {
+            "x": 568,
+            "y": 1183,
+            "width": 17,
+            "height": 32
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 601,
+            "y": 1194,
+            "width": 71,
+            "height": 32
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.16,
+          "bbox": {
+            "x": 677,
+            "y": 1178,
+            "width": 18,
+            "height": 52
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are)",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 722,
+            "y": 1183,
+            "width": 65,
+            "height": 42
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(is / near here / the post office)",
+      "confidence": 94.92,
+      "bbox": {
+        "x": 205,
+        "y": 1239,
+        "width": 593,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(is",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 205,
+            "y": 1239,
+            "width": 36,
+            "height": 42
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 258,
+            "y": 1240,
+            "width": 17,
+            "height": 32
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "near",
+          "confidence": 96.34,
+          "bbox": {
+            "x": 292,
+            "y": 1251,
+            "width": 79,
+            "height": 21
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "here",
+          "confidence": 93.1,
+          "bbox": {
+            "x": 385,
+            "y": 1239,
+            "width": 80,
+            "height": 33
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.1,
+          "bbox": {
+            "x": 482,
+            "y": 1240,
+            "width": 16,
+            "height": 32
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 97.01,
+          "bbox": {
+            "x": 516,
+            "y": 1239,
+            "width": 56,
+            "height": 33
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "post",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 587,
+            "y": 1247,
+            "width": 77,
+            "height": 36
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "office)",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 679,
+            "y": 1239,
+            "width": 119,
+            "height": 42
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(at school / are / your children)",
+      "confidence": 94.61,
+      "bbox": {
+        "x": 204,
+        "y": 1295,
+        "width": 595,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(at",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 204,
+            "y": 1295,
+            "width": 44,
+            "height": 43
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "school",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 262,
+            "y": 1295,
+            "width": 119,
+            "height": 33
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 397,
+            "y": 1297,
+            "width": 17,
+            "height": 32
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 92.83,
+          "bbox": {
+            "x": 431,
+            "y": 1307,
+            "width": 53,
+            "height": 21
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.47,
+          "bbox": {
+            "x": 501,
+            "y": 1297,
+            "width": 17,
+            "height": 32
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.9,
+          "bbox": {
+            "x": 533,
+            "y": 1307,
+            "width": 89,
+            "height": 32
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "children)",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 636,
+            "y": 1295,
+            "width": 163,
+            "height": 43
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(you / are / late / why)",
+      "confidence": 93.71,
+      "bbox": {
+        "x": 205,
+        "y": 1347,
+        "width": 440,
+        "height": 52
+      },
+      "words": [
+        {
+          "text": "(you",
+          "confidence": 93.27,
+          "bbox": {
+            "x": 205,
+            "y": 1352,
+            "width": 81,
+            "height": 43
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.23,
+          "bbox": {
+            "x": 291,
+            "y": 1347,
+            "width": 19,
+            "height": 52
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 337,
+            "y": 1364,
+            "width": 52,
+            "height": 21
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 407,
+            "y": 1353,
+            "width": 16,
+            "height": 31
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "late",
+          "confidence": 93.27,
+          "bbox": {
+            "x": 439,
+            "y": 1351,
+            "width": 64,
+            "height": 34
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.11,
+          "bbox": {
+            "x": 520,
+            "y": 1353,
+            "width": 17,
+            "height": 32
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "why)",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 553,
+            "y": 1351,
+            "width": 92,
+            "height": 44
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| How ..",
+      "confidence": 72.41,
+      "bbox": {
+        "x": 813,
+        "y": 1431,
+        "width": 154,
+        "height": 54
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 65.52,
+          "bbox": {
+            "x": 813,
+            "y": 1435,
+            "width": 10,
+            "height": 45
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "How",
+          "confidence": 75.86,
+          "bbox": {
+            "x": 840,
+            "y": 1439,
+            "width": 125,
+            "height": 35
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "..",
+          "confidence": 75.86,
+          "bbox": {
+            "x": 930,
+            "y": 1431,
+            "width": 37,
+            "height": 54
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "完成 下 列 问",
+      "confidence": 86.17,
+      "bbox": {
+        "x": 1001,
+        "y": 1431,
+        "width": 216,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "完成",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 1001,
+            "y": 1435,
+            "width": 213,
+            "height": 42
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "下",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 1110,
+            "y": 1431,
+            "width": 39,
+            "height": 55
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "列",
+          "confidence": 93.03,
+          "bbox": {
+            "x": 1148,
+            "y": 1431,
+            "width": 42,
+            "height": 55
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "问",
+          "confidence": 61.92,
+          "bbox": {
+            "x": 1189,
+            "y": 1431,
+            "width": 28,
+            "height": 55
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| Who",
+      "confidence": 92.04,
+      "bbox": {
+        "x": 392,
+        "y": 1435,
+        "width": 120,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 87.88,
+          "bbox": {
+            "x": 392,
+            "y": 1435,
+            "width": 23,
+            "height": 45
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Who",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 428,
+            "y": 1439,
+            "width": 84,
+            "height": 35
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| Where",
+      "confidence": 86.53,
+      "bbox": {
+        "x": 582,
+        "y": 1436,
+        "width": 161,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 76.9,
+          "bbox": {
+            "x": 582,
+            "y": 1436,
+            "width": 11,
+            "height": 44
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Where",
+          "confidence": 96.15,
+          "bbox": {
+            "x": 608,
+            "y": 1439,
+            "width": 135,
+            "height": 35
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "用 What",
+      "confidence": 96.36,
+      "bbox": {
+        "x": 159,
+        "y": 1437,
+        "width": 164,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "用",
+          "confidence": 96.26,
+          "bbox": {
+            "x": 159,
+            "y": 1437,
+            "width": 30,
+            "height": 38
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "What",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 227,
+            "y": 1439,
+            "width": 96,
+            "height": 34
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "1 fi,",
+      "confidence": 38.37,
+      "bbox": {
+        "x": 1207,
+        "y": 1437,
+        "width": 77,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 54.32,
+          "bbox": {
+            "x": 1207,
+            "y": 1437,
+            "width": 7,
+            "height": 39
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "fi,",
+          "confidence": 22.41,
+          "bbox": {
+            "x": 1227,
+            "y": 1438,
+            "width": 57,
+            "height": 39
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "2.3",
+      "confidence": 93.93,
+      "bbox": {
+        "x": 25,
+        "y": 1441,
+        "width": 53,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "2.3",
+          "confidence": 93.93,
+          "bbox": {
+            "x": 25,
+            "y": 1441,
+            "width": 53,
+            "height": 32
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "六",
+      "confidence": 33.58,
+      "bbox": {
+        "x": 511,
+        "y": 1510,
+        "width": 57,
+        "height": 54
+      },
+      "words": [
+        {
+          "text": "六",
+          "confidence": 33.58,
+          "bbox": {
+            "x": 511,
+            "y": 1510,
+            "width": 57,
+            "height": 54
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "How are your parents? \\ {Tl hey’re very well \\",
+      "confidence": 82.84,
+      "bbox": {
+        "x": 786,
+        "y": 1562,
+        "width": 1071,
+        "height": 78
+      },
+      "words": [
+        {
+          "text": "How",
+          "confidence": 96.48,
+          "bbox": {
+            "x": 786,
+            "y": 1578,
+            "width": 76,
+            "height": 32
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.48,
+          "bbox": {
+            "x": 875,
+            "y": 1587,
+            "width": 59,
+            "height": 23
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 1002,
+            "y": 1599,
+            "width": 88,
+            "height": 31
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "parents?",
+          "confidence": 84.16,
+          "bbox": {
+            "x": 1103,
+            "y": 1564,
+            "width": 148,
+            "height": 76
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "\\",
+          "confidence": 84.16,
+          "bbox": {
+            "x": 1269,
+            "y": 1568,
+            "width": 20,
+            "height": 68
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "{Tl",
+          "confidence": 43.59,
+          "bbox": {
+            "x": 1342,
+            "y": 1562,
+            "width": 90,
+            "height": 77
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "hey’re",
+          "confidence": 92.74,
+          "bbox": {
+            "x": 1425,
+            "y": 1585,
+            "width": 115,
+            "height": 44
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 1555,
+            "y": 1597,
+            "width": 81,
+            "height": 32
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 1650,
+            "y": 1585,
+            "width": 78,
+            "height": 33
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "\\",
+          "confidence": 40.59,
+          "bbox": {
+            "x": 1780,
+            "y": 1566,
+            "width": 77,
+            "height": 68
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "i",
+      "confidence": 5.79,
+      "bbox": {
+        "x": 158,
+        "y": 1567,
+        "width": 125,
+        "height": 71
+      },
+      "words": [
+        {
+          "text": "i",
+          "confidence": 5.79,
+          "bbox": {
+            "x": 158,
+            "y": 1567,
+            "width": 125,
+            "height": 71
+          },
+          "block": 45,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "At the end of the street",
+      "confidence": 96.65,
+      "bbox": {
+        "x": 1393,
+        "y": 1639,
+        "width": 437,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "At",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 1393,
+            "y": 1641,
+            "width": 45,
+            "height": 31
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 1452,
+            "y": 1639,
+            "width": 57,
+            "height": 34
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "end",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 1526,
+            "y": 1639,
+            "width": 67,
+            "height": 34
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "of",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 1608,
+            "y": 1639,
+            "width": 43,
+            "height": 34
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1659,
+            "y": 1639,
+            "width": 57,
+            "height": 34
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "street",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 1731,
+            "y": 1648,
+            "width": 99,
+            "height": 25
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "the bus stop?",
+      "confidence": 96.69,
+      "bbox": {
+        "x": 1010,
+        "y": 1643,
+        "width": 240,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "the",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 1010,
+            "y": 1643,
+            "width": 57,
+            "height": 33
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bus",
+          "confidence": 97.01,
+          "bbox": {
+            "x": 1081,
+            "y": 1643,
+            "width": 62,
+            "height": 34
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "stop?",
+          "confidence": 96.68,
+          "bbox": {
+            "x": 1158,
+            "y": 1645,
+            "width": 92,
+            "height": 42
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Five, six and ten",
+      "confidence": 96.51,
+      "bbox": {
+        "x": 1394,
+        "y": 1696,
+        "width": 308,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "Five,",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 1394,
+            "y": 1698,
+            "width": 78,
+            "height": 31
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "six",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 1500,
+            "y": 1708,
+            "width": 49,
+            "height": 21
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "and",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 1564,
+            "y": 1696,
+            "width": 66,
+            "height": 33
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "ten",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 1644,
+            "y": 1705,
+            "width": 58,
+            "height": 24
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "your children?",
+      "confidence": 95.83,
+      "bbox": {
+        "x": 981,
+        "y": 1699,
+        "width": 271,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "your",
+          "confidence": 95.84,
+          "bbox": {
+            "x": 981,
+            "y": 1711,
+            "width": 89,
+            "height": 32
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "children?",
+          "confidence": 95.82,
+          "bbox": {
+            "x": 1084,
+            "y": 1699,
+            "width": 168,
+            "height": 34
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "3",
+      "confidence": 59.73,
+      "bbox": {
+        "x": 154,
+        "y": 1700,
+        "width": 20,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "3",
+          "confidence": 59.73,
+          "bbox": {
+            "x": 154,
+            "y": 1700,
+            "width": 20,
+            "height": 32
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "£1.50 a kilo",
+      "confidence": 88.33,
+      "bbox": {
+        "x": 1392,
+        "y": 1752,
+        "width": 234,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "£1.50",
+          "confidence": 74.25,
+          "bbox": {
+            "x": 1392,
+            "y": 1753,
+            "width": 117,
+            "height": 43
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 95.06,
+          "bbox": {
+            "x": 1525,
+            "y": 1765,
+            "width": 17,
+            "height": 21
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "kilo",
+          "confidence": 95.67,
+          "bbox": {
+            "x": 1557,
+            "y": 1752,
+            "width": 69,
+            "height": 34
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "these oranges?",
+      "confidence": 96.61,
+      "bbox": {
+        "x": 983,
+        "y": 1756,
+        "width": 264,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "these",
+          "confidence": 96.72,
+          "bbox": {
+            "x": 983,
+            "y": 1756,
+            "width": 92,
+            "height": 33
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "oranges?",
+          "confidence": 96.5,
+          "bbox": {
+            "x": 1091,
+            "y": 1757,
+            "width": 156,
+            "height": 43
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "4",
+      "confidence": 96.76,
+      "bbox": {
+        "x": 154,
+        "y": 1757,
+        "width": 21,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "4",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 154,
+            "y": 1757,
+            "width": 21,
+            "height": 31
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Skiing",
+      "confidence": 96.7,
+      "bbox": {
+        "x": 1394,
+        "y": 1808,
+        "width": 118,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Skiing",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 1394,
+            "y": 1808,
+            "width": 118,
+            "height": 45
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "your favourite sport?",
+      "confidence": 96.38,
+      "bbox": {
+        "x": 860,
+        "y": 1812,
+        "width": 389,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "your",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 860,
+            "y": 1824,
+            "width": 88,
+            "height": 32
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "favourite",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 962,
+            "y": 1812,
+            "width": 165,
+            "height": 34
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sport?",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 1142,
+            "y": 1814,
+            "width": 107,
+            "height": 42
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "5",
+      "confidence": 96.14,
+      "bbox": {
+        "x": 155,
+        "y": 1813,
+        "width": 18,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "5",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 155,
+            "y": 1813,
+            "width": 18,
+            "height": 32
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "That’s my father",
+      "confidence": 95.27,
+      "bbox": {
+        "x": 1393,
+        "y": 1864,
+        "width": 310,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "That’s",
+          "confidence": 92.6,
+          "bbox": {
+            "x": 1393,
+            "y": 1865,
+            "width": 115,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "my",
+          "confidence": 96.64,
+          "bbox": {
+            "x": 1522,
+            "y": 1877,
+            "width": 60,
+            "height": 32
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "father",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 1596,
+            "y": 1864,
+            "width": 107,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "the man in this photograph?",
+      "confidence": 96.76,
+      "bbox": {
+        "x": 713,
+        "y": 1868,
+        "width": 528,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "the",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 713,
+            "y": 1868,
+            "width": 57,
+            "height": 35
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "man",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 786,
+            "y": 1881,
+            "width": 79,
+            "height": 21
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "in",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 880,
+            "y": 1881,
+            "width": 35,
+            "height": 21
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "this",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 931,
+            "y": 1868,
+            "width": 63,
+            "height": 34
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "photograph?",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 1008,
+            "y": 1868,
+            "width": 233,
+            "height": 45
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "™",
+      "confidence": 55.95,
+      "bbox": {
+        "x": 154,
+        "y": 1915,
+        "width": 120,
+        "height": 77
+      },
+      "words": [
+        {
+          "text": "™",
+          "confidence": 55.95,
+          "bbox": {
+            "x": 154,
+            "y": 1915,
+            "width": 120,
+            "height": 77
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "your new shoe st 5, Bleek",
+      "confidence": 56.74,
+      "bbox": {
+        "x": 941,
+        "y": 1918,
+        "width": 556,
+        "height": 78
+      },
+      "words": [
+        {
+          "text": "your",
+          "confidence": 96.72,
+          "bbox": {
+            "x": 941,
+            "y": 1938,
+            "width": 89,
+            "height": 31
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "new",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 1043,
+            "y": 1938,
+            "width": 80,
+            "height": 20
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "shoe",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 1137,
+            "y": 1925,
+            "width": 83,
+            "height": 34
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "st",
+          "confidence": 0,
+          "bbox": {
+            "x": 1215,
+            "y": 1921,
+            "width": 32,
+            "height": 75
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "5,",
+          "confidence": 25.65,
+          "bbox": {
+            "x": 1342,
+            "y": 1918,
+            "width": 39,
+            "height": 78
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Bleek",
+          "confidence": 24.39,
+          "bbox": {
+            "x": 1400,
+            "y": 1922,
+            "width": 97,
+            "height": 70
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "yy,",
+      "confidence": 0,
+      "bbox": {
+        "x": 1784,
+        "y": 1924,
+        "width": 73,
+        "height": 68
+      },
+      "words": [
+        {
+          "text": "yy,",
+          "confidence": 0,
+          "bbox": {
+            "x": 1784,
+            "y": 1924,
+            "width": 73,
+            "height": 68
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "如",
+      "confidence": 6.66,
+      "bbox": {
+        "x": 1604,
+        "y": 2021,
+        "width": 141,
+        "height": 156
+      },
+      "words": [
+        {
+          "text": "如",
+          "confidence": 6.66,
+          "bbox": {
+            "x": 1604,
+            "y": 2021,
+            "width": 141,
+            "height": 156
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "根据 下 列 提示 和 回答 提问",
+      "confidence": 91.57,
+      "bbox": {
+        "x": 159,
+        "y": 2032,
+        "width": 485,
+        "height": 62
+      },
+      "words": [
+        {
+          "text": "根据",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 159,
+            "y": 2037,
+            "width": 9,
+            "height": 39
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "下",
+          "confidence": 93.13,
+          "bbox": {
+            "x": 263,
+            "y": 2036,
+            "width": 44,
+            "height": 41
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "列",
+          "confidence": 91.61,
+          "bbox": {
+            "x": 316,
+            "y": 2036,
+            "width": 33,
+            "height": 41
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "提示",
+          "confidence": 76.28,
+          "bbox": {
+            "x": 351,
+            "y": 2037,
+            "width": 156,
+            "height": 40
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "和",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 434,
+            "y": 2032,
+            "width": 51,
+            "height": 62
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "回答",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 484,
+            "y": 2032,
+            "width": 90,
+            "height": 62
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "提问",
+          "confidence": 90.36,
+          "bbox": {
+            "x": 578,
+            "y": 2038,
+            "width": 66,
+            "height": 39
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "从",
+      "confidence": 0,
+      "bbox": {
+        "x": 1051,
+        "y": 2038,
+        "width": 137,
+        "height": 143
+      },
+      "words": [
+        {
+          "text": "从",
+          "confidence": 0,
+          "bbox": {
+            "x": 1051,
+            "y": 2038,
+            "width": 137,
+            "height": 143
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "2.4",
+      "confidence": 95.36,
+      "bbox": {
+        "x": 25,
+        "y": 2042,
+        "width": 56,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "2.4",
+          "confidence": 95.36,
+          "bbox": {
+            "x": 25,
+            "y": 2042,
+            "width": 56,
+            "height": 32
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "六、",
+      "confidence": 50.77,
+      "bbox": {
+        "x": 1183,
+        "y": 2153,
+        "width": 171,
+        "height": 125
+      },
+      "words": [
+        {
+          "text": "六、",
+          "confidence": 50.77,
+          "bbox": {
+            "x": 1183,
+            "y": 2153,
+            "width": 171,
+            "height": 125
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "1 f(r name?)",
+      "confidence": 48.08,
+      "bbox": {
+        "x": 158,
+        "y": 2205,
+        "width": 233,
+        "height": 77
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 49.96,
+          "bbox": {
+            "x": 158,
+            "y": 2236,
+            "width": 13,
+            "height": 31
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "f(r",
+          "confidence": 0,
+          "bbox": {
+            "x": 193,
+            "y": 2205,
+            "width": 77,
+            "height": 77
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "name?)",
+          "confidence": 94.27,
+          "bbox": {
+            "x": 263,
+            "y": 2235,
+            "width": 128,
+            "height": 42
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "What’s your name?",
+      "confidence": 93.42,
+      "bbox": {
+        "x": 461,
+        "y": 2218,
+        "width": 361,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "What’s",
+          "confidence": 89,
+          "bbox": {
+            "x": 461,
+            "y": 2219,
+            "width": 129,
+            "height": 32
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 95.63,
+          "bbox": {
+            "x": 603,
+            "y": 2229,
+            "width": 84,
+            "height": 31
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "name?",
+          "confidence": 95.63,
+          "bbox": {
+            "x": 703,
+            "y": 2218,
+            "width": 119,
+            "height": 33
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, I’m Australian",
+      "confidence": 95.01,
+      "bbox": {
+        "x": 1453,
+        "y": 2287,
+        "width": 354,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 96.29,
+          "bbox": {
+            "x": 1453,
+            "y": 2289,
+            "width": 61,
+            "height": 31
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 92.81,
+          "bbox": {
+            "x": 1543,
+            "y": 2289,
+            "width": 64,
+            "height": 31
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Australian",
+          "confidence": 95.92,
+          "bbox": {
+            "x": 1621,
+            "y": 2287,
+            "width": 186,
+            "height": 33
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(American?)",
+      "confidence": 96.16,
+      "bbox": {
+        "x": 251,
+        "y": 2291,
+        "width": 221,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "(American?)",
+          "confidence": 96.16,
+          "bbox": {
+            "x": 251,
+            "y": 2291,
+            "width": 221,
+            "height": 42
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "I’m 30",
+      "confidence": 77.67,
+      "bbox": {
+        "x": 1454,
+        "y": 2340,
+        "width": 123,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "I’m",
+          "confidence": 59.47,
+          "bbox": {
+            "x": 1454,
+            "y": 2340,
+            "width": 54,
+            "height": 46
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "30",
+          "confidence": 95.87,
+          "bbox": {
+            "x": 1532,
+            "y": 2344,
+            "width": 45,
+            "height": 33
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(how old?)",
+      "confidence": 96.47,
+      "bbox": {
+        "x": 251,
+        "y": 2346,
+        "width": 196,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(how",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 251,
+            "y": 2346,
+            "width": 95,
+            "height": 44
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "old?)",
+          "confidence": 96.12,
+          "bbox": {
+            "x": 361,
+            "y": 2346,
+            "width": 86,
+            "height": 44
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, I’m a lawyer",
+      "confidence": 80.84,
+      "bbox": {
+        "x": 1453,
+        "y": 2399,
+        "width": 324,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1453,
+            "y": 2402,
+            "width": 61,
+            "height": 31
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 41.45,
+          "bbox": {
+            "x": 1544,
+            "y": 2401,
+            "width": 63,
+            "height": 32
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "a",
+          "confidence": 89,
+          "bbox": {
+            "x": 1622,
+            "y": 2412,
+            "width": 16,
+            "height": 21
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "lawyer",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1652,
+            "y": 2399,
+            "width": 125,
+            "height": 44
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(a teacher?)",
+      "confidence": 95.82,
+      "bbox": {
+        "x": 251,
+        "y": 2403,
+        "width": 206,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "(a",
+          "confidence": 95.94,
+          "bbox": {
+            "x": 251,
+            "y": 2404,
+            "width": 29,
+            "height": 41
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "teacher?)",
+          "confidence": 95.71,
+          "bbox": {
+            "x": 295,
+            "y": 2403,
+            "width": 162,
+            "height": 42
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Yes, Iam",
+      "confidence": 82.5,
+      "bbox": {
+        "x": 1452,
+        "y": 2458,
+        "width": 180,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "Yes,",
+          "confidence": 95.22,
+          "bbox": {
+            "x": 1452,
+            "y": 2458,
+            "width": 68,
+            "height": 32
+          },
+          "block": 77,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Iam",
+          "confidence": 69.78,
+          "bbox": {
+            "x": 1549,
+            "y": 2458,
+            "width": 83,
+            "height": 31
+          },
+          "block": 77,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(married?)",
+      "confidence": 96.45,
+      "bbox": {
+        "x": 251,
+        "y": 2460,
+        "width": 183,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "(married?)",
+          "confidence": 96.45,
+          "bbox": {
+            "x": 251,
+            "y": 2460,
+            "width": 183,
+            "height": 42
+          },
+          "block": 76,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, she’s a designer",
+      "confidence": 96.49,
+      "bbox": {
+        "x": 1453,
+        "y": 2512,
+        "width": 376,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 1453,
+            "y": 2514,
+            "width": 61,
+            "height": 32
+          },
+          "block": 79,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "she’s",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 1542,
+            "y": 2513,
+            "width": 85,
+            "height": 33
+          },
+          "block": 79,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 1642,
+            "y": 2525,
+            "width": 18,
+            "height": 21
+          },
+          "block": 79,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "designer",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 1675,
+            "y": 2512,
+            "width": 154,
+            "height": 45
+          },
+          "block": 79,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(wife a lawyer?)",
+      "confidence": 96.54,
+      "bbox": {
+        "x": 251,
+        "y": 2516,
+        "width": 289,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(wife",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 251,
+            "y": 2516,
+            "width": 90,
+            "height": 43
+          },
+          "block": 78,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.61,
+          "bbox": {
+            "x": 358,
+            "y": 2529,
+            "width": 16,
+            "height": 21
+          },
+          "block": 78,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "lawyer?)",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 388,
+            "y": 2516,
+            "width": 152,
+            "height": 44
+          },
+          "block": 78,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "She’s Italian",
+      "confidence": 94.07,
+      "bbox": {
+        "x": 1454,
+        "y": 2569,
+        "width": 223,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "She’s",
+          "confidence": 91.99,
+          "bbox": {
+            "x": 1454,
+            "y": 2569,
+            "width": 66,
+            "height": 34
+          },
+          "block": 81,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Italian",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 1564,
+            "y": 2569,
+            "width": 113,
+            "height": 33
+          },
+          "block": 81,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(from?)",
+      "confidence": 96.66,
+      "bbox": {
+        "x": 251,
+        "y": 2573,
+        "width": 130,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "(from?)",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 251,
+            "y": 2573,
+            "width": 130,
+            "height": 43
+          },
+          "block": 80,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Anna",
+      "confidence": 96.71,
+      "bbox": {
+        "x": 1453,
+        "y": 2626,
+        "width": 99,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "Anna",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 1453,
+            "y": 2626,
+            "width": 99,
+            "height": 32
+          },
+          "block": 83,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(her name?)",
+      "confidence": 96.85,
+      "bbox": {
+        "x": 251,
+        "y": 2629,
+        "width": 215,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "(her",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 251,
+            "y": 2629,
+            "width": 73,
+            "height": 43
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "name?)",
+          "confidence": 96.94,
+          "bbox": {
+            "x": 338,
+            "y": 2630,
+            "width": 128,
+            "height": 41
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "wy",
+      "confidence": 32.56,
+      "bbox": {
+        "x": 1790,
+        "y": 2661,
+        "width": 73,
+        "height": 83
+      },
+      "words": [
+        {
+          "text": "wy",
+          "confidence": 32.56,
+          "bbox": {
+            "x": 1790,
+            "y": 2661,
+            "width": 73,
+            "height": 83
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "he’s 27",
+      "confidence": 96.42,
+      "bbox": {
+        "x": 1477,
+        "y": 2678,
+        "width": 128,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "he’s",
+          "confidence": 96.48,
+          "bbox": {
+            "x": 1477,
+            "y": 2678,
+            "width": 70,
+            "height": 47
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "27",
+          "confidence": 96.36,
+          "bbox": {
+            "x": 1567,
+            "y": 2683,
+            "width": 38,
+            "height": 32
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(how old?)",
+      "confidence": 96.69,
+      "bbox": {
+        "x": 251,
+        "y": 2685,
+        "width": 196,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "(how",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 251,
+            "y": 2685,
+            "width": 96,
+            "height": 43
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "old?)",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 362,
+            "y": 2685,
+            "width": 85,
+            "height": 43
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "了 出 简略 答 语 (Yes, | am. / No, he isn't",
+      "confidence": 85.47,
+      "bbox": {
+        "x": 179,
+        "y": 2777,
+        "width": 773,
+        "height": 53
+      },
+      "words": [
+        {
+          "text": "了",
+          "confidence": 55.51,
+          "bbox": {
+            "x": 179,
+            "y": 2801,
+            "width": 32,
+            "height": 20
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "出",
+          "confidence": 55.01,
+          "bbox": {
+            "x": 217,
+            "y": 2781,
+            "width": 48,
+            "height": 42
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "简略",
+          "confidence": 86.96,
+          "bbox": {
+            "x": 266,
+            "y": 2782,
+            "width": 87,
+            "height": 42
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "答",
+          "confidence": 92.2,
+          "bbox": {
+            "x": 353,
+            "y": 2782,
+            "width": 46,
+            "height": 41
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "语",
+          "confidence": 91.99,
+          "bbox": {
+            "x": 403,
+            "y": 2784,
+            "width": 18,
+            "height": 38
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(Yes,",
+          "confidence": 95.24,
+          "bbox": {
+            "x": 456,
+            "y": 2777,
+            "width": 99,
+            "height": 53
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 88.83,
+          "bbox": {
+            "x": 572,
+            "y": 2786,
+            "width": 5,
+            "height": 33
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "am.",
+          "confidence": 88.83,
+          "bbox": {
+            "x": 607,
+            "y": 2796,
+            "width": 49,
+            "height": 24
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 83.67,
+          "bbox": {
+            "x": 688,
+            "y": 2782,
+            "width": 11,
+            "height": 44
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "No,",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 718,
+            "y": 2777,
+            "width": 51,
+            "height": 53
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.18,
+          "bbox": {
+            "x": 801,
+            "y": 2777,
+            "width": 33,
+            "height": 53
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn't",
+          "confidence": 94.4,
+          "bbox": {
+            "x": 826,
+            "y": 2786,
+            "width": 126,
+            "height": 34
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": ")",
+      "confidence": 93.23,
+      "bbox": {
+        "x": 1030,
+        "y": 2784,
+        "width": 8,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": ")",
+          "confidence": 93.23,
+          "bbox": {
+            "x": 1030,
+            "y": 2784,
+            "width": 8,
+            "height": 35
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2.5",
+      "confidence": 96.06,
+      "bbox": {
+        "x": 25,
+        "y": 2788,
+        "width": 56,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "2.5",
+          "confidence": 96.06,
+          "bbox": {
+            "x": 25,
+            "y": 2788,
+            "width": 56,
+            "height": 32
+          },
+          "block": 87,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, I’m not",
+      "confidence": 86.26,
+      "bbox": {
+        "x": 620,
+        "y": 2843,
+        "width": 201,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 94.92,
+          "bbox": {
+            "x": 620,
+            "y": 2847,
+            "width": 46,
+            "height": 32
+          },
+          "block": 91,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 68.06,
+          "bbox": {
+            "x": 694,
+            "y": 2843,
+            "width": 45,
+            "height": 45
+          },
+          "block": 91,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 95.81,
+          "bbox": {
+            "x": 758,
+            "y": 2851,
+            "width": 63,
+            "height": 28
+          },
+          "block": 91,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "1 Are you married?",
+      "confidence": 94,
+      "bbox": {
+        "x": 158,
+        "y": 2861,
+        "width": 372,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 91.58,
+          "bbox": {
+            "x": 158,
+            "y": 2862,
+            "width": 14,
+            "height": 32
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Are",
+          "confidence": 91.58,
+          "bbox": {
+            "x": 203,
+            "y": 2862,
+            "width": 67,
+            "height": 32
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 95.92,
+          "bbox": {
+            "x": 285,
+            "y": 2873,
+            "width": 71,
+            "height": 31
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "married?",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 371,
+            "y": 2861,
+            "width": 159,
+            "height": 33
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "4 Are your hands cold?",
+      "confidence": 96.68,
+      "bbox": {
+        "x": 1104,
+        "y": 2861,
+        "width": 447,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "4",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 1104,
+            "y": 2863,
+            "width": 22,
+            "height": 31
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Are",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 1152,
+            "y": 2862,
+            "width": 68,
+            "height": 32
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 1235,
+            "y": 2873,
+            "width": 88,
+            "height": 32
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "hands",
+          "confidence": 96.94,
+          "bbox": {
+            "x": 1336,
+            "y": 2861,
+            "width": 105,
+            "height": 33
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "cold?",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 1457,
+            "y": 2861,
+            "width": 94,
+            "height": 33
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2 Are you thirsty?",
+      "confidence": 96.63,
+      "bbox": {
+        "x": 155,
+        "y": 2917,
+        "width": 348,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 155,
+            "y": 2919,
+            "width": 21,
+            "height": 31
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Are",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 203,
+            "y": 2919,
+            "width": 68,
+            "height": 32
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 284,
+            "y": 2929,
+            "width": 71,
+            "height": 32
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "thirsty?",
+          "confidence": 96.89,
+          "bbox": {
+            "x": 371,
+            "y": 2917,
+            "width": 132,
+            "height": 44
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "5 Is it dark now?",
+      "confidence": 93.85,
+      "bbox": {
+        "x": 1106,
+        "y": 2917,
+        "width": 325,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "5",
+          "confidence": 90.07,
+          "bbox": {
+            "x": 1106,
+            "y": 2919,
+            "width": 18,
+            "height": 32
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Is",
+          "confidence": 91.59,
+          "bbox": {
+            "x": 1155,
+            "y": 2919,
+            "width": 26,
+            "height": 32
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it",
+          "confidence": 94.73,
+          "bbox": {
+            "x": 1198,
+            "y": 2926,
+            "width": 24,
+            "height": 25
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "dark",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 1237,
+            "y": 2917,
+            "width": 80,
+            "height": 34
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "now?",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 1332,
+            "y": 2919,
+            "width": 99,
+            "height": 32
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "3 Is it cold today?",
+      "confidence": 88.37,
+      "bbox": {
+        "x": 155,
+        "y": 2973,
+        "width": 343,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "3",
+          "confidence": 75.95,
+          "bbox": {
+            "x": 155,
+            "y": 2974,
+            "width": 20,
+            "height": 33
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Is",
+          "confidence": 75.95,
+          "bbox": {
+            "x": 205,
+            "y": 2975,
+            "width": 27,
+            "height": 32
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it",
+          "confidence": 96.07,
+          "bbox": {
+            "x": 247,
+            "y": 2982,
+            "width": 25,
+            "height": 24
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "cold",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 288,
+            "y": 2973,
+            "width": 78,
+            "height": 33
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "today?",
+          "confidence": 96.9,
+          "bbox": {
+            "x": 380,
+            "y": 2973,
+            "width": 118,
+            "height": 44
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "6 Are you a teacher? .....",
+      "confidence": 84.01,
+      "bbox": {
+        "x": 1105,
+        "y": 2974,
+        "width": 470,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "6",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 1105,
+            "y": 2975,
+            "width": 20,
+            "height": 32
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Are",
+          "confidence": 94.94,
+          "bbox": {
+            "x": 1153,
+            "y": 2975,
+            "width": 67,
+            "height": 32
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 92.1,
+          "bbox": {
+            "x": 1235,
+            "y": 2986,
+            "width": 70,
+            "height": 31
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 87.28,
+          "bbox": {
+            "x": 1321,
+            "y": 2986,
+            "width": 17,
+            "height": 21
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "teacher?",
+          "confidence": 87.28,
+          "bbox": {
+            "x": 1354,
+            "y": 2974,
+            "width": 149,
+            "height": 33
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ".....",
+          "confidence": 45.78,
+          "bbox": {
+            "x": 1532,
+            "y": 3002,
+            "width": 43,
+            "height": 3
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "一 补充 练习 1-2 (8253-25477)",
+      "confidence": 75.62,
+      "bbox": {
+        "x": 25,
+        "y": 3041,
+        "width": 627,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "一",
+          "confidence": 59.3,
+          "bbox": {
+            "x": 25,
+            "y": 3054,
+            "width": 65,
+            "height": 32
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "补充",
+          "confidence": 96,
+          "bbox": {
+            "x": 98,
+            "y": 3047,
+            "width": 85,
+            "height": 40
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "练习",
+          "confidence": 94.81,
+          "bbox": {
+            "x": 182,
+            "y": 3041,
+            "width": 56,
+            "height": 55
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "1-2",
+          "confidence": 94.48,
+          "bbox": {
+            "x": 305,
+            "y": 3054,
+            "width": 17,
+            "height": 28
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(8253-25477)",
+          "confidence": 33.51,
+          "bbox": {
+            "x": 358,
+            "y": 3047,
+            "width": 294,
+            "height": 45
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "17",
+      "confidence": 89.07,
+      "bbox": {
+        "x": 1999,
+        "y": 3052,
+        "width": 49,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "17",
+          "confidence": 89.07,
+          "bbox": {
+            "x": 1999,
+            "y": 3052,
+            "width": 49,
+            "height": 35
+          },
+          "block": 98,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    }
+  ]
+}

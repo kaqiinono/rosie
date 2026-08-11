@@ -57,7 +57,7 @@ export default function CharFlashCard({
   const delay = Math.min(index * 0.03, 0.25)
 
   const infoLabel = useMemo(() => {
-    const parts = [`第${unit}单元`]
+    const parts = unit > 0 ? [`第${unit}单元`] : ['生字']
     if (unitLessonNo != null && unitLessonNo > 0) parts.push(`课${unitLessonNo}`)
     if (bookLessonNo != null && bookLessonNo > 0) parts.push(`全册${bookLessonNo}`)
     return parts.join(' · ')

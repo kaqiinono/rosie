@@ -1,0 +1,6373 @@
+{
+  "cacheKey": "e654c2e74fbec7c7a75e93aadbc22d69b0edb00b40459ae51a2c6d3557ecf68c",
+  "pdfPage": 32,
+  "image": "page-0032.png",
+  "textFile": "page-0032.txt",
+  "tsvFile": "page-0032.tsv",
+  "dimensions": {
+    "width": 2096,
+    "height": 3078
+  },
+  "stats": {
+    "characters": 1717,
+    "words": 349,
+    "lines": 122,
+    "meanConfidence": 86.93,
+    "lowConfidenceWords": 38
+  },
+  "warnings": [
+    "many_low_confidence_words"
+  ],
+  "lines": [
+    {
+      "text": "Exercises",
+      "confidence": 96.42,
+      "bbox": {
+        "x": 27,
+        "y": 65,
+        "width": 351,
+        "height": 68
+      },
+      "words": [
+        {
+          "text": "Exercises",
+          "confidence": 96.42,
+          "bbox": {
+            "x": 27,
+            "y": 65,
+            "width": 351,
+            "height": 68
+          },
+          "block": 1,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Unit 6",
+      "confidence": 96.37,
+      "bbox": {
+        "x": 1738,
+        "y": 66,
+        "width": 216,
+        "height": 63
+      },
+      "words": [
+        {
+          "text": "Unit",
+          "confidence": 96.16,
+          "bbox": {
+            "x": 1738,
+            "y": 67,
+            "width": 136,
+            "height": 56
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "6",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 1912,
+            "y": 66,
+            "width": 42,
+            "height": 63
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "写 出 下 列 句子 的 否定 式 ，",
+      "confidence": 81.07,
+      "bbox": {
+        "x": 162,
+        "y": 178,
+        "width": 447,
+        "height": 53
+      },
+      "words": [
+        {
+          "text": "写",
+          "confidence": 92.7,
+          "bbox": {
+            "x": 162,
+            "y": 191,
+            "width": 53,
+            "height": 29
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "出",
+          "confidence": 92.63,
+          "bbox": {
+            "x": 217,
+            "y": 184,
+            "width": 40,
+            "height": 37
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "下",
+          "confidence": 92.74,
+          "bbox": {
+            "x": 258,
+            "y": 185,
+            "width": 20,
+            "height": 37
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "列",
+          "confidence": 91.79,
+          "bbox": {
+            "x": 293,
+            "y": 183,
+            "width": 28,
+            "height": 39
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "句子",
+          "confidence": 47.76,
+          "bbox": {
+            "x": 341,
+            "y": 182,
+            "width": 73,
+            "height": 40
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "的",
+          "confidence": 96.65,
+          "bbox": {
+            "x": 426,
+            "y": 182,
+            "width": 30,
+            "height": 40
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "否定",
+          "confidence": 74.51,
+          "bbox": {
+            "x": 473,
+            "y": 183,
+            "width": 73,
+            "height": 38
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "式",
+          "confidence": 86.4,
+          "bbox": {
+            "x": 561,
+            "y": 182,
+            "width": 46,
+            "height": 39
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "，",
+          "confidence": 54.45,
+          "bbox": {
+            "x": 595,
+            "y": 178,
+            "width": 14,
+            "height": 53
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "6.1",
+      "confidence": 96.85,
+      "bbox": {
+        "x": 23,
+        "y": 189,
+        "width": 50,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "6.1",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 23,
+            "y": 189,
+            "width": 50,
+            "height": 31
+          },
+          "block": 3,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| dont. play.the piano.very well.",
+      "confidence": 85.49,
+      "bbox": {
+        "x": 922,
+        "y": 250,
+        "width": 566,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 91.09,
+          "bbox": {
+            "x": 922,
+            "y": 251,
+            "width": 2,
+            "height": 28
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "dont.",
+          "confidence": 78.54,
+          "bbox": {
+            "x": 941,
+            "y": 250,
+            "width": 96,
+            "height": 31
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "play.the",
+          "confidence": 79.77,
+          "bbox": {
+            "x": 1050,
+            "y": 251,
+            "width": 150,
+            "height": 42
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "piano.very",
+          "confidence": 86.04,
+          "bbox": {
+            "x": 1217,
+            "y": 252,
+            "width": 184,
+            "height": 40
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well.",
+          "confidence": 92.02,
+          "bbox": {
+            "x": 1417,
+            "y": 250,
+            "width": 71,
+            "height": 29
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "1 I play the piano very well.",
+      "confidence": 95.34,
+      "bbox": {
+        "x": 155,
+        "y": 256,
+        "width": 529,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 92.53,
+          "bbox": {
+            "x": 155,
+            "y": 260,
+            "width": 14,
+            "height": 30
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 92.53,
+          "bbox": {
+            "x": 201,
+            "y": 260,
+            "width": 11,
+            "height": 30
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "play",
+          "confidence": 95.91,
+          "bbox": {
+            "x": 228,
+            "y": 257,
+            "width": 74,
+            "height": 43
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 317,
+            "y": 257,
+            "width": 56,
+            "height": 33
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "piano",
+          "confidence": 96.52,
+          "bbox": {
+            "x": 387,
+            "y": 258,
+            "width": 102,
+            "height": 42
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 504,
+            "y": 269,
+            "width": 80,
+            "height": 30
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well.",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 598,
+            "y": 256,
+            "width": 86,
+            "height": 33
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2 Jane plays the piano very well.",
+      "confidence": 96.24,
+      "bbox": {
+        "x": 152,
+        "y": 311,
+        "width": 609,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 95.63,
+          "bbox": {
+            "x": 152,
+            "y": 314,
+            "width": 20,
+            "height": 31
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Jane",
+          "confidence": 95.63,
+          "bbox": {
+            "x": 194,
+            "y": 315,
+            "width": 81,
+            "height": 41
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "plays",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 290,
+            "y": 312,
+            "width": 88,
+            "height": 43
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 393,
+            "y": 312,
+            "width": 56,
+            "height": 33
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "piano",
+          "confidence": 96.45,
+          "bbox": {
+            "x": 463,
+            "y": 313,
+            "width": 102,
+            "height": 42
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 580,
+            "y": 324,
+            "width": 80,
+            "height": 30
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well.",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 674,
+            "y": 311,
+            "width": 87,
+            "height": 33
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Jane",
+      "confidence": 96.18,
+      "bbox": {
+        "x": 862,
+        "y": 313,
+        "width": 82,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "Jane",
+          "confidence": 96.18,
+          "bbox": {
+            "x": 862,
+            "y": 313,
+            "width": 82,
+            "height": 41
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "3 They know my phone number.",
+      "confidence": 95.13,
+      "bbox": {
+        "x": 152,
+        "y": 366,
+        "width": 636,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "3",
+          "confidence": 92.64,
+          "bbox": {
+            "x": 152,
+            "y": 369,
+            "width": 20,
+            "height": 32
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "They",
+          "confidence": 92.64,
+          "bbox": {
+            "x": 200,
+            "y": 367,
+            "width": 97,
+            "height": 44
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "know",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 311,
+            "y": 367,
+            "width": 106,
+            "height": 33
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "my",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 431,
+            "y": 379,
+            "width": 58,
+            "height": 31
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "phone",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 504,
+            "y": 367,
+            "width": 115,
+            "height": 43
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "number.",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 635,
+            "y": 366,
+            "width": 153,
+            "height": 34
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "They",
+      "confidence": 95.82,
+      "bbox": {
+        "x": 868,
+        "y": 366,
+        "width": 98,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "They",
+          "confidence": 95.82,
+          "bbox": {
+            "x": 868,
+            "y": 366,
+            "width": 98,
+            "height": 43
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "4 We work very hard.",
+      "confidence": 96.22,
+      "bbox": {
+        "x": 152,
+        "y": 422,
+        "width": 424,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "4",
+          "confidence": 95.62,
+          "bbox": {
+            "x": 152,
+            "y": 425,
+            "width": 21,
+            "height": 32
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "We",
+          "confidence": 95.62,
+          "bbox": {
+            "x": 200,
+            "y": 425,
+            "width": 65,
+            "height": 32
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "work",
+          "confidence": 96.34,
+          "bbox": {
+            "x": 280,
+            "y": 423,
+            "width": 97,
+            "height": 33
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 390,
+            "y": 435,
+            "width": 81,
+            "height": 31
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "hard.",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 485,
+            "y": 422,
+            "width": 91,
+            "height": 33
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "5 He has a bath every day.",
+      "confidence": 93.36,
+      "bbox": {
+        "x": 154,
+        "y": 478,
+        "width": 498,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "5",
+          "confidence": 79.92,
+          "bbox": {
+            "x": 154,
+            "y": 481,
+            "width": 18,
+            "height": 31
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "He",
+          "confidence": 95.36,
+          "bbox": {
+            "x": 201,
+            "y": 480,
+            "width": 55,
+            "height": 31
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "has",
+          "confidence": 94.47,
+          "bbox": {
+            "x": 271,
+            "y": 479,
+            "width": 54,
+            "height": 32
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 94.47,
+          "bbox": {
+            "x": 341,
+            "y": 490,
+            "width": 17,
+            "height": 21
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bath",
+          "confidence": 95.65,
+          "bbox": {
+            "x": 372,
+            "y": 478,
+            "width": 79,
+            "height": 33
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "every",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 467,
+            "y": 489,
+            "width": 99,
+            "height": 31
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "day.",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 581,
+            "y": 478,
+            "width": 71,
+            "height": 42
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "6 You do the same thing every day.",
+      "confidence": 95.66,
+      "bbox": {
+        "x": 153,
+        "y": 533,
+        "width": 675,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "6",
+          "confidence": 95.78,
+          "bbox": {
+            "x": 153,
+            "y": 536,
+            "width": 20,
+            "height": 31
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "You",
+          "confidence": 95.78,
+          "bbox": {
+            "x": 200,
+            "y": 536,
+            "width": 80,
+            "height": 30
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "do",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 296,
+            "y": 534,
+            "width": 45,
+            "height": 33
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 357,
+            "y": 533,
+            "width": 56,
+            "height": 33
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "same",
+          "confidence": 94.79,
+          "bbox": {
+            "x": 428,
+            "y": 545,
+            "width": 88,
+            "height": 21
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "thing",
+          "confidence": 94.79,
+          "bbox": {
+            "x": 532,
+            "y": 533,
+            "width": 96,
+            "height": 43
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "every",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 642,
+            "y": 544,
+            "width": 100,
+            "height": 31
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "day.",
+          "confidence": 95.48,
+          "bbox": {
+            "x": 757,
+            "y": 533,
+            "width": 71,
+            "height": 42
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "根据 下 图 ，",
+      "confidence": 91.5,
+      "bbox": {
+        "x": 161,
+        "y": 617,
+        "width": 182,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "根据",
+          "confidence": 90.39,
+          "bbox": {
+            "x": 161,
+            "y": 617,
+            "width": 75,
+            "height": 40
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "下",
+          "confidence": 96.36,
+          "bbox": {
+            "x": 247,
+            "y": 619,
+            "width": 33,
+            "height": 37
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "图",
+          "confidence": 93.21,
+          "bbox": {
+            "x": 293,
+            "y": 619,
+            "width": 30,
+            "height": 37
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "，",
+          "confidence": 86.03,
+          "bbox": {
+            "x": 340,
+            "y": 648,
+            "width": 3,
+            "height": 6
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "用 like 造句 。",
+      "confidence": 79.97,
+      "bbox": {
+        "x": 385,
+        "y": 617,
+        "width": 237,
+        "height": 39
+      },
+      "words": [
+        {
+          "text": "用",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 385,
+            "y": 618,
+            "width": 27,
+            "height": 38
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "like",
+          "confidence": 78.27,
+          "bbox": {
+            "x": 435,
+            "y": 620,
+            "width": 69,
+            "height": 34
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "造句",
+          "confidence": 55.65,
+          "bbox": {
+            "x": 574,
+            "y": 617,
+            "width": 25,
+            "height": 39
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "。",
+          "confidence": 89.02,
+          "bbox": {
+            "x": 614,
+            "y": 649,
+            "width": 8,
+            "height": 7
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "6.2",
+      "confidence": 96.74,
+      "bbox": {
+        "x": 24,
+        "y": 624,
+        "width": 56,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "6.2",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 24,
+            "y": 624,
+            "width": 56,
+            "height": 31
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Ben and Sophie like cla",
+      "confidence": 95.54,
+      "bbox": {
+        "x": 1180,
+        "y": 703,
+        "width": 425,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "Ben",
+          "confidence": 96.63,
+          "bbox": {
+            "x": 1180,
+            "y": 703,
+            "width": 65,
+            "height": 30
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "and",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 1262,
+            "y": 704,
+            "width": 66,
+            "height": 29
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Sophie",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 1346,
+            "y": 703,
+            "width": 122,
+            "height": 36
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "like",
+          "confidence": 91.76,
+          "bbox": {
+            "x": 1487,
+            "y": 704,
+            "width": 43,
+            "height": 27
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "cla",
+          "confidence": 96.51,
+          "bbox": {
+            "x": 1556,
+            "y": 704,
+            "width": 49,
+            "height": 28
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Music.",
+      "confidence": 78.77,
+      "bbox": {
+        "x": 1735,
+        "y": 705,
+        "width": 113,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "Music.",
+          "confidence": 78.77,
+          "bbox": {
+            "x": 1735,
+            "y": 705,
+            "width": 113,
+            "height": 27
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "a",
+      "confidence": 65.28,
+      "bbox": {
+        "x": 632,
+        "y": 720,
+        "width": 43,
+        "height": 18
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 65.28,
+          "bbox": {
+            "x": 632,
+            "y": 720,
+            "width": 43,
+            "height": 18
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "SN",
+      "confidence": 39.76,
+      "bbox": {
+        "x": 686,
+        "y": 725,
+        "width": 46,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "SN",
+          "confidence": 39.76,
+          "bbox": {
+            "x": 686,
+            "y": 725,
+            "width": 46,
+            "height": 28
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "ee",
+      "confidence": 37.72,
+      "bbox": {
+        "x": 557,
+        "y": 728,
+        "width": 107,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "ee",
+          "confidence": 37.72,
+          "bbox": {
+            "x": 557,
+            "y": 728,
+            "width": 107,
+            "height": 38
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Aig E76",
+      "confidence": 30.6,
+      "bbox": {
+        "x": 553,
+        "y": 771,
+        "width": 156,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "Aig",
+          "confidence": 52.37,
+          "bbox": {
+            "x": 553,
+            "y": 771,
+            "width": 57,
+            "height": 27
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "E76",
+          "confidence": 8.83,
+          "bbox": {
+            "x": 637,
+            "y": 771,
+            "width": 72,
+            "height": 25
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Kate",
+      "confidence": 96.45,
+      "bbox": {
+        "x": 1126,
+        "y": 773,
+        "width": 83,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "Kate",
+          "confidence": 96.45,
+          "bbox": {
+            "x": 1126,
+            "y": 773,
+            "width": 83,
+            "height": 31
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ATS",
+      "confidence": 45.27,
+      "bbox": {
+        "x": 579,
+        "y": 793,
+        "width": 132,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "ATS",
+          "confidence": 45.27,
+          "bbox": {
+            "x": 579,
+            "y": 793,
+            "width": 132,
+            "height": 47
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Do you",
+      "confidence": 96.75,
+      "bbox": {
+        "x": 276,
+        "y": 819,
+        "width": 110,
+        "height": 37
+      },
+      "words": [
+        {
+          "text": "Do",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 276,
+            "y": 819,
+            "width": 42,
+            "height": 29
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 329,
+            "y": 827,
+            "width": 57,
+            "height": 29
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "classical music.",
+      "confidence": 96.04,
+      "bbox": {
+        "x": 1681,
+        "y": 826,
+        "width": 270,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "classical",
+          "confidence": 96.51,
+          "bbox": {
+            "x": 1681,
+            "y": 826,
+            "width": 139,
+            "height": 32
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "music.",
+          "confidence": 95.57,
+          "bbox": {
+            "x": 1835,
+            "y": 827,
+            "width": 116,
+            "height": 31
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "like .., ?",
+      "confidence": 69.82,
+      "bbox": {
+        "x": 276,
+        "y": 869,
+        "width": 132,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "like",
+          "confidence": 78.04,
+          "bbox": {
+            "x": 276,
+            "y": 869,
+            "width": 49,
+            "height": 30
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "..,",
+          "confidence": 43.42,
+          "bbox": {
+            "x": 342,
+            "y": 897,
+            "width": 33,
+            "height": 7
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "?",
+          "confidence": 88.01,
+          "bbox": {
+            "x": 393,
+            "y": 869,
+            "width": 15,
+            "height": 29
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "BEN AND",
+      "confidence": 95.84,
+      "bbox": {
+        "x": 562,
+        "y": 877,
+        "width": 160,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "BEN",
+          "confidence": 96.57,
+          "bbox": {
+            "x": 562,
+            "y": 877,
+            "width": 75,
+            "height": 31
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "AND",
+          "confidence": 95.1,
+          "bbox": {
+            "x": 648,
+            "y": 885,
+            "width": 74,
+            "height": 23
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "KATE",
+      "confidence": 89.72,
+      "bbox": {
+        "x": 780,
+        "y": 923,
+        "width": 98,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "KATE",
+          "confidence": 89.72,
+          "bbox": {
+            "x": 780,
+            "y": 923,
+            "width": 98,
+            "height": 31
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "You",
+      "confidence": 96.9,
+      "bbox": {
+        "x": 931,
+        "y": 923,
+        "width": 76,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "You",
+          "confidence": 96.9,
+          "bbox": {
+            "x": 931,
+            "y": 923,
+            "width": 76,
+            "height": 31
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "SOPHIE",
+      "confidence": 96.38,
+      "bbox": {
+        "x": 581,
+        "y": 924,
+        "width": 124,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "SOPHIE",
+          "confidence": 96.38,
+          "bbox": {
+            "x": 581,
+            "y": 924,
+            "width": 124,
+            "height": 31
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2 Ben and Sophie",
+      "confidence": 96.22,
+      "bbox": {
+        "x": 1078,
+        "y": 929,
+        "width": 343,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 96.08,
+          "bbox": {
+            "x": 1078,
+            "y": 931,
+            "width": 20,
+            "height": 31
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Ben",
+          "confidence": 95.6,
+          "bbox": {
+            "x": 1126,
+            "y": 931,
+            "width": 73,
+            "height": 31
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "and",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1215,
+            "y": 930,
+            "width": 65,
+            "height": 32
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Sophie",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 1295,
+            "y": 929,
+            "width": 126,
+            "height": 43
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Kate",
+      "confidence": 96.01,
+      "bbox": {
+        "x": 1126,
+        "y": 987,
+        "width": 84,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "Kate",
+          "confidence": 96.01,
+          "bbox": {
+            "x": 1126,
+            "y": 987,
+            "width": 84,
+            "height": 31
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "1 classical music?",
+      "confidence": 88.43,
+      "bbox": {
+        "x": 184,
+        "y": 1001,
+        "width": 319,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 84.37,
+          "bbox": {
+            "x": 184,
+            "y": 1003,
+            "width": 12,
+            "height": 30
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "classical",
+          "confidence": 84.37,
+          "bbox": {
+            "x": 229,
+            "y": 1001,
+            "width": 137,
+            "height": 33
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "music?",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 382,
+            "y": 1002,
+            "width": 121,
+            "height": 31
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "no",
+      "confidence": 96.83,
+      "bbox": {
+        "x": 810,
+        "y": 1011,
+        "width": 46,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "no",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 810,
+            "y": 1011,
+            "width": 46,
+            "height": 21
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "yes",
+      "confidence": 96.15,
+      "bbox": {
+        "x": 615,
+        "y": 1012,
+        "width": 56,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "yes",
+          "confidence": 96.15,
+          "bbox": {
+            "x": 615,
+            "y": 1012,
+            "width": 56,
+            "height": 31
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "}",
+      "confidence": 50.78,
+      "bbox": {
+        "x": 949,
+        "y": 1028,
+        "width": 46,
+        "height": 80
+      },
+      "words": [
+        {
+          "text": "}",
+          "confidence": 50.78,
+          "bbox": {
+            "x": 949,
+            "y": 1028,
+            "width": 46,
+            "height": 80
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "2 boxing?",
+      "confidence": 91.59,
+      "bbox": {
+        "x": 181,
+        "y": 1070,
+        "width": 191,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 91.59,
+          "bbox": {
+            "x": 181,
+            "y": 1072,
+            "width": 19,
+            "height": 31
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "boxing?",
+          "confidence": 91.59,
+          "bbox": {
+            "x": 228,
+            "y": 1070,
+            "width": 144,
+            "height": 43
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "no",
+      "confidence": 96.84,
+      "bbox": {
+        "x": 621,
+        "y": 1081,
+        "width": 46,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "no",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 621,
+            "y": 1081,
+            "width": 46,
+            "height": 21
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "yes",
+      "confidence": 96.36,
+      "bbox": {
+        "x": 805,
+        "y": 1081,
+        "width": 56,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "yes",
+          "confidence": 96.36,
+          "bbox": {
+            "x": 805,
+            "y": 1081,
+            "width": 56,
+            "height": 31
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "e",
+      "confidence": 85.46,
+      "bbox": {
+        "x": 959,
+        "y": 1122,
+        "width": 18,
+        "height": 17
+      },
+      "words": [
+        {
+          "text": "e",
+          "confidence": 85.46,
+          "bbox": {
+            "x": 959,
+            "y": 1122,
+            "width": 18,
+            "height": 17
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "3 horror films?",
+      "confidence": 94.13,
+      "bbox": {
+        "x": 181,
+        "y": 1139,
+        "width": 282,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "3",
+          "confidence": 96.27,
+          "bbox": {
+            "x": 181,
+            "y": 1142,
+            "width": 19,
+            "height": 31
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "horror",
+          "confidence": 89.56,
+          "bbox": {
+            "x": 229,
+            "y": 1140,
+            "width": 119,
+            "height": 33
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "films?",
+          "confidence": 96.57,
+          "bbox": {
+            "x": 361,
+            "y": 1139,
+            "width": 102,
+            "height": 33
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "yes",
+      "confidence": 96.5,
+      "bbox": {
+        "x": 616,
+        "y": 1151,
+        "width": 56,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "yes",
+          "confidence": 96.5,
+          "bbox": {
+            "x": 616,
+            "y": 1151,
+            "width": 56,
+            "height": 31
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "no",
+      "confidence": 96.75,
+      "bbox": {
+        "x": 811,
+        "y": 1151,
+        "width": 46,
+        "height": 20
+      },
+      "words": [
+        {
+          "text": "no",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 811,
+            "y": 1151,
+            "width": 46,
+            "height": 20
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "5 5",
+      "confidence": 10.82,
+      "bbox": {
+        "x": 1907,
+        "y": 1191,
+        "width": 49,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "5",
+          "confidence": 21.63,
+          "bbox": {
+            "x": 1907,
+            "y": 1191,
+            "width": 2,
+            "height": 3
+          },
+          "block": 45,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "5",
+          "confidence": 0,
+          "bbox": {
+            "x": 1954,
+            "y": 1191,
+            "width": 2,
+            "height": 3
+          },
+          "block": 45,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "ia",
+      "confidence": 44.88,
+      "bbox": {
+        "x": 1129,
+        "y": 1248,
+        "width": 28,
+        "height": 2
+      },
+      "words": [
+        {
+          "text": "ia",
+          "confidence": 44.88,
+          "bbox": {
+            "x": 1129,
+            "y": 1248,
+            "width": 28,
+            "height": 2
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "... 2 I don't ... very often",
+      "confidence": 74.19,
+      "bbox": {
+        "x": 1011,
+        "y": 1349,
+        "width": 513,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "...",
+          "confidence": 50.88,
+          "bbox": {
+            "x": 1011,
+            "y": 1380,
+            "width": 29,
+            "height": 5
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "2",
+          "confidence": 46.36,
+          "bbox": {
+            "x": 1061,
+            "y": 1349,
+            "width": 35,
+            "height": 39
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "I",
+          "confidence": 62.92,
+          "bbox": {
+            "x": 1116,
+            "y": 1352,
+            "width": 6,
+            "height": 33
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "don't",
+          "confidence": 75.34,
+          "bbox": {
+            "x": 1143,
+            "y": 1351,
+            "width": 104,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "...",
+          "confidence": 91.15,
+          "bbox": {
+            "x": 1267,
+            "y": 1379,
+            "width": 29,
+            "height": 5
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.68,
+          "bbox": {
+            "x": 1316,
+            "y": 1361,
+            "width": 84,
+            "height": 33
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often",
+          "confidence": 96.02,
+          "bbox": {
+            "x": 1418,
+            "y": 1350,
+            "width": 106,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "hi +f",
+      "confidence": 44.5,
+      "bbox": {
+        "x": 163,
+        "y": 1351,
+        "width": 67,
+        "height": 39
+      },
+      "words": [
+        {
+          "text": "hi",
+          "confidence": 64.29,
+          "bbox": {
+            "x": 163,
+            "y": 1354,
+            "width": 26,
+            "height": 36
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "+f",
+          "confidence": 24.71,
+          "bbox": {
+            "x": 205,
+            "y": 1351,
+            "width": 25,
+            "height": 39
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "大",
+      "confidence": 57.93,
+      "bbox": {
+        "x": 264,
+        "y": 1351,
+        "width": 6,
+        "height": 13
+      },
+      "words": [
+        {
+          "text": "大",
+          "confidence": 57.93,
+          "bbox": {
+            "x": 264,
+            "y": 1351,
+            "width": 6,
+            "height": 13
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "1 CA te,",
+      "confidence": 35.71,
+      "bbox": {
+        "x": 308,
+        "y": 1351,
+        "width": 217,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 50.57,
+          "bbox": {
+            "x": 308,
+            "y": 1353,
+            "width": 13,
+            "height": 36
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "CA",
+          "confidence": 24.07,
+          "bbox": {
+            "x": 344,
+            "y": 1351,
+            "width": 71,
+            "height": 39
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "te,",
+          "confidence": 32.48,
+          "bbox": {
+            "x": 427,
+            "y": 1351,
+            "width": 98,
+            "height": 40
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "{",
+      "confidence": 48.25,
+      "bbox": {
+        "x": 252,
+        "y": 1352,
+        "width": 8,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "{",
+          "confidence": 48.25,
+          "bbox": {
+            "x": 252,
+            "y": 1352,
+            "width": 8,
+            "height": 38
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "用 | never ...",
+      "confidence": 89.31,
+      "bbox": {
+        "x": 568,
+        "y": 1352,
+        "width": 235,
+        "height": 37
+      },
+      "words": [
+        {
+          "text": "用",
+          "confidence": 88.8,
+          "bbox": {
+            "x": 568,
+            "y": 1352,
+            "width": 25,
+            "height": 37
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 90.32,
+          "bbox": {
+            "x": 617,
+            "y": 1354,
+            "width": 6,
+            "height": 33
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "never",
+          "confidence": 89.45,
+          "bbox": {
+            "x": 645,
+            "y": 1363,
+            "width": 109,
+            "height": 24
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "...",
+          "confidence": 88.66,
+          "bbox": {
+            "x": 774,
+            "y": 1381,
+            "width": 29,
+            "height": 5
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| often",
+      "confidence": 93.79,
+      "bbox": {
+        "x": 855,
+        "y": 1352,
+        "width": 134,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 91.32,
+          "bbox": {
+            "x": 855,
+            "y": 1353,
+            "width": 7,
+            "height": 33
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often",
+          "confidence": 96.26,
+          "bbox": {
+            "x": 882,
+            "y": 1352,
+            "width": 107,
+            "height": 34
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "了",
+      "confidence": 71.01,
+      "bbox": {
+        "x": 230,
+        "y": 1354,
+        "width": 5,
+        "height": 9
+      },
+      "words": [
+        {
+          "text": "了",
+          "confidence": 71.01,
+          "bbox": {
+            "x": 230,
+            "y": 1354,
+            "width": 5,
+            "height": 9
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "6.3",
+      "confidence": 91.65,
+      "bbox": {
+        "x": 27,
+        "y": 1357,
+        "width": 55,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "6.3",
+          "confidence": 91.65,
+          "bbox": {
+            "x": 27,
+            "y": 1357,
+            "width": 55,
+            "height": 32
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "尔",
+      "confidence": 87.81,
+      "bbox": {
+        "x": 260,
+        "y": 1365,
+        "width": 24,
+        "height": 26
+      },
+      "words": [
+        {
+          "text": "尔",
+          "confidence": 87.81,
+          "bbox": {
+            "x": 260,
+            "y": 1365,
+            "width": 24,
+            "height": 26
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "了",
+      "confidence": 87.98,
+      "bbox": {
+        "x": 231,
+        "y": 1377,
+        "width": 4,
+        "height": 11
+      },
+      "words": [
+        {
+          "text": "了",
+          "confidence": 87.98,
+          "bbox": {
+            "x": 231,
+            "y": 1377,
+            "width": 4,
+            "height": 11
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "上",
+      "confidence": 71.27,
+      "bbox": {
+        "x": 301,
+        "y": 1377,
+        "width": 3,
+        "height": 12
+      },
+      "words": [
+        {
+          "text": "上",
+          "confidence": 71.27,
+          "bbox": {
+            "x": 301,
+            "y": 1377,
+            "width": 3,
+            "height": 12
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| don’t watch TV very often.",
+      "confidence": 94.82,
+      "bbox": {
+        "x": 623,
+        "y": 1413,
+        "width": 498,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 93.82,
+          "bbox": {
+            "x": 623,
+            "y": 1415,
+            "width": 2,
+            "height": 29
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "don’t",
+          "confidence": 92.93,
+          "bbox": {
+            "x": 642,
+            "y": 1413,
+            "width": 93,
+            "height": 32
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watch",
+          "confidence": 96.65,
+          "bbox": {
+            "x": 749,
+            "y": 1413,
+            "width": 108,
+            "height": 31
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "TV",
+          "confidence": 94.48,
+          "bbox": {
+            "x": 874,
+            "y": 1413,
+            "width": 42,
+            "height": 30
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 929,
+            "y": 1423,
+            "width": 73,
+            "height": 30
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often.",
+          "confidence": 94.41,
+          "bbox": {
+            "x": 1017,
+            "y": 1413,
+            "width": 104,
+            "height": 30
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Ph TY",
+      "confidence": 55.36,
+      "bbox": {
+        "x": 1631,
+        "y": 1414,
+        "width": 62,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "Ph",
+          "confidence": 55.36,
+          "bbox": {
+            "x": 1631,
+            "y": 1414,
+            "width": 15,
+            "height": 28
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "TY",
+          "confidence": 55.36,
+          "bbox": {
+            "x": 1671,
+            "y": 1420,
+            "width": 22,
+            "height": 22
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "| never Wate",
+      "confidence": 71.06,
+      "bbox": {
+        "x": 1410,
+        "y": 1421,
+        "width": 215,
+        "height": 22
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 84.27,
+          "bbox": {
+            "x": 1410,
+            "y": 1421,
+            "width": 1,
+            "height": 21
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "never",
+          "confidence": 84.85,
+          "bbox": {
+            "x": 1430,
+            "y": 1423,
+            "width": 94,
+            "height": 20
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Wate",
+          "confidence": 44.06,
+          "bbox": {
+            "x": 1538,
+            "y": 1421,
+            "width": 87,
+            "height": 22
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "1 (watch TV)",
+      "confidence": 94.02,
+      "bbox": {
+        "x": 159,
+        "y": 1428,
+        "width": 256,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 91.58,
+          "bbox": {
+            "x": 159,
+            "y": 1430,
+            "width": 12,
+            "height": 30
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(watch",
+          "confidence": 93.68,
+          "bbox": {
+            "x": 206,
+            "y": 1428,
+            "width": 120,
+            "height": 42
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "TV)",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 342,
+            "y": 1429,
+            "width": 73,
+            "height": 41
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "or",
+      "confidence": 96.84,
+      "bbox": {
+        "x": 1830,
+        "y": 1433,
+        "width": 41,
+        "height": 23
+      },
+      "words": [
+        {
+          "text": "or",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 1830,
+            "y": 1433,
+            "width": 41,
+            "height": 23
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "or",
+      "confidence": 96.35,
+      "bbox": {
+        "x": 1266,
+        "y": 1434,
+        "width": 40,
+        "height": 23
+      },
+      "words": [
+        {
+          "text": "or",
+          "confidence": 96.35,
+          "bbox": {
+            "x": 1266,
+            "y": 1434,
+            "width": 40,
+            "height": 23
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2",
+      "confidence": 56.19,
+      "bbox": {
+        "x": 1186,
+        "y": 1454,
+        "width": 2,
+        "height": 2
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 56.19,
+          "bbox": {
+            "x": 1186,
+            "y": 1454,
+            "width": 2,
+            "height": 2
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "| often watch TY.",
+      "confidence": 96.24,
+      "bbox": {
+        "x": 624,
+        "y": 1469,
+        "width": 304,
+        "height": 30
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 96.18,
+          "bbox": {
+            "x": 624,
+            "y": 1470,
+            "width": 2,
+            "height": 27
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often",
+          "confidence": 96.07,
+          "bbox": {
+            "x": 643,
+            "y": 1469,
+            "width": 94,
+            "height": 30
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watch",
+          "confidence": 96.16,
+          "bbox": {
+            "x": 754,
+            "y": 1469,
+            "width": 108,
+            "height": 30
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "TY.",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 881,
+            "y": 1469,
+            "width": 47,
+            "height": 28
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "2 (go to the theatre)",
+      "confidence": 96.38,
+      "bbox": {
+        "x": 155,
+        "y": 1537,
+        "width": 381,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 95.73,
+          "bbox": {
+            "x": 155,
+            "y": 1539,
+            "width": 20,
+            "height": 31
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(go",
+          "confidence": 95.73,
+          "bbox": {
+            "x": 206,
+            "y": 1538,
+            "width": 55,
+            "height": 43
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "to",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 277,
+            "y": 1546,
+            "width": 35,
+            "height": 24
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 97,
+          "bbox": {
+            "x": 328,
+            "y": 1537,
+            "width": 56,
+            "height": 33
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "theatre)",
+          "confidence": 96.51,
+          "bbox": {
+            "x": 399,
+            "y": 1537,
+            "width": 137,
+            "height": 42
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "7",
+      "confidence": 21.59,
+      "bbox": {
+        "x": 1928,
+        "y": 1561,
+        "width": 2,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "7",
+          "confidence": 21.59,
+          "bbox": {
+            "x": 1928,
+            "y": 1561,
+            "width": 2,
+            "height": 3
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "3 (ride a bicycle)",
+      "confidence": 91.86,
+      "bbox": {
+        "x": 156,
+        "y": 1592,
+        "width": 317,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "3",
+          "confidence": 87.27,
+          "bbox": {
+            "x": 156,
+            "y": 1595,
+            "width": 19,
+            "height": 31
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(ride",
+          "confidence": 87.27,
+          "bbox": {
+            "x": 206,
+            "y": 1593,
+            "width": 81,
+            "height": 42
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.36,
+          "bbox": {
+            "x": 302,
+            "y": 1605,
+            "width": 17,
+            "height": 20
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bicycle)",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 333,
+            "y": 1592,
+            "width": 140,
+            "height": 43
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "4 (eat in restaurants)",
+      "confidence": 96.79,
+      "bbox": {
+        "x": 156,
+        "y": 1648,
+        "width": 380,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "4",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 156,
+            "y": 1650,
+            "width": 20,
+            "height": 31
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(eat",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 206,
+            "y": 1649,
+            "width": 63,
+            "height": 40
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "in",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 284,
+            "y": 1649,
+            "width": 33,
+            "height": 31
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "restaurants)",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 333,
+            "y": 1648,
+            "width": 203,
+            "height": 41
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "5 (travel by train)",
+      "confidence": 94.07,
+      "bbox": {
+        "x": 157,
+        "y": 1703,
+        "width": 328,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "5",
+          "confidence": 89.81,
+          "bbox": {
+            "x": 157,
+            "y": 1705,
+            "width": 18,
+            "height": 31
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(travel",
+          "confidence": 92.68,
+          "bbox": {
+            "x": 206,
+            "y": 1703,
+            "width": 111,
+            "height": 42
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "by",
+          "confidence": 97.02,
+          "bbox": {
+            "x": 333,
+            "y": 1703,
+            "width": 44,
+            "height": 43
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "train)",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 392,
+            "y": 1703,
+            "width": 93,
+            "height": 41
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "用 don't/doesn't + 所 给 动词 完成 ”",
+      "confidence": 91.43,
+      "bbox": {
+        "x": 163,
+        "y": 1780,
+        "width": 659,
+        "height": 52
+      },
+      "words": [
+        {
+          "text": "用",
+          "confidence": 95.78,
+          "bbox": {
+            "x": 163,
+            "y": 1787,
+            "width": 29,
+            "height": 37
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "don't/doesn't",
+          "confidence": 81.67,
+          "bbox": {
+            "x": 215,
+            "y": 1786,
+            "width": 266,
+            "height": 42
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "+",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 497,
+            "y": 1800,
+            "width": 21,
+            "height": 20
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "所",
+          "confidence": 95.7,
+          "bbox": {
+            "x": 542,
+            "y": 1786,
+            "width": 32,
+            "height": 36
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "给",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 585,
+            "y": 1785,
+            "width": 28,
+            "height": 38
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "动词",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 642,
+            "y": 1785,
+            "width": 96,
+            "height": 39
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "完成",
+          "confidence": 93.18,
+          "bbox": {
+            "x": 737,
+            "y": 1785,
+            "width": 83,
+            "height": 39
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "”",
+          "confidence": 75.83,
+          "bbox": {
+            "x": 809,
+            "y": 1780,
+            "width": 13,
+            "height": 52
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "6.4",
+      "confidence": 96.46,
+      "bbox": {
+        "x": 28,
+        "y": 1792,
+        "width": 58,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "6.4",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 28,
+            "y": 1792,
+            "width": 58,
+            "height": 31
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "confidence": 78.57,
+      "bbox": {
+        "x": 823,
+        "y": 1802,
+        "width": 2,
+        "height": 20
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 78.57,
+          "bbox": {
+            "x": 823,
+            "y": 1802,
+            "width": 2,
+            "height": 20
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "know",
+      "confidence": 86.48,
+      "bbox": {
+        "x": 528,
+        "y": 1860,
+        "width": 115,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "know",
+          "confidence": 86.48,
+          "bbox": {
+            "x": 528,
+            "y": 1860,
+            "width": 115,
+            "height": 32
+          },
+          "block": 76,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "read",
+      "confidence": 52.21,
+      "bbox": {
+        "x": 729,
+        "y": 1860,
+        "width": 102,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "read",
+          "confidence": 52.21,
+          "bbox": {
+            "x": 729,
+            "y": 1860,
+            "width": 102,
+            "height": 32
+          },
+          "block": 77,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "COSt",
+      "confidence": 92.63,
+      "bbox": {
+        "x": 205,
+        "y": 1868,
+        "width": 81,
+        "height": 26
+      },
+      "words": [
+        {
+          "text": "COSt",
+          "confidence": 92.63,
+          "bbox": {
+            "x": 205,
+            "y": 1868,
+            "width": 81,
+            "height": 26
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "see",
+      "confidence": 96.47,
+      "bbox": {
+        "x": 924,
+        "y": 1870,
+        "width": 60,
+        "height": 22
+      },
+      "words": [
+        {
+          "text": "see",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 924,
+            "y": 1870,
+            "width": 60,
+            "height": 22
+          },
+          "block": 78,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "use",
+      "confidence": 96.84,
+      "bbox": {
+        "x": 1081,
+        "y": 1870,
+        "width": 65,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "use",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 1081,
+            "y": 1870,
+            "width": 65,
+            "height": 21
+          },
+          "block": 79,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "wear",
+      "confidence": 96.81,
+      "bbox": {
+        "x": 1242,
+        "y": 1870,
+        "width": 100,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "wear",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 1242,
+            "y": 1870,
+            "width": 100,
+            "height": 21
+          },
+          "block": 80,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "go",
+      "confidence": 95.18,
+      "bbox": {
+        "x": 382,
+        "y": 1872,
+        "width": 50,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "go",
+          "confidence": 95.18,
+          "bbox": {
+            "x": 382,
+            "y": 1872,
+            "width": 50,
+            "height": 31
+          },
+          "block": 81,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "don’t re",
+      "confidence": 90.18,
+      "bbox": {
+        "x": 1117,
+        "y": 1925,
+        "width": 134,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "don’t",
+          "confidence": 85.85,
+          "bbox": {
+            "x": 1117,
+            "y": 1925,
+            "width": 93,
+            "height": 31
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "re",
+          "confidence": 94.5,
+          "bbox": {
+            "x": 1244,
+            "y": 1939,
+            "width": 7,
+            "height": 16
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "confidence": 72.67,
+      "bbox": {
+        "x": 1304,
+        "y": 1925,
+        "width": 4,
+        "height": 30
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 72.67,
+          "bbox": {
+            "x": 1304,
+            "y": 1925,
+            "width": 4,
+            "height": 30
+          },
+          "block": 83,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "I buy a newspaper every day, but sometimes I",
+      "confidence": 93.06,
+      "bbox": {
+        "x": 206,
+        "y": 1933,
+        "width": 850,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "I",
+          "confidence": 95.38,
+          "bbox": {
+            "x": 206,
+            "y": 1936,
+            "width": 11,
+            "height": 30
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "buy",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 232,
+            "y": 1934,
+            "width": 69,
+            "height": 43
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 317,
+            "y": 1946,
+            "width": 16,
+            "height": 21
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "newspaper",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 348,
+            "y": 1945,
+            "width": 195,
+            "height": 31
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "every",
+          "confidence": 96.61,
+          "bbox": {
+            "x": 557,
+            "y": 1945,
+            "width": 100,
+            "height": 31
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "day,",
+          "confidence": 96.61,
+          "bbox": {
+            "x": 672,
+            "y": 1933,
+            "width": 72,
+            "height": 43
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "but",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 760,
+            "y": 1933,
+            "width": 61,
+            "height": 32
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sometimes",
+          "confidence": 96.72,
+          "bbox": {
+            "x": 836,
+            "y": 1934,
+            "width": 193,
+            "height": 31
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 64.98,
+          "bbox": {
+            "x": 1045,
+            "y": 1934,
+            "width": 11,
+            "height": 30
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "it.",
+      "confidence": 94.26,
+      "bbox": {
+        "x": 1393,
+        "y": 1933,
+        "width": 34,
+        "height": 30
+      },
+      "words": [
+        {
+          "text": "it.",
+          "confidence": 94.26,
+          "bbox": {
+            "x": 1393,
+            "y": 1933,
+            "width": 34,
+            "height": 30
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "it very often.",
+      "confidence": 95.39,
+      "bbox": {
+        "x": 1121,
+        "y": 1986,
+        "width": 237,
+        "height": 48
+      },
+      "words": [
+        {
+          "text": "it",
+          "confidence": 94.99,
+          "bbox": {
+            "x": 1121,
+            "y": 1989,
+            "width": 24,
+            "height": 30
+          },
+          "block": 87,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 94.99,
+          "bbox": {
+            "x": 1159,
+            "y": 1999,
+            "width": 80,
+            "height": 35
+          },
+          "block": 87,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often.",
+          "confidence": 96.19,
+          "bbox": {
+            "x": 1254,
+            "y": 1986,
+            "width": 104,
+            "height": 33
+          },
+          "block": 87,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Paul has a car, but he",
+      "confidence": 95.96,
+      "bbox": {
+        "x": 204,
+        "y": 1988,
+        "width": 394,
+        "height": 39
+      },
+      "words": [
+        {
+          "text": "Paul",
+          "confidence": 96.64,
+          "bbox": {
+            "x": 204,
+            "y": 1989,
+            "width": 80,
+            "height": 33
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "has",
+          "confidence": 94.94,
+          "bbox": {
+            "x": 298,
+            "y": 1990,
+            "width": 55,
+            "height": 32
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 94.94,
+          "bbox": {
+            "x": 369,
+            "y": 2001,
+            "width": 16,
+            "height": 20
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "car,",
+          "confidence": 96.19,
+          "bbox": {
+            "x": 401,
+            "y": 2001,
+            "width": 62,
+            "height": 26
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "but",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 479,
+            "y": 1989,
+            "width": 61,
+            "height": 32
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 555,
+            "y": 1988,
+            "width": 43,
+            "height": 33
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "to the cinema very often.",
+      "confidence": 96.31,
+      "bbox": {
+        "x": 1451,
+        "y": 2040,
+        "width": 468,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "to",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 1451,
+            "y": 2050,
+            "width": 35,
+            "height": 23
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 1503,
+            "y": 2040,
+            "width": 55,
+            "height": 33
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "cinema",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 1575,
+            "y": 2042,
+            "width": 131,
+            "height": 31
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 1720,
+            "y": 2052,
+            "width": 80,
+            "height": 31
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often.",
+          "confidence": 94.95,
+          "bbox": {
+            "x": 1815,
+            "y": 2040,
+            "width": 104,
+            "height": 33
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Paul and his friends like films, but they",
+      "confidence": 96.62,
+      "bbox": {
+        "x": 205,
+        "y": 2042,
+        "width": 723,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "Paul",
+          "confidence": 96.48,
+          "bbox": {
+            "x": 205,
+            "y": 2043,
+            "width": 79,
+            "height": 34
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "and",
+          "confidence": 96.89,
+          "bbox": {
+            "x": 299,
+            "y": 2044,
+            "width": 65,
+            "height": 32
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "his",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 378,
+            "y": 2043,
+            "width": 49,
+            "height": 33
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "friends",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 441,
+            "y": 2043,
+            "width": 122,
+            "height": 33
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "like",
+          "confidence": 96.45,
+          "bbox": {
+            "x": 578,
+            "y": 2043,
+            "width": 65,
+            "height": 32
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "films,",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 659,
+            "y": 2042,
+            "width": 98,
+            "height": 39
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "but",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 773,
+            "y": 2042,
+            "width": 61,
+            "height": 33
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "they",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 849,
+            "y": 2042,
+            "width": 79,
+            "height": 43
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Amanda is married, but she",
+      "confidence": 96.49,
+      "bbox": {
+        "x": 204,
+        "y": 2098,
+        "width": 508,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "Amanda",
+          "confidence": 96.18,
+          "bbox": {
+            "x": 204,
+            "y": 2099,
+            "width": 153,
+            "height": 33
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 372,
+            "y": 2100,
+            "width": 24,
+            "height": 32
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "married,",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 412,
+            "y": 2098,
+            "width": 151,
+            "height": 38
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "but",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 579,
+            "y": 2098,
+            "width": 62,
+            "height": 33
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "she",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 655,
+            "y": 2098,
+            "width": 57,
+            "height": 33
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "a ring.",
+      "confidence": 88,
+      "bbox": {
+        "x": 1236,
+        "y": 2098,
+        "width": 114,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 88,
+          "bbox": {
+            "x": 1236,
+            "y": 2109,
+            "width": 17,
+            "height": 21
+          },
+          "block": 91,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "ring.",
+          "confidence": 88,
+          "bbox": {
+            "x": 1267,
+            "y": 2098,
+            "width": 83,
+            "height": 42
+          },
+          "block": 91,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "much about politics. I’m not interested in it.",
+      "confidence": 89.08,
+      "bbox": {
+        "x": 740,
+        "y": 2152,
+        "width": 826,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "much",
+          "confidence": 95.69,
+          "bbox": {
+            "x": 740,
+            "y": 2153,
+            "width": 105,
+            "height": 33
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "about",
+          "confidence": 95.69,
+          "bbox": {
+            "x": 860,
+            "y": 2153,
+            "width": 104,
+            "height": 33
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "politics.",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 978,
+            "y": 2152,
+            "width": 140,
+            "height": 44
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 67.41,
+          "bbox": {
+            "x": 1137,
+            "y": 2153,
+            "width": 65,
+            "height": 32
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 67.41,
+          "bbox": {
+            "x": 1214,
+            "y": 2161,
+            "width": 61,
+            "height": 24
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "interested",
+          "confidence": 96.51,
+          "bbox": {
+            "x": 1290,
+            "y": 2152,
+            "width": 178,
+            "height": 33
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "in",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 1483,
+            "y": 2153,
+            "width": 34,
+            "height": 31
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it.",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 1533,
+            "y": 2153,
+            "width": 33,
+            "height": 31
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "I",
+      "confidence": 95.69,
+      "bbox": {
+        "x": 206,
+        "y": 2157,
+        "width": 12,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "I",
+          "confidence": 95.69,
+          "bbox": {
+            "x": 206,
+            "y": 2157,
+            "width": 12,
+            "height": 31
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "much to stay there.",
+      "confidence": 96.6,
+      "bbox": {
+        "x": 1429,
+        "y": 2207,
+        "width": 356,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "much",
+          "confidence": 95.82,
+          "bbox": {
+            "x": 1429,
+            "y": 2207,
+            "width": 104,
+            "height": 33
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "to",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 1549,
+            "y": 2215,
+            "width": 34,
+            "height": 24
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "stay",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 1600,
+            "y": 2215,
+            "width": 66,
+            "height": 34
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "there.",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 1682,
+            "y": 2207,
+            "width": 103,
+            "height": 32
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "The Regent Hotel isn’t expensive. It",
+      "confidence": 95.9,
+      "bbox": {
+        "x": 205,
+        "y": 2209,
+        "width": 701,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "The",
+          "confidence": 96,
+          "bbox": {
+            "x": 205,
+            "y": 2210,
+            "width": 75,
+            "height": 32
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Regent",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 295,
+            "y": 2212,
+            "width": 138,
+            "height": 40
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Hotel",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 447,
+            "y": 2209,
+            "width": 105,
+            "height": 33
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn’t",
+          "confidence": 96.28,
+          "bbox": {
+            "x": 567,
+            "y": 2210,
+            "width": 76,
+            "height": 32
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "expensive.",
+          "confidence": 95.88,
+          "bbox": {
+            "x": 658,
+            "y": 2210,
+            "width": 190,
+            "height": 42
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "It",
+          "confidence": 95.26,
+          "bbox": {
+            "x": 879,
+            "y": 2210,
+            "width": 27,
+            "height": 31
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "him very often.",
+      "confidence": 96.48,
+      "bbox": {
+        "x": 1315,
+        "y": 2262,
+        "width": 285,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "him",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 1315,
+            "y": 2263,
+            "width": 73,
+            "height": 32
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.72,
+          "bbox": {
+            "x": 1402,
+            "y": 2275,
+            "width": 79,
+            "height": 30
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often.",
+          "confidence": 95.76,
+          "bbox": {
+            "x": 1497,
+            "y": 2262,
+            "width": 103,
+            "height": 33
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Brian lives very near us, but we",
+      "confidence": 96.77,
+      "bbox": {
+        "x": 205,
+        "y": 2264,
+        "width": 587,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "Brian",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 205,
+            "y": 2267,
+            "width": 99,
+            "height": 31
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "lives",
+          "confidence": 96.68,
+          "bbox": {
+            "x": 319,
+            "y": 2265,
+            "width": 79,
+            "height": 33
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 412,
+            "y": 2277,
+            "width": 80,
+            "height": 31
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "near",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 507,
+            "y": 2276,
+            "width": 78,
+            "height": 21
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "us,",
+          "confidence": 97,
+          "bbox": {
+            "x": 599,
+            "y": 2276,
+            "width": 47,
+            "height": 27
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "but",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 662,
+            "y": 2264,
+            "width": 61,
+            "height": 33
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "we",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 738,
+            "y": 2276,
+            "width": 54,
+            "height": 20
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Amn ae ARG EARS",
+      "confidence": 12.44,
+      "bbox": {
+        "x": 168,
+        "y": 2346,
+        "width": 565,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "Amn",
+          "confidence": 0,
+          "bbox": {
+            "x": 168,
+            "y": 2347,
+            "width": 161,
+            "height": 41
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ae",
+          "confidence": 0,
+          "bbox": {
+            "x": 342,
+            "y": 2350,
+            "width": 78,
+            "height": 37
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ARG",
+          "confidence": 0,
+          "bbox": {
+            "x": 435,
+            "y": 2347,
+            "width": 119,
+            "height": 39
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "EARS",
+          "confidence": 49.74,
+          "bbox": {
+            "x": 568,
+            "y": 2346,
+            "width": 165,
+            "height": 40
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "6.5",
+      "confidence": 96.96,
+      "bbox": {
+        "x": 30,
+        "y": 2354,
+        "width": 57,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "6.5",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 30,
+            "y": 2354,
+            "width": 57,
+            "height": 31
+          },
+          "block": 98,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Ni",
+      "confidence": 32.57,
+      "bbox": {
+        "x": 631,
+        "y": 2362,
+        "width": 15,
+        "height": 23
+      },
+      "words": [
+        {
+          "text": "Ni",
+          "confidence": 32.57,
+          "bbox": {
+            "x": 631,
+            "y": 2362,
+            "width": 15,
+            "height": 23
+          },
+          "block": 100,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "speaks",
+      "confidence": 50.56,
+      "bbox": {
+        "x": 439,
+        "y": 2418,
+        "width": 128,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "speaks",
+          "confidence": 50.56,
+          "bbox": {
+            "x": 439,
+            "y": 2418,
+            "width": 128,
+            "height": 42
+          },
+          "block": 103,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "four languages — English, French, German and Spanish. (speak)",
+      "confidence": 95.6,
+      "bbox": {
+        "x": 627,
+        "y": 2420,
+        "width": 1184,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "four",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 627,
+            "y": 2422,
+            "width": 77,
+            "height": 33
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "languages",
+          "confidence": 93.16,
+          "bbox": {
+            "x": 717,
+            "y": 2422,
+            "width": 176,
+            "height": 43
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 92.55,
+          "bbox": {
+            "x": 907,
+            "y": 2440,
+            "width": 25,
+            "height": 3
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "English,",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 944,
+            "y": 2421,
+            "width": 146,
+            "height": 44
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "French,",
+          "confidence": 96.43,
+          "bbox": {
+            "x": 1107,
+            "y": 2421,
+            "width": 138,
+            "height": 38
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "German",
+          "confidence": 96.64,
+          "bbox": {
+            "x": 1264,
+            "y": 2423,
+            "width": 148,
+            "height": 31
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "and",
+          "confidence": 95.22,
+          "bbox": {
+            "x": 1427,
+            "y": 2421,
+            "width": 66,
+            "height": 32
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Spanish.",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 1508,
+            "y": 2421,
+            "width": 148,
+            "height": 42
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(speak)",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 1689,
+            "y": 2420,
+            "width": 122,
+            "height": 43
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Margaret",
+      "confidence": 96.83,
+      "bbox": {
+        "x": 206,
+        "y": 2426,
+        "width": 166,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "Margaret",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 206,
+            "y": 2426,
+            "width": 166,
+            "height": 41
+          },
+          "block": 101,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "人 全",
+      "confidence": 6.14,
+      "bbox": {
+        "x": 387,
+        "y": 2450,
+        "width": 70,
+        "height": 4
+      },
+      "words": [
+        {
+          "text": "人",
+          "confidence": 6.46,
+          "bbox": {
+            "x": 387,
+            "y": 2450,
+            "width": 37,
+            "height": 4
+          },
+          "block": 102,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "全",
+          "confidence": 5.81,
+          "bbox": {
+            "x": 428,
+            "y": 2450,
+            "width": 29,
+            "height": 3
+          },
+          "block": 102,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "LA",
+      "confidence": 29.31,
+      "bbox": {
+        "x": 468,
+        "y": 2450,
+        "width": 143,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "LA",
+          "confidence": 29.31,
+          "bbox": {
+            "x": 468,
+            "y": 2450,
+            "width": 143,
+            "height": 3
+          },
+          "block": 104,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "dor",
+      "confidence": 77.73,
+      "bbox": {
+        "x": 289,
+        "y": 2474,
+        "width": 54,
+        "height": 29
+      },
+      "words": [
+        {
+          "text": "dor",
+          "confidence": 77.73,
+          "bbox": {
+            "x": 289,
+            "y": 2474,
+            "width": 54,
+            "height": 29
+          },
+          "block": 106,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "my job. It’s very boring. (like)",
+      "confidence": 95.81,
+      "bbox": {
+        "x": 534,
+        "y": 2477,
+        "width": 587,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "my",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 534,
+            "y": 2490,
+            "width": 59,
+            "height": 31
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "job.",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 601,
+            "y": 2477,
+            "width": 74,
+            "height": 43
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "It’s",
+          "confidence": 96.53,
+          "bbox": {
+            "x": 707,
+            "y": 2478,
+            "width": 53,
+            "height": 32
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 775,
+            "y": 2489,
+            "width": 80,
+            "height": 31
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "boring.",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 869,
+            "y": 2477,
+            "width": 130,
+            "height": 42
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(like)",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 1032,
+            "y": 2477,
+            "width": 89,
+            "height": 41
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "3?",
+      "confidence": 72.88,
+      "bbox": {
+        "x": 1385,
+        "y": 2531,
+        "width": 7,
+        "height": 11
+      },
+      "words": [
+        {
+          "text": "3?",
+          "confidence": 72.88,
+          "bbox": {
+            "x": 1385,
+            "y": 2531,
+            "width": 7,
+            "height": 11
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(know)",
+      "confidence": 96.53,
+      "bbox": {
+        "x": 1425,
+        "y": 2531,
+        "width": 129,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "(know)",
+          "confidence": 96.53,
+          "bbox": {
+            "x": 1425,
+            "y": 2531,
+            "width": 129,
+            "height": 41
+          },
+          "block": 111,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "“Where’s Martin?’",
+      "confidence": 89.41,
+      "bbox": {
+        "x": 208,
+        "y": 2534,
+        "width": 331,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "“Where’s",
+          "confidence": 83.35,
+          "bbox": {
+            "x": 208,
+            "y": 2534,
+            "width": 163,
+            "height": 32
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Martin?’",
+          "confidence": 95.46,
+          "bbox": {
+            "x": 386,
+            "y": 2534,
+            "width": 153,
+            "height": 32
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "‘Tm sorry. I",
+      "confidence": 84.66,
+      "bbox": {
+        "x": 616,
+        "y": 2534,
+        "width": 233,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "‘Tm",
+          "confidence": 65.26,
+          "bbox": {
+            "x": 616,
+            "y": 2534,
+            "width": 74,
+            "height": 31
+          },
+          "block": 110,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sorry.",
+          "confidence": 94.48,
+          "bbox": {
+            "x": 705,
+            "y": 2544,
+            "width": 100,
+            "height": 31
+          },
+          "block": 110,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 94.24,
+          "bbox": {
+            "x": 837,
+            "y": 2534,
+            "width": 12,
+            "height": 30
+          },
+          "block": 110,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Very much. (talk)",
+      "confidence": 80.3,
+      "bbox": {
+        "x": 1246,
+        "y": 2585,
+        "width": 395,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "Very",
+          "confidence": 53.5,
+          "bbox": {
+            "x": 1246,
+            "y": 2598,
+            "width": 145,
+            "height": 30
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "much.",
+          "confidence": 93.13,
+          "bbox": {
+            "x": 1405,
+            "y": 2586,
+            "width": 114,
+            "height": 32
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(talk)",
+          "confidence": 94.27,
+          "bbox": {
+            "x": 1553,
+            "y": 2585,
+            "width": 88,
+            "height": 41
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Sue is a very quiet person. She",
+      "confidence": 96.09,
+      "bbox": {
+        "x": 207,
+        "y": 2587,
+        "width": 582,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "Sue",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 207,
+            "y": 2590,
+            "width": 65,
+            "height": 31
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 95.43,
+          "bbox": {
+            "x": 288,
+            "y": 2590,
+            "width": 24,
+            "height": 30
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 95.43,
+          "bbox": {
+            "x": 327,
+            "y": 2600,
+            "width": 17,
+            "height": 21
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96,
+          "bbox": {
+            "x": 358,
+            "y": 2600,
+            "width": 80,
+            "height": 30
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "quiet",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 453,
+            "y": 2589,
+            "width": 93,
+            "height": 42
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "person.",
+          "confidence": 95.99,
+          "bbox": {
+            "x": 560,
+            "y": 2599,
+            "width": 132,
+            "height": 31
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "She",
+          "confidence": 96.52,
+          "bbox": {
+            "x": 724,
+            "y": 2587,
+            "width": 65,
+            "height": 33
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "a lot of tea. It’s his favourite drink. (drink)",
+      "confidence": 92.62,
+      "bbox": {
+        "x": 831,
+        "y": 2640,
+        "width": 807,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 82.06,
+          "bbox": {
+            "x": 831,
+            "y": 2654,
+            "width": 16,
+            "height": 20
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "lot",
+          "confidence": 82.06,
+          "bbox": {
+            "x": 861,
+            "y": 2642,
+            "width": 49,
+            "height": 32
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "of",
+          "confidence": 96.28,
+          "bbox": {
+            "x": 925,
+            "y": 2641,
+            "width": 42,
+            "height": 33
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "tea.",
+          "confidence": 92.16,
+          "bbox": {
+            "x": 975,
+            "y": 2650,
+            "width": 60,
+            "height": 24
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "It’s",
+          "confidence": 96.08,
+          "bbox": {
+            "x": 1066,
+            "y": 2642,
+            "width": 53,
+            "height": 32
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "his",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 1135,
+            "y": 2641,
+            "width": 48,
+            "height": 33
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "favourite",
+          "confidence": 96.16,
+          "bbox": {
+            "x": 1198,
+            "y": 2641,
+            "width": 163,
+            "height": 32
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "drink.",
+          "confidence": 95.91,
+          "bbox": {
+            "x": 1377,
+            "y": 2640,
+            "width": 107,
+            "height": 33
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(drink)",
+          "confidence": 95.91,
+          "bbox": {
+            "x": 1518,
+            "y": 2640,
+            "width": 120,
+            "height": 42
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Andy",
+      "confidence": 96.78,
+      "bbox": {
+        "x": 206,
+        "y": 2643,
+        "width": 101,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "Andy",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 206,
+            "y": 2643,
+            "width": 101,
+            "height": 43
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": ".. it! (believe)",
+      "confidence": 67.38,
+      "bbox": {
+        "x": 970,
+        "y": 2696,
+        "width": 250,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "..",
+          "confidence": 40.07,
+          "bbox": {
+            "x": 970,
+            "y": 2724,
+            "width": 15,
+            "height": 4
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "it!",
+          "confidence": 69.63,
+          "bbox": {
+            "x": 1002,
+            "y": 2697,
+            "width": 33,
+            "height": 32
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(believe)",
+          "confidence": 92.43,
+          "bbox": {
+            "x": 1068,
+            "y": 2696,
+            "width": 152,
+            "height": 42
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "It’s not true! I",
+      "confidence": 94.86,
+      "bbox": {
+        "x": 208,
+        "y": 2699,
+        "width": 268,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "It’s",
+          "confidence": 96.43,
+          "bbox": {
+            "x": 208,
+            "y": 2699,
+            "width": 52,
+            "height": 33
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 95.87,
+          "bbox": {
+            "x": 276,
+            "y": 2707,
+            "width": 61,
+            "height": 24
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "true!",
+          "confidence": 95.1,
+          "bbox": {
+            "x": 351,
+            "y": 2699,
+            "width": 83,
+            "height": 32
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 92.04,
+          "bbox": {
+            "x": 465,
+            "y": 2700,
+            "width": 11,
+            "height": 31
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "it very much. (like)",
+      "confidence": 95.03,
+      "bbox": {
+        "x": 1341,
+        "y": 2751,
+        "width": 370,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "it",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 1341,
+            "y": 2753,
+            "width": 24,
+            "height": 31
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 95.87,
+          "bbox": {
+            "x": 1381,
+            "y": 2763,
+            "width": 79,
+            "height": 31
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "much.",
+          "confidence": 93.84,
+          "bbox": {
+            "x": 1475,
+            "y": 2751,
+            "width": 114,
+            "height": 33
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(like)",
+          "confidence": 93.84,
+          "bbox": {
+            "x": 1622,
+            "y": 2751,
+            "width": 89,
+            "height": 41
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "That’s a very beautiful picture. I",
+      "confidence": 90.96,
+      "bbox": {
+        "x": 207,
+        "y": 2753,
+        "width": 612,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "That’s",
+          "confidence": 91.19,
+          "bbox": {
+            "x": 207,
+            "y": 2754,
+            "width": 113,
+            "height": 33
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 336,
+            "y": 2766,
+            "width": 16,
+            "height": 20
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 366,
+            "y": 2766,
+            "width": 80,
+            "height": 30
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "beautiful",
+          "confidence": 96.64,
+          "bbox": {
+            "x": 460,
+            "y": 2753,
+            "width": 161,
+            "height": 33
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "picture.",
+          "confidence": 95.19,
+          "bbox": {
+            "x": 636,
+            "y": 2754,
+            "width": 140,
+            "height": 42
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 69.97,
+          "bbox": {
+            "x": 808,
+            "y": 2754,
+            "width": 11,
+            "height": 31
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "meat. (eat)",
+      "confidence": 96.51,
+      "bbox": {
+        "x": 1199,
+        "y": 2807,
+        "width": 206,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "meat.",
+          "confidence": 96.12,
+          "bbox": {
+            "x": 1199,
+            "y": 2815,
+            "width": 98,
+            "height": 25
+          },
+          "block": 120,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(eat)",
+          "confidence": 96.9,
+          "bbox": {
+            "x": 1330,
+            "y": 2807,
+            "width": 75,
+            "height": 42
+          },
+          "block": 120,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Mark is a vegetarian. He",
+      "confidence": 96.1,
+      "bbox": {
+        "x": 208,
+        "y": 2810,
+        "width": 469,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "Mark",
+          "confidence": 94.47,
+          "bbox": {
+            "x": 208,
+            "y": 2810,
+            "width": 99,
+            "height": 32
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 321,
+            "y": 2811,
+            "width": 24,
+            "height": 31
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 361,
+            "y": 2821,
+            "width": 16,
+            "height": 21
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "vegetarian.",
+          "confidence": 96.29,
+          "bbox": {
+            "x": 392,
+            "y": 2810,
+            "width": 197,
+            "height": 42
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "He",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 621,
+            "y": 2810,
+            "width": 56,
+            "height": 31
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "25",
+      "confidence": 96.97,
+      "bbox": {
+        "x": 1983,
+        "y": 2985,
+        "width": 53,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "25",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 1983,
+            "y": 2985,
+            "width": 53,
+            "height": 36
+          },
+          "block": 122,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    }
+  ]
+}

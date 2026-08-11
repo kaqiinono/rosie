@@ -33,24 +33,113 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
+-- Name: check_api_rate_limit(text, text, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_api_rate_limit(p_key_hash text, p_route text, p_limit integer, p_window_seconds integer) RETURNS boolean
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO ''
+    SET statement_timeout TO '2s'
+    AS $$
+DECLARE
+  v_window_start timestamptz;
+  v_count integer;
+BEGIN
+  IF p_key_hash IS NULL OR length(p_key_hash) <> 64
+     OR p_route IS NULL OR length(p_route) > 160
+     OR p_limit < 1 OR p_limit > 10000
+     OR p_window_seconds < 1 OR p_window_seconds > 86400 THEN
+    RAISE EXCEPTION 'invalid_rate_limit_input';
+  END IF;
+
+  v_window_start := to_timestamp(
+    floor(extract(epoch FROM clock_timestamp()) / p_window_seconds) * p_window_seconds
+  );
+
+  -- Serialize only the same key+route. Different users/routes remain concurrent.
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_key_hash || ':' || p_route, 0));
+
+  DELETE FROM public.api_rate_limits
+  WHERE key_hash = p_key_hash
+    AND route = p_route
+    AND window_start < v_window_start;
+
+  INSERT INTO public.api_rate_limits (
+    key_hash,
+    route,
+    window_start,
+    request_count,
+    updated_at
+  )
+  VALUES (p_key_hash, p_route, v_window_start, 1, clock_timestamp())
+  ON CONFLICT (key_hash, route, window_start)
+  DO UPDATE SET
+    request_count = public.api_rate_limits.request_count + 1,
+    updated_at = clock_timestamp()
+  RETURNING request_count INTO v_count;
+
+  RETURN v_count > p_limit;
+END;
+$$;
+
+
+--
 -- Name: increment_math_solved(uuid, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.increment_math_solved(p_user_id uuid, p_prob_id text) RETURNS integer
     LANGUAGE plpgsql
+    SET search_path TO ''
     AS $$
-  DECLARE new_count integer;
-  BEGIN
-    INSERT INTO math_solved (user_id, problem_id, solve_count, solved_at)
-    VALUES (p_user_id, p_prob_id, 1, now())
-    ON CONFLICT (user_id, problem_id)
-    DO UPDATE SET
-      solve_count = math_solved.solve_count + 1,
-      solved_at   = now()
-    RETURNING solve_count INTO new_count;
-    RETURN new_count;
-  END;
-  $$;
+DECLARE
+  new_count integer;
+BEGIN
+  INSERT INTO public.math_solved (user_id, problem_id, solve_count, solved_at)
+  VALUES (p_user_id, p_prob_id, 1, pg_catalog.now())
+  ON CONFLICT (user_id, problem_id)
+  DO UPDATE SET
+    solve_count = public.math_solved.solve_count + 1,
+    solved_at = pg_catalog.now()
+  RETURNING solve_count INTO new_count;
+
+  RETURN new_count;
+END;
+$$;
+
+
+--
+-- Name: is_admin(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.is_admin() RETURNS boolean
+    LANGUAGE sql STABLE
+    SET search_path TO 'public'
+    AS $$
+  SELECT COALESCE((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
+$$;
+
+
+--
+-- Name: knowledge_chunks_update_content_tsv(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.knowledge_chunks_update_content_tsv() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO ''
+    AS $$
+BEGIN
+  IF NEW.subject = 'english' THEN
+    NEW.content_tsv := pg_catalog.to_tsvector(
+      'pg_catalog.english'::pg_catalog.regconfig,
+      NEW.content
+    );
+  ELSE
+    NEW.content_tsv := NULL;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
 
 
 --
@@ -59,6 +148,7 @@ CREATE FUNCTION public.increment_math_solved(p_user_id uuid, p_prob_id text) RET
 
 CREATE FUNCTION public.math_wrong_clear_resolved_on_insert() RETURNS trigger
     LANGUAGE plpgsql
+    SET search_path TO ''
     AS $$
 BEGIN
   NEW.resolved := false;
@@ -69,11 +159,121 @@ $$;
 
 
 --
+-- Name: search_knowledge(public.vector, text, text, smallint, jsonb, integer, double precision, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.search_knowledge(query_embedding public.vector, query_text text DEFAULT NULL::text, match_subject text DEFAULT NULL::text, match_grade smallint DEFAULT NULL::smallint, match_metadata jsonb DEFAULT NULL::jsonb, match_count integer DEFAULT 10, match_threshold double precision DEFAULT 0.65, rrf_k integer DEFAULT 60) RETURNS TABLE(chunk_id uuid, document_id uuid, subject text, content text, metadata jsonb, similarity double precision)
+    LANGUAGE sql STABLE
+    SET search_path TO 'pg_catalog', 'public'
+    AS $_$
+  WITH accessible AS (
+    SELECT c.*
+    FROM public.knowledge_chunks c
+    WHERE c.user_id IS NULL OR c.user_id = (SELECT auth.uid())
+  ),
+  filtered AS (
+    SELECT a.*
+    FROM accessible a
+    WHERE (match_subject IS NULL OR a.subject = match_subject)
+      AND (
+        match_grade IS NULL
+        OR NULLIF(a.metadata ->> 'grade', '') IS NULL
+        OR (
+          (a.metadata ->> 'grade') ~ '^\d+$'
+          AND (a.metadata ->> 'grade')::int = match_grade
+        )
+      )
+      AND (match_metadata IS NULL OR a.metadata @> match_metadata)
+  ),
+  vector_hits AS (
+    SELECT
+      f.id,
+      f.document_id,
+      f.subject,
+      f.content,
+      f.metadata,
+      ROW_NUMBER() OVER (ORDER BY f.embedding <=> query_embedding) AS rn,
+      (1 - (f.embedding <=> query_embedding))::float AS vec_sim
+    FROM filtered f
+    WHERE f.embedding IS NOT NULL
+      AND (1 - (f.embedding <=> query_embedding)) >= match_threshold
+    ORDER BY f.embedding <=> query_embedding
+    LIMIT 50
+  ),
+  text_hits AS (
+    SELECT
+      f.id,
+      f.document_id,
+      f.subject,
+      f.content,
+      f.metadata,
+      ROW_NUMBER() OVER (
+        ORDER BY
+          CASE
+            WHEN lower(f.content) LIKE '%' || lower(query_text) || '%' THEN 1.0
+            WHEN f.subject = 'english'
+              THEN ts_rank(f.content_tsv, plainto_tsquery('english', query_text))
+            ELSE similarity(f.content, query_text)
+          END DESC
+      ) AS rn,
+      CASE
+        WHEN lower(f.content) LIKE '%' || lower(query_text) || '%' THEN 1.0::float
+        WHEN f.subject = 'english'
+          THEN ts_rank(f.content_tsv, plainto_tsquery('english', query_text))::float
+        ELSE similarity(f.content, query_text)::float
+      END AS text_sim
+    FROM filtered f
+    WHERE query_text IS NOT NULL
+      AND btrim(query_text) <> ''
+      AND (
+        lower(f.content) LIKE '%' || lower(query_text) || '%'
+        OR (
+          f.subject = 'english'
+          AND f.content_tsv @@ plainto_tsquery('english', query_text)
+        )
+        OR (f.subject <> 'english' AND f.content % query_text)
+      )
+    ORDER BY text_sim DESC
+    LIMIT 50
+  ),
+  rrf AS (
+    SELECT
+      COALESCE(v.id, t.id) AS id,
+      COALESCE(v.document_id, t.document_id) AS document_id,
+      COALESCE(v.subject, t.subject) AS subject,
+      COALESCE(v.content, t.content) AS content,
+      COALESCE(v.metadata, t.metadata) AS metadata,
+      (COALESCE(1.0 / (rrf_k + v.rn), 0) + COALESCE(1.0 / (rrf_k + t.rn), 0))::float AS score,
+      COALESCE(v.vec_sim, 0) AS vec_sim,
+      COALESCE(t.text_sim, 0) AS text_sim
+    FROM vector_hits v
+    FULL OUTER JOIN text_hits t ON v.id = t.id
+  ),
+  deduped AS (
+    SELECT DISTINCT ON (id)
+      id, document_id, subject, content, metadata, score, vec_sim, text_sim
+    FROM rrf
+    ORDER BY id, score DESC
+  )
+  SELECT
+    d.id AS chunk_id,
+    d.document_id,
+    d.subject,
+    d.content,
+    d.metadata,
+    GREATEST(d.score, d.vec_sim, d.text_sim) AS similarity
+  FROM deduped d
+  ORDER BY d.score DESC, d.vec_sim DESC, d.text_sim DESC
+  LIMIT GREATEST(match_count, 1);
+$_$;
+
+
+--
 -- Name: upsert_math_scratch_working(text, text, jsonb, jsonb); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.upsert_math_scratch_working(p_problem_id text, p_paper_scope text, p_objects jsonb, p_answer_draft jsonb DEFAULT NULL::jsonb) RETURNS void
-    LANGUAGE plpgsql SECURITY DEFINER
+    LANGUAGE plpgsql
     SET search_path TO 'public'
     AS $$
 DECLARE
@@ -155,6 +355,67 @@ CREATE TABLE public.adaptive_word_plans (
     boss_pack_limit integer DEFAULT 50 NOT NULL,
     CONSTRAINT adaptive_word_plans_mode_chk CHECK (((mode)::text = ANY ((ARRAY['normal'::character varying, 'review_only'::character varying, 'boss'::character varying])::text[]))),
     CONSTRAINT adaptive_word_plans_status_chk CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying, 'completed'::character varying, 'archived'::character varying])::text[])))
+);
+
+
+--
+-- Name: ai_conversations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ai_conversations (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    session_id uuid NOT NULL,
+    role text NOT NULL,
+    content text NOT NULL,
+    blocks jsonb DEFAULT '[]'::jsonb NOT NULL,
+    actions jsonb DEFAULT '[]'::jsonb NOT NULL,
+    sources jsonb DEFAULT '[]'::jsonb NOT NULL,
+    subject text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT ai_conversations_role_check CHECK ((role = ANY (ARRAY['user'::text, 'assistant'::text])))
+);
+
+
+--
+-- Name: ai_teaching_sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ai_teaching_sessions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    conversation_id uuid,
+    subject text NOT NULL,
+    content_ref text,
+    teaching_stage text DEFAULT 'understand'::text NOT NULL,
+    hint_level smallint DEFAULT 0 NOT NULL,
+    attempt_count smallint DEFAULT 0 NOT NULL,
+    latest_answer text,
+    error_kind text,
+    state jsonb DEFAULT '{}'::jsonb NOT NULL,
+    status text DEFAULT 'active'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    completed_at timestamp with time zone,
+    CONSTRAINT ai_teaching_sessions_attempt_count_check CHECK ((attempt_count >= 0)),
+    CONSTRAINT ai_teaching_sessions_hint_level_check CHECK (((hint_level >= 0) AND (hint_level <= 3))),
+    CONSTRAINT ai_teaching_sessions_status_check CHECK ((status = ANY (ARRAY['active'::text, 'completed'::text, 'abandoned'::text]))),
+    CONSTRAINT ai_teaching_sessions_subject_check CHECK ((subject = ANY (ARRAY['english'::text, 'math'::text, 'chinese'::text]))),
+    CONSTRAINT ai_teaching_sessions_teaching_stage_check CHECK ((teaching_stage = ANY (ARRAY['understand'::text, 'attempt'::text, 'hint'::text, 'check'::text, 'transfer'::text, 'summary'::text])))
+);
+
+
+--
+-- Name: api_rate_limits; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.api_rate_limits (
+    key_hash text NOT NULL,
+    route text NOT NULL,
+    window_start timestamp with time zone NOT NULL,
+    request_count integer DEFAULT 1 NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT api_rate_limits_request_count_check CHECK ((request_count > 0))
 );
 
 
@@ -585,6 +846,89 @@ CREATE TABLE public.flipbook_progress (
 
 
 --
+-- Name: knowledge_chunks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.knowledge_chunks (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    document_id uuid NOT NULL,
+    user_id uuid,
+    subject text NOT NULL,
+    chunk_index smallint NOT NULL,
+    content text NOT NULL,
+    embedding public.vector(1536),
+    content_tsv tsvector,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT knowledge_chunks_subject_check CHECK ((subject = ANY (ARRAY['english'::text, 'math'::text, 'chinese'::text])))
+);
+
+
+--
+-- Name: knowledge_documents; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.knowledge_documents (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    subject text NOT NULL,
+    source_type text NOT NULL,
+    source_ref text,
+    owner_id uuid,
+    title text NOT NULL,
+    content text NOT NULL,
+    content_hash text NOT NULL,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT knowledge_documents_source_type_check CHECK ((source_type = ANY (ARRAY['db_sync'::text, 'catalog_sync'::text, 'import'::text]))),
+    CONSTRAINT knowledge_documents_subject_check CHECK ((subject = ANY (ARRAY['english'::text, 'math'::text, 'chinese'::text])))
+);
+
+
+--
+-- Name: knowledge_imports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.knowledge_imports (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    subject text NOT NULL,
+    file_name text,
+    file_path text,
+    file_type text,
+    content text DEFAULT ''::text NOT NULL,
+    chunk_count integer DEFAULT 0 NOT NULL,
+    status text DEFAULT 'pending'::text NOT NULL,
+    error_msg text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT knowledge_imports_subject_check CHECK ((subject = ANY (ARRAY['english'::text, 'math'::text, 'chinese'::text])))
+);
+
+
+--
+-- Name: knowledge_sync_state; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.knowledge_sync_state (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    source_key text NOT NULL,
+    last_synced_at timestamp with time zone,
+    records_synced integer DEFAULT 0 NOT NULL,
+    chunks_created integer DEFAULT 0 NOT NULL,
+    chunks_deleted integer DEFAULT 0 NOT NULL,
+    status text DEFAULT 'idle'::text NOT NULL,
+    error_msg text,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    cursor_position integer DEFAULT 0 NOT NULL,
+    total_records integer,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    started_at timestamp with time zone,
+    completed_at timestamp with time zone
+);
+
+
+--
 -- Name: math_favorites; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -997,6 +1341,30 @@ ALTER TABLE ONLY public.adaptive_word_plans
 
 
 --
+-- Name: ai_conversations ai_conversations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_conversations
+    ADD CONSTRAINT ai_conversations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ai_teaching_sessions ai_teaching_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_teaching_sessions
+    ADD CONSTRAINT ai_teaching_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: api_rate_limits api_rate_limits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.api_rate_limits
+    ADD CONSTRAINT api_rate_limits_pkey PRIMARY KEY (key_hash, route, window_start);
+
+
+--
 -- Name: audio_assets audio_assets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1186,6 +1554,54 @@ ALTER TABLE ONLY public.flipbook_books
 
 ALTER TABLE ONLY public.flipbook_progress
     ADD CONSTRAINT flipbook_progress_pkey PRIMARY KEY (user_id, book_id);
+
+
+--
+-- Name: knowledge_chunks knowledge_chunks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_chunks
+    ADD CONSTRAINT knowledge_chunks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: knowledge_documents knowledge_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_documents
+    ADD CONSTRAINT knowledge_documents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: knowledge_documents knowledge_documents_source_ref_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_documents
+    ADD CONSTRAINT knowledge_documents_source_ref_unique UNIQUE (source_ref);
+
+
+--
+-- Name: knowledge_imports knowledge_imports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_imports
+    ADD CONSTRAINT knowledge_imports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: knowledge_sync_state knowledge_sync_state_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_sync_state
+    ADD CONSTRAINT knowledge_sync_state_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: knowledge_sync_state knowledge_sync_state_source_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_sync_state
+    ADD CONSTRAINT knowledge_sync_state_source_key_key UNIQUE (source_key);
 
 
 --
@@ -1437,6 +1853,41 @@ ALTER TABLE ONLY public.word_mastery
 
 
 --
+-- Name: ai_conversations_session_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ai_conversations_session_idx ON public.ai_conversations USING btree (session_id, created_at);
+
+
+--
+-- Name: ai_conversations_user_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ai_conversations_user_idx ON public.ai_conversations USING btree (user_id);
+
+
+--
+-- Name: ai_teaching_sessions_conversation_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ai_teaching_sessions_conversation_idx ON public.ai_teaching_sessions USING btree (conversation_id) WHERE (conversation_id IS NOT NULL);
+
+
+--
+-- Name: ai_teaching_sessions_one_active_conversation_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX ai_teaching_sessions_one_active_conversation_idx ON public.ai_teaching_sessions USING btree (user_id, conversation_id, subject) WHERE ((status = 'active'::text) AND (conversation_id IS NOT NULL));
+
+
+--
+-- Name: ai_teaching_sessions_user_status_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ai_teaching_sessions_user_status_idx ON public.ai_teaching_sessions USING btree (user_id, status, updated_at DESC);
+
+
+--
 -- Name: audio_assets_user_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1633,13 +2084,6 @@ CREATE INDEX idx_chinese_roadmap_plans_user_status ON public.chinese_roadmap_pla
 
 
 --
--- Name: idx_math_practice_attempts_user_problem; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_math_practice_attempts_user_problem ON public.math_practice_attempts USING btree (user_id, problem_id, attempted_at DESC);
-
-
---
 -- Name: idx_math_scratch_drafts_user_problem; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1672,6 +2116,69 @@ CREATE INDEX idx_scratch_drafts_user_problem_time ON public.math_scratch_drafts 
 --
 
 CREATE INDEX idx_scratch_working_user_paper ON public.math_scratch_working USING btree (user_id, paper_scope) WHERE (paper_scope <> ''::text);
+
+
+--
+-- Name: knowledge_chunks_content_trgm_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_chunks_content_trgm_idx ON public.knowledge_chunks USING gin (content public.gin_trgm_ops);
+
+
+--
+-- Name: knowledge_chunks_document_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_chunks_document_idx ON public.knowledge_chunks USING btree (document_id);
+
+
+--
+-- Name: knowledge_chunks_embedding_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_chunks_embedding_idx ON public.knowledge_chunks USING hnsw (embedding public.vector_cosine_ops);
+
+
+--
+-- Name: knowledge_chunks_subject_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_chunks_subject_idx ON public.knowledge_chunks USING btree (subject);
+
+
+--
+-- Name: knowledge_chunks_tsv_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_chunks_tsv_idx ON public.knowledge_chunks USING gin (content_tsv);
+
+
+--
+-- Name: knowledge_chunks_user_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_chunks_user_idx ON public.knowledge_chunks USING btree (user_id) WHERE (user_id IS NOT NULL);
+
+
+--
+-- Name: knowledge_documents_owner_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_documents_owner_idx ON public.knowledge_documents USING btree (owner_id) WHERE (owner_id IS NOT NULL);
+
+
+--
+-- Name: knowledge_documents_subject_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_documents_subject_idx ON public.knowledge_documents USING btree (subject);
+
+
+--
+-- Name: knowledge_imports_user_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX knowledge_imports_user_idx ON public.knowledge_imports USING btree (user_id);
 
 
 --
@@ -1787,6 +2294,13 @@ CREATE TRIGGER math_wrong_reset_resolved BEFORE INSERT ON public.math_wrong FOR 
 
 
 --
+-- Name: knowledge_chunks trg_knowledge_chunks_update_content_tsv; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_knowledge_chunks_update_content_tsv BEFORE INSERT OR UPDATE OF content, subject ON public.knowledge_chunks FOR EACH ROW EXECUTE FUNCTION public.knowledge_chunks_update_content_tsv();
+
+
+--
 -- Name: adaptive_plan_word_progress adaptive_plan_word_progress_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1808,6 +2322,22 @@ ALTER TABLE ONLY public.adaptive_plan_word_progress
 
 ALTER TABLE ONLY public.adaptive_word_plans
     ADD CONSTRAINT adaptive_word_plans_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: ai_conversations ai_conversations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_conversations
+    ADD CONSTRAINT ai_conversations_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: ai_teaching_sessions ai_teaching_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_teaching_sessions
+    ADD CONSTRAINT ai_teaching_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 
 --
@@ -2000,6 +2530,38 @@ ALTER TABLE ONLY public.flipbook_progress
 
 ALTER TABLE ONLY public.flipbook_progress
     ADD CONSTRAINT flipbook_progress_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: knowledge_chunks knowledge_chunks_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_chunks
+    ADD CONSTRAINT knowledge_chunks_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.knowledge_documents(id) ON DELETE CASCADE;
+
+
+--
+-- Name: knowledge_chunks knowledge_chunks_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_chunks
+    ADD CONSTRAINT knowledge_chunks_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: knowledge_documents knowledge_documents_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_documents
+    ADD CONSTRAINT knowledge_documents_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: knowledge_imports knowledge_imports_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.knowledge_imports
+    ADD CONSTRAINT knowledge_imports_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 
 --
@@ -2211,45 +2773,24 @@ ALTER TABLE ONLY public.word_mastery
 
 
 --
--- Name: flipbook_books Authenticated delete flipbook_books; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Authenticated delete flipbook_books" ON public.flipbook_books FOR DELETE TO authenticated USING (true);
-
-
---
--- Name: math_problem_images Authenticated delete math_problem_images; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Authenticated delete math_problem_images" ON public.math_problem_images FOR DELETE TO authenticated USING ((auth.uid() IS NOT NULL));
-
-
---
--- Name: reading_passage_media Authenticated delete reading_passage_media; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Authenticated delete reading_passage_media" ON public.reading_passage_media FOR DELETE TO authenticated USING (true);
-
-
---
 -- Name: flipbook_books Authenticated insert flipbook_books; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Authenticated insert flipbook_books" ON public.flipbook_books FOR INSERT TO authenticated WITH CHECK (((auth.uid() IS NOT NULL) AND (user_id = auth.uid())));
+CREATE POLICY "Authenticated insert flipbook_books" ON public.flipbook_books FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (user_id = ( SELECT auth.uid() AS uid))));
 
 
 --
 -- Name: math_problem_images Authenticated insert math_problem_images; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Authenticated insert math_problem_images" ON public.math_problem_images FOR INSERT TO authenticated WITH CHECK (((auth.uid() IS NOT NULL) AND (user_id = auth.uid()) AND (image_kind = ANY (ARRAY['analysis'::text, 'figure'::text, 'summary'::text])) AND (((image_kind = ANY (ARRAY['analysis'::text, 'figure'::text])) AND (problem_id ~~ (lesson_id || '-%'::text)) AND (((image_kind = 'analysis'::text) AND (storage_path ~~ (('analysis/'::text || lesson_id) || '/%'::text))) OR ((image_kind = 'figure'::text) AND (storage_path ~~ (('figures/'::text || lesson_id) || '/%'::text))))) OR ((image_kind = 'summary'::text) AND (problem_id = (lesson_id || '__SUMMARY'::text)) AND (storage_path ~~ (('summaries/'::text || lesson_id) || '/summary.%'::text))))));
+CREATE POLICY "Authenticated insert math_problem_images" ON public.math_problem_images FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (user_id = ( SELECT auth.uid() AS uid)) AND (image_kind = ANY (ARRAY['analysis'::text, 'figure'::text, 'summary'::text])) AND (((image_kind = ANY (ARRAY['analysis'::text, 'figure'::text])) AND (problem_id ~~ (lesson_id || '-%'::text)) AND (((image_kind = 'analysis'::text) AND (storage_path ~~ (('analysis/'::text || lesson_id) || '/%'::text))) OR ((image_kind = 'figure'::text) AND (storage_path ~~ (('figures/'::text || lesson_id) || '/%'::text))))) OR ((image_kind = 'summary'::text) AND (problem_id = (lesson_id || '__SUMMARY'::text)) AND (storage_path ~~ (('summaries/'::text || lesson_id) || '/summary.%'::text))))));
 
 
 --
 -- Name: reading_passage_media Authenticated insert reading_passage_media; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Authenticated insert reading_passage_media" ON public.reading_passage_media FOR INSERT TO authenticated WITH CHECK (((auth.uid() IS NOT NULL) AND (user_id = auth.uid())));
+CREATE POLICY "Authenticated insert reading_passage_media" ON public.reading_passage_media FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (user_id = ( SELECT auth.uid() AS uid))));
 
 
 --
@@ -2267,24 +2808,45 @@ CREATE POLICY "Authenticated read reading_passage_media" ON public.reading_passa
 
 
 --
--- Name: flipbook_books Authenticated update flipbook_books; Type: POLICY; Schema: public; Owner: -
+-- Name: flipbook_books Owners or admins delete flipbook_books; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Authenticated update flipbook_books" ON public.flipbook_books FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-
-
---
--- Name: math_problem_images Authenticated update math_problem_images; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Authenticated update math_problem_images" ON public.math_problem_images FOR UPDATE TO authenticated USING ((auth.uid() IS NOT NULL)) WITH CHECK (((auth.uid() IS NOT NULL) AND (user_id = auth.uid()) AND (image_kind = ANY (ARRAY['analysis'::text, 'figure'::text, 'summary'::text])) AND (((image_kind = ANY (ARRAY['analysis'::text, 'figure'::text])) AND (problem_id ~~ (lesson_id || '-%'::text)) AND (((image_kind = 'analysis'::text) AND (storage_path ~~ (('analysis/'::text || lesson_id) || '/%'::text))) OR ((image_kind = 'figure'::text) AND (storage_path ~~ (('figures/'::text || lesson_id) || '/%'::text))))) OR ((image_kind = 'summary'::text) AND (problem_id = (lesson_id || '__SUMMARY'::text)) AND (storage_path ~~ (('summaries/'::text || lesson_id) || '/summary.%'::text))))));
+CREATE POLICY "Owners or admins delete flipbook_books" ON public.flipbook_books FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
 
 
 --
--- Name: reading_passage_media Authenticated update reading_passage_media; Type: POLICY; Schema: public; Owner: -
+-- Name: math_problem_images Owners or admins delete math_problem_images; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Authenticated update reading_passage_media" ON public.reading_passage_media FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Owners or admins delete math_problem_images" ON public.math_problem_images FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
+
+
+--
+-- Name: reading_passage_media Owners or admins delete reading_passage_media; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Owners or admins delete reading_passage_media" ON public.reading_passage_media FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
+
+
+--
+-- Name: flipbook_books Owners or admins update flipbook_books; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Owners or admins update flipbook_books" ON public.flipbook_books FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin))) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
+
+
+--
+-- Name: math_problem_images Owners or admins update math_problem_images; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Owners or admins update math_problem_images" ON public.math_problem_images FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin))) WITH CHECK ((((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)) AND (image_kind = ANY (ARRAY['analysis'::text, 'figure'::text, 'summary'::text])) AND (((image_kind = ANY (ARRAY['analysis'::text, 'figure'::text])) AND (problem_id ~~ (lesson_id || '-%'::text)) AND (((image_kind = 'analysis'::text) AND (storage_path ~~ (('analysis/'::text || lesson_id) || '/%'::text))) OR ((image_kind = 'figure'::text) AND (storage_path ~~ (('figures/'::text || lesson_id) || '/%'::text))))) OR ((image_kind = 'summary'::text) AND (problem_id = (lesson_id || '__SUMMARY'::text)) AND (storage_path ~~ (('summaries/'::text || lesson_id) || '/summary.%'::text))))));
+
+
+--
+-- Name: reading_passage_media Owners or admins update reading_passage_media; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Owners or admins update reading_passage_media" ON public.reading_passage_media FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin))) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
 
 
 --
@@ -2298,84 +2860,84 @@ CREATE POLICY "Public read math_problem_images" ON public.math_problem_images FO
 -- Name: math_weekly_plans Users can delete own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users can delete own math_weekly_plans" ON public.math_weekly_plans FOR DELETE TO authenticated USING ((auth.uid() = user_id));
+CREATE POLICY "Users can delete own math_weekly_plans" ON public.math_weekly_plans FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: weekly_plans Users can delete own weekly_plans; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users can delete own weekly_plans" ON public.weekly_plans FOR DELETE TO authenticated USING ((auth.uid() = user_id));
+CREATE POLICY "Users can delete own weekly_plans" ON public.weekly_plans FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_weekly_plans Users can insert own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users can insert own math_weekly_plans" ON public.math_weekly_plans FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "Users can insert own math_weekly_plans" ON public.math_weekly_plans FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: weekly_plans Users can insert own weekly_plans; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users can insert own weekly_plans" ON public.weekly_plans FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: math_weekly_plans Users can read own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Users can read own math_weekly_plans" ON public.math_weekly_plans FOR SELECT TO authenticated USING ((auth.uid() = user_id));
-
-
---
--- Name: weekly_plans Users can read own weekly_plans; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Users can read own weekly_plans" ON public.weekly_plans FOR SELECT TO authenticated USING ((auth.uid() = user_id));
-
-
---
--- Name: math_weekly_plans Users can update own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Users can update own math_weekly_plans" ON public.math_weekly_plans FOR UPDATE TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: weekly_plans Users can update own weekly_plans; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Users can update own weekly_plans" ON public.weekly_plans FOR UPDATE TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "Users can insert own weekly_plans" ON public.weekly_plans FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_rotating_review Users can manage their own rotating review; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users can manage their own rotating review" ON public.math_rotating_review USING (((auth.uid())::text = user_id)) WITH CHECK (((auth.uid())::text = user_id));
+CREATE POLICY "Users can manage their own rotating review" ON public.math_rotating_review USING (((( SELECT auth.uid() AS uid))::text = user_id)) WITH CHECK (((( SELECT auth.uid() AS uid))::text = user_id));
+
+
+--
+-- Name: math_weekly_plans Users can read own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can read own math_weekly_plans" ON public.math_weekly_plans FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+
+
+--
+-- Name: weekly_plans Users can read own weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can read own weekly_plans" ON public.weekly_plans FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+
+
+--
+-- Name: math_weekly_plans Users can update own math_weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can update own math_weekly_plans" ON public.math_weekly_plans FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+
+
+--
+-- Name: weekly_plans Users can update own weekly_plans; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can update own weekly_plans" ON public.weekly_plans FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: flipbook_progress Users insert own flipbook_progress; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users insert own flipbook_progress" ON public.flipbook_progress FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "Users insert own flipbook_progress" ON public.flipbook_progress FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: flipbook_progress Users read own flipbook_progress; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users read own flipbook_progress" ON public.flipbook_progress FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY "Users read own flipbook_progress" ON public.flipbook_progress FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: flipbook_progress Users update own flipbook_progress; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users update own flipbook_progress" ON public.flipbook_progress FOR UPDATE USING ((auth.uid() = user_id));
+CREATE POLICY "Users update own flipbook_progress" ON public.flipbook_progress FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2388,7 +2950,7 @@ ALTER TABLE public.adaptive_plan_word_progress ENABLE ROW LEVEL SECURITY;
 -- Name: adaptive_plan_word_progress adaptive_plan_word_progress_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY adaptive_plan_word_progress_own ON public.adaptive_plan_word_progress USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY adaptive_plan_word_progress_own ON public.adaptive_plan_word_progress USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2401,8 +2963,61 @@ ALTER TABLE public.adaptive_word_plans ENABLE ROW LEVEL SECURITY;
 -- Name: adaptive_word_plans adaptive_word_plans_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY adaptive_word_plans_own ON public.adaptive_word_plans USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY adaptive_word_plans_own ON public.adaptive_word_plans USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
+
+--
+-- Name: ai_conversations; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ai_conversations ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: ai_conversations ai_conversations_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY ai_conversations_own ON public.ai_conversations TO authenticated USING ((user_id = ( SELECT auth.uid() AS uid))) WITH CHECK ((user_id = ( SELECT auth.uid() AS uid)));
+
+
+--
+-- Name: ai_teaching_sessions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ai_teaching_sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: ai_teaching_sessions ai_teaching_sessions_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY ai_teaching_sessions_delete_own ON public.ai_teaching_sessions FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT auth.uid() AS uid) = user_id)));
+
+
+--
+-- Name: ai_teaching_sessions ai_teaching_sessions_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY ai_teaching_sessions_insert_own ON public.ai_teaching_sessions FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT auth.uid() AS uid) = user_id)));
+
+
+--
+-- Name: ai_teaching_sessions ai_teaching_sessions_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY ai_teaching_sessions_select_own ON public.ai_teaching_sessions FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT auth.uid() AS uid) = user_id)));
+
+
+--
+-- Name: ai_teaching_sessions ai_teaching_sessions_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY ai_teaching_sessions_update_own ON public.ai_teaching_sessions FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT auth.uid() AS uid) = user_id))) WITH CHECK (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT auth.uid() AS uid) = user_id)));
+
+
+--
+-- Name: api_rate_limits; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.api_rate_limits ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: audio_assets; Type: ROW SECURITY; Schema: public; Owner: -
@@ -2426,21 +3041,21 @@ ALTER TABLE public.audio_playlists ENABLE ROW LEVEL SECURITY;
 -- Name: audio_assets authenticated can read audio_assets; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "authenticated can read audio_assets" ON public.audio_assets FOR SELECT USING ((auth.role() = 'authenticated'::text));
+CREATE POLICY "authenticated can read audio_assets" ON public.audio_assets FOR SELECT TO authenticated USING (true);
 
 
 --
 -- Name: audio_playlist_items authenticated can read audio_playlist_items; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "authenticated can read audio_playlist_items" ON public.audio_playlist_items FOR SELECT USING ((auth.role() = 'authenticated'::text));
+CREATE POLICY "authenticated can read audio_playlist_items" ON public.audio_playlist_items FOR SELECT TO authenticated USING (true);
 
 
 --
 -- Name: audio_playlists authenticated can read audio_playlists; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "authenticated can read audio_playlists" ON public.audio_playlists FOR SELECT USING ((auth.role() = 'authenticated'::text));
+CREATE POLICY "authenticated can read audio_playlists" ON public.audio_playlists FOR SELECT TO authenticated USING (true);
 
 
 --
@@ -2453,14 +3068,7 @@ ALTER TABLE public.calc_mistakes ENABLE ROW LEVEL SECURITY;
 -- Name: calc_mistakes calc_mistakes_modify_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY calc_mistakes_modify_own ON public.calc_mistakes USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: calc_mistakes calc_mistakes_select_own; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY calc_mistakes_select_own ON public.calc_mistakes FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY calc_mistakes_modify_own ON public.calc_mistakes TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2473,14 +3081,7 @@ ALTER TABLE public.calc_problem_state ENABLE ROW LEVEL SECURITY;
 -- Name: calc_problem_state calc_problem_state_modify_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY calc_problem_state_modify_own ON public.calc_problem_state USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: calc_problem_state calc_problem_state_select_own; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY calc_problem_state_select_own ON public.calc_problem_state FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY calc_problem_state_modify_own ON public.calc_problem_state TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2493,14 +3094,14 @@ ALTER TABLE public.calc_sessions ENABLE ROW LEVEL SECURITY;
 -- Name: calc_sessions calc_sessions_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY calc_sessions_insert_own ON public.calc_sessions FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY calc_sessions_insert_own ON public.calc_sessions FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: calc_sessions calc_sessions_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY calc_sessions_select_own ON public.calc_sessions FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY calc_sessions_select_own ON public.calc_sessions FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2513,14 +3114,7 @@ ALTER TABLE public.calc_settings ENABLE ROW LEVEL SECURITY;
 -- Name: calc_settings calc_settings_modify_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY calc_settings_modify_own ON public.calc_settings USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: calc_settings calc_settings_select_own; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY calc_settings_select_own ON public.calc_settings FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY calc_settings_modify_own ON public.calc_settings TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2533,14 +3127,7 @@ ALTER TABLE public.calc_vouchers ENABLE ROW LEVEL SECURITY;
 -- Name: calc_vouchers calc_vouchers_modify_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY calc_vouchers_modify_own ON public.calc_vouchers USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: calc_vouchers calc_vouchers_select_own; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY calc_vouchers_select_own ON public.calc_vouchers FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY calc_vouchers_modify_own ON public.calc_vouchers TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2550,10 +3137,17 @@ CREATE POLICY calc_vouchers_select_own ON public.calc_vouchers FOR SELECT USING 
 ALTER TABLE public.chinese_char_entries ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: chinese_char_entries chinese_char_entries_mutate_auth; Type: POLICY; Schema: public; Owner: -
+-- Name: chinese_char_entries chinese_char_entries_delete_admin; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_char_entries_mutate_auth ON public.chinese_char_entries TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY chinese_char_entries_delete_admin ON public.chinese_char_entries FOR DELETE TO authenticated USING (( SELECT public.is_admin() AS is_admin));
+
+
+--
+-- Name: chinese_char_entries chinese_char_entries_insert_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY chinese_char_entries_insert_admin ON public.chinese_char_entries FOR INSERT TO authenticated WITH CHECK (( SELECT public.is_admin() AS is_admin));
 
 
 --
@@ -2561,6 +3155,13 @@ CREATE POLICY chinese_char_entries_mutate_auth ON public.chinese_char_entries TO
 --
 
 CREATE POLICY chinese_char_entries_select_auth ON public.chinese_char_entries FOR SELECT TO authenticated USING (true);
+
+
+--
+-- Name: chinese_char_entries chinese_char_entries_update_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY chinese_char_entries_update_admin ON public.chinese_char_entries FOR UPDATE TO authenticated USING (( SELECT public.is_admin() AS is_admin)) WITH CHECK (( SELECT public.is_admin() AS is_admin));
 
 
 --
@@ -2573,28 +3174,28 @@ ALTER TABLE public.chinese_char_mastery ENABLE ROW LEVEL SECURITY;
 -- Name: chinese_char_mastery chinese_char_mastery_delete_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_char_mastery_delete_own ON public.chinese_char_mastery FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY chinese_char_mastery_delete_own ON public.chinese_char_mastery FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_char_mastery chinese_char_mastery_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_char_mastery_insert_own ON public.chinese_char_mastery FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_char_mastery_insert_own ON public.chinese_char_mastery FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_char_mastery chinese_char_mastery_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_char_mastery_select_own ON public.chinese_char_mastery FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY chinese_char_mastery_select_own ON public.chinese_char_mastery FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_char_mastery chinese_char_mastery_update_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_char_mastery_update_own ON public.chinese_char_mastery FOR UPDATE USING ((auth.uid() = user_id));
+CREATE POLICY chinese_char_mastery_update_own ON public.chinese_char_mastery FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2604,10 +3205,17 @@ CREATE POLICY chinese_char_mastery_update_own ON public.chinese_char_mastery FOR
 ALTER TABLE public.chinese_lesson_chars ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: chinese_lesson_chars chinese_lesson_chars_mutate_auth; Type: POLICY; Schema: public; Owner: -
+-- Name: chinese_lesson_chars chinese_lesson_chars_delete_admin; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_lesson_chars_mutate_auth ON public.chinese_lesson_chars TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY chinese_lesson_chars_delete_admin ON public.chinese_lesson_chars FOR DELETE TO authenticated USING (( SELECT public.is_admin() AS is_admin));
+
+
+--
+-- Name: chinese_lesson_chars chinese_lesson_chars_insert_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY chinese_lesson_chars_insert_admin ON public.chinese_lesson_chars FOR INSERT TO authenticated WITH CHECK (( SELECT public.is_admin() AS is_admin));
 
 
 --
@@ -2618,16 +3226,30 @@ CREATE POLICY chinese_lesson_chars_select_auth ON public.chinese_lesson_chars FO
 
 
 --
+-- Name: chinese_lesson_chars chinese_lesson_chars_update_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY chinese_lesson_chars_update_admin ON public.chinese_lesson_chars FOR UPDATE TO authenticated USING (( SELECT public.is_admin() AS is_admin)) WITH CHECK (( SELECT public.is_admin() AS is_admin));
+
+
+--
 -- Name: chinese_lessons; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
 ALTER TABLE public.chinese_lessons ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: chinese_lessons chinese_lessons_mutate_auth; Type: POLICY; Schema: public; Owner: -
+-- Name: chinese_lessons chinese_lessons_delete_admin; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_lessons_mutate_auth ON public.chinese_lessons TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY chinese_lessons_delete_admin ON public.chinese_lessons FOR DELETE TO authenticated USING (( SELECT public.is_admin() AS is_admin));
+
+
+--
+-- Name: chinese_lessons chinese_lessons_insert_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY chinese_lessons_insert_admin ON public.chinese_lessons FOR INSERT TO authenticated WITH CHECK (( SELECT public.is_admin() AS is_admin));
 
 
 --
@@ -2635,6 +3257,13 @@ CREATE POLICY chinese_lessons_mutate_auth ON public.chinese_lessons TO authentic
 --
 
 CREATE POLICY chinese_lessons_select_auth ON public.chinese_lessons FOR SELECT TO authenticated USING (true);
+
+
+--
+-- Name: chinese_lessons chinese_lessons_update_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY chinese_lessons_update_admin ON public.chinese_lessons FOR UPDATE TO authenticated USING (( SELECT public.is_admin() AS is_admin)) WITH CHECK (( SELECT public.is_admin() AS is_admin));
 
 
 --
@@ -2647,21 +3276,21 @@ ALTER TABLE public.chinese_reading_recordings ENABLE ROW LEVEL SECURITY;
 -- Name: chinese_reading_recordings chinese_reading_recordings_delete_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_reading_recordings_delete_own ON public.chinese_reading_recordings FOR DELETE TO authenticated USING ((auth.uid() = user_id));
+CREATE POLICY chinese_reading_recordings_delete_own ON public.chinese_reading_recordings FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_reading_recordings chinese_reading_recordings_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_reading_recordings_insert_own ON public.chinese_reading_recordings FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_reading_recordings_insert_own ON public.chinese_reading_recordings FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_reading_recordings chinese_reading_recordings_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_reading_recordings_select_own ON public.chinese_reading_recordings FOR SELECT TO authenticated USING ((auth.uid() = user_id));
+CREATE POLICY chinese_reading_recordings_select_own ON public.chinese_reading_recordings FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2674,7 +3303,7 @@ ALTER TABLE public.chinese_roadmap_plan_lesson_runs ENABLE ROW LEVEL SECURITY;
 -- Name: chinese_roadmap_plan_lesson_runs chinese_roadmap_plan_lesson_runs_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_roadmap_plan_lesson_runs_own ON public.chinese_roadmap_plan_lesson_runs USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_roadmap_plan_lesson_runs_own ON public.chinese_roadmap_plan_lesson_runs USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2687,7 +3316,7 @@ ALTER TABLE public.chinese_roadmap_plans ENABLE ROW LEVEL SECURITY;
 -- Name: chinese_roadmap_plans chinese_roadmap_plans_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_roadmap_plans_own ON public.chinese_roadmap_plans USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_roadmap_plans_own ON public.chinese_roadmap_plans USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2700,42 +3329,42 @@ ALTER TABLE public.chinese_weekly_plans ENABLE ROW LEVEL SECURITY;
 -- Name: chinese_weekly_plans chinese_weekly_plans_delete_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_weekly_plans_delete_own ON public.chinese_weekly_plans FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY chinese_weekly_plans_delete_own ON public.chinese_weekly_plans FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_weekly_plans chinese_weekly_plans_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_weekly_plans_insert_own ON public.chinese_weekly_plans FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_weekly_plans_insert_own ON public.chinese_weekly_plans FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_weekly_plans chinese_weekly_plans_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_weekly_plans_select_own ON public.chinese_weekly_plans FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY chinese_weekly_plans_select_own ON public.chinese_weekly_plans FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_weekly_plans chinese_weekly_plans_update_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_weekly_plans_update_own ON public.chinese_weekly_plans FOR UPDATE USING ((auth.uid() = user_id));
+CREATE POLICY chinese_weekly_plans_update_own ON public.chinese_weekly_plans FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_wrong_items chinese_wrong_delete_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_wrong_delete_own ON public.chinese_wrong_items FOR DELETE TO authenticated USING ((auth.uid() = user_id));
+CREATE POLICY chinese_wrong_delete_own ON public.chinese_wrong_items FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_wrong_items chinese_wrong_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_wrong_insert_own ON public.chinese_wrong_items FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_wrong_insert_own ON public.chinese_wrong_items FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2748,14 +3377,14 @@ ALTER TABLE public.chinese_wrong_items ENABLE ROW LEVEL SECURITY;
 -- Name: chinese_wrong_items chinese_wrong_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_wrong_select_own ON public.chinese_wrong_items FOR SELECT TO authenticated USING ((auth.uid() = user_id));
+CREATE POLICY chinese_wrong_select_own ON public.chinese_wrong_items FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: chinese_wrong_items chinese_wrong_update_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY chinese_wrong_update_own ON public.chinese_wrong_items FOR UPDATE TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY chinese_wrong_update_own ON public.chinese_wrong_items FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2774,28 +3403,28 @@ ALTER TABLE public.english_wrong ENABLE ROW LEVEL SECURITY;
 -- Name: english_wrong english_wrong_delete_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY english_wrong_delete_own ON public.english_wrong FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY english_wrong_delete_own ON public.english_wrong FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: english_wrong english_wrong_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY english_wrong_insert_own ON public.english_wrong FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY english_wrong_insert_own ON public.english_wrong FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: english_wrong english_wrong_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY english_wrong_select_own ON public.english_wrong FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY english_wrong_select_own ON public.english_wrong FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: english_wrong english_wrong_update_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY english_wrong_update_own ON public.english_wrong FOR UPDATE USING ((auth.uid() = user_id));
+CREATE POLICY english_wrong_update_own ON public.english_wrong FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2811,6 +3440,72 @@ ALTER TABLE public.flipbook_books ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.flipbook_progress ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: knowledge_chunks; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.knowledge_chunks ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: knowledge_chunks knowledge_chunks_insert_import; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY knowledge_chunks_insert_import ON public.knowledge_chunks FOR INSERT TO authenticated WITH CHECK ((user_id = ( SELECT auth.uid() AS uid)));
+
+
+--
+-- Name: knowledge_chunks knowledge_chunks_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY knowledge_chunks_select ON public.knowledge_chunks FOR SELECT TO authenticated USING (((user_id IS NULL) OR (user_id = ( SELECT auth.uid() AS uid))));
+
+
+--
+-- Name: knowledge_documents; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.knowledge_documents ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: knowledge_documents knowledge_documents_insert_import; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY knowledge_documents_insert_import ON public.knowledge_documents FOR INSERT TO authenticated WITH CHECK (((source_type = 'import'::text) AND (owner_id = ( SELECT auth.uid() AS uid))));
+
+
+--
+-- Name: knowledge_documents knowledge_documents_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY knowledge_documents_select ON public.knowledge_documents FOR SELECT TO authenticated USING (((owner_id IS NULL) OR (owner_id = ( SELECT auth.uid() AS uid))));
+
+
+--
+-- Name: knowledge_imports; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.knowledge_imports ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: knowledge_imports knowledge_imports_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY knowledge_imports_own ON public.knowledge_imports TO authenticated USING ((user_id = ( SELECT auth.uid() AS uid))) WITH CHECK ((user_id = ( SELECT auth.uid() AS uid)));
+
+
+--
+-- Name: knowledge_sync_state; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.knowledge_sync_state ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: knowledge_sync_state knowledge_sync_state_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY knowledge_sync_state_select ON public.knowledge_sync_state FOR SELECT TO authenticated USING (true);
+
+
+--
 -- Name: math_favorites; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -2820,21 +3515,21 @@ ALTER TABLE public.math_favorites ENABLE ROW LEVEL SECURITY;
 -- Name: math_favorites math_favorites_delete_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_favorites_delete_own ON public.math_favorites FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY math_favorites_delete_own ON public.math_favorites FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_favorites math_favorites_insert_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_favorites_insert_own ON public.math_favorites FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_favorites_insert_own ON public.math_favorites FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_favorites math_favorites_select_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_favorites_select_own ON public.math_favorites FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY math_favorites_select_own ON public.math_favorites FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2847,28 +3542,28 @@ ALTER TABLE public.math_practice_attempts ENABLE ROW LEVEL SECURITY;
 -- Name: math_practice_attempts math_practice_attempts_delete; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_practice_attempts_delete ON public.math_practice_attempts FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY math_practice_attempts_delete ON public.math_practice_attempts FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_practice_attempts math_practice_attempts_insert; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_practice_attempts_insert ON public.math_practice_attempts FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_practice_attempts_insert ON public.math_practice_attempts FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_practice_attempts math_practice_attempts_select; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_practice_attempts_select ON public.math_practice_attempts FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY math_practice_attempts_select ON public.math_practice_attempts FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_practice_attempts math_practice_attempts_update; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_practice_attempts_update ON public.math_practice_attempts FOR UPDATE USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_practice_attempts_update ON public.math_practice_attempts FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2887,14 +3582,14 @@ ALTER TABLE public.math_problem_notes ENABLE ROW LEVEL SECURITY;
 -- Name: math_problem_notes math_problem_notes_delete; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_problem_notes_delete ON public.math_problem_notes FOR DELETE TO authenticated USING (true);
+CREATE POLICY math_problem_notes_delete ON public.math_problem_notes FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
 
 
 --
 -- Name: math_problem_notes math_problem_notes_insert; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_problem_notes_insert ON public.math_problem_notes FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_problem_notes_insert ON public.math_problem_notes FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2908,7 +3603,7 @@ CREATE POLICY math_problem_notes_select ON public.math_problem_notes FOR SELECT 
 -- Name: math_problem_notes math_problem_notes_update; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_problem_notes_update ON public.math_problem_notes FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY math_problem_notes_update ON public.math_problem_notes FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin))) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) OR ( SELECT public.is_admin() AS is_admin)));
 
 
 --
@@ -2921,7 +3616,7 @@ ALTER TABLE public.math_quiz_batches ENABLE ROW LEVEL SECURITY;
 -- Name: math_quiz_batches math_quiz_batches_user; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_quiz_batches_user ON public.math_quiz_batches USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_quiz_batches_user ON public.math_quiz_batches USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2934,7 +3629,7 @@ ALTER TABLE public.math_quiz_papers ENABLE ROW LEVEL SECURITY;
 -- Name: math_quiz_papers math_quiz_papers_user; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_quiz_papers_user ON public.math_quiz_papers USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_quiz_papers_user ON public.math_quiz_papers USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2959,28 +3654,28 @@ ALTER TABLE public.math_scratch_drafts ENABLE ROW LEVEL SECURITY;
 -- Name: math_scratch_drafts math_scratch_drafts_delete; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_drafts_delete ON public.math_scratch_drafts FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY math_scratch_drafts_delete ON public.math_scratch_drafts FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_scratch_drafts math_scratch_drafts_insert; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_drafts_insert ON public.math_scratch_drafts FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_scratch_drafts_insert ON public.math_scratch_drafts FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_scratch_drafts math_scratch_drafts_select; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_drafts_select ON public.math_scratch_drafts FOR SELECT USING ((auth.uid() = user_id));
+CREATE POLICY math_scratch_drafts_select ON public.math_scratch_drafts FOR SELECT USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_scratch_drafts math_scratch_drafts_update; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_drafts_update ON public.math_scratch_drafts FOR UPDATE USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_scratch_drafts_update ON public.math_scratch_drafts FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -2993,28 +3688,28 @@ ALTER TABLE public.math_scratch_working ENABLE ROW LEVEL SECURITY;
 -- Name: math_scratch_working math_scratch_working_delete; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_working_delete ON public.math_scratch_working FOR DELETE USING (((auth.uid())::text = (user_id)::text));
+CREATE POLICY math_scratch_working_delete ON public.math_scratch_working FOR DELETE USING (((( SELECT auth.uid() AS uid))::text = (user_id)::text));
 
 
 --
 -- Name: math_scratch_working math_scratch_working_insert; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_working_insert ON public.math_scratch_working FOR INSERT WITH CHECK (((auth.uid())::text = (user_id)::text));
+CREATE POLICY math_scratch_working_insert ON public.math_scratch_working FOR INSERT WITH CHECK (((( SELECT auth.uid() AS uid))::text = (user_id)::text));
 
 
 --
 -- Name: math_scratch_working math_scratch_working_select; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_working_select ON public.math_scratch_working FOR SELECT USING (((auth.uid())::text = (user_id)::text));
+CREATE POLICY math_scratch_working_select ON public.math_scratch_working FOR SELECT USING (((( SELECT auth.uid() AS uid))::text = (user_id)::text));
 
 
 --
 -- Name: math_scratch_working math_scratch_working_update; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_scratch_working_update ON public.math_scratch_working FOR UPDATE USING (((auth.uid())::text = (user_id)::text)) WITH CHECK (((auth.uid())::text = (user_id)::text));
+CREATE POLICY math_scratch_working_update ON public.math_scratch_working FOR UPDATE USING (((( SELECT auth.uid() AS uid))::text = (user_id)::text)) WITH CHECK (((( SELECT auth.uid() AS uid))::text = (user_id)::text));
 
 
 --
@@ -3027,7 +3722,7 @@ ALTER TABLE public.math_skipped ENABLE ROW LEVEL SECURITY;
 -- Name: math_skipped math_skipped_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_skipped_own ON public.math_skipped USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_skipped_own ON public.math_skipped USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -3046,7 +3741,7 @@ ALTER TABLE public.math_weekly_lesson_review ENABLE ROW LEVEL SECURITY;
 -- Name: math_weekly_lesson_review math_weekly_lesson_review_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY math_weekly_lesson_review_own ON public.math_weekly_lesson_review TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY math_weekly_lesson_review_own ON public.math_weekly_lesson_review TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -3071,7 +3766,7 @@ ALTER TABLE public.practice_pending_sessions ENABLE ROW LEVEL SECURITY;
 -- Name: practice_pending_sessions practice_pending_sessions_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY practice_pending_sessions_own ON public.practice_pending_sessions USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY practice_pending_sessions_own ON public.practice_pending_sessions USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -3091,7 +3786,7 @@ CREATE POLICY "public read word_entries" ON public.word_entries FOR SELECT USING
 -- Name: math_quiz_scratch_links quiz_scratch_links_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY quiz_scratch_links_own ON public.math_quiz_scratch_links USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY quiz_scratch_links_own ON public.math_quiz_scratch_links USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -3099,6 +3794,12 @@ CREATE POLICY quiz_scratch_links_own ON public.math_quiz_scratch_links USING ((a
 --
 
 ALTER TABLE public.reading_passage_media ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: schema_migrations; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.schema_migrations ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: star_sessions; Type: ROW SECURITY; Schema: public; Owner: -
@@ -3110,140 +3811,98 @@ ALTER TABLE public.star_sessions ENABLE ROW LEVEL SECURITY;
 -- Name: star_sessions star_sessions_own; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY star_sessions_own ON public.star_sessions USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: word_mastery user_own; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY user_own ON public.word_mastery USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
-
-
---
--- Name: problem_mastery users can manage own problem mastery; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "users can manage own problem mastery" ON public.problem_mastery USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY star_sessions_own ON public.star_sessions USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_assets users delete own audio_assets; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users delete own audio_assets" ON public.audio_assets FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY "users delete own audio_assets" ON public.audio_assets FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_playlist_items users delete own audio_playlist_items; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users delete own audio_playlist_items" ON public.audio_playlist_items FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY "users delete own audio_playlist_items" ON public.audio_playlist_items FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_playlists users delete own audio_playlists; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users delete own audio_playlists" ON public.audio_playlists FOR DELETE USING ((auth.uid() = user_id));
+CREATE POLICY "users delete own audio_playlists" ON public.audio_playlists FOR DELETE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_assets users insert own audio_assets; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users insert own audio_assets" ON public.audio_assets FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users insert own audio_assets" ON public.audio_assets FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_playlist_items users insert own audio_playlist_items; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users insert own audio_playlist_items" ON public.audio_playlist_items FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users insert own audio_playlist_items" ON public.audio_playlist_items FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_playlists users insert own audio_playlists; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users insert own audio_playlists" ON public.audio_playlists FOR INSERT WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users insert own audio_playlists" ON public.audio_playlists FOR INSERT WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: daily_progress users manage own daily_progress; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users manage own daily_progress" ON public.daily_progress USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users manage own daily_progress" ON public.daily_progress TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_solved users manage own math_solved; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users manage own math_solved" ON public.math_solved USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users manage own math_solved" ON public.math_solved TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: math_wrong users manage own math_wrong; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users manage own math_wrong" ON public.math_wrong USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users manage own math_wrong" ON public.math_wrong TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: problem_mastery users manage own problem_mastery; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users manage own problem_mastery" ON public.problem_mastery USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users manage own problem_mastery" ON public.problem_mastery TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: word_mastery users manage own word_mastery; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users manage own word_mastery" ON public.word_mastery USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
-
-
---
--- Name: math_wrong users manage own wrong; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "users manage own wrong" ON public.math_wrong USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+CREATE POLICY "users manage own word_mastery" ON public.word_mastery TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_assets users update own audio_assets; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users update own audio_assets" ON public.audio_assets FOR UPDATE USING ((auth.uid() = user_id));
+CREATE POLICY "users update own audio_assets" ON public.audio_assets FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
 -- Name: audio_playlists users update own audio_playlists; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "users update own audio_playlists" ON public.audio_playlists FOR UPDATE USING ((auth.uid() = user_id));
-
-
---
--- Name: daily_progress users_own_daily; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY users_own_daily ON public.daily_progress USING ((auth.uid() = user_id));
-
-
---
--- Name: math_solved users_own_math; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY users_own_math ON public.math_solved USING ((auth.uid() = user_id));
-
-
---
--- Name: word_entries users_own_words; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY users_own_words ON public.word_entries USING ((auth.uid() = creator));
+CREATE POLICY "users update own audio_playlists" ON public.audio_playlists FOR UPDATE USING ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
@@ -3253,10 +3912,31 @@ CREATE POLICY users_own_words ON public.word_entries USING ((auth.uid() = creato
 ALTER TABLE public.voucher_templates ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: voucher_templates voucher_templates_all_authenticated; Type: POLICY; Schema: public; Owner: -
+-- Name: voucher_templates voucher_templates_delete_admin; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY voucher_templates_all_authenticated ON public.voucher_templates USING ((auth.role() = 'authenticated'::text)) WITH CHECK ((auth.role() = 'authenticated'::text));
+CREATE POLICY voucher_templates_delete_admin ON public.voucher_templates FOR DELETE TO authenticated USING (( SELECT public.is_admin() AS is_admin));
+
+
+--
+-- Name: voucher_templates voucher_templates_insert_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY voucher_templates_insert_admin ON public.voucher_templates FOR INSERT TO authenticated WITH CHECK (( SELECT public.is_admin() AS is_admin));
+
+
+--
+-- Name: voucher_templates voucher_templates_select_authenticated; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY voucher_templates_select_authenticated ON public.voucher_templates FOR SELECT TO authenticated USING (true);
+
+
+--
+-- Name: voucher_templates voucher_templates_update_admin; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY voucher_templates_update_admin ON public.voucher_templates FOR UPDATE TO authenticated USING (( SELECT public.is_admin() AS is_admin)) WITH CHECK (( SELECT public.is_admin() AS is_admin));
 
 
 --
@@ -3272,6 +3952,27 @@ ALTER TABLE public.weekly_plans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.word_entries ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: word_entries word_entries_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY word_entries_delete_own ON public.word_entries FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = creator));
+
+
+--
+-- Name: word_entries word_entries_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY word_entries_insert_own ON public.word_entries FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = creator));
+
+
+--
+-- Name: word_entries word_entries_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY word_entries_update_own ON public.word_entries FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = creator)) WITH CHECK ((( SELECT auth.uid() AS uid) = creator));
+
+
+--
 -- Name: word_mastery; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -3280,5 +3981,3 @@ ALTER TABLE public.word_mastery ENABLE ROW LEVEL SECURITY;
 --
 -- PostgreSQL database dump complete
 --
-
-

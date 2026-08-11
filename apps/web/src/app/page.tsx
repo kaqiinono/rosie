@@ -40,6 +40,16 @@ const baseModules: ModuleCardData[] = [
     icon: '📜',
   },
   {
+    href: '/ai',
+    title: 'AI 助手',
+    description: '按住说话提问，单词、课文、数学题都能问；还能一键跳转到题目和阅读页。',
+    tag: 'AI',
+    variant: 'today',
+    stats: ['语音提问', '知识卡片', '一键跳转'],
+    enterText: '开始问 AI',
+    icon: '✨',
+  },
+  {
     href: '/calc',
     title: '口算天地',
     description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',
@@ -88,16 +98,6 @@ const baseModules: ModuleCardData[] = [
     stats: ['全模块通用', '兑换奖券', '星星余额'],
     enterText: '查看奖券',
     icon: '⭐',
-  },
-  {
-    href: '/admin',
-    title: '管理',
-    description: '星星与奖券、词库、语文字词、媒体等家长管理入口。',
-    tag: 'ADMIN',
-    variant: 'today',
-    stats: ['星星奖券', '词库维护', '数据审计'],
-    enterText: '进入管理',
-    icon: '🛠',
   },
 ]
 

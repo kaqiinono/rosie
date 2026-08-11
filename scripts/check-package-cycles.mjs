@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Guards the monorepo's "no cyclic package dependencies" invariant (CLAUDE.md DAG).
+// Guards the monorepo's "no cyclic package dependencies" invariant (AGENTS.md DAG).
 // Builds a package-level graph from `@rosie/*` import specifiers found in each
 // packages/*/src and fails if any cycle exists. Intentionally package-level (not
 // file-level) to avoid the noise of benign intra-package import cycles — it exists

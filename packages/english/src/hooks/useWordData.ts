@@ -50,7 +50,8 @@ function stageIndexCacheKey(userId: string) {
   return `${CACHE_VER}_${userId}_stage_index`
 }
 
-function readCachedStageVocab(userId: string, stage: string): WordEntry[] | null {
+/** Read one account-scoped textbook cache without starting a network request. */
+export function readCachedStageVocab(userId: string, stage: string): WordEntry[] | null {
   try {
     const json = localStorage.getItem(cacheDataKey(userId, stage))
     if (!json) return null

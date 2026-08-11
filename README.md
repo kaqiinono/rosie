@@ -3,7 +3,7 @@
 面向小学低年级（单个孩子 Rosie）的互动学习 PWA，覆盖**数学、英语、语文、口算**，
 外加**绘本阅读、音频、奖励系统**。**强制登录，Supabase 为唯一数据源**（无游客模式）。
 
-> 架构与开发约定以 [`CLAUDE.md`](CLAUDE.md) 为准，各学科模块细节见对应包的 `CLAUDE.md`。
+> 架构与开发约定以 [`AGENTS.md`](AGENTS.md) 为准，各学科模块细节见对应包的 `AGENTS.md`。
 > 本文件只做快速上手。
 
 ## 技术栈
@@ -22,7 +22,7 @@
 ## Monorepo 结构
 
 单一可部署应用（`apps/web`），每个学科各自成包以便独立开发/类型检查。依赖 DAG 无环，
-`core/ui/rewards/player` 永不依赖学科包。详见 [`CLAUDE.md`](CLAUDE.md)。
+`core/ui/rewards/player` 永不依赖学科包。详见 [`AGENTS.md`](AGENTS.md)。
 
 ```
 apps/web/          Next.js 应用 —— 所有路由（Vercel Root Directory = apps/web）
@@ -37,7 +37,7 @@ supabase/          数据库 schema 快照 + 迁移（见 supabase/README.md）
 docs/              扩展指南、规则、每学科 SQL/灌库脚本
 ```
 
-各模块权威文档：`packages/<pkg>/CLAUDE.md`。
+各模块权威文档：`packages/<pkg>/AGENTS.md`。
 
 ## 本地开发
 
@@ -66,7 +66,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-可选能力见 [`CLAUDE.md` → Environment Variables](CLAUDE.md)：`ANTHROPIC_API_KEY`（单词 AI 补全）、
+可选能力见 [`AGENTS.md` → Environment Variables](AGENTS.md)：`AI_EMBED_*`（单词 AI 补全 + `/ai` 助手）、
 `PEXELS_API_KEY` + `SUPABASE_SERVICE_ROLE_KEY`（单词自动配图 / 找回密码）。服务端密钥严禁
 加 `NEXT_PUBLIC_` 前缀。本地 env 放在 `apps/web/.env.local`。
 

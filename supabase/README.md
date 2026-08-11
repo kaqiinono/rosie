@@ -12,6 +12,8 @@ supabase/
   schema.sql              # full-schema snapshot (pg_dump --schema-only) that
                           # INCLUDES every migration. The "rebuild truth": one
                           # file recreates an empty DB.
+  audits/                 # durable database-advisor ledgers, including every
+                          # intentionally deferred finding and its rationale
   migrations/
     0001_baseline.sql     # frozen baseline == schema.sql BEFORE 0002+
     0002_*.sql            # every change AFTER the baseline, in filename order
@@ -33,6 +35,9 @@ tracked in `public.schema_migrations`.
    are run manually — they are not applied by the runner.
 4. **`DATABASE_URL` never gets committed.** It is a Postgres URI (session pooler
    or direct), not the anon/service key. Pass it inline per command.
+5. **Do not lose deferred advisor findings.** After a production advisor run,
+   update the dated ledger under `supabase/audits/` with fixed, deferred, and
+   accepted items plus the post-migration counts.
 
 ## Historical SQL (frozen, do not move)
 

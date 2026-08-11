@@ -15,6 +15,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "flipbook:sync": "node scripts/generate-flipbook-sync.mjs",
+    "ai:sync-db": "node scripts/ai-sync-db.mjs",
+    "ai:sync-catalog": "node scripts/ai-sync-catalog.mjs",
+    "ai:sync-status": "node scripts/ai-sync-status.mjs",
+    "ai:audit": "node scripts/ai-audit.mjs",
+    "ai:sync-all": "node scripts/ai-sync-all.mjs",
+    "grammar:extract": "node scripts/extract-grammar-pdf.mjs",
     "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs"
   },
   "devDependencies": {

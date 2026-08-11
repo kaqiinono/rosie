@@ -1,12 +1,14 @@
-// 单词自动填充：优先走服务端 Claude 路由（/api/word-enrich），
+import { supabase } from '@rosie/core'
+
+// 单词自动填充：优先走服务端百炼路由（/api/word-enrich），
 // 失败时兜底到免费词典 dictionaryapi.dev。返回结果会标注 source，
 // 以便 UI 明确告知用户信息来自哪个数据源。
 
-export type EnrichSource = 'claude' | 'dictionary'
+export type EnrichSource = 'ai' | 'dictionary'
 
 export interface EnrichResult {
   source: EnrichSource
-  /** Claude 路由返回的模型 id（dictionary 兜底时为空） */
+  /** AI 路由返回的模型 id（dictionary 兜底时为空） */
   model?: string
   ipa: string
   explanation: string
@@ -65,20 +67,33 @@ async function enrichFromDictionary(word: string): Promise<EnrichResult> {
 export async function enrichWord(word: string, stage?: string): Promise<EnrichResult> {
   const trimmed = word.trim()
   if (!trimmed) {
-    return { source: 'dictionary', ipa: '', explanation: '', chineseDef: '', example: '', note: '请先输入单词。' }
+    return {
+      source: 'dictionary',
+      ipa: '',
+      explanation: '',
+      chineseDef: '',
+      example: '',
+      note: '请先输入单词。',
+    }
   }
 
-  // 1) 优先 Claude 服务端路由
+  // 1) 优先百炼服务端路由
   try {
+    const { data } = await supabase.auth.getSession()
+    const token = data.session?.access_token
+    if (!token) throw new Error('not_authenticated')
     const r = await fetch('/api/word-enrich', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ word: trimmed, stage }),
     })
     if (r.ok) {
       const d = (await r.json()) as Partial<EnrichResult>
       return {
-        source: 'claude',
+        source: 'ai',
         model: d.model,
         ipa: d.ipa || '',
         explanation: d.explanation || '',
@@ -92,6 +107,6 @@ export async function enrichWord(word: string, stage?: string): Promise<EnrichRe
 
   // 2) 兜底免费词典
   const fallback = await enrichFromDictionary(trimmed)
-  fallback.note = `Claude 暂不可用，已改用免费词典。${fallback.note ?? ''}`.trim()
+  fallback.note = `AI 填词暂不可用，已改用免费词典。${fallback.note ?? ''}`.trim()
   return fallback
 }

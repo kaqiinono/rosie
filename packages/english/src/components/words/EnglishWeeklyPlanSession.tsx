@@ -4,7 +4,13 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WeeklyPlan, WordEntry } from '@rosie/core'
-import { fmtDate, findWordByKey, formatPlanLessonLabel, getOldReviewWords } from '../../utils/english-helpers'
+import {
+  fmtDate,
+  findWordByKey,
+  formatPlanLessonLabel,
+  getOldReviewWords,
+  wordKey,
+} from '../../utils/english-helpers'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import OldReviewSession from './OldReviewSession'
 import { todayStr, useAuth } from '@rosie/core'
@@ -26,6 +32,7 @@ import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-pla
 
 interface Props {
   vocab: WordEntry[]
+  stage: string
 }
 
 type PlanCardKind = 'weekly' | 'adaptive'
@@ -113,6 +120,30 @@ function isWeeklyIncomplete(plan: WeeklyPlan): boolean {
   return doneDays < totalDays
 }
 
+function adaptivePlanMatchesStage(
+  plan: AdaptiveWordPlan,
+  stage: string,
+  lessonKeys: Set<string>,
+): boolean {
+  if (!stage) return true
+  const stages = plan.scope.stages ?? []
+  if (stages.length > 0) return stages.includes(stage)
+
+  const scopedLessons = plan.scope.lessonKeys ?? []
+  if (scopedLessons.length > 0) {
+    return scopedLessons.some((key) => lessonKeys.has(key))
+  }
+
+  // Legacy plans may have neither field; keep them visible rather than making
+  // an existing plan unreachable.
+  return true
+}
+
+function weeklyPlanMatchesStage(plan: WeeklyPlan, wordKeys: Set<string>): boolean {
+  const plannedKeys = plan.days.flatMap((day) => day.newWordKeys)
+  return plannedKeys.some((key) => wordKeys.has(key))
+}
+
 function cardShellClass(kind: PlanCardKind, isCurrent: boolean): string {
   const base =
     'group flex h-full flex-col rounded-[16px] border bg-[var(--wm-surface2)] transition-all'
@@ -126,7 +157,7 @@ function cardShellClass(kind: PlanCardKind, isCurrent: boolean): string {
     : `${base} border-[rgba(139,92,246,.22)] hover:border-[rgba(139,92,246,.5)] hover:bg-[var(--wm-surface)]`
 }
 
-export default function EnglishWeeklyPlanSession({ vocab }: Props) {
+export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
   const router = useRouter()
   const { user } = useAuth()
   const { masteryMap } = useWordsContext()
@@ -144,10 +175,31 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
   const [dayByPlanId, setDayByPlanId] = useState<Record<string, PlanDaySnapshot>>({})
   const [rowsByPlanId, setRowsByPlanId] = useState<Record<string, AdaptivePlanWordProgress[]>>({})
 
+  const stageWordKeys = useMemo(() => new Set(vocab.map(wordKey)), [vocab])
+  const stageLessonKeys = useMemo(
+    () => new Set(vocab.map((word) => `${word.unit}::${word.lesson}`)),
+    [vocab],
+  )
+
+  const visibleWeeklyPlans = useMemo(
+    () => allPlans.filter((plan) => weeklyPlanMatchesStage(plan, stageWordKeys)),
+    [allPlans, stageWordKeys],
+  )
+
+  const visibleWeeklyPlan = useMemo(
+    () =>
+      weeklyPlan && weeklyPlanMatchesStage(weeklyPlan, stageWordKeys) ? weeklyPlan : null,
+    [weeklyPlan, stageWordKeys],
+  )
+
   const visibleAdaptivePlans = useMemo(
     () =>
-      adaptivePlans.filter((plan) => plan.status === 'active' || plan.status === 'completed'),
-    [adaptivePlans],
+      adaptivePlans.filter(
+        (plan) =>
+          (plan.status === 'active' || plan.status === 'completed') &&
+          adaptivePlanMatchesStage(plan, stage, stageLessonKeys),
+      ),
+    [adaptivePlans, stage, stageLessonKeys],
   )
 
   const activeAdaptive = useMemo(
@@ -157,18 +209,20 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
 
   /** Prefer this week's multi-day plan; otherwise the active adaptive plan. */
   const currentActiveKey = useMemo(() => {
-    if (weeklyPlan && isWeeklyIncomplete(weeklyPlan)) {
-      return `weekly:${weeklyPlan.id ?? weeklyPlan.weekStart}`
+    if (visibleWeeklyPlan && isWeeklyIncomplete(visibleWeeklyPlan)) {
+      return `weekly:${visibleWeeklyPlan.id ?? visibleWeeklyPlan.weekStart}`
     }
     if (activeAdaptive) return `adaptive:${activeAdaptive.id}`
-    if (weeklyPlan) return `weekly:${weeklyPlan.id ?? weeklyPlan.weekStart}`
+    if (visibleWeeklyPlan) {
+      return `weekly:${visibleWeeklyPlan.id ?? visibleWeeklyPlan.weekStart}`
+    }
     return null
-  }, [weeklyPlan, activeAdaptive])
+  }, [visibleWeeklyPlan, activeAdaptive])
 
   const unifiedCards = useMemo(() => {
     const cards: UnifiedPlanCard[] = []
 
-    for (const plan of allPlans) {
+    for (const plan of visibleWeeklyPlans) {
       cards.push({
         key: `weekly:${plan.id ?? plan.weekStart}`,
         kind: 'weekly',
@@ -197,11 +251,13 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
     })
 
     return cards
-  }, [allPlans, visibleAdaptivePlans, currentActiveKey])
+  }, [visibleWeeklyPlans, visibleAdaptivePlans, currentActiveKey])
 
   const currentAndNextWeekPlans = useMemo(() => {
     const today = todayStr()
-    const sorted = [...allPlans].sort((a, b) => a.weekStart.localeCompare(b.weekStart))
+    const sorted = [...visibleWeeklyPlans].sort((a, b) =>
+      a.weekStart.localeCompare(b.weekStart),
+    )
     let currentIdx = -1
     for (let i = sorted.length - 1; i >= 0; i--) {
       if (sorted[i].weekStart <= today) {
@@ -213,7 +269,7 @@ export default function EnglishWeeklyPlanSession({ vocab }: Props) {
     if (currentIdx >= 0) result.push(sorted[currentIdx])
     if (currentIdx + 1 < sorted.length) result.push(sorted[currentIdx + 1])
     return result
-  }, [allPlans])
+  }, [visibleWeeklyPlans])
 
   const oldReviewWords = useMemo(
     () => getOldReviewWords(vocab, masteryMap, currentAndNextWeekPlans),

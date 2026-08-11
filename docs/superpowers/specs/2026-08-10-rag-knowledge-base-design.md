@@ -1,21 +1,277 @@
 # RAG 知识库系统设计
 
-> 日期：2026-08-10
-> 状态：设计已确认，待实现
+> 日期：2026-08-10（评审修订：2026-08-10）
+> 状态：评审修订完成（含 Agent 响应协议），待分阶段实现
 
 ## 概述
 
-为 Rosie 学习乐园引入 RAG（检索增强生成）系统，建立英语、数学、语文三科知识库，支持：
-1. **知识问答**：孩子向 AI 提问，获得基于知识库的适龄解答
-2. **智能出题**：基于知识内容自动生成练习题
-3. **弱项强化训练**：AI 分析薄弱点，每日推送个性化训练任务
+为 Rosie 学习乐园引入 **Rosie Agent**（混合交互智能体 + RAG 知识库），建立英语、数学、语文三科知识库，支持：
+1. **知识问答**：孩子向 AI 提问（**语音为主**），获得基于知识库的适龄解答
+2. **混合交互响应**：除文字外，返回 **卡片 / 文章节选 / 题解 / 可点击跳转** 等结构化 UI
+3. **智能出题**：基于知识内容自动生成练习题
+4. **弱项强化训练**：AI 分析薄弱点，每日推送个性化训练任务
 
 ## 核心约束
 
 - **用户**：小学低年级儿童（Rosie），界面需简洁友好
-- **AI 服务**：Qoder API（具体接口后续确认）
-- **知识来源**：Supabase 已有结构化数据 + 手动导入外部文本/PDF
+- **AI 服务**：优先复用现有 **Anthropic** 栈（chat）；Embedding / Vision / STT 选用 **OpenAI-compatible 单一 provider**（若 Qoder 可用且兼容则统一密钥，否则 Anthropic chat + 独立 embed provider）。实现前须锁定 embed 维度与模型标识
+- **知识来源**：**双通道 ingest** — Supabase 结构化数据 + **bundled TS catalog**（math-content、chinese passages/poems、english reading）+ 手动导入外部文本/PDF
 - **基础设施**：Supabase pgvector（不引入额外向量数据库）
+- **包边界**：新建 `@rosie/ai`（**不**放入 `@rosie/core`）
+
+## 架构原则：Structured-first + RAG-second + Agent Envelope
+
+弱项出题 / 每日训练 **不依赖向量检索**；开放问答 / 课文理解才走 RAG。
+所有面向孩子的回复统一走 **Agent Response Envelope**（`blocks` + `actions`），而不只是 Markdown 气泡。
+
+```
+孩子提问 / 出题请求（语音/文字）
+        │
+        ▼
+   Agent 编排器（意图 → Tools）
+        │
+        ├─ 弱项/出题/复习 ──► 结构化直查（mastery + canonical）
+        │
+        └─ 开放问答 / 课文理解 ──► RAG 检索（pgvector + Hybrid）
+        │
+        ▼
+   LLM 生成 AgentResponse { blocks[], actions[] }
+        │
+        ▼
+   混合渲染器（文字 / 卡片 / 题解 / 按钮跳转）
+```
+
+**好处**：与现有 `word_key` / `problem_key` / `char_key` / 路由体系一致；可跳转现有课时页、题目详情、草稿；比纯聊天更可用。
+
+---
+
+## Rosie Agent：混合交互智能体
+
+### 定位
+
+**不是**全自动多步 ReAct Agent（单用户、儿童场景无需复杂自治循环）。
+**是**「编排器 + 工具调用 + 结构化响应 + 客户端渲染」的 **混合交互智能体**：
+
+| 层 | 职责 |
+|----|------|
+| **Orchestrator** | 意图识别 → 选择 Tools → 组装上下文 |
+| **Tools** | 检索、canonical 直查、deep link 解析、（P1+）出题/弱项 |
+| **LLM** | 基于 tool 结果生成儿童友好文案 + 结构化 blocks/actions |
+| **Renderer** | `@rosie/ai` 按 block `type` 渲染不同 UI |
+
+### 总体架构
+
+```mermaid
+flowchart TB
+  Input[语音/文字输入]
+  Orchestrator[AgentOrchestrator]
+  Tools[ToolRegistry]
+  Retrieve[retrieve_knowledge]
+  Lookup[lookup_canonical]
+  Resolve[resolve_deep_links]
+  LLM[Anthropic chat]
+  Envelope[AgentResponse]
+  Renderer[AiMessageRenderer]
+
+  Input --> Orchestrator
+  Orchestrator --> Tools
+  Tools --> Retrieve
+  Tools --> Lookup
+  Tools --> Resolve
+  Retrieve --> LLM
+  Lookup --> LLM
+  Resolve --> LLM
+  LLM --> Envelope
+  Envelope --> Renderer
+```
+
+### Agent Response Envelope
+
+一次 assistant 回复 = **一个消息**，载荷为结构化 JSON（存 DB + SSE 下发）：
+
+```typescript
+/** packages/ai/src/types/agent-response.ts */
+
+export interface AgentResponse {
+  /** 纯文本摘要（必填；DB content 列、TTS、无障碍） */
+  text: string;
+  blocks: AgentBlock[];
+  actions: AgentAction[];
+  sources?: AgentSource[];
+}
+
+export interface AgentSource {
+  sourceRef: string;
+  title: string;
+  snippet?: string;
+  subject?: 'english' | 'math' | 'chinese';
+}
+```
+
+### Block 类型（`AgentBlock`）
+
+| type | 说明 | 阶段 | 渲染组件 |
+|------|------|------|---------|
+| `text` | 儿童友好说明 | **P0** | `AgentTextBlock` |
+| `word_card` | 英语单词卡 | **P0** | `AgentWordCard` |
+| `char_card` | 汉字卡 | **P0** | `AgentCharCard` |
+| `passage_excerpt` | 课文/阅读节选 | **P0** | `AgentPassageBlock` |
+| `math_solution` | 数学题解步骤 | **P0** | `AgentMathSolutionBlock` |
+| `poem_card` | 古诗卡片 | P0.5 | `AgentPoemCard` |
+| `ai_quiz` | 内联 AI 题 | P1 | `AgentQuizInline` |
+| `weakness_summary` | 弱项摘要 | P2 | `AgentWeaknessCard` |
+| `scratch_hint` | 草稿提示 | P0.5 | `AgentScratchHintBlock` |
+
+**原则**：
+
+- **题解优先 canonical**：数学 `fromCatalog: true` 时 steps 来自 `Problem.analysis[]`；LLM 只改写讲解语气。
+- **长文不全文堆聊天**：`passage_excerpt` + action「读全文」。
+- **草稿不在聊天里画板**：`scratch_hint` + `open_scratch` 进现有题目页。
+
+```typescript
+type AgentBlock =
+  | { type: 'text'; content: string }
+  | {
+      type: 'word_card';
+      sourceRef: string;
+      word: string;
+      ipa?: string;
+      chineseDef: string;
+      example?: string;
+    }
+  | {
+      type: 'char_card';
+      sourceRef: string;
+      char: string;
+      pinyin: string;
+      phrases: string[];
+    }
+  | {
+      type: 'passage_excerpt';
+      sourceRef: string;
+      title: string;
+      bookSlug?: string;
+      lessonKey?: string;
+      paragraphs: string[];
+    }
+  | {
+      type: 'math_solution';
+      sourceRef: string;
+      problemId: string;
+      title: string;
+      steps: string[];
+      finalAnswer?: string;
+      fromCatalog: boolean;
+    }
+  | { type: 'poem_card'; sourceRef: string; title: string; author?: string; lines: string[] }
+  | { type: 'ai_quiz'; quizId: string; questions: AiQuestion[] }
+  | { type: 'weakness_summary'; subject: string; items: Array<{ label: string; severity: string }> }
+  | { type: 'scratch_hint'; problemId: string; title: string };
+```
+
+### Action 类型（`AgentAction`）
+
+由 `AgentActionBar` 渲染；**仅允许 app 内相对路径**（服务端校验）。
+
+| type | 说明 | 阶段 |
+|------|------|------|
+| `navigate` | 路由跳转 | **P0** |
+| `open_problem` | 跳转题目详情 | **P0** |
+| `open_reading` | 跳转课文/阅读页 | **P0** |
+| `open_scratch` | 跳转题目页写草稿 | P0.5 |
+| `start_ai_quiz` | 开始 AI 练习 | P1 |
+| `start_training` | 开始当日训练 | P2 |
+| `copy_text` | 复制文本 | P0.5 |
+
+```typescript
+type AgentAction =
+  | { type: 'navigate'; href: string; label: string; icon?: string }
+  | { type: 'open_problem'; problemId: string; label: string }
+  | { type: 'open_reading'; href: string; label: string }
+  | { type: 'open_scratch'; problemId: string; label: string }
+  | { type: 'start_ai_quiz'; quizId: string; label: string }
+  | { type: 'start_training'; planId: string; label: string }
+  | { type: 'copy_text'; text: string; label: string };
+```
+
+### Tool Registry（服务端）
+
+| Tool | 输出 | 阶段 |
+|------|------|------|
+| `retrieve_knowledge` | chunks[] | P0 |
+| `lookup_word` | WordEntry 字段 | P0 |
+| `lookup_char` | ChineseCharProfile | P0 |
+| `lookup_passage` | paragraphs + metadata | P0 |
+| `lookup_math_problem` | Problem + analysis + href | P0 |
+| `resolve_actions` | AgentAction[] | P0 |
+| `lookup_mastery_weak` | weak points[] | P2 |
+| `generate_quiz` | AiQuestion[] | P1 |
+
+**Deep link 解析**（`packages/ai/src/server/resolve-links.ts`）：
+
+| source_ref | 跳转 |
+|-----------|------|
+| `word_entries:{id}` | `/english/words/practice?focus={wordKey}` |
+| `english:reading:{passageKey}` | `/english/words/reading/{passageKey}` |
+| `math-content:{lessonId}` | `/math/ny/{grade}/{seq}` |
+| problemId（catalog） | `lookupMathProblem` → `href` |
+| `chinese:passage:{book}:{lessonKey}` | `/chinese/{book}/reading/{lessonKey}` |
+| `chinese_char_entries:{charKey}` | `/chinese/{book}/chars/practice?…` |
+
+**DAG 注意**：优先在 `@rosie/ai` 内维护 **catalog 同步生成的 link manifest JSON**，避免 `ai → math/english/chinese` 运行时深依赖；manifest 由 `ai:sync-catalog` 一并输出。
+
+### 意图 → Tool 映射（示例）
+
+| 用户输入 | Tools | blocks | actions |
+|---------|-------|--------|---------|
+| 「apple 是什么意思」 | lookup_word | word_card, text | navigate 练词 |
+| 「小蝌蚪找妈妈讲什么」 | lookup_passage, retrieve_knowledge | passage_excerpt, text | open_reading |
+| 「打字员那道题怎么做」 | lookup_math_problem | math_solution, text | open_problem |
+| 「带我去看这道题」 | context problemId | text | open_problem |
+| 「帮我出 3 道加法题」 | generate_quiz | ai_quiz | start_ai_quiz |
+
+### Orchestrator 流程（单次 chat）
+
+```
+1. STT（若语音）→ message
+2. classifyIntent(message, context)
+3. 并行 tools（按 intent）
+4. resolve_actions(sourceRefs)
+5. buildPrompt + LLM → AgentResponse JSON
+6. Zod validate；失败 → 纯 text 降级
+7. SSE token 流 + envelope 事件
+8. INSERT ai_conversations
+```
+
+### SSE 事件
+
+```
+event: token
+data: {"text":"…"}
+
+event: envelope
+data: {"text":"…","blocks":[…],"actions":[…],"sources":[…]}
+
+event: done
+data: {"conversationId":"…","messageId":"…"}
+```
+
+### 安全
+
+- href 仅允许 `/math`、`/english`、`/chinese`、`/ai` 前缀
+- catalog 题解 steps 服务端填充，LLM 不可篡改数值
+- actions 不可指向 `/admin`
+
+### Block 分阶段
+
+| 阶段 | 交付 |
+|------|------|
+| **P0** | text, word/char/passage/math_solution blocks + navigate/open_problem/open_reading |
+| **P0.5** | poem_card, scratch_hint, open_scratch |
+| **P1** | ai_quiz |
+| **P2** | weakness_summary, start_training |
+
+---
 
 ## 架构选型
 
@@ -23,74 +279,95 @@
 
 ```
 ┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  前端 UI     │────▶│  Next.js API     │────▶│  Supabase       │
-│  (React)     │◀────│  Routes          │◀────│  pgvector + RPC │
+│  @rosie/ai   │────▶│  Next.js API     │────▶│  Supabase       │
+│  (React UI)  │◀────│  Routes (薄层)    │◀────│  pgvector + RPC │
 └─────────────┘     └────────┬─────────┘     └─────────────────┘
                              │
-                             ▼
-                     ┌──────────────────┐
-                     │  Qoder API       │
-                     │  (Embed + Gen)   │
-                     └──────────────────┘
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+        Anthropic       Embed API      Vision API
+        (chat)          (OpenAI-compat) (PDF, P3)
 ```
 
 **选型理由**：
 - 零额外基础设施，与现有 RLS 安全策略一致
 - 单数据源管理简单，pgvector 性能对单用户场景绰绰有余
-- Next.js API Routes 已有服务端逻辑模式，新增 RAG 路由自然
+- Next.js API Routes 已有服务端逻辑模式（参考 `word-enrich`），新增 RAG 路由自然
 
 **否决方案**：
 - 方案 B（Edge Function）：引入 Deno 技术栈增加复杂度
 - 方案 C（独立向量库）：对小规模项目过重
+
+## 分阶段交付
+
+| 阶段 | 范围 | 验证标准 |
+|------|------|---------|
+| **P0** | ingest + STT + `/api/ai/chat` + **Agent Envelope**（5 类 block + 3 类 action）+ 混合 UI | 语音问课文/单词/数学题；返回卡片或题解 +「去看题/读全文」按钮 |
+| **P0.5** | poem_card、scratch_hint、open_scratch | 古诗卡片；跳转写草稿 |
+| **P1** | topic 模式出题 + 独立 `AiQuizSession` UI | JSON schema 校验通过率 >95% |
+| **P2** | 弱项分析 + 每日训练 SSE + mastery 回写 | 与 mastery 闭环、无重复 plan |
+| **P3** | PDF 导入 CLI + admin 知识库管理 | 本地脚本 + 人工抽检 |
+
+P0–P2 不依赖 PDF 管道；P3 可独立迭代。
 
 ## 数据模型
 
 ### 知识库层
 
 ```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- 知识文档（原始文档/内容条目）
 CREATE TABLE knowledge_documents (
-  id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  subject     text NOT NULL,           -- 'english' | 'math' | 'chinese'
-  source_type text NOT NULL,           -- 'db_sync' | 'import'
-  source_ref  text,                    -- 来源引用，如 'word_entries:123'
-  title       text NOT NULL,
-  content     text NOT NULL,
-  metadata    jsonb DEFAULT '{}' NOT NULL,  -- grade、semester、unit 等
-  created_at  timestamptz DEFAULT now(),
-  updated_at  timestamptz DEFAULT now()
+  id           uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  subject      text NOT NULL,            -- 'english' | 'math' | 'chinese'
+  source_type  text NOT NULL,            -- 'db_sync' | 'catalog_sync' | 'import'
+  source_ref   text,                     -- 如 'word_entries:123' | 'math-content:1-35' | 'chinese:passage:g2a:3-2'
+  owner_id     uuid REFERENCES auth.users(id),  -- NULL = 系统内置；import 关联实际上传者
+  title        text NOT NULL,
+  content      text NOT NULL,
+  content_hash text NOT NULL,            -- SHA-256 of normalized content；增量 sync 判变更
+  metadata     jsonb DEFAULT '{}' NOT NULL,
+  created_at   timestamptz DEFAULT now(),
+  updated_at   timestamptz DEFAULT now(),
+  CONSTRAINT knowledge_documents_source_ref_unique UNIQUE (source_ref)
+    -- source_ref 为 NULL 时（纯 import 无稳定键）允许多行；非 NULL 时 upsert
 );
 
 -- 知识片段（Embedding 后的向量块）
--- 冗余 user_id 用于简化 RLS 策略并提升查询性能
--- 系统内置数据（db_sync）user_id 为 NULL，手动导入数据关联实际用户
+-- user_id 冗余：系统内置（db_sync / catalog_sync）为 NULL；手动 import 关联 owner
 CREATE TABLE knowledge_chunks (
   id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   document_id uuid NOT NULL REFERENCES knowledge_documents(id) ON DELETE CASCADE,
-  user_id     uuid REFERENCES auth.users(id),  -- NULL = 系统内置数据
+  user_id     uuid REFERENCES auth.users(id),
   subject     text NOT NULL,
   chunk_index smallint NOT NULL,
   content     text NOT NULL,
-  embedding   vector(1536),  -- 维度取决于 Embedding 模型，当前以 1536 为基准；若后续模型变更需迁移
-  content_tsv tsvector,      -- 全文检索向量（用于 Hybrid Search）
+  embedding   vector(1536),   -- 维度锁定于 embed 模型；变更需全量 re-embed migration
+  content_tsv tsvector,       -- 英文 FTS；中文靠 pg_trgm + metadata
   metadata    jsonb DEFAULT '{}' NOT NULL,
   created_at  timestamptz DEFAULT now()
 );
 
--- 索引策略说明：
--- 初期数据量小时（< 几万条），使用 HNSW 索引（精确检索，无需预热）
--- 数据量增长后可切换为 IVFFlat（需 REINDEX 重建）
 CREATE INDEX knowledge_chunks_embedding_idx
   ON knowledge_chunks USING hnsw (embedding vector_cosine_ops);
 
--- 全文检索索引（支持 Hybrid Search）
 CREATE INDEX knowledge_chunks_tsv_idx
   ON knowledge_chunks USING gin (content_tsv);
 
--- tsvector 自动更新触发器
+-- 中文/混合文本 trigram 索引（精确词、古诗名、汉字）
+CREATE INDEX knowledge_chunks_content_trgm_idx
+  ON knowledge_chunks USING gin (content gin_trgm_ops);
+
+-- 英文 tsvector 自动更新（仅对 english subject 或含 ASCII 为主的 chunk）
 CREATE OR REPLACE FUNCTION update_content_tsv() RETURNS trigger AS $$
 BEGIN
-  NEW.content_tsv := to_tsvector('simple', NEW.content);
+  IF NEW.subject = 'english' THEN
+    NEW.content_tsv := to_tsvector('english', NEW.content);
+  ELSE
+    NEW.content_tsv := NULL;
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -105,24 +382,25 @@ CREATE TABLE knowledge_imports (
   user_id     uuid NOT NULL REFERENCES auth.users(id),
   subject     text NOT NULL,
   file_name   text,
-  file_path   text,                    -- Supabase Storage 路径
-  file_type   text,                    -- 'text' | 'pdf_text' | 'pdf_scanned' | 'plain_text'
+  file_path   text,
+  file_type   text,                     -- 'text' | 'pdf_text' | 'pdf_scanned' | 'plain_text'
   content     text NOT NULL DEFAULT '',
   chunk_count integer DEFAULT 0,
-  status      text DEFAULT 'pending',  -- pending | extracting | chunking | embedding | done | error
+  status      text DEFAULT 'pending',
   error_msg   text,
   created_at  timestamptz DEFAULT now(),
   updated_at  timestamptz DEFAULT now()
 );
 
--- 知识库同步状态
+-- 知识库同步状态（按 source 粒度，非仅 table 级）
 CREATE TABLE knowledge_sync_state (
   id              uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  table_name      text NOT NULL UNIQUE,
+  source_key      text NOT NULL UNIQUE,  -- 如 'db:word_entries' | 'catalog:math-content' | 'catalog:chinese-passages'
   last_synced_at  timestamptz,
   records_synced  integer DEFAULT 0,
   chunks_created  integer DEFAULT 0,
-  status          text DEFAULT 'idle',  -- idle | syncing | done | error
+  chunks_deleted  integer DEFAULT 0,     -- tombstone 清理计数
+  status          text DEFAULT 'idle',
   error_msg       text,
   updated_at      timestamptz DEFAULT now()
 );
@@ -131,14 +409,16 @@ CREATE TABLE knowledge_sync_state (
 ### 应用层
 
 ```sql
--- AI 对话记录
+-- AI 对话记录（API 字段 conversationId 映射 session_id）
 CREATE TABLE ai_conversations (
   id              uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id         uuid NOT NULL REFERENCES auth.users(id),
   session_id      uuid NOT NULL,
-  role            text NOT NULL,        -- 'user' | 'assistant'
-  content         text NOT NULL,
-  sources         jsonb DEFAULT '[]',
+  role            text NOT NULL,
+  content         text NOT NULL,           -- AgentResponse.text 摘要
+  blocks          jsonb DEFAULT '[]',      -- AgentBlock[]
+  actions         jsonb DEFAULT '[]',      -- AgentAction[]（可点击跳转）
+  sources         jsonb DEFAULT '[]',      -- AgentSource[]（溯源；UI 优先 actions）
   subject         text,
   created_at      timestamptz DEFAULT now()
 );
@@ -146,7 +426,8 @@ CREATE TABLE ai_conversations (
 CREATE INDEX ai_conversations_session_idx
   ON ai_conversations(session_id, created_at);
 
--- AI 生成题目记录（去重 + 质量追踪）
+-- 保留策略：默认保留 90 天，cron 清理（P2 实现）
+
 CREATE TABLE ai_generated_questions (
   id              uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id         uuid NOT NULL REFERENCES auth.users(id),
@@ -154,17 +435,13 @@ CREATE TABLE ai_generated_questions (
   topic           text,
   question_hash   text NOT NULL,
   question_data   jsonb NOT NULL,
-  source          text NOT NULL,        -- 'quiz' | 'training'
+  source          text NOT NULL,         -- 'quiz' | 'training'
   correct         boolean,
-  created_at      timestamptz DEFAULT now()
+  created_at      timestamptz DEFAULT now(),
+  CONSTRAINT ai_generated_questions_user_hash_unique
+    UNIQUE (user_id, question_hash)
 );
 
-CREATE INDEX ai_questions_hash_idx
-  ON ai_generated_questions(question_hash);
-
--- 每日训练计划
--- 注意：每个 plan_date 可有多条记录（每科一条），
--- training/generate API 一次性为当天所有科目创建计划
 CREATE TABLE ai_training_plans (
   id           uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id      uuid NOT NULL REFERENCES auth.users(id),
@@ -172,25 +449,74 @@ CREATE TABLE ai_training_plans (
   subject      text NOT NULL,
   weak_points  jsonb NOT NULL DEFAULT '[]',
   questions    jsonb NOT NULL DEFAULT '[]',
-  status       text DEFAULT 'pending',  -- pending | started | completed
+  status       text DEFAULT 'pending',
   score        integer,
   feedback     text,
   created_at   timestamptz DEFAULT now(),
-  completed_at timestamptz
+  completed_at timestamptz,
+  CONSTRAINT ai_training_plans_user_date_subject_unique
+    UNIQUE (user_id, plan_date, subject)
 );
 ```
 
-### 已有依赖表结构参考
+### RLS 策略
 
-弱项分析和智能出题依赖以下已有表，此处列出关键字段供参考（完整结构见 `0001_baseline.sql`）：
+```sql
+ALTER TABLE knowledge_documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE knowledge_chunks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE knowledge_imports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_generated_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_training_plans ENABLE ROW LEVEL SECURITY;
+
+-- knowledge_documents / chunks：系统内置可读；用户 import 仅 owner
+CREATE POLICY knowledge_documents_select ON knowledge_documents FOR SELECT TO authenticated
+  USING (owner_id IS NULL OR owner_id = auth.uid());
+
+CREATE POLICY knowledge_chunks_select ON knowledge_chunks FOR SELECT TO authenticated
+  USING (user_id IS NULL OR user_id = auth.uid());
+
+CREATE POLICY knowledge_documents_insert_import ON knowledge_documents FOR INSERT TO authenticated
+  WITH CHECK (source_type = 'import' AND owner_id = auth.uid());
+
+CREATE POLICY knowledge_chunks_insert_import ON knowledge_chunks FOR INSERT TO authenticated
+  WITH CHECK (user_id = auth.uid());
+
+-- knowledge_sync_state：只读（authenticated）；写入仅 service role（sync API）
+CREATE POLICY knowledge_sync_state_select ON knowledge_sync_state FOR SELECT TO authenticated
+  USING (true);
+
+-- ai_* 表：标准 user_id = auth.uid()
+CREATE POLICY ai_conversations_own ON ai_conversations
+  USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE POLICY ai_generated_questions_own ON ai_generated_questions
+  USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE POLICY ai_training_plans_own ON ai_training_plans
+  USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE POLICY knowledge_imports_own ON knowledge_imports
+  USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+```
+
+**sync / catalog ingest 权限**：
+- `POST /api/ai/knowledge/sync` 与 `pnpm ai:sync-catalog` **使用 service role**，仅 admin 路由或本地 CLI 可触发
+- 普通 authenticated 用户 **不可** 触发全库 re-embed
+
+### 增量同步语义
+
+1. 每条 canonical 记录计算 `content_hash`（normalized text + metadata 关键字段）
+2. upsert by `source_ref`：hash 不变则 skip embed；hash 变则 delete old chunks + re-embed
+3. 源记录删除时：delete document by `source_ref`（CASCADE chunks）
+4. `knowledge_sync_state.source_key` 记录每通道最后成功时间
+
+### 已有依赖表结构参考
 
 **掌握度表（mastery）**：
 
 | 表名 | 学科 | 关键字段 |
 |------|------|--------|
-| `word_mastery` | 英语 | `user_id`, `word_key`, `correct`, `incorrect`, `stage`, `next_review_date`, `is_hard` |
-| `problem_mastery` | 数学 | `user_id`, `problem_key`, `correct`, `incorrect`, `stage`, `next_review_date`, `is_hard` |
-| `chinese_char_mastery` | 语文 | `user_id`, `char_key`, `track`(recognize/write), `correct`, `incorrect`, `stage`, `next_review_date`, `is_hard` |
+| `word_mastery` | 英语 | `user_id`, `word_key`, `correct`, `incorrect`, `last_seen`, `stage`, `next_review_date`, `is_hard` |
+| `problem_mastery` | 数学 | `user_id`, `problem_key`, `correct`, `incorrect`, `last_seen`, `stage`, `next_review_date`, `is_hard` |
+| `chinese_char_mastery` | 语文 | `user_id`, `char_key`, `track`, `correct`, `incorrect`, `last_seen`, `stage`, `next_review_date`, `is_hard` |
 
 **错题表（wrong）**：
 
@@ -198,214 +524,155 @@ CREATE TABLE ai_training_plans (
 |------|------|--------|
 | `english_wrong` | 英语 | `user_id`, `word_key`, `added_at`, `resolved` |
 | `math_wrong` | 数学 | `user_id`, `problem_id`, `added_at`, `resolved` |
-| `chinese_wrong_items` | 语文 | `user_id`, `item_key`, `item_type`(char/phrase/accumulation/poem), `wrong_kind`, `resolved` |
-| `calc_mistakes` | 口算 | `user_id`, `signature`, `category`(addsub/muldiv/mixed), `consecutive_correct`, `resolved` |
+| `chinese_wrong_items` | 语文 | `user_id`, `item_key`, `item_type`, `wrong_kind`, `resolved` |
+| `calc_mistakes` | 口算 | `user_id`, `signature`, `category`, `consecutive_correct`, `resolved` |
 
-**弱项分析逻辑**：通过聚合上述表的 `is_hard`、`correct/(correct+incorrect)`、`resolved`、`last_seen` 等字段，结合知识库 chunks 检索，生成个性化训练任务。
+**口算 calc**：不在 AI 三科知识库范围内；`calc_mistakes` 不参与弱项分析（除非后续单独扩展）。
+
+**弱项 → canonical 映射**（structured lookup，非 RAG）：
+
+| 学科 | mastery/wrong key | canonical 来源 | source_ref 示例 |
+|------|-------------------|---------------|-----------------|
+| 英语 | `word_key` | `word_entries` | `word_entries:{id}` |
+| 数学 | `problem_key` | `@rosie/math-content` problem | `math-content:{lessonId}:{problemId}` |
+| 语文 | `char_key` | `chinese_char_entries` | `chinese_char_entries:{charKey}` |
+| 语文 | `item_key` (poem/passage) | catalog TS | `chinese:poem:{bookSlug}:{id}` / `chinese:passage:{bookSlug}:{lessonKey}` |
 
 ### 向量检索函数（Hybrid Search）
 
-支持向量相似度 + 全文检索混合检索，解决孩子搜索精确词汇（如特定单词、古诗名）时纯向量检索遗漏的问题。
+采用 **Reciprocal Rank Fusion (RRF)** 合并向量与关键词结果，避免 cosine 与 ts_rank 量纲不一致。
 
 ```sql
 CREATE OR REPLACE FUNCTION search_knowledge(
-  query_embedding vector(1536),        -- 查询向量
-  query_text text DEFAULT NULL,         -- 原文关键词（用于全文检索）
+  query_embedding vector(1536),
+  query_text text DEFAULT NULL,
   match_subject text DEFAULT NULL,
   match_grade smallint DEFAULT NULL,
+  match_metadata jsonb DEFAULT NULL,   -- 精确过滤：lessonKey, char, poemTitle 等
   match_count int DEFAULT 10,
-  match_threshold float DEFAULT 0.7,
-  text_weight float DEFAULT 0.3,        -- 全文检索权重（0-1）
-  vector_weight float DEFAULT 0.7       -- 向量检索权重（0-1）
+  match_threshold float DEFAULT 0.65,  -- 可配置；实现时按 embed 模型校准
+  rrf_k int DEFAULT 60
 ) RETURNS TABLE (
   chunk_id uuid,
   document_id uuid,
   subject text,
   content text,
   metadata jsonb,
-  similarity float                       -- 加权综合分数
+  similarity float
 )
 ```
 
 **Hybrid Search 策略**：
-- `query_text` 为空时：退化为纯向量检索
-- `query_text` 非空时：同时执行向量检索和 `tsvector` 全文检索，按 `vector_weight` / `text_weight` 加权合并排序
-- 去重：同一 chunk 被两种方式命中时取最高分
 
-## 知识来源映射
+| 场景 | 向量 | 关键词 |
+|------|------|--------|
+| 英语 | cosine similarity | `content_tsv` + `english` config |
+| 数学/语文 | cosine similarity | `pg_trgm` similarity (`%` / `similarity()`) |
+| 精确实体 | metadata filter 优先 | lessonKey / char / poem title 精确匹配 |
 
-| 学科 | 数据源表 | 映射方式 |
-|------|---------|---------|
-| 英语 | `word_entries` | 每个单词 → 1 个文档（含释义、音标、例句、拼读规则） |
-| 英语 | `vocabulary` | 每条词汇 → 1 个文档 |
-| 数学 | `math-content` 课时题目 | 每个课时 → 1 个文档（含该课所有题目文本和知识点） |
-| 语文 | `chinese_char_entries` | 每个汉字 → 1 个文档（含拼音、部首、笔画、词语） |
-| 语文 | `chinese_lessons` | 每篇课文 → 1 个文档（含课文内容、类型、单元） |
-| 通用 | 手动导入 | 文本/PDF → 分块 → 多 chunks |
+- `query_text` 为空：纯向量检索 + metadata filter
+- `query_text` 非空：向量 top-N + 关键词 top-N → RRF 合并
+- 同一 document 多 chunk 命中：应用层按 `document_id` 合并，保留最高分 chunk
+- **中文不使用 `simple` tsvector** 作为主检索手段
+
+## 知识来源映射（双通道 ingest）
+
+> **注意**：`vocabulary` 表已于 `0002_drop_deprecated_tables.sql` 删除，由 `word_entries` 取代。
+
+### 通道 A：DB sync（Supabase）
+
+| 学科 | 数据源 | source_ref | 映射方式 |
+|------|--------|-----------|---------|
+| 英语 | `word_entries` | `word_entries:{id}` | 每个单词 → 1 document（释义、音标、例句、拼读） |
+| 语文 | `chinese_char_entries` | `chinese_char_entries:{char_key}` | 每个汉字 → 1 document |
+| 语文 | `chinese_lessons` | `chinese_lessons:{lesson_key}` | 每课 metadata + `recall_phrases[]` |
+
+### 通道 B：Catalog sync（bundled TS → CLI）
+
+Canonical 语料在 TS 中，**不能仅靠 DB sync**。CLI：`pnpm ai:sync-catalog [--subject ...]`
+
+| 学科 | 数据源路径 | source_ref | 映射方式 |
+|------|-----------|-----------|---------|
+| 数学 | `packages/math-content/src/utils/g*/lesson*-data.ts` | `math-content:{lessonId}` | 每课时 → 1 document（所有 section 题目 text + analysis，strip HTML） |
+| 语文 | `packages/chinese/src/utils/g*/lesson-passages.ts` | `chinese:passage:{bookSlug}:{lessonKey}` | 每篇课文 → 1 document（paragraphs 拼接） |
+| 语文 | `packages/chinese/src/utils/g*/poems.ts` | `chinese:poem:{bookSlug}:{id}` | 每首古诗 → 1 document |
+| 语文 | `packages/chinese/src/utils/g*/accumulation.ts` | `chinese:accumulation:{bookSlug}:{unit}` | 日积月累条目聚合 |
+| 英语 | `packages/english/src/utils/reading-data.ts` | `english:reading:{unit}:{lesson}` | 每篇阅读课文 → 1 document |
+
+CLI 流程：读 TS exports → 生成 normalized JSON → `POST /api/ai/knowledge/ingest`（service role）→ upsert by `source_ref` + hash。
+
+参考现有模式：`packages/chinese/scripts/extract-lesson-passages.py`。
+
+### 通道 C：手动 import
+
+| 方式 | 说明 |
+|------|------|
+| 粘贴文本 | Admin UI 或 API |
+| 上传 TXT/Markdown | 直接读取 |
+| 上传 PDF | P3：本地脚本提取 JSON 后 upload |
 
 ## 分块策略
 
-- **结构化数据**（单词、汉字）：粒度细，每条记录 = 1 chunk，保留完整元数据
-- **长文本**（课文、导入文档）：按 300-500 字分块，相邻块有 50 字重叠
-- **数学题目**：按课时聚合，一个课时的所有题目 + 知识点摘要 = 1-2 chunks
+- **结构化数据**（单词、汉字）：每条记录 = 1 chunk
+- **长文本**（课文、导入文档）：300–500 字分块，句级对齐 + 50 字重叠（完整句子，非硬切）
+- **数学题目**：按课时聚合 = 1–2 chunks
+- **检索去重**：同 document 多 chunk 命中时应用层合并
 
-### 重叠区域处理
-
-长文本分块的 50 字重叠策略需要注意语意完整性：
-
-1. **句级对齐**：分块边界优先在句号/换行处切分，避免在词中间截断
-2. **重叠内容**：相邻 chunk 的重叠区域保留完整句子（而非固定 50 字硬切），确保上下文连贯
-3. **元数据继承**：重叠区域的元数据（如 grade、unit、lesson）由所属 document 统一继承，不因重叠而丢失
-4. **检索去重**：当同一文档的多个 chunk 被检索命中时，在应用层合并去重，避免重复内容干扰 LLM
-
-## PDF 导入管道
+## PDF 导入管道（P3）
 
 ### 架构：本地脚本提取 + 服务端入库
 
 ```
 ┌──────────────────────────────────┐
-│  本地环境（脚本执行）              │
-│                                  │
-│  1. 读取本地 PDF 文件             │
-│  2. 逐页渲染为图片 (pdf2pic)      │
-│  3. 文字提取 (pdf-parse)          │
-│  4. 表格检测 (启发式规则)          │
-│  │   ├─ 无表格 → 直接用文字       │
-│  │   └─ 有表格 → Vision LLM 提取 │
-│  5. 扫描页 → Tesseract.js/Vision │
-│  6. 输出结构化 JSON               │
+│  本地环境（需 ImageMagick）        │
+│  1. pdf.js 解析布局 + 文字        │
+│  2. 纯文字页 → 直接提取           │
+│  3. 表格页 → pdf.js 坐标启发式    │
+│     └─ 确认后 Vision LLM 结构化   │
+│  4. 扫描页 → Vision LLM（首选）   │
+│     └─ 可选 tesseract 预筛        │
+│  5. 输出 JSON → upload            │
 └──────────────┬───────────────────┘
-               │  上传 JSON
                ▼
 ┌──────────────────────────────────┐
-│  Next.js API（服务端）             │
-│  分块 → Embedding → 写入 pgvector │
+│  Next.js API：分块 → Embed → 入库  │
 └──────────────────────────────────┘
 ```
 
-**选型理由**：Vercel Serverless 有执行时长限制（Pro 60s），大 PDF 的 OCR 处理易超时，本地脚本不受此限制。
+**修正说明**：
+- `pdf-parse` **不提供可靠 x/y 坐标**；表格布局分析改用 **pdf.js**
+- `pdf2pic` 依赖 **GraphicsMagick / ImageMagick**，文档与 README 须写明安装前提
+- 中文扫描页：`tesseract.js` 质量有限，**优先 Vision LLM**；tesseract 仅作无 API 时的降级
 
-### 脚本使用
-
-```bash
-# 提取单个 PDF
-npx tsx scripts/extract-pdf.ts \
-  --file ./downloads/数学一年级上册.pdf \
-  --subject math --grade 1 --semester 上 \
-  --output ./extracted/math-g1a.json
-
-# 提取并直接上传到知识库
-npx tsx scripts/extract-pdf.ts \
-  --file ./downloads/英语课文合集.pdf \
-  --subject english --upload
-
-# 批量处理目录
-npx tsx scripts/extract-pdf.ts \
-  --dir ./downloads/chinese-textbooks/ \
-  --subject chinese --upload
-```
-
-### PDF 处理策略
-
-| 页面类型 | 处理方式 | 说明 |
-|---------|---------|------|
-| 纯文字页 | `pdf-parse` 提取 | 快速、零成本 |
-| 扫描文字页 | `tesseract.js` OCR | 本地处理，无 API 调用 |
-| 含表格页（文本型） | 文字提取 + 视觉 LLM 结构化 | 先提取原始文字，再用 Vision 重建表格结构 |
-| 含表格页（扫描型） | 视觉 LLM 直接识别 | 跳过 OCR，一步到位提取结构化内容 |
-
-### 表格检测
-
-采用**两层检测**策略，减少误判导致的昂贵 Vision LLM 调用：
-
-**第一层：文本启发式规则（快速过滤）**
-- 文字中出现大量制表符/多空格分隔
-- 多行具有相似的列结构（≥ 3 列）
-- 包含"表格""合计""总计"等关键词
-- 文字密度异常（表格页通常文字少但排列规整）
-
-**第二层：坐标布局分析（精确判定）**
-- 利用 `pdf-parse` 返回的文字绝对坐标（x, y 位置）
-- 分析行距均匀性：表格行的 y 坐标间距趋于等距
-- 分析列对齐：多行文字在相同 x 坐标处出现对齐断点
-- 检测网格线：页面中存在水平/垂直线条（部分 PDF 保留线条矢量信息）
-
-**判定逻辑**：第一层 ≥ 2 个信号命中 → 进入第二层坐标分析 → 坐标分析确认后才触发 Vision LLM。
-这种两层策略可有效过滤教材中常见的「看图填空」「情景图片」等密集排版页面的误判。
-
-### 视觉 LLM 提取 Prompt
-
-```
-你是一个文档内容提取助手。请从这张页面图片中提取所有内容，特别注意：
-
-1. 如果页面包含表格，请用 Markdown 表格格式输出，保留行列结构
-2. 合并单元格请用相同内容填充对应的每个单元格
-3. 表格中的数学公式用 LaTeX 格式
-4. 非表格部分按阅读顺序输出纯文本
-5. 用 "---TABLE---" 和 "---TEXT---" 标记不同类型的内容区域
-```
-
-### 脚本输出格式
+### 脚本依赖（root devDependencies）
 
 ```json
 {
-  "file": "数学一年级上册.pdf",
-  "subject": "math",
-  "metadata": { "grade": 1, "semester": "上" },
-  "pages": [
-    { "page": 1, "type": "text", "content": "..." },
-    { "page": 2, "type": "ocr", "content": "..." },
-    { "page": 3, "type": "table", "content": "| ... |" }
-  ],
-  "total_pages": 120,
-  "text_pages": 85,
-  "ocr_pages": 35
-}
-```
-
-### 脚本优化策略
-
-- 批量渲染页面 → 并行提交 Vision API（控制并发数）
-- 缓存已处理页面到 `.cache/tables/`，支持断点续传
-- 可配置 `--skip-tables` 跳过表格检测（快速模式）
-- 终端进度条显示处理进度
-
-### 脚本依赖（devDependencies）
-
-```json
-{
-  "pdf-parse": "^1.1.1",
-  "tesseract.js": "^5.0.0",
+  "pdfjs-dist": "^4.x",
   "pdf2pic": "^3.1.0",
   "cli-progress": "^3.12.0",
   "sharp": "^0.33.0"
 }
 ```
 
-### 支持的导入方式
-
-| 方式 | 说明 |
-|------|------|
-| 粘贴文本 | 直接输入/粘贴文本内容 |
-| 上传 PDF | 本地脚本提取后上传 JSON |
-| 上传 TXT/Markdown | 直接读取文本内容 |
-| 数据库同步 | 一键将现有结构化数据批量导入知识库 |
-
-## 核心功能一：知识问答
+## 核心功能一：知识问答（P0）
 
 ### 交互流程
 
 ```
-孩子输入问题（文字/语音）
+孩子输入（语音/文字）
     │
     ▼
-意图识别 & 查询改写（判断学科 + 优化检索词）
+AgentOrchestrator：意图 → Tools
     │
     ▼
-向量检索 + 元数据过滤（search_knowledge RPC）
+search_knowledge + lookup_canonical + resolve_actions
     │
     ▼
-RAG 生成回答（流式输出，System Prompt 约束儿童友好语气）
+LLM → AgentResponse { text, blocks[], actions[] }
+    │
+    ▼
+AiMessageRenderer 混合 UI（SSE token + envelope）
 ```
 
 ### 关键设计
@@ -413,71 +680,96 @@ RAG 生成回答（流式输出，System Prompt 约束儿童友好语气）
 | 要素 | 设计 |
 |------|------|
 | 意图识别 | 自动判断学科，缩小检索范围 |
-| 查询改写 | 将口语化问题改写为更适合检索的查询 |
-| 上下文记忆 | 保留最近 5 轮对话，支持追问 |
-| 安全边界 | 只回答知识库相关内容，非学习问题礼貌拒绝 |
-| 引用标注 | 回答中标注知识来源，可点击查看原文 |
-| 语音输入 | 复用项目已有录音能力（`@breezystack/lamejs`），录音后通过 Qoder API 的语音转文字（STT）能力转为文本，再走相同问答流程 |
+| 查询改写 | 口语化 → 检索友好 query |
+| 上下文记忆 | 最近 5 轮（`session_id` = API `conversationId`） |
+| 安全边界 | Prompt 约束 + 输入长度限制；P2 可加 output 关键词过滤 |
+| 引用/跳转 | **actions** 渲染为按钮（「去看这道题」「读全文」）；sources 作次要溯源 |
+| 语音输入 | **P0 必选**。服务端 Whisper STT（OpenAI-compatible）；客户端 `MediaRecorder` + `@rosie/player` 压缩 → `POST /api/ai/transcribe` → 转写文字填入输入框（可编辑后发送）；**音频不落库** |
+| 限流 | `/api/ai/chat`：20 req/min；`/api/ai/transcribe`：15 req/min（middleware） |
 
 ### System Prompt 约束
 
 - 角色：耐心温柔的老师
-- 面向小学低年级孩子，用简单易懂的语言
-- 适当用 emoji 和鼓励语气
-- 只基于知识库内容回答
-- 不确定时诚实说"这个我不确定"
+- 面向小学低年级，简单易懂
+- 只基于检索到的知识库内容回答
+- 不确定时诚实说「这个我不确定」
+- 非学习话题礼貌拒绝
 
-## 核心功能二：智能出题
+## 核心功能二：智能出题（P1）
 
 ### 出题模式
 
-| 模式 | 触发方式 | 知识检索策略 | 适用场景 |
-|------|---------|------------|---------|
-| 知识点出题 | 选学科 → 选课时/知识点 | 精确检索该知识点的 chunks | 预习/复习特定内容 |
-| 薄弱项出题 | 一键生成 | 检索 mastery 表中 is_hard=true 或正确率低的知识点 | 针对性强化 |
-| 随机挑战 | 一键生成 | 跨学科/跨课时随机采样 chunks | 综合能力检测 |
+| 模式 | 知识获取策略 | 说明 |
+|------|------------|------|
+| 知识点出题 | metadata 精确过滤 + 可选 RAG | 选课时/知识点 |
+| 薄弱项出题 | **structured lookup**（mastery → canonical） | LLM 变式生成，**不 embed 检索** |
+| 随机挑战 | catalog 随机采样 + 可选 RAG | 跨课时 |
 
 ### 支持题型
 
-| 学科 | AI 可生成的题型 |
-|------|---------------|
-| 英语 | 选择题（看词选义/听音选词）、填空题、拼写题 |
+| 学科 | AI 可生成题型 |
+|------|-------------|
+| 英语 | 选择题、填空、拼写 |
 | 数学 | 应用题、概念题（选择/判断）、计算题 |
-| 语文 | 选字填空、拼音选择、组词题、课文理解题、古诗填空 |
+| 语文 | 选字填空、拼音选择、组词、课文理解、古诗填空 |
 
-### 题目输出格式
+### 题目输出格式（AiQuestion）
 
-LLM 返回结构化 JSON：
-
-```json
-{
-  "subject": "math",
-  "grade": 1,
-  "topic": "加法基础",
-  "questions": [
-    {
-      "type": "choice",
-      "stem": "小明有 3 个苹果，妈妈又给了他 2 个，小明现在有几个苹果？",
-      "options": ["4", "5", "6", "3"],
-      "answer": "5",
-      "explanation": "3 + 2 = 5，把两个数合在一起就是加法！"
-    }
-  ]
+```typescript
+interface AiQuestion {
+  id: string;
+  subject: 'english' | 'math' | 'chinese';
+  type: 'choice' | 'fill' | 'spell' | 'true_false';
+  stem: string;
+  options?: string[];
+  answer: string;
+  explanation: string;
+  metadata?: {
+    sourceRef?: string;
+    grade?: number;
+    topic?: string;
+  };
 }
 ```
 
-生成后复用现有练习组件（QuizRunner、AdaptivePlanSession）渲染答题界面。
+### AiQuizSession（独立 UI，不复用现有 Runner）
 
-## 核心功能三：弱项强化训练
+**不复用** `QuizRunner` / `AdaptivePlanSession` / `CharQuizRunner` — 它们强绑定 `WordEntry`、`QuizType` A/B/C/D、adaptive plan settle 等。
+
+新建 `@rosie/ai` 组件：
+
+| 组件 | 职责 |
+|------|------|
+| `AiQuizSession` | 通用答题流程：展示 stem → 收集答案 → 判定 → 下一题 |
+| `AiChoiceQuestion` | 选择题 UI |
+| `AiFillQuestion` | 填空 UI |
+| `AiSpellQuestion` | 拼写 UI（英语） |
+| `subjectAdapters.ts` | 按 subject 格式化题干、校验答案、提交后回调 |
+
+```typescript
+// packages/ai/src/quiz/subjectAdapters.ts
+interface SubjectQuizAdapter {
+  formatStem(q: AiQuestion): React.ReactNode;
+  normalizeAnswer(q: AiQuestion, input: string): string;
+  isCorrect(q: AiQuestion, input: string): boolean;
+  onAnswerCommit?(q: AiQuestion, correct: boolean): Promise<void>;
+}
+```
+
+生成流程：LLM JSON → **Zod schema 校验** → 写入 `ai_generated_questions`（hash dedupe）→ `AiQuizSession` 渲染。
+
+复用范围：仅 `@rosie/ui` 按钮/布局、`@rosie/rewards` 星星反馈。
+
+## 核心功能三：弱项强化训练（P2）
 
 ### 分析维度
 
 | 维度 | 数据来源 | 判定规则 |
 |------|---------|---------|
-| 正确率低 | mastery 表 correct/(correct+incorrect) | < 60% 为薄弱 |
-| 频繁出错 | wrong 表 | 同一知识点 ≥ 3 次错误 |
-| 长期未掌握 | mastery 表 stage | stage 长期未提升 |
-| 遗忘退化 | mastery 表 last_seen | 超过 7 天未练习的已学内容 |
+| 正确率低 | mastery | correct/(correct+incorrect) < 60% |
+| 频繁出错 | wrong | 同一知识点 ≥ 3 次 |
+| 长期未掌握 | mastery.stage | 长期未提升 |
+| 遗忘退化 | mastery.last_seen | > 7 天未练习 |
 
 ### 弱项分析输出
 
@@ -488,7 +780,9 @@ interface WeaknessAnalysis {
     knowledgePoint: string;
     severity: 'high' | 'medium' | 'low';
     evidence: string[];
-    relatedChunkIds: string[];
+    sourceRef: string;           // structured lookup 键，非 chunk id
+    canonicalContent: string;    // 直查 canonical 记录文本
+    relatedChunkIds?: string[];  // 可选，仅开放问答场景补充
   }>;
   recommendedFocus: string[];
 }
@@ -500,49 +794,68 @@ interface WeaknessAnalysis {
 每天首次打开 App
     │
     ▼
-检查今日是否已有 ai_training_plans
+检查 ai_training_plans (user_id, plan_date, subject) UNIQUE
     │
-    ├─ 有 → 显示待完成的训练任务
+    ├─ 三科均有 → 显示待完成训练
     │
-    └─ 无 → 触发弱项分析
+    └─ 缺失科 → SSE 分科生成
               │
               ▼
-         查询各科 mastery + wrong 数据
+         mastery + wrong 聚合 → structured lookup 取 canonical 内容
               │
               ▼
-         RAG 检索相关知识
+         LLM 变式出题（无需 RAG embed）
               │
               ▼
-         SSE 流式逐科生成：
-           ├─ 英语完成 → 即时返回英语卡片
-           ├─ 数学完成 → 即时返回数学卡片
-           └─ 语文完成 → 即时返回语文卡片
+         UPSERT ai_training_plans（UNIQUE 防重复）
               │
               ▼
-         每科写入 ai_training_plans（按科分条）
-              │
-              ▼
-         首页显示「今日寻宝任务」卡片
-         （正向激励话术，不显示“弱项”字样）
+         首页「今日寻宝任务」卡片
 ```
+
+### Mastery 回写闭环
+
+`POST /api/ai/training/complete` 完成后：
+
+| 学科 | 写回 |
+|------|------|
+| 英语 | `wordMasteryStore.patch` — 更新 `word_key` 的 correct/incorrect/stage/last_seen |
+| 数学 | `problemMasteryStore.patch` — 更新 `problem_key` |
+| 语文 | `charMasteryStore.patch` — 更新 `char_key` + track |
+
+答错且重复出现的项：写入对应 wrong 表（`english_wrong` / `math_wrong` / `chinese_wrong_items`）。
+
+**与 `/today` 关系**：AI 训练卡片与现有周计划 **并行展示**，不合并进 `weekly_plans`；`/today` 增加 optional `AiTrainingCard` 区块。
 
 ## API 设计
 
 ### 路由结构
 
 ```
-apps/web/src/app/api/ai/
-├── chat/route.ts           ← 知识问答（SSE 流式）
-├── quiz/route.ts           ← 智能出题
+apps/web/src/app/api/ai/          ← 薄 wrapper，逻辑在 packages/ai/src/server/
+├── chat/route.ts
+├── transcribe/route.ts         ← P0：语音转文字（Whisper）
+├── quiz/route.ts
 ├── training/
-│   ├── generate/route.ts   ← 生成每日训练
-│   └── complete/route.ts   ← 提交训练结果
+│   ├── generate/route.ts
+│   └── complete/route.ts
 ├── knowledge/
-│   ├── upload/route.ts     ← 上传文本内容到知识库
-│   ├── sync/route.ts       ← 同步数据库现有数据
-│   └── status/route.ts     ← 查询知识库状态/统计
-└── search/route.ts         ← 知识库检索（调试用）
+│   ├── ingest/route.ts           ← catalog CLI + service role upsert
+│   ├── upload/route.ts           ← 用户 import（admin）
+│   ├── sync/route.ts             ← DB sync（service role / admin）
+│   └── status/route.ts
+└── search/route.ts               ← 调试用
 ```
+
+### 限流（middleware.ts 扩展）
+
+| 路由 | 限制 |
+|------|------|
+| `/api/ai/chat` | 20/min/IP |
+| `/api/ai/transcribe` | 15/min/IP |
+| `/api/ai/quiz` | 10/min/IP |
+| `/api/ai/training/generate` | 3/min/IP |
+| `/api/ai/knowledge/*` | 5/min/IP |
 
 ### `POST /api/ai/chat`
 
@@ -550,18 +863,27 @@ Request:
 ```json
 {
   "message": "string",
-  "conversationId": "string (optional)",
-  "context": {
-    "subject": "string (optional)",
-    "lessonId": "string (optional)",
-    "grade": "number (optional)"
-  }
+  "conversationId": "string (optional, maps to session_id)",
+  "context": { "subject": "string", "lessonId": "string", "grade": "number" }
 }
 ```
 
-Response: SSE 流式逐 token 返回，最终包含 sources 和 messageId。
+Response: SSE — `token` 流式文字 + 最终 `envelope`（含 `blocks`、`actions`、`sources`）+ `done`（`conversationId`、`messageId`）。
 
-内部流程：意图识别 → Embedding → 检索 → 组装 Prompt → Qoder API 流式生成 → 保存对话记录。
+详见上文「Rosie Agent → SSE 事件」。
+
+### `POST /api/ai/transcribe`（P0）
+
+Request: `multipart/form-data`，字段 `audio`（mp3/webm，≤ 5MB）
+
+Response:
+```json
+{ "text": "小蝌蚪找妈妈讲什么", "language": "zh" }
+```
+
+- 服务端 OpenAI-compatible Whisper；**音频不落库**
+- 转写结果填入客户端输入框，孩子可编辑后再发送 chat
+- Errors: `503`（无 key）、`413`（过大）、`422`（无法识别）
 
 ### `POST /api/ai/quiz`
 
@@ -576,151 +898,146 @@ Request:
 }
 ```
 
-Response: `{ quizId, subject, questions: [...] }`
-
-内部流程：查询掌握度 → RAG 检索 → 查询已有题目去重 → LLM 生成结构化 JSON → 解析验证。
+内部流程（weakness 模式）：mastery 聚合 → structured lookup → hash dedupe → LLM 变式 → Zod 校验。
 
 ### `POST /api/ai/training/generate`
 
-Request: `{ "date": "string (optional)" }`
-
-**异步处理模式**（避免 Vercel 60s 超时）：
-
-该接口内部涉及「查询多科 mastery/wrong 数据 → RAG 检索 → LLM 生成 3 科题目 → 写入数据库」的长链路调用，在 Vercel Serverless 上极大概率超过 60s 限制。
-
-**采用 SSE 流式 + 分科返回策略**：
-
-```
-前端发起 POST → 服务端 SSE 流式响应
-  event: progress { subject: "english", status: "generating" }
-  event: subject_done { subject: "english", plan: {...}, questions: [...] }
-  event: progress { subject: "math", status: "generating" }
-  event: subject_done { subject: "math", plan: {...}, questions: [...] }
-  event: progress { subject: "chinese", status: "generating" }
-  event: subject_done { subject: "chinese", plan: {...}, questions: [...] }
-  event: done { totalQuestions: 9 }
-```
-
-- 每科独立生成并即时返回，避免等待全部完成
-- 前端收到每科数据后立即渲染对应科目卡片
-- 任一科失败不影响其他科，错误通过 `event: error` 事件返回
-- 写入 `ai_training_plans` 表按科分条创建
-
-Response（最终）: `{ plans: [{ subject, weakPoints, questions }], totalQuestions }`
+SSE 分科返回；UPSERT `ai_training_plans`（UNIQUE 约束）。
 
 ### `POST /api/ai/training/complete`
 
 Request: `{ "planId": "string", "answers": [...] }`
 
-Response: `{ score, feedback, updatedWeakPoints: [{ point, trend }] }`
+Response: `{ score, feedback, updatedWeakPoints, masteryPatches }`
 
-### `POST /api/ai/knowledge/upload`
+触发 mastery / wrong 写回。
 
-Request: `{ "subject": "string", "title": "string", "content": "string", "metadata": {...} }`
+### `POST /api/ai/knowledge/ingest`
 
-Response: `{ documentId, chunkCount, status }`
-
-### `POST /api/ai/knowledge/sync`
-
-Request: `{ "subjects": [...], "tables": [...], "force": boolean }`
-
-Response: `{ results: [{ table, recordsProcessed, chunksCreated, errors }] }`
+Service role only。Catalog CLI 与 sync 共用 upsert 逻辑。
 
 ## UI/UX 设计
 
-### 入口结构
+### 包结构
 
-- **独立入口**：首页新增「AI 助手」大卡片 → 进入 AI 助手主页
-- **学科快捷入口**：数学/英语/语文模块页新增浮动「问 AI」按钮 → 底部抽屉式对话窗口（自动带学科上下文）
+| 页面/组件 | 放置位置 |
+|----------|---------|
+| `AiAssistantPage` | `packages/ai` |
+| `AiChatPanel` | `packages/ai` |
+| `AiMessageRenderer` | `packages/ai` | 按 block type 混合渲染 |
+| `AgentWordCard` / `AgentCharCard` / `AgentPassageBlock` / `AgentMathSolutionBlock` | `packages/ai` | P0 blocks |
+| `AgentActionBar` | `packages/ai` | actions 按钮组 |
+| `AiVoiceInput` | `packages/ai` | P0：按住说话 |
+| `AiFloatingButton` | `packages/ai` |
+| `AiQuizGenerator` | `packages/ai` |
+| `AiQuizSession` | `packages/ai` |
+| `AiTrainingCard` | `packages/ai` |
 
-### 页面列表
+`apps/web/src/app/globals.css` 新增：
+```css
+@source "../../packages/ai/src/**/*.{ts,tsx}";
+```
 
-| 页面/组件 | 放置位置 | 说明 |
-|----------|---------|------|
-| `AiAssistantPage` | `packages/core` | AI 助手主页（对话 + 快捷功能入口） |
-| `AiChatPanel` | `packages/core` | 可复用对话面板（主页 + 抽屉共用） |
-| `AiFloatingButton` | `packages/core` | 学科页浮动问答按钮 |
-| `AiQuizGenerator` | `packages/core` | 智能出题页面 |
-| `AiTrainingCard` | `packages/core` | 首页每日训练卡片 |
+路由 shell：`apps/web/src/app/ai/**` → import from `@rosie/ai`。
 
-放在 `packages/core` 因为 AI 功能是跨学科共用的。
+### Admin 知识库管理（P3）
 
-### AI 助手主页布局
+`/admin/knowledge`：
+- 同步状态（`knowledge_sync_state`）
+- 手动触发 catalog / DB sync
+- import 历史与失败重试
+- chunk / document 统计
 
-- 欢迎语 + 示例问题引导
-- 「今日训练」卡片（显示待完成训练任务）
-- 「智能出题」快捷入口（按学科 + 出题模式选择）
-- 底部输入栏（文字 + 语音）
+### 离线行为
 
-### 对话界面
-
-- 聊天气泡式交互
-- AI 回答带引用标注（可点击查看原文）
-- 保留最近 5 轮上下文
-- 支持语音输入
-
-### 每日训练卡片（首页）
-
-**儿童友好话术设计**：
-
-不直接展示「你的弱项是...」等挫败性语言，采用正向激励包装：
-
-| 内部概念 | 面向孩子的展示 |
-|---------|-------------|
-| 薄弱项 | 「技能升级挑战」「今日寻宝任务」 |
-| 正确率低 | 「快要掌握了，再练一练！」 |
-| 频繁出错 | 「这个知识点很调皮，我们一起攻克它！」 |
-| 遗忘退化 | 「好久没见面了，复习一下还记得吗？」 |
-
-卡片内容：
-- 显示今日挑战任务摘要（如「3 个寻宝任务等你完成！」）
-- 每个科目用 emoji + 鼓励语展示（如「🔢 数学：退位减法大冒险！」）
-- 显示待训练题目总数
-- 一键「开始挑战」按钮
+AI 功能需网络；无网络时 UI 显示 graceful 提示，不阻塞其他模块。
 
 ## 技术依赖
 
-### 新增运行时依赖
+### 新增包 `@rosie/ai`
 
 ```json
-// packages/core/package.json
 {
+  "name": "@rosie/ai",
   "dependencies": {
-    "ai": "^4.0.0"
+    "@rosie/core": "workspace:*",
+    "@rosie/ui": "workspace:*",
+    "@rosie/player": "workspace:*",
+    "@rosie/rewards": "workspace:*",
+    "ai": "^4.0.0",
+    "zod": "^3.x"
   }
 }
 ```
 
-- `ai`（Vercel AI SDK）：统一 LLM 流式调用、多模型适配
+- `ai`（Vercel AI SDK）：流式 LLM
+- `zod`：`AgentResponse` / `AgentBlock` / `AiQuestion` schema 校验
 
-### 新增开发依赖
+**不在 `@rosie/core` 添加 AI 依赖**（避免所有 consumer 承担体积；违反 core 包边界规则）。
+
+### Catalog sync CLI（root script）
 
 ```json
-// package.json (root devDependencies)
 {
-  "pdf-parse": "^1.1.1",
-  "tesseract.js": "^5.0.0",
-  "pdf2pic": "^3.1.0",
-  "cli-progress": "^3.12.0",
-  "sharp": "^0.33.0"
+  "scripts": {
+    "ai:sync-catalog": "tsx scripts/ai-sync-catalog.ts"
+  }
 }
 ```
+
+### PDF 脚本 devDependencies（P3，root）
+
+见 PDF 章节。
 
 ## 环境变量
 
 ```env
-# apps/web/.env.local 新增
-QODER_API_KEY=xxx           # Qoder API 密钥
-QODER_EMBED_MODEL=xxx       # Embedding 模型标识（待确认）
-QODER_CHAT_MODEL=xxx        # 对话生成模型标识（待确认）
-QODER_VISION_MODEL=xxx      # 视觉模型标识（待确认，用于表格提取）
+# apps/web/.env.local
+ANTHROPIC_API_KEY=xxx              # chat（复用现有）
+ANTHROPIC_MODEL=claude-haiku-4-5-20251001
+
+# Embedding / Vision / STT — OpenAI-compatible 或 Qoder（须确认兼容）
+AI_EMBED_API_KEY=xxx
+AI_EMBED_MODEL=xxx                 # 锁定维度（默认 1536）
+AI_EMBED_BASE_URL=xxx              # optional，OpenAI-compatible endpoint
+AI_STT_MODEL=whisper-1             # P0 语音提问必选
+# AI_STT_API_KEY=xxx               # optional；默认复用 AI_EMBED_API_KEY
+AI_VISION_MODEL=xxx                # P3 PDF
+
+SUPABASE_SERVICE_ROLE_KEY=xxx      # catalog ingest / sync（已有）
 ```
+
+实现前须确认：embed 模型维度、STT 接口、Vision 接口；若 Qoder 为 OpenAI-compatible 代理，可统一 `AI_*_BASE_URL`。
 
 ## 新增迁移文件
 
-新增 `supabase/migrations/0004_rag_knowledge_base.sql`，包含：
-- pgvector 扩展启用
-- `knowledge_documents`、`knowledge_chunks`、`knowledge_imports`、`knowledge_sync_state` 表
-- `ai_conversations`、`ai_generated_questions`、`ai_training_plans` 表
-- `search_knowledge()` RPC 函数
-- 所有新增表的 RLS 策略（基于 `user_id = auth.uid()`）
+`supabase/migrations/0004_rag_knowledge_base.sql`：
+- `vector` + `pg_trgm` 扩展
+- 上述全部表 + UNIQUE 约束
+- `search_knowledge()` RPC（RRF Hybrid）
+- RLS 策略（见上文）
+- `knowledge_sync_state` 只读 policy
+
+## 测试与可观测性
+
+| 范围 | 方式 |
+|------|------|
+| chunker | 单元测试：句级对齐、overlap、hash 稳定性 |
+| `search_knowledge` | SQL 集成测试：英/中/query 样例 |
+| AiQuestion | Zod schema 回归（fixture JSON） |
+| ingest | CLI dry-run 对比 chunk 数 |
+| 运行时 | API 日志：embed 失败率、检索 hit count、LLM latency |
+
+## 修订摘要（相对初版）
+
+1. 移除已删 `vocabulary`；补充 catalog 双通道 ingest
+2. Structured-first：弱项/出题以 canonical 直查为主
+3. `@rosie/ai` 新包；UI 移出 core
+4. RLS 完整策略；sync 限 service role
+5. 中文检索：`pg_trgm` + metadata；英文 `english` tsvector；RRF 合并
+6. PDF 栈修正为 pdf.js + Vision；写明 ImageMagick 依赖
+7. `source_ref` UNIQUE + `content_hash` 增量同步
+8. 独立 `AiQuizSession` + subject adapters
+9. mastery 回写闭环 + `ai_training_plans` UNIQUE
+10. 分阶段 P0–P3；admin UI；rate limit
+11. **Rosie Agent 响应协议**：`AgentResponse`（blocks + actions）、Tool Registry、混合渲染器、deep link manifest

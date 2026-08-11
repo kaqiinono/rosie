@@ -27,6 +27,8 @@ const config = [
 
       // React: not needed with new JSX transform
       'react/display-name': 'off',
+      // Routes live in apps/web; package lint has no local pages directory.
+      '@next/next/no-html-link-for-pages': 'off',
       // Chinese text with quotation marks is intentional; relax to warn
       'react/no-unescaped-entities': 'warn',
 

@@ -1,0 +1,5485 @@
+{
+  "cacheKey": "96944100fb84c6eadca83b166cbe37f997202a01b3d60fcbb9701101c1abe238",
+  "pdfPage": 35,
+  "image": "page-0035.png",
+  "textFile": "page-0035.txt",
+  "tsvFile": "page-0035.tsv",
+  "dimensions": {
+    "width": 2096,
+    "height": 3152
+  },
+  "stats": {
+    "characters": 1366,
+    "words": 332,
+    "lines": 68,
+    "meanConfidence": 88.62,
+    "lowConfidenceWords": 29
+  },
+  "warnings": [],
+  "lines": [
+    {
+      "text": "ey",
+      "confidence": 35.06,
+      "bbox": {
+        "x": 1093,
+        "y": 457,
+        "width": 176,
+        "height": 129
+      },
+      "words": [
+        {
+          "text": "ey",
+          "confidence": 35.06,
+          "bbox": {
+            "x": 1093,
+            "y": 457,
+            "width": 176,
+            "height": 129
+          },
+          "block": 3,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "a",
+      "confidence": 15.72,
+      "bbox": {
+        "x": 1666,
+        "y": 478,
+        "width": 56,
+        "height": 16
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 15.72,
+          "bbox": {
+            "x": 1666,
+            "y": 478,
+            "width": 56,
+            "height": 16
+          },
+          "block": 1,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "\\",
+      "confidence": 84.94,
+      "bbox": {
+        "x": 1766,
+        "y": 520,
+        "width": 18,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "\\",
+          "confidence": 84.94,
+          "bbox": {
+            "x": 1766,
+            "y": 520,
+            "width": 18,
+            "height": 47
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": ">",
+      "confidence": 73.61,
+      "bbox": {
+        "x": 1369,
+        "y": 544,
+        "width": 53,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": ">",
+          "confidence": 73.61,
+          "bbox": {
+            "x": 1369,
+            "y": 544,
+            "width": 53,
+            "height": 42
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "一 ==",
+      "confidence": 62.31,
+      "bbox": {
+        "x": 1377,
+        "y": 585,
+        "width": 135,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "一",
+          "confidence": 82.44,
+          "bbox": {
+            "x": 1377,
+            "y": 590,
+            "width": 32,
+            "height": 7
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "==",
+          "confidence": 42.17,
+          "bbox": {
+            "x": 1434,
+            "y": 585,
+            "width": 78,
+            "height": 35
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "\\",
+      "confidence": 91.5,
+      "bbox": {
+        "x": 1849,
+        "y": 590,
+        "width": 17,
+        "height": 54
+      },
+      "words": [
+        {
+          "text": "\\",
+          "confidence": 91.5,
+          "bbox": {
+            "x": 1849,
+            "y": 590,
+            "width": 17,
+            "height": 54
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ae",
+      "confidence": 45.21,
+      "bbox": {
+        "x": 1560,
+        "y": 608,
+        "width": 76,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "ae",
+          "confidence": 45.21,
+          "bbox": {
+            "x": 1560,
+            "y": 608,
+            "width": 76,
+            "height": 40
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "i",
+      "confidence": 31.49,
+      "bbox": {
+        "x": 961,
+        "y": 617,
+        "width": 145,
+        "height": 50
+      },
+      "words": [
+        {
+          "text": "i",
+          "confidence": 31.49,
+          "bbox": {
+            "x": 961,
+            "y": 617,
+            "width": 145,
+            "height": 50
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "SS",
+      "confidence": 10.49,
+      "bbox": {
+        "x": 1320,
+        "y": 626,
+        "width": 58,
+        "height": 12
+      },
+      "words": [
+        {
+          "text": "SS",
+          "confidence": 10.49,
+          "bbox": {
+            "x": 1320,
+            "y": 626,
+            "width": 58,
+            "height": 12
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "PE",
+      "confidence": 34.98,
+      "bbox": {
+        "x": 1261,
+        "y": 638,
+        "width": 45,
+        "height": 5
+      },
+      "words": [
+        {
+          "text": "PE",
+          "confidence": 34.98,
+          "bbox": {
+            "x": 1261,
+            "y": 638,
+            "width": 45,
+            "height": 5
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "\\\\",
+      "confidence": 30.52,
+      "bbox": {
+        "x": 1853,
+        "y": 645,
+        "width": 28,
+        "height": 48
+      },
+      "words": [
+        {
+          "text": "\\\\",
+          "confidence": 30.52,
+          "bbox": {
+            "x": 1853,
+            "y": 645,
+            "width": 28,
+            "height": 48
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": ".)",
+      "confidence": 0,
+      "bbox": {
+        "x": 1890,
+        "y": 656,
+        "width": 36,
+        "height": 53
+      },
+      "words": [
+        {
+          "text": ".)",
+          "confidence": 0,
+          "bbox": {
+            "x": 1890,
+            "y": 656,
+            "width": 36,
+            "height": 53
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Jack is watching television.",
+      "confidence": 96.71,
+      "bbox": {
+        "x": 314,
+        "y": 682,
+        "width": 509,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "Jack",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 314,
+            "y": 682,
+            "width": 83,
+            "height": 44
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 97.01,
+          "bbox": {
+            "x": 410,
+            "y": 684,
+            "width": 26,
+            "height": 31
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watching",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 450,
+            "y": 682,
+            "width": 173,
+            "height": 44
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "television.",
+          "confidence": 96.38,
+          "bbox": {
+            "x": 636,
+            "y": 682,
+            "width": 187,
+            "height": 33
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "La is",
+      "confidence": 44.28,
+      "bbox": {
+        "x": 1799,
+        "y": 714,
+        "width": 53,
+        "height": 19
+      },
+      "words": [
+        {
+          "text": "La",
+          "confidence": 67.53,
+          "bbox": {
+            "x": 1799,
+            "y": 714,
+            "width": 12,
+            "height": 18
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 21.03,
+          "bbox": {
+            "x": 1842,
+            "y": 721,
+            "width": 10,
+            "height": 12
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "eg",
+      "confidence": 30.31,
+      "bbox": {
+        "x": 1064,
+        "y": 719,
+        "width": 324,
+        "height": 109
+      },
+      "words": [
+        {
+          "text": "eg",
+          "confidence": 30.31,
+          "bbox": {
+            "x": 1064,
+            "y": 719,
+            "width": 324,
+            "height": 109
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "ve",
+      "confidence": 60.77,
+      "bbox": {
+        "x": 1570,
+        "y": 732,
+        "width": 52,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "ve",
+          "confidence": 60.77,
+          "bbox": {
+            "x": 1570,
+            "y": 732,
+            "width": 52,
+            "height": 41
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "W",
+      "confidence": 70.79,
+      "bbox": {
+        "x": 1868,
+        "y": 735,
+        "width": 27,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "W",
+          "confidence": 70.79,
+          "bbox": {
+            "x": 1868,
+            "y": 735,
+            "width": 27,
+            "height": 44
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "He is not playing the guitar.",
+      "confidence": 96.78,
+      "bbox": {
+        "x": 321,
+        "y": 738,
+        "width": 515,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "He",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 321,
+            "y": 741,
+            "width": 56,
+            "height": 31
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.48,
+          "bbox": {
+            "x": 392,
+            "y": 740,
+            "width": 25,
+            "height": 32
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.89,
+          "bbox": {
+            "x": 433,
+            "y": 746,
+            "width": 53,
+            "height": 26
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "playing",
+          "confidence": 96.52,
+          "bbox": {
+            "x": 499,
+            "y": 738,
+            "width": 135,
+            "height": 45
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 97.01,
+          "bbox": {
+            "x": 648,
+            "y": 738,
+            "width": 57,
+            "height": 34
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "guitar.",
+          "confidence": 96.94,
+          "bbox": {
+            "x": 720,
+            "y": 740,
+            "width": 116,
+            "height": 42
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "i",
+      "confidence": 56.96,
+      "bbox": {
+        "x": 1550,
+        "y": 799,
+        "width": 38,
+        "height": 76
+      },
+      "words": [
+        {
+          "text": "i",
+          "confidence": 56.96,
+          "bbox": {
+            "x": 1550,
+            "y": 799,
+            "width": 38,
+            "height": 76
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "But Jack has a guitar.",
+      "confidence": 96.26,
+      "bbox": {
+        "x": 320,
+        "y": 819,
+        "width": 392,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "But",
+          "confidence": 95.73,
+          "bbox": {
+            "x": 320,
+            "y": 821,
+            "width": 69,
+            "height": 32
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Jack",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 396,
+            "y": 819,
+            "width": 83,
+            "height": 45
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "has",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 493,
+            "y": 819,
+            "width": 56,
+            "height": 34
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 564,
+            "y": 832,
+            "width": 18,
+            "height": 21
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "guitar.",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 596,
+            "y": 821,
+            "width": 116,
+            "height": 43
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "vi",
+      "confidence": 16.05,
+      "bbox": {
+        "x": 1608,
+        "y": 823,
+        "width": 24,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "vi",
+          "confidence": 16.05,
+          "bbox": {
+            "x": 1608,
+            "y": 823,
+            "width": 24,
+            "height": 38
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "He often plays it and he plays very well.",
+      "confidence": 96.61,
+      "bbox": {
+        "x": 321,
+        "y": 875,
+        "width": 750,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "He",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 321,
+            "y": 878,
+            "width": 57,
+            "height": 31
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 393,
+            "y": 876,
+            "width": 96,
+            "height": 34
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "plays",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 503,
+            "y": 876,
+            "width": 89,
+            "height": 44
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it",
+          "confidence": 96.42,
+          "bbox": {
+            "x": 607,
+            "y": 877,
+            "width": 25,
+            "height": 32
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "and",
+          "confidence": 96.24,
+          "bbox": {
+            "x": 646,
+            "y": 875,
+            "width": 67,
+            "height": 35
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 726,
+            "y": 876,
+            "width": 44,
+            "height": 33
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "plays",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 785,
+            "y": 875,
+            "width": 90,
+            "height": 45
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.61,
+          "bbox": {
+            "x": 890,
+            "y": 888,
+            "width": 80,
+            "height": 31
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "well.",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 983,
+            "y": 875,
+            "width": 88,
+            "height": 34
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "a 一",
+      "confidence": 38.86,
+      "bbox": {
+        "x": 1534,
+        "y": 884,
+        "width": 54,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 34.82,
+          "bbox": {
+            "x": 1534,
+            "y": 890,
+            "width": 51,
+            "height": 14
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "一",
+          "confidence": 42.91,
+          "bbox": {
+            "x": 1577,
+            "y": 884,
+            "width": 11,
+            "height": 28
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Jack plays the guitar,",
+      "confidence": 96.72,
+      "bbox": {
+        "x": 316,
+        "y": 956,
+        "width": 404,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Jack",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 316,
+            "y": 956,
+            "width": 82,
+            "height": 45
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "plays",
+          "confidence": 96.38,
+          "bbox": {
+            "x": 411,
+            "y": 956,
+            "width": 104,
+            "height": 45
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 531,
+            "y": 956,
+            "width": 57,
+            "height": 34
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "guitar,",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 603,
+            "y": 958,
+            "width": 117,
+            "height": 43
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "but he is not playing the guitar now.",
+      "confidence": 96.68,
+      "bbox": {
+        "x": 321,
+        "y": 1013,
+        "width": 718,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "but",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 321,
+            "y": 1013,
+            "width": 62,
+            "height": 34
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.53,
+          "bbox": {
+            "x": 397,
+            "y": 1013,
+            "width": 44,
+            "height": 34
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 455,
+            "y": 1013,
+            "width": 31,
+            "height": 34
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.93,
+          "bbox": {
+            "x": 500,
+            "y": 1020,
+            "width": 70,
+            "height": 27
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "playing",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 584,
+            "y": 1013,
+            "width": 155,
+            "height": 44
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.05,
+          "bbox": {
+            "x": 753,
+            "y": 1013,
+            "width": 57,
+            "height": 34
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "guitar",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 826,
+            "y": 1015,
+            "width": 108,
+            "height": 42
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "now.",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 948,
+            "y": 1025,
+            "width": 91,
+            "height": 22
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(现在 进行 时 )",
+      "confidence": 86.48,
+      "bbox": {
+        "x": 1328,
+        "y": 1086,
+        "width": 272,
+        "height": 66
+      },
+      "words": [
+        {
+          "text": "(现在",
+          "confidence": 92.82,
+          "bbox": {
+            "x": 1328,
+            "y": 1090,
+            "width": 137,
+            "height": 47
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "进行",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 1490,
+            "y": 1086,
+            "width": 65,
+            "height": 66
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 68.5,
+          "bbox": {
+            "x": 1555,
+            "y": 1090,
+            "width": 19,
+            "height": 44
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ")",
+          "confidence": 87.76,
+          "bbox": {
+            "x": 1590,
+            "y": 1095,
+            "width": 10,
+            "height": 42
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Is he playing the guitar?",
+      "confidence": 96.58,
+      "bbox": {
+        "x": 321,
+        "y": 1094,
+        "width": 475,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Is",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 321,
+            "y": 1096,
+            "width": 34,
+            "height": 32
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 369,
+            "y": 1094,
+            "width": 49,
+            "height": 34
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "playing",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 433,
+            "y": 1094,
+            "width": 154,
+            "height": 45
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.04,
+          "bbox": {
+            "x": 601,
+            "y": 1094,
+            "width": 57,
+            "height": 34
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "guitar?",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 674,
+            "y": 1096,
+            "width": 122,
+            "height": 42
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, he isn’t.",
+      "confidence": 96.11,
+      "bbox": {
+        "x": 934,
+        "y": 1094,
+        "width": 258,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 95.72,
+          "bbox": {
+            "x": 934,
+            "y": 1096,
+            "width": 77,
+            "height": 38
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.98,
+          "bbox": {
+            "x": 1027,
+            "y": 1094,
+            "width": 48,
+            "height": 34
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn’t.",
+          "confidence": 95.62,
+          "bbox": {
+            "x": 1090,
+            "y": 1095,
+            "width": 102,
+            "height": 33
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(一 般 现 在 时 )",
+      "confidence": 91.86,
+      "bbox": {
+        "x": 1328,
+        "y": 1142,
+        "width": 276,
+        "height": 67
+      },
+      "words": [
+        {
+          "text": "(一",
+          "confidence": 93.1,
+          "bbox": {
+            "x": 1328,
+            "y": 1146,
+            "width": 272,
+            "height": 47
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "般",
+          "confidence": 93.1,
+          "bbox": {
+            "x": 1416,
+            "y": 1142,
+            "width": 47,
+            "height": 67
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "现",
+          "confidence": 93.22,
+          "bbox": {
+            "x": 1462,
+            "y": 1142,
+            "width": 51,
+            "height": 67
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "在",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 1512,
+            "y": 1142,
+            "width": 39,
+            "height": 67
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 83.25,
+          "bbox": {
+            "x": 1550,
+            "y": 1142,
+            "width": 30,
+            "height": 67
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ")",
+          "confidence": 91.53,
+          "bbox": {
+            "x": 1586,
+            "y": 1142,
+            "width": 18,
+            "height": 67
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Does he play the guitar?",
+      "confidence": 95.83,
+      "bbox": {
+        "x": 321,
+        "y": 1150,
+        "width": 480,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Does",
+          "confidence": 95.1,
+          "bbox": {
+            "x": 321,
+            "y": 1152,
+            "width": 106,
+            "height": 32
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 95.1,
+          "bbox": {
+            "x": 441,
+            "y": 1150,
+            "width": 48,
+            "height": 34
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "play",
+          "confidence": 96.08,
+          "bbox": {
+            "x": 504,
+            "y": 1150,
+            "width": 87,
+            "height": 45
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.23,
+          "bbox": {
+            "x": 606,
+            "y": 1150,
+            "width": 56,
+            "height": 34
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "guitar?",
+          "confidence": 96.63,
+          "bbox": {
+            "x": 678,
+            "y": 1152,
+            "width": 123,
+            "height": 43
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Yes, he does.",
+      "confidence": 96.41,
+      "bbox": {
+        "x": 933,
+        "y": 1150,
+        "width": 274,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "Yes,",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 933,
+            "y": 1152,
+            "width": 89,
+            "height": 38
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 1037,
+            "y": 1150,
+            "width": 49,
+            "height": 34
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "does.",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 1101,
+            "y": 1150,
+            "width": 106,
+            "height": 34
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "现在 进行 时 (lam doing) 表示 现在 或 说 话 的 时 刻 正在 发 生 的 事情 :",
+      "confidence": 91.07,
+      "bbox": {
+        "x": 300,
+        "y": 1285,
+        "width": 1299,
+        "height": 67
+      },
+      "words": [
+        {
+          "text": "现在",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 300,
+            "y": 1289,
+            "width": 85,
+            "height": 43
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "进行",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 409,
+            "y": 1289,
+            "width": 97,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 92.47,
+          "bbox": {
+            "x": 505,
+            "y": 1285,
+            "width": 26,
+            "height": 67
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(lam",
+          "confidence": 51.41,
+          "bbox": {
+            "x": 541,
+            "y": 1285,
+            "width": 96,
+            "height": 67
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "doing)",
+          "confidence": 90.72,
+          "bbox": {
+            "x": 658,
+            "y": 1285,
+            "width": 152,
+            "height": 67
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "表示",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 823,
+            "y": 1289,
+            "width": 73,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "现在",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 915,
+            "y": 1289,
+            "width": 73,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "或",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 1012,
+            "y": 1289,
+            "width": 20,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "说",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 1058,
+            "y": 1289,
+            "width": 47,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "话",
+          "confidence": 82.49,
+          "bbox": {
+            "x": 1134,
+            "y": 1289,
+            "width": 17,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "的",
+          "confidence": 95.87,
+          "bbox": {
+            "x": 1179,
+            "y": 1289,
+            "width": 18,
+            "height": 43
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 92.98,
+          "bbox": {
+            "x": 1196,
+            "y": 1285,
+            "width": 43,
+            "height": 67
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "刻",
+          "confidence": 93.13,
+          "bbox": {
+            "x": 1238,
+            "y": 1289,
+            "width": 19,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "正在",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1284,
+            "y": 1289,
+            "width": 67,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "发",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 1376,
+            "y": 1289,
+            "width": 47,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "生",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 1422,
+            "y": 1285,
+            "width": 43,
+            "height": 67
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "的",
+          "confidence": 96.4,
+          "bbox": {
+            "x": 1464,
+            "y": 1289,
+            "width": 21,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "事情",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 1510,
+            "y": 1289,
+            "width": 72,
+            "height": 44
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ":",
+          "confidence": 81.88,
+          "bbox": {
+            "x": 1581,
+            "y": 1285,
+            "width": 18,
+            "height": 67
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "I’m doing",
+      "confidence": 93.05,
+      "bbox": {
+        "x": 1075,
+        "y": 1391,
+        "width": 214,
+        "height": 48
+      },
+      "words": [
+        {
+          "text": "I’m",
+          "confidence": 90,
+          "bbox": {
+            "x": 1075,
+            "y": 1391,
+            "width": 77,
+            "height": 38
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing",
+          "confidence": 96.09,
+          "bbox": {
+            "x": 1167,
+            "y": 1394,
+            "width": 122,
+            "height": 45
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "过 去",
+      "confidence": 96.58,
+      "bbox": {
+        "x": 374,
+        "y": 1509,
+        "width": 86,
+        "height": 65
+      },
+      "words": [
+        {
+          "text": "过",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 374,
+            "y": 1513,
+            "width": 83,
+            "height": 43
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "去",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 426,
+            "y": 1509,
+            "width": 34,
+            "height": 65
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "将 来",
+      "confidence": 96.3,
+      "bbox": {
+        "x": 1900,
+        "y": 1509,
+        "width": 87,
+        "height": 69
+      },
+      "words": [
+        {
+          "text": "将",
+          "confidence": 97,
+          "bbox": {
+            "x": 1900,
+            "y": 1513,
+            "width": 86,
+            "height": 45
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "来",
+          "confidence": 95.59,
+          "bbox": {
+            "x": 1956,
+            "y": 1509,
+            "width": 31,
+            "height": 69
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "现在",
+      "confidence": 96.49,
+      "bbox": {
+        "x": 1137,
+        "y": 1513,
+        "width": 85,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "现在",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 1137,
+            "y": 1513,
+            "width": 85,
+            "height": 44
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "口 Please be quiet. I’m working. (而 不 用 I work)",
+      "confidence": 93.8,
+      "bbox": {
+        "x": 377,
+        "y": 1598,
+        "width": 959,
+        "height": 56
+      },
+      "words": [
+        {
+          "text": "口",
+          "confidence": 92.84,
+          "bbox": {
+            "x": 377,
+            "y": 1611,
+            "width": 25,
+            "height": 25
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Please",
+          "confidence": 95.17,
+          "bbox": {
+            "x": 421,
+            "y": 1605,
+            "width": 111,
+            "height": 34
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "be",
+          "confidence": 96.98,
+          "bbox": {
+            "x": 546,
+            "y": 1605,
+            "width": 44,
+            "height": 33
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "quiet.",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 605,
+            "y": 1606,
+            "width": 104,
+            "height": 43
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 81.48,
+          "bbox": {
+            "x": 740,
+            "y": 1606,
+            "width": 73,
+            "height": 32
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "working.",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 826,
+            "y": 1605,
+            "width": 177,
+            "height": 44
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(而",
+          "confidence": 95.07,
+          "bbox": {
+            "x": 1035,
+            "y": 1603,
+            "width": 98,
+            "height": 44
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "不",
+          "confidence": 95.7,
+          "bbox": {
+            "x": 1141,
+            "y": 1602,
+            "width": 35,
+            "height": 42
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "用",
+          "confidence": 93.85,
+          "bbox": {
+            "x": 1160,
+            "y": 1598,
+            "width": 29,
+            "height": 56
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 91.28,
+          "bbox": {
+            "x": 1198,
+            "y": 1606,
+            "width": 12,
+            "height": 33
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "work)",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 1225,
+            "y": 1605,
+            "width": 111,
+            "height": 43
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "© Tom is having a shower at the moment. (而 不 用 Tom has)",
+      "confidence": 94.01,
+      "bbox": {
+        "x": 377,
+        "y": 1655,
+        "width": 1182,
+        "height": 54
+      },
+      "words": [
+        {
+          "text": "©",
+          "confidence": 69.92,
+          "bbox": {
+            "x": 377,
+            "y": 1667,
+            "width": 26,
+            "height": 25
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Tom",
+          "confidence": 94.86,
+          "bbox": {
+            "x": 421,
+            "y": 1662,
+            "width": 95,
+            "height": 33
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 95.24,
+          "bbox": {
+            "x": 528,
+            "y": 1661,
+            "width": 31,
+            "height": 34
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "having",
+          "confidence": 96.42,
+          "bbox": {
+            "x": 574,
+            "y": 1661,
+            "width": 133,
+            "height": 44
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 721,
+            "y": 1673,
+            "width": 18,
+            "height": 22
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "shower",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 752,
+            "y": 1661,
+            "width": 137,
+            "height": 34
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.24,
+          "bbox": {
+            "x": 902,
+            "y": 1670,
+            "width": 32,
+            "height": 25
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 948,
+            "y": 1661,
+            "width": 58,
+            "height": 34
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "moment.",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 1019,
+            "y": 1670,
+            "width": 169,
+            "height": 25
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(而",
+          "confidence": 95.42,
+          "bbox": {
+            "x": 1221,
+            "y": 1659,
+            "width": 140,
+            "height": 45
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "不",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 1301,
+            "y": 1655,
+            "width": 44,
+            "height": 54
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "用",
+          "confidence": 95.67,
+          "bbox": {
+            "x": 1345,
+            "y": 1655,
+            "width": 31,
+            "height": 54
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Tom",
+          "confidence": 94.85,
+          "bbox": {
+            "x": 1382,
+            "y": 1663,
+            "width": 95,
+            "height": 32
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "has)",
+          "confidence": 94.85,
+          "bbox": {
+            "x": 1490,
+            "y": 1661,
+            "width": 69,
+            "height": 44
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O Take an umbrella with you. It’s raining.",
+      "confidence": 93.21,
+      "bbox": {
+        "x": 377,
+        "y": 1717,
+        "width": 821,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 72.75,
+          "bbox": {
+            "x": 377,
+            "y": 1723,
+            "width": 26,
+            "height": 26
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Take",
+          "confidence": 95.54,
+          "bbox": {
+            "x": 421,
+            "y": 1717,
+            "width": 94,
+            "height": 34
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "an",
+          "confidence": 96.15,
+          "bbox": {
+            "x": 530,
+            "y": 1730,
+            "width": 43,
+            "height": 21
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "umbrella",
+          "confidence": 96.04,
+          "bbox": {
+            "x": 587,
+            "y": 1717,
+            "width": 164,
+            "height": 34
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "with",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 763,
+            "y": 1717,
+            "width": 86,
+            "height": 35
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you.",
+          "confidence": 96.45,
+          "bbox": {
+            "x": 862,
+            "y": 1730,
+            "width": 82,
+            "height": 32
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "It’s",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 975,
+            "y": 1719,
+            "width": 61,
+            "height": 33
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "raining.",
+          "confidence": 95.09,
+          "bbox": {
+            "x": 1050,
+            "y": 1718,
+            "width": 148,
+            "height": 44
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "口 You can turn off the television. I’m not watching it.",
+      "confidence": 94.16,
+      "bbox": {
+        "x": 377,
+        "y": 1773,
+        "width": 1057,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "口",
+          "confidence": 87.63,
+          "bbox": {
+            "x": 377,
+            "y": 1780,
+            "width": 26,
+            "height": 25
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "You",
+          "confidence": 92.96,
+          "bbox": {
+            "x": 420,
+            "y": 1775,
+            "width": 83,
+            "height": 33
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "can",
+          "confidence": 96.35,
+          "bbox": {
+            "x": 518,
+            "y": 1786,
+            "width": 62,
+            "height": 22
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "turn",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 595,
+            "y": 1782,
+            "width": 78,
+            "height": 26
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "off",
+          "confidence": 95.24,
+          "bbox": {
+            "x": 688,
+            "y": 1773,
+            "width": 56,
+            "height": 35
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 95.24,
+          "bbox": {
+            "x": 751,
+            "y": 1774,
+            "width": 58,
+            "height": 34
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "television.",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 823,
+            "y": 1774,
+            "width": 187,
+            "height": 34
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 87.57,
+          "bbox": {
+            "x": 1041,
+            "y": 1775,
+            "width": 73,
+            "height": 33
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 95.32,
+          "bbox": {
+            "x": 1128,
+            "y": 1782,
+            "width": 64,
+            "height": 26
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watching",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 1205,
+            "y": 1774,
+            "width": 181,
+            "height": 45
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it.",
+          "confidence": 95.75,
+          "bbox": {
+            "x": 1399,
+            "y": 1775,
+            "width": 35,
+            "height": 33
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "0 Why are you under the table? What are you doing?",
+      "confidence": 84.4,
+      "bbox": {
+        "x": 376,
+        "y": 1830,
+        "width": 1046,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "0",
+          "confidence": 19.05,
+          "bbox": {
+            "x": 376,
+            "y": 1836,
+            "width": 27,
+            "height": 25
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Why",
+          "confidence": 85.49,
+          "bbox": {
+            "x": 421,
+            "y": 1830,
+            "width": 94,
+            "height": 44
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 530,
+            "y": 1842,
+            "width": 53,
+            "height": 21
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 597,
+            "y": 1842,
+            "width": 71,
+            "height": 32
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "under",
+          "confidence": 95.79,
+          "bbox": {
+            "x": 683,
+            "y": 1830,
+            "width": 110,
+            "height": 34
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 95.79,
+          "bbox": {
+            "x": 807,
+            "y": 1830,
+            "width": 57,
+            "height": 34
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "table?",
+          "confidence": 53.32,
+          "bbox": {
+            "x": 878,
+            "y": 1830,
+            "width": 105,
+            "height": 34
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "What",
+          "confidence": 95.95,
+          "bbox": {
+            "x": 1010,
+            "y": 1830,
+            "width": 105,
+            "height": 34
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 1129,
+            "y": 1842,
+            "width": 63,
+            "height": 22
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.42,
+          "bbox": {
+            "x": 1206,
+            "y": 1842,
+            "width": 71,
+            "height": 33
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing?",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 1292,
+            "y": 1830,
+            "width": 130,
+            "height": 45
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "一 般 现 在 时 (Ldo) 表示 一 般 性 的 事实 、 经 常 或 有 时 发 生 的 事情 ，",
+      "confidence": 89.33,
+      "bbox": {
+        "x": 302,
+        "y": 1926,
+        "width": 1237,
+        "height": 68
+      },
+      "words": [
+        {
+          "text": "一",
+          "confidence": 93.17,
+          "bbox": {
+            "x": 302,
+            "y": 1949,
+            "width": 39,
+            "height": 7
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "般",
+          "confidence": 92.72,
+          "bbox": {
+            "x": 361,
+            "y": 1930,
+            "width": 26,
+            "height": 45
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "现",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 408,
+            "y": 1931,
+            "width": 52,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "在",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 459,
+            "y": 1926,
+            "width": 43,
+            "height": 68
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 92.36,
+          "bbox": {
+            "x": 502,
+            "y": 1930,
+            "width": 20,
+            "height": 45
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(Ldo)",
+          "confidence": 19.06,
+          "bbox": {
+            "x": 548,
+            "y": 1926,
+            "width": 101,
+            "height": 68
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "表示",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 680,
+            "y": 1931,
+            "width": 69,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 93.09,
+          "bbox": {
+            "x": 769,
+            "y": 1949,
+            "width": 26,
+            "height": 7
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "般",
+          "confidence": 92.88,
+          "bbox": {
+            "x": 820,
+            "y": 1931,
+            "width": 23,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "性",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 863,
+            "y": 1931,
+            "width": 52,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "的",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 940,
+            "y": 1931,
+            "width": 21,
+            "height": 45
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "事实",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 985,
+            "y": 1931,
+            "width": 58,
+            "height": 45
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "、",
+          "confidence": 93.13,
+          "bbox": {
+            "x": 1046,
+            "y": 1926,
+            "width": 43,
+            "height": 68
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "经",
+          "confidence": 91.5,
+          "bbox": {
+            "x": 1088,
+            "y": 1932,
+            "width": 26,
+            "height": 41
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "常",
+          "confidence": 93.08,
+          "bbox": {
+            "x": 1139,
+            "y": 1931,
+            "width": 56,
+            "height": 45
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "或",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 1210,
+            "y": 1931,
+            "width": 23,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "有",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 1233,
+            "y": 1926,
+            "width": 34,
+            "height": 68
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 1267,
+            "y": 1931,
+            "width": 28,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "发",
+          "confidence": 92.61,
+          "bbox": {
+            "x": 1318,
+            "y": 1931,
+            "width": 23,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "生",
+          "confidence": 91.47,
+          "bbox": {
+            "x": 1364,
+            "y": 1932,
+            "width": 22,
+            "height": 42
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "的",
+          "confidence": 96.94,
+          "bbox": {
+            "x": 1411,
+            "y": 1932,
+            "width": 18,
+            "height": 44
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "事情",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 1454,
+            "y": 1931,
+            "width": 68,
+            "height": 45
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "，",
+          "confidence": 58.76,
+          "bbox": {
+            "x": 1534,
+            "y": 1959,
+            "width": 5,
+            "height": 14
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Ido",
+      "confidence": 92.7,
+      "bbox": {
+        "x": 1143,
+        "y": 2024,
+        "width": 84,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "Ido",
+          "confidence": 92.7,
+          "bbox": {
+            "x": 1143,
+            "y": 2024,
+            "width": 84,
+            "height": 35
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "过 去",
+      "confidence": 96.6,
+      "bbox": {
+        "x": 374,
+        "y": 2110,
+        "width": 89,
+        "height": 67
+      },
+      "words": [
+        {
+          "text": "过",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 374,
+            "y": 2114,
+            "width": 84,
+            "height": 44
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "去",
+          "confidence": 96.89,
+          "bbox": {
+            "x": 428,
+            "y": 2110,
+            "width": 35,
+            "height": 67
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "将 来",
+      "confidence": 96.72,
+      "bbox": {
+        "x": 1901,
+        "y": 2111,
+        "width": 88,
+        "height": 70
+      },
+      "words": [
+        {
+          "text": "将",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 1901,
+            "y": 2115,
+            "width": 85,
+            "height": 47
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "来",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 1958,
+            "y": 2111,
+            "width": 31,
+            "height": 70
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "现在",
+      "confidence": 96.64,
+      "bbox": {
+        "x": 1138,
+        "y": 2114,
+        "width": 84,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "现在",
+          "confidence": 96.64,
+          "bbox": {
+            "x": 1138,
+            "y": 2114,
+            "width": 84,
+            "height": 46
+          },
+          "block": 45,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "C1 I work every day from 9 o’clock to 5.30.",
+      "confidence": 89.17,
+      "bbox": {
+        "x": 377,
+        "y": 2205,
+        "width": 824,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "C1",
+          "confidence": 55.09,
+          "bbox": {
+            "x": 377,
+            "y": 2211,
+            "width": 26,
+            "height": 26
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "I",
+          "confidence": 76.09,
+          "bbox": {
+            "x": 424,
+            "y": 2207,
+            "width": 11,
+            "height": 32
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "work",
+          "confidence": 93.12,
+          "bbox": {
+            "x": 449,
+            "y": 2205,
+            "width": 111,
+            "height": 35
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "every",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 574,
+            "y": 2217,
+            "width": 100,
+            "height": 33
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "day",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 689,
+            "y": 2205,
+            "width": 64,
+            "height": 45
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "from",
+          "confidence": 95.82,
+          "bbox": {
+            "x": 766,
+            "y": 2205,
+            "width": 91,
+            "height": 35
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "9",
+          "confidence": 93.15,
+          "bbox": {
+            "x": 871,
+            "y": 2207,
+            "width": 22,
+            "height": 32
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "o’clock",
+          "confidence": 91.8,
+          "bbox": {
+            "x": 907,
+            "y": 2205,
+            "width": 138,
+            "height": 35
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "to",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 1059,
+            "y": 2214,
+            "width": 36,
+            "height": 26
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "5.30.",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1111,
+            "y": 2207,
+            "width": 90,
+            "height": 33
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O Tom has a shower every morning.",
+      "confidence": 92.13,
+      "bbox": {
+        "x": 377,
+        "y": 2262,
+        "width": 701,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 70.43,
+          "bbox": {
+            "x": 377,
+            "y": 2267,
+            "width": 27,
+            "height": 27
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Tom",
+          "confidence": 94.76,
+          "bbox": {
+            "x": 422,
+            "y": 2263,
+            "width": 94,
+            "height": 33
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "has",
+          "confidence": 95.84,
+          "bbox": {
+            "x": 528,
+            "y": 2262,
+            "width": 68,
+            "height": 34
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 610,
+            "y": 2274,
+            "width": 18,
+            "height": 22
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "shower",
+          "confidence": 95.68,
+          "bbox": {
+            "x": 642,
+            "y": 2262,
+            "width": 136,
+            "height": 34
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "every",
+          "confidence": 95.68,
+          "bbox": {
+            "x": 791,
+            "y": 2274,
+            "width": 102,
+            "height": 32
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "morning.",
+          "confidence": 95.86,
+          "bbox": {
+            "x": 906,
+            "y": 2264,
+            "width": 172,
+            "height": 43
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O It rains a lot in winter.",
+      "confidence": 91.91,
+      "bbox": {
+        "x": 377,
+        "y": 2317,
+        "width": 478,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 65.69,
+          "bbox": {
+            "x": 377,
+            "y": 2323,
+            "width": 27,
+            "height": 26
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "It",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 423,
+            "y": 2320,
+            "width": 29,
+            "height": 32
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "rains",
+          "confidence": 96.13,
+          "bbox": {
+            "x": 464,
+            "y": 2318,
+            "width": 100,
+            "height": 35
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.11,
+          "bbox": {
+            "x": 578,
+            "y": 2330,
+            "width": 18,
+            "height": 22
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "lot",
+          "confidence": 96.11,
+          "bbox": {
+            "x": 609,
+            "y": 2317,
+            "width": 51,
+            "height": 36
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "in",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 674,
+            "y": 2320,
+            "width": 36,
+            "height": 32
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "winter.",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 723,
+            "y": 2320,
+            "width": 132,
+            "height": 33
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "0 I don’t watch television very often.",
+      "confidence": 89.8,
+      "bbox": {
+        "x": 377,
+        "y": 2373,
+        "width": 732,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "0",
+          "confidence": 58.45,
+          "bbox": {
+            "x": 377,
+            "y": 2380,
+            "width": 26,
+            "height": 27
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "I",
+          "confidence": 87.23,
+          "bbox": {
+            "x": 424,
+            "y": 2376,
+            "width": 12,
+            "height": 33
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "don’t",
+          "confidence": 96.27,
+          "bbox": {
+            "x": 452,
+            "y": 2374,
+            "width": 111,
+            "height": 35
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watch",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 576,
+            "y": 2374,
+            "width": 127,
+            "height": 35
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "television",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 717,
+            "y": 2373,
+            "width": 177,
+            "height": 36
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 907,
+            "y": 2387,
+            "width": 83,
+            "height": 32
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "often.",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 1003,
+            "y": 2375,
+            "width": 106,
+            "height": 34
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "口 What do you usually do at the weekend?",
+      "confidence": 95.77,
+      "bbox": {
+        "x": 377,
+        "y": 2430,
+        "width": 828,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "口",
+          "confidence": 91.9,
+          "bbox": {
+            "x": 377,
+            "y": 2437,
+            "width": 26,
+            "height": 25
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "What",
+          "confidence": 93.72,
+          "bbox": {
+            "x": 420,
+            "y": 2430,
+            "width": 107,
+            "height": 36
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "do",
+          "confidence": 96.49,
+          "bbox": {
+            "x": 541,
+            "y": 2431,
+            "width": 52,
+            "height": 35
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 607,
+            "y": 2443,
+            "width": 71,
+            "height": 33
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "usually",
+          "confidence": 96.43,
+          "bbox": {
+            "x": 693,
+            "y": 2431,
+            "width": 127,
+            "height": 45
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "do",
+          "confidence": 96.57,
+          "bbox": {
+            "x": 834,
+            "y": 2431,
+            "width": 52,
+            "height": 34
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.94,
+          "bbox": {
+            "x": 902,
+            "y": 2440,
+            "width": 32,
+            "height": 26
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 948,
+            "y": 2431,
+            "width": 57,
+            "height": 34
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "weekend?",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1019,
+            "y": 2431,
+            "width": 186,
+            "height": 35
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "下 列 动词 不 用 于 现在 进行 时 (Lam ing).",
+      "confidence": 82.89,
+      "bbox": {
+        "x": 302,
+        "y": 2504,
+        "width": 795,
+        "height": 98
+      },
+      "words": [
+        {
+          "text": "下",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 302,
+            "y": 2533,
+            "width": 39,
+            "height": 42
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "列",
+          "confidence": 92.98,
+          "bbox": {
+            "x": 359,
+            "y": 2530,
+            "width": 56,
+            "height": 45
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "动词",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 438,
+            "y": 2533,
+            "width": 69,
+            "height": 43
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "不",
+          "confidence": 96.28,
+          "bbox": {
+            "x": 506,
+            "y": 2504,
+            "width": 37,
+            "height": 98
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "用",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 543,
+            "y": 2533,
+            "width": 21,
+            "height": 42
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "于",
+          "confidence": 95.57,
+          "bbox": {
+            "x": 579,
+            "y": 2534,
+            "width": 32,
+            "height": 41
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "现在",
+          "confidence": 96.67,
+          "bbox": {
+            "x": 628,
+            "y": 2530,
+            "width": 105,
+            "height": 66
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "进行",
+          "confidence": 94.94,
+          "bbox": {
+            "x": 754,
+            "y": 2531,
+            "width": 71,
+            "height": 44
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 91.84,
+          "bbox": {
+            "x": 824,
+            "y": 2504,
+            "width": 32,
+            "height": 98
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(Lam",
+          "confidence": 56.4,
+          "bbox": {
+            "x": 861,
+            "y": 2504,
+            "width": 91,
+            "height": 98
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ing).",
+          "confidence": 0,
+          "bbox": {
+            "x": 984,
+            "y": 2504,
+            "width": 113,
+            "height": 98
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "understand",
+      "confidence": 96.31,
+      "bbox": {
+        "x": 1131,
+        "y": 2611,
+        "width": 236,
+        "height": 40
+      },
+      "words": [
+        {
+          "text": "understand",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1131,
+            "y": 2611,
+            "width": 236,
+            "height": 40
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "remember",
+      "confidence": 96.88,
+      "bbox": {
+        "x": 1461,
+        "y": 2611,
+        "width": 223,
+        "height": 51
+      },
+      "words": [
+        {
+          "text": "remember",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 1461,
+            "y": 2611,
+            "width": 223,
+            "height": 51
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "like",
+      "confidence": 96.65,
+      "bbox": {
+        "x": 321,
+        "y": 2612,
+        "width": 78,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "like",
+          "confidence": 96.65,
+          "bbox": {
+            "x": 321,
+            "y": 2612,
+            "width": 78,
+            "height": 38
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "love",
+      "confidence": 95.72,
+      "bbox": {
+        "x": 541,
+        "y": 2612,
+        "width": 91,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "love",
+          "confidence": 95.72,
+          "bbox": {
+            "x": 541,
+            "y": 2612,
+            "width": 91,
+            "height": 38
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "know",
+      "confidence": 96.66,
+      "bbox": {
+        "x": 915,
+        "y": 2612,
+        "width": 123,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "know",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 915,
+            "y": 2612,
+            "width": 123,
+            "height": 41
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "depend",
+      "confidence": 96.15,
+      "bbox": {
+        "x": 1778,
+        "y": 2612,
+        "width": 155,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "depend",
+          "confidence": 96.15,
+          "bbox": {
+            "x": 1778,
+            "y": 2612,
+            "width": 155,
+            "height": 47
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "need mean",
+      "confidence": 96.13,
+      "bbox": {
+        "x": 719,
+        "y": 2664,
+        "width": 315,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "need",
+          "confidence": 95.99,
+          "bbox": {
+            "x": 719,
+            "y": 2664,
+            "width": 107,
+            "height": 49
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "mean",
+          "confidence": 96.26,
+          "bbox": {
+            "x": 915,
+            "y": 2678,
+            "width": 119,
+            "height": 25
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "prefer hate",
+      "confidence": 61.33,
+      "bbox": {
+        "x": 322,
+        "y": 2667,
+        "width": 313,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "prefer",
+          "confidence": 82.75,
+          "bbox": {
+            "x": 322,
+            "y": 2667,
+            "width": 128,
+            "height": 47
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "hate",
+          "confidence": 39.91,
+          "bbox": {
+            "x": 543,
+            "y": 2667,
+            "width": 92,
+            "height": 36
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "forget",
+      "confidence": 96.85,
+      "bbox": {
+        "x": 1455,
+        "y": 2669,
+        "width": 134,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "forget",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 1455,
+            "y": 2669,
+            "width": 134,
+            "height": 49
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "这 些 动 词 可 用 于 一 般 现 在 时 (I want / do you like? 等 )",
+      "confidence": 89.42,
+      "bbox": {
+        "x": 301,
+        "y": 2769,
+        "width": 1079,
+        "height": 61
+      },
+      "words": [
+        {
+          "text": "这",
+          "confidence": 93.01,
+          "bbox": {
+            "x": 301,
+            "y": 2775,
+            "width": 40,
+            "height": 42
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "些",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 361,
+            "y": 2774,
+            "width": 51,
+            "height": 44
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "动",
+          "confidence": 88.52,
+          "bbox": {
+            "x": 438,
+            "y": 2777,
+            "width": 27,
+            "height": 42
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "词",
+          "confidence": 92.75,
+          "bbox": {
+            "x": 484,
+            "y": 2777,
+            "width": 23,
+            "height": 40
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "可",
+          "confidence": 92.2,
+          "bbox": {
+            "x": 506,
+            "y": 2769,
+            "width": 39,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "用",
+          "confidence": 96.32,
+          "bbox": {
+            "x": 544,
+            "y": 2776,
+            "width": 20,
+            "height": 42
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "于",
+          "confidence": 95.21,
+          "bbox": {
+            "x": 582,
+            "y": 2777,
+            "width": 29,
+            "height": 41
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 632,
+            "y": 2792,
+            "width": 25,
+            "height": 7
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "般",
+          "confidence": 92.81,
+          "bbox": {
+            "x": 678,
+            "y": 2773,
+            "width": 27,
+            "height": 46
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "现",
+          "confidence": 92.34,
+          "bbox": {
+            "x": 727,
+            "y": 2774,
+            "width": 51,
+            "height": 45
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "在",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 777,
+            "y": 2769,
+            "width": 43,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 86.67,
+          "bbox": {
+            "x": 819,
+            "y": 2773,
+            "width": 21,
+            "height": 45
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(I",
+          "confidence": 63.62,
+          "bbox": {
+            "x": 865,
+            "y": 2769,
+            "width": 31,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "want",
+          "confidence": 93.28,
+          "bbox": {
+            "x": 906,
+            "y": 2769,
+            "width": 83,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 1008,
+            "y": 2780,
+            "width": 21,
+            "height": 33
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "do",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 1052,
+            "y": 2769,
+            "width": 38,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 1110,
+            "y": 2769,
+            "width": 62,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "like?",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 1191,
+            "y": 2769,
+            "width": 103,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "等",
+          "confidence": 91.78,
+          "bbox": {
+            "x": 1330,
+            "y": 2774,
+            "width": 21,
+            "height": 45
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ")",
+          "confidence": 43.08,
+          "bbox": {
+            "x": 1372,
+            "y": 2769,
+            "width": 8,
+            "height": 61
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "O I’m tired. I want to go home. (而 不 用 I’m wanting)",
+      "confidence": 88.29,
+      "bbox": {
+        "x": 377,
+        "y": 2829,
+        "width": 1060,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 54.69,
+          "bbox": {
+            "x": 377,
+            "y": 2840,
+            "width": 26,
+            "height": 26
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "I’m",
+          "confidence": 46.32,
+          "bbox": {
+            "x": 424,
+            "y": 2835,
+            "width": 63,
+            "height": 33
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "tired.",
+          "confidence": 95.2,
+          "bbox": {
+            "x": 502,
+            "y": 2834,
+            "width": 95,
+            "height": 35
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 95.96,
+          "bbox": {
+            "x": 627,
+            "y": 2836,
+            "width": 13,
+            "height": 32
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "want",
+          "confidence": 96.67,
+          "bbox": {
+            "x": 654,
+            "y": 2842,
+            "width": 105,
+            "height": 27
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "to",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 771,
+            "y": 2844,
+            "width": 38,
+            "height": 25
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "go",
+          "confidence": 95.18,
+          "bbox": {
+            "x": 824,
+            "y": 2847,
+            "width": 45,
+            "height": 33
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "home.",
+          "confidence": 95.18,
+          "bbox": {
+            "x": 884,
+            "y": 2835,
+            "width": 117,
+            "height": 34
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(而",
+          "confidence": 94.86,
+          "bbox": {
+            "x": 1033,
+            "y": 2834,
+            "width": 98,
+            "height": 44
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "不",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 1139,
+            "y": 2833,
+            "width": 34,
+            "height": 41
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "用",
+          "confidence": 90.44,
+          "bbox": {
+            "x": 1156,
+            "y": 2829,
+            "width": 32,
+            "height": 55
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 93.38,
+          "bbox": {
+            "x": 1195,
+            "y": 2836,
+            "width": 65,
+            "height": 33
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "wanting)",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 1273,
+            "y": 2836,
+            "width": 164,
+            "height": 44
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "0 ‘Do you know that girl?’",
+      "confidence": 90.22,
+      "bbox": {
+        "x": 377,
+        "y": 2891,
+        "width": 525,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "0",
+          "confidence": 75.43,
+          "bbox": {
+            "x": 377,
+            "y": 2896,
+            "width": 26,
+            "height": 26
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "‘Do",
+          "confidence": 85.66,
+          "bbox": {
+            "x": 424,
+            "y": 2891,
+            "width": 75,
+            "height": 34
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 94.75,
+          "bbox": {
+            "x": 512,
+            "y": 2903,
+            "width": 72,
+            "height": 32
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "know",
+          "confidence": 96.02,
+          "bbox": {
+            "x": 599,
+            "y": 2891,
+            "width": 116,
+            "height": 34
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "that",
+          "confidence": 96.34,
+          "bbox": {
+            "x": 730,
+            "y": 2891,
+            "width": 71,
+            "height": 34
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "girl?’",
+          "confidence": 93.12,
+          "bbox": {
+            "x": 814,
+            "y": 2891,
+            "width": 88,
+            "height": 45
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "‘Yes, but I don’t remember her name.’",
+      "confidence": 92.77,
+      "bbox": {
+        "x": 978,
+        "y": 2891,
+        "width": 769,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "‘Yes,",
+          "confidence": 74.06,
+          "bbox": {
+            "x": 978,
+            "y": 2892,
+            "width": 89,
+            "height": 40
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "but",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 1082,
+            "y": 2891,
+            "width": 63,
+            "height": 35
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 95.72,
+          "bbox": {
+            "x": 1160,
+            "y": 2893,
+            "width": 12,
+            "height": 32
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "don’t",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1188,
+            "y": 2891,
+            "width": 113,
+            "height": 35
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "remember",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1314,
+            "y": 2892,
+            "width": 221,
+            "height": 34
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "her",
+          "confidence": 95.32,
+          "bbox": {
+            "x": 1548,
+            "y": 2892,
+            "width": 63,
+            "height": 34
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "name.’",
+          "confidence": 94.39,
+          "bbox": {
+            "x": 1623,
+            "y": 2892,
+            "width": 124,
+            "height": 34
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O I don’t understand. What do you mean?",
+      "confidence": 92.37,
+      "bbox": {
+        "x": 377,
+        "y": 2947,
+        "width": 877,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 68.62,
+          "bbox": {
+            "x": 377,
+            "y": 2953,
+            "width": 26,
+            "height": 26
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 93.42,
+          "bbox": {
+            "x": 424,
+            "y": 2949,
+            "width": 12,
+            "height": 32
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "don’t",
+          "confidence": 96.75,
+          "bbox": {
+            "x": 451,
+            "y": 2947,
+            "width": 113,
+            "height": 35
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "understand.",
+          "confidence": 96.11,
+          "bbox": {
+            "x": 577,
+            "y": 2947,
+            "width": 244,
+            "height": 35
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "What",
+          "confidence": 95.37,
+          "bbox": {
+            "x": 849,
+            "y": 2947,
+            "width": 107,
+            "height": 35
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "do",
+          "confidence": 95.3,
+          "bbox": {
+            "x": 969,
+            "y": 2947,
+            "width": 53,
+            "height": 35
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 1035,
+            "y": 2960,
+            "width": 71,
+            "height": 33
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "mean?",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 1121,
+            "y": 2949,
+            "width": 133,
+            "height": 33
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "现在 进行 时 — Units 3-4",
+      "confidence": 93.29,
+      "bbox": {
+        "x": 324,
+        "y": 3053,
+        "width": 413,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "现在",
+          "confidence": 96.36,
+          "bbox": {
+            "x": 324,
+            "y": 3057,
+            "width": 76,
+            "height": 38
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "进行",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 419,
+            "y": 3057,
+            "width": 81,
+            "height": 39
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 499,
+            "y": 3053,
+            "width": 24,
+            "height": 47
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 78.07,
+          "bbox": {
+            "x": 529,
+            "y": 3073,
+            "width": 35,
+            "height": 13
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Units",
+          "confidence": 95.99,
+          "bbox": {
+            "x": 578,
+            "y": 3061,
+            "width": 82,
+            "height": 27
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "3-4",
+          "confidence": 96.27,
+          "bbox": {
+            "x": 674,
+            "y": 3062,
+            "width": 63,
+            "height": 26
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "一 般 现 在 时 一 Units 5-7 “现在 时 表示 将 来 一 Unit 25",
+      "confidence": 90.05,
+      "bbox": {
+        "x": 785,
+        "y": 3053,
+        "width": 914,
+        "height": 48
+      },
+      "words": [
+        {
+          "text": "一",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 785,
+            "y": 3057,
+            "width": 193,
+            "height": 39
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "般",
+          "confidence": 92.29,
+          "bbox": {
+            "x": 838,
+            "y": 3053,
+            "width": 39,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "现",
+          "confidence": 93.04,
+          "bbox": {
+            "x": 877,
+            "y": 3053,
+            "width": 39,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "在",
+          "confidence": 96.34,
+          "bbox": {
+            "x": 916,
+            "y": 3053,
+            "width": 42,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 93.85,
+          "bbox": {
+            "x": 958,
+            "y": 3053,
+            "width": 24,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 85.93,
+          "bbox": {
+            "x": 989,
+            "y": 3073,
+            "width": 36,
+            "height": 14
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Units",
+          "confidence": 95.7,
+          "bbox": {
+            "x": 1038,
+            "y": 3061,
+            "width": 82,
+            "height": 28
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "5-7",
+          "confidence": 91.8,
+          "bbox": {
+            "x": 1136,
+            "y": 3063,
+            "width": 59,
+            "height": 26
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "“现在",
+          "confidence": 52.84,
+          "bbox": {
+            "x": 1245,
+            "y": 3058,
+            "width": 271,
+            "height": 39
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "时",
+          "confidence": 95.49,
+          "bbox": {
+            "x": 1339,
+            "y": 3053,
+            "width": 33,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "表示",
+          "confidence": 95.73,
+          "bbox": {
+            "x": 1372,
+            "y": 3058,
+            "width": 81,
+            "height": 39
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "将",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 1453,
+            "y": 3053,
+            "width": 48,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "来",
+          "confidence": 87.55,
+          "bbox": {
+            "x": 1501,
+            "y": 3053,
+            "width": 30,
+            "height": 48
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 79.11,
+          "bbox": {
+            "x": 1552,
+            "y": 3074,
+            "width": 12,
+            "height": 13
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Unit",
+          "confidence": 94.86,
+          "bbox": {
+            "x": 1577,
+            "y": 3061,
+            "width": 68,
+            "height": 28
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "25",
+          "confidence": 96.17,
+          "bbox": {
+            "x": 1658,
+            "y": 3063,
+            "width": 41,
+            "height": 26
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    }
+  ]
+}

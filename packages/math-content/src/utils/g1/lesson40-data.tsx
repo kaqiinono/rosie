@@ -1,5 +1,3 @@
-'use client'
-
 import type { ProblemSet } from '@rosie/core'
 
 export const LESSON_TIP =

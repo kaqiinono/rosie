@@ -1,5 +1,3 @@
-'use client'
-
 import type { Problem, ProblemSet } from '@rosie/core'
 import LessonFig8Grid from '@rosie/math-content/components/lesson/g2/lesson5/Figure/LessonFig8Grid'
 import LessonFig8Triangle from '@rosie/math-content/components/lesson/g2/lesson5/Figure/LessonFig8Triangle'

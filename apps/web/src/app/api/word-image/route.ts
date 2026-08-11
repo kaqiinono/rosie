@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { forbiddenResponse, requireAdminFromRequest } from '@/lib/api-auth'
 // Deliberately NOT importing from the `@rosie/english` barrel — that pulls in
 // `english.css` plus every client component in the package. Import the pure
 // helper module directly so this server route stays free of client bundles.
@@ -21,19 +22,6 @@ function getAdminClient(): SupabaseClient | null {
   if (!url || !key) return null
   adminClient = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
   return adminClient
-}
-
-async function getAuthedUser(req: NextRequest): Promise<User | null> {
-  const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization')
-  const token = authHeader?.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : null
-  if (!token) return null
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !anonKey) return null
-  const client = createClient(url, anonKey, { auth: { autoRefreshToken: false, persistSession: false } })
-  const { data, error } = await client.auth.getUser(token)
-  if (error || !data.user) return null
-  return data.user
 }
 
 interface PexelsPhoto {
@@ -90,9 +78,12 @@ async function searchPexels(
 
   let resp: Response
   try {
-    resp = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=8`, {
-      headers: { Authorization: apiKey },
-    })
+    resp = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=8`,
+      {
+        headers: { Authorization: apiKey },
+      },
+    )
   } catch {
     throw new WordImageError('pexels_network_error', 502)
   }
@@ -174,7 +165,12 @@ interface BatchResultItem {
   imageMatchScore?: number
 }
 
-async function handleBatch(admin: SupabaseClient, stage: string, unit: string, force: boolean): Promise<BatchResultItem[]> {
+async function handleBatch(
+  admin: SupabaseClient,
+  stage: string,
+  unit: string,
+  force: boolean,
+): Promise<BatchResultItem[]> {
   let query = admin
     .from('word_entries')
     .select('stage, unit, lesson, word, explanation, image_source, image_path')
@@ -294,13 +290,11 @@ async function handleUpload(
   if (bytes.length > MAX_UPLOAD_BYTES) throw new WordImageError('file_too_large', 413)
 
   const path = wordImageStoragePath(stage, unit, lesson, word)
-  const { error: uploadError } = await admin.storage
-    .from(WORD_IMAGES_BUCKET)
-    .upload(path, bytes, {
-      contentType,
-      upsert: true,
-      cacheControl: '60',
-    })
+  const { error: uploadError } = await admin.storage.from(WORD_IMAGES_BUCKET).upload(path, bytes, {
+    contentType,
+    upsert: true,
+    cacheControl: '60',
+  })
   if (uploadError) throw new WordImageError(`upload_failed: ${uploadError.message}`, 500)
 
   let updateQuery = admin
@@ -340,10 +334,8 @@ function strArray(v: unknown): string[] | undefined {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getAuthedUser(req)
-  if (!user) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  const user = await requireAdminFromRequest(req)
+  if (!user) return forbiddenResponse()
 
   let body: Record<string, unknown>
   try {

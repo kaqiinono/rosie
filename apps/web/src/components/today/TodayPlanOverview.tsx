@@ -592,7 +592,11 @@ export function useTodayPlanOverview() {
     (chinese.isCharDataLoading && !chinese.isCharDataReady) ||
     (!!activeAdaptive && adaptiveLoading)
 
-  const cards = buildTodayPlanCards({
+  const hasMath = !!(mathPlan && mathProblems.length > 0)
+  const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!activeAdaptive
+  const hasChinese = !!chineseActivePlan || chinesePlanCleared || chinese.hasChinese
+
+  const allCards = buildTodayPlanCards({
     calc: {
       done: calcDoneCount,
       target: calcTargetCount,
@@ -649,12 +653,22 @@ export function useTodayPlanOverview() {
     },
   })
 
+  // Hide subject cards when the user has no plan/data for that subject —
+  // showing "0/0 · 0 个词待练" with a link to a non-practice page is misleading.
+  const visibilityMap: Record<string, boolean> = {
+    calc: true, // calc always has a daily target
+    english: hasEnglish,
+    math: hasMath,
+    chinese: hasChinese,
+  }
+  const cards = allCards.filter((c) => visibilityMap[c.key])
+
   return {
     isLoading,
     cards,
-    hasMath: !!(mathPlan && mathProblems.length > 0),
-    hasEnglish: !!(englishPlan && newWordKeys.length > 0) || !!activeAdaptive,
-    hasChinese: !!chineseActivePlan || chinesePlanCleared || chinese.hasChinese,
+    hasMath,
+    hasEnglish,
+    hasChinese,
   }
 }
 
@@ -675,10 +689,10 @@ function TodayPlanOverviewInner({
   allowReset = false,
   onResetToast,
 }: TodayPlanOverviewInnerProps) {
-  const { isLoading, cards, hasMath, hasEnglish, hasChinese } = useTodayPlanOverview()
+  const { isLoading, cards } = useTodayPlanOverview()
 
   if (isLoading) return <>{loadingFallback}</>
-  if (!alwaysShow && !(hasMath || hasEnglish || hasChinese)) return null
+  if (!alwaysShow && cards.length === 0) return null
 
   return (
     <TodayPlanOverviewCards

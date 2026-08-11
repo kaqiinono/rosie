@@ -1,0 +1,6742 @@
+{
+  "cacheKey": "e7a357d663c4ca4ac5d3ba1452f166c70ed3cf988fd64595a7df278975d880f5",
+  "pdfPage": 28,
+  "image": "page-0028.png",
+  "textFile": "page-0028.txt",
+  "tsvFile": "page-0028.tsv",
+  "dimensions": {
+    "width": 2096,
+    "height": 3078
+  },
+  "stats": {
+    "characters": 2114,
+    "words": 364,
+    "lines": 135,
+    "meanConfidence": 57.75,
+    "lowConfidenceWords": 171
+  },
+  "warnings": [
+    "low_mean_confidence",
+    "many_low_confidence_words",
+    "fill_blank_layout_present",
+    "wide_or_multi_column_lines_present"
+  ],
+  "lines": [
+    {
+      "text": "Exercises",
+      "confidence": 95.69,
+      "bbox": {
+        "x": 33,
+        "y": 75,
+        "width": 351,
+        "height": 66
+      },
+      "words": [
+        {
+          "text": "Exercises",
+          "confidence": 95.69,
+          "bbox": {
+            "x": 33,
+            "y": 75,
+            "width": 351,
+            "height": 66
+          },
+          "block": 1,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Unit 4",
+      "confidence": 96.08,
+      "bbox": {
+        "x": 1742,
+        "y": 76,
+        "width": 218,
+        "height": 59
+      },
+      "words": [
+        {
+          "text": "Unit",
+          "confidence": 95.78,
+          "bbox": {
+            "x": 1742,
+            "y": 76,
+            "width": 135,
+            "height": 55
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "4",
+          "confidence": 96.38,
+          "bbox": {
+            "x": 1914,
+            "y": 76,
+            "width": 46,
+            "height": 59
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| t",
+      "confidence": 63.88,
+      "bbox": {
+        "x": 258,
+        "y": 193,
+        "width": 17,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 80.57,
+          "bbox": {
+            "x": 258,
+            "y": 193,
+            "width": 2,
+            "height": 28
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "t",
+          "confidence": 47.19,
+          "bbox": {
+            "x": 273,
+            "y": 215,
+            "width": 2,
+            "height": 10
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "4.1",
+      "confidence": 96.47,
+      "bbox": {
+        "x": 29,
+        "y": 198,
+        "width": 50,
+        "height": 30
+      },
+      "words": [
+        {
+          "text": "4.1",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 29,
+            "y": 198,
+            "width": 50,
+            "height": 30
+          },
+          "block": 3,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "—",
+      "confidence": 49.7,
+      "bbox": {
+        "x": 1868,
+        "y": 248,
+        "width": 17,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "—",
+          "confidence": 49.7,
+          "bbox": {
+            "x": 1868,
+            "y": 248,
+            "width": 17,
+            "height": 1
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "—",
+      "confidence": 50.63,
+      "bbox": {
+        "x": 1381,
+        "y": 249,
+        "width": 82,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "—",
+          "confidence": 50.63,
+          "bbox": {
+            "x": 1381,
+            "y": 249,
+            "width": 82,
+            "height": 1
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "—",
+      "confidence": 40.41,
+      "bbox": {
+        "x": 1031,
+        "y": 250,
+        "width": 57,
+        "height": 2
+      },
+      "words": [
+        {
+          "text": "—",
+          "confidence": 40.41,
+          "bbox": {
+            "x": 1031,
+            "y": 250,
+            "width": 57,
+            "height": 2
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "‘Cod",
+      "confidence": 57.31,
+      "bbox": {
+        "x": 187,
+        "y": 252,
+        "width": 178,
+        "height": 142
+      },
+      "words": [
+        {
+          "text": "‘Cod",
+          "confidence": 57.31,
+          "bbox": {
+            "x": 187,
+            "y": 252,
+            "width": 178,
+            "height": 142
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "=",
+      "confidence": 93.28,
+      "bbox": {
+        "x": 414,
+        "y": 252,
+        "width": 17,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "=",
+          "confidence": 93.28,
+          "bbox": {
+            "x": 414,
+            "y": 252,
+            "width": 17,
+            "height": 1
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "aE,",
+      "confidence": 9.76,
+      "bbox": {
+        "x": 171,
+        "y": 253,
+        "width": 56,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "aE,",
+          "confidence": 9.76,
+          "bbox": {
+            "x": 171,
+            "y": 253,
+            "width": 56,
+            "height": 1
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "| 3",
+      "confidence": 96.42,
+      "bbox": {
+        "x": 1357,
+        "y": 276,
+        "width": 45,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 1357,
+            "y": 276,
+            "width": 1,
+            "height": 16
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "3",
+          "confidence": 96.63,
+          "bbox": {
+            "x": 1383,
+            "y": 279,
+            "width": 19,
+            "height": 30
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(you / wate",
+      "confidence": 80.46,
+      "bbox": {
+        "x": 352,
+        "y": 292,
+        "width": 162,
+        "height": 37
+      },
+      "words": [
+        {
+          "text": "(you",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 352,
+            "y": 294,
+            "width": 59,
+            "height": 35
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 70.29,
+          "bbox": {
+            "x": 424,
+            "y": 292,
+            "width": 9,
+            "height": 35
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "wate",
+          "confidence": 77.83,
+          "bbox": {
+            "x": 445,
+            "y": 298,
+            "width": 69,
+            "height": 30
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "[ it?)",
+      "confidence": 41.93,
+      "bbox": {
+        "x": 544,
+        "y": 292,
+        "width": 87,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "[",
+          "confidence": 51.59,
+          "bbox": {
+            "x": 544,
+            "y": 292,
+            "width": 9,
+            "height": 35
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "it?)",
+          "confidence": 32.26,
+          "bbox": {
+            "x": 566,
+            "y": 294,
+            "width": 65,
+            "height": 39
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(YOU | go | NOW?) es",
+      "confidence": 72.57,
+      "bbox": {
+        "x": 853,
+        "y": 294,
+        "width": 449,
+        "height": 37
+      },
+      "words": [
+        {
+          "text": "(YOU",
+          "confidence": 95.85,
+          "bbox": {
+            "x": 853,
+            "y": 296,
+            "width": 59,
+            "height": 34
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 85.32,
+          "bbox": {
+            "x": 925,
+            "y": 294,
+            "width": 9,
+            "height": 35
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "go",
+          "confidence": 87.42,
+          "bbox": {
+            "x": 946,
+            "y": 304,
+            "width": 34,
+            "height": 27
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 82.38,
+          "bbox": {
+            "x": 992,
+            "y": 294,
+            "width": 8,
+            "height": 34
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "NOW?)",
+          "confidence": 50.82,
+          "bbox": {
+            "x": 1013,
+            "y": 295,
+            "width": 84,
+            "height": 32
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "es",
+          "confidence": 33.63,
+          "bbox": {
+            "x": 1113,
+            "y": 319,
+            "width": 189,
+            "height": 4
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "al",
+      "confidence": 57.15,
+      "bbox": {
+        "x": 498,
+        "y": 295,
+        "width": 35,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "al",
+          "confidence": 57.15,
+          "bbox": {
+            "x": 498,
+            "y": 295,
+            "width": 35,
+            "height": 55
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "\\ré YOu wal",
+      "confidence": 84.94,
+      "bbox": {
+        "x": 293,
+        "y": 330,
+        "width": 198,
+        "height": 29
+      },
+      "words": [
+        {
+          "text": "\\ré",
+          "confidence": 80.47,
+          "bbox": {
+            "x": 293,
+            "y": 333,
+            "width": 38,
+            "height": 17
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "YOu",
+          "confidence": 93.03,
+          "bbox": {
+            "x": 359,
+            "y": 332,
+            "width": 55,
+            "height": 27
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "wal",
+          "confidence": 81.33,
+          "bbox": {
+            "x": 437,
+            "y": 330,
+            "width": 54,
+            "height": 22
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "1I09",
+      "confidence": 7.98,
+      "bbox": {
+        "x": 536,
+        "y": 331,
+        "width": 60,
+        "height": 30
+      },
+      "words": [
+        {
+          "text": "1I09",
+          "confidence": 7.98,
+          "bbox": {
+            "x": 536,
+            "y": 331,
+            "width": 60,
+            "height": 30
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "s<nirg py suspen An 人",
+      "confidence": 7.02,
+      "bbox": {
+        "x": 232,
+        "y": 343,
+        "width": 155,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "s<nirg",
+          "confidence": 0,
+          "bbox": {
+            "x": 232,
+            "y": 343,
+            "width": 29,
+            "height": 28
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "py",
+          "confidence": 35.12,
+          "bbox": {
+            "x": 266,
+            "y": 360,
+            "width": 9,
+            "height": 2
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "suspen",
+          "confidence": 0,
+          "bbox": {
+            "x": 279,
+            "y": 359,
+            "width": 42,
+            "height": 3
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "An",
+          "confidence": 0,
+          "bbox": {
+            "x": 331,
+            "y": 359,
+            "width": 30,
+            "height": 3
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "人",
+          "confidence": 0,
+          "bbox": {
+            "x": 365,
+            "y": 359,
+            "width": 22,
+            "height": 3
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "SG",
+      "confidence": 48.43,
+      "bbox": {
+        "x": 424,
+        "y": 394,
+        "width": 66,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "SG",
+          "confidence": 48.43,
+          "bbox": {
+            "x": 424,
+            "y": 394,
+            "width": 66,
+            "height": 36
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "画",
+      "confidence": 68.8,
+      "bbox": {
+        "x": 208,
+        "y": 421,
+        "width": 188,
+        "height": 100
+      },
+      "words": [
+        {
+          "text": "画",
+          "confidence": 68.8,
+          "bbox": {
+            "x": 208,
+            "y": 421,
+            "width": 188,
+            "height": 100
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Al)",
+      "confidence": 54.99,
+      "bbox": {
+        "x": 466,
+        "y": 442,
+        "width": 43,
+        "height": 52
+      },
+      "words": [
+        {
+          "text": "Al)",
+          "confidence": 54.99,
+          "bbox": {
+            "x": 466,
+            "y": 442,
+            "width": 43,
+            "height": 52
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "UL",
+      "confidence": 47.4,
+      "bbox": {
+        "x": 446,
+        "y": 446,
+        "width": 26,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "UL",
+          "confidence": 47.4,
+          "bbox": {
+            "x": 446,
+            "y": 446,
+            "width": 26,
+            "height": 36
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Lt",
+      "confidence": 14.14,
+      "bbox": {
+        "x": 574,
+        "y": 450,
+        "width": 26,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "Lt",
+          "confidence": 14.14,
+          "bbox": {
+            "x": 574,
+            "y": 450,
+            "width": 26,
+            "height": 41
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Ind",
+      "confidence": 20.97,
+      "bbox": {
+        "x": 1706,
+        "y": 458,
+        "width": 60,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Ind",
+          "confidence": 20.97,
+          "bbox": {
+            "x": 1706,
+            "y": 458,
+            "width": 60,
+            "height": 45
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "到",
+      "confidence": 20.42,
+      "bbox": {
+        "x": 1131,
+        "y": 460,
+        "width": 39,
+        "height": 57
+      },
+      "words": [
+        {
+          "text": "到",
+          "confidence": 20.42,
+          "bbox": {
+            "x": 1131,
+            "y": 460,
+            "width": 39,
+            "height": 57
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "ZX)",
+      "confidence": 14.22,
+      "bbox": {
+        "x": 595,
+        "y": 463,
+        "width": 64,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "ZX)",
+          "confidence": 14.22,
+          "bbox": {
+            "x": 595,
+            "y": 463,
+            "width": 64,
+            "height": 42
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "TP) |i\"",
+      "confidence": 30.02,
+      "bbox": {
+        "x": 975,
+        "y": 484,
+        "width": 110,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "TP)",
+          "confidence": 11.63,
+          "bbox": {
+            "x": 975,
+            "y": 484,
+            "width": 61,
+            "height": 32
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "|i\"",
+          "confidence": 48.41,
+          "bbox": {
+            "x": 1051,
+            "y": 484,
+            "width": 34,
+            "height": 32
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Ric 吕",
+      "confidence": 12.29,
+      "bbox": {
+        "x": 1662,
+        "y": 489,
+        "width": 98,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "Ric",
+          "confidence": 24.58,
+          "bbox": {
+            "x": 1662,
+            "y": 500,
+            "width": 95,
+            "height": 17
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "吕",
+          "confidence": 0,
+          "bbox": {
+            "x": 1742,
+            "y": 489,
+            "width": 18,
+            "height": 32
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "S",
+      "confidence": 49.62,
+      "bbox": {
+        "x": 1606,
+        "y": 500,
+        "width": 33,
+        "height": 29
+      },
+      "words": [
+        {
+          "text": "S",
+          "confidence": 49.62,
+          "bbox": {
+            "x": 1606,
+            "y": 500,
+            "width": 33,
+            "height": 29
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "if Ay,",
+      "confidence": 43.63,
+      "bbox": {
+        "x": 472,
+        "y": 517,
+        "width": 161,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "if",
+          "confidence": 39.25,
+          "bbox": {
+            "x": 472,
+            "y": 517,
+            "width": 22,
+            "height": 21
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Ay,",
+          "confidence": 48,
+          "bbox": {
+            "x": 531,
+            "y": 528,
+            "width": 102,
+            "height": 44
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Ly",
+      "confidence": 58.23,
+      "bbox": {
+        "x": 395,
+        "y": 520,
+        "width": 33,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "Ly",
+          "confidence": 58.23,
+          "bbox": {
+            "x": 395,
+            "y": 520,
+            "width": 33,
+            "height": 28
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "iL",
+      "confidence": 35.3,
+      "bbox": {
+        "x": 1000,
+        "y": 520,
+        "width": 31,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "iL",
+          "confidence": 35.3,
+          "bbox": {
+            "x": 1000,
+            "y": 520,
+            "width": 31,
+            "height": 21
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Rd",
+      "confidence": 33.61,
+      "bbox": {
+        "x": 1383,
+        "y": 522,
+        "width": 19,
+        "height": 16
+      },
+      "words": [
+        {
+          "text": "Rd",
+          "confidence": 33.61,
+          "bbox": {
+            "x": 1383,
+            "y": 522,
+            "width": 19,
+            "height": 16
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "| 一 ||= < 一",
+      "confidence": 70.54,
+      "bbox": {
+        "x": 939,
+        "y": 530,
+        "width": 122,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 95.09,
+          "bbox": {
+            "x": 939,
+            "y": 536,
+            "width": 3,
+            "height": 14
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 39.59,
+          "bbox": {
+            "x": 946,
+            "y": 547,
+            "width": 111,
+            "height": 7
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "||=",
+          "confidence": 67.87,
+          "bbox": {
+            "x": 994,
+            "y": 530,
+            "width": 22,
+            "height": 33
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "<",
+          "confidence": 84.67,
+          "bbox": {
+            "x": 1023,
+            "y": 530,
+            "width": 20,
+            "height": 33
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 65.48,
+          "bbox": {
+            "x": 1042,
+            "y": 530,
+            "width": 19,
+            "height": 33
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "PP",
+      "confidence": 1.85,
+      "bbox": {
+        "x": 233,
+        "y": 532,
+        "width": 70,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "PP",
+          "confidence": 1.85,
+          "bbox": {
+            "x": 233,
+            "y": 532,
+            "width": 70,
+            "height": 42
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "/人",
+      "confidence": 32.34,
+      "bbox": {
+        "x": 1131,
+        "y": 534,
+        "width": 17,
+        "height": 26
+      },
+      "words": [
+        {
+          "text": "/人",
+          "confidence": 32.34,
+          "bbox": {
+            "x": 1131,
+            "y": 534,
+            "width": 17,
+            "height": 26
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "confidence": 60.03,
+      "bbox": {
+        "x": 1400,
+        "y": 536,
+        "width": 226,
+        "height": 24
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 60.03,
+          "bbox": {
+            "x": 1400,
+            "y": 536,
+            "width": 226,
+            "height": 24
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "S|",
+      "confidence": 52.83,
+      "bbox": {
+        "x": 1659,
+        "y": 538,
+        "width": 176,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "S|",
+          "confidence": 52.83,
+          "bbox": {
+            "x": 1659,
+            "y": 538,
+            "width": 176,
+            "height": 31
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "No, not at the moment",
+      "confidence": 96.4,
+      "bbox": {
+        "x": 1544,
+        "y": 590,
+        "width": 335,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 95.98,
+          "bbox": {
+            "x": 1544,
+            "y": 590,
+            "width": 37,
+            "height": 27
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 1602,
+            "y": 593,
+            "width": 47,
+            "height": 24
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 1660,
+            "y": 593,
+            "width": 28,
+            "height": 24
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 1699,
+            "y": 590,
+            "width": 46,
+            "height": 27
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "moment",
+          "confidence": 96.12,
+          "bbox": {
+            "x": 1758,
+            "y": 593,
+            "width": 121,
+            "height": 24
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, you can turn it off.",
+      "confidence": 94.32,
+      "bbox": {
+        "x": 344,
+        "y": 592,
+        "width": 328,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 96.68,
+          "bbox": {
+            "x": 344,
+            "y": 593,
+            "width": 38,
+            "height": 28
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 400,
+            "y": 601,
+            "width": 51,
+            "height": 27
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "can",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 465,
+            "y": 601,
+            "width": 48,
+            "height": 20
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "turn",
+          "confidence": 94.48,
+          "bbox": {
+            "x": 526,
+            "y": 596,
+            "width": 60,
+            "height": 24
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it",
+          "confidence": 94.48,
+          "bbox": {
+            "x": 600,
+            "y": 593,
+            "width": 18,
+            "height": 27
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "off.",
+          "confidence": 86.37,
+          "bbox": {
+            "x": 629,
+            "y": 592,
+            "width": 43,
+            "height": 28
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Yes, see you tomorrow",
+      "confidence": 96.81,
+      "bbox": {
+        "x": 929,
+        "y": 594,
+        "width": 330,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "Yes,",
+          "confidence": 96.9,
+          "bbox": {
+            "x": 929,
+            "y": 594,
+            "width": 49,
+            "height": 28
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "see",
+          "confidence": 96.7,
+          "bbox": {
+            "x": 995,
+            "y": 602,
+            "width": 45,
+            "height": 20
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 1051,
+            "y": 602,
+            "width": 51,
+            "height": 26
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "tomorrow",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 1115,
+            "y": 597,
+            "width": 144,
+            "height": 25
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "———",
+      "confidence": 45.97,
+      "bbox": {
+        "x": 300,
+        "y": 673,
+        "width": 119,
+        "height": 2
+      },
+      "words": [
+        {
+          "text": "———",
+          "confidence": 45.97,
+          "bbox": {
+            "x": 300,
+            "y": 673,
+            "width": 119,
+            "height": 2
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "日 (wm | wait | for a bus?) ..... - )",
+      "confidence": 58.71,
+      "bbox": {
+        "x": 1384,
+        "y": 694,
+        "width": 563,
+        "height": 116
+      },
+      "words": [
+        {
+          "text": "日",
+          "confidence": 43.61,
+          "bbox": {
+            "x": 1384,
+            "y": 701,
+            "width": 20,
+            "height": 30
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "(wm",
+          "confidence": 38.58,
+          "bbox": {
+            "x": 1418,
+            "y": 694,
+            "width": 92,
+            "height": 116
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "|",
+          "confidence": 48.56,
+          "bbox": {
+            "x": 1523,
+            "y": 716,
+            "width": 9,
+            "height": 35
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "wait",
+          "confidence": 96.55,
+          "bbox": {
+            "x": 1544,
+            "y": 719,
+            "width": 62,
+            "height": 26
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 60.06,
+          "bbox": {
+            "x": 1617,
+            "y": 716,
+            "width": 8,
+            "height": 34
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "for",
+          "confidence": 91.32,
+          "bbox": {
+            "x": 1636,
+            "y": 718,
+            "width": 42,
+            "height": 27
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 91.32,
+          "bbox": {
+            "x": 1689,
+            "y": 726,
+            "width": 13,
+            "height": 19
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bus?)",
+          "confidence": 63.69,
+          "bbox": {
+            "x": 1716,
+            "y": 717,
+            "width": 71,
+            "height": 31
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ".....",
+          "confidence": 18.45,
+          "bbox": {
+            "x": 1802,
+            "y": 742,
+            "width": 82,
+            "height": 2
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "-",
+          "confidence": 46.81,
+          "bbox": {
+            "x": 1889,
+            "y": 742,
+            "width": 15,
+            "height": 2
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": ")",
+          "confidence": 46.81,
+          "bbox": {
+            "x": 1927,
+            "y": 694,
+            "width": 20,
+            "height": 115
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(you | enjoy | the film?) ..............",
+      "confidence": 79.73,
+      "bbox": {
+        "x": 257,
+        "y": 715,
+        "width": 447,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "(you",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 257,
+            "y": 722,
+            "width": 59,
+            "height": 33
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 59.41,
+          "bbox": {
+            "x": 329,
+            "y": 720,
+            "width": 9,
+            "height": 34
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "enjoy",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 349,
+            "y": 729,
+            "width": 77,
+            "height": 27
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 53.95,
+          "bbox": {
+            "x": 433,
+            "y": 715,
+            "width": 8,
+            "height": 45
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "the",
+          "confidence": 94.6,
+          "bbox": {
+            "x": 457,
+            "y": 722,
+            "width": 46,
+            "height": 27
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "film?)",
+          "confidence": 92.33,
+          "bbox": {
+            "x": 515,
+            "y": 720,
+            "width": 79,
+            "height": 32
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "..............",
+          "confidence": 64.32,
+          "bbox": {
+            "x": 608,
+            "y": 744,
+            "width": 96,
+            "height": 4
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(that clock | work?) wcccccssssccseen",
+      "confidence": 65.43,
+      "bbox": {
+        "x": 873,
+        "y": 717,
+        "width": 454,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "(that",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 873,
+            "y": 720,
+            "width": 68,
+            "height": 31
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "clock",
+          "confidence": 96.51,
+          "bbox": {
+            "x": 952,
+            "y": 720,
+            "width": 72,
+            "height": 27
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 88.37,
+          "bbox": {
+            "x": 1036,
+            "y": 717,
+            "width": 9,
+            "height": 35
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "work?)",
+          "confidence": 45.3,
+          "bbox": {
+            "x": 1057,
+            "y": 719,
+            "width": 93,
+            "height": 31
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "wcccccssssccseen",
+          "confidence": 0,
+          "bbox": {
+            "x": 1164,
+            "y": 743,
+            "width": 163,
+            "height": 3
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "cool ) [gh ©",
+      "confidence": 36.77,
+      "bbox": {
+        "x": 815,
+        "y": 809,
+        "width": 371,
+        "height": 75
+      },
+      "words": [
+        {
+          "text": "cool",
+          "confidence": 26.98,
+          "bbox": {
+            "x": 815,
+            "y": 813,
+            "width": 371,
+            "height": 51
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": ")",
+          "confidence": 6.52,
+          "bbox": {
+            "x": 954,
+            "y": 809,
+            "width": 39,
+            "height": 75
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "[gh",
+          "confidence": 33.99,
+          "bbox": {
+            "x": 1029,
+            "y": 809,
+            "width": 82,
+            "height": 75
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "©",
+          "confidence": 79.59,
+          "bbox": {
+            "x": 1142,
+            "y": 809,
+            "width": 44,
+            "height": 75
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Tl",
+      "confidence": 42.11,
+      "bbox": {
+        "x": 1225,
+        "y": 814,
+        "width": 15,
+        "height": 17
+      },
+      "words": [
+        {
+          "text": "Tl",
+          "confidence": 42.11,
+          "bbox": {
+            "x": 1225,
+            "y": 814,
+            "width": 15,
+            "height": 17
+          },
+          "block": 45,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "sx",
+      "confidence": 32.87,
+      "bbox": {
+        "x": 477,
+        "y": 824,
+        "width": 98,
+        "height": 88
+      },
+      "words": [
+        {
+          "text": "sx",
+          "confidence": 32.87,
+          "bbox": {
+            "x": 477,
+            "y": 824,
+            "width": 98,
+            "height": 88
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "—_",
+      "confidence": 68.79,
+      "bbox": {
+        "x": 1059,
+        "y": 862,
+        "width": 83,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "—_",
+          "confidence": 68.79,
+          "bbox": {
+            "x": 1059,
+            "y": 862,
+            "width": 83,
+            "height": 38
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "AS",
+      "confidence": 50.95,
+      "bbox": {
+        "x": 1638,
+        "y": 863,
+        "width": 149,
+        "height": 68
+      },
+      "words": [
+        {
+          "text": "AS",
+          "confidence": 50.95,
+          "bbox": {
+            "x": 1638,
+            "y": 863,
+            "width": 149,
+            "height": 68
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "vt",
+      "confidence": 27.12,
+      "bbox": {
+        "x": 1172,
+        "y": 871,
+        "width": 78,
+        "height": 50
+      },
+      "words": [
+        {
+          "text": "vt",
+          "confidence": 27.12,
+          "bbox": {
+            "x": 1172,
+            "y": 871,
+            "width": 78,
+            "height": 50
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Px",
+      "confidence": 41.29,
+      "bbox": {
+        "x": 401,
+        "y": 898,
+        "width": 155,
+        "height": 104
+      },
+      "words": [
+        {
+          "text": "Px",
+          "confidence": 41.29,
+          "bbox": {
+            "x": 401,
+            "y": 898,
+            "width": 155,
+            "height": 104
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "a",
+      "confidence": 40.62,
+      "bbox": {
+        "x": 1460,
+        "y": 937,
+        "width": 55,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 40.62,
+          "bbox": {
+            "x": 1460,
+            "y": 937,
+            "width": 55,
+            "height": 31
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "< 一 一 二 一",
+      "confidence": 67.98,
+      "bbox": {
+        "x": 1846,
+        "y": 942,
+        "width": 98,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "<",
+          "confidence": 93.04,
+          "bbox": {
+            "x": 1846,
+            "y": 942,
+            "width": 18,
+            "height": 31
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 54.71,
+          "bbox": {
+            "x": 1863,
+            "y": 942,
+            "width": 20,
+            "height": 31
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "一",
+          "confidence": 80.77,
+          "bbox": {
+            "x": 1882,
+            "y": 948,
+            "width": 19,
+            "height": 20
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "二",
+          "confidence": 73.36,
+          "bbox": {
+            "x": 1900,
+            "y": 942,
+            "width": 16,
+            "height": 31
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 38.03,
+          "bbox": {
+            "x": 1915,
+            "y": 948,
+            "width": 29,
+            "height": 20
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Y",
+      "confidence": 0,
+      "bbox": {
+        "x": 1638,
+        "y": 953,
+        "width": 9,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "Y",
+          "confidence": 0,
+          "bbox": {
+            "x": 1638,
+            "y": 953,
+            "width": 9,
+            "height": 32
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "[二",
+      "confidence": 38.89,
+      "bbox": {
+        "x": 1755,
+        "y": 967,
+        "width": 68,
+        "height": 18
+      },
+      "words": [
+        {
+          "text": "[二",
+          "confidence": 38.89,
+          "bbox": {
+            "x": 1755,
+            "y": 967,
+            "width": 68,
+            "height": 18
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "[>",
+      "confidence": 38.16,
+      "bbox": {
+        "x": 1446,
+        "y": 970,
+        "width": 66,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "[>",
+          "confidence": 38.16,
+          "bbox": {
+            "x": 1446,
+            "y": 970,
+            "width": 66,
+            "height": 42
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "— 7",
+      "confidence": 43.53,
+      "bbox": {
+        "x": 1565,
+        "y": 984,
+        "width": 90,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "—",
+          "confidence": 43.53,
+          "bbox": {
+            "x": 1565,
+            "y": 988,
+            "width": 86,
+            "height": 24
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "7",
+          "confidence": 43.53,
+          "bbox": {
+            "x": 1627,
+            "y": 984,
+            "width": 28,
+            "height": 32
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "No, it's broken",
+      "confidence": 96.44,
+      "bbox": {
+        "x": 1089,
+        "y": 999,
+        "width": 204,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 1089,
+            "y": 999,
+            "width": 37,
+            "height": 27
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it's",
+          "confidence": 95.89,
+          "bbox": {
+            "x": 1147,
+            "y": 1002,
+            "width": 38,
+            "height": 24
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "broken",
+          "confidence": 96.43,
+          "bbox": {
+            "x": 1197,
+            "y": 999,
+            "width": 96,
+            "height": 27
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "No, for a taxi",
+      "confidence": 92.03,
+      "bbox": {
+        "x": 1686,
+        "y": 1007,
+        "width": 185,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "No,",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 1686,
+            "y": 1007,
+            "width": 38,
+            "height": 27
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "for",
+          "confidence": 87.5,
+          "bbox": {
+            "x": 1743,
+            "y": 1007,
+            "width": 41,
+            "height": 27
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 87.5,
+          "bbox": {
+            "x": 1795,
+            "y": 1014,
+            "width": 13,
+            "height": 20
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "taxi",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 1821,
+            "y": 1009,
+            "width": 50,
+            "height": 25
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ee",
+      "confidence": 38.06,
+      "bbox": {
+        "x": 1416,
+        "y": 1009,
+        "width": 120,
+        "height": 26
+      },
+      "words": [
+        {
+          "text": "ee",
+          "confidence": 38.06,
+          "bbox": {
+            "x": 1416,
+            "y": 1009,
+            "width": 120,
+            "height": 26
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Yes, it's very funny.",
+      "confidence": 91.74,
+      "bbox": {
+        "x": 404,
+        "y": 1023,
+        "width": 272,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "Yes,",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 404,
+            "y": 1024,
+            "width": 48,
+            "height": 27
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it's",
+          "confidence": 95.68,
+          "bbox": {
+            "x": 472,
+            "y": 1027,
+            "width": 39,
+            "height": 24
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "very",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 520,
+            "y": 1031,
+            "width": 61,
+            "height": 27
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "funny.",
+          "confidence": 77.53,
+          "bbox": {
+            "x": 592,
+            "y": 1023,
+            "width": 84,
+            "height": 34
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "EE —— Ee",
+      "confidence": 3.83,
+      "bbox": {
+        "x": 702,
+        "y": 1072,
+        "width": 249,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "EE",
+          "confidence": 11.48,
+          "bbox": {
+            "x": 702,
+            "y": 1072,
+            "width": 42,
+            "height": 28
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "——",
+          "confidence": 0,
+          "bbox": {
+            "x": 758,
+            "y": 1072,
+            "width": 47,
+            "height": 28
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Ee",
+          "confidence": 0,
+          "bbox": {
+            "x": 771,
+            "y": 1089,
+            "width": 180,
+            "height": 1
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "———-",
+      "confidence": 0,
+      "bbox": {
+        "x": 487,
+        "y": 1090,
+        "width": 65,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "———-",
+          "confidence": 0,
+          "bbox": {
+            "x": 487,
+            "y": 1090,
+            "width": 65,
+            "height": 1
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "4.2",
+      "confidence": 88.34,
+      "bbox": {
+        "x": 33,
+        "y": 1148,
+        "width": 56,
+        "height": 30
+      },
+      "words": [
+        {
+          "text": "4.2",
+          "confidence": 88.34,
+          "bbox": {
+            "x": 33,
+            "y": 1148,
+            "width": 56,
+            "height": 30
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "read",
+      "confidence": 96.76,
+      "bbox": {
+        "x": 1118,
+        "y": 1215,
+        "width": 88,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "read",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 1118,
+            "y": 1215,
+            "width": 88,
+            "height": 33
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "laugh",
+      "confidence": 96.37,
+      "bbox": {
+        "x": 669,
+        "y": 1216,
+        "width": 114,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "laugh",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 669,
+            "y": 1216,
+            "width": 114,
+            "height": 43
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "look at",
+      "confidence": 96.55,
+      "bbox": {
+        "x": 879,
+        "y": 1216,
+        "width": 143,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "look",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 879,
+            "y": 1216,
+            "width": 92,
+            "height": 32
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 985,
+            "y": 1222,
+            "width": 37,
+            "height": 26
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "eat",
+      "confidence": 96.93,
+      "bbox": {
+        "x": 370,
+        "y": 1224,
+        "width": 58,
+        "height": 26
+      },
+      "words": [
+        {
+          "text": "eat",
+          "confidence": 96.93,
+          "bbox": {
+            "x": 370,
+            "y": 1224,
+            "width": 58,
+            "height": 26
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "cry",
+      "confidence": 96.54,
+      "bbox": {
+        "x": 210,
+        "y": 1229,
+        "width": 64,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "cry",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 210,
+            "y": 1229,
+            "width": 64,
+            "height": 32
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "go",
+      "confidence": 94.54,
+      "bbox": {
+        "x": 524,
+        "y": 1229,
+        "width": 50,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "go",
+          "confidence": 94.54,
+          "bbox": {
+            "x": 524,
+            "y": 1229,
+            "width": 50,
+            "height": 31
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ee",
+      "confidence": 0,
+      "bbox": {
+        "x": 1812,
+        "y": 1277,
+        "width": 81,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "ee",
+          "confidence": 0,
+          "bbox": {
+            "x": 1812,
+            "y": 1277,
+            "width": 81,
+            "height": 1
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "—",
+      "confidence": 68.52,
+      "bbox": {
+        "x": 1365,
+        "y": 1278,
+        "width": 49,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "—",
+          "confidence": 68.52,
+          "bbox": {
+            "x": 1365,
+            "y": 1278,
+            "width": 49,
+            "height": 1
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ee",
+      "confidence": 0,
+      "bbox": {
+        "x": 455,
+        "y": 1281,
+        "width": 60,
+        "height": 1
+      },
+      "words": [
+        {
+          "text": "ee",
+          "confidence": 0,
+          "bbox": {
+            "x": 455,
+            "y": 1281,
+            "width": 60,
+            "height": 1
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "[a",
+      "confidence": 15.92,
+      "bbox": {
+        "x": 886,
+        "y": 1302,
+        "width": 128,
+        "height": 123
+      },
+      "words": [
+        {
+          "text": "[a",
+          "confidence": 15.92,
+          "bbox": {
+            "x": 886,
+            "y": 1302,
+            "width": 128,
+            "height": 123
+          },
+          "block": 86,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": ")",
+      "confidence": 82.82,
+      "bbox": {
+        "x": 1872,
+        "y": 1303,
+        "width": 57,
+        "height": 116
+      },
+      "words": [
+        {
+          "text": ")",
+          "confidence": 82.82,
+          "bbox": {
+            "x": 1872,
+            "y": 1303,
+            "width": 57,
+            "height": 116
+          },
+          "block": 88,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ae",
+      "confidence": 54.63,
+      "bbox": {
+        "x": 1387,
+        "y": 1304,
+        "width": 152,
+        "height": 116
+      },
+      "words": [
+        {
+          "text": "ae",
+          "confidence": 54.63,
+          "bbox": {
+            "x": 1387,
+            "y": 1304,
+            "width": 152,
+            "height": 116
+          },
+          "block": 87,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "C",
+      "confidence": 54.22,
+      "bbox": {
+        "x": 297,
+        "y": 1306,
+        "width": 58,
+        "height": 116
+      },
+      "words": [
+        {
+          "text": "C",
+          "confidence": 54.22,
+          "bbox": {
+            "x": 297,
+            "y": 1306,
+            "width": 58,
+            "height": 116
+          },
+          "block": 85,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "2",
+      "confidence": 97,
+      "bbox": {
+        "x": 780,
+        "y": 1310,
+        "width": 19,
+        "height": 31
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 97,
+          "bbox": {
+            "x": 780,
+            "y": 1310,
+            "width": 19,
+            "height": 31
+          },
+          "block": 79,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "| 1",
+      "confidence": 91.26,
+      "bbox": {
+        "x": 163,
+        "y": 1312,
+        "width": 40,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 93.86,
+          "bbox": {
+            "x": 163,
+            "y": 1319,
+            "width": 1,
+            "height": 37
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "1",
+          "confidence": 88.66,
+          "bbox": {
+            "x": 190,
+            "y": 1312,
+            "width": 13,
+            "height": 31
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "What",
+      "confidence": 96.73,
+      "bbox": {
+        "x": 1512,
+        "y": 1328,
+        "width": 77,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "What",
+          "confidence": 96.73,
+          "bbox": {
+            "x": 1512,
+            "y": 1328,
+            "width": 77,
+            "height": 27
+          },
+          "block": 81,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "she",
+      "confidence": 96.91,
+      "bbox": {
+        "x": 1235,
+        "y": 1329,
+        "width": 47,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "she",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 1235,
+            "y": 1329,
+            "width": 47,
+            "height": 27
+          },
+          "block": 80,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "hat",
+      "confidence": 96.81,
+      "bbox": {
+        "x": 349,
+        "y": 1332,
+        "width": 45,
+        "height": 27
+      },
+      "words": [
+        {
+          "text": "hat",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 349,
+            "y": 1332,
+            "width": 45,
+            "height": 27
+          },
+          "block": 76,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "savanna aeaseau ene eKens esReDanaamsaareons",
+      "confidence": 2.37,
+      "bbox": {
+        "x": 1602,
+        "y": 1335,
+        "width": 269,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "savanna",
+          "confidence": 0,
+          "bbox": {
+            "x": 1602,
+            "y": 1352,
+            "width": 55,
+            "height": 2
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "aeaseau",
+          "confidence": 0,
+          "bbox": {
+            "x": 1661,
+            "y": 1352,
+            "width": 43,
+            "height": 2
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ene",
+          "confidence": 11.84,
+          "bbox": {
+            "x": 1708,
+            "y": 1352,
+            "width": 16,
+            "height": 2
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "eKens",
+          "confidence": 0,
+          "bbox": {
+            "x": 1728,
+            "y": 1351,
+            "width": 29,
+            "height": 3
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "esReDanaamsaareons",
+          "confidence": 0,
+          "bbox": {
+            "x": 1763,
+            "y": 1335,
+            "width": 108,
+            "height": 28
+          },
+          "block": 82,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "2",
+      "confidence": 19.87,
+      "bbox": {
+        "x": 612,
+        "y": 1354,
+        "width": 37,
+        "height": 4
+      },
+      "words": [
+        {
+          "text": "2",
+          "confidence": 19.87,
+          "bbox": {
+            "x": 612,
+            "y": 1354,
+            "width": 37,
+            "height": 4
+          },
+          "block": 77,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "rer",
+      "confidence": 50.2,
+      "bbox": {
+        "x": 653,
+        "y": 1354,
+        "width": 29,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "rer",
+          "confidence": 50.2,
+          "bbox": {
+            "x": 653,
+            "y": 1354,
+            "width": 29,
+            "height": 3
+          },
+          "block": 78,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "seus eatinonean xmas papas neoenaeei freeanee ee aPel",
+      "confidence": 3.3,
+      "bbox": {
+        "x": 1513,
+        "y": 1382,
+        "width": 343,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "seus",
+          "confidence": 6.43,
+          "bbox": {
+            "x": 1513,
+            "y": 1399,
+            "width": 22,
+            "height": 2
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "eatinonean",
+          "confidence": 0,
+          "bbox": {
+            "x": 1539,
+            "y": 1382,
+            "width": 56,
+            "height": 28
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "xmas",
+          "confidence": 0,
+          "bbox": {
+            "x": 1609,
+            "y": 1382,
+            "width": 33,
+            "height": 28
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "papas",
+          "confidence": 19.98,
+          "bbox": {
+            "x": 1646,
+            "y": 1398,
+            "width": 49,
+            "height": 3
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "neoenaeei",
+          "confidence": 0,
+          "bbox": {
+            "x": 1700,
+            "y": 1382,
+            "width": 56,
+            "height": 28
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "freeanee",
+          "confidence": 0,
+          "bbox": {
+            "x": 1768,
+            "y": 1398,
+            "width": 48,
+            "height": 3
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ee",
+          "confidence": 0,
+          "bbox": {
+            "x": 1824,
+            "y": 1398,
+            "width": 12,
+            "height": 2
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "aPel",
+          "confidence": 0,
+          "bbox": {
+            "x": 1840,
+            "y": 1382,
+            "width": 16,
+            "height": 28
+          },
+          "block": 84,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "corer",
+      "confidence": 0,
+      "bbox": {
+        "x": 609,
+        "y": 1401,
+        "width": 44,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "corer",
+          "confidence": 0,
+          "bbox": {
+            "x": 609,
+            "y": 1401,
+            "width": 44,
+            "height": 3
+          },
+          "block": 83,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "a",
+      "confidence": 30.99,
+      "bbox": {
+        "x": 546,
+        "y": 1470,
+        "width": 63,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 30.99,
+          "bbox": {
+            "x": 546,
+            "y": 1470,
+            "width": 63,
+            "height": 55
+          },
+          "block": 89,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "$",
+      "confidence": 0.43,
+      "bbox": {
+        "x": 1555,
+        "y": 1525,
+        "width": 97,
+        "height": 135
+      },
+      "words": [
+        {
+          "text": "$",
+          "confidence": 0.43,
+          "bbox": {
+            "x": 1555,
+            "y": 1525,
+            "width": 97,
+            "height": 135
+          },
+          "block": 91,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "fe]",
+      "confidence": 41,
+      "bbox": {
+        "x": 597,
+        "y": 1530,
+        "width": 30,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "fe]",
+          "confidence": 41,
+          "bbox": {
+            "x": 597,
+            "y": 1530,
+            "width": 30,
+            "height": 21
+          },
+          "block": 90,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "confidence": 45.28,
+      "bbox": {
+        "x": 1842,
+        "y": 1724,
+        "width": 128,
+        "height": 116
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 45.28,
+          "bbox": {
+            "x": 1842,
+            "y": 1724,
+            "width": 128,
+            "height": 116
+          },
+          "block": 100,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "'C",
+      "confidence": 26.36,
+      "bbox": {
+        "x": 188,
+        "y": 1728,
+        "width": 104,
+        "height": 116
+      },
+      "words": [
+        {
+          "text": "'C",
+          "confidence": 26.36,
+          "bbox": {
+            "x": 188,
+            "y": 1728,
+            "width": 104,
+            "height": 116
+          },
+          "block": 97,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Bi rcscarsonsanegermasezcnsseceazon",
+      "confidence": 12.17,
+      "bbox": {
+        "x": 296,
+        "y": 1752,
+        "width": 313,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "Bi",
+          "confidence": 24.34,
+          "bbox": {
+            "x": 296,
+            "y": 1752,
+            "width": 32,
+            "height": 35
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "rcscarsonsanegermasezcnsseceazon",
+          "confidence": 0,
+          "bbox": {
+            "x": 341,
+            "y": 1776,
+            "width": 268,
+            "height": 3
+          },
+          "block": 95,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "TL sevecazsevsuszesesertecomnvoveabeenen",
+      "confidence": 5.56,
+      "bbox": {
+        "x": 918,
+        "y": 1754,
+        "width": 265,
+        "height": 24
+      },
+      "words": [
+        {
+          "text": "TL",
+          "confidence": 11.12,
+          "bbox": {
+            "x": 918,
+            "y": 1754,
+            "width": 9,
+            "height": 24
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "sevecazsevsuszesesertecomnvoveabeenen",
+          "confidence": 0,
+          "bbox": {
+            "x": 940,
+            "y": 1774,
+            "width": 243,
+            "height": 3
+          },
+          "block": 92,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "eveewospyemppawwogpyaagyyevasweoegpngy",
+      "confidence": 0,
+      "bbox": {
+        "x": 1580,
+        "y": 1772,
+        "width": 256,
+        "height": 4
+      },
+      "words": [
+        {
+          "text": "eveewospyemppawwogpyaagyyevasweoegpngy",
+          "confidence": 0,
+          "bbox": {
+            "x": 1580,
+            "y": 1772,
+            "width": 256,
+            "height": 4
+          },
+          "block": 93,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "=",
+      "confidence": 64.56,
+      "bbox": {
+        "x": 1840,
+        "y": 1772,
+        "width": 9,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "=",
+          "confidence": 64.56,
+          "bbox": {
+            "x": 1840,
+            "y": 1772,
+            "width": 9,
+            "height": 3
+          },
+          "block": 94,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "na tennemreie seeds SRO ER",
+      "confidence": 17.92,
+      "bbox": {
+        "x": 1578,
+        "y": 1803,
+        "width": 202,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "na",
+          "confidence": 25.98,
+          "bbox": {
+            "x": 1578,
+            "y": 1819,
+            "width": 9,
+            "height": 3
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "tennemreie",
+          "confidence": 0,
+          "bbox": {
+            "x": 1591,
+            "y": 1819,
+            "width": 83,
+            "height": 3
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "seeds",
+          "confidence": 39.71,
+          "bbox": {
+            "x": 1679,
+            "y": 1803,
+            "width": 28,
+            "height": 28
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "SRO",
+          "confidence": 23.93,
+          "bbox": {
+            "x": 1716,
+            "y": 1819,
+            "width": 31,
+            "height": 3
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ER",
+          "confidence": 0,
+          "bbox": {
+            "x": 1756,
+            "y": 1819,
+            "width": 24,
+            "height": 2
+          },
+          "block": 96,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Oana Ca NLC EPL MERON EAE MERE SOREE",
+      "confidence": 10.6,
+      "bbox": {
+        "x": 871,
+        "y": 1820,
+        "width": 310,
+        "height": 5
+      },
+      "words": [
+        {
+          "text": "Oana",
+          "confidence": 18.18,
+          "bbox": {
+            "x": 871,
+            "y": 1821,
+            "width": 36,
+            "height": 4
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Ca",
+          "confidence": 45.27,
+          "bbox": {
+            "x": 913,
+            "y": 1821,
+            "width": 8,
+            "height": 3
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "NLC",
+          "confidence": 0,
+          "bbox": {
+            "x": 932,
+            "y": 1821,
+            "width": 42,
+            "height": 3
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "EPL",
+          "confidence": 0,
+          "bbox": {
+            "x": 990,
+            "y": 1821,
+            "width": 44,
+            "height": 3
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "MERON",
+          "confidence": 21.37,
+          "bbox": {
+            "x": 1049,
+            "y": 1821,
+            "width": 39,
+            "height": 3
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "EAE",
+          "confidence": 0,
+          "bbox": {
+            "x": 1093,
+            "y": 1821,
+            "width": 21,
+            "height": 3
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "MERE",
+          "confidence": 0,
+          "bbox": {
+            "x": 1128,
+            "y": 1821,
+            "width": 19,
+            "height": 2
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "SOREE",
+          "confidence": 0,
+          "bbox": {
+            "x": 1152,
+            "y": 1820,
+            "width": 29,
+            "height": 3
+          },
+          "block": 99,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "fvbsvcaanssaavwasvivecausonnsandacusnenaNeaniene",
+      "confidence": 0,
+      "bbox": {
+        "x": 265,
+        "y": 1822,
+        "width": 322,
+        "height": 4
+      },
+      "words": [
+        {
+          "text": "fvbsvcaanssaavwasvivecausonnsandacusnenaNeaniene",
+          "confidence": 0,
+          "bbox": {
+            "x": 265,
+            "y": 1822,
+            "width": 322,
+            "height": 4
+          },
+          "block": 98,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "%",
+      "confidence": 0,
+      "bbox": {
+        "x": 192,
+        "y": 1928,
+        "width": 212,
+        "height": 181
+      },
+      "words": [
+        {
+          "text": "%",
+          "confidence": 0,
+          "bbox": {
+            "x": 192,
+            "y": 1928,
+            "width": 212,
+            "height": 181
+          },
+          "block": 102,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "w 4",
+      "confidence": 80.55,
+      "bbox": {
+        "x": 1699,
+        "y": 1979,
+        "width": 200,
+        "height": 90
+      },
+      "words": [
+        {
+          "text": "w",
+          "confidence": 86.14,
+          "bbox": {
+            "x": 1699,
+            "y": 1979,
+            "width": 69,
+            "height": 90
+          },
+          "block": 101,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "4",
+          "confidence": 74.96,
+          "bbox": {
+            "x": 1853,
+            "y": 1984,
+            "width": 46,
+            "height": 81
+          },
+          "block": 101,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "SS",
+      "confidence": 0,
+      "bbox": {
+        "x": 758,
+        "y": 2114,
+        "width": 184,
+        "height": 5
+      },
+      "words": [
+        {
+          "text": "SS",
+          "confidence": 0,
+          "bbox": {
+            "x": 758,
+            "y": 2114,
+            "width": 184,
+            "height": 5
+          },
+          "block": 103,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "4.3",
+      "confidence": 95.5,
+      "bbox": {
+        "x": 37,
+        "y": 2175,
+        "width": 55,
+        "height": 29
+      },
+      "words": [
+        {
+          "text": "4.3",
+          "confidence": 95.5,
+          "bbox": {
+            "x": 37,
+            "y": 2175,
+            "width": 55,
+            "height": 29
+          },
+          "block": 104,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "confidence": 92.9,
+      "bbox": {
+        "x": 837,
+        "y": 2242,
+        "width": 1,
+        "height": 23
+      },
+      "words": [
+        {
+          "text": "|",
+          "confidence": 92.9,
+          "bbox": {
+            "x": 837,
+            "y": 2242,
+            "width": 1,
+            "height": 23
+          },
+          "block": 105,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(is / working / Paul / today)",
+      "confidence": 93.21,
+      "bbox": {
+        "x": 216,
+        "y": 2244,
+        "width": 531,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "(is",
+          "confidence": 93.21,
+          "bbox": {
+            "x": 216,
+            "y": 2246,
+            "width": 36,
+            "height": 41
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 280,
+            "y": 2247,
+            "width": 4,
+            "height": 30
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "working",
+          "confidence": 92.98,
+          "bbox": {
+            "x": 301,
+            "y": 2244,
+            "width": 157,
+            "height": 43
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 90.62,
+          "bbox": {
+            "x": 473,
+            "y": 2246,
+            "width": 16,
+            "height": 31
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Paul",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 506,
+            "y": 2244,
+            "width": 79,
+            "height": 33
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 601,
+            "y": 2245,
+            "width": 17,
+            "height": 31
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "today)",
+          "confidence": 96.19,
+          "bbox": {
+            "x": 635,
+            "y": 2244,
+            "width": 112,
+            "height": 42
+          },
+          "block": 108,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "AL",
+      "confidence": 67.57,
+      "bbox": {
+        "x": 1099,
+        "y": 2248,
+        "width": 36,
+        "height": 23
+      },
+      "words": [
+        {
+          "text": "AL",
+          "confidence": 67.57,
+          "bbox": {
+            "x": 1099,
+            "y": 2248,
+            "width": 36,
+            "height": 23
+          },
+          "block": 106,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Dinan crvasoscaavescniaastassacas assnenseqcersonsasz1as saceeseriversmanceennrss ero ssasseepernenaasenens",
+      "confidence": 0,
+      "bbox": {
+        "x": 1219,
+        "y": 2253,
+        "width": 704,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "Dinan",
+          "confidence": 0,
+          "bbox": {
+            "x": 1219,
+            "y": 2253,
+            "width": 36,
+            "height": 28
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "crvasoscaavescniaastassacas",
+          "confidence": 0,
+          "bbox": {
+            "x": 1259,
+            "y": 2253,
+            "width": 176,
+            "height": 28
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "assnenseqcersonsasz1as",
+          "confidence": 0,
+          "bbox": {
+            "x": 1443,
+            "y": 2253,
+            "width": 146,
+            "height": 28
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "saceeseriversmanceennrss",
+          "confidence": 0,
+          "bbox": {
+            "x": 1595,
+            "y": 2253,
+            "width": 161,
+            "height": 28
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ero",
+          "confidence": 0,
+          "bbox": {
+            "x": 1761,
+            "y": 2268,
+            "width": 21,
+            "height": 3
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ssasseepernenaasenens",
+          "confidence": 0,
+          "bbox": {
+            "x": 1787,
+            "y": 2267,
+            "width": 136,
+            "height": 4
+          },
+          "block": 107,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "lil",
+      "confidence": 0,
+      "bbox": {
+        "x": 1249,
+        "y": 2291,
+        "width": 44,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "lil",
+          "confidence": 0,
+          "bbox": {
+            "x": 1249,
+            "y": 2291,
+            "width": 44,
+            "height": 28
+          },
+          "block": 111,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "a",
+      "confidence": 52.1,
+      "bbox": {
+        "x": 1159,
+        "y": 2298,
+        "width": 15,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 52.1,
+          "bbox": {
+            "x": 1159,
+            "y": 2298,
+            "width": 15,
+            "height": 21
+          },
+          "block": 110,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(what / the children / are / doing)",
+      "confidence": 93.91,
+      "bbox": {
+        "x": 216,
+        "y": 2299,
+        "width": 643,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "(what",
+          "confidence": 93.15,
+          "bbox": {
+            "x": 216,
+            "y": 2301,
+            "width": 101,
+            "height": 41
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.15,
+          "bbox": {
+            "x": 333,
+            "y": 2302,
+            "width": 17,
+            "height": 31
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.81,
+          "bbox": {
+            "x": 367,
+            "y": 2300,
+            "width": 56,
+            "height": 33
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "children",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 440,
+            "y": 2300,
+            "width": 149,
+            "height": 32
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 605,
+            "y": 2301,
+            "width": 17,
+            "height": 30
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 93.1,
+          "bbox": {
+            "x": 639,
+            "y": 2311,
+            "width": 52,
+            "height": 20
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.1,
+          "bbox": {
+            "x": 708,
+            "y": 2300,
+            "width": 17,
+            "height": 31
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing)",
+          "confidence": 95.45,
+          "bbox": {
+            "x": 742,
+            "y": 2299,
+            "width": 117,
+            "height": 42
+          },
+          "block": 109,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ne cDAAENO RMI SERREDAPFBDED oERERENSDNDOAMAIOR ARP SRTOARToPOOREM TR",
+      "confidence": 4.28,
+      "bbox": {
+        "x": 1498,
+        "y": 2308,
+        "width": 422,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "ne",
+          "confidence": 20.71,
+          "bbox": {
+            "x": 1498,
+            "y": 2325,
+            "width": 8,
+            "height": 2
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "cDAAENO",
+          "confidence": 0,
+          "bbox": {
+            "x": 1511,
+            "y": 2324,
+            "width": 42,
+            "height": 3
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "RMI",
+          "confidence": 13.35,
+          "bbox": {
+            "x": 1557,
+            "y": 2324,
+            "width": 16,
+            "height": 3
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "SERREDAPFBDED",
+          "confidence": 0,
+          "bbox": {
+            "x": 1578,
+            "y": 2308,
+            "width": 89,
+            "height": 28
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "oERERENSDNDOAMAIOR",
+          "confidence": 0,
+          "bbox": {
+            "x": 1673,
+            "y": 2308,
+            "width": 113,
+            "height": 28
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ARP",
+          "confidence": 0,
+          "bbox": {
+            "x": 1791,
+            "y": 2323,
+            "width": 16,
+            "height": 3
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "SRTOARToPOOREM",
+          "confidence": 0,
+          "bbox": {
+            "x": 1811,
+            "y": 2323,
+            "width": 89,
+            "height": 3
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "TR",
+          "confidence": 0.21,
+          "bbox": {
+            "x": 1911,
+            "y": 2323,
+            "width": 9,
+            "height": 3
+          },
+          "block": 112,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(you / are / listening / to me)",
+      "confidence": 94.05,
+      "bbox": {
+        "x": 217,
+        "y": 2351,
+        "width": 555,
+        "height": 51
+      },
+      "words": [
+        {
+          "text": "(you",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 217,
+            "y": 2357,
+            "width": 79,
+            "height": 41
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.17,
+          "bbox": {
+            "x": 302,
+            "y": 2351,
+            "width": 18,
+            "height": 51
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 93.05,
+          "bbox": {
+            "x": 347,
+            "y": 2368,
+            "width": 51,
+            "height": 20
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.05,
+          "bbox": {
+            "x": 415,
+            "y": 2357,
+            "width": 17,
+            "height": 31
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "listening",
+          "confidence": 93.14,
+          "bbox": {
+            "x": 448,
+            "y": 2355,
+            "width": 156,
+            "height": 42
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.08,
+          "bbox": {
+            "x": 619,
+            "y": 2357,
+            "width": 16,
+            "height": 30
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "to",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 653,
+            "y": 2363,
+            "width": 35,
+            "height": 24
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "me)",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 704,
+            "y": 2355,
+            "width": 68,
+            "height": 41
+          },
+          "block": 114,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "acsunsqansanpecsenssomnasonneosencssnenponnsssseoneneaennedipon visa snbavevepseecess tas iugbaghsadindevbeseybivdesepeioae",
+      "confidence": 0.44,
+      "bbox": {
+        "x": 1123,
+        "y": 2363,
+        "width": 797,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "acsunsqansanpecsenssomnasonneosencssnenponnsssseoneneaennedipon",
+          "confidence": 0,
+          "bbox": {
+            "x": 1123,
+            "y": 2380,
+            "width": 416,
+            "height": 3
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "visa",
+          "confidence": 0,
+          "bbox": {
+            "x": 1546,
+            "y": 2379,
+            "width": 27,
+            "height": 3
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "snbavevepseecess",
+          "confidence": 0,
+          "bbox": {
+            "x": 1577,
+            "y": 2363,
+            "width": 103,
+            "height": 28
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "tas",
+          "confidence": 2.22,
+          "bbox": {
+            "x": 1683,
+            "y": 2379,
+            "width": 17,
+            "height": 3
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "iugbaghsadindevbeseybivdesepeioae",
+          "confidence": 0,
+          "bbox": {
+            "x": 1707,
+            "y": 2363,
+            "width": 213,
+            "height": 28
+          },
+          "block": 113,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(where / your friends / are / going) eceoissasuincusmateccmnanscmmmnimenccneianaanmnnmenncatnentsnecemnasint",
+      "confidence": 68.77,
+      "bbox": {
+        "x": 217,
+        "y": 2409,
+        "width": 1703,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(where",
+          "confidence": 92.06,
+          "bbox": {
+            "x": 217,
+            "y": 2411,
+            "width": 124,
+            "height": 41
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 47.5,
+          "bbox": {
+            "x": 359,
+            "y": 2412,
+            "width": 16,
+            "height": 31
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "your",
+          "confidence": 94,
+          "bbox": {
+            "x": 390,
+            "y": 2422,
+            "width": 88,
+            "height": 31
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "friends",
+          "confidence": 90.83,
+          "bbox": {
+            "x": 492,
+            "y": 2410,
+            "width": 121,
+            "height": 32
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 81.59,
+          "bbox": {
+            "x": 630,
+            "y": 2411,
+            "width": 16,
+            "height": 31
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 78,
+          "bbox": {
+            "x": 663,
+            "y": 2421,
+            "width": 52,
+            "height": 21
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 78,
+          "bbox": {
+            "x": 733,
+            "y": 2411,
+            "width": 17,
+            "height": 31
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "going)",
+          "confidence": 56.93,
+          "bbox": {
+            "x": 767,
+            "y": 2409,
+            "width": 115,
+            "height": 42
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "eceoissasuincusmateccmnanscmmmnimenccneianaanmnnmenncatnentsnecemnasint",
+          "confidence": 0,
+          "bbox": {
+            "x": 914,
+            "y": 2433,
+            "width": 1006,
+            "height": 6
+          },
+          "block": 115,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(are / watching / your parents / television)",
+      "confidence": 94.03,
+      "bbox": {
+        "x": 217,
+        "y": 2463,
+        "width": 797,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(are",
+          "confidence": 93.23,
+          "bbox": {
+            "x": 217,
+            "y": 2466,
+            "width": 64,
+            "height": 41
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.75,
+          "bbox": {
+            "x": 298,
+            "y": 2467,
+            "width": 16,
+            "height": 31
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watching",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 330,
+            "y": 2465,
+            "width": 170,
+            "height": 42
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 515,
+            "y": 2467,
+            "width": 17,
+            "height": 30
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "your",
+          "confidence": 96.63,
+          "bbox": {
+            "x": 548,
+            "y": 2477,
+            "width": 88,
+            "height": 30
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "parents",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 650,
+            "y": 2472,
+            "width": 129,
+            "height": 35
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.19,
+          "bbox": {
+            "x": 796,
+            "y": 2465,
+            "width": 16,
+            "height": 31
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "television)",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 829,
+            "y": 2463,
+            "width": 185,
+            "height": 41
+          },
+          "block": 116,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "cesuUIaTRRN KM RSS S ARATE Aum IEE LETS RDG TAG TD RAAT ES ATRERURARSTRGT SO TANNED",
+      "confidence": 5.46,
+      "bbox": {
+        "x": 1406,
+        "y": 2488,
+        "width": 517,
+        "height": 4
+      },
+      "words": [
+        {
+          "text": "cesuUIaTRRN",
+          "confidence": 0,
+          "bbox": {
+            "x": 1406,
+            "y": 2489,
+            "width": 83,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "KM",
+          "confidence": 24.42,
+          "bbox": {
+            "x": 1493,
+            "y": 2489,
+            "width": 9,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "RSS",
+          "confidence": 4.84,
+          "bbox": {
+            "x": 1514,
+            "y": 2489,
+            "width": 15,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "S",
+          "confidence": 0,
+          "bbox": {
+            "x": 1533,
+            "y": 2489,
+            "width": 2,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ARATE",
+          "confidence": 13.89,
+          "bbox": {
+            "x": 1540,
+            "y": 2489,
+            "width": 28,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Aum",
+          "confidence": 0,
+          "bbox": {
+            "x": 1574,
+            "y": 2489,
+            "width": 21,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "IEE",
+          "confidence": 3.14,
+          "bbox": {
+            "x": 1600,
+            "y": 2489,
+            "width": 22,
+            "height": 2
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "LETS",
+          "confidence": 0,
+          "bbox": {
+            "x": 1635,
+            "y": 2489,
+            "width": 20,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "RDG",
+          "confidence": 0,
+          "bbox": {
+            "x": 1661,
+            "y": 2489,
+            "width": 14,
+            "height": 2
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "TAG",
+          "confidence": 0,
+          "bbox": {
+            "x": 1682,
+            "y": 2489,
+            "width": 13,
+            "height": 2
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "TD",
+          "confidence": 33.43,
+          "bbox": {
+            "x": 1707,
+            "y": 2489,
+            "width": 8,
+            "height": 2
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "RAAT",
+          "confidence": 0,
+          "bbox": {
+            "x": 1721,
+            "y": 2489,
+            "width": 21,
+            "height": 2
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ES",
+          "confidence": 0,
+          "bbox": {
+            "x": 1747,
+            "y": 2489,
+            "width": 9,
+            "height": 2
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ATRERURARSTRGT",
+          "confidence": 0,
+          "bbox": {
+            "x": 1760,
+            "y": 2488,
+            "width": 89,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "SO",
+          "confidence": 0,
+          "bbox": {
+            "x": 1854,
+            "y": 2488,
+            "width": 8,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "TANNED",
+          "confidence": 7.68,
+          "bbox": {
+            "x": 1868,
+            "y": 2488,
+            "width": 55,
+            "height": 3
+          },
+          "block": 117,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "(what / Jessica / is / cooking)",
+      "confidence": 93.49,
+      "bbox": {
+        "x": 217,
+        "y": 2519,
+        "width": 549,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(what",
+          "confidence": 93.3,
+          "bbox": {
+            "x": 217,
+            "y": 2521,
+            "width": 102,
+            "height": 41
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.28,
+          "bbox": {
+            "x": 334,
+            "y": 2522,
+            "width": 17,
+            "height": 31
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Jessica",
+          "confidence": 93.3,
+          "bbox": {
+            "x": 361,
+            "y": 2522,
+            "width": 119,
+            "height": 41
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.28,
+          "bbox": {
+            "x": 496,
+            "y": 2522,
+            "width": 16,
+            "height": 30
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 92.3,
+          "bbox": {
+            "x": 529,
+            "y": 2532,
+            "width": 25,
+            "height": 20
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.3,
+          "bbox": {
+            "x": 581,
+            "y": 2521,
+            "width": 6,
+            "height": 31
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "cooking)",
+          "confidence": 96.64,
+          "bbox": {
+            "x": 605,
+            "y": 2519,
+            "width": 161,
+            "height": 42
+          },
+          "block": 118,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(why / you / are / looking / at me)",
+      "confidence": 93.87,
+      "bbox": {
+        "x": 218,
+        "y": 2574,
+        "width": 666,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "(why",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 218,
+            "y": 2575,
+            "width": 90,
+            "height": 43
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.67,
+          "bbox": {
+            "x": 325,
+            "y": 2577,
+            "width": 16,
+            "height": 30
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 93.17,
+          "bbox": {
+            "x": 357,
+            "y": 2587,
+            "width": 69,
+            "height": 31
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.16,
+          "bbox": {
+            "x": 443,
+            "y": 2576,
+            "width": 17,
+            "height": 31
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 476,
+            "y": 2586,
+            "width": 52,
+            "height": 21
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.25,
+          "bbox": {
+            "x": 546,
+            "y": 2576,
+            "width": 16,
+            "height": 31
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "looking",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 579,
+            "y": 2574,
+            "width": 143,
+            "height": 42
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 93.26,
+          "bbox": {
+            "x": 738,
+            "y": 2575,
+            "width": 16,
+            "height": 31
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "at",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 772,
+            "y": 2582,
+            "width": 30,
+            "height": 24
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "me)",
+          "confidence": 96.61,
+          "bbox": {
+            "x": 816,
+            "y": 2574,
+            "width": 68,
+            "height": 40
+          },
+          "block": 119,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "(is / coming / the bus)",
+      "confidence": 93.79,
+      "bbox": {
+        "x": 218,
+        "y": 2629,
+        "width": 418,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "(is",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 218,
+            "y": 2631,
+            "width": 36,
+            "height": 41
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 92.98,
+          "bbox": {
+            "x": 282,
+            "y": 2632,
+            "width": 5,
+            "height": 31
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "coming",
+          "confidence": 93.02,
+          "bbox": {
+            "x": 304,
+            "y": 2642,
+            "width": 139,
+            "height": 30
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 89.96,
+          "bbox": {
+            "x": 458,
+            "y": 2631,
+            "width": 17,
+            "height": 31
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 491,
+            "y": 2630,
+            "width": 56,
+            "height": 32
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "bus)",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 563,
+            "y": 2629,
+            "width": 73,
+            "height": 41
+          },
+          "block": 121,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ss",
+      "confidence": 0,
+      "bbox": {
+        "x": 1002,
+        "y": 2653,
+        "width": 922,
+        "height": 5
+      },
+      "words": [
+        {
+          "text": "ss",
+          "confidence": 0,
+          "bbox": {
+            "x": 1002,
+            "y": 2653,
+            "width": 922,
+            "height": 5
+          },
+          "block": 120,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Yes, | am. / No, he isn’t",
+      "confidence": 87.49,
+      "bbox": {
+        "x": 482,
+        "y": 2711,
+        "width": 471,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "Yes,",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 482,
+            "y": 2714,
+            "width": 65,
+            "height": 33
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 93.96,
+          "bbox": {
+            "x": 580,
+            "y": 2714,
+            "width": 6,
+            "height": 32
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "am.",
+          "confidence": 75.29,
+          "bbox": {
+            "x": 608,
+            "y": 2724,
+            "width": 56,
+            "height": 22
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "/",
+          "confidence": 75.29,
+          "bbox": {
+            "x": 695,
+            "y": 2711,
+            "width": 8,
+            "height": 42
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "No,",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 722,
+            "y": 2713,
+            "width": 52,
+            "height": 33
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "he",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 808,
+            "y": 2713,
+            "width": 42,
+            "height": 33
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn’t",
+          "confidence": 78.04,
+          "bbox": {
+            "x": 872,
+            "y": 2715,
+            "width": 81,
+            "height": 30
+          },
+          "block": 124,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "4.4",
+      "confidence": 90.74,
+      "bbox": {
+        "x": 38,
+        "y": 2719,
+        "width": 59,
+        "height": 29
+      },
+      "words": [
+        {
+          "text": "4.4",
+          "confidence": 90.74,
+          "bbox": {
+            "x": 38,
+            "y": 2719,
+            "width": 59,
+            "height": 29
+          },
+          "block": 122,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "F",
+      "confidence": 15.88,
+      "bbox": {
+        "x": 275,
+        "y": 2734,
+        "width": 3,
+        "height": 11
+      },
+      "words": [
+        {
+          "text": "F",
+          "confidence": 15.88,
+          "bbox": {
+            "x": 275,
+            "y": 2734,
+            "width": 3,
+            "height": 11
+          },
+          "block": 123,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "N",
+      "confidence": 92.84,
+      "bbox": {
+        "x": 726,
+        "y": 2781,
+        "width": 20,
+        "height": 29
+      },
+      "words": [
+        {
+          "text": "N",
+          "confidence": 92.84,
+          "bbox": {
+            "x": 726,
+            "y": 2781,
+            "width": 20,
+            "height": 29
+          },
+          "block": 125,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "和 TS it rating? ccc nnnenennnnnnn",
+      "confidence": 40.15,
+      "bbox": {
+        "x": 1064,
+        "y": 2787,
+        "width": 681,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "和",
+          "confidence": 60.33,
+          "bbox": {
+            "x": 1064,
+            "y": 2788,
+            "width": 21,
+            "height": 31
+          },
+          "block": 129,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "TS",
+          "confidence": 59.6,
+          "bbox": {
+            "x": 1114,
+            "y": 2788,
+            "width": 26,
+            "height": 31
+          },
+          "block": 129,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "it",
+          "confidence": 79.2,
+          "bbox": {
+            "x": 1155,
+            "y": 2795,
+            "width": 25,
+            "height": 23
+          },
+          "block": 129,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "rating?",
+          "confidence": 41.49,
+          "bbox": {
+            "x": 1195,
+            "y": 2787,
+            "width": 144,
+            "height": 42
+          },
+          "block": 129,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "ccc",
+          "confidence": 0.29,
+          "bbox": {
+            "x": 1374,
+            "y": 2813,
+            "width": 124,
+            "height": 3
+          },
+          "block": 129,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "nnnenennnnnnn",
+          "confidence": 0,
+          "bbox": {
+            "x": 1536,
+            "y": 2812,
+            "width": 209,
+            "height": 4
+          },
+          "block": 129,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Are you watching TV?",
+      "confidence": 96.31,
+      "bbox": {
+        "x": 216,
+        "y": 2789,
+        "width": 427,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "Are",
+          "confidence": 95.88,
+          "bbox": {
+            "x": 216,
+            "y": 2791,
+            "width": 66,
+            "height": 31
+          },
+          "block": 127,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 95.88,
+          "bbox": {
+            "x": 296,
+            "y": 2801,
+            "width": 69,
+            "height": 31
+          },
+          "block": 127,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watching",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 380,
+            "y": 2789,
+            "width": 171,
+            "height": 42
+          },
+          "block": 127,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "TV?",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 564,
+            "y": 2790,
+            "width": 79,
+            "height": 31
+          },
+          "block": 127,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "1 上",
+      "confidence": 82.84,
+      "bbox": {
+        "x": 842,
+        "y": 2790,
+        "width": 24,
+        "height": 16
+      },
+      "words": [
+        {
+          "text": "1",
+          "confidence": 78.6,
+          "bbox": {
+            "x": 842,
+            "y": 2794,
+            "width": 2,
+            "height": 12
+          },
+          "block": 126,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "上",
+          "confidence": 87.07,
+          "bbox": {
+            "x": 863,
+            "y": 2790,
+            "width": 3,
+            "height": 13
+          },
+          "block": 126,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ae",
+      "confidence": 39.33,
+      "bbox": {
+        "x": 674,
+        "y": 2815,
+        "width": 84,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "ae",
+          "confidence": 39.33,
+          "bbox": {
+            "x": 674,
+            "y": 2815,
+            "width": 84,
+            "height": 3
+          },
+          "block": 128,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "5 Are you sitting on the floor?",
+      "confidence": 96.3,
+      "bbox": {
+        "x": 1066,
+        "y": 2841,
+        "width": 575,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "5",
+          "confidence": 95.68,
+          "bbox": {
+            "x": 1066,
+            "y": 2844,
+            "width": 18,
+            "height": 31
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Are",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 1113,
+            "y": 2843,
+            "width": 65,
+            "height": 31
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96,
+          "bbox": {
+            "x": 1193,
+            "y": 2854,
+            "width": 70,
+            "height": 31
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sitting",
+          "confidence": 96,
+          "bbox": {
+            "x": 1278,
+            "y": 2850,
+            "width": 113,
+            "height": 34
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "on",
+          "confidence": 96.57,
+          "bbox": {
+            "x": 1405,
+            "y": 2853,
+            "width": 47,
+            "height": 21
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 1467,
+            "y": 2841,
+            "width": 56,
+            "height": 32
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "floor?",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 1539,
+            "y": 2841,
+            "width": 102,
+            "height": 32
+          },
+          "block": 131,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Are you wearing a watch? .......",
+      "confidence": 79.98,
+      "bbox": {
+        "x": 217,
+        "y": 2843,
+        "width": 578,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "Are",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 217,
+            "y": 2846,
+            "width": 65,
+            "height": 31
+          },
+          "block": 130,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 297,
+            "y": 2857,
+            "width": 69,
+            "height": 31
+          },
+          "block": 130,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "wearing",
+          "confidence": 95.9,
+          "bbox": {
+            "x": 381,
+            "y": 2856,
+            "width": 147,
+            "height": 31
+          },
+          "block": 130,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 95.9,
+          "bbox": {
+            "x": 543,
+            "y": 2856,
+            "width": 16,
+            "height": 20
+          },
+          "block": 130,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watch?",
+          "confidence": 57.14,
+          "bbox": {
+            "x": 574,
+            "y": 2843,
+            "width": 128,
+            "height": 33
+          },
+          "block": 130,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": ".......",
+          "confidence": 37.56,
+          "bbox": {
+            "x": 732,
+            "y": 2871,
+            "width": 63,
+            "height": 3
+          },
+          "block": 130,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "6 Are you feeling Well? .....ccccccssennnnmnnnnnnnnnnnn",
+      "confidence": 71.07,
+      "bbox": {
+        "x": 1065,
+        "y": 2896,
+        "width": 896,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "6",
+          "confidence": 95.45,
+          "bbox": {
+            "x": 1065,
+            "y": 2900,
+            "width": 20,
+            "height": 31
+          },
+          "block": 133,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Are",
+          "confidence": 92.98,
+          "bbox": {
+            "x": 1113,
+            "y": 2899,
+            "width": 65,
+            "height": 31
+          },
+          "block": 133,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.32,
+          "bbox": {
+            "x": 1194,
+            "y": 2910,
+            "width": 69,
+            "height": 30
+          },
+          "block": 133,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "feeling",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 1279,
+            "y": 2897,
+            "width": 123,
+            "height": 43
+          },
+          "block": 133,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Well?",
+          "confidence": 45.44,
+          "bbox": {
+            "x": 1416,
+            "y": 2896,
+            "width": 92,
+            "height": 33
+          },
+          "block": 133,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": ".....ccccccssennnnmnnnnnnnnnnnn",
+          "confidence": 0,
+          "bbox": {
+            "x": 1538,
+            "y": 2923,
+            "width": 423,
+            "height": 4
+          },
+          "block": 133,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Are you eating something? 2.0.0...",
+      "confidence": 77.72,
+      "bbox": {
+        "x": 217,
+        "y": 2899,
+        "width": 790,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "Are",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 217,
+            "y": 2902,
+            "width": 65,
+            "height": 31
+          },
+          "block": 132,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 297,
+            "y": 2913,
+            "width": 68,
+            "height": 30
+          },
+          "block": 132,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "eating",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 382,
+            "y": 2909,
+            "width": 110,
+            "height": 34
+          },
+          "block": 132,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "something?",
+          "confidence": 90.97,
+          "bbox": {
+            "x": 506,
+            "y": 2899,
+            "width": 209,
+            "height": 43
+          },
+          "block": 132,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "2.0.0...",
+          "confidence": 8.3,
+          "bbox": {
+            "x": 746,
+            "y": 2926,
+            "width": 261,
+            "height": 4
+          },
+          "block": 132,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "一 补充 练习 3 (第 254 页 )",
+      "confidence": 75.47,
+      "bbox": {
+        "x": 38,
+        "y": 2989,
+        "width": 478,
+        "height": 53
+      },
+      "words": [
+        {
+          "text": "一",
+          "confidence": 60.61,
+          "bbox": {
+            "x": 38,
+            "y": 3013,
+            "width": 38,
+            "height": 14
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "补充",
+          "confidence": 90.2,
+          "bbox": {
+            "x": 106,
+            "y": 2994,
+            "width": 83,
+            "height": 39
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "练习",
+          "confidence": 90.44,
+          "bbox": {
+            "x": 196,
+            "y": 2989,
+            "width": 70,
+            "height": 53
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "3",
+          "confidence": 94.59,
+          "bbox": {
+            "x": 279,
+            "y": 3000,
+            "width": 11,
+            "height": 26
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(第",
+          "confidence": 92.24,
+          "bbox": {
+            "x": 325,
+            "y": 2994,
+            "width": 74,
+            "height": 44
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "254",
+          "confidence": 93.01,
+          "bbox": {
+            "x": 398,
+            "y": 2989,
+            "width": 56,
+            "height": 53
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "页",
+          "confidence": 41.35,
+          "bbox": {
+            "x": 464,
+            "y": 2997,
+            "width": 31,
+            "height": 38
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": ")",
+          "confidence": 41.35,
+          "bbox": {
+            "x": 504,
+            "y": 2993,
+            "width": 12,
+            "height": 44
+          },
+          "block": 134,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "21",
+      "confidence": 91.72,
+      "bbox": {
+        "x": 1990,
+        "y": 2993,
+        "width": 45,
+        "height": 35
+      },
+      "words": [
+        {
+          "text": "21",
+          "confidence": 91.72,
+          "bbox": {
+            "x": 1990,
+            "y": 2993,
+            "width": 45,
+            "height": 35
+          },
+          "block": 135,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    }
+  ]
+}

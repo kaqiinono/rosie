@@ -1,0 +1,4592 @@
+{
+  "cacheKey": "759d03256856e457ec3384fc920eab478792e0f3e94ad98638f765be1096f5b7",
+  "pdfPage": 25,
+  "image": "page-0025.png",
+  "textFile": "page-0025.txt",
+  "tsvFile": "page-0025.tsv",
+  "dimensions": {
+    "width": 2096,
+    "height": 3152
+  },
+  "stats": {
+    "characters": 1290,
+    "words": 262,
+    "lines": 75,
+    "meanConfidence": 85.32,
+    "lowConfidenceWords": 33
+  },
+  "warnings": [
+    "many_low_confidence_words",
+    "wide_or_multi_column_lines_present"
+  ],
+  "lines": [
+    {
+      "text": "Unit",
+      "confidence": 96.69,
+      "bbox": {
+        "x": 29,
+        "y": 58,
+        "width": 135,
+        "height": 58
+      },
+      "words": [
+        {
+          "text": "Unit",
+          "confidence": 96.69,
+          "bbox": {
+            "x": 29,
+            "y": 58,
+            "width": 135,
+            "height": 58
+          },
+          "block": 1,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Te",
+      "confidence": 41.77,
+      "bbox": {
+        "x": 1557,
+        "y": 302,
+        "width": 364,
+        "height": 173
+      },
+      "words": [
+        {
+          "text": "Te",
+          "confidence": 41.77,
+          "bbox": {
+            "x": 1557,
+            "y": 302,
+            "width": 364,
+            "height": 173
+          },
+          "block": 4,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "N",
+      "confidence": 78.8,
+      "bbox": {
+        "x": 1129,
+        "y": 375,
+        "width": 14,
+        "height": 13
+      },
+      "words": [
+        {
+          "text": "N",
+          "confidence": 78.8,
+          "bbox": {
+            "x": 1129,
+            "y": 375,
+            "width": 14,
+            "height": 13
+          },
+          "block": 2,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "Nos",
+      "confidence": 66.86,
+      "bbox": {
+        "x": 910,
+        "y": 386,
+        "width": 63,
+        "height": 20
+      },
+      "words": [
+        {
+          "text": "Nos",
+          "confidence": 66.86,
+          "bbox": {
+            "x": 910,
+            "y": 386,
+            "width": 63,
+            "height": 20
+          },
+          "block": 3,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "e",
+      "confidence": 0,
+      "bbox": {
+        "x": 516,
+        "y": 440,
+        "width": 113,
+        "height": 166
+      },
+      "words": [
+        {
+          "text": "e",
+          "confidence": 0,
+          "bbox": {
+            "x": 516,
+            "y": 440,
+            "width": 113,
+            "height": 166
+          },
+          "block": 7,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "»?",
+      "confidence": 68.46,
+      "bbox": {
+        "x": 1187,
+        "y": 466,
+        "width": 36,
+        "height": 22
+      },
+      "words": [
+        {
+          "text": "»?",
+          "confidence": 68.46,
+          "bbox": {
+            "x": 1187,
+            "y": 466,
+            "width": 36,
+            "height": 22
+          },
+          "block": 5,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "x?",
+      "confidence": 22.8,
+      "bbox": {
+        "x": 1259,
+        "y": 536,
+        "width": 49,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "x?",
+          "confidence": 22.8,
+          "bbox": {
+            "x": 1259,
+            "y": 536,
+            "width": 49,
+            "height": 21
+          },
+          "block": 6,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "p®",
+      "confidence": 40.57,
+      "bbox": {
+        "x": 1589,
+        "y": 553,
+        "width": 33,
+        "height": 26
+      },
+      "words": [
+        {
+          "text": "p®",
+          "confidence": 40.57,
+          "bbox": {
+            "x": 1589,
+            "y": 553,
+            "width": 33,
+            "height": 26
+          },
+          "block": 10,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "\\g",
+      "confidence": 46.84,
+      "bbox": {
+        "x": 1774,
+        "y": 559,
+        "width": 81,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "\\g",
+          "confidence": 46.84,
+          "bbox": {
+            "x": 1774,
+            "y": 559,
+            "width": 81,
+            "height": 44
+          },
+          "block": 11,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "a",
+      "confidence": 31.61,
+      "bbox": {
+        "x": 1921,
+        "y": 560,
+        "width": 80,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 31.61,
+          "bbox": {
+            "x": 1921,
+            "y": 560,
+            "width": 80,
+            "height": 55
+          },
+          "block": 12,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "AN”",
+      "confidence": 35.46,
+      "bbox": {
+        "x": 907,
+        "y": 567,
+        "width": 107,
+        "height": 37
+      },
+      "words": [
+        {
+          "text": "AN”",
+          "confidence": 35.46,
+          "bbox": {
+            "x": 907,
+            "y": 567,
+            "width": 107,
+            "height": 37
+          },
+          "block": 8,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "eS",
+      "confidence": 24.65,
+      "bbox": {
+        "x": 1270,
+        "y": 574,
+        "width": 38,
+        "height": 16
+      },
+      "words": [
+        {
+          "text": "eS",
+          "confidence": 24.65,
+          "bbox": {
+            "x": 1270,
+            "y": 574,
+            "width": 38,
+            "height": 16
+          },
+          "block": 9,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "ty",
+      "confidence": 20.85,
+      "bbox": {
+        "x": 948,
+        "y": 654,
+        "width": 25,
+        "height": 16
+      },
+      "words": [
+        {
+          "text": "ty",
+          "confidence": 20.85,
+          "bbox": {
+            "x": 948,
+            "y": 654,
+            "width": 25,
+            "height": 16
+          },
+          "block": 13,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "Ne PN",
+      "confidence": 60.33,
+      "bbox": {
+        "x": 934,
+        "y": 682,
+        "width": 114,
+        "height": 28
+      },
+      "words": [
+        {
+          "text": "Ne",
+          "confidence": 55.83,
+          "bbox": {
+            "x": 934,
+            "y": 691,
+            "width": 35,
+            "height": 19
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "PN",
+          "confidence": 64.83,
+          "bbox": {
+            "x": 1004,
+            "y": 682,
+            "width": 44,
+            "height": 22
+          },
+          "block": 14,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "A",
+      "confidence": 10.99,
+      "bbox": {
+        "x": 663,
+        "y": 795,
+        "width": 75,
+        "height": 51
+      },
+      "words": [
+        {
+          "text": "A",
+          "confidence": 10.99,
+          "bbox": {
+            "x": 663,
+            "y": 795,
+            "width": 75,
+            "height": 51
+          },
+          "block": 17,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "se",
+      "confidence": 29.88,
+      "bbox": {
+        "x": 385,
+        "y": 822,
+        "width": 56,
+        "height": 10
+      },
+      "words": [
+        {
+          "text": "se",
+          "confidence": 29.88,
+          "bbox": {
+            "x": 385,
+            "y": 822,
+            "width": 56,
+            "height": 10
+          },
+          "block": 16,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "==",
+      "confidence": 54.32,
+      "bbox": {
+        "x": 383,
+        "y": 836,
+        "width": 59,
+        "height": 17
+      },
+      "words": [
+        {
+          "text": "==",
+          "confidence": 54.32,
+          "bbox": {
+            "x": 383,
+            "y": 836,
+            "width": 59,
+            "height": 17
+          },
+          "block": 15,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "by",
+      "confidence": 64.01,
+      "bbox": {
+        "x": 1694,
+        "y": 837,
+        "width": 57,
+        "height": 55
+      },
+      "words": [
+        {
+          "text": "by",
+          "confidence": 64.01,
+          "bbox": {
+            "x": 1694,
+            "y": 837,
+            "width": 57,
+            "height": 55
+          },
+          "block": 19,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "x)",
+      "confidence": 65.4,
+      "bbox": {
+        "x": 1786,
+        "y": 854,
+        "width": 36,
+        "height": 41
+      },
+      "words": [
+        {
+          "text": "x)",
+          "confidence": 65.4,
+          "bbox": {
+            "x": 1786,
+            "y": 854,
+            "width": 36,
+            "height": 41
+          },
+          "block": 20,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "CF",
+      "confidence": 54.13,
+      "bbox": {
+        "x": 1505,
+        "y": 858,
+        "width": 59,
+        "height": 39
+      },
+      "words": [
+        {
+          "text": "CF",
+          "confidence": 54.13,
+          "bbox": {
+            "x": 1505,
+            "y": 858,
+            "width": 59,
+            "height": 39
+          },
+          "block": 18,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "They’re running",
+      "confidence": 94.54,
+      "bbox": {
+        "x": 1565,
+        "y": 985,
+        "width": 338,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "They’re",
+          "confidence": 92.52,
+          "bbox": {
+            "x": 1565,
+            "y": 985,
+            "width": 155,
+            "height": 44
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "running",
+          "confidence": 96.57,
+          "bbox": {
+            "x": 1735,
+            "y": 996,
+            "width": 168,
+            "height": 33
+          },
+          "block": 23,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "She’s eating",
+      "confidence": 94.3,
+      "bbox": {
+        "x": 305,
+        "y": 987,
+        "width": 243,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "She’s",
+          "confidence": 92.66,
+          "bbox": {
+            "x": 305,
+            "y": 987,
+            "width": 99,
+            "height": 34
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "eating",
+          "confidence": 95.94,
+          "bbox": {
+            "x": 420,
+            "y": 994,
+            "width": 128,
+            "height": 37
+          },
+          "block": 21,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "It’s raining",
+      "confidence": 93.4,
+      "bbox": {
+        "x": 968,
+        "y": 988,
+        "width": 224,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "It’s",
+          "confidence": 90,
+          "bbox": {
+            "x": 968,
+            "y": 988,
+            "width": 59,
+            "height": 32
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "raining",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 1041,
+            "y": 997,
+            "width": 151,
+            "height": 33
+          },
+          "block": 22,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "They aren’t walking",
+      "confidence": 93.7,
+      "bbox": {
+        "x": 1565,
+        "y": 1041,
+        "width": 415,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "They",
+          "confidence": 93.3,
+          "bbox": {
+            "x": 1565,
+            "y": 1042,
+            "width": 99,
+            "height": 44
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "aren’t",
+          "confidence": 90.93,
+          "bbox": {
+            "x": 1679,
+            "y": 1048,
+            "width": 122,
+            "height": 27
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "walking",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 1814,
+            "y": 1041,
+            "width": 166,
+            "height": 44
+          },
+          "block": 26,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "The sun isn’t shining",
+      "confidence": 96.13,
+      "bbox": {
+        "x": 966,
+        "y": 1042,
+        "width": 425,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "The",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 966,
+            "y": 1043,
+            "width": 76,
+            "height": 33
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sun",
+          "confidence": 95.39,
+          "bbox": {
+            "x": 1058,
+            "y": 1055,
+            "width": 62,
+            "height": 21
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn’t",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 1134,
+            "y": 1049,
+            "width": 90,
+            "height": 27
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "shining",
+          "confidence": 95.91,
+          "bbox": {
+            "x": 1239,
+            "y": 1042,
+            "width": 152,
+            "height": 44
+          },
+          "block": 25,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "She isn’t reading",
+      "confidence": 96.51,
+      "bbox": {
+        "x": 305,
+        "y": 1043,
+        "width": 343,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "She",
+          "confidence": 96.43,
+          "bbox": {
+            "x": 305,
+            "y": 1043,
+            "width": 66,
+            "height": 35
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn’t",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 387,
+            "y": 1045,
+            "width": 89,
+            "height": 32
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "reading",
+          "confidence": 96.52,
+          "bbox": {
+            "x": 490,
+            "y": 1043,
+            "width": 158,
+            "height": 45
+          },
+          "block": 24,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "现在 进行 时 的 形式 为",
+      "confidence": 96.7,
+      "bbox": {
+        "x": 283,
+        "y": 1141,
+        "width": 403,
+        "height": 67
+      },
+      "words": [
+        {
+          "text": "现在",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 283,
+            "y": 1145,
+            "width": 399,
+            "height": 44
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "进行",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 392,
+            "y": 1141,
+            "width": 93,
+            "height": 67
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "时",
+          "confidence": 96.94,
+          "bbox": {
+            "x": 484,
+            "y": 1141,
+            "width": 43,
+            "height": 67
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "的",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 526,
+            "y": 1141,
+            "width": 47,
+            "height": 67
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "形式",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 572,
+            "y": 1141,
+            "width": 89,
+            "height": 67
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "为",
+          "confidence": 96.33,
+          "bbox": {
+            "x": 660,
+            "y": 1141,
+            "width": 26,
+            "height": 67
+          },
+          "block": 27,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "am/is/are + doing/eating/running/writing 等",
+      "confidence": 92.28,
+      "bbox": {
+        "x": 281,
+        "y": 1200,
+        "width": 923,
+        "height": 50
+      },
+      "words": [
+        {
+          "text": "am/is/are",
+          "confidence": 87.5,
+          "bbox": {
+            "x": 281,
+            "y": 1207,
+            "width": 204,
+            "height": 33
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "+",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 502,
+            "y": 1209,
+            "width": 27,
+            "height": 28
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing/eating/running/writing",
+          "confidence": 91.81,
+          "bbox": {
+            "x": 546,
+            "y": 1206,
+            "width": 604,
+            "height": 44
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "等",
+          "confidence": 96.51,
+          "bbox": {
+            "x": 1167,
+            "y": 1200,
+            "width": 37,
+            "height": 45
+          },
+          "block": 28,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "am (not)",
+      "confidence": 95.99,
+      "bbox": {
+        "x": 439,
+        "y": 1300,
+        "width": 167,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "am",
+          "confidence": 95.99,
+          "bbox": {
+            "x": 439,
+            "y": 1311,
+            "width": 65,
+            "height": 22
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(not)",
+          "confidence": 95.99,
+          "bbox": {
+            "x": 521,
+            "y": 1300,
+            "width": 85,
+            "height": 42
+          },
+          "block": 30,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "I",
+      "confidence": 95.57,
+      "bbox": {
+        "x": 375,
+        "y": 1301,
+        "width": 12,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "I",
+          "confidence": 95.57,
+          "bbox": {
+            "x": 375,
+            "y": 1301,
+            "width": 12,
+            "height": 32
+          },
+          "block": 29,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O I’m working. I’m not watching TV",
+      "confidence": 85.52,
+      "bbox": {
+        "x": 829,
+        "y": 1312,
+        "width": 790,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 66.48,
+          "bbox": {
+            "x": 829,
+            "y": 1320,
+            "width": 26,
+            "height": 26
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 55.87,
+          "bbox": {
+            "x": 876,
+            "y": 1314,
+            "width": 74,
+            "height": 32
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "working.",
+          "confidence": 95.58,
+          "bbox": {
+            "x": 963,
+            "y": 1312,
+            "width": 177,
+            "height": 45
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 91.88,
+          "bbox": {
+            "x": 1181,
+            "y": 1314,
+            "width": 73,
+            "height": 33
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.72,
+          "bbox": {
+            "x": 1267,
+            "y": 1318,
+            "width": 71,
+            "height": 28
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watching",
+          "confidence": 96.24,
+          "bbox": {
+            "x": 1350,
+            "y": 1312,
+            "width": 196,
+            "height": 44
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "TV",
+          "confidence": 95.88,
+          "bbox": {
+            "x": 1568,
+            "y": 1313,
+            "width": 51,
+            "height": 33
+          },
+          "block": 31,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "he",
+      "confidence": 96.9,
+      "bbox": {
+        "x": 344,
+        "y": 1381,
+        "width": 44,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "he",
+          "confidence": 96.9,
+          "bbox": {
+            "x": 344,
+            "y": 1381,
+            "width": 44,
+            "height": 33
+          },
+          "block": 32,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "0 Maria is reading a newspaper",
+      "confidence": 88.1,
+      "bbox": {
+        "x": 829,
+        "y": 1392,
+        "width": 618,
+        "height": 46
+      },
+      "words": [
+        {
+          "text": "0",
+          "confidence": 45.28,
+          "bbox": {
+            "x": 829,
+            "y": 1400,
+            "width": 26,
+            "height": 26
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Maria",
+          "confidence": 96.48,
+          "bbox": {
+            "x": 875,
+            "y": 1395,
+            "width": 110,
+            "height": 33
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.89,
+          "bbox": {
+            "x": 998,
+            "y": 1404,
+            "width": 31,
+            "height": 24
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "reading",
+          "confidence": 96.68,
+          "bbox": {
+            "x": 1044,
+            "y": 1392,
+            "width": 159,
+            "height": 46
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 1216,
+            "y": 1405,
+            "width": 19,
+            "height": 22
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "newspaper",
+          "confidence": 96.42,
+          "bbox": {
+            "x": 1248,
+            "y": 1404,
+            "width": 199,
+            "height": 34
+          },
+          "block": 34,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "she",
+      "confidence": 96.95,
+      "bbox": {
+        "x": 330,
+        "y": 1437,
+        "width": 58,
+        "height": 34
+      },
+      "words": [
+        {
+          "text": "she",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 330,
+            "y": 1437,
+            "width": 58,
+            "height": 34
+          },
+          "block": 33,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "is (not)",
+      "confidence": 96.76,
+      "bbox": {
+        "x": 438,
+        "y": 1438,
+        "width": 133,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "is",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 438,
+            "y": 1448,
+            "width": 31,
+            "height": 22
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(not)",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 486,
+            "y": 1438,
+            "width": 85,
+            "height": 42
+          },
+          "block": 35,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "0 She isn’t eating. (或 She’s not eating.)",
+      "confidence": 89.37,
+      "bbox": {
+        "x": 829,
+        "y": 1445,
+        "width": 826,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "0",
+          "confidence": 56.75,
+          "bbox": {
+            "x": 829,
+            "y": 1457,
+            "width": 27,
+            "height": 26
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "She",
+          "confidence": 96.15,
+          "bbox": {
+            "x": 876,
+            "y": 1450,
+            "width": 68,
+            "height": 34
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "isn’t",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 957,
+            "y": 1451,
+            "width": 91,
+            "height": 33
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "eating.",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 1062,
+            "y": 1456,
+            "width": 129,
+            "height": 38
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(或",
+          "confidence": 95.73,
+          "bbox": {
+            "x": 1232,
+            "y": 1445,
+            "width": 54,
+            "height": 48
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "She’s",
+          "confidence": 92.59,
+          "bbox": {
+            "x": 1304,
+            "y": 1449,
+            "width": 100,
+            "height": 35
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 1418,
+            "y": 1455,
+            "width": 71,
+            "height": 28
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "eating.)",
+          "confidence": 83.87,
+          "bbox": {
+            "x": 1503,
+            "y": 1449,
+            "width": 152,
+            "height": 45
+          },
+          "block": 36,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "-ing",
+      "confidence": 63.82,
+      "bbox": {
+        "x": 661,
+        "y": 1500,
+        "width": 87,
+        "height": 33
+      },
+      "words": [
+        {
+          "text": "-ing",
+          "confidence": 63.82,
+          "bbox": {
+            "x": 661,
+            "y": 1500,
+            "width": 87,
+            "height": 33
+          },
+          "block": 38,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "it",
+      "confidence": 39.18,
+      "bbox": {
+        "x": 363,
+        "y": 1502,
+        "width": 26,
+        "height": 25
+      },
+      "words": [
+        {
+          "text": "it",
+          "confidence": 39.18,
+          "bbox": {
+            "x": 363,
+            "y": 1502,
+            "width": 26,
+            "height": 25
+          },
+          "block": 37,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "O The phone is ringing",
+      "confidence": 81.49,
+      "bbox": {
+        "x": 830,
+        "y": 1506,
+        "width": 468,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 22.73,
+          "bbox": {
+            "x": 830,
+            "y": 1513,
+            "width": 26,
+            "height": 26
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "The",
+          "confidence": 95.15,
+          "bbox": {
+            "x": 875,
+            "y": 1506,
+            "width": 78,
+            "height": 34
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "phone",
+          "confidence": 96.29,
+          "bbox": {
+            "x": 966,
+            "y": 1506,
+            "width": 120,
+            "height": 45
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 1098,
+            "y": 1517,
+            "width": 32,
+            "height": 23
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "ringing",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 1144,
+            "y": 1517,
+            "width": 154,
+            "height": 34
+          },
+          "block": 39,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "we",
+      "confidence": 96.77,
+      "bbox": {
+        "x": 334,
+        "y": 1587,
+        "width": 54,
+        "height": 21
+      },
+      "words": [
+        {
+          "text": "we",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 334,
+            "y": 1587,
+            "width": 54,
+            "height": 21
+          },
+          "block": 40,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O We’re having dinner",
+      "confidence": 88.26,
+      "bbox": {
+        "x": 830,
+        "y": 1587,
+        "width": 463,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 73.01,
+          "bbox": {
+            "x": 830,
+            "y": 1594,
+            "width": 26,
+            "height": 27
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "We’re",
+          "confidence": 87.35,
+          "bbox": {
+            "x": 875,
+            "y": 1589,
+            "width": 125,
+            "height": 33
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "having",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1014,
+            "y": 1587,
+            "width": 142,
+            "height": 45
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "dinner",
+          "confidence": 96.09,
+          "bbox": {
+            "x": 1170,
+            "y": 1587,
+            "width": 123,
+            "height": 34
+          },
+          "block": 41,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "are (not)",
+      "confidence": 96.14,
+      "bbox": {
+        "x": 439,
+        "y": 1631,
+        "width": 165,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "are",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 439,
+            "y": 1642,
+            "width": 63,
+            "height": 23
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(not)",
+          "confidence": 96.14,
+          "bbox": {
+            "x": 519,
+            "y": 1631,
+            "width": 85,
+            "height": 43
+          },
+          "block": 43,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O You're not listening to me. (或 You aren’t listening",
+      "confidence": 85.28,
+      "bbox": {
+        "x": 830,
+        "y": 1639,
+        "width": 1085,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 76.45,
+          "bbox": {
+            "x": 830,
+            "y": 1650,
+            "width": 26,
+            "height": 27
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "You're",
+          "confidence": 15.38,
+          "bbox": {
+            "x": 875,
+            "y": 1646,
+            "width": 138,
+            "height": 32
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "not",
+          "confidence": 96.19,
+          "bbox": {
+            "x": 1026,
+            "y": 1650,
+            "width": 70,
+            "height": 28
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "listening",
+          "confidence": 96.01,
+          "bbox": {
+            "x": 1107,
+            "y": 1643,
+            "width": 176,
+            "height": 45
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "to",
+          "confidence": 96.01,
+          "bbox": {
+            "x": 1296,
+            "y": 1652,
+            "width": 36,
+            "height": 25
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "me.",
+          "confidence": 95.09,
+          "bbox": {
+            "x": 1347,
+            "y": 1655,
+            "width": 56,
+            "height": 23
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(或",
+          "confidence": 95.72,
+          "bbox": {
+            "x": 1444,
+            "y": 1639,
+            "width": 53,
+            "height": 47
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "You",
+          "confidence": 93.3,
+          "bbox": {
+            "x": 1512,
+            "y": 1645,
+            "width": 81,
+            "height": 32
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "aren’t",
+          "confidence": 92.53,
+          "bbox": {
+            "x": 1608,
+            "y": 1644,
+            "width": 121,
+            "height": 34
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "listening",
+          "confidence": 96.09,
+          "bbox": {
+            "x": 1740,
+            "y": 1643,
+            "width": 175,
+            "height": 44
+          },
+          "block": 44,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "you",
+      "confidence": 96.86,
+      "bbox": {
+        "x": 317,
+        "y": 1643,
+        "width": 71,
+        "height": 32
+      },
+      "words": [
+        {
+          "text": "you",
+          "confidence": 96.86,
+          "bbox": {
+            "x": 317,
+            "y": 1643,
+            "width": 71,
+            "height": 32
+          },
+          "block": 42,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": ")",
+      "confidence": 93.22,
+      "bbox": {
+        "x": 1974,
+        "y": 1643,
+        "width": 11,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": ")",
+          "confidence": 93.22,
+          "bbox": {
+            "x": 1974,
+            "y": 1643,
+            "width": 11,
+            "height": 43
+          },
+          "block": 45,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "they",
+      "confidence": 96.77,
+      "bbox": {
+        "x": 309,
+        "y": 1687,
+        "width": 80,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "they",
+          "confidence": 96.77,
+          "bbox": {
+            "x": 309,
+            "y": 1687,
+            "width": 80,
+            "height": 45
+          },
+          "block": 46,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O The children are doing their homework",
+      "confidence": 91.98,
+      "bbox": {
+        "x": 830,
+        "y": 1699,
+        "width": 827,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 66.26,
+          "bbox": {
+            "x": 830,
+            "y": 1707,
+            "width": 26,
+            "height": 26
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "The",
+          "confidence": 95.79,
+          "bbox": {
+            "x": 876,
+            "y": 1700,
+            "width": 77,
+            "height": 35
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "children",
+          "confidence": 95.79,
+          "bbox": {
+            "x": 968,
+            "y": 1700,
+            "width": 154,
+            "height": 34
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.03,
+          "bbox": {
+            "x": 1136,
+            "y": 1711,
+            "width": 62,
+            "height": 23
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing",
+          "confidence": 96.76,
+          "bbox": {
+            "x": 1213,
+            "y": 1699,
+            "width": 122,
+            "height": 45
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "their",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 1349,
+            "y": 1700,
+            "width": 88,
+            "height": 34
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "homework",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 1449,
+            "y": 1699,
+            "width": 208,
+            "height": 35
+          },
+          "block": 47,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "am/is/are + -ing 表示 “现在 正在 发 生 某 事",
+      "confidence": 93.52,
+      "bbox": {
+        "x": 283,
+        "y": 1825,
+        "width": 862,
+        "height": 59
+      },
+      "words": [
+        {
+          "text": "am/is/are",
+          "confidence": 91.8,
+          "bbox": {
+            "x": 283,
+            "y": 1835,
+            "width": 206,
+            "height": 33
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "+",
+          "confidence": 92.55,
+          "bbox": {
+            "x": 505,
+            "y": 1838,
+            "width": 27,
+            "height": 27
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "-ing",
+          "confidence": 93,
+          "bbox": {
+            "x": 548,
+            "y": 1845,
+            "width": 88,
+            "height": 33
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "表示",
+          "confidence": 96.66,
+          "bbox": {
+            "x": 650,
+            "y": 1830,
+            "width": 84,
+            "height": 44
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "“现在",
+          "confidence": 96.25,
+          "bbox": {
+            "x": 751,
+            "y": 1825,
+            "width": 121,
+            "height": 59
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "正在",
+          "confidence": 96.26,
+          "bbox": {
+            "x": 894,
+            "y": 1829,
+            "width": 97,
+            "height": 45
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "发",
+          "confidence": 93.29,
+          "bbox": {
+            "x": 1016,
+            "y": 1830,
+            "width": 19,
+            "height": 42
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "生",
+          "confidence": 91.5,
+          "bbox": {
+            "x": 1034,
+            "y": 1825,
+            "width": 42,
+            "height": 59
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "某",
+          "confidence": 91.12,
+          "bbox": {
+            "x": 1075,
+            "y": 1830,
+            "width": 24,
+            "height": 43
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "事",
+          "confidence": 92.78,
+          "bbox": {
+            "x": 1119,
+            "y": 1829,
+            "width": 26,
+            "height": 44
+          },
+          "block": 48,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "TPm working",
+      "confidence": 48.44,
+      "bbox": {
+        "x": 1053,
+        "y": 1938,
+        "width": 306,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "TPm",
+          "confidence": 0,
+          "bbox": {
+            "x": 1053,
+            "y": 1939,
+            "width": 116,
+            "height": 35
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "working",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 1178,
+            "y": 1938,
+            "width": 181,
+            "height": 49
+          },
+          "block": 49,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "a hat",
+      "confidence": 94.25,
+      "bbox": {
+        "x": 1322,
+        "y": 1992,
+        "width": 96,
+        "height": 42
+      },
+      "words": [
+        {
+          "text": "a",
+          "confidence": 94.25,
+          "bbox": {
+            "x": 1322,
+            "y": 2007,
+            "width": 19,
+            "height": 27
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "hat",
+          "confidence": 94.25,
+          "bbox": {
+            "x": 1355,
+            "y": 1992,
+            "width": 63,
+            "height": 42
+          },
+          "block": 51,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "she’s we:",
+      "confidence": 95.04,
+      "bbox": {
+        "x": 1034,
+        "y": 1994,
+        "width": 172,
+        "height": 38
+      },
+      "words": [
+        {
+          "text": "she’s",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 1034,
+            "y": 1994,
+            "width": 97,
+            "height": 38
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "we:",
+          "confidence": 93.45,
+          "bbox": {
+            "x": 1161,
+            "y": 1994,
+            "width": 45,
+            "height": 12
+          },
+          "block": 50,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "ly",
+      "confidence": 4.62,
+      "bbox": {
+        "x": 1231,
+        "y": 2036,
+        "width": 51,
+        "height": 14
+      },
+      "words": [
+        {
+          "text": "ly",
+          "confidence": 4.62,
+          "bbox": {
+            "x": 1231,
+            "y": 2036,
+            "width": 51,
+            "height": 14
+          },
+          "block": 52,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "they’re playing football",
+      "confidence": 92.23,
+      "bbox": {
+        "x": 985,
+        "y": 2042,
+        "width": 472,
+        "height": 77
+      },
+      "words": [
+        {
+          "text": "they’re",
+          "confidence": 92.05,
+          "bbox": {
+            "x": 985,
+            "y": 2042,
+            "width": 142,
+            "height": 77
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "playing",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 1145,
+            "y": 2042,
+            "width": 148,
+            "height": 77
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "football",
+          "confidence": 87.85,
+          "bbox": {
+            "x": 1312,
+            "y": 2042,
+            "width": 145,
+            "height": 77
+          },
+          "block": 53,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "将 来",
+      "confidence": 96.19,
+      "bbox": {
+        "x": 1888,
+        "y": 2238,
+        "width": 87,
+        "height": 69
+      },
+      "words": [
+        {
+          "text": "将",
+          "confidence": 96.98,
+          "bbox": {
+            "x": 1888,
+            "y": 2242,
+            "width": 85,
+            "height": 46
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "来",
+          "confidence": 95.39,
+          "bbox": {
+            "x": 1948,
+            "y": 2238,
+            "width": 27,
+            "height": 69
+          },
+          "block": 56,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "we",
+      "confidence": 55.16,
+      "bbox": {
+        "x": 478,
+        "y": 2244,
+        "width": 85,
+        "height": 43
+      },
+      "words": [
+        {
+          "text": "we",
+          "confidence": 55.16,
+          "bbox": {
+            "x": 478,
+            "y": 2244,
+            "width": 85,
+            "height": 43
+          },
+          "block": 54,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "现在",
+      "confidence": 96.35,
+      "bbox": {
+        "x": 1182,
+        "y": 2244,
+        "width": 85,
+        "height": 44
+      },
+      "words": [
+        {
+          "text": "现在",
+          "confidence": 96.35,
+          "bbox": {
+            "x": 1182,
+            "y": 2244,
+            "width": 85,
+            "height": 44
+          },
+          "block": 55,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O Please be quiet. I’m working. (= I’m working now)",
+      "confidence": 92.21,
+      "bbox": {
+        "x": 360,
+        "y": 2333,
+        "width": 1075,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 56.7,
+          "bbox": {
+            "x": 360,
+            "y": 2339,
+            "width": 25,
+            "height": 27
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "Please",
+          "confidence": 96.19,
+          "bbox": {
+            "x": 405,
+            "y": 2333,
+            "width": 113,
+            "height": 35
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "be",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 531,
+            "y": 2333,
+            "width": 45,
+            "height": 35
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "quiet.",
+          "confidence": 96.72,
+          "bbox": {
+            "x": 591,
+            "y": 2341,
+            "width": 95,
+            "height": 37
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 95.42,
+          "bbox": {
+            "x": 726,
+            "y": 2335,
+            "width": 72,
+            "height": 32
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "working.",
+          "confidence": 95.83,
+          "bbox": {
+            "x": 811,
+            "y": 2333,
+            "width": 179,
+            "height": 45
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(=",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 1031,
+            "y": 2334,
+            "width": 40,
+            "height": 43
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 94.27,
+          "bbox": {
+            "x": 1090,
+            "y": 2339,
+            "width": 64,
+            "height": 32
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "working",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 1167,
+            "y": 2337,
+            "width": 160,
+            "height": 45
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "now)",
+          "confidence": 96.57,
+          "bbox": {
+            "x": 1339,
+            "y": 2334,
+            "width": 96,
+            "height": 43
+          },
+          "block": 57,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "O Look, there’s Sarah. She’s wearing a brown coat. (= she is wearing it now)",
+      "confidence": 93.85,
+      "bbox": {
+        "x": 359,
+        "y": 2389,
+        "width": 1505,
+        "height": 50
+      },
+      "words": [
+        {
+          "text": "O",
+          "confidence": 73.64,
+          "bbox": {
+            "x": 359,
+            "y": 2396,
+            "width": 27,
+            "height": 26
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Look,",
+          "confidence": 93.3,
+          "bbox": {
+            "x": 405,
+            "y": 2390,
+            "width": 101,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "there’s",
+          "confidence": 92.34,
+          "bbox": {
+            "x": 531,
+            "y": 2389,
+            "width": 122,
+            "height": 35
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Sarah.",
+          "confidence": 92.79,
+          "bbox": {
+            "x": 668,
+            "y": 2389,
+            "width": 100,
+            "height": 35
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "She’s",
+          "confidence": 89.25,
+          "bbox": {
+            "x": 809,
+            "y": 2390,
+            "width": 100,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "wearing",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 922,
+            "y": 2401,
+            "width": 170,
+            "height": 33
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "a",
+          "confidence": 96.96,
+          "bbox": {
+            "x": 1106,
+            "y": 2402,
+            "width": 17,
+            "height": 22
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "brown",
+          "confidence": 96,
+          "bbox": {
+            "x": 1136,
+            "y": 2389,
+            "width": 125,
+            "height": 35
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "coat.",
+          "confidence": 96.85,
+          "bbox": {
+            "x": 1276,
+            "y": 2398,
+            "width": 78,
+            "height": 26
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(=",
+          "confidence": 96.95,
+          "bbox": {
+            "x": 1395,
+            "y": 2390,
+            "width": 41,
+            "height": 43
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "she",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 1451,
+            "y": 2394,
+            "width": 59,
+            "height": 34
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 1525,
+            "y": 2406,
+            "width": 26,
+            "height": 22
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "wearing",
+          "confidence": 96.16,
+          "bbox": {
+            "x": 1565,
+            "y": 2406,
+            "width": 151,
+            "height": 33
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it",
+          "confidence": 96.16,
+          "bbox": {
+            "x": 1729,
+            "y": 2403,
+            "width": 26,
+            "height": 25
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "now)",
+          "confidence": 96.74,
+          "bbox": {
+            "x": 1768,
+            "y": 2390,
+            "width": 96,
+            "height": 42
+          },
+          "block": 58,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "口 The weather is nice. It’s not raining",
+      "confidence": 95.17,
+      "bbox": {
+        "x": 359,
+        "y": 2446,
+        "width": 770,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "口",
+          "confidence": 90.74,
+          "bbox": {
+            "x": 359,
+            "y": 2452,
+            "width": 26,
+            "height": 26
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "The",
+          "confidence": 93.05,
+          "bbox": {
+            "x": 405,
+            "y": 2446,
+            "width": 77,
+            "height": 34
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "weather",
+          "confidence": 96.78,
+          "bbox": {
+            "x": 496,
+            "y": 2446,
+            "width": 152,
+            "height": 35
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "is",
+          "confidence": 96.84,
+          "bbox": {
+            "x": 659,
+            "y": 2458,
+            "width": 27,
+            "height": 22
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "nice.",
+          "confidence": 96.41,
+          "bbox": {
+            "x": 701,
+            "y": 2458,
+            "width": 76,
+            "height": 22
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "It’s",
+          "confidence": 93.92,
+          "bbox": {
+            "x": 819,
+            "y": 2448,
+            "width": 60,
+            "height": 32
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.79,
+          "bbox": {
+            "x": 893,
+            "y": 2453,
+            "width": 71,
+            "height": 27
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "raining",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 977,
+            "y": 2457,
+            "width": 152,
+            "height": 34
+          },
+          "block": 59,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "CO ‘Where are the children?’",
+      "confidence": 87,
+      "bbox": {
+        "x": 359,
+        "y": 2501,
+        "width": 525,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "CO",
+          "confidence": 57.91,
+          "bbox": {
+            "x": 359,
+            "y": 2508,
+            "width": 26,
+            "height": 27
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "‘Where",
+          "confidence": 92.38,
+          "bbox": {
+            "x": 416,
+            "y": 2503,
+            "width": 131,
+            "height": 34
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 561,
+            "y": 2514,
+            "width": 54,
+            "height": 23
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.67,
+          "bbox": {
+            "x": 630,
+            "y": 2501,
+            "width": 59,
+            "height": 36
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "children?’",
+          "confidence": 91.58,
+          "bbox": {
+            "x": 703,
+            "y": 2502,
+            "width": 181,
+            "height": 35
+          },
+          "block": 60,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "‘They’re playing in the park.’",
+      "confidence": 93.62,
+      "bbox": {
+        "x": 960,
+        "y": 2502,
+        "width": 577,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "‘They’re",
+          "confidence": 85.65,
+          "bbox": {
+            "x": 960,
+            "y": 2502,
+            "width": 166,
+            "height": 45
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "playing",
+          "confidence": 96.6,
+          "bbox": {
+            "x": 1140,
+            "y": 2502,
+            "width": 156,
+            "height": 45
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "in",
+          "confidence": 96.35,
+          "bbox": {
+            "x": 1309,
+            "y": 2513,
+            "width": 37,
+            "height": 23
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 95.77,
+          "bbox": {
+            "x": 1360,
+            "y": 2502,
+            "width": 58,
+            "height": 34
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "park.’",
+          "confidence": 93.73,
+          "bbox": {
+            "x": 1432,
+            "y": 2502,
+            "width": 105,
+            "height": 45
+          },
+          "block": 61,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "口 (on the phone) We’re having dinner now. Can I phone you later?",
+      "confidence": 91.37,
+      "bbox": {
+        "x": 360,
+        "y": 2558,
+        "width": 1305,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "口",
+          "confidence": 91.77,
+          "bbox": {
+            "x": 360,
+            "y": 2565,
+            "width": 25,
+            "height": 26
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(on",
+          "confidence": 72.68,
+          "bbox": {
+            "x": 408,
+            "y": 2560,
+            "width": 52,
+            "height": 42
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 476,
+            "y": 2558,
+            "width": 49,
+            "height": 35
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "phone)",
+          "confidence": 93.2,
+          "bbox": {
+            "x": 534,
+            "y": 2559,
+            "width": 115,
+            "height": 46
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "We’re",
+          "confidence": 87.96,
+          "bbox": {
+            "x": 676,
+            "y": 2561,
+            "width": 125,
+            "height": 33
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "having",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 815,
+            "y": 2558,
+            "width": 143,
+            "height": 46
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "dinner",
+          "confidence": 96.54,
+          "bbox": {
+            "x": 972,
+            "y": 2559,
+            "width": 122,
+            "height": 34
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "now.",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 1108,
+            "y": 2571,
+            "width": 84,
+            "height": 22
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Can",
+          "confidence": 83.16,
+          "bbox": {
+            "x": 1232,
+            "y": 2560,
+            "width": 77,
+            "height": 34
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I",
+          "confidence": 83.16,
+          "bbox": {
+            "x": 1323,
+            "y": 2560,
+            "width": 13,
+            "height": 33
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "phone",
+          "confidence": 96.71,
+          "bbox": {
+            "x": 1351,
+            "y": 2558,
+            "width": 119,
+            "height": 45
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.24,
+          "bbox": {
+            "x": 1482,
+            "y": 2571,
+            "width": 73,
+            "height": 32
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "later?",
+          "confidence": 96.24,
+          "bbox": {
+            "x": 1569,
+            "y": 2558,
+            "width": 96,
+            "height": 35
+          },
+          "block": 62,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "© You can turn off the television. I’m not watching it",
+      "confidence": 89.72,
+      "bbox": {
+        "x": 360,
+        "y": 2615,
+        "width": 1073,
+        "height": 45
+      },
+      "words": [
+        {
+          "text": "©",
+          "confidence": 29.17,
+          "bbox": {
+            "x": 360,
+            "y": 2622,
+            "width": 25,
+            "height": 25
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "You",
+          "confidence": 96.39,
+          "bbox": {
+            "x": 405,
+            "y": 2617,
+            "width": 82,
+            "height": 33
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "can",
+          "confidence": 94.76,
+          "bbox": {
+            "x": 503,
+            "y": 2628,
+            "width": 62,
+            "height": 21
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "turn",
+          "confidence": 94.76,
+          "bbox": {
+            "x": 580,
+            "y": 2624,
+            "width": 77,
+            "height": 26
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "off",
+          "confidence": 95.44,
+          "bbox": {
+            "x": 672,
+            "y": 2615,
+            "width": 58,
+            "height": 35
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "the",
+          "confidence": 96.92,
+          "bbox": {
+            "x": 736,
+            "y": 2615,
+            "width": 58,
+            "height": 35
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "television.",
+          "confidence": 96.37,
+          "bbox": {
+            "x": 809,
+            "y": 2615,
+            "width": 179,
+            "height": 35
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "I’m",
+          "confidence": 92.92,
+          "bbox": {
+            "x": 1027,
+            "y": 2617,
+            "width": 74,
+            "height": 33
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "not",
+          "confidence": 96.83,
+          "bbox": {
+            "x": 1114,
+            "y": 2622,
+            "width": 72,
+            "height": 28
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "watching",
+          "confidence": 96.56,
+          "bbox": {
+            "x": 1198,
+            "y": 2615,
+            "width": 195,
+            "height": 45
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "it",
+          "confidence": 96.82,
+          "bbox": {
+            "x": 1406,
+            "y": 2624,
+            "width": 27,
+            "height": 26
+          },
+          "block": 63,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "拼写 (参见 附录 5) :",
+      "confidence": 88.14,
+      "bbox": {
+        "x": 285,
+        "y": 2687,
+        "width": 402,
+        "height": 59
+      },
+      "words": [
+        {
+          "text": "拼写",
+          "confidence": 86.35,
+          "bbox": {
+            "x": 285,
+            "y": 2687,
+            "width": 103,
+            "height": 59
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(参见",
+          "confidence": 75.32,
+          "bbox": {
+            "x": 403,
+            "y": 2691,
+            "width": 133,
+            "height": 45
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "附录",
+          "confidence": 95.51,
+          "bbox": {
+            "x": 535,
+            "y": 2691,
+            "width": 150,
+            "height": 45
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "5)",
+          "confidence": 92.15,
+          "bbox": {
+            "x": 623,
+            "y": 2687,
+            "width": 35,
+            "height": 59
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ":",
+          "confidence": 91.36,
+          "bbox": {
+            "x": 671,
+            "y": 2687,
+            "width": 16,
+            "height": 59
+          },
+          "block": 64,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "come 一 coming 。 write 一 writing | dance - 一 es",
+      "confidence": 78.41,
+      "bbox": {
+        "x": 308,
+        "y": 2749,
+        "width": 1161,
+        "height": 112
+      },
+      "words": [
+        {
+          "text": "come",
+          "confidence": 92.95,
+          "bbox": {
+            "x": 308,
+            "y": 2778,
+            "width": 105,
+            "height": 25
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 91.66,
+          "bbox": {
+            "x": 427,
+            "y": 2779,
+            "width": 45,
+            "height": 23
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "coming",
+          "confidence": 91.94,
+          "bbox": {
+            "x": 487,
+            "y": 2767,
+            "width": 151,
+            "height": 56
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "。",
+          "confidence": 32.73,
+          "bbox": {
+            "x": 681,
+            "y": 2762,
+            "width": 26,
+            "height": 65
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "write",
+          "confidence": 81.35,
+          "bbox": {
+            "x": 720,
+            "y": 2769,
+            "width": 102,
+            "height": 33
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 91.7,
+          "bbox": {
+            "x": 835,
+            "y": 2778,
+            "width": 47,
+            "height": 20
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "writing",
+          "confidence": 82.24,
+          "bbox": {
+            "x": 894,
+            "y": 2749,
+            "width": 144,
+            "height": 77
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 51.72,
+          "bbox": {
+            "x": 1056,
+            "y": 2753,
+            "width": 17,
+            "height": 41
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "dance",
+          "confidence": 93.06,
+          "bbox": {
+            "x": 1120,
+            "y": 2762,
+            "width": 93,
+            "height": 76
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "-",
+          "confidence": 92.9,
+          "bbox": {
+            "x": 1240,
+            "y": 2778,
+            "width": 18,
+            "height": 56
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 96.01,
+          "bbox": {
+            "x": 1249,
+            "y": 2778,
+            "width": 46,
+            "height": 23
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "es",
+          "confidence": 42.63,
+          "bbox": {
+            "x": 1288,
+            "y": 2751,
+            "width": 181,
+            "height": 110
+          },
+          "block": 65,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "sit — sitting — swim 一",
+      "confidence": 76.55,
+      "bbox": {
+        "x": 682,
+        "y": 2816,
+        "width": 499,
+        "height": 78
+      },
+      "words": [
+        {
+          "text": "sit",
+          "confidence": 93.24,
+          "bbox": {
+            "x": 682,
+            "y": 2824,
+            "width": 50,
+            "height": 55
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 75.24,
+          "bbox": {
+            "x": 756,
+            "y": 2837,
+            "width": 13,
+            "height": 17
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "sitting",
+          "confidence": 90.98,
+          "bbox": {
+            "x": 799,
+            "y": 2816,
+            "width": 126,
+            "height": 78
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 36.15,
+          "bbox": {
+            "x": 957,
+            "y": 2886,
+            "width": 3,
+            "height": 4
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        },
+        {
+          "text": "swim",
+          "confidence": 71.91,
+          "bbox": {
+            "x": 1006,
+            "y": 2819,
+            "width": 100,
+            "height": 75
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 91.8,
+          "bbox": {
+            "x": 1147,
+            "y": 2826,
+            "width": 34,
+            "height": 35
+          },
+          "block": 68,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "run — running",
+      "confidence": 92.53,
+      "bbox": {
+        "x": 303,
+        "y": 2819,
+        "width": 302,
+        "height": 56
+      },
+      "words": [
+        {
+          "text": "run",
+          "confidence": 93.15,
+          "bbox": {
+            "x": 303,
+            "y": 2819,
+            "width": 70,
+            "height": 56
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 88.49,
+          "bbox": {
+            "x": 396,
+            "y": 2836,
+            "width": 24,
+            "height": 19
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "running",
+          "confidence": 95.94,
+          "bbox": {
+            "x": 443,
+            "y": 2823,
+            "width": 162,
+            "height": 46
+          },
+          "block": 66,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "iF",
+      "confidence": 16.22,
+      "bbox": {
+        "x": 613,
+        "y": 2875,
+        "width": 12,
+        "height": 22
+      },
+      "words": [
+        {
+          "text": "iF",
+          "confidence": 16.22,
+          "bbox": {
+            "x": 613,
+            "y": 2875,
+            "width": 12,
+            "height": 22
+          },
+          "block": 67,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "TY",
+      "confidence": 14.35,
+      "bbox": {
+        "x": 820,
+        "y": 2877,
+        "width": 61,
+        "height": 25
+      },
+      "words": [
+        {
+          "text": "TY",
+          "confidence": 14.35,
+          "bbox": {
+            "x": 820,
+            "y": 2877,
+            "width": 61,
+            "height": 25
+          },
+          "block": 69,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "lie 一 lying",
+      "confidence": 93.92,
+      "bbox": {
+        "x": 306,
+        "y": 2878,
+        "width": 224,
+        "height": 47
+      },
+      "words": [
+        {
+          "text": "lie",
+          "confidence": 93.18,
+          "bbox": {
+            "x": 306,
+            "y": 2878,
+            "width": 50,
+            "height": 36
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 91.69,
+          "bbox": {
+            "x": 386,
+            "y": 2888,
+            "width": 29,
+            "height": 22
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "lying",
+          "confidence": 96.88,
+          "bbox": {
+            "x": 427,
+            "y": 2878,
+            "width": 103,
+            "height": 47
+          },
+          "block": 70,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "-",
+      "confidence": 58.18,
+      "bbox": {
+        "x": 1190,
+        "y": 2941,
+        "width": 10,
+        "height": 3
+      },
+      "words": [
+        {
+          "text": "-",
+          "confidence": 58.18,
+          "bbox": {
+            "x": 1190,
+            "y": 2941,
+            "width": 10,
+            "height": 3
+          },
+          "block": 71,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": true
+        }
+      ]
+    },
+    {
+      "text": "1am doing 5 | do 比较 — Unit 8",
+      "confidence": 91.15,
+      "bbox": {
+        "x": 1302,
+        "y": 3011,
+        "width": 539,
+        "height": 51
+      },
+      "words": [
+        {
+          "text": "1am",
+          "confidence": 75.23,
+          "bbox": {
+            "x": 1302,
+            "y": 3020,
+            "width": 69,
+            "height": 29
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing",
+          "confidence": 96.62,
+          "bbox": {
+            "x": 1385,
+            "y": 3020,
+            "width": 89,
+            "height": 38
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "5",
+          "confidence": 93.01,
+          "bbox": {
+            "x": 1487,
+            "y": 3015,
+            "width": 35,
+            "height": 38
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "|",
+          "confidence": 90.78,
+          "bbox": {
+            "x": 1535,
+            "y": 3020,
+            "width": 8,
+            "height": 29
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "do",
+          "confidence": 93.91,
+          "bbox": {
+            "x": 1557,
+            "y": 3020,
+            "width": 39,
+            "height": 29
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "比较",
+          "confidence": 89.52,
+          "bbox": {
+            "x": 1609,
+            "y": 3015,
+            "width": 73,
+            "height": 38
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 88.53,
+          "bbox": {
+            "x": 1701,
+            "y": 3011,
+            "width": 18,
+            "height": 51
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Unit",
+          "confidence": 96.46,
+          "bbox": {
+            "x": 1742,
+            "y": 3019,
+            "width": 68,
+            "height": 28
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "8",
+          "confidence": 96.31,
+          "bbox": {
+            "x": 1824,
+            "y": 3021,
+            "width": 17,
+            "height": 26
+          },
+          "block": 74,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "are you doing? (疑问 式 ) — Unit 4",
+      "confidence": 94.16,
+      "bbox": {
+        "x": 665,
+        "y": 3012,
+        "width": 586,
+        "height": 49
+      },
+      "words": [
+        {
+          "text": "are",
+          "confidence": 96.8,
+          "bbox": {
+            "x": 665,
+            "y": 3028,
+            "width": 50,
+            "height": 21
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.44,
+          "bbox": {
+            "x": 727,
+            "y": 3028,
+            "width": 58,
+            "height": 29
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing?",
+          "confidence": 93.27,
+          "bbox": {
+            "x": 799,
+            "y": 3020,
+            "width": 109,
+            "height": 37
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "(疑问",
+          "confidence": 92.85,
+          "bbox": {
+            "x": 932,
+            "y": 3016,
+            "width": 146,
+            "height": 37
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "式",
+          "confidence": 91.62,
+          "bbox": {
+            "x": 1040,
+            "y": 3012,
+            "width": 35,
+            "height": 49
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": ")",
+          "confidence": 92.91,
+          "bbox": {
+            "x": 1074,
+            "y": 3012,
+            "width": 16,
+            "height": 49
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 90.13,
+          "bbox": {
+            "x": 1104,
+            "y": 3031,
+            "width": 34,
+            "height": 12
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Unit",
+          "confidence": 96.59,
+          "bbox": {
+            "x": 1151,
+            "y": 3019,
+            "width": 67,
+            "height": 28
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "4",
+          "confidence": 96.87,
+          "bbox": {
+            "x": 1231,
+            "y": 3021,
+            "width": 20,
+            "height": 25
+          },
+          "block": 73,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "am/is/are 一 Unit 1",
+      "confidence": 86.02,
+      "bbox": {
+        "x": 309,
+        "y": 3017,
+        "width": 299,
+        "height": 36
+      },
+      "words": [
+        {
+          "text": "am/is/are",
+          "confidence": 63.98,
+          "bbox": {
+            "x": 309,
+            "y": 3017,
+            "width": 147,
+            "height": 36
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "一",
+          "confidence": 86.21,
+          "bbox": {
+            "x": 467,
+            "y": 3031,
+            "width": 34,
+            "height": 12
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Unit",
+          "confidence": 96.91,
+          "bbox": {
+            "x": 514,
+            "y": 3018,
+            "width": 68,
+            "height": 28
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "1",
+          "confidence": 96.97,
+          "bbox": {
+            "x": 599,
+            "y": 3020,
+            "width": 9,
+            "height": 26
+          },
+          "block": 72,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    },
+    {
+      "text": "What are you doing tomorrow? — Unit 25",
+      "confidence": 93.84,
+      "bbox": {
+        "x": 309,
+        "y": 3062,
+        "width": 697,
+        "height": 37
+      },
+      "words": [
+        {
+          "text": "What",
+          "confidence": 96.3,
+          "bbox": {
+            "x": 309,
+            "y": 3062,
+            "width": 90,
+            "height": 29
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "are",
+          "confidence": 96.47,
+          "bbox": {
+            "x": 411,
+            "y": 3070,
+            "width": 51,
+            "height": 21
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "you",
+          "confidence": 96.58,
+          "bbox": {
+            "x": 474,
+            "y": 3071,
+            "width": 57,
+            "height": 28
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "doing",
+          "confidence": 96.2,
+          "bbox": {
+            "x": 545,
+            "y": 3063,
+            "width": 89,
+            "height": 36
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "tomorrow?",
+          "confidence": 91.74,
+          "bbox": {
+            "x": 648,
+            "y": 3063,
+            "width": 179,
+            "height": 28
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "—",
+          "confidence": 80.47,
+          "bbox": {
+            "x": 838,
+            "y": 3074,
+            "width": 33,
+            "height": 12
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "Unit",
+          "confidence": 95.95,
+          "bbox": {
+            "x": 884,
+            "y": 3062,
+            "width": 67,
+            "height": 28
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        },
+        {
+          "text": "25",
+          "confidence": 96.99,
+          "bbox": {
+            "x": 965,
+            "y": 3064,
+            "width": 41,
+            "height": 25
+          },
+          "block": 75,
+          "paragraph": 1,
+          "line": 1,
+          "lowConfidence": false
+        }
+      ]
+    }
+  ]
+}

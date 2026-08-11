@@ -440,7 +440,7 @@ export default function AwardsAdminPage() {
           </div>
           {activeTemplates.length === 0 ? (
             <div className="rounded-xl bg-white/60 py-6 text-center text-[12px] text-slate-400">
-              还没有可用模版，去下方"兑换券模版"创建一个
+              还没有可用模版，去下方“兑换券模版”创建一个
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">

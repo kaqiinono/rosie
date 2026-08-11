@@ -6,6 +6,7 @@ import type { QuizQuestion, WordEntry } from '@rosie/core'
 import { supabase, todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { StarProgressBar, useStarHud } from '@rosie/rewards'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
+import { fetchStageVocab, readCachedStageVocab } from '../../hooks/useWordData'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
 import { wordMasteryStore } from '../../hooks/useWordMastery'
 import {
@@ -241,7 +242,7 @@ async function upsertMasteryPatches(
 
 export default function AdaptivePlanSession({ planId, onBack, autoStart = false }: AdaptivePlanSessionProps) {
   const { user } = useAuth()
-  const { vocab, masteryMap } = useWordsContext()
+  const { vocab: selectedStageVocab, masteryMap } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
   const { awardStars, session: starSession } = useStarHud()
   const {
@@ -257,6 +258,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   const { weeklyPlan } = useWeeklyPlan(user)
 
   const [plan, setPlan] = useState<AdaptiveWordPlan | null>(null)
+  const [planVocab, setPlanVocab] = useState<WordEntry[] | null>(null)
+  const [isPlanVocabLoading, setIsPlanVocabLoading] = useState(false)
   const [rows, setRows] = useState<AdaptivePlanWordProgress[]>([])
   const [task, setTask] = useState<AdaptiveDailyTask | null>(null)
   const [isLoadingRows, setIsLoadingRows] = useState(true)
@@ -300,6 +303,50 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     () => plans.find((item) => item.id === planId) ?? null,
     [plans, planId],
   )
+  // Adaptive plans own their textbook scope. Do not try to build a KET/4A
+  // session from whichever textbook (for example 5A) happens to be selected
+  // in the shared words layout. Hydrate the account-scoped stage cache first,
+  // and fetch only missing stages from Supabase before auto-starting the round.
+  useEffect(() => {
+    const stages = sourcePlan?.scope.stages ?? []
+    if (!user?.id || stages.length === 0) {
+      setPlanVocab(null)
+      setIsPlanVocabLoading(false)
+      return
+    }
+
+    let cancelled = false
+    const cachedByStage = stages.map((stage) => readCachedStageVocab(user.id, stage))
+    const hasCompleteCache = cachedByStage.every((words) => words != null)
+    if (hasCompleteCache) {
+      setPlanVocab(cachedByStage.flatMap((words) => words ?? []))
+      setIsPlanVocabLoading(false)
+      return
+    } else {
+      setPlanVocab([])
+      setIsPlanVocabLoading(true)
+    }
+
+    void Promise.all(
+      stages.map((stage, index) => cachedByStage[index] ?? fetchStageVocab(user.id, stage)),
+    )
+      .then((stageWords) => {
+        if (cancelled) return
+        setPlanVocab(stageWords.flat())
+        setIsPlanVocabLoading(false)
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return
+        console.error('[adaptive_word_plan] load scoped vocab failed', err)
+        setIsPlanVocabLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [sourcePlan, user?.id])
+
+  const vocab = planVocab ?? selectedStageVocab
   const dayReviewKeys = task?.reviewKeys ?? []
   const batchSize = Math.max(1, plan?.reviewBatchSize ?? 20)
   const visibleReviewKeys = dayReviewKeys.slice(0, reviewCursor)
@@ -428,7 +475,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   // list resolves without this id (deleted / archived / list fetch failed)
   // nothing ever clears `isLoadingRows`, and the page would sit on「加载中…」
   // forever instead of reaching the not-found screen.
-  const isLoading = plansLoading || (sourcePlan != null && isLoadingRows)
+  const isLoading =
+    plansLoading || (sourcePlan != null && (isLoadingRows || isPlanVocabLoading))
 
   const retryLoad = useCallback(() => {
     // Orphan any in-flight load so its late resolve can't clear the new one.
@@ -1167,13 +1215,22 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   // Starting before vocab loads builds zero quiz slots → stuck on「题目准备中…」.
   useEffect(() => {
     if (!autoStart || autoStartDoneRef.current) return
-    if (isLoadingRows || !task || settling) return
+    if (isLoadingRows || isPlanVocabLoading || !task || settling) return
     if (vocab.length === 0) return
     if (phase !== 'hub') return
     if (sessionStartedRef.current || unappliedSnapshotRef.current) return
     autoStartDoneRef.current = true
     beginSession()
-  }, [autoStart, isLoadingRows, task, settling, phase, beginSession, vocab.length])
+  }, [
+    autoStart,
+    isLoadingRows,
+    isPlanVocabLoading,
+    task,
+    settling,
+    phase,
+    beginSession,
+    vocab.length,
+  ])
 
   const currentQuestion = useMemo<QuizQuestion | null>(() => {
     const slot = quizSlots[curQ]
