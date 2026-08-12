@@ -87,7 +87,7 @@ Three modes in `calc-session-policy.ts`:
 
 | Mode      | Clock (`T_clock`)       | At 0                                                           | Star multiplier               |
 | --------- | ----------------------- | -------------------------------------------------------------- | ----------------------------- |
-| `relaxed` | `T_target` (soft clock) | no auto-advance; past 0 keeps counting overtime (−m:ss) in red | ×1.0                          |
+| `relaxed` | `T_target` (hidden soft clock) | no auto-advance; elapsed time continues in the background | ×1.0                          |
 | `strict`  | `T_target`              | final wrong                                                    | ×1.2                          |
 | `bonus`   | `T_target + bonusSec`   | final wrong                                                    | `max(1, 1.2 − 0.05×bonusSec)` |
 

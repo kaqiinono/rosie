@@ -178,9 +178,8 @@ export default function CalcSessionPage() {
     setPrepConfirmed(true)
   }, [prepTimingMode, prepBonusSec, settings.soundEnabled])
 
-  // UI countdown: clock time per the confirmed session timing mode (relaxed
-  // sessions — including drills/mistakes which never set the mode ref — fall
-  // back to today's "timed mode + explicit seconds" behavior).
+  // Clock time per the confirmed session timing mode. Relaxed sessions keep
+  // this clock for proficiency measurement, but do not display it in the UI.
   const secondsForQuestion = useCallback(
     (q: CalcQuestion): number | null => {
       let explicit: number | null | undefined = null
@@ -1236,6 +1235,7 @@ export default function CalcSessionPage() {
         style={{ height: 'calc(100svh - 56px)' }}
       >
         <CalcSessionStatusBar
+          showTimer={!isRelaxedClock}
           remainingSec={remainingSec}
           timerOvertime={timerOvertime}
           idx={idx}

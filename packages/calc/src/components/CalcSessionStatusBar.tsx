@@ -11,6 +11,8 @@
 type LastResult = { stars: number; bonus: number } | null
 
 type Props = {
+  /** Whether the timer should be visible in the status row. */
+  showTimer?: boolean
   /** Remaining seconds, or null for an untimed (∞) session. */
   remainingSec: number | null
   /**
@@ -38,6 +40,7 @@ function formatTimer(s: number) {
 }
 
 export default function CalcSessionStatusBar({
+  showTimer = true,
   remainingSec,
   timerOvertime = false,
   idx,
@@ -58,9 +61,12 @@ export default function CalcSessionStatusBar({
         style={{ color: 'rgba(196,181,253,0.6)' }}
       >
         <div
-          className={timerOvertime ? 'animate-pulse' : undefined}
+          aria-hidden={!showTimer}
+          className={timerOvertime && showTimer ? 'animate-pulse' : undefined}
           style={
-            timerOvertime
+            !showTimer
+              ? { visibility: 'hidden' }
+              : timerOvertime
               ? {
                   color: '#f87171',
                   textShadow:
@@ -69,7 +75,7 @@ export default function CalcSessionStatusBar({
               : undefined
           }
         >
-          {remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞'}
+          {showTimer && (remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞')}
         </div>
         {inMakeupTail ? (
           <div style={{ color: 'rgba(251,191,36,0.7)' }}>

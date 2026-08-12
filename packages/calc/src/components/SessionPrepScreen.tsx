@@ -16,7 +16,7 @@ type Props = {
 }
 
 const MODE_META: Record<CalcTimingMode, { label: string; emoji: string; desc: string }> = {
-  relaxed: { label: '宽松', emoji: '🌤️', desc: '显示目标倒计时，超时标红、不强制交卷' },
+  relaxed: { label: '宽松', emoji: '🌤️', desc: '不显示倒计时，按自己的节奏作答' },
   strict: { label: '严格', emoji: '⏱️', desc: '始终显示倒计时，超时算最终错误' },
   bonus: { label: '自定义加成', emoji: '➕', desc: '目标时间基础上多给几秒缓冲，超时算最终错误' },
 }
