@@ -5,5 +5,5 @@ import { AudioManagerPage } from '@rosie/audio'
 
 export default function AdminAudioPage() {
   const { user } = useAuth()
-  return <AudioManagerPage user={user} />
+  return <AudioManagerPage user={user} scope="library" />
 }

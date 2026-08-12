@@ -426,7 +426,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       setEditingPlan(null)
       setEditingPlanStart(null)
       setEditArrangeBaselineKey(null)
-      router.push('/admin/plans/english')
+      router.push('/setting/plans/english')
     },
     [
       activeLesson,
@@ -841,7 +841,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
               <div className="mt-2 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
                 <button
                   type="button"
-                  onClick={() => router.push('/admin/plans/english')}
+                  onClick={() => router.push('/setting/plans/english')}
                   className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
                 >
                   取消

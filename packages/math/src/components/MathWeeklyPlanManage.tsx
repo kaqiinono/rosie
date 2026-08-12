@@ -33,7 +33,7 @@ export default function MathWeeklyPlanManage({ problemSets }: Props) {
           <p className="mt-1 text-[12px] text-gray-500">创建、修改与删除数学每日一练计划</p>
         </div>
         <Link
-          href="/admin/plans/math/new"
+          href="/setting/plans/math/new"
           className="shrink-0 rounded-xl px-4 py-2.5 text-[13px] font-extrabold text-white no-underline transition-all hover:scale-105"
           style={{
             background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
@@ -55,7 +55,7 @@ export default function MathWeeklyPlanManage({ problemSets }: Props) {
           <div className="mb-2 text-4xl">📅</div>
           <div className="mb-4 text-[14px] font-bold text-orange-800">还没有数学计划</div>
           <Link
-            href="/admin/plans/math/new"
+            href="/setting/plans/math/new"
             className="inline-block rounded-xl px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
             style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
           >
@@ -70,7 +70,7 @@ export default function MathWeeklyPlanManage({ problemSets }: Props) {
           problemSets={problemSets}
           onDelete={deletePlan}
           onEdit={(plan) => {
-            router.push(`/admin/plans/math/${encodeURIComponent(plan.weekStart)}`)
+            router.push(`/setting/plans/math/${encodeURIComponent(plan.weekStart)}`)
           }}
         />
       )}

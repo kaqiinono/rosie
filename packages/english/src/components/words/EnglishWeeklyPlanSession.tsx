@@ -360,7 +360,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
                 </button>
               )}
               <Link
-                href="/admin/plans/english"
+                href="/setting/plans/english"
                 className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-3 py-2.5 text-[.75rem] font-extrabold text-[#93c5fd] no-underline"
               >
                 计划管理
@@ -374,7 +374,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
                 <span>暂无练习计划</span>
                 <span className="text-[.75rem]">请家长在管理后台创建多日计划或自适应计划</span>
                 <Link
-                  href="/admin/plans/english"
+                  href="/setting/plans/english"
                   className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-[.8rem] font-extrabold text-[#93c5fd] no-underline"
                 >
                   前往计划管理

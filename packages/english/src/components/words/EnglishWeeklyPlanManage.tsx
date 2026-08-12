@@ -54,7 +54,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
           <p className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">按课程与日期分配每日单词</p>
         </div>
         <Link
-          href="/admin/plans/english/new"
+          href="/setting/plans/english/new"
           className="font-nunito shrink-0 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
         >
           + 创建多日计划
@@ -72,7 +72,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
           <div className="mb-2 text-4xl">📅</div>
           <div className="mb-4 text-[14px] font-bold text-[#fbbf24]">还没有多日计划</div>
           <Link
-            href="/admin/plans/english/new"
+            href="/setting/plans/english/new"
             className="font-nunito inline-block rounded-xl bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
           >
             创建第一个计划
@@ -127,7 +127,7 @@ export default function EnglishWeeklyPlanManage({ vocab }: Props) {
                   {!plan.weekCompletion && plan.id && (
                     <button
                       type="button"
-                      onClick={() => router.push(`/admin/plans/english/${plan.id}`)}
+                      onClick={() => router.push(`/setting/plans/english/${plan.id}`)}
                       className="font-nunito cursor-pointer rounded-xl border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#93c5fd] transition-colors hover:bg-[rgba(96,165,250,.15)]"
                     >
                       编辑计划

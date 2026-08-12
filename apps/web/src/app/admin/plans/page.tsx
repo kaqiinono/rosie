@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 const PLAN_MODULES = [
   {
-    href: '/admin/plans/math',
+    href: '/setting/plans/math',
     emoji: '📐',
     title: '数学计划',
     description: '按关卡、题型与日期分配每日数学题',
@@ -13,7 +13,7 @@ const PLAN_MODULES = [
     border: 'rgba(251,146,60,.25)',
   },
   {
-    href: '/admin/plans/english',
+    href: '/setting/plans/english',
     emoji: '📖',
     title: '英语计划',
     description: '多日计划与自适应计划：按词库、课程分配，或按掌握度自动推进',
@@ -22,7 +22,7 @@ const PLAN_MODULES = [
     border: 'rgba(59,130,246,.25)',
   },
   {
-    href: '/admin/plans/chinese',
+    href: '/setting/plans/chinese',
     emoji: '📜',
     title: '语文计划',
     description: '按教材路线图推进：控制关卡与题型，暂停/恢复，查看每关练习记录',
@@ -51,7 +51,7 @@ export default function AdminPlansHubPage() {
       >
         <div className="mx-auto flex h-14 max-w-[640px] items-center gap-3 px-4">
           <Link
-            href="/admin"
+            href="/setting"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline"
             style={{ background: 'rgba(251,146,60,.1)', border: '1.5px solid rgba(251,146,60,.25)', color: '#c2410c' }}
           >

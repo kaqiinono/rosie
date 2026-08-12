@@ -23,7 +23,7 @@ export default function AdminNewMathPlanPage() {
       >
         <div className="mx-auto flex h-14 max-w-[800px] items-center gap-3 px-4">
           <Link
-            href="/admin/plans/math"
+            href="/setting/plans/math"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline"
             style={{ background: 'rgba(251,146,60,.12)', border: '1.5px solid rgba(251,146,60,.3)', color: '#c2410c' }}
           >

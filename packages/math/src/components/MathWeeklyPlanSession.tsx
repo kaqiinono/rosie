@@ -577,7 +577,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                   : '请家长在管理后台检查计划日期'}
             </div>
             <Link
-              href="/admin/plans/math"
+              href="/setting/plans/math"
               className="inline-block rounded-xl px-6 py-3 text-[14px] font-extrabold text-white no-underline transition-all hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
@@ -613,7 +613,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                         </span>
                       </span>
                       <Link
-                        href="/admin/plans/math"
+                        href="/setting/plans/math"
                         className="shrink-0 text-[11px] font-bold text-orange-500 no-underline"
                       >
                         管理 →

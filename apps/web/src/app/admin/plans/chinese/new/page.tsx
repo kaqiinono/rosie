@@ -22,7 +22,7 @@ export default function AdminNewChinesePlanPage() {
       >
         <div className="mx-auto flex h-14 max-w-[720px] items-center gap-3 px-4">
           <Link
-            href="/admin/plans/chinese"
+            href="/setting/plans/chinese"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline"
             style={{
               background: 'rgba(245,158,11,.12)',

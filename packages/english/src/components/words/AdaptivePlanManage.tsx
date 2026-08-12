@@ -237,7 +237,7 @@ export default function AdaptivePlanManage() {
           <p className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">按掌握度自动推进的单词挑战</p>
         </div>
         <Link
-          href="/admin/plans/english/adaptive/new"
+          href="/setting/plans/english/adaptive/new"
           className="font-nunito shrink-0 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline shadow-[0_3px_12px_rgba(124,58,237,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(124,58,237,.5)]"
         >
           + 创建自适应计划
@@ -255,7 +255,7 @@ export default function AdaptivePlanManage() {
           <div className="mb-2 text-4xl">🧭</div>
           <div className="mb-4 text-[14px] font-bold text-[#c4b5fd]">还没有自适应计划</div>
           <Link
-            href="/admin/plans/english/adaptive/new"
+            href="/setting/plans/english/adaptive/new"
             className="font-nunito inline-block rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#2563eb] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
           >
             创建第一个计划

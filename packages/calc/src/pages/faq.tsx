@@ -242,7 +242,7 @@ export default function CalcFaqPage() {
 
         <div className="flex flex-wrap gap-2 pt-2">
           <Link
-            href="/admin/calc"
+            href="/setting/calc"
             className="rounded-full px-4 py-2 text-[12px] font-extrabold no-underline"
             style={{
               background: 'rgba(139,92,246,0.2)',

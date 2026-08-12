@@ -159,9 +159,18 @@ unaffected by the migration. Optional: enable Turborepo Remote Caching (Vercel d
 
 This is a Next.js 15 App Router PWA for elementary school math and English learning, targeting a single child (Rosie). **Login is required** — Supabase is the sole data store. The app is almost entirely client-side with SSG; server Route Handlers include `word-enrich` (百炼填词) and `/api/ai/*` (RAG 助手).
 
-### Admin (`/admin`)
+### Settings and Admin (`/setting`, `/admin`)
 
-`/admin` is a parent/admin hub (card menu). Sub-pages:
+`/setting` is the signed-in user's configuration hub. It shows personal configuration cards to
+every authenticated user (calc settings, learning plans, stars/vouchers, media collections) and
+also shows the global configuration section when `app_metadata.role = "admin"`. Personal detail
+routes live under `/setting/**` and always operate on the current `user.id`.
+
+`/admin/**` is reserved for global management and remains wrapped by `AdminGuard`. The account
+button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/admin/awards`, and
+`/admin/plans/**` URLs redirect to their `/setting/**` equivalents.
+
+Global admin sub-pages include:
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.

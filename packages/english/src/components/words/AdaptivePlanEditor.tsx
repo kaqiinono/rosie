@@ -216,7 +216,7 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
         if (result.status === 'paused') {
           window.alert('已创建（暂停）。当前已有进行中的计划，可在列表中点「恢复」来切换。')
         }
-        router.push('/admin/plans/english')
+        router.push('/setting/plans/english')
         return
       }
     } catch (err) {
@@ -367,7 +367,7 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
         <div className="mt-2 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
           <button
             type="button"
-            onClick={() => router.push('/admin/plans/english')}
+            onClick={() => router.push('/setting/plans/english')}
             className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
           >
             取消

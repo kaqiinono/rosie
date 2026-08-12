@@ -20,7 +20,10 @@ import {
   type PlayerTrack,
 } from '@rosie/player'
 
-type Props = { user: User | null }
+type Props = {
+  user: User | null
+  scope?: 'all' | 'library' | 'collections'
+}
 
 function assetToTrack(asset: AudioAsset, url: string): PlayerTrack {
   return { url, label: asset.label, refLink: null, mediaType: asset.mediaType, source: assetToInput(asset) }
@@ -45,9 +48,9 @@ function resolvePlaylistId(c: AudioCollection, favoriteId: string | null): strin
   return null
 }
 
-export default function AudioManagerPage({ user }: Props) {
+export default function AudioManagerPage({ user, scope = 'all' }: Props) {
   // 'library' = 独立媒体库；其余为收藏夹 id
-  const [selectedId, setSelectedId] = useState<string>('library')
+  const [selectedId, setSelectedId] = useState<string>(scope === 'collections' ? 'favorites' : 'library')
   const [flash, setFlash] = useState<string | null>(null)
   const [pendingAsset, setPendingAsset] = useState<AudioAsset | null>(null)
 
@@ -60,7 +63,7 @@ export default function AudioManagerPage({ user }: Props) {
     window.setTimeout(() => setFlash(null), 1800)
   }
 
-  const isLibrary = selectedId === 'library'
+  const isLibrary = scope === 'library' || selectedId === 'library'
   const selected = isLibrary ? null : col.collections.find((c) => c.id === selectedId) ?? null
 
   const current = player.current
@@ -130,8 +133,12 @@ export default function AudioManagerPage({ user }: Props) {
             ←
           </Link>
           <div>
-            <div className="text-[17px] font-extrabold text-amber-900">媒体管理</div>
-            <div className="text-[10px] font-semibold text-amber-500/70">独立媒体 · 收藏夹</div>
+            <div className="text-[17px] font-extrabold text-amber-900">
+              {scope === 'collections' ? '媒体收藏夹' : '公共媒体管理'}
+            </div>
+            <div className="text-[10px] font-semibold text-amber-500/70">
+              {scope === 'collections' ? '我的最爱 · 自建收藏夹' : '独立音频 · 视频资源'}
+            </div>
           </div>
           {flash && (
             <div
@@ -145,7 +152,7 @@ export default function AudioManagerPage({ user }: Props) {
       </header>
 
       <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 py-6 md:flex-row md:gap-5">
-        <PlaylistSidebar
+        {scope !== 'library' && <PlaylistSidebar
           collections={col.collections}
           selectedId={selectedId}
           onSelect={setSelectedId}
@@ -179,7 +186,8 @@ export default function AudioManagerPage({ user }: Props) {
             player.enqueue(c.tracks)
             showFlash(`已加入播放列表（${c.tracks.length}）`)
           }}
-        />
+          showLibrary={scope === 'all'}
+        />}
 
         <div className="min-w-0 flex-1">
           {isLibrary ? (
@@ -223,7 +231,7 @@ export default function AudioManagerPage({ user }: Props) {
               getItem={itemInSelected}
               onRemove={(item) => void col.removeItem(item)}
               onUpload={
-                selected.acceptsItems
+                scope !== 'collections' && selected.acceptsItems
                   ? async (file) => {
                       const { error, asset } = await assetHook.uploadAsset(file)
                       if (error) {

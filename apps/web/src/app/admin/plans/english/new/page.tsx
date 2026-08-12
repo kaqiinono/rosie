@@ -21,7 +21,7 @@ export default function AdminNewEnglishPlanPage() {
         >
           <div className="mx-auto flex h-14 max-w-[800px] items-center gap-3 px-4">
             <Link
-              href="/admin/plans/english"
+              href="/setting/plans/english"
               className="flex h-9 w-9 items-center justify-center rounded-full no-underline text-[#93c5fd]"
               style={{ background: 'rgba(96,165,250,.12)', border: '1.5px solid rgba(96,165,250,.3)' }}
             >

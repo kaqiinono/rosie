@@ -188,7 +188,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
           quizTypes,
         }
         await savePlan(next)
-        router.push('/admin/plans/chinese')
+        router.push('/setting/plans/chinese')
         return
       }
 
@@ -200,7 +200,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
         quizTypes,
         activateNow,
       })
-      router.push('/admin/plans/chinese')
+      router.push('/setting/plans/chinese')
     } catch (err) {
       console.error('[chinese_roadmap_plan] save failed', err)
       setFormError('保存失败，请检查网络后重试。')
@@ -258,7 +258,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
         <p className="text-[14px] font-bold text-slate-600">未找到该计划（可能已归档）。</p>
         <button
           type="button"
-          onClick={() => router.push('/admin/plans/chinese')}
+          onClick={() => router.push('/setting/plans/chinese')}
           className="mt-4 cursor-pointer rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-[13px] font-extrabold text-amber-800"
         >
           返回列表
@@ -579,7 +579,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
           </button>
           <button
             type="button"
-            onClick={() => router.push('/admin/plans/chinese')}
+            onClick={() => router.push('/setting/plans/chinese')}
             className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-[13px] font-bold text-slate-500"
           >
             取消

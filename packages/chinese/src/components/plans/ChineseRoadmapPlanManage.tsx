@@ -96,7 +96,7 @@ export default function ChineseRoadmapPlanManage() {
           </p>
         </div>
         <Link
-          href="/admin/plans/chinese/new"
+          href="/setting/plans/chinese/new"
           className="shrink-0 rounded-xl px-4 py-2.5 text-[13px] font-extrabold text-white no-underline transition-all hover:scale-105"
           style={{
             background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
@@ -118,7 +118,7 @@ export default function ChineseRoadmapPlanManage() {
           <div className="mb-2 text-4xl">📖</div>
           <div className="mb-4 text-[14px] font-bold text-amber-800">还没有语文计划</div>
           <Link
-            href="/admin/plans/chinese/new"
+            href="/setting/plans/chinese/new"
             className="inline-block rounded-xl px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
             style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}
           >
@@ -168,7 +168,7 @@ export default function ChineseRoadmapPlanManage() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 border-t border-amber-100 bg-amber-50/40 px-5 py-3">
                   <Link
-                    href={`/admin/plans/chinese/${plan.id}`}
+                    href={`/setting/plans/chinese/${plan.id}`}
                     className="rounded-xl border border-[rgba(180,83,9,.35)] bg-[rgba(245,158,11,.08)] px-3.5 py-2 text-[13px] font-extrabold text-amber-800 no-underline transition-colors hover:bg-[rgba(245,158,11,.15)]"
                   >
                     编辑

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useStarEarning } from '@rosie/rewards'
@@ -36,6 +37,8 @@ interface TodayVoucherRow {
 }
 
 export default function AwardsAdminPage() {
+  const pathname = usePathname()
+  const isTemplateAdmin = pathname === '/admin/voucher-templates'
   const { user } = useAuth()
   const wallet = useCalcWallet(user)
   const { earnStars } = useStarEarning(user)
@@ -238,16 +241,16 @@ export default function AwardsAdminPage() {
       >
         <div className="mx-auto flex h-14 max-w-[760px] items-center gap-3 px-4">
           <Link
-            href="/admin"
+            href={isTemplateAdmin ? '/admin' : '/setting'}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-amber-700 transition hover:scale-110"
             style={{ background: 'rgba(245,158,11,0.10)', border: '1.5px solid rgba(245,158,11,0.30)' }}
-            aria-label="返回管理后台"
+            aria-label={isTemplateAdmin ? '返回管理后台' : '返回用户配置'}
           >
             ←
           </Link>
           <div className="flex items-center gap-1.5 text-[17px] font-extrabold text-amber-900">
             <span aria-hidden>🛠</span>
-            <span>管理 · 星星与奖券</span>
+            <span>{isTemplateAdmin ? '管理 · 奖券模板' : '配置 · 星星与奖券'}</span>
           </div>
           {flash && (
             <div
@@ -261,6 +264,7 @@ export default function AwardsAdminPage() {
       </header>
 
       <main className="mx-auto max-w-[760px] space-y-6 px-4 py-6 pb-20">
+        {!isTemplateAdmin && <>
         {/* Current balances + face value */}
         <section
           className="rounded-3xl p-5"
@@ -492,8 +496,10 @@ export default function AwardsAdminPage() {
           )}
         </section>
 
+        </>}
+
         {/* Voucher template CRUD */}
-        <section>
+        {isTemplateAdmin && <section>
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-2">
               <h2 className="text-[15px] font-extrabold text-slate-800">兑换券模版</h2>
@@ -547,10 +553,10 @@ export default function AwardsAdminPage() {
               )}
             </div>
           )}
-        </section>
+        </section>}
 
         {/* Today's log */}
-        <section>
+        {!isTemplateAdmin && <section>
           <div className="mb-3 flex items-baseline gap-2">
             <h2 className="text-[15px] font-extrabold text-slate-800">今日操作日志</h2>
             <span className="text-[11px] text-slate-500">
@@ -617,10 +623,10 @@ export default function AwardsAdminPage() {
               })}
             </div>
           )}
-        </section>
+        </section>}
       </main>
 
-      {modalMode !== null && (
+      {isTemplateAdmin && modalMode !== null && (
         <VoucherTemplateModal
           initial={modalMode === 'new' ? undefined : modalMode}
           onCancel={() => setModalMode(null)}

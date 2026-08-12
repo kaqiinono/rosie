@@ -173,7 +173,7 @@ export default function AdaptivePlanPractice() {
               <span>暂无自适应计划</span>
               <span className="text-[.75rem]">请家长在管理后台创建英语自适应计划</span>
               <Link
-                href="/admin/plans/english"
+                href="/setting/plans/english"
                 className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.4)] bg-[rgba(139,92,246,.08)] px-4 py-2 text-[.8rem] font-extrabold text-[#c4b5fd] no-underline"
               >
                 前往计划管理

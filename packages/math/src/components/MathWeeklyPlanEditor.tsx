@@ -242,7 +242,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
 
     await savePlan(plan)
     setEditingPlanStart(null)
-    router.push('/admin/plans/math')
+    router.push('/setting/plans/math')
   }, [
     selectedLessonIds,
     sectionFilters,
@@ -311,7 +311,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
           <div className="mb-5 flex items-center justify-between">
             <button
               type="button"
-              onClick={() => router.push('/admin/plans/math')}
+              onClick={() => router.push('/setting/plans/math')}
               className="flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-bold text-orange-700 transition-all hover:scale-105"
               style={{ background: 'rgba(251,146,60,.12)', border: '1.5px solid rgba(251,146,60,.3)' }}
             >
@@ -320,7 +320,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
             </button>
             <button
               type="button"
-              onClick={() => router.push('/admin/plans/math')}
+              onClick={() => router.push('/setting/plans/math')}
               className="cursor-pointer rounded-full px-3 py-2 text-[13px] font-bold text-gray-400 transition-all hover:text-gray-600"
               style={{ background: 'rgba(0,0,0,.05)', border: '1.5px solid rgba(0,0,0,.06)' }}
             >

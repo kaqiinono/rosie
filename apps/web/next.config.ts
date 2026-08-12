@@ -20,6 +20,12 @@ const nextConfig: NextConfig = {
 
   transpilePackages: getRosiePackages(),
 
+  redirects: async () => [
+    { source: '/admin/calc', destination: '/setting/calc', permanent: false },
+    { source: '/admin/awards', destination: '/setting/awards', permanent: false },
+    { source: '/admin/plans/:path*', destination: '/setting/plans/:path*', permanent: false },
+  ],
+
   headers: async () => [
     {
       source: '/sw.js',
