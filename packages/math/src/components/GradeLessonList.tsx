@@ -2,6 +2,7 @@
 
 import { OrbBackground, BackLink } from '@rosie/ui'
 import CourseCard from '@rosie/math/components/CourseCard'
+import MathGradeStatsPanel from '@rosie/math/components/MathGradeStatsPanel'
 import { COURSES } from '@rosie/math-kit/utils/courses-data'
 import { GRADE_LABEL, gradeOf, lessonIdFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import type { CourseCardData } from '@rosie/core'
@@ -26,6 +27,7 @@ export default function GradeLessonList({ grade }: { grade: number }) {
             共 {courses.length} 讲，选一节开始吧
           </p>
         </section>
+        <MathGradeStatsPanel courses={courses} />
         <section className="grid w-full max-w-[680px] grid-cols-1 gap-4 min-[501px]:max-w-4xl min-[501px]:grid-cols-2 xl:max-w-6xl xl:grid-cols-3">
           {courses.map((course) => (
             <CourseCard key={course.href} data={course} />

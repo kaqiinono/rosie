@@ -69,3 +69,20 @@ CREATE POLICY chinese_roadmap_plan_lesson_runs_own ON public.chinese_roadmap_pla
 ALTER TABLE public.chinese_roadmap_plans
   ALTER COLUMN quiz_types
   SET DEFAULT ARRAY['recognize','stroke','phrase','blank','passage','pinyin-write']::text[];
+
+-- Incremental: add run tracking columns for enhanced reports.
+ALTER TABLE public.chinese_roadmap_plan_lesson_runs
+  ADD COLUMN IF NOT EXISTS duration_seconds INT,
+  ADD COLUMN IF NOT EXISTS source VARCHAR(16) NOT NULL DEFAULT 'plan',
+  ADD COLUMN IF NOT EXISTS finished_phases TEXT[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS lesson_title VARCHAR(128) NOT NULL DEFAULT '';
+
+ALTER TABLE public.chinese_roadmap_plan_lesson_runs
+  DROP CONSTRAINT IF EXISTS chinese_roadmap_plan_runs_source_chk;
+ALTER TABLE public.chinese_roadmap_plan_lesson_runs
+  ADD CONSTRAINT chinese_roadmap_plan_runs_source_chk
+  CHECK (source IN ('plan', 'free', 'review'));
+
+-- Index on finished_at for today-run lookups (used by homepage card + practice records).
+CREATE INDEX IF NOT EXISTS idx_chinese_roadmap_plan_runs_finished
+  ON public.chinese_roadmap_plan_lesson_runs (user_id, plan_id, finished_at DESC);

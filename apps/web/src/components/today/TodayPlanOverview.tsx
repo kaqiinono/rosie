@@ -31,7 +31,7 @@ export type TodayPlanCardModel = {
   label: string
   icon: string
   href: string
-  done: number | string
+  done: number | string | null
   total: number | null
   subtitle: string
   pct: number
@@ -81,7 +81,7 @@ export type BuildTodayPlanCardsInput = {
     href?: string
   }
   chinese: {
-    done: number | string
+    done: number | string | null
     total: number | null
     subtitle: string
     pct: number
@@ -325,12 +325,14 @@ export function TodayPlanOverviewCards({
               >
                 {card.label}
               </div>
-              <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
-                {card.done}
-                {card.total !== null && (
-                  <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
-                )}
-              </div>
+              {card.done !== null && card.done !== '' && (
+                <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
+                  {card.done}
+                  {card.total !== null && (
+                    <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
+                  )}
+                </div>
+              )}
               <div
                 className="mt-1 truncate text-[10px] font-medium"
                 style={{ color: card.tone.subtitle }}
@@ -480,9 +482,16 @@ export function useTodayPlanOverview() {
   const {
     activePlan: chineseActivePlan,
     completedPlan: chineseCompletedPlan,
+    loadRunsForPlan,
+    runsByPlanId,
     isLoading: chinesePlanLoading,
   } = useChineseRoadmapPlan(user)
   const chinesePlanCleared = !chineseActivePlan && !!chineseCompletedPlan
+
+  const chineseFocusPlan = chineseActivePlan ?? chineseCompletedPlan
+  useEffect(() => {
+    if (chineseFocusPlan) void loadRunsForPlan(chineseFocusPlan.id)
+  }, [chineseFocusPlan, loadRunsForPlan])
 
   useEffect(() => {
     if (chineseActivePlan) setActiveChineseBook(chineseActivePlan.bookSlug)
@@ -526,20 +535,19 @@ export function useTodayPlanOverview() {
     )
   }, [chineseActivePlan, chinese.lessons])
 
-  // Active plan: batch completion vs completed_lesson_keys (not char mastery N/N).
-  const chineseBatchDoneCount = useMemo(() => {
-    if (!chineseActivePlan || chineseBatchKeys.length === 0) return 0
-    const completed = new Set(chineseActivePlan.completedLessonKeys)
-    return chineseBatchKeys.filter((k) => completed.has(k)).length
-  }, [chineseActivePlan, chineseBatchKeys])
+  // Today's Chinese run: boolean check — has any run been recorded today?
+  const chineseTodayRun = useMemo(() => {
+    if (!chineseFocusPlan) return null
+    const runs = runsByPlanId[chineseFocusPlan.id] ?? []
+    return runs.find((r) => r.finishedAt.startsWith(today)) ?? null
+  }, [chineseFocusPlan, runsByPlanId, today])
+  const chineseHasTodayRun = chineseTodayRun !== null
 
   const chineseDone = chineseActivePlan
-    ? chineseBatchKeys.length > 0 && chineseBatchDoneCount >= chineseBatchKeys.length
+    ? chineseHasTodayRun
     : chinesePlanCleared || chinese.allDone || chinese.lessonDone
   const chinesePct = chineseActivePlan
-    ? chineseBatchKeys.length > 0
-      ? Math.round((chineseBatchDoneCount / chineseBatchKeys.length) * 100)
-      : 0
+    ? (chineseHasTodayRun ? 100 : 0)
     : chinesePlanCleared
       ? 100
       : chinese.total > 0
@@ -569,16 +577,23 @@ export function useTodayPlanOverview() {
 
   const chineseHref = chinesePlanCleared
     ? '/chinese/weekly'
-    : chineseActivePlan && chineseBatchKeys.length > 0
-      ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
-      : chinese.currentNode
-        ? `${chineseRoute(chinese.bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
-        : chineseRoute(chinese.bookSlug, 'daily')
+    : chineseActivePlan && chineseHasTodayRun
+      ? '/chinese/weekly'
+      : chineseActivePlan && chineseBatchKeys.length > 0
+        ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
+        : chinese.currentNode
+          ? `${chineseRoute(chinese.bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+          : chineseRoute(chinese.bookSlug, 'daily')
 
+  const chineseRunLesson = chineseTodayRun
+    ? (chinese.lessons.find((l) => l.lessonKey === chineseTodayRun.lessonKey) ?? null)
+    : null
   const chineseSubtitle = chinesePlanCleared
     ? '计划通关 🎉'
     : chineseActivePlan
-      ? `${chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey} · ${formatPlanQuizTypes(chineseActivePlan.quizTypes)}`
+      ? chineseHasTodayRun
+        ? `${chineseRunLesson?.lessonTitle ?? chineseTodayRun!.lessonKey} 已完成`
+        : `${chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey} · ${formatPlanQuizTypes(chineseActivePlan.quizTypes)}`
       : chinese.allDone
         ? '本册通关 🎉'
         : chinese.lessonDone
@@ -634,17 +649,16 @@ export function useTodayPlanOverview() {
       href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
-      done:
-        chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
-          ? '✓'
-          : chineseActivePlan
-            ? chineseBatchDoneCount
-            : chinese.done,
+      done: chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
+        ? '✓'
+        : chineseActivePlan
+          ? (chineseHasTodayRun ? '✓' : '')
+          : chinese.done,
       total:
         chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
           ? null
           : chineseActivePlan
-            ? chineseBatchKeys.length
+            ? null
             : chinese.total,
       subtitle: chineseSubtitle,
       pct: chinesePct,
@@ -657,11 +671,37 @@ export function useTodayPlanOverview() {
   // showing "0/0 · 0 个词待练" with a link to a non-practice page is misleading.
   const visibilityMap: Record<string, boolean> = {
     calc: true, // calc always has a daily target
-    english: hasEnglish,
-    math: hasMath,
-    chinese: hasChinese,
+    // Keep each subject entry visible and clickable while its own progress is
+    // loading. Previously one slow request replaced the whole panel with inert
+    // skeletons, even though the practice routes were already known.
+    english: hasEnglish || englishLoading || adaptiveLoading,
+    math: hasMath || mathLoading,
+    chinese:
+      hasChinese ||
+      chinesePlanLoading ||
+      (chinese.isCharDataLoading && !chinese.isCharDataReady),
   }
-  const cards = allCards.filter((c) => visibilityMap[c.key])
+  const loadingMap: Record<TodayPlanSubjectKey, boolean> = {
+    calc: false,
+    english: englishLoading || (!!activeAdaptive && adaptiveLoading),
+    math: mathLoading,
+    chinese:
+      chinesePlanLoading ||
+      (chinese.isCharDataLoading && !chinese.isCharDataReady),
+  }
+  const cards = allCards
+    .filter((c) => visibilityMap[c.key])
+    .map((card) =>
+      loadingMap[card.key]
+        ? {
+            ...card,
+            done: null,
+            total: null,
+            subtitle: '正在读取进度…',
+            pct: 0,
+          }
+        : card,
+    )
 
   return {
     isLoading,
@@ -691,7 +731,10 @@ function TodayPlanOverviewInner({
 }: TodayPlanOverviewInnerProps) {
   const { isLoading, cards } = useTodayPlanOverview()
 
-  if (isLoading) return <>{loadingFallback}</>
+  // Progressively render known subject cards while slower stores hydrate. The
+  // cards already have stable destination routes, so loading must not block
+  // navigation. Keep the fallback only for callers that truly have no card.
+  if (isLoading && cards.length === 0) return <>{loadingFallback}</>
   if (!alwaysShow && cards.length === 0) return null
 
   return (

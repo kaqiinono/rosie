@@ -17,7 +17,7 @@ function ChineseNavInner() {
   ]
   return (
     <nav className="sticky top-0 z-20 border-b border-amber-100/80 bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-3xl items-center gap-1 overflow-x-auto px-3 py-2">
+      <div className="mx-auto flex max-w-3xl items-center gap-1 overflow-x-auto pl-[52px] pr-3 py-2 sm:pl-[60px]">
         {tabs.map((tab) => {
           const active = tab.match(pathname)
           return (

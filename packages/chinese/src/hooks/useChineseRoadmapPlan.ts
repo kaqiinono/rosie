@@ -13,6 +13,7 @@ import {
 import { resolveChinesePlanCreateStatus } from '../utils/chineseRoadmapPlanLogic'
 import type {
   ChinesePlanQuizType,
+  ChinesePlanRunSource,
   ChineseRoadmapPlan,
   ChineseRoadmapPlanLessonRun,
   ChineseRoadmapPlanLessonRunRow,
@@ -424,8 +425,12 @@ export function useChineseRoadmapPlan(user: User | null) {
     async (
       planId: string,
       runs: Array<
-        Omit<ChineseRoadmapPlanLessonRun, 'id' | 'planId' | 'userId'> & {
+        Omit<ChineseRoadmapPlanLessonRun, 'id' | 'planId' | 'userId' | 'durationSeconds' | 'source' | 'finishedPhases' | 'lessonTitle'> & {
           id?: string
+          durationSeconds?: number | null
+          source?: ChinesePlanRunSource
+          finishedPhases?: string[]
+          lessonTitle?: string
         }
       >,
     ): Promise<ChineseRoadmapPlanLessonRun[]> => {
@@ -444,6 +449,10 @@ export function useChineseRoadmapPlan(user: User | null) {
         accuracy: run.accuracy,
         byType: run.byType,
         quizTypes: run.quizTypes,
+        durationSeconds: run.durationSeconds ?? null,
+        source: run.source ?? 'plan',
+        finishedPhases: run.finishedPhases ?? [],
+        lessonTitle: run.lessonTitle ?? '',
       }))
 
       const inserted = await insertRunsToCloud(payload)

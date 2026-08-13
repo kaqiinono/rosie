@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react'
 import type { AgentAction, AgentBlock } from '../../types'
+import RosieAssistantAvatar from '../RosieAssistantAvatar'
 import AnalysisImage from '@rosie/ui/AnalysisImage'
 import ProblemSolutionView from '@rosie/ui/ProblemSolutionView'
 import AgentActionBar from './AgentActionBar'
@@ -98,9 +99,7 @@ export default function AiMessageRenderer({
   return (
     <div className={`flex items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser ? (
-        <div className="grid size-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-sky-500 text-base shadow-sm">
-          🤖
-        </div>
+        <RosieAssistantAvatar className="size-8 rounded-xl shadow-sm ring-1 ring-rose-100" />
       ) : null}
       <div
         className={`max-w-[88%] px-4 py-3 sm:max-w-[82%] ${

@@ -145,6 +145,16 @@
   50%, 100% { transform: rotate(0deg) }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .home-rosie-animation {
+    display: none;
+  }
+
+  .home-rosie-static {
+    display: block;
+  }
+}
+
 @keyframes bounce-slow {
   0%, 100% { transform: translateY(0) }
   50% { transform: translateY(-8px) }
@@ -285,4 +295,3 @@
   0% { transform: translateX(-100%) }
   100% { transform: translateX(280%) }
 }
-

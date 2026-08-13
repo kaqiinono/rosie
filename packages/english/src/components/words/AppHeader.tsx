@@ -28,7 +28,7 @@ export default function AppHeader({ onImmersive }: AppHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--wm-border)] bg-[var(--wm-bg)]/95 px-4 py-2.5 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2.5">
+      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2.5 pl-[52px] pr-4 sm:pl-[60px]">
         <Link href="/english">
           <div className="font-fredoka bg-gradient-to-br from-[var(--wm-accent)] to-[var(--wm-accent2)] bg-clip-text text-2xl font-bold whitespace-nowrap text-transparent">
             📚 {username ?? 'Rosie'} Fun

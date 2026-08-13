@@ -21,8 +21,20 @@ function buildProblemIdsByGrade(): Record<number, string[]> {
   return result
 }
 
+function buildProblemIdsByLesson(): Record<string, string[]> {
+  const sets: Record<string, Set<string>> = {}
+  for (const { problem, lessonId } of SEA_POOL) {
+    if (!sets[lessonId]) sets[lessonId] = new Set()
+    sets[lessonId].add(problem.id)
+  }
+  return Object.fromEntries(Object.entries(sets).map(([lessonId, ids]) => [lessonId, [...ids]]))
+}
+
 /** 各年级全部题目 id（与题海题库一致，模块加载时预计算）。 */
 export const GRADE_PROBLEM_IDS = buildProblemIdsByGrade()
+
+/** 各讲全部题目 id（与题海题库一致，模块加载时预计算）。 */
+export const LESSON_PROBLEM_IDS = buildProblemIdsByLesson()
 
 const ALL_MATH_PROBLEM_IDS = [...new Set(Object.values(GRADE_PROBLEM_IDS).flat())]
 
@@ -41,6 +53,19 @@ export function gradeProblemStats(
   solveCount: Record<string, number>,
 ): GradeProblemStats {
   const ids = GRADE_PROBLEM_IDS[grade] ?? []
+  let practiced = 0
+  for (const id of ids) {
+    if ((solveCount[id] ?? 0) >= 1) practiced++
+  }
+  return { total: ids.length, practiced }
+}
+
+/** 某一讲的总题数与已练习题数（solve_count ≥ 1 计为已练）。 */
+export function lessonProblemStats(
+  lessonId: string,
+  solveCount: Record<string, number>,
+): GradeProblemStats {
+  const ids = LESSON_PROBLEM_IDS[lessonId] ?? []
   let practiced = 0
   for (const id of ids) {
     if ((solveCount[id] ?? 0) >= 1) practiced++

@@ -3,6 +3,7 @@
 import { OrbBackground, BackLink } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { EnglishQuickLinkGrid } from '@rosie/english'
+import EnglishStatsPanel from '@/components/EnglishStatsPanel'
 
 export default function EnglishPage() {
   const { user } = useAuth()
@@ -24,6 +25,8 @@ export default function EnglishPage() {
             背单词、做练习、读课文，开启今天的英语冒险吧
           </p>
         </section>
+
+        <EnglishStatsPanel />
 
         <section className="w-full max-w-[840px]">
           <EnglishQuickLinkGrid />

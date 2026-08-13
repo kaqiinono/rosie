@@ -523,6 +523,18 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
                         >
                           {run.completed ? '已完成' : '未完成'}
                         </span>
+                        {run.source && run.source !== 'plan' && (
+                          <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">
+                            {run.source === 'free' ? '自由练习' : run.source === 'review' ? '复习' : run.source}
+                          </span>
+                        )}
+                        {run.durationSeconds != null && run.durationSeconds > 0 && (
+                          <span className="text-[10px] font-semibold text-slate-400">
+                            {run.durationSeconds < 60
+                              ? `${run.durationSeconds}秒`
+                              : `${Math.floor(run.durationSeconds / 60)}分${run.durationSeconds % 60 > 0 ? `${run.durationSeconds % 60}秒` : ''}`}
+                          </span>
+                        )}
                       </div>
                       <div className="mt-1 text-[12px] font-bold text-slate-500">
                         正确率 {accuracyLabel(run)}

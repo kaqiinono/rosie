@@ -236,9 +236,16 @@ export default function TodayDashboard() {
   const {
     activePlan: chineseActivePlan,
     completedPlan: chineseCompletedPlan,
+    loadRunsForPlan,
+    runsByPlanId,
     isLoading: chinesePlanLoading,
   } = useChineseRoadmapPlan(user)
   const chinesePlanCleared = !chineseActivePlan && !!chineseCompletedPlan
+
+  const chineseFocusPlan = chineseActivePlan ?? chineseCompletedPlan
+  useEffect(() => {
+    if (chineseFocusPlan) void loadRunsForPlan(chineseFocusPlan.id)
+  }, [chineseFocusPlan, loadRunsForPlan])
 
   useEffect(() => {
     if (chineseActivePlan) setActiveChineseBook(chineseActivePlan.bookSlug)
@@ -336,20 +343,19 @@ export default function TodayDashboard() {
     )
   }, [chineseActivePlan, chinese.lessons])
 
-  // Active plan: batch completion vs completed_lesson_keys (not char mastery N/N).
-  const chineseBatchDoneCount = useMemo(() => {
-    if (!chineseActivePlan || chineseBatchKeys.length === 0) return 0
-    const completed = new Set(chineseActivePlan.completedLessonKeys)
-    return chineseBatchKeys.filter((k) => completed.has(k)).length
-  }, [chineseActivePlan, chineseBatchKeys])
+  // Today's Chinese run: boolean check — has any run been recorded today?
+  const chineseTodayRun = useMemo(() => {
+    if (!chineseFocusPlan) return null
+    const runs = runsByPlanId[chineseFocusPlan.id] ?? []
+    return runs.find((r) => r.finishedAt.startsWith(today)) ?? null
+  }, [chineseFocusPlan, runsByPlanId, today])
+  const chineseHasTodayRun = chineseTodayRun !== null
 
   const chineseDone = chineseActivePlan
-    ? chineseBatchKeys.length > 0 && chineseBatchDoneCount >= chineseBatchKeys.length
+    ? chineseHasTodayRun
     : chinesePlanCleared || chinese.allDone || chinese.lessonDone
   const chinesePct = chineseActivePlan
-    ? chineseBatchKeys.length > 0
-      ? Math.round((chineseBatchDoneCount / chineseBatchKeys.length) * 100)
-      : 0
+    ? (chineseHasTodayRun ? 100 : 0)
     : chinesePlanCleared
       ? 100
       : chinese.total > 0
@@ -360,16 +366,23 @@ export default function TodayDashboard() {
 
   const chineseHref = chinesePlanCleared
     ? '/chinese/weekly'
-    : chineseActivePlan && chineseBatchKeys.length > 0
-      ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
-      : chinese.currentNode
-        ? `${chineseRoute(chinese.bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
-        : chineseRoute(chinese.bookSlug, 'daily')
+    : chineseActivePlan && chineseHasTodayRun
+      ? '/chinese/weekly'
+      : chineseActivePlan && chineseBatchKeys.length > 0
+        ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
+        : chinese.currentNode
+          ? `${chineseRoute(chinese.bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
+          : chineseRoute(chinese.bookSlug, 'daily')
 
+  const chineseRunLesson = chineseTodayRun
+    ? (chinese.lessons.find((l) => l.lessonKey === chineseTodayRun.lessonKey) ?? null)
+    : null
   const chineseSubtitle = chinesePlanCleared
     ? '计划通关 🎉'
     : chineseActivePlan
-      ? `${chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey} · ${formatPlanQuizTypes(chineseActivePlan.quizTypes)}`
+      ? chineseHasTodayRun
+        ? `${chineseRunLesson?.lessonTitle ?? chineseTodayRun!.lessonKey} 已完成`
+        : `${chinesePlanLesson?.lessonTitle ?? chineseActivePlan.currentLessonKey} · ${formatPlanQuizTypes(chineseActivePlan.quizTypes)}`
       : chinese.allDone
         ? '本册通关 🎉'
         : chinese.lessonDone
@@ -441,17 +454,16 @@ export default function TodayDashboard() {
       href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
-      done:
-        chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
-          ? '✓'
-          : chineseActivePlan
-            ? chineseBatchDoneCount
-            : chinese.done,
+      done: chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
+        ? '✓'
+        : chineseActivePlan
+          ? (chineseHasTodayRun ? '✓' : '')
+          : chinese.done,
       total:
         chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
           ? null
           : chineseActivePlan
-            ? chineseBatchKeys.length
+            ? null
             : chinese.total,
       subtitle: chineseSubtitle,
       pct: chinesePct,

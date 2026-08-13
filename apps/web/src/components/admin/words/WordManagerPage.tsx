@@ -277,7 +277,7 @@ export default function WordManagerPage({ user }: Props) {
         className="sticky top-0 z-30 border-b border-amber-200/40 backdrop-blur"
         style={{ background: 'rgba(255,255,255,0.85)' }}
       >
-        <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-3 pl-[52px] pr-4 sm:pl-[60px]">
           <Link
             href="/admin"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-amber-700 transition hover:scale-110"

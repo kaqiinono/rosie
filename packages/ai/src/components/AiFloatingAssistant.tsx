@@ -7,6 +7,7 @@ import { useImmersive } from '@rosie/core'
 import type { AgentBlock, AiSubject, ChatContext } from '../types'
 import { findManifestByHref } from '../server/tools/resolve-links'
 import AiChatPanel from './AiChatPanel'
+import RosieAssistantAvatar from './RosieAssistantAvatar'
 
 export function shouldShowAiAssistant(pathname: string, isImmersive: boolean): boolean {
   if (isImmersive) return false
@@ -106,11 +107,11 @@ export default function AiFloatingAssistant({
       >
         <span
           aria-hidden="true"
-          className="grid size-9 place-items-center rounded-full bg-white/20 text-2xl transition group-hover:scale-110"
+          className="grid size-9 place-items-center overflow-hidden rounded-full bg-white/20 text-2xl transition group-hover:scale-110"
         >
-          {open ? '×' : '🤖'}
+          {open ? '×' : <RosieAssistantAvatar className="size-full" />}
         </span>
-        <span className="text-sm font-bold whitespace-nowrap">{open ? '收起' : '问 Rosie'}</span>
+        <span className="text-sm font-bold whitespace-nowrap">{open ? '收起' : '问问我'}</span>
       </button>
 
       <button
@@ -129,9 +130,7 @@ export default function AiFloatingAssistant({
       >
         <header className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white/85 px-4 py-3 backdrop-blur-xl">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-sky-500 text-xl shadow-sm">
-              🤖
-            </span>
+            <RosieAssistantAvatar className="size-10 rounded-2xl shadow-sm ring-1 ring-rose-100" />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-black text-slate-900">Rosie 学习助手</h2>

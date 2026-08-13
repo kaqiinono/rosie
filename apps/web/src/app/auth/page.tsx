@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, Suspense } from 'react'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 
@@ -100,10 +101,15 @@ function AuthContent() {
     >
       <div className="w-[400px] max-w-full">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="mb-3 text-5xl">🌟</div>
-          <h1 className="font-fredoka text-[2rem] tracking-wide text-white">Rosie 的学习乐园</h1>
-          <p className="mt-1 text-sm text-white/40">登录后进度自动云端同步</p>
+        <div className="mb-4 text-center">
+          <Image
+            src="/brand/rosie-fun-horizontal.png"
+            alt="Rosie Fun"
+            width={400}
+            height={133}
+            priority
+            className="mx-auto mb-3 h-auto drop-shadow-[0_12px_20px_rgba(251,113,133,0.2)]"
+          />
         </div>
 
         <div className="rounded-2xl border border-white/[.08] bg-white/[.05] p-6">

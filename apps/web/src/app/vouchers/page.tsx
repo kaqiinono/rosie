@@ -116,7 +116,7 @@ export default function VouchersPage() {
           boxShadow: '0 2px 14px rgba(251,191,36,0.08)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 px-3 sm:gap-3 sm:px-4">
+        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pl-[52px] pr-3 sm:pl-[60px] sm:gap-3 sm:pr-4">
           <Link
             href="/"
             className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full no-underline transition-all hover:scale-110"

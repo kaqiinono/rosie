@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import AiChatPanel from './AiChatPanel'
+import RosieAssistantAvatar from './RosieAssistantAvatar'
 
 const SUBJECTS = [
   { icon: 'A', label: '英语', note: '单词 · 阅读', color: 'from-emerald-400 to-teal-500' },
@@ -36,17 +37,17 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
           <aside className="hidden overflow-hidden rounded-[32px] bg-gradient-to-br from-[#25245e] via-[#383488] to-[#4d61bd] p-6 text-white shadow-[0_24px_70px_rgba(41,45,100,0.22)] lg:flex lg:flex-col">
             <div className="relative mb-7">
               <div className="absolute -top-9 -right-9 size-28 rounded-full border border-white/10 bg-white/5" />
-              <div className="relative grid size-16 place-items-center rounded-[22px] bg-white/15 text-4xl shadow-inner ring-1 ring-white/20 backdrop-blur">
-                🤖
-              </div>
-              <p className="mt-5 text-xs font-bold tracking-[0.2em] text-indigo-200 uppercase">
+              <p className="relative text-xs font-bold tracking-[0.2em] text-indigo-200 uppercase">
                 Rosie Study Mate
               </p>
-              <h1 className="mt-2 text-3xl leading-tight font-black tracking-tight">
-                嗨，我是
-                <br />
-                Rosie 老师
-              </h1>
+              <div className="relative mt-4 flex items-center gap-4">
+                <RosieAssistantAvatar className="size-16 shrink-0 rounded-[22px] shadow-inner ring-1 ring-white/30" />
+                <h1 className="text-3xl leading-tight font-black tracking-tight">
+                  嗨，我是
+                  <br />
+                  不不 老师
+                </h1>
+              </div>
               <p className="mt-3 text-sm leading-6 text-indigo-100/80">
                 我不会急着说答案，而是陪你找到自己的思路。
               </p>
@@ -84,9 +85,7 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
           <section className="min-w-0 overflow-hidden rounded-[28px] border border-white/90 bg-white/72 shadow-[0_24px_80px_rgba(69,75,130,0.15)] backdrop-blur-2xl sm:rounded-[32px]">
             <div className="border-b border-slate-100/90 px-5 py-4 sm:px-7 sm:py-5">
               <div className="flex items-center gap-3">
-                <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-sky-500 text-2xl shadow-[0_8px_20px_rgba(99,102,241,0.25)] lg:hidden">
-                  🤖
-                </div>
+                <RosieAssistantAvatar className="size-12 rounded-2xl shadow-[0_8px_20px_rgba(251,113,133,0.22)] ring-1 ring-rose-100 lg:hidden" />
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">

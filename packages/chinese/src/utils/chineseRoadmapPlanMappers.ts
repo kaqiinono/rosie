@@ -3,6 +3,7 @@ import { isChineseBookSlug } from './chinese-books'
 import {
   CHINESE_PLAN_QUIZ_TYPES,
   type ChinesePlanQuizType,
+  type ChinesePlanRunSource,
   type ChineseRoadmapPlan,
   type ChineseRoadmapPlanLessonRun,
   type ChineseRoadmapPlanLessonRunRow,
@@ -101,6 +102,11 @@ export function mapPlanModelToRow(plan: ChineseRoadmapPlan): Record<string, unkn
   }
 }
 
+function parseRunSource(value: string | null): ChinesePlanRunSource {
+  if (value === 'free' || value === 'review') return value
+  return 'plan'
+}
+
 /** DB Row (snake_case) -> app model (camelCase). */
 export function mapRunRowToModel(row: ChineseRoadmapPlanLessonRunRow): ChineseRoadmapPlanLessonRun {
   return {
@@ -116,6 +122,10 @@ export function mapRunRowToModel(row: ChineseRoadmapPlanLessonRunRow): ChineseRo
     accuracy: parseAccuracy(row.accuracy),
     byType: parseByType(row.by_type),
     quizTypes: parseStringArray(row.quiz_types),
+    durationSeconds: row.duration_seconds ?? null,
+    source: parseRunSource(row.source),
+    finishedPhases: parseStringArray(row.finished_phases),
+    lessonTitle: row.lesson_title ?? '',
   }
 }
 
@@ -134,5 +144,9 @@ export function mapRunModelToRow(run: ChineseRoadmapPlanLessonRun): Record<strin
     accuracy: run.accuracy,
     by_type: run.byType,
     quiz_types: run.quizTypes,
+    duration_seconds: run.durationSeconds,
+    source: run.source,
+    finished_phases: run.finishedPhases,
+    lesson_title: run.lessonTitle,
   }
 }

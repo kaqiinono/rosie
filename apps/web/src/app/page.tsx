@@ -115,7 +115,23 @@ export default function HomePage() {
 
       <div className="relative z-1 flex min-h-screen flex-col items-center justify-center gap-9 px-5 py-8 pt-12 pb-12">
         <section className="max-w-[540px] text-center">
-          <div className="animate-wave inline-block origin-[70%_70%] text-[52px]">👋</div>
+          <picture>
+            {/* Animated WebP must stay unoptimized so the browser receives every frame. */}
+            <img
+              src="/brand/rosie-fun-hop.webp?v=3"
+              alt="Rosie Fun"
+              width={144}
+              height={128}
+              className="home-rosie-animation mx-auto h-32 w-36 object-contain drop-shadow-[0_12px_18px_rgba(251,113,133,0.2)]"
+            />
+            <img
+              src="/brand/rosie-fun-mascot.png"
+              alt="Rosie Fun"
+              width={144}
+              height={128}
+              className="home-rosie-static mx-auto hidden h-32 w-36 object-contain drop-shadow-[0_12px_18px_rgba(251,113,133,0.2)]"
+            />
+          </picture>
           <div className="text-text-secondary mt-2 text-[15px] font-semibold tracking-wide">
             {greeting}
           </div>

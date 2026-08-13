@@ -9,11 +9,7 @@ import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { fetchStageVocab, readCachedStageVocab } from '../../hooks/useWordData'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
 import { wordMasteryStore } from '../../hooks/useWordMastery'
-import {
-  buildQuizOptions,
-  findWordByKey,
-  wordKey,
-} from '../../utils/english-helpers'
+import { buildQuizOptions, findWordByKey, wordKey } from '../../utils/english-helpers'
 import { activateWord } from '../../utils/adaptivePlanBoxes'
 import {
   buildConsolidateExemptSet,
@@ -23,9 +19,7 @@ import {
   type AdaptiveMasteryPatch,
   type SessionOutcome,
 } from '../../utils/adaptivePlanSettle'
-import type {
-  AdaptiveDailyTask,
-} from '../../utils/adaptivePlanScheduler'
+import type { AdaptiveDailyTask } from '../../utils/adaptivePlanScheduler'
 import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
 import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
 import {
@@ -39,10 +33,7 @@ import {
   type AdaptiveSnapshotPhase,
 } from '../../utils/adaptivePlanSessionSnapshot'
 import { adaptiveStageLabel } from '../../utils/adaptivePlanStages'
-import type {
-  AdaptivePlanWordProgress,
-  AdaptiveWordPlan,
-} from '../../utils/adaptivePlanTypes'
+import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanProgressBar from './AdaptivePlanProgressBar'
 import AdaptivePlanStageBoard from './AdaptivePlanStageBoard'
@@ -132,11 +123,7 @@ function buildRoundSummary(args: {
   const collapsed = collapseSessionOutcomes(args.outcomes)
   const beforeByKey = new Map(args.beforeRows.map((row) => [row.wordKey, row]))
   const afterByKey = new Map(args.afterRows.map((row) => [row.wordKey, row]))
-  const touchedKeys = uniqueKeys([
-    ...args.activateKeys,
-    ...args.reviewKeys,
-    ...collapsed.keys(),
-  ])
+  const touchedKeys = uniqueKeys([...args.activateKeys, ...args.reviewKeys, ...collapsed.keys()])
 
   let promotedCount = 0
   let masteredCount = 0
@@ -192,8 +179,7 @@ function demoteBossStubbornRows(
   return rows
     .filter(
       (row) =>
-        row.status === 'LEARNING' &&
-        (firstPassWrongKeys.has(row.wordKey) || row.streakWrong >= 2),
+        row.status === 'LEARNING' && (firstPassWrongKeys.has(row.wordKey) || row.streakWrong >= 2),
     )
     .map((row) => ({
       ...row,
@@ -240,7 +226,11 @@ async function upsertMasteryPatches(
   if (error) throw error
 }
 
-export default function AdaptivePlanSession({ planId, onBack, autoStart = false }: AdaptivePlanSessionProps) {
+export default function AdaptivePlanSession({
+  planId,
+  onBack,
+  autoStart = false,
+}: AdaptivePlanSessionProps) {
   const { user } = useAuth()
   const { vocab: selectedStageVocab, masteryMap } = useWordsContext()
   const { isImmersive, setIsImmersive } = useImmersive()
@@ -274,6 +264,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [settling, setSettling] = useState(false)
   const [isStashing, setIsStashing] = useState(false)
+  const [isRestarting, setIsRestarting] = useState(false)
   const [stashToast, setStashToast] = useState<string | null>(null)
   // Set when remote saves fail during settle — done screen offers a retry.
   const [settleFailed, setSettleFailed] = useState<'normal' | 'boss' | null>(null)
@@ -369,13 +360,21 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     [activateKeys, vocab],
   )
   const previewEntries = useMemo(() => {
-    const keys = task?.mode === 'boss'
-      ? task.bossKeys
-      : uniqueKeys([...dayReviewKeys, ...activateKeys])
+    const keys =
+      task?.mode === 'boss' ? task.bossKeys : uniqueKeys([...dayReviewKeys, ...activateKeys])
     return keys
       .map((key) => findWordByKey(vocab, key))
       .filter((entry): entry is WordEntry => entry != null)
   }, [activateKeys, dayReviewKeys, task?.bossKeys, task?.mode, vocab])
+  // `newStudyDone` is the cursor through the combined preview list (reviews +
+  // new words). The "今日新学" counter must only include previewed activations;
+  // otherwise a 15-review + 15-new preview incorrectly renders as 30/15.
+  const previewedNewWordCount = useMemo(() => {
+    const activateSet = new Set(activateKeys)
+    return previewEntries
+      .slice(0, Math.min(newStudyDone, previewEntries.length))
+      .filter((entry) => activateSet.has(wordKey(entry))).length
+  }, [activateKeys, newStudyDone, previewEntries])
   const [loadError, setLoadError] = useState<string | null>(null)
   const loadGenRef = useRef(0)
   const sessionStartedRef = useRef(false)
@@ -470,6 +469,38 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     }
   }, [plan, flushCloudNow, setIsImmersive])
 
+  const restartCardPreview = useCallback(async () => {
+    if (!plan || previewEntries.length === 0 || isRestarting) return
+    setIsRestarting(true)
+    try {
+      // Remove the old local/cloud checkpoint first so a reload cannot restore
+      // answers or a card index from before the restart.
+      await clearAdaptivePendingEverywhere(user?.id, plan.id)
+      setReviewDoneKeys(new Set())
+      setStudyIdx(0)
+      setQuizSlots([])
+      setCurQ(0)
+      setScore(0)
+      setHelpClicks({})
+      setNewStudyDone(0)
+      setSettleFailed(null)
+      setRoundSummary(null)
+      reviewOutcomesRef.current = []
+      finalOutcomesRef.current = []
+      bossFirstPassOutcomesRef.current = []
+      bossSinkOutcomesRef.current = []
+      finalPassWrongKeysRef.current = new Set()
+      bossPassWrongKeysRef.current = new Set()
+      bossSinkWrongKeysRef.current = new Set()
+      starsAwardedThisRoundRef.current = 0
+      sessionStartedRef.current = true
+      setIsImmersive(true)
+      setPhase('study')
+    } finally {
+      setIsRestarting(false)
+    }
+  }, [isRestarting, plan, previewEntries.length, setIsImmersive, user?.id])
+
   useEffect(() => {
     sessionStartedRef.current = false
     loadedPlanIdRef.current = null
@@ -483,8 +514,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   // list resolves without this id (deleted / archived / list fetch failed)
   // nothing ever clears `isLoadingRows`, and the page would sit on「加载中…」
   // forever instead of reaching the not-found screen.
-  const isLoading =
-    plansLoading || (sourcePlan != null && (isLoadingRows || isPlanVocabLoading))
+  const isLoading = plansLoading || (sourcePlan != null && (isLoadingRows || isPlanVocabLoading))
 
   const retryLoad = useCallback(() => {
     // Orphan any in-flight load so its late resolve can't clear the new one.
@@ -595,7 +625,10 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
           bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
           bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
           sessionStartedRef.current = true
-          setIsImmersiveRef.current(snap.phase !== 'study')
+          // Every resumable snapshot represents an in-progress practice phase,
+          // including the card-preview (`study`) phase. Restoring any of them
+          // must re-enter immersive mode just like a fresh practice start.
+          setIsImmersiveRef.current(true)
           setIsLoadingRows(false)
           if (dailyTask.mode !== planSnapshot.mode) {
             void updatePlan(modePlan)
@@ -774,9 +807,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     (nextPlan: AdaptiveWordPlan, nextRows: AdaptivePlanWordProgress[]) => {
       const dailyTask = buildDailyTask(nextPlan, nextRows, today)
       const modePlan =
-        dailyTask.mode === nextPlan.mode
-          ? nextPlan
-          : { ...nextPlan, mode: dailyTask.mode }
+        dailyTask.mode === nextPlan.mode ? nextPlan : { ...nextPlan, mode: dailyTask.mode }
       setPlan(modePlan)
       setTask(dailyTask)
       setReviewCursor(Math.min(modePlan.reviewBatchSize, dailyTask.reviewKeys.length))
@@ -968,11 +999,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         )
 
         if (shouldForceUnlock) {
-          const forcedRows = demoteBossStubbornRows(
-            nextRows,
-            bossPassWrongKeysRef.current,
-            today,
-          )
+          const forcedRows = demoteBossStubbornRows(nextRows, bossPassWrongKeysRef.current, today)
           const forcedByKey = new Map(forcedRows.map((row) => [row.wordKey, row]))
           nextRows = nextRows.map((row) => forcedByKey.get(row.wordKey) ?? row)
           progressUpdates = [
@@ -1145,15 +1172,23 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     }
 
     startFinalQuiz(finalKeys)
-  }, [activateEntries, activateKeys, applyActivations, newStudyDone, previewEntries.length, setIsImmersive, startFinalQuiz, task])
+  }, [
+    activateEntries,
+    activateKeys,
+    applyActivations,
+    newStudyDone,
+    previewEntries.length,
+    setIsImmersive,
+    startFinalQuiz,
+    task,
+  ])
 
   const beginSession = useCallback(() => {
     if (!task || settling) return
     sessionStartedRef.current = true
     starsAwardedThisRoundRef.current = 0
     roundActivateKeysRef.current = activateKeys
-    roundReviewKeysRef.current =
-      task.mode === 'boss' ? task.bossKeys : dayReviewKeys
+    roundReviewKeysRef.current = task.mode === 'boss' ? task.bossKeys : dayReviewKeys
     setRoundSummary(null)
     if (previewEntries.length > 0 && newStudyDone < previewEntries.length) {
       if (task.mode !== 'boss') void applyActivations()
@@ -1279,7 +1314,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
             ])
     const slots = buildSlots(keys, {
       preferLight: phase === 'review',
-      bossTier: phase === 'boss' || phase === 'boss_sink' ? plan?.stats.bossQuestionTier : undefined,
+      bossTier:
+        phase === 'boss' || phase === 'boss_sink' ? plan?.stats.bossQuestionTier : undefined,
     })
     if (slots.length > 0) {
       setQuizSlots(slots)
@@ -1531,9 +1567,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
           </button>
         </div>
         <div className="rounded-[22px] border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] p-8">
-          <div className="font-fredoka mb-3 text-center text-3xl text-[#fbbf24]">
-            今日关卡 Boss
-          </div>
+          <div className="font-fredoka mb-3 text-center text-3xl text-[#fbbf24]">今日关卡 Boss</div>
           <div className="mx-auto mb-6 max-w-[620px] text-center text-sm font-bold text-[var(--wm-text-dim)]">
             首轮正确率达到 85%，并把沉底错题清空，就能退出 Boss 模式继续推进计划。
           </div>
@@ -1547,7 +1581,9 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
               <div className="mt-1 text-xs font-extrabold text-[var(--wm-text-dim)]">连续受阻</div>
             </div>
             <div className="rounded-[16px] border border-white/[.08] bg-white/[.045] p-4 text-center">
-              <div className="text-2xl font-black text-[#93c5fd]">{plan.stats.bossQuestionTier}</div>
+              <div className="text-2xl font-black text-[#93c5fd]">
+                {plan.stats.bossQuestionTier}
+              </div>
               <div className="mt-1 text-xs font-extrabold text-[var(--wm-text-dim)]">题目层级</div>
             </div>
           </div>
@@ -1556,7 +1592,11 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
             disabled={settling || task.bossKeys.length === 0}
             className="font-nunito w-full cursor-pointer rounded-[14px] border-0 bg-gradient-to-br from-[#f59e0b] to-[#ef4444] px-6 py-3.5 text-base font-extrabold text-white shadow-[0_4px_18px_rgba(245,158,11,.28)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {settling ? '保存中…' : task.bossKeys.length === 0 ? '暂无 Boss 题' : '开始 Boss 挑战 →'}
+            {settling
+              ? '保存中…'
+              : task.bossKeys.length === 0
+                ? '暂无 Boss 题'
+                : '开始 Boss 挑战 →'}
           </button>
         </div>
       </div>
@@ -1612,6 +1652,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         onBack={() => void backToHub()}
         onStash={() => void stashSession()}
         isStashing={isStashing}
+        onRestart={() => void restartCardPreview()}
+        isRestarting={isRestarting}
         onPrev={() => setStudyIdx((idx) => Math.max(0, idx - 1))}
         onNext={() => {
           setNewStudyDone((done) => Math.max(done, studyIdx + 1))
@@ -1637,7 +1679,10 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     )
   }
 
-  if ((phase === 'review' || phase === 'final' || phase === 'boss' || phase === 'boss_sink') && !currentQuestion) {
+  if (
+    (phase === 'review' || phase === 'final' || phase === 'boss' || phase === 'boss_sink') &&
+    !currentQuestion
+  ) {
     return (
       <div className="mx-auto max-w-[560px] px-4 py-16 text-center">
         <div className="mb-3 text-sm font-bold text-[var(--wm-text-dim)]">题目准备中…</div>
@@ -1655,7 +1700,10 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     )
   }
 
-  if ((phase === 'review' || phase === 'final' || phase === 'boss' || phase === 'boss_sink') && currentQuestion) {
+  if (
+    (phase === 'review' || phase === 'final' || phase === 'boss' || phase === 'boss_sink') &&
+    currentQuestion
+  ) {
     const title =
       phase === 'review'
         ? 'Step 1 · 今日复习'
@@ -1680,10 +1728,18 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
           <button
             type="button"
             onClick={() => void stashSession()}
-            disabled={isStashing}
+            disabled={isStashing || isRestarting}
             className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
           >
             {isStashing ? '暂存中…' : '💾 暂存'}
+          </button>
+          <button
+            type="button"
+            onClick={() => void restartCardPreview()}
+            disabled={isRestarting || isStashing || previewEntries.length === 0}
+            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(96,165,250,.45)] bg-[rgba(96,165,250,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#93c5fd] transition-all hover:bg-[rgba(96,165,250,.2)] disabled:cursor-wait disabled:opacity-60"
+          >
+            {isRestarting ? '重置中…' : '↻ 重来'}
           </button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">{title}</div>
           <div className="ml-auto text-[.78rem] font-bold text-[var(--wm-text-dim)]">
@@ -1692,11 +1748,12 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
                 首轮 {bossFirstPassOutcomesRef.current.filter((item) => item.correct).length}/
                 {task.bossKeys.length}
                 <span className="mx-2 text-white/20">·</span>
-                沉底错题 {phase === 'boss_sink' ? quizSlots.length : bossPassWrongKeysRef.current.size}
+                沉底错题{' '}
+                {phase === 'boss_sink' ? quizSlots.length : bossPassWrongKeysRef.current.size}
               </>
             ) : (
               <>
-                今日新学 {newStudyDone}/{activateKeys.length}
+                今日新学 {previewedNewWordCount}/{activateKeys.length}
                 <span className="mx-2 text-white/20">·</span>
                 今日复习 {reviewDoneKeys.size}/{visibleReviewKeys.length}
               </>
@@ -1768,18 +1825,24 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
               <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <div className="rounded-2xl border border-white/[.08] bg-white/[.04] px-3 py-3 text-center">
                   <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">新学</div>
-                  <div className="font-fredoka text-2xl text-[#93c5fd]">{summary.newLearnedCount}</div>
+                  <div className="font-fredoka text-2xl text-[#93c5fd]">
+                    {summary.newLearnedCount}
+                  </div>
                 </div>
                 <div className="rounded-2xl border border-white/[.08] bg-white/[.04] px-3 py-3 text-center">
                   <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">复习</div>
-                  <div className="font-fredoka text-2xl text-[#c4b5fd]">{summary.reviewedCount}</div>
+                  <div className="font-fredoka text-2xl text-[#c4b5fd]">
+                    {summary.reviewedCount}
+                  </div>
                 </div>
                 <div className="rounded-2xl border border-white/[.08] bg-white/[.04] px-3 py-3 text-center">
                   <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">答错</div>
                   <div className="font-fredoka text-2xl text-[#f87171]">{summary.wrongCount}</div>
                 </div>
                 <div className="rounded-2xl border border-white/[.08] bg-white/[.04] px-3 py-3 text-center">
-                  <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">红月亮</div>
+                  <div className="text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">
+                    红月亮
+                  </div>
                   <div className="font-fredoka text-2xl text-[#fbbf24]">{summary.starsEarned}</div>
                 </div>
               </div>
@@ -1904,7 +1967,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
             {plan.title}
           </div>
           <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
-            每日建议练一轮：复习 → 新学（每轮约 {plan.newWordsPerDay} 个新词）→ 闯关；目标完成后还可提前学下一批
+            每日建议练一轮：复习 → 新学（每轮约 {plan.newWordsPerDay} 个新词）→
+            闯关；目标完成后还可提前学下一批
             <span className="mt-1 block text-[.72rem] font-bold text-[#93c5fd]">
               成长阶段：🥚蛋 → 🐛虫 → 🦋蝴蝶 → 🌸花 → 🌳树；题型随阶段递进
             </span>
@@ -1932,7 +1996,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
             <div className="mb-1 text-[.72rem] font-extrabold text-[#93c5fd]">Step 2</div>
             <div className="text-lg font-black text-[var(--wm-text)]">本轮新学</div>
             <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
-              {newStudyDone} / {activateKeys.length}
+              {previewedNewWordCount} / {activateKeys.length}
             </div>
           </div>
           <div className="rounded-[16px] border border-white/[.08] bg-white/[.035] p-4">

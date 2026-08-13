@@ -2,6 +2,8 @@ import type { ChineseBookSlug } from './chinese-books'
 
 export type ChineseRoadmapPlanStatus = 'active' | 'paused' | 'completed' | 'archived'
 
+export type ChinesePlanRunSource = 'plan' | 'free' | 'review'
+
 export type ChinesePlanQuizType =
   | 'recognize'
   | 'stroke'
@@ -54,6 +56,10 @@ export interface ChineseRoadmapPlanLessonRun {
   accuracy: number | null
   byType: Record<string, { total: number; correct: number }>
   quizTypes: string[]
+  durationSeconds: number | null
+  source: ChinesePlanRunSource
+  finishedPhases: string[]
+  lessonTitle: string
 }
 
 export type ChineseRoadmapPlanRow = {
@@ -85,4 +91,8 @@ export type ChineseRoadmapPlanLessonRunRow = {
   accuracy: number | string | null
   by_type: unknown
   quiz_types: string[] | null
+  duration_seconds: number | null
+  source: string | null
+  finished_phases: string[] | null
+  lesson_title: string | null
 }

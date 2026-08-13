@@ -21,7 +21,7 @@ export default function AdminMathPlansPage() {
           borderBottom: '2px solid rgba(251,146,60,.2)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-6">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 pl-[52px] pr-4 md:px-6 sm:pl-[60px]">
           <Link
             href="/setting/plans"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline"

@@ -12,6 +12,7 @@ import type {
 } from '../types'
 import type { TeachingSessionAction } from '../server/teaching-session-store'
 import AiMessageRenderer from './agent/AiMessageRenderer'
+import RosieAssistantAvatar from './RosieAssistantAvatar'
 import AiVoiceInput from './AiVoiceInput'
 
 type ChatMessage = {
@@ -334,9 +335,7 @@ export default function AiChatPanel({
           <div className="mx-auto flex w-full max-w-2xl flex-col items-center py-3 text-center sm:py-8">
             <div className="relative">
               <div className="absolute inset-0 scale-125 rounded-full bg-violet-300/30 blur-xl" />
-              <div className="relative grid size-20 place-items-center rounded-[28px] bg-gradient-to-br from-violet-500 via-indigo-500 to-sky-400 text-4xl shadow-[0_16px_35px_rgba(99,102,241,0.28)] ring-4 ring-white">
-                🤖
-              </div>
+              <RosieAssistantAvatar className="relative size-20 rounded-[28px] shadow-[0_16px_35px_rgba(251,113,133,0.25)] ring-4 ring-white" />
             </div>
             <h3 className="mt-5 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
               嗨，很高兴和你一起学习！

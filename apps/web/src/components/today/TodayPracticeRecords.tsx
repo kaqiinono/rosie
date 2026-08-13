@@ -35,6 +35,12 @@ import {
   formatPlanRunByType,
 } from '@rosie/chinese'
 
+const RUN_SOURCE_LABELS: Record<string, string> = {
+  plan: '计划练习',
+  free: '自由练习',
+  review: '复习',
+}
+
 function formatClock(iso: string | null | undefined): string | null {
   if (!iso) return null
   // Date-only YYYY-MM-DD — no wall-clock time stored
@@ -283,14 +289,17 @@ export default function TodayPracticeRecords() {
   const chineseRuns = chineseFocusPlan
     ? (runsByPlanId[chineseFocusPlan.id] ?? [])
     : []
-  // Active: current lesson only. Completed: latest run on the finished plan.
+  // Prefer today's run (by finishedAt date); fall back to currentLessonKey match or latest.
+  const chineseTodayRun = chineseRuns.find((r) => r.finishedAt.startsWith(today)) ?? null
   const chineseLatestRun = chineseActivePlan
-    ? (chineseRuns.find((r) => r.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
+    ? (chineseTodayRun ?? chineseRuns.find((r) => r.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
     : chinesePlanCleared
       ? (chineseRuns[0] ?? null)
       : null
   const chinesePlanLesson = chineseActivePlan
-    ? (chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null)
+    ? (chineseLatestRun
+        ? (chinese.lessons.find((l) => l.lessonKey === chineseLatestRun.lessonKey) ?? null)
+        : (chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null))
     : chineseLatestRun
       ? (chinese.lessons.find((l) => l.lessonKey === chineseLatestRun.lessonKey) ?? null)
       : null
@@ -617,13 +626,22 @@ export default function TodayPracticeRecords() {
           <div className="flex flex-col gap-2">
             {chineseLatestRun ? (
               <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 px-3 py-2.5">
-                <div className="text-[13px] font-bold text-emerald-900">
-                  {chinesePlanLesson?.lessonTitle ?? chineseLatestRun.lessonKey}
-                  {chineseLatestRun.completed ? (
-                    <span className="ml-2 text-emerald-700">已完成</span>
-                  ) : (
-                    <span className="ml-2 text-slate-500">未完成</span>
-                  )}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="text-[13px] font-bold text-emerald-900">
+                    {chineseLatestRun.lessonTitle || chinesePlanLesson?.lessonTitle || chineseLatestRun.lessonKey}
+                    {chineseLatestRun.completed ? (
+                      <span className="ml-2 text-emerald-700">已完成</span>
+                    ) : (
+                      <span className="ml-2 text-slate-500">未完成</span>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    {chineseLatestRun.source && (
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">
+                        {RUN_SOURCE_LABELS[chineseLatestRun.source] ?? chineseLatestRun.source}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="mt-1 text-[11px] font-medium text-emerald-800/80">
                   {chineseLatestRun.accuracy != null && (
@@ -640,7 +658,25 @@ export default function TodayPracticeRecords() {
                       {formatClock(chineseLatestRun.finishedAt) ?? chineseLatestRun.finishedAt}
                     </>
                   )}
+                  {chineseLatestRun.durationSeconds != null && chineseLatestRun.durationSeconds > 0 && (
+                    <>
+                      <span className="mx-1.5">·</span>
+                      {formatDuration(chineseLatestRun.durationSeconds)}
+                    </>
+                  )}
                 </div>
+                {chineseLatestRun.finishedPhases.length > 0 && (
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {chineseLatestRun.finishedPhases.map((phase) => (
+                      <span
+                        key={phase}
+                        className="rounded-full bg-emerald-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700"
+                      >
+                        {phase}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 {chineseByTypeRows.length > 0 && (
                   <ul className="mt-2 flex flex-col gap-0.5 border-t border-emerald-100/80 pt-2">
                     {chineseByTypeRows.map((row) => (

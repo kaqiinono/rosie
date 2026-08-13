@@ -481,6 +481,9 @@ export default function ChineseCharsPracticeSession() {
     const phasePlan = enrichPlanForPhases(plan)
     const finishedAt = new Date().toISOString()
     const startedAt = sessionStartedAtRef.current
+    const durationSeconds = Math.round(
+      (new Date(finishedAt).getTime() - new Date(startedAt).getTime()) / 1000
+    )
     const sessionLessons = filtered.map((f) => f.lesson)
     const completedInBatch: string[] = []
 
@@ -517,6 +520,10 @@ export default function ChineseCharsPracticeSession() {
         accuracy: total > 0 ? Math.round((correct / total) * 10000) / 10000 : null,
         byType,
         quizTypes: presentPhases,
+        durationSeconds,
+        source: 'plan' as const,
+        finishedPhases,
+        lessonTitle: lesson.lessonTitle ?? '',
       }
     })
 

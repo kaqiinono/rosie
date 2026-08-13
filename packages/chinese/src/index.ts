@@ -60,6 +60,7 @@ export {
   CHINESE_PLAN_QUIZ_TYPES,
   type ChineseRoadmapPlanStatus,
   type ChinesePlanQuizType,
+  type ChinesePlanRunSource,
   type PlanSessionPhase,
   type ChineseRoadmapPlan,
   type ChineseRoadmapPlanLessonRun,

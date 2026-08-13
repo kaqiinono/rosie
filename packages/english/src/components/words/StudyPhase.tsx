@@ -34,6 +34,8 @@ interface StudyPhaseProps {
   completeButtonText: string
   onStash?: () => void
   isStashing?: boolean
+  onRestart?: () => void
+  isRestarting?: boolean
 }
 
 export default function StudyPhase({
@@ -56,6 +58,8 @@ export default function StudyPhase({
   completeButtonText,
   onStash,
   isStashing = false,
+  onRestart,
+  isRestarting = false,
 }: StudyPhaseProps) {
   // Reset word visibility when the word or "definition only" toggle changes.
   // Uses the in-render "adjusting state from props" pattern to avoid an extra
@@ -93,6 +97,16 @@ export default function StudyPhase({
               className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3 py-1.5 text-[.75rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
             >
               {isStashing ? '暂存中…' : '💾 暂存'}
+            </button>
+          )}
+          {onRestart && (
+            <button
+              type="button"
+              onClick={onRestart}
+              disabled={isRestarting || isStashing}
+              className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(96,165,250,.45)] bg-[rgba(96,165,250,.12)] px-3 py-1.5 text-[.75rem] font-bold text-[#93c5fd] transition-all hover:bg-[rgba(96,165,250,.2)] disabled:cursor-wait disabled:opacity-60"
+            >
+              {isRestarting ? '重置中…' : '↻ 重来'}
             </button>
           )}
           <div className="font-fredoka truncate text-[1rem] text-[var(--wm-text)]">
@@ -189,16 +203,6 @@ export default function StudyPhase({
               </span>
             )}
           </div>
-          {imageSrc && (
-            <div className="relative z-[1] flex max-h-[150px] w-full items-center justify-center overflow-hidden rounded-2xl bg-black/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageSrc}
-                alt=""
-                className="max-h-[150px] w-auto max-w-full object-contain"
-              />
-            </div>
-          )}
           <div className="relative z-[1] flex items-center gap-3">
             <div className="font-nunito text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
               <PhonicsWord text={entry.word} syllables={entry.syllables} />
@@ -229,7 +233,7 @@ export default function StudyPhase({
           onClick={() => {
             if (studyDefOnly) setStudyWordVisible(!studyWordVisible)
           }}
-          className={`relative flex flex-col items-center justify-center px-7 py-6 transition-all duration-400 max-sm:w-full max-sm:px-5 ${
+          className={`relative flex min-h-0 flex-col items-center justify-center overflow-y-auto px-7 py-6 transition-all duration-400 max-sm:w-full max-sm:justify-start max-sm:px-5 max-sm:py-4 ${
             studyDefOnly && !studyWordVisible
               ? 'w-full cursor-pointer max-sm:flex-1'
               : studyDefOnly
@@ -239,6 +243,16 @@ export default function StudyPhase({
           style={{ background: 'linear-gradient(135deg, #0e2a50 0%, #1a1a2e 100%)' }}
         >
           <div className="flex w-full max-w-[420px] flex-col items-start gap-2">
+            {imageSrc && (
+              <div className="mb-1 flex h-[min(20dvh,150px)] min-h-[96px] w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-black/20">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imageSrc}
+                  alt={`${entry.word} 配图`}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            )}
             <div className="text-[.6rem] font-extrabold tracking-widest text-[rgba(96,165,250,.6)] uppercase">
               释义
             </div>
