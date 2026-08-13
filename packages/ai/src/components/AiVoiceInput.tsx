@@ -94,9 +94,10 @@ export default function AiVoiceInput({
     if (!recorder || recorder.state === 'inactive') return
 
     recorder.onstop = async () => {
+      const chunks = chunksRef.current
       cleanup()
       try {
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' })
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })
         if (blob.size === 0) throw new Error('录音太短了')
         await uploadForStt(blob, recorder.mimeType || 'audio/webm')
       } catch (err) {
@@ -126,7 +127,9 @@ export default function AiVoiceInput({
         if (e.data.size > 0) chunksRef.current.push(e.data)
       }
 
-      recorder.start()
+      // Ask the browser to flush audio regularly. Some WebKit implementations
+      // can otherwise emit an empty final chunk when stop() is called.
+      recorder.start(250)
       setPhase('recording')
       stopTimerRef.current = setTimeout(() => {
         void stopRecording()
@@ -141,7 +144,19 @@ export default function AiVoiceInput({
   if (!supported) return null
 
   const phaseLabel =
-    phase === 'recording' ? '正在听…' : phase === 'transcribing' ? '正在识别…' : '按住说话'
+    phase === 'recording'
+      ? '点击结束'
+      : phase === 'transcribing'
+        ? '正在识别…'
+        : '点击说话'
+
+  const toggleRecording = () => {
+    if (phase === 'recording') {
+      void stopRecording()
+      return
+    }
+    void startRecording()
+  }
 
   if (compact) {
     return (
@@ -161,17 +176,14 @@ export default function AiVoiceInput({
         <button
           type="button"
           disabled={disabled || phase === 'transcribing'}
-          onPointerDown={() => void startRecording()}
-          onPointerUp={() => void stopRecording()}
-          onPointerLeave={() => {
-            if (phase === 'recording') void stopRecording()
-          }}
+          onClick={toggleRecording}
           className={`grid size-10 place-items-center rounded-xl text-lg transition ${
             phase === 'recording'
               ? 'scale-105 bg-rose-500 text-white ring-4 ring-rose-100'
               : 'bg-sky-50 text-sky-600 hover:bg-sky-100'
           } disabled:opacity-50`}
-          aria-label="按住说话"
+          aria-label={phase === 'recording' ? '结束录音' : '开始录音'}
+          aria-pressed={phase === 'recording'}
           title={phaseLabel}
         >
           {phase === 'transcribing' ? '…' : '🎤'}
@@ -185,17 +197,14 @@ export default function AiVoiceInput({
       <button
         type="button"
         disabled={disabled || phase === 'transcribing'}
-        onPointerDown={() => void startRecording()}
-        onPointerUp={() => void stopRecording()}
-        onPointerLeave={() => {
-          if (phase === 'recording') void stopRecording()
-        }}
+        onClick={toggleRecording}
         className={`flex h-14 w-14 items-center justify-center rounded-[20px] text-xl shadow-md transition ${
           phase === 'recording'
             ? 'scale-105 bg-rose-500 text-white ring-4 ring-rose-100'
             : 'bg-gradient-to-br from-sky-400 to-indigo-500 text-white hover:-translate-y-0.5'
         } disabled:opacity-50`}
-        aria-label="按住说话"
+        aria-label={phase === 'recording' ? '结束录音' : '开始录音'}
+        aria-pressed={phase === 'recording'}
       >
         🎤
       </button>

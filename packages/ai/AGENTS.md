@@ -136,7 +136,8 @@ app 层共享一套 embedded renderers 给浮层和完整 `/ai` 页面。英语�
 | `AI_EMBED_API_KEY` / `AI_EMBED_BASE_URL` | embedding + STT + chat（Qoter 等） |
 | `AI_CHAT_MODEL`                          | chat 模型（默认 `gpt-4o-mini`）    |
 | `AI_CHAT_API_KEY` / `AI_CHAT_BASE_URL`   | 可选，单独覆盖 chat endpoint       |
-| `AI_STT_MODEL`                           | 默认 `whisper-1`                   |
+| `AI_STT_BASE_URL`                        | 可选，单独覆盖 STT endpoint        |
+| `AI_STT_MODEL`                           | 默认 `whisper-1`；百炼用 `qwen3-asr-flash` |
 | `SUPABASE_SERVICE_ROLE_KEY`              | ingest / sync API                  |
 
 ## 开发检查

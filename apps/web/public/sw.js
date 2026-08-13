@@ -9,9 +9,9 @@ const { RangeRequestsPlugin } = workbox.rangeRequests
 
 precacheAndRoute([
   { url: '/manifest.json', revision: null },
-  { url: '/icons/icon-32.png', revision: 'rosie-transparent-v2' },
-  { url: '/icons/icon-192.png', revision: 'rosie-transparent-v2' },
-  { url: '/icons/icon-512.png', revision: 'rosie-transparent-v2' },
+  { url: '/icons/favicon-32.png', revision: 'rosie-icon-split-v4' },
+  { url: '/icons/icon-192.png', revision: 'rosie-icon-split-v4' },
+  { url: '/icons/icon-512.png', revision: 'rosie-icon-split-v4' },
 ])
 
 registerRoute(

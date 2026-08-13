@@ -27,7 +27,7 @@ export default function LogoLink() {
       tabIndex={isHome ? -1 : 0}
     >
       <Image
-        src="/icons/icon-32.png"
+        src="/icons/favicon-32.png"
         alt="Rosie Fun"
         width={28}
         height={28}
