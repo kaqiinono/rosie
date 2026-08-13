@@ -347,7 +347,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   }, [sourcePlan, user?.id])
 
   const vocab = planVocab ?? selectedStageVocab
-  const dayReviewKeys = task?.reviewKeys ?? []
+  const dayReviewKeys = useMemo(() => task?.reviewKeys ?? [], [task?.reviewKeys])
   const batchSize = Math.max(1, plan?.reviewBatchSize ?? 20)
   const visibleReviewKeys = dayReviewKeys.slice(0, reviewCursor)
   const activateKeys = useMemo(() => {
@@ -368,6 +368,14 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         .filter((entry): entry is WordEntry => entry != null),
     [activateKeys, vocab],
   )
+  const previewEntries = useMemo(() => {
+    const keys = task?.mode === 'boss'
+      ? task.bossKeys
+      : uniqueKeys([...dayReviewKeys, ...activateKeys])
+    return keys
+      .map((key) => findWordByKey(vocab, key))
+      .filter((entry): entry is WordEntry => entry != null)
+  }, [activateKeys, dayReviewKeys, task?.bossKeys, task?.mode, vocab])
   const [loadError, setLoadError] = useState<string | null>(null)
   const loadGenRef = useRef(0)
   const sessionStartedRef = useRef(false)
@@ -1087,16 +1095,14 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   ])
 
   const startStudyOrFinal = useCallback(() => {
-    // Prefer keys that resolve in current vocab; fall back to raw activateKeys for study.
-    const studyKeys =
-      activateEntries.length > 0
-        ? activateEntries.map((entry) => wordKey(entry))
-        : (task?.activateKeys ?? [])
+    const hasFinishedCardPreview =
+      previewEntries.length > 0 && newStudyDone >= previewEntries.length
 
-    if (studyKeys.length > 0 && activateEntries.length > 0) {
+    if (previewEntries.length > 0 && !hasFinishedCardPreview) {
       void applyActivations()
       setStudyIdx(0)
       setNewStudyDone(0)
+      setIsImmersive(true)
       setPhase('study')
       return
     }
@@ -1112,7 +1118,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     const wrongReviewKeys = [...collapseSessionOutcomes(reviewOutcomesRef.current)]
       .filter(([, correct]) => !correct)
       .map(([key]) => key)
-    const finalKeys = uniqueKeys(wrongReviewKeys)
+    const finalKeys = uniqueKeys([...activateKeys, ...wrongReviewKeys])
     if (finalKeys.length === 0) {
       // Truly nothing to do today — show hub message, do NOT auto-settle as "completed day"
       const note =
@@ -1139,7 +1145,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     }
 
     startFinalQuiz(finalKeys)
-  }, [activateEntries, applyActivations, startFinalQuiz, task])
+  }, [activateEntries, activateKeys, applyActivations, newStudyDone, previewEntries.length, setIsImmersive, startFinalQuiz, task])
 
   const beginSession = useCallback(() => {
     if (!task || settling) return
@@ -1149,6 +1155,14 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     roundReviewKeysRef.current =
       task.mode === 'boss' ? task.bossKeys : dayReviewKeys
     setRoundSummary(null)
+    if (previewEntries.length > 0 && newStudyDone < previewEntries.length) {
+      if (task.mode !== 'boss') void applyActivations()
+      setStudyIdx(0)
+      setNewStudyDone(0)
+      setIsImmersive(true)
+      setPhase('study')
+      return
+    }
     if (task.mode === 'boss') {
       if (task.bossKeys.length === 0) {
         setDoneTitle('今天暂无 Boss 词')
@@ -1198,11 +1212,15 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
     startStudyOrFinal()
   }, [
     activateKeys,
+    applyActivations,
     batchSize,
     buildSlots,
     dayReviewKeys,
     plan?.stats.bossQuestionTier,
+    newStudyDone,
+    previewEntries.length,
     reviewCursor,
+    setIsImmersive,
     settling,
     startBossQuiz,
     startReview,
@@ -1546,7 +1564,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
   }
 
   if (phase === 'study') {
-    const entry = activateEntries[studyIdx]
+    const entry = previewEntries[studyIdx]
     if (!entry) {
       // Vocab race or empty — fall through to final / empty-state instead of blank flash
       return (
@@ -1577,8 +1595,8 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
       <StudyPhase
         entry={entry}
         currentIdx={studyIdx}
-        totalCount={activateEntries.length}
-        title="今日新学"
+        totalCount={previewEntries.length}
+        title="练习前卡片预览"
         studyDefOnly={studyDefOnly}
         onStudyDefOnlyChange={setStudyDefOnly}
         isImmersive={isImmersive}
@@ -1588,7 +1606,7 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         nextButtonShadowClass="shadow-[0_3px_12px_rgba(96,165,250,.35)]"
         wordBadge={
           <span className="rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.16)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[#93c5fd] uppercase">
-            新学
+            {activateKeys.includes(wordKey(entry)) ? '新学' : '复习'}
           </span>
         }
         onBack={() => void backToHub()}
@@ -1597,10 +1615,18 @@ export default function AdaptivePlanSession({ planId, onBack, autoStart = false 
         onPrev={() => setStudyIdx((idx) => Math.max(0, idx - 1))}
         onNext={() => {
           setNewStudyDone((done) => Math.max(done, studyIdx + 1))
-          setStudyIdx((idx) => Math.min(idx + 1, activateEntries.length - 1))
+          setStudyIdx((idx) => Math.min(idx + 1, previewEntries.length - 1))
         }}
         onComplete={() => {
-          setNewStudyDone(activateEntries.length)
+          setNewStudyDone(previewEntries.length)
+          if (task.mode === 'boss') {
+            startBossQuiz(task.bossKeys, 'boss')
+            return
+          }
+          if (dayReviewKeys.length > 0 && reviewDoneKeys.size < dayReviewKeys.length) {
+            startReview()
+            return
+          }
           const wrongReviewKeys = [...collapseSessionOutcomes(reviewOutcomesRef.current)]
             .filter(([, correct]) => !correct)
             .map(([key]) => key)

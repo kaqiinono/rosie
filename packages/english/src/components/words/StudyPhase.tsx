@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import type { WordEntry } from '@rosie/core'
 import { hilite, highlightExample } from '../../utils/english-helpers'
+import { getWordImagePublicUrl } from '../../utils/word-image'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
 
@@ -69,6 +70,7 @@ export default function StudyPhase({
   }
 
   const isLast = currentIdx === totalCount - 1
+  const imageSrc = entry.imagePath ? getWordImagePublicUrl(entry.imagePath) : ''
 
   return (
     <div
@@ -135,6 +137,28 @@ export default function StudyPhase({
       </div>
 
       <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-[16px] border border-[var(--wm-border)] max-sm:flex-col">
+        <button
+          type="button"
+          onClick={onPrev}
+          disabled={currentIdx === 0}
+          aria-label="上一个单词"
+          title="上一个单词"
+          className="absolute top-1/2 left-2 z-10 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-[#090914]/75 text-2xl font-black text-white/70 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:cursor-default disabled:opacity-20 max-sm:h-10 max-sm:w-10 max-sm:text-xl"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (isLast) onComplete()
+            else onNext()
+          }}
+          aria-label={isLast ? completeButtonText : '下一个单词'}
+          title={isLast ? completeButtonText : '下一个单词'}
+          className="absolute top-1/2 right-2 z-10 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-[#090914]/75 text-2xl font-black text-white/70 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:border-[#a78bfa] hover:text-[#c4b5fd] max-sm:h-10 max-sm:w-10 max-sm:text-xl"
+        >
+          ›
+        </button>
         <div
           className={`relative flex flex-col items-center justify-center gap-3 overflow-hidden px-7 py-6 transition-all duration-400 max-sm:px-5 ${
             studyDefOnly && !studyWordVisible
@@ -165,6 +189,16 @@ export default function StudyPhase({
               </span>
             )}
           </div>
+          {imageSrc && (
+            <div className="relative z-[1] flex max-h-[150px] w-full items-center justify-center overflow-hidden rounded-2xl bg-black/20">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageSrc}
+                alt=""
+                className="max-h-[150px] w-auto max-w-full object-contain"
+              />
+            </div>
+          )}
           <div className="relative z-[1] flex items-center gap-3">
             <div className="font-nunito text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
               <PhonicsWord text={entry.word} syllables={entry.syllables} />
