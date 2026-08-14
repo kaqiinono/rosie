@@ -301,26 +301,6 @@ export default function QuestionLayout({
           font-weight: 500;
         }
 
-        /* ─── 深色模式适配 ─── */
-        @media (prefers-color-scheme: dark) {
-          .question-layout {
-            background: #1c1c1e;
-            box-shadow:
-              0 2px 8px rgba(0,0,0,0.3),
-              0 0 0 1.5px rgba(255,255,255,0.06);
-          }
-          .ql-question { background: #232325; border-bottom-color: #2e2e30; }
-          .ql-question-body { color: #f0ede8; }
-          .ql-toggle-btn { background: #2e2940; border-color: #5040a0; color: #b8a8ff; }
-          .ql-toggle-btn:hover { background: #3a3355; }
-          .ql-toggle-btn--open { background: #6c4fff; border-color: #6c4fff; color: #fff; }
-          .ql-solution { background: #26231a; border-top-color: #3a3222; }
-          .ql-solution-body { color: #e8d8a0; }
-          .ql-answer { background: #1a2420; }
-          .ql-answer-body { color: #7adea8; }
-          .ql-section-label { color: #606060; }
-        }
-
         /* ─── 移动端 ─── */
         @media (max-width: 480px) {
           .ql-question, .ql-answer { padding: 18px 18px 16px; }
