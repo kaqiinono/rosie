@@ -72,6 +72,7 @@ pnpm dev                                  # dev server (turbo → web, Turbopack
 pnpm build                                # production build (turbo)
 pnpm start                                # preview production build
 pnpm lint                                 # lint all packages
+pnpm lint:theme                           # reject accidental system-dark styles on light pages
 pnpm typecheck                            # type-check all packages
 
 # scoped to one module (the AI-context / fast-feedback win):
