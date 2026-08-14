@@ -20,6 +20,22 @@ type SolutionToggleContextValue = {
 }
 
 const SolutionToggleContext = createContext<SolutionToggleContextValue | null>(null)
+const SolutionAvailabilityOverrideContext = createContext(false)
+
+/** Allows list-style study views to show solutions before an answer attempt. */
+export function SolutionAvailabilityOverride({
+  enabled,
+  children,
+}: {
+  enabled: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <SolutionAvailabilityOverrideContext.Provider value={enabled}>
+      {children}
+    </SolutionAvailabilityOverrideContext.Provider>
+  )
+}
 
 /**
  * Place the 查看题解 control next to 检查答案 (or other answer actions).
@@ -66,7 +82,11 @@ export default function QuestionLayout({
   problemId,
   problem,
 }: QuestionLayoutProps) {
-  const [solutionOpen, setSolutionOpen] = useState(defaultSolutionOpen && solutionAvailable)
+  const solutionAvailabilityOverride = useContext(SolutionAvailabilityOverrideContext)
+  const effectiveSolutionAvailable = solutionAvailable || solutionAvailabilityOverride
+  const [solutionOpen, setSolutionOpen] = useState(
+    defaultSolutionOpen && effectiveSolutionAvailable,
+  )
   const solutionRef = useRef<HTMLDivElement>(null)
   const [solutionHeight, setSolutionHeight] = useState(0)
   // Reference-counted rather than a boolean reset by an effect: the claim happens in a
@@ -77,8 +97,8 @@ export default function QuestionLayout({
   const toggleClaimed = claimCount > 0
 
   useEffect(() => {
-    setSolutionOpen(solutionAvailable ? defaultSolutionOpen : false)
-  }, [defaultSolutionOpen, solutionAvailable])
+    setSolutionOpen(effectiveSolutionAvailable ? defaultSolutionOpen : false)
+  }, [defaultSolutionOpen, effectiveSolutionAvailable])
 
   useEffect(() => {
     const el = solutionRef.current
@@ -109,7 +129,7 @@ export default function QuestionLayout({
     return () => setClaimCount((c) => c - 1)
   }, [])
 
-  const toggleEnabled = solutionAvailable && showSolutionToggle
+  const toggleEnabled = effectiveSolutionAvailable && showSolutionToggle
 
   const toggleCtx = useMemo((): SolutionToggleContextValue | null => {
     if (!toggleEnabled) return null
@@ -150,7 +170,7 @@ export default function QuestionLayout({
         </section>
 
         {/* ── Section 3: 题解（答题区下方折叠展开） ── */}
-        {solutionAvailable ? (
+        {effectiveSolutionAvailable ? (
           <section
             className="ql-solution"
             style={{

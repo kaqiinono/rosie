@@ -6,6 +6,7 @@ import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from 
 import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
 import type { ProblemDetailComponentProps } from '@rosie/math-kit/components/shared/LessonProblemRoutePage'
+import { SolutionAvailabilityOverride } from '@rosie/math-kit/components/shared/QuestionLayout'
 
 export type ProblemDetailInlineComponent = ComponentType<ProblemDetailComponentProps>
 
@@ -69,7 +70,9 @@ function ExpandedProblemCard({
       </button>
       {isOpen && (
         <div className="border-t border-border-light px-4 pb-5 pt-3">
-          <ProblemDetail problem={problem} mode="inline" defaultSolutionOpen={defaultSolutionOpen} />
+          <SolutionAvailabilityOverride enabled={Boolean(defaultSolutionOpen)}>
+            <ProblemDetail problem={problem} mode="inline" defaultSolutionOpen={defaultSolutionOpen} />
+          </SolutionAvailabilityOverride>
         </div>
       )}
     </div>

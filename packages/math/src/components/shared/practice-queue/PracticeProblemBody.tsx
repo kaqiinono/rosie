@@ -99,7 +99,8 @@ export default function PracticeProblemBody({
   const [dontKnowFeedback, setDontKnowFeedback] = useState<DontKnowFeedback | null>(null)
   const [helpOpen, setHelpOpen] = useState(false)
   const [helpIndex, setHelpIndex] = useState(0)
-  const helpProblem = helpProblems[helpIndex]
+  const helpItem = helpProblems[helpIndex]
+  const helpProblem = helpItem?.problem
   const hasAttempted = reveal?.problemId === problem.id
   const autoOpenSolution = reveal?.problemId === problem.id && reveal.openSolution
   const panelFeedback =
@@ -264,6 +265,9 @@ export default function PracticeProblemBody({
           <div className="px-4">
             <div className="mb-3 flex items-center gap-2">
               <div className="min-w-0 flex-1 text-sm font-extrabold text-text-primary">{helpProblem.title}</div>
+              <span className="shrink-0 rounded-full border border-orange-200 bg-white px-2.5 py-1 text-xs font-bold text-orange-700">
+                {problemSetSectionLabel(helpItem.section, lessonId)}
+              </span>
               <span className="shrink-0 rounded-full bg-amber-200 px-2.5 py-1 text-xs font-black text-amber-900" aria-live="polite">
                 {helpIndex + 1} / {helpProblems.length}
               </span>

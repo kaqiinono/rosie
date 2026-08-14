@@ -2,6 +2,7 @@ import type { MathPlanProblem, ProblemSet, Problem } from '@rosie/core'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import type { MathPracticeQueueItemRef } from '@rosie/math-kit/utils/practice-queue-snapshot'
 import { lessonByKey, routeForLesson } from '@rosie/math-kit/utils/lesson-registry'
+import { findHelpProblems } from '@rosie/math-kit/utils/practice-help-problems'
 
 const SECTIONS = ['lesson', 'homework', 'pretest', 'workbook', 'supplement'] as const
 
@@ -14,36 +15,6 @@ function detailHref(lessonId: string, section: string, index: number): string {
   const entry = lessonByKey(lessonId)
   const base = entry ? routeForLesson(entry) : `/math/ny/${lessonId}`
   return `${base}/${section}/${index}`
-}
-
-/** Rank same-type worked examples deterministically, favoring solution screenshots. */
-export function findHelpProblems(
-  problemSets: Record<string, ProblemSet>,
-  lessonId: string,
-  current: Problem,
-): Problem[] {
-  const problemSet = problemSets[lessonId]
-  if (!problemSet) return []
-
-  return SECTIONS.flatMap((section, sectionOrder) =>
-    sectionProblems(problemSet, section).map((problem, problemOrder) => ({
-      problem,
-      sectionOrder,
-      problemOrder,
-    })),
-  )
-    .filter(({ problem }) => problem.id !== current.id && problem.tag === current.tag)
-    .sort((a, b) => {
-      const screenshotOrder = Number(Boolean(b.problem.analysisImg)) - Number(Boolean(a.problem.analysisImg))
-      if (screenshotOrder !== 0) return screenshotOrder
-      const difficultyOrder =
-        Math.abs(a.problem.difficulty - current.difficulty) -
-        Math.abs(b.problem.difficulty - current.difficulty)
-      if (difficultyOrder !== 0) return difficultyOrder
-      if (a.sectionOrder !== b.sectionOrder) return a.sectionOrder - b.sectionOrder
-      return a.problemOrder - b.problemOrder
-    })
-    .map(({ problem }) => problem)
 }
 
 export function findProblemInSets(
@@ -88,7 +59,7 @@ export function mathPlanProblemToQueueItem(
     section: mp.section,
     lessonId: mp.lessonId,
     detailHref: detailHref(mp.lessonId, found.section, found.index),
-    helpProblems: findHelpProblems(problemSets, mp.lessonId, found.problem),
+    helpProblems: findHelpProblems(problemSets[mp.lessonId], found.problem),
   }
 }
 
@@ -121,7 +92,7 @@ export function rehydratePracticeQueueItems(
       section: ref.section || found.section,
       lessonId: ref.lessonId,
       detailHref: ref.detailHref || detailHref(ref.lessonId, found.section, found.index),
-      helpProblems: findHelpProblems(problemSets, ref.lessonId, found.problem),
+      helpProblems: findHelpProblems(problemSets[ref.lessonId], found.problem),
     })
   }
   return items

@@ -15,6 +15,7 @@ import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-typ
 import { mathWrongStore } from '@rosie/math-kit/hooks/useMathWrong'
 import { syncWrongBookFromAttempts } from '@rosie/math-kit/utils/math-scratch-db'
 import { lessonDisplayLabelFromRegistry } from '@rosie/math-kit/utils/lesson-registry'
+import { findHelpProblems } from '@rosie/math-kit/utils/practice-help-problems'
 import { useLessonRoute } from './LessonRouteContext'
 import type { MasteryFilter, PracticeFilter, SkipReasonFilter } from '@rosie/math-kit/components/shared/FilterPanel'
 
@@ -30,11 +31,15 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 
 function SectionListPage({ section }: { section: SectionKey }) {
   const { module, basePath, entry } = useLessonRoute()
+  const problemSet = module.PROBLEMS
   const { solveCount } = module.useLesson()
   const startPractice = useStartPracticeQueue()
   const [showDetail, setShowDetail] = useState(false)
   const [autoExpand, setAutoExpand] = useState(false)
-  const list = (module.PROBLEMS[section] ?? []) as typeof module.PROBLEMS.lesson
+  const list = useMemo(
+    () => (problemSet[section] ?? []) as typeof problemSet.lesson,
+    [problemSet, section],
+  )
   const attempted = list.filter((p) => (solveCount[p.id] ?? 0) >= 1).length
   const mastered = list.filter((p) => (solveCount[p.id] ?? 0) >= 3).length
   const total = list.length
@@ -47,8 +52,9 @@ function SectionListPage({ section }: { section: SectionKey }) {
       section,
       lessonId: entry.lessonKey,
       detailHref: `${sectionPath}/${idx + 1}`,
+      helpProblems: findHelpProblems(problemSet, problem),
     }))
-  }, [list, section, entry.lessonKey, sectionPath])
+  }, [list, section, entry.lessonKey, sectionPath, problemSet])
 
   const beginPractice = useCallback(
     (initialProblemId?: string) => {
@@ -64,69 +70,77 @@ function SectionListPage({ section }: { section: SectionKey }) {
     [practicePool, startPractice, section, label, sectionPath],
   )
 
-  const btnBase =
-    'cursor-pointer rounded-full border-[1.5px] px-2.5 py-1 text-[11px] font-semibold transition-all active:scale-95'
-  const btnOn = 'border-blue-600 bg-blue-600 text-white'
-  const btnOff = 'border-slate-200 bg-white text-text-secondary'
-
   return (
     <div>
-      <div className="mb-3.5 rounded-[14px] border border-slate-200 bg-white/80 p-4">
-        <div className="mb-1 text-sm font-extrabold text-text-primary">
-          {SECTION_LABELS[section]} · {label}
-        </div>
-        <div className="mb-2 text-xs text-text-secondary">
-          {total > 0 ? `共 ${total} 道题` : '本模块暂无题目'}
-        </div>
-        {total > 0 && (
-          <div className="mb-2">
-            <div className="mb-1.5 text-[11px] font-bold text-text-secondary">📖 题解显示</div>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => setAutoExpand((v) => !v)}
-                className={`${btnBase} ${autoExpand ? btnOn : btnOff}`}
-              >
-                {autoExpand ? '✅ 自动展开题解' : '⭕ 自动展开题解'}
-              </button>
-            </div>
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-slate-300 transition-[width] duration-400"
-              style={{ width: `${total > 0 ? Math.round((attempted / total) * 100) : 0}%` }}
-            />
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-[width] duration-400"
-              style={{ width: `${total > 0 ? Math.round((mastered / total) * 100) : 0}%` }}
-            />
-          </div>
-          <div className="shrink-0 text-xs font-bold text-text-secondary">
-            练过 {attempted} · 🦋 {mastered}/{total}
+      <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-base font-extrabold text-text-primary sm:text-lg">
+              {SECTION_LABELS[section]} · {label}
+            </h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              {total > 0 ? `共 ${total} 道题` : '本模块暂无题目'}
+            </p>
           </div>
           {total > 0 && (
-            <>
+            <span className="shrink-0 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
+              🦋 {mastered}/{total}
+            </span>
+          )}
+        </div>
+
+        {total > 0 && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+            <div className="min-w-0">
+              <div className="mb-2 flex items-center justify-between gap-3 text-xs font-semibold text-text-secondary">
+                <span>学习进度</span>
+                <span>练过 {attempted} / {total}</span>
+              </div>
+              <div className="relative h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full bg-slate-300 transition-[width] duration-400"
+                  style={{ width: `${Math.round((attempted / total) * 100)}%` }}
+                />
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-[width] duration-400"
+                  style={{ width: `${Math.round((mastered / total) * 100)}%` }}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
               <button
                 type="button"
                 onClick={() => beginPractice()}
-                className={`shrink-0 ${btnBase} ${btnOn}`}
+                className="min-h-11 cursor-pointer rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(37,99,235,0.25)] transition-all hover:bg-blue-700 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
               >
                 开始练习
+              </button>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={autoExpand}
+                onClick={() => setAutoExpand((v) => !v)}
+                className={`flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-bold transition-all active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${autoExpand ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-text-secondary hover:bg-slate-50'}`}
+              >
+                <span
+                  className={`h-2.5 w-2.5 shrink-0 rounded-full ${autoExpand ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  aria-hidden="true"
+                />
+                题解：{autoExpand ? '自动' : '手动'}
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setShowDetail((v) => !v)
                 }}
-                className={`shrink-0 ${btnBase} ${showDetail ? btnOn : btnOff}`}
+                aria-expanded={showDetail}
+                className={`col-span-2 min-h-11 cursor-pointer rounded-xl border px-4 py-2.5 text-sm font-bold transition-all active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:col-span-1 ${showDetail ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-text-secondary hover:bg-slate-50'}`}
               >
                 {showDetail ? '收起 ↑' : '展开 ↓'}
               </button>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
       <LessonProblemList
         problems={list}
@@ -156,7 +170,7 @@ function AlltestContent() {
       for (const p of list ?? []) allTags.add(p.tag)
     }
     return {
-      source: new Set(['pretest', 'lesson', 'homework', 'supplement']),
+      source: new Set(['pretest', 'lesson', 'homework', 'workbook', 'supplement']),
       type: typeParam ? new Set([typeParam]) : allTags,
       mastery: 'all' as MasteryFilter,
       practice: 'all' as PracticeFilter,

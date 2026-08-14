@@ -7,7 +7,8 @@ import DifficultyFilterRow from '@rosie/math-kit/components/shared/DifficultyFil
 import ExpandedProblemCard, { type ProblemDetailInlineComponent } from '@rosie/math-kit/components/shared/ExpandedProblemCard'
 import MasonryGrid from '@rosie/math-kit/components/shared/MasonryGrid'
 import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
-import { seaPoolToQueueItems } from '@rosie/math-kit/utils/practice-queue-from-sea'
+import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
+import { findHelpProblems } from '@rosie/math-kit/utils/practice-help-problems'
 import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
 import { useAuth } from '@rosie/core'
 import { useMathSkipped } from '@rosie/math-kit/hooks/useMathSkipped'
@@ -15,7 +16,6 @@ import {
   MATH_SKIP_REASON_OPTIONS,
   type MathSkipReason,
 } from '@rosie/math-kit/utils/math-skip-reasons'
-import type { SeaProblem } from '@rosie/math-kit/utils/sea-types'
 import { problemSetSectionLabel } from '@rosie/math-kit/utils/problem-set-helpers'
 import { lessonKeyFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import type { MathSkippedMap } from '@rosie/math-kit/hooks/useMathSkipped'
@@ -162,27 +162,28 @@ export function createFilterPanel(
     const allSourceSelected = sourceBtns.every(b => filters.source.has(b.key))
     const allTypeSelected = typeBtns.every(b => filters.type.has(b.key))
 
-    const practicePool = useMemo((): SeaProblem[] =>
+    const practicePool = useMemo((): PracticeQueueItem[] =>
       filtered.map(({ p, setName, idx }) => ({
         problem: p,
         lessonId,
         section: setName,
-        href: getProblemHref(setName, idx),
+        detailHref: getProblemHref(setName, idx),
+        helpProblems: findHelpProblems(problems, p),
       })),
-    [filtered, lessonId])
+    [filtered, problems])
 
     const beginPractice = useCallback(
       (initialProblemId?: string) => {
         if (practicePool.length === 0) return
         startPractice({
-          pool: seaPoolToQueueItems(practicePool),
+          pool: practicePool,
           source: 'lesson',
           title: title,
           initialProblemId,
           returnHref: base,
         })
       },
-      [practicePool, startPractice, title, base],
+      [practicePool, startPractice],
     )
 
     const allExpanded = total > 0 && filtered.every(({ p }) => expandedIds.has(p.id))

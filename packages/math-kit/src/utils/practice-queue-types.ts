@@ -1,13 +1,18 @@
 import type { Problem } from '@rosie/core'
 import type { MathPracticeSource } from '@rosie/math-kit/utils/practice-queue-snapshot'
 
+export type PracticeHelpProblem = {
+  problem: Problem
+  section: string
+}
+
 export type PracticeQueueItem = {
   problem: Problem
   section: string
   lessonId: string
   detailHref: string
   /** Same-type worked examples shown on request without revealing the current answer. */
-  helpProblems?: Problem[]
+  helpProblems?: PracticeHelpProblem[]
 }
 
 export type PracticeQueuePhase = 'answering' | 'celebration'
