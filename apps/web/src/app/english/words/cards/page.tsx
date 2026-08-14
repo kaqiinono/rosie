@@ -7,14 +7,22 @@ import { shuffle, wordKey } from '@rosie/english'
 import { FilterBar } from '@rosie/english'
 import { PhonicsLegend } from '@rosie/english'
 import { CardsGrid } from '@rosie/english'
+import { useImmersive } from '@rosie/core'
 
 export default function CardsPage() {
+  const { setIsImmersive } = useImmersive()
   const {
-    vocab, filteredWords, masteryMap,
-    selUnits, setSelUnits,
-    selLessons, setSelLessons,
-    selWords, setSelWords,
-    masteryFilter, setMasteryFilter,
+    vocab,
+    filteredWords,
+    masteryMap,
+    selUnits,
+    setSelUnits,
+    selLessons,
+    setSelLessons,
+    selWords,
+    setSelWords,
+    masteryFilter,
+    setMasteryFilter,
   } = useWordsContext()
 
   const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set())
@@ -24,10 +32,7 @@ export default function CardsPage() {
   /** Shuffled order only applies when `sig` matches current filter signature. */
   const [shuffleState, setShuffleState] = useState<{ sig: string; seed: number } | null>(null)
 
-  const filterSig = useMemo(
-    () => filteredWords.map(w => wordKey(w)).join('|'),
-    [filteredWords],
-  )
+  const filterSig = useMemo(() => filteredWords.map((w) => wordKey(w)).join('|'), [filteredWords])
 
   const displayWords = useMemo(() => {
     if (!shuffleState || shuffleState.sig !== filterSig) return filteredWords
@@ -39,39 +44,56 @@ export default function CardsPage() {
     setAllFlipped(false)
   }, [])
 
-  const toggleUnit = useCallback((unit: string) => {
-    setSelUnits(prev => {
-      const next = new Set(prev)
-      if (next.has(unit)) {
-        next.delete(unit)
-        setSelLessons(old => new Set([...old].filter(k => !k.startsWith(`${unit}::`))))
-      } else {
-        next.add(unit)
-      }
-      setSelWords(new Set())
-      return next
-    })
-    resetCards()
-  }, [setSelUnits, setSelLessons, setSelWords, resetCards])
+  const toggleUnit = useCallback(
+    (unit: string) => {
+      setSelUnits((prev) => {
+        const next = new Set(prev)
+        if (next.has(unit)) {
+          next.delete(unit)
+          setSelLessons((old) => new Set([...old].filter((k) => !k.startsWith(`${unit}::`))))
+        } else {
+          next.add(unit)
+        }
+        setSelWords(new Set())
+        return next
+      })
+      resetCards()
+    },
+    [setSelUnits, setSelLessons, setSelWords, resetCards],
+  )
 
-  const toggleLesson = useCallback((lesson: string) => {
-    setSelLessons(prev => {
-      const next = new Set(prev)
-      if (next.has(lesson)) { next.delete(lesson) } else { next.add(lesson) }
-      setSelWords(new Set())
-      return next
-    })
-    resetCards()
-  }, [setSelLessons, setSelWords, resetCards])
+  const toggleLesson = useCallback(
+    (lesson: string) => {
+      setSelLessons((prev) => {
+        const next = new Set(prev)
+        if (next.has(lesson)) {
+          next.delete(lesson)
+        } else {
+          next.add(lesson)
+        }
+        setSelWords(new Set())
+        return next
+      })
+      resetCards()
+    },
+    [setSelLessons, setSelWords, resetCards],
+  )
 
-  const toggleWord = useCallback((word: string) => {
-    setSelWords(prev => {
-      const next = new Set(prev)
-      if (next.has(word)) { next.delete(word) } else { next.add(word) }
-      return next
-    })
-    resetCards()
-  }, [setSelWords, resetCards])
+  const toggleWord = useCallback(
+    (word: string) => {
+      setSelWords((prev) => {
+        const next = new Set(prev)
+        if (next.has(word)) {
+          next.delete(word)
+        } else {
+          next.add(word)
+        }
+        return next
+      })
+      resetCards()
+    },
+    [setSelWords, resetCards],
+  )
 
   const clearWords = useCallback(() => {
     setSelWords(new Set())
@@ -79,9 +101,13 @@ export default function CardsPage() {
   }, [setSelWords, resetCards])
 
   const flipCard = useCallback((index: number) => {
-    setFlippedSet(prev => {
+    setFlippedSet((prev) => {
       const next = new Set(prev)
-      if (next.has(index)) { next.delete(index) } else { next.add(index) }
+      if (next.has(index)) {
+        next.delete(index)
+      } else {
+        next.add(index)
+      }
       return next
     })
   }, [])
@@ -120,12 +146,13 @@ export default function CardsPage() {
         onClearWords={clearWords}
         onFlipAll={flipAll}
         onToggleDualMode={toggleDualMode}
+        onImmersive={() => setIsImmersive(true)}
         onShuffleOrder={shuffleOrder}
         masteryFilter={masteryFilter}
         onMasteryFilter={setMasteryFilter}
         masteryMap={masteryMap}
       />
-      <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
+      <div className="relative z-[1] mx-auto max-w-[1280px] px-4 py-5">
         <PhonicsLegend />
         <CardsGrid
           words={displayWords}

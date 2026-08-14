@@ -1,10 +1,15 @@
-import type { WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
+import type { QuizType, WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
 import { advanceStage, regressStage } from '@rosie/core'
 import { applyBoxAnswer } from './adaptivePlanBoxes'
 import type { AdaptivePlanStats, AdaptivePlanWordProgress } from './adaptivePlanTypes'
 import { classifyPlanWords } from './english-helpers'
 
-export type SessionOutcome = { wordKey: string; correct: boolean }
+export type SessionOutcome = {
+  wordKey: string
+  correct: boolean
+  quizType?: QuizType
+  usedRetry?: boolean
+}
 
 export type AdaptiveMasteryPatch = { wordKey: string; info: WordMasteryInfo }
 

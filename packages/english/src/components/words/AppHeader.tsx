@@ -5,10 +5,6 @@ import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 
-interface AppHeaderProps {
-  onImmersive: () => void
-}
-
 const BASE = '/english/words'
 
 const TABS = [
@@ -18,7 +14,7 @@ const TABS = [
   { id: 'reading', path: `${BASE}/reading`, icon: '📖', label: '阅读' },
 ]
 
-export default function AppHeader({ onImmersive }: AppHeaderProps) {
+export default function AppHeader() {
   const router = useRouter()
   const pathname = usePathname()
   const { user } = useAuth()
@@ -27,47 +23,73 @@ export default function AppHeader({ onImmersive }: AppHeaderProps) {
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--wm-border)] bg-[var(--wm-bg)]/95 px-4 py-2.5 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2.5 pl-[52px] pr-4 sm:pl-[60px]">
-        <Link href="/english">
-          <div className="font-fredoka bg-gradient-to-br from-[var(--wm-accent)] to-[var(--wm-accent2)] bg-clip-text text-2xl font-bold whitespace-nowrap text-transparent">
+    <header className="sticky top-0 z-50 border-b border-[var(--wm-border)] bg-[var(--wm-bg)]/95 px-3 py-2.5 backdrop-blur-xl md:px-4">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-2.5 md:flex md:flex-wrap md:justify-between md:gap-2.5">
+        <Link href="/english" className="min-w-0">
+          <div className="font-fredoka truncate bg-gradient-to-br from-[var(--wm-accent)] to-[var(--wm-accent2)] bg-clip-text text-xl font-bold whitespace-nowrap text-transparent md:text-2xl">
             📚 {username ?? 'Rosie'} Fun
           </div>
         </Link>
 
         {availableStages.length > 0 && (
-          <div
-            className="flex items-center gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1"
-            role="group"
-            aria-label="切换教材"
-          >
-            <span className="hidden px-1.5 text-[.7rem] font-extrabold text-[var(--wm-text-dim)] sm:inline">
-              📗 教材
-            </span>
-            {availableStages.map((stage) => {
-              const active = stage === selStage
-              return (
-                <button
-                  key={stage}
-                  type="button"
-                  onClick={() => setSelStage(stage)}
-                  disabled={active}
-                  title={`切换到 ${stage}`}
-                  className={`font-nunito flex shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-[9px] px-2.5 py-1.5 text-[0.8rem] font-bold transition-all ${
-                    active
-                      ? 'bg-gradient-to-br from-[#0ea5e9] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(99,102,241,.35)]'
-                      : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
-                  } ${active && isVocabLoading ? 'animate-pulse' : ''}`}
-                >
-                  {stage}
-                  {active && isVocabLoading && <span aria-hidden>·</span>}
-                </button>
-              )
-            })}
-          </div>
+          <>
+            <label className="relative flex items-center justify-self-end md:hidden">
+              <span className="sr-only">切换教材</span>
+              <select
+                value={selStage}
+                onChange={(event) => setSelStage(event.target.value)}
+                aria-label="切换教材"
+                className={`font-nunito max-w-[7.5rem] cursor-pointer appearance-none rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] py-2 pr-7 pl-3 text-[0.8rem] font-bold text-[var(--wm-text)] transition-colors outline-none focus:border-[#6366f1] ${
+                  isVocabLoading ? 'animate-pulse' : ''
+                }`}
+              >
+                {availableStages.map((stage) => (
+                  <option key={stage} value={stage}>
+                    教材 {stage}
+                  </option>
+                ))}
+              </select>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-2.5 text-[0.6rem] text-[var(--wm-text-dim)]"
+              >
+                ▼
+              </span>
+            </label>
+
+            <div
+              className="hidden items-center gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1 md:flex"
+              role="group"
+              aria-label="切换教材"
+            >
+              <span className="px-1.5 text-[.7rem] font-extrabold text-[var(--wm-text-dim)]">
+                📗 教材
+              </span>
+              {availableStages.map((stage) => {
+                const active = stage === selStage
+                return (
+                  <button
+                    key={stage}
+                    type="button"
+                    onClick={() => setSelStage(stage)}
+                    disabled={active}
+                    title={`切换到 ${stage}`}
+                    className={`font-nunito flex shrink-0 cursor-pointer items-center gap-1 rounded-[9px] px-2.5 py-1.5 text-[0.8rem] font-bold whitespace-nowrap transition-all ${
+                      active
+                        ? 'bg-gradient-to-br from-[#0ea5e9] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(99,102,241,.35)]'
+                        : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
+                    } ${active && isVocabLoading ? 'animate-pulse' : ''}`}
+                  >
+                    {stage}
+                    {active && isVocabLoading && <span aria-hidden>·</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </>
         )}
 
-        <nav className="flex gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1">
+        <nav className="col-span-2 grid w-full grid-cols-4 gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1 md:flex md:w-auto">
           {TABS.map((t) => {
             const active = pathname.startsWith(t.path)
             return (
@@ -76,38 +98,20 @@ export default function AppHeader({ onImmersive }: AppHeaderProps) {
                 onClick={() => router.push(t.path)}
                 title={t.label}
                 aria-label={t.label}
-                className={`font-nunito flex shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-[9px] px-2 py-1.5 text-[0.875rem] font-bold transition-all sm:px-2.5 ${
+                className={`font-nunito flex min-w-0 cursor-pointer items-center justify-center gap-1 rounded-[9px] px-2 py-2 text-[0.8rem] font-bold whitespace-nowrap transition-all md:shrink-0 md:px-2.5 md:py-1.5 md:text-[0.875rem] ${
                   active
                     ? 'bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] text-white shadow-[0_3px_10px_rgba(233,69,96,.35)]'
                     : 'bg-transparent text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
                 }`}
               >
-                <span aria-hidden className="text-[1rem] leading-none">{t.icon}</span>
-                <span className="hidden sm:inline">{t.label}</span>
+                <span aria-hidden className="text-[1rem] leading-none">
+                  {t.icon}
+                </span>
+                <span>{t.label}</span>
               </button>
             )
           })}
         </nav>
-
-        {pathname.startsWith(`${BASE}/cards`) && (
-          <button
-            type="button"
-            onClick={onImmersive}
-            className="font-nunito flex shrink-0 cursor-pointer items-center gap-1.5 rounded-[10px] border-0 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] px-3.5 py-1.5 text-[0.875rem] font-bold whitespace-nowrap text-white shadow-[0_2px_10px_rgba(124,58,237,.35)] transition-all hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(124,58,237,.5)]"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-            沉浸模式
-          </button>
-        )}
       </div>
     </header>
   )

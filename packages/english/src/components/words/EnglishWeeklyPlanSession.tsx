@@ -598,6 +598,14 @@ function AdaptivePlanCard({
         )}
       </button>
       <div className="mt-auto flex flex-wrap items-center justify-end gap-1.5 px-4 pb-4">
+        {plan.status === 'active' && capsules.length > 0 && (
+          <Link
+            href={`/english/words/adaptive/${plan.id}/practice`}
+            className="font-nunito rounded-[10px] border border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#86efac] no-underline transition-all hover:border-[rgba(74,222,128,.7)] hover:bg-[rgba(74,222,128,.18)]"
+          >
+            📖 学习
+          </Link>
+        )}
         <Link
           href={`/english/words/adaptive/${plan.id}/preview`}
           className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline"

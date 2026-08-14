@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import {
   ADAPTIVE_BOX_STAGES,
   ADAPTIVE_MASTERED_STAGE,
@@ -19,6 +19,7 @@ type AdaptivePlanStageRoadmapProps = {
   compact?: boolean
   className?: string
   title?: string
+  footer?: ReactNode
 }
 
 type RoadmapNode = {
@@ -102,11 +103,9 @@ export default function AdaptivePlanStageRoadmap({
   compact = false,
   className,
   title = '通关路线图',
+  footer,
 }: AdaptivePlanStageRoadmapProps) {
-  const counts = useMemo(
-    () => computeAdaptivePlanStageCounts(rows, today),
-    [rows, today],
-  )
+  const counts = useMemo(() => computeAdaptivePlanStageCounts(rows, today), [rows, today])
 
   const showPreStages = counts.queue > 0 || counts.learning === 0
   const nodes = useMemo(() => buildNodes(counts, showPreStages), [counts, showPreStages])
@@ -134,7 +133,7 @@ export default function AdaptivePlanStageRoadmap({
         </div>
       </div>
 
-      <div className="relative overflow-x-auto pb-1 pt-1">
+      <div className="relative overflow-x-auto pt-1 pb-1">
         <div className="flex min-w-max items-end gap-1 sm:gap-1.5">
           {nodes.map((node, index) => (
             <div key={node.key} className="flex items-end">
@@ -145,7 +144,7 @@ export default function AdaptivePlanStageRoadmap({
               )}
               <div className="flex flex-col items-center">
                 {node.focus && (
-                  <div className="mb-1 rounded-full bg-[#a78bfa] px-1.5 py-0.5 text-[.55rem] font-extrabold leading-none text-white">
+                  <div className="mb-1 rounded-full bg-[#a78bfa] px-1.5 py-0.5 text-[.55rem] leading-none font-extrabold text-white">
                     当前
                   </div>
                 )}
@@ -176,9 +175,7 @@ export default function AdaptivePlanStageRoadmap({
                     </div>
                   ) : (
                     !compact && (
-                      <div className="mt-1 text-[.55rem] font-bold text-white/25">
-                        {node.hint}
-                      </div>
+                      <div className="mt-1 text-[.55rem] font-bold text-white/25">{node.hint}</div>
                     )
                   )}
                 </div>
@@ -209,6 +206,7 @@ export default function AdaptivePlanStageRoadmap({
           已毕业 <strong className="text-[#86efac]">{counts.mastered}</strong>
         </span>
       </div>
+      {footer && <div className="mt-3 border-t border-white/[.08] pt-3">{footer}</div>}
     </div>
   )
 }

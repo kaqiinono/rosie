@@ -23,6 +23,7 @@ interface FilterBarProps {
   onClearWords: () => void
   onFlipAll?: () => void
   onToggleDualMode?: () => void
+  onImmersive?: () => void
   onShuffleOrder?: () => void
   masteryFilter?: MasteryLevel | null
   onMasteryFilter?: (level: MasteryLevel | null) => void
@@ -46,6 +47,7 @@ export default function FilterBar({
   onClearWords,
   onFlipAll,
   onToggleDualMode,
+  onImmersive,
   onShuffleOrder,
   masteryFilter,
   onMasteryFilter,
@@ -82,7 +84,7 @@ export default function FilterBar({
         >
           清除单词筛选
         </button>
-        {(onFlipAll || onShuffleOrder || onToggleDualMode) && (
+        {(onFlipAll || onShuffleOrder || onToggleDualMode || onImmersive) && (
           <>
             <div className="h-[22px] w-px bg-[var(--wm-border)]" />
             {onShuffleOrder && (
@@ -115,6 +117,16 @@ export default function FilterBar({
                 }`}
               >
                 📖 {dualMode ? '退出双面' : '双面模式'}
+              </button>
+            )}
+            {onImmersive && (
+              <button
+                type="button"
+                onClick={onImmersive}
+                disabled={filteredCount === 0}
+                className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] px-4 py-1.5 text-[0.875rem] font-bold text-white shadow-[0_2px_10px_rgba(124,58,237,.3)] transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(124,58,237,.45)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+              >
+                ⚡ 沉浸模式
               </button>
             )}
           </>

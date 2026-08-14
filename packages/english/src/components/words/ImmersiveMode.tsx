@@ -37,7 +37,6 @@ interface ImmersiveModeProps {
   onQuizComplete?: (results: { entry: WordEntry; correct: boolean }[]) => void
 }
 
-
 export default function ImmersiveMode({
   open,
   words,
@@ -272,16 +271,14 @@ export default function ImmersiveMode({
           <span className="text-[11px] font-extrabold tracking-[.14em] text-rose-300/80 uppercase">
             本次月亮
           </span>
-          <span className="font-fredoka ml-auto text-[14px] font-black tabular-nums text-rose-100">
+          <span className="font-fredoka ml-auto text-[14px] font-black text-rose-100 tabular-nums">
             {earned}
             <span className="ml-0.5 text-[11px] text-rose-100/40">/{goal}</span>
           </span>
           <span
             className="inline-flex h-4 w-4 items-center justify-center"
             style={{
-              filter: reached
-                ? 'drop-shadow(0 0 6px rgba(239,68,68,.9))'
-                : 'grayscale(40%)',
+              filter: reached ? 'drop-shadow(0 0 6px rgba(239,68,68,.9))' : 'grayscale(40%)',
               opacity: reached ? 1 : 0.4,
             }}
             aria-hidden
@@ -298,8 +295,7 @@ export default function ImmersiveMode({
             style={{
               width: `${pct}%`,
               background: 'linear-gradient(90deg, #fb7185, #e11d48)',
-              boxShadow:
-                '0 0 10px rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
+              boxShadow: '0 0 10px rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
             }}
           />
           {pct > 0 && pct < 100 && (
@@ -316,8 +312,12 @@ export default function ImmersiveMode({
         </div>
         <style jsx>{`
           @keyframes imm-moon-shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(280%); }
+            0% {
+              transform: translateX(-100%);
+            }
+            100% {
+              transform: translateX(280%);
+            }
           }
         `}</style>
       </div>
@@ -327,52 +327,57 @@ export default function ImmersiveMode({
   return (
     <div className="fixed inset-0 z-[200] flex flex-col overflow-hidden bg-[#090914]">
       {/* Header */}
-      <div className="z-10 flex shrink-0 flex-wrap items-center gap-2.5 border-b border-white/[.07] bg-[rgba(9,9,20,.98)] px-5 py-2.5">
-        <div className="font-fredoka mr-auto flex items-center gap-2">
-          <span className="bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] bg-clip-text text-[1.05rem] text-transparent">
-            ⚡ 沉浸模式 · {mode === 'vocab' ? '背单词' : '单词练习'}
-          </span>
+      <div className="z-10 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-white/[.07] bg-[rgba(9,9,20,.98)] px-4 py-2 md:px-5">
+        <div className="inline-flex w-fit min-w-0 items-stretch overflow-hidden rounded-full border border-white/10 bg-white/[.04] p-1">
           {mode === 'practice' && inReinforcement && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-2.5 py-0.5 text-[10px] font-black tracking-wide text-white shadow-[0_2px_0_rgba(0,0,0,.25)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-2.5 py-1.5 text-[10px] font-black tracking-wide text-white shadow-[0_2px_0_rgba(0,0,0,.25)]">
               🌱 巩固
             </span>
           )}
+          {mode === 'vocab' && (
+            <button
+              type="button"
+              onClick={toggleDefOnly}
+              aria-pressed={defOnly}
+              className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 transition-all select-none ${
+                defOnly ? 'bg-[rgba(124,58,237,.24)]' : 'hover:bg-white/[.05]'
+              }`}
+            >
+              <span aria-hidden className="text-[.88rem]">
+                👁
+              </span>
+              <span
+                className={`text-[.72rem] font-bold whitespace-nowrap ${defOnly ? 'text-[#c4b5fd]' : 'text-white/45'}`}
+              >
+                仅看释义
+              </span>
+              <span
+                aria-hidden
+                className={`relative h-4 w-7 rounded-lg transition-colors ${defOnly ? 'bg-[#7c3aed]' : 'bg-white/[.14]'}`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,.4)] transition-transform ${defOnly ? 'translate-x-3' : ''}`}
+                />
+              </span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className={`font-nunito cursor-pointer rounded-full px-3.5 py-1.5 text-[.72rem] font-bold text-white/[.42] transition-all hover:bg-[rgba(248,113,113,.1)] hover:text-[#f87171] ${
+              mode === 'vocab' ? 'ml-1 border-l border-white/10' : ''
+            }`}
+          >
+            ✕ 退出
+          </button>
         </div>
-        <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[.7rem] font-bold text-white/[.38]">
+        <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[.7rem] font-bold whitespace-nowrap text-white/[.38]">
           {mode === 'vocab'
             ? `${idx + 1} / ${total}`
             : showResults
               ? '完成'
               : `${curQ + 1} / ${qTotal}`}
         </div>
-        {mode === 'vocab' && (
-          <button
-            onClick={toggleDefOnly}
-            className={`flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] px-3 py-1.5 transition-all select-none ${
-              defOnly ? 'border-[#7c3aed] bg-[rgba(124,58,237,.2)]' : 'border-white/10 bg-white/5'
-            }`}
-          >
-            <span className="text-[.88rem]">👁</span>
-            <span
-              className={`text-[.72rem] font-bold whitespace-nowrap ${defOnly ? 'text-[#c4b5fd]' : 'text-white/45'}`}
-            >
-              仅看释义
-            </span>
-            <div
-              className={`relative h-4 w-7 rounded-lg transition-colors ${defOnly ? 'bg-[#7c3aed]' : 'bg-white/[.14]'}`}
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,.4)] transition-transform ${defOnly ? 'translate-x-3' : ''}`}
-              />
-            </div>
-          </button>
-        )}
-        <button
-          onClick={onClose}
-          className="font-nunito cursor-pointer rounded-full border-[1.5px] border-white/10 bg-transparent px-3.5 py-1.5 text-[.72rem] font-bold text-white/[.38] transition-all hover:border-[#f87171] hover:text-[#f87171]"
-        >
-          ✕ 退出
-        </button>
       </div>
 
       {/* Progress bar */}
@@ -415,7 +420,7 @@ export default function ImmersiveMode({
                     }
                   : {
                       flexShrink: 0,
-                      maxHeight: topVisible ? '60vh' : '0px',
+                      maxHeight: topVisible ? '50dvh' : '0px',
                       opacity: topVisible ? 1 : 0,
                       padding: topVisible ? '2rem 2rem' : '0 2rem',
                       overflow: 'hidden',
@@ -458,16 +463,6 @@ export default function ImmersiveMode({
                     </span>
                   )}
                 </div>
-                {v.imagePath && (
-                  <div className="max-h-[160px] w-full overflow-hidden rounded-2xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={getWordImagePublicUrl(v.imagePath)}
-                      alt=""
-                      className="mx-auto max-h-[160px] w-auto max-w-full object-cover"
-                    />
-                  </div>
-                )}
                 <div
                   className={`font-nunito ${wordSizeClass} text-center leading-tight font-black break-words`}
                 >
@@ -527,6 +522,16 @@ export default function ImmersiveMode({
               }}
             >
               <div className="flex w-full max-w-[640px] flex-col items-center gap-3.5 text-center">
+                {v.imagePath && (
+                  <div className="flex h-[clamp(200px,32dvh,360px)] w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black/20">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getWordImagePublicUrl(v.imagePath)}
+                      alt={`${v.word} 配图`}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                )}
                 <div className="text-[.75rem] font-extrabold tracking-[.14em] text-[rgba(167,139,250,.5)] uppercase">
                   释义
                 </div>
@@ -575,25 +580,26 @@ export default function ImmersiveMode({
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Navigation */}
-          <div className="z-10 flex shrink-0 flex-wrap items-center justify-center gap-3 border-t border-white/[.07] bg-[rgba(9,9,20,.98)] px-5 py-3">
+            {/* Viewport-edge navigation keeps the content area free on narrow screens. */}
             <button
+              type="button"
               onClick={goPrev}
               disabled={idx === 0}
-              className="font-nunito cursor-pointer rounded-full border-[1.5px] border-white/10 bg-transparent px-6 py-2 text-[1rem] font-bold text-white/[.38] transition-all hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:cursor-default disabled:opacity-[.18]"
+              aria-label="上一个单词"
+              title="上一个单词"
+              className="absolute top-1/2 left-2 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-[#090914]/75 text-2xl font-black text-white/65 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:cursor-default disabled:opacity-15 sm:left-4 sm:h-12 sm:w-12"
             >
-              ← 上一个
+              ‹
             </button>
-            <div className="min-w-[70px] text-center text-[0.875rem] font-bold text-white/[.32]">
-              {idx + 1} / {total}
-            </div>
             <button
+              type="button"
               onClick={goNext}
-              className="font-nunito cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-7 py-2 text-[.85rem] font-extrabold text-white shadow-[0_3px_12px_rgba(109,40,217,.4)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(109,40,217,.55)]"
+              aria-label={idx === total - 1 ? '完成单词浏览' : '下一个单词'}
+              title={idx === total - 1 ? '完成' : '下一个单词'}
+              className="absolute top-1/2 right-2 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-[#090914]/75 text-2xl font-black text-white/65 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:border-[#a78bfa] hover:text-[#c4b5fd] sm:right-4 sm:h-12 sm:w-12"
             >
-              {idx === total - 1 ? '完成 ✓' : '下一个 →'}
+              {idx === total - 1 ? '✓' : '›'}
             </button>
           </div>
         </>

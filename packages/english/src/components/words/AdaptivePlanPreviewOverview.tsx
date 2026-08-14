@@ -52,18 +52,33 @@ function firstDayTaskLabel(
   return { text: withQuestions, color: '#93c5fd' }
 }
 
-function motivationalTagline(mastered: number, total: number, projectedFinish: string | null): string {
+function growthUnits(row: AdaptivePlanWordProgress): number {
+  if (row.status === 'MASTERED') return 6
+  if (row.status === 'LEARNING') return Math.min(5, Math.max(1, row.boxIndex ?? 1))
+  if (row.status === 'LEARNING_PENDING') return 0.5
+  return 0
+}
+
+function motivationalTagline(
+  mastered: number,
+  activated: number,
+  total: number,
+  growthPct: number,
+  projectedFinish: string | null,
+): string {
   if (total <= 0) return '暂无单词'
   if (mastered >= total) return '🎉 全部毕业，计划通关！'
-  if (mastered === 0) {
+  if (activated === 0) {
     return projectedFinish
       ? `今日起步，按全对节奏预计 ${formatShortDate(projectedFinish)} 通关`
       : '今日练起，踏上通关之旅'
   }
-  const remaining = total - mastered
+  if (mastered === 0) {
+    return `${activated} 词已经启程 · 成长 ${growthPct}%${projectedFinish ? ` · 预计 ${formatShortDate(projectedFinish)} 通关` : ''}`
+  }
   return projectedFinish
-    ? `还差 ${remaining} 词，预计 ${formatShortDate(projectedFinish)} 通关`
-    : `还差 ${remaining} 词，继续加油`
+    ? `已毕业 ${mastered} 词 · 成长 ${growthPct}% · 预计 ${formatShortDate(projectedFinish)} 通关`
+    : `已毕业 ${mastered} 词 · 成长 ${growthPct}% · 继续加油`
 }
 
 function buildOverviewStats(
@@ -103,7 +118,7 @@ function buildOverviewStats(
       hint: total > 0 ? '本计划范围' : undefined,
     },
     {
-      label: '首日任务',
+      label: '今日任务',
       value: todayTask.text,
       color: todayTask.color,
       hint: firstDay ? formatShortDate(firstDay.date) : '暂无排程',
@@ -129,11 +144,13 @@ export default function AdaptivePlanPreviewOverview({
   const learning = rows.filter((row) => row.status === 'LEARNING').length
   const pending = rows.filter((row) => row.status === 'LEARNING_PENDING').length
   const notStarted = rows.filter((row) => row.status === 'NOT_STARTED').length
-  const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
+  const activated = total - notStarted
+  const totalGrowthUnits = rows.reduce((sum, row) => sum + growthUnits(row), 0)
+  const growthPct = total > 0 ? Math.round((totalGrowthUnits / (total * 6)) * 100) : 0
 
   const lastDay = simulation.days.at(-1)
   const projectedFinish = lastDay?.date ?? null
-  const tagline = motivationalTagline(mastered, total, projectedFinish)
+  const tagline = motivationalTagline(mastered, activated, total, growthPct, projectedFinish)
   const stats = buildOverviewStats(rows, plan, simulation)
 
   const segments = [
@@ -146,11 +163,11 @@ export default function AdaptivePlanPreviewOverview({
   const headline =
     total > 0 ? (
       <>
-        <span className="text-[#86efac]">{mastered}</span>
-        <span className="text-white/35"> / </span>
-        <span>{total}</span>
+        <span className="bg-gradient-to-r from-[#60a5fa] via-[#a78bfa] to-[#86efac] bg-clip-text text-transparent">
+          {growthPct}%
+        </span>
         <span className="ml-2 text-[.95rem] font-bold text-[var(--wm-text-dim)]">
-          已毕业{pct > 0 ? ` · ${pct}%` : ''}
+          计划成长进度
         </span>
       </>
     ) : (
@@ -169,14 +186,19 @@ export default function AdaptivePlanPreviewOverview({
             {tagline}
           </div>
         </div>
-        {learning > 0 && (
+        {activated > 0 && (
           <div className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-3 py-1 text-[.72rem] font-extrabold text-[#93c5fd]">
-            {learning} 词在学
+            {activated} 词已启程 · {mastered} 词毕业
           </div>
         )}
       </div>
 
-      <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-white/[.06]">
+      <div className="relative mb-4 h-3 overflow-hidden rounded-full bg-white/[.06]">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#60a5fa] via-[#a78bfa] to-[#86efac] transition-[width] duration-500"
+          style={{ width: `${growthPct}%` }}
+        />
+        <div className="relative flex h-full opacity-35">
         {segments.map((segment, index) => {
           if (segment.count <= 0 || total <= 0) return null
           return (
@@ -187,6 +209,7 @@ export default function AdaptivePlanPreviewOverview({
             />
           )
         })}
+        </div>
       </div>
 
       <AdaptivePlanStageRoadmap rows={rows} className="mb-4" />

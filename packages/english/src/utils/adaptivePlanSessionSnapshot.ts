@@ -28,6 +28,8 @@ export interface AdaptiveSessionSnapshot {
   version: number
   planId: string
   date: string
+  logSessionId?: string
+  startedAt?: string
   phase: AdaptiveSnapshotPhase
   quizSlots: AdaptiveQuizSlotSnapshot[]
   curQ: number

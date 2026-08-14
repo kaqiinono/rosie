@@ -23,6 +23,10 @@ import type { AdaptiveDailyTask } from '../../utils/adaptivePlanScheduler'
 import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
 import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
 import {
+  saveAdaptivePracticeLog,
+  type AdaptiveLoggedOutcome,
+} from '../../utils/adaptivePlanPracticeLog'
+import {
   ADAPTIVE_PENDING_KIND,
   ADAPTIVE_SESSION_SNAPSHOT_VERSION,
   clearAdaptivePendingEverywhere,
@@ -40,6 +44,7 @@ import AdaptivePlanStageBoard from './AdaptivePlanStageBoard'
 import AdaptivePlanStageRoadmap from './AdaptivePlanStageRoadmap'
 import QuizQuestionBody from './QuizQuestionBody'
 import StudyPhase from './StudyPhase'
+import TodayWordDetailModal from './TodayWordDetailModal'
 import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
 
 type AdaptivePlanSessionProps = {
@@ -77,6 +82,10 @@ type RoundSummary = {
   masteredCount: number
   words: RoundWordStatus[]
   note: string
+}
+
+function newLogSessionId(): string {
+  return globalThis.crypto.randomUUID()
 }
 
 const BOSS_PASS_PCT = 85
@@ -277,6 +286,7 @@ export default function AdaptivePlanSession({
   const [doneTitle, setDoneTitle] = useState('本轮完成')
   const [doneMessage, setDoneMessage] = useState('已保存自适应计划进度。')
   const [roundSummary, setRoundSummary] = useState<RoundSummary | null>(null)
+  const [selectedTodayWord, setSelectedTodayWord] = useState<WordEntry | null>(null)
   const starsAwardedThisRoundRef = useRef(0)
   const roundActivateKeysRef = useRef<string[]>([])
   const roundReviewKeysRef = useRef<string[]>([])
@@ -288,6 +298,8 @@ export default function AdaptivePlanSession({
   const finalPassWrongKeysRef = useRef<Set<string>>(new Set())
   const bossPassWrongKeysRef = useRef<Set<string>>(new Set())
   const bossSinkWrongKeysRef = useRef<Set<string>>(new Set())
+  const logSessionIdRef = useRef<string | null>(null)
+  const logStartedAtRef = useRef<string | null>(null)
 
   const today = todayStr()
   const sourcePlan = useMemo(
@@ -366,6 +378,13 @@ export default function AdaptivePlanSession({
       .map((key) => findWordByKey(vocab, key))
       .filter((entry): entry is WordEntry => entry != null)
   }, [activateKeys, dayReviewKeys, task?.bossKeys, task?.mode, vocab])
+  const todayStudyEntries = useMemo(
+    () =>
+      uniqueKeys([...dayReviewKeys.slice(0, reviewCursor), ...activateKeys])
+        .map((key) => findWordByKey(vocab, key))
+        .filter((entry): entry is WordEntry => entry != null),
+    [activateKeys, dayReviewKeys, reviewCursor, vocab],
+  )
   // `newStudyDone` is the cursor through the combined preview list (reviews +
   // new words). The "今日新学" counter must only include previewed activations;
   // otherwise a 15-review + 15-new preview incorrectly renders as 30/15.
@@ -401,6 +420,8 @@ export default function AdaptivePlanSession({
       version: ADAPTIVE_SESSION_SNAPSHOT_VERSION,
       planId: plan.id,
       date: today,
+      logSessionId: logSessionIdRef.current ?? undefined,
+      startedAt: logStartedAtRef.current ?? undefined,
       phase: phase as AdaptiveSnapshotPhase,
       quizSlots,
       curQ,
@@ -624,6 +645,8 @@ export default function AdaptivePlanSession({
           finalPassWrongKeysRef.current = new Set(snap.finalPassWrongKeys)
           bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
           bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
+          logSessionIdRef.current = snap.logSessionId ?? newLogSessionId()
+          logStartedAtRef.current = snap.startedAt ?? new Date().toISOString()
           sessionStartedRef.current = true
           // Every resumable snapshot represents an in-progress practice phase,
           // including the card-preview (`study`) phase. Restoring any of them
@@ -861,8 +884,6 @@ export default function AdaptivePlanSession({
       await upsertMasteryPatches(user.id, settleResult.masteryPatches)
       const updateByKey = new Map(settleResult.progressUpdates.map((row) => [row.wordKey, row]))
       const nextRows = rows.map((row) => updateByKey.get(row.wordKey) ?? row)
-      setRows(nextRows)
-      setSettleFailed(null)
 
       let nextPlan = plan
       if (hasStatsPatch(settleResult.planStatsPatch)) {
@@ -877,6 +898,36 @@ export default function AdaptivePlanSession({
       const starsEarned = starsAwardedThisRoundRef.current
       const activateSnapshot = [...roundActivateKeysRef.current]
       const reviewSnapshot = [...roundReviewKeysRef.current]
+
+      const loggedOutcomes: AdaptiveLoggedOutcome[] = [
+        ...reviewOutcomesRef.current.map((outcome) => ({
+          ...outcome,
+          quizType: outcome.quizType ?? 'A',
+          phase: 'step1_review' as const,
+        })),
+        ...finalOutcomesRef.current.map((outcome) => ({
+          ...outcome,
+          quizType: outcome.quizType ?? 'A',
+          phase: 'step3_final' as const,
+        })),
+      ]
+      await saveAdaptivePracticeLog({
+        sessionId: logSessionIdRef.current ?? newLogSessionId(),
+        planId: plan.id,
+        userId: user.id,
+        practiceDate: today,
+        mode: 'normal',
+        startedAt: logStartedAtRef.current ?? new Date().toISOString(),
+        finishedAt: new Date().toISOString(),
+        newWordCount: activateSnapshot.length,
+        reviewWordCount: reviewSnapshot.length,
+        starsEarned,
+        outcomes: loggedOutcomes,
+        beforeRows: rows,
+        afterRows: nextRows,
+      })
+      setRows(nextRows)
+      setSettleFailed(null)
 
       if (isPlanCompletable(nextRows, false)) {
         const completed = await completePlanIfEligible(plan.id)
@@ -1021,12 +1072,41 @@ export default function AdaptivePlanSession({
       // Remote writes first, local state after (see settleSession for rationale).
       await saveProgressBatch(progressUpdates)
       await upsertMasteryPatches(user.id, settleResult.masteryPatches)
-      setRows(nextRows)
-      setSettleFailed(null)
 
       const bossOutcomes = [...firstPassResults, ...sinkResults]
       const bossReviewKeys = uniqueKeys(firstPassResults.map((item) => item.wordKey))
       const starsEarned = starsAwardedThisRoundRef.current
+
+      const loggedOutcomes: AdaptiveLoggedOutcome[] = [
+        ...firstPassResults.map((outcome) => ({
+          ...outcome,
+          quizType: outcome.quizType ?? 'A',
+          phase: 'boss' as const,
+        })),
+        ...sinkResults.map((outcome) => ({
+          ...outcome,
+          quizType: outcome.quizType ?? 'A',
+          phase: 'boss_sink' as const,
+        })),
+      ]
+      await saveAdaptivePracticeLog({
+        sessionId: logSessionIdRef.current ?? newLogSessionId(),
+        planId: plan.id,
+        userId: user.id,
+        practiceDate: today,
+        mode: 'boss',
+        startedAt: logStartedAtRef.current ?? new Date().toISOString(),
+        finishedAt: new Date().toISOString(),
+        newWordCount: 0,
+        reviewWordCount: bossReviewKeys.length,
+        starsEarned,
+        bossPassed: passed,
+        outcomes: loggedOutcomes,
+        beforeRows: rows,
+        afterRows: nextRows,
+      })
+      setRows(nextRows)
+      setSettleFailed(null)
 
       if (isPlanCompletable(nextRows, false)) {
         const completed = await completePlanIfEligible(plan.id)
@@ -1185,6 +1265,8 @@ export default function AdaptivePlanSession({
 
   const beginSession = useCallback(() => {
     if (!task || settling) return
+    logSessionIdRef.current = newLogSessionId()
+    logStartedAtRef.current = new Date().toISOString()
     sessionStartedRef.current = true
     starsAwardedThisRoundRef.current = 0
     roundActivateKeysRef.current = activateKeys
@@ -1351,7 +1433,12 @@ export default function AdaptivePlanSession({
       const q = currentQuestion
       if (!q) return
       const key = wordKey(q.word)
-      const outcome = { wordKey: key, correct: info.finalCorrect }
+      const outcome = {
+        wordKey: key,
+        correct: info.finalCorrect,
+        quizType: q.type,
+        usedRetry: info.usedRetry,
+      }
 
       if (phase === 'review') {
         reviewOutcomesRef.current.push(outcome)
@@ -1641,6 +1728,7 @@ export default function AdaptivePlanSession({
         onStudyDefOnlyChange={setStudyDefOnly}
         isImmersive={isImmersive}
         onExitImmersive={() => void flushCloudNow().then(() => setIsImmersive(false))}
+        compactImmersiveControls
         progressGradientClasses="from-[#60a5fa] via-[#a78bfa] to-[#f0abfc]"
         nextButtonGradientClasses="from-[#2563eb] to-[#a855f7]"
         nextButtonShadowClass="shadow-[0_3px_12px_rgba(96,165,250,.35)]"
@@ -1980,7 +2068,54 @@ export default function AdaptivePlanSession({
         </div>
 
         <div className="mb-5">
-          <AdaptivePlanStageRoadmap rows={rows} className="mb-4" />
+          <AdaptivePlanStageRoadmap
+            rows={rows}
+            className="mb-4"
+            footer={
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <div className="text-[.68rem] font-extrabold tracking-[.12em] text-[var(--wm-text-dim)] uppercase">
+                    今日学习单词
+                  </div>
+                  <div className="flex items-center gap-2 text-[.62rem] font-bold text-[var(--wm-text-dim)]">
+                    <span className="inline-flex items-center gap-1">
+                      <span className="h-2 w-2 rounded-full bg-[#60a5fa]" /> 新学
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <span className="h-2 w-2 rounded-full bg-[#c084fc]" /> 复习
+                    </span>
+                    <span className="ml-1">{todayStudyEntries.length} 词</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {todayStudyEntries.map((entry) => {
+                    const key = wordKey(entry)
+                    const isNew = activateKeys.includes(key)
+                    return (
+                      <button
+                        type="button"
+                        key={key}
+                        onClick={() => setSelectedTodayWord(entry)}
+                        aria-label={`查看${isNew ? '新学' : '复习'}单词 ${entry.word} 的卡片`}
+                        className={`inline-flex cursor-pointer items-center rounded-lg border px-2.5 py-1.5 text-left text-[.78rem] font-extrabold transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                          isNew
+                            ? 'border-[rgba(96,165,250,.42)] bg-[rgba(96,165,250,.13)] text-[#bfdbfe] shadow-[inset_3px_0_0_#60a5fa] hover:bg-[rgba(96,165,250,.2)] focus-visible:outline-[#60a5fa]'
+                            : 'border-[rgba(192,132,252,.42)] bg-[rgba(192,132,252,.13)] text-[#e9d5ff] shadow-[inset_3px_0_0_#c084fc] hover:bg-[rgba(192,132,252,.2)] focus-visible:outline-[#c084fc]'
+                        }`}
+                      >
+                        {entry.word}
+                      </button>
+                    )
+                  })}
+                  {todayStudyEntries.length === 0 && (
+                    <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+                      今日暂无待学习单词
+                    </div>
+                  )}
+                </div>
+              </div>
+            }
+          />
           <AdaptivePlanProgressBar rows={rows} />
         </div>
 
@@ -2018,6 +2153,15 @@ export default function AdaptivePlanSession({
       </div>
 
       <AdaptivePlanStageBoard rows={rows} vocab={vocab} panelTitle="词汇学习状态" />
+      {selectedTodayWord && (
+        <TodayWordDetailModal
+          key={wordKey(selectedTodayWord)}
+          words={todayStudyEntries}
+          initialWord={selectedTodayWord}
+          masteryMap={masteryMap}
+          onClose={() => setSelectedTodayWord(null)}
+        />
+      )}
     </div>
   )
 }

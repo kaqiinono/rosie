@@ -16,6 +16,10 @@ import {
   type SimulateAdaptivePlanResult,
 } from '../../utils/adaptivePlanSimulate'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
+import {
+  loadAdaptivePracticeLogs,
+  type AdaptivePracticeSessionLog,
+} from '../../utils/adaptivePlanPracticeLog'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanPreviewOverview from './AdaptivePlanPreviewOverview'
 import AdaptivePlanPreviewCalendar from './AdaptivePlanPreviewCalendar'
@@ -69,6 +73,33 @@ function displayWord(key: string, vocab: WordEntry[]): string {
 
 function joinStacked(parts: string[]): string {
   return parts.length > 0 ? parts.join(' + ') : '—'
+}
+
+function localDateFromTimestamp(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value.slice(0, 10)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function inclusiveCalendarDays(startDate: string, endDate: string): number {
+  const [startYear, startMonth, startDay] = startDate.split('-').map(Number)
+  const [endYear, endMonth, endDay] = endDate.split('-').map(Number)
+  const start = Date.UTC(startYear ?? 0, (startMonth ?? 1) - 1, startDay ?? 1)
+  const end = Date.UTC(endYear ?? 0, (endMonth ?? 1) - 1, endDay ?? 1)
+  return Math.max(1, Math.floor((end - start) / 86_400_000) + 1)
+}
+
+function addCalendarDays(dateStr: string, amount: number): string {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  const date = new Date(Date.UTC(year ?? 0, (month ?? 1) - 1, (day ?? 1) + amount))
+  return date.toISOString().slice(0, 10)
+}
+
+function calendarDayIndex(startDate: string, dateStr: string): number {
+  return inclusiveCalendarDays(startDate, dateStr)
 }
 
 /** One row per word; stack phases / stages / quiz types like「题型」. */
@@ -153,11 +184,7 @@ function DayCard({
         <div className="border-t border-white/[.06] px-4 py-4">
           <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <StatPill label="新学" value={day.newWordKeys.length} color="#93c5fd" />
-            <StatPill
-              label="复习"
-              value={day.reviewWordKeys.length}
-              color="#c4b5fd"
-            />
+            <StatPill label="复习" value={day.reviewWordKeys.length} color="#c4b5fd" />
             <StatPill label="答题" value={day.totalQuestions} color="#86efac" />
             <StatPill label="新掌握" value={day.masteredToday.length} color="#fbbf24" />
           </div>
@@ -237,20 +264,113 @@ function DayCard({
   )
 }
 
-function StatPill({
-  label,
-  value,
-  color,
-}: {
-  label: string
-  value: number
-  color: string
-}) {
+function StatPill({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div className="rounded-xl border border-white/[.08] bg-white/[.03] px-3 py-2 text-center">
       <div className="text-[.65rem] font-extrabold text-[var(--wm-text-dim)]">{label}</div>
       <div className="font-fredoka text-xl" style={{ color }}>
         {value}
+      </div>
+    </div>
+  )
+}
+
+function PracticeHistory({
+  sessions,
+  vocab,
+}: {
+  sessions: AdaptivePracticeSessionLog[]
+  vocab: WordEntry[]
+}) {
+  if (sessions.length === 0) return null
+  return (
+    <div className="mb-5 rounded-[24px] border border-[rgba(74,222,128,.25)] bg-[var(--wm-surface)] p-6">
+      <div className="font-fredoka text-xl text-[#86efac]">真实练习轨迹</div>
+      <div className="mt-1 mb-4 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+        共 {sessions.length} 轮 · 精确记录题数、正确率与结算前后箱位
+      </div>
+      <div className="flex flex-col gap-2.5">
+        {sessions.map((session, index) => {
+          const accuracy =
+            session.questionCount > 0
+              ? Math.round((session.correctCount / session.questionCount) * 100)
+              : 0
+          return (
+            <details
+              key={session.id}
+              className="rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)]"
+            >
+              <summary className="cursor-pointer px-4 py-3 text-[.78rem] font-extrabold text-[var(--wm-text)]">
+                D{index + 1} · {session.practiceDate} · {session.mode === 'boss' ? 'Boss' : '普通'}{' '}
+                ·{' '}
+                {session.questionCount > 0
+                  ? `${session.questionCount} 题 · ${accuracy}%`
+                  : `激活 ${session.newWordCount} 词`}
+                {session.recordKind === 'inferred' && (
+                  <span className="ml-2 rounded-full border border-[rgba(251,191,36,.3)] bg-[rgba(251,191,36,.08)] px-2 py-0.5 text-[.62rem] text-[#fbbf24]">
+                    推定记录
+                  </span>
+                )}
+              </summary>
+              <div className="overflow-x-auto border-t border-[var(--wm-border)]">
+                {session.recordKind === 'inferred' && (
+                  <div className="border-b border-[var(--wm-border)] px-3 py-2 text-[.65rem] font-bold text-[#fbbf24]">
+                    依据：{session.inferenceBasis.includes('introduced_on') ? '首次激活日期' : ''}
+                    {session.inferenceBasis.length > 1 ? '、' : ''}
+                    {session.inferenceBasis.includes('unique_plan_word_review_history')
+                      ? '唯一计划匹配的答题历史'
+                      : ''}
+                    ；未知轮次、题型和箱位变化保持空白。
+                  </div>
+                )}
+                <table className="w-full min-w-[700px] text-left text-[.72rem]">
+                  <thead className="text-[var(--wm-text-dim)]">
+                    <tr>
+                      <th className="px-3 py-2">单词</th>
+                      <th className="px-3 py-2">题目</th>
+                      <th className="px-3 py-2">正确率</th>
+                      <th className="px-3 py-2">箱位变化</th>
+                      <th className="px-3 py-2">下次复习</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[.05]">
+                    {session.words.map((word) => (
+                      <tr key={word.wordKey}>
+                        <td className="px-3 py-2 font-extrabold text-[var(--wm-text)]">
+                          {displayWord(word.wordKey, vocab)}
+                        </td>
+                        <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
+                          {word.outcomes.length > 0
+                            ? word.outcomes
+                                .map(
+                                  (outcome) =>
+                                    `${outcome.quizType ?? '题型未知'}${outcome.correct ? '✓' : '✗'}${outcome.usedRetry ? '↺' : ''}`,
+                                )
+                                .join(' · ')
+                            : '仅确认首次激活'}
+                        </td>
+                        <td className="px-3 py-2 font-extrabold text-[#86efac]">
+                          {word.questionCount > 0
+                            ? `${word.correctCount}/${word.questionCount}`
+                            : '—'}
+                        </td>
+                        <td className="px-3 py-2 font-extrabold text-[#c4b5fd]">
+                          {word.boxBefore == null && word.boxAfter == null
+                            ? '未知'
+                            : `${word.boxBefore ?? '—'} → ${word.boxAfter ?? (word.statusAfter === 'MASTERED' ? '👑' : '—')}`}
+                        </td>
+                        <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
+                          {word.nextReviewAfter ??
+                            (session.recordKind === 'exact' ? '已完成' : '未知')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          )
+        })}
       </div>
     </div>
   )
@@ -268,6 +388,7 @@ const STAGE_LEGEND = [
   { cell: MASTERED_CELL, label: '已掌握' },
   { cell: '⏳', label: '待激活' },
   { cell: BOSS_CELL, label: 'Boss 考核（箱位未变）' },
+  { cell: '?', label: '历史箱位未知' },
 ] as const
 
 function stageCellClass(cell: string): string {
@@ -280,6 +401,7 @@ function stageCellClass(cell: string): string {
   if (cell === '🦋') return 'text-[#c4b5fd] bg-[rgba(196,181,253,.1)]'
   if (cell === '🌸') return 'text-[#f0abfc] bg-[rgba(240,171,252,.1)]'
   if (cell === '🌳') return 'text-[#86efac] bg-[rgba(74,222,128,.08)]'
+  if (cell === '?') return 'text-[#fbbf24] bg-[rgba(251,191,36,.08)]'
   return 'text-[var(--wm-text-dim)]'
 }
 
@@ -315,8 +437,7 @@ function keyStageCell(
   const bossTouch = day.touches.find((t) => t.wordKey === wordKey && t.phase === 'boss')
   if (bossTouch) {
     const unchanged =
-      bossTouch.boxBefore === bossTouch.boxAfter &&
-      bossTouch.statusBefore === bossTouch.statusAfter
+      bossTouch.boxBefore === bossTouch.boxAfter && bossTouch.statusBefore === bossTouch.statusAfter
     if (unchanged) return BOSS_CELL
   }
 
@@ -329,10 +450,12 @@ function StageTrajectoryMatrix({
   matrix,
   days,
   vocab,
+  displayCells,
 }: {
   matrix: AdaptiveStageMatrix
   days: SimDaySnapshot[]
   vocab: WordEntry[]
+  displayCells?: string[][]
 }) {
   const [open, setOpen] = useState(false)
 
@@ -348,7 +471,8 @@ function StageTrajectoryMatrix({
         <div>
           <div className="font-fredoka text-xl text-[#c4b5fd]">阶段总览表</div>
           <div className="mt-1 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
-            {matrix.words.length} 词 × {matrix.dayIndices.length} 天 · 练到显示箱位，Boss 同箱考核显示老板图标
+            {matrix.words.length} 词 × {matrix.dayIndices.length} 天 · 练到显示箱位，Boss
+            同箱考核显示老板图标
           </div>
         </div>
         <span className="shrink-0 text-sm font-bold text-[var(--wm-text-dim)]">
@@ -372,7 +496,7 @@ function StageTrajectoryMatrix({
             <table className="border-collapse text-center text-[.72rem]">
               <thead>
                 <tr>
-                  <th className="sticky left-0 top-0 z-30 min-w-[7.5rem] border-b border-r border-[var(--wm-border)] bg-[var(--wm-surface)] px-2 py-2 text-left text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">
+                  <th className="sticky top-0 left-0 z-30 min-w-[7.5rem] border-r border-b border-[var(--wm-border)] bg-[var(--wm-surface)] px-2 py-2 text-left text-[.68rem] font-extrabold text-[var(--wm-text-dim)]">
                     单词
                   </th>
                   {matrix.dayIndices.map((day, colIdx) => (
@@ -399,16 +523,13 @@ function StageTrajectoryMatrix({
                       {displayWord(word.wordKey, vocab)}
                     </th>
                     {matrix.dayIndices.map((day, colIdx) => {
-                      const cell = keyStageCell(matrix, days, rowIdx, colIdx)
+                      const cell = displayCells?.[rowIdx]?.[colIdx]
+                        ?? keyStageCell(matrix, days, rowIdx, colIdx)
                       return (
                         <td
                           key={`${word.wordKey}-${day}`}
                           className={`px-1 py-1.5 font-extrabold ${stageCellClass(cell)}`}
-                          title={
-                            cell
-                              ? `D${day} ${stageLegendLabel(cell)}`
-                              : undefined
-                          }
+                          title={cell ? `D${day} ${stageLegendLabel(cell)}` : undefined}
                         >
                           {cell}
                         </td>
@@ -425,7 +546,6 @@ function StageTrajectoryMatrix({
   )
 }
 
-
 export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPreviewProps) {
   const { user } = useAuth()
   const { vocab } = useWordsContext()
@@ -437,6 +557,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
   const [refreshToken, setRefreshToken] = useState(0)
   const [detailView, setDetailView] = useState<DetailViewMode>('list')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [practiceLogs, setPracticeLogs] = useState<AdaptivePracticeSessionLog[]>([])
 
   const today = todayStr()
   const plan = useMemo(() => plans.find((p) => p.id === planId) ?? null, [plans, planId])
@@ -473,17 +594,25 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
         setIsLoadingRows(false)
       })
 
+    if (user) {
+      void loadAdaptivePracticeLogs(user.id, plan.id)
+        .then((loaded) => {
+          if (!cancelled) setPracticeLogs(loaded)
+        })
+        .catch((err) => {
+          if (!cancelled) console.error('[adaptive_word_plan] practice log load failed', err)
+        })
+    }
+
     return () => {
       cancelled = true
     }
-  }, [loadProgress, plan, plansLoading, refreshToken])
+  }, [loadProgress, plan, plansLoading, refreshToken, user])
 
   const simulation: SimulateAdaptivePlanResult | null = useMemo(() => {
     if (!plan || rows.length === 0) return null
 
-    const wordKeys = rows
-      .filter((r) => r.archivedAt == null)
-      .map((r) => r.wordKey)
+    const wordKeys = rows.filter((r) => r.archivedAt == null).map((r) => r.wordKey)
 
     return simulateAdaptivePlan({
       plan,
@@ -496,10 +625,89 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     })
   }, [plan, rows, today])
 
-  const activeRows = useMemo(
-    () => rows.filter((r) => r.archivedAt == null),
-    [rows],
-  )
+  const activeRows = useMemo(() => rows.filter((r) => r.archivedAt == null), [rows])
+
+  const actualProgress = useMemo(() => {
+    if (!plan) return null
+    const planStartDate = localDateFromTimestamp(plan.createdAt)
+    const introducedByDate = new Map<string, number>()
+    for (const row of activeRows) {
+      if (!row.introducedOn || row.introducedOn > today) continue
+      introducedByDate.set(row.introducedOn, (introducedByDate.get(row.introducedOn) ?? 0) + 1)
+    }
+    const introducedCount = [...introducedByDate.values()].reduce((sum, count) => sum + count, 0)
+    return {
+      planStartDate,
+      calendarDays: inclusiveCalendarDays(planStartDate, today),
+      activeDays: introducedByDate.size,
+      introducedCount,
+      averagePerActiveDay: introducedByDate.size > 0 ? introducedCount / introducedByDate.size : 0,
+    }
+  }, [activeRows, plan, today])
+
+  const fullTrajectory = useMemo(() => {
+    const projected = simulation?.stageMatrix
+    if (!plan || !projected) return null
+
+    const planStartDate = localDateFromTimestamp(plan.createdAt)
+    const dates: string[] = []
+    for (let date = planStartDate; date < today; date = addCalendarDays(date, 1)) {
+      dates.push(date)
+    }
+    for (const date of projected.dates) {
+      if (!dates.includes(date)) dates.push(date)
+    }
+    dates.sort()
+
+    const projectedWordIndex = new Map(
+      projected.words.map((word, index) => [word.wordKey, index]),
+    )
+    const projectedDateIndex = new Map(projected.dates.map((date, index) => [date, index]))
+    const logsByDate = new Map<string, AdaptivePracticeSessionLog[]>()
+    for (const session of practiceLogs) {
+      const list = logsByDate.get(session.practiceDate) ?? []
+      list.push(session)
+      logsByDate.set(session.practiceDate, list)
+    }
+
+    const displayCells = projected.words.map((word) => dates.map((date) => {
+      const logged = (logsByDate.get(date) ?? [])
+        .flatMap((session) => session.words
+          .filter((item) => item.wordKey === word.wordKey)
+          .map((item) => ({ session, item })))
+        .at(-1)
+      if (logged) {
+        if (logged.session.recordKind === 'inferred') return '?'
+        if (logged.item.statusAfter === 'MASTERED') return MASTERED_CELL
+        if (
+          logged.session.mode === 'boss'
+          && logged.item.boxBefore === logged.item.boxAfter
+          && logged.item.statusBefore === logged.item.statusAfter
+        ) {
+          return BOSS_CELL
+        }
+        if (logged.item.boxAfter != null) {
+          return ['🥚', '🐛', '🦋', '🌸', '🌳'][logged.item.boxAfter - 1] ?? '?'
+        }
+        return '?'
+      }
+
+      const projectedCol = projectedDateIndex.get(date)
+      const projectedRow = projectedWordIndex.get(word.wordKey)
+      if (projectedCol == null || projectedRow == null) return ''
+      return keyStageCell(projected, simulation.days, projectedRow, projectedCol)
+    }))
+
+    return {
+      matrix: {
+        words: projected.words,
+        dates,
+        dayIndices: dates.map((date) => calendarDayIndex(planStartDate, date)),
+        cells: displayCells,
+      } satisfies AdaptiveStageMatrix,
+      displayCells,
+    }
+  }, [plan, practiceLogs, simulation, today])
 
   // `isLoadingRows` only ever clears from the row load, which never runs when
   // the plan list resolves without this id — gate on the plan so a missing /
@@ -543,9 +751,9 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     )
   }
 
-  const { baseline, days, resumedFromProgress, stageMatrix } = simulation
+  const { baseline, days } = simulation
   const lastDay = days.at(-1)
-  const selectedDay = selectedDate ? days.find((d) => d.date === selectedDate) ?? null : null
+  const selectedDay = selectedDate ? (days.find((d) => d.date === selectedDate) ?? null) : null
 
   return (
     <div className="mx-auto max-w-[1120px] px-4 py-6">
@@ -571,27 +779,38 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           {plan.title} · 学习轨迹预览
         </div>
         <div className="mb-4 text-sm font-bold text-[var(--wm-text-dim)]">
-          {scopeLabel(plan)} · 每日新词 {plan.newWordsPerDay} · 复习上限 {plan.reviewCap} · 熔断 {plan.backlogFuse} · Boss 题包 {plan.bossPackLimit}
-        </div>
-
-        <div className="mb-4 rounded-2xl border border-[rgba(139,92,246,.25)] bg-[rgba(139,92,246,.06)] px-4 py-3 text-[.78rem] font-bold leading-relaxed text-[#c4b5fd]">
-          基于<strong className="text-[#e9d5ff]">当前进度</strong>
-          {resumedFromProgress ? '（已保存的真实数据）' : ''}，假设之后
-          <strong className="text-[#e9d5ff]">每天练一轮且全对</strong>，推算后续每日任务。
-          若今日目标已完成，D1 回放今天已学的词，再从明天起推演（不含「提前学」）。
-          练习后进度变化，刷新即可看到更新后的发展路径。
+          {scopeLabel(plan)} · 每日新词 {plan.newWordsPerDay} · 复习上限 {plan.reviewCap} · 熔断{' '}
+          {plan.backlogFuse} · Boss 题包 {plan.bossPackLimit}
         </div>
 
         <div className="mb-4">
-          <AdaptivePlanPreviewOverview
-            rows={activeRows}
-            plan={plan}
-            simulation={simulation}
-          />
+          <AdaptivePlanPreviewOverview rows={activeRows} plan={plan} simulation={simulation} />
         </div>
 
+        {actualProgress && (
+          <div className="mb-4 rounded-[18px] border border-[rgba(74,222,128,.22)] bg-[rgba(74,222,128,.05)] p-4">
+            <div className="mb-3 text-[.68rem] font-extrabold tracking-[.16em] text-[#86efac] uppercase">
+              实际执行统计 · {actualProgress.planStartDate} 至 {today}
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <StatPill label="计划运行" value={actualProgress.calendarDays} color="#e2e8f0" />
+              <StatPill label="实际学习日" value={actualProgress.activeDays} color="#86efac" />
+              <StatPill label="已激活新词" value={actualProgress.introducedCount} color="#93c5fd" />
+              <StatPill
+                label="学习日均新词"
+                value={Number(actualProgress.averagePerActiveDay.toFixed(1))}
+                color="#c4b5fd"
+              />
+            </div>
+            <div className="mt-2 text-[.65rem] font-bold text-[var(--wm-text-dim)]">
+              注：现有进度表保存每个词的首次激活日和当前状态，因此历史学习日按真实激活记录统计，不会把今天当成计划第一天。
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
-          <span>预览起点 {baseline.date}</span>
+          {actualProgress && <span>计划开始 {actualProgress.planStartDate}</span>}
+          <span>后续推演起点 {baseline.date}</span>
           <span>当前模式 {MODE_LABELS[baseline.mode]}</span>
           {lastDay && (
             <span>
@@ -601,13 +820,20 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
         </div>
       </div>
 
-      {stageMatrix && (
-        <StageTrajectoryMatrix matrix={stageMatrix} days={days} vocab={vocab} />
+      {fullTrajectory && (
+        <StageTrajectoryMatrix
+          matrix={fullTrajectory.matrix}
+          days={days}
+          vocab={vocab}
+          displayCells={fullTrajectory.displayCells}
+        />
       )}
+
+      <PracticeHistory sessions={practiceLogs} vocab={vocab} />
 
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="text-[.8rem] font-extrabold tracking-wide text-[var(--wm-text-dim)] uppercase">
-          每日详情（从今日起）
+          后续每日详情（承接实际进度）
         </div>
         <div
           className="inline-flex rounded-full border border-[var(--wm-border)] bg-white/[.03] p-0.5"

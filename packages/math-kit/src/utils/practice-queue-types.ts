@@ -6,6 +6,8 @@ export type PracticeQueueItem = {
   section: string
   lessonId: string
   detailHref: string
+  /** Same-type worked examples shown on request without revealing the current answer. */
+  helpProblems?: Problem[]
 }
 
 export type PracticeQueuePhase = 'answering' | 'celebration'
