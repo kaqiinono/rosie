@@ -13,6 +13,11 @@ export type PracticeQueueItem = {
   detailHref: string
   /** Same-type worked examples shown on request without revealing the current answer. */
   helpProblems?: PracticeHelpProblem[]
+  planAssignment?: {
+    planStart: string
+    date: string
+    assignmentId: string
+  }
 }
 
 export type PracticeQueuePhase = 'answering' | 'celebration'

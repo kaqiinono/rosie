@@ -32,9 +32,9 @@ export default function ProblemDetail({
   nextHref = null,
   positionLabel,
 }: ProblemDetailProps) {
-  const { solveCount, handleSolve, addWrong } = useG1Lesson38()
-  const count = solveCount[problem.id] ?? 0
-  const level = getMasteryLevel(count)
+  const { practiceCount, correctCount, handleSolve, addWrong } = useG1Lesson38()
+  const count = practiceCount[problem.id] ?? 0
+  const level = getMasteryLevel(correctCount[problem.id] ?? 0)
 
   const { answer, setAnswer, feedback, check, hasAttempted } = useProblemAnswer(problem, {
     handleSolve,

@@ -46,6 +46,7 @@ async function hasVerifiedEvidence(
       .eq('problem_id', target.problemId)
       .eq('correct', true)
       .eq('status', 'completed')
+      .eq('record_origin', 'native')
       .gte('attempted_at', since)
     if (result.error) throw result.error
     return (result.count ?? 0) > 0

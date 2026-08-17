@@ -1,16 +1,13 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { AnswerCheckResult } from '@rosie/core'
-import { useAuth } from '@rosie/core'
 import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
 import DifficultyStars from '@rosie/math-kit/components/shared/DifficultyStars'
 import ProblemDraftActions from '@rosie/math-kit/components/shared/ProblemDraftActions'
 import { ProblemScratchProvider } from '@rosie/math-kit/components/shared/ScratchPad/ProblemScratchContext'
 import { ProblemWorkspaceRuntimeProvider } from '@rosie/math-kit/components/shared/ProblemWorkspaceRuntime'
-import { findInProgressAttempt } from '@rosie/math-kit/utils/math-scratch-db'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
-import { submitPracticeAttempt } from '@rosie/math-kit/utils/submitPracticeAttempt'
 import { problemSetSectionLabel } from '@rosie/math-kit/utils/problem-set-helpers'
 import { lessonModuleByKey } from '@rosie/math/utils/lesson-module-registry'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
@@ -34,68 +31,51 @@ export default function PracticeProblemBody({
   isLast = false,
 }: Props) {
   const { problem, section, lessonId, helpProblems = [] } = item
-  const { user } = useAuth()
   const lessonModule = lessonModuleByKey(lessonId)
   const lesson = SEA_LESSON_MAP[lessonId]
   const [dontKnowUsed, setDontKnowUsed] = useState(false)
-
-  const persistAttempt = useCallback(
-    async (correct: boolean, answerSnapshot: unknown) => {
-      if (!user) return
-      const inProgress = await findInProgressAttempt(user.id, problem.id, null)
-      await submitPracticeAttempt({
-        userId: user.id,
-        problem,
-        section,
-        correct,
-        objects: inProgress?.objects ?? [],
-        answerSnapshot,
-        paperId: null,
-        attemptId: inProgress?.id ?? null,
-      })
-    },
-    [user, problem, section],
-  )
+  const [correctUsed, setCorrectUsed] = useState(false)
 
   const followup = useMemo(
     () => (
       <button
         type="button"
-        onClick={onAdvance}
+        onClick={() => {
+          if (correctUsed) void Promise.resolve(onAnswerCorrect())
+          else onAdvance()
+        }}
         className="cursor-pointer rounded-full bg-app-blue px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(59,130,246,0.3)] transition-all hover:brightness-105 active:scale-[0.96]"
       >
         {isLast ? '完成' : '下一题'}
       </button>
     ),
-    [onAdvance, isLast],
+    [correctUsed, onAnswerCorrect, onAdvance, isLast],
   )
 
   const runtime = useMemo(
     () => ({
-      onCorrect: async (answerSnapshot: unknown, _result: AnswerCheckResult) => {
-        await persistAttempt(true, answerSnapshot)
-        await onAnswerCorrect()
+      onCorrect: (_answerSnapshot: unknown, _result: AnswerCheckResult) => {
+        setCorrectUsed(true)
       },
-      onWrong: async (answerSnapshot: unknown, _result: AnswerCheckResult) => {
-        await persistAttempt(false, answerSnapshot)
+      onWrong: async (_answerSnapshot: unknown, _result: AnswerCheckResult) => {
         onAnswerWrong()
       },
       onDontKnow: async () => {
-        await persistAttempt(false, { reason: 'dont_know' })
         onAnswerWrong()
         setDontKnowUsed(true)
       },
       dontKnowUsed,
       dontKnowFollowup: followup,
+      correctFollowup: correctUsed ? followup : undefined,
       defaultSolutionOpen: dontKnowUsed,
       showSolutionToggle: !dontKnowUsed,
-      onPaperArchived: async (correct: boolean) => {
-        if (correct) await onAnswerCorrect()
+      onPaperArchived: (correct: boolean) => {
+        if (correct) setCorrectUsed(true)
         else onAnswerWrong()
       },
       onOpenScratch,
     }),
-    [persistAttempt, onAnswerCorrect, onAnswerWrong, dontKnowUsed, followup, onOpenScratch],
+    [onAnswerWrong, dontKnowUsed, correctUsed, followup, onOpenScratch],
   )
 
   const scratchContext = useMemo(

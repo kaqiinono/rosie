@@ -38,7 +38,9 @@ audio, flipbook).
   remote writes before local state and surfaces a「重试保存」button on failure. In-progress rounds
   are snapshotted to sessionStorage (`adaptivePlanSessionSnapshot.ts`, same-day restore; kept on
   settle failure so answers survive a reload). Plan list views use the batched
-  `loadProgressForPlans`. **Vocab↔plan consistency is maintained at the write side**: `useWordData`'s
+  `loadProgressForPlans`. Completed rounds settle progress, mastery, exact logs, and
+  `adaptive_daily_progress` atomically through `settle_adaptive_practice_round`; homepage cards
+  prefer that immutable daily ledger over mutable box-state inference. **Vocab↔plan consistency is maintained at the write side**: `useWordData`'s
   `deleteWord`/`deleteStage` call `archiveAdaptiveProgressForDeletedKeys` (archives matching progress
   rows across all plans + auto-completes plans that become finishable) and `updateWord` calls
   `migrateAdaptiveProgressKey` on unit/lesson/word renames (carries progress to the new key) — both

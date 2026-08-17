@@ -313,6 +313,23 @@ export interface MathPlanProblem {
   problemId: string // original Problem.id e.g. "36-L1"
   /** Problem type label e.g. 凑整法; optional for legacy stored plans */
   tagLabel?: string
+  /** Unique occurrence within a plan. Legacy rows fall back to date + key. */
+  assignmentId?: string
+  /** Deferred occurrences are independent tasks and never complete their source occurrence. */
+  isDeferred?: boolean
+  deferredFromDate?: string
+  deferredFromPlanStart?: string
+  deferredFromAssignmentId?: string
+  deferGeneration?: number
+}
+
+export interface MathDeferredBatch {
+  id: string
+  sourceDate: string
+  targetDate: string
+  sourceAssignmentIds: string[]
+  targetAssignmentIds: string[]
+  deferredAt: string
 }
 
 export interface MathWeeklyPlanDay {
@@ -329,6 +346,10 @@ export interface MathDayProgress {
 export interface MathWeeklyPlan {
   weekStart: string // plan start date (ISO)
   planEnd?: string // plan end date (ISO); falls back to last day in `days`
+  /** Immutable end date before the first extension. */
+  originalPlanEnd?: string
+  /** Source/target lineage for independently deferred task occurrences. */
+  deferredBatches?: MathDeferredBatch[]
   /** Optional parent-set display title; stored in progress_data.__planMeta. */
   name?: string
   lessonId: string // primary lesson for display / legacy single-lesson plans

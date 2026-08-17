@@ -52,6 +52,7 @@ type AttemptDbRow = {
   objects?: unknown
   answer_snapshot: unknown | null
   attempted_at: string
+  record_origin?: string | null
 }
 
 function rowToWorking(r: WorkingDbRow): MathScratchWorkingRow {
@@ -94,6 +95,7 @@ function rowToAttempt(r: AttemptDbRow): MathPracticeAttemptRow {
     objects: parseObjects(r.objects),
     answerSnapshot: r.answer_snapshot,
     attemptedAt: r.attempted_at,
+    recordOrigin: r.record_origin === 'math_solved_backfill' ? 'math_solved_backfill' : 'native',
   }
 }
 
@@ -272,61 +274,6 @@ export async function updateAttemptProgress(
   if (error) throw error
 }
 
-export async function completePracticeAttempt(input: {
-  attemptId: string
-  correct: boolean
-  objects: ScratchObject[]
-  answerSnapshot: unknown | null
-}): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('math_practice_attempts')
-    .update({
-      status: 'completed',
-      correct: input.correct,
-      objects: input.objects,
-      answer_snapshot: input.answerSnapshot,
-      attempted_at: new Date().toISOString(),
-    })
-    .eq('id', input.attemptId)
-    .eq('status', 'in_progress')
-    .select('id')
-  if (error) throw error
-  const updated = (data?.length ?? 0) > 0
-  if (updated) invalidateSessionStore('math_practice_attempts_today')
-  return updated
-}
-
-export async function insertCompletedAttempt(
-  userId: string,
-  problemId: string,
-  section: string,
-  correct: boolean,
-  objects: ScratchObject[],
-  answerSnapshot: unknown | null,
-  paperId: string | null,
-): Promise<string> {
-  const lessonId = lessonIdFromProblemId(problemId)
-  const { data, error } = await supabase
-    .from('math_practice_attempts')
-    .insert({
-      user_id: userId,
-      problem_id: problemId,
-      lesson_id: lessonId,
-      section,
-      paper_id: paperId,
-      status: 'completed',
-      correct,
-      objects,
-      draft_id: null,
-      answer_snapshot: answerSnapshot,
-    })
-    .select('id')
-    .single()
-  if (error || !data) throw error ?? new Error('completed attempt insert failed')
-  invalidateSessionStore('math_practice_attempts_today')
-  return data.id as string
-}
-
 export async function fetchAttemptCanvas(attemptId: string): Promise<ScratchObject[]> {
   const attempt = await fetchPracticeAttempt(attemptId)
   if (!attempt) return []
@@ -336,35 +283,6 @@ export async function fetchAttemptCanvas(attemptId: string): Promise<ScratchObje
     fallbackDraftObjects = draft?.objects ?? null
   }
   return resolveAttemptCanvasObjects(attempt, fallbackDraftObjects)
-}
-
-export async function insertPracticeAttempt(
-  userId: string,
-  problemId: string,
-  section: string,
-  correct: boolean,
-  draftId: string | null,
-  answerSnapshot: unknown | null,
-  paperId: string | null,
-): Promise<string> {
-  const lessonId = lessonIdFromProblemId(problemId)
-  const { data, error } = await supabase
-    .from('math_practice_attempts')
-    .insert({
-      user_id: userId,
-      problem_id: problemId,
-      lesson_id: lessonId,
-      section,
-      correct,
-      draft_id: draftId,
-      answer_snapshot: answerSnapshot,
-      paper_id: paperId,
-    })
-    .select('id')
-    .single()
-  if (error || !data) throw error ?? new Error('attempt insert failed')
-  invalidateSessionStore('math_practice_attempts_today')
-  return data.id as string
 }
 
 export async function upsertQuizScratchLink(
@@ -397,23 +315,6 @@ export async function fetchQuizScratchDraftId(
     .maybeSingle()
   if (error || !data) return null
   return data.draft_id as string
-}
-
-export async function upsertWrongWithAttempt(
-  userId: string,
-  problemId: string,
-  _attemptId: string,
-): Promise<void> {
-  const { error } = await supabase.from('math_wrong').upsert(
-    {
-      user_id: userId,
-      problem_id: problemId,
-      resolved: false,
-      resolved_at: null,
-    },
-    { onConflict: 'user_id,problem_id' },
-  )
-  if (error) throw error
 }
 
 /** Backfill math_wrong rows for wrong attempts that never synced (e.g. prior schema mismatch). */

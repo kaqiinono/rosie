@@ -50,6 +50,7 @@ export default function ProblemAnswerSection({
   if (answerMode === 'custom-widget') {
     return (
       <>
+        {tip}
         <div className={puzzleWrapperClassName}>
           <ScratchPadCustomAnswerWidget
             problem={problem}
@@ -64,7 +65,6 @@ export default function ProblemAnswerSection({
             {solutionToggle}
           </div>
         ) : null}
-        {tip}
       </>
     )
   }
@@ -72,6 +72,7 @@ export default function ProblemAnswerSection({
   if (answerMode === 'readonly-puzzle-numeric' && verticalPuzzle) {
     return (
       <>
+        {tip}
         <div className={puzzleWrapperClassName}>
           <VerticalDigitPuzzlePanel spec={verticalPuzzle} embedded onSubmit={() => {}} />
         </div>
@@ -84,13 +85,13 @@ export default function ProblemAnswerSection({
           buttonClassName={buttonClassName}
           trailingActions={effectiveTrailingActions}
         />
-        {tip}
       </>
     )
   }
 
   return (
     <>
+      {tip}
       <NumericAnswerPanel
         problem={problem}
         answer={answer}
@@ -100,7 +101,6 @@ export default function ProblemAnswerSection({
         buttonClassName={buttonClassName}
         trailingActions={effectiveTrailingActions}
       />
-      {tip}
     </>
   )
 }

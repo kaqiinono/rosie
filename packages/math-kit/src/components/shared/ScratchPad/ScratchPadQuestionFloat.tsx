@@ -24,7 +24,7 @@ type ScratchPadQuestionFloatProps = {
   answerMode?: 'practice' | 'quiz'
   initialAnswer?: unknown
   onAnswerDraftChange?: (snapshot: unknown) => void
-  onSubmitResult?: (correct: boolean, snapshot: unknown) => void
+  onSubmitResult?: (correct: boolean, snapshot: unknown) => void | Promise<void>
 }
 
 export default function ScratchPadQuestionFloat({

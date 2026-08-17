@@ -8,7 +8,8 @@ const BASE = '/math/ny/1/35'
 
 interface HomePageProps {
   problems: ProblemSet
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
 }
 
 interface ModuleItem {
@@ -65,10 +66,10 @@ const MODULES: ModuleItem[] = [
   },
 ]
 
-export default function HomePage({ problems, solveCount }: HomePageProps) {
+export default function HomePage({ problems, practiceCount, correctCount }: HomePageProps) {
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
-  const masteredAll = Object.values(solveCount).filter((c) => c >= 3).length
-  const attemptedAll = Object.values(solveCount).filter((c) => c >= 1).length
+  const masteredAll = Object.values(correctCount).filter((c) => c >= 3).length
+  const attemptedAll = Object.values(practiceCount).filter((c) => c >= 1).length
 
   function getProgress(key: string) {
     if (key === 'alltest') {
@@ -77,8 +78,8 @@ export default function HomePage({ problems, solveCount }: HomePageProps) {
     const list = problems[key as keyof ProblemSet]
     if (!list) return { mastered: 0, attempted: 0, total: 0 }
     return {
-      mastered: list.filter((p) => (solveCount[p.id] ?? 0) >= 3).length,
-      attempted: list.filter((p) => (solveCount[p.id] ?? 0) >= 1).length,
+      mastered: list.filter((p) => (correctCount[p.id] ?? 0) >= 3).length,
+      attempted: list.filter((p) => (practiceCount[p.id] ?? 0) >= 1).length,
       total: list.length,
     }
   }

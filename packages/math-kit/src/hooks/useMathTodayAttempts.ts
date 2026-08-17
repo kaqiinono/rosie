@@ -18,6 +18,7 @@ type AttemptDbRow = {
   objects?: unknown
   answer_snapshot: unknown | null
   attempted_at: string
+  record_origin?: string | null
 }
 
 function parseObjects(raw: unknown): MathPracticeAttemptRow['objects'] {
@@ -39,6 +40,7 @@ function rowToAttempt(r: AttemptDbRow): MathPracticeAttemptRow {
     objects: parseObjects(r.objects),
     answerSnapshot: r.answer_snapshot,
     attemptedAt: r.attempted_at,
+    recordOrigin: r.record_origin === 'math_solved_backfill' ? 'math_solved_backfill' : 'native',
   }
 }
 
@@ -54,10 +56,11 @@ async function fetchMathTodayAttempts(userId: string): Promise<MathPracticeAttem
   const { data, error } = await supabase
     .from('math_practice_attempts')
     .select(
-      'id,user_id,problem_id,lesson_id,section,paper_id,status,correct,draft_id,objects,answer_snapshot,attempted_at',
+      'id,user_id,problem_id,lesson_id,section,paper_id,status,correct,draft_id,objects,answer_snapshot,attempted_at,record_origin',
     )
     .eq('user_id', userId)
     .eq('status', 'completed')
+    .eq('record_origin', 'native')
     .gte('attempted_at', start)
     .lte('attempted_at', end)
     .order('attempted_at', { ascending: false })

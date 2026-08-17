@@ -6,7 +6,8 @@ import { TAG_STYLE } from '@rosie/math-content/utils/g2/lesson4-data'
 
 type Props = {
   problems: Problem[]
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
   basePath: string
   showSource?: boolean
   sourceLabel?: string
@@ -14,7 +15,8 @@ type Props = {
 
 export default function ProblemList({
   problems,
-  solveCount,
+  practiceCount,
+  correctCount,
   basePath,
   showSource,
   sourceLabel,
@@ -22,7 +24,8 @@ export default function ProblemList({
   return (
     <LessonProblemList
       problems={problems}
-      solveCount={solveCount}
+      practiceCount={practiceCount}
+      correctCount={correctCount}
       basePath={basePath}
       lessonId="2-4"
       tagStyles={TAG_STYLE}

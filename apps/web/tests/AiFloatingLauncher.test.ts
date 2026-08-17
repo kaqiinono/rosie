@@ -9,6 +9,7 @@ describe('AI floating launcher visibility', () => {
   })
 
   it('hides where the global entry would be distracting or redundant', () => {
+    expect(shouldShowAiAssistant('/calc/session', false)).toBe(false)
     expect(shouldShowAiAssistant('/ai', false)).toBe(false)
     expect(shouldShowAiAssistant('/auth/reset', false)).toBe(false)
     expect(shouldShowAiAssistant('/admin/words', false)).toBe(false)

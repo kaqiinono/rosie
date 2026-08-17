@@ -15,7 +15,7 @@ import type {
   MathPracticeQueueItemRef,
   MathPracticeSource,
 } from '@rosie/math-kit/utils/practice-queue-snapshot'
-import type { MathSkipReason } from '@rosie/math-kit/utils/math-skip-reasons'
+export type DeferCurrentResult = 'moved' | 'only_remaining'
 
 export type ResumeOpts = {
   items: PracticeQueueItem[]
@@ -63,7 +63,7 @@ export type PracticeQueueContextValue = {
   onAnswerWrong: () => void
   /** Advance without marking correct (e.g. after 不会 + review 题解). */
   onAdvance: () => void
-  onSkip: (reason: MathSkipReason, note?: string) => void
+  onDeferCurrent: () => DeferCurrentResult
   setImmersive: (value: boolean) => void
   toggleImmersive: () => void
 }

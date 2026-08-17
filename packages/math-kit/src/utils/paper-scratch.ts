@@ -17,10 +17,7 @@ import {
 import {
   ensureInProgressAttempt,
   findInProgressAttempt,
-  insertPracticeAttempt,
-  insertScratchDraft,
   updateAttemptProgress,
-  upsertWrongWithAttempt,
 } from '@rosie/math-kit/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math-kit/utils/submitPracticeAttempt'
 import { getMathImagePublicUrl } from '@rosie/math-kit/hooks/useMathProblemImages'
@@ -174,7 +171,7 @@ export async function submitPaperWorkingArchive(input: {
     userId: input.userId,
     problem: { id: input.problemId } as import('@rosie/core').Problem,
     section: input.section,
-    correct: marked,
+    result: marked ? 'correct' : 'wrong',
     objects: attempt.objects,
     answerSnapshot: attempt.answerSnapshot,
     paperId: input.paperId ?? null,
@@ -201,29 +198,15 @@ export async function submitArchivedPaperScratchDraft(input: {
   const objects: ScratchObject[] = [createFullScratchImageObject(url, width, height)]
   const section = input.section ?? 'paper'
 
-  const draftId = await insertScratchDraft(input.userId, input.problemId, section, objects)
-  if (!draftId) return { error: '草稿保存失败' }
-
-  const attemptId = await insertPracticeAttempt(
-    input.userId,
-    input.problemId,
+  await submitPracticeAttempt({
+    userId: input.userId,
+    problem: { id: input.problemId } as import('@rosie/core').Problem,
     section,
-    input.correct,
-    draftId,
-    null,
-    null,
-  )
-
-  if (!input.correct) {
-    await upsertWrongWithAttempt(input.userId, input.problemId, attemptId)
-  } else {
-    const now = new Date().toISOString()
-    await supabase
-      .from('math_wrong')
-      .update({ resolved: true, resolved_at: now })
-      .eq('user_id', input.userId)
-      .eq('problem_id', input.problemId)
-  }
+    result: input.correct ? 'correct' : 'wrong',
+    objects,
+    answerSnapshot: null,
+    paperId: null,
+  })
 
   return { error: null }
 }

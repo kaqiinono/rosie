@@ -34,9 +34,9 @@ export default function ProblemDetail({
   positionLabel,
 }: ProblemDetailProps) {
   const tipText = tip ?? TYPE_TIP[problem.tag]
-  const { solveCount, handleSolve, addWrong } = useG2Lesson4()
-  const count = solveCount[problem.id] ?? 0
-  const level = getMasteryLevel(count)
+  const { practiceCount, correctCount, handleSolve, addWrong } = useG2Lesson4()
+  const count = practiceCount[problem.id] ?? 0
+  const level = getMasteryLevel(correctCount[problem.id] ?? 0)
 
   const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(
     problem,

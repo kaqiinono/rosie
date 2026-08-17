@@ -7,7 +7,6 @@ import QuestionLayout, {
   type QuestionLayoutProps,
 } from '@rosie/math-kit/components/shared/QuestionLayout'
 import { useProblemScratchContext } from '@rosie/math-kit/components/shared/ScratchPad/ProblemScratchContext'
-import { useLessonScratchActions } from '@rosie/math-kit/components/shared/ScratchPad/LessonScratchActionsContext'
 import { findInProgressAttempt } from '@rosie/math-kit/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math-kit/utils/submitPracticeAttempt'
 import { useProblemWorkspaceRuntime } from '@rosie/math-kit/components/shared/ProblemWorkspaceRuntime'
@@ -39,7 +38,6 @@ export default function ProblemWorkspace({
 }: Props) {
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
-  const scratchActions = useLessonScratchActions()
   const runtime = useProblemWorkspaceRuntime()
   const [localDontKnow, setLocalDontKnow] = useState(false)
   const [settling, setSettling] = useState(false)
@@ -61,22 +59,21 @@ export default function ProblemWorkspace({
       userId: user.id,
       problem,
       section: scratchCtx.section,
-      correct: false,
+      result: 'dont_know',
       objects: inProgress?.objects ?? [],
-      answerSnapshot: { reason: 'dont_know' },
+      answerSnapshot: null,
       paperId: null,
       attemptId: inProgress?.id ?? null,
     })
-    scratchActions?.onWrong(problem.id)
-  }, [user, scratchCtx, problem, scratchActions])
+  }, [user, scratchCtx, problem])
 
   const handleDontKnow = useCallback(async () => {
     if (settling || attempted) return
     setSettling(true)
     try {
+      await handleDefaultDontKnow()
       if (onDontKnow) await onDontKnow()
       else if (runtime) await runtime.onDontKnow()
-      else await handleDefaultDontKnow()
       setLocalDontKnow(true)
       showFlash('已加入错题集，看看题解吧')
     } catch {
@@ -97,7 +94,9 @@ export default function ProblemWorkspace({
         >
           {settling ? '记录中…' : '不会'}
         </button>
-      ) : usedDontKnow ? (dontKnowFollowup ?? runtime?.dontKnowFollowup) : null}
+      ) : usedDontKnow
+        ? (dontKnowFollowup ?? runtime?.dontKnowFollowup)
+        : (runtime?.correctFollowup ?? null)}
     </>
   ) : null
 

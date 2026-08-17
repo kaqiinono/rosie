@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { MathPlanProblem, ProblemMasteryMap, ProblemSet, WordMasteryInfo } from '@rosie/core'
 import { useAuth, ensureStageInit, isGraduated, MASTERY_ICON, getMasteryLevel } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import type { MathPracticeAttemptRow } from '@rosie/math-kit/hooks/math-scratch-types'
 import { fetchPracticeAttemptsForProblems } from '@rosie/math-kit/utils/math-scratch-db'
@@ -97,7 +97,7 @@ export default function ProblemMasteryPanel({
   problemSets,
 }: Props) {
   const { user } = useAuth()
-  const { solveCount, solvedAt } = useMathSolved(user)
+  const { practiceCount, lastAttemptedAt } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState(1)
@@ -117,13 +117,13 @@ export default function ProblemMasteryPanel({
           : m
             ? formatDue(m.nextReviewDate, today)
             : { label: '—', urgent: 'none' as const }
-        const count = solveCount[p.problemId] ?? 0
+        const count = practiceCount[p.problemId] ?? 0
         const practiceStatus: PracticeStatus = wrongIds.has(p.problemId)
           ? 'wrong'
           : count > 0
             ? 'practiced'
             : 'unseen'
-        const practiceTime = solvedAt[p.problemId] ?? m?.lastSeen
+        const practiceTime = lastAttemptedAt[p.problemId] ?? m?.lastSeen
         return { p, m, graduated, due, count, practiceStatus, practiceTime }
       })
       .filter((r) => r.m != null || r.count > 0 || r.practiceStatus === 'wrong')
@@ -136,7 +136,7 @@ export default function ProblemMasteryPanel({
         if (tb) return 1
         return a.p.key.localeCompare(b.p.key)
       })
-  }, [problems, masteryMap, solveCount, solvedAt, wrongIds, today])
+  }, [problems, masteryMap, practiceCount, lastAttemptedAt, wrongIds, today])
 
   const hardCount = rows.filter((r) => r.m?.isHard && !r.graduated).length
   const graduatedCount = rows.filter((r) => r.graduated).length

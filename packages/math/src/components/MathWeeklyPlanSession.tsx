@@ -5,13 +5,16 @@ import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { useProblemMastery } from '@rosie/math-kit/hooks/useProblemMastery'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import {
   getMathReviewProblemsForDay,
   makeProblem,
   planEndDate,
   buildProblemIdMap,
   collectOverduePlanProblems,
+  addPlanDays,
+  isPlanProblemDone,
+  planAssignmentId,
 } from '@rosie/math-kit/utils/math-helpers'
 import { useMathRotatingReview } from '@rosie/math-kit/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math-kit/hooks/useMathWeeklyLessonReview'
@@ -54,6 +57,10 @@ import MathPlanMap, { type MapMode } from './MathPlanMap'
 
 const OVERDUE_PAGE_SIZE = 5
 
+function calendarDayDiff(from: string, to: string): number {
+  return Math.max(0, Math.round((Date.parse(`${to}T00:00:00`) - Date.parse(`${from}T00:00:00`)) / 86400000))
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 interface Props {
   problemSets: Record<string, ProblemSet>
@@ -64,26 +71,32 @@ interface Props {
 export default function MathWeeklyPlanSession({ problemSets, autoStart = false }: Props) {
   const { user } = useAuth()
   const {
-    weeklyPlan,
+    weeklyPlan: activeWeeklyPlan,
+    activePlans,
     allPlans,
     allPriorKeys,
     priorProblemMap,
     addDoneKey,
+    postponeAllOverdue,
     isLoading,
   } = useMathWeeklyPlan(user)
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
-  const { solveCount } = useMathSolved(user)
+  const { practiceCount, correctCount } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const startPractice = useStartPracticeQueue()
   const { resume, isActive: practiceActive } = usePracticeQueue()
 
   const today = todayStr()
+  const weeklyPlan = activeWeeklyPlan ?? allPlans.find((plan) =>
+    collectOverduePlanProblems(plan, today).length > 0,
+  ) ?? null
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [mapMode, setMapMode] = useState<MapMode>('week')
   const autoStartDoneRef = useRef(false)
   /** Resume lookup finished (success, empty, or skipped). Auto-start must wait on this. */
   const [resumeChecked, setResumeChecked] = useState(false)
   const [overduePage, setOverduePage] = useState(0)
+  const [isPostponing, setIsPostponing] = useState(false)
 
   // Auto-select date when plan loads (during-render).
   const [autoSelectKey, setAutoSelectKey] = useState('')
@@ -125,7 +138,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     const todayPlan = weeklyPlan.days.find((d) => d.date === selectedDate)
     if (!todayPlan || todayPlan.problems.length === 0) return false
     const prog = weeklyPlan.progress[selectedDate] ?? { doneKeys: [] }
-    return todayPlan.problems.every((p) => prog.doneKeys.includes(p.key))
+    return todayPlan.problems.every((p) => isPlanProblemDone(p, selectedDate, prog.doneKeys))
   }, [weeklyPlan, selectedDate])
 
   // Reconcile plan progress with actual solve data from Supabase
@@ -134,16 +147,23 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     for (const day of weeklyPlan.days) {
       const doneSet = new Set((weeklyPlan.progress[day.date] ?? { doneKeys: [] }).doneKeys)
       for (const prob of [...day.problems, ...day.optionalProblems]) {
-        if ((solveCount[prob.problemId] ?? 0) > 0 && !doneSet.has(prob.key)) {
-          void addDoneKey(day.date, prob.key)
+        // New plans persist assignmentId while legacy plans persisted problem.key.
+        // Checking only problem.key makes an already-completed assignment reconcile
+        // again after every store patch, causing an unbounded render/write loop.
+        if (
+          (correctCount[prob.problemId] ?? 0) > 0 &&
+          !isPlanProblemDone(prob, day.date, doneSet)
+        ) {
+          if (prob.isDeferred) continue
+          void addDoneKey(weeklyPlan.weekStart, day.date, planAssignmentId(prob, day.date))
           recordProblemResult(prob.key, true)
         }
       }
     }
-  }, [weeklyPlan, solveCount, isLoading, addDoneKey, recordProblemResult])
+  }, [weeklyPlan, correctCount, isLoading, addDoneKey, recordProblemResult])
 
   // Session pool for celebration "继续练习". Ref so the checker always reads
-  // the latest solveCount (rebuilt every render below).
+  // the latest correctCount (rebuilt every render below).
   const remainingPoolRef = useRef<{
     pool: MathPlanProblem[]
     title: string
@@ -156,10 +176,26 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       pool: MathPlanProblem[],
       initialProblemId: string,
       title = '每日一练',
-      preserveOrder = false,
+      preserveOrder = true,
       checkRemaining?: boolean,
     ): boolean => {
-      const items = mathPlanProblemsToQueueItems(pool, problemSets)
+      const items = mathPlanProblemsToQueueItems(
+        pool,
+        problemSets,
+        (problem) => {
+          const assignmentId = problem.assignmentId
+          if (!assignmentId) return undefined
+          for (const plan of allPlans) {
+            for (const day of plan.days) {
+              if (day.problems.some((candidate) => planAssignmentId(candidate, day.date) === assignmentId)) {
+                return { planStart: plan.weekStart, date: day.date, assignmentId }
+              }
+            }
+          }
+          return undefined
+        },
+        practiceCount,
+      )
       if (items.length === 0 || !user) return false
       if (checkRemaining) {
         remainingPoolRef.current = { pool, title, preserveOrder }
@@ -177,7 +213,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       })
       return true
     },
-    [problemSets, startPractice, user],
+    [problemSets, startPractice, user, allPlans, practiceCount],
   )
 
   // Resume / auto-start only on `/math/ny/plan/practice` (autoStart).
@@ -197,16 +233,16 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
     let cancelled = false
 
-    const todayProblemIds = (
-      weeklyPlan.days.find((d) => d.date === today)?.problems ?? []
-    ).map((p) => p.problemId)
+    const todayProblemIds = activePlans.flatMap((plan) =>
+      plan.days.find((d) => d.date === today)?.problems.map((p) => p.problemId) ?? [],
+    )
 
     const tryResume = (pending: NonNullable<ReturnType<typeof readMathPracticeSnapshot>>) => {
       if (!isResumablePlanPracticeSnapshot(pending, todayProblemIds, today)) {
         void clearMathPendingEverywhere(userId, 'plan')
         return false
       }
-      const items = rehydratePracticeQueueItems(pending.items, problemSets)
+      const items = rehydratePracticeQueueItems(pending.items, problemSets, practiceCount)
       if (items.length === 0) {
         void clearMathPendingEverywhere(userId, 'plan')
         return false
@@ -214,13 +250,13 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       if (!userId) return false
 
       // Resume is always today's plan session — pin the checker pool to today
-      // (not selectedDate). Fresh solveCount comes from the every-render rebuild.
+      // (not selectedDate). Fresh correctCount comes from the every-render rebuild.
       const todayDay = weeklyPlan.days.find((d) => d.date === today)
       if (todayDay && todayDay.problems.length > 0) {
         remainingPoolRef.current = {
           pool: todayDay.problems,
           title: pending.title || '每日一练',
-          preserveOrder: false,
+          preserveOrder: true,
         }
       }
 
@@ -270,7 +306,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       cancelled = true
       if (timer !== undefined) window.clearTimeout(timer)
     }
-  }, [autoStart, practiceActive, isLoading, resumeChecked, userId, problemSets, resume, weeklyPlan, today])
+  }, [autoStart, practiceActive, isLoading, resumeChecked, userId, problemSets, practiceCount, resume, weeklyPlan, activePlans, today])
 
   // Practice route: jump straight into today's first unfinished required problem.
   useEffect(() => {
@@ -291,20 +327,30 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     if (!user) return
 
     // 「执行计划」always means today's required queue, not the calendar selection.
-    const dayPlan = weeklyPlan.days.find((d) => d.date === today)
-    if (!dayPlan || dayPlan.problems.length === 0) {
+    const todayProblems = activePlans.flatMap((plan) =>
+      plan.days.find((d) => d.date === today)?.problems ?? [],
+    )
+    if (todayProblems.length === 0) {
       autoStartDoneRef.current = true
       return
     }
-    const doneKeys = new Set((weeklyPlan.progress[today] ?? { doneKeys: [] }).doneKeys)
-    const firstUndone = dayPlan.problems.find((p) => !doneKeys.has(p.key))
+    const undone = todayProblems.filter((problem) => {
+      for (const plan of activePlans) {
+        const day = plan.days.find((candidate) => candidate.date === today)
+        if (day?.problems.includes(problem)) {
+          return !isPlanProblemDone(problem, today, plan.progress[today]?.doneKeys ?? [])
+        }
+      }
+      return true
+    })
+    const firstUndone = undone[0]
     // All required problems done — stay on the plan page; do not re-enter practice.
     if (!firstUndone) {
       autoStartDoneRef.current = true
       return
     }
 
-    const started = beginPractice(dayPlan.problems, firstUndone.problemId, '每日一练', false, true)
+    const started = beginPractice(undone, firstUndone.problemId, '今日计划', true, true)
     if (!started) return
     autoStartDoneRef.current = true
   }, [
@@ -312,6 +358,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     resumeChecked,
     isLoading,
     weeklyPlan,
+    activePlans,
     today,
     beginPractice,
     practiceActive,
@@ -411,11 +458,11 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   useEffect(() => {
     if (weeklyPlan?.lessonId !== '1-36') return
     for (const prob of rotatingReviews) {
-      if ((solveCount[prob.problemId] ?? 0) > 0 && !isCompletedToday(prob.key)) {
+      if ((correctCount[prob.problemId] ?? 0) > 0 && !isCompletedToday(prob.key)) {
         markReviewDone(prob.key)
       }
     }
-  }, [solveCount, rotatingReviews, weeklyPlan?.lessonId, isCompletedToday, markReviewDone])
+  }, [correctCount, rotatingReviews, weeklyPlan?.lessonId, isCompletedToday, markReviewDone])
 
   const rotatingReviewKeys = useMemo(
     () => new Set(rotatingReviews.map((p) => p.key)),
@@ -441,10 +488,10 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   // Detect weekly lesson review completions
   useEffect(() => {
     if (!weeklyLessonProblem || weeklyLessonIsDone) return
-    if ((solveCount[weeklyLessonProblem.problemId] ?? 0) > 0) {
+    if ((correctCount[weeklyLessonProblem.problemId] ?? 0) > 0) {
       markWeeklyLessonDone(weeklyLessonProblem.key)
     }
-  }, [solveCount, weeklyLessonProblem, weeklyLessonIsDone, markWeeklyLessonDone])
+  }, [correctCount, weeklyLessonProblem, weeklyLessonIsDone, markWeeklyLessonDone])
 
   // One batched draft-presence load for the selected day (avoids N per-card fetches).
   // Must stay above early returns (Rules of Hooks).
@@ -485,24 +532,12 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
   const { draftProblemIds } = useViewableDraftIds(user, dayDraftProblemIds, draftRefreshKey)
 
-  // Problems with at least one solve — treated as done even before plan progress syncs.
-  const doneProblemIds = useMemo(() => {
-    const ids = new Set<string>()
-    for (const [id, count] of Object.entries(solveCount)) {
-      if (count > 0) ids.add(id)
-    }
-    return ids
-  }, [solveCount])
-
   const overdueItems = useMemo(
-    () => (weeklyPlan ? collectOverduePlanProblems(weeklyPlan, today) : []),
-    [weeklyPlan, today],
+    () => allPlans.flatMap((plan) => collectOverduePlanProblems(plan, today))
+      .sort((a, b) => a.date.localeCompare(b.date)),
+    [allPlans, today],
   )
-  // Exclude already-solved problems so 补做 always starts from the first undone question.
-  const overdueUndoneItems = useMemo(
-    () => overdueItems.filter(({ problem }) => !doneProblemIds.has(problem.problemId)),
-    [overdueItems, doneProblemIds],
-  )
+  const overdueUndoneItems = overdueItems
   const overduePool = useMemo(() => overdueUndoneItems.map((item) => item.problem), [overdueUndoneItems])
 
   // Reset overdue page when list shrinks
@@ -515,13 +550,23 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     [overdueUndoneItems, overduePage],
   )
 
-  // Always-fresh checker: pool comes from beginPractice / resume; solveCount
+  // Always-fresh checker: pool comes from beginPractice / resume; correctCount
   // from this render so celebration never sees a stale closure.
   useEffect(() => {
     remainingCheckerRef.current = (() => {
       const cfg = remainingPoolRef.current
       if (!cfg || cfg.pool.length === 0) return null
-      const remaining = cfg.pool.filter((p) => (solveCount[p.problemId] ?? 0) === 0)
+      const remaining = cfg.pool.filter((problem) => {
+        if (!problem.assignmentId) return (correctCount[problem.problemId] ?? 0) === 0
+        for (const plan of allPlans) {
+          for (const day of plan.days) {
+            if (day.problems.some((p) => planAssignmentId(p, day.date) === problem.assignmentId)) {
+              return !isPlanProblemDone(problem, day.date, plan.progress[day.date]?.doneKeys ?? [])
+            }
+          }
+        }
+        return true
+      })
       if (remaining.length === 0) return null
       return {
         count: remaining.length,
@@ -533,7 +578,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
         },
       }
     })
-  }, [solveCount, beginPractice])
+  }, [correctCount, beginPractice, allPlans])
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {
@@ -649,7 +694,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   const doneKeys = new Set(dayProgress.doneKeys)
 
   const todayRequired = dayPlan?.problems ?? []
-  const todayDone = todayRequired.filter((p) => doneKeys.has(p.key)).length
+  const todayDone = todayRequired.filter((p) => isPlanProblemDone(p, selectedDate ?? '', doneKeys)).length
   const pct = todayRequired.length > 0 ? Math.round((todayDone / todayRequired.length) * 100) : 0
 
   return (
@@ -672,10 +717,18 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                   {fmtPlanRange(weeklyPlan.weekStart, planEndDate(weeklyPlan))}
                   <span className="mx-1 text-gray-300">·</span>
                   每天约 {weeklyPlan.problemsPerDay} 题
+                  {weeklyPlan.originalPlanEnd && planEndDate(weeklyPlan) > weeklyPlan.originalPlanEnd && (
+                    <>
+                      <span className="mx-1 text-gray-300">·</span>
+                      <span className="font-bold text-violet-600">
+                        已延期 {calendarDayDiff(weeklyPlan.originalPlanEnd, planEndDate(weeklyPlan))} 天
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
-            {!autoStart && (
+            {!autoStart && activePlans.length > 0 && (
               <Link
                 href={MATH_PLAN_PRACTICE_HREF}
                 className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white no-underline transition-all hover:scale-105 sm:px-4 sm:text-[13px]"
@@ -765,7 +818,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           mode={mapMode}
           onModeChange={setMapMode}
           onPracticeProblem={(prob, dayProblems) => {
-            beginPractice(dayProblems, prob.problemId, '每日一练', false, true)
+            beginPractice(dayProblems, prob.problemId, '每日一练', true, true)
           }}
           headerExtra={
             selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) ? (
@@ -795,20 +848,46 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               accent="#ef4444"
               defaultExpanded={false}
               headerRight={
-                <button
-                  type="button"
-                  onClick={() => {
-                    const first = overduePool[0]
-                    if (first) beginPractice(overduePool, first.problemId, '待补做', true, true)
-                  }}
-                  className="cursor-pointer rounded-full px-3 py-1 text-[10px] font-extrabold text-white transition-all hover:scale-105"
-                  style={{
-                    background: 'linear-gradient(135deg, #ef4444, #f97316)',
-                    boxShadow: '0 2px 10px rgba(239,68,68,.3)',
-                  }}
-                >
-                  一键补做
-                </button>
+                <div className="grid w-40 grid-cols-2 gap-1.5 sm:w-44">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const first = overduePool[0]
+                      if (first) beginPractice(overduePool, first.problemId, '待补做', true, true)
+                    }}
+                    className="min-w-0 cursor-pointer rounded-full px-2 py-1 text-[10px] font-extrabold text-white transition-all hover:scale-105"
+                    style={{ background: 'linear-gradient(135deg, #ef4444, #f97316)' }}
+                  >
+                    一键补做
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isPostponing}
+                    onClick={async () => {
+                      const dates = new Set(overdueUndoneItems.map((item) => `${item.planStart}::${item.date}`))
+                      const preview = allPlans.flatMap((plan) => {
+                        const batchDates = new Set(overdueUndoneItems.filter((item) => item.planStart === plan.weekStart).map((item) => item.date))
+                        if (batchDates.size === 0) return []
+                        const currentEnd = planEndDate(plan)
+                        const start = addPlanDays(currentEnd < today ? today : currentEnd, 1)
+                        const nextEnd = addPlanDays(start, batchDates.size - 1)
+                        const originalEnd = plan.originalPlanEnd ?? currentEnd
+                        return [`${mathPlanDisplayName(plan)}：延期至 ${fmtDate(nextEnd)}（累计 ${calendarDayDiff(originalEnd, nextEnd)} 天）`]
+                      })
+                      if (!window.confirm(`将 ${overdueUndoneItems.length} 道欠题按 ${dates.size} 个任务日追加到各计划末尾，现有题单不会重排。\n\n${preview.join('\n')}\n\n确认延期吗？`)) return
+                      setIsPostponing(true)
+                      try {
+                        await postponeAllOverdue()
+                      } finally {
+                        setIsPostponing(false)
+                      }
+                    }}
+                    className="min-w-0 cursor-pointer rounded-full px-2 py-1 text-[10px] font-extrabold text-white transition-all hover:scale-105 disabled:opacity-60"
+                    style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
+                  >
+                    {isPostponing ? '延期中' : '一键延期'}
+                  </button>
+                </div>
               }
             >
               <p className="mb-2.5 px-1 text-[12px] font-medium text-gray-500">
@@ -874,21 +953,27 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                 <div className="space-y-2.5">
                   {dayPlan.problems.map((prob) => (
                     <ProblemCard
-                      key={prob.key}
+                      key={planAssignmentId(prob, selectedDate!)}
                       prob={prob}
-                      done={doneKeys.has(prob.key)}
+                      done={isPlanProblemDone(prob, selectedDate!, doneKeys)}
                       isWrong={wrongIds.has(prob.problemId)}
+                      deferredSource={(weeklyPlan.deferredBatches ?? []).some((batch) =>
+                        batch.sourceAssignmentIds.includes(planAssignmentId(prob, selectedDate!)),
+                      )}
                       overdueDate={
-                        selectedDate && selectedDate < today && !doneKeys.has(prob.key)
+                        selectedDate && selectedDate < today && !isPlanProblemDone(prob, selectedDate, doneKeys)
                           ? selectedDate
                           : undefined
                       }
                       problemSets={problemSets}
                       hasDraft={draftProblemIds.has(prob.problemId)}
                       onPractice={
-                        doneKeys.has(prob.key)
+                        isPlanProblemDone(prob, selectedDate!, doneKeys) ||
+                        (weeklyPlan.deferredBatches ?? []).some((batch) =>
+                          batch.sourceAssignmentIds.includes(planAssignmentId(prob, selectedDate!)),
+                        )
                           ? undefined
-                          : () => beginPractice(dayPlan.problems, prob.problemId, '每日一练', false, true)
+                          : () => beginPractice(dayPlan.problems, prob.problemId, '每日一练', true, true)
                       }
                     />
                   ))}

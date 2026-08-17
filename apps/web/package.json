@@ -10,6 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
+    "audit:adaptive": "node scripts/audit-adaptive-progress.mjs",
+    "repair:adaptive": "node scripts/repair-adaptive-progress.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

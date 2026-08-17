@@ -2,6 +2,7 @@ import type {
   ProblemSet,
   Problem,
   MathPlanProblem,
+  MathWeeklyPlan,
   MathWeeklyPlanDay,
   MathDayProgress,
   ProblemMasteryMap,
@@ -13,6 +14,33 @@ import { ensureStageInit, isGraduated } from '@rosie/core'
 
 export function problemKey(lessonId: string, problemId: string): string {
   return `${lessonId}::${problemId}`
+}
+
+export function planAssignmentId(problem: MathPlanProblem, date: string): string {
+  return problem.assignmentId ?? `${date}::${problem.key}`
+}
+
+export function isPlanProblemDone(
+  problem: MathPlanProblem,
+  date: string,
+  doneKeys: ReadonlySet<string> | string[],
+): boolean {
+  const done = doneKeys instanceof Set ? doneKeys : new Set(doneKeys)
+  return done.has(planAssignmentId(problem, date)) || done.has(problem.key)
+}
+
+export function ensureMathPlanAssignmentIds(days: MathWeeklyPlanDay[]): MathWeeklyPlanDay[] {
+  return days.map((day) => ({
+    ...day,
+    problems: day.problems.map((problem) => ({
+      ...problem,
+      assignmentId: planAssignmentId(problem, day.date),
+    })),
+    optionalProblems: (day.optionalProblems ?? []).map((problem) => ({
+      ...problem,
+      assignmentId: planAssignmentId(problem, day.date),
+    })),
+  }))
 }
 
 function toLocalDateStr(d: Date): string {
@@ -131,14 +159,14 @@ export type LessonSectionStat = {
 export function getLessonSectionStats(
   ps: ProblemSet,
   sections: MathPlanSectionKey[],
-  solveCount: Record<string, number>,
+  practiceCount: Record<string, number>,
 ): LessonSectionStat[] {
   return sections.map(section => {
     const probs = getSectionProblems(ps, section)
     return {
       section,
       total: probs.length,
-      practiced: probs.filter(p => (solveCount[p.id] ?? 0) > 0).length,
+      practiced: probs.filter(p => (practiceCount[p.id] ?? 0) > 0).length,
     }
   })
 }
@@ -146,7 +174,7 @@ export function getLessonSectionStats(
 export function getLessonTagStats(
   ps: ProblemSet,
   sections: MathPlanSectionKey[],
-  solveCount: Record<string, number>,
+  practiceCount: Record<string, number>,
 ): LessonTagStat[] {
   const byTag = new Map<string, LessonTagStat>()
   for (const section of sections) {
@@ -159,7 +187,7 @@ export function getLessonTagStats(
         typeOrder: parseTypeOrder(p.tag),
       }
       existing.total += 1
-      if ((solveCount[p.id] ?? 0) > 0) existing.practiced += 1
+      if ((practiceCount[p.id] ?? 0) > 0) existing.practiced += 1
       byTag.set(p.tag, existing)
     }
   }
@@ -196,11 +224,11 @@ export type BuildMathFlexiblePlanOptions = {
   /** Prior plan days (edit flow). Days that stay frozen keep their historical problem lists. */
   existingDays?: MathWeeklyPlanDay[]
   /**
-   * ISO date (typically today). Existing days with `date < freezeDate` are frozen.
-   * Fully completed existing days on/after this date are also frozen.
+   * ISO date (typically today). Existing days with `date <= freezeDate` are frozen.
+   * Fully completed existing days after this date are also frozen.
    */
   freezeDate?: string
-  /** Used to detect fully completed days for freezing on/after freezeDate. */
+  /** Used to detect fully completed days for freezing after freezeDate. */
   progress?: Record<string, MathDayProgress>
 }
 
@@ -210,7 +238,7 @@ function isExistingDayFullyComplete(
 ): boolean {
   if (day.problems.length === 0) return false
   const done = new Set((progress?.[day.date] ?? { doneKeys: [] }).doneKeys)
-  return day.problems.every((p) => done.has(p.key))
+  return day.problems.every((p) => isPlanProblemDone(p, day.date, done))
 }
 
 function collectPoolItems(
@@ -218,7 +246,7 @@ function collectPoolItems(
   sectionFilters: Record<string, string[]>,
   problemSets: Record<string, ProblemSet>,
   tagFilters: Record<string, string[]>,
-  solveCount: Record<string, number>,
+  practiceCount: Record<string, number>,
 ): PoolItem[] {
   const pool: PoolItem[] = []
   for (const lessonId of lessonIds) {
@@ -233,7 +261,7 @@ function collectPoolItems(
           tag: `${lessonId}::${p.tag}`,
           difficulty: p.difficulty,
           typeOrder: parseTypeOrder(p.tag),
-          practiced: (solveCount[p.id] ?? 0) > 0,
+          practiced: (practiceCount[p.id] ?? 0) > 0,
         })
       })
     }
@@ -323,10 +351,10 @@ function allocatePoolAcrossDates(
  * Build a flexible-date plan with type-aware daily allocation.
  * Types (Problem.tag) are ordered easy→hard; each day prioritizes types with fewer prior allocations.
  * Within a day, prefer spreading across lessons (avoid stacking the same lesson) before balancing tags.
- * Within each type, unpracticed problems (solveCount === 0) are picked before practiced ones, then by difficulty asc.
+ * Within each type, unpracticed problems are picked before practiced ones, then by difficulty asc.
  *
  * On edit (`freezeDate` + `existingDays`):
- * - Freeze days before freezeDate, and fully completed days on/after it (historical lists unchanged,
+ * - Freeze days through freezeDate, and fully completed days after it (historical lists unchanged,
  *   even if the current filter/selection no longer includes those problems).
  * - Rebuild pool from the **current** filters only; problems already on kept frozen days are excluded.
  * - Problems on existing days that fall outside the new date range re-enter the pool (if still in filter).
@@ -338,13 +366,13 @@ export function buildMathFlexiblePlan(
   startDate: string,
   endDate: string,
   tagFilters: Record<string, string[]> = {},
-  solveCount: Record<string, number> = {},
+  practiceCount: Record<string, number> = {},
   options: BuildMathFlexiblePlanOptions = {},
 ): { days: MathWeeklyPlanDay[]; problemsPerDay: number } {
   const dates = enumerateDates(startDate, endDate)
   if (dates.length === 0) return { days: [], problemsPerDay: 0 }
 
-  const fullPool = collectPoolItems(lessonIds, sectionFilters, problemSets, tagFilters, solveCount)
+  const fullPool = collectPoolItems(lessonIds, sectionFilters, problemSets, tagFilters, practiceCount)
   const { existingDays, freezeDate, progress } = options
 
   if (!freezeDate || !existingDays || existingDays.length === 0) {
@@ -356,9 +384,9 @@ export function buildMathFlexiblePlan(
 
   for (const day of existingDays) {
     if (!dateSet.has(day.date)) continue
-    const freezePast = day.date < freezeDate
-    const freezeComplete = day.date >= freezeDate && isExistingDayFullyComplete(day, progress)
-    if (freezePast || freezeComplete) {
+    const freezeThroughBoundary = day.date <= freezeDate
+    const freezeComplete = day.date > freezeDate && isExistingDayFullyComplete(day, progress)
+    if (freezeThroughBoundary || freezeComplete) {
       frozenByDate.set(day.date, {
         date: day.date,
         problems: [...day.problems],
@@ -405,21 +433,37 @@ export function planEndDate(plan: { planEnd?: string; weekStart: string; days: M
 }
 
 export type OverduePlanProblem = {
+  planStart?: string
   date: string
   problem: MathPlanProblem
+  assignmentId: string
+  deferred: boolean
 }
 
 /** Required problems on days before `today` that are not yet in that day's doneKeys. */
 export function collectOverduePlanProblems(
-  plan: { days: MathWeeklyPlanDay[]; progress: Record<string, MathDayProgress> },
+  plan: Pick<MathWeeklyPlan, 'days' | 'progress'> &
+    Partial<Pick<MathWeeklyPlan, 'weekStart' | 'deferredBatches'>>,
   today: string,
 ): OverduePlanProblem[] {
   const out: OverduePlanProblem[] = []
+  const deferredSources = new Set(
+    (plan.deferredBatches ?? []).flatMap((batch) => batch.sourceAssignmentIds),
+  )
   for (const day of plan.days) {
     if (day.date >= today) continue
     const done = new Set((plan.progress[day.date] ?? { doneKeys: [] }).doneKeys)
     for (const p of day.problems) {
-      if (!done.has(p.key)) out.push({ date: day.date, problem: p })
+      const assignmentId = planAssignmentId(p, day.date)
+      if (!isPlanProblemDone(p, day.date, done) && !deferredSources.has(assignmentId)) {
+        out.push({
+          planStart: plan.weekStart,
+          date: day.date,
+          problem: p,
+          assignmentId,
+          deferred: Boolean(p.isDeferred),
+        })
+      }
     }
   }
   return out
@@ -438,10 +482,10 @@ export function planProblemExecStatus(
 
 export function planProblemAnswerStatus(
   problemId: string,
-  opts: { wrongIds: ReadonlySet<string>; solveCount: Record<string, number> },
+  opts: { wrongIds: ReadonlySet<string>; practiceCount: Record<string, number> },
 ): PlanProblemAnswerStatus {
   if (opts.wrongIds.has(problemId)) return 'wrong'
-  if ((opts.solveCount[problemId] ?? 0) > 0) return 'practiced'
+  if ((opts.practiceCount[problemId] ?? 0) > 0) return 'practiced'
   return 'unseen'
 }
 
@@ -553,7 +597,9 @@ export function getMathReviewProblemsForDay(
   thisWeekKeys: Set<string>,
   maxCount = 5,
 ): string[] {
-  const candidates = allPriorKeys
+  // A problem can occur in several historical/current plan rows. Review is
+  // problem-based, so collapse those occurrences before ranking and rendering.
+  const candidates = [...new Set(allPriorKeys)]
     .filter(key => {
       if (thisWeekKeys.has(key)) return false
       const m = masteryMap[key]

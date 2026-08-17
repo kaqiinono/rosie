@@ -39,10 +39,10 @@ export const LESSON_PROBLEM_IDS = buildProblemIdsByLesson()
 const ALL_MATH_PROBLEM_IDS = [...new Set(Object.values(GRADE_PROBLEM_IDS).flat())]
 
 /** 全模块数学题目总数与已练数（solve_count ≥ 1 计为已练）。 */
-export function allMathProblemStats(solveCount: Record<string, number>): GradeProblemStats {
+export function allMathProblemStats(practiceCount: Record<string, number>): GradeProblemStats {
   let practiced = 0
   for (const id of ALL_MATH_PROBLEM_IDS) {
-    if ((solveCount[id] ?? 0) >= 1) practiced++
+    if ((practiceCount[id] ?? 0) >= 1) practiced++
   }
   return { total: ALL_MATH_PROBLEM_IDS.length, practiced }
 }
@@ -50,12 +50,12 @@ export function allMathProblemStats(solveCount: Record<string, number>): GradePr
 /** 某年级的总题数与已练习题数（solve_count ≥ 1 计为已练）。 */
 export function gradeProblemStats(
   grade: number,
-  solveCount: Record<string, number>,
+  practiceCount: Record<string, number>,
 ): GradeProblemStats {
   const ids = GRADE_PROBLEM_IDS[grade] ?? []
   let practiced = 0
   for (const id of ids) {
-    if ((solveCount[id] ?? 0) >= 1) practiced++
+    if ((practiceCount[id] ?? 0) >= 1) practiced++
   }
   return { total: ids.length, practiced }
 }
@@ -63,12 +63,12 @@ export function gradeProblemStats(
 /** 某一讲的总题数与已练习题数（solve_count ≥ 1 计为已练）。 */
 export function lessonProblemStats(
   lessonId: string,
-  solveCount: Record<string, number>,
+  practiceCount: Record<string, number>,
 ): GradeProblemStats {
   const ids = LESSON_PROBLEM_IDS[lessonId] ?? []
   let practiced = 0
   for (const id of ids) {
-    if ((solveCount[id] ?? 0) >= 1) practiced++
+    if ((practiceCount[id] ?? 0) >= 1) practiced++
   }
   return { total: ids.length, practiced }
 }

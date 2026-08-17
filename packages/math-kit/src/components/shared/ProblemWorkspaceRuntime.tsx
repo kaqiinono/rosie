@@ -9,6 +9,8 @@ export type ProblemWorkspaceRuntimeValue = {
   onDontKnow: () => void | Promise<void>
   dontKnowUsed: boolean
   dontKnowFollowup?: React.ReactNode
+  /** Replaces answer actions after a correct result so the learner can review first. */
+  correctFollowup?: React.ReactNode
   defaultSolutionOpen?: boolean
   showSolutionToggle?: boolean
   onPaperArchived?: (correct: boolean) => void | Promise<void>

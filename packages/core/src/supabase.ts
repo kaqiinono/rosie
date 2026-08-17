@@ -64,16 +64,6 @@ export const supabase: SupabaseClient = new Proxy({} as SupabaseClient, {
 export type Database = {
   public: {
     Tables: {
-      math_solved: {
-        Row: {
-          id: string
-          user_id: string
-          problem_id: string
-          solved_at: string
-          solve_count: number
-        }
-        Insert: { user_id: string; problem_id: string; solved_at?: string; solve_count?: number }
-      }
       math_wrong: {
         Row: {
           user_id: string
@@ -88,22 +78,6 @@ export type Database = {
           added_at?: string
           resolved?: boolean
           resolved_at?: string | null
-        }
-      }
-      math_skipped: {
-        Row: {
-          user_id: string
-          problem_id: string
-          reason: string
-          note: string | null
-          added_at: string
-        }
-        Insert: {
-          user_id: string
-          problem_id: string
-          reason?: string
-          note?: string | null
-          added_at?: string
         }
       }
       math_quiz_batches: {
@@ -329,6 +303,40 @@ export type Database = {
           introduced_on?: string | null
           updated_at?: string
           archived_at?: string | null
+        }
+      }
+      adaptive_daily_progress: {
+        Row: {
+          plan_id: string
+          user_id: string
+          practice_date: string
+          new_goal: number
+          review_goal: number
+          new_done: number
+          review_done: number
+          all_done: boolean
+          completed_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          plan_id: string
+          user_id: string
+          practice_date: string
+          new_goal: number
+          review_goal: number
+          new_done?: number
+          review_done?: number
+          all_done?: boolean
+          completed_at?: string | null
+        }
+        Update: {
+          new_goal?: number
+          review_goal?: number
+          new_done?: number
+          review_done?: number
+          all_done?: boolean
+          completed_at?: string | null
+          updated_at?: string
         }
       }
       practice_pending_sessions: {

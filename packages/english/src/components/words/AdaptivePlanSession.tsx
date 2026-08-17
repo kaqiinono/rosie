@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { QuizQuestion, WordEntry } from '@rosie/core'
-import { supabase, todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
+import { todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { StarProgressBar, useStarHud } from '@rosie/rewards'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { fetchStageVocab, readCachedStageVocab } from '../../hooks/useWordData'
@@ -20,10 +20,14 @@ import {
   type SessionOutcome,
 } from '../../utils/adaptivePlanSettle'
 import type { AdaptiveDailyTask } from '../../utils/adaptivePlanScheduler'
-import { buildDailyTask, isPlanCompletable } from '../../utils/adaptivePlanScheduler'
+import {
+  buildDailyTask,
+  isPlanCompletable,
+  summarizeAdaptiveTodayProgress,
+} from '../../utils/adaptivePlanScheduler'
 import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
 import {
-  saveAdaptivePracticeLog,
+  settleAdaptivePracticeRound,
   type AdaptiveLoggedOutcome,
 } from '../../utils/adaptivePlanPracticeLog'
 import {
@@ -200,39 +204,13 @@ function demoteBossStubbornRows(
     }))
 }
 
-async function upsertMasteryPatches(
-  userId: string,
-  patches: AdaptiveMasteryPatch[],
-): Promise<void> {
+function patchMasteryPatches(userId: string, patches: AdaptiveMasteryPatch[]): void {
   if (patches.length === 0) return
-
   wordMasteryStore.patchSessionData(userId, (prev) => {
     const next = { ...prev }
     for (const patch of patches) next[patch.wordKey] = patch.info
     return next
   })
-
-  // Empty-string dates crash Postgres DATE columns (error 22007) — coerce to
-  // today/null so a fresh mastery record (lastSeen '') can never break the save.
-  const rows = patches.map(({ wordKey: key, info }) => ({
-    user_id: userId,
-    word_key: key,
-    correct: info.correct,
-    incorrect: info.incorrect,
-    last_seen: info.lastSeen || todayStr(),
-    stage: info.stage ?? null,
-    next_review_date: info.nextReviewDate || null,
-    is_hard: info.isHard ?? false,
-    review_history: info.reviewHistory ?? [],
-    updated_at: new Date().toISOString(),
-  }))
-
-  const { error } = await supabase
-    .from('word_mastery')
-    .upsert(rows, { onConflict: 'user_id,word_key' })
-  // Throw so the settle flow can surface a retry — the local store patch above
-  // is idempotent on retry (absolute values, not increments).
-  if (error) throw error
 }
 
 export default function AdaptivePlanSession({
@@ -878,10 +856,6 @@ export default function AdaptivePlanSession({
         today,
       })
 
-      // Remote writes first, local state after — a failure leaves local state
-      // untouched so the retry recomputes from the same inputs (idempotent).
-      await saveProgressBatch(settleResult.progressUpdates)
-      await upsertMasteryPatches(user.id, settleResult.masteryPatches)
       const updateByKey = new Map(settleResult.progressUpdates.map((row) => [row.wordKey, row]))
       const nextRows = rows.map((row) => updateByKey.get(row.wordKey) ?? row)
 
@@ -911,7 +885,8 @@ export default function AdaptivePlanSession({
           phase: 'step3_final' as const,
         })),
       ]
-      await saveAdaptivePracticeLog({
+      const todaySummary = summarizeAdaptiveTodayProgress(nextPlan, nextRows, today)
+      await settleAdaptivePracticeRound({
         sessionId: logSessionIdRef.current ?? newLogSessionId(),
         planId: plan.id,
         userId: user.id,
@@ -925,7 +900,13 @@ export default function AdaptivePlanSession({
         outcomes: loggedOutcomes,
         beforeRows: rows,
         afterRows: nextRows,
+        progressUpdates: settleResult.progressUpdates,
+        masteryPatches: settleResult.masteryPatches,
+        newGoal: plan.newWordsPerDay,
+        reviewGoal: reviewSnapshot.length,
+        allDone: todaySummary.allDone,
       })
+      patchMasteryPatches(user.id, settleResult.masteryPatches)
       setRows(nextRows)
       setSettleFailed(null)
 
@@ -996,7 +977,6 @@ export default function AdaptivePlanSession({
     plan,
     resetRoundState,
     rows,
-    saveProgressBatch,
     setIsImmersive,
     settling,
     today,
@@ -1069,10 +1049,6 @@ export default function AdaptivePlanSession({
         }
       }
 
-      // Remote writes first, local state after (see settleSession for rationale).
-      await saveProgressBatch(progressUpdates)
-      await upsertMasteryPatches(user.id, settleResult.masteryPatches)
-
       const bossOutcomes = [...firstPassResults, ...sinkResults]
       const bossReviewKeys = uniqueKeys(firstPassResults.map((item) => item.wordKey))
       const starsEarned = starsAwardedThisRoundRef.current
@@ -1089,7 +1065,8 @@ export default function AdaptivePlanSession({
           phase: 'boss_sink' as const,
         })),
       ]
-      await saveAdaptivePracticeLog({
+      const todaySummary = summarizeAdaptiveTodayProgress(nextPlan, nextRows, today)
+      await settleAdaptivePracticeRound({
         sessionId: logSessionIdRef.current ?? newLogSessionId(),
         planId: plan.id,
         userId: user.id,
@@ -1104,7 +1081,13 @@ export default function AdaptivePlanSession({
         outcomes: loggedOutcomes,
         beforeRows: rows,
         afterRows: nextRows,
+        progressUpdates,
+        masteryPatches: settleResult.masteryPatches,
+        newGoal: plan.newWordsPerDay,
+        reviewGoal: bossReviewKeys.length,
+        allDone: todaySummary.allDone,
       })
+      patchMasteryPatches(user.id, settleResult.masteryPatches)
       setRows(nextRows)
       setSettleFailed(null)
 
@@ -1190,7 +1173,6 @@ export default function AdaptivePlanSession({
     plan,
     resetRoundState,
     rows,
-    saveProgressBatch,
     setIsImmersive,
     settling,
     task,

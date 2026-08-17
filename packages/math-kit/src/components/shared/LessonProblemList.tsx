@@ -16,7 +16,8 @@ import { problemHasAnalysisImage } from '@rosie/math-kit/utils/problem-analysis-
 
 type Props = {
   problems: Problem[]
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
   basePath: string
   /** Lesson number used for alltest tag filter link, e.g. '35' */
   lessonId: string
@@ -39,7 +40,8 @@ function MetaDot() {
 
 export default function LessonProblemList({
   problems,
-  solveCount,
+  practiceCount,
+  correctCount,
   basePath,
   lessonId,
   tagStyles,
@@ -81,7 +83,8 @@ export default function LessonProblemList({
               key={p.id}
               problem={p}
               index={i}
-              solveCount={solveCount}
+              practiceCount={practiceCount}
+              correctCount={correctCount}
               tagStyles={tagStyles}
               isOpen={!collapsedIds.has(p.id)}
               onToggle={() => toggleCard(p.id)}
@@ -105,8 +108,8 @@ export default function LessonProblemList({
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {problems.map((p, i) => {
-        const count = solveCount[p.id] ?? 0
-        const level = getMasteryLevel(count)
+        const count = practiceCount[p.id] ?? 0
+        const level = getMasteryLevel(correctCount[p.id] ?? 0)
         const hasAnalysis = problemHasAnalysisImage(p, dbAnalysisIds)
 
         const inner = (

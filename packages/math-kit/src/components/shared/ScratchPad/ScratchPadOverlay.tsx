@@ -34,7 +34,11 @@ type ScratchPadOverlayProps = {
   closeLabel?: string
   onObjectsChange?: (objects: ScratchObject[]) => void
   onAnswerDraftChange?: (snapshot: unknown) => void
-  onSubmitResult?: (correct: boolean, snapshot: unknown, objects: ScratchObject[]) => void
+  onSubmitResult?: (
+    correct: boolean,
+    snapshot: unknown,
+    objects: ScratchObject[],
+  ) => void | Promise<void>
   onClose: (objects?: ScratchObject[]) => void
   edgeNav?: EdgeNavConfig
   readOnly?: boolean
@@ -155,7 +159,7 @@ export default function ScratchPadOverlay({
   const handleAnswerSubmit = useCallback(
     (correct: boolean, snapshot: unknown) => {
       if (!onSubmitResult) return
-      void onSubmitResult(correct, snapshot, getObjects())
+      return onSubmitResult(correct, snapshot, getObjects())
     },
     [getObjects, onSubmitResult],
   )

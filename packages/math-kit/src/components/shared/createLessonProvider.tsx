@@ -2,13 +2,17 @@
 
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import { useStarHud } from '@rosie/rewards'
 import { LessonScratchActionsProvider } from '@rosie/math-kit/components/shared/ScratchPad/LessonScratchActionsContext'
 
 interface LessonContextType {
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
+  wrongCount: Record<string, number>
+  lastAttemptedAt: Record<string, string>
+  lastCorrectAt: Record<string, string>
   solved: Record<string, boolean>
   handleSolve: (id: string) => void
   wrongIds: Set<string>
@@ -41,7 +45,13 @@ export function createLessonProvider(displayName: string): {
 
   function Provider({ children }: { children: ReactNode }): ReactNode {
     const { user } = useAuth()
-    const { solveCount, handleSolve: solveAndSync } = useMathSolved(user)
+    const {
+      practiceCount,
+      correctCount,
+      wrongCount,
+      lastAttemptedAt,
+      lastCorrectAt,
+    } = useMathPracticeStats(user)
     const { wrongIds, addWrong: addWrongRow, removeWrong: removeWrongRow, markResolved: markResolvedRow } =
       useMathWrong(user)
     const { awardStars } = useStarHud()
@@ -50,18 +60,14 @@ export function createLessonProvider(displayName: string): {
 
     const solved = useMemo(() => {
       const next: Record<string, boolean> = {}
-      for (const [k, v] of Object.entries(solveCount)) {
+      for (const [k, v] of Object.entries(correctCount)) {
         if (v >= 1) next[k] = true
       }
       return next
-    }, [solveCount])
+    }, [correctCount])
 
     const handleSolve = useCallback(async (id: string) => {
-      const newCount = await solveAndSync(id)
-
-      if (wrongIds.has(id)) {
-        void markResolvedRow(id)
-      }
+      const newCount = (correctCount[id] ?? 0) + 1
 
       void awardStars('blue', 1)
 
@@ -74,7 +80,7 @@ export function createLessonProvider(displayName: string): {
       } else {
         setToast(`⭐ 第${newCount}次答对！继续保持！`)
       }
-    }, [solveAndSync, wrongIds, markResolvedRow, awardStars])
+    }, [correctCount, awardStars])
 
     const addWrong = useCallback(
       (id: string) => {
@@ -100,15 +106,20 @@ export function createLessonProvider(displayName: string): {
     const scratchActions = useMemo(
       () => ({
         onSolve: handleSolve,
-        onWrong: addWrong,
-        onResolved: markResolvedCb,
+        // submitPracticeAttempt owns both math_wrong projections atomically.
+        onWrong: () => undefined,
+        onResolved: () => undefined,
       }),
-      [handleSolve, addWrong, markResolvedCb],
+      [handleSolve],
     )
 
     const contextValue = useMemo(
       () => ({
-        solveCount,
+        practiceCount,
+        correctCount,
+        wrongCount,
+        lastAttemptedAt,
+        lastCorrectAt,
         solved,
         handleSolve,
         wrongIds,
@@ -121,7 +132,11 @@ export function createLessonProvider(displayName: string): {
         setShowCongrats,
       }),
       [
-        solveCount,
+        practiceCount,
+        correctCount,
+        wrongCount,
+        lastAttemptedAt,
+        lastCorrectAt,
         solved,
         handleSolve,
         wrongIds,

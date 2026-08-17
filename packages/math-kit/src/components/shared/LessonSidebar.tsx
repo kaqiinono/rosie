@@ -46,21 +46,21 @@ type Props = {
 
 export default function LessonSidebar({ config, problems, useLessonContext }: Props) {
   const pathname = usePathname()
-  const { solveCount, wrongIds } = useLessonContext()
+  const { correctCount, wrongIds } = useLessonContext()
   const [collapsed, setCollapsed] = useLocalStorage<boolean>(
     STORAGE_KEYS.MATH_SIDEBAR_COLLAPSED,
     false,
   )
   const utilityLinks = lessonUtilityLinks(config.basePath)
   const totalAll = Object.values(problems).reduce((s, l) => s + l.length, 0)
-  const masteredAll = Object.values(solveCount).filter((c) => c >= 3).length
+  const masteredAll = Object.values(correctCount).filter((c) => c >= 3).length
 
   function getProgress(key: string): string {
     if (key === 'alltest') return `${masteredAll}/${totalAll}`
     if (key === 'mistakes') return `${wrongIds.size} 题`
     const list = problems[key as keyof ProblemSet]
     if (!list) return '0/0'
-    const mastered = list.filter((p) => (solveCount[p.id] ?? 0) >= 3).length
+    const mastered = list.filter((p) => (correctCount[p.id] ?? 0) >= 3).length
     return `${mastered}/${list.length}`
   }
 

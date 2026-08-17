@@ -51,6 +51,8 @@ export function resolveMathPlanProblem(
 export function mathPlanProblemToQueueItem(
   mp: MathPlanProblem,
   problemSets: Record<string, ProblemSet>,
+  planAssignment?: PracticeQueueItem['planAssignment'],
+  practiceCount: Record<string, number> = {},
 ): PracticeQueueItem | null {
   const found = findProblemInSets(problemSets, mp.lessonId, mp.problemId)
   if (!found) return null
@@ -59,20 +61,26 @@ export function mathPlanProblemToQueueItem(
     section: mp.section,
     lessonId: mp.lessonId,
     detailHref: detailHref(mp.lessonId, found.section, found.index),
-    helpProblems: findHelpProblems(problemSets[mp.lessonId], found.problem),
+    helpProblems: findHelpProblems(problemSets[mp.lessonId], found.problem, practiceCount),
+    planAssignment,
   }
 }
 
 export function mathPlanProblemsToQueueItems(
   problems: MathPlanProblem[],
   problemSets: Record<string, ProblemSet>,
+  resolveAssignment?: (problem: MathPlanProblem) => PracticeQueueItem['planAssignment'],
+  practiceCount: Record<string, number> = {},
 ): PracticeQueueItem[] {
   const items: PracticeQueueItem[] = []
-  const seen = new Set<string>()
   for (const mp of problems) {
-    const item = mathPlanProblemToQueueItem(mp, problemSets)
-    if (!item || seen.has(item.problem.id)) continue
-    seen.add(item.problem.id)
+    const item = mathPlanProblemToQueueItem(
+      mp,
+      problemSets,
+      resolveAssignment?.(mp),
+      practiceCount,
+    )
+    if (!item) continue
     items.push(item)
   }
   return items
@@ -82,6 +90,7 @@ export function mathPlanProblemsToQueueItems(
 export function rehydratePracticeQueueItems(
   refs: MathPracticeQueueItemRef[],
   problemSets: Record<string, ProblemSet>,
+  practiceCount: Record<string, number> = {},
 ): PracticeQueueItem[] {
   const items: PracticeQueueItem[] = []
   for (const ref of refs) {
@@ -92,7 +101,8 @@ export function rehydratePracticeQueueItems(
       section: ref.section || found.section,
       lessonId: ref.lessonId,
       detailHref: ref.detailHref || detailHref(ref.lessonId, found.section, found.index),
-      helpProblems: findHelpProblems(problemSets[ref.lessonId], found.problem),
+      helpProblems: findHelpProblems(problemSets[ref.lessonId], found.problem, practiceCount),
+      planAssignment: ref.planAssignment,
     })
   }
   return items

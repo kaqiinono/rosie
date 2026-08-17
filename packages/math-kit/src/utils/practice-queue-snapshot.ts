@@ -17,7 +17,7 @@ import {
 } from '@rosie/core'
 import type { PracticeQueuePhase } from './practice-queue-types'
 
-export const MATH_PRACTICE_SNAPSHOT_VERSION = 2
+export const MATH_PRACTICE_SNAPSHOT_VERSION = 3
 export const MATH_PENDING_KIND = 'math' as const
 
 /** @deprecated Pre-source single slot; migrated on first read into `queue:<source>`. */
@@ -47,10 +47,15 @@ export type MathPracticeQueueItemRef = {
   lessonId: string
   section: string
   detailHref: string
+  planAssignment?: {
+    planStart: string
+    date: string
+    assignmentId: string
+  }
 }
 
 export type MathPracticeSnapshot = {
-  version: typeof MATH_PRACTICE_SNAPSHOT_VERSION | 1
+  version: typeof MATH_PRACTICE_SNAPSHOT_VERSION
   source: MathPracticeSource
   date: string
   items: MathPracticeQueueItemRef[]
@@ -79,7 +84,7 @@ function isValidSnap(snap: unknown): snap is Omit<MathPracticeSnapshot, 'source'
 } {
   if (!snap || typeof snap !== 'object') return false
   const s = snap as MathPracticeSnapshot
-  const verOk = s.version === 1 || s.version === MATH_PRACTICE_SNAPSHOT_VERSION
+  const verOk = s.version === MATH_PRACTICE_SNAPSHOT_VERSION
   return (
     verOk &&
     Array.isArray(s.items) &&

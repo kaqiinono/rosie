@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { OrbBackground } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import { getMasteryLevel, MASTERY_BORDER, MASTERY_BADGE_BG, MASTERY_ICON } from '@rosie/core'
 import type { Problem } from '@rosie/core'
@@ -429,7 +429,7 @@ function MistakeCard({
 
 export default function GlobalMistakesPage() {
   const { user } = useAuth()
-  const { solveCount, handleSolve } = useMathSolved(user)
+  const { practiceCount } = useMathPracticeStats(user)
   const { rows, markResolved } = useMathWrong(user)
   const startPractice = useStartPracticeQueue()
 
@@ -735,7 +735,7 @@ export default function GlobalMistakesPage() {
                 lessonId={lessonId}
                 section={section}
                 resolved={resolved}
-                count={solveCount[storedId] ?? solveCount[problem.id] ?? 0}
+                count={practiceCount[storedId] ?? practiceCount[problem.id] ?? 0}
                 hasDraft={hasDraftForEntry(storedId, problem.id)}
                 draftLookupIds={[storedId, problem.id]}
                 wrongProblems={wrongProblems}
@@ -754,7 +754,7 @@ export default function GlobalMistakesPage() {
                     beginPractice(problem.id)
                   }
                 }}
-                onSolve={(id) => void handleSolve(id)}
+                onSolve={handleDraftResolved}
                 onDraftResolved={handleDraftResolved}
               />
             ),

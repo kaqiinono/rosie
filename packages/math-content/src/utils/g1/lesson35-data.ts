@@ -570,7 +570,10 @@ const RAW_PROBLEMS: ProblemSet = {
     ],
 }
 
-Object.values(RAW_PROBLEMS).forEach(list => list.forEach(ensureBlockScene))
+Object.values(RAW_PROBLEMS).forEach((list) => list.forEach((problem: Problem) => {
+    problem.id = `1-35-${problem.id}`
+    ensureBlockScene(problem)
+}))
 
 export const PROBLEMS: ProblemSet = RAW_PROBLEMS
 

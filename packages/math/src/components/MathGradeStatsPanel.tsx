@@ -4,14 +4,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import type { CourseCardData } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { lessonIdFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import { lessonProblemStats } from '@rosie/math/utils/grade-stats'
 
 export default function MathGradeStatsPanel({ courses }: { courses: CourseCardData[] }) {
   const { user } = useAuth()
   const [expanded, setExpanded] = useState(false)
-  const { solveCount, isLoading } = useMathSolved(expanded ? user : null)
+  const { practiceCount, isLoading } = useMathPracticeStats(expanded ? user : null)
 
   if (!user) return null
 
@@ -57,7 +57,7 @@ export default function MathGradeStatsPanel({ courses }: { courses: CourseCardDa
             courses.map((course) => {
               const lessonId = lessonIdFromHref(course.href)
               const stats = lessonId
-                ? lessonProblemStats(lessonId, solveCount)
+                ? lessonProblemStats(lessonId, practiceCount)
                 : { practiced: 0, total: 0 }
 
               return (

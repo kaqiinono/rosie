@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth, useImmersive, STORAGE_KEYS, todayStr, usePracticePendingLifecycle } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
-import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
-import { useMathSkipped } from '@rosie/math-kit/hooks/useMathSkipped'
-import type { MathSkipReason } from '@rosie/math-kit/utils/math-skip-reasons'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
+import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import {
   buildPracticeQueue,
+  deferQueueItem,
   initialIndexForProblem,
 } from '@rosie/math/utils/build-practice-queue'
 import type {
@@ -24,7 +23,6 @@ import {
   readMathPracticeSnapshot,
   writeMathPracticeSnapshot,
   wrapMathEnvelope,
-  type MathPracticeQueueItemRef,
   type MathPracticeSnapshot,
   type MathPracticeSource,
 } from '@rosie/math-kit/utils/practice-queue-snapshot'
@@ -54,9 +52,8 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const { user } = useAuth()
   const { setIsImmersive } = useImmersive()
-  const { solveCount, handleSolve } = useMathSolved(user)
-  const { markResolved } = useMathWrong(user)
-  const { addSkipped, clearSkipped } = useMathSkipped(user)
+  const { practiceCount, lastAttemptedAt } = useMathPracticeStats(user)
+  const { addDoneKey } = useMathWeeklyPlan(user)
 
   const [isActive, setIsActive] = useState(false)
   const [phase, setPhase] = useState<PracticeQueuePhase>('answering')
@@ -96,6 +93,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
         lessonId: item.lessonId,
         section: item.section,
         detailHref: item.detailHref,
+        planAssignment: item.planAssignment,
       })),
       currentIndex,
       sessionCorrect,
@@ -139,6 +137,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
           lessonId: item.lessonId,
           section: item.section,
           detailHref: item.detailHref,
+          planAssignment: item.planAssignment,
         })),
         currentIndex: index,
         sessionCorrect: correct,
@@ -167,7 +166,12 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
   const start = useCallback(
     (opts: PracticeQueueStartOpts) => {
       if (!user) return
-      const queue = buildPracticeQueue(opts.pool, solveCount, opts.preserveOrder)
+      const queue = buildPracticeQueue(
+        opts.pool,
+        practiceCount,
+        lastAttemptedAt,
+        opts.preserveOrder,
+      )
       if (queue.length === 0) return
 
       rawPoolRef.current = opts.pool
@@ -197,7 +201,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
         immersivePref,
       )
     },
-    [user, solveCount, setIsImmersive, persistSnapshot],
+    [user, practiceCount, lastAttemptedAt, setIsImmersive, persistSnapshot],
   )
 
   const resume = useCallback(
@@ -297,15 +301,37 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     )
   }, [items, currentIndex, user?.id, sessionCorrect, returnHref, title, immersive, persistSnapshot])
 
-  const onSkip = useCallback(
-    (reason: MathSkipReason, note?: string) => {
-      const item = items[currentIndex]
-      if (!item) return
-      addSkipped(item.problem.id, reason, note)
-      onAdvance()
-    },
-    [items, currentIndex, addSkipped, onAdvance],
-  )
+  const onDeferCurrent = useCallback((): 'moved' | 'only_remaining' => {
+    const practiceSource = sourceRef.current
+    if (!practiceSource || !items[currentIndex]) return 'only_remaining'
+    const deferred = deferQueueItem(items, currentIndex)
+    if (deferred.result === 'only_remaining') {
+      persistSnapshot(
+        items,
+        currentIndex,
+        sessionCorrect,
+        'answering',
+        practiceSource,
+        returnHref,
+        title,
+        immersive,
+      )
+      return deferred.result
+    }
+    const nextItems = deferred.items
+    setItems(nextItems)
+    persistSnapshot(
+      nextItems,
+      currentIndex,
+      sessionCorrect,
+      'answering',
+      practiceSource,
+      returnHref,
+      title,
+      immersive,
+    )
+    return deferred.result
+  }, [items, currentIndex, sessionCorrect, returnHref, title, immersive, persistSnapshot])
 
   const onAnswerCorrect = useCallback(async () => {
     const item = items[currentIndex]
@@ -316,9 +342,13 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     const indexAtEntry = currentIndex
 
     try {
-      await handleSolve(item.problem.id)
-      void markResolved(item.problem.id)
-      clearSkipped(item.problem.id)
+      if (item.planAssignment) {
+        await addDoneKey(
+          item.planAssignment.planStart,
+          item.planAssignment.date,
+          item.planAssignment.assignmentId,
+        )
+      }
     } catch {
       // Sync failure must not block advancing to the next problem.
     }
@@ -349,9 +379,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     items,
     currentIndex,
     user?.id,
-    handleSolve,
-    markResolved,
-    clearSkipped,
+    addDoneKey,
     returnHref,
     title,
     immersive,
@@ -428,7 +456,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       onAnswerCorrect,
       onAnswerWrong,
       onAdvance,
-      onSkip,
+      onDeferCurrent,
       setImmersive,
       toggleImmersive,
     }),
@@ -452,7 +480,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
       onAnswerCorrect,
       onAnswerWrong,
       onAdvance,
-      onSkip,
+      onDeferCurrent,
       setImmersive,
       toggleImmersive,
     ],
@@ -475,7 +503,7 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
           onAnswerCorrect={onAnswerCorrect}
           onAnswerWrong={onAnswerWrong}
           onAdvance={onAdvance}
-          onSkip={onSkip}
+          onDeferCurrent={onDeferCurrent}
           onRestart={restart}
           onToggleImmersive={toggleImmersive}
           onSetImmersive={setImmersive}
@@ -485,4 +513,3 @@ export function PracticeQueueProvider({ children }: { children: ReactNode }) {
     </PracticeQueueContext.Provider>
   )
 }
-

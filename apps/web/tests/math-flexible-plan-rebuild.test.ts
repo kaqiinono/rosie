@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import type { Problem, ProblemSet, MathWeeklyPlanDay, MathDayProgress } from '@rosie/core'
-import { buildMathFlexiblePlan } from '@rosie/math-kit/utils/math-helpers'
+import {
+  buildMathFlexiblePlan,
+  collectOverduePlanProblems,
+  ensureMathPlanAssignmentIds,
+  isPlanProblemDone,
+} from '@rosie/math-kit/utils/math-helpers'
 
 function stubProblem(id: string, tag = 'type1', difficulty = 1): Problem {
   return {
@@ -45,7 +50,7 @@ describe('buildMathFlexiblePlan — preserve past days on rebuild', () => {
     expect(keys).toEqual(['a', 'b', 'c', 'd', 'e', 'f'])
   })
 
-  it('keeps days before freezeDate unchanged and excludes their problems from later days', () => {
+  it('keeps days through freezeDate unchanged and excludes their problems from later days', () => {
     const existingDays: MathWeeklyPlanDay[] = [
       {
         date: '2026-08-01',
@@ -124,7 +129,55 @@ describe('buildMathFlexiblePlan — preserve past days on rebuild', () => {
     expect(laterIds.sort()).toEqual(['c', 'd', 'e', 'f'])
   })
 
-  it('also freezes fully completed days on/after freezeDate', () => {
+  it('keeps an incomplete boundary day unchanged and redistributes only later problems', () => {
+    const existingDays: MathWeeklyPlanDay[] = [
+      {
+        date: '2026-08-01',
+        problems: [
+          {
+            key: `${lessonId}::a`, lessonId, section: 'lesson', index: 1,
+            title: 'a', problemId: 'a', tagLabel: 'type1',
+          },
+        ],
+        optionalProblems: [],
+      },
+      {
+        date: '2026-08-02',
+        problems: [
+          {
+            key: `${lessonId}::b`, lessonId, section: 'lesson', index: 2,
+            title: 'b', problemId: 'b', tagLabel: 'type1',
+          },
+          {
+            key: `${lessonId}::c`, lessonId, section: 'lesson', index: 3,
+            title: 'c', problemId: 'c', tagLabel: 'type1',
+          },
+        ],
+        optionalProblems: [],
+      },
+      {
+        date: '2026-08-03',
+        problems: [
+          {
+            key: `${lessonId}::d`, lessonId, section: 'lesson', index: 4,
+            title: 'd', problemId: 'd', tagLabel: 'type1',
+          },
+        ],
+        optionalProblems: [],
+      },
+    ]
+
+    const { days } = buildMathFlexiblePlan(
+      [lessonId], sectionFilters, problemSets, '2026-08-01', '2026-08-04', {}, {},
+      { existingDays, freezeDate: '2026-08-02', progress: {} },
+    )
+
+    expect(days[1]!.problems.map((p) => p.problemId)).toEqual(['b', 'c'])
+    const laterIds = days.slice(2).flatMap((d) => d.problems.map((p) => p.problemId)).sort()
+    expect(laterIds).toEqual(['d', 'e', 'f'])
+  })
+
+  it('also freezes fully completed days after freezeDate', () => {
     const existingDays: MathWeeklyPlanDay[] = [
       {
         date: '2026-08-01',
@@ -332,5 +385,65 @@ describe('buildMathFlexiblePlan — preserve past days on rebuild', () => {
     expect(laterIds).toEqual(['c', 'd', 'e'])
     expect(laterIds).not.toContain('a')
     expect(laterIds).not.toContain('b')
+  })
+})
+
+describe('math plan assignment occurrences and deferred overdue tasks', () => {
+  const lessonId = '1-99'
+  const baseDays: MathWeeklyPlanDay[] = [
+    {
+      date: '2026-08-01',
+      problems: [{
+        key: `${lessonId}::a`, lessonId, section: 'lesson', index: 1,
+        title: 'a', problemId: 'a', tagLabel: 'type1',
+      }],
+      optionalProblems: [],
+    },
+  ]
+
+  it('gives legacy occurrences stable date-scoped assignment ids', () => {
+    const days = ensureMathPlanAssignmentIds(baseDays)
+    expect(days[0]!.problems[0]!.assignmentId).toBe('2026-08-01::1-99::a')
+    expect(isPlanProblemDone(days[0]!.problems[0]!, '2026-08-01', ['1-99::a'])).toBe(true)
+    expect(
+      isPlanProblemDone(
+        days[0]!.problems[0]!,
+        '2026-08-01',
+        ['2026-08-01::1-99::a'],
+      ),
+    ).toBe(true)
+  })
+
+  it('removes a deferred source from the make-up pool while keeping its target independent', () => {
+    const source = ensureMathPlanAssignmentIds(baseDays)[0]!.problems[0]!
+    const target = {
+      ...source,
+      assignmentId: 'deferred::target-a',
+      isDeferred: true,
+      deferredFromDate: '2026-08-01',
+      deferredFromPlanStart: '2026-08-01',
+      deferredFromAssignmentId: source.assignmentId,
+      deferGeneration: 1,
+    }
+    const plan = {
+      weekStart: '2026-08-01',
+      days: [
+        { ...baseDays[0]!, problems: [source] },
+        { date: '2026-08-03', problems: [target], optionalProblems: [] },
+      ],
+      progress: {},
+      deferredBatches: [{
+        id: 'batch-1',
+        sourceDate: '2026-08-01',
+        targetDate: '2026-08-03',
+        sourceAssignmentIds: [source.assignmentId!],
+        targetAssignmentIds: [target.assignmentId],
+        deferredAt: '2026-08-02T00:00:00.000Z',
+      }],
+    }
+
+    const overdue = collectOverduePlanProblems(plan, '2026-08-04')
+    expect(overdue.map((item) => item.assignmentId)).toEqual(['deferred::target-a'])
+    expect(overdue[0]!.deferred).toBe(true)
   })
 })

@@ -146,7 +146,6 @@ async function audit() {
   console.log('=== Math lesson ID migration audit (dry-run) ===\n')
 
   const tables = [
-    'math_solved',
     'math_wrong',
     'math_favorites',
     'math_weekly_plans',
@@ -171,11 +170,11 @@ async function audit() {
     console.log(`${table}: ${error ? `error ${error.message}` : `${count ?? 0} rows`}`)
   }
 
-  const { data: solvedSample } = await supabase
-    .from('math_solved')
+  const { data: attemptSample } = await supabase
+    .from('math_practice_attempts')
     .select('problem_id')
     .limit(5)
-  console.log('\nmath_solved sample:', solvedSample?.map((r) => r.problem_id))
+  console.log('\nmath_practice_attempts sample:', attemptSample?.map((r) => r.problem_id))
 
   const { data: plans } = await supabase
     .from('math_weekly_plans')

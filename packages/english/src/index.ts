@@ -43,6 +43,7 @@ export * from './utils/adaptivePlanQuizTypes'
 export {
   buildDailyTask,
   summarizeAdaptiveTodayProgress,
+  applyAdaptiveDailyProgress,
 } from './utils/adaptivePlanScheduler'
 export type { AdaptiveDailyTask } from './utils/adaptivePlanScheduler'
 export * from './utils/adaptivePlanSimulate'

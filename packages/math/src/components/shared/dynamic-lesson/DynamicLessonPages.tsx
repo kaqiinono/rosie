@@ -17,7 +17,7 @@ import { syncWrongBookFromAttempts } from '@rosie/math-kit/utils/math-scratch-db
 import { lessonDisplayLabelFromRegistry } from '@rosie/math-kit/utils/lesson-registry'
 import { findHelpProblems } from '@rosie/math-kit/utils/practice-help-problems'
 import { useLessonRoute } from './LessonRouteContext'
-import type { MasteryFilter, PracticeFilter, SkipReasonFilter } from '@rosie/math-kit/components/shared/FilterPanel'
+import type { MasteryFilter, PracticeFilter } from '@rosie/math-kit/components/shared/FilterPanel'
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
 
@@ -32,7 +32,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 function SectionListPage({ section }: { section: SectionKey }) {
   const { module, basePath, entry } = useLessonRoute()
   const problemSet = module.PROBLEMS
-  const { solveCount } = module.useLesson()
+  const { practiceCount, correctCount } = module.useLesson()
   const startPractice = useStartPracticeQueue()
   const [showDetail, setShowDetail] = useState(false)
   const [autoExpand, setAutoExpand] = useState(false)
@@ -40,8 +40,8 @@ function SectionListPage({ section }: { section: SectionKey }) {
     () => (problemSet[section] ?? []) as typeof problemSet.lesson,
     [problemSet, section],
   )
-  const attempted = list.filter((p) => (solveCount[p.id] ?? 0) >= 1).length
-  const mastered = list.filter((p) => (solveCount[p.id] ?? 0) >= 3).length
+  const attempted = list.filter((p) => (practiceCount[p.id] ?? 0) >= 1).length
+  const mastered = list.filter((p) => (correctCount[p.id] ?? 0) >= 3).length
   const total = list.length
   const label = lessonDisplayLabelFromRegistry(entry.lessonKey, true)
   const sectionPath = `${basePath}/${section}`
@@ -52,9 +52,9 @@ function SectionListPage({ section }: { section: SectionKey }) {
       section,
       lessonId: entry.lessonKey,
       detailHref: `${sectionPath}/${idx + 1}`,
-      helpProblems: findHelpProblems(problemSet, problem),
+      helpProblems: findHelpProblems(problemSet, problem, practiceCount),
     }))
-  }, [list, section, entry.lessonKey, sectionPath, problemSet])
+  }, [list, section, entry.lessonKey, sectionPath, problemSet, practiceCount])
 
   const beginPractice = useCallback(
     (initialProblemId?: string) => {
@@ -144,7 +144,8 @@ function SectionListPage({ section }: { section: SectionKey }) {
       </div>
       <LessonProblemList
         problems={list}
-        solveCount={solveCount}
+        practiceCount={practiceCount}
+        correctCount={correctCount}
         basePath={sectionPath}
         lessonId={entry.lessonKey}
         tagStyles={module.TAG_STYLE}
@@ -159,7 +160,7 @@ function SectionListPage({ section }: { section: SectionKey }) {
 
 function AlltestContent() {
   const { module } = useLessonRoute()
-  const { solveCount } = module.useLesson()
+  const { practiceCount, correctCount } = module.useLesson()
   const searchParams = useSearchParams()
   const typeParam = searchParams.get('type')
 
@@ -173,7 +174,6 @@ function AlltestContent() {
       type: typeParam ? new Set([typeParam]) : allTags,
       mastery: 'all' as MasteryFilter,
       practice: 'all' as PracticeFilter,
-      skipReason: 'all' as SkipReasonFilter,
       difficulty: new Set<ProblemDifficulty>([1, 2, 3, 4, 5]),
     }
   })
@@ -200,26 +200,32 @@ function AlltestContent() {
   return (
     <module.FilterPanel
       problems={module.PROBLEMS}
-      solveCount={solveCount}
+      practiceCount={practiceCount}
+      correctCount={correctCount}
       filters={filters}
       onToggleFilter={toggleFilter}
       onSetMastery={(value: MasteryFilter) => setFilters((f) => ({ ...f, mastery: value }))}
       onSetPractice={(value: PracticeFilter) => setFilters((f) => ({ ...f, practice: value }))}
-      onSetSkipReason={(value: SkipReasonFilter) => setFilters((f) => ({ ...f, skipReason: value }))}
     />
   )
 }
 
 export function DynamicLessonHomePage() {
   const { module } = useLessonRoute()
-  const { solveCount } = module.useLesson()
-  return <module.HomePage problems={module.PROBLEMS} solveCount={solveCount} />
+  const { practiceCount, correctCount } = module.useLesson()
+  return (
+    <module.HomePage
+      problems={module.PROBLEMS}
+      practiceCount={practiceCount}
+      correctCount={correctCount}
+    />
+  )
 }
 
 export function DynamicLessonMistakesPage() {
   const { user } = useAuth()
   const { module, basePath, entry } = useLessonRoute()
-  const { wrongIds, solveCount } = module.useLesson()
+  const { wrongIds, practiceCount, correctCount } = module.useLesson()
 
   useEffect(() => {
     if (!user) return
@@ -237,7 +243,8 @@ export function DynamicLessonMistakesPage() {
       problems={module.PROBLEMS}
       tagStyle={module.TAG_STYLE}
       wrongIds={wrongIds}
-      solveCount={solveCount}
+      practiceCount={practiceCount}
+      correctCount={correctCount}
     />
   )
 }

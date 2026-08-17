@@ -17,7 +17,7 @@ type ScratchPadAnswerPanelProps = {
   mode: 'practice' | 'quiz'
   initialAnswer?: unknown
   onAnswerDraftChange: (snapshot: unknown) => void
-  onSubmitResult?: (correct: boolean, snapshot: unknown) => void
+  onSubmitResult?: (correct: boolean, snapshot: unknown) => void | Promise<void>
   buttonClassName?: string
   /** 答题区导出容器（由浮层顶栏「加入画布」使用） */
   exportHostRef?: RefObject<HTMLDivElement | null>
@@ -42,6 +42,7 @@ export default function ScratchPadAnswerPanel({
   const [interactiveState, setInteractiveState] = useState<unknown>(undefined)
   const [interactiveTouched, setInteractiveTouched] = useState(false)
   const [feedback, setFeedback] = useState<AnswerCheckResult | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     setFeedback(null)
@@ -65,14 +66,26 @@ export default function ScratchPadAnswerPanel({
   )
 
   const runCheck = useCallback(
-    (input: unknown) => {
-      if (mode === 'quiz') return
+    async (input: unknown) => {
+      if (mode === 'quiz' || submitting) return
       const result = checkProblemAnswer(problem, input)
       if (!result.message && !result.ok) return
-      setFeedback(result)
-      onSubmitResult?.(result.ok, input)
+      if (!onSubmitResult) {
+        setFeedback(result)
+        return
+      }
+      setSubmitting(true)
+      setFeedback(null)
+      try {
+        await onSubmitResult(result.ok, input)
+        setFeedback(result)
+      } catch {
+        setFeedback({ ok: false, message: '记录失败，请稍后重试' })
+      } finally {
+        setSubmitting(false)
+      }
     },
-    [mode, problem, onSubmitResult],
+    [mode, problem, onSubmitResult, submitting],
   )
 
   const handleCheck = useCallback(() => {
@@ -113,10 +126,10 @@ export default function ScratchPadAnswerPanel({
           <button
             type="button"
             onClick={handleCheck}
-            disabled={!interactiveTouched}
+            disabled={!interactiveTouched || submitting}
             className={`mt-2 w-full cursor-pointer rounded-full px-4 py-2 text-[12px] font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-40 ${buttonClassName}`}
           >
-            检查答案
+            {submitting ? '记录中…' : '检查答案'}
           </button>
         )}
         {mode === 'quiz' && interactiveTouched && (

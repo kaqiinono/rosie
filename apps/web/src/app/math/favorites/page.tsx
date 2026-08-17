@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useAuth, getMasteryLevel, MASTERY_ICON } from '@rosie/core'
 import { BackLink } from '@rosie/ui'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
 import {
   resolveFavoriteProblems,
@@ -17,7 +17,7 @@ import { seaPoolToQueueItems } from '@rosie/math-kit/utils/practice-queue-from-s
 
 export default function MathFavoritesPage() {
   const { user } = useAuth()
-  const { solveCount } = useMathSolved(user)
+  const { practiceCount, correctCount } = useMathPracticeStats(user)
   const { favorites } = useMathFavoritesContext()
   const startPractice = useStartPracticeQueue()
 
@@ -74,8 +74,8 @@ export default function MathFavoritesPage() {
               </div>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {group.items.map((sp) => {
-                  const count = solveCount[sp.problem.id] ?? 0
-                  const level = getMasteryLevel(count)
+                  const count = practiceCount[sp.problem.id] ?? 0
+                  const level = getMasteryLevel(correctCount[sp.problem.id] ?? 0)
                   return (
                     <button
                       key={`${sp.lessonId}-${sp.section}-${sp.problem.id}`}

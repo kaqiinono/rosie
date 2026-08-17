@@ -21,7 +21,7 @@ lifecycle through `ProblemWorkspaceRuntimeProvider` while rendering the register
 It resolves uploaded/static analysis images and enables trusted lesson-data HTML; keep the pure
 visual layer in UI so the AI package can reuse it without depending on math-kit.
 
-- `hooks/**` — `useMathSolved/Wrong/Skipped/RotatingReview/WeeklyLessonReview/WeeklyPlan`,
+- `hooks/**` — `useMathPracticeStats/Wrong/RotatingReview/WeeklyLessonReview/WeeklyPlan`,
   `useProblemAnswer/Mastery/Notes`, `useMathFavorites`, image/notes hooks, `math-scratch-types`.
 - `utils/**` — generic helpers only: `check-problem-answer`, `math-helpers`, `math-practice-attempt`,
   `math-scratch-db`, `lesson-registry`, `lesson-grade`, `practice-queue-types`, `submitPracticeAttempt`,

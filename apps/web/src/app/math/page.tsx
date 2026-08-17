@@ -12,12 +12,12 @@ import MathMistakesCard from '@rosie/math/components/MathMistakesCard'
 import { gradesForLanding, GRADE_LABEL, lessonsForGrade } from '@rosie/math-kit/utils/lesson-grade'
 import { gradeCourseSummary } from '@rosie/math-kit/utils/courses-data'
 import { gradeProblemStats } from '@rosie/math/utils/grade-stats'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useAuth } from '@rosie/core'
 
 export default function MathPage() {
     const { user } = useAuth()
-    const { solveCount } = useMathSolved(user)
+    const { practiceCount } = useMathPracticeStats(user)
     const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
     const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
     return (
@@ -48,7 +48,7 @@ export default function MathPage() {
                     </div>
                     <section className="grid w-full grid-cols-1 gap-4 min-[501px]:grid-cols-2">
                         {gradesForLanding().map((g) => {
-                            const { total, practiced } = gradeProblemStats(g, solveCount)
+                            const { total, practiced } = gradeProblemStats(g, practiceCount)
                             return (
                                 <GradeCard
                                     key={g}

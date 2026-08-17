@@ -107,6 +107,7 @@ export default function QuestionLayout({
     defaultSolutionOpen && effectiveSolutionAvailable,
   )
   const solutionRef = useRef<HTMLDivElement>(null)
+  const solutionScrollRequestedRef = useRef(false)
   const [solutionHeight, setSolutionHeight] = useState(0)
   // Reference-counted rather than a boolean reset by an effect: the claim happens in a
   // child's layout effect while any reset would run in the parent's, which always comes
@@ -124,12 +125,24 @@ export default function QuestionLayout({
   useEffect(() => {
     const el = solutionRef.current
     if (!el || !solutionOpen) return
+    let scrollFrame: number | null = null
 
     const measure = () => {
       const nextHeight = el.scrollHeight
       setSolutionHeight((prev) => (prev === nextHeight ? prev : nextHeight))
     }
     measure()
+
+    if (solutionScrollRequestedRef.current) {
+      solutionScrollRequestedRef.current = false
+      scrollFrame = window.requestAnimationFrame(() => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        el.scrollIntoView({
+          behavior: reduceMotion ? 'auto' : 'smooth',
+          block: 'nearest',
+        })
+      })
+    }
 
     const ro = new ResizeObserver(measure)
     ro.observe(el)
@@ -140,10 +153,18 @@ export default function QuestionLayout({
     })
 
     return () => {
+      if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame)
       ro.disconnect()
       el.querySelectorAll('img').forEach((img) => img.removeEventListener('load', onImageLoad))
     }
   }, [problemId, solutionOpen])
+
+  const toggleSolution = useCallback(() => {
+    setSolutionOpen((open) => {
+      if (!open) solutionScrollRequestedRef.current = true
+      return !open
+    })
+  }, [])
 
   const claim = useCallback(() => {
     setClaimCount((c) => c + 1)
@@ -170,7 +191,7 @@ export default function QuestionLayout({
         <button
           type="button"
           className={`ql-toggle-btn ${solutionOpen ? 'ql-toggle-btn--open' : ''}`}
-          onClick={() => setSolutionOpen((v) => !v)}
+          onClick={toggleSolution}
           aria-expanded={solutionOpen}
         >
           <span className="ql-toggle-text">{solutionOpen ? '收起题解' : '查看题解'}</span>
@@ -180,7 +201,7 @@ export default function QuestionLayout({
         </button>
       ),
     }
-  }, [toggleEnabled, solutionOpen, claim])
+  }, [toggleEnabled, solutionOpen, claim, toggleSolution])
 
   const toggleButton = toggleCtx?.node ?? null
 

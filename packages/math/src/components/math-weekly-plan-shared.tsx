@@ -3,13 +3,13 @@
 import { useMemo, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import {
   MATH_PLAN_SECTIONS,
   planEndDate,
   planProblemAnswerStatus,
-  planProblemExecStatus,
+  isPlanProblemDone,
 } from '@rosie/math-kit/utils/math-helpers'
 import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
@@ -560,7 +560,7 @@ export function PlanPreviewCalendar({
   onPracticeProblem,
 }: PlanPreviewCalendarProps) {
   const { user } = useAuth()
-  const { solveCount } = useMathSolved(user)
+  const { practiceCount } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const controlled = onSelectDate != null
   const end = planEndDate(plan)
@@ -679,6 +679,19 @@ export function PlanPreviewCalendar({
             const compactChips = uniqueDayTypeChips(problems, problemSets, { compact: true })
             const fullChips = uniqueDayTypeChips(problems, problemSets)
             const isSelected = selectedDate === cell.date
+            const dayDoneKeys = plan.progress[cell.date]?.doneKeys ?? []
+            const doneCount = problems.filter((problem) =>
+              isPlanProblemDone(problem, cell.date!, dayDoneKeys),
+            ).length
+            const isComplete = problems.length > 0 && doneCount === problems.length
+            const isOverdueDay = cell.date < todayStr() && !isComplete
+            const isDeferredDay = problems.some((problem) => problem.isDeferred)
+            const deferredSourceIds = new Set(
+              (plan.deferredBatches ?? []).flatMap((batch) => batch.sourceAssignmentIds),
+            )
+            const isDeferredSourceDay = problems.some((problem) =>
+              deferredSourceIds.has(problem.assignmentId ?? `${cell.date}::${problem.key}`),
+            )
             return (
               <button
                 type="button"
@@ -694,11 +707,23 @@ export function PlanPreviewCalendar({
                 style={{
                   background: isSelected
                     ? 'rgba(251,146,60,.22)'
+                    : isComplete
+                      ? 'rgba(134,239,172,.45)'
+                      : isOverdueDay
+                        ? 'rgba(254,202,202,.55)'
+                        : isDeferredDay
+                          ? 'rgba(221,214,254,.6)'
                     : problems.length > 0
                       ? 'rgba(251,146,60,.1)'
                       : 'rgba(251,146,60,.04)',
                   border: isSelected
                     ? '2px solid rgba(234,88,12,.55)'
+                    : isComplete
+                      ? '1.5px solid rgba(34,197,94,.55)'
+                      : isOverdueDay
+                        ? '1.5px solid rgba(239,68,68,.5)'
+                        : isDeferredDay
+                          ? '1.5px solid rgba(124,58,237,.45)'
                     : '1px solid rgba(251,146,60,.22)',
                   boxShadow: isSelected ? '0 2px 10px rgba(249,115,22,.2)' : 'none',
                 }}
@@ -711,6 +736,11 @@ export function PlanPreviewCalendar({
                     </span>
                   )}
                 </div>
+                {problems.length > 0 && (
+                  <div className="mt-0.5 text-[8px] font-extrabold" style={{ color: isComplete ? '#15803d' : isOverdueDay ? '#dc2626' : isDeferredDay ? '#7c3aed' : '#c2410c' }}>
+                    {isComplete ? (isDeferredDay ? '延期完成' : '已完成') : isDeferredSourceDay ? '过期·已延期' : isOverdueDay ? '已过期' : isDeferredDay ? '延期任务' : `未执行 ${doneCount}/${problems.length}`}
+                  </div>
+                )}
                 {/* Mobile: lesson only (e.g. 7数字谜). Desktop: include tagLabel. */}
                 <DayCellChipStack
                   chips={compactChips}
@@ -756,8 +786,11 @@ export function PlanPreviewCalendar({
               const full = resolveFullProblem(prob, problemSets)
               const typeChip = mathPlanProblemTypeChip(prob, problemSets)
               const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
-              const exec = planProblemExecStatus(prob.key, selectedDoneKeys)
-              const answer = planProblemAnswerStatus(prob.problemId, { wrongIds, solveCount })
+              const exec = isPlanProblemDone(prob, selectedDate!, selectedDoneKeys) ? 'done' : 'pending'
+              const answer = planProblemAnswerStatus(prob.problemId, {
+                wrongIds,
+                practiceCount,
+              })
               const isOverdue = Boolean(selectedDate && selectedDate < todayStr() && exec === 'pending')
               return (
                 <article
@@ -786,6 +819,14 @@ export function PlanPreviewCalendar({
                       color={exec === 'done' ? '#15803d' : '#c2410c'}
                       border={exec === 'done' ? 'rgba(34,197,94,.35)' : 'rgba(249,115,22,.35)'}
                     />
+                    {prob.isDeferred && (
+                      <StatusChip
+                        label={`延期自 ${fmtDate(prob.deferredFromDate ?? '')}`}
+                        bg="rgba(124,58,237,.12)"
+                        color="#6d28d9"
+                        border="rgba(124,58,237,.3)"
+                      />
+                    )}
                     <StatusChip
                       label={
                         answer === 'wrong' ? '答题·错题' : answer === 'practiced' ? '答题·已练' : '答题·未练'
@@ -962,6 +1003,7 @@ export function ProblemCard({
   problemSets,
   hasDraft,
   overdueDate,
+  deferredSource,
 }: {
   prob: MathPlanProblem
   done: boolean
@@ -975,21 +1017,25 @@ export function ProblemCard({
   hasDraft?: boolean
   /** ISO date when this card is an overdue make-up item. */
   overdueDate?: string
+  /** Historical occurrence already copied to a later independent assignment. */
+  deferredSource?: boolean
 }) {
   const { user } = useAuth()
-  const { solveCount } = useMathSolved(user)
-  const practiceCount = solveCount[prob.problemId] ?? 0
+  const { practiceCount } = useMathPracticeStats(user)
+  const problemPracticeCount = practiceCount[prob.problemId] ?? 0
   const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
   const draftProblem = problemSets ? resolveMathPlanProblem(prob, problemSets) : undefined
-  const answerLabel = isWrong ? '答题·错题' : practiceCount > 0 ? '答题·已练' : '答题·未练'
-  const execLabel = done ? '执行·已完成' : overdueDate ? '执行·过期未做' : '执行·未做'
+  const answerLabel = isWrong ? '答题·错题' : problemPracticeCount > 0 ? '答题·已练' : '答题·未练'
+  const execLabel = done
+    ? prob.isDeferred ? '执行·延期完成' : '执行·已完成'
+    : deferredSource ? '执行·过期已延期' : overdueDate ? '执行·过期未做' : prob.isDeferred ? '执行·延期任务' : '执行·未做'
 
   return (
     <div
       className="group flex items-center gap-3 rounded-[14px] px-4 py-3 transition-all duration-300"
       style={{
-        background: done ? 'rgba(220,252,231,.6)' : isWrong ? 'rgba(254,226,226,.5)' : 'rgba(255,255,255,.85)',
-        border: `1.5px solid ${done ? '#86efac' : isWrong ? 'rgba(239,68,68,.35)' : overdueDate ? 'rgba(239,68,68,.28)' : 'rgba(0,0,0,.07)'}`,
+        background: done ? 'rgba(220,252,231,.6)' : prob.isDeferred ? 'rgba(245,243,255,.88)' : isWrong ? 'rgba(254,226,226,.5)' : 'rgba(255,255,255,.85)',
+        border: `1.5px solid ${done ? '#86efac' : prob.isDeferred ? 'rgba(124,58,237,.38)' : isWrong ? 'rgba(239,68,68,.35)' : overdueDate ? 'rgba(239,68,68,.28)' : 'rgba(0,0,0,.07)'}`,
         boxShadow: done ? 'none' : '0 2px 10px rgba(0,0,0,.04)',
       }}
     >
@@ -1042,6 +1088,11 @@ export function ProblemCard({
               {fmtDate(overdueDate)} 欠
             </span>
           )}
+          {prob.isDeferred && (
+            <span className="rounded-full px-1.5 py-px text-[9px] font-extrabold" style={{ background: 'rgba(124,58,237,.12)', color: '#6d28d9' }}>
+              延期自 {fmtDate(prob.deferredFromDate ?? '')}
+            </span>
+          )}
           {isReview && (
             <span
               className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
@@ -1064,15 +1115,15 @@ export function ProblemCard({
             style={{
               background: isWrong
                 ? 'rgba(239,68,68,.12)'
-                : practiceCount > 0
+                : problemPracticeCount > 0
                   ? 'rgba(59,130,246,.12)'
                   : 'rgba(0,0,0,.05)',
-              color: isWrong ? '#dc2626' : practiceCount > 0 ? '#1d4ed8' : '#6b7280',
+              color: isWrong ? '#dc2626' : problemPracticeCount > 0 ? '#1d4ed8' : '#6b7280',
             }}
           >
             {answerLabel}
           </span>
-          <PracticeCountBadge count={practiceCount} />
+          <PracticeCountBadge count={problemPracticeCount} />
         </div>
       </div>
 

@@ -23,20 +23,16 @@ function bossPackLimit(plan: AdaptiveWordPlan): number {
 
 /** Active rows only — excludes soft-archived progress. */
 function activeRows(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
-  return rows.filter(row => row.archivedAt == null)
+  return rows.filter((row) => row.archivedAt == null)
 }
 
 /** Due = LEARNING && nextReviewDate != null && nextReviewDate <= today (lexicographic DATE strings). */
 export function isDue(row: AdaptivePlanWordProgress, today: string): boolean {
-  return (
-    row.status === 'LEARNING' &&
-    row.nextReviewDate != null &&
-    row.nextReviewDate <= today
-  )
+  return row.status === 'LEARNING' && row.nextReviewDate != null && row.nextReviewDate <= today
 }
 
 export function countDueLearning(rows: AdaptivePlanWordProgress[], today: string): number {
-  return activeRows(rows).filter(row => isDue(row, today)).length
+  return activeRows(rows).filter((row) => isDue(row, today)).length
 }
 
 /** §5.2.2 priority: PENDING target 3 → PENDING target 1 → NOT_STARTED. */
@@ -48,12 +44,12 @@ export function pickActivations(
   if (limit <= 0) return []
 
   const pending3 = activeRows(rows).filter(
-    row => row.status === 'LEARNING_PENDING' && row.targetBox === 3,
+    (row) => row.status === 'LEARNING_PENDING' && row.targetBox === 3,
   )
   const pending1 = activeRows(rows).filter(
-    row => row.status === 'LEARNING_PENDING' && row.targetBox === 1,
+    (row) => row.status === 'LEARNING_PENDING' && row.targetBox === 1,
   )
-  const notStarted = activeRows(rows).filter(row => row.status === 'NOT_STARTED')
+  const notStarted = activeRows(rows).filter((row) => row.status === 'NOT_STARTED')
 
   const picked: AdaptivePlanWordProgress[] = []
   for (const pool of [pending3, pending1, notStarted]) {
@@ -66,27 +62,19 @@ export function pickActivations(
 }
 
 /** Words already activated today — they consume the daily new-word quota (§4.3). */
-export function countActivatedToday(
-  rows: AdaptivePlanWordProgress[],
-  today: string,
-): number {
-  return activeRows(rows).filter(row => row.introducedOn === today).length
+export function countActivatedToday(rows: AdaptivePlanWordProgress[], today: string): number {
+  return activeRows(rows).filter((row) => row.introducedOn === today).length
 }
 
 function countStubbornLearning(rows: AdaptivePlanWordProgress[]): number {
-  return activeRows(rows).filter(
-    row => row.status === 'LEARNING' && row.streakWrong >= 2,
-  ).length
+  return activeRows(rows).filter((row) => row.status === 'LEARNING' && row.streakWrong >= 2).length
 }
 
 function isQuantitativeBossTrigger(plan: AdaptiveWordPlan): boolean {
   // Require real progress — a brand-new plan (0 activated) must never enter Boss.
-  const sinceBoss =
-    plan.stats.totalActivatedCount - plan.stats.lastBossActivatedCount
+  const sinceBoss = plan.stats.totalActivatedCount - plan.stats.lastBossActivatedCount
   return (
-    plan.stats.totalActivatedCount > 0 &&
-    plan.bossEveryNNew > 0 &&
-    sinceBoss >= plan.bossEveryNNew
+    plan.stats.totalActivatedCount > 0 && plan.bossEveryNNew > 0 && sinceBoss >= plan.bossEveryNNew
   )
 }
 
@@ -125,18 +113,12 @@ function compareDateStrings(a: string | null, b: string | null): number {
 }
 
 /** Soonest due first for review pool. */
-function sortDueReviews(
-  rows: AdaptivePlanWordProgress[],
-): AdaptivePlanWordProgress[] {
-  return [...rows].sort(
-    (a, b) => compareDateStrings(a.nextReviewDate, b.nextReviewDate),
-  )
+function sortDueReviews(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
+  return [...rows].sort((a, b) => compareDateStrings(a.nextReviewDate, b.nextReviewDate))
 }
 
 /** Boss pack: high streakWrong, soonest nextReviewDate, then recently introduced. */
-function sortBossCandidates(
-  rows: AdaptivePlanWordProgress[],
-): AdaptivePlanWordProgress[] {
+function sortBossCandidates(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
   return [...rows].sort((a, b) => {
     if (b.streakWrong !== a.streakWrong) {
       return b.streakWrong - a.streakWrong
@@ -153,16 +135,16 @@ function pickDueReviewKeys(
   today: string,
   reviewCap: number,
 ): string[] {
-  const due = sortDueReviews(activeRows(rows).filter(row => isDue(row, today)))
-  return due.slice(0, reviewCap).map(row => row.wordKey)
+  const due = sortDueReviews(activeRows(rows).filter((row) => isDue(row, today)))
+  return due.slice(0, reviewCap).map((row) => row.wordKey)
 }
 
 function pickBossKeys(rows: AdaptivePlanWordProgress[], limit: number): string[] {
   const cap = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : BOSS_PACK_LIMIT_FALLBACK
-  const learning = activeRows(rows).filter(row => row.status === 'LEARNING')
+  const learning = activeRows(rows).filter((row) => row.status === 'LEARNING')
   return sortBossCandidates(learning)
     .slice(0, cap)
-    .map(row => row.wordKey)
+    .map((row) => row.wordKey)
 }
 
 export function buildDailyTask(
@@ -258,15 +240,11 @@ export function summarizeAdaptiveTodayProgress(
   // Goal met + no mandatory review/boss work. Extra activateKeys (提前学) do
   // not keep the card in an incomplete state.
   const allDone =
-    goalMet &&
-    unfinishedCount === 0 &&
-    task.reviewKeys.length === 0 &&
-    task.mode !== 'boss'
+    goalMet && unfinishedCount === 0 && task.reviewKeys.length === 0 && task.mode !== 'boss'
 
   const newDone = Math.min(newGoal, settled)
   const newRemaining = Math.max(0, newGoal - newDone)
-  const dueRemaining =
-    task.mode === 'boss' ? task.bossKeys.length : task.reviewKeys.length
+  const dueRemaining = task.mode === 'boss' ? task.bossKeys.length : task.reviewKeys.length
 
   // When finished, show the new-word goal as the completed quota. While work
   // remains, keep done + remaining === total (reviews inflate the denominator).
@@ -299,6 +277,33 @@ export function summarizeAdaptiveTodayProgress(
   }
 }
 
+export type AdaptiveDailyProgressSnapshot = {
+  newGoal: number
+  reviewGoal: number
+  newDone: number
+  reviewDone: number
+  allDone: boolean
+}
+
+/** Prefer the immutable daily ledger over mutable box-state inference when available. */
+export function applyAdaptiveDailyProgress(
+  inferred: ReturnType<typeof summarizeAdaptiveTodayProgress>,
+  daily: AdaptiveDailyProgressSnapshot | null,
+): ReturnType<typeof summarizeAdaptiveTodayProgress> {
+  if (!daily) return inferred
+  const total = Math.max(0, daily.newGoal) + Math.max(0, daily.reviewGoal)
+  const done = Math.min(total, Math.max(0, daily.newDone) + Math.max(0, daily.reviewDone))
+  return {
+    ...inferred,
+    done: daily.allDone ? total : done,
+    total,
+    allDone: daily.allDone,
+    subtitle: daily.allDone
+      ? '今日任务已完成'
+      : `已完成 ${done}/${total} · 新词 ${daily.newDone}/${daily.newGoal} · 复习 ${daily.reviewDone}/${daily.reviewGoal}`,
+  }
+}
+
 /** §5.7 — completable when no active learning pipeline and no open session. */
 export function isPlanCompletable(
   rows: AdaptivePlanWordProgress[],
@@ -308,7 +313,7 @@ export function isPlanCompletable(
 
   const active = activeRows(rows)
   return !active.some(
-    row =>
+    (row) =>
       row.status === 'NOT_STARTED' ||
       row.status === 'LEARNING_PENDING' ||
       row.status === 'LEARNING',

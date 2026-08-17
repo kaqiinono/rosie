@@ -3,12 +3,21 @@
 import { useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, getWeekStart, supabase, todayStr } from '@rosie/core'
-import type { MathWeeklyPlan, MathDayProgress } from '@rosie/core'
-import { planEndDate } from '@rosie/math-kit/utils/math-helpers'
+import type { MathWeeklyPlan, MathDayProgress, MathDeferredBatch } from '@rosie/core'
+import {
+  addPlanDays,
+  collectOverduePlanProblems,
+  ensureMathPlanAssignmentIds,
+  isPlanProblemDone,
+  planEndDate,
+} from '@rosie/math-kit/utils/math-helpers'
 
 const SYSTEM_DEFAULTS = { weekStartDay: 4, problemsPerDay: 3 }
 
-type PlanMeta = Pick<MathWeeklyPlan, 'planEnd' | 'name' | 'lessonIds' | 'sectionFilters' | 'tagFilters'>
+type PlanMeta = Pick<
+  MathWeeklyPlan,
+  'planEnd' | 'originalPlanEnd' | 'deferredBatches' | 'name' | 'lessonIds' | 'sectionFilters' | 'tagFilters'
+>
 
 type ProgressPayload = Record<string, MathDayProgress | PlanMeta | undefined> & {
   __planMeta?: PlanMeta
@@ -25,6 +34,8 @@ function withPlanMeta(plan: MathWeeklyPlan): ProgressPayload {
     ...plan.progress,
     __planMeta: {
       planEnd: plan.planEnd,
+      originalPlanEnd: plan.originalPlanEnd,
+      deferredBatches: plan.deferredBatches,
       name: plan.name,
       lessonIds: plan.lessonIds,
       sectionFilters: plan.sectionFilters,
@@ -41,11 +52,13 @@ async function loadAllPlansFromCloud(userId: string): Promise<MathWeeklyPlan[]> 
       .eq('user_id', userId)
     if (!data) return []
     return data.map((row) => {
-      const days = row.plan_data as MathWeeklyPlan['days']
+      const days = ensureMathPlanAssignmentIds(row.plan_data as MathWeeklyPlan['days'])
       const { progress, meta } = stripPlanMeta((row.progress_data as ProgressPayload) ?? {})
       return {
         weekStart: row.week_start,
         planEnd: meta?.planEnd,
+        originalPlanEnd: meta?.originalPlanEnd,
+        deferredBatches: meta?.deferredBatches,
         name: meta?.name,
         lessonId: row.lesson_id,
         lessonIds: meta?.lessonIds,
@@ -92,10 +105,13 @@ export const mathWeeklyPlansStore = createUserSessionStore<MathWeeklyPlan[]>('ma
 export function useMathWeeklyPlan(user: User | null) {
   const { data: plansState, isLoading } = mathWeeklyPlansStore.useSessionData(user)
 
-  const weeklyPlan = useMemo(() => {
+  const activePlans = useMemo(() => {
     const t = todayStr()
-    return plansState.find((plan) => plan.weekStart <= t && t <= planEndDate(plan)) ?? null
+    return plansState
+      .filter((plan) => plan.weekStart <= t && t <= planEndDate(plan))
+      .sort((a, b) => a.weekStart.localeCompare(b.weekStart))
   }, [plansState])
+  const weeklyPlan = activePlans[0] ?? null
 
   const priorPlans = useMemo(
     () => plansState.filter((p) => p !== weeklyPlan),
@@ -119,35 +135,37 @@ export function useMathWeeklyPlan(user: User | null) {
   const savePlan = useCallback(
     async (plan: MathWeeklyPlan) => {
       if (!user) return
+      const normalized = { ...plan, days: ensureMathPlanAssignmentIds(plan.days) }
       mathWeeklyPlansStore.patchSessionData(user.id, (prev) => {
-        const idx = prev.findIndex((p) => p.weekStart === plan.weekStart)
+        const idx = prev.findIndex((p) => p.weekStart === normalized.weekStart)
         if (idx >= 0) {
           const copy = [...prev]
-          copy[idx] = plan
+          copy[idx] = normalized
           return copy
         }
-        return [...prev, plan]
+        return [...prev, normalized]
       })
-      await saveToCloud(user.id, plan)
+      await saveToCloud(user.id, normalized)
     },
     [user],
   )
 
   const addDoneKey = useCallback(
-    async (date: string, key: string) => {
+    async (planStart: string, date: string, assignmentId: string) => {
       if (!user) return
       let updatedPlan: MathWeeklyPlan | null = null
       mathWeeklyPlansStore.patchSessionData(user.id, (prev) => {
-        const idx = prev.findIndex((plan) => plan.days.some((d) => d.date === date))
+        const idx = prev.findIndex((plan) => plan.weekStart === planStart)
         if (idx < 0) return prev
         const plan = prev[idx]
         const existing = plan.progress[date] ?? { doneKeys: [] }
-        if (existing.doneKeys.includes(key)) return prev
+        if (existing.doneKeys.includes(assignmentId)) return prev
         const now = new Date().toISOString()
         const dayPlan = plan.days.find((d) => d.date === date)
-        const newDoneKeys = [...existing.doneKeys, key]
-        const allRequired = dayPlan?.problems.map((p) => p.key) ?? []
-        const allDone = allRequired.every((k) => newDoneKeys.includes(k))
+        const newDoneKeys = [...existing.doneKeys, assignmentId]
+        const allDone = dayPlan?.problems.every((p) =>
+          isPlanProblemDone(p, date, newDoneKeys),
+        ) ?? false
         updatedPlan = {
           ...plan,
           progress: {
@@ -166,6 +184,80 @@ export function useMathWeeklyPlan(user: User | null) {
     },
     [user],
   )
+
+  const postponeAllOverdue = useCallback(async (): Promise<{
+    problemCount: number
+    batchCount: number
+    newEndDates: Record<string, string>
+  }> => {
+    if (!user) return { problemCount: 0, batchCount: 0, newEndDates: {} }
+    const today = todayStr()
+    const updatedPlans: MathWeeklyPlan[] = []
+    let problemCount = 0
+    let batchCount = 0
+    const newEndDates: Record<string, string> = {}
+
+    mathWeeklyPlansStore.patchSessionData(user.id, (prev) => prev.map((rawPlan) => {
+      const plan = { ...rawPlan, days: ensureMathPlanAssignmentIds(rawPlan.days) }
+      const overdue = collectOverduePlanProblems(plan, today)
+      if (overdue.length === 0) return plan
+
+      const byDate = new Map<string, typeof overdue>()
+      for (const item of overdue) {
+        const list = byDate.get(item.date) ?? []
+        list.push(item)
+        byDate.set(item.date, list)
+      }
+
+      const currentEnd = planEndDate(plan)
+      let targetDate = addPlanDays(currentEnd < today ? today : currentEnd, 1)
+      const generationBase = (plan.deferredBatches ?? []).length + 1
+      const newDays = [...plan.days]
+      const newBatches: MathDeferredBatch[] = [...(plan.deferredBatches ?? [])]
+      let batchIndex = 0
+
+      for (const [sourceDate, items] of [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+        const targetProblems = items.map(({ problem, assignmentId }) => ({
+          ...problem,
+          assignmentId: `deferred::${plan.weekStart}::${targetDate}::${assignmentId}`,
+          isDeferred: true,
+          deferredFromDate: sourceDate,
+          deferredFromPlanStart: plan.weekStart,
+          deferredFromAssignmentId: assignmentId,
+          deferGeneration: (problem.deferGeneration ?? 0) + 1,
+        }))
+        const batchId = `defer::${plan.weekStart}::${Date.now()}::${generationBase + batchIndex}`
+        newDays.push({ date: targetDate, problems: targetProblems, optionalProblems: [] })
+        newBatches.push({
+          id: batchId,
+          sourceDate,
+          targetDate,
+          sourceAssignmentIds: items.map((item) => item.assignmentId),
+          targetAssignmentIds: targetProblems.map((problem) => problem.assignmentId!),
+          deferredAt: new Date().toISOString(),
+        })
+        problemCount += items.length
+        batchCount += 1
+        batchIndex += 1
+        targetDate = addPlanDays(targetDate, 1)
+      }
+
+      const nextEnd = addPlanDays(targetDate, -1)
+      const updated: MathWeeklyPlan = {
+        ...plan,
+        originalPlanEnd: plan.originalPlanEnd ?? currentEnd,
+        planEnd: nextEnd,
+        deferredBatches: newBatches,
+        days: newDays.sort((a, b) => a.date.localeCompare(b.date)),
+      }
+      newEndDates[plan.weekStart] = nextEnd
+      updatedPlans.push(updated)
+      return updated
+    }))
+
+    await Promise.all(updatedPlans.map((plan) => saveToCloud(user.id, plan)))
+    return { problemCount, batchCount, newEndDates }
+  }, [user])
 
   const updateDayProgress = useCallback(
     async (date: string, progress: MathDayProgress) => {
@@ -236,6 +328,7 @@ export function useMathWeeklyPlan(user: User | null) {
 
   return {
     weeklyPlan,
+    activePlans,
     priorPlans,
     allPlans,
     allPriorKeys,
@@ -244,6 +337,7 @@ export function useMathWeeklyPlan(user: User | null) {
     defaultParams,
     savePlan,
     addDoneKey,
+    postponeAllOverdue,
     updateDayProgress,
     deletePlan,
     isLoading,

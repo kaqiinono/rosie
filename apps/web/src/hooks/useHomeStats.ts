@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { allMathProblemStats } from '@rosie/math/utils/grade-stats'
 import { G1B_RECOGNIZE_TOTAL } from '@rosie/chinese'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import { useWordMastery } from '@rosie/english'
 import { useEnglishWrong } from '@rosie/english'
@@ -41,10 +41,10 @@ function countUnresolved(rows: { resolved?: boolean | null }[]): number {
 /**
  * Homepage learning-overview stats.
  * Pass `user` only after the overview panel is near the viewport so cold
- * loads skip math_solved / word_mastery / wrong-book fetches.
+ * loads skip math practice stats / word_mastery / wrong-book fetches.
  */
 export function useHomeStats(user: User | null) {
-  const { solveCount, isLoading: mathLoading } = useMathSolved(user)
+  const { practiceCount, isLoading: mathLoading } = useMathPracticeStats(user)
   const { masteryMap, isLoading: wmLoading } = useWordMastery(user)
   const { masteryMap: chineseMastery, isLoading: cmLoading } = useCharMastery(user)
   const { totalProblems, practiceDays, isLoading: calcLoading } = useCalcPracticeStats(user)
@@ -90,7 +90,7 @@ export function useHomeStats(user: User | null) {
   const stats = useMemo((): HomeStats => {
     if (!user) return EMPTY_STATS
 
-    const { practiced: mathPracticed, total: mathTotal } = allMathProblemStats(solveCount)
+    const { practiced: mathPracticed, total: mathTotal } = allMathProblemStats(practiceCount)
 
     let englishPracticed = 0
     for (const row of Object.values(masteryMap)) {
@@ -122,7 +122,7 @@ export function useHomeStats(user: User | null) {
     }
   }, [
     user,
-    solveCount,
+    practiceCount,
     masteryMap,
     chineseMastery,
     totalProblems,

@@ -9,6 +9,7 @@ import {
   fmtDate,
   uniqueDayTypeChips,
 } from './math-weekly-plan-shared'
+import { isPlanProblemDone } from '@rosie/math-kit/utils/math-helpers'
 
 export type MapMode = 'week' | 'month'
 
@@ -154,12 +155,19 @@ export default function MathPlanMap({
               const hasPlan = Boolean(day)
               const prog = plan.progress[date] ?? { doneKeys: [] }
               const done = hasPlan
-                ? prog.doneKeys.filter((k) => problems.some((p) => p.key === k)).length
+                ? problems.filter((problem) => isPlanProblemDone(problem, date, prog.doneKeys)).length
                 : 0
               const isToday = date === today
               const isPast = date < today
               const isSelected = date === selectedDate
               const isComplete = hasPlan && total > 0 && done >= total
+              const isDeferredDay = problems.some((problem) => problem.isDeferred)
+              const deferredSourceIds = new Set(
+                (plan.deferredBatches ?? []).flatMap((batch) => batch.sourceAssignmentIds),
+              )
+              const isDeferredSourceDay = problems.some((problem) =>
+                deferredSourceIds.has(problem.assignmentId ?? `${date}::${problem.key}`),
+              )
               const compactChips = hasPlan
                 ? uniqueDayTypeChips(problems, problemSets, { compact: true })
                 : []
@@ -188,6 +196,10 @@ export default function MathPlanMap({
                 bg = 'rgba(254,202,202,.5)'
                 border = 'rgba(239,68,68,.3)'
                 textClr = '#ef4444'
+              } else if (isDeferredDay) {
+                bg = 'rgba(221,214,254,.65)'
+                border = 'rgba(124,58,237,.42)'
+                textClr = '#6d28d9'
               } else if (hasPlan) {
                 bg = 'rgba(251,146,60,.1)'
                 border = 'rgba(251,146,60,.22)'
@@ -231,6 +243,9 @@ export default function MathPlanMap({
                   </div>
                   {hasPlan ? (
                     <>
+                      <div className="mt-0.5 text-[8px] font-extrabold" style={{ color: textClr }}>
+                        {isComplete ? (isDeferredDay ? '延期完成' : '已完成') : isDeferredSourceDay ? '过期·已延期' : isPast ? '已过期' : isDeferredDay ? '延期任务' : '未执行'}
+                      </div>
                       {/* Mobile: 讲次短名 only, e.g. 7数字谜 */}
                       <WeekDayChipStack
                         chips={compactChips}

@@ -117,7 +117,7 @@ export type MathLessonIdAuditReport = {
 }
 
 const PROBLEM_ID_TABLES = [
-  'math_solved',
+  'math_practice_attempts',
   'math_wrong',
   'math_favorites',
   'math_scratch_working',
@@ -125,7 +125,6 @@ const PROBLEM_ID_TABLES = [
 
 const OPTIONAL_TABLES = [
   'math_scratch_drafts',
-  'math_practice_attempts',
   'math_quiz_scratch_links',
   'math_rotating_review',
   'math_weekly_lesson_review',
@@ -268,7 +267,7 @@ function buildRiskAssessment(
   const blockers: string[] = []
   const mitigations: string[] = []
   if (conflicts.length > 0) {
-    blockers.push(`math_solved 存在 ${conflicts.length} 组迁移主键冲突，需先合并或删除重复行`)
+    blockers.push(`用户题目数据存在 ${conflicts.length} 组迁移主键冲突，需先合并或删除重复行`)
   }
   if (totals.legacyProblemRows > 0) {
     mitigations.push('用户做题记录：运行 docs/sql/math-lesson-id-migrate.sql（事务内一次执行）')
@@ -297,7 +296,7 @@ function buildRiskAssessment(
     `注册表：${LESSONS.length} 讲（lessonKey + grade + seq）`,
     `模块表：${Object.keys(LEGACY_TO_LESSON_KEY).length} 讲历史 legacy 映射（仅审计用）`,
     '静态路由：仅保留 /math/ny/[grade]/[seq] 动态路由',
-    'DB 表：math_solved / wrong / favorites / notes / images / weekly_plans 等',
+    'DB 表：practice_attempts / wrong / favorites / notes / images / weekly_plans 等',
   ]
 
   let level: RefactorRiskAssessment['level'] = 'green'
@@ -371,12 +370,13 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     : []
 
   const conflicts: MigrationConflict[] = []
-  if (problemIdsByTable.math_solved) {
-    const solvedRows = await fetchRows<{ user_id: string; problem_id: string }>(
-      'math_solved',
+  for (const table of ['math_wrong', 'math_favorites'] as const) {
+    if (!problemIdsByTable[table]) continue
+    const rows = await fetchRows<{ user_id: string; problem_id: string }>(
+      table,
       'user_id, problem_id',
     )
-    conflicts.push(...findConflicts('math_solved', solvedRows))
+    conflicts.push(...findConflicts(table, rows))
   }
 
   const jsonLegacyHits: JsonLegacyHit[] = []
@@ -420,7 +420,7 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
     cur[field] += 1
     orphanMap.set(pid, cur)
   }
-  for (const pid of problemIdsByTable.math_solved ?? []) bumpOrphan(pid, 'solved')
+  for (const pid of problemIdsByTable.math_practice_attempts ?? []) bumpOrphan(pid, 'solved')
   for (const pid of problemIdsByTable.math_wrong ?? []) bumpOrphan(pid, 'wrong')
   for (const pid of problemIdsByTable.math_favorites ?? []) bumpOrphan(pid, 'favorites')
   for (const pid of noteProblemIds) {
@@ -442,7 +442,9 @@ export async function runMathLessonIdAudit(): Promise<MathLessonIdAuditReport> {
   const byLesson: LessonImpactRow[] = LESSONS.map((entry) => {
     const legacyId = legacyIdForLessonKey(entry.lessonKey)
     const problemIds = {
-      solved: legacyId ? countProblemIdsForLegacy(problemIdsByTable.math_solved ?? [], legacyId) : 0,
+      solved: legacyId
+        ? countProblemIdsForLegacy(problemIdsByTable.math_practice_attempts ?? [], legacyId)
+        : 0,
       wrong: legacyId ? countProblemIdsForLegacy(problemIdsByTable.math_wrong ?? [], legacyId) : 0,
       favorites: legacyId
         ? countProblemIdsForLegacy(problemIdsByTable.math_favorites ?? [], legacyId)

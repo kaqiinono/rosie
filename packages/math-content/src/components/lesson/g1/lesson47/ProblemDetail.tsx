@@ -36,9 +36,9 @@ export default function ProblemDetail({
   nextHref = null,
   positionLabel,
 }: ProblemDetailProps) {
-  const { solveCount, handleSolve, addWrong } = useG1Lesson47()
-  const count = solveCount[problem.id] ?? 0
-  const level = getMasteryLevel(count)
+  const { practiceCount, correctCount, handleSolve, addWrong } = useG1Lesson47()
+  const count = practiceCount[problem.id] ?? 0
+  const level = getMasteryLevel(correctCount[problem.id] ?? 0)
   const interactive = isInteractiveProblem(problem)
 
   const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(problem, {

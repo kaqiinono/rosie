@@ -20,7 +20,8 @@ type Props = {
   problems: ProblemSet
   tagStyle: TagStyleMap
   wrongIds: Set<string>
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
   accentClass?: string
 }
 
@@ -36,7 +37,8 @@ function MistakeRow({
   item,
   index,
   wrongProblems,
-  solveCount,
+  practiceCount,
+  correctCount,
   tagStyle,
   hasDraft,
   onPractice,
@@ -44,16 +46,18 @@ function MistakeRow({
   item: { p: Problem; setName: string; idx: number }
   index: number
   wrongProblems: Problem[]
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
   tagStyle: TagStyleMap
   hasDraft: boolean
   onPractice: () => void
 }) {
   const scratchActions = useLessonScratchActions()
   const { p } = item
-  const count = solveCount[p.id] ?? 0
-  const level = getMasteryLevel(count)
-  const isMastered = count >= 3
+  const count = practiceCount[p.id] ?? 0
+  const correct = correctCount[p.id] ?? 0
+  const level = getMasteryLevel(correct)
+  const isMastered = correct >= 3
   const srcLabel = SOURCE_LABELS[item.setName] || item.setName
 
   return (
@@ -112,7 +116,8 @@ export default function LessonMistakesPage({
   problems,
   tagStyle,
   wrongIds,
-  solveCount,
+  practiceCount,
+  correctCount,
 }: Props) {
   const { user } = useAuth()
   const startPractice = useStartPracticeQueue()
@@ -124,7 +129,7 @@ export default function LessonMistakesPage({
     .map((id) => problemMap.get(id))
     .filter(Boolean) as { p: Problem; setName: string; idx: number }[]
   const wrongProblems = wrongList.map((x) => x.p)
-  const masteredCount = wrongList.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
+  const masteredCount = wrongList.filter(({ p }) => (correctCount[p.id] ?? 0) >= 3).length
 
   const mistakePool = useMemo((): PracticeQueueItem[] =>
     wrongList.map(({ p, setName, idx }) => ({
@@ -218,7 +223,8 @@ export default function LessonMistakesPage({
               item={item}
               index={index}
               wrongProblems={wrongProblems}
-              solveCount={solveCount}
+              practiceCount={practiceCount}
+              correctCount={correctCount}
               tagStyle={tagStyle}
               hasDraft={draftProblemIds.has(item.p.id)}
               onPractice={() => beginPractice(item.p.id)}

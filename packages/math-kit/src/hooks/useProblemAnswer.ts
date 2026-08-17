@@ -40,20 +40,19 @@ export function useProblemAnswer(
     submittingRef.current = false
   }, [problem.id])
 
-  const archiveWorkingScratch = useCallback(
+  const persistAttempt = useCallback(
     async (correct: boolean, answerSnapshot: unknown) => {
-      if (!user || !scratchCtx?.section) return
+      if (!user) return
       const inProgress = await findInProgressAttempt(user.id, problem.id, null)
-      if (!inProgress?.objects?.length) return
       await submitPracticeAttempt({
         userId: user.id,
         problem,
-        section: scratchCtx.section,
-        correct,
-        objects: inProgress.objects,
+        section: scratchCtx?.section ?? 'lesson',
+        result: correct ? 'correct' : 'wrong',
+        objects: inProgress?.objects ?? [],
         answerSnapshot,
         paperId: null,
-        attemptId: inProgress.id,
+        attemptId: inProgress?.id ?? null,
       })
     },
     [user, scratchCtx, problem],
@@ -76,27 +75,35 @@ export function useProblemAnswer(
 
       void (async () => {
         try {
-          if (!runtime) await archiveWorkingScratch(result.ok, input)
+          await persistAttempt(result.ok, input)
+        } catch {
+          setFeedback({ ok: false, message: '记录失败，请稍后重试' })
+          setHasAttempted(false)
+          submittingRef.current = false
+          return
+        }
+
+        try {
           setFeedback(result)
+          if (result.ok) {
+            await ctx.handleSolve(problem.id)
+            options?.onCorrect?.(result)
+          }
           if (runtime) {
             if (result.ok) await runtime.onCorrect(input, result)
             else await runtime.onWrong(input, result)
-            if (result.ok) options?.onCorrect?.(result)
-          } else if (result.ok) {
-            await ctx.handleSolve(problem.id)
-            options?.onCorrect?.(result)
-          } else {
-            ctx.addWrong(problem.id)
           }
-        } finally {
-          // A correct answer advances the queue; the problem.id effect re-arms it there.
-          if (!result.ok) submittingRef.current = false
+        } catch {
+          // The attempt is already committed; never present this as a record failure.
+          setFeedback(result)
         }
+        // A correct answer advances the queue; the problem.id effect re-arms it there.
+        if (!result.ok) submittingRef.current = false
       })()
 
       return result
     },
-    [problem, ctx, options, archiveWorkingScratch, runtime],
+    [problem, ctx, options, persistAttempt, runtime],
   )
 
   const clearFeedback = useCallback(() => {

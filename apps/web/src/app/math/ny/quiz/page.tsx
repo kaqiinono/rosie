@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import { useProblemMastery } from '@rosie/math-kit/hooks/useProblemMastery'
 import { useMathQuiz, type QuizBatch, type QuizPaper } from '@rosie/math/hooks/useMathQuiz'
@@ -80,15 +80,15 @@ function formatDate(iso: string) {
 export default function QuizPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const { solveCount } = useMathSolved(user)
+  const { practiceCount } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const { masteryMap } = useProblemMastery(user)
   const { papers, batches, savePaper, createBatch, appendToBatch, deletePaper, renamePaper, renameBatch, deleteBatch } =
     useMathQuiz(user)
 
   const allocationCtx = useMemo(
-    () => ({ wrongIds, solveCount, masteryMap }),
-    [wrongIds, solveCount, masteryMap],
+    () => ({ wrongIds, practiceCount, masteryMap }),
+    [wrongIds, practiceCount, masteryMap],
   )
 
   // Builder state
@@ -852,7 +852,7 @@ export default function QuizPage() {
                 {quizEntries.map(({ item, entry }, i) => {
                   if (!entry) return null
                   const { problem, section } = entry
-                  const count = solveCount[problem.id] ?? 0
+                  const count = practiceCount[problem.id] ?? 0
                   const countCls =
                     count === 0
                       ? 'bg-slate-100 text-slate-500'

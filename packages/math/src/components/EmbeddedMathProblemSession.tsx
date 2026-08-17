@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import PracticeProblemBody from '@rosie/math/components/shared/practice-queue/PracticeProblemBody'
 import { SEA_POOL } from '@rosie/math/utils/sea-data'
@@ -14,7 +14,7 @@ type EmbeddedMathProblemSessionProps = {
 
 export default function EmbeddedMathProblemSession({ problemId }: EmbeddedMathProblemSessionProps) {
   const { user } = useAuth()
-  const { handleSolve, solveCount } = useMathSolved(user)
+  const { correctCount } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const [finished, setFinished] = useState(false)
   const entry = useMemo(() => {
@@ -53,7 +53,7 @@ export default function EmbeddedMathProblemSession({ problemId }: EmbeddedMathPr
     <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-slate-100 sm:p-3">
       <div className="mb-2 flex flex-wrap gap-2 px-1 text-xs font-bold">
         <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-indigo-700">
-          已正确完成 {solveCount[entry.problem.id] ?? 0} 次
+          已正确完成 {correctCount[entry.problem.id] ?? 0} 次
         </span>
         {wrongIds.has(entry.problem.id) ? (
           <span className="rounded-full bg-amber-100 px-2.5 py-1 text-amber-800">待巩固</span>
@@ -67,9 +67,7 @@ export default function EmbeddedMathProblemSession({ problemId }: EmbeddedMathPr
           section: entry.section,
           detailHref: entry.href,
         }}
-        onAnswerCorrect={() => {
-          void handleSolve(entry.problem.id)
-        }}
+        onAnswerCorrect={() => setFinished(true)}
         onAnswerWrong={() => {}}
         onAdvance={() => setFinished(true)}
         isLast

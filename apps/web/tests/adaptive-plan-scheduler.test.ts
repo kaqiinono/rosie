@@ -12,6 +12,7 @@ import {
   buildDailyTask,
   isPlanCompletable,
   summarizeAdaptiveTodayProgress,
+  applyAdaptiveDailyProgress,
 } from '../../../packages/english/src/utils/adaptivePlanScheduler'
 
 const TODAY = '2026-07-09'
@@ -42,7 +43,10 @@ const basePlan = (overrides: Partial<AdaptiveWordPlan> = {}): AdaptiveWordPlan =
   ...overrides,
 })
 
-const row = (wordKey: string, overrides: Partial<AdaptivePlanWordProgress> = {}): AdaptivePlanWordProgress => ({
+const row = (
+  wordKey: string,
+  overrides: Partial<AdaptivePlanWordProgress> = {},
+): AdaptivePlanWordProgress => ({
   planId: 'plan-1',
   userId: 'user-1',
   wordKey,
@@ -58,15 +62,11 @@ const row = (wordKey: string, overrides: Partial<AdaptivePlanWordProgress> = {})
 describe('isDue', () => {
   it('is due when LEARNING and nextReviewDate <= today (string compare)', () => {
     expect(isDue(row('a', { status: 'LEARNING', nextReviewDate: TODAY }), TODAY)).toBe(true)
-    expect(
-      isDue(row('b', { status: 'LEARNING', nextReviewDate: '2026-07-08' }), TODAY),
-    ).toBe(true)
+    expect(isDue(row('b', { status: 'LEARNING', nextReviewDate: '2026-07-08' }), TODAY)).toBe(true)
   })
 
   it('is not due when nextReviewDate is after today', () => {
-    expect(
-      isDue(row('c', { status: 'LEARNING', nextReviewDate: '2026-07-10' }), TODAY),
-    ).toBe(false)
+    expect(isDue(row('c', { status: 'LEARNING', nextReviewDate: '2026-07-10' }), TODAY)).toBe(false)
   })
 
   it('is not due for non-LEARNING or null nextReviewDate', () => {
@@ -116,7 +116,7 @@ describe('pickActivations', () => {
       row('p3b', { status: 'LEARNING_PENDING', targetBox: 3 }),
     ]
     const picked = pickActivations(rows, 4)
-    expect(picked.map(r => r.wordKey)).toEqual(['p3', 'p3b', 'p1', 'ns1'])
+    expect(picked.map((r) => r.wordKey)).toEqual(['p3', 'p3b', 'p1', 'ns1'])
   })
 
   it('respects n limit', () => {
@@ -129,9 +129,7 @@ describe('pickActivations', () => {
   })
 
   it('treats NaN / non-finite n as zero (never dump the whole queue)', () => {
-    const rows = Array.from({ length: 33 }, (_, i) =>
-      row(`w${i}`, { status: 'NOT_STARTED' }),
-    )
+    const rows = Array.from({ length: 33 }, (_, i) => row(`w${i}`, { status: 'NOT_STARTED' }))
     expect(pickActivations(rows, Number.NaN)).toHaveLength(0)
     expect(pickActivations(rows, Number.POSITIVE_INFINITY)).toHaveLength(0)
   })
@@ -230,13 +228,23 @@ describe('buildDailyTask', () => {
     expect(task.bossKeys).toEqual([])
   })
 
-  it('still offers a full fresh batch after today\'s goal was already settled (ahead learning)', () => {
+  it("still offers a full fresh batch after today's goal was already settled (ahead learning)", () => {
     const plan = basePlan({ newWordsPerDay: 3 })
     const rows = [
       // Settled earlier today — goal progress, but must not block the next round.
-      row('done1', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
+      row('done1', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+      }),
       row('done2', { status: 'MASTERED', introducedOn: TODAY }),
-      row('done3', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
+      row('done3', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+      }),
       row('ns1', { status: 'NOT_STARTED' }),
       row('ns2', { status: 'NOT_STARTED' }),
       row('ns3', { status: 'NOT_STARTED' }),
@@ -246,7 +254,7 @@ describe('buildDailyTask', () => {
     expect(task.activateKeys).toEqual(['ns1', 'ns2', 'ns3'])
   })
 
-  it('keeps unfinished same-day activations on today\'s activate list', () => {
+  it("keeps unfinished same-day activations on today's activate list", () => {
     // Unfinished fill the batch first — no room for fresh ns1.
     const plan = basePlan({ newWordsPerDay: 2 })
     const rows = [
@@ -290,10 +298,15 @@ describe('buildDailyTask', () => {
     expect(task.activateKeys).toEqual(['stuck', 'ns1', 'ns2'])
   })
 
-  it('still pulls a fresh batch even when today\'s goal count is already met', () => {
+  it("still pulls a fresh batch even when today's goal count is already met", () => {
     const plan = basePlan({ newWordsPerDay: 2 })
     const rows = [
-      row('done1', { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY, nextReviewDate: '2026-07-10' }),
+      row('done1', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        introducedOn: TODAY,
+        nextReviewDate: '2026-07-10',
+      }),
       // Settled wrong earlier today — due again, but not an unfinished activation.
       row('done2', {
         status: 'LEARNING',
@@ -419,7 +432,7 @@ describe('buildDailyTask', () => {
 })
 
 describe('summarizeAdaptiveTodayProgress', () => {
-  it('counts 0 when today\'s activations were never settled', () => {
+  it("counts 0 when today's activations were never settled", () => {
     const plan = basePlan({ newWordsPerDay: 5 })
     const rows = Array.from({ length: 5 }, (_, i) =>
       row(`w${i}`, {
@@ -525,6 +538,45 @@ describe('summarizeAdaptiveTodayProgress', () => {
   })
 })
 
+describe('applyAdaptiveDailyProgress', () => {
+  const inferred = {
+    done: 0,
+    total: 25,
+    allDone: false,
+    activateCount: 5,
+    reviewCount: 20,
+    unfinishedCount: 5,
+    subtitle: '还有 5 个新词待练完',
+  }
+
+  it('counts completed reviews and new words symmetrically', () => {
+    const summary = applyAdaptiveDailyProgress(inferred, {
+      newGoal: 5,
+      reviewGoal: 20,
+      newDone: 5,
+      reviewDone: 12,
+      allDone: false,
+    })
+    expect(summary.done).toBe(17)
+    expect(summary.total).toBe(25)
+    expect(summary.subtitle).toContain('17/25')
+  })
+
+  it('keeps a settled completed day complete even if mutable box state disagrees', () => {
+    const summary = applyAdaptiveDailyProgress(inferred, {
+      newGoal: 5,
+      reviewGoal: 20,
+      newDone: 5,
+      reviewDone: 20,
+      allDone: true,
+    })
+    expect(summary.done).toBe(25)
+    expect(summary.total).toBe(25)
+    expect(summary.allDone).toBe(true)
+    expect(summary.subtitle).toBe('今日任务已完成')
+  })
+})
+
 describe('isPlanCompletable', () => {
   it('returns false when hasOpenSession', () => {
     const rows = [row('m', { status: 'MASTERED' })]
@@ -533,9 +585,9 @@ describe('isPlanCompletable', () => {
 
   it('returns false when any NOT_STARTED, LEARNING_PENDING, or LEARNING remain', () => {
     expect(isPlanCompletable([row('ns', { status: 'NOT_STARTED' })], false)).toBe(false)
-    expect(
-      isPlanCompletable([row('p', { status: 'LEARNING_PENDING', targetBox: 1 })], false),
-    ).toBe(false)
+    expect(isPlanCompletable([row('p', { status: 'LEARNING_PENDING', targetBox: 1 })], false)).toBe(
+      false,
+    )
     expect(
       isPlanCompletable(
         [row('l', { status: 'LEARNING', boxIndex: 1, nextReviewDate: TODAY })],
@@ -545,20 +597,14 @@ describe('isPlanCompletable', () => {
   })
 
   it('returns true when only MASTERED remain and no open session', () => {
-    const rows = [
-      row('a', { status: 'MASTERED' }),
-      row('b', { status: 'MASTERED' }),
-    ]
+    const rows = [row('a', { status: 'MASTERED' }), row('b', { status: 'MASTERED' })]
     expect(isPlanCompletable(rows, false)).toBe(true)
   })
 
   it('returns true for empty active pipeline (all archived or empty)', () => {
     expect(isPlanCompletable([], false)).toBe(true)
-    expect(
-      isPlanCompletable(
-        [row('a', { status: 'LEARNING', archivedAt: TODAY })],
-        false,
-      ),
-    ).toBe(true)
+    expect(isPlanCompletable([row('a', { status: 'LEARNING', archivedAt: TODAY })], false)).toBe(
+      true,
+    )
   })
 })

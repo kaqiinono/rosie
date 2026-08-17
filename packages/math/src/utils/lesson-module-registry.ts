@@ -257,14 +257,19 @@ export type LessonModule = {
   TAG_STYLE: Record<string, string>
   Provider: ComponentType<{ children: ReactNode }>
   useLesson: () => LessonContextType
-  HomePage: ComponentType<{ problems: ProblemSet; solveCount: Record<string, number> }>
+  HomePage: ComponentType<{
+    problems: ProblemSet
+    practiceCount: Record<string, number>
+    correctCount: Record<string, number>
+  }>
   AppHeader: ComponentType<{ problems: ProblemSet }>
   Sidebar: ComponentType<{ problems: ProblemSet }>
   BottomNav: ComponentType
   FilterPanel: ComponentType<FilterPanelProps>
   ProblemList: ComponentType<{
     problems: Problem[]
-    solveCount: Record<string, number>
+    practiceCount: Record<string, number>
+    correctCount: Record<string, number>
     basePath: string
     showSource?: boolean
     sourceLabel?: string

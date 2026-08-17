@@ -1,13 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { PracticeQueueItem, PracticeQueuePhase } from '@rosie/math-kit/utils/practice-queue-types'
 import type { PracticeQueueStartOpts } from '@rosie/math-kit/utils/practice-queue-types'
-import {
-  MATH_SKIP_REASON_OPTIONS,
-  type MathSkipReason,
-} from '@rosie/math-kit/utils/math-skip-reasons'
+import type { DeferCurrentResult } from '@rosie/math-kit/components/shared/practice-queue/practice-queue-context'
 import PracticeProblemBody from './PracticeProblemBody'
 import PracticeCelebration from '@rosie/math-kit/components/shared/practice-queue/PracticeCelebration'
 import ScratchPadSession from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadSession'
@@ -25,7 +22,7 @@ type Props = {
   onAnswerCorrect: () => void
   onAnswerWrong: () => void
   onAdvance: () => void
-  onSkip: (reason: MathSkipReason, note?: string) => void
+  onDeferCurrent: () => DeferCurrentResult
   onRestart: () => void
   onToggleImmersive: () => void
   onSetImmersive: (value: boolean) => void
@@ -45,7 +42,7 @@ export default function MathPracticePortal({
   onAnswerCorrect,
   onAnswerWrong,
   onAdvance,
-  onSkip,
+  onDeferCurrent,
   onRestart,
   onToggleImmersive,
   onSetImmersive,
@@ -53,35 +50,16 @@ export default function MathPracticePortal({
 }: Props) {
   const [mounted, setMounted] = useState(false)
   const current = items[currentIndex]
+  const currentIdentity = current
+    ? current.planAssignment?.assignmentId ?? current.problem.id
+    : 'none'
   const total = items.length
   const progressPct = total > 0 ? Math.min(100, ((currentIndex + 1) / total) * 100) : 0
-  const [skipMenuOpen, setSkipMenuOpen] = useState(false)
-  const [otherNote, setOtherNote] = useState('')
-  const [showOtherInput, setShowOtherInput] = useState(false)
-  const skipMenuRef = useRef<HTMLDivElement>(null)
+  const [deferMessage, setDeferMessage] = useState<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  useEffect(() => {
-    setSkipMenuOpen(false)
-    setShowOtherInput(false)
-    setOtherNote('')
-  }, [currentIndex])
-
-  useEffect(() => {
-    if (!skipMenuOpen) return
-    const onPointer = (e: MouseEvent) => {
-      if (skipMenuRef.current && !skipMenuRef.current.contains(e.target as Node)) {
-        setSkipMenuOpen(false)
-        setShowOtherInput(false)
-        setOtherNote('')
-      }
-    }
-    window.addEventListener('mousedown', onPointer)
-    return () => window.removeEventListener('mousedown', onPointer)
-  }, [skipMenuOpen])
 
   const handleWrong = useCallback(() => {
     onAnswerWrong()
@@ -95,15 +73,15 @@ export default function MathPracticePortal({
     onAdvance()
   }, [onAdvance])
 
-  const commitSkip = useCallback(
-    (reason: MathSkipReason, note?: string) => {
-      onSkip(reason, note)
-      setSkipMenuOpen(false)
-      setShowOtherInput(false)
-      setOtherNote('')
-    },
-    [onSkip],
-  )
+  const deferCurrent = useCallback(() => {
+    const result = onDeferCurrent()
+    setDeferMessage(
+      result === 'moved'
+        ? '已移到本次练习队尾'
+        : '其他题已完成，请继续完成这道题',
+    )
+    window.setTimeout(() => setDeferMessage(null), 2200)
+  }, [onDeferCurrent])
 
   const shell = (
     <div className="fixed inset-0 z-[200] flex flex-col bg-[#f8fafc]">
@@ -140,81 +118,14 @@ export default function MathPracticePortal({
           </div>
           {phase === 'answering' && current && (
             <>
-              <div className="relative" ref={skipMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSkipMenuOpen((o) => !o)
-                    setShowOtherInput(false)
-                    setOtherNote('')
-                  }}
-                  title="跳过当前题并选择原因"
-                  className="shrink-0 cursor-pointer rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800 transition-all hover:bg-amber-100 active:scale-95"
-                >
-                  ⏭ 跳过
-                </button>
-                {skipMenuOpen && (
-                  <div
-                    className="absolute top-full right-0 z-30 mt-1.5 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-lg"
-                    style={{ minWidth: 200 }}
-                  >
-                    <div className="mb-1.5 px-1 text-[10px] font-bold text-slate-400">
-                      选择跳过原因
-                    </div>
-                    {!showOtherInput ? (
-                      <div className="flex flex-col gap-1">
-                        {MATH_SKIP_REASON_OPTIONS.map((opt) => (
-                          <button
-                            key={opt.key}
-                            type="button"
-                            onClick={() => {
-                              if (opt.key === 'other') {
-                                setShowOtherInput(true)
-                                return
-                              }
-                              commitSkip(opt.key)
-                            }}
-                            className="cursor-pointer rounded-lg px-2.5 py-2 text-left text-[12px] font-bold text-slate-700 transition-colors hover:bg-amber-50"
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-2 px-0.5">
-                        <input
-                          type="text"
-                          value={otherNote}
-                          onChange={(e) => setOtherNote(e.target.value)}
-                          placeholder="简单说明（选填）"
-                          maxLength={80}
-                          className="w-full rounded-lg border border-slate-200 px-2.5 py-2 text-[12px] outline-none focus:border-amber-300"
-                          autoFocus
-                        />
-                        <div className="flex gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowOtherInput(false)
-                              setOtherNote('')
-                            }}
-                            className="flex-1 cursor-pointer rounded-lg border border-slate-200 px-2 py-1.5 text-[11px] font-bold text-slate-500"
-                          >
-                            返回
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => commitSkip('other', otherNote)}
-                            className="flex-1 cursor-pointer rounded-lg bg-amber-500 px-2 py-1.5 text-[11px] font-extrabold text-white"
-                          >
-                            确认跳过
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={deferCurrent}
+                title="移到本次练习队尾"
+                className="shrink-0 cursor-pointer rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800 transition-all hover:bg-amber-100 active:scale-95"
+              >
+                ⏭ 稍后再做
+              </button>
               {immersive && (
                 <button
                   type="button"
@@ -238,6 +149,12 @@ export default function MathPracticePortal({
         )}
       </header>
 
+      {deferMessage && (
+        <div className="pointer-events-none fixed top-20 left-1/2 z-[230] -translate-x-1/2 rounded-full bg-amber-800 px-4 py-2 text-[12px] font-bold text-white shadow-lg">
+          {deferMessage}
+        </div>
+      )}
+
       <main className="relative min-h-0 flex-1 overflow-hidden">
         {phase === 'celebration' ? (
           <PracticeCelebration
@@ -251,7 +168,7 @@ export default function MathPracticePortal({
           />
         ) : immersive && current ? (
           <ScratchPadSession
-            key={`immersive-${current.problem.id}`}
+            key={`immersive-${currentIdentity}`}
             items={items.map((it) => ({ problem: it.problem, section: it.section }))}
             controlledIndex={currentIndex}
             mode="practice"
@@ -268,7 +185,7 @@ export default function MathPracticePortal({
           <div className="h-full overflow-y-auto px-4 py-5">
             <div className="mx-auto max-w-[700px]">
               <PracticeProblemBody
-                key={current.problem.id}
+                key={currentIdentity}
                 item={current}
                 onAnswerCorrect={handleCorrect}
                 onAnswerWrong={handleWrong}

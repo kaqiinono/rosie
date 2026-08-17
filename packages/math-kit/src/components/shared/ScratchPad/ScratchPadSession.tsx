@@ -277,20 +277,16 @@ export default function ScratchPadSession({
       if (!user || !problem || mode !== 'practice') return
       const snapshotObjects = canvasObjects ?? objectsRef.current
       const attemptId = activeAttemptIdRef.current ?? (await ensureAttemptId())
-      try {
-        await submitPracticeAttempt({
-          userId: user.id,
-          problem,
-          section: itemSection,
-          correct,
-          objects: snapshotObjects,
-          answerSnapshot: snapshot,
-          paperId,
-          attemptId,
-        })
-      } catch {
-        // Draft/attempt persistence must not block advancing the practice queue.
-      }
+      await submitPracticeAttempt({
+        userId: user.id,
+        problem,
+        section: itemSection,
+        result: correct ? 'correct' : 'wrong',
+        objects: snapshotObjects,
+        answerSnapshot: snapshot,
+        paperId,
+        attemptId,
+      })
       activeAttemptIdRef.current = null
       setActiveAttemptId(null)
       setAttemptRefresh((n) => n + 1)

@@ -12,6 +12,7 @@ import RosieAssistantAvatar from './RosieAssistantAvatar'
 export function shouldShowAiAssistant(pathname: string, isImmersive: boolean): boolean {
   if (isImmersive) return false
   return !(
+    pathname === '/calc/session' ||
     pathname === '/ai' ||
     pathname.startsWith('/ai/') ||
     pathname === '/auth' ||

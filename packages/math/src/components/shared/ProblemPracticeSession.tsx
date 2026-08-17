@@ -75,7 +75,7 @@ function pickWeighted(items: SeaProblem[]): SeaProblem {
 
 function pickFromFilteredPool(
   pool: SeaProblem[],
-  solveCount: Record<string, number>,
+  practiceCount: Record<string, number>,
   excludeProblemId?: string,
 ): SeaProblem | null {
   if (pool.length === 0) return null
@@ -85,7 +85,7 @@ function pickFromFilteredPool(
       : [...pool]
   if (candidates.length === 0) candidates = [...pool]
 
-  const untried = candidates.filter((sp) => (solveCount[sp.problem.id] ?? 0) === 0)
+  const untried = candidates.filter((sp) => (practiceCount[sp.problem.id] ?? 0) === 0)
   const pickFrom = untried.length > 0 ? untried : candidates
   return pickWeighted(pickFrom)
 }
@@ -216,20 +216,20 @@ export const FAVORITES_SKIN: PracticeSkin = {
 
 function PracticeProblem({
   sp,
-  solveCount,
+  practiceCount,
   solvedAt,
   onSolve,
   skin,
 }: {
   sp: SeaProblem
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
   solvedAt: Record<string, string>
   onSolve: (id: string) => Promise<number>
   skin: PracticeSkin
 }) {
   const { problem, lessonId, section } = sp
   const lesson = SEA_LESSON_MAP[lessonId]
-  const count = solveCount[problem.id] ?? 0
+  const count = practiceCount[problem.id] ?? 0
   const tagStyle = lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'
   const interactive = isInteractiveProblem(problem)
   const { user } = useAuth()
@@ -370,9 +370,9 @@ function PracticeProblem({
 }
 
 /** 收藏连刷：按收藏列表顺序选题，进度为当前题号 / 收藏总数。 */
-function initialFavoritesIndex(pool: SeaProblem[], solveCount: Record<string, number>): number {
+function initialFavoritesIndex(pool: SeaProblem[], practiceCount: Record<string, number>): number {
   if (pool.length === 0) return 0
-  const firstUntried = pool.findIndex((sp) => (solveCount[sp.problem.id] ?? 0) === 0)
+  const firstUntried = pool.findIndex((sp) => (practiceCount[sp.problem.id] ?? 0) === 0)
   return firstUntried >= 0 ? firstUntried : 0
 }
 
@@ -410,7 +410,7 @@ function FavoritesPoolProgress({
 export default function ProblemPracticeSession({
   pool,
   poolMode = 'sea',
-  solveCount,
+  practiceCount,
   solvedAt,
   onSolve,
   onEnd,
@@ -418,7 +418,7 @@ export default function ProblemPracticeSession({
 }: {
   pool: SeaProblem[]
   poolMode?: 'sea' | 'favorites'
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
   solvedAt: Record<string, string>
   onSolve: (id: string) => Promise<number>
   onEnd: () => void
@@ -427,15 +427,15 @@ export default function ProblemPracticeSession({
   const isFavorites = poolMode === 'favorites'
 
   const pickNextSea = useCallback(
-    (excludeProblemId?: string) => pickFromFilteredPool(pool, solveCount, excludeProblemId),
-    [pool, solveCount],
+    (excludeProblemId?: string) => pickFromFilteredPool(pool, practiceCount, excludeProblemId),
+    [pool, practiceCount],
   )
 
   const [seaCurrent, setSeaCurrent] = useState<SeaProblem | null>(() =>
-    isFavorites ? null : pickFromFilteredPool(pool, solveCount),
+    isFavorites ? null : pickFromFilteredPool(pool, practiceCount),
   )
   const [favoritesIndex, setFavoritesIndex] = useState(() =>
-    initialFavoritesIndex(pool, solveCount),
+    initialFavoritesIndex(pool, practiceCount),
   )
   const [count, setCount] = useState(0)
 
@@ -483,7 +483,7 @@ export default function ProblemPracticeSession({
     )
   }
 
-  const untriedCount = pool.filter(sp => (solveCount[sp.problem.id] ?? 0) === 0).length
+  const untriedCount = pool.filter(sp => (practiceCount[sp.problem.id] ?? 0) === 0).length
 
   return (
     <div
@@ -578,7 +578,7 @@ export default function ProblemPracticeSession({
           )}
           <PracticeProblem
             sp={current}
-            solveCount={solveCount}
+            practiceCount={practiceCount}
             solvedAt={solvedAt}
             onSolve={onSolve}
             skin={skin}

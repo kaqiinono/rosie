@@ -64,13 +64,13 @@ describe('plan problem status helpers', () => {
 
   it('answer status prefers wrong over practiced', () => {
     expect(
-      planProblemAnswerStatus('p1', { wrongIds: new Set(['p1']), solveCount: { p1: 2 } }),
+      planProblemAnswerStatus('p1', { wrongIds: new Set(['p1']), practiceCount: { p1: 2 } }),
     ).toBe('wrong')
     expect(
-      planProblemAnswerStatus('p1', { wrongIds: new Set(), solveCount: { p1: 1 } }),
+      planProblemAnswerStatus('p1', { wrongIds: new Set(), practiceCount: { p1: 1 } }),
     ).toBe('practiced')
     expect(
-      planProblemAnswerStatus('p1', { wrongIds: new Set(), solveCount: {} }),
+      planProblemAnswerStatus('p1', { wrongIds: new Set(), practiceCount: {} }),
     ).toBe('unseen')
   })
 })

@@ -10,38 +10,28 @@ import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practic
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import { findHelpProblems } from '@rosie/math-kit/utils/practice-help-problems'
 import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
-import { useAuth } from '@rosie/core'
-import { useMathSkipped } from '@rosie/math-kit/hooks/useMathSkipped'
-import {
-  MATH_SKIP_REASON_OPTIONS,
-  type MathSkipReason,
-} from '@rosie/math-kit/utils/math-skip-reasons'
 import { problemSetSectionLabel } from '@rosie/math-kit/utils/problem-set-helpers'
 import { lessonKeyFromHref } from '@rosie/math-kit/utils/lesson-grade'
-import type { MathSkippedMap } from '@rosie/math-kit/hooks/useMathSkipped'
 
 export type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 export type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
-/** `all` = no skip filter; otherwise only problems skipped with that reason. */
-export type SkipReasonFilter = 'all' | MathSkipReason
 
 export interface Filters {
   source: Set<string>
   type: Set<string>
   mastery: MasteryFilter
   practice: PracticeFilter
-  skipReason: SkipReasonFilter
   difficulty: Set<ProblemDifficulty>
 }
 
 export interface FilterPanelProps {
   problems: ProblemSet
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
   filters: Filters
   onToggleFilter: (axis: 'source' | 'type' | 'difficulty', value: string) => void
   onSetMastery: (value: MasteryFilter) => void
   onSetPractice: (value: PracticeFilter) => void
-  onSetSkipReason: (value: SkipReasonFilter) => void
 }
 
 interface FilterPanelTheme {
@@ -83,11 +73,6 @@ const PRACTICE_BTNS: { key: PracticeFilter; label: string }[] = [
   { key: 'practiced',   label: '练过' },
 ]
 
-const SKIP_BTNS: { key: SkipReasonFilter; label: string }[] = [
-  { key: 'all', label: '全部' },
-  ...MATH_SKIP_REASON_OPTIONS.map((o) => ({ key: o.key as SkipReasonFilter, label: o.label })),
-]
-
 function matchesMastery(count: number, mastery: MasteryFilter): boolean {
   if (mastery === 'all') return true
   if (mastery === 'unstarted') return count === 0
@@ -103,15 +88,6 @@ function matchesPractice(count: number, practice: PracticeFilter): boolean {
   return true
 }
 
-function matchesSkipReason(
-  problemId: string,
-  skipReason: SkipReasonFilter,
-  skippedMap: MathSkippedMap,
-): boolean {
-  if (skipReason === 'all') return true
-  return skippedMap[problemId]?.reason === skipReason
-}
-
 export function createFilterPanel(
   config: FilterPanelConfig,
   ProblemDetailComponent: ProblemDetailInlineComponent,
@@ -125,16 +101,14 @@ export function createFilterPanel(
 
   return function FilterPanel({
     problems,
-    solveCount,
+    practiceCount,
+    correctCount,
     filters,
     onToggleFilter,
     onSetMastery,
     onSetPractice,
-    onSetSkipReason,
   }: FilterPanelProps) {
-    const { user } = useAuth()
     const { favorites } = useMathFavoritesContext()
-    const { skippedMap } = useMathSkipped(user)
     const startPractice = useStartPracticeQueue()
     const [favOnly, setFavOnly] = useState(false)
     const [autoExpand, setAutoExpand] = useState(false)
@@ -150,14 +124,13 @@ export function createFilterPanel(
         (filters.source.size === 0 || filters.source.has(setName)) &&
         (filters.type.size === 0 || filters.type.has(p.tag)) &&
         filters.difficulty.has(p.difficulty) &&
-        matchesMastery(solveCount[p.id] ?? 0, filters.mastery) &&
-        matchesPractice(solveCount[p.id] ?? 0, filters.practice) &&
-        matchesSkipReason(p.id, filters.skipReason, skippedMap) &&
+        matchesMastery(correctCount[p.id] ?? 0, filters.mastery) &&
+        matchesPractice(practiceCount[p.id] ?? 0, filters.practice) &&
         (!favOnly || favorites.has(p.id)),
     )
     const total = filtered.length
-    const mastered = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 3).length
-    const attempted = filtered.filter(({ p }) => (solveCount[p.id] ?? 0) >= 1).length
+    const mastered = filtered.filter(({ p }) => (correctCount[p.id] ?? 0) >= 3).length
+    const attempted = filtered.filter(({ p }) => (practiceCount[p.id] ?? 0) >= 1).length
     const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
     const allSourceSelected = sourceBtns.every(b => filters.source.has(b.key))
     const allTypeSelected = typeBtns.every(b => filters.type.has(b.key))
@@ -168,9 +141,9 @@ export function createFilterPanel(
         lessonId,
         section: setName,
         detailHref: getProblemHref(setName, idx),
-        helpProblems: findHelpProblems(problems, p),
+        helpProblems: findHelpProblems(problems, p, practiceCount),
       })),
-    [filtered, problems])
+    [filtered, problems, practiceCount])
 
     const beginPractice = useCallback(
       (initialProblemId?: string) => {
@@ -260,16 +233,6 @@ export function createFilterPanel(
           </div>
 
           <div className="mb-2">
-            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>⏭ 跳过</div>
-            <div className="flex flex-wrap gap-1.5">
-              {SKIP_BTNS.map(b => (
-                <button key={b.key} onClick={() => onSetSkipReason(b.key)}
-                  className={`${btnBase} ${filters.skipReason === b.key ? btnOn : btnOff}`}>{b.label}</button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-2">
             <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>🎯 掌握度</div>
             <div className="flex flex-wrap gap-1.5">
               {MASTERY_BTNS.map(b => (
@@ -337,7 +300,8 @@ export function createFilterPanel(
               key={p.id}
               problem={p}
               index={idx}
-              solveCount={solveCount}
+              practiceCount={practiceCount}
+              correctCount={correctCount}
               tagStyles={tagColors}
               isOpen={expandedIds.has(p.id)}
               onToggle={() => toggleCard(p.id)}

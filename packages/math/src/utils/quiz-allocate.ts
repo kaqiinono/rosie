@@ -18,7 +18,7 @@ export type QuizBatchConfig = {
 
 export type AllocationContext = {
   wrongIds: Set<string>
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
   masteryMap: ProblemMasteryMap
 }
 
@@ -68,8 +68,8 @@ export function compareQuizPriority(a: QuizEntry, b: QuizEntry, ctx: AllocationC
   const wb = ctx.wrongIds.has(b.problem.id) ? 0 : 1
   if (wa !== wb) return wa - wb
 
-  const ca = ctx.solveCount[a.problem.id] ?? 0
-  const cb = ctx.solveCount[b.problem.id] ?? 0
+  const ca = ctx.practiceCount[a.problem.id] ?? 0
+  const cb = ctx.practiceCount[b.problem.id] ?? 0
   if (ca !== cb) return ca - cb
 
   const la = ctx.masteryMap[a.problem.id]?.lastSeen ?? ''

@@ -199,7 +199,7 @@ Adding a new math lesson is a guided flow — see `.Codex/skills/add-lesson` + `
 
 ### Data Flow
 
-All data hooks (`useWordMastery`, `useMathSolved`, `useWordData`, `useWeeklyPlan`, etc.) read and write Supabase directly. Each hook receives `user: User | null` from `AuthContext` and does nothing when `user` is null.
+All data hooks (`useWordMastery`, `useMathPracticeStats`, `useWordData`, `useWeeklyPlan`, etc.) read and write Supabase directly. Each hook receives `user: User | null` from `AuthContext` and does nothing when `user` is null.
 
 **Caching:** user-scoped lists/maps go through `createUserSessionStore` in `@rosie/core` (module-level
 per-user cache + inflight dedupe). Remounting a page after `ready` must not refetch the same store.

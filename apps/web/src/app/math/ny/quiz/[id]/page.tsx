@@ -5,7 +5,6 @@ import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text
 import { use, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
 import { useMathQuiz, computeQuizPoints } from '@rosie/math/hooks/useMathQuiz'
 import { supabase } from '@rosie/core'
 import { useStarHud } from '@rosie/rewards'
@@ -155,7 +154,6 @@ function customWidgetHint(problem: Problem): string {
 export default function QuizDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { user } = useAuth()
-  const { handleSolve } = useMathSolved(user)
   const { completePaper, saveDraftPaper, savePaperProgress } = useMathQuiz(user)
   const { awardStars } = useStarHud()
   const [starBreakdown, setStarBreakdown] = useState<{ base: number; bonus: number } | null>(null)
@@ -314,12 +312,15 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   async function handleSubmit() {
     if (!paper || !user) return
     setSubmitting(true)
+    setSaveMessage(null)
 
-    const workingMap = await fetchAllScratchWorkingForPaper(user.id, paper.id)
-    const newResults: Record<string, boolean> = {}
-    const answerRecords: Record<string, QuizAnswerRecord> = {}
+    try {
 
-    for (const item of paper.problems) {
+      const workingMap = await fetchAllScratchWorkingForPaper(user.id, paper.id)
+      const newResults: Record<string, boolean> = {}
+      const answerRecords: Record<string, QuizAnswerRecord> = {}
+
+      for (const item of paper.problems) {
       const entry = PROBLEM_MAP.get(item.problemId)
       if (!entry) continue
       const { problem } = entry
@@ -339,14 +340,12 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
           userId: user.id,
           problem,
           section: 'quiz',
-          correct,
+          result: correct ? 'correct' : 'wrong',
           objects: working?.objects ?? [],
           answerSnapshot: state ?? null,
           paperId: paper.id,
         })
-        if (correct) {
-          await handleSolve(item.problemId)
-        } else {
+        if (!correct) {
           mathWrongStore.invalidate(user.id)
         }
         continue
@@ -365,39 +364,41 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
         userId: user.id,
         problem,
         section: 'quiz',
-        correct,
+        result: correct ? 'correct' : 'wrong',
         objects: working?.objects ?? [],
         answerSnapshot: userAnswer,
         paperId: paper.id,
       })
-      if (correct) {
-        await handleSolve(item.problemId)
-      } else {
+      if (!correct) {
         mathWrongStore.invalidate(user.id)
       }
     }
 
-    const score = paper.problems.reduce(
+      const score = paper.problems.reduce(
       (sum, item, idx) => sum + (newResults[item.problemId] ? pointsArr[idx] : 0),
       0,
     )
 
-    await completePaper(paper.id, score, answerRecords)
+      await completePaper(paper.id, score, answerRecords)
 
-    setResults(newResults)
-    setSubmitted(true)
-    setSubmitting(false)
+      setResults(newResults)
+      setSubmitted(true)
 
     // ── Award blue stars: +1 per correct, +20% bonus if all correct
-    const correctN = paper.problems.filter((item) => newResults[item.problemId]).length
-    const allCorrect = correctN > 0 && correctN === paper.problems.length
-    const bonus = allCorrect ? Math.round(correctN * 0.2) : 0
-    setStarBreakdown({ base: correctN, bonus })
-    if (correctN > 0) {
-      void awardStars('blue', correctN, {
-        bonus,
-        bonusLabel: bonus > 0 ? `全对加成 +20% (+${bonus}⭐)` : undefined,
-      })
+      const correctN = paper.problems.filter((item) => newResults[item.problemId]).length
+      const allCorrect = correctN > 0 && correctN === paper.problems.length
+      const bonus = allCorrect ? Math.round(correctN * 0.2) : 0
+      setStarBreakdown({ base: correctN, bonus })
+      if (correctN > 0) {
+        void awardStars('blue', correctN, {
+          bonus,
+          bonusLabel: bonus > 0 ? `全对加成 +20% (+${bonus}⭐)` : undefined,
+        })
+      }
+    } catch {
+      setSaveMessage('提交失败，请稍后重试；已成功记录的题目不会重复计数')
+    } finally {
+      setSubmitting(false)
     }
   }
 

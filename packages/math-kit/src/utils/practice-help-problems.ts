@@ -15,6 +15,7 @@ function sectionProblems(
 export function findHelpProblems(
   problemSet: ProblemSet,
   current: Problem,
+  practiceCount: Record<string, number> = {},
 ): PracticeHelpProblem[] {
   return HELP_SECTION_ORDER.flatMap((section, sectionOrder) =>
     sectionProblems(problemSet, section).map((problem, problemOrder) => ({
@@ -30,6 +31,9 @@ export function findHelpProblems(
       const screenshotOrder =
         Number(Boolean(b.problem.analysisImg)) - Number(Boolean(a.problem.analysisImg))
       if (screenshotOrder !== 0) return screenshotOrder
+      const practiceOrder =
+        (practiceCount[a.problem.id] ?? 0) - (practiceCount[b.problem.id] ?? 0)
+      if (practiceOrder !== 0) return practiceOrder
       const difficultyOrder =
         Math.abs(a.problem.difficulty - current.difficulty) -
         Math.abs(b.problem.difficulty - current.difficulty)

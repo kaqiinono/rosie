@@ -5,16 +5,29 @@ import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { todayStr } from '@rosie/core'
 import { MATH_PLAN_LESSONS, mathPlanDisplayName } from './math-weekly-plan-shared'
+import { isPlanProblemDone } from '@rosie/math-kit/utils/math-helpers'
 
 export default function MathDailyCard() {
   const { user } = useAuth()
-  const { weeklyPlan, isLoading } = useMathWeeklyPlan(user)
+  const { weeklyPlan, activePlans, isLoading, allPlans } = useMathWeeklyPlan(user)
 
   const today = todayStr()
-  const todayPlan = weeklyPlan?.days.find((d) => d.date === today)
-  const progress = weeklyPlan?.progress[today] ?? { doneKeys: [] }
-  const total = todayPlan?.problems.length ?? 0
-  const done = progress.doneKeys.filter((k) => todayPlan?.problems.some((p) => p.key === k)).length
+  const todayAssignments = activePlans.flatMap((plan) => {
+    const day = plan.days.find((candidate) => candidate.date === today)
+    return (day?.problems ?? []).map((problem) => ({ problem, plan }))
+  })
+  const total = todayAssignments.length
+  const done = todayAssignments.filter(({ problem, plan }) =>
+    isPlanProblemDone(problem, today, plan.progress[today]?.doneKeys ?? []),
+  ).length
+  const overdueCount = allPlans.reduce((count, plan) => count + plan.days.reduce((dayCount, day) => {
+    if (day.date >= today) return dayCount
+    const deferred = new Set((plan.deferredBatches ?? []).flatMap((batch) => batch.sourceAssignmentIds))
+    return dayCount + day.problems.filter((problem) =>
+      !deferred.has(problem.assignmentId ?? `${day.date}::${problem.key}`) &&
+      !isPlanProblemDone(problem, day.date, plan.progress[day.date]?.doneKeys ?? []),
+    ).length
+  }, 0), 0)
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
   const allDone = total > 0 && done >= total
   const lessonInfo = weeklyPlan
@@ -54,8 +67,8 @@ export default function MathDailyCard() {
           <div className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-orange-500 transition-transform group-hover:translate-x-0.5">
             {(() => {
               if (isLoading) return '…'
-              if (!weeklyPlan) return '暂无计划'
-              return allDone ? '✅ 完成！' : '去做题'
+              if (!weeklyPlan) return overdueCount > 0 ? `欠 ${overdueCount} 题` : '暂无计划'
+              return allDone ? '✅ 完成！' : activePlans.length > 1 ? `${activePlans.length} 个计划` : '去做题'
             })()}
             <span className="text-[14px]">→</span>
           </div>
@@ -100,18 +113,18 @@ export default function MathDailyCard() {
 
             {/* Today's problems preview */}
             <div className="flex flex-wrap gap-1.5">
-              {todayPlan!.problems.slice(0, 4).map((p, i) => {
-                const isDone = progress.doneKeys.includes(p.key)
+              {todayAssignments.slice(0, 4).map(({ problem: p, plan }, i) => {
+                const isDone = isPlanProblemDone(p, today, plan.progress[today]?.doneKeys ?? [])
                 return (
                   <span
-                    key={p.key}
+                    key={`${plan.weekStart}::${p.assignmentId ?? p.key}`}
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all ${
                       isDone
                         ? 'bg-green-100 text-green-700 line-through opacity-70'
                         : 'border border-orange-200 bg-white/80 text-orange-700'
                     }`}
                   >
-                    {isDone ? '⭐' : `${i + 1}.`} {p.title.split('·')[0].trim()}
+                    {isDone ? '⭐' : `${i + 1}.`} {p.isDeferred ? '延期 · ' : ''}{p.title.split('·')[0].trim()}
                   </span>
                 )
               })}

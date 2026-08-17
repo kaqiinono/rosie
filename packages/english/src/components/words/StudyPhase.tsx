@@ -234,7 +234,7 @@ export default function StudyPhase({
           disabled={currentIdx === 0}
           aria-label="上一个单词"
           title="上一个单词"
-          className={`absolute top-1/2 left-2 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full font-black backdrop-blur-sm transition-all hover:scale-110 disabled:cursor-default ${
+          className={`absolute top-[45%] left-0 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full font-black backdrop-blur-sm transition-all hover:scale-110 disabled:cursor-default sm:top-1/2 sm:left-2 ${
             useCompactControls
               ? 'h-12 w-12 border-2 border-[#93c5fd] bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] text-xl text-white shadow-[0_0_0_4px_rgba(37,99,235,.16),0_6px_22px_rgba(37,99,235,.55)] hover:border-white hover:shadow-[0_0_0_5px_rgba(96,165,250,.22),0_8px_28px_rgba(37,99,235,.7)] disabled:border-white/20 disabled:bg-[#111827] disabled:bg-none disabled:text-white/35 disabled:opacity-60 disabled:shadow-none sm:left-3 sm:h-14 sm:w-14 sm:text-2xl'
               : 'h-11 w-11 border border-white/15 bg-[#090914]/75 text-2xl text-white/70 shadow-lg hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:opacity-20 max-sm:h-10 max-sm:w-10 max-sm:text-xl'
@@ -250,7 +250,7 @@ export default function StudyPhase({
           }}
           aria-label={isLast ? completeButtonText : '下一个单词'}
           title={isLast ? completeButtonText : '下一个单词'}
-          className={`absolute top-1/2 right-2 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full font-black backdrop-blur-sm transition-all hover:scale-110 ${
+          className={`absolute top-[45%] right-0 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full font-black backdrop-blur-sm transition-all hover:scale-110 sm:top-1/2 sm:right-2 ${
             useCompactControls
               ? 'h-12 w-12 border-2 border-[#c4b5fd] bg-gradient-to-br from-[#7c3aed] to-[#a855f7] text-xl text-white shadow-[0_0_0_4px_rgba(124,58,237,.16),0_6px_22px_rgba(124,58,237,.58)] hover:border-white hover:shadow-[0_0_0_5px_rgba(167,139,250,.22),0_8px_28px_rgba(124,58,237,.75)] sm:right-3 sm:h-14 sm:w-14 sm:text-2xl'
               : 'h-11 w-11 border border-white/15 bg-[#090914]/75 text-2xl text-white/70 shadow-lg hover:border-[#a78bfa] hover:text-[#c4b5fd] max-sm:h-10 max-sm:w-10 max-sm:text-xl'

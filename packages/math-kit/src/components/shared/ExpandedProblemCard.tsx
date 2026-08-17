@@ -14,7 +14,8 @@ export type ProblemDetailInlineComponent = ComponentType<ProblemDetailComponentP
 type ExpandedProblemCardProps = {
   problem: Problem
   index: number
-  solveCount: Record<string, number>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
   tagStyles: Record<string, string>
   isOpen: boolean
   onToggle: () => void
@@ -30,7 +31,8 @@ type ExpandedProblemCardProps = {
 function ExpandedProblemCard({
   problem,
   index,
-  solveCount,
+  practiceCount,
+  correctCount,
   tagStyles,
   isOpen,
   onToggle,
@@ -41,8 +43,8 @@ function ExpandedProblemCard({
   href,
   onActivate,
 }: ExpandedProblemCardProps) {
-  const count = solveCount[problem.id] ?? 0
-  const level = getMasteryLevel(count)
+  const count = practiceCount[problem.id] ?? 0
+  const level = getMasteryLevel(correctCount[problem.id] ?? 0)
 
   const cardBody = (
     <>

@@ -53,7 +53,7 @@ src/
 │   ├── shared/     #   createLessonProvider, LessonAppHeader, dynamic-lesson, …
 │   ├── catalog/    #   CatalogTree + treeLayout (course map)
 │   └── *Card.tsx   #   top-level entry cards (the public surface)
-├── hooks/          # useMathSolved, useMathWrong, useMathQuiz, useMathRotatingReview,
+├── hooks/          # useMathPracticeStats, useMathWrong, useMathQuiz, useMathRotatingReview,
 │                   #   useMathWeeklyLessonReview, useMathWeeklyPlan, useProblemMastery
 └── utils/          # g1/lesson{seq}-data, g2/lesson{seq}-data (ProblemSet banks);
                     #   lesson-registry (lessonKey + grade + seq), lesson-module-registry,

@@ -37,7 +37,7 @@ import {
 } from '@rosie/chinese'
 import EmbeddedMathProblemSession from '@rosie/math/components/EmbeddedMathProblemSession'
 import { MathDailyCard } from '@rosie/math'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import AdaptivePlanTodayCard from '@/components/today/AdaptivePlanTodayCard'
 
@@ -137,15 +137,19 @@ function EnglishLearningStatus({ view }: { view: LearningStatusBlock['view'] }) 
 function MathLearningStatus({ view }: { view: LearningStatusBlock['view'] }) {
   const { user } = useAuth()
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null)
-  const { solveCount, isLoading } = useMathSolved(user)
+  const { practiceCount, correctCount, isLoading } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
-  const counts = Object.values(solveCount)
+  const counts = Object.values(correctCount)
   return (
     <div className="rounded-2xl bg-indigo-50/80 p-3 ring-1 ring-indigo-100">
       <h3 className="mb-2 font-bold text-indigo-900">数学</h3>
       {isLoading ? <p className="text-sm text-indigo-700">正在加载…</p> : null}
       <div className="grid grid-cols-3 gap-2">
-        <StatusMetric label="已练题目" value={counts.length} tone="bg-white text-indigo-800" />
+        <StatusMetric
+          label="已练题目"
+          value={Object.keys(practiceCount).length}
+          tone="bg-white text-indigo-800"
+        />
         <StatusMetric
           label="已掌握"
           value={counts.filter((count) => count >= 3).length}

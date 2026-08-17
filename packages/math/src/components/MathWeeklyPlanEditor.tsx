@@ -4,14 +4,13 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import {
   buildMathFlexiblePlan,
   countFilteredPlanProblems,
   MATH_PLAN_SECTIONS,
   addPlanDays,
   getOccupiedPlanDates,
-  planRangeOverlapsOccupied,
   suggestAvailablePlanRange,
   getLessonTagStats,
   getLessonSectionStats,
@@ -44,7 +43,6 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   const {
     allPlans,
     priorProblemMap,
-    currentWeekStart,
     defaultParams,
     savePlan,
     deletePlan,
@@ -52,7 +50,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   } = useMathWeeklyPlan(user)
   const { masteryMap } = useProblemMastery(user)
   
-  const { solveCount } = useMathSolved(user)
+  const { practiceCount } = useMathPracticeStats(user)
   
   const today = todayStr()
     const [selectedLessons, setSelectedLessons] = useState<Set<string>>(
@@ -84,16 +82,6 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   const previewDays = useMemo(() => countPlanDays(planStartDate, planEndDateStr), [planStartDate, planEndDateStr])
   const previewProblemsPerDay = previewDays > 0 ? Math.max(1, Math.ceil(previewTotal / previewDays)) : 0
 
-  const occupiedDatesInForm = useMemo(
-    () => getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined),
-    [allPlans, editingPlanStart],
-  )
-
-  const rangeHasOverlap = useMemo(
-    () => planRangeOverlapsOccupied(planStartDate, planEndDateStr, occupiedDatesInForm),
-    [planStartDate, planEndDateStr, occupiedDatesInForm],
-  )
-
   const applySuggestedDateRange = useCallback(
     (fromDate: string) => {
       const occupied = getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined)
@@ -110,14 +98,14 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     (lessonId: string, sections: string[]) => {
       const ps = problemSets[lessonId]
       if (!ps) return
-      const available = getLessonTagStats(ps, sections as MathPlanSectionKey[], solveCount).map(t => t.tag)
+      const available = getLessonTagStats(ps, sections as MathPlanSectionKey[], practiceCount).map(t => t.tag)
       setTagFilters(prev => {
         const current = prev[lessonId] ?? available
         const kept = current.filter(t => available.includes(t))
         return { ...prev, [lessonId]: kept.length > 0 ? kept : available }
       })
     },
-    [problemSets, solveCount],
+    [problemSets, practiceCount],
   )
 
   const toggleLesson = useCallback(
@@ -158,12 +146,12 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       const ps = problemSets[lessonId]
       if (!ps) return prev
       const sections = sectionFilters[lessonId] ?? defaultSectionsForLesson(ps)
-      const allTags = getLessonTagStats(ps, sections as MathPlanSectionKey[], solveCount).map(t => t.tag)
+      const allTags = getLessonTagStats(ps, sections as MathPlanSectionKey[], practiceCount).map(t => t.tag)
       const current = prev[lessonId] ?? allTags
       const next = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag]
       return { ...prev, [lessonId]: next.length > 0 ? next : current }
     })
-  }, [problemSets, sectionFilters, solveCount])
+  }, [problemSets, sectionFilters, practiceCount])
 
   const loadPlanIntoForm = useCallback(
     (plan: MathWeeklyPlan) => {
@@ -188,15 +176,12 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   const handleCreatePlan = useCallback(async () => {
     if (selectedLessonIds.length === 0 || previewDays <= 0 || previewTotal <= 0) return
     if (planEndDateStr < planStartDate) return
-    if (planRangeOverlapsOccupied(planStartDate, planEndDateStr, getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined))) {
-      return
-    }
 
     const targetStart = editingPlanStart ?? planStartDate
     const existingPlan = allPlans.find(p => p.weekStart === targetStart)
     const primaryLesson = selectedLessonIds[selectedLessonIds.length - 1] ?? selectedLessonIds[0]!
 
-    // Edit: freeze past / completed days; rebuild only open days from the *current*
+    // Edit: freeze today, past, and completed future days; rebuild only open days from the *current*
     // filter pool, excluding problems already scheduled on kept frozen days.
     const { days, problemsPerDay } = buildMathFlexiblePlan(
       selectedLessonIds,
@@ -205,7 +190,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       planStartDate,
       planEndDateStr,
       tagFilters,
-      solveCount,
+      practiceCount,
       existingPlan
         ? {
             existingDays: existingPlan.days,
@@ -225,6 +210,8 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     const plan: MathWeeklyPlan = {
       weekStart: planStartDate,
       planEnd: planEndDateStr,
+      originalPlanEnd: existingPlan?.originalPlanEnd ?? planEndDateStr,
+      deferredBatches: existingPlan?.deferredBatches,
       name: planName.trim() || undefined,
       lessonId: primaryLesson,
       lessonIds: selectedLessonIds,
@@ -258,7 +245,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     defaultParams.weekStartDay,
     savePlan,
     deletePlan,
-    solveCount,
+    practiceCount,
     today,
     router,
   ])
@@ -302,8 +289,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       selectedLessonIds.length > 0 &&
       previewDays > 0 &&
       previewTotal > 0 &&
-      planEndDateStr >= planStartDate &&
-      !rangeHasOverlap
+      planEndDateStr >= planStartDate
 
   return (
       <div className="mx-auto max-w-130 px-4 py-8">
@@ -369,22 +355,12 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
               key={editingPlanStart ?? 'new'}
               startDate={planStartDate}
               endDate={planEndDateStr}
-              occupiedDates={occupiedDatesInForm}
+              occupiedDates={new Set<string>()}
               onRangeChange={(start, end) => {
                 setPlanStartDate(start)
                 setPlanEndDateStr(end)
               }}
             />
-            {rangeHasOverlap && (
-              <div className="mt-3 text-[12px] font-medium text-red-500">
-                所选时间段与已有计划重叠，请选择空闲日期
-              </div>
-            )}
-            {occupiedDatesInForm.size > 0 && !rangeHasOverlap && !isEditing && (
-              <div className="mt-3 text-[11px] font-medium text-gray-400">
-                灰色划线的日期已有计划，不可选择
-              </div>
-            )}
           </div>
 
           {/* Lesson multi-select */}
@@ -437,10 +413,10 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
                         const availSections = ps ? availableSections(ps) : []
                         const enabledSections = sectionFilters[l.id] ?? (isSelected ? defaultSectionsForLesson(ps) : [])
                         const tagStats = ps && isSelected
-                          ? getLessonTagStats(ps, enabledSections as MathPlanSectionKey[], solveCount)
+                          ? getLessonTagStats(ps, enabledSections as MathPlanSectionKey[], practiceCount)
                           : []
                         const sectionStats = ps
-                          ? getLessonSectionStats(ps, availSections as MathPlanSectionKey[], solveCount)
+                          ? getLessonSectionStats(ps, availSections as MathPlanSectionKey[], practiceCount)
                           : []
                         const sectionStatMap = Object.fromEntries(sectionStats.map(s => [s.section, s]))
                         const enabledTags = tagFilters[l.id] ?? tagStats.map(t => t.tag)
@@ -622,7 +598,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
             </div>
             {isEditing && (
               <div className="mt-2 text-[12px] font-medium text-orange-600/90">
-                保存时：今天之前与已完成的天保持原题单；仅把当前筛选下、尚未排过的题重新分到未完成的天。
+                保存时：今天及以前与已完成的天保持原题单；仅把当前筛选下、尚未排过的题重新分到余下未完成的天。
               </div>
             )}
             {previewTotal === 0 && (

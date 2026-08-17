@@ -22,6 +22,7 @@ export type MathScratchDraftRow = {
 }
 
 export type PracticeAttemptStatus = 'in_progress' | 'completed'
+export type MathPracticeRecordOrigin = 'native' | 'math_solved_backfill'
 
 export type MathPracticeAttemptRow = {
   id: string
@@ -37,6 +38,7 @@ export type MathPracticeAttemptRow = {
   objects: ScratchObject[]
   answerSnapshot: unknown | null
   attemptedAt: string
+  recordOrigin: MathPracticeRecordOrigin
 }
 
 export type ScratchSessionMode = 'practice' | 'quiz' | 'readonly'

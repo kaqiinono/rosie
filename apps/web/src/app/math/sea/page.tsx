@@ -4,9 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useMathSolved } from '@rosie/math-kit/hooks/useMathSolved'
-import { useMathSkipped } from '@rosie/math-kit/hooks/useMathSkipped'
-import { MATH_SKIP_REASON_OPTIONS, type MathSkipReason } from '@rosie/math-kit/utils/math-skip-reasons'
+import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math-kit/utils/lesson-grade'
 import { SOURCE_LABELS } from '@rosie/core'
@@ -191,16 +189,18 @@ function SeaGrid({
   items,
   page,
   pageSize,
-  solveCount,
-  solvedAt,
+  practiceCount,
+  correctCount,
+  lastAttemptedAt,
   onPageChange,
   onCardClick,
 }: {
   items: SeaProblem[]
   page: number
   pageSize: number
-  solveCount: Record<string, number>
-  solvedAt: Record<string, string>
+  practiceCount: Record<string, number>
+  correctCount: Record<string, number>
+  lastAttemptedAt: Record<string, string>
   onPageChange: (p: number) => void
   onCardClick: (sp: SeaProblem) => void
 }) {
@@ -224,10 +224,11 @@ function SeaGrid({
         {pageItems.map((sp, idx) => {
           const { problem, lessonId, section } = sp
           const lesson = SEA_LESSON_MAP[lessonId]
-          const count = solveCount[problem.id] ?? 0
+          const count = correctCount[problem.id] ?? 0
+          const totalAttempts = practiceCount[problem.id] ?? 0
           const level = getMasteryLevel(count)
           const tagStyle = lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'
-          const lastSolved = solvedAt[problem.id]
+          const lastAttempted = lastAttemptedAt[problem.id]
           const cardStyle = getCardStyle(count)
 
           return (
@@ -267,11 +268,11 @@ function SeaGrid({
                   >
                     {SOURCE_LABELS[section] ?? section}
                   </span>
-                  <PracticeCountBadge count={count} />
+                  <PracticeCountBadge count={totalAttempts} />
                 </div>
-                {count > 0 && lastSolved && (
+                {totalAttempts > 0 && lastAttempted && (
                   <div className="mt-1.5 text-[10px]" style={{ color: 'rgba(90,142,176,0.6)' }}>
-                    上次 {formatDate(lastSolved)}
+                    上次 {formatDate(lastAttempted)}
                   </div>
                 )}
               </div>
@@ -344,12 +345,10 @@ function SeaGrid({
 
 type MasteryFilter = 'all' | 'unstarted' | 'reinforce' | 'mastered'
 type PracticeFilter = 'all' | 'unpracticed' | 'practiced'
-type SkipReasonFilter = 'all' | MathSkipReason
 
 export default function MathSeaPage() {
   const { user } = useAuth()
-  const { solveCount, solvedAt } = useMathSolved(user)
-  const { skippedMap } = useMathSkipped(user)
+  const { practiceCount, correctCount, lastAttemptedAt } = useMathPracticeStats(user)
   const startPractice = useStartPracticeQueue()
   const searchParams = useSearchParams()
 
@@ -383,7 +382,6 @@ export default function MathSeaPage() {
   )
   const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all')
   const [practiceFilter, setPracticeFilter] = useState<PracticeFilter>('all')
-  const [skipReasonFilter, setSkipReasonFilter] = useState<SkipReasonFilter>('all')
   const [selectedDifficulties, setSelectedDifficulties] = useState<Set<ProblemDifficulty>>(
     () => new Set(ALL_DIFFICULTY_LEVELS),
   )
@@ -542,28 +540,28 @@ export default function MathSeaPage() {
       if (!selectedSections.has(sp.section)) return false
       if (selectedTypes.size > 0 && !selectedTypes.has(`${sp.lessonId}::${sp.problem.tag}`)) return false
       if (!selectedDifficulties.has(sp.problem.difficulty)) return false
-      const c = solveCount[sp.problem.id] ?? 0
-      if (masteryFilter === 'unstarted' && c > 0) return false
-      if (masteryFilter === 'reinforce' && (c === 0 || c >= 3)) return false
-      if (masteryFilter === 'mastered' && c < 3) return false
-      if (practiceFilter === 'unpracticed' && c > 0) return false
-      if (practiceFilter === 'practiced' && c === 0) return false
-      if (skipReasonFilter !== 'all' && skippedMap[sp.problem.id]?.reason !== skipReasonFilter) return false
+      const correct = correctCount[sp.problem.id] ?? 0
+      const practiced = practiceCount[sp.problem.id] ?? 0
+      if (masteryFilter === 'unstarted' && correct > 0) return false
+      if (masteryFilter === 'reinforce' && (correct === 0 || correct >= 3)) return false
+      if (masteryFilter === 'mastered' && correct < 3) return false
+      if (practiceFilter === 'unpracticed' && practiced > 0) return false
+      if (practiceFilter === 'practiced' && practiced === 0) return false
       if (q) {
         const hay = `${sp.problem.title} ${sp.problem.text} ${sp.problem.tagLabel}`.toLowerCase()
         if (!hay.includes(q)) return false
       }
       return true
     })
-  }, [search, selectedLessons, selectedSections, selectedTypes, selectedDifficulties, masteryFilter, practiceFilter, skipReasonFilter, solveCount, skippedMap])
+  }, [search, selectedLessons, selectedSections, selectedTypes, selectedDifficulties, masteryFilter, practiceFilter, practiceCount, correctCount])
 
   const stats = useMemo(() => {
     const total = filtered.length
-    const attempted = filtered.filter(sp => (solveCount[sp.problem.id] ?? 0) > 0).length
-    const mastered = filtered.filter(sp => (solveCount[sp.problem.id] ?? 0) >= 3).length
+    const attempted = filtered.filter(sp => (practiceCount[sp.problem.id] ?? 0) > 0).length
+    const mastered = filtered.filter(sp => (correctCount[sp.problem.id] ?? 0) >= 3).length
     const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
     return { total, attempted, mastered, pct }
-  }, [filtered, solveCount])
+  }, [filtered, practiceCount, correctCount])
 
   const SECTION_BTNS = [
     { key: 'pretest', label: '📝 课前测' },
@@ -584,11 +582,6 @@ export default function MathSeaPage() {
     { key: 'all', label: '全部' },
     { key: 'unpracticed', label: '✨ 未练习' },
     { key: 'practiced', label: '练过' },
-  ]
-
-  const SKIP_BTNS: { key: SkipReasonFilter; label: string }[] = [
-    { key: 'all', label: '全部' },
-    ...MATH_SKIP_REASON_OPTIONS.map((o) => ({ key: o.key as SkipReasonFilter, label: o.label })),
   ]
 
   const beginPractice = useCallback(
@@ -870,20 +863,6 @@ export default function MathSeaPage() {
                   </div>
                 </div>
 
-                <div>
-                  <div className="sea-section-label mb-2">跳过</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {SKIP_BTNS.map(b => (
-                      <button
-                        key={b.key}
-                        onClick={() => { setSkipReasonFilter(b.key); setPage(1) }}
-                        className={`sea-chip-${skipReasonFilter === b.key ? 'on' : 'off'} cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-semibold transition-all active:scale-95`}
-                      >
-                        {b.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
 
@@ -951,8 +930,9 @@ export default function MathSeaPage() {
               items={filtered}
               page={Math.min(page, Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)))}
               pageSize={PAGE_SIZE}
-              solveCount={solveCount}
-              solvedAt={solvedAt}
+              practiceCount={practiceCount}
+              correctCount={correctCount}
+              lastAttemptedAt={lastAttemptedAt}
               onPageChange={setPage}
               onCardClick={(sp) => beginPractice(sp.problem.id)}
             />
