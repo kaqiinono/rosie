@@ -124,6 +124,11 @@ AI 的数学题解使用 `@rosie/ui` 的 `ProblemSolutionView`，与详情页的
 浮层根据当前 pathname 查生成后的 link manifest，并把匹配的稳定 sourceRef 作为活动内容上下文；
 chat route 会在服务端重新解析 pathname，不信任客户端直接提交的 sourceRef。RAG 搜索通过 metadata
 锁定当前内容，因此“这道题/这篇课文”无需重复描述。manifest 未命中时仍回退普通混合检索。
+数学 `QuestionLayout` 会在 DOM 上暴露当前可见题目的 `problemId`；浮层只在打开时读取该标记。
+chat route 必须再用 link manifest 按 `problemId` 验证并重建 `activeContent`，不得相信客户端的题名或 sourceRef。
+练习中未作答的当前题不得返回同题完整题解；服务端需同时校验 `math_practice_attempts`
+的 completed 记录。未作答时可给题意、分级提示、易错点，也可检索并完整讲解不同 `problemId`
+的相似例题；相似题检索必须排除当前 sourceRef。
 app 层共享一套 embedded renderers 给浮层和完整 `/ai` 页面。英语课文复用现有音频按钮；
 语文课文复用全文朗读和录音上传，浮层隐藏时通过 `active` 属性停止正在进行的录音。
 古诗得分只在存在匹配的活动语文路线计划时追加 lesson run，不擅自推进计划关卡。

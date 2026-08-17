@@ -25,6 +25,15 @@ describe('AI embedded content-card intent', () => {
     })
   })
 
+  it('recognizes a request for a worked similar example', () => {
+    expect(
+      classifyIntent('给我一道相似例题，讲解完整过程', { subject: 'math' }),
+    ).toMatchObject({
+      intent: 'math_similar_example',
+      subject: 'math',
+    })
+  })
+
   it('never treats the first character in a math word problem as a character card', () => {
     expect(classifyIntent('打字员30分钟能打1800个字，那么1小时能打多少个字？')).toMatchObject({
       intent: 'math_problem',

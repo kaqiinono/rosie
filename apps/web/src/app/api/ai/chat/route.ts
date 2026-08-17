@@ -4,7 +4,7 @@ import {
   getUserFromRequest,
   unauthorizedResponse,
 } from '@/lib/api-auth'
-import { findManifestByHref, runChatStream } from '@rosie/ai'
+import { findManifestByHref, findManifestByProblemId, runChatStream } from '@rosie/ai'
 import type { ChatContext } from '@rosie/ai'
 
 export const runtime = 'nodejs'
@@ -60,18 +60,45 @@ export async function POST(req: Request) {
       : undefined
   const lessonId = typeof rawContext?.lessonId === 'string' ? rawContext.lessonId : undefined
   const manifestEntry = lessonId ? findManifestByHref(lessonId) : undefined
-  const subject: ChatContext['subject'] =
-    rawContext?.subject === 'english' ||
-    rawContext?.subject === 'math' ||
-    rawContext?.subject === 'chinese'
-      ? rawContext.subject
+  const rawActiveContent =
+    rawContext?.activeContent && typeof rawContext.activeContent === 'object'
+      ? (rawContext.activeContent as Record<string, unknown>)
       : undefined
+  const activeProblemEntry =
+    typeof rawActiveContent?.problemId === 'string'
+      ? findManifestByProblemId(rawActiveContent.problemId)
+      : undefined
+  const supabase = createAuthedSupabase(token)
+  let hasAttemptedActiveProblem = false
+  if (activeProblemEntry?.problemId && rawActiveContent?.hasAttempted === true) {
+    const { data: attempts } = await supabase
+      .from('math_practice_attempts')
+      .select('id')
+      .eq('problem_id', activeProblemEntry.problemId)
+      .eq('status', 'completed')
+      .limit(1)
+    hasAttemptedActiveProblem = Boolean(attempts?.length)
+  }
+  const subject: ChatContext['subject'] =
+    activeProblemEntry?.subject ??
+    (rawContext?.subject === 'english' ||
+      rawContext?.subject === 'math' ||
+      rawContext?.subject === 'chinese'
+        ? rawContext.subject
+        : undefined)
   const context: ChatContext | undefined = rawContext
     ? {
         subject,
         lessonId,
         grade: typeof rawContext.grade === 'number' ? rawContext.grade : undefined,
-        activeContent: manifestEntry
+        activeContent: activeProblemEntry
+          ? {
+              sourceRef: activeProblemEntry.sourceRef,
+              title: activeProblemEntry.title,
+              problemId: activeProblemEntry.problemId,
+              hasAttempted: hasAttemptedActiveProblem,
+            }
+          : manifestEntry
           ? {
               sourceRef: manifestEntry.sourceRef,
               title: manifestEntry.title,
@@ -81,9 +108,6 @@ export async function POST(req: Request) {
           : undefined,
       }
     : undefined
-
-  const supabase = createAuthedSupabase(token)
-
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder()

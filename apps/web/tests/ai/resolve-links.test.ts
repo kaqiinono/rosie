@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   findManifestByHref,
+  findManifestByProblemId,
   isAllowedHref,
   resolveActionsForHits,
   resolveActionsForSourceRefs,
@@ -43,5 +44,13 @@ describe('resolve-links', () => {
     expect(findManifestByHref('/english/words/reading/4a-u5l1')).toMatchObject({
       sourceRef: 'english:reading:4A:Unit 5:Lesson 1',
     })
+  })
+
+  it('resolves a visible practice problem without relying on the page route', () => {
+    expect(findManifestByProblemId('1-12-H1')).toMatchObject({
+      sourceRef: 'math:problem:1-12-H1',
+      title: '巩固1(1) · 凑整法',
+    })
+    expect(findManifestByProblemId('not-a-real-problem')).toBeUndefined()
   })
 })

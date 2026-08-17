@@ -55,7 +55,7 @@ const L2_PUZZLE: VerticalDigitPuzzleSpec = {
     [null, 6, 7],
   ],
   result: [null, 0, 5, 1],
-  solutionFills: { b0: 8, b1: 8, b2: 1 },
+  solutionFills: { b0: 8, b1: 6, b2: 1 },
 }
 
 const L3_PUZZLE: VerticalDigitPuzzleSpec = {
@@ -65,7 +65,7 @@ const L3_PUZZLE: VerticalDigitPuzzleSpec = {
     [null, 2, null, 4],
   ],
   result: [8, 6, 4, 2],
-  solutionFills: { b0: 7, b1: 8, b2: 0, b3: 4 },
+  solutionFills: { b0: 4, b1: 8, b2: 7, b3: 0 },
 }
 
 // ── 例题 2 ──
@@ -94,11 +94,10 @@ const L6_PUZZLE: VerticalDigitPuzzleSpec = {
   op: '+',
   operands: [
     [null, 1],
-    [null, null, null],
-    [null, null, null, null],
+    [null, 9, null],
   ],
   result: [null, null, 9, null],
-  solutionFills: { b0: 9, b1: 9, b2: 9, b3: 9, b4: 1, b5: 0, b6: 0 },
+  solutionFills: { b0: 9, b1: 9, b2: 9, b3: 1, b4: 0, b5: 0 },
 }
 
 // ── 例题 3–4 ──
@@ -218,8 +217,8 @@ const L17_PUZZLE: VerticalDigitPuzzleSpec = {
     [null, null, null, 1],
     [null, 3, 8],
   ],
-  result: [null, 7, 3],
-  solutionFills: { b0: 1, b1: 0, b2: 1, b3: 9, b4: 0 },
+  result: [7, 3],
+  solutionFills: { b0: 1, b1: 0, b2: 1, b3: 9 },
 }
 
 const L18_PUZZLE: VerticalDigitPuzzleSpec = {
@@ -231,7 +230,7 @@ const L18_PUZZLE: VerticalDigitPuzzleSpec = {
   result: [null, null, 9, null],
   chainSubtract: [null, null, null],
   chainResult: [null, 4],
-  solutionFills: { b0: 9, b1: 9, b2: 9, b3: 9, b4: 1, b5: 0, b6: 0, b7: 0, b8: 0, b9: 0 },
+  solutionFills: { b0: 9, b1: 9, b2: 9, b3: 1, b4: 0, b5: 0, b6: 9, b7: 9, b8: 6, b9: 9 },
 }
 
 const L19_PUZZLE: VerticalDigitPuzzleSpec = {
@@ -536,12 +535,12 @@ const LESSON: Problem[] = [
       '个位：□+3 得 2 需进位，□=9，进 1',
       '十位：5+□+1=5 → □=9，进 1',
       '百位：□+3+1=8 → □=4',
-      '即 <strong>495+393=852</strong>',
+      '即 <strong>459+393=852</strong>',
     ],
     type: 'none',
     finalQ: '较大加数是',
     finalUnit: '',
-    finalAns: 495,
+    finalAns: 459,
   },
   {
     id: '2-7-L2',
@@ -555,12 +554,12 @@ const LESSON: Problem[] = [
       '个位 4+7=11，个位 1 进 1',
       '十位 □+6+1 个位为 5 → □=8，进 1',
       '百位 3+□+1 个位为 0 → □=6，进 1',
-      '千位进 1，得 <strong>384+867=1251</strong>',
+      '千位进 1，得 <strong>384+667=1051</strong>',
     ],
     type: 'none',
     finalQ: '和是',
     finalUnit: '',
-    finalAns: 1251,
+    finalAns: 1051,
   },
   {
     id: '2-7-L3',
@@ -616,15 +615,15 @@ const LESSON: Problem[] = [
   },
   {
     id: '2-7-L6',
-    title: '例题2-3 · 三数相加',
+    title: '例题2-3 · 两数相加',
     tag: 'type1',
     tagLabel: '加法数字谜',
     difficulty: 3,
     text: '在图中空格里填入适当的数字，使竖式成立。',
     ...withPuzzle(L6_PUZZLE),
     analysis: [
-      '两位加三位加四位得四位数，百位为 9',
-      '一组解：<strong>91+999=1090</strong>（另两加数需逐位验证）',
+      '两位数加三位数得四位数，十位为 9',
+      '一组解：<strong>91+999=1090</strong>',
     ],
     type: 'none',
     finalQ: '和是',
@@ -643,7 +642,7 @@ const LESSON: Problem[] = [
       '个位 7+2=9，□=9 进 1',
       '十位 7+9+1=17，□=9 进 1',
       '百位 0+0+1=1',
-      '逐位得 <strong>908907+99029=1007836</strong> 或 <strong>908797+99029=1007826</strong>',
+      '逐位得 <strong>908797+99029=1007826</strong>',
     ],
     type: 'none',
     finalQ: '和的个位是',
@@ -815,7 +814,7 @@ const LESSON: Problem[] = [
     type: 'none',
     finalQ: '最后差是',
     finalUnit: '',
-    finalAns: 4,
+    finalAns: 94,
   },
   {
     id: '2-7-L19',

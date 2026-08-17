@@ -102,6 +102,7 @@ export interface ChatContext {
     sourceRef: string
     title: string
     problemId?: string
+    hasAttempted?: boolean
     wordKey?: string
   }
 }

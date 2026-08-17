@@ -46,6 +46,32 @@ describe('AI chat prompt safety', () => {
     expect(prompt).not.toContain('最终答案是 25')
   })
 
+  it('isolates the current solution until a verified attempt exists', () => {
+    const unattempted = buildSafeMathContext(mathBlock, null, {
+      subject: 'math',
+      activeContent: {
+        sourceRef: 'math:problem:p1',
+        problemId: 'p1',
+        title: '打字员问题',
+        hasAttempted: false,
+      },
+    })
+    expect(unattempted).toContain('尚未作答')
+    expect(unattempted).toContain('相似例题')
+    expect(unattempted).not.toContain('最终答案是 25')
+
+    const attempted = buildSafeMathContext(mathBlock, null, {
+      subject: 'math',
+      activeContent: {
+        sourceRef: 'math:problem:p1',
+        problemId: 'p1',
+        title: '打字员问题',
+        hasAttempted: true,
+      },
+    })
+    expect(attempted).toContain('最终答案是 25')
+  })
+
   it('normalizes newest-first rows into bounded chronological history', () => {
     const history = normalizeConversationHistory([
       { role: 'assistant', content: '第二条回答' },

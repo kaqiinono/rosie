@@ -1,11 +1,21 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useImmersive } from '@rosie/core'
+import { STORAGE_KEYS, useImmersive } from '@rosie/core'
 import type { AgentBlock, AiSubject, ChatContext } from '../types'
-import { findManifestByHref } from '../server/tools/resolve-links'
+import { findManifestByHref, findManifestByProblemId } from '../server/tools/resolve-links'
 import AiChatPanel from './AiChatPanel'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
 
@@ -47,6 +57,46 @@ type AiFloatingAssistantProps = {
   onVisibilityChange?: (open: boolean) => void
 }
 
+type LauncherPosition = { x: number; y: number }
+type DragStart = LauncherPosition & { pointerX: number; pointerY: number; pointerId: number }
+
+const LAUNCHER_EDGE_GAP = 8
+const DRAG_THRESHOLD = 6
+
+function clampLauncherPosition(
+  position: LauncherPosition,
+  width: number,
+  height: number,
+): LauncherPosition {
+  return {
+    x: Math.min(
+      Math.max(LAUNCHER_EDGE_GAP, position.x),
+      Math.max(LAUNCHER_EDGE_GAP, window.innerWidth - width - LAUNCHER_EDGE_GAP),
+    ),
+    y: Math.min(
+      Math.max(LAUNCHER_EDGE_GAP, position.y),
+      Math.max(LAUNCHER_EDGE_GAP, window.innerHeight - height - LAUNCHER_EDGE_GAP),
+    ),
+  }
+}
+
+export function findVisibleActiveProblem(candidates: HTMLElement[]): HTMLElement | undefined {
+  for (let index = candidates.length - 1; index >= 0; index -= 1) {
+    const element = candidates[index]
+    if (!element) continue
+    const rect = element.getBoundingClientRect()
+    const isVisible =
+      rect.width > 0 &&
+      rect.height > 0 &&
+      rect.bottom > 0 &&
+      rect.right > 0 &&
+      rect.top < window.innerHeight &&
+      rect.left < window.innerWidth
+    if (isVisible) return element
+  }
+  return undefined
+}
+
 export default function AiFloatingAssistant({
   renderMathProblem,
   renderWordCard,
@@ -60,13 +110,32 @@ export default function AiFloatingAssistant({
   const pathname = usePathname()
   const { isImmersive } = useImmersive()
   const [open, setOpen] = useState(false)
+  const [launcherPosition, setLauncherPosition] = useState<LauncherPosition | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const [activeProblem, setActiveProblem] = useState<{
+    problemId: string
+    hasAttempted: boolean
+  } | null>(null)
   const launcherRef = useRef<HTMLButtonElement>(null)
+  const dragStartRef = useRef<DragStart | null>(null)
+  const didDragRef = useRef(false)
+  const suppressClickRef = useRef(false)
   const context = useMemo<ChatContext>(() => {
     const manifestEntry = findManifestByHref(pathname)
+    const activeProblemEntry = activeProblem
+      ? findManifestByProblemId(activeProblem.problemId)
+      : undefined
     return {
       subject: subjectFromPathname(pathname),
       lessonId: pathname,
-      activeContent: manifestEntry
+      activeContent: activeProblemEntry
+        ? {
+            sourceRef: activeProblemEntry.sourceRef,
+            title: activeProblemEntry.title,
+            problemId: activeProblemEntry.problemId,
+            hasAttempted: activeProblem?.hasAttempted,
+          }
+        : manifestEntry
         ? {
             sourceRef: manifestEntry.sourceRef,
             title: manifestEntry.title,
@@ -75,11 +144,145 @@ export default function AiFloatingAssistant({
           }
         : undefined,
     }
-  }, [pathname])
+  }, [activeProblem, pathname])
   const closeAssistant = useCallback(() => {
     setOpen(false)
     requestAnimationFrame(() => launcherRef.current?.focus())
   }, [])
+
+  const openAssistant = useCallback(() => {
+    const candidates = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-ai-active-problem-id]'),
+    )
+    const visibleProblem = findVisibleActiveProblem(candidates)
+    const problemId = visibleProblem?.dataset.aiActiveProblemId
+    setActiveProblem(
+      problemId
+        ? {
+            problemId,
+            hasAttempted: visibleProblem.dataset.aiProblemAttempted === 'true',
+          }
+        : null,
+    )
+    setOpen(true)
+  }, [])
+
+  const saveLauncherPosition = useCallback((position: LauncherPosition) => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.AI_ASSISTANT_POSITION, JSON.stringify(position))
+    } catch {
+      // The launcher remains draggable when browser storage is unavailable.
+    }
+  }, [])
+
+  const positionLauncher = useCallback(
+    (position: LauncherPosition, persist = false) => {
+      const launcher = launcherRef.current
+      if (!launcher) return
+      const nextPosition = clampLauncherPosition(
+        position,
+        launcher.offsetWidth,
+        launcher.offsetHeight,
+      )
+      setLauncherPosition(nextPosition)
+      if (persist) saveLauncherPosition(nextPosition)
+    },
+    [saveLauncherPosition],
+  )
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.AI_ASSISTANT_POSITION)
+      if (!saved) return
+      const parsed: unknown = JSON.parse(saved)
+      if (typeof parsed === 'object' && parsed !== null) {
+        const candidate = parsed as Record<string, unknown>
+        if (typeof candidate.x === 'number' && typeof candidate.y === 'number') {
+          const savedPosition = { x: candidate.x, y: candidate.y }
+          requestAnimationFrame(() => positionLauncher(savedPosition))
+        }
+      }
+    } catch {
+      // Ignore malformed or unavailable local storage and use the default corner.
+    }
+  }, [positionLauncher])
+
+  useEffect(() => {
+    const keepLauncherOnScreen = () => {
+      if (launcherPosition) positionLauncher(launcherPosition, true)
+    }
+    window.addEventListener('resize', keepLauncherOnScreen)
+    return () => window.removeEventListener('resize', keepLauncherOnScreen)
+  }, [launcherPosition, positionLauncher])
+
+  const handleLauncherPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (open || event.button !== 0) return
+    const rect = event.currentTarget.getBoundingClientRect()
+    dragStartRef.current = {
+      x: rect.left,
+      y: rect.top,
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      pointerId: event.pointerId,
+    }
+    didDragRef.current = false
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handleLauncherPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const start = dragStartRef.current
+    if (!start || start.pointerId !== event.pointerId) return
+    const deltaX = event.clientX - start.pointerX
+    const deltaY = event.clientY - start.pointerY
+    if (!didDragRef.current && Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD) return
+    didDragRef.current = true
+    setDragging(true)
+    positionLauncher({ x: start.x + deltaX, y: start.y + deltaY })
+  }
+
+  const finishLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const start = dragStartRef.current
+    if (!start || start.pointerId !== event.pointerId) return
+    dragStartRef.current = null
+    setDragging(false)
+    if (didDragRef.current) {
+      suppressClickRef.current = true
+      positionLauncher(
+        {
+          x: start.x + event.clientX - start.pointerX,
+          y: start.y + event.clientY - start.pointerY,
+        },
+        true,
+      )
+    }
+  }
+
+  const cancelLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (dragStartRef.current?.pointerId !== event.pointerId) return
+    dragStartRef.current = null
+    didDragRef.current = false
+    suppressClickRef.current = false
+    setDragging(false)
+    if (launcherPosition) saveLauncherPosition(launcherPosition)
+  }
+
+  const handleLauncherKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    const movement: Record<string, LauncherPosition> = {
+      ArrowLeft: { x: -24, y: 0 },
+      ArrowRight: { x: 24, y: 0 },
+      ArrowUp: { x: 0, y: -24 },
+      ArrowDown: { x: 0, y: 24 },
+    }
+    const delta = movement[event.key]
+    if (!delta || open) return
+    event.preventDefault()
+    const rect = event.currentTarget.getBoundingClientRect()
+    positionLauncher({ x: rect.left + delta.x, y: rect.top + delta.y }, true)
+  }
+
+  const launcherStyle: CSSProperties | undefined = launcherPosition
+    ? { left: launcherPosition.x, top: launcherPosition.y, right: 'auto', bottom: 'auto' }
+    : undefined
 
   useEffect(() => {
     onVisibilityChange?.(open)
@@ -101,10 +304,24 @@ export default function AiFloatingAssistant({
       <button
         ref={launcherRef}
         type="button"
-        aria-label={open ? '收起 Rosie 学习助手' : '打开 Rosie 学习助手'}
+        aria-label={open ? '收起 Rosie 学习助手' : '打开 Rosie 学习助手，可拖动调整位置'}
         aria-expanded={open}
-        onClick={() => (open ? closeAssistant() : setOpen(true))}
-        className={`group fixed right-4 bottom-24 z-50 flex min-h-14 items-center gap-2 rounded-full bg-gradient-to-br from-violet-500 to-sky-500 p-2.5 text-white shadow-[0_10px_30px_rgba(59,130,246,0.35)] ring-2 ring-white/80 transition hover:-translate-y-1 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 active:translate-y-0 md:right-6 md:bottom-6 ${open ? 'pr-3' : 'pr-4'}`}
+        title={open ? '收起 Rosie 学习助手' : '拖动可移开，方向键也可调整位置'}
+        style={launcherStyle}
+        onClick={() => {
+          if (suppressClickRef.current) {
+            suppressClickRef.current = false
+            return
+          }
+          if (open) closeAssistant()
+          else openAssistant()
+        }}
+        onKeyDown={handleLauncherKeyDown}
+        onPointerDown={handleLauncherPointerDown}
+        onPointerMove={handleLauncherPointerMove}
+        onPointerUp={finishLauncherDrag}
+        onPointerCancel={cancelLauncherDrag}
+        className={`group fixed right-4 bottom-24 z-50 flex min-h-14 touch-none items-center gap-2 rounded-full bg-gradient-to-br from-violet-500 to-sky-500 p-2.5 text-white shadow-[0_10px_30px_rgba(59,130,246,0.35)] ring-2 ring-white/80 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 md:right-6 md:bottom-6 ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
       >
         <span
           aria-hidden="true"

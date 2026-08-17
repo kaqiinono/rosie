@@ -8,6 +8,7 @@ export type AgentIntent =
   | 'today_tasks'
   | 'passage_lookup'
   | 'math_problem'
+  | 'math_similar_example'
   | 'math_practice'
   | 'general_qa'
 
@@ -27,6 +28,7 @@ const ENGLISH_WORD_HINTS = ['单词', '词卡', '英文卡片']
 const PASSAGE_HINTS = ['课文', '讲什么', '主要内容', '阅读', '故事']
 const MATH_HINTS = ['题', '怎么做', '解题', '应用题', '算', '数学']
 const MATH_PRACTICE_HINTS = ['展示', '让我做', '我要做', '练习这道', '打开这道', '出示']
+const MATH_SIMILAR_HINTS = ['相似题', '类似题', '相似例题', '类似例题', '同类题']
 const CHAR_CARD_HINTS = ['生字卡', '汉字卡', '文字卡', '字卡', '展示这个字']
 const POEM_RECITE_HINTS = ['背诵', '背古诗', '古诗填空', '考我古诗']
 const STATUS_HINTS = ['掌握度', '掌握情况', '错题统计', '错题情况', '学习情况', '学习概况']
@@ -139,7 +141,9 @@ export function classifyIntent(message: string, context?: ChatContext): Classifi
   ) {
     return {
       intent:
-        trimmed.includes('题') && MATH_PRACTICE_HINTS.some((hint) => trimmed.includes(hint))
+        MATH_SIMILAR_HINTS.some((hint) => trimmed.includes(hint))
+          ? 'math_similar_example'
+          : trimmed.includes('题') && MATH_PRACTICE_HINTS.some((hint) => trimmed.includes(hint))
           ? 'math_practice'
           : 'math_problem',
       subject: 'math',

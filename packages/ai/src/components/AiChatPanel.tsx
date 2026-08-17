@@ -36,6 +36,15 @@ const PROMPT_TONES = {
   indigo: 'bg-indigo-50 text-indigo-700 ring-indigo-100',
 } as const
 
+const MATH_PROBLEM_PROMPTS = [
+  '帮我读懂这道题，不要告诉我答案',
+  '给我第一级提示',
+  '这道题有哪些易错点和笔记？',
+  '给我一道相似例题，讲解完整过程',
+] as const
+
+const COMPLETED_MATH_PROMPT = '我已经作答，请讲解这道题的完整题解'
+
 const STAGE_LABELS: Record<TeachingSessionState['teachingStage'], string> = {
   understand: '理解题意',
   attempt: '自己尝试',
@@ -331,7 +340,50 @@ export default function AiChatPanel({
       }`}
     >
       <div className="flex-1 space-y-5 overflow-y-auto px-1 py-5 sm:px-2 sm:py-6">
-        {messages.length === 0 ? (
+        {context?.subject === 'math' && context.activeContent?.problemId ? (
+          <section
+            aria-labelledby="ai-current-problem-title"
+            className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-sky-50 p-3.5 text-left shadow-[0_5px_18px_rgba(79,70,229,0.08)]"
+          >
+            <p className="text-[11px] font-black tracking-wider text-indigo-500 uppercase">
+              已识别当前题目
+            </p>
+            <h3
+              id="ai-current-problem-title"
+              className="mt-1 text-sm leading-5 font-black text-slate-800"
+            >
+              {context.activeContent.title}
+            </h3>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              不用重复输入题目，选择一个问题就可以开始。
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {MATH_PROBLEM_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void sendMessage(prompt)}
+                  className="min-h-11 cursor-pointer rounded-xl border border-white bg-white px-3 py-2.5 text-left text-xs leading-5 font-bold text-indigo-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 active:scale-[0.98] disabled:cursor-wait disabled:opacity-50"
+                >
+                  {prompt}
+                </button>
+              ))}
+              {context.activeContent.hasAttempted ? (
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => void sendMessage(COMPLETED_MATH_PROMPT)}
+                  className="min-h-11 cursor-pointer rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2.5 text-left text-xs leading-5 font-bold text-emerald-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-100 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 active:scale-[0.98] disabled:cursor-wait disabled:opacity-50 sm:col-span-2"
+                >
+                  {COMPLETED_MATH_PROMPT}
+                </button>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {messages.length === 0 && !context?.activeContent?.problemId ? (
           <div className="mx-auto flex w-full max-w-2xl flex-col items-center py-3 text-center sm:py-8">
             <div className="relative">
               <div className="absolute inset-0 scale-125 rounded-full bg-violet-300/30 blur-xl" />

@@ -62,7 +62,14 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
     try {
       const stream = streamChatTokens(
         buildChatSystemPrompt(Boolean(profile)),
-        buildChatUserPrompt(input.message, envelope, profile, teachingSession, history),
+        buildChatUserPrompt(
+          input.message,
+          envelope,
+          profile,
+          teachingSession,
+          history,
+          input.context,
+        ),
       )
       let streamed = ''
       while (true) {
@@ -86,6 +93,12 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
 
     if (teachingSession && shouldHideFullSolution(teachingSession)) {
       envelope.blocks = envelope.blocks.filter((block) => block.type !== 'math_solution')
+    } else if (input.context?.activeContent?.hasAttempted !== true) {
+      envelope.blocks = envelope.blocks.filter(
+        (block) =>
+          block.type !== 'math_solution' ||
+          block.problemId !== input.context?.activeContent?.problemId,
+      )
     }
 
     const { data: inserted, error } = await input.supabase

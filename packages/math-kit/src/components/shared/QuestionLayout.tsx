@@ -208,7 +208,12 @@ export default function QuestionLayout({
   return (
     <SolutionToggleContext.Provider value={toggleCtx}>
       <AnswerActionsContext.Provider value={answerActionsCtx}>
-      <div className="question-layout">
+      <div
+        className="question-layout"
+        data-ai-active-problem-id={problemId}
+        data-ai-active-problem-title={problem?.title}
+        data-ai-problem-attempted={effectiveSolutionAvailable ? 'true' : 'false'}
+      >
         {/* ── Section 1: 题目 ── */}
         <section className="ql-question">
           <div className="ql-question-body">{question}</div>

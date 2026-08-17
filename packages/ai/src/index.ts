@@ -14,7 +14,11 @@ export type {
 
 export { default as AiAssistantPage } from './components/AiAssistantPage'
 export { default as AiFloatingAssistant } from './components/AiFloatingAssistant'
-export { shouldShowAiAssistant, subjectFromPathname } from './components/AiFloatingAssistant'
+export {
+  findVisibleActiveProblem,
+  shouldShowAiAssistant,
+  subjectFromPathname,
+} from './components/AiFloatingAssistant'
 export { default as AiChatPanel } from './components/AiChatPanel'
 export { default as AiVoiceInput } from './components/AiVoiceInput'
 export { default as AiMessageRenderer } from './components/agent/AiMessageRenderer'
@@ -83,4 +87,5 @@ export {
   resolveActionsForHits,
   isAllowedHref,
   findManifestByHref,
+  findManifestByProblemId,
 } from './server/tools/resolve-links'

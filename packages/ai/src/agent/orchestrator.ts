@@ -40,15 +40,34 @@ export async function runAgentOrchestrator(
   }
 
   try {
-    hits = await searchKnowledge(supabase, {
-      query: input.message,
-      subject: classified.subject,
-      grade: input.context?.grade,
-      matchCount: 6,
-      metadata: input.context?.activeContent?.sourceRef
-        ? { sourceRef: input.context.activeContent.sourceRef }
-        : undefined,
-    })
+    if (classified.intent === 'math_similar_example' && input.context?.activeContent?.sourceRef) {
+      const currentHits = await searchKnowledge(supabase, {
+        query: input.message,
+        subject: 'math',
+        matchCount: 2,
+        metadata: { sourceRef: input.context.activeContent.sourceRef },
+      })
+      const comparisonQuery = currentHits[0]?.content ?? input.context.activeContent.title
+      const similarHits = await searchKnowledge(supabase, {
+        query: comparisonQuery,
+        subject: 'math',
+        grade: input.context?.grade,
+        matchCount: 8,
+      })
+      hits = similarHits.filter(
+        (hit) => hit.metadata.sourceRef !== input.context?.activeContent?.sourceRef,
+      )
+    } else {
+      hits = await searchKnowledge(supabase, {
+        query: input.message,
+        subject: classified.subject,
+        grade: input.context?.grade,
+        matchCount: 6,
+        metadata: input.context?.activeContent?.sourceRef
+          ? { sourceRef: input.context.activeContent.sourceRef }
+          : undefined,
+      })
+    }
   } catch {
     hits = []
   }
@@ -98,7 +117,7 @@ export async function runAgentOrchestrator(
     }
   }
 
-  if (classified.intent === 'math_problem') {
+  if (classified.intent === 'math_problem' || classified.intent === 'math_similar_example') {
     const mathHit = hits.find((h) => h.subject === 'math') ?? hits[0]
     if (mathHit) {
       const block = await buildMathSolutionFromHit(supabase, mathHit)

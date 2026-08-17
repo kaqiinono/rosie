@@ -1,4 +1,4 @@
-import type { AgentBlock, AgentResponse, TeachingSessionState } from '../types'
+import type { AgentBlock, AgentResponse, ChatContext, TeachingSessionState } from '../types'
 import type { ChatHistoryMessage } from './conversation-history'
 import type { StudentProfile } from './student-profile'
 import { buildStudentProfilePrompt } from './student-profile'
@@ -23,6 +23,7 @@ export function buildChatUserPrompt(
   profile?: StudentProfile | null,
   teachingSession?: TeachingSessionState | null,
   history: ChatHistoryMessage[] = [],
+  context?: ChatContext,
 ): string {
   const contextParts = envelope.blocks
     .map((block) => {
@@ -34,7 +35,7 @@ export function buildChatUserPrompt(
         case 'passage_excerpt':
           return `课文《${block.title}》：\n${block.paragraphs.join('\n\n')}`
         case 'math_solution':
-          return buildSafeMathContext(block, teachingSession)
+          return buildSafeMathContext(block, teachingSession, context)
         case 'math_problem':
           return `数学练习《${block.title}》（题目已在对话中展示，先鼓励孩子自己作答）`
         case 'poem_recite':
@@ -79,7 +80,14 @@ type MathSolutionBlock = Extract<AgentBlock, { type: 'math_solution' }>
 export function buildSafeMathContext(
   block: MathSolutionBlock,
   teachingSession?: TeachingSessionState | null,
+  context?: ChatContext,
 ): string {
+  const isUnattemptedCurrentProblem =
+    context?.activeContent?.problemId === block.problemId &&
+    context.activeContent.hasAttempted !== true
+  if (isUnattemptedCurrentProblem) {
+    return `数学题《${block.title}》：孩子尚未作答，完整解析和最终答案已隔离。可以讲解题意、易错点和分级提示，或完整讲解另一道相似例题。`
+  }
   if (!teachingSession || teachingSession.teachingStage === 'summary') {
     return `数学题《${block.title}》步骤：\n${block.steps.join('\n')}`
   }

@@ -64,6 +64,57 @@ describe('AiChatPanel teaching flow', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toContain('/api/ai/teaching-sessions?id=')
   })
 
+  it('shows contextual questions and sends the verified active problem context', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      sseResponse([
+        {
+          event: 'envelope',
+          data: { text: '我们先读懂题意。', blocks: [], actions: [], sources: [] },
+        },
+        {
+          event: 'done',
+          data: { conversationId: '00000000-0000-4000-8000-000000000001' },
+        },
+      ]),
+    )
+
+    render(
+      <AiChatPanel
+        mode="overlay"
+        context={{
+          subject: 'math',
+          lessonId: '/math/plan',
+          activeContent: {
+            sourceRef: 'math:problem:1-12-H1',
+            problemId: '1-12-H1',
+            title: '巩固1 · 两两配对',
+            hasAttempted: false,
+          },
+        }}
+      />,
+    )
+
+    expect(screen.getByText('已识别当前题目')).toBeInTheDocument()
+    expect(screen.getByText('巩固1 · 两两配对')).toBeInTheDocument()
+    expect(screen.queryByText('嗨，很高兴和你一起学习！')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '给我一道相似例题，讲解完整过程' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: '我已经作答，请讲解这道题的完整题解' }),
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '帮我读懂这道题，不要告诉我答案' }))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+    const request = fetchMock.mock.calls[0]?.[1]
+    const body = JSON.parse(String(request?.body)) as {
+      message: string
+      context: { activeContent?: { problemId?: string } }
+    }
+    expect(body.message).toBe('帮我读懂这道题，不要告诉我答案')
+    expect(body.context.activeContent?.problemId).toBe('1-12-H1')
+  })
+
   it('starts an explicit teaching session after a subject answer', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce(

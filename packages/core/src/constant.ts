@@ -32,6 +32,8 @@ export const STORAGE_KEYS = {
   AI_CONVERSATION_ID: 'ai-conversation-id-v1',
   /** 当前浏览器标签页中的显式教学会话，不保存孩子的作答内容。 */
   AI_TEACHING_SESSION_ID: 'ai-teaching-session-id-v1',
+  /** AI 悬浮助手在当前设备上的可拖动位置。 */
+  AI_ASSISTANT_POSITION: 'ai-assistant-position-v1',
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
   ENGLISH_SEL_STAGE: 'english-sel-stage',
   ENGLISH_SEL_UNITS: 'english-sel-units',

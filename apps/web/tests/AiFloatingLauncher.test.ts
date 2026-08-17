@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { shouldShowAiAssistant, subjectFromPathname } from '@rosie/ai'
+import { findVisibleActiveProblem, shouldShowAiAssistant, subjectFromPathname } from '@rosie/ai'
 
 describe('AI floating launcher visibility', () => {
   it('shows on learning pages', () => {
@@ -22,5 +22,17 @@ describe('AI floating launcher visibility', () => {
     expect(subjectFromPathname('/math/ny/3/12')).toBe('math')
     expect(subjectFromPathname('/calc/session')).toBe('math')
     expect(subjectFromPathname('/today')).toBeUndefined()
+  })
+})
+
+describe('AI floating launcher active problem', () => {
+  it('finds the last visible problem without relying on Array.findLast', () => {
+    const hidden = document.createElement('div')
+    hidden.getBoundingClientRect = () => new DOMRect(0, 0, 0, 0)
+    const visible = document.createElement('div')
+    visible.dataset.aiActiveProblemId = '1-12-H1'
+    visible.getBoundingClientRect = () => new DOMRect(20, 20, 320, 240)
+
+    expect(findVisibleActiveProblem([hidden, visible])).toBe(visible)
   })
 })
