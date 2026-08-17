@@ -19,7 +19,13 @@ type SolutionToggleContextValue = {
   claim: () => () => void
 }
 
+type AnswerActionsContextValue = {
+  node: React.ReactNode
+  claim: () => () => void
+}
+
 const SolutionToggleContext = createContext<SolutionToggleContextValue | null>(null)
+const AnswerActionsContext = createContext<AnswerActionsContextValue | null>(null)
 const SolutionAvailabilityOverrideContext = createContext(false)
 
 /** Allows list-style study views to show solutions before an answer attempt. */
@@ -51,7 +57,17 @@ export function useClaimSolutionToggle(claim = true): React.ReactNode {
   return ctx?.node ?? null
 }
 
-interface QuestionLayoutProps {
+/** Places shared actions such as 不会 in the answer component's primary action row. */
+export function useClaimAnswerActions(claim = true): React.ReactNode {
+  const ctx = useContext(AnswerActionsContext)
+  useLayoutEffect(() => {
+    if (!claim || !ctx?.node) return
+    return ctx.claim()
+  }, [claim, ctx])
+  return ctx?.node ?? null
+}
+
+export interface QuestionLayoutProps {
   question: React.ReactNode
   solution: React.ReactNode
   answer: React.ReactNode
@@ -70,6 +86,8 @@ interface QuestionLayoutProps {
   problemId?: string
   /** Enables in-place note editing on problem detail for logged-in users. */
   problem?: Problem
+  /** Shared attempt actions rendered directly below the answer controls. */
+  answerActions?: React.ReactNode
 }
 
 export default function QuestionLayout({
@@ -81,6 +99,7 @@ export default function QuestionLayout({
   showSolutionToggle = true,
   problemId,
   problem,
+  answerActions,
 }: QuestionLayoutProps) {
   const solutionAvailabilityOverride = useContext(SolutionAvailabilityOverrideContext)
   const effectiveSolutionAvailable = solutionAvailable || solutionAvailabilityOverride
@@ -95,6 +114,8 @@ export default function QuestionLayout({
   // 查看题解 button next to the claimed one.
   const [claimCount, setClaimCount] = useState(0)
   const toggleClaimed = claimCount > 0
+  const [answerActionsClaimCount, setAnswerActionsClaimCount] = useState(0)
+  const answerActionsClaimed = answerActionsClaimCount > 0
 
   useEffect(() => {
     setSolutionOpen(effectiveSolutionAvailable ? defaultSolutionOpen : false)
@@ -129,6 +150,16 @@ export default function QuestionLayout({
     return () => setClaimCount((c) => c - 1)
   }, [])
 
+  const claimAnswerActions = useCallback(() => {
+    setAnswerActionsClaimCount((count) => count + 1)
+    return () => setAnswerActionsClaimCount((count) => count - 1)
+  }, [])
+
+  const answerActionsCtx = useMemo((): AnswerActionsContextValue | null => {
+    if (!answerActions) return null
+    return { node: answerActions, claim: claimAnswerActions }
+  }, [answerActions, claimAnswerActions])
+
   const toggleEnabled = effectiveSolutionAvailable && showSolutionToggle
 
   const toggleCtx = useMemo((): SolutionToggleContextValue | null => {
@@ -155,6 +186,7 @@ export default function QuestionLayout({
 
   return (
     <SolutionToggleContext.Provider value={toggleCtx}>
+      <AnswerActionsContext.Provider value={answerActionsCtx}>
       <div className="question-layout">
         {/* ── Section 1: 题目 ── */}
         <section className="ql-question">
@@ -164,6 +196,9 @@ export default function QuestionLayout({
         {/* ── Section 2: 答案（查看题解紧挨检查答案，由 NumericAnswerPanel 认领） ── */}
         <section className="ql-answer">
           <div className="ql-answer-body">{answer}</div>
+          {answerActions && !answerActionsClaimed ? (
+            <div className="ql-answer-actions">{answerActions}</div>
+          ) : null}
           {toggleEnabled && !toggleClaimed ? (
             <div className="ql-toggle-row">{toggleButton}</div>
           ) : null}
@@ -207,6 +242,14 @@ export default function QuestionLayout({
         .ql-question,
         .ql-answer {
           padding: 24px 28px 20px;
+        }
+        .ql-answer-actions {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 8px;
+          margin-top: 10px;
         }
 
         /* ─── 标签行 ─── */
@@ -332,6 +375,7 @@ export default function QuestionLayout({
         }
       `}</style>
       </div>
+      </AnswerActionsContext.Provider>
     </SolutionToggleContext.Provider>
   )
 }

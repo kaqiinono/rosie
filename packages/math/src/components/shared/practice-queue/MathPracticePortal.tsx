@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import clsx from 'clsx'
 import type { PracticeQueueItem, PracticeQueuePhase } from '@rosie/math-kit/utils/practice-queue-types'
 import type { PracticeQueueStartOpts } from '@rosie/math-kit/utils/practice-queue-types'
 import {
@@ -216,19 +215,16 @@ export default function MathPracticePortal({
                   </div>
                 )}
               </div>
-              <button
-                type="button"
-                onClick={onToggleImmersive}
-                className={clsx(
-                  'shrink-0 cursor-pointer rounded-full border px-2.5 py-1 text-[10px] font-bold transition-all active:scale-95',
-                  immersive
-                    ? 'border-slate-200 bg-slate-50 text-slate-600'
-                    : 'border-indigo-300 bg-indigo-100 text-indigo-800',
-                )}
-                title={immersive ? '返回详情答题' : '进入草稿答题'}
-              >
-                {immersive ? '📄 详情' : '📝 草稿'}
-              </button>
+              {immersive && (
+                <button
+                  type="button"
+                  onClick={onToggleImmersive}
+                  className="shrink-0 cursor-pointer rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold text-slate-600 transition-all active:scale-95"
+                  title="返回详情答题"
+                >
+                  📄 详情
+                </button>
+              )}
             </>
           )}
         </div>
@@ -277,6 +273,7 @@ export default function MathPracticePortal({
                 onAnswerCorrect={handleCorrect}
                 onAnswerWrong={handleWrong}
                 onAdvance={handleAdvance}
+                onOpenScratch={() => onSetImmersive(true)}
                 isLast={currentIndex >= total - 1}
               />
             </div>

@@ -89,6 +89,7 @@ export default function LessonProblemList({
               defaultSolutionOpen={autoExpandSolution}
               sourceLabel={showSource ? sourceLabel : undefined}
               sourceBadgeClass={showSource ? 'bg-purple-100 text-purple-700' : undefined}
+              href={`${basePath}/${i + 1}`}
             />
           ))}
         </MasonryGrid>

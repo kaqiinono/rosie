@@ -8,7 +8,7 @@ import { useG2Lesson7 } from './G2Lesson7Provider'
 import { getMasteryLevel } from '@rosie/core'
 import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
 import ProblemAnswerSection from '@rosie/math-kit/components/shared/ProblemAnswerSection'
-import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
+import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import LessonProblemDetailHeader from '@rosie/math-kit/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math-kit/components/shared/LessonProblemNavBar'
@@ -98,13 +98,12 @@ export default function ProblemDetail({
           problem={problem}
         />
       )}
-      <QuestionLayout
-        solutionAvailable={hasAttempted}
+      <ProblemWorkspace
+        hasAttempted={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}
         defaultSolutionOpen={defaultSolutionOpen}
-        problemId={problem.id}
         problem={problem}
       />
       {mode === 'full' && positionLabel && (

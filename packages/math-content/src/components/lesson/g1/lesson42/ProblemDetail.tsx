@@ -2,14 +2,13 @@
 
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 
-import { useState, useEffect } from 'react'
 import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
 import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerPanel'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math-content/utils/g1/lesson42-data'
 import { useG1Lesson42 } from './G1Lesson42Provider'
 import { getMasteryLevel } from '@rosie/core'
-import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
+import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import DifficultyStars from '@rosie/math-kit/components/shared/DifficultyStars'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
@@ -84,13 +83,12 @@ export default function ProblemDetail({
           problem={problem}
         />
       )}
-      <QuestionLayout
-        solutionAvailable={hasAttempted}
+      <ProblemWorkspace
+        hasAttempted={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}
         defaultSolutionOpen={defaultSolutionOpen}
-        problemId={problem.id}
         problem={problem}
       />
       {mode === 'full' && positionLabel && (

@@ -16,6 +16,10 @@ DAG: `math → math-content → math-kit → {core,ui,rewards,calc}` (acyclic, e
 `scripts/check-package-cycles.mjs`). You should not need to read other subject modules except `@rosie/calc`
 (math-kit reuses its vertical-digit pad).
 
+The practice queue renders each registered module's actual `ProblemDetail` inside its `Provider`.
+`@rosie/math-kit`'s `ProblemWorkspaceRuntimeProvider` adapts correct/wrong/不会/paper-draft outcomes
+to queue progress. Do not build a second generic question body in the practice layer.
+
 ## Dependencies (the only things math imports from outside)
 
 - **`@rosie/core`** — Supabase client, `useAuth`/`AuthProvider`, shared types (incl. `Problem`,

@@ -11,7 +11,7 @@ import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerP
 import RatioDiagram from './RatioDiagram'
 import BlockDiagram from './BlockDiagram'
 import DualBlockDiagram from './DualBlockDiagram'
-import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
+import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math-kit/components/shared/DifficultyStars'
@@ -146,13 +146,12 @@ export default function ProblemDetail({
         />
       )}
 
-      <QuestionLayout
-        solutionAvailable={hasAttempted}
+      <ProblemWorkspace
+        hasAttempted={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}
         defaultSolutionOpen={defaultSolutionOpen}
-        problemId={problem.id}
         problem={problem}
       />
       {mode === 'full' && positionLabel && (

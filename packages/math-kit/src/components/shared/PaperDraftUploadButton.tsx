@@ -17,6 +17,7 @@ type PaperDraftUploadButtonProps = {
   className?: string
   onUploaded?: () => void
   onFlash?: (message: string) => void
+  onArchived?: (correct: boolean) => void | Promise<void>
 }
 
 type PendingUpload = {
@@ -30,6 +31,7 @@ export default function PaperDraftUploadButton({
   className = '',
   onUploaded,
   onFlash,
+  onArchived,
 }: PaperDraftUploadButtonProps) {
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
@@ -80,9 +82,11 @@ export default function PaperDraftUploadButton({
         return
       }
       if (archivedCorrect) {
-        void scratchActions?.onSolve?.(problem.id)
+        if (onArchived) void onArchived(true)
+        else void scratchActions?.onSolve?.(problem.id)
       } else {
-        scratchActions?.onWrong?.(problem.id)
+        if (onArchived) void onArchived(false)
+        else scratchActions?.onWrong?.(problem.id)
       }
       onFlash?.(archivedCorrect ? '纸质练习已提交（做对）' : '纸质练习已提交（做错）')
       onUploaded?.()

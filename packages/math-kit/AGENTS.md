@@ -11,6 +11,12 @@ blocks that the lesson content depends on — and **nothing that knows about a s
   `DifficultyStars`, `RichTextEditor` + `rich-text-*`, `AnalysisImage`, `VerticalDigitPuzzle(Panel)`,
   and the whole `ScratchPad/` subsystem.
 
+`ProblemWorkspace` is the shared single-problem core for routed lesson details and practice queues.
+It owns common answer-adjacent capabilities (`不会`, paper draft upload, solution, notes, and attempt
+integration). Outer shells keep route navigation or queue/session progress. Practice injects its
+lifecycle through `ProblemWorkspaceRuntimeProvider` while rendering the registered lesson's real
+`ProblemDetail`; never reimplement lesson-specific figures or answer widgets in the queue layer.
+
 `ProblemSolutionPanel` is the math-data wrapper around `@rosie/ui`'s `ProblemSolutionView`.
 It resolves uploaded/static analysis images and enables trusted lesson-data HTML; keep the pure
 visual layer in UI so the AI package can reuse it without depending on math-kit.

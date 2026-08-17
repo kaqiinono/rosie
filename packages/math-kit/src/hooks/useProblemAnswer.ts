@@ -11,6 +11,7 @@ import {
 import { useProblemScratchContext } from '@rosie/math-kit/components/shared/ScratchPad/ProblemScratchContext'
 import { findInProgressAttempt } from '@rosie/math-kit/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math-kit/utils/submitPracticeAttempt'
+import { useProblemWorkspaceRuntime } from '@rosie/math-kit/components/shared/ProblemWorkspaceRuntime'
 
 export interface ProblemAnswerContext {
   handleSolve: (id: string) => void
@@ -28,6 +29,7 @@ export function useProblemAnswer(
   const [hasAttempted, setHasAttempted] = useState(false)
   const { user } = useAuth()
   const scratchCtx = useProblemScratchContext()
+  const runtime = useProblemWorkspaceRuntime()
   /** The settle below is async; without this a double-tap files two attempts. */
   const submittingRef = useRef(false)
 
@@ -74,9 +76,13 @@ export function useProblemAnswer(
 
       void (async () => {
         try {
-          await archiveWorkingScratch(result.ok, input)
+          if (!runtime) await archiveWorkingScratch(result.ok, input)
           setFeedback(result)
-          if (result.ok) {
+          if (runtime) {
+            if (result.ok) await runtime.onCorrect(input, result)
+            else await runtime.onWrong(input, result)
+            if (result.ok) options?.onCorrect?.(result)
+          } else if (result.ok) {
             await ctx.handleSolve(problem.id)
             options?.onCorrect?.(result)
           } else {
@@ -90,7 +96,7 @@ export function useProblemAnswer(
 
       return result
     },
-    [problem, ctx, options, archiveWorkingScratch],
+    [problem, ctx, options, archiveWorkingScratch, runtime],
   )
 
   const clearFeedback = useCallback(() => {

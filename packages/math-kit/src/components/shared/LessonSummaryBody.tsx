@@ -13,6 +13,7 @@ type Props = {
   preview?: boolean
   /** Show card title bar (homepage uses collapsible toggle instead). */
   showHeader?: boolean
+  headerLabel?: string
   className?: string
 }
 
@@ -21,6 +22,7 @@ export default function LessonSummaryBody({
   bodyHtml,
   preview = false,
   showHeader = true,
+  headerLabel = '📋 本讲内容总结',
   className,
 }: Props) {
   const html = sanitizeRichHtml(bodyHtml)
@@ -34,7 +36,7 @@ export default function LessonSummaryBody({
     >
       {showHeader && (
         <div className="border-b border-teal-50 bg-teal-50/60 px-3 py-1.5 text-[12px] font-bold text-teal-900">
-          📋 本讲内容总结
+          {headerLabel}
         </div>
       )}
       <div

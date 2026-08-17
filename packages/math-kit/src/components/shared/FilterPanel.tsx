@@ -345,6 +345,7 @@ export function createFilterPanel(
               defaultSolutionOpen={autoExpand}
               sourceLabel={problemSetSectionLabel(setName, lessonId)}
               sourceBadgeClass={theme.srcBadge}
+              onActivate={() => beginPractice(p.id)}
             />
           ))}
         </MasonryGrid>

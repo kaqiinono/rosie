@@ -5,7 +5,10 @@ import type { AnswerCheckResult, Problem } from '@rosie/core'
 import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerPanel'
 import VerticalDigitPuzzlePanel from '@rosie/math-kit/components/shared/VerticalDigitPuzzlePanel'
 import ScratchPadCustomAnswerWidget from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadCustomAnswerWidget'
-import { useClaimSolutionToggle } from '@rosie/math-kit/components/shared/QuestionLayout'
+import {
+  useClaimAnswerActions,
+  useClaimSolutionToggle,
+} from '@rosie/math-kit/components/shared/QuestionLayout'
 import { getProblemAnswerMode } from '@rosie/math-kit/utils/problem-answer-mode'
 
 type ProblemAnswerSectionProps = {
@@ -41,6 +44,8 @@ export default function ProblemAnswerSection({
   // Custom widgets have no 检查答案 row — claim toggle under the widget.
   // Numeric modes: NumericAnswerPanel claims beside 检查答案.
   const solutionToggle = useClaimSolutionToggle(answerMode === 'custom-widget')
+  const sharedTrailingActions = useClaimAnswerActions()
+  const effectiveTrailingActions = trailingActions ?? sharedTrailingActions
 
   if (answerMode === 'custom-widget') {
     return (
@@ -53,9 +58,9 @@ export default function ProblemAnswerSection({
             feedback={feedback}
           />
         </div>
-        {trailingActions || solutionToggle ? (
+        {effectiveTrailingActions || solutionToggle ? (
           <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
-            {trailingActions}
+            {effectiveTrailingActions}
             {solutionToggle}
           </div>
         ) : null}
@@ -77,7 +82,7 @@ export default function ProblemAnswerSection({
           onCheck={onCheck}
           feedback={feedback}
           buttonClassName={buttonClassName}
-          trailingActions={trailingActions}
+          trailingActions={effectiveTrailingActions}
         />
         {tip}
       </>
@@ -93,7 +98,7 @@ export default function ProblemAnswerSection({
         onCheck={onCheck}
         feedback={feedback}
         buttonClassName={buttonClassName}
-        trailingActions={trailingActions}
+        trailingActions={effectiveTrailingActions}
       />
       {tip}
     </>

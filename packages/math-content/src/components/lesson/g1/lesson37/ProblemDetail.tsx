@@ -10,7 +10,7 @@ import AssumptionDiagram from './AssumptionDiagram'
 import EquationDiagram from './EquationDiagram'
 import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
 import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerPanel'
-import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
+import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math-kit/components/shared/DifficultyStars'
@@ -116,13 +116,12 @@ export default function ProblemDetail({
           problem={problem}
         />
       )}
-      <QuestionLayout
-        solutionAvailable={hasAttempted}
+      <ProblemWorkspace
+        hasAttempted={hasAttempted}
         question={question}
         solution={solution}
         answer={answerDom}
         defaultSolutionOpen={defaultSolutionOpen}
-        problemId={problem.id}
         problem={problem}
       />
       {mode === 'full' && positionLabel && (

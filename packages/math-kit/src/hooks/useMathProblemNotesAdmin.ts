@@ -18,29 +18,43 @@ function normalizeLessonIds(lessonId: string | string[] | null): string[] {
   return Array.isArray(lessonId) ? lessonId : [lessonId]
 }
 
-export function useMathProblemNotesAdmin(user: User | null, lessonId: string | string[] | null) {
+export function useMathProblemNotesAdmin(
+  user: User | null,
+  lessonId: string | string[] | null,
+  options: { enabled?: boolean } = {},
+) {
+  const enabled = options.enabled ?? true
   const lessonIds = normalizeLessonIds(lessonId)
   const lessonIdsKey = lessonIds.join(',')
 
   const [notes, setNotes] = useState<MathProblemNote[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const reload = useCallback(async () => {
     const ids = lessonIdsKey ? lessonIdsKey.split(',') : []
     if (ids.length === 0) {
       setNotes([])
+      setLoadError(null)
       return
     }
     setIsLoading(true)
-    const rows = await Promise.all(ids.map(loadLessonNotes))
-    setNotes(rows.flat())
-    setIsLoading(false)
+    setLoadError(null)
+    try {
+      const rows = await Promise.all(ids.map(loadLessonNotes))
+      setNotes(rows.flat())
+    } catch (error: unknown) {
+      setLoadError(error instanceof Error ? error.message : '笔记加载失败')
+    } finally {
+      setIsLoading(false)
+    }
   }, [lessonIdsKey])
 
   useEffect(() => {
+    if (!enabled) return
     void reload()
-  }, [reload])
+  }, [enabled, reload])
 
   const counts = noteCountByProblem(notes)
 
@@ -68,7 +82,7 @@ export function useMathProblemNotesAdmin(user: User | null, lessonId: string | s
       setNotes((prev) => [...prev, note])
       return { error: null }
     },
-    [user, lessonIdsKey, lessonIds.length, notes],
+    [user, lessonIds.length, notes],
   )
 
   const saveNote = useCallback(
@@ -130,6 +144,7 @@ export function useMathProblemNotesAdmin(user: User | null, lessonId: string | s
     counts,
     isLoading,
     isSaving,
+    loadError,
     reload,
     getNotes,
     addNote,
