@@ -42,7 +42,8 @@ export function resolveActionsForSourceRefs(sourceRefs: string[]): AgentAction[]
       actions.push({
         type: 'open_problem',
         problemId: entry.problemId,
-        label: '去看这道题 🎯',
+        label: entry.title ? `去看：${entry.title} 🎯` : '去看这道题 🎯',
+        title: entry.title,
       })
       continue
     }
@@ -100,10 +101,11 @@ export function resolveActionsForHits(hits: KnowledgeSearchHit[]): AgentAction[]
   return actions
 }
 
-export function resolveProblemAction(problemId: string): AgentAction | null {
-  const entry = findManifestByProblemId(problemId)
-  if (!entry?.href || !isAllowedHref(entry.href)) {
-    return { type: 'open_problem', problemId, label: '去看这道题 🎯' }
+export function resolveProblemAction(problemId: string, title?: string): AgentAction {
+  return {
+    type: 'open_problem',
+    problemId,
+    label: title ? `去看：${title} 🎯` : '去看这道题 🎯',
+    title,
   }
-  return { type: 'navigate', href: entry.href, label: '去看这道题 🎯' }
 }

@@ -1,4 +1,10 @@
-import type { AgentBlock, AgentResponse, ChatContext, TeachingSessionState } from '../types'
+import type {
+  AgentBlock,
+  AgentResponse,
+  ChatContext,
+  LessonNote,
+  TeachingSessionState,
+} from '../types'
 import type { ChatHistoryMessage } from './conversation-history'
 import type { StudentProfile } from './student-profile'
 import { buildStudentProfilePrompt } from './student-profile'
@@ -24,6 +30,7 @@ export function buildChatUserPrompt(
   teachingSession?: TeachingSessionState | null,
   history: ChatHistoryMessage[] = [],
   context?: ChatContext,
+  lessonNotes?: LessonNote[],
 ): string {
   const contextParts = envelope.blocks
     .map((block) => {
@@ -46,12 +53,15 @@ export function buildChatUserPrompt(
           return `${block.subject ?? '三科'}今日任务卡已在对话中展示；只根据卡片内容鼓励孩子。`
         case 'text':
           return block.content
+        case 'lesson_notes':
+          return `本讲学习笔记（已直接展示给孩子，不需要再重复）：\n${block.notes.map((n) => `【${n.title ?? '要点'}】${n.bodyHtml.replace(/<[^>]*>/g, '').trim()}`).join('\n')}`
         default:
           return ''
       }
     })
     .filter(Boolean)
 
+  console.log('lessonNotes', lessonNotes)
   return [
     ...(history.length
       ? [
@@ -67,6 +77,19 @@ export function buildChatUserPrompt(
       ? ['', '学习画像摘要：', buildStudentProfilePrompt(profile, envelope.sources?.[0]?.subject)]
       : []),
     ...(teachingSession ? ['', buildTeachingStagePrompt(teachingSession)] : []),
+    ...(lessonNotes?.length
+      ? [
+          '',
+          '当前讲次的学习笔记（可作为回答参考）：',
+          lessonNotes
+            .map((n) => {
+              const title = n.title ?? '要点'
+              const body = n.bodyHtml.replace(/<[^>]*>/g, '').trim()
+              return `【${title}】${body}`
+            })
+            .join('\n'),
+        ]
+      : []),
     '',
     '知识库内容：',
     contextParts.join('\n\n'),

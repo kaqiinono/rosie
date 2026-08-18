@@ -1,8 +1,10 @@
 'use client'
 
-import { useCallback, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import Link from 'next/link'
-import { AiChatPanel, AiFloatingAssistant, type AgentBlock } from '@rosie/ai'
+import { usePathname } from 'next/navigation'
+import { AiChatPanel, AiFloatingAssistant, stripHtml, type AgentBlock } from '@rosie/ai'
+import type { LessonNote, SimilarProblem } from '@rosie/ai'
 import { getWordMasteryLevel, useAuth, type WordEntry } from '@rosie/core'
 import {
   FlashCard,
@@ -37,6 +39,10 @@ import {
 } from '@rosie/chinese'
 import EmbeddedMathProblemSession from '@rosie/math/components/EmbeddedMathProblemSession'
 import { MathDailyCard } from '@rosie/math'
+import { SEA_POOL } from '@rosie/math/utils/sea-data'
+import { lookupMathProblem } from '@rosie/math/utils/math-problem-lookup'
+import ProblemSolutionView from '@rosie/ui/ProblemSolutionView'
+import { loadLessonNotes } from '@rosie/math-kit/hooks/useMathProblemNotes'
 import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import AdaptivePlanTodayCard from '@/components/today/AdaptivePlanTodayCard'
@@ -647,9 +653,78 @@ function EmbeddedPassage({ block, active }: { block: PassageBlock; active: boole
   )
 }
 
+function sanitizeProblemHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    .replace(/javascript\s*:/gi, '')
+}
+
+function EmbeddedMathProblemCard({
+  problemId,
+  renderRemainingActions,
+}: {
+  problemId: string
+  renderRemainingActions: () => ReactNode
+}) {
+  const entry = useMemo(() => {
+    const direct = SEA_POOL.find((item) => item.problem.id === problemId)
+    if (direct) return direct
+    const resolved = lookupMathProblem(problemId)
+    return resolved
+      ? (SEA_POOL.find((item) => item.problem.id === resolved.problemId) ?? null)
+      : null
+  }, [problemId])
+
+  if (!entry) {
+    return (
+      <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800 ring-1 ring-amber-100">
+        暂时无法加载这道题，请尝试输入完整题目编号。
+      </div>
+    )
+  }
+
+  const { problem } = entry
+  const problemHtml = sanitizeProblemHtml(problem.text)
+  const analysisSteps = (problem.analysis ?? []).map((s) => stripHtml(s))
+
+  return (
+    <div className="space-y-2">
+      <div className="text-sm font-bold text-indigo-950">{problem.title}</div>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <div className="text-xs font-bold text-slate-600 mb-1">📝 题目</div>
+        <div
+          className="text-sm leading-relaxed text-slate-800 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-1"
+          dangerouslySetInnerHTML={{ __html: problemHtml }}
+        />
+      </div>
+      {analysisSteps.length > 0 ? (
+        <ProblemSolutionView
+          analysis={analysisSteps}
+          heading="解题过程"
+          headingIcon="💡"
+          variant="yellow"
+          allowTrustedHtml
+        />
+      ) : null}
+      {renderRemainingActions()}
+    </div>
+  )
+}
+
 function useAiEmbeddedRenderers(contentActive = true) {
   const renderMathProblem = useCallback(
-    (problemId: string): ReactNode => <EmbeddedMathProblemSession problemId={problemId} />,
+    (problemId: string, renderRemainingActions?: () => ReactNode): ReactNode => {
+      if (renderRemainingActions) {
+        return (
+          <EmbeddedMathProblemCard
+            problemId={problemId}
+            renderRemainingActions={renderRemainingActions}
+          />
+        )
+      }
+      return <EmbeddedMathProblemSession problemId={problemId} />
+    },
     [],
   )
   const renderWordCard = useCallback(
@@ -692,8 +767,97 @@ export function AiEmbeddedChatPanel() {
   return <AiChatPanel {...renderers} />
 }
 
+/**
+ * Fetch lesson notes + a similar problem for the current math page.
+ * loadLessonNotes uses a module-level Promise cache, so this is essentially
+ * free when the page already loaded notes.
+ */
+function useMathEnrichment(
+  pathname: string,
+  activeProblemId: string | undefined,
+): { lessonNotes?: LessonNote[]; similarProblem?: SimilarProblem } | undefined {
+  const isMath = /^\/math\//.test(pathname) || pathname === '/math'
+  // Derive lessonId synchronously from URL so we can gate the async fetch
+  const lessonId = useMemo(() => {
+    if (!isMath) return undefined
+    const match = pathname.match(/\/math\/ny\/(\d+)\/(\d+)/)
+    return match ? `${match[1]}-${match[2]}` : undefined
+  }, [pathname, isMath])
+
+  const [fetched, setFetched] = useState<{
+    lessonNotes?: LessonNote[]
+    similarProblem?: SimilarProblem
+  } | undefined>(undefined)
+
+  useEffect(() => {
+    if (!lessonId) return
+
+    let cancelled = false
+
+    // Notes: cached via module-level lessonCache
+    void loadLessonNotes(lessonId)
+      .then((rows) => {
+        if (cancelled) return
+        const notes = rows.length
+          ? rows.map((r) => ({ title: r.title, bodyHtml: r.bodyHtml }))
+          : undefined
+
+        // Similar problem: filter SEA_POOL for same lesson, prefer with analysis
+        const sameLesson = SEA_POOL.filter(
+          (sp) => sp.lessonId === lessonId && sp.problem.id !== activeProblemId,
+        )
+        const withAnalysis = sameLesson.filter((sp) => sp.problem.analysis?.length > 0)
+        const candidate = withAnalysis[0] ?? sameLesson[0]
+        const similar: SimilarProblem | undefined = candidate
+          ? {
+              title: candidate.problem.title,
+              text: stripHtml(candidate.problem.text),
+              analysis: (candidate.problem.analysis ?? []).map((s) => stripHtml(s)),
+              href: candidate.href,
+              problemId: candidate.problem.id,
+            }
+          : undefined
+
+        setFetched({ lessonNotes: notes, similarProblem: similar })
+      })
+      .catch(() => {
+        if (!cancelled) setFetched(undefined)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [lessonId, activeProblemId])
+
+  // Return enrichment only when on a math page with a valid lessonId
+  return lessonId ? fetched : undefined
+}
+
 export default function AiFloatingAssistantHost() {
+  const pathname = usePathname()
   const [assistantOpen, setAssistantOpen] = useState(false)
   const renderers = useAiEmbeddedRenderers(assistantOpen)
-  return <AiFloatingAssistant {...renderers} onVisibilityChange={setAssistantOpen} />
+
+  // Read the active problem from DOM when assistant opens
+  const [activeProblemId, setActiveProblemId] = useState<string | undefined>()
+  useEffect(() => {
+    if (!assistantOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing on close
+      setActiveProblemId(undefined)
+      return
+    }
+    const el = document.querySelector<HTMLElement>('[data-ai-active-problem-id]')
+    const id = el?.dataset.aiActiveProblemId
+    setActiveProblemId(id)
+  }, [assistantOpen, pathname])
+
+  const mathEnrichment = useMathEnrichment(pathname, activeProblemId)
+
+  return (
+    <AiFloatingAssistant
+      {...renderers}
+      onVisibilityChange={setAssistantOpen}
+      mathEnrichment={mathEnrichment}
+    />
+  )
 }

@@ -81,10 +81,14 @@ export type AgentBlock =
       view: 'mastery' | 'mistakes' | 'overview'
     }
   | { type: 'today_tasks'; subject?: AiSubject }
+  | {
+      type: 'lesson_notes'
+      notes: Array<{ title: string | null; bodyHtml: string }>
+    }
 
 export type AgentAction =
   | { type: 'navigate'; href: string; label: string; icon?: string }
-  | { type: 'open_problem'; problemId: string; label: string }
+  | { type: 'open_problem'; problemId: string; label: string; title?: string }
   | { type: 'open_reading'; href: string; label: string }
 
 export interface AgentResponse {
@@ -98,6 +102,8 @@ export interface ChatContext {
   subject?: AiSubject
   lessonId?: string
   grade?: number
+  /** True when the user is on a lesson overview page (not a specific problem). */
+  lessonPage?: boolean
   activeContent?: {
     sourceRef: string
     title: string
@@ -105,6 +111,10 @@ export interface ChatContext {
     hasAttempted?: boolean
     wordKey?: string
   }
+  /** Pre-loaded lesson notes (fetched client-side via cached loadLessonNotes). */
+  lessonNotes?: LessonNote[]
+  /** Pre-loaded similar problem from the same lesson (from SEA_POOL). */
+  similarProblem?: SimilarProblem
 }
 
 export type TeachingStage = 'understand' | 'attempt' | 'hint' | 'check' | 'transfer' | 'summary'
@@ -144,4 +154,17 @@ export interface LinkManifestEntry {
   subject?: AiSubject
   problemId?: string
   wordKey?: string
+}
+
+export interface LessonNote {
+  title: string | null
+  bodyHtml: string
+}
+
+export interface SimilarProblem {
+  title: string
+  text: string
+  analysis: string[]
+  href: string
+  problemId: string
 }

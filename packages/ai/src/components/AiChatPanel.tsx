@@ -14,6 +14,7 @@ import type { TeachingSessionAction } from '../server/teaching-session-store'
 import AiMessageRenderer from './agent/AiMessageRenderer'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
 import AiVoiceInput from './AiVoiceInput'
+import '../ai-chat.css'
 
 type ChatMessage = {
   id: string
@@ -37,9 +38,7 @@ const PROMPT_TONES = {
 } as const
 
 const MATH_PROBLEM_PROMPTS = [
-  '帮我读懂这道题，不要告诉我答案',
-  '给我第一级提示',
-  '这道题有哪些易错点和笔记？',
+  '帮我复习这个讲次的重点内容',
   '给我一道相似例题，讲解完整过程',
 ] as const
 
@@ -64,7 +63,7 @@ async function getAccessToken(): Promise<string> {
 type AiChatPanelProps = {
   mode?: 'page' | 'overlay'
   context?: ChatContext
-  renderMathProblem?: (problemId: string) => ReactNode
+  renderMathProblem?: (problemId: string, renderRemainingActions?: () => ReactNode) => ReactNode
   renderWordCard?: (block: Extract<AgentBlock, { type: 'word_card' }>) => ReactNode
   renderCharCard?: (block: Extract<AgentBlock, { type: 'char_card' }>) => ReactNode
   renderPoemRecite?: (block: Extract<AgentBlock, { type: 'poem_recite' }>) => ReactNode
@@ -161,6 +160,17 @@ export default function AiChatPanel({
 
       try {
         const token = await getAccessToken()
+
+        // DEBUG: trace what context is sent
+        console.log('[AiChatPanel] sending context:', JSON.stringify({
+          subject: context?.subject,
+          lessonId: context?.lessonId,
+          lessonPage: context?.lessonPage,
+          hasLessonNotes: Array.isArray(context?.lessonNotes),
+          lessonNotesLen: Array.isArray(context?.lessonNotes) ? context.lessonNotes.length : 0,
+          hasSimilarProblem: !!context?.similarProblem,
+          activeContent: context?.activeContent,
+        }))
 
         const res = await fetch('/api/ai/chat', {
           method: 'POST',
@@ -340,22 +350,26 @@ export default function AiChatPanel({
       }`}
     >
       <div className="flex-1 space-y-5 overflow-y-auto px-1 py-5 sm:px-2 sm:py-6">
-        {context?.subject === 'math' && context.activeContent?.problemId ? (
+        {context?.subject === 'math' && (context.activeContent?.problemId || context.lessonPage) ? (
           <section
-            aria-labelledby="ai-current-problem-title"
+            aria-labelledby="ai-math-context-title"
             className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-sky-50 p-3.5 text-left shadow-[0_5px_18px_rgba(79,70,229,0.08)]"
           >
             <p className="text-[11px] font-black tracking-wider text-indigo-500 uppercase">
-              已识别当前题目
+              {context.activeContent?.problemId ? '已识别当前题目' : '已识别当前讲次'}
             </p>
-            <h3
-              id="ai-current-problem-title"
-              className="mt-1 text-sm leading-5 font-black text-slate-800"
-            >
-              {context.activeContent.title}
-            </h3>
+            {context.activeContent?.title ? (
+              <h3
+                id="ai-math-context-title"
+                className="mt-1 text-sm leading-5 font-black text-slate-800"
+              >
+                {context.activeContent.title}
+              </h3>
+            ) : null}
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              不用重复输入题目，选择一个问题就可以开始。
+              {context.activeContent?.problemId
+                ? '不用重复输入题目，选择一个问题就可以开始。'
+                : '选择一个问题，让 AI 帮你复习这个讲次。'}
             </p>
             <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {MATH_PROBLEM_PROMPTS.map((prompt) => (
@@ -369,7 +383,7 @@ export default function AiChatPanel({
                   {prompt}
                 </button>
               ))}
-              {context.activeContent.hasAttempted ? (
+              {context.activeContent?.problemId && context.activeContent.hasAttempted ? (
                 <button
                   type="button"
                   disabled={loading}
@@ -383,7 +397,7 @@ export default function AiChatPanel({
           </section>
         ) : null}
 
-        {messages.length === 0 && !context?.activeContent?.problemId ? (
+        {messages.length === 0 && !context?.activeContent?.problemId && !context?.lessonPage ? (
           <div className="mx-auto flex w-full max-w-2xl flex-col items-center py-3 text-center sm:py-8">
             <div className="relative">
               <div className="absolute inset-0 scale-125 rounded-full bg-violet-300/30 blur-xl" />
@@ -430,9 +444,10 @@ export default function AiChatPanel({
           <AiMessageRenderer
             key={msg.id}
             role={msg.role}
-            text={msg.text || (msg.streaming ? '…' : '')}
+            text={msg.text}
             blocks={msg.blocks}
             actions={msg.actions}
+            streaming={msg.streaming}
             renderMathProblem={renderMathProblem}
             renderWordCard={renderWordCard}
             renderCharCard={renderCharCard}
@@ -450,7 +465,7 @@ export default function AiChatPanel({
         </p>
       ) : null}
 
-      {!teachingSession && latestSubject && conversationId ? (
+      {/* {!teachingSession && latestSubject && conversationId ? (
         <div className="mx-2 mb-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 p-4 ring-1 ring-amber-200/80">
           <p className="text-sm font-semibold text-amber-900">想一步一步学会吗？</p>
           <p className="mt-1 text-xs text-amber-700">
@@ -465,7 +480,7 @@ export default function AiChatPanel({
             开始引导学习
           </button>
         </div>
-      ) : null}
+      ) : null} */}
 
       {teachingSession ? (
         <div className="mx-2 mb-3 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 p-4 ring-1 ring-sky-100">

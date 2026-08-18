@@ -1,12 +1,14 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 import { runAgentOrchestrator } from '../agent/orchestrator'
-import type { AgentResponse, ChatContext, TeachingSessionState } from '../types'
+import type { AgentResponse, ChatContext, LessonNote, SimilarProblem, TeachingSessionState } from '../types'
 import { buildChatSystemPrompt, buildChatUserPrompt } from './prompts'
 import { streamChatTokens } from './chat-stream'
 import { loadStudentProfile } from './student-profile'
 import { shouldHideFullSolution } from './teaching-session'
 import { getTeachingSession } from './teaching-session-store'
 import { loadConversationHistory } from './conversation-history'
+
+export type { LessonNote, SimilarProblem }
 
 export type ChatStreamEvent =
   | { event: 'token'; data: { text: string } }
@@ -22,6 +24,8 @@ export interface RunChatInput {
   conversationId?: string
   teachingSessionId?: string
   context?: ChatContext
+  lessonNotes?: LessonNote[]
+  similarProblem?: SimilarProblem
 }
 
 function sseLine(event: ChatStreamEvent): string {
@@ -52,6 +56,8 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
       runAgentOrchestrator(input.supabase, {
         message: input.message,
         context: input.context,
+        lessonNotes: input.lessonNotes,
+        similarProblem: input.similarProblem,
       }),
       loadStudentProfile(input.supabase, input.user.id).catch(() => null),
     ])
@@ -59,6 +65,24 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
       ? await getTeachingSession(input.supabase, input.user.id, input.teachingSessionId)
       : null
     let llmText = envelope.text
+
+    // For review / similar-problem intents, the orchestrator already produced the
+    // full formatted answer. Skip LLM rephrasing to avoid overwriting the notes/problem.
+    const isDirectEnrichment =
+      input.context?.subject === 'math' &&
+      ((input.lessonNotes?.length &&
+        (input.message.includes('复习') || input.message.includes('重点') ||
+         input.message.includes('讲次') || input.message.includes('笔记') ||
+         input.message.includes('易错点'))) ||
+       (input.similarProblem &&
+        (input.message.includes('相似') || input.message.includes('类似') ||
+         input.message.includes('例题') || input.message.includes('讲解完整过程'))))
+
+    if (isDirectEnrichment) {
+      // Stream the orchestrator's text directly as tokens (no LLM rewrite)
+      const text = envelope.text
+      yield sseLine({ event: 'token', data: { text } })
+    } else {
     try {
       const stream = streamChatTokens(
         buildChatSystemPrompt(Boolean(profile)),
@@ -69,6 +93,7 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
           teachingSession,
           history,
           input.context,
+          input.lessonNotes,
         ),
       )
       let streamed = ''
@@ -90,6 +115,7 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
     } catch {
       yield sseLine({ event: 'token', data: { text: envelope.text } })
     }
+    } // end else (non-direct-enrichment path)
 
     if (teachingSession && shouldHideFullSolution(teachingSession)) {
       envelope.blocks = envelope.blocks.filter((block) => block.type !== 'math_solution')

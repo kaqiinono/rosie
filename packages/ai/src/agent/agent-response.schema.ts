@@ -88,6 +88,15 @@ const agentBlockSchema = z.discriminatedUnion('type', [
     type: z.literal('today_tasks'),
     subject: z.enum(['english', 'math', 'chinese']).optional(),
   }),
+  z.object({
+    type: z.literal('lesson_notes'),
+    notes: z.array(
+      z.object({
+        title: z.string().nullable(),
+        bodyHtml: z.string(),
+      }),
+    ).min(1),
+  }),
 ])
 
 const agentActionSchema = z.discriminatedUnion('type', [
@@ -101,6 +110,7 @@ const agentActionSchema = z.discriminatedUnion('type', [
     type: z.literal('open_problem'),
     problemId: z.string(),
     label: z.string(),
+    title: z.string().optional(),
   }),
   z.object({
     type: z.literal('open_reading'),

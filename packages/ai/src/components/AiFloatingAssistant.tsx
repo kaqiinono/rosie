@@ -14,7 +14,7 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { STORAGE_KEYS, useImmersive } from '@rosie/core'
-import type { AgentBlock, AiSubject, ChatContext } from '../types'
+import type { AgentBlock, AiSubject, ChatContext, LessonNote, SimilarProblem } from '../types'
 import { findManifestByHref, findManifestByProblemId } from '../server/tools/resolve-links'
 import AiChatPanel from './AiChatPanel'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
@@ -46,8 +46,13 @@ export function subjectFromPathname(pathname: string): AiSubject | undefined {
   return undefined
 }
 
+/** Detect a math lesson home page URL like `/math/ny/1/12`. */
+export function parseMathLessonPathname(pathname: string): boolean {
+  return /^\/math\/ny\/\d+\/\d+$/.test(pathname)
+}
+
 type AiFloatingAssistantProps = {
-  renderMathProblem?: (problemId: string) => ReactNode
+  renderMathProblem?: (problemId: string, renderRemainingActions?: () => ReactNode) => ReactNode
   renderWordCard?: (block: Extract<AgentBlock, { type: 'word_card' }>) => ReactNode
   renderCharCard?: (block: Extract<AgentBlock, { type: 'char_card' }>) => ReactNode
   renderPoemRecite?: (block: Extract<AgentBlock, { type: 'poem_recite' }>) => ReactNode
@@ -55,6 +60,11 @@ type AiFloatingAssistantProps = {
   renderLearningStatus?: (block: Extract<AgentBlock, { type: 'learning_status' }>) => ReactNode
   renderTodayTasks?: (block: Extract<AgentBlock, { type: 'today_tasks' }>) => ReactNode
   onVisibilityChange?: (open: boolean) => void
+  /** Pre-loaded math enrichment data (fetched by the host in apps/web). */
+  mathEnrichment?: {
+    lessonNotes?: LessonNote[]
+    similarProblem?: SimilarProblem
+  }
 }
 
 type LauncherPosition = { x: number; y: number }
@@ -97,6 +107,17 @@ export function findVisibleActiveProblem(candidates: HTMLElement[]): HTMLElement
   return undefined
 }
 
+/**
+ * Derive a human-readable lesson label from a math lesson URL like `/math/ny/1/12`.
+ * Returns null when the pathname is not a lesson home page.
+ */
+function mathLessonLabel(pathname: string): string | null {
+  const match = pathname.match(/^\/math\/ny\/(\d+)\/(\d+)$/)
+  if (!match) return null
+  const gradeLabel = match[1] === '1' ? '一年级' : match[1] === '2' ? '二年级' : `G${match[1]}`
+  return `${gradeLabel} · 第 ${match[2]} 讲`
+}
+
 export default function AiFloatingAssistant({
   renderMathProblem,
   renderWordCard,
@@ -106,6 +127,7 @@ export default function AiFloatingAssistant({
   renderLearningStatus,
   renderTodayTasks,
   onVisibilityChange,
+  mathEnrichment,
 }: AiFloatingAssistantProps) {
   const pathname = usePathname()
   const { isImmersive } = useImmersive()
@@ -115,6 +137,7 @@ export default function AiFloatingAssistant({
   const [activeProblem, setActiveProblem] = useState<{
     problemId: string
     hasAttempted: boolean
+    title?: string
   } | null>(null)
   const launcherRef = useRef<HTMLButtonElement>(null)
   const dragStartRef = useRef<DragStart | null>(null)
@@ -125,26 +148,43 @@ export default function AiFloatingAssistant({
     const activeProblemEntry = activeProblem
       ? findManifestByProblemId(activeProblem.problemId)
       : undefined
+    const isLessonPage = parseMathLessonPathname(pathname)
+    const label = isLessonPage ? mathLessonLabel(pathname) : null
+
+    const activeContent = activeProblemEntry
+      ? {
+          sourceRef: activeProblemEntry.sourceRef,
+          title: activeProblemEntry.title,
+          problemId: activeProblemEntry.problemId,
+          hasAttempted: activeProblem?.hasAttempted,
+        }
+      : activeProblem
+        ? {
+            sourceRef: `math:problem:${activeProblem.problemId}`,
+            title: activeProblem.title ?? activeProblem.problemId,
+            problemId: activeProblem.problemId,
+            hasAttempted: activeProblem.hasAttempted,
+          }
+        : manifestEntry
+          ? {
+              sourceRef: manifestEntry.sourceRef,
+              title: manifestEntry.title,
+              problemId: manifestEntry.problemId,
+              wordKey: manifestEntry.wordKey,
+            }
+          : label
+            ? { sourceRef: `math:lesson:${pathname}`, title: label }
+            : undefined
+
     return {
       subject: subjectFromPathname(pathname),
       lessonId: pathname,
-      activeContent: activeProblemEntry
-        ? {
-            sourceRef: activeProblemEntry.sourceRef,
-            title: activeProblemEntry.title,
-            problemId: activeProblemEntry.problemId,
-            hasAttempted: activeProblem?.hasAttempted,
-          }
-        : manifestEntry
-        ? {
-            sourceRef: manifestEntry.sourceRef,
-            title: manifestEntry.title,
-            problemId: manifestEntry.problemId,
-            wordKey: manifestEntry.wordKey,
-          }
-        : undefined,
+      lessonPage: isLessonPage || undefined,
+      activeContent,
+      lessonNotes: mathEnrichment?.lessonNotes,
+      similarProblem: mathEnrichment?.similarProblem,
     }
-  }, [activeProblem, pathname])
+  }, [activeProblem, pathname, mathEnrichment])
   const closeAssistant = useCallback(() => {
     setOpen(false)
     requestAnimationFrame(() => launcherRef.current?.focus())
@@ -156,11 +196,13 @@ export default function AiFloatingAssistant({
     )
     const visibleProblem = findVisibleActiveProblem(candidates)
     const problemId = visibleProblem?.dataset.aiActiveProblemId
+    const ds = visibleProblem?.dataset
     setActiveProblem(
       problemId
         ? {
             problemId,
-            hasAttempted: visibleProblem.dataset.aiProblemAttempted === 'true',
+            hasAttempted: ds?.aiProblemAttempted === 'true',
+            title: ds?.aiActiveProblemTitle,
           }
         : null,
     )
@@ -344,7 +386,7 @@ export default function AiFloatingAssistant({
         aria-label="Rosie 学习助手对话框"
         aria-hidden={!open}
         inert={!open}
-        className={`fixed inset-x-2 top-2 bottom-2 z-70 flex flex-col overflow-hidden rounded-[28px] border border-white/80 bg-[#f9faff]/96 shadow-[0_28px_90px_rgba(15,23,42,0.3)] backdrop-blur-2xl transition duration-300 ease-out sm:inset-x-auto sm:top-4 sm:right-4 sm:bottom-4 sm:w-[440px] ${open ? 'pointer-events-auto translate-x-0 opacity-100' : 'pointer-events-none translate-x-[110%] opacity-0'}`}
+        className={`fixed inset-x-2 top-2 bottom-2 z-70 flex flex-col overflow-hidden rounded-[28px] border border-white/80 bg-[#f9faff]/96 shadow-[0_28px_90px_rgba(15,23,42,0.3)] backdrop-blur-2xl transition duration-300 ease-out sm:inset-x-auto sm:top-4 sm:right-4 sm:bottom-4 sm:w-[440px] md:w-[480px] lg:w-[520px] ${open ? 'pointer-events-auto translate-x-0 opacity-100' : 'pointer-events-none translate-x-[110%] opacity-0'}`}
       >
         <header className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white/85 px-4 py-3 backdrop-blur-xl">
           <div className="flex items-center gap-3">

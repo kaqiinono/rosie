@@ -12,10 +12,13 @@ import {
   buildPoemReciteBlockFromHit,
 } from '../server/tools/lookup-passage'
 import { resolveActionsForHits, resolveProblemAction } from '../server/tools/resolve-links'
+import type { LessonNote, SimilarProblem } from '../types'
 
 export interface OrchestratorInput {
   message: string
   context?: ChatContext
+  lessonNotes?: LessonNote[]
+  similarProblem?: SimilarProblem
 }
 
 export async function runAgentOrchestrator(
@@ -37,6 +40,52 @@ export async function runAgentOrchestrator(
 
   if (classified.intent === 'today_tasks') {
     blocks.push({ type: 'today_tasks', subject: classified.subject })
+  }
+
+  // ── Lesson review: return notes directly when user asks to review ──
+  console.log('[orchestrator] review check: subject=%s lessonNotes=%d message=%s',
+    input.context?.subject ?? 'NONE',
+    input.lessonNotes?.length ?? 0,
+    input.message.slice(0, 50))
+  const isReviewIntent =
+    input.context?.subject === 'math' &&
+    input.lessonNotes?.length &&
+    (input.message.includes('复习') ||
+      input.message.includes('重点') ||
+      input.message.includes('讲次') ||
+      input.message.includes('笔记') ||
+      input.message.includes('易错点'))
+  console.log('[orchestrator] isReviewIntent=%s', !!isReviewIntent)
+  if (isReviewIntent) {
+    blocks.push({
+      type: 'lesson_notes',
+      notes: input.lessonNotes!.map((n) => ({
+        title: n.title,
+        bodyHtml: n.bodyHtml,
+      })),
+    })
+  }
+
+  // ── Similar problem: return a same-lesson problem with solution ──
+  console.log('[orchestrator] similar check: subject=%s hasSimilarProblem=%s',
+    input.context?.subject ?? 'NONE', !!input.similarProblem)
+  const isSimilarIntent =
+    input.context?.subject === 'math' &&
+    input.similarProblem &&
+    (input.message.includes('相似') ||
+      input.message.includes('类似') ||
+      input.message.includes('例题') ||
+      input.message.includes('讲解完整过程'))
+  if (isSimilarIntent && input.similarProblem) {
+    const sp = input.similarProblem
+    blocks.push({
+      type: 'math_solution',
+      sourceRef: sp.href,
+      problemId: sp.problemId,
+      title: `相似例题《${sp.title}》`,
+      steps: [sp.text, ...sp.analysis],
+      fromCatalog: false,
+    })
   }
 
   try {
@@ -145,18 +194,24 @@ export async function runAgentOrchestrator(
   }
 
   const actions = resolveActionsForHits(hits)
+
+  // For blocks with problemId, replace navigate actions with open_problem (supports inline rendering)
   const mathBlock = blocks.find((b) => b.type === 'math_solution')
   if (mathBlock?.type === 'math_solution') {
-    const problemAction = resolveProblemAction(mathBlock.problemId)
-    if (problemAction && !actions.some((a) => a.type === 'open_problem' || a.type === 'navigate')) {
-      actions.unshift(problemAction)
+    // Remove any navigate action pointing to the same problem
+    for (let i = actions.length - 1; i >= 0; i--) {
+      if (actions[i].type === 'navigate') {
+        actions.splice(i, 1)
+      }
+    }
+    if (!actions.some((a) => a.type === 'open_problem')) {
+      actions.unshift(resolveProblemAction(mathBlock.problemId, mathBlock.title))
     }
   }
   const practiceBlock = blocks.find((b) => b.type === 'math_problem')
   if (practiceBlock?.type === 'math_problem') {
-    const problemAction = resolveProblemAction(practiceBlock.problemId)
-    if (problemAction && !actions.some((action) => action.type === 'open_problem')) {
-      actions.unshift(problemAction)
+    if (!actions.some((a) => a.type === 'open_problem')) {
+      actions.unshift(resolveProblemAction(practiceBlock.problemId, practiceBlock.title))
     }
   }
 
@@ -215,7 +270,10 @@ function buildSummaryText(
 
   const math = blocks.find((b) => b.type === 'math_solution')
   if (math?.type === 'math_solution') {
-    return `这道题可以这样思考，下面是解题步骤。想自己试的话，点「去看这道题」。`
+    const isSimilar = math.title.startsWith('相似例题')
+    return isSimilar
+      ? `这是一道同讲次的相似例题，下面是完整的解题过程。`
+      : `这道题可以这样思考，下面是解题步骤。想自己试的话，点「去看这道题」。`
   }
 
   const practice = blocks.find((b) => b.type === 'math_problem')
@@ -240,6 +298,11 @@ function buildSummaryText(
     return todayTasks.subject
       ? '这是你今天这门学科的任务和当前进度。'
       : '这是你今天三科的任务和当前进度。'
+  }
+
+  const notes = blocks.find((b) => b.type === 'lesson_notes')
+  if (notes?.type === 'lesson_notes') {
+    return `这是本讲的${notes.notes.length}条学习笔记，认真复习吧！`
   }
 
   if (hits[0]) {
