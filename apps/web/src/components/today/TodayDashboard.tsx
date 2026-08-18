@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
+import { isPlanProblemDone } from '@rosie/math-kit/utils/math-helpers'
 import { useWordData } from '@rosie/english'
 import { useCalcDaily } from '@rosie/calc'
 import {
@@ -316,7 +317,7 @@ export default function TodayDashboard() {
   const mathToday = mathPlan?.days.find(d => d.date === today)
   const mathProgress = mathPlan?.progress[today] ?? { doneKeys: [] }
   const mathProblems = mathToday?.problems ?? []
-  const mathDoneCount = mathProblems.filter(p => mathProgress.doneKeys.includes(p.key)).length
+  const mathDoneCount = mathProblems.filter(p => isPlanProblemDone(p, todayStr(), mathProgress.doneKeys)).length
   const mathAllDone = mathProblems.length > 0 && mathDoneCount >= mathProblems.length
 
   const chineseOrderedKeys = useMemo(
@@ -711,7 +712,7 @@ export default function TodayDashboard() {
         {hasMath ? (
           <div className="space-y-2">
             {mathProblems.map((prob, i) => {
-              const done = mathProgress.doneKeys.includes(prob.key)
+              const done = isPlanProblemDone(prob, todayStr(), mathProgress.doneKeys)
               const sectionColor = SECTION_COLORS[prob.section] ?? '#94a3b8'
               return (
                 <Link

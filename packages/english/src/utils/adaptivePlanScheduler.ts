@@ -12,6 +12,12 @@ export type AdaptiveDailyTask = {
   reviewBatchKeys: string[]
   activateKeys: string[]
   bossKeys: string[]
+  /**
+   * Boss mode only: unfinished same-day activations folded into `bossKeys`.
+   * The settle counts them toward the daily new-word goal so a passed boss
+   * doesn't leave the homepage card at e.g. 20/25 demanding a second round.
+   */
+  bossUnfinishedNewKeys: string[]
 }
 
 const BOSS_PACK_LIMIT_FALLBACK = 50
@@ -117,7 +123,7 @@ function sortDueReviews(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgr
   return [...rows].sort((a, b) => compareDateStrings(a.nextReviewDate, b.nextReviewDate))
 }
 
-/** Boss pack: high streakWrong, soonest nextReviewDate, then recently introduced. */
+/** Tier 1 (stubborn): high streakWrong, soonest nextReviewDate, then recently introduced. */
 function sortBossCandidates(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
   return [...rows].sort((a, b) => {
     if (b.streakWrong !== a.streakWrong) {
@@ -126,6 +132,18 @@ function sortBossCandidates(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordP
     const dateCmp = compareDateStrings(a.nextReviewDate, b.nextReviewDate)
     if (dateCmp !== 0) return dateCmp
     // Recently introduced wins ties (descending introducedOn).
+    return compareDateStrings(b.introducedOn, a.introducedOn)
+  })
+}
+
+/** Tier 2 (rest): soonest due first — overdue-ness outranks a mild wrong streak. */
+function sortBossRestCandidates(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
+  return [...rows].sort((a, b) => {
+    const dateCmp = compareDateStrings(a.nextReviewDate, b.nextReviewDate)
+    if (dateCmp !== 0) return dateCmp
+    if (b.streakWrong !== a.streakWrong) {
+      return b.streakWrong - a.streakWrong
+    }
     return compareDateStrings(b.introducedOn, a.introducedOn)
   })
 }
@@ -142,7 +160,12 @@ function pickDueReviewKeys(
 function pickBossKeys(rows: AdaptivePlanWordProgress[], limit: number): string[] {
   const cap = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : BOSS_PACK_LIMIT_FALLBACK
   const learning = activeRows(rows).filter((row) => row.status === 'LEARNING')
-  return sortBossCandidates(learning)
+  // Two tiers: stubborn words (streakWrong >= 2) are why boss exists, so they
+  // always get slots first; the remaining slots go soonest-due first so the
+  // most overdue words aren't crowded out by mildly-wrong fresh words.
+  const stubborn = learning.filter((row) => row.streakWrong >= 2)
+  const rest = learning.filter((row) => row.streakWrong < 2)
+  return [...sortBossCandidates(stubborn), ...sortBossRestCandidates(rest)]
     .slice(0, cap)
     .map((row) => row.wordKey)
 }
@@ -165,12 +188,20 @@ export function buildDailyTask(
   )
 
   if (mode === 'boss') {
+    // Same-day activations left unfinished by an interrupted normal round must
+    // be drilled here too — otherwise the boss round clears reviews while the
+    // new-word goal stays at 0 and the day splits into two rounds.
+    const packedBossKeys = pickBossKeys(rows, bossPackLimit(plan)).filter(
+      (key) => !unfinishedSet.has(key),
+    )
+    const bossKeys = [...unfinishedKeys, ...packedBossKeys].slice(0, bossPackLimit(plan))
     return {
       mode,
       reviewKeys: dueReviewKeys,
       reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
       activateKeys: [],
-      bossKeys: pickBossKeys(rows, bossPackLimit(plan)),
+      bossKeys,
+      bossUnfinishedNewKeys: bossKeys.filter((key) => unfinishedSet.has(key)),
     }
   }
 
@@ -183,6 +214,7 @@ export function buildDailyTask(
       reviewBatchKeys: reviewKeys.slice(0, plan.reviewBatchSize),
       activateKeys: [],
       bossKeys: [],
+      bossUnfinishedNewKeys: [],
     }
   }
 
@@ -204,6 +236,7 @@ export function buildDailyTask(
     reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
     activateKeys,
     bossKeys: [],
+    bossUnfinishedNewKeys: [],
   }
 }
 

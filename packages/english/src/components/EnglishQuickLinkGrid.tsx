@@ -77,6 +77,16 @@ export default function EnglishQuickLinkGrid() {
         <EnglishQuickLinkCard key={link.href} {...link} />
       ))}
       <EnglishQuickLinkCard
+        href="/english/grammar"
+        icon="📗"
+        label="语法"
+        description="剑桥初级语法 · 116 单元 · 讲解+练习"
+        gradient="linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #d9f99d 100%)"
+        border="rgba(34,197,94,.35)"
+        shadow="0 4px 20px rgba(34,197,94,.12)"
+        text="#166534"
+      />
+      <EnglishQuickLinkCard
         href={`${BASE}/hard`}
         icon="📕"
         label="难词本"

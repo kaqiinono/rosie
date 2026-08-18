@@ -1118,6 +1118,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               <OptionalSection
                 problems={dayPlan.optionalProblems}
                 doneKeys={doneKeys}
+                date={selectedDate!}
                 problemSets={problemSets}
                 draftProblemIds={draftProblemIds}
                 onPractice={(prob) =>

@@ -21,7 +21,8 @@
     "ai:sync-status": "node scripts/ai-sync-status.mjs",
     "ai:audit": "node scripts/ai-audit.mjs",
     "ai:sync-all": "node scripts/ai-sync-all.mjs",
-    "grammar:extract": "node scripts/extract-grammar-pdf.mjs",
+    "grammar:extract": "node scripts/extract-grammar-unit.mjs",
+    "grammar:render-pdf": "node scripts/extract-grammar-pdf.mjs",
     "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs"
   },
   "devDependencies": {

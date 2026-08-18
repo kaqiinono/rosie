@@ -30,6 +30,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   cannot_demote_self: '不能取消自己的管理员权限。',
   cannot_delete_self: '不能注销当前登录账户。',
   user_not_found: '用户不存在或已被删除。',
+  role_update_failed: '管理员角色更新未生效，请刷新后重试。',
   missing_admin_env: '服务端缺少 Supabase Service Role 配置。',
 }
 

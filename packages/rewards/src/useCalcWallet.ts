@@ -75,6 +75,34 @@ interface StarSessionRow {
   date: string | null
 }
 
+/** PostgREST caps every response at `max-rows` (default 1000). */
+const STAR_ROWS_PAGE_SIZE = 1000
+
+/**
+ * Fetch ALL star_sessions rows for a user, paging past the PostgREST 1000-row
+ * cap. A single unbounded select silently truncates once the table grows past
+ * the cap: newly inserted stars land outside the window, so balances appear
+ * frozen even though inserts succeed. Ordered for a deterministic window.
+ */
+async function fetchAllStarRows(
+  userId: string,
+): Promise<{ rows: StarSessionRow[]; error: unknown | null }> {
+  const rows: StarSessionRow[] = []
+  for (;;) {
+    const from = rows.length
+    const { data, error } = await supabase
+      .from('star_sessions')
+      .select('coins_earned,source,ref_id,date')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+      .range(from, from + STAR_ROWS_PAGE_SIZE - 1)
+    if (error) return { rows, error }
+    const batch = (data ?? []) as StarSessionRow[]
+    rows.push(...batch)
+    if (batch.length < STAR_ROWS_PAGE_SIZE) return { rows, error: null }
+  }
+}
+
 interface VoucherRecord {
   category: VoucherCategory
   free: boolean
@@ -87,6 +115,8 @@ type WalletData = {
   /** The lazy detail fetch failed; don't retry-loop, and don't claim to be loading. */
   sessionsFailed: boolean
   voucherRecords: VoucherRecord[]
+  /** Spent totals from the server RPC ([yellow, red, blue]); null on the raw-row fallback path. */
+  rpcSpent: [number, number, number] | null
   yellowEarned: number
   redEarned: number
   blueEarned: number
@@ -106,6 +136,7 @@ const EMPTY_WALLET: WalletData = {
   sessionsReady: false,
   sessionsFailed: false,
   voucherRecords: [],
+  rpcSpent: null,
   yellowEarned: 0,
   redEarned: 0,
   blueEarned: 0,
@@ -114,19 +145,19 @@ const EMPTY_WALLET: WalletData = {
   coinsBySessionId: [],
 }
 
+interface WalletBalancesRpc {
+  earned?: { calc?: number; english?: number; math?: number }
+  spent?: { yellow?: number; red?: number; blue?: number }
+  calcCoinsByDate?: [string, number][]
+  coinsBySessionId?: [string, number][]
+}
+
 /** Balances + templates only — skips heavy calc_sessions (homepage HUD). */
 async function fetchWalletData(userId: string): Promise<WalletData> {
-  const [
-    { data: voucherRows, error: vouchErr },
-    { data: starRows, error: starErr },
-    { data: templateRows, error: tmplErr },
-  ] = await Promise.all([
-    supabase.from('calc_vouchers').select('category,free').eq('user_id', userId),
-    supabase.from('star_sessions').select('coins_earned,source,ref_id,date').eq('user_id', userId),
+  const [rpcResult, { data: templateRows, error: tmplErr }] = await Promise.all([
+    supabase.rpc('star_wallet_balances'),
     supabase.from('voucher_templates').select('category,price_yellow,price_red,price_blue'),
   ])
-  if (vouchErr) console.error('[wallet] calc_vouchers fetch failed', vouchErr)
-  if (starErr) console.error('[wallet] star_sessions fetch failed', starErr)
   if (tmplErr) console.error('[wallet] voucher_templates fetch failed', tmplErr)
 
   const priceEntries: [string, [number, number, number]][] = []
@@ -134,12 +165,45 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
     priceEntries.push([r.category, [r.price_yellow, r.price_red, r.price_blue]])
   }
 
+  // Server-side aggregation (migration 0023): O(1) regardless of how many
+  // star_sessions rows exist. Falls back to fetching raw rows when the RPC
+  // isn't deployed yet.
+  if (!rpcResult.error && rpcResult.data) {
+    const b = rpcResult.data as WalletBalancesRpc
+    return {
+      sessions: [],
+      sessionsReady: false,
+      sessionsFailed: false,
+      voucherRecords: [],
+      rpcSpent: [b.spent?.yellow ?? 0, b.spent?.red ?? 0, b.spent?.blue ?? 0],
+      yellowEarned: b.earned?.calc ?? 0,
+      redEarned: b.earned?.english ?? 0,
+      blueEarned: b.earned?.math ?? 0,
+      priceEntries,
+      calcCoinsByDate: (b.calcCoinsByDate ?? []).map(([date, total]) => [String(date), Number(total)]),
+      coinsBySessionId: (b.coinsBySessionId ?? []).map(([refId, total]) => [String(refId), Number(total)]),
+    }
+  }
+  if (rpcResult.error) {
+    console.error('[wallet] star_wallet_balances RPC unavailable, falling back to row fetch', rpcResult.error)
+  }
+
+  const [
+    { data: voucherRows, error: vouchErr },
+    { rows: starRows, error: starErr },
+  ] = await Promise.all([
+    supabase.from('calc_vouchers').select('category,free').eq('user_id', userId),
+    fetchAllStarRows(userId),
+  ])
+  if (vouchErr) console.error('[wallet] calc_vouchers fetch failed', vouchErr)
+  if (starErr) console.error('[wallet] star_sessions fetch failed', starErr)
+
   let yellowEarned = 0
   let redEarned = 0
   let blueEarned = 0
   const calcCoinsByDate = new Map<string, number>()
   const coinsBySessionId = new Map<string, number>()
-  for (const r of (starRows ?? []) as StarSessionRow[]) {
+  for (const r of starRows) {
     const amt = r.coins_earned ?? 0
     if (r.source === 'calc') {
       yellowEarned += amt
@@ -163,6 +227,7 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
     sessionsReady: false,
     sessionsFailed: false,
     voucherRecords,
+    rpcSpent: null,
     yellowEarned,
     redEarned,
     blueEarned,
@@ -261,6 +326,11 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
   }, [user, loadSessions])
 
   const { yellowSpent, redSpent, blueSpent } = useMemo(() => {
+    // RPC path: spent is pre-aggregated server-side (price snapshots frozen at
+    // redemption). Fallback path: recompute from voucher records × template prices.
+    if (wallet.rpcSpent) {
+      return { yellowSpent: wallet.rpcSpent[0], redSpent: wallet.rpcSpent[1], blueSpent: wallet.rpcSpent[2] }
+    }
     let y = 0
     let r = 0
     let b = 0
@@ -273,7 +343,7 @@ export function useCalcWallet(user: User | null, options: UseCalcWalletOptions =
       b += p[2]
     }
     return { yellowSpent: y, redSpent: r, blueSpent: b }
-  }, [wallet.voucherRecords, priceByCategory])
+  }, [wallet.rpcSpent, wallet.voucherRecords, priceByCategory])
 
   const yellowBalance = Math.max(0, wallet.yellowEarned - yellowSpent)
   const redBalance = Math.max(0, wallet.redEarned - redSpent)

@@ -429,6 +429,109 @@ describe('buildDailyTask', () => {
     const task = buildDailyTask(plan, rows, TODAY)
     expect(task.bossKeys).toHaveLength(50)
   })
+
+  it('boss pack keeps stubborn words first, then fills remaining slots most-overdue-first', () => {
+    // Production repro: a quantity-triggered boss packed mildly-wrong fresh words
+    // and left the most overdue words (oldest nextReviewDate) out of the pack,
+    // so they stayed due after a passed boss. Overdue words must outrank
+    // mildly-wrong fresh ones; stubborn words (streakWrong >= 2) keep priority.
+    const plan = basePlan({ mode: 'boss', bossPackLimit: 3 })
+    const rows = [
+      row('stubborn', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        streakWrong: 2,
+        nextReviewDate: TODAY,
+        introducedOn: '2026-07-06',
+      }),
+      row('overdue1', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        streakWrong: 0,
+        nextReviewDate: '2026-07-03',
+        introducedOn: '2026-07-01',
+      }),
+      row('overdue2', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        streakWrong: 0,
+        nextReviewDate: '2026-07-05',
+        introducedOn: '2026-07-02',
+      }),
+      row('freshWrong', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        streakWrong: 1,
+        nextReviewDate: TODAY,
+        introducedOn: '2026-07-07',
+      }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.mode).toBe('boss')
+    expect(task.bossKeys).toEqual(['stubborn', 'overdue1', 'overdue2'])
+  })
+
+  it('boss mode folds unfinished same-day activations to the front of the pack', () => {
+    // An interrupted normal round can leave activated-but-unsettled new words.
+    // The boss pack must drill them too, or the day splits into two rounds
+    // (homepage card stuck at e.g. 20/25 after a passed boss).
+    const plan = basePlan({ mode: 'boss', bossPackLimit: 3 })
+    const rows = [
+      row('old1', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        nextReviewDate: '2026-07-05',
+        introducedOn: '2026-07-01',
+      }),
+      row('old2', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        nextReviewDate: '2026-07-06',
+        introducedOn: '2026-07-01',
+      }),
+      row('old3', {
+        status: 'LEARNING',
+        boxIndex: 2,
+        nextReviewDate: '2026-07-07',
+        introducedOn: '2026-07-02',
+      }),
+      row('new1', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        nextReviewDate: TODAY,
+        introducedOn: TODAY,
+        streakWrong: 0,
+      }),
+      row('new2', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        nextReviewDate: TODAY,
+        introducedOn: TODAY,
+        streakWrong: 0,
+      }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.mode).toBe('boss')
+    expect(task.bossKeys).toEqual(['new1', 'new2', 'old1'])
+    expect(task.bossUnfinishedNewKeys).toEqual(['new1', 'new2'])
+    expect(task.activateKeys).toEqual([])
+  })
+
+  it('reports no bossUnfinishedNewKeys outside boss mode', () => {
+    const plan = basePlan({ newWordsPerDay: 2 })
+    const rows = [
+      row('stuck', {
+        status: 'LEARNING',
+        boxIndex: 1,
+        nextReviewDate: TODAY,
+        introducedOn: TODAY,
+        streakWrong: 0,
+      }),
+      row('ns', { status: 'NOT_STARTED' }),
+    ]
+    const task = buildDailyTask(plan, rows, TODAY)
+    expect(task.bossUnfinishedNewKeys).toEqual([])
+  })
 })
 
 describe('summarizeAdaptiveTodayProgress', () => {

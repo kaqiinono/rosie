@@ -10,7 +10,7 @@ import { fetchStageVocab, readCachedStageVocab } from '../../hooks/useWordData'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
 import { wordMasteryStore } from '../../hooks/useWordMastery'
 import { buildQuizOptions, findWordByKey, wordKey } from '../../utils/english-helpers'
-import { activateWord } from '../../utils/adaptivePlanBoxes'
+import { activateWord, isUnfinishedSameDayActivation } from '../../utils/adaptivePlanBoxes'
 import {
   buildConsolidateExemptSet,
   collapseSessionOutcomes,
@@ -1051,6 +1051,13 @@ export default function AdaptivePlanSession({
 
       const bossOutcomes = [...firstPassResults, ...sinkResults]
       const bossReviewKeys = uniqueKeys(firstPassResults.map((item) => item.wordKey))
+      // Same-day activations the interrupted normal round never settled are
+      // folded into the boss pack — count them toward the daily new-word goal
+      // so a passed boss completes the whole day, not just the review half.
+      const bossNewWordKeys = bossReviewKeys.filter((key) => {
+        const before = rows.find((row) => row.wordKey === key)
+        return before != null && isUnfinishedSameDayActivation(before, today)
+      })
       const starsEarned = starsAwardedThisRoundRef.current
 
       const loggedOutcomes: AdaptiveLoggedOutcome[] = [
@@ -1074,7 +1081,7 @@ export default function AdaptivePlanSession({
         mode: 'boss',
         startedAt: logStartedAtRef.current ?? new Date().toISOString(),
         finishedAt: new Date().toISOString(),
-        newWordCount: 0,
+        newWordCount: bossNewWordKeys.length,
         reviewWordCount: bossReviewKeys.length,
         starsEarned,
         bossPassed: passed,
@@ -1100,7 +1107,7 @@ export default function AdaptivePlanSession({
           setRoundSummary(
             buildRoundSummary({
               kind: 'boss',
-              activateKeys: [],
+              activateKeys: bossNewWordKeys,
               reviewKeys: bossReviewKeys,
               outcomes: bossOutcomes,
               beforeRows: rows,
@@ -1142,7 +1149,7 @@ export default function AdaptivePlanSession({
       setRoundSummary(
         buildRoundSummary({
           kind: 'boss',
-          activateKeys: [],
+          activateKeys: bossNewWordKeys,
           reviewKeys: bossReviewKeys,
           outcomes: bossOutcomes,
           beforeRows: rows,

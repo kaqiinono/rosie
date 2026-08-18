@@ -24,6 +24,7 @@ packages/
   calc/      @rosie/calc    — 口算
   math/      @rosie/math    — 人教版 lessons 12–44 + sea + catalog + quiz + weekly plan
   english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
+                              + grammar (剑桥初级英语语法 116 单元，内容存 Supabase，CLI 提取)
   flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
   chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一下 / 二上 / 二下）

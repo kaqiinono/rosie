@@ -1,7 +1,7 @@
 # @rosie/english
 
-The English module — **vocabulary** (words) + **reading** (passages) — extracted as a standalone
-workspace package so it can be worked on and type-checked in isolation.
+The English module — **vocabulary** (words) + **reading** (passages) + **grammar** (剑桥初级英语语法)
+— extracted as a standalone workspace package so it can be worked on and type-checked in isolation.
 
 **Scope rule for agents:** to change English behavior you almost always only need files in this
 package. Read here first; reach into `@rosie/core` / `@rosie/ui` / `@rosie/player` / `@rosie/rewards`
@@ -17,6 +17,9 @@ audio, flipbook).
   **their own audio** stored in `reading_passage_media` (hooks `useReadingPassageMedia` /
   `useReadingPassageAudio`). Reading playback was **decoupled from the audio module**: it builds its
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
+- **Grammar (`grammar/`)** — 剑桥初级英语语法 116 单元：内容存 Supabase jsonb，渲染层是
+  type → 组件注册表（未知块型降级为 unsupported）；讲解/练习双 tab + mastery 进度。
+  详见下方 Grammar 小节。
 - **`WordsContext`** — aggregates vocab (`useWordData`), mastery (`useWordMastery`), and filter
   state; all English routes consume it via `useWordsContext()`.
 - **`utils/`** — `english-helpers` (`wordKey`/`shuffle`/`hilite`/`parseWordRows`; re-exports
@@ -49,6 +52,34 @@ audio, flipbook).
   the admin manage page still auto-detects orphaned rows and shows「清理 N 个失效词」
   (`archiveOrphanWords`) only when found. DDL lives in **`sql/adaptive-word-plans.sql`** (tracked
   mirror of the gitignored `docs/sql` copy).
+
+## Grammar (剑桥初级英语语法)
+
+**布局**：`grammar/types.ts`（类型 + normalize）、`grammar/grammar-index.ts`（全量静态索引，
+Phase 2 由 `--toc` 生成；为空时首页降级为仅展示 DB 已入库单元）、`grammar/hooks/`（overview /
+unit / mastery）、`grammar/components/`（GrammarHomePage / GrammarUnitPage / LessonView /
+ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`。
+
+**数据流**：内容存 `grammar_units`（unit_number PK，lesson/exercises jsonb，RLS 只读，写入走
+service-role），进度存 `grammar_mastery`（user_id+unit_number PK，完整 RLS）。DDL 在
+`supabase/migrations/0024_add_grammar_module.sql`。`useGrammarUnit` 用模块级缓存（内容是全局
+静态数据，不用 per-user store）；overview/mastery 走 `createUserSessionStore`。
+
+**内容提取 CLI**：`pnpm grammar:extract`（`scripts/extract-grammar-unit.mjs`）——
+`--unit N` / `--range A-B` 提取（pdftoppm → qwen-vl-max → 组装 → upsert）；`--no-upload`
+只落地 `output/grammar-units/unitNNN/`；`--upload-only` 直接读 unit.json 入库；`--force`
+忽略缓存。页码映射优先 `scripts/grammar-page-map.json`，缺失时用临时公式 `[19+2N, 20+2N]`。
+旧 Tesseract 脚本 `extract-grammar-pdf.mjs` 保留为 `grammar:render-pdf`。
+
+**页码标记**：三层——单元级 `book_pages`（DB 列）、Section/练习组级 `bookPage`（渲染 p.N 角标）、
+交叉引用保留原文页码。
+
+**框架扩展四步流程**（新增内容块/题型时）：
+1. `types.ts` 加 union 成员 + `normalizeBlocks`/`normalizeExercises` 分支（未知 type 自动归一为
+   `unsupported`，永不崩溃）；
+2. `LessonView` 的 `BlockView` 或 `ExerciseView` 加渲染分支；
+3. 提取 Prompt（`scripts/extract-grammar-unit.mjs` 的 `EXTRACTION_PROMPT`）同步加块类型说明；
+4. 重跑一个单元验证端到端。
 
 ## Adding phonics rules
 
@@ -85,7 +116,7 @@ add a path alias — Next compiles this package via `transpilePackages`.
 
 ## How it plugs into the app
 
-Routes stay in `apps/web/src/app/english/**` (cards/daily/practice/reading/weekly + layout)
+Routes stay in `apps/web/src/app/english/**` (cards/daily/practice/reading/weekly/grammar + layout)
 and import everything from the `@rosie/english` barrel. `reading-data` is **English-owned**; the
 audio and flipbook modules consume it from `@rosie/english`.
 

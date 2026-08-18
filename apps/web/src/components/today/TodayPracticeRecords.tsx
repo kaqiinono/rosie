@@ -17,6 +17,7 @@ import {
   findWordByKey,
 } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
+import { isPlanProblemDone } from '@rosie/math-kit/utils/math-helpers'
 import { useMathTodayAttempts } from '@rosie/math-kit/hooks/useMathTodayAttempts'
 import { lessonDisplayLabel } from '@rosie/math'
 import { fetchAttemptCanvas } from '@rosie/math-kit/utils/math-scratch-db'
@@ -246,7 +247,7 @@ export default function TodayPracticeRecords() {
   const mathToday = mathPlan?.days.find((d) => d.date === today)
   const mathProgress = mathPlan?.progress[today] ?? { doneKeys: [] }
   const mathProblems = mathToday?.problems ?? []
-  const mathDoneCount = mathProblems.filter((p) => mathProgress.doneKeys.includes(p.key)).length
+  const mathDoneCount = mathProblems.filter((p) => isPlanProblemDone(p, today, mathProgress.doneKeys)).length
   const [mathPreviewId, setMathPreviewId] = useState<string | null>(null)
 
   // ── Chinese ──

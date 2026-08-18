@@ -65,6 +65,11 @@ export function useCalcVouchers(user: User | null) {
             user_id: user.id,
             category: template.category,
             coins_spent: templateTotalPrice(template),
+            // Snapshot the price at redemption (migration 0023) so a later
+            // template reprice can't retroactively change historical balances.
+            price_yellow: template.priceYellow,
+            price_red: template.priceRed,
+            price_blue: template.priceBlue,
             free: false,
           })
           .select('id,category,redeemed_at,used_at,coins_spent')
@@ -93,7 +98,15 @@ export function useCalcVouchers(user: User | null) {
       if (!user) return null
       const { data, error } = await supabase
         .from('calc_vouchers')
-        .insert({ user_id: user.id, category: template.category, coins_spent: 0, free: true })
+        .insert({
+          user_id: user.id,
+          category: template.category,
+          coins_spent: 0,
+          price_yellow: 0,
+          price_red: 0,
+          price_blue: 0,
+          free: true,
+        })
         .select('id,category,redeemed_at,used_at,coins_spent')
         .single()
       if (error || !data) {

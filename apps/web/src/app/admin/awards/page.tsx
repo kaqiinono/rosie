@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useAuth } from '@rosie/core'
+import { isAdminUser, useAuth } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useStarEarning } from '@rosie/rewards'
 import { useCalcVouchers } from '@rosie/rewards'
@@ -36,10 +36,18 @@ interface TodayVoucherRow {
   redeemed_at: string
 }
 
+/** Unified today-log entry (star ops + voucher ops) sorted by timestamp. */
+type TodayLogEntry =
+  | { kind: 'voucher'; id: string; time: string; category: VoucherCategory; free: boolean | null }
+  | { kind: 'star'; id: string; time: string; color: StarColor; amount: number }
+
+const LOG_PAGE_SIZE = 10
+
 export default function AwardsAdminPage() {
   const pathname = usePathname()
   const isTemplateAdmin = pathname === '/admin/voucher-templates'
   const { user } = useAuth()
+  const isAdmin = isAdminUser(user)
   const wallet = useCalcWallet(user)
   const { earnStars } = useStarEarning(user)
   const { grantFree } = useCalcVouchers(user)
@@ -55,6 +63,7 @@ export default function AwardsAdminPage() {
   const [todayVouchers, setTodayVouchers] = useState<TodayVoucherRow[]>([])
   const [flash, setFlash] = useState<string | null>(null)
   const [showArchived, setShowArchived] = useState(false)
+  const [logPage, setLogPage] = useState(1)
   /** Modal mode: null = closed, 'new' = create, VoucherTemplate = edit that one */
   const [modalMode, setModalMode] = useState<null | 'new' | VoucherTemplate>(null)
 
@@ -67,15 +76,13 @@ export default function AwardsAdminPage() {
         .select('id, source, coins_earned, created_at')
         .eq('user_id', user.id)
         .eq('date', today)
-        .order('created_at', { ascending: false })
-        .limit(80),
+        .order('created_at', { ascending: false }),
       supabase
         .from('calc_vouchers')
         .select('id, category, free, redeemed_at')
         .eq('user_id', user.id)
         .gte('redeemed_at', `${today}T00:00:00`)
-        .order('redeemed_at', { ascending: false })
-        .limit(40),
+        .order('redeemed_at', { ascending: false }),
     ])
     setTodayStars((starRows ?? []) as TodayStarRow[])
     setTodayVouchers((vRows ?? []) as TodayVoucherRow[])
@@ -98,6 +105,7 @@ export default function AwardsAdminPage() {
 
   const handleAdjustStars = useCallback(
     async (color: StarColor, amount: number, mode: 'add' | 'spend') => {
+      if (!isAdmin) return
       if (busy || amount <= 0) return
       const hex = STAR_COLOR_HEX[color]
       if (mode === 'spend' && amount > getBalance(color)) {
@@ -108,7 +116,11 @@ export default function AwardsAdminPage() {
       setBusy(key)
       try {
         if (mode === 'add') {
-          await earnStars(COLOR_TO_SOURCE[color], amount)
+          const ok = await earnStars(COLOR_TO_SOURCE[color], amount)
+          if (!ok) {
+            triggerFlash('添加失败，请重试')
+            return
+          }
         } else {
           const { error } = await supabase.from('star_sessions').insert({
             user_id: user!.id,
@@ -133,7 +145,7 @@ export default function AwardsAdminPage() {
         setBusy(null)
       }
     },
-    [busy, earnStars, wallet, loadToday, getBalance, user],
+    [isAdmin, busy, earnStars, wallet, loadToday, getBalance, user],
   )
 
   const handleGrantVoucher = useCallback(
@@ -192,6 +204,35 @@ export default function AwardsAdminPage() {
     [catalog],
   )
 
+  /** Admin-only manual trigger for the nightly star_sessions compaction job. */
+  const handleCompactStars = useCallback(async () => {
+    if (busy) return
+    if (!window.confirm('合并 7 天前的星星记录（按日汇总，总额不变）？')) return
+    setBusy('compact')
+    try {
+      const { data } = await supabase.auth.getSession()
+      const token = data.session?.access_token
+      if (!token) {
+        triggerFlash('请先登录')
+        return
+      }
+      const res = await fetch('/api/stars/compact', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      })
+      const payload = (await res.json().catch(() => ({}))) as { deleted?: number }
+      if (res.ok) {
+        triggerFlash(`已合并 ${payload.deleted ?? 0} 条历史记录`)
+      } else {
+        triggerFlash('合并失败，请重试')
+      }
+    } catch {
+      triggerFlash('合并失败，请重试')
+    } finally {
+      setBusy(null)
+    }
+  }, [busy])
+
   const activeTemplates = useMemo(
     () => catalog.visible.slice().sort((a, b) => a.sortOrder - b.sortOrder),
     [catalog.visible],
@@ -200,6 +241,42 @@ export default function AwardsAdminPage() {
     () => catalog.archived.slice().sort((a, b) => a.sortOrder - b.sortOrder),
     [catalog.archived],
   )
+
+  /** Today's net totals per color — spends (negative rows) are included. */
+  const todayTotals = useMemo(() => {
+    const totals: Record<StarColor, number> = { yellow: 0, red: 0, blue: 0 }
+    for (const s of todayStars) {
+      const color: StarColor = s.source === 'calc' ? 'yellow' : s.source === 'english' ? 'red' : 'blue'
+      totals[color] += s.coins_earned
+    }
+    return totals
+  }, [todayStars])
+
+  /** Star ops + voucher ops interleaved by timestamp (newest first) for paging. */
+  const todayLog = useMemo<TodayLogEntry[]>(() => {
+    const entries: TodayLogEntry[] = [
+      ...todayVouchers.map((v) => ({
+        kind: 'voucher' as const,
+        id: v.id,
+        time: v.redeemed_at,
+        category: v.category,
+        free: v.free,
+      })),
+      ...todayStars.map((s) => ({
+        kind: 'star' as const,
+        id: s.id,
+        time: s.created_at,
+        color: (s.source === 'calc' ? 'yellow' : s.source === 'english' ? 'red' : 'blue') as StarColor,
+        amount: s.coins_earned,
+      })),
+    ]
+    entries.sort((a, b) => b.time.localeCompare(a.time))
+    return entries
+  }, [todayStars, todayVouchers])
+
+  const rawMaxLogPage = Math.max(1, Math.ceil(todayLog.length / LOG_PAGE_SIZE))
+  const currentPage = Math.min(logPage, rawMaxLogPage)
+  const pagedLog = todayLog.slice((currentPage - 1) * LOG_PAGE_SIZE, currentPage * LOG_PAGE_SIZE)
 
   const balancesByColor = useMemo(
     (): Record<StarColor, number> => ({
@@ -259,6 +336,18 @@ export default function AwardsAdminPage() {
             >
               ✓ {flash}
             </div>
+          )}
+          {isAdmin && !isTemplateAdmin && (
+            <button
+              type="button"
+              disabled={!!busy}
+              onClick={() => void handleCompactStars()}
+              className={`rounded-full px-3 py-1 text-[11px] font-extrabold text-slate-500 transition hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 ${flash ? '' : 'ml-auto'}`}
+              style={{ background: 'rgba(100,116,139,0.10)', border: '1px solid rgba(100,116,139,0.28)' }}
+              title="把 7 天前的逐题星星记录按日合并，总额不变"
+            >
+              {busy === 'compact' ? '合并中…' : '压缩历史记录'}
+            </button>
           )}
         </div>
       </header>
@@ -348,8 +437,8 @@ export default function AwardsAdminPage() {
           </div>
         </section>
 
-        {/* Add or spend stars */}
-        <section>
+        {/* Add or spend stars (admin only) */}
+        {isAdmin && <section>
           <div className="mb-3 flex items-baseline gap-2">
             <h2 className="text-[15px] font-extrabold text-slate-800">添加或消费</h2>
             <span className="text-[11px] text-slate-500">输入数量后点击添加或消费，当天可多次操作</span>
@@ -434,7 +523,7 @@ export default function AwardsAdminPage() {
               )
             })}
           </div>
-        </section>
+        </section>}
 
         {/* Grant vouchers */}
         <section>
@@ -560,68 +649,110 @@ export default function AwardsAdminPage() {
           <div className="mb-3 flex items-baseline gap-2">
             <h2 className="text-[15px] font-extrabold text-slate-800">今日操作日志</h2>
             <span className="text-[11px] text-slate-500">
-              {todayStars.length + todayVouchers.length} 条
+              {todayLog.length} 条
             </span>
           </div>
-          {todayStars.length === 0 && todayVouchers.length === 0 ? (
+          {todayLog.length === 0 ? (
             <div className="rounded-xl bg-white/60 py-6 text-center text-[12px] text-slate-400">
               今天还没有操作
             </div>
           ) : (
-            <div className="space-y-1">
-              {todayVouchers.map((v) => {
-                const t = catalog.getById(v.category)
-                return (
-                  <div
-                    key={`v-${v.id}`}
-                    className="flex items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-[12px]"
-                  >
-                    <span className="text-[16px]">{t?.emoji ?? '🎫'}</span>
-                    <span className="font-extrabold text-slate-700">
-                      {t?.label ?? v.category}
+            <>
+              {/* Today's net totals per color (spends included) */}
+              <div
+                className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl px-3 py-2"
+                style={{ background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(245,158,11,0.18)' }}
+              >
+                <span className="text-[11px] font-extrabold text-slate-500">今日合计</span>
+                {COLORS.map((c) => {
+                  const hex = STAR_COLOR_HEX[c]
+                  const total = todayTotals[c]
+                  return (
+                    <span key={c} className="inline-flex items-center gap-1 text-[12px] font-black tabular-nums" style={{ color: hex.outline }}>
+                      <ColoredStar color={c} size={13} glow={4} />
+                      {total >= 0 ? '+' : ''}{total} {hex.shapeLabel}
                     </span>
-                    {v.free && (
-                      <span
-                        className="rounded px-1.5 py-0.5 text-[10px] font-black"
-                        style={{ background: 'rgba(16,185,129,0.12)', color: '#065f46' }}
+                  )
+                })}
+              </div>
+              <div className="space-y-1">
+                {pagedLog.map((entry) => {
+                  if (entry.kind === 'voucher') {
+                    const t = catalog.getById(entry.category)
+                    return (
+                      <div
+                        key={`v-${entry.id}`}
+                        className="flex items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-[12px]"
                       >
-                        FREE
+                        <span className="text-[16px]">{t?.emoji ?? '🎫'}</span>
+                        <span className="font-extrabold text-slate-700">
+                          {t?.label ?? entry.category}
+                        </span>
+                        {entry.free && (
+                          <span
+                            className="rounded px-1.5 py-0.5 text-[10px] font-black"
+                            style={{ background: 'rgba(16,185,129,0.12)', color: '#065f46' }}
+                          >
+                            FREE
+                          </span>
+                        )}
+                        <span className="ml-auto font-mono text-[11px] text-slate-400 tabular-nums">
+                          {new Date(entry.time).toLocaleTimeString('zh-CN', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                    )
+                  }
+                  const hex = STAR_COLOR_HEX[entry.color]
+                  return (
+                    <div
+                      key={`s-${entry.id}`}
+                      className="flex items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-[12px]"
+                    >
+                      <ColoredStar color={entry.color} size={14} glow={4} />
+                      <span className="font-extrabold" style={{ color: hex.outline }}>
+                        {entry.amount >= 0 ? '+' : ''}
+                        {entry.amount} {hex.cnLabel}
+                        {hex.shapeLabel}
                       </span>
-                    )}
-                    <span className="ml-auto font-mono text-[11px] text-slate-400 tabular-nums">
-                      {new Date(v.redeemed_at).toLocaleTimeString('zh-CN', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                )
-              })}
-              {todayStars.map((s) => {
-                const color: StarColor =
-                  s.source === 'calc' ? 'yellow' : s.source === 'english' ? 'red' : 'blue'
-                const hex = STAR_COLOR_HEX[color]
-                return (
-                  <div
-                    key={`s-${s.id}`}
-                    className="flex items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-[12px]"
+                      <span className="ml-auto font-mono text-[11px] text-slate-400 tabular-nums">
+                        {new Date(entry.time).toLocaleTimeString('zh-CN', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+              {rawMaxLogPage > 1 && (
+                <div className="mt-2 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    disabled={currentPage <= 1}
+                    onClick={() => setLogPage(currentPage - 1)}
+                    className="cursor-pointer rounded-lg px-3 py-1 text-[12px] font-extrabold text-amber-800 transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
+                    style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(245,158,11,0.35)' }}
                   >
-                    <ColoredStar color={color} size={14} glow={4} />
-                    <span className="font-extrabold" style={{ color: hex.outline }}>
-                      {s.coins_earned >= 0 ? '+' : ''}
-                      {s.coins_earned} {hex.cnLabel}
-                      {hex.shapeLabel}
-                    </span>
-                    <span className="ml-auto font-mono text-[11px] text-slate-400 tabular-nums">
-                      {new Date(s.created_at).toLocaleTimeString('zh-CN', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
+                    ← 上一页
+                  </button>
+                  <span className="text-[12px] font-bold text-slate-500 tabular-nums">
+                    第 {currentPage} / {rawMaxLogPage} 页
+                  </span>
+                  <button
+                    type="button"
+                    disabled={currentPage >= rawMaxLogPage}
+                    onClick={() => setLogPage(currentPage + 1)}
+                    className="cursor-pointer rounded-lg px-3 py-1 text-[12px] font-extrabold text-amber-800 transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
+                    style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(245,158,11,0.35)' }}
+                  >
+                    下一页 →
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </section>}
       </main>

@@ -1312,18 +1312,20 @@ export function WeeklyLessonSection({
 export function OptionalSection({
   problems,
   doneKeys,
+  date,
   onPractice,
   problemSets,
   draftProblemIds,
 }: {
   problems: MathPlanProblem[]
   doneKeys: Set<string>
+  date: string
   onPractice?: (prob: MathPlanProblem) => void
   problemSets?: Record<string, ProblemSet>
   draftProblemIds?: Set<string>
 }) {
   const [expanded, setExpanded] = useState(false)
-  const doneCount = problems.filter((p) => doneKeys.has(p.key)).length
+  const doneCount = problems.filter((p) => isPlanProblemDone(p, date, doneKeys)).length
 
   return (
     <div>
@@ -1355,11 +1357,11 @@ export function OptionalSection({
             <ProblemCard
               key={prob.key}
               prob={prob}
-              done={doneKeys.has(prob.key)}
+              done={isPlanProblemDone(prob, date, doneKeys)}
               problemSets={problemSets}
               hasDraft={draftProblemIds?.has(prob.problemId) ?? false}
               onPractice={
-                doneKeys.has(prob.key) || !onPractice ? undefined : () => onPractice(prob)
+                isPlanProblemDone(prob, date, doneKeys) || !onPractice ? undefined : () => onPractice(prob)
               }
             />
           ))}

@@ -103,12 +103,19 @@ export async function PATCH(req: Request) {
       }
       const nextAppMetadata = { ...target.app_metadata }
       if (isAdmin) nextAppMetadata.role = 'admin'
-      else delete nextAppMetadata.role
+      // GoTrue merges app_metadata (absent keys are NOT deleted), so demote by
+      // overwriting role with an empty string — all role checks compare === 'admin'.
+      else nextAppMetadata.role = ''
 
-      const { error } = await admin.auth.admin.updateUserById(userId, {
+      const { data: updated, error } = await admin.auth.admin.updateUserById(userId, {
         app_metadata: nextAppMetadata,
       })
       if (error) throw error
+      // Ensure the role change actually persisted (merge semantics can silently no-op).
+      const roleNow = updated.user.app_metadata?.role
+      if (roleNow !== (isAdmin ? 'admin' : '')) {
+        return NextResponse.json({ error: 'role_update_failed' }, { status: 502 })
+      }
       return NextResponse.json({ ok: true })
     }
 

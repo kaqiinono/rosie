@@ -1,5 +1,6 @@
 // @rosie/english — vocabulary (cards/quiz/spelling/daily/weekly-plan/mastery) + reading
-// (passages with their own audio). Public API for apps/web routes & external consumers.
+// (passages with their own audio) + grammar (剑桥初级英语语法).
+// Public API for apps/web routes & external consumers.
 
 // Package-private styles (phonics / keyword / word-monster + rescue vars, reading-recall
 // decorations). Bundled here so any route importing @rosie/english gets them — keeps the
@@ -127,3 +128,12 @@ export { default as ReadingAudioUploadButton } from './components/reading/Readin
 export { default as RecallQuizStack } from './components/reading/RecallQuizStack'
 export { default as UncoveredWordsReview } from './components/reading/UncoveredWordsReview'
 export { default as WordPopup } from './components/reading/WordPopup'
+
+// Grammar (剑桥初级英语语法)
+export { default as GrammarHomePage } from './grammar/components/GrammarHomePage'
+export { default as GrammarUnitPage } from './grammar/components/GrammarUnitPage'
+export { useGrammarOverview, grammarUnitsStore } from './grammar/hooks/useGrammarOverview'
+export { useGrammarUnit } from './grammar/hooks/useGrammarUnit'
+export { useGrammarMastery, grammarMasteryStore } from './grammar/hooks/useGrammarMastery'
+export { GRAMMAR_INDEX } from './grammar/grammar-index'
+export * from './grammar/types'

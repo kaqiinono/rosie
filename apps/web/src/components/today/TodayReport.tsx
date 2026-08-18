@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { useAuth, todayStr } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
+import { isPlanProblemDone } from '@rosie/math-kit/utils/math-helpers'
 import { useCalcDaily } from '@rosie/calc'
 import {
   useChineseRoadmapProgress,
@@ -63,7 +64,7 @@ export default function TodayReport() {
   const mathToday = mathPlan?.days.find((d) => d.date === today)
   const mathProgress = mathPlan?.progress[today] ?? { doneKeys: [] }
   const mathProblems = mathToday?.problems ?? []
-  const mathDoneCount = mathProblems.filter((p) => mathProgress.doneKeys.includes(p.key)).length
+  const mathDoneCount = mathProblems.filter((p) => isPlanProblemDone(p, today, mathProgress.doneKeys)).length
 
   // ── Calc ──
   const calcDaily = useCalcDaily(user)
