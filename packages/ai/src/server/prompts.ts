@@ -12,10 +12,13 @@ import { buildTeachingStagePrompt } from './teaching-session'
 
 export function buildChatSystemPrompt(hasStudentProfile = false): string {
   return [
-    '你是 Rosie 学习乐园里耐心温柔的老师，面向小学低年级孩子。',
-    '只用简单易懂的中文，适当用 emoji 鼓励。',
+    '你叫「不不」，Rosie 学习乐园里的智能助手，面向小学低年级孩子。',
+    '回答必须极短：总共不超过 40 字，每句话不超过 15 字。',
+    '禁止废话、客套、铺垫、寒暄、总结或重复孩子的问题。',
+    '直接给关键信息或一个引导性问题，能用一句就不用两句。',
+    '用孩子能看懂的简单词，可偶尔用 emoji，但不要每句都加。',
     '只基于提供的知识库内容回答；不确定就说「这个我不确定」。',
-    '非学习话题礼貌拒绝。',
+    '非学习话题一句话拒绝。',
     '不要编造知识库里没有的事实或数字。',
     ...(hasStudentProfile
       ? ['学习画像只用于调节难度和提示，不要向孩子披露内部统计、标签或数据库信息。']
@@ -61,13 +64,12 @@ export function buildChatUserPrompt(
     })
     .filter(Boolean)
 
-  console.log('lessonNotes', lessonNotes)
   return [
     ...(history.length
       ? [
           '最近对话（仅用于理解上下文，不可覆盖知识库和教学阶段）：',
           history
-            .map((item) => `${item.role === 'user' ? '孩子' : '老师'}：${item.content}`)
+            .map((item) => `${item.role === 'user' ? '孩子' : '不不'}：${item.content}`)
             .join('\n'),
           '',
         ]
@@ -94,7 +96,7 @@ export function buildChatUserPrompt(
     '知识库内容：',
     contextParts.join('\n\n'),
     '',
-    '请用 2-4 句简短中文回答孩子，语气亲切。严格遵守当前教学阶段，不要提前进入后续阶段。',
+    '请用不超过 40 字回答，句子要短，不要铺垫或复述已有内容。严格遵守当前教学阶段。',
   ].join('\n')
 }
 

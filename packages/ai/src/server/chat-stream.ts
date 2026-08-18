@@ -22,7 +22,7 @@ export async function* streamChatTokens(
     },
     body: JSON.stringify({
       model,
-      max_tokens: 512,
+      max_tokens: 200,
       stream: true,
       messages: [
         { role: 'system', content: system },

@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@rosie/core'
+import AuthSkeleton from './AuthSkeleton'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -15,7 +16,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, pathname, router])
 
-  if (loading) return null
+  if (loading) return <AuthSkeleton />
   if (!user && pathname !== '/auth') return null
 
   return <>{children}</>

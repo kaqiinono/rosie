@@ -43,10 +43,6 @@ export async function runAgentOrchestrator(
   }
 
   // ── Lesson review: return notes directly when user asks to review ──
-  console.log('[orchestrator] review check: subject=%s lessonNotes=%d message=%s',
-    input.context?.subject ?? 'NONE',
-    input.lessonNotes?.length ?? 0,
-    input.message.slice(0, 50))
   const isReviewIntent =
     input.context?.subject === 'math' &&
     input.lessonNotes?.length &&
@@ -55,7 +51,6 @@ export async function runAgentOrchestrator(
       input.message.includes('讲次') ||
       input.message.includes('笔记') ||
       input.message.includes('易错点'))
-  console.log('[orchestrator] isReviewIntent=%s', !!isReviewIntent)
   if (isReviewIntent) {
     blocks.push({
       type: 'lesson_notes',
@@ -67,8 +62,6 @@ export async function runAgentOrchestrator(
   }
 
   // ── Similar problem: return a same-lesson problem with solution ──
-  console.log('[orchestrator] similar check: subject=%s hasSimilarProblem=%s',
-    input.context?.subject ?? 'NONE', !!input.similarProblem)
   const isSimilarIntent =
     input.context?.subject === 'math' &&
     input.similarProblem &&
@@ -229,7 +222,7 @@ export async function runAgentOrchestrator(
     return fallbackAgentResponse(
       hits.length > 0
         ? summaryText
-        : '我在知识库里还没有找到相关内容。你可以换个问法，或者让爸爸妈妈帮忙导入资料哦。',
+        : '我在知识库里还没找到相关内容。换个问法试试，或让爸爸妈妈帮忙导入资料。',
     )
   }
 
@@ -260,53 +253,53 @@ function buildSummaryText(
 
   const passage = blocks.find((b) => b.type === 'passage_excerpt')
   if (passage?.type === 'passage_excerpt') {
-    return `《${passage.title}》主要内容在这里啦，你可以点下面按钮读全文。`
+    return `《${passage.title}》内容在这里，点下方按钮读全文。`
   }
 
   const char = blocks.find((b) => b.type === 'char_card')
   if (char?.type === 'char_card') {
-    return `这是“${char.char}”的生字卡，点击卡片可以翻面查看拼音、组词和字形信息。`
+    return `“${char.char}”的生字卡，点击翻面看拼音和组词。`
   }
 
   const math = blocks.find((b) => b.type === 'math_solution')
   if (math?.type === 'math_solution') {
     const isSimilar = math.title.startsWith('相似例题')
     return isSimilar
-      ? `这是一道同讲次的相似例题，下面是完整的解题过程。`
-      : `这道题可以这样思考，下面是解题步骤。想自己试的话，点「去看这道题」。`
+      ? `相似例题，下面是解题过程。`
+      : `这道题这样做，点「去看这道题」自己试试。`
   }
 
   const practice = blocks.find((b) => b.type === 'math_problem')
   if (practice?.type === 'math_problem') {
-    return `我把《${practice.title}》放到对话里了，直接作答就可以。提交后再查看完整题解。`
+    return `《${practice.title}》已放入对话，直接作答。`
   }
 
   const poem = blocks.find((b) => b.type === 'poem_recite')
   if (poem?.type === 'poem_recite') {
-    return `《${poem.title}》背诵练习已经准备好了，直接填写空缺的字再提交。`
+    return `《${poem.title}》准备好了，填写空缺的字再提交。`
   }
 
   const status = blocks.find((b) => b.type === 'learning_status')
   if (status?.type === 'learning_status') {
     return status.subject
-      ? `这是你当前的${status.subject === 'english' ? '英语' : status.subject === 'math' ? '数学' : '语文'}学习情况。`
-      : '这是你当前三科的学习概况。'
+      ? `这是你的${status.subject === 'english' ? '英语' : status.subject === 'math' ? '数学' : '语文'}学习情况。`
+      : '这是你三科的学习概况。'
   }
 
   const todayTasks = blocks.find((b) => b.type === 'today_tasks')
   if (todayTasks?.type === 'today_tasks') {
     return todayTasks.subject
-      ? '这是你今天这门学科的任务和当前进度。'
-      : '这是你今天三科的任务和当前进度。'
+      ? '这是你今天这门课的任务和进度。'
+      : '这是你今天三科的任务和进度。'
   }
 
   const notes = blocks.find((b) => b.type === 'lesson_notes')
   if (notes?.type === 'lesson_notes') {
-    return `这是本讲的${notes.notes.length}条学习笔记，认真复习吧！`
+    return `本讲${notes.notes.length}条笔记，复习吧！`
   }
 
   if (hits[0]) {
-    return `我找到了一些相关内容，帮你整理在下面啦。`
+    return `找到相关内容，整理在下面。`
   }
 
   return `关于「${message.slice(0, 40)}」，让我想想…`

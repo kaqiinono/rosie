@@ -6,7 +6,7 @@ export default function RosieAssistantAvatar({ className = '' }: RosieAssistantA
   return (
     <span
       role="img"
-      aria-label="Rosie"
+      aria-label="不不"
       className={`block shrink-0 bg-contain bg-center bg-no-repeat ${className}`}
       style={{ backgroundImage: "url('/brand/rosie-assistant-pink-v2.webp')" }}
     />

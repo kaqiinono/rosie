@@ -346,9 +346,9 @@ export default function AiFloatingAssistant({
       <button
         ref={launcherRef}
         type="button"
-        aria-label={open ? '收起 Rosie 学习助手' : '打开 Rosie 学习助手，可拖动调整位置'}
+        aria-label={open ? '收起不不' : '打开不不，可拖动调整位置'}
         aria-expanded={open}
-        title={open ? '收起 Rosie 学习助手' : '拖动可移开，方向键也可调整位置'}
+        title={open ? '收起不不' : '拖动可移开，方向键也可调整位置'}
         style={launcherStyle}
         onClick={() => {
           if (suppressClickRef.current) {
@@ -376,14 +376,14 @@ export default function AiFloatingAssistant({
 
       <button
         type="button"
-        aria-label="关闭 Rosie 学习助手"
+        aria-label="关闭不不"
         tabIndex={open ? 0 : -1}
         onClick={closeAssistant}
         className={`fixed inset-0 z-60 bg-slate-950/25 backdrop-blur-[2px] transition-opacity duration-300 ${open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
       />
 
       <aside
-        aria-label="Rosie 学习助手对话框"
+        aria-label="不不对话框"
         aria-hidden={!open}
         inert={!open}
         className={`fixed inset-x-2 top-2 bottom-2 z-70 flex flex-col overflow-hidden rounded-[28px] border border-white/80 bg-[#f9faff]/96 shadow-[0_28px_90px_rgba(15,23,42,0.3)] backdrop-blur-2xl transition duration-300 ease-out sm:inset-x-auto sm:top-4 sm:right-4 sm:bottom-4 sm:w-[440px] md:w-[480px] lg:w-[520px] ${open ? 'pointer-events-auto translate-x-0 opacity-100' : 'pointer-events-none translate-x-[110%] opacity-0'}`}
@@ -393,7 +393,7 @@ export default function AiFloatingAssistant({
             <RosieAssistantAvatar className="size-10 rounded-2xl shadow-sm ring-1 ring-rose-100" />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-black text-slate-900">Rosie 学习助手</h2>
+                <h2 className="text-sm font-black text-slate-900">不不</h2>
                 <span className="size-2 rounded-full bg-emerald-400" />
               </div>
               <p className="text-[11px] text-slate-500">
@@ -411,7 +411,7 @@ export default function AiFloatingAssistant({
             </Link>
             <button
               type="button"
-              aria-label="收起 Rosie 学习助手"
+              aria-label="收起不不"
               onClick={closeAssistant}
               className="grid size-9 place-items-center rounded-xl text-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
             >

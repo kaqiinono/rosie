@@ -29,7 +29,7 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
           </Link>
           <div className="flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur-xl">
             <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.15)]" />
-            Rosie 在线
+            不不 在线
           </div>
         </header>
 
@@ -45,7 +45,7 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
                 <h1 className="text-3xl leading-tight font-black tracking-tight">
                   嗨，我是
                   <br />
-                  不不 老师
+                  不不
                 </h1>
               </div>
               <p className="mt-3 text-sm leading-6 text-indigo-100/80">
@@ -96,7 +96,7 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
                     </span>
                   </div>
                   <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm">
-                    打字或按住麦克风，Rosie 会根据你的学习进度一步步引导。
+                    打字或按住麦克风，不不会根据你的学习进度一步步引导。
                   </p>
                 </div>
               </div>
