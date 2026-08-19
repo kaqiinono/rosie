@@ -128,12 +128,20 @@ export default function ProblemMasteryPanel({
       })
       .filter((r) => r.m != null || r.count > 0 || r.practiceStatus === 'wrong')
       .sort((a, b) => {
-        // 按练习时间倒序：最近练习的排最前；未练习的排最后
+        // 按练习时间降序：最近练习的排最前；未练习的排最后
         const ta = a.practiceTime ?? ''
         const tb = b.practiceTime ?? ''
-        if (ta && tb) return tb.localeCompare(ta)
+        if (ta && tb) {
+          const cmp = tb.localeCompare(ta)
+          if (cmp !== 0) return cmp
+          // 练习时间相同：练习次数多的排前面
+          if (b.count !== a.count) return b.count - a.count
+          return a.p.key.localeCompare(b.p.key)
+        }
         if (ta) return -1
         if (tb) return 1
+        // 都未练习：练习次数多的排前面，再按 key 排序
+        if (b.count !== a.count) return b.count - a.count
         return a.p.key.localeCompare(b.p.key)
       })
   }, [problems, masteryMap, practiceCount, lastAttemptedAt, wrongIds, today])

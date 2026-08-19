@@ -5,9 +5,14 @@ import type {
   CrossReference,
   GrammarBlock,
   GrammarExample,
+  GrammarFigure,
   GrammarLesson,
+  GrammarPageImage,
   GrammarSection,
+  GrammarTableBlock,
 } from '../types'
+import { grammarPageImageUrl } from '../types'
+import { FigureCard } from './FigureCard'
 
 /** 按 bold 数组顺序逐个匹配并高亮例句中的关键词 */
 function renderBold(en: string, bold?: string[]): ReactNode[] {
@@ -30,12 +35,22 @@ function renderBold(en: string, bold?: string[]): ReactNode[] {
 }
 
 /** 原书印刷页码角标 */
-function PageBadge({ page }: { page?: number }) {
+function PageBadge({ page, onClick }: { page?: number; onClick?: (page: number) => void }) {
   if (typeof page !== 'number') return null
+  const clickable = !!onClick
   return (
-    <span className="ml-auto shrink-0 rounded-full bg-surface-dim px-2 py-0.5 text-[10px] font-bold text-text-muted ring-1 ring-border-light">
+    <button
+      type="button"
+      disabled={!clickable}
+      onClick={() => clickable && onClick(page)}
+      className={`ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 transition-colors ${
+        clickable
+          ? 'cursor-pointer bg-surface-dim text-app-blue ring-border-light hover:bg-app-blue-light hover:text-app-blue-dark'
+          : 'bg-surface-dim text-text-muted ring-border-light'
+      }`}
+    >
       p.{page}
-    </span>
+    </button>
   )
 }
 
@@ -48,6 +63,93 @@ function ExampleRow({ item }: { item: GrammarExample }) {
       <div className="text-[13px] leading-relaxed text-text-secondary">
         {item.zh}
         {item.note ? <span className="ml-1 text-text-muted">（{item.note}）</span> : null}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 同列连续空单元格向下合并：空单元格并入上方最近非空单元格（rowSpan），
+ * 还原原书「一个动词形式用花括号跨多行」的分组效果（如 was 覆盖 I/he/she/it）。
+ * 返回值 0 表示该单元格被上方 rowspan 吸收，不渲染。
+ */
+function buildRowSpans(rows: string[][]): number[][] {
+  const spans = rows.map((row) => row.map(() => 1))
+  const colCount = rows.reduce((max, row) => Math.max(max, row.length), 0)
+  for (let c = 0; c < colCount; c++) {
+    let anchor = -1
+    for (let r = 0; r < rows.length; r++) {
+      if ((rows[r][c] ?? '') === '') {
+        if (anchor >= 0) {
+          spans[r][c] = 0
+          spans[anchor][c] += 1
+        }
+      } else {
+        anchor = r
+      }
+    }
+  }
+  return spans
+}
+
+/** 单元格尾部括号注记（如 (wasn't)）弱化为次要视觉，不抢动词本体的焦点 */
+function renderTableCell(cell: string): ReactNode {
+  const match = cell.match(/^(.*?\S)\s*(\(.*\))$/)
+  if (!match) return cell
+  return (
+    <>
+      {match[1]} <span className="font-normal text-text-muted">{match[2]}</span>
+    </>
+  )
+}
+
+function GrammarTableView({ block }: { block: GrammarTableBlock }) {
+  const spans = buildRowSpans(block.rows)
+  const hasHeaders = block.headers.some((h) => h !== '')
+  return (
+    <div className="overflow-hidden rounded-xl ring-1 ring-border-light">
+      {block.title && (
+        <div className="bg-gradient-to-r from-app-blue to-sky-500 px-4 py-2 text-sm font-bold text-white">
+          {block.title}
+        </div>
+      )}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          {hasHeaders && (
+            <thead>
+              <tr className="bg-app-blue-light/50">
+                {block.headers.map((h, i) => (
+                  <th key={i} className="px-4 py-2 text-left text-xs font-bold text-app-blue-dark">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody className="divide-y divide-border-light bg-surface">
+            {block.rows.map((row, ri) => (
+              <tr key={ri}>
+                {row.map((cell, ci) => {
+                  const rowSpan = spans[ri]?.[ci] ?? 1
+                  if (rowSpan === 0) return null
+                  return (
+                    <td
+                      key={ci}
+                      rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                      className={`px-4 py-2.5 align-middle ${
+                        ci === 0
+                          ? 'font-medium text-text-secondary'
+                          : 'font-bold text-text-primary'
+                      }`}
+                    >
+                      {renderTableCell(cell)}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
@@ -72,33 +174,7 @@ function BlockView({ block }: { block: GrammarBlock }) {
   }
 
   if (block.type === 'grammar_table') {
-    return (
-      <div className="overflow-hidden rounded-xl ring-1 ring-border-light">
-        {block.title && (
-          <div className="bg-gradient-to-r from-app-blue to-sky-500 px-4 py-2 text-sm font-bold text-white">
-            {block.title}
-          </div>
-        )}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <tbody>
-              {block.rows.map((row, ri) => (
-                <tr key={ri} className={ri % 2 === 0 ? 'bg-surface' : 'bg-surface-dim'}>
-                  {row.map((cell, ci) => (
-                    <td
-                      key={ci}
-                      className={`px-4 py-2 ${ci === 0 ? 'font-bold text-text-primary' : 'text-text-secondary'} ${cell.startsWith('(') ? 'text-[13px] text-app-blue-dark' : ''}`}
-                    >
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    )
+    return <GrammarTableView block={block} />
   }
 
   if (block.type === 'contraction_note') {
@@ -145,6 +221,44 @@ function BlockView({ block }: { block: GrammarBlock }) {
     )
   }
 
+  if (block.type === 'spelling_rule') {
+    return (
+      <div className="rounded-xl bg-orange-50 p-4 ring-1 ring-orange-100">
+        <div className="mb-2 text-xs font-bold tracking-wide text-orange-700 uppercase">
+          ✍️ 拼写规则
+        </div>
+        {block.text && (
+          <p className="mb-2 text-sm leading-relaxed whitespace-pre-line text-text-primary">{block.text}</p>
+        )}
+        {block.examples.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {block.examples.map((e, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-[13px] font-medium ring-1 ring-orange-100"
+              >
+                <span className="text-text-secondary">{e.base}</span>
+                <span className="text-orange-400">→</span>
+                <span className="font-bold text-text-primary">{e.form}</span>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  if (block.type === 'image_description') {
+    return (
+      <div className="rounded-xl bg-teal-50 p-4 ring-1 ring-teal-100">
+        <div className="mb-2 text-xs font-bold tracking-wide text-teal-700 uppercase">
+          🖼️ 插图说明
+        </div>
+        <p className="text-sm leading-relaxed whitespace-pre-line text-text-primary">{block.text}</p>
+      </div>
+    )
+  }
+
   // unsupported：未知 block 类型优雅降级（框架扩展四步流程落地前的兜底）
   return (
     <div className="rounded-xl border-2 border-dashed border-border-light bg-surface-dim p-4 text-sm text-text-muted">
@@ -157,7 +271,30 @@ function BlockView({ block }: { block: GrammarBlock }) {
   )
 }
 
-function SectionView({ section }: { section: GrammarSection }) {
+interface SectionViewProps {
+  section: GrammarSection
+  sectionIdx: number
+  isAdmin: boolean
+  /** 该 Section bookPage 对应的原书页图 URL（无则隐藏「＋ 插图」入口） */
+  figureSourceUrl?: string
+  onPageClick?: (page: number) => void
+  /** admin 发起裁切；replaceIdx 有值 = 重裁替换该张 */
+  onStartCrop?: (sectionIdx: number, replaceIdx?: number) => void
+  onPreviewFigure: (figure: GrammarFigure) => void
+  onRemoveFigure?: (sectionIdx: number, figureIdx: number) => void
+}
+
+function SectionView({
+  section,
+  sectionIdx,
+  isAdmin,
+  figureSourceUrl,
+  onPageClick,
+  onStartCrop,
+  onPreviewFigure,
+  onRemoveFigure,
+}: SectionViewProps) {
+  const figures = section.figures ?? []
   return (
     <section className="flex gap-3 sm:gap-4">
       {section.label ? (
@@ -170,14 +307,67 @@ function SectionView({ section }: { section: GrammarSection }) {
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-center gap-2">
           {section.title && <h3 className="text-base font-bold text-text-primary">{section.title}</h3>}
-          <PageBadge page={section.bookPage} />
+          <PageBadge page={section.bookPage} onClick={onPageClick} />
+          {isAdmin && figureSourceUrl && typeof section.bookPage === 'number' && (
+            <button
+              type="button"
+              onClick={() => onStartCrop?.(sectionIdx)}
+              title="从原书页图裁切插图"
+              className="shrink-0 rounded-full bg-surface-dim px-2 py-0.5 text-[10px] font-bold text-app-purple ring-1 ring-border-light transition-colors hover:bg-app-purple-light hover:text-app-purple-dark"
+            >
+              ＋ 插图
+            </button>
+          )}
         </div>
-        {section.blocks.map((block, i) => (
-          <BlockView key={i} block={block} />
-        ))}
+        {/* Section 级插图：标题下方、内容块之前，按插入顺序渲染 */}
+        {figures.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {figures.map((figure, fi) => (
+              <FigureCard
+                key={figure.path}
+                figure={figure}
+                isAdmin={isAdmin}
+                onPreview={onPreviewFigure}
+                onRecrop={isAdmin && figureSourceUrl ? () => onStartCrop?.(sectionIdx, fi) : undefined}
+                onRemove={isAdmin ? () => onRemoveFigure?.(sectionIdx, fi) : undefined}
+              />
+            ))}
+          </div>
+        )}
+        {renderSectionBlocks(section.blocks)}
       </div>
     </section>
   )
+}
+
+/**
+ * 连续的 grammar_table 在桌面端并排（对齐原书横排布局：肯定式/否定式/疑问式三表并列），
+ * 移动端仍纵向堆叠；其余 block 保持原顺序逐个渲染。
+ */
+function renderSectionBlocks(blocks: GrammarBlock[]): ReactNode[] {
+  const out: ReactNode[] = []
+  let i = 0
+  while (i < blocks.length) {
+    if (blocks[i].type !== 'grammar_table') {
+      out.push(<BlockView key={`b${i}`} block={blocks[i]} />)
+      i += 1
+      continue
+    }
+    let j = i
+    while (j < blocks.length && blocks[j].type === 'grammar_table') j += 1
+    const run = blocks.slice(i, j)
+    const gridClass =
+      run.length >= 3 ? 'grid gap-3 md:grid-cols-3' : run.length === 2 ? 'grid gap-3 sm:grid-cols-2' : ''
+    out.push(
+      <div key={`tables${i}`} className={gridClass}>
+        {run.map((table, k) => (
+          <BlockView key={k} block={table} />
+        ))}
+      </div>,
+    )
+    i = j
+  }
+  return out
 }
 
 function CrossReferenceChips({ refs }: { refs: CrossReference[] }) {
@@ -197,12 +387,47 @@ function CrossReferenceChips({ refs }: { refs: CrossReference[] }) {
   )
 }
 
-export function LessonView({ data }: { data: GrammarLesson }) {
+export interface LessonViewProps {
+  data: GrammarLesson
+  isAdmin: boolean
+  pageImages: GrammarPageImage[]
+  onPageClick?: (page: number) => void
+  /** admin 发起裁切；replaceIdx 有值 = 重裁替换该张 */
+  onStartCrop?: (sectionIdx: number, replaceIdx?: number) => void
+  onPreviewFigure: (figure: GrammarFigure) => void
+  onRemoveFigure?: (sectionIdx: number, figureIdx: number) => void
+}
+
+export function LessonView({
+  data,
+  isAdmin,
+  pageImages,
+  onPageClick,
+  onStartCrop,
+  onPreviewFigure,
+  onRemoveFigure,
+}: LessonViewProps) {
   return (
     <div className="flex flex-col gap-6">
-      {data.sections.map((section, i) => (
-        <SectionView key={section.label ?? `s${i}`} section={section} />
-      ))}
+      {data.sections.map((section, i) => {
+        const src =
+          typeof section.bookPage === 'number'
+            ? pageImages.find((img) => img.page === section.bookPage)
+            : undefined
+        return (
+          <SectionView
+            key={section.label ?? `s${i}`}
+            section={section}
+            sectionIdx={i}
+            isAdmin={isAdmin}
+            figureSourceUrl={src ? grammarPageImageUrl(src.path) : undefined}
+            onPageClick={onPageClick}
+            onStartCrop={onStartCrop}
+            onPreviewFigure={onPreviewFigure}
+            onRemoveFigure={onRemoveFigure}
+          />
+        )
+      })}
       <CrossReferenceChips refs={data.crossReferences} />
     </div>
   )

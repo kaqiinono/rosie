@@ -20,7 +20,7 @@ import { useMathRotatingReview } from '@rosie/math-kit/hooks/useMathRotatingRevi
 import { useMathWeeklyLessonReview } from '@rosie/math-kit/hooks/useMathWeeklyLessonReview'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
-import { todayStr } from '@rosie/core'
+import { todayStr, localDateStr } from '@rosie/core'
 import { compareLessonIds } from '@rosie/math-kit/utils/lesson-registry'
 import type { MathPlanProblem, ProblemSet } from '@rosie/core'
 import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
@@ -81,7 +81,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     isLoading,
   } = useMathWeeklyPlan(user)
   const { masteryMap, recordProblemResult } = useProblemMastery(user)
-  const { practiceCount, correctCount } = useMathPracticeStats(user)
+  const { practiceCount, correctCount, lastCorrectAt } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const startPractice = useStartPracticeQueue()
   const { resume, isActive: practiceActive } = usePracticeQueue()
@@ -141,7 +141,10 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     return todayPlan.problems.every((p) => isPlanProblemDone(p, selectedDate, prog.doneKeys))
   }, [weeklyPlan, selectedDate])
 
-  // Reconcile plan progress with actual solve data from Supabase
+  // Reconcile plan progress with actual solve data from Supabase.
+  // Only a correct attempt made ON the assignment's own date may auto-complete
+  // it — earlier practice (even within this plan period) must not mark a later
+  // day's assignment done, or today's progress shows phantom completions.
   useEffect(() => {
     if (!weeklyPlan || isLoading) return
     for (const day of weeklyPlan.days) {
@@ -154,13 +157,16 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           (correctCount[prob.problemId] ?? 0) > 0 &&
           !isPlanProblemDone(prob, day.date, doneSet)
         ) {
+          // Skip: reconcile only when the correct attempt happened on this day.
+          const correctAt = lastCorrectAt[prob.problemId]
+          if (!correctAt || localDateStr(new Date(correctAt)) !== day.date) continue
           if (prob.isDeferred) continue
           void addDoneKey(weeklyPlan.weekStart, day.date, planAssignmentId(prob, day.date))
           recordProblemResult(prob.key, true)
         }
       }
     }
-  }, [weeklyPlan, correctCount, isLoading, addDoneKey, recordProblemResult])
+  }, [weeklyPlan, correctCount, lastCorrectAt, isLoading, addDoneKey, recordProblemResult])
 
   // Session pool for celebration "继续练习". Ref so the checker always reads
   // the latest correctCount (rebuilt every render below).

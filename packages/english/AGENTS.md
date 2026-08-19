@@ -53,22 +53,30 @@ audio, flipbook).
   (`archiveOrphanWords`) only when found. DDL lives in **`sql/adaptive-word-plans.sql`** (tracked
   mirror of the gitignored `docs/sql` copy).
 
-## Grammar (剑桥初级英语语法)
+## Grammar (剑桥英语语法 — 多书架构)
 
-**布局**：`grammar/types.ts`（类型 + normalize）、`grammar/grammar-index.ts`（全量静态索引，
-Phase 2 由 `--toc` 生成；为空时首页降级为仅展示 DB 已入库单元）、`grammar/hooks/`（overview /
-unit / mastery）、`grammar/components/`（GrammarHomePage / GrammarUnitPage / LessonView /
-ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`。
+**布局**：`grammar/types.ts`（类型 + normalize + `GRAMMAR_BOOKS` 注册表）、`grammar/grammar-index.ts`
+（全量静态索引，Phase 2 由 `--toc` 生成；为空时首页降级为仅展示 DB 已入库单元）、
+`grammar/hooks/`（overview / unit / mastery）、`grammar/components/`
+（GrammarHomePage / GrammarUnitPage / LessonView / ExerciseView）。
+路由壳在 `apps/web/src/app/english/grammar/**`。
 
-**数据流**：内容存 `grammar_units`（unit_number PK，lesson/exercises jsonb，RLS 只读，写入走
-service-role），进度存 `grammar_mastery`（user_id+unit_number PK，完整 RLS）。DDL 在
-`supabase/migrations/0024_add_grammar_module.sql`。`useGrammarUnit` 用模块级缓存（内容是全局
-静态数据，不用 per-user store）；overview/mastery 走 `createUserSessionStore`。
+**多书维度**：`book` 列（`essential` / `intermediate` / `advanced`）已在 DB 和全链路中落地。
+- `grammar_units`：复合 PK `(book, unit_number)`，每本书 unit_number 从 1 开始。
+- `grammar_mastery`：复合 PK `(user_id, book, unit_number)`。
+- `types.ts`：`GrammarBookId` union + `GRAMMAR_BOOKS` 常量注册表（新书只需追加条目，无需 migration）。
+- hooks / CLI 均接受 book 参数，默认 `essential`。
+- DDL 在 `0024_add_grammar_module.sql`（建表）+ `0025_add_grammar_book_dimension.sql`（加 book 列）。
+
+**数据流**：内容存 `grammar_units`（lesson/exercises jsonb，RLS 只读，写入走 service-role），
+进度存 `grammar_mastery`（完整 RLS）。`useGrammarUnit` 用模块级缓存（key = `book:unitNumber`，
+内容是全局静态数据，不用 per-user store）；overview/mastery 走 `createUserSessionStore`。
 
 **内容提取 CLI**：`pnpm grammar:extract`（`scripts/extract-grammar-unit.mjs`）——
-`--unit N` / `--range A-B` 提取（pdftoppm → qwen-vl-max → 组装 → upsert）；`--no-upload`
-只落地 `output/grammar-units/unitNNN/`；`--upload-only` 直接读 unit.json 入库；`--force`
-忽略缓存。页码映射优先 `scripts/grammar-page-map.json`，缺失时用临时公式 `[19+2N, 20+2N]`。
+`--unit N` / `--range A-B` / `--book <id>` 提取（pdftoppm → qwen-vl-max → 组装 → upsert）；
+`--no-upload` 只落地 `output/grammar-units/<book>/unitNNN/`；`--upload-only` 直接读 unit.json
+入库；`--force` 忽略缓存。`on_conflict=book,unit_number` 幂等覆盖。
+页码映射优先 `scripts/grammar-page-map.json`，缺失时用临时公式 `[19+2N, 20+2N]`。
 旧 Tesseract 脚本 `extract-grammar-pdf.mjs` 保留为 `grammar:render-pdf`。
 
 **页码标记**：三层——单元级 `book_pages`（DB 列）、Section/练习组级 `bookPage`（渲染 p.N 角标）、

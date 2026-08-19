@@ -11,10 +11,11 @@ import BlockPicker from '../components/BlockPicker'
 import MixedOpList from '../components/MixedOpList'
 import CalcConfigBar from '../components/CalcConfigBar'
 import PerTypeTimeChips from '../components/PerTypeTimeChips'
+import TierTargetsSheet, { type TierTargetItem } from '../components/TierTargetsSheet'
 import CustomCountInput, { COUNT_OPTIONS } from '../components/CustomCountInput'
 import { playSfx } from '../components/audio'
-import { blocksByGroup, blockById, type CalcBlock } from '../utils/calc-blocks'
-import { skeletonMeta } from '../utils/calc-mixed'
+import { blocksByGroup, blockById, BLOCK_GROUPS, type CalcBlock } from '../utils/calc-blocks'
+import { skeletonMeta, SKELETONS } from '../utils/calc-mixed'
 
 interface PerTypeCardProps {
   label: string
@@ -51,7 +52,9 @@ function PerTypeConfigCard({
       style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}
     >
       <div className="flex items-center gap-2">
-        <div className="min-w-0 flex-1 text-[13px] font-extrabold" style={{ color: '#e9d5ff' }}>{label}</div>
+        <div className="min-w-0 flex-1 text-[13px] font-extrabold" style={{ color: '#e9d5ff' }}>
+          {label}
+        </div>
         {showDelete && onDelete && (
           <button
             type="button"
@@ -66,7 +69,12 @@ function PerTypeConfigCard({
       </div>
       {showCount && (
         <div className="flex flex-wrap items-center gap-1">
-          <span className="mr-1 w-7 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>题量</span>
+          <span
+            className="mr-1 w-7 text-[10px] font-extrabold uppercase"
+            style={{ color: 'rgba(196,181,253,0.5)' }}
+          >
+            题量
+          </span>
           {COUNT_OPTIONS.map((n) => {
             const on = count === n
             return (
@@ -90,7 +98,12 @@ function PerTypeConfigCard({
       )}
       {showSeconds && (
         <div className="flex items-start gap-1">
-          <span className="mr-1 w-7 shrink-0 pt-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>目标时间</span>
+          <span
+            className="mr-1 w-7 shrink-0 pt-1 text-[10px] font-extrabold uppercase"
+            style={{ color: 'rgba(196,181,253,0.5)' }}
+          >
+            目标时间
+          </span>
           <div className="min-w-0 flex-1">
             <PerTypeTimeChips targetId={targetId} value={seconds} onChange={onSeconds} />
           </div>
@@ -119,11 +132,14 @@ function ToggleRow({ label, description, value, onChange }: ToggleRowProps) {
       }}
     >
       <div className="min-w-0">
-        <div className="text-[14px] font-extrabold" style={{ color: value ? '#c4b5fd' : 'rgba(245,243,255,0.7)' }}>
+        <div
+          className="text-[14px] font-extrabold"
+          style={{ color: value ? '#c4b5fd' : 'rgba(245,243,255,0.7)' }}
+        >
           {label}
         </div>
         {description && (
-          <div className="text-[11px] mt-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>
+          <div className="mt-0.5 text-[11px]" style={{ color: 'rgba(245,243,255,0.35)' }}>
             {description}
           </div>
         )}
@@ -187,7 +203,12 @@ interface TimingModeDefaultsProps {
   onChangeBonus: (n: number) => void
 }
 
-function TimingModeDefaults({ timingMode, bonusSec, onChangeMode, onChangeBonus }: TimingModeDefaultsProps) {
+function TimingModeDefaults({
+  timingMode,
+  bonusSec,
+  onChangeMode,
+  onChangeBonus,
+}: TimingModeDefaultsProps) {
   const [customOpen, setCustomOpen] = useState(!BONUS_PRESETS.includes(bonusSec))
 
   return (
@@ -214,11 +235,15 @@ function TimingModeDefaults({ timingMode, bonusSec, onChangeMode, onChangeBonus 
               >
                 {meta.label}
               </div>
-              <div className="text-[11px] mt-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>
+              <div className="mt-0.5 text-[11px]" style={{ color: 'rgba(245,243,255,0.35)' }}>
                 {meta.desc}
               </div>
             </div>
-            {on && <span className="mt-0.5 shrink-0 text-[13px]" style={{ color: '#c4b5fd' }}>✓</span>}
+            {on && (
+              <span className="mt-0.5 shrink-0 text-[13px]" style={{ color: '#c4b5fd' }}>
+                ✓
+              </span>
+            )}
           </button>
         )
       })}
@@ -228,7 +253,10 @@ function TimingModeDefaults({ timingMode, bonusSec, onChangeMode, onChangeBonus 
           className="flex flex-wrap items-center gap-1.5 rounded-xl px-3 py-2.5"
           style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}
         >
-          <span className="mr-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>
+          <span
+            className="mr-1 text-[10px] font-extrabold uppercase"
+            style={{ color: 'rgba(196,181,253,0.5)' }}
+          >
             加成秒数
           </span>
           {BONUS_PRESETS.map((n) => {
@@ -237,7 +265,10 @@ function TimingModeDefaults({ timingMode, bonusSec, onChangeMode, onChangeBonus 
               <button
                 key={n}
                 type="button"
-                onClick={() => { setCustomOpen(false); onChangeBonus(clampBonusSec(n)) }}
+                onClick={() => {
+                  setCustomOpen(false)
+                  onChangeBonus(clampBonusSec(n))
+                }}
                 className="rounded-lg px-2.5 py-1 text-[11px] font-extrabold transition-all active:scale-95"
                 style={{
                   background: on ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
@@ -273,9 +304,16 @@ function TimingModeDefaults({ timingMode, bonusSec, onChangeMode, onChangeBonus 
                   if (Number.isFinite(v)) onChangeBonus(clampBonusSec(v))
                 }}
                 className="w-14 rounded-md px-2 py-1 text-right text-[12px] font-extrabold tabular-nums"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.4)', color: '#c4b5fd', outline: 'none' }}
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(139,92,246,0.4)',
+                  color: '#c4b5fd',
+                  outline: 'none',
+                }}
               />
-              <span className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>秒（0–15）</span>
+              <span className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+                秒（0–15）
+              </span>
             </span>
           )}
         </div>
@@ -299,6 +337,7 @@ export default function CalcSettingsPage() {
   const router = useRouter()
   const { settings, update, setSettings, isLoading } = useCalcSettings(user)
   const [saved, setSaved] = useState(false)
+  const [tierSheetOpen, setTierSheetOpen] = useState(false)
 
   // Settings already persist on every `update()`; this button is an explicit
   // "save now" affordance that re-upserts the current snapshot and confirms.
@@ -326,16 +365,21 @@ export default function CalcSettingsPage() {
   const toggleGroup = (group: CalcBlock['group'], on: boolean) => {
     const ids = blocksByGroup(group).map((b) => b.id)
     const have = new Map(settings.selectedBlocks.map((b) => [b.id, b]))
-    if (on) ids.forEach((i) => { if (!have.has(i)) have.set(i, { id: i, count: 20, seconds: 0 }) })
+    if (on)
+      ids.forEach((i) => {
+        if (!have.has(i)) have.set(i, { id: i, count: 20, seconds: 0 })
+      })
     else ids.forEach((i) => have.delete(i))
     update({ selectedBlocks: [...have.values()] })
   }
 
-  const patchBlock = (id: string, patch: Partial<typeof settings.selectedBlocks[number]>) => {
-    update({ selectedBlocks: settings.selectedBlocks.map((b) => (b.id === id ? { ...b, ...patch } : b)) })
+  const patchBlock = (id: string, patch: Partial<(typeof settings.selectedBlocks)[number]>) => {
+    update({
+      selectedBlocks: settings.selectedBlocks.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+    })
   }
 
-  const patchMixed = (id: string, patch: Partial<typeof settings.mixedOps[number]>) => {
+  const patchMixed = (id: string, patch: Partial<(typeof settings.mixedOps)[number]>) => {
     update({ mixedOps: settings.mixedOps.map((m) => (m.id === id ? { ...m, ...patch } : m)) })
   }
 
@@ -350,11 +394,7 @@ export default function CalcSettingsPage() {
   if (isLoading) {
     return (
       <>
-        <CalcAppHeader
-          title="设置"
-          backHref="/admin"
-          backLabel="管理"
-        />
+        <CalcAppHeader title="设置" backHref="/admin" backLabel="管理" />
         <div
           className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
           style={{ color: 'rgba(196,181,253,0.4)' }}
@@ -373,21 +413,56 @@ export default function CalcSettingsPage() {
     enabledMixed.reduce((s, m) => s + m.count, 0)
   const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
 
+  // 全量运算档位一览：按组排列所有单运算 + 混合骨架
+  const allTierItems: TierTargetItem[] = [
+    ...BLOCK_GROUPS.flatMap((g) =>
+      blocksByGroup(g.group).map((b) => ({
+        label: b.label,
+        targetId: b.id,
+        kind: 'block' as const,
+        group: g.label,
+      })),
+    ),
+    ...SKELETONS.map((s) => ({
+      label: s.label,
+      targetId: s.id,
+      kind: 'mixed' as const,
+      group: '混合运算',
+    })),
+  ]
+
   return (
     <>
       <CalcAppHeader
         title="口算设置"
         backHref="/admin"
         backLabel="管理"
+        rightExtra={
+          // 档位标准 — 全量运算四档建议耗时一览
+          <button
+            type="button"
+            onClick={() => setTierSheetOpen(true)}
+            className="shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all active:scale-95"
+            style={{
+              background: 'rgba(139,92,246,0.14)',
+              border: '1px solid rgba(139,92,246,0.35)',
+              color: '#c4b5fd',
+            }}
+          >
+            🎯 档位标准
+          </button>
+        }
       />
 
-      <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
-
+      <main className="relative mx-auto max-w-[640px] space-y-5 px-4 pt-5 pb-12">
         {/* 单运算 — multi-select building blocks */}
         <section>
           <SectionHeading
             suffix={
-              <span className="ml-2 normal-case tracking-normal" style={{ color: 'rgba(196,181,253,0.3)' }}>
+              <span
+                className="ml-2 tracking-normal normal-case"
+                style={{ color: 'rgba(196,181,253,0.3)' }}
+              >
                 · 已选 {blockCount} 种
               </span>
             }
@@ -450,7 +525,10 @@ export default function CalcSettingsPage() {
         {/* 默认计时模式 */}
         <section>
           <SectionHeading>默认计时模式</SectionHeading>
-          <p className="mb-2 text-[11px] leading-relaxed" style={{ color: 'rgba(245,243,255,0.35)' }}>
+          <p
+            className="mb-2 text-[11px] leading-relaxed"
+            style={{ color: 'rgba(245,243,255,0.35)' }}
+          >
             每次开始练习前可临时调整；此处设为预填默认值。
           </p>
           <TimingModeDefaults
@@ -465,7 +543,10 @@ export default function CalcSettingsPage() {
         <section>
           <SectionHeading
             suffix={
-              <span className="ml-2 normal-case tracking-normal" style={{ color: 'rgba(196,181,253,0.3)' }}>
+              <span
+                className="ml-2 tracking-normal normal-case"
+                style={{ color: 'rgba(196,181,253,0.3)' }}
+              >
                 · 共 {totalQuestions} 题
               </span>
             }
@@ -493,61 +574,64 @@ export default function CalcSettingsPage() {
             })}
           </div>
           {settings.countMode === 'auto' && (
-            <CalcConfigBar count={settings.lastCount} onChange={(count) => update({ lastCount: count })} />
+            <CalcConfigBar
+              count={settings.lastCount}
+              onChange={(count) => update({ lastCount: count })}
+            />
           )}
 
           {/* 每个题型的设置：目标时间仅总开关打开时可设；题量仅精准设置（自动模式下题量由系统分配）。 */}
           {(settings.timedAnswerEnabled || settings.countMode === 'manual') && (
-          <div className="mt-3">
-            <div
-              className="mb-1.5 text-[10px] font-extrabold uppercase tracking-wider"
-              style={{ color: 'rgba(196,181,253,0.45)' }}
-            >
-              {settings.countMode === 'manual'
-                ? settings.timedAnswerEnabled
-                  ? '每个题型的题量 · 目标时间'
-                  : '每个题型的题量'
-                : '每个题型的目标时间'}
+            <div className="mt-3">
+              <div
+                className="mb-1.5 text-[10px] font-extrabold tracking-wider uppercase"
+                style={{ color: 'rgba(196,181,253,0.45)' }}
+              >
+                {settings.countMode === 'manual'
+                  ? settings.timedAnswerEnabled
+                    ? '每个题型的题量 · 目标时间'
+                    : '每个题型的题量'
+                  : '每个题型的目标时间'}
+              </div>
+              {settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
+                <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                  先在上方选择题型，这里会出现每个题型的设置。
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {settings.selectedBlocks.map((b) => (
+                    <PerTypeConfigCard
+                      key={b.id}
+                      label={blockById(b.id)?.label ?? b.id}
+                      targetId={b.id}
+                      count={b.count}
+                      seconds={b.seconds}
+                      showCount={settings.countMode === 'manual'}
+                      showSeconds={settings.timedAnswerEnabled}
+                      showDelete={settings.countMode === 'manual'}
+                      onCount={(n) => patchBlock(b.id, { count: n })}
+                      onSeconds={(s) => patchBlock(b.id, { seconds: s })}
+                      onDelete={() => removeBlock(b.id)}
+                    />
+                  ))}
+                  {enabledMixed.map((m) => (
+                    <PerTypeConfigCard
+                      key={m.id}
+                      label={m.label ?? skeletonMeta(m.skeleton).label}
+                      targetId={m.skeleton}
+                      count={m.count}
+                      seconds={m.seconds}
+                      showCount={settings.countMode === 'manual'}
+                      showSeconds={settings.timedAnswerEnabled}
+                      showDelete={settings.countMode === 'manual'}
+                      onCount={(n) => patchMixed(m.id, { count: n })}
+                      onSeconds={(s) => patchMixed(m.id, { seconds: s })}
+                      onDelete={() => disableMixed(m.id)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            {settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
-              <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
-                先在上方选择题型，这里会出现每个题型的设置。
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {settings.selectedBlocks.map((b) => (
-                  <PerTypeConfigCard
-                    key={b.id}
-                    label={blockById(b.id)?.label ?? b.id}
-                    targetId={b.id}
-                    count={b.count}
-                    seconds={b.seconds}
-                    showCount={settings.countMode === 'manual'}
-                    showSeconds={settings.timedAnswerEnabled}
-                    showDelete={settings.countMode === 'manual'}
-                    onCount={(n) => patchBlock(b.id, { count: n })}
-                    onSeconds={(s) => patchBlock(b.id, { seconds: s })}
-                    onDelete={() => removeBlock(b.id)}
-                  />
-                ))}
-                {enabledMixed.map((m) => (
-                  <PerTypeConfigCard
-                    key={m.id}
-                    label={m.label ?? skeletonMeta(m.skeleton).label}
-                    targetId={m.skeleton}
-                    count={m.count}
-                    seconds={m.seconds}
-                    showCount={settings.countMode === 'manual'}
-                    showSeconds={settings.timedAnswerEnabled}
-                    showDelete={settings.countMode === 'manual'}
-                    onCount={(n) => patchMixed(m.id, { count: n })}
-                    onSeconds={(s) => patchMixed(m.id, { seconds: s })}
-                    onDelete={() => disableMixed(m.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
           )}
         </section>
 
@@ -590,6 +674,10 @@ export default function CalcSettingsPage() {
           </button>
         </div>
       </main>
+
+      {tierSheetOpen && (
+        <TierTargetsSheet items={allTierItems} onClose={() => setTierSheetOpen(false)} />
+      )}
     </>
   )
 }

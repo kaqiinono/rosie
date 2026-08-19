@@ -10,6 +10,63 @@
  * docs/superpowers/specs/2026-08-18-grammar-framework-design.md §5.
  */
 
+// ── Book identity ─────────────────────────────────────────────────────────────
+
+/** 已知语法书 ID（对应 DB grammar_units.book 列） */
+export type GrammarBookId = 'essential' | 'intermediate' | 'advanced'
+
+export interface GrammarBookMeta {
+  id: GrammarBookId
+  label: string
+  labelZh: string
+  maxUnits: number
+}
+
+/**
+ * 已知语法书注册表。新增一本书时在此追加条目，DB 无需 migration
+ * （book 列已为 TEXT）。
+ */
+export const GRAMMAR_BOOKS: Record<GrammarBookId, GrammarBookMeta> = {
+  essential: { id: 'essential', label: 'Essential Grammar in Use', labelZh: '剑桥初级英语语法', maxUnits: 115 },
+  intermediate: { id: 'intermediate', label: 'English Grammar in Use', labelZh: '剑桥中级英语语法', maxUnits: 145 },
+  advanced: { id: 'advanced', label: 'Advanced Grammar in Use', labelZh: '剑桥高级英语语法', maxUnits: 120 },
+}
+
+// ── Storage ────────────────────────────────────────────────────────────────────
+
+/** Supabase Storage bucket for grammar page images */
+export const GRAMMAR_PAGES_BUCKET = 'grammar-pages'
+
+/**
+ * 教学内容区域包围盒（提取时由 Vision LLM 输出）。
+ * 坐标归一化到 0-1000（图像左上角 (0,0)，右下角 (1000,1000)），
+ * 渲染时按图片自然分辨率换算即可裁出无白边的内容区。
+ */
+export interface GrammarPageCrop {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+}
+
+export interface GrammarPageImage {
+  /** 书内印刷页码 */
+  page: number
+  /** Supabase Storage path: {book}/unit{NNN}/page-{NNNN}.png */
+  path: string
+  /** 页面类型：讲解页 / 练习页 */
+  type: 'lesson' | 'exercise'
+  /** 内容区域坐标；旧提取数据无此字段，缺省时展示整页 */
+  crop?: GrammarPageCrop
+}
+
+/** 构造 Storage public URL（无需 Supabase client，仅拼 URL） */
+export function grammarPageImageUrl(path: string, supabaseUrl?: string): string {
+  const base = (supabaseUrl ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '')
+  if (!base) return ''
+  return `${base}/storage/v1/object/public/${GRAMMAR_PAGES_BUCKET}/${path}`
+}
+
 // ── Lesson content blocks ─────────────────────────────────────────────────────
 
 export interface GrammarExample {
@@ -53,6 +110,20 @@ export interface TipBlock {
   text: string
 }
 
+export interface SpellingRuleBlock {
+  type: 'spelling_rule'
+  /** 规则说明文字（可含换行） */
+  text: string
+  /** 拼写变化示例：base → form（如 come → coming） */
+  examples: { base: string; form: string }[]
+}
+
+export interface ImageDescriptionBlock {
+  type: 'image_description'
+  /** 教学内容插图的逐字描述（可含换行） */
+  text: string
+}
+
 /** 未知 block 类型的兜底形态：保留原始信息，渲染层降级展示 */
 export interface UnsupportedBlock {
   type: 'unsupported'
@@ -66,6 +137,8 @@ export type GrammarBlock =
   | ContractionNoteBlock
   | ExamplesBlock
   | RuleTextBlock
+  | SpellingRuleBlock
+  | ImageDescriptionBlock
   | TipBlock
   | UnsupportedBlock
 
@@ -74,6 +147,8 @@ export interface GrammarSection {
   title: string | null
   /** 原书印刷页码（逐页提取时注入） */
   bookPage?: number
+  /** Section 级插图（admin 从原书页图裁切插入，按插入顺序渲染） */
+  figures?: GrammarFigure[]
   blocks: GrammarBlock[]
 }
 
@@ -95,6 +170,7 @@ export type GrammarExerciseType =
   | 'short_answer'
   | 'transformation'
   | 'multiple_choice'
+  | 'matching'
 
 const KNOWN_EXERCISE_TYPES: readonly string[] = [
   'fill_blank',
@@ -102,6 +178,7 @@ const KNOWN_EXERCISE_TYPES: readonly string[] = [
   'short_answer',
   'transformation',
   'multiple_choice',
+  'matching',
 ]
 
 export interface GrammarExerciseItem {
@@ -112,6 +189,16 @@ export interface GrammarExerciseItem {
   /** 空字符串 = 开放题，展示不判分 */
   answer: string
   options?: string[] | null
+  /** 学习指导题目右侧标注的相关学习单元（可多个） */
+  studyUnits?: number[]
+}
+
+/** 插图：从原书页图裁切后上传 Storage 的独立图片（讲解 Section / 练习组共用） */
+export interface GrammarFigure {
+  /** Storage path: {book}/unit{NNN}/figures/fig-{timestamp}.png（grammar-pages bucket） */
+  path: string
+  /** 裁剪来源的书内印刷页码（追溯用） */
+  page: number
 }
 
 export interface GrammarExerciseGroup {
@@ -119,12 +206,15 @@ export interface GrammarExerciseGroup {
   instruction: string
   /** 原书印刷页码（逐页提取时注入） */
   bookPage?: number
+  /** 组级插图（admin 从原书页图裁切插入） */
+  figure?: GrammarFigure
   items: GrammarExerciseItem[]
 }
 
 // ── Unit aggregate & DB shapes ────────────────────────────────────────────────
 
 export interface GrammarUnitDetail {
+  book: GrammarBookId
   unitNumber: number
   title: string
   titleZh: string
@@ -133,11 +223,20 @@ export interface GrammarUnitDetail {
   difficulty: number
   /** 原书印刷页码，如 [21, 22] */
   bookPages: number[]
+  /** 原文图片（Storage 路径） */
+  pageImages: GrammarPageImage[]
   lesson: GrammarLesson
   exercises: GrammarExerciseGroup[]
+  /** 补充练习条目对应的正文单元（练习表第三列，仅补充练习条目有） */
+  units?: number[]
+  /** 锚定到本单元的补充练习延展位（仅正文单元有，迁移 0028 后回写） */
+  suppEntries?: number[]
+  /** studyUnits 含本单元的学习指导条目延展位（仅正文单元有） */
+  studyGuideUnits?: number[]
 }
 
 export interface GrammarUnitSummary {
+  book: GrammarBookId
   unitNumber: number
   title: string
   titleZh: string
@@ -145,15 +244,19 @@ export interface GrammarUnitSummary {
   categoryZh: string
   difficulty: number
   bookPages: number[]
+  units?: number[]
+  suppEntries?: number[]
+  studyGuideUnits?: number[]
 }
 
 export type GrammarMasteryMap = Record<
-  number,
+  string,
   { correct: number; total: number; mastered: boolean; lastPracticedAt: string }
 >
 
 /** 静态索引条目（Phase 2 由 grammar:extract --toc 生成） */
 export interface GrammarIndexEntry {
+  book: GrammarBookId
   unitNumber: number
   title: string
   titleZh: string
@@ -163,6 +266,7 @@ export interface GrammarIndexEntry {
 }
 
 export interface GrammarUnitRow {
+  book: string
   unit_number: number
   title: string
   title_zh: string | null
@@ -170,8 +274,13 @@ export interface GrammarUnitRow {
   category_zh: string | null
   difficulty: number | null
   book_pages: number[] | null
+  page_images: unknown
   lesson: unknown
   exercises: unknown
+  /** 迁移 0028 新增列（未应用时为 undefined） */
+  units?: unknown
+  supp_entries?: unknown
+  study_guide_units?: unknown
 }
 
 // ── Normalizers (jsonb → typed, crash-proof) ──────────────────────────────────
@@ -186,6 +295,19 @@ function asString(v: unknown, fallback = ''): string {
 
 function asNumber(v: unknown, fallback = 0): number {
   return typeof v === 'number' && Number.isFinite(v) ? v : fallback
+}
+
+/** 解析 crop：4 个 0-1000 坐标且 x1<x2、y1<y2 才有效，否则 undefined（crash-proof） */
+function normalizePageCrop(raw: unknown): GrammarPageCrop | undefined {
+  const rec = asRecord(raw)
+  if (!rec) return undefined
+  const x1 = asNumber(rec.x1, -1)
+  const y1 = asNumber(rec.y1, -1)
+  const x2 = asNumber(rec.x2, -1)
+  const y2 = asNumber(rec.y2, -1)
+  const inRange = (n: number) => n >= 0 && n <= 1000
+  if (![x1, y1, x2, y2].every(inRange) || x2 <= x1 || y2 <= y1) return undefined
+  return { x1, y1, x2, y2 }
 }
 
 function normalizeExampleItems(raw: unknown): GrammarExample[] {
@@ -243,6 +365,25 @@ export function normalizeBlocks(raw: unknown): GrammarBlock[] {
       case 'tip':
         out.push({ type, text: asString(rec.text) })
         break
+      case 'spelling_rule':
+        out.push({
+          type,
+          text: asString(rec.text),
+          examples: Array.isArray(rec.examples)
+            ? (rec.examples as unknown[]).map((e) => {
+                const er = asRecord(e)
+                return { base: asString(er?.base), form: asString(er?.form) }
+              })
+            : [],
+        })
+        break
+      case 'image_description':
+        out.push({ type, text: asString(rec.text) })
+        break
+      case 'cross_reference':
+        // 误放入 blocks 的交叉引用：降级为 tip 展示，不丢失信息
+        out.push({ type: 'tip', text: `→ ${asString(rec.text)}` })
+        break
       default:
         out.push({ type: 'unsupported', originalType: type || 'unknown', text: JSON.stringify(item) })
     }
@@ -261,6 +402,11 @@ export function normalizeLesson(raw: unknown): GrammarLesson {
         label: typeof sr.label === 'string' ? sr.label : null,
         title: typeof sr.title === 'string' ? sr.title : null,
         bookPage: typeof sr.bookPage === 'number' ? sr.bookPage : undefined,
+        figures: Array.isArray(sr.figures)
+          ? sr.figures
+              .map(normalizeFigure)
+              .filter((f): f is GrammarFigure => f !== undefined)
+          : undefined,
         blocks: normalizeBlocks(sr.blocks),
       })
     }
@@ -277,6 +423,14 @@ export function normalizeLesson(raw: unknown): GrammarLesson {
     }
   }
   return { sections, crossReferences }
+}
+
+function normalizeFigure(raw: unknown): GrammarFigure | undefined {
+  const rec = asRecord(raw)
+  if (!rec) return undefined
+  const path = asString(rec.path)
+  if (!path) return undefined
+  return { path, page: asNumber(rec.page) }
 }
 
 export function normalizeExercises(raw: unknown): GrammarExerciseGroup[] {
@@ -298,6 +452,12 @@ export function normalizeExercises(raw: unknown): GrammarExerciseGroup[] {
           prompt: asString(ir.prompt),
           answer: asString(ir.answer),
           options: Array.isArray(ir.options) ? ir.options.map(String) : null,
+          ...(() => {
+            const studyUnits = Array.isArray(ir.studyUnits)
+              ? ir.studyUnits.map((n) => asNumber(n, NaN)).filter((n) => Number.isFinite(n))
+              : undefined
+            return studyUnits && studyUnits.length > 0 ? { studyUnits } : {}
+          })(),
         })
       }
     }
@@ -305,14 +465,35 @@ export function normalizeExercises(raw: unknown): GrammarExerciseGroup[] {
       section: asString(rec.section),
       instruction: asString(rec.instruction),
       bookPage: typeof rec.bookPage === 'number' ? rec.bookPage : undefined,
+      figure: normalizeFigure(rec.figure),
       items,
     })
   }
   return groups
 }
 
+/** 数字数组列归一（units / supp_entries / study_guide_units）；非法/缺失返回 undefined */
+function normalizeNumberArray(raw: unknown): number[] | undefined {
+  if (!Array.isArray(raw)) return undefined
+  const out = raw.map((n) => asNumber(n, NaN)).filter((n) => Number.isFinite(n))
+  return out.length > 0 ? out : undefined
+}
+
 export function parseGrammarUnitRow(row: GrammarUnitRow): GrammarUnitDetail {
+  const pageImages: GrammarPageImage[] = []
+  if (Array.isArray(row.page_images)) {
+    for (const item of row.page_images) {
+      const rec = asRecord(item)
+      if (!rec) continue
+      const page = asNumber(rec.page, 0)
+      const path = asString(rec.path)
+      const type = rec.type === 'exercise' ? 'exercise' as const : 'lesson' as const
+      const crop = normalizePageCrop(rec.crop)
+      if (path) pageImages.push({ page, path, type, ...(crop ? { crop } : {}) })
+    }
+  }
   return {
+    book: (row.book || 'essential') as GrammarBookId,
     unitNumber: row.unit_number,
     title: row.title,
     titleZh: row.title_zh ?? '',
@@ -320,13 +501,18 @@ export function parseGrammarUnitRow(row: GrammarUnitRow): GrammarUnitDetail {
     categoryZh: row.category_zh ?? '',
     difficulty: row.difficulty ?? 1,
     bookPages: Array.isArray(row.book_pages) ? row.book_pages : [],
+    pageImages,
     lesson: normalizeLesson(row.lesson),
     exercises: normalizeExercises(row.exercises),
+    ...(normalizeNumberArray(row.units) ? { units: normalizeNumberArray(row.units) } : {}),
+    ...(normalizeNumberArray(row.supp_entries) ? { suppEntries: normalizeNumberArray(row.supp_entries) } : {}),
+    ...(normalizeNumberArray(row.study_guide_units) ? { studyGuideUnits: normalizeNumberArray(row.study_guide_units) } : {}),
   }
 }
 
 export function toSummary(d: GrammarUnitDetail): GrammarUnitSummary {
   return {
+    book: d.book,
     unitNumber: d.unitNumber,
     title: d.title,
     titleZh: d.titleZh,
@@ -334,5 +520,8 @@ export function toSummary(d: GrammarUnitDetail): GrammarUnitSummary {
     categoryZh: d.categoryZh,
     difficulty: d.difficulty,
     bookPages: d.bookPages,
+    ...(d.units ? { units: d.units } : {}),
+    ...(d.suppEntries ? { suppEntries: d.suppEntries } : {}),
+    ...(d.studyGuideUnits ? { studyGuideUnits: d.studyGuideUnits } : {}),
   }
 }

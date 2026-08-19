@@ -29,9 +29,9 @@ describe('clampBonusSec', () => {
 describe('resolveTargetSec / resolveClockSec', () => {
   it('target prefers explicit > 0 else fluent for known block', () => {
     expect(resolveTargetSec({ explicitSeconds: 6, sourceId: 'mul:25' })).toBe(6)
-    // mul:25 fluent[1] is 4 per TIME_TARGETS
-    expect(resolveTargetSec({ explicitSeconds: 0, sourceId: 'mul:25' })).toBe(4)
-    expect(resolveTargetSec({ explicitSeconds: null, sourceId: 'mul:25' })).toBe(4)
+    // mul:25 fluent[1] is 2 per TIME_TARGETS
+    expect(resolveTargetSec({ explicitSeconds: 0, sourceId: 'mul:25' })).toBe(2)
+    expect(resolveTargetSec({ explicitSeconds: null, sourceId: 'mul:25' })).toBe(2)
   })
 
   it('clock: strict=target, bonus=target+bonus, relaxed soft target', () => {

@@ -46,3 +46,5 @@ old-html/
 .worktrees/
 # Supabase CLI local link/cache metadata
 supabase/.temp/
+/output
+/output2
