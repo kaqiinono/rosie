@@ -41,11 +41,15 @@ function isDynamic(segment: string): boolean {
 }
 
 function findRoute(segments: string[]): BreadcrumbRoute | undefined {
-  return BREADCRUMB_ROUTES.find(
+  const matches = BREADCRUMB_ROUTES.filter(
     (route) =>
       route.pattern.length === segments.length &&
       route.pattern.every((part, i) => isDynamic(part) || part === segments[i]),
   )
+  if (matches.length === 0) return undefined
+  // 静态段多的条目优先，避免命中依赖数组书写顺序（如 study-guide vs [unitId]）
+  const dynamicCount = (r: BreadcrumbRoute) => r.pattern.filter(isDynamic).length
+  return matches.reduce((best, route) => (dynamicCount(route) < dynamicCount(best) ? route : best))
 }
 
 function fillLabel(route: BreadcrumbRoute, segments: string[]): string {
