@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 import type { ProblemSet } from '@rosie/core'
+import { PageBreadcrumb } from '@rosie/ui'
 import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math-kit/components/shared/rich-text-image'
 import { useLessonNotes } from '@rosie/math-kit/hooks/useLessonNotes'
 import { useLessonSummary } from '@rosie/math-kit/hooks/useLessonSummary'
@@ -59,12 +60,9 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
           <div className="text-5xl">📭</div>
           <div className="text-text-primary text-[15px] font-bold">还没有笔记</div>
           <div className="text-text-muted text-[13px]">家长可在管理后台为题目添加笔记</div>
-          <Link
-            href={basePath}
-            className="mt-2 rounded-full bg-violet-600 px-5 py-2 text-[13px] font-semibold text-white no-underline shadow-[0_3px_10px_rgba(91,76,204,0.25)]"
-          >
-            返回首页 →
-          </Link>
+          <div className="mt-2">
+            <PageBreadcrumb variant="inline" />
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-2.5">

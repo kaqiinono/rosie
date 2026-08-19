@@ -1,7 +1,7 @@
 'use client'
 
 import { isAdminUser, useAuth } from '@rosie/core'
-import Link from 'next/link'
+import PageBreadcrumb from './PageBreadcrumb'
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -16,12 +16,9 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
         <p className="mt-3 text-sm leading-6 text-slate-600">
           当前账户可以继续学习，但不能打开家长管理页面。
         </p>
-        <Link
-          className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white"
-          href="/"
-        >
-          返回首页
-        </Link>
+        <div className="mt-6 flex justify-center">
+          <PageBreadcrumb variant="inline" />
+        </div>
       </div>
     </main>
   )

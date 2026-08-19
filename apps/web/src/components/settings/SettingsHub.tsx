@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { isAdminUser, useAuth } from '@rosie/core'
+import { PageBreadcrumb } from '@rosie/ui'
 
 interface SettingTool {
   href: string
@@ -69,7 +70,7 @@ export default function SettingsHub() {
   const admin = isAdminUser(user)
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(160deg,#fffbeb 0%,#fff1f2 45%,#eff6ff 100%)' }}>
-      <header className="sticky top-0 z-30 border-b border-amber-200/40 bg-white/85 backdrop-blur"><div className="mx-auto flex h-14 max-w-[860px] items-center gap-3 px-4"><Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full border border-amber-300/40 bg-amber-500/10 text-amber-700" aria-label="返回首页">←</Link><div className="text-[17px] font-extrabold text-amber-900">⚙️ 用户配置</div></div></header>
+      <header className="sticky top-0 z-30 border-b border-amber-200/40 bg-white/85 backdrop-blur"><div className="mx-auto flex h-14 max-w-[860px] items-center gap-3 px-4"><PageBreadcrumb variant="inline" /><div className="text-[17px] font-extrabold text-amber-900">⚙️ 用户配置</div></div></header>
       <main className="mx-auto max-w-[860px] space-y-10 px-4 py-8 pb-20">
         <section><h1 className="text-[22px] font-black text-slate-800">个人配置</h1><p className="mb-5 mt-1 text-[13px] text-slate-500">仅修改当前登录账户的学习与使用配置</p><ToolGrid tools={PERSONAL_TOOLS} /></section>
         {admin && <section><div className="mb-5"><h2 className="text-[22px] font-black text-slate-800">全局配置</h2><p className="mt-1 text-[13px] text-slate-500">管理员专用 · 管理全局内容和账户</p></div><AdminSettingsCards /></section>}

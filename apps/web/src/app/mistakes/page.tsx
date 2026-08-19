@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { OrbBackground, BackLink } from '@rosie/ui'
+import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import {
   filterMistakes,
   MODULE_LABEL,
@@ -91,7 +91,7 @@ export default function UnifiedMistakesPage() {
   return (
     <>
       <OrbBackground variant="home" />
-      <BackLink href="/" label="首页" />
+      <PageBreadcrumb />
 
       <div className="relative z-1 mx-auto min-h-screen max-w-[680px] px-4 py-8 pt-20 pb-12">
         {/* Header */}

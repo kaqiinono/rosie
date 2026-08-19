@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PageBreadcrumb } from '@rosie/ui'
 import type { User } from '@supabase/supabase-js'
 import { useAudioAssets } from '../hooks/useAudioAssets'
 import { useAudioCollections } from '../hooks/useAudioCollections'
@@ -124,14 +125,7 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
         }}
       >
         <div className="mx-auto flex h-14 max-w-[960px] items-center gap-3 px-4">
-          <Link
-            href="/"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-amber-700 transition hover:scale-110"
-            style={{ background: 'rgba(245,158,11,0.1)', border: '1.5px solid rgba(245,158,11,0.25)' }}
-            aria-label="返回首页"
-          >
-            ←
-          </Link>
+          <PageBreadcrumb variant="inline" />
           <div>
             <div className="text-[17px] font-extrabold text-amber-900">
               {scope === 'collections' ? '媒体收藏夹' : '公共媒体管理'}

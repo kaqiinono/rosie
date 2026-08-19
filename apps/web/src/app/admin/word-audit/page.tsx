@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { PageBreadcrumb } from '@rosie/ui'
 import { supabase } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { SAMPLE_WORDS, SAMPLE_WORDS_4B, SAMPLE_WORDS_5A, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@rosie/english'
@@ -190,7 +190,7 @@ export default function WordAuditPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">📊 单词数据对账</h1>
-          <Link href="/" className="text-sm text-slate-500 hover:underline">← 返回首页</Link>
+          <PageBreadcrumb variant="inline" />
         </div>
 
         <div className="rounded-lg bg-white p-4 text-sm text-slate-600 shadow-sm">

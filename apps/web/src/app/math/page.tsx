@@ -1,6 +1,6 @@
 'use client'
 
-import { OrbBackground, BackLink } from '@rosie/ui'
+import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import GradeCard from '@rosie/math/components/GradeCard'
 import MathDailyCard from '@rosie/math/components/MathDailyCard'
 import MathSeaCard from '@rosie/math/components/MathSeaCard'
@@ -23,7 +23,7 @@ export default function MathPage() {
     return (
         <>
             <OrbBackground variant="math" />
-            <BackLink />
+            <PageBreadcrumb />
 
             <div className="relative z-1 flex min-h-screen flex-col items-center gap-7 px-5 pt-24 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:pt-20 max-[500px]:pb-8">
                 <section className="max-w-[480px] text-center">

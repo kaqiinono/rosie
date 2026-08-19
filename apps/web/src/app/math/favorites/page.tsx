@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useAuth, getMasteryLevel, MASTERY_ICON } from '@rosie/core'
-import { BackLink } from '@rosie/ui'
+import { PageBreadcrumb } from '@rosie/ui'
 import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
 import {
@@ -38,7 +38,7 @@ export default function MathFavoritesPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-5">
-      <BackLink href="/math" label="返回数学" />
+      <PageBreadcrumb />
 
       <div className="mb-5 mt-2 rounded-[14px] bg-gradient-to-br from-rose-50 to-pink-100 p-6">
         <h1 className="mb-1 text-2xl font-extrabold text-rose-700">我的收藏 ❤️</h1>

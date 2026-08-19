@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { OrbBackground, BackLink } from '@rosie/ui'
+import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import { useAuth, isAdminUser } from '@rosie/core'
 import { useGrammarUnit } from '../hooks/useGrammarUnit'
 import { useGrammarUnits } from '../hooks/useGrammarUnits'
@@ -53,7 +53,7 @@ function UnitPageShell({ unitNumber, children }: { unitNumber: number; children:
   return (
     <>
       <OrbBackground variant="home" />
-      <BackLink />
+      <PageBreadcrumb />
       <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1040px] gap-5 px-4 pt-20 pb-16 sm:px-6">
         <GrammarToc currentUnit={unitNumber} />
         {children}

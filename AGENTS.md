@@ -7,6 +7,12 @@ similar bulk jobs), prefer a resumable local CLI under `scripts/` over agent-dri
 Such scripts should be idempotent, observable, rate-limit aware, safe to rerun, and documented in
 the owning package guide.
 
+**Script placement:** `scripts/` root holds ONLY long-lived, reusable CLIs (referenced by npm
+scripts, CI, skills, or docs) plus their companion data files (e.g. `grammar-page-map.json`).
+One-off / temporary scripts (data fixes, diagnostics, migration patches, POCs, one-time SQL seeds)
+go in `scripts/tmp/` and can be deleted at any time. When moving a script between the two, fix its
+dirname-based root path resolution accordingly.
+
 ## Monorepo layout
 
 This repo is a **pnpm workspace + Turborepo**. There is exactly one deployable Next.js app
@@ -256,6 +262,7 @@ Both math and English share a weekly plan system with the same Thursday-start we
 1. Before modifying UI, check theme tokens in `src/app/globals.css` (Tailwind v4 uses CSS variables — there is no `tailwind.config.js`)
 2. After any logic change, run `pnpm lint` to confirm no type errors
 3. When modifying offline / Service Worker behavior, test in `pnpm start` (preview) mode, not `pnpm dev`
+4. When adding a new page route, check `packages/ui/src/breadcrumb-map.ts` and add a breadcrumb entry — otherwise the page only shows a plain 返回首页 button (no level-by-level back navigation)
 
 ### Component Structure
 

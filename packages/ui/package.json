@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./AnalysisImage": "./src/AnalysisImage.tsx",
-    "./ProblemSolutionView": "./src/ProblemSolutionView.tsx"
+    "./ProblemSolutionView": "./src/ProblemSolutionView.tsx",
+    "./breadcrumb-map": "./src/breadcrumb-map.ts"
   },
   "scripts": {
     "lint": "eslint .",

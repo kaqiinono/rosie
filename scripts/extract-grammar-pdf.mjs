@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const defaults = {
   input: resolve(root, 'docs/english/剑桥初级英语语法.pdf'),
-  output: resolve(root, 'output/grammar-pilot/units-001-010'),
+  output: resolve(root, 'output2/grammar-pilot/units-001-010'),
   firstPage: 21,
   lastPage: 40,
   dpi: 300,

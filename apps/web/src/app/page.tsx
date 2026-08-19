@@ -10,6 +10,16 @@ import type { ModuleCardData } from '@rosie/core'
 
 const baseModules: ModuleCardData[] = [
   {
+    href: '/calc',
+    title: '口算天地',
+    description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',
+    tag: 'CALC',
+    variant: 'calc',
+    stats: ['加减乘除闯关', '金币兑换奖券', '错题本'],
+    enterText: '开始口算',
+    icon: '🧮',
+  },
+  {
     href: '/math',
     title: '数学乐园',
     description: '加减乘除、应用题、趣味动画，用故事理解数学。',
@@ -48,16 +58,6 @@ const baseModules: ModuleCardData[] = [
     stats: ['语音提问', '知识卡片', '一键跳转'],
     enterText: '开始问 AI',
     icon: '✨',
-  },
-  {
-    href: '/calc',
-    title: '口算天地',
-    description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',
-    tag: 'CALC',
-    variant: 'calc',
-    stats: ['加减乘除闯关', '金币兑换奖券', '错题本'],
-    enterText: '开始口算',
-    icon: '🧮',
   },
   {
     href: '/mistakes',

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { OrbBackground, BackLink } from '@rosie/ui'
+import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import { useGrammarUnits } from '../hooks/useGrammarUnits'
 import { grammarPageImageUrl, type GrammarFigure, type GrammarUnitDetail } from '../types'
 import { LessonView } from './LessonView'
@@ -28,7 +28,7 @@ export default function GrammarStudyGuidePage() {
   return (
     <>
       <OrbBackground variant="home" />
-      <BackLink />
+      <PageBreadcrumb />
       <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[860px] flex-col gap-6 px-4 pt-20 pb-16 sm:px-6">
         <header className="text-center">
           <div className="inline-block text-5xl">🧭</div>

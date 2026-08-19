@@ -249,7 +249,7 @@ export default function GrammarToc({ currentUnit }: { currentUnit: number }) {
         )}
       </aside>
 
-      {/* 移动/平板：左下角悬浮胶囊（避开左上 BackLink 与右下 AI 助手）+ 抽屉 */}
+      {/* 移动/平板：左下角悬浮胶囊（避开左上 PageBreadcrumb 与右下 AI 助手）+ 抽屉 */}
       <button
         type="button"
         onClick={() => setMobileOpen(true)}

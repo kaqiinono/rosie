@@ -31,7 +31,7 @@ tracked in `public.schema_migrations`.
    EXISTS`). Follow `.cursor/rules/sql-no-destructive-data-ops.mdc`: no
    `DROP`/`TRUNCATE`/`DELETE` unless the change is explicitly a cleanup.
 3. **Data seeds are not migrations.** Content loads (word `*-upsert.sql`,
-   `add_chinese_def.sql`, etc.) stay in their existing per-stage locations and
+   `scripts/tmp/add_chinese_def.sql`, etc.) stay in their existing per-stage locations and
    are run manually — they are not applied by the runner.
 4. **`DATABASE_URL` never gets committed.** It is a Postgres URI (session pooler
    or direct), not the anon/service key. Pass it inline per command.

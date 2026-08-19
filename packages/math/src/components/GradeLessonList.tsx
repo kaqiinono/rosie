@@ -1,6 +1,6 @@
 'use client'
 
-import { OrbBackground, BackLink } from '@rosie/ui'
+import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import CourseCard from '@rosie/math/components/CourseCard'
 import MathGradeStatsPanel from '@rosie/math/components/MathGradeStatsPanel'
 import { COURSES } from '@rosie/math-kit/utils/courses-data'
@@ -17,7 +17,7 @@ export default function GradeLessonList({ grade }: { grade: number }) {
   return (
     <>
       <OrbBackground variant="math" />
-      <BackLink href="/math" />
+      <PageBreadcrumb />
       <div className="relative z-1 flex min-h-screen flex-col items-center gap-7 px-5 pt-24 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:pt-20 max-[500px]:pb-8">
         <section className="max-w-[480px] text-center">
           <h1 className="mt-2 bg-gradient-to-br from-blue-900 via-violet-600 to-amber-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">

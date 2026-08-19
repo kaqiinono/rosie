@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { OrbBackground, BackLink } from '@rosie/ui'
+import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useGrammarOverview, type GrammarOverviewEntry } from '../hooks/useGrammarOverview'
 import { useGrammarMastery } from '../hooks/useGrammarMastery'
@@ -135,7 +135,7 @@ export default function GrammarHomePage() {
   return (
     <>
       <OrbBackground variant="home" />
-      <BackLink />
+      <PageBreadcrumb />
 
       <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[860px] flex-col gap-6 px-4 pt-20 pb-16 sm:px-6">
         <header className="text-center">

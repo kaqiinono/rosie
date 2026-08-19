@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { BackLink } from '@rosie/ui'
+import { PageBreadcrumb } from '@rosie/ui'
 import CatalogTree from '@rosie/math/components/catalog/CatalogTree'
 import {
   BOOKS,
@@ -107,7 +107,7 @@ export default function MathCatalogPage() {
 
   return (
     <div className="min-h-screen bg-[#f4f6fb] text-[#1f2733]">
-      <BackLink href="/math" label="返回数学" />
+      <PageBreadcrumb />
 
       <header className="bg-gradient-to-r from-[#3a0ca3] via-[#4361ee] to-[#4895ef] px-7 py-[22px] text-white">
         <h1 className="m-0 text-[21px] font-bold">📚 小学数学思维教材 · 细分题型知识图谱</h1>

@@ -2,9 +2,14 @@
 
 Shared **presentational** components used across modules. No data fetching, no business logic.
 
-**Contents:** `CandyButton`/`JellyButton` (+ presets/tiles), `BackLink`, `ArrowIcon`,
+**Contents:** `CandyButton`/`JellyButton` (+ presets/tiles), `PageBreadcrumb`, `ArrowIcon`,
 `OrbBackground`, `LoadingOverlay`, `ModuleCard`, `AccountBar`, `AuthGuard`, `NavigationLink`,
 `TopRightBar`, `ServiceWorkerRegistrar`.
+
+`PageBreadcrumb` renders the site breadcrumb (or a 返回首页 button when the parent is home)
+driven by the route map in `breadcrumb-map.ts` (subpath export `@rosie/ui/breadcrumb-map`).
+**When adding a new page route, check `breadcrumb-map.ts` and add an entry** — otherwise the
+page falls back to the plain 返回首页 button.
 
 `ProblemSolutionView` and `AnalysisImage` are data-agnostic shared presentation for authoritative
 math solutions. Math-kit resolves `Problem`/Supabase image data; AI passes structured block data.

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { PageBreadcrumb } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcVouchers } from '@rosie/rewards'
@@ -117,18 +118,7 @@ export default function VouchersPage() {
         }}
       >
         <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pl-[52px] pr-3 sm:pl-[60px] sm:gap-3 sm:pr-4">
-          <Link
-            href="/"
-            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full no-underline transition-all hover:scale-110"
-            style={{
-              background: 'rgba(245,158,11,0.10)',
-              border: '1.5px solid rgba(245,158,11,0.30)',
-              color: '#b45309',
-            }}
-            aria-label="返回首页"
-          >
-            <span className="text-[15px] leading-none font-bold">←</span>
-          </Link>
+          <PageBreadcrumb variant="inline" />
 
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
             <div className="hidden shrink-0 items-center -space-x-1 sm:flex">
