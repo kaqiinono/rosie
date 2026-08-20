@@ -249,6 +249,13 @@ export interface GrammarUnitSummary {
   studyGuideUnits?: number[]
 }
 
+/** 首页高级检索索引条目（search_text 懒加载缓存） */
+export interface GrammarSearchIndexEntry {
+  book: GrammarBookId
+  unitNumber: number
+  searchText: string
+}
+
 export type GrammarMasteryMap = Record<
   string,
   { correct: number; total: number; mastered: boolean; lastPracticedAt: string }
@@ -281,6 +288,8 @@ export interface GrammarUnitRow {
   units?: unknown
   supp_entries?: unknown
   study_guide_units?: unknown
+  /** 迁移 0029 新增列（未应用时为 undefined） */
+  search_text?: string | null
 }
 
 // ── Normalizers (jsonb → typed, crash-proof) ──────────────────────────────────
