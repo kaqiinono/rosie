@@ -139,7 +139,7 @@ export { useGrammarUnit } from './grammar/hooks/useGrammarUnit'
 export { useGrammarUnits } from './grammar/hooks/useGrammarUnits'
 export { useGrammarMastery, grammarMasteryStore } from './grammar/hooks/useGrammarMastery'
 export {
-  GRAMMAR_TOC_SECTIONS,
+  tocSectionsFor,
   useGrammarToc,
   type GrammarTocGroup,
   type GrammarTocSection,

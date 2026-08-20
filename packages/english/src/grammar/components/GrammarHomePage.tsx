@@ -7,7 +7,7 @@ import { useAuth } from '@rosie/core'
 import { useGrammarOverview, type GrammarOverviewEntry } from '../hooks/useGrammarOverview'
 import { useGrammarMastery } from '../hooks/useGrammarMastery'
 import { useGrammarSearchIndex } from '../hooks/useGrammarSearchIndex'
-import { GRAMMAR_TOC_SECTIONS, BACKMATTER_ICONS } from '../grammar-toc'
+import { tocSectionsFor, BACKMATTER_ICONS } from '../grammar-toc'
 import { searchGrammarEntries, type GrammarSearchMode } from '../grammar-search'
 import type { GrammarMasteryMap } from '../types'
 import GrammarSearchResults from './GrammarSearchResults'
@@ -149,11 +149,11 @@ export default function GrammarHomePage() {
     [entries, masteryMap],
   )
 
-  // 按原书目录章节（GRAMMAR_TOC_SECTIONS）分区，与单元页目录侧栏一致；
+  // 按原书目录章节（tocSectionsFor）分区，与单元页目录侧栏一致；
   // DB 的 category 粒度过细（一般现在时/现在进行时等），不适合作分区依据
   const groups = useMemo(() => {
     const byUnit = new Map(entries.map((e) => [e.unitNumber, e]))
-    return GRAMMAR_TOC_SECTIONS.map((section) => {
+    return tocSectionsFor('essential').map((section) => {
       const items: GrammarOverviewEntry[] = []
       for (let n = section.from; n <= section.to; n++) {
         const entry = byUnit.get(n)

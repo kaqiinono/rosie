@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { GRAMMAR_INDEX } from './grammar-index'
 import { useGrammarOverview, type GrammarOverviewEntry } from './hooks/useGrammarOverview'
+import { GRAMMAR_BOOKS, type GrammarBookId } from './types'
 
 /**
  * 书目目录章节结构（essential = 《剑桥初级英语语法》原书目录页 v-viii，人工校对）。
@@ -28,33 +29,52 @@ export const BACKMATTER_ICONS: Record<string, string> = {
   study_guide: '🧭',
 }
 
-export const GRAMMAR_TOC_SECTIONS: GrammarTocSection[] = [
-  { id: 'present', titleZh: '现在时', from: 1, to: 9 },
-  { id: 'past', titleZh: '过去时', from: 10, to: 14 },
-  { id: 'present-perfect', titleZh: '现在完成时', from: 15, to: 20 },
-  { id: 'passive', titleZh: '被动语态', from: 21, to: 22 },
-  { id: 'verb-forms', titleZh: '动词形式', from: 23, to: 24 },
-  { id: 'future', titleZh: '将来时', from: 25, to: 28 },
-  { id: 'modals', titleZh: '情态动词，祈使语气等', from: 29, to: 36 },
-  { id: 'there-it', titleZh: 'there 与 it', from: 37, to: 39 },
-  { id: 'auxiliaries', titleZh: '助动词', from: 40, to: 43 },
-  { id: 'questions', titleZh: '疑问句', from: 44, to: 49 },
-  { id: 'reported-speech', titleZh: '间接引语', from: 50, to: 50 },
-  { id: 'ing-infinitive', titleZh: '动词 -ing 形式与不定式', from: 51, to: 54 },
-  { id: 'verbs', titleZh: 'go, get, do, make 与 have', from: 55, to: 58 },
-  { id: 'pronouns', titleZh: '人称代词与所有格', from: 59, to: 64 },
-  { id: 'determiners', titleZh: '限定词与代词', from: 65, to: 84 },
-  { id: 'adjectives-adverbs', titleZh: '形容词与副词', from: 85, to: 92 },
-  { id: 'word-order', titleZh: '词序', from: 93, to: 96 },
-  { id: 'conjunctions', titleZh: '连词与从句', from: 97, to: 102 },
-  { id: 'prepositions', titleZh: '介词', from: 103, to: 113 },
-  { id: 'phrasal-verbs', titleZh: '短语动词', from: 114, to: 115 },
-  { id: 'appendix', titleZh: '附录', from: 116, to: 122, backmatter: true },
-  { id: 'supplementary', titleZh: '补充练习', from: 123, to: 157, backmatter: true },
-  { id: 'study-guide', titleZh: '学习指导', from: 158, to: 169, backmatter: true },
-]
+/** 各书目录章节：essential 为原书目录（人工校对）；新书接入时按原书目录追加 */
+const GRAMMAR_TOC_SECTIONS_BY_BOOK: Partial<Record<GrammarBookId, GrammarTocSection[]>> = {
+  essential: [
+    { id: 'present', titleZh: '现在时', from: 1, to: 9 },
+    { id: 'past', titleZh: '过去时', from: 10, to: 14 },
+    { id: 'present-perfect', titleZh: '现在完成时', from: 15, to: 20 },
+    { id: 'passive', titleZh: '被动语态', from: 21, to: 22 },
+    { id: 'verb-forms', titleZh: '动词形式', from: 23, to: 24 },
+    { id: 'future', titleZh: '将来时', from: 25, to: 28 },
+    { id: 'modals', titleZh: '情态动词，祈使语气等', from: 29, to: 36 },
+    { id: 'there-it', titleZh: 'there 与 it', from: 37, to: 39 },
+    { id: 'auxiliaries', titleZh: '助动词', from: 40, to: 43 },
+    { id: 'questions', titleZh: '疑问句', from: 44, to: 49 },
+    { id: 'reported-speech', titleZh: '间接引语', from: 50, to: 50 },
+    { id: 'ing-infinitive', titleZh: '动词 -ing 形式与不定式', from: 51, to: 54 },
+    { id: 'verbs', titleZh: 'go, get, do, make 与 have', from: 55, to: 58 },
+    { id: 'pronouns', titleZh: '人称代词与所有格', from: 59, to: 64 },
+    { id: 'determiners', titleZh: '限定词与代词', from: 65, to: 84 },
+    { id: 'adjectives-adverbs', titleZh: '形容词与副词', from: 85, to: 92 },
+    { id: 'word-order', titleZh: '词序', from: 93, to: 96 },
+    { id: 'conjunctions', titleZh: '连词与从句', from: 97, to: 102 },
+    { id: 'prepositions', titleZh: '介词', from: 103, to: 113 },
+    { id: 'phrasal-verbs', titleZh: '短语动词', from: 114, to: 115 },
+    { id: 'appendix', titleZh: '附录', from: 116, to: 122, backmatter: true },
+    { id: 'supplementary', titleZh: '补充练习', from: 123, to: 157, backmatter: true },
+    { id: 'study-guide', titleZh: '学习指导', from: 158, to: 169, backmatter: true },
+  ],
+}
 
-/** 目录侧栏条目 = 首页 overview 条目（含解锁状态） */
+/**
+ * 取书的目录章节；无数据的书降级为每 10 单元一组的通用分区
+ * （接入新书前目录结构未知，先用通用分区保证单元列表页可用）
+ */
+export function tocSectionsFor(book: GrammarBookId): GrammarTocSection[] {
+  const sections = GRAMMAR_TOC_SECTIONS_BY_BOOK[book]
+  if (sections) return sections
+  const result: GrammarTocSection[] = []
+  const max = GRAMMAR_BOOKS[book].maxUnits
+  for (let from = 1; from <= max; from += 10) {
+    const to = Math.min(from + 9, max)
+    result.push({ id: `chunk-${from}`, titleZh: `Unit ${from}–${to}`, from, to })
+  }
+  return result
+}
+
+/** 目录侧栏条目 = 书内 overview 条目（含解锁状态） */
 export type GrammarTocEntry = GrammarOverviewEntry
 
 export interface GrammarTocGroup {
@@ -64,14 +84,15 @@ export interface GrammarTocGroup {
 
 /**
  * 按原书目录章节聚合单元，供目录侧栏渲染。
- * 复用 useGrammarOverview 的 session store（与语法首页共享缓存，无额外请求）。
+ * 复用 useGrammarOverview 的 session store（与书内单元列表页共享缓存，无额外请求）。
  */
-export function useGrammarToc(user: User | null) {
-  const { entries, isLoading } = useGrammarOverview(user)
+export function useGrammarToc(user: User | null, book: GrammarBookId = 'essential') {
+  const { entries, isLoading } = useGrammarOverview(user, book)
 
   const groups = useMemo<GrammarTocGroup[]>(() => {
+    const sections = tocSectionsFor(book)
     const byUnit = new Map(entries.map((e) => [e.unitNumber, e]))
-    return GRAMMAR_TOC_SECTIONS.map((section) => {
+    return sections.map((section) => {
       const items: GrammarTocEntry[] = []
       for (let n = section.from; n <= section.to; n++) {
         const unlocked = byUnit.get(n)
@@ -80,7 +101,7 @@ export function useGrammarToc(user: User | null) {
           continue
         }
         // 静态索引存在但单元未入库 → 锁定占位；索引为空时不展示未入库单元
-        const idx = GRAMMAR_INDEX.find((e) => e.unitNumber === n)
+        const idx = GRAMMAR_INDEX.find((e) => e.book === book && e.unitNumber === n)
         if (!idx) continue
         items.push({
           book: idx.book,
@@ -96,7 +117,7 @@ export function useGrammarToc(user: User | null) {
       }
       return { section, items }
     }).filter((g) => g.items.length > 0)
-  }, [entries])
+  }, [entries, book])
 
   return { groups, isLoading }
 }
