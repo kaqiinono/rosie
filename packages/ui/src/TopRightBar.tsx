@@ -5,7 +5,7 @@ import AccountBar from './AccountBar'
 import { StarHud } from '@rosie/rewards'
 import { useImmersive } from '@rosie/core'
 
-const HOME_PAGES = ['/', '/math', '/today', '/vouchers']
+const HOME_PAGES = ['/', '/math', '/vouchers']
 
 function showsGlobalChrome(pathname: string): boolean {
   return HOME_PAGES.includes(pathname)

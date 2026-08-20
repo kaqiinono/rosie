@@ -107,9 +107,11 @@ export default function MathCatalogPage() {
 
   return (
     <div className="min-h-screen bg-[#f4f6fb] text-[#1f2733]">
-      <PageBreadcrumb />
-
       <header className="bg-gradient-to-r from-[#3a0ca3] via-[#4361ee] to-[#4895ef] px-7 py-[22px] text-white">
+        {/* 面包屑 inline 放在渐变 header 内（fixed 变体会贴视口左缘，与内容脱节） */}
+        <div className="mb-3 w-fit">
+          <PageBreadcrumb variant="inline" />
+        </div>
         <h1 className="m-0 text-[21px] font-bold">📚 小学数学思维教材 · 细分题型知识图谱</h1>
         <p className="mt-1.5 text-[13px] opacity-90">
           《学而思秘籍 1–7》·《大白本 1–3》·《高斯数学课本 一上–三下》·《高思竞赛数学导引》｜

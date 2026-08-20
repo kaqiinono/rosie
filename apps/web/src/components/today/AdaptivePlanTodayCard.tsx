@@ -9,6 +9,7 @@ import {
   useAdaptiveWordPlan,
   type AdaptivePlanWordProgress,
 } from '@rosie/english'
+import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
 
 function progressStats(rows: AdaptivePlanWordProgress[]) {
   const activeRows = rows.filter((row) => row.archivedAt == null)
@@ -19,20 +20,31 @@ function progressStats(rows: AdaptivePlanWordProgress[]) {
 
 type AdaptivePlanTodayCardProps = {
   user: User | null
+  /** Date to display; defaults to today. Past dates render a read-only summary. */
+  date?: string
 }
 
-export default function AdaptivePlanTodayCard({ user }: AdaptivePlanTodayCardProps) {
+export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayCardProps) {
   const { plans, isLoading: plansLoading, loadProgress } = useAdaptiveWordPlan(user)
   const activePlan = useMemo(
     () => plans.find((plan) => plan.status === 'active') ?? null,
     [plans],
   )
 
+  const targetDate = date ?? todayStr()
+  const isTargetToday = targetDate === todayStr()
+
+  // Historical view reads adaptive_daily_progress rows (per-date goals/done).
+  const { history: dailyHistory, isLoading: historyLoading } = useAdaptiveDailyHistory(
+    user,
+    !isTargetToday && activePlan ? activePlan.id : null,
+  )
+
   const [progressRows, setProgressRows] = useState<AdaptivePlanWordProgress[] | null>(null)
   const [progressLoading, setProgressLoading] = useState(false)
 
   useEffect(() => {
-    if (!activePlan) {
+    if (!activePlan || !isTargetToday) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgressRows(null)
       return
@@ -50,7 +62,7 @@ export default function AdaptivePlanTodayCard({ user }: AdaptivePlanTodayCardPro
     return () => {
       cancelled = true
     }
-  }, [activePlan, loadProgress])
+  }, [activePlan, loadProgress, isTargetToday])
 
   if (plansLoading || !activePlan) return null
 
@@ -61,6 +73,7 @@ export default function AdaptivePlanTodayCard({ user }: AdaptivePlanTodayCardPro
   const newCount = dailyTask?.activateKeys.length ?? 0
   const reviewCount = dailyTask?.reviewKeys.length ?? 0
   const pct = stats && stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
+  const historyRow = dailyHistory?.get(targetDate) ?? null
 
   return (
     <section className="mb-8">
@@ -103,7 +116,19 @@ export default function AdaptivePlanTodayCard({ user }: AdaptivePlanTodayCardPro
             <div className="text-[14px] font-extrabold truncate text-indigo-900">
               {activePlan.title}
             </div>
-            {progressLoading ? (
+            {!isTargetToday ? (
+              historyLoading ? (
+                <div className="text-[11px] mt-0.5 font-medium text-indigo-400">加载记录…</div>
+              ) : historyRow ? (
+                <div className="text-[11px] mt-0.5 font-medium text-indigo-700">
+                  {historyRow.allDone
+                    ? '当日任务已完成 🎉'
+                    : `新学 ${historyRow.newDone}/${historyRow.newGoal} · 复习 ${historyRow.reviewDone}/${historyRow.reviewGoal}`}
+                </div>
+              ) : (
+                <div className="text-[11px] mt-0.5 font-medium text-indigo-600">当天未练习</div>
+              )
+            ) : progressLoading ? (
               <div className="text-[11px] mt-0.5 font-medium text-indigo-400">加载进度…</div>
             ) : stats ? (
               <>

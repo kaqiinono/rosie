@@ -39,7 +39,7 @@ export default function TodayPage() {
           boxShadow: '0 2px 16px rgba(251,146,60,.08)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-[960px] items-center gap-3 px-4">
           <Link
             href="/"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline transition-all hover:scale-105 sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-2"
@@ -67,6 +67,12 @@ export default function TodayPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/today/calendar"
+              className="text-[12px] font-bold text-sky-700 no-underline transition-opacity hover:opacity-70"
+            >
+              计划日历 →
+            </Link>
             <Link
               href="/today/records"
               className="text-[12px] font-bold text-amber-700 no-underline transition-opacity hover:opacity-70"

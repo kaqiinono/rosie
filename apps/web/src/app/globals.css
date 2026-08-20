@@ -153,6 +153,89 @@
   .home-rosie-static {
     display: block;
   }
+
+  .rosieload-scurry,
+  .rosieload-bounce,
+  .rosieload-face-right,
+  .rosieload-face-left,
+  .rosieload-shadow,
+  .rosieload-blink,
+  .rosieload-turn-body,
+  .rosieload-turn-shadow,
+  .rosieload-round-turn-sprite {
+    animation: none;
+  }
+
+  .rosieload-face-left {
+    opacity: 0;
+  }
+}
+
+/* ── LoadingOverlay：方案三「左右蹦蹦」── */
+@keyframes rosieload-scurry {
+  0%, 100% { transform: translateX(-64px) }
+  50% { transform: translateX(64px) }
+}
+
+@keyframes rosieload-bounce {
+  0%, 25%, 50%, 75%, 100% { transform: translateY(0) }
+  12.5%, 37.5%, 62.5%, 87.5% { transform: translateY(-16px) }
+}
+
+@keyframes rosieload-show-right {
+  0%, 49% { opacity: 1 }
+  50%, 100% { opacity: 0 }
+}
+
+@keyframes rosieload-show-left {
+  0%, 49% { opacity: 0 }
+  50%, 100% { opacity: 1 }
+}
+
+@keyframes rosieload-shadow {
+  0%, 25%, 50%, 75%, 100% { transform: scaleX(1); opacity: 0.3 }
+  12.5%, 37.5%, 62.5%, 87.5% { transform: scaleX(0.55); opacity: 0.15 }
+}
+
+/* 慢等待安抚态：周期性眨眼 */
+@keyframes rosieload-blink {
+  0%, 88%, 100% { opacity: 0 }
+  90%, 96% { opacity: 1 }
+}
+
+.rosieload-scurry { animation: rosieload-scurry 2.4s ease-in-out infinite }
+.rosieload-bounce { animation: rosieload-bounce 2.4s ease-in-out infinite }
+.rosieload-face-right { animation: rosieload-show-right 2.4s linear infinite }
+.rosieload-face-left { animation: rosieload-show-left 2.4s linear infinite }
+.rosieload-shadow { animation: rosieload-shadow 2.4s ease-in-out infinite }
+.rosieload-blink { animation: rosieload-blink 2.6s linear infinite }
+
+/* ── LoadingOverlay：方案五「圆球身体转圈」（sprite 8 帧） ── */
+@keyframes rosieload-turn-frames {
+  from { background-position: 0 0 }
+  to { background-position: 100% 0 }
+}
+
+@keyframes rosieload-turn-body {
+  0%, 100% { transform: translateY(0) rotate(-2deg) scale(1) }
+  22% { transform: translateY(-8px) rotate(2deg) scale(1.025) }
+  50% { transform: translateY(-2px) rotate(-1deg) scale(0.98) }
+  76% { transform: translateY(-10px) rotate(2deg) scale(1.025) }
+}
+
+@keyframes rosieload-turn-shadow {
+  0%, 50%, 100% { transform: scaleX(1); opacity: 0.25 }
+  22%, 76% { transform: scaleX(0.62); opacity: 0.13 }
+}
+
+.rosieload-turn-body { animation: rosieload-turn-body 1.75s cubic-bezier(.45, 0, .35, 1) infinite }
+.rosieload-turn-shadow { animation: rosieload-turn-shadow 1.75s ease-in-out infinite }
+.rosieload-round-turn-sprite {
+  background-image: url('/brand/rosie-fun-spin-round-v1.png');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 800% 100%;
+  animation: rosieload-turn-frames 1.75s steps(7, end) infinite;
 }
 
 @keyframes bounce-slow {

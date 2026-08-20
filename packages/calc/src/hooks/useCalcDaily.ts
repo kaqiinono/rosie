@@ -36,7 +36,7 @@ export const calcSessionSummariesStore = createUserSessionStore<CalcDailyData>(
 
 const DEFAULT_TARGET = 20
 
-export function useCalcDaily(user: User | null) {
+export function useCalcDaily(user: User | null, date?: string) {
   const { data: dailyData, isLoading: sessionsLoading } =
     calcSessionSummariesStore.useSessionData(user)
   const { data: settings, isLoading: settingsLoading } = calcSettingsStore.useSessionData(user)
@@ -44,11 +44,11 @@ export function useCalcDaily(user: User | null) {
   const wallet = useCalcWallet(user)
 
   const summary = useMemo(() => {
-    const today = todayStr()
+    const target = date ?? todayStr()
     let done = 0
     let correct = 0
     for (const s of dailyData.sessions) {
-      if (s.date !== today) continue
+      if (s.date !== target) continue
       done += (s.correct_count ?? 0) + (s.retry_count ?? 0) + (s.wrong_count ?? 0)
       correct += (s.correct_count ?? 0) + (s.retry_count ?? 0)
     }
@@ -66,7 +66,27 @@ export function useCalcDaily(user: User | null) {
     settingsLoading,
     wallet.todayCoinsEarned,
     wallet.isLoading,
+    date,
   ])
 
   return summary
+}
+
+/**
+ * All session summaries + current daily target — lets callers (e.g. the plan
+ * calendar) compute per-date stats for any date, not just today.
+ */
+export function useCalcSessionSummaries(user: User | null) {
+  const { data: dailyData, isLoading: sessionsLoading } =
+    calcSessionSummariesStore.useSessionData(user)
+  const { data: settings, isLoading: settingsLoading } = calcSettingsStore.useSessionData(user)
+
+  return useMemo(
+    () => ({
+      sessions: dailyData.sessions,
+      target: settings.lastCount ?? DEFAULT_TARGET,
+      isLoading: sessionsLoading || settingsLoading,
+    }),
+    [dailyData, settings.lastCount, sessionsLoading, settingsLoading],
+  )
 }

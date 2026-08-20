@@ -91,9 +91,12 @@ export default function UnifiedMistakesPage() {
   return (
     <>
       <OrbBackground variant="home" />
-      <PageBreadcrumb />
 
-      <div className="relative z-1 mx-auto min-h-screen max-w-[680px] px-4 py-8 pt-20 pb-12">
+      {/* 面包屑 inline 与内容左缘对齐（fixed 变体宽屏时会落在容器外留白里） */}
+      <div className="relative z-1 mx-auto min-h-screen max-w-[1120px] px-4 pt-5 pb-12">
+        <div className="w-fit">
+          <PageBreadcrumb variant="inline" />
+        </div>
         {/* Header */}
         <div
           className="mb-5 rounded-[18px] px-5 py-4"

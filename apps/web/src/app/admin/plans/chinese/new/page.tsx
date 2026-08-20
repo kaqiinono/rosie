@@ -20,7 +20,7 @@ export default function AdminNewChinesePlanPage() {
           borderBottom: '2px solid rgba(245,158,11,.2)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[720px] items-center gap-3 pl-[52px] pr-4 sm:pl-[60px]">
+        <div className="mx-auto flex h-14 max-w-[720px] items-center gap-3 px-4">
           <Link
             href="/setting/plans/chinese"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline"

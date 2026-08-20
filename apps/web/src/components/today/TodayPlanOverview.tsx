@@ -103,7 +103,9 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       done: calc.done,
       total: calc.target,
       subtitle: calc.allDone
-        ? `🎉 完成 · 得 ${calc.coins}⭐`
+        ? calc.coins > 0
+          ? `🎉 完成 · 得 ${calc.coins}⭐`
+          : '🎉 已完成'
         : calc.done > 0
           ? `正确率 ${calc.accuracy}%`
           : '今日还未练习',

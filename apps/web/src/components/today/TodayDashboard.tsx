@@ -221,7 +221,7 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
   )
 }
 
-export default function TodayDashboard() {
+export default function TodayDashboard({ date }: { date?: string }) {
   const { user } = useAuth()
   const [resetToast, setResetToast] = useState<string | null>(null)
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
@@ -232,7 +232,12 @@ export default function TodayDashboard() {
   } = useAdaptiveTodayProgress(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
-  const calcDaily = useCalcDaily(user)
+  // `today` may be a historical date picked on the plan-calendar page; calc
+  // stats are per-date, but live coins / adaptive summary are today-only.
+  const today = date ?? todayStr()
+  const isActualToday = today === todayStr()
+  const calcDaily = useCalcDaily(user, today)
+  const overviewAdaptive = isActualToday ? activeAdaptive : null
   const chinese = useChineseRoadmapProgress(user)
   const {
     activePlan: chineseActivePlan,
@@ -258,8 +263,6 @@ export default function TodayDashboard() {
     const t = window.setTimeout(() => setResetToast(null), 3200)
     return () => window.clearTimeout(t)
   }, [resetToast])
-
-  const today = todayStr()
 
   // English: today's word keys -> full WordEntry objects
   const englishToday = englishPlan?.days.find(d => d.date === today)
@@ -317,7 +320,7 @@ export default function TodayDashboard() {
   const mathToday = mathPlan?.days.find(d => d.date === today)
   const mathProgress = mathPlan?.progress[today] ?? { doneKeys: [] }
   const mathProblems = mathToday?.problems ?? []
-  const mathDoneCount = mathProblems.filter(p => isPlanProblemDone(p, todayStr(), mathProgress.doneKeys)).length
+  const mathDoneCount = mathProblems.filter(p => isPlanProblemDone(p, today, mathProgress.doneKeys)).length
   const mathAllDone = mathProblems.length > 0 && mathDoneCount >= mathProblems.length
 
   const chineseOrderedKeys = useMemo(
@@ -400,7 +403,7 @@ export default function TodayDashboard() {
   if (isLoading) return <LoadingState />
 
   const hasMath = mathPlan && mathProblems.length > 0
-  const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!activeAdaptive
+  const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!overviewAdaptive
   const hasChinese = !!chineseActivePlan || chinesePlanCleared || chinese.hasChinese
   const calcDoneCount = calcDaily.todayDone
   const calcTargetCount = calcDaily.todayTarget
@@ -409,10 +412,10 @@ export default function TodayDashboard() {
 
   // Active adaptive wins over weekly (same as homepage overview).
   // Done today → detail/hub; incomplete → practice.
-  const englishHref = activeAdaptive
+  const englishHref = overviewAdaptive
     ? adaptiveToday?.allDone
-      ? `/english/words/adaptive/${activeAdaptive.id}`
-      : `/english/words/adaptive/${activeAdaptive.id}/practice`
+      ? `/english/words/adaptive/${overviewAdaptive.id}`
+      : `/english/words/adaptive/${overviewAdaptive.id}/practice`
     : englishPlan?.id
       ? englishDone
         ? `/english/words/weekly/${englishPlan.id}`
@@ -423,29 +426,29 @@ export default function TodayDashboard() {
     calc: {
       done: calcDoneCount,
       target: calcTargetCount,
-      coins: calcDaily.todayCoins,
+      coins: isActualToday ? calcDaily.todayCoins : 0,
       accuracy: calcAccuracy,
       allDone: calcAllDone,
       href: '/calc/session?mode=daily&start=1',
     },
     english: {
-      doneCount: activeAdaptive
+      doneCount: overviewAdaptive
         ? (adaptiveToday?.done ?? 0)
         : englishDone
           ? newWordKeys.length
           : 0,
-      total: activeAdaptive
-        ? (adaptiveToday?.total ?? activeAdaptive.newWordsPerDay)
+      total: overviewAdaptive
+        ? (adaptiveToday?.total ?? overviewAdaptive.newWordsPerDay)
         : newWordKeys.length,
-      lastScore: activeAdaptive ? undefined : englishProgress?.lastScore,
-      allDone: activeAdaptive
+      lastScore: overviewAdaptive ? undefined : englishProgress?.lastScore,
+      allDone: overviewAdaptive
         ? (adaptiveToday?.allDone ?? false)
         : englishDone,
       href: englishHref,
-      subtitle: activeAdaptive
+      subtitle: overviewAdaptive
         ? adaptiveToday
           ? `自适应 · ${adaptiveToday.subtitle}`
-          : `自适应 · 每日约 ${activeAdaptive.newWordsPerDay} 词`
+          : `自适应 · 每日约 ${overviewAdaptive.newWordsPerDay} 词`
         : undefined,
     },
     math: {
@@ -483,7 +486,7 @@ export default function TodayDashboard() {
   const overviewCards = allOverviewCards.filter((c) => overviewVisibility[c.key])
 
   return (
-    <div className="mx-auto max-w-[640px] px-4 pb-12">
+    <div className="mx-auto max-w-[960px] px-4 pb-12 sm:px-6">
 
       {/* Stats cards row — calc is always present */}
       {overviewCards.length > 0 && (
@@ -498,7 +501,7 @@ export default function TodayDashboard() {
           )}
           <TodayPlanOverviewCards
             cards={overviewCards}
-            allowReset
+            allowReset={isActualToday}
             onResetToast={setResetToast}
             className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4"
           />
@@ -590,7 +593,7 @@ export default function TodayDashboard() {
               </div>
             )}
           </>
-        ) : (
+        ) : isActualToday ? (
           <div
             className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
             style={{ borderColor: 'rgba(13,148,136,.2)', background: 'rgba(240,253,250,.5)' }}
@@ -605,10 +608,20 @@ export default function TodayDashboard() {
               创建英语计划
             </Link>
           </div>
+        ) : (
+          <div
+            className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
+            style={{ borderColor: 'rgba(13,148,136,.2)', background: 'rgba(240,253,250,.5)' }}
+          >
+            <div className="text-3xl mb-2">📖</div>
+            <div className="text-[13px] text-text-muted">
+              该日期没有英语周计划{activeAdaptive ? '（自适应计划见下方卡片）' : ''}
+            </div>
+          </div>
         )}
       </section>
 
-      <AdaptivePlanTodayCard user={user} />
+      <AdaptivePlanTodayCard user={user} date={today} />
 
       {/* Chinese section — roadmap current level (same card as /chinese home) */}
       <section className="mb-8">
@@ -631,7 +644,32 @@ export default function TodayDashboard() {
           </Link>
         </div>
 
-        <ChineseDailyCard />
+        {isActualToday ? (
+          <ChineseDailyCard />
+        ) : (
+          <div
+            className="rounded-2xl px-4 py-4"
+            style={{
+              background: chineseHasTodayRun
+                ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
+                : 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+              border: `1.5px solid ${chineseHasTodayRun ? 'rgba(34,197,94,.25)' : 'rgba(245,158,11,.2)'}`,
+            }}
+          >
+            {chineseTodayRun ? (
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🎉</span>
+                <span className="text-[12px] font-bold text-green-700">
+                  已完成：{chineseRunLesson?.lessonTitle ?? chineseTodayRun.lessonKey}
+                </span>
+              </div>
+            ) : (
+              <div className="text-[12px] font-bold" style={{ color: '#92400e' }}>
+                {chineseFocusPlan ? '当天没有语文学习记录' : '当天没有语文计划'}
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Calc section */}
@@ -683,8 +721,10 @@ export default function TodayDashboard() {
               </div>
               <div className="text-[11px] mt-0.5" style={{ color: calcAllDone ? '#16a34a' : '#7c3aed' }}>
                 {calcDoneCount > 0
-                  ? `正确率 ${calcAccuracy}% · 已得 ⭐ ${calcDaily.todayCoins}`
-                  : '加减乘除闯关，答对得星星兑换奖券'}
+                  ? `正确率 ${calcAccuracy}%${isActualToday ? ` · 已得 ⭐ ${calcDaily.todayCoins}` : ''}`
+                  : isActualToday
+                    ? '加减乘除闯关，答对得星星兑换奖券'
+                    : '当天未练习口算'}
               </div>
             </div>
             {calcAllDone && <span className="text-2xl">🎉</span>}
@@ -710,9 +750,9 @@ export default function TodayDashboard() {
         </div>
 
         {hasMath ? (
-          <div className="space-y-2">
+          <div className="grid gap-2 lg:grid-cols-2">
             {mathProblems.map((prob, i) => {
-              const done = isPlanProblemDone(prob, todayStr(), mathProgress.doneKeys)
+              const done = isPlanProblemDone(prob, today, mathProgress.doneKeys)
               const sectionColor = SECTION_COLORS[prob.section] ?? '#94a3b8'
               return (
                 <Link
@@ -770,7 +810,7 @@ export default function TodayDashboard() {
 
             {mathAllDone && (
               <div
-                className="mt-2 rounded-2xl px-4 py-3 text-center"
+                className="mt-2 rounded-2xl px-4 py-3 text-center lg:col-span-2"
                 style={{
                   background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
                   border: '1.5px solid rgba(34,197,94,.25)',
@@ -780,7 +820,7 @@ export default function TodayDashboard() {
               </div>
             )}
           </div>
-        ) : (
+        ) : isActualToday ? (
           <div
             className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
             style={{ borderColor: 'rgba(251,146,60,.25)', background: 'rgba(255,247,237,.5)' }}
@@ -794,6 +834,14 @@ export default function TodayDashboard() {
             >
               创建数学计划
             </Link>
+          </div>
+        ) : (
+          <div
+            className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
+            style={{ borderColor: 'rgba(251,146,60,.25)', background: 'rgba(255,247,237,.5)' }}
+          >
+            <div className="text-3xl mb-2">📐</div>
+            <div className="text-[13px] text-text-muted">该日期没有数学计划</div>
           </div>
         )}
       </section>

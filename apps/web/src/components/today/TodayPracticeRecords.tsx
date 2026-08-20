@@ -323,8 +323,8 @@ export default function TodayPracticeRecords() {
     chinesePlanLoading || (chinese.isCharDataLoading && !chinese.isCharDataReady)
 
   return (
-    <div className="mx-auto flex max-w-[640px] flex-col gap-4 px-4 pb-16">
-      <p className="px-0.5 text-[12px] font-medium text-slate-500">
+    <div className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pb-16 sm:px-6 lg:grid lg:grid-cols-2 lg:items-start">
+      <p className="px-0.5 text-[12px] font-medium text-slate-500 lg:col-span-2">
         查看今天四科练习的完成时间、状态、对错与得分；数学可看草稿，口算可打开统计报告。
       </p>
 

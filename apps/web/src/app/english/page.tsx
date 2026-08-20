@@ -13,9 +13,12 @@ export default function EnglishPage() {
   return (
     <>
       <OrbBackground variant="home" />
-      <PageBreadcrumb />
 
-      <div className="relative z-1 flex min-h-screen flex-col items-center gap-7 px-5 pt-24 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:pt-20 max-[500px]:pb-8">
+      {/* 面包屑 inline 与内容同层（fixed 变体宽屏时会悬在左侧留白里） */}
+      <div className="relative z-1 flex min-h-screen flex-col items-center gap-7 px-5 pt-5 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:pb-8">
+        <div className="w-fit self-start">
+          <PageBreadcrumb variant="inline" />
+        </div>
         <section className="max-w-[480px] text-center">
           <div className="animate-bounce-slow inline-block text-5xl">📚</div>
           <h1 className="mt-2 bg-gradient-to-br from-rose-700 via-pink-600 to-sky-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">

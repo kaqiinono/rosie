@@ -117,7 +117,7 @@ export default function VouchersPage() {
           boxShadow: '0 2px 14px rgba(251,191,36,0.08)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pl-[52px] pr-3 sm:pl-[60px] sm:gap-3 sm:pr-4">
+        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pl-3 pr-3 sm:gap-3 sm:pl-4 sm:pr-4">
           <PageBreadcrumb variant="inline" />
 
           <div className="flex min-w-0 flex-1 items-center gap-1.5">

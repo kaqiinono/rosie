@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import TodayReport from '@/components/today/TodayReport'
+import PlanCalendarDashboard from '@/components/today/PlanCalendarDashboard'
 
 function todayLabel() {
   const d = new Date()
@@ -10,7 +10,7 @@ function todayLabel() {
   return `${months[d.getMonth()]}${d.getDate()}日 ${days[d.getDay()]}`
 }
 
-export default function TodayReportPage() {
+export default function PlanCalendarPage() {
   const label = todayLabel()
 
   return (
@@ -45,7 +45,7 @@ export default function TodayReportPage() {
           boxShadow: '0 2px 16px rgba(251,146,60,.08)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[960px] items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-3 px-4">
           <Link
             href="/today"
             className="flex h-9 w-9 items-center justify-center rounded-full no-underline transition-all hover:scale-105 sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-2"
@@ -60,7 +60,7 @@ export default function TodayReportPage() {
           </Link>
 
           <div className="flex flex-1 items-center gap-2">
-            <span className="inline-block text-xl">📊</span>
+            <span className="inline-block text-xl">🗓️</span>
             <div>
               <div
                 className="text-[17px] font-extrabold leading-tight"
@@ -70,23 +70,23 @@ export default function TodayReportPage() {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                今日练习报告
+                计划日历
               </div>
               <div className="text-[10px] leading-none font-semibold text-text-muted">{label}</div>
             </div>
           </div>
 
           <Link
-            href="/today/records"
+            href="/today"
             className="text-[12px] font-bold text-amber-700 no-underline transition-opacity hover:opacity-70"
           >
-            练习记录
+            今日计划
           </Link>
         </div>
       </div>
 
-      <div className="relative pt-2">
-        <TodayReport />
+      <div className="relative pt-5">
+        <PlanCalendarDashboard />
       </div>
     </div>
   )

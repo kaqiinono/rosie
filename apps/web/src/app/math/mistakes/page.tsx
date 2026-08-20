@@ -576,7 +576,7 @@ export default function GlobalMistakesPage() {
       <OrbBackground variant="math" />
 
       <header className="fixed top-0 right-0 left-0 z-20 border-b border-rose-200/60 bg-[#fff8f8]/92 shadow-[0_4px_20px_rgba(190,18,60,0.05)] backdrop-blur-lg">
-        <div className="flex items-center gap-2 pl-[52px] pr-2.5 py-2 sm:gap-3 sm:pl-[60px] sm:pr-4 sm:py-2.5">
+        <div className="flex items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-4 sm:py-2.5">
           <Link
             href="/math"
             className="flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-rose-100 bg-white px-3 text-[12px] font-bold text-rose-900/55 no-underline shadow-sm transition-all hover:border-rose-200 hover:text-rose-900 active:scale-95 sm:text-[13px]"

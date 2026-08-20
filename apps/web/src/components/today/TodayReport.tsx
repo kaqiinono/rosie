@@ -123,7 +123,7 @@ export default function TodayReport() {
   const hasAnyPractice = subjectsPracticed.length > 0
 
   return (
-    <div className="mx-auto max-w-[640px] px-4 py-6">
+    <div className="mx-auto max-w-[960px] px-4 py-6 sm:px-6">
       {/* Summary header */}
       <div className="mb-6 rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 to-orange-50 p-4">
         <div className="text-[11px] font-bold uppercase tracking-widest text-amber-600/80">
@@ -155,7 +155,7 @@ export default function TodayReport() {
         </div>
       )}
 
-      <div className="flex flex-col gap-5">
+      <div className="grid gap-5 lg:grid-cols-2">
         {/* ── 语文 ── */}
         {chineseTodayRuns.length > 0 && (
           <div className="rounded-2xl border border-emerald-200/60 bg-white p-4">
