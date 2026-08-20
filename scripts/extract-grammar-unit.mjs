@@ -26,6 +26,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { buildGrammarSearchText } from './grammar-search-text.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -1335,7 +1336,7 @@ async function uploadUnitImages(pageImages, pageResults, book, unitNumber, env) 
 // ── upload ────────────────────────────────────────────────────────────────────
 
 /** 降级列表：迁移 0028 未应用时逐列剔除扩展字段重试 */
-const EXTENSION_COLUMNS = ['units', 'supp_entries', 'study_guide_units']
+const EXTENSION_COLUMNS = ['units', 'supp_entries', 'study_guide_units', 'search_text']
 
 function missingColumnError(body) {
   if (!/column|PGRST204|42703/.test(body)) return null
@@ -1349,7 +1350,11 @@ async function upsertUnit(row, env) {
     throw new Error('入库需要 NEXT_PUBLIC_SUPABASE_URL 与 SUPABASE_SERVICE_ROLE_KEY（apps/web/.env.local）')
   }
   const headers = { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
-  let payload = { ...row, updated_at: new Date().toISOString() }
+  let payload = {
+    ...row,
+    search_text: buildGrammarSearchText(row),
+    updated_at: new Date().toISOString(),
+  }
 
   // 策略：POST 纯插入（不带 on_conflict）→ 409 冲突说明行已存在，改 PATCH 全字段更新。
   // 不用 merge-duplicates upsert：本项目 PostgREST 对既有行的冲突检测失效，
