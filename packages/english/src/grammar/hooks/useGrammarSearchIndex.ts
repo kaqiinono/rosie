@@ -58,6 +58,7 @@ export function useGrammarSearchIndex(): GrammarSearchIndexState {
   // useCallback 保证 load 引用稳定，供调用方放入 useEffect 依赖数组
   const load = useCallback(async () => {
     setStarted(true)
+    setError(false) // 重试加载期间不残留上一轮失败态，避免闪现「加载失败」
     if (loaded) return cache
     if (!inflight) {
       inflight = loadIndex().finally(() => {
