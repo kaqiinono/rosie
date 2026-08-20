@@ -16,12 +16,12 @@ interface GrammarMasteryRow {
 
 const DEFAULT_BOOK: GrammarBookId = 'essential'
 
+/** 全书合并拉取（不按 book 过滤）：map key 为 `${book}:${unit}`，天然按书隔离 */
 async function fetchGrammarMastery(userId: string): Promise<GrammarMasteryMap> {
   const { data } = await supabase
     .from('grammar_mastery')
     .select('book,unit_number,correct_count,total_count,mastered,last_practiced_at')
     .eq('user_id', userId)
-    .eq('book', DEFAULT_BOOK)
   const map: GrammarMasteryMap = {}
   for (const row of (data ?? []) as GrammarMasteryRow[]) {
     map[`${row.book}:${row.unit_number}`] = {
