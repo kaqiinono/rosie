@@ -1,7 +1,7 @@
 'use client'
 
-import { GrammarHomePage } from '@rosie/english'
+import { GrammarBooksPage } from '@rosie/english'
 
 export default function GrammarRoute() {
-  return <GrammarHomePage />
+  return <GrammarBooksPage />
 }

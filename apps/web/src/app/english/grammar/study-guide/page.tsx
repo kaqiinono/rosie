@@ -1,7 +1,7 @@
 'use client'
 
-import { GrammarStudyGuidePage } from '@rosie/english'
+import { redirect } from 'next/navigation'
 
 export default function GrammarStudyGuideRoute() {
-  return <GrammarStudyGuidePage />
+  redirect('/english/grammar/essential/study-guide')
 }
