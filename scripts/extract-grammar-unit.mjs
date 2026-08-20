@@ -14,9 +14,11 @@
  *   node scripts/extract-grammar-unit.mjs --unit 1 --force      忽略 PNG/JSON 缓存
  *   node scripts/extract-grammar-unit.mjs --book intermediate --unit 1  指定书（默认 essential）
  *
- * 页码映射：优先 scripts/grammar-page-map.json（Phase 2 `--toc` 产物，格式
- * { "<unit>": { "pdf": [..], "book": [..] } }）；缺失时用临时公式
- * pdfPages = bookPages = [19 + 2N, 20 + 2N] 并打印 WARN。
+ * 页码映射：按书分文件（essential → scripts/grammar-page-map.json，其他书 →
+ * scripts/grammar-page-map-{book}.json；Phase 2 `--toc` 产物，格式
+ * { "<unit>": { "pdf": [..], "book": [..] } }）；essential 缺失时用临时公式
+ * pdfPages = bookPages = [19 + 2N, 20 + 2N] 并打印 WARN；其他书缺失直接报错
+ * （临时公式是 essential 专用规律，禁止对新书兜底）。
  *
  * Env（apps/web/.env.local）：NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
  * （入库时必需）；AI_EMBED_API_KEY / AI_EMBED_BASE_URL（提取时必需）。
@@ -38,7 +40,11 @@ const BOOKS = {
 }
 const DEFAULT_BOOK = 'essential'
 
-const PAGE_MAP_PATH = resolve(root, 'scripts/grammar-page-map.json')
+/** page-map 按书分文件：essential 保留历史文件名，其他书 grammar-page-map-{book}.json */
+function pageMapPathFor(book) {
+  if (book === 'essential') return resolve(root, 'scripts/grammar-page-map.json')
+  return resolve(root, `scripts/grammar-page-map-${book}.json`)
+}
 const PAGES_DIR = resolve(root, 'output/grammar-pages')
 const UNITS_BASE_DIR = resolve(root, 'output/grammar-units')
 const KEYS_DIR_NAME = '_keys'
@@ -49,7 +55,9 @@ const DPI = 300
 // 书尾内容（essential）：延展位 116-169，unit_number 仅作延展位主键，
 // title/category 承载原类型名。书页码 = PDF 页 - 7。
 // kind：appendix（附录）/ supp（补充练习）/ guide（学习指导）/ answers（答案页）/ index（练习表）
-const BACKMATTER = [
+// 按书隔离：intermediate/advanced 接入时按各自原书结构追加
+const BACKMATTER_BY_BOOK = {
+  essential: [
   { key: 'appendix-1', unit: 116, kind: 'appendix', title: '附录 1 主动语态与被动语态比较', categoryZh: '附录', pdf: [251] },
   { key: 'appendix-2', unit: 117, kind: 'appendix', title: '附录 2 不规则动词表', categoryZh: '附录', pdf: [252] },
   { key: 'appendix-3', unit: 118, kind: 'appendix', title: '附录 3 不规则动词分类表', categoryZh: '附录', pdf: [253] },
@@ -72,11 +80,13 @@ const BACKMATTER = [
   { key: 'answers-main', kind: 'answers', title: '练习答案', pdf: Array.from({ length: 27 }, (_, i) => 291 + i) },
   { key: 'answers-supp', kind: 'answers', title: '补充练习答案', pdf: [318, 319, 320] },
   { key: 'answers-guide', kind: 'answers', title: '学习指导答案', pdf: [321, 322] },
-]
+  ],
+}
+
 const CATEGORY_BY_KIND = { appendix: 'appendix', supp: 'supplementary', guide: 'study_guide' }
 
-function findBackmatter(key) {
-  return BACKMATTER.find((e) => e.key === key)
+function findBackmatter(book, key) {
+  return (BACKMATTER_BY_BOOK[book] ?? []).find((e) => e.key === key)
 }
 
 function loadSuppIndex(book) {
@@ -211,17 +221,22 @@ function assertUnit(n, book) {
 
 // ── page mapping ──────────────────────────────────────────────────────────────
 
-function resolvePageMap(unitNumber) {
-  if (existsSync(PAGE_MAP_PATH)) {
-    const map = JSON.parse(readFileSync(PAGE_MAP_PATH, 'utf8'))
+function resolvePageMap(book, unitNumber) {
+  const mapPath = pageMapPathFor(book)
+  if (existsSync(mapPath)) {
+    const map = JSON.parse(readFileSync(mapPath, 'utf8'))
     const entry = map[String(unitNumber)]
     if (entry && Array.isArray(entry.pdf) && entry.pdf.length > 0) {
       return { pdf: entry.pdf, book: entry.book ?? entry.pdf, fromMap: true }
     }
-    throw new Error(`grammar-page-map.json 缺少 unit ${unitNumber} 的条目`)
+    throw new Error(`${mapPath} 缺少 unit ${unitNumber} 的条目`)
   }
-  // Phase 1 临时公式：Unit 1 = PDF/印刷页 21-22，每单元两页
-  console.warn(`⚠ unit ${unitNumber}: 未找到 grammar-page-map.json，使用临时公式 [19+2N, 20+2N]（Phase 2 --toc 会替换）`)
+  // 临时公式 [19+2N, 20+2N] 是 essential 专用规律，禁止对新书兜底（错用会导致页码全错）
+  if (book !== 'essential') {
+    throw new Error(
+      `book "${book}" 缺少 page-map 文件 ${mapPath}：先放入 PDF 并用 grammar-page-map-gen.mjs --book ${book} 生成`,
+    )
+  }
   const lesson = 19 + 2 * unitNumber
   return { pdf: [lesson, lesson + 1], book: [lesson, lesson + 1], fromMap: false }
 }
@@ -1438,7 +1453,7 @@ async function processUnit(unitNumber, opts, env) {
     return
   }
 
-  const pageMap = resolvePageMap(unitNumber)
+  const pageMap = resolvePageMap(opts.book, unitNumber)
   const apiKey = env.AI_EMBED_API_KEY
   const baseUrl = env.AI_EMBED_BASE_URL
   if (!apiKey || !baseUrl) {
@@ -1491,8 +1506,11 @@ async function main() {
 
   let failed = 0
   if (opts.backmatterKeys.length > 0) {
+    if (opts.book !== 'essential' && !BACKMATTER_BY_BOOK[opts.book]) {
+      throw new Error(`book "${opts.book}" 的书尾（backmatter）注册表尚未配置，接入该书时先在 BACKMATTER_BY_BOOK 补充`)
+    }
     for (const key of opts.backmatterKeys) {
-      const entry = findBackmatter(key) ?? resolveSuppEntry(key, opts.book)
+      const entry = findBackmatter(opts.book, key) ?? resolveSuppEntry(key, opts.book)
       if (!entry) {
         failed += 1
         console.error(`✗ ${key}: 不在 BACKMATTER 注册表（或需先生成练习表后动态注册）`)
