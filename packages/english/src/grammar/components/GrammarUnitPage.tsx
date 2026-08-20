@@ -8,7 +8,12 @@ import { useGrammarUnit } from '../hooks/useGrammarUnit'
 import { useGrammarUnits } from '../hooks/useGrammarUnits'
 import { useGrammarMastery } from '../hooks/useGrammarMastery'
 import { BACKMATTER_ICONS } from '../grammar-toc'
-import { grammarPageImageUrl, type GrammarFigure, type GrammarUnitDetail } from '../types'
+import {
+  grammarPageImageUrl,
+  type GrammarBookId,
+  type GrammarFigure,
+  type GrammarUnitDetail,
+} from '../types'
 import { LessonView } from './LessonView'
 import { ExerciseView } from './ExerciseView'
 import GrammarToc from './GrammarToc'
@@ -39,9 +44,15 @@ function BookPagesChip({ pages }: { pages: number[] }) {
   )
 }
 
-/** 以 key={unitNumber} 重挂载，目录内切单元时自动重置全部本地状态 */
-export default function GrammarUnitPage({ unitNumber }: { unitNumber: number }) {
-  return <GrammarUnitPageInner key={unitNumber} unitNumber={unitNumber} />
+/** 以 key={`${book}:${unitNumber}`} 重挂载，目录内切单元时自动重置全部本地状态 */
+export default function GrammarUnitPage({
+  unitNumber,
+  book = 'essential' as GrammarBookId,
+}: {
+  unitNumber: number
+  book?: GrammarBookId
+}) {
+  return <GrammarUnitPageInner key={`${book}:${unitNumber}`} unitNumber={unitNumber} book={book} />
 }
 
 /**
@@ -51,7 +62,15 @@ export default function GrammarUnitPage({ unitNumber }: { unitNumber: number }) 
  * 面包屑用 inline 变体放在容器内顶部，与内容左缘对齐（fixed 变体会贴视口左缘，
  * 宽屏时落在容器外的留白里）
  */
-function UnitPageShell({ unitNumber, children }: { unitNumber: number; children: ReactNode }) {
+function UnitPageShell({
+  unitNumber,
+  book,
+  children,
+}: {
+  unitNumber: number
+  book: GrammarBookId
+  children: ReactNode
+}) {
   return (
     <>
       <OrbBackground variant="home" />
@@ -60,7 +79,7 @@ function UnitPageShell({ unitNumber, children }: { unitNumber: number; children:
           <PageBreadcrumb variant="inline" />
         </div>
         <div className="flex flex-1 gap-5">
-          <GrammarToc currentUnit={unitNumber} />
+          <GrammarToc currentUnit={unitNumber} book={book} />
           {children}
         </div>
       </div>
@@ -82,9 +101,15 @@ function UnitPageSkeleton() {
   )
 }
 
-function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
+function GrammarUnitPageInner({
+  unitNumber,
+  book,
+}: {
+  unitNumber: number
+  book: GrammarBookId
+}) {
   const { user } = useAuth()
-  const { unit, isLoading, notFound } = useGrammarUnit(unitNumber)
+  const { unit, isLoading, notFound } = useGrammarUnit(unitNumber, book)
   const { masteryMap, recordPractice } = useGrammarMastery(user)
   const [tab, setTab] = useState<Tab>('lesson')
   const [previewPage, setPreviewPage] = useState<number | null>(null)
@@ -98,8 +123,8 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
   }, [unit, unitNumber])
 
   // 锚定到本单元的补充练习/学习指导条目（迁移 0028 未应用时字段缺失，区域自动隐藏）
-  const { units: suppUnits } = useGrammarUnits(unit?.suppEntries)
-  const { units: guideUnits } = useGrammarUnits(unit?.studyGuideUnits)
+  const { units: suppUnits } = useGrammarUnits(unit?.suppEntries, book)
+  const { units: guideUnits } = useGrammarUnits(unit?.studyGuideUnits, book)
 
   const isAdmin = isAdminUser(user)
   // admin 插图操作：本地 override 保证保存后立即重渲染（缓存同步由 mutations patch）
@@ -154,9 +179,9 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
         sumTotal += r.total
       }
       setSummary({ unit: unitNumber, text: `${sumCorrect}/${sumTotal}` })
-      void recordPractice(unitNumber, sumCorrect, sumTotal)
+      void recordPractice(unitNumber, sumCorrect, sumTotal, book)
     },
-    [unit, recordPractice, unitNumber],
+    [unit, recordPractice, unitNumber, book],
   )
 
   const handleStartCrop = useCallback(
@@ -245,7 +270,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
 
   if (isLoading) {
     return (
-      <UnitPageShell unitNumber={unitNumber}>
+      <UnitPageShell unitNumber={unitNumber} book={book}>
         <UnitPageSkeleton />
       </UnitPageShell>
     )
@@ -253,13 +278,13 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
 
   if (notFound || !unit) {
     return (
-      <UnitPageShell unitNumber={unitNumber}>
+      <UnitPageShell unitNumber={unitNumber} book={book}>
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-4 pt-24 text-center">
           <div className="text-5xl">🔒</div>
           <h1 className="text-text-primary text-xl font-black">该单元尚未解锁</h1>
           <p className="text-text-secondary text-sm">内容还在提取中，先去看看其他单元吧</p>
           <Link
-            href="/english/grammar"
+            href={`/english/grammar/${book}`}
             className="from-app-blue rounded-full bg-gradient-to-r to-sky-500 px-6 py-2 text-sm font-bold text-white shadow-md shadow-sky-200 transition-transform active:scale-95"
           >
             返回语法地图
@@ -274,7 +299,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
 
   return (
     <>
-      <UnitPageShell unitNumber={unitNumber}>
+      <UnitPageShell unitNumber={unitNumber} book={book}>
         <div className="flex min-w-0 flex-1 flex-col gap-5">
           <header className="text-center">
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -302,7 +327,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
               )}
               {(detail.studyGuideUnits?.length ?? 0) > 0 && (
                 <Link
-                  href={`/english/grammar/study-guide#guide-${detail.studyGuideUnits?.[0]}`}
+                  href={`/english/grammar/${book}/study-guide#guide-${detail.studyGuideUnits?.[0]}`}
                   className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700 transition-colors hover:bg-sky-200"
                   title="跳转学习指导总览并定位到本单元相关内容"
                 >
@@ -324,7 +349,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
                 {detail.units.map((n) => (
                   <Link
                     key={n}
-                    href={`/english/grammar/${n}`}
+                    href={`/english/grammar/${book}/${n}`}
                     className="bg-surface text-app-blue ring-border-light hover:bg-app-blue-light rounded-full px-2.5 py-0.5 text-xs font-bold ring-1 transition-colors"
                   >
                     Unit {n}
@@ -423,7 +448,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
                             {supp.units?.map((u) => (
                               <Link
                                 key={u}
-                                href={`/english/grammar/${u}`}
+                                href={`/english/grammar/${book}/${u}`}
                                 className="bg-surface text-app-blue ring-border-light hover:bg-app-blue-light rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 transition-colors"
                               >
                                 Unit {u}
@@ -467,7 +492,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
                               {guide.title}
                             </span>
                             <Link
-                              href={`/english/grammar/study-guide#guide-${n}`}
+                              href={`/english/grammar/${book}/study-guide#guide-${n}`}
                               className="text-text-muted hover:text-app-blue text-[11px] font-bold underline-offset-2 hover:underline"
                             >
                               在总览中查看 →

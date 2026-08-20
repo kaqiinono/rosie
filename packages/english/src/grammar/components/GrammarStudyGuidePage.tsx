@@ -4,7 +4,13 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import { useGrammarUnits } from '../hooks/useGrammarUnits'
-import { grammarPageImageUrl, type GrammarFigure, type GrammarUnitDetail } from '../types'
+import {
+  grammarPageImageUrl,
+  GRAMMAR_BOOKS,
+  type GrammarBookId,
+  type GrammarFigure,
+  type GrammarUnitDetail,
+} from '../types'
 import { LessonView } from './LessonView'
 import { ExerciseView } from './ExerciseView'
 
@@ -17,9 +23,39 @@ const NOOP_GROUP_RESULT = () => {}
  * 学习指导总览：按页条目顺序聚合展示全部内容。
  * 单元页/首页的「学习指导」标记通过 `#guide-{延展位}` 锚点定位到对应页。
  */
-export default function GrammarStudyGuidePage() {
-  const { units, isLoading } = useGrammarUnits(GUIDE_UNITS)
+export default function GrammarStudyGuidePage({
+  book = 'essential' as GrammarBookId,
+}: {
+  book?: GrammarBookId
+}) {
+  const { units, isLoading } = useGrammarUnits(book === 'essential' ? GUIDE_UNITS : [], book)
   const [lightbox, setLightbox] = useState<GrammarFigure | null>(null)
+
+  // GUIDE_UNITS（158-169）是 essential 延展位；其他书的学习指导尚未接入
+  if (book !== 'essential') {
+    return (
+      <>
+        <OrbBackground variant="home" />
+        <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-6 px-4 pt-5 pb-16 sm:px-6">
+          <div className="w-fit">
+            <PageBreadcrumb variant="inline" />
+          </div>
+          <div className="bg-surface text-text-muted ring-border-light mx-auto mt-24 rounded-2xl p-8 text-center text-sm ring-1">
+            <div className="mb-2 text-4xl">🧭</div>
+            该书的学习指导尚未接入
+            <div className="mt-4">
+              <Link
+                href={`/english/grammar/${book}`}
+                className="text-app-blue font-bold underline-offset-2 hover:underline"
+              >
+                ← 返回《{GRAMMAR_BOOKS[book].labelZh}》
+              </Link>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   const pages = GUIDE_UNITS.map((n) => units.get(n)).filter(
     (d): d is GrammarUnitDetail => d !== undefined,
@@ -40,7 +76,7 @@ export default function GrammarStudyGuidePage() {
             学习指导
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm">
-            《剑桥初级英语语法》· 自测选择题，每题标注对应学习单元
+            《{GRAMMAR_BOOKS[book].labelZh}》· 自测选择题，每题标注对应学习单元
           </p>
         </header>
 
@@ -96,7 +132,7 @@ export default function GrammarStudyGuidePage() {
 
         <div className="text-center">
           <Link
-            href="/english/grammar"
+            href={`/english/grammar/${book}`}
             className="text-text-secondary text-sm font-bold underline-offset-2 hover:underline"
           >
             ← 返回语法地图

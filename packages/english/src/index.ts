@@ -129,7 +129,8 @@ export { default as RecallQuizStack } from './components/reading/RecallQuizStack
 export { default as UncoveredWordsReview } from './components/reading/UncoveredWordsReview'
 export { default as WordPopup } from './components/reading/WordPopup'
 
-// Grammar (剑桥初级英语语法)
+// Grammar (剑桥英语语法系列，按 book 维度分书)
+export { default as GrammarBooksPage } from './grammar/components/GrammarBooksPage'
 export { default as GrammarHomePage } from './grammar/components/GrammarHomePage'
 export { default as GrammarUnitPage } from './grammar/components/GrammarUnitPage'
 export { default as GrammarStudyGuidePage } from './grammar/components/GrammarStudyGuidePage'

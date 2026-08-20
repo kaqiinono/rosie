@@ -2,9 +2,24 @@
 
 import Link from 'next/link'
 import { BACKMATTER_ICONS } from '../grammar-toc'
-import type { GrammarMasteryMap } from '../types'
+import { GRAMMAR_BOOKS, type GrammarBookId, type GrammarMasteryMap } from '../types'
 import { splitSnippetParts, type GrammarSearchHit } from '../grammar-search'
-import { masteryBadge } from './GrammarHomePage'
+import type { GrammarOverviewEntry } from '../hooks/useGrammarOverview'
+
+type MasteryBadgeKind = 'new' | 'in-progress' | 'mastered'
+
+export function masteryBadge(
+  entry: GrammarOverviewEntry,
+  mastery: GrammarMasteryMap,
+): { label: string; className: string } | null {
+  if (entry.locked) return null
+  const record = mastery[`${entry.book}:${entry.unitNumber}`]
+  const kind: MasteryBadgeKind = record ? (record.mastered ? 'mastered' : 'in-progress') : 'new'
+  if (kind === 'mastered')
+    return { label: '⭐ 已掌握', className: 'bg-app-green-light text-app-green-dark' }
+  if (kind === 'in-progress') return { label: '练习中', className: 'bg-amber-100 text-amber-700' }
+  return { label: '新', className: 'bg-surface-dim text-text-muted ring-1 ring-border-light' }
+}
 
 /** 摘要高亮：按 ranges 切分片段文本（重叠区间由 splitSnippetParts 截断），命中区间套 emerald 高亮 */
 function SnippetHighlight({ text, ranges }: { text: string; ranges: [number, number][] }) {
@@ -27,7 +42,7 @@ function SnippetHighlight({ text, ranges }: { text: string; ranges: [number, num
 function ResultCard({ hit, mastery }: { hit: GrammarSearchHit; mastery: GrammarMasteryMap }) {
   const { entry } = hit
   const badge = masteryBadge(entry, mastery)
-  // 书尾条目不显示延展位编号，以类别图标代替（与首页 UnitCard 一致）
+  // 书尾条目不显示延展位编号，以类别图标代替（与单元列表页 UnitCard 一致）
   const badgeContent = entry.locked ? '🔒' : (BACKMATTER_ICONS[entry.category] ?? entry.unitNumber)
   const inner = (
     <>
@@ -73,7 +88,7 @@ function ResultCard({ hit, mastery }: { hit: GrammarSearchHit; mastery: GrammarM
   }
   return (
     <Link
-      href={`/english/grammar/${entry.unitNumber}`}
+      href={`/english/grammar/${entry.book}/${entry.unitNumber}`}
       className="bg-surface ring-border-light hover:ring-app-blue/40 flex items-center gap-3 rounded-xl p-3 ring-1 transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       {inner}
@@ -81,7 +96,7 @@ function ResultCard({ hit, mastery }: { hit: GrammarSearchHit; mastery: GrammarM
   )
 }
 
-/** 检索结果扁平列表（查询非空时替代首页章节分组视图） */
+/** 检索结果列表：按书划分区域（只展示有命中的书，顺序按 GRAMMAR_BOOKS 定义序） */
 export default function GrammarSearchResults({
   hits,
   truncated,
@@ -92,11 +107,33 @@ export default function GrammarSearchResults({
   truncated: boolean
   mastery: GrammarMasteryMap
 }) {
+  const byBook = new Map<GrammarBookId, GrammarSearchHit[]>()
+  for (const hit of hits) {
+    const list = byBook.get(hit.entry.book) ?? []
+    list.push(hit)
+    byBook.set(hit.entry.book, list)
+  }
   return (
-    <div className="flex flex-col gap-2.5">
-      {hits.map((hit) => (
-        <ResultCard key={hit.entry.unitNumber} hit={hit} mastery={mastery} />
-      ))}
+    <div className="flex flex-col gap-5">
+      {Object.values(GRAMMAR_BOOKS)
+        .filter((b) => byBook.has(b.id))
+        .map((b) => (
+          <section key={b.id}>
+            <h2 className="text-text-primary mb-2 flex items-center gap-2 text-sm font-black">
+              <span className="inline-block h-4 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-teal-500" />
+              📗 {b.labelZh}
+            </h2>
+            <div className="flex flex-col gap-2.5">
+              {(byBook.get(b.id) ?? []).map((hit) => (
+                <ResultCard
+                  key={`${hit.entry.book}:${hit.entry.unitNumber}`}
+                  hit={hit}
+                  mastery={mastery}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
       {truncated && (
         <p className="text-text-muted py-1 text-center text-xs font-bold">
           结果较多，只显示前 30 条，试试更精确的关键字 🔍

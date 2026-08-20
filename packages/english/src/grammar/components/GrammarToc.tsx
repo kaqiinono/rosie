@@ -6,6 +6,7 @@ import { STORAGE_KEYS, useAuth, useLocalStorage } from '@rosie/core'
 import { useGrammarMastery } from '../hooks/useGrammarMastery'
 import { useGrammarToc, type GrammarTocEntry, type GrammarTocGroup } from '../grammar-toc'
 import { BACKMATTER_ICONS } from '../grammar-toc'
+import type { GrammarBookId } from '../types'
 
 /** 单元行：编号徽章 + 标题；当前单元高亮，锁定单元不可点击 */
 function UnitRow({
@@ -57,7 +58,7 @@ function UnitRow({
   }
   return (
     <Link
-      href={`/english/grammar/${entry.unitNumber}`}
+      href={`/english/grammar/${entry.book}/${entry.unitNumber}`}
       onClick={onNavigate}
       aria-current={active ? 'page' : undefined}
       className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${
@@ -143,9 +144,15 @@ function TocList({
  *   该区间同样走抽屉模式。
  * - 移动/平板：左下角悬浮胶囊 + 抽屉覆盖层，收起时不占用页面空间；点击单元后自动收起
  */
-export default function GrammarToc({ currentUnit }: { currentUnit: number }) {
+export default function GrammarToc({
+  currentUnit,
+  book = 'essential' as GrammarBookId,
+}: {
+  currentUnit: number
+  book?: GrammarBookId
+}) {
   const { user } = useAuth()
-  const { groups } = useGrammarToc(user)
+  const { groups } = useGrammarToc(user, book)
   const [collapsed, setCollapsed] = useLocalStorage<boolean>(
     STORAGE_KEYS.GRAMMAR_SIDEBAR_COLLAPSED,
     false,
