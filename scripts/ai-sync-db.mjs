@@ -4,6 +4,7 @@
  * - word_entries (english)
  * - chinese_char_entries
  * - chinese_lessons (titles + recall phrases)
+ * - grammar_units (english: lesson content only, exercises/answers excluded)
  *
  * Requires: apps/web/.env.local + pnpm dev + AI_EMBED_*
  *
@@ -66,7 +67,7 @@ const tables = tablesArg
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean)
-  : ['word_entries', 'chinese_char_entries', 'chinese_lessons']
+  : ['word_entries', 'chinese_char_entries', 'chinese_lessons', 'grammar_units']
 
 const admin = createClient(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -392,6 +393,143 @@ async function syncChineseChars() {
   console.log(`chinese_char_entries synced: ${processed}`)
 }
 
+// ── grammar_units: flatten lesson blocks into natural-language knowledge ──
+// 只入库讲课内容（lesson）；练习题与答案不入库，避免孩子直接问到答案。
+// 补充练习（supplementary）无 lesson，跳过入库但保留 manifest 导航。
+function grammarBlockLines(block) {
+  if (!block || typeof block !== 'object') return []
+  switch (block.type) {
+    case 'rule_text':
+    case 'tip':
+    case 'image_description':
+    case 'unsupported':
+      return block.text ? [block.text] : []
+    case 'spelling_rule': {
+      const lines = block.text ? [block.text] : []
+      if (Array.isArray(block.examples)) {
+        const pairs = block.examples
+          .map((e) => `${e.base} → ${e.form}`)
+          .filter(Boolean)
+          .join('; ')
+        if (pairs) lines.push(pairs)
+      }
+      return lines
+    }
+    case 'example_set': {
+      const lines = block.context ? [block.context] : []
+      for (const item of block.items ?? []) {
+        const parts = [item.en, item.zh, item.note].filter(Boolean)
+        if (parts.length) lines.push(parts.join(' '))
+      }
+      return lines
+    }
+    case 'examples':
+      return (block.items ?? []).map((item) =>
+        [item.en, item.zh, item.note].filter(Boolean).join(' '),
+      )
+    case 'contraction_note':
+      return (block.items ?? []).map((item) => `${item.full} → ${item.short}`)
+    case 'grammar_table': {
+      const lines = block.title ? [`表: ${block.title}`] : []
+      const headers = (block.headers ?? []).filter(Boolean)
+      if (headers.length) lines.push(headers.join(' | '))
+      for (const row of block.rows ?? []) {
+        const cells = (row ?? []).map((c) => String(c ?? ''))
+        if (cells.some((c) => c.trim())) lines.push(cells.join(' | '))
+      }
+      return lines
+    }
+    default:
+      return typeof block.text === 'string' && block.text ? [block.text] : []
+  }
+}
+
+function grammarLessonText(lesson) {
+  const lines = []
+  for (const section of lesson?.sections ?? []) {
+    if (section.title) lines.push(`【${section.title}】`)
+    for (const block of section.blocks ?? []) lines.push(...grammarBlockLines(block))
+  }
+  return lines.filter(Boolean).join('\n')
+}
+
+async function syncGrammarUnits() {
+  const sourceKey = 'english_grammar'
+  const offset = await resolveOffset(sourceKey)
+  const all = await fetchAll(
+    'grammar_units',
+    'book, unit_number, title, title_zh, category, category_zh, difficulty, lesson',
+    0,
+  )
+  // 正文（1-115）+ 附录（116-122）+ 学习指导（158-169）有讲课内容；补充练习仅练习无 lesson
+  const data = all.filter((row) => row.category !== 'supplementary').slice(offset)
+  const manifestEntries = all.map((row) => {
+    const isBackmatter = row.unit_number > 115
+    return {
+      sourceRef: `grammar_units:${row.book}:${row.unit_number}`,
+      href: `/english/grammar/${row.unit_number}`,
+      title: isBackmatter
+        ? row.title_zh || row.title
+        : `Unit ${row.unit_number} · ${row.title_zh || row.title}`,
+      subject: 'english',
+    }
+  })
+  await updateSyncState({
+    sourceKey,
+    status: 'running',
+    cursorPosition: offset,
+    totalRecords: all.filter((row) => row.category !== 'supplementary').length,
+    metadata: { table: 'grammar_units', subject: 'english' },
+  })
+  let processed = 0
+  const progress = createProgress('grammar_units', offset, data.length, data.length + offset)
+  await mapWithConcurrency(data, async (row) => {
+    const body = grammarLessonText(row.lesson)
+    const content = [
+      `语法点: Unit ${row.unit_number} ${row.title}${row.title_zh ? ` (${row.title_zh})` : ''}`,
+      row.category_zh ? `分类: ${row.category_zh}` : '',
+      body,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    await ingest({
+      subject: 'english',
+      sourceType: 'db_sync',
+      sourceRef: `grammar_units:${row.book}:${row.unit_number}`,
+      title: `Unit ${row.unit_number} ${row.title_zh || row.title}`,
+      content,
+      metadata: {
+        structured: true,
+        knowledgeType: 'grammar',
+        book: row.book,
+        unitNumber: row.unit_number,
+        category: row.category,
+        difficulty: row.difficulty,
+        href: `/english/grammar/${row.unit_number}`,
+      },
+    })
+    processed++
+    progress.increment()
+  })
+  progress.stop()
+  mergeManifest('english', manifestEntries, (e) =>
+    String(e.sourceRef || '').startsWith('grammar_units:'),
+  )
+  const totalIngest = offset + processed
+  const totalRecords = all.filter((row) => row.category !== 'supplementary').length
+  await updateSyncState({
+    sourceKey,
+    status: totalIngest >= totalRecords ? 'completed' : 'partial',
+    recordsSynced: totalIngest,
+    chunksCreated: processed,
+    cursorPosition: totalIngest,
+    totalRecords,
+    metadata: { table: 'grammar_units', subject: 'english' },
+  })
+  console.log(`grammar_units synced: ${processed} (manifest: ${manifestEntries.length})`)
+}
+
 function mergeManifest(subject, newEntries, _replacePredicate) {
   const manifestFile = resolve(root, 'packages/ai/src/data/link-manifest.json')
   let existing = []
@@ -496,6 +634,7 @@ for (const table of tables) {
     if (table === 'word_entries') await syncWords()
     else if (table === 'chinese_char_entries') await syncChineseChars()
     else if (table === 'chinese_lessons') await syncChineseLessons()
+    else if (table === 'grammar_units') await syncGrammarUnits()
     else console.warn(`unknown table skipped: ${table}`)
   } catch (err) {
     const sourceKey =
@@ -503,7 +642,9 @@ for (const table of tables) {
         ? 'english_words'
         : table === 'chinese_char_entries'
           ? 'chinese_chars'
-          : 'chinese_lessons'
+          : table === 'grammar_units'
+            ? 'english_grammar'
+            : 'chinese_lessons'
     const message = err instanceof Error ? err.message : String(err)
     try {
       await updateSyncState({

@@ -113,7 +113,7 @@ async function ensureServer() {
 }
 
 async function dbSourcesComplete() {
-  const expected = new Set(['english_words', 'chinese_chars', 'chinese_lessons'])
+  const expected = new Set(['english_words', 'chinese_chars', 'chinese_lessons', 'english_grammar'])
   const { data, error } = await admin
     .from('knowledge_sync_state')
     .select('source_key,status,cursor_position,total_records')

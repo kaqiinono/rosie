@@ -135,9 +135,12 @@ export default function GrammarHomePage() {
   return (
     <>
       <OrbBackground variant="home" />
-      <PageBreadcrumb />
 
-      <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[860px] flex-col gap-6 px-4 pt-20 pb-16 sm:px-6">
+      {/* 面包屑 inline 放在容器内顶部，与内容左缘对齐（fixed 变体宽屏时会落在容器外留白里） */}
+      <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-6 px-4 pt-5 pb-16 sm:px-6">
+        <div className="w-fit">
+          <PageBreadcrumb variant="inline" />
+        </div>
         <header className="text-center">
           <div className="animate-bounce-slow inline-block text-5xl">📗</div>
           <h1 className="mt-2 bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
@@ -184,7 +187,7 @@ export default function GrammarHomePage() {
                     </Link>
                   )}
                 </h2>
-                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {items.map((entry) => (
                     <UnitCard key={entry.unitNumber} entry={entry} mastery={masteryMap} />
                   ))}

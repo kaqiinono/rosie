@@ -218,7 +218,7 @@ export default function GrammarToc({ currentUnit }: { currentUnit: number }) {
     <>
       {/* 桌面 sticky 侧栏（lg+；md 区间归入抽屉模式，避免挤压内容列） */}
       <aside
-        className={`bg-surface/90 ring-border-light sticky top-20 z-20 hidden shrink-0 self-start overflow-hidden rounded-2xl shadow-sm ring-1 backdrop-blur-sm transition-[width] duration-200 lg:block ${
+        className={`bg-surface/90 ring-border-light sticky top-5 z-20 hidden shrink-0 self-start overflow-hidden rounded-2xl shadow-sm ring-1 backdrop-blur-sm transition-[width] duration-200 lg:block ${
           collapsed ? 'w-11' : 'w-[248px]'
         }`}
       >
@@ -232,7 +232,7 @@ export default function GrammarToc({ currentUnit }: { currentUnit: number }) {
             ☰
           </button>
         ) : (
-          <div className="flex h-[calc(100vh-6.5rem)] flex-col">
+          <div className="flex h-[calc(100vh-2.5rem)] flex-col">
             <div className="border-border-light flex shrink-0 items-center justify-between border-b px-3 py-2.5">
               <span className="text-text-primary text-sm font-black">📗 目录</span>
               <button
@@ -249,7 +249,7 @@ export default function GrammarToc({ currentUnit }: { currentUnit: number }) {
         )}
       </aside>
 
-      {/* 移动/平板：左下角悬浮胶囊（避开左上 PageBreadcrumb 与右下 AI 助手）+ 抽屉 */}
+      {/* 移动/平板：左下角悬浮胶囊（避开右下 AI 助手）+ 抽屉 */}
       <button
         type="button"
         onClick={() => setMobileOpen(true)}

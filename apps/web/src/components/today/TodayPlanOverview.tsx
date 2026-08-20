@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { MouseEvent, ReactNode } from 'react'
+import type { CSSProperties, MouseEvent, ReactNode } from 'react'
 import {
   useAuth,
   todayStr,
@@ -195,6 +195,17 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
   ]
 }
 
+/** Flowing-light loading gradient in a subject color — pair with animate-shimmer.
+ * `reverse` makes the highlight sweep left→right (the keyframe otherwise moves
+ * the oversized background right→left). */
+function shimmerStyle(color: string): CSSProperties {
+  return {
+    background: `linear-gradient(90deg, ${color}59, ${color} 35%, rgba(255,255,255,.85) 50%, ${color} 65%, ${color}59)`,
+    backgroundSize: '200% 100%',
+    animationDirection: 'reverse',
+  }
+}
+
 type TodayPlanOverviewCardsProps = {
   cards: TodayPlanCardModel[]
   linkable?: boolean
@@ -326,28 +337,45 @@ export function TodayPlanOverviewCards({
               >
                 {card.label}
               </div>
-              {card.done !== null && card.done !== '' && (
-                <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
-                  {card.done}
-                  {card.total !== null && (
-                    <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
-                  )}
-                </div>
+              {card.done === null ? (
+                // Loading: plain skeleton keeps the number row's height so the
+                // progress bar stays pinned to the card bottom.
+                <div className="h-[26px] w-[72px] animate-pulse rounded-lg bg-black/10" />
+              ) : (
+                card.done !== '' && (
+                  <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
+                    {card.done}
+                    {card.total !== null && (
+                      <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
+                    )}
+                  </div>
+                )
               )}
               <div
-                className="mt-1 truncate text-[10px] font-medium"
+                className="mb-2 mt-1 truncate text-[10px] font-medium"
                 style={{ color: card.tone.subtitle }}
               >
                 {card.subtitle}
               </div>
               <div
-                className="mt-2 h-1.5 overflow-hidden rounded-full"
+                // mt-auto pins the bar to the card bottom even when a card
+                // (e.g. 语文 boolean state) renders no number row.
+                className="mt-auto h-1.5 overflow-hidden rounded-full"
                 style={{ background: 'rgba(0,0,0,.08)' }}
               >
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${card.pct}%`, background: card.tone.bar }}
-                />
+                {card.done === null ? (
+                  // Loading: full-width flowing-light sweep (done === null is
+                  // the hook's per-card loading marker) instead of an empty bar.
+                  <div
+                    className="animate-shimmer h-full w-full rounded-full"
+                    style={shimmerStyle(card.tone.bar)}
+                  />
+                ) : (
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{ width: `${card.pct}%`, background: card.tone.bar }}
+                  />
+                )}
               </div>
             </>
           )
@@ -393,7 +421,7 @@ export function TodayPlanOverviewCards({
               <Link
                 key={card.key}
                 href={card.href}
-                className="relative block overflow-hidden rounded-2xl px-4 py-3.5 no-underline transition-all hover:-translate-y-0.5"
+                className="relative flex flex-col overflow-hidden rounded-2xl px-4 py-3.5 no-underline transition-all hover:-translate-y-0.5"
                 style={style}
               >
                 {content}
@@ -410,13 +438,13 @@ export function TodayPlanOverviewCards({
               {linkable ? (
                 <Link
                   href={card.href}
-                  className="relative block flex-1 px-4 py-3.5 no-underline"
+                  className="relative flex flex-1 flex-col px-4 py-3.5 no-underline"
                   style={{ color: 'inherit' }}
                 >
                   {content}
                 </Link>
               ) : (
-                <div className="relative flex-1 px-4 py-3.5">{content}</div>
+                <div className="relative flex flex-1 flex-col px-4 py-3.5">{content}</div>
               )}
               {actionBar}
             </div>

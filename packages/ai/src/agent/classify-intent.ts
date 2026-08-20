@@ -33,6 +33,8 @@ const CHAR_CARD_HINTS = ['生字卡', '汉字卡', '文字卡', '字卡', '展�
 const POEM_RECITE_HINTS = ['背诵', '背古诗', '古诗填空', '考我古诗']
 const STATUS_HINTS = ['掌握度', '掌握情况', '错题统计', '错题情况', '学习情况', '学习概况']
 const TODAY_TASK_HINTS = ['今日任务', '今天学什么', '今天的计划', '今天要学', '今日计划']
+// 英语语法术语：无页面上下文时据此把语法提问归到英语学科（知识库 grammar chunks）
+const GRAMMAR_HINTS = ['语法', '时态', '进行时', '完成时', '过去式', '一般现在', 'be动词']
 
 function looksLikeMathWordProblem(message: string): boolean {
   const numbers = message.match(/\d+(?:\.\d+)?/g) ?? []
@@ -40,7 +42,12 @@ function looksLikeMathWordProblem(message: string): boolean {
 }
 
 function subjectFromMessage(message: string, fallback?: AiSubject): AiSubject | undefined {
-  if (message.includes('英语') || message.includes('单词')) return 'english'
+  if (
+    message.includes('英语') ||
+    message.includes('单词') ||
+    GRAMMAR_HINTS.some((hint) => message.includes(hint))
+  )
+    return 'english'
   if (message.includes('数学') || message.includes('题目')) return 'math'
   if (message.includes('语文') || message.includes('生字')) return 'chinese'
   return fallback
@@ -164,7 +171,7 @@ export function classifyIntent(message: string, context?: ChatContext): Classifi
 
   return {
     intent: 'general_qa',
-    subject: context?.subject,
+    subject: context?.subject ?? subjectFromMessage(trimmed),
     entities: {},
   }
 }

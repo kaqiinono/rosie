@@ -19,9 +19,9 @@ import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const PDF_PATH = resolve(root, 'docs/english/剑桥初级英语语法.pdf')
-const PAGES_DIR = resolve(root, 'output2/grammar-pages')
+const PAGES_DIR = resolve(root, 'output/grammar-pages')
 const PAGE_MAP_PATH = resolve(root, 'scripts/grammar-page-map.json')
-const CACHE_PATH = resolve(root, 'output2/grammar-page-num-cache.json')
+const CACHE_PATH = resolve(root, 'output/grammar-page-num-cache.json')
 const VISION_MODEL = process.env.GRAMMAR_VISION_MODEL || 'qwen-vl-max'
 const DPI = 120 // 读页码用低 DPI 即可，节省渲染与传输成本
 const OFFSET = 7 // 已知规律 book = pdf - 7（Unit 1-10 已验证）

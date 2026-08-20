@@ -45,18 +45,24 @@ export default function GrammarUnitPage({ unitNumber }: { unitNumber: number }) 
 }
 
 /**
- * 页面外壳：居中容器 + 目录 + 内容槽位。
+ * 页面外壳：居中容器 + 面包屑 + 目录 + 内容槽位。
  * loading/notFound/正常三个分支共用同一结构（目录始终在居中容器内），
- * 避免加载前后布局跳变导致目录贴左缘的闪动
+ * 避免加载前后布局跳变导致目录贴左缘的闪动。
+ * 面包屑用 inline 变体放在容器内顶部，与内容左缘对齐（fixed 变体会贴视口左缘，
+ * 宽屏时落在容器外的留白里）
  */
 function UnitPageShell({ unitNumber, children }: { unitNumber: number; children: ReactNode }) {
   return (
     <>
       <OrbBackground variant="home" />
-      <PageBreadcrumb />
-      <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1040px] gap-5 px-4 pt-20 pb-16 sm:px-6">
-        <GrammarToc currentUnit={unitNumber} />
-        {children}
+      <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-4 px-4 pt-5 pb-16 sm:px-6">
+        <div className="w-fit">
+          <PageBreadcrumb variant="inline" />
+        </div>
+        <div className="flex flex-1 gap-5">
+          <GrammarToc currentUnit={unitNumber} />
+          {children}
+        </div>
       </div>
     </>
   )
@@ -65,7 +71,7 @@ function UnitPageShell({ unitNumber, children }: { unitNumber: number; children:
 /** 加载骨架屏：尺寸贴近真实 header + tabs + main，减小内容出现时的跳变 */
 function UnitPageSkeleton() {
   return (
-    <div className="flex max-w-[760px] min-w-0 flex-1 flex-col gap-5">
+    <div className="flex min-w-0 flex-1 flex-col gap-5">
       <div className="flex flex-col items-center gap-3">
         <div className="bg-surface/70 ring-border-light h-6 w-40 animate-pulse rounded-full ring-1" />
         <div className="bg-surface/70 ring-border-light h-8 w-64 max-w-full animate-pulse rounded-lg ring-1" />
@@ -269,7 +275,7 @@ function GrammarUnitPageInner({ unitNumber }: { unitNumber: number }) {
   return (
     <>
       <UnitPageShell unitNumber={unitNumber}>
-        <div className="flex max-w-[760px] min-w-0 flex-1 flex-col gap-5">
+        <div className="flex min-w-0 flex-1 flex-col gap-5">
           <header className="text-center">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <span className="bg-app-blue-light text-app-blue-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold">

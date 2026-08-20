@@ -38,8 +38,8 @@ const BOOKS = {
 const DEFAULT_BOOK = 'essential'
 
 const PAGE_MAP_PATH = resolve(root, 'scripts/grammar-page-map.json')
-const PAGES_DIR = resolve(root, 'output2/grammar-pages')
-const UNITS_BASE_DIR = resolve(root, 'output2/grammar-units')
+const PAGES_DIR = resolve(root, 'output/grammar-pages')
+const UNITS_BASE_DIR = resolve(root, 'output/grammar-units')
 const KEYS_DIR_NAME = '_keys'
 const VISION_MODEL = process.env.GRAMMAR_VISION_MODEL || 'qwen-vl-max'
 const DPI = 300
