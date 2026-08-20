@@ -1386,7 +1386,7 @@ async function upsertUnit(row, env) {
       const patchBody = await patch.text()
       const missing = missingColumnError(patchBody)
       if (missing) {
-        console.warn(`⚠ unit ${row.unit_number}: ${missing} 列不存在（迁移 0028 未应用），降级为不带该列重试；请尽快应用迁移后重新 --upload-only`)
+        console.warn(`⚠ unit ${row.unit_number}: ${missing} 列不存在（对应迁移未应用），降级为不带该列重试；请尽快应用迁移后重新 --upload-only`)
         const next = { ...payload }
         delete next[missing]
         payload = next
@@ -1396,7 +1396,7 @@ async function upsertUnit(row, env) {
     }
     const missing = missingColumnError(insertBody)
     if (missing) {
-      console.warn(`⚠ unit ${row.unit_number}: ${missing} 列不存在（迁移 0028 未应用），降级为不带该列重试；请尽快应用迁移后重新 --upload-only`)
+      console.warn(`⚠ unit ${row.unit_number}: ${missing} 列不存在（对应迁移未应用），降级为不带该列重试；请尽快应用迁移后重新 --upload-only`)
       const next = { ...payload }
       delete next[missing]
       payload = next
