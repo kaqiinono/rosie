@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest'
-// @ts-expect-error — .mjs 脚本无类型声明
 import { buildGrammarSearchText } from '../../../scripts/grammar-search-text.mjs'
 
 const row = {
