@@ -1,7 +1,7 @@
 ---
 name: add-grammar-unit
 description: Add or re-extract an English grammar unit to the Rosie platform — renders PDF pages, extracts via qwen-vl-max Vision LLM, quality-reviews the JSON, uploads page images to Storage, and upserts into Supabase grammar_units via scripts/extract-grammar-unit.mjs. Supports multiple books (essential/intermediate/advanced) via --book flag. Use when the user asks to 添加语法单元, 提取 Unit N, 批量提取语法, re-extract a bad unit, or /add-grammar-unit.
-version: 1.3.0
+version: 1.4.0
 trigger: /add-grammar-unit
 ---
 
@@ -20,7 +20,9 @@ trigger: /add-grammar-unit
 书尾延展位 116-169：附录（appendix-1~7）/补充练习（supp-01~35，仅练习无 lesson）/学习指导
 （guide-p272~283）；锚点列 `units`/`supp_entries`/`study_guide_units`（migration 0028）记录
 书尾内容与正文单元的关联；`search_text` 列（migration 0029）是讲解块展平的检索文本
-（口径与 ai-sync-db 的 grammarBlockLines 一致，不含练习题/答案）。
+（口径与 ai-sync-db 的 grammarBlockLines 一致，不含练习题/答案），供首页 `/english/grammar`
+高级检索使用：前端懒加载全量 search_text 后纯客户端匹配（普通模式只搜标题/分类元数据，
+高级模式搜全文并展示命中摘要高亮；仅未锁定单元参与，结果上限 30 条）。
 
 ## 前置条件
 
@@ -103,7 +105,8 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 `--upload-only` 同时执行：
 1. 上传本地 PNG 到 Storage `grammar-pages` bucket（路径 `x-upsert` 幂等覆盖）
 2. 写入 `grammar_units` 行（含 `page_images` 列；`search_text` 由
-   `scripts/grammar-search-text.mjs` 自动生成，无需手填）
+   `scripts/grammar-search-text.mjs` 自动生成，无需手填）——入库后新单元即可被首页
+   高级检索命中（无 lesson 的书尾条目 search_text 仅含标题/分类元数据）
 
 入库后 `unit.json` 三件套建议随代码提交留档。
 
@@ -111,14 +114,15 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 
 `/english/grammar/<N>`：讲解/练习/原文三 tab 渲染、`p.N` 页码角标可点击弹出原文预览、
 判题（填空答对变绿）、全部答对后 `grammar_mastery` 写入且首页出 ⭐已掌握。
+再回 `/english/grammar` 首页用该单元标题关键字切到**高级检索**验证能命中且摘要高亮正常。
 登录态必须（无 guest 模式）。
 
 **Step 6: 后置同步**
 
 1. **AI 知识库**（有 lesson 的单元才需要）：`node scripts/ai-sync-db.mjs --tables=grammar_units`
    （需 dev server 在跑 + AI_EMBED_*），幂等覆盖，同步后「不不」才能检索到新语法点。
-2. **存量 search_text 回填**（仅当存在未经新 upsert 路径入库的旧行）：
-   `node scripts/tmp/backfill-grammar-search-text.mjs`（幂等）。
+2. **存量 search_text 回填**（仅当存在未经新 upsert 路径入库的旧行，否则首页高级检索
+   搜不到这些单元）：`node scripts/tmp/backfill-grammar-search-text.mjs`（幂等）。
 3. **锚点字段**（仅书尾相关）：新增/重提取补充练习后跑
    `node scripts/grammar-backmatter-anchors.mjs`（正文单元的 supp_entries/study_guide_units）与
    `node scripts/grammar-supp-units-patch.mjs`（补充练习的 units 列）；两者均为 PATCH 精确更新。
@@ -139,6 +143,8 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 | 入库报 `23502 title NOT NULL` | PostgREST merge-duplicates 冲突检测失效——CLI 已用 POST→409→PATCH 规避，若自行写脚本勿用 `resolution=merge-duplicates` upsert，改用 PATCH |
 | `--backmatter supp-1` 报 key 不存在 | key 须零填充为 `supp-01`（区间语法 `supp-1-35` 除外）|
 | 新单元在 AI 助手里搜不到 | 漏跑 Step 6 的知识库同步（`ai-sync-db.mjs --tables=grammar_units`）|
+| 新单元在首页高级检索搜不到 | 行是经旧路径入库的没有 search_text → 跑回填脚本；或 migration 0029 未应用（前端提示「索引尚未生成」）|
+| 首页高级检索一直显示「索引尚未生成」 | migration 0029 未应用或回填未执行；已应用已回填仍为空则检查 RLS/列权限 |
 
 ## 框架扩展（新块型 / 新题型）
 
