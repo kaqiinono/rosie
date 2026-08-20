@@ -7,11 +7,15 @@ import { useAuth, isAdminUser } from '@rosie/core'
 import { useGrammarUnit } from '../hooks/useGrammarUnit'
 import { useGrammarUnits } from '../hooks/useGrammarUnits'
 import { useGrammarMastery } from '../hooks/useGrammarMastery'
+import { useGrammarOverview } from '../hooks/useGrammarOverview'
 import { BACKMATTER_ICONS } from '../grammar-toc'
 import {
   grammarPageImageUrl,
   type GrammarBookId,
+  type GrammarExerciseGroup,
   type GrammarFigure,
+  type GrammarLesson,
+  type GrammarTableBlock,
   type GrammarUnitDetail,
 } from '../types'
 import { LessonView } from './LessonView'
@@ -19,12 +23,18 @@ import { ExerciseView } from './ExerciseView'
 import GrammarToc from './GrammarToc'
 import { PagePreviewModal } from './PagePreviewModal'
 import { FigureCropModal } from './FigureCropModal'
+import { GrammarTableEditorModal } from './GrammarTableEditorModal'
+import { GrammarExerciseEditorModal } from './GrammarExerciseEditorModal'
+import { GrammarLessonEditorModal } from './GrammarLessonEditorModal'
 import {
   saveGroupFigure,
   removeGroupFigure,
   saveSectionFigure,
   removeSectionFigure,
 } from '../figure-mutations'
+import { saveGrammarTable } from '../grammar-table-mutations'
+import { saveGrammarExercises } from '../grammar-exercise-mutations'
+import { saveGrammarLesson } from '../grammar-lesson-mutations'
 
 type Tab = 'lesson' | 'exercise' | 'original'
 
@@ -74,7 +84,7 @@ function UnitPageShell({
   return (
     <>
       <OrbBackground variant="home" />
-      <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-4 px-4 pt-5 pb-16 sm:px-6">
+      <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-4 px-4 pt-5 pb-32 sm:px-6">
         <div className="w-fit">
           <PageBreadcrumb variant="inline" />
         </div>
@@ -110,6 +120,7 @@ function GrammarUnitPageInner({
 }) {
   const { user } = useAuth()
   const { unit, isLoading, notFound } = useGrammarUnit(unitNumber, book)
+  const { entries: overviewEntries } = useGrammarOverview(user, book)
   const { masteryMap, recordPractice } = useGrammarMastery(user)
   const [tab, setTab] = useState<Tab>('lesson')
   const [previewPage, setPreviewPage] = useState<number | null>(null)
@@ -143,6 +154,14 @@ function GrammarUnitPageInner({
     | { kind: 'section'; sectionIdx: number; figureIdx: number }
     | null
   >(null)
+  const [tableEdit, setTableEdit] = useState<{ sectionIdx: number; blockIdx: number } | null>(null)
+  const [lessonEditing, setLessonEditing] = useState(false)
+  const [exerciseEditGroup, setExerciseEditGroup] = useState<number | null>(null)
+  const [suppExerciseEdit, setSuppExerciseEdit] = useState<{
+    unitNumber: number
+    groupIndex: number
+  } | null>(null)
+  const [suppOverrides, setSuppOverrides] = useState<Map<number, GrammarUnitDetail>>(() => new Map())
 
   const handlePageClick = useCallback((page: number) => {
     setPreviewPage(page)
@@ -268,6 +287,56 @@ function GrammarUnitPageInner({
     }
   }, [pendingDelete, unit, unitOverride])
 
+  const handleSaveTable = useCallback(
+    async (table: GrammarTableBlock) => {
+      const d = unitOverride ?? unit
+      if (!tableEdit || !d) return
+      const updated = await saveGrammarTable(d, tableEdit.sectionIdx, tableEdit.blockIdx, table)
+      setUnitOverride(updated)
+      setTableEdit(null)
+    },
+    [tableEdit, unit, unitOverride],
+  )
+
+  const handleSaveExercises = useCallback(
+    async (exercises: GrammarExerciseGroup[]) => {
+      const d = unitOverride ?? unit
+      if (!d) return
+      const updated = await saveGrammarExercises(d, exercises)
+      setUnitOverride(updated)
+      setExerciseEditGroup(null)
+    },
+    [unit, unitOverride],
+  )
+
+  const handleSaveLesson = useCallback(
+    async (lesson: GrammarLesson) => {
+      const d = unitOverride ?? unit
+      if (!d) return
+      const updated = await saveGrammarLesson(d, lesson)
+      setUnitOverride(updated)
+      setLessonEditing(false)
+    },
+    [unit, unitOverride],
+  )
+
+  const handleSaveSupplementaryExercises = useCallback(
+    async (exercises: GrammarExerciseGroup[]) => {
+      if (!suppExerciseEdit) return
+      const source =
+        suppOverrides.get(suppExerciseEdit.unitNumber) ?? suppUnits.get(suppExerciseEdit.unitNumber)
+      if (!source) return
+      const updated = await saveGrammarExercises(source, exercises)
+      setSuppOverrides((previous) => {
+        const next = new Map(previous)
+        next.set(updated.unitNumber, updated)
+        return next
+      })
+      setSuppExerciseEdit(null)
+    },
+    [suppExerciseEdit, suppOverrides, suppUnits],
+  )
+
   if (isLoading) {
     return (
       <UnitPageShell unitNumber={unitNumber} book={book}>
@@ -296,6 +365,15 @@ function GrammarUnitPageInner({
 
   const detail = unitOverride ?? unit
   const currentRecord = masteryMap[`${detail.book}:${unitNumber}`]
+  const availableUnits = overviewEntries
+    .filter((entry) => !entry.locked)
+    .toSorted((a, b) => a.unitNumber - b.unitNumber)
+  const currentUnitIndex = availableUnits.findIndex((entry) => entry.unitNumber === unitNumber)
+  const previousUnit = currentUnitIndex > 0 ? availableUnits[currentUnitIndex - 1] : undefined
+  const nextUnit =
+    currentUnitIndex >= 0 && currentUnitIndex < availableUnits.length - 1
+      ? availableUnits[currentUnitIndex + 1]
+      : undefined
 
   return (
     <>
@@ -359,7 +437,7 @@ function GrammarUnitPageInner({
             )}
           </header>
 
-          <div className="bg-surface ring-border-light mx-auto flex rounded-full p-1 shadow-sm ring-1">
+          <div className="sticky top-16 z-30 mx-auto flex rounded-full bg-surface/95 p-1 shadow-lg ring-1 ring-border-light backdrop-blur-md sm:top-3">
             {(
               [
                 { id: 'lesson', label: '📖 讲解' },
@@ -379,6 +457,28 @@ function GrammarUnitPageInner({
                 {t.label}
               </button>
             ))}
+            {isAdmin && tab !== 'original' && (
+              <>
+                <span className="mx-1 my-1 w-px bg-border-light" aria-hidden="true" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (tab === 'lesson') setLessonEditing(true)
+                    if (tab === 'exercise') setExerciseEditGroup(0)
+                  }}
+                  aria-label={tab === 'lesson' ? '管理讲解' : '管理练习'}
+                  className="group flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-black text-app-purple-dark transition-colors hover:bg-app-purple-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-purple sm:px-4 sm:text-sm"
+                >
+                  <span
+                    className="transition-transform group-hover:rotate-45 motion-reduce:transform-none"
+                    aria-hidden="true"
+                  >
+                    ⚙
+                  </span>
+                  <span>{tab === 'lesson' ? '管理讲解' : '管理练习'}</span>
+                </button>
+              </>
+            )}
           </div>
 
           <main
@@ -386,22 +486,46 @@ function GrammarUnitPageInner({
             className="animate-fade-up bg-surface/90 ring-border-light rounded-2xl p-4 shadow-sm ring-1 backdrop-blur-sm sm:p-6"
           >
             {tab === 'lesson' ? (
-              <LessonView
-                data={detail.lesson}
-                isAdmin={isAdmin}
-                pageImages={detail.pageImages}
-                onPageClick={handlePageClick}
-                onStartCrop={isAdmin ? handleStartSectionCrop : undefined}
-                onPreviewFigure={setLightbox}
-                onRemoveFigure={
-                  isAdmin
-                    ? (sectionIdx, figureIdx) =>
-                        setPendingDelete({ kind: 'section', sectionIdx, figureIdx })
-                    : undefined
-                }
-              />
+              <>
+                {lessonEditing && (
+                  <GrammarLessonEditorModal
+                    lesson={detail.lesson}
+                    onSave={handleSaveLesson}
+                    onClose={() => setLessonEditing(false)}
+                  />
+                )}
+                <LessonView
+                  data={detail.lesson}
+                  isAdmin={isAdmin}
+                  pageImages={detail.pageImages}
+                  onPageClick={handlePageClick}
+                  onStartCrop={isAdmin ? handleStartSectionCrop : undefined}
+                  onPreviewFigure={setLightbox}
+                  onRemoveFigure={
+                    isAdmin
+                      ? (sectionIdx, figureIdx) =>
+                          setPendingDelete({ kind: 'section', sectionIdx, figureIdx })
+                      : undefined
+                  }
+                  onEditTable={
+                    isAdmin
+                      ? (sectionIdx, blockIdx) => setTableEdit({ sectionIdx, blockIdx })
+                      : undefined
+                  }
+                />
+              </>
             ) : tab === 'exercise' ? (
               <>
+                {exerciseEditGroup != null && (
+                  <GrammarExerciseEditorModal
+                    groups={detail.exercises}
+                    initialGroupIndex={exerciseEditGroup}
+                    pageImages={detail.pageImages}
+                    onSave={handleSaveExercises}
+                    onClose={() => setExerciseEditGroup(null)}
+                  />
+                )}
+                <div className={exerciseEditGroup != null ? 'hidden' : 'contents'}>
                 <ExerciseView
                   groups={detail.exercises}
                   isAdmin={isAdmin}
@@ -409,6 +533,7 @@ function GrammarUnitPageInner({
                   onGroupResult={handleGroupResult}
                   onPageClick={handlePageClick}
                   onStartCrop={isAdmin ? handleStartCrop : undefined}
+                  onEditGroup={isAdmin ? setExerciseEditGroup : undefined}
                   onPreviewFigure={setLightbox}
                   onRemoveFigure={
                     isAdmin ? (idx) => setPendingDelete({ kind: 'group', idx }) : undefined
@@ -437,10 +562,19 @@ function GrammarUnitPageInner({
                       ✏️ 补充练习
                     </h2>
                     {(detail.suppEntries ?? []).map((n) => {
-                      const supp = suppUnits.get(n)
+                      const supp = suppOverrides.get(n) ?? suppUnits.get(n)
                       if (!supp || supp.exercises.length === 0) return null
                       return (
                         <div key={n} className="flex flex-col gap-2">
+                          {suppExerciseEdit?.unitNumber === n && (
+                            <GrammarExerciseEditorModal
+                              groups={supp.exercises}
+                              initialGroupIndex={suppExerciseEdit.groupIndex}
+                              pageImages={supp.pageImages}
+                              onSave={handleSaveSupplementaryExercises}
+                              onClose={() => setSuppExerciseEdit(null)}
+                            />
+                          )}
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className="text-text-secondary text-sm font-bold">
                               补充练习 · {supp.title}
@@ -457,9 +591,14 @@ function GrammarUnitPageInner({
                           </div>
                           <ExerciseView
                             groups={supp.exercises}
-                            isAdmin={false}
+                            isAdmin={isAdmin}
                             pageImages={supp.pageImages}
                             onGroupResult={NOOP_GROUP_RESULT}
+                            onEditGroup={
+                              isAdmin
+                                ? (groupIndex) => setSuppExerciseEdit({ unitNumber: n, groupIndex })
+                                : undefined
+                            }
                             onPreviewFigure={setLightbox}
                           />
                         </div>
@@ -510,6 +649,7 @@ function GrammarUnitPageInner({
                     })}
                   </section>
                 )}
+                </div>
               </>
             ) : (
               <div className="flex flex-col gap-4">
@@ -535,6 +675,44 @@ function GrammarUnitPageInner({
               </div>
             )}
           </main>
+
+          <nav
+            aria-label="语法单元切换"
+            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-40 mx-auto grid max-w-3xl grid-cols-2 gap-2 rounded-2xl bg-surface/95 p-2 text-left shadow-xl ring-1 ring-border-light backdrop-blur-md sm:gap-3"
+          >
+            {previousUnit ? (
+              <Link
+                href={`/english/grammar/${book}/${previousUnit.unitNumber}`}
+                className="group min-h-12 rounded-xl bg-surface-dim/60 px-3 py-2 transition-colors hover:bg-app-blue-light sm:px-4"
+              >
+                <span className="block text-xs font-bold text-text-muted">← 上一单元</span>
+                <span className="mt-0.5 block truncate text-sm font-bold text-text-primary group-hover:text-app-blue-dark">
+                  Unit {previousUnit.unitNumber} · {previousUnit.title}
+                </span>
+              </Link>
+            ) : (
+              <span className="min-h-12 rounded-xl bg-surface-dim px-3 py-2 opacity-45 sm:px-4">
+                <span className="block text-xs font-bold text-text-muted">← 上一单元</span>
+                <span className="mt-0.5 block text-sm font-bold text-text-muted">已经是第一个单元</span>
+              </span>
+            )}
+            {nextUnit ? (
+              <Link
+                href={`/english/grammar/${book}/${nextUnit.unitNumber}`}
+                className="group min-h-12 rounded-xl bg-surface-dim/60 px-3 py-2 text-right transition-colors hover:bg-app-blue-light sm:px-4"
+              >
+                <span className="block text-xs font-bold text-text-muted">下一单元 →</span>
+                <span className="mt-0.5 block truncate text-sm font-bold text-text-primary group-hover:text-app-blue-dark">
+                  Unit {nextUnit.unitNumber} · {nextUnit.title}
+                </span>
+              </Link>
+            ) : (
+              <span className="min-h-12 rounded-xl bg-surface-dim px-3 py-2 text-right opacity-45 sm:px-4">
+                <span className="block text-xs font-bold text-text-muted">下一单元 →</span>
+                <span className="mt-0.5 block text-sm font-bold text-text-muted">已经是最后一个单元</span>
+              </span>
+            )}
+          </nav>
         </div>
       </UnitPageShell>
 
@@ -543,6 +721,16 @@ function GrammarUnitPageInner({
         images={detail.pageImages}
         onClose={handleClosePreview}
       />
+
+      {tableEdit &&
+        detail.lesson.sections[tableEdit.sectionIdx]?.blocks[tableEdit.blockIdx]?.type ===
+          'grammar_table' && (
+          <GrammarTableEditorModal
+            table={detail.lesson.sections[tableEdit.sectionIdx].blocks[tableEdit.blockIdx] as GrammarTableBlock}
+            onSave={handleSaveTable}
+            onClose={() => setTableEdit(null)}
+          />
+        )}
 
       {crop && (
         <FigureCropModal

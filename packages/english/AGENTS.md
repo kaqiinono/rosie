@@ -90,6 +90,22 @@ ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english
 **页码标记**：三层——单元级 `book_pages`（DB 列）、Section/练习组级 `bookPage`（渲染 p.N 角标）、
 交叉引用保留原文页码。
 
+**管理员表格编辑**：讲解区所有 `grammar_table` 对管理员显示「编辑表格」，可修改标题/表头/
+单元格、增删行列，并在弹窗中实时预览。显式合并区域存入 block 的 `merges`
+（`row`/`column`/`rowSpan`/`colSpan`，仅正文坐标）；字段存在时关闭旧版基于空白/重复值的
+自动合并推断。保存由 `grammar-table-mutations.ts` 更新 `lesson` jsonb 并同步单元缓存。
+
+**管理员练习编辑**：练习 Tab 对管理员显示「管理练习」，点击后在当前 Tab 原地切换为编辑模式，
+可新增/复制/排序/删除练习组，
+编辑组编号、说明、页码，以及六种题型的题号、题干、答案、选项、关联单元；题目支持增删、
+复制和排序，右侧复用 `ExerciseView` 实时预览学生端效果。保存由
+`grammar-exercise-mutations.ts` 覆盖 `exercises` jsonb 并同步单元缓存。
+
+**管理员讲解编辑**：讲解 Tab 对管理员显示「管理讲解」，编辑器按
+`lesson → sections → blocks → items` 的通用数据层级展示内容，可新增、编辑或删除分区，删除/排序内容块，
+并可单独删除 `example_set` / `examples` 中的例句。所有操作先作用于本地草稿，确认保存后由
+`grammar-lesson-mutations.ts` 整体更新 `lesson` jsonb 并同步单元缓存；不要为特定 Unit 写删除逻辑。
+
 **框架扩展四步流程**（新增内容块/题型时）：
 1. `types.ts` 加 union 成员 + `normalizeBlocks`/`normalizeExercises` 分支（未知 type 自动归一为
    `unsupported`，永不崩溃）；

@@ -93,6 +93,15 @@ export interface GrammarTableBlock {
   title: string
   headers: string[]
   rows: string[][]
+  /** 管理员显式设置的正文合并区域；存在（含空数组）时不再使用旧版自动合并推断。 */
+  merges?: GrammarTableMerge[]
+}
+
+export interface GrammarTableMerge {
+  row: number
+  column: number
+  rowSpan: number
+  colSpan: number
 }
 
 export interface ContractionNoteBlock {
@@ -191,7 +200,7 @@ export interface GrammarExerciseItem {
   type: GrammarExerciseType
   /** 题干；填空处用 6 个下划线 ______ 表示 */
   prompt: string
-  /** 空字符串 = 开放题，展示不判分 */
+  /** 空字符串 = 开放题，展示不判分；单空题允许每行填写一个可接受答案 */
   answer: string
   options?: string[] | null
   /** 学习指导题目右侧标注的相关学习单元（可多个） */
@@ -362,6 +371,19 @@ export function normalizeBlocks(raw: unknown): GrammarBlock[] {
           rows: Array.isArray(rec.rows)
             ? (rec.rows as unknown[]).map((r) => (Array.isArray(r) ? r.map(String) : []))
             : [],
+          merges: Array.isArray(rec.merges)
+            ? rec.merges.flatMap((merge) => {
+                const mr = asRecord(merge)
+                const row = Number(mr?.row)
+                const column = Number(mr?.column)
+                const rowSpan = Number(mr?.rowSpan)
+                const colSpan = Number(mr?.colSpan)
+                return Number.isInteger(row) && Number.isInteger(column) && row >= 0 && column >= 0 &&
+                  Number.isInteger(rowSpan) && Number.isInteger(colSpan) && rowSpan >= 1 && colSpan >= 1
+                  ? [{ row, column, rowSpan, colSpan }]
+                  : []
+              })
+            : undefined,
         })
         break
       case 'contraction_note':
