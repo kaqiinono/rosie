@@ -110,6 +110,34 @@ function UnitCard({ entry, mastery }: { entry: GrammarOverviewEntry; mastery: Gr
   )
 }
 
+/** 加载骨架屏：模拟真实分区 + 卡片网格尺寸，减小内容出现时的跳变 */
+function HomePageSkeleton() {
+  const sections = [4, 3, 4]
+  return (
+    <div className="flex flex-col gap-6">
+      {sections.map((count, i) => (
+        <section key={i}>
+          <div className="bg-surface/70 ring-border-light mb-2.5 h-4 w-36 animate-pulse rounded-full ring-1" />
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: count }).map((_, j) => (
+              <div
+                key={j}
+                className="bg-surface/70 ring-border-light flex items-center gap-3 rounded-xl p-3 ring-1"
+              >
+                <div className="bg-border-light h-9 w-9 shrink-0 animate-pulse rounded-full" />
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <div className="bg-border-light h-3.5 w-3/4 animate-pulse rounded" />
+                  <div className="bg-border-light h-3 w-1/2 animate-pulse rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  )
+}
+
 export default function GrammarHomePage() {
   const { user } = useAuth()
   const { entries, unlockedCount, totalCount, isLoading } = useGrammarOverview(user)
@@ -138,7 +166,9 @@ export default function GrammarHomePage() {
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState<GrammarSearchMode>('normal')
   const [index, setIndex] = useState<Map<string, string>>(new Map())
-  const searchIndex = useGrammarSearchIndex()
+  // load 是 useCallback 产物引用稳定，可安全放入 effect 依赖；
+  // 不可依赖 hook 返回的对象字面量（每次渲染新建，会导致 effect 无限重跑）
+  const { isLoading: indexLoading, started, error, isEmpty, load } = useGrammarSearchIndex()
 
   const trimmed = query.trim()
   const searching = trimmed.length > 0
@@ -147,20 +177,20 @@ export default function GrammarHomePage() {
   useEffect(() => {
     if (!searching || mode !== 'advanced') return
     let cancelled = false
-    void searchIndex.load().then((map) => {
+    void load().then((map) => {
       if (!cancelled) setIndex(new Map(map))
     })
     return () => {
       cancelled = true
     }
-  }, [searching, mode, searchIndex])
+  }, [searching, mode, load])
 
   const hits = useMemo(
     () => (searching ? searchGrammarEntries(entries, trimmed, index, mode) : []),
     [searching, entries, trimmed, index, mode],
   )
 
-  const indexReady = !searchIndex.isLoading && !searchIndex.isEmpty
+  const indexReady = started && !indexLoading && !error && !isEmpty
 
   return (
     <>
@@ -177,7 +207,11 @@ export default function GrammarHomePage() {
             语法闯关
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm">
-            《剑桥初级英语语法》· 已解锁 {unlockedCount}/{totalCount} · 已掌握 {masteredCount}
+            {isLoading && entries.length === 0 ? (
+              <span className="bg-surface/70 ring-border-light inline-block h-3.5 w-52 animate-pulse rounded-full ring-1 align-middle" />
+            ) : (
+              <>《剑桥初级英语语法》· 已解锁 {unlockedCount}/{totalCount} · 已掌握 {masteredCount}</>
+            )}
           </p>
         </header>
 
@@ -191,6 +225,7 @@ export default function GrammarHomePage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={mode === 'normal' ? '搜标题 / 分类，如「进行时」' : '搜讲解内容，如「have been」'}
+              aria-label="语法单元检索关键字"
               className="bg-surface ring-border-light focus:ring-app-blue/50 w-full rounded-full py-2.5 pr-10 pl-10 text-sm font-bold outline-none ring-1 transition-shadow focus:ring-2"
             />
             {query && (
@@ -213,6 +248,7 @@ export default function GrammarHomePage() {
               <button
                 key={m.id}
                 onClick={() => setMode(m.id)}
+                aria-pressed={mode === m.id}
                 className={`rounded-full px-3 py-1 text-xs font-bold transition-all ${
                   mode === m.id
                     ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
@@ -226,7 +262,11 @@ export default function GrammarHomePage() {
         </div>
 
         {searching ? (
-          mode === 'advanced' && searchIndex.isLoading ? (
+          mode === 'advanced' && error ? (
+            <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
+              检索索引加载失败，清空搜索后重新输入即可重试 🔁
+            </div>
+          ) : mode === 'advanced' && (indexLoading || !started) ? (
             <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
               正在加载检索索引…
             </div>
@@ -246,14 +286,7 @@ export default function GrammarHomePage() {
             <GrammarSearchResults hits={hits} truncated={hits.length >= 30} mastery={masteryMap} />
           )
         ) : isLoading && entries.length === 0 ? (
-          <div className="flex flex-col gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-surface/70 ring-border-light h-16 animate-pulse rounded-xl ring-1"
-              />
-            ))}
-          </div>
+          <HomePageSkeleton />
         ) : entries.length === 0 ? (
           <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
             还没有单元内容，先用提取脚本入库第一个单元吧 🌱

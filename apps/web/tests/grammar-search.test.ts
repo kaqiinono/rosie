@@ -3,6 +3,7 @@ import {
   tokenizeQuery,
   searchGrammarEntries,
   buildSnippet,
+  splitSnippetParts,
 } from '../../../packages/english/src/grammar/grammar-search'
 import type { GrammarOverviewEntry } from '../../../packages/english/src/grammar/hooks/useGrammarOverview'
 
@@ -120,5 +121,36 @@ describe('buildSnippet', () => {
 
   it('returns null when no token matches', () => {
     expect(buildSnippet('nothing here', ['target'], 10)).toBeNull()
+  })
+})
+
+describe('splitSnippetParts', () => {
+  it('splits non-overlapping ranges into plain and hit parts', () => {
+    const parts = splitSnippetParts('foo bar baz', [[4, 7]])
+    expect(parts).toEqual([
+      { text: 'foo ', hit: false },
+      { text: 'bar', hit: true },
+      { text: ' baz', hit: false },
+    ])
+  })
+
+  it('truncates overlapping ranges without duplicating characters', () => {
+    // 'is'[4,6) 与 'reading'[5,12) 重叠，拼接后必须等于原文且命中段不重复
+    const parts = splitSnippetParts('She is reading.', [[4, 6], [5, 12]])
+    expect(parts.map((p) => p.text).join('')).toBe('She is reading.')
+    expect(parts).toEqual([
+      { text: 'She ', hit: false },
+      { text: 'is', hit: true },
+      { text: ' readi', hit: true },
+      { text: 'ng.', hit: false },
+    ])
+  })
+
+  it('ignores ranges fully covered by a previous range', () => {
+    const parts = splitSnippetParts('abcdefgh', [[0, 6], [2, 4]])
+    expect(parts).toEqual([
+      { text: 'abcdef', hit: true },
+      { text: 'gh', hit: false },
+    ])
   })
 })

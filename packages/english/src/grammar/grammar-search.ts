@@ -21,6 +21,28 @@ export interface GrammarSearchHit {
 
 export const MAX_RESULTS = 30
 
+export interface GrammarSnippetPart {
+  text: string
+  hit: boolean
+}
+
+/**
+ * 把摘要文本按命中区间切分为渲染片段（游标法）。
+ * 重叠区间（多 token 命中同一区域）以 cursor 截断，不重复输出已覆盖的字符。
+ */
+export function splitSnippetParts(text: string, ranges: [number, number][]): GrammarSnippetPart[] {
+  const sorted = [...ranges].sort((a, b) => a[0] - b[0])
+  const parts: GrammarSnippetPart[] = []
+  let cursor = 0
+  for (const [s, e] of sorted) {
+    if (s > cursor) parts.push({ text: text.slice(cursor, s), hit: false })
+    if (e > cursor) parts.push({ text: text.slice(Math.max(s, cursor), e), hit: true })
+    cursor = Math.max(cursor, e)
+  }
+  if (cursor < text.length) parts.push({ text: text.slice(cursor), hit: false })
+  return parts
+}
+
 export function tokenizeQuery(query: string): string[] {
   return query
     .trim()

@@ -3,20 +3,12 @@
 import Link from 'next/link'
 import { BACKMATTER_ICONS } from '../grammar-toc'
 import type { GrammarMasteryMap } from '../types'
-import type { GrammarSearchHit } from '../grammar-search'
+import { splitSnippetParts, type GrammarSearchHit } from '../grammar-search'
 import { masteryBadge } from './GrammarHomePage'
 
-/** 摘要高亮：按 ranges 切分片段文本，命中区间套 emerald 高亮 */
+/** 摘要高亮：按 ranges 切分片段文本（重叠区间由 splitSnippetParts 截断），命中区间套 emerald 高亮 */
 function SnippetHighlight({ text, ranges }: { text: string; ranges: [number, number][] }) {
-  const sorted = [...ranges].sort((a, b) => a[0] - b[0])
-  const parts: { text: string; hit: boolean }[] = []
-  let cursor = 0
-  for (const [s, e] of sorted) {
-    if (s > cursor) parts.push({ text: text.slice(cursor, s), hit: false })
-    if (e > s) parts.push({ text: text.slice(s, e), hit: true })
-    cursor = Math.max(cursor, e)
-  }
-  if (cursor < text.length) parts.push({ text: text.slice(cursor), hit: false })
+  const parts = splitSnippetParts(text, ranges)
   return (
     <p className="text-text-muted mt-1.5 line-clamp-2 text-xs leading-relaxed">
       {parts.map((p, i) =>
