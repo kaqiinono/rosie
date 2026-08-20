@@ -17,9 +17,9 @@ audio, flipbook).
   **their own audio** stored in `reading_passage_media` (hooks `useReadingPassageMedia` /
   `useReadingPassageAudio`). Reading playback was **decoupled from the audio module**: it builds its
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
-- **Grammar (`grammar/`)** — 剑桥初级英语语法 116 单元：内容存 Supabase jsonb，渲染层是
-  type → 组件注册表（未知块型降级为 unsupported）；讲解/练习双 tab + mastery 进度。
-  详见下方 Grammar 小节。
+- **Grammar (`grammar/`)** — 剑桥英语语法系列（essential/intermediate/advanced，按 book 维度分书；
+  目前仅 essential 入库）：内容存 Supabase jsonb，渲染层是 type → 组件注册表（未知块型降级为
+  unsupported）；讲解/练习/原文三 tab + mastery 进度。详见下方 Grammar 小节。
 - **`WordsContext`** — aggregates vocab (`useWordData`), mastery (`useWordMastery`), and filter
   state; all English routes consume it via `useWordsContext()`.
 - **`utils/`** — `english-helpers` (`wordKey`/`shuffle`/`hilite`/`parseWordRows`; re-exports
@@ -55,17 +55,23 @@ audio, flipbook).
 
 ## Grammar (剑桥英语语法 — 多书架构)
 
-**布局**：`grammar/types.ts`（类型 + normalize + `GRAMMAR_BOOKS` 注册表）、`grammar/grammar-index.ts`
-（全量静态索引，Phase 2 由 `--toc` 生成；为空时首页降级为仅展示 DB 已入库单元）、
-`grammar/hooks/`（overview / unit / mastery）、`grammar/components/`
-（GrammarHomePage / GrammarUnitPage / LessonView / ExerciseView）。
-路由壳在 `apps/web/src/app/english/grammar/**`。
+**布局**：`grammar/types.ts`（类型 + normalize + `GRAMMAR_BOOKS` 注册表 + `isGrammarBookId` 守卫）、
+`grammar/grammar-index.ts`（全量静态索引，Phase 2 由 `--toc` 生成；为空时首页降级为仅展示 DB
+已入库单元）、`grammar/hooks/`（overview / unit / mastery，均支持 book 参数）、
+`grammar/components/`（GrammarBooksPage / GrammarHomePage / GrammarUnitPage / LessonView /
+ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english/grammar` 书籍列表页
+（含全局检索）→ `/english/grammar/{book}` 书内单元列表 → `/english/grammar/{book}/{unit}` 单元页；
+旧 URL `/english/grammar/<N>` 由 `[book]` 段重定向到 essential。
 
 **多书维度**：`book` 列（`essential` / `intermediate` / `advanced`）已在 DB 和全链路中落地。
 - `grammar_units`：复合 PK `(book, unit_number)`，每本书 unit_number 从 1 开始。
 - `grammar_mastery`：复合 PK `(user_id, book, unit_number)`。
 - `types.ts`：`GrammarBookId` union + `GRAMMAR_BOOKS` 常量注册表（新书只需追加条目，无需 migration）。
 - hooks / CLI 均接受 book 参数，默认 `essential`。
+- TOC 章节与 BACKMATTER 均按书注册（`GRAMMAR_TOC_SECTIONS_BY_BOOK` / CLI `BACKMATTER_BY_BOOK`），
+  目前仅 essential 有数据；无数据的书降级为每 10 单元一组的通用分区。
+- 全局检索在首页（书籍列表页）跨书执行，结果按书分区；mastery 全书合并拉取
+  （map key `${book}:${unit}` 天然隔离）。
 - DDL 在 `0024_add_grammar_module.sql`（建表）+ `0025_add_grammar_book_dimension.sql`（加 book 列）。
 
 **数据流**：内容存 `grammar_units`（lesson/exercises jsonb，RLS 只读，写入走 service-role），
@@ -76,7 +82,9 @@ audio, flipbook).
 `--unit N` / `--range A-B` / `--book <id>` 提取（pdftoppm → qwen-vl-max → 组装 → upsert）；
 `--no-upload` 只落地 `output/grammar-units/<book>/unitNNN/`；`--upload-only` 直接读 unit.json
 入库；`--force` 忽略缓存。`on_conflict=book,unit_number` 幂等覆盖。
-页码映射优先 `scripts/grammar-page-map.json`，缺失时用临时公式 `[19+2N, 20+2N]`。
+页码映射按书分文件（essential → `scripts/grammar-page-map.json`，其他书 →
+`grammar-page-map-{book}.json`）；essential 缺失时用临时公式 `[19+2N, 20+2N]` 兜底，
+非 essential 缺 page-map 直接报错（临时公式禁止对新书兜底）。
 旧 Tesseract 脚本 `extract-grammar-pdf.mjs` 保留为 `grammar:render-pdf`。
 
 **页码标记**：三层——单元级 `book_pages`（DB 列）、Section/练习组级 `bookPage`（渲染 p.N 角标）、

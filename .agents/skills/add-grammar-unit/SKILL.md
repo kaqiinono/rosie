@@ -13,6 +13,8 @@ trigger: /add-grammar-unit
 架构速记：内容是带 `type` 判别的 jsonb 数据块，渲染层是 type → 组件注册表（未知块型降级
 `unsupported` 不崩溃）。数据在 `grammar_units`（复合 PK `(book, unit_number)`，RLS 只读，
 写入走 service-role），进度在 `grammar_mastery`（复合 PK `(user_id, book, unit_number)`）。
+前端信息架构：`/english/grammar`（书籍列表 + 全局检索，结果按书分区）→
+`/english/grammar/{book}`（书内单元列表）→ `/english/grammar/{book}/{unit}`（单元页）。
 原文图片存 Supabase Storage `grammar-pages` bucket（路径 `{book}/unit{NNN}/page-{NNNN}.png`），
 `grammar_units.page_images` jsonb 列存储 `[{page, path, type, crop?}]`（`crop` 为内容区域
 归一化 0-1000 坐标 `{x1,y1,x2,y2}`，新提取的页才有，旧数据无此字段）。前端三 tab：讲解/练习/原文，
@@ -21,8 +23,9 @@ trigger: /add-grammar-unit
 （guide-p272~283）；锚点列 `units`/`supp_entries`/`study_guide_units`（migration 0028）记录
 书尾内容与正文单元的关联；`search_text` 列（migration 0029）是讲解块展平的检索文本
 （口径与 ai-sync-db 的 grammarBlockLines 一致，不含练习题/答案），供首页 `/english/grammar`
-高级检索使用：前端懒加载全量 search_text 后纯客户端匹配（普通模式只搜标题/分类元数据，
-高级模式搜全文并展示命中摘要高亮；仅未锁定单元参与，结果上限 30 条）。
+（书籍列表页）全局检索使用：前端懒加载全量 search_text 后纯客户端匹配（普通模式只搜
+标题/分类元数据，高级模式搜全文并展示命中摘要高亮；检索跨所有书执行，结果按书分区，
+仅未锁定单元参与，结果上限 30 条）。
 
 ## 前置条件
 
@@ -48,8 +51,14 @@ trigger: /add-grammar-unit
 
 **Step 1: 核对页码映射**
 
-查 `scripts/grammar-page-map.json` 是否有该单元条目（格式 `{ "<unit>": { "pdf": [..], "book": [..] } }`）。
-**必须确保 page-map 中有该单元的条目**（pdf 页码 + 书内印刷页码），否则 CLI 会用临时公式导致页码错误。
+page-map 按书分文件：essential → `scripts/grammar-page-map.json`；其他书 →
+`scripts/grammar-page-map-{book}.json`。查对应文件是否有该单元条目（格式
+`{ "<unit>": { "pdf": [..], "book": [..] } }`）。
+**必须确保 page-map 中有该单元的条目**（pdf 页码 + 书内印刷页码）。essential 缺失时
+CLI 会用临时公式兜底并打 WARN；**非 essential 缺 page-map 直接报错**（临时公式是
+essential 专用规律，禁止对新书兜底）。新书 page-map 用
+`node scripts/grammar-page-map-gen.mjs --book <id> [--offset N] --range A-B` 生成
+（未传 --offset 时跳过公式交叉验证，需人工核对）。
 新增单元前，用 `pdftoppm` 渲染对应 PDF 页并肉眼确认角落印刷页码，补进 page-map。
 已知规律（Essential Grammar in Use）：`book_page = pdf_page - 7`（8 个采样点验证恒定），
 但仍需逐单元写入 page-map 以确保校验机制生效。
@@ -112,9 +121,10 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 
 **Step 5: 页面验证**
 
-`/english/grammar/<N>`：讲解/练习/原文三 tab 渲染、`p.N` 页码角标可点击弹出原文预览、
-判题（填空答对变绿）、全部答对后 `grammar_mastery` 写入且首页出 ⭐已掌握。
-再回 `/english/grammar` 首页用该单元标题关键字切到**高级检索**验证能命中且摘要高亮正常。
+`/english/grammar/<book>/<N>`：讲解/练习/原文三 tab 渲染、`p.N` 页码角标可点击弹出原文预览、
+判题（填空答对变绿）、全部答对后 `grammar_mastery` 写入且书内列表出 ⭐已掌握。
+旧 URL `/english/grammar/<N>` 自动重定向到 essential。再回 `/english/grammar` 首页用该单元
+标题关键字切到**高级检索**验证能命中且摘要高亮正常（结果按书分区展示）。
 登录态必须（无 guest 模式）。
 
 **Step 6: 后置同步**
@@ -156,9 +166,14 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 
 ## 新增一本书
 
-`book` 维度已入库（migration 0025），新增书只需：
-1. `types.ts` 的 `GrammarBookId` union + `GRAMMAR_BOOKS` 注册表追加条目（无需 migration）；
-2. CLI `BOOKS` 对象追加 PDF 路径与 `maxUnits`；
-3. 准备 PDF 文件放入 `docs/english/`，创建对应的 page-map 文件；
-4. 前端路由考虑 book 维度（当前硬编码 essential，后续改为 `/english/grammar/{book}/{unit}`）。
+`book` 维度已全链路就绪（migration 0025 建列；`GRAMMAR_BOOKS` 注册表三本书；CLI `BOOKS`
+按书配 PDF 路径；前端 `/english/grammar/{book}` 路由、书籍列表页、TOC 降级分区均已就绪）。
+新增书剩余步骤：
+1. PDF 放入 `docs/english/`（文件名与 CLI `BOOKS` 的 pdfPath 对齐）；
+2. `node scripts/grammar-page-map-gen.mjs --book <id> [--offset N] --range ...` 生成
+   `scripts/grammar-page-map-<id>.json`（非 essential 缺此文件时提取直接报错）；
+3. （可选）在 `grammar-toc.ts` 的 `GRAMMAR_TOC_SECTIONS_BY_BOOK` 补原书目录；无数据时
+   前端自动降级为每 10 单元一组的通用分区；
+4. （可选）在 CLI `BACKMATTER_BY_BOOK` 补书尾注册表（附录/补充练习/学习指导）；
+5. 批量 `/add-grammar-unit --book <id>`（或 `--range`）提取入库。
 动手前先写设计文档过 review（阶段实施双关卡）。
