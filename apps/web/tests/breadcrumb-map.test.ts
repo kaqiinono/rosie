@@ -15,11 +15,12 @@ describe('buildBreadcrumb', () => {
     ])
   })
 
-  it('动态段回填标签与上级 href：/english/grammar/5', () => {
-    expect(buildBreadcrumb('/english/grammar/5')).toEqual([
+  it('书维度单元页：/english/grammar/essential/5', () => {
+    expect(buildBreadcrumb('/english/grammar/essential/5')).toEqual([
       { label: '英语', href: '/english' },
       { label: '语法', href: '/english/grammar' },
-      { label: 'Unit 5', href: '/english/grammar/5' },
+      { label: '剑桥初级英语语法', href: '/english/grammar/essential' },
+      { label: 'Unit 5', href: '/english/grammar/essential/5' },
     ])
   })
 
@@ -32,11 +33,20 @@ describe('buildBreadcrumb', () => {
     ])
   })
 
-  it('静态路由优先于动态段匹配：/english/grammar/study-guide', () => {
-    expect(buildBreadcrumb('/english/grammar/study-guide')).toEqual([
+  it('书维度学习指导（静态段优先）：/english/grammar/essential/study-guide', () => {
+    expect(buildBreadcrumb('/english/grammar/essential/study-guide')).toEqual([
       { label: '英语', href: '/english' },
       { label: '语法', href: '/english/grammar' },
-      { label: '学习指导', href: '/english/grammar/study-guide' },
+      { label: '剑桥初级英语语法', href: '/english/grammar/essential' },
+      { label: '学习指导', href: '/english/grammar/essential/study-guide' },
+    ])
+  })
+
+  it('labelMap 未命中时用原始段值：/english/grammar/unknown-book', () => {
+    expect(buildBreadcrumb('/english/grammar/unknown-book')).toEqual([
+      { label: '英语', href: '/english' },
+      { label: '语法', href: '/english/grammar' },
+      { label: 'unknown-book', href: '/english/grammar/unknown-book' },
     ])
   })
 

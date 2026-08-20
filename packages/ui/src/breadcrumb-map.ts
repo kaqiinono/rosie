@@ -10,13 +10,26 @@ export interface BreadcrumbRoute {
   pattern: string[]
   /** 页面标签，可用 {name} 引用动态段值，如 'Unit {unitId}' */
   label: string
+  /** 动态段取值映射（如 book id → 中文书名）；未命中时用原始段值 */
+  labelMap?: Record<string, Record<string, string>>
 }
 
 export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['english'], label: '英语' },
   { pattern: ['english', 'grammar'], label: '语法' },
-  { pattern: ['english', 'grammar', 'study-guide'], label: '学习指导' },
-  { pattern: ['english', 'grammar', '[unitId]'], label: 'Unit {unitId}' },
+  {
+    pattern: ['english', 'grammar', '[book]'],
+    label: '{book}',
+    labelMap: {
+      book: {
+        essential: '剑桥初级英语语法',
+        intermediate: '剑桥中级英语语法',
+        advanced: '剑桥高级英语语法',
+      },
+    },
+  },
+  { pattern: ['english', 'grammar', '[book]', 'study-guide'], label: '学习指导' },
+  { pattern: ['english', 'grammar', '[book]', '[unitId]'], label: 'Unit {unitId}' },
   { pattern: ['math'], label: '数学' },
   { pattern: ['math', 'catalog'], label: '目录' },
   { pattern: ['math', 'favorites'], label: '收藏' },
@@ -59,9 +72,11 @@ function findRoute(segments: string[]): BreadcrumbRoute | undefined {
 function fillLabel(route: BreadcrumbRoute, segments: string[]): string {
   let label = route.label
   route.pattern.forEach((part, i) => {
-    if (isDynamic(part)) {
-      label = label.replaceAll(`{${part.slice(1, -1)}}`, segments[i])
-    }
+    if (!isDynamic(part)) return
+    const name = part.slice(1, -1)
+    const raw = segments[i]
+    const value = route.labelMap?.[name]?.[raw] ?? raw
+    label = label.replaceAll(`{${name}}`, value)
   })
   return label
 }
