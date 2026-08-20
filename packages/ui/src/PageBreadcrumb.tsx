@@ -1,8 +1,8 @@
 'use client'
 
 import { Fragment } from 'react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import NavigationLink from './NavigationLink'
 import { buildBreadcrumb, type BreadcrumbItem } from './breadcrumb-map'
 
 type PageBreadcrumbProps = {
@@ -13,7 +13,7 @@ type PageBreadcrumbProps = {
 /** 单级回退（上级即首页）或未知路由时的「返回首页」按钮，视觉沿用原 BackLink */
 function BackHomeLink({ variant }: { variant: 'fixed' | 'inline' }) {
   return (
-    <NavigationLink
+    <Link
       href="/"
       className={`flex items-center gap-1.5 rounded-xl border border-black/6 bg-white/80 px-3.5 py-2 text-[13px] font-bold text-slate-500 shadow-sm backdrop-blur-xl transition-all hover:-translate-x-0.5 hover:border-black/12 hover:text-slate-800 ${
         variant === 'fixed' ? 'fixed top-4 left-14 z-10' : ''
@@ -23,7 +23,7 @@ function BackHomeLink({ variant }: { variant: 'fixed' | 'inline' }) {
         <path d="m15 18-6-6 6-6" />
       </svg>
       返回首页
-    </NavigationLink>
+    </Link>
   )
 }
 
@@ -49,12 +49,12 @@ export default function PageBreadcrumb({ variant = 'fixed' }: PageBreadcrumbProp
     >
       {links.map((item) => (
         <Fragment key={item.href}>
-          <NavigationLink
+          <Link
             href={item.href}
             className="cursor-pointer whitespace-nowrap text-slate-500 transition-colors hover:text-slate-800"
           >
             {item.label}
-          </NavigationLink>
+          </Link>
           <span className="px-1.5 text-slate-300" aria-hidden>
             ›
           </span>
