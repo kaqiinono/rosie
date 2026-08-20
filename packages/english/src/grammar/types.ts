@@ -32,6 +32,11 @@ export const GRAMMAR_BOOKS: Record<GrammarBookId, GrammarBookMeta> = {
   advanced: { id: 'advanced', label: 'Advanced Grammar in Use', labelZh: '剑桥高级英语语法', maxUnits: 120 },
 }
 
+/** URL 参数校验用：任意字符串 → GrammarBookId 判定 */
+export function isGrammarBookId(value: string): value is GrammarBookId {
+  return value in GRAMMAR_BOOKS
+}
+
 // ── Storage ────────────────────────────────────────────────────────────────────
 
 /** Supabase Storage bucket for grammar page images */
