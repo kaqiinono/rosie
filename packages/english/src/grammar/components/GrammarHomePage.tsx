@@ -1,17 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useGrammarOverview, type GrammarOverviewEntry } from '../hooks/useGrammarOverview'
 import { useGrammarMastery } from '../hooks/useGrammarMastery'
+import { useGrammarSearchIndex } from '../hooks/useGrammarSearchIndex'
 import { GRAMMAR_TOC_SECTIONS, BACKMATTER_ICONS } from '../grammar-toc'
+import { searchGrammarEntries, type GrammarSearchMode } from '../grammar-search'
 import type { GrammarMasteryMap } from '../types'
+import GrammarSearchResults from './GrammarSearchResults'
 
 type MasteryBadgeKind = 'new' | 'in-progress' | 'mastered'
 
-function masteryBadge(
+export function masteryBadge(
   entry: GrammarOverviewEntry,
   mastery: GrammarMasteryMap,
 ): { label: string; className: string } | null {
@@ -132,6 +135,33 @@ export default function GrammarHomePage() {
     }).filter((g) => g.items.length > 0)
   }, [entries])
 
+  const [query, setQuery] = useState('')
+  const [mode, setMode] = useState<GrammarSearchMode>('normal')
+  const [index, setIndex] = useState<Map<string, string>>(new Map())
+  const searchIndex = useGrammarSearchIndex()
+
+  const trimmed = query.trim()
+  const searching = trimmed.length > 0
+
+  // 高级模式且查询非空时懒加载索引（模块级缓存兜底重复挂载，只真正拉取一次）
+  useEffect(() => {
+    if (!searching || mode !== 'advanced') return
+    let cancelled = false
+    void searchIndex.load().then((map) => {
+      if (!cancelled) setIndex(new Map(map))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [searching, mode, searchIndex])
+
+  const hits = useMemo(
+    () => (searching ? searchGrammarEntries(entries, trimmed, index, mode) : []),
+    [searching, entries, trimmed, index, mode],
+  )
+
+  const indexReady = !searchIndex.isLoading && !searchIndex.isEmpty
+
   return (
     <>
       <OrbBackground variant="home" />
@@ -151,7 +181,71 @@ export default function GrammarHomePage() {
           </p>
         </header>
 
-        {isLoading && entries.length === 0 ? (
+        {/* 搜索栏：普通/高级两种模式；查询非空时下方切换为扁平结果列表 */}
+        <div className="mx-auto flex w-full max-w-xl flex-col gap-2">
+          <div className="relative">
+            <span className="text-text-muted pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm">
+              🔍
+            </span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={mode === 'normal' ? '搜标题 / 分类，如「进行时」' : '搜讲解内容，如「have been」'}
+              className="bg-surface ring-border-light focus:ring-app-blue/50 w-full rounded-full py-2.5 pr-10 pl-10 text-sm font-bold outline-none ring-1 transition-shadow focus:ring-2"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                aria-label="清空搜索"
+                className="text-text-muted hover:text-text-primary absolute top-1/2 right-3 -translate-y-1/2 text-base font-black"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          <div className="flex justify-center gap-1.5">
+            {(
+              [
+                { id: 'normal', label: '🔍 普通检索' },
+                { id: 'advanced', label: '🧠 高级检索' },
+              ] as { id: GrammarSearchMode; label: string }[]
+            ).map((m) => (
+              <button
+                key={m.id}
+                onClick={() => setMode(m.id)}
+                className={`rounded-full px-3 py-1 text-xs font-bold transition-all ${
+                  mode === m.id
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
+                    : 'bg-surface-dim text-text-secondary'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {searching ? (
+          mode === 'advanced' && searchIndex.isLoading ? (
+            <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
+              正在加载检索索引…
+            </div>
+          ) : mode === 'advanced' && !indexReady ? (
+            <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
+              高级检索索引尚未生成，请先运行回填脚本 ✨
+            </div>
+          ) : hits.length === 0 ? (
+            <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
+              没有找到相关单元，换个关键字试试，或
+              <Link href="/ai" className="mx-1 font-bold text-sky-600 underline">
+                问 AI 助手
+              </Link>
+              🤖
+            </div>
+          ) : (
+            <GrammarSearchResults hits={hits} truncated={hits.length >= 30} mastery={masteryMap} />
+          )
+        ) : isLoading && entries.length === 0 ? (
           <div className="flex flex-col gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
