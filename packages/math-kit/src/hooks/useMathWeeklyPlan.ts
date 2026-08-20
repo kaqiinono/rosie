@@ -8,6 +8,7 @@ import {
   addPlanDays,
   collectOverduePlanProblems,
   ensureMathPlanAssignmentIds,
+  normalizeMathPlanProgress,
   isPlanProblemDone,
   planEndDate,
 } from '@rosie/math-kit/utils/math-helpers'
@@ -53,7 +54,8 @@ async function loadAllPlansFromCloud(userId: string): Promise<MathWeeklyPlan[]> 
     if (!data) return []
     return data.map((row) => {
       const days = ensureMathPlanAssignmentIds(row.plan_data as MathWeeklyPlan['days'])
-      const { progress, meta } = stripPlanMeta((row.progress_data as ProgressPayload) ?? {})
+      const { progress: rawProgress, meta } = stripPlanMeta((row.progress_data as ProgressPayload) ?? {})
+      const progress = normalizeMathPlanProgress(days, rawProgress)
       return {
         weekStart: row.week_start,
         planEnd: meta?.planEnd,

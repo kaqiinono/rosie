@@ -66,24 +66,39 @@ export default function TodayPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
             <Link
               href="/today/calendar"
-              className="text-[12px] font-bold text-sky-700 no-underline transition-opacity hover:opacity-70"
+              className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-bold no-underline transition-all hover:-translate-y-0.5"
+              style={{
+                background: 'rgba(14,165,233,.08)',
+                border: '1px solid rgba(14,165,233,.22)',
+                color: '#0369a1',
+              }}
             >
-              计划日历 →
+              🗓️ 日历
             </Link>
             <Link
               href="/today/records"
-              className="text-[12px] font-bold text-amber-700 no-underline transition-opacity hover:opacity-70"
+              className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-bold no-underline transition-all hover:-translate-y-0.5"
+              style={{
+                background: 'rgba(245,158,11,.08)',
+                border: '1px solid rgba(245,158,11,.22)',
+                color: '#b45309',
+              }}
             >
-              练习记录 →
+              📈 记录
             </Link>
             <Link
               href="/today/report"
-              className="text-[12px] font-bold text-emerald-700 no-underline transition-opacity hover:opacity-70"
+              className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-bold no-underline transition-all hover:-translate-y-0.5"
+              style={{
+                background: 'rgba(16,185,129,.08)',
+                border: '1px solid rgba(16,185,129,.22)',
+                color: '#047857',
+              }}
             >
-              练习报告 →
+              📊 报告
             </Link>
           </div>
         </div>

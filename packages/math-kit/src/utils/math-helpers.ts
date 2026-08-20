@@ -10,7 +10,7 @@ import type {
   PerLessonRotationState,
   MathWeeklyLessonReviewState,
 } from '@rosie/core'
-import { ensureStageInit, isGraduated } from '@rosie/core'
+import { ensureStageInit, isGraduated, todayStr } from '@rosie/core'
 
 export function problemKey(lessonId: string, problemId: string): string {
   return `${lessonId}::${problemId}`
@@ -26,7 +26,13 @@ export function isPlanProblemDone(
   doneKeys: ReadonlySet<string> | string[],
 ): boolean {
   const done = doneKeys instanceof Set ? doneKeys : new Set(doneKeys)
-  return done.has(planAssignmentId(problem, date)) || done.has(problem.key)
+  // Assignment-aware plans must never fall back to the old problem-only key:
+  // the same problem can be scheduled on several dates. Legacy plans without
+  // assignmentId keep the old lookup until they are normalized on load.
+  return (
+    done.has(planAssignmentId(problem, date)) ||
+    (problem.assignmentId == null && done.has(problem.key))
+  )
 }
 
 export function ensureMathPlanAssignmentIds(days: MathWeeklyPlanDay[]): MathWeeklyPlanDay[] {
@@ -40,6 +46,30 @@ export function ensureMathPlanAssignmentIds(days: MathWeeklyPlanDay[]): MathWeek
       ...problem,
       assignmentId: planAssignmentId(problem, day.date),
     })),
+  }))
+}
+
+/**
+ * Upgrade date-scoped legacy problem keys to assignment ids. Old keys on a
+ * future date are not trustworthy (they were vulnerable to cross-day matches),
+ * while exact assignment ids remain valid for intentional ahead-of-plan work.
+ */
+export function normalizeMathPlanProgress(
+  days: MathWeeklyPlanDay[],
+  progress: MathWeeklyPlan['progress'],
+  today = todayStr(),
+): MathWeeklyPlan['progress'] {
+  return Object.fromEntries(Object.entries(progress).map(([date, dayProgress]) => {
+    const problems = days.find((day) => day.date === date)?.problems ?? []
+    const legacyAssignments = new Map(
+      problems.map((problem) => [problem.key, planAssignmentId(problem, date)]),
+    )
+    const doneKeys = dayProgress.doneKeys.flatMap((key) => {
+      const assignmentId = legacyAssignments.get(key)
+      if (!assignmentId) return [key]
+      return date <= today ? [assignmentId] : []
+    })
+    return [date, { ...dayProgress, doneKeys: [...new Set(doneKeys)] }]
   }))
 }
 

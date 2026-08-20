@@ -24,6 +24,7 @@ import { findPassage, parseFocusLessonKey } from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
 import AdaptivePlanTodayCard from './AdaptivePlanTodayCard'
 import { buildTodayPlanCards, TodayPlanOverviewCards } from './TodayPlanOverview'
+import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
 
 function wordKeyStr(e: WordEntry): string {
   return `${e.unit}::${e.lesson}::${e.word}`
@@ -214,21 +215,27 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
           </div>
         )}
       </div>
-      <span className="text-[14px] font-extrabold" style={{ color: done ? '#16a34a' : palette.text }}>
-        →
-      </span>
     </Link>
   )
 }
 
-export default function TodayDashboard({ date }: { date?: string }) {
+export default function TodayDashboard({
+  date,
+  containerClassName,
+  showAllCards = false,
+}: {
+  date?: string
+  /** Override the outer column (e.g. match the plan-calendar page's 640px column). */
+  containerClassName?: string
+  /** Always render all 4 subject cards even when a subject has no plan. */
+  showAllCards?: boolean
+}) {
   const { user } = useAuth()
   const [resetToast, setResetToast] = useState<string | null>(null)
   const { weeklyPlan: englishPlan, isLoading: englishLoading } = useWeeklyPlan(user)
   const {
     activePlan: activeAdaptive,
     summary: adaptiveToday,
-    isLoading: adaptiveLoading,
   } = useAdaptiveTodayProgress(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
@@ -237,7 +244,12 @@ export default function TodayDashboard({ date }: { date?: string }) {
   const today = date ?? todayStr()
   const isActualToday = today === todayStr()
   const calcDaily = useCalcDaily(user, today)
-  const overviewAdaptive = isActualToday ? activeAdaptive : null
+  const { history: adaptiveHistory, isLoading: adaptiveHistoryLoading } = useAdaptiveDailyHistory(
+    user,
+    !isActualToday && activeAdaptive ? activeAdaptive.id : null,
+  )
+  const adaptiveHistoryRow = adaptiveHistory?.get(today) ?? null
+  const overviewAdaptive = isActualToday || adaptiveHistoryRow ? activeAdaptive : null
   const chinese = useChineseRoadmapProgress(user)
   const {
     activePlan: chineseActivePlan,
@@ -396,14 +408,17 @@ export default function TodayDashboard({ date }: { date?: string }) {
   const isLoading =
     englishLoading ||
     mathLoading ||
+    (!isActualToday && !!activeAdaptive && adaptiveHistoryLoading) ||
     chinesePlanLoading ||
-    (chinese.isCharDataLoading && !chinese.isCharDataReady) ||
-    (!englishPlan && adaptiveLoading)
+    (chinese.isCharDataLoading && !chinese.isCharDataReady)
 
   if (isLoading) return <LoadingState />
 
   const hasMath = mathPlan && mathProblems.length > 0
   const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!overviewAdaptive
+  // 英语单词预习区只跟随周计划：无周计划（或今日无词）时整块隐藏，
+  // 自适应计划由下方 AdaptivePlanTodayCard 独立展示（无计划时自身返回 null）。
+  const hasWeeklyEnglish = !!(englishPlan && newWordKeys.length > 0)
   const hasChinese = !!chineseActivePlan || chinesePlanCleared || chinese.hasChinese
   const calcDoneCount = calcDaily.todayDone
   const calcTargetCount = calcDaily.todayTarget
@@ -433,22 +448,32 @@ export default function TodayDashboard({ date }: { date?: string }) {
     },
     english: {
       doneCount: overviewAdaptive
-        ? (adaptiveToday?.done ?? 0)
+        ? isActualToday
+          ? (adaptiveToday?.done ?? 0)
+          : (adaptiveHistoryRow?.newDone ?? 0) + (adaptiveHistoryRow?.reviewDone ?? 0)
         : englishDone
           ? newWordKeys.length
           : 0,
       total: overviewAdaptive
-        ? (adaptiveToday?.total ?? overviewAdaptive.newWordsPerDay)
+        ? isActualToday
+          ? (adaptiveToday?.total ?? overviewAdaptive.newWordsPerDay)
+          : (adaptiveHistoryRow?.newGoal ?? 0) + (adaptiveHistoryRow?.reviewGoal ?? 0)
         : newWordKeys.length,
       lastScore: overviewAdaptive ? undefined : englishProgress?.lastScore,
       allDone: overviewAdaptive
-        ? (adaptiveToday?.allDone ?? false)
+        ? isActualToday
+          ? (adaptiveToday?.allDone ?? false)
+          : (adaptiveHistoryRow?.allDone ?? false)
         : englishDone,
       href: englishHref,
       subtitle: overviewAdaptive
-        ? adaptiveToday
-          ? `自适应 · ${adaptiveToday.subtitle}`
-          : `自适应 · 每日约 ${overviewAdaptive.newWordsPerDay} 词`
+        ? isActualToday
+          ? adaptiveToday
+            ? `自适应 · ${adaptiveToday.subtitle}`
+            : `自适应 · 每日约 ${overviewAdaptive.newWordsPerDay} 词`
+          : adaptiveHistoryRow
+            ? `自适应 · 新学 ${adaptiveHistoryRow.newDone}/${adaptiveHistoryRow.newGoal} · 复习 ${adaptiveHistoryRow.reviewDone}/${adaptiveHistoryRow.reviewGoal}`
+            : undefined
         : undefined,
     },
     math: {
@@ -477,16 +502,30 @@ export default function TodayDashboard({ date }: { date?: string }) {
   })
 
   // Hide subject cards when no plan/data — same filter as useTodayPlanOverview.
-  const overviewVisibility: Record<string, boolean> = {
+  // The plan-calendar page opts out (showAllCards) so the 4-column grid stays
+  // stable across dates; subjects without a plan get a muted subtitle instead
+  // of a misleading "0 个词待练".
+  const NO_PLAN_SUBTITLE: Record<string, string> = {
+    english: '暂无英语计划',
+    math: '暂无数学计划',
+    chinese: '暂无语文计划',
+  }
+  const subjectHasPlan: Record<string, boolean> = {
     calc: true,
     english: hasEnglish,
     math: !!hasMath,
     chinese: hasChinese,
   }
-  const overviewCards = allOverviewCards.filter((c) => overviewVisibility[c.key])
+  const overviewCards = showAllCards
+    ? allOverviewCards.map((c) =>
+        subjectHasPlan[c.key]
+          ? c
+          : { ...c, subtitle: NO_PLAN_SUBTITLE[c.key] ?? '暂无计划', pct: 0 },
+      )
+    : allOverviewCards.filter((c) => subjectHasPlan[c.key])
 
   return (
-    <div className="mx-auto max-w-[960px] px-4 pb-12 sm:px-6">
+    <div className={containerClassName ?? 'mx-auto max-w-[960px] px-4 pb-12 sm:px-6'}>
 
       {/* Stats cards row — calc is always present */}
       {overviewCards.length > 0 && (
@@ -508,7 +547,8 @@ export default function TodayDashboard({ date }: { date?: string }) {
         </>
       )}
 
-      {/* English section */}
+      {/* English weekly section — shown only when a weekly plan has words today */}
+      {hasWeeklyEnglish && (
       <section className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
@@ -522,7 +562,7 @@ export default function TodayDashboard({ date }: { date?: string }) {
               href={`/english/words/weekly/${englishPlan.id}/practice`}
               className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
             >
-              前往练习 →
+              前往练习
             </Link>
           )}
         </div>
@@ -593,33 +633,9 @@ export default function TodayDashboard({ date }: { date?: string }) {
               </div>
             )}
           </>
-        ) : isActualToday ? (
-          <div
-            className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
-            style={{ borderColor: 'rgba(13,148,136,.2)', background: 'rgba(240,253,250,.5)' }}
-          >
-            <div className="text-3xl mb-2">📖</div>
-            <div className="text-[13px] text-text-muted mb-3">还没有本周英语计划</div>
-            <Link
-              href="/english/words/daily"
-              className="inline-block rounded-xl px-4 py-2 text-[13px] font-bold text-white no-underline transition-opacity hover:opacity-80"
-              style={{ background: 'linear-gradient(135deg, #0d9488, #10b981)', boxShadow: '0 4px 12px rgba(13,148,136,.3)' }}
-            >
-              创建英语计划
-            </Link>
-          </div>
-        ) : (
-          <div
-            className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
-            style={{ borderColor: 'rgba(13,148,136,.2)', background: 'rgba(240,253,250,.5)' }}
-          >
-            <div className="text-3xl mb-2">📖</div>
-            <div className="text-[13px] text-text-muted">
-              该日期没有英语周计划{activeAdaptive ? '（自适应计划见下方卡片）' : ''}
-            </div>
-          </div>
-        )}
+        ) : null}
       </section>
+      )}
 
       <AdaptivePlanTodayCard user={user} date={today} />
 
@@ -640,7 +656,7 @@ export default function TodayDashboard({ date }: { date?: string }) {
             }}
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-amber-700"
           >
-            前往学习 →
+            前往学习
           </Link>
         </div>
 
@@ -685,7 +701,7 @@ export default function TodayDashboard({ date }: { date?: string }) {
             href="/calc/session?mode=daily&start=1"
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-violet-600"
           >
-            {calcAllDone ? '再练一组 →' : '前往练习 →'}
+            {calcAllDone ? '再练一组' : '前往练习'}
           </Link>
         </div>
 
@@ -745,7 +761,7 @@ export default function TodayDashboard({ date }: { date?: string }) {
             href={mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice'}
             className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
           >
-            {mathAllDone ? '查看计划 →' : '前往做题 →'}
+            {mathAllDone ? '查看计划' : '前往做题'}
           </Link>
         </div>
 
@@ -800,10 +816,6 @@ export default function TodayDashboard({ date }: { date?: string }) {
                       <span className="text-[10px] text-text-muted">第 {prob.lessonId} 讲</span>
                     </div>
                   </div>
-
-                  <span className="text-[11px]" style={{ color: done ? '#86efac' : '#fca58a' }}>
-                    {done ? '✓' : '→'}
-                  </span>
                 </Link>
               )
             })}

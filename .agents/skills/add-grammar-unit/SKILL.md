@@ -1,7 +1,7 @@
 ---
 name: add-grammar-unit
 description: Add or re-extract an English grammar unit to the Rosie platform — renders PDF pages, extracts via qwen-vl-max Vision LLM, quality-reviews the JSON, uploads page images to Storage, and upserts into Supabase grammar_units via scripts/extract-grammar-unit.mjs. Supports multiple books (essential/intermediate/advanced) via --book flag. Use when the user asks to 添加语法单元, 提取 Unit N, 批量提取语法, re-extract a bad unit, or /add-grammar-unit.
-version: 1.2.0
+version: 1.3.0
 trigger: /add-grammar-unit
 ---
 
@@ -17,6 +17,10 @@ trigger: /add-grammar-unit
 `grammar_units.page_images` jsonb 列存储 `[{page, path, type, crop?}]`（`crop` 为内容区域
 归一化 0-1000 坐标 `{x1,y1,x2,y2}`，新提取的页才有，旧数据无此字段）。前端三 tab：讲解/练习/原文，
 页码角标 `p.N` 可点击弹出原文图片预览。
+书尾延展位 116-169：附录（appendix-1~7）/补充练习（supp-01~35，仅练习无 lesson）/学习指导
+（guide-p272~283）；锚点列 `units`/`supp_entries`/`study_guide_units`（migration 0028）记录
+书尾内容与正文单元的关联；`search_text` 列（migration 0029）是讲解块展平的检索文本
+（口径与 ai-sync-db 的 grammarBlockLines 一致，不含练习题/答案）。
 
 ## 前置条件
 
@@ -24,7 +28,8 @@ trigger: /add-grammar-unit
   `SUPABASE_SERVICE_ROLE_KEY`（缺一不可；缺 API key 报 503 类错误，缺 service-role 拒绝入库）
 - `pdftoppm` 可用（brew poppler）
 - PDF 按书放置：`docs/english/剑桥初级英语语法.pdf` / `剑桥中级英语语法.pdf` / `剑桥高级英语语法.pdf`
-- migration `0025_add_grammar_book_dimension` + `0026_add_grammar_page_images` 已应用
+- migration `0025_add_grammar_book_dimension` + `0026_add_grammar_page_images` 已应用；
+  `0028`（锚点列）/`0029`（search_text）未应用不阻断——CLI 会逐列降级重试，但建议应用
 
 ## 工作流（每个单元）
 
@@ -36,6 +41,7 @@ trigger: /add-grammar-unit
 - [ ] Step 3: 质量审核（对照原书页图）
 - [ ] Step 4: 入库（--upload-only，含图片上传 + 数据 upsert）
 - [ ] Step 5: 页面验证
+- [ ] Step 6: 后置同步（AI 知识库 / 锚点）
 ```
 
 **Step 1: 核对页码映射**
@@ -55,6 +61,11 @@ node scripts/extract-grammar-unit.mjs --unit <N> --no-upload [--book <id>]
 产物落在 `output/grammar-units/<book>/unitNNN/`：`page-NNNN.json`（原始提取）、
 `lesson.json` / `exercise.json` / `unit.json`（组装结果，unit.json 是入库载荷）。
 批量：`--range A-B`（顺序执行，逐单元失败不阻断后续）。
+
+**书尾内容**用 `--backmatter <key>`：单 key（`appendix-1` / `supp-01` / `guide-p272`）、
+逗号列表或同前缀区间（`appendix-1-7`、`supp-1-35`），产物目录为 `appendix-N` / `supp-NN` /
+`guide-pNNN`。注意 key 必须零填充（`supp-01` 而非 `supp-1`，区间语法除外）；
+补充练习依赖 `_keys/supp-index.json` 练习表，缺失时先跑 `--backmatter supp-index`。
 
 **页码自动校验**：组装时 CLI 自动执行三层校验：
 1. LLM 提取的 `bookPage` 与 page-map 期望值比对（一致→通过）
@@ -87,9 +98,12 @@ node scripts/extract-grammar-unit.mjs --unit <N> --no-upload [--book <id>]
 node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 ```
 
-幂等 upsert（`on_conflict=book,unit_number`），重复执行覆盖。`--upload-only` 同时执行：
+幂等入库：**POST 纯插入 → 409 冲突转 PATCH 全字段覆盖**两段式（本项目 PostgREST 对既有行
+的 merge-duplicates 冲突检测失效，走 INSERT 分支会报 23502 title NOT NULL，勿改回 upsert）。
+`--upload-only` 同时执行：
 1. 上传本地 PNG 到 Storage `grammar-pages` bucket（路径 `x-upsert` 幂等覆盖）
-2. upsert `grammar_units` 行（含 `page_images` 列）
+2. 写入 `grammar_units` 行（含 `page_images` 列；`search_text` 由
+   `scripts/grammar-search-text.mjs` 自动生成，无需手填）
 
 入库后 `unit.json` 三件套建议随代码提交留档。
 
@@ -98,6 +112,16 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 `/english/grammar/<N>`：讲解/练习/原文三 tab 渲染、`p.N` 页码角标可点击弹出原文预览、
 判题（填空答对变绿）、全部答对后 `grammar_mastery` 写入且首页出 ⭐已掌握。
 登录态必须（无 guest 模式）。
+
+**Step 6: 后置同步**
+
+1. **AI 知识库**（有 lesson 的单元才需要）：`node scripts/ai-sync-db.mjs --tables=grammar_units`
+   （需 dev server 在跑 + AI_EMBED_*），幂等覆盖，同步后「不不」才能检索到新语法点。
+2. **存量 search_text 回填**（仅当存在未经新 upsert 路径入库的旧行）：
+   `node scripts/tmp/backfill-grammar-search-text.mjs`（幂等）。
+3. **锚点字段**（仅书尾相关）：新增/重提取补充练习后跑
+   `node scripts/grammar-backmatter-anchors.mjs`（正文单元的 supp_entries/study_guide_units）与
+   `node scripts/grammar-supp-units-patch.mjs`（补充练习的 units 列）；两者均为 PATCH 精确更新。
 
 ## ⚠️ 常见失误
 
@@ -112,6 +136,9 @@ node scripts/extract-grammar-unit.mjs --unit <N> --upload-only [--book <id>]
 | `unitNumber 不一致` WARN | 页码映射错位（渲染到了别的单元）——修 page-map 重提取 |
 | 提取结果明显缺内容 | 模型截断（max_tokens 上限）→ `--force` 重提取，仍失败则考虑单页拆两次提问 |
 | 想重提取已入库单元 | 直接再跑一遍全流程（幂等覆盖），无需先删行 |
+| 入库报 `23502 title NOT NULL` | PostgREST merge-duplicates 冲突检测失效——CLI 已用 POST→409→PATCH 规避，若自行写脚本勿用 `resolution=merge-duplicates` upsert，改用 PATCH |
+| `--backmatter supp-1` 报 key 不存在 | key 须零填充为 `supp-01`（区间语法 `supp-1-35` 除外）|
+| 新单元在 AI 助手里搜不到 | 漏跑 Step 6 的知识库同步（`ai-sync-db.mjs --tables=grammar_units`）|
 
 ## 框架扩展（新块型 / 新题型）
 

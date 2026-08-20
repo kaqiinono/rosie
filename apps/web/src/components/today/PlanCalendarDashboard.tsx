@@ -42,7 +42,13 @@ export default function PlanCalendarDashboard() {
         </div>
       </div>
 
-      <TodayDashboard date={selected} />
+      {/* Same 640px column as TodayDashboard below so header/calendar/body
+          share one aligned axis (previously the 960px dashboard looked skewed). */}
+      <TodayDashboard
+        date={selected}
+        showAllCards
+        containerClassName="mx-auto max-w-[640px] px-4 pb-12"
+      />
     </>
   )
 }

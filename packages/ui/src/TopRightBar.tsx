@@ -16,8 +16,15 @@ export default function TopRightBar() {
   const { isImmersive } = useImmersive()
   if (isImmersive || !showsGlobalChrome(pathname)) return null
 
+  const positionClassName =
+    pathname === '/'
+      ? 'left-1/2 w-[calc(100%-2.5rem)] max-w-[1040px] -translate-x-1/2'
+      : 'right-3 max-w-[calc(100vw-1.5rem)]'
+
   return (
-    <div className="pointer-events-none fixed top-3 right-3 z-50 flex max-w-[calc(100vw-1.5rem)] items-center justify-end gap-1.5">
+    <div
+      className={`pointer-events-none fixed top-3 z-50 flex items-center justify-end gap-1.5 ${positionClassName}`}
+    >
       <div className="pointer-events-auto flex items-center gap-1.5">
         <StarHud />
         <AccountBar />

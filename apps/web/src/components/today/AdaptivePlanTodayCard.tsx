@@ -4,11 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { todayStr } from '@rosie/core'
-import {
-  buildDailyTask,
-  useAdaptiveWordPlan,
-  type AdaptivePlanWordProgress,
-} from '@rosie/english'
+import { buildDailyTask, useAdaptiveWordPlan, type AdaptivePlanWordProgress } from '@rosie/english'
 import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
 
 function progressStats(rows: AdaptivePlanWordProgress[]) {
@@ -26,10 +22,7 @@ type AdaptivePlanTodayCardProps = {
 
 export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayCardProps) {
   const { plans, isLoading: plansLoading, loadProgress } = useAdaptiveWordPlan(user)
-  const activePlan = useMemo(
-    () => plans.find((plan) => plan.status === 'active') ?? null,
-    [plans],
-  )
+  const activePlan = useMemo(() => plans.find((plan) => plan.status === 'active') ?? null, [plans])
 
   const targetDate = date ?? todayStr()
   const isTargetToday = targetDate === todayStr()
@@ -77,16 +70,16 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
 
   return (
     <section className="mb-8">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-indigo-500 to-violet-500 shadow-[0_3px_10px_rgba(99,102,241,.3)]">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-text-primary flex items-center gap-2 text-[15px] font-extrabold">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-sm shadow-[0_3px_10px_rgba(99,102,241,.3)]">
             🧠
           </span>
           自适应单词计划
         </h2>
         <Link
           href={`/english/words/adaptive/${activePlan.id}`}
-          className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-indigo-600"
+          className="flex items-center gap-1 text-[12px] font-bold text-indigo-600 no-underline transition-opacity hover:opacity-70"
         >
           前往练习 →
         </Link>
@@ -112,27 +105,27 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
           >
             🧠
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[14px] font-extrabold truncate text-indigo-900">
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[14px] font-extrabold text-indigo-900">
               {activePlan.title}
             </div>
             {!isTargetToday ? (
               historyLoading ? (
-                <div className="text-[11px] mt-0.5 font-medium text-indigo-400">加载记录…</div>
+                <div className="mt-0.5 text-[11px] font-medium text-indigo-400">加载记录…</div>
               ) : historyRow ? (
-                <div className="text-[11px] mt-0.5 font-medium text-indigo-700">
+                <div className="mt-0.5 text-[11px] font-medium text-indigo-700">
                   {historyRow.allDone
                     ? '当日任务已完成 🎉'
                     : `新学 ${historyRow.newDone}/${historyRow.newGoal} · 复习 ${historyRow.reviewDone}/${historyRow.reviewGoal}`}
                 </div>
               ) : (
-                <div className="text-[11px] mt-0.5 font-medium text-indigo-600">当天未练习</div>
+                <div className="mt-0.5 text-[11px] font-medium text-indigo-600">当天未练习</div>
               )
             ) : progressLoading ? (
-              <div className="text-[11px] mt-0.5 font-medium text-indigo-400">加载进度…</div>
+              <div className="mt-0.5 text-[11px] font-medium text-indigo-400">加载进度…</div>
             ) : stats ? (
               <>
-                <div className="text-[11px] mt-0.5 font-medium text-indigo-700">
+                <div className="mt-0.5 text-[11px] font-medium text-indigo-700">
                   已掌握 {stats.mastered}/{stats.total}
                   {dailyTask && (
                     <>
@@ -141,7 +134,10 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
                     </>
                   )}
                 </div>
-                <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(99,102,241,.12)' }}>
+                <div
+                  className="mt-2 h-1.5 overflow-hidden rounded-full"
+                  style={{ background: 'rgba(99,102,241,.12)' }}
+                >
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
@@ -152,10 +148,9 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
                 </div>
               </>
             ) : (
-              <div className="text-[11px] mt-0.5 font-medium text-indigo-600">点击进入今日任务</div>
+              <div className="mt-0.5 text-[11px] font-medium text-indigo-600">点击进入今日任务</div>
             )}
           </div>
-          <span className="text-[14px] font-extrabold text-indigo-500">→</span>
         </div>
       </Link>
     </section>
