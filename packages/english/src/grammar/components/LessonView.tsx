@@ -10,29 +10,11 @@ import type {
   GrammarPageImage,
   GrammarSection,
   GrammarTableBlock,
+  GrammarTableTextMark,
+  GrammarTableTextStyle,
 } from '../types'
 import { grammarPageImageUrl } from '../types'
 import { FigureCard } from './FigureCard'
-
-/** 按 bold 数组顺序逐个匹配并高亮例句中的关键词 */
-function renderBold(en: string, bold?: string[]): ReactNode[] {
-  if (!bold || bold.length === 0) return [en]
-  const nodes: ReactNode[] = []
-  let cursor = 0
-  bold.forEach((word, i) => {
-    const idx = en.indexOf(word, cursor)
-    if (idx === -1) return
-    if (idx > cursor) nodes.push(en.slice(cursor, idx))
-    nodes.push(
-      <strong key={`b${i}`} className="font-bold text-app-blue-dark">
-        {word}
-      </strong>,
-    )
-    cursor = idx + word.length
-  })
-  if (cursor < en.length) nodes.push(en.slice(cursor))
-  return nodes
-}
 
 /** 原书印刷页码角标 */
 function PageBadge({ page, onClick }: { page?: number; onClick?: (page: number) => void }) {
@@ -66,11 +48,11 @@ function ExampleCard({ item, index }: { item: GrammarExample; index: number }) {
       </span>
       <div className="min-w-0 pl-4">
         <p className="text-base leading-6 font-bold tracking-[-0.01em] text-app-blue-dark sm:text-[17px]">
-          {renderBold(item.en, item.bold)}
+          {renderExampleText(item, 'en')}
         </p>
         <p className="mt-1 text-[13px] leading-5 font-normal text-text-secondary">
-          {item.zh}
-          {item.note ? <span className="ml-1 text-text-muted">（{item.note}）</span> : null}
+          {renderExampleText(item, 'zh')}
+          {item.note ? <span className="ml-1 text-text-muted">（{renderExampleText(item, 'note')}）</span> : null}
         </p>
       </div>
     </li>
@@ -98,13 +80,13 @@ function ExamplesGrid({ items }: { items: GrammarExample[] }) {
               className={`absolute top-3.5 bottom-3.5 left-0 w-1 rounded-r-full ${reply ? 'bg-app-green' : 'bg-app-blue'}`}
             />
             <p className="text-base leading-6 font-semibold text-app-blue-dark">
-              {renderBold(item.en, item.bold)}
+              {renderExampleText(item, 'en')}
             </p>
             {item.zh && (
               <div className={`mt-1 leading-6 ${reply ? 'text-base font-semibold text-app-green-dark' : 'text-[13px] text-text-secondary'}`}>
                 <span>
-                  {item.zh}
-                  {item.note ? <span className="ml-1 text-text-muted">（{item.note}）</span> : null}
+                  {renderExampleText(item, 'zh')}
+                  {item.note ? <span className="ml-1 text-text-muted">（{renderExampleText(item, 'note')}）</span> : null}
                 </span>
               </div>
             )}
@@ -219,11 +201,11 @@ function PresentFormView({
             <li key={i} className="relative border-b border-border-light py-2.5 pl-4 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0">
               <span className="absolute top-4 left-0 h-1.5 w-1.5 rounded-full bg-app-blue" aria-hidden="true" />
               <p className="text-[15px] leading-6 font-semibold text-app-blue-dark">
-                {renderBold(item.en, item.bold)}
+                {renderExampleText(item, 'en')}
               </p>
               <p className="text-[13px] leading-5 text-text-secondary">
-                {item.zh}
-                {item.note ? <span className="ml-1 text-text-muted">（{item.note}）</span> : null}
+                {renderExampleText(item, 'zh')}
+                {item.note ? <span className="ml-1 text-text-muted">（{renderExampleText(item, 'note')}）</span> : null}
               </p>
             </li>
           ))}
@@ -250,7 +232,7 @@ function PresentTimelineView({ section }: { section: GrammarSection }) {
             {patternBlock.items.map((item, i) => (
               <div key={i} className="min-w-0">
                 <p className="text-base leading-6 font-bold">{item.en}</p>
-                <p className="text-xs leading-5 text-blue-100">{item.zh}</p>
+                <p className="text-xs leading-5 text-blue-100">{renderExampleText(item, 'zh')}</p>
               </div>
             ))}
           </div>
@@ -279,7 +261,7 @@ function PresentTimelineView({ section }: { section: GrammarSection }) {
           {contextBlock.items.map((item, i) => (
             <li key={i} className="border-b border-border-light py-2.5 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0">
               <p className="text-[15px] leading-6 font-semibold text-app-blue-dark">{item.en}</p>
-              <p className="mt-0.5 text-[13px] leading-5 text-text-secondary">{item.zh}</p>
+              <p className="mt-0.5 text-[13px] leading-5 text-text-secondary">{renderExampleText(item, 'zh')}</p>
             </li>
           ))}
         </ul>
@@ -383,7 +365,82 @@ function renderTableCell(cell: string): ReactNode {
   )
 }
 
+const TABLE_TEXT_STYLE_CLASSES: Record<GrammarTableTextStyle, string> = {
+  bold: 'font-black',
+  italic: 'italic',
+  underline: 'underline decoration-2 underline-offset-2',
+  'text-blue': '!text-app-blue-dark',
+  'text-red': '!text-app-red',
+  'text-green': '!text-app-green-dark',
+  highlight: 'box-decoration-clone rounded-sm bg-yellow-light px-0.5',
+}
+
+function renderMarkedText(text: string, marks?: GrammarTableTextMark[]): ReactNode {
+  const validMarks = marks?.filter((mark) => mark.start < text.length && mark.end > mark.start) ?? []
+  if (validMarks.length === 0) return text
+  const boundaries = [...new Set([0, text.length, ...validMarks.flatMap((mark) => [mark.start, Math.min(mark.end, text.length)])])]
+    .sort((a, b) => a - b)
+  return boundaries.slice(0, -1).map((start, index) => {
+    const end = boundaries[index + 1]
+    const styles = [...new Set(validMarks
+      .filter((mark) => mark.start <= start && mark.end >= end)
+      .flatMap((mark) => mark.styles))]
+    return styles.length > 0
+      ? <span key={`${start}:${end}`} className={styles.map((style) => TABLE_TEXT_STYLE_CLASSES[style]).join(' ')}>{text.slice(start, end)}</span>
+      : text.slice(start, end)
+  })
+}
+
+function renderExampleText(item: GrammarExample, field: 'en' | 'zh' | 'note'): ReactNode {
+  const value = field === 'note' ? item.note ?? '' : item[field]
+  const marks = [...(item.textMarks?.[field] ?? [])]
+  if (field === 'en') {
+    let cursor = 0
+    for (const bold of item.bold ?? []) {
+      const start = value.indexOf(bold, cursor)
+      if (start === -1) continue
+      marks.push({ start, end: start + bold.length, styles: ['bold', 'text-blue'] })
+      cursor = start + bold.length
+    }
+  }
+  return marks.length > 0 ? renderMarkedText(value, marks) : value
+}
+
 export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
+  const isLegacyTimeline =
+    block.headers.length === 3 &&
+    block.headers[0] === '过去' &&
+    block.headers[1] === '现在' &&
+    block.headers[2] === '将来' &&
+    block.rows.every((row) => row.every((cell) => cell.trim() === ''))
+  const isTimeline = block.displayType === 'timeline' ||
+    (block.displayType === undefined && isLegacyTimeline)
+
+  if (isTimeline) {
+    return (
+      <div
+        className="px-1 py-1 sm:px-4"
+        role="img"
+        aria-label={`${block.title ?? '时态'}：从过去经现在到将来的时间轴`}
+      >
+        {block.title && (
+          <div className="mx-4 bg-text-primary/12 px-8 py-1.5 text-center text-sm font-black text-text-primary [clip-path:polygon(0.75rem_0,calc(100%_-_0.75rem)_0,100%_50%,calc(100%_-_0.75rem)_100%,0.75rem_100%,0_50%)] sm:mx-8">
+            {renderMarkedText(block.title, block.textMarks?.title)}
+          </div>
+        )}
+        <div className="relative mt-1 grid grid-cols-3 border-t border-text-muted/45 pt-1 text-xs font-semibold text-text-secondary sm:text-sm">
+          <span className="text-left">{renderMarkedText(block.headers[0], block.textMarks?.['header:0'])}</span>
+          <span className="text-center">{renderMarkedText(block.headers[1], block.textMarks?.['header:1'])}</span>
+          <span className="text-right">{renderMarkedText(block.headers[2], block.textMarks?.['header:2'])}</span>
+          <span
+            aria-hidden="true"
+            className="absolute top-[-3px] left-1/2 h-1.5 w-px -translate-x-1/2 bg-text-muted/60"
+          />
+        </div>
+      </div>
+    )
+  }
+
   const usesExplicitMerges = block.merges !== undefined
   const restoredRows = usesExplicitMerges ? block.rows : restoreConjugationGroups(block)
   const columnCount = Math.max(
@@ -419,7 +476,7 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
               <tr className="bg-app-blue-light/50">
                 {block.headers.map((h, i) => (
                   <th key={i} className="border border-border-light px-4 py-2 text-left text-xs font-bold text-app-blue-dark">
-                    {spanningHeaderColumns.has(i) ? '' : h}
+                    {spanningHeaderColumns.has(i) ? '' : renderMarkedText(h, block.textMarks?.[`header:${i}`])}
                   </th>
                 ))}
               </tr>
@@ -437,7 +494,7 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
                         rowSpan={rows.length}
                         className="border border-app-blue/40 bg-app-blue-light/50 px-4 py-2.5 align-middle font-bold whitespace-pre-line text-text-primary"
                       >
-                        {block.headers[ci]}
+                        {renderMarkedText(block.headers[ci], block.textMarks?.[`header:${ci}`])}
                       </td>
                     )
                   }
@@ -467,7 +524,9 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
                           : 'font-bold text-text-primary'
                       } ${isMerged ? 'border-app-blue/40 bg-app-blue-light/50' : 'border-border-light'}`}
                     >
-                      {renderTableCell(cell)}
+                      {block.textMarks?.[`body:${ri}:${ci}`]
+                        ? renderMarkedText(cell, block.textMarks[`body:${ri}:${ci}`])
+                        : renderTableCell(cell)}
                     </td>
                   )
                 })}
@@ -482,6 +541,24 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
 
 function BlockView({ block }: { block: GrammarBlock }) {
   if (block.type === 'example_set') {
+    if (block.displayType === 'paragraph') {
+      const contextRepeatsItems = block.context.trim() === block.items.map((item) => item.en.trim()).join(' ')
+      return (
+        <article className="rounded-xl bg-sky-50/70 px-4 py-4 sm:px-5">
+          {block.context && !contextRepeatsItems && (
+            <p className="mb-3 text-sm font-semibold text-sky-800">{renderMarkedText(block.context, block.contextMarks)}</p>
+          )}
+          <div className="space-y-2.5">
+            {block.items.map((item, index) => (
+              <p key={index} className="text-base leading-7 text-text-primary sm:text-[17px]">
+                <span className="font-medium text-app-blue-dark">{renderExampleText(item, 'en')}</span>
+                {item.zh && <span className="ml-2 text-[13px] text-text-muted">{renderExampleText(item, 'zh')}</span>}
+              </p>
+            ))}
+          </div>
+        </article>
+      )
+    }
     return (
       <div className="overflow-hidden rounded-xl bg-gradient-to-br from-sky-50 to-surface p-3 ring-1 ring-sky-200 sm:p-4">
         {block.context && (
@@ -503,7 +580,7 @@ function BlockView({ block }: { block: GrammarBlock }) {
               <path d="M4 4h16a1 1 0 0 1 1 1v3H3V5a1 1 0 0 1 1-1Z" />
               <path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z" />
             </svg>
-            <span>{block.context}</span>
+            <span>{renderMarkedText(block.context, block.contextMarks)}</span>
           </div>
         )}
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -538,23 +615,51 @@ function BlockView({ block }: { block: GrammarBlock }) {
     )
   }
 
-  if (block.type === 'rule_text' || block.type === 'tip') {
+  if (block.type === 'rule_text') {
+    const toneStyles = {
+      success: 'bg-app-green-light/55 text-app-green-dark',
+      info: 'bg-app-blue-light/55 text-app-blue-dark',
+      warning: 'bg-yellow-light/65 text-amber-900',
+      error: 'bg-app-red-light/45 text-app-red',
+    }
+    const toneSymbols = { success: '✓', info: 'i', warning: '!', error: '×' }
+    const tone = block.tone ?? 'info'
     return (
-      <div
-        className={`rounded-xl p-4 text-sm leading-relaxed ring-1 ${
-          block.type === 'tip'
-            ? 'bg-app-purple-light/50 text-app-purple-dark ring-app-purple/20'
-            : 'bg-surface-dim text-text-primary ring-border-light'
-        }`}
-      >
-        {block.type === 'tip' && <span className="mr-1">💡</span>}
-        {block.text}
+      <div className={`flex items-start gap-3 rounded-xl px-4 py-3.5 text-sm leading-relaxed ${toneStyles[tone]}`}>
+        <span aria-hidden="true" className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-current/10 text-xs font-black">
+          {toneSymbols[tone]}
+        </span>
+        <p className="min-w-0 whitespace-pre-line">{renderMarkedText(block.text, block.textMarks)}</p>
+      </div>
+    )
+  }
+
+  if (block.type === 'tip') {
+    return (
+      <div className="rounded-xl bg-app-purple-light/50 p-4 text-sm leading-relaxed text-app-purple-dark ring-1 ring-app-purple/20">
+        <span className="mr-1">💡</span>
+        {renderMarkedText(block.text, block.textMarks)}
       </div>
     )
   }
 
   if (block.type === 'examples') {
     return <ExamplesGrid items={block.items} />
+  }
+
+  if (block.type === 'vocabulary_list') {
+    return (
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-surface-dim/65 px-4 py-3 ring-1 ring-border-light/70 sm:grid-cols-4 xl:grid-cols-7">
+        {block.items.map((item, index) => (
+          <li key={`${item.en}-${index}`} className="min-w-0 border-b border-border-light/70 pb-2 last:border-b-0 sm:border-b-0 sm:pb-0">
+            <p className="text-[15px] leading-5 font-bold text-text-primary">
+              {renderExampleText(item, 'en')}
+            </p>
+            {item.zh && <p className="mt-0.5 text-[11px] leading-4 text-text-muted">{renderExampleText(item, 'zh')}</p>}
+          </li>
+        ))}
+      </ul>
+    )
   }
 
   if (block.type === 'spelling_rule') {
@@ -564,7 +669,7 @@ function BlockView({ block }: { block: GrammarBlock }) {
           ✍️ 拼写规则
         </div>
         {block.text && (
-          <p className="mb-2 text-sm leading-relaxed whitespace-pre-line text-text-primary">{block.text}</p>
+          <p className="mb-2 text-sm leading-relaxed whitespace-pre-line text-text-primary">{renderMarkedText(block.text, block.textMarks)}</p>
         )}
         {block.examples.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
@@ -590,7 +695,7 @@ function BlockView({ block }: { block: GrammarBlock }) {
         <div className="mb-2 text-xs font-bold tracking-wide text-teal-700 uppercase">
           🖼️ 插图说明
         </div>
-        <p className="text-sm leading-relaxed whitespace-pre-line text-text-primary">{block.text}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-line text-text-primary">{renderMarkedText(block.text, block.textMarks)}</p>
       </div>
     )
   }

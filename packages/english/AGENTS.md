@@ -93,7 +93,12 @@ ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english
 **管理员表格编辑**：讲解区所有 `grammar_table` 对管理员显示「编辑表格」，可修改标题/表头/
 单元格、增删行列，并在弹窗中实时预览。显式合并区域存入 block 的 `merges`
 （`row`/`column`/`rowSpan`/`colSpan`，仅正文坐标）；字段存在时关闭旧版基于空白/重复值的
-自动合并推断。保存由 `grammar-table-mutations.ts` 更新 `lesson` jsonb 并同步单元缓存。
+自动合并推断。`displayType` 显式控制渲染器（当前为 `standard` / `timeline`）；旧版的
+“过去 / 现在 / 将来 + 空正文”表会在 normalize 时兼容识别为时间轴。保存由
+`grammar-table-mutations.ts` 更新 `lesson` jsonb 并同步单元缓存。
+表格内容的局部样式存入可选 `textMarks`，key 为 `title`、`header:N` 或 `body:R:C`，
+范围使用纯文本字符 offset；搜索、复制、朗读仍只读 title/headers/rows 原文。编辑单元格文字时
+清除该单元格的旧 mark，增删行列等结构操作则清除全表 marks，避免 offset/key 错位。
 
 **管理员练习编辑**：练习 Tab 对管理员显示「管理练习」，点击后在当前 Tab 原地切换为编辑模式，
 可新增/复制/排序/删除练习组，
@@ -102,9 +107,28 @@ ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english
 `grammar-exercise-mutations.ts` 覆盖 `exercises` jsonb 并同步单元缓存。
 
 **管理员讲解编辑**：讲解 Tab 对管理员显示「管理讲解」，编辑器按
-`lesson → sections → blocks → items` 的通用数据层级展示内容，可新增、编辑或删除分区，删除/排序内容块，
-并可单独删除 `example_set` / `examples` 中的例句。所有操作先作用于本地草稿，确认保存后由
+`lesson → sections → blocks → items` 的通用数据层级展示内容。交互以练习编辑器为基准：左侧新建/复制/
+排序/删除分区，中间新增和编辑各类型内容块，右侧在原书对照与 `LessonView` 实时预览间切换；内容块、
+例句、缩写和拼写示例均支持新增、复制、排序和删除，表格高级编辑可在草稿内直接打开，相关单元也可维护。
+`GrammarEditorShared` 提供讲解/练习共用的排序、未保存关闭保护及原书/预览面板。所有操作先作用于本地草稿，确认保存后由
 `grammar-lesson-mutations.ts` 整体更新 `lesson` jsonb 并同步单元缓存；不要为特定 Unit 写删除逻辑。
+
+**词汇清单**：`vocabulary_list` 用于原书成排罗列的单词，与 `examples` 共用
+`items: GrammarExample[]`，因此管理员可在「例句列表 / 词汇清单」间无损切换。渲染时使用轻量多列清单，
+不使用完整例句卡片。旧 `examples` 若包含至少 6 个不含空格的纯单词，normalize 时兼容识别为
+`vocabulary_list`；之后保存讲解会固化显式类型。
+
+**情境例句展示**：`example_set.displayType` 为 `cards` / `paragraph`。前者使用编号卡片，
+后者使用单一连续阅读区，不显示编号和独立卡片。两者共用 context/items，管理员可无损切换。
+旧数据若 context 恰好是 items 所有英文的重复拼接，normalize 时兼容识别为 `paragraph`，
+文章渲染时也会隐藏该重复 context。
+情境说明使用 `contextMarks`，每条 GrammarExample 的英文/中文/注释样式使用
+`textMarks.en` / `textMarks.zh` / `textMarks.note`；所有展示类型共用这些样式元数据，不修改原文。
+
+**规则说明状态**：`rule_text` 保持原块类型，可选 `tone` 为 `info` / `success` /
+`warning` / `error`，未设置的旧数据按 `info` 渲染。四种状态使用无边框浅色背景与状态图标。
+局部文字样式使用可选 `textMarks`，正文 `text` 始终保持纯文本；编辑正文时清除该块旧 marks，
+避免 offset 错位。
 
 **框架扩展四步流程**（新增内容块/题型时）：
 1. `types.ts` 加 union 成员 + `normalizeBlocks`/`normalizeExercises` 分支（未知 type 自动归一为

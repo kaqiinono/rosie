@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type {
   GrammarExerciseGroup,
@@ -8,8 +8,12 @@ import type {
   GrammarExerciseType,
   GrammarPageImage,
 } from '../types'
-import { grammarPageImageUrl } from '../types'
 import { ExerciseView } from './ExerciseView'
+import {
+  GrammarEditorReferencePane,
+  moveEditorItem,
+  useEditorDismissGuard,
+} from './GrammarEditorShared'
 
 interface GrammarExerciseEditorModalProps {
   groups: GrammarExerciseGroup[]
@@ -52,14 +56,6 @@ function emptyGroup(index: number): GrammarExerciseGroup {
   return { section: String(index + 1), instruction: '', items: [emptyItem(1)] }
 }
 
-function moveItem<T>(items: T[], from: number, to: number): T[] {
-  if (to < 0 || to >= items.length || from === to) return items
-  const next = [...items]
-  const [moved] = next.splice(from, 1)
-  next.splice(to, 0, moved)
-  return next
-}
-
 export function GrammarExerciseEditorModal({
   groups,
   initialGroupIndex = 0,
@@ -73,36 +69,11 @@ export function GrammarExerciseEditorModal({
   )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [viewerMode, setViewerMode] = useState<'source' | 'preview'>('source')
   const current = draft[activeGroup]
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || saving) return
-      onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose, saving])
-
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [])
+  const dirty = JSON.stringify(draft) !== JSON.stringify(groups)
+  const requestClose = useEditorDismissGuard({ dirty, saving, onClose })
 
   const previewGroups = useMemo(() => (current ? [current] : []), [current])
-  const referenceImage = useMemo(
-    () =>
-      pageImages.find((image) => image.page === current?.bookPage && image.type === 'exercise')
-      ?? pageImages.find((image) => image.page === current?.bookPage)
-      ?? pageImages.find((image) => image.type === 'exercise')
-      ?? pageImages[0],
-    [current?.bookPage, pageImages],
-  )
-  const referenceImageUrl = referenceImage ? grammarPageImageUrl(referenceImage.path) : ''
   const updateGroup = (update: (group: GrammarExerciseGroup) => GrammarExerciseGroup) => {
     setDraft((all) => all.map((group, index) => (index === activeGroup ? update(group) : group)))
   }
@@ -140,7 +111,7 @@ export function GrammarExerciseEditorModal({
   const moveGroup = (direction: -1 | 1) => {
     const target = activeGroup + direction
     if (target < 0 || target >= draft.length) return
-    setDraft((all) => moveItem(all, activeGroup, target))
+    setDraft((all) => moveEditorItem(all, activeGroup, target))
     setActiveGroup(target)
   }
 
@@ -184,7 +155,7 @@ export function GrammarExerciseEditorModal({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={requestClose}
               disabled={saving}
               aria-label="关闭练习编辑器"
               className="min-h-11 min-w-11 rounded-full text-lg font-bold text-text-secondary hover:bg-surface-dim disabled:opacity-40"
@@ -258,8 +229,8 @@ export function GrammarExerciseEditorModal({
                           {EXERCISE_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
                         </select>
                         <div className="ml-auto flex gap-1">
-                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: moveItem(group.items, itemIndex, itemIndex - 1) }))} disabled={itemIndex === 0} className="h-9 min-w-9 rounded-lg bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↑</button>
-                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: moveItem(group.items, itemIndex, itemIndex + 1) }))} disabled={itemIndex === current.items.length - 1} className="h-9 min-w-9 rounded-lg bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↓</button>
+                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: moveEditorItem(group.items, itemIndex, itemIndex - 1) }))} disabled={itemIndex === 0} className="h-9 min-w-9 rounded-lg bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↑</button>
+                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: moveEditorItem(group.items, itemIndex, itemIndex + 1) }))} disabled={itemIndex === current.items.length - 1} className="h-9 min-w-9 rounded-lg bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↓</button>
                           <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: [...group.items.slice(0, itemIndex + 1), { ...item, number: nextQuestionNumber(group.items), options: item.options ? [...item.options] : null }, ...group.items.slice(itemIndex + 1)] }))} className="h-9 rounded-lg bg-surface px-2 text-xs font-bold text-text-secondary">复制</button>
                           <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: group.items.filter((_, index) => index !== itemIndex) }))} className="h-9 rounded-lg bg-app-red-light px-2 text-xs font-bold text-app-red">删除</button>
                         </div>
@@ -294,65 +265,18 @@ export function GrammarExerciseEditorModal({
             )}
           </main>
 
-          <aside className="order-first min-w-0 border-b border-border-light bg-surface-dim/45 p-4 lg:order-none lg:overflow-y-auto lg:border-b-0">
-            <div className="mb-4 grid grid-cols-2 rounded-xl bg-surface p-1 ring-1 ring-border-light" role="tablist" aria-label="查看区域">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={viewerMode === 'source'}
-                onClick={() => setViewerMode('source')}
-                className={`min-h-10 rounded-lg px-3 text-sm font-bold transition-colors ${viewerMode === 'source' ? 'bg-app-blue text-white shadow-sm' : 'text-text-secondary hover:bg-surface-dim'}`}
-              >
-                原书对照{referenceImage ? ` · p.${referenceImage.page}` : ''}
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={viewerMode === 'preview'}
-                onClick={() => setViewerMode('preview')}
-                className={`min-h-10 rounded-lg px-3 text-sm font-bold transition-colors ${viewerMode === 'preview' ? 'bg-app-blue text-white shadow-sm' : 'text-text-secondary hover:bg-surface-dim'}`}
-              >
-                实时预览
-              </button>
-            </div>
-
-            {viewerMode === 'source' ? (
-              <section role="tabpanel" aria-label="原书对照">
-                {referenceImageUrl ? (
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface ring-1 ring-border-light">
-                    {/* Storage 域名随环境变化，沿用原书预览的直接图片加载方式。 */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={referenceImageUrl}
-                      alt={`原书第 ${referenceImage?.page ?? ''} 页`}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="rounded-xl bg-surface p-6 text-center text-sm text-text-muted ring-1 ring-border-light">
-                    本单元暂无可对照的原书图片
-                  </div>
-                )}
-              </section>
-            ) : (
-              <section role="tabpanel" aria-label="学生端实时预览">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-sm font-black text-text-primary">学生端实时预览</h3>
-                <span className="rounded-full bg-app-green-light px-2 py-1 text-[10px] font-bold text-app-green-dark">自动更新</span>
-                </div>
-                {previewGroups.length > 0 ? (
-                  <ExerciseView groups={previewGroups} isAdmin={false} pageImages={[]} onGroupResult={() => {}} onPreviewFigure={() => {}} />
-                ) : (
-                  <p className="text-sm text-text-muted">暂无可预览内容</p>
-                )}
-              </section>
-            )}
-          </aside>
+          <GrammarEditorReferencePane
+            pageImages={pageImages}
+            page={current?.bookPage}
+            imageType="exercise"
+            previewEmpty={previewGroups.length === 0}
+            preview={<ExerciseView groups={previewGroups} isAdmin={false} pageImages={[]} onGroupResult={() => {}} onPreviewFigure={() => {}} />}
+          />
         </div>
 
         <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-border-light px-4 py-3 sm:px-5">
           {error && <p role="alert" className="mr-auto text-sm font-bold text-app-red">{error}</p>}
-          <button type="button" onClick={onClose} disabled={saving} className="min-h-11 rounded-full px-5 text-sm font-bold text-text-secondary ring-1 ring-border-light disabled:opacity-40">取消</button>
+          <button type="button" onClick={requestClose} disabled={saving} className="min-h-11 rounded-full px-5 text-sm font-bold text-text-secondary ring-1 ring-border-light disabled:opacity-40">取消</button>
           <button type="button" onClick={() => void handleSave()} disabled={saving} className="min-h-11 rounded-full bg-app-blue px-6 text-sm font-bold text-white disabled:opacity-50">{saving ? '保存中…' : '保存并应用'}</button>
         </footer>
       </div>

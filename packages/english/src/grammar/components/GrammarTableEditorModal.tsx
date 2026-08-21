@@ -1,7 +1,13 @@
 'use client'
 
-import { useEffect, useMemo, useState, type ClipboardEvent as ReactClipboardEvent } from 'react'
-import type { GrammarTableBlock, GrammarTableMerge } from '../types'
+import { useEffect, useMemo, useState, type ClipboardEvent as ReactClipboardEvent, type SyntheticEvent } from 'react'
+import type {
+  GrammarTableBlock,
+  GrammarTableDisplayType,
+  GrammarTableMerge,
+  GrammarTableTextMark,
+  GrammarTableTextStyle,
+} from '../types'
 import { GrammarTableView } from './LessonView'
 
 interface GrammarTableEditorModalProps {
@@ -14,6 +20,46 @@ interface CellPosition {
   /** -1 表示表头，0 起表示正文行 */
   row: number
   column: number
+}
+
+interface TextSelection {
+  target: string
+  start: number
+  end: number
+}
+
+const TEXT_STYLE_BUTTONS: { style: GrammarTableTextStyle; label: string; title: string }[] = [
+  { style: 'bold', label: 'B', title: '粗体' },
+  { style: 'italic', label: 'I', title: '斜体' },
+  { style: 'underline', label: 'U', title: '下划线' },
+  { style: 'text-blue', label: '', title: '蓝色文字' },
+  { style: 'text-red', label: '', title: '红色文字' },
+  { style: 'text-green', label: '', title: '绿色文字' },
+  { style: 'highlight', label: '', title: '背景高亮' },
+]
+
+const TEXT_COLOR_STYLES: GrammarTableTextStyle[] = ['text-blue', 'text-red', 'text-green']
+
+function toggleMarkStyle(
+  marks: GrammarTableTextMark[],
+  start: number,
+  end: number,
+  style: GrammarTableTextStyle,
+) {
+  const exact = marks.find((mark) => mark.start === start && mark.end === end)
+  const active = exact?.styles.includes(style) === true
+  const isColor = TEXT_COLOR_STYLES.includes(style)
+  const removable = isColor ? TEXT_COLOR_STYLES : [style]
+  const cleaned = marks.flatMap((mark) => {
+    if (mark.start !== start || mark.end !== end) return [mark]
+    const styles = mark.styles.filter((item) => !removable.includes(item))
+    return styles.length > 0 ? [{ ...mark, styles }] : []
+  })
+  if (active) return cleaned
+  const target = cleaned.find((mark) => mark.start === start && mark.end === end)
+  return target
+    ? cleaned.map((mark) => mark === target ? { ...mark, styles: [...mark.styles, style] } : mark)
+    : [...cleaned, { start, end, styles: [style] }]
 }
 
 function encodeTsv(rows: string[][]): string {
@@ -75,6 +121,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
   const [selectedCell, setSelectedCell] = useState<CellPosition | null>(null)
   const [selectionAnchor, setSelectionAnchor] = useState<CellPosition | null>(null)
   const [selectionEnd, setSelectionEnd] = useState<CellPosition | null>(null)
+  const [textSelection, setTextSelection] = useState<TextSelection | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const columnCount = draft.headers.length
@@ -126,9 +173,10 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
   }
 
   const clearSelection = () => {
-    clearSelection()
+    setSelectedCell(null)
     setSelectionAnchor(null)
     setSelectionEnd(null)
+    setTextSelection(null)
   }
 
   const isInSelection = (row: number, column: number): boolean =>
@@ -185,7 +233,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
           rows[targetRow][start.column + column] = value
         })
       }
-      return { ...current, headers, rows }
+      return { ...current, headers, rows, textMarks: {} }
     })
 
     const pastedBottom = start.row === -1
@@ -204,6 +252,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
     setDraft((current) => ({
       ...current,
       headers: current.headers.map((cell, index) => (index === columnIndex ? value : cell)),
+      textMarks: Object.fromEntries(Object.entries(current.textMarks ?? {}).filter(([key]) => key !== `header:${columnIndex}`)),
     }))
   }
 
@@ -215,7 +264,63 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
           ? row.map((cell, ci) => (ci === columnIndex ? value : cell))
           : row,
       ),
+      textMarks: Object.fromEntries(Object.entries(current.textMarks ?? {}).filter(([key]) => key !== `body:${rowIndex}:${columnIndex}`)),
     }))
+  }
+
+  const rememberTextSelection = (target: string, event: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const element = event.currentTarget
+    const start = element.selectionStart ?? 0
+    const end = element.selectionEnd ?? start
+    setTextSelection(end > start ? { target, start, end } : null)
+  }
+
+  const applyTextStyle = (style: GrammarTableTextStyle) => {
+    if (!textSelection) return
+    setDraft((current) => {
+      const marks = current.textMarks?.[textSelection.target] ?? []
+      const nextMarks = toggleMarkStyle(marks, textSelection.start, textSelection.end, style)
+      return {
+        ...current,
+        textMarks: { ...current.textMarks, [textSelection.target]: nextMarks },
+      }
+    })
+  }
+
+  const clearTextStyles = () => {
+    if (!textSelection) return
+    setDraft((current) => ({
+      ...current,
+      textMarks: {
+        ...current.textMarks,
+        [textSelection.target]: (current.textMarks?.[textSelection.target] ?? []).filter(
+          (mark) => mark.end <= textSelection.start || mark.start >= textSelection.end,
+        ),
+      },
+    }))
+  }
+
+  const isTextStyleActive = (style: GrammarTableTextStyle): boolean => {
+    if (!textSelection) return false
+    return draft.textMarks?.[textSelection.target]?.some(
+      (mark) => mark.start === textSelection.start && mark.end === textSelection.end && mark.styles.includes(style),
+    ) === true
+  }
+
+  const setDisplayType = (displayType: GrammarTableDisplayType) => {
+    setDraft((current) => displayType === 'timeline'
+      ? {
+          ...current,
+          displayType,
+          headers: ['过去', '现在', '将来'],
+          rows: [['', '', '']],
+          merges: [],
+          textMarks: {},
+        }
+      : { ...current, displayType })
+    setSelectedCell(null)
+    setSelectionAnchor(null)
+    setSelectionEnd(null)
   }
 
   const removeColumn = (columnIndex: number) => {
@@ -225,6 +330,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       headers: current.headers.filter((_, index) => index !== columnIndex),
       rows: current.rows.map((row) => row.filter((_, index) => index !== columnIndex)),
       merges: [],
+      textMarks: {},
     }))
     clearSelection()
   }
@@ -234,6 +340,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       ...current,
       rows: current.rows.filter((_, index) => index !== rowIndex),
       merges: [],
+      textMarks: {},
     }))
     setSelectedCell(null)
   }
@@ -304,6 +411,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       return {
         ...current,
         rows,
+        textMarks: {},
         merges: existing
           ? merges.map((merge) => (merge === existing ? next : merge))
           : [...merges, next],
@@ -324,7 +432,8 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
             selectedCell.column >= merge.column &&
             selectedCell.column < merge.column + merge.colSpan
           ),
-      ),
+        ),
+      textMarks: {},
     }))
   }
 
@@ -345,6 +454,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
         }
         return merge
       }),
+      textMarks: {},
     }))
     selectSingleCell({ row: insertIndex, column: selectedCell.column })
   }
@@ -371,6 +481,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
         }
         return merge
       }),
+      textMarks: {},
     }))
     selectSingleCell({ row: selectedCell.row, column: insertIndex })
   }
@@ -419,11 +530,27 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
         <div className="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="flex min-w-0 flex-col gap-3 border-b border-border-light p-4 lg:border-r lg:border-b-0 sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-2 text-xs font-bold text-text-secondary">
+                <span className="shrink-0">表格类型</span>
+                <select
+                  value={draft.displayType ?? 'standard'}
+                  onChange={(event) => setDisplayType(event.target.value as GrammarTableDisplayType)}
+                  className="min-h-10 rounded-lg bg-surface px-3 text-sm font-bold text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue"
+                >
+                  <option value="standard">普通表格</option>
+                  <option value="timeline">时间轴</option>
+                </select>
+              </label>
               <label className="flex min-w-[260px] flex-1 items-center gap-2 text-xs font-bold text-text-secondary">
                 <span className="shrink-0">表格标题</span>
               <input
                 value={draft.title}
-                onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
+                onSelect={(event) => rememberTextSelection('title', event)}
+                onChange={(event) => setDraft((current) => ({
+                  ...current,
+                  title: event.target.value,
+                  textMarks: Object.fromEntries(Object.entries(current.textMarks ?? {}).filter(([key]) => key !== 'title')),
+                }))}
                   className="min-h-10 min-w-0 flex-1 rounded-lg bg-surface px-3 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue"
                 placeholder="可留空"
               />
@@ -437,6 +564,48 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                     : `第 ${selectedCell.row + 1} 行 · 第 ${selectedCell.column + 1} 列`
                   : '未选择单元格'}
               </span>
+            </div>
+
+            {draft.displayType === 'timeline' && (
+              <p className="rounded-lg bg-app-blue-light/45 px-3 py-2 text-xs font-semibold text-app-blue-dark">
+                时间轴固定使用“过去 / 现在 / 将来”三段布局，切换到该类型会自动设置表头并清空正文单元格。
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-surface-dim p-1.5 ring-1 ring-border-light" aria-label="文字格式工具栏">
+              <span className="px-1.5 text-xs font-bold text-text-muted">
+                {textSelection ? '已选文字' : '请先选中文字'}
+              </span>
+              {TEXT_STYLE_BUTTONS.map(({ style, label, title }) => (
+                (() => {
+                  const active = isTextStyleActive(style)
+                  const swatchClass = style === 'text-blue' ? 'bg-app-blue' : style === 'text-red' ? 'bg-app-red' : style === 'text-green' ? 'bg-app-green' : style === 'highlight' ? 'bg-amber-300' : ''
+                  return (
+                    <button
+                      key={style}
+                      type="button"
+                      title={title}
+                      aria-label={title}
+                      aria-pressed={active}
+                      disabled={!textSelection}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => applyTextStyle(style)}
+                      className={`min-h-9 min-w-9 cursor-pointer rounded-md px-2 text-xs font-bold text-text-secondary ring-1 transition-colors hover:bg-app-blue-light disabled:cursor-not-allowed disabled:opacity-35 ${active ? 'bg-app-blue-light ring-2 ring-app-blue' : 'bg-surface ring-border-light'} ${style === 'italic' ? 'italic' : ''} ${style === 'underline' ? 'underline' : ''}`}
+                    >
+                      {swatchClass ? <span aria-hidden="true" className={`mx-auto block h-4 w-4 rounded ${swatchClass} ring-1 ring-black/10`} /> : label}
+                    </button>
+                  )
+                })()
+              ))}
+              <button
+                type="button"
+                disabled={!textSelection}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={clearTextStyles}
+                className="min-h-9 cursor-pointer rounded-md px-2.5 text-xs font-bold text-app-red ring-1 ring-app-red/20 transition-colors hover:bg-app-red-light/40 disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                清除格式
+              </button>
             </div>
 
             <div className="overflow-x-auto pb-2">
@@ -516,6 +685,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                           selectCell({ row: -1, column: columnIndex }, event.shiftKey)
                         }
                         onChange={(event) => setHeader(columnIndex, event.target.value)}
+                        onSelect={(event) => rememberTextSelection(`header:${columnIndex}`, event)}
                         aria-label={`第 ${columnIndex + 1} 列表头`}
                         className={`block min-h-16 w-full max-w-full resize-y rounded-lg bg-app-blue-light/50 p-2 text-sm font-bold text-text-primary outline-none ring-1 focus:ring-2 focus:ring-app-blue ${
                           selectedCell?.row === -1 && selectedCell.column === columnIndex
@@ -551,6 +721,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                               selectCell({ row: rowIndex, column: columnIndex }, event.shiftKey)
                             }
                             onChange={(event) => setCell(rowIndex, columnIndex, event.target.value)}
+                            onSelect={(event) => rememberTextSelection(`body:${rowIndex}:${columnIndex}`, event)}
                             aria-label={`第 ${rowIndex + 1} 行第 ${columnIndex + 1} 列`}
                             className={`block min-h-16 w-full max-w-full resize-y rounded-lg bg-surface p-2 text-sm text-text-primary outline-none ring-1 focus:ring-2 focus:ring-app-blue ${
                               selectedCell?.row === rowIndex && selectedCell.column === columnIndex

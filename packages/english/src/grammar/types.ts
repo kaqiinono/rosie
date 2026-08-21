@@ -79,22 +79,50 @@ export interface GrammarExample {
   zh: string
   bold?: string[]
   note?: string | null
+  /** 英文/中文/注释的非破坏性局部样式。 */
+  textMarks?: Partial<Record<'en' | 'zh' | 'note', GrammarTableTextMark[]>>
 }
 
 export interface ExampleSetBlock {
   type: 'example_set'
+  /** 同一组内容的展示方式；旧数据可按 context/items 特征兼容识别。 */
+  displayType?: ExampleSetDisplayType
   /** 情境描述，如「Lisa 自我介绍」 */
   context: string
+  contextMarks?: GrammarTableTextMark[]
   items: GrammarExample[]
 }
 
+export type ExampleSetDisplayType = 'cards' | 'paragraph'
+
 export interface GrammarTableBlock {
   type: 'grammar_table'
+  /** 展示方式；旧数据未设置时由内容特征兼容识别。 */
+  displayType?: GrammarTableDisplayType
   title: string
   headers: string[]
   rows: string[][]
+  /** 标题/表头/单元格的非破坏性行内样式；key 为 title、header:N 或 body:R:C。 */
+  textMarks?: Record<string, GrammarTableTextMark[]>
   /** 管理员显式设置的正文合并区域；存在（含空数组）时不再使用旧版自动合并推断。 */
   merges?: GrammarTableMerge[]
+}
+
+export type GrammarTableDisplayType = 'standard' | 'timeline'
+
+export type GrammarTableTextStyle =
+  | 'bold'
+  | 'italic'
+  | 'underline'
+  | 'text-blue'
+  | 'text-red'
+  | 'text-green'
+  | 'highlight'
+
+export interface GrammarTableTextMark {
+  start: number
+  end: number
+  styles: GrammarTableTextStyle[]
 }
 
 export interface GrammarTableMerge {
@@ -114,20 +142,34 @@ export interface ExamplesBlock {
   items: GrammarExample[]
 }
 
+/** 紧凑词汇清单；与例句共用 items 形状，可无损切换展示类型。 */
+export interface VocabularyListBlock {
+  type: 'vocabulary_list'
+  items: GrammarExample[]
+}
+
 export interface RuleTextBlock {
   type: 'rule_text'
   text: string
+  /** 可选语义状态；旧数据未设置时默认为 info。 */
+  tone?: RuleTextTone
+  /** 与正文分离的局部文字样式。 */
+  textMarks?: GrammarTableTextMark[]
 }
+
+export type RuleTextTone = 'success' | 'info' | 'warning' | 'error'
 
 export interface TipBlock {
   type: 'tip'
   text: string
+  textMarks?: GrammarTableTextMark[]
 }
 
 export interface SpellingRuleBlock {
   type: 'spelling_rule'
   /** 规则说明文字（可含换行） */
   text: string
+  textMarks?: GrammarTableTextMark[]
   /** 拼写变化示例：base → form（如 come → coming） */
   examples: { base: string; form: string }[]
 }
@@ -136,6 +178,7 @@ export interface ImageDescriptionBlock {
   type: 'image_description'
   /** 教学内容插图的逐字描述（可含换行） */
   text: string
+  textMarks?: GrammarTableTextMark[]
 }
 
 /** 未知 block 类型的兜底形态：保留原始信息，渲染层降级展示 */
@@ -150,6 +193,7 @@ export type GrammarBlock =
   | GrammarTableBlock
   | ContractionNoteBlock
   | ExamplesBlock
+  | VocabularyListBlock
   | RuleTextBlock
   | SpellingRuleBlock
   | ImageDescriptionBlock
@@ -344,9 +388,41 @@ function normalizeExampleItems(raw: unknown): GrammarExample[] {
       zh: asString(rec.zh),
       bold: Array.isArray(rec.bold) ? rec.bold.map(String) : undefined,
       note: typeof rec.note === 'string' ? rec.note : null,
+      textMarks: normalizeTextMarkMap(rec.textMarks, ['en', 'zh', 'note']),
     })
   }
   return out
+}
+
+const GRAMMAR_TEXT_STYLES: GrammarTableTextStyle[] = [
+  'bold', 'italic', 'underline', 'text-blue', 'text-red', 'text-green', 'highlight',
+]
+
+function normalizeTextMarkList(raw: unknown): GrammarTableTextMark[] | undefined {
+  if (!Array.isArray(raw)) return undefined
+  const marks = raw.flatMap((mark) => {
+    const value = asRecord(mark)
+    const start = Number(value?.start)
+    const end = Number(value?.end)
+    const styles = Array.isArray(value?.styles)
+      ? value.styles.filter((style): style is GrammarTableTextStyle =>
+          GRAMMAR_TEXT_STYLES.includes(style as GrammarTableTextStyle))
+      : []
+    return Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && styles.length > 0
+      ? [{ start, end, styles }]
+      : []
+  })
+  return marks.length > 0 ? marks : undefined
+}
+
+function normalizeTextMarkMap<K extends string>(raw: unknown, allowedKeys: K[]): Partial<Record<K, GrammarTableTextMark[]>> | undefined {
+  const record = asRecord(raw)
+  if (!record) return undefined
+  const entries = allowedKeys.flatMap((key) => {
+    const marks = normalizeTextMarkList(record[key])
+    return marks ? [[key, marks] as const] : []
+  })
+  return entries.length > 0 ? Object.fromEntries(entries) as Partial<Record<K, GrammarTableTextMark[]>> : undefined
 }
 
 export function normalizeBlocks(raw: unknown): GrammarBlock[] {
@@ -358,19 +434,70 @@ export function normalizeBlocks(raw: unknown): GrammarBlock[] {
     const type = asString(rec.type)
     switch (type) {
       case 'example_set':
-        out.push({ type, context: asString(rec.context), items: normalizeExampleItems(rec.items) })
+        const context = asString(rec.context)
+        const items = normalizeExampleItems(rec.items)
+        const repeatedContext = context.trim() !== '' && context.trim() === items.map((item) => item.en.trim()).join(' ')
+        out.push({
+          type,
+          displayType: rec.displayType === 'paragraph' || rec.displayType === 'cards'
+            ? rec.displayType
+            : repeatedContext ? 'paragraph' : 'cards',
+          context,
+          contextMarks: normalizeTextMarkList(rec.contextMarks),
+          items,
+        })
         break
       case 'examples':
+        const exampleItems = normalizeExampleItems(rec.items)
+        const looksLikeVocabulary =
+          exampleItems.length >= 6 &&
+          exampleItems.every((example) => /^[A-Za-z]+(?:['-][A-Za-z]+)*$/.test(example.en.trim()))
+        out.push({ type: looksLikeVocabulary ? 'vocabulary_list' : type, items: exampleItems })
+        break
+      case 'vocabulary_list':
         out.push({ type, items: normalizeExampleItems(rec.items) })
         break
       case 'grammar_table':
+        const headers = Array.isArray(rec.headers) ? rec.headers.map(String) : []
+        const rows = Array.isArray(rec.rows)
+          ? (rec.rows as unknown[]).map((r) => (Array.isArray(r) ? r.map(String) : []))
+          : []
+        const legacyTimeline =
+          headers.length === 3 &&
+          headers[0] === '过去' &&
+          headers[1] === '现在' &&
+          headers[2] === '将来' &&
+          rows.every((row) => row.every((cell) => cell.trim() === ''))
+        const textMarks = asRecord(rec.textMarks)
         out.push({
           type,
+          displayType: rec.displayType === 'timeline' || rec.displayType === 'standard'
+            ? rec.displayType
+            : legacyTimeline ? 'timeline' : 'standard',
           title: asString(rec.title),
-          headers: Array.isArray(rec.headers) ? rec.headers.map(String) : [],
-          rows: Array.isArray(rec.rows)
-            ? (rec.rows as unknown[]).map((r) => (Array.isArray(r) ? r.map(String) : []))
-            : [],
+          headers,
+          rows,
+          textMarks: textMarks
+            ? Object.fromEntries(Object.entries(textMarks).flatMap(([key, marks]) => {
+                if (!Array.isArray(marks)) return []
+                const normalized = marks.flatMap((mark) => {
+                  const value = asRecord(mark)
+                  const start = Number(value?.start)
+                  const end = Number(value?.end)
+                  const allowedStyles: GrammarTableTextStyle[] = [
+                    'bold', 'italic', 'underline', 'text-blue', 'text-red', 'text-green', 'highlight',
+                  ]
+                  const styles = Array.isArray(value?.styles)
+                    ? value.styles.filter((style): style is GrammarTableTextStyle =>
+                        allowedStyles.includes(style as GrammarTableTextStyle))
+                    : []
+                  return Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && styles.length > 0
+                    ? [{ start, end, styles }]
+                    : []
+                })
+                return normalized.length > 0 ? [[key, normalized]] : []
+              }))
+            : undefined,
           merges: Array.isArray(rec.merges)
             ? rec.merges.flatMap((merge) => {
                 const mr = asRecord(merge)
@@ -397,14 +524,38 @@ export function normalizeBlocks(raw: unknown): GrammarBlock[] {
             : [],
         })
         break
-      case 'rule_text':
+      case 'rule_text': {
+        const tone = rec.tone === 'success' || rec.tone === 'info' || rec.tone === 'warning' || rec.tone === 'error'
+          ? rec.tone
+          : 'info'
+        const textMarks = Array.isArray(rec.textMarks)
+          ? rec.textMarks.flatMap((mark) => {
+              const value = asRecord(mark)
+              const start = Number(value?.start)
+              const end = Number(value?.end)
+              const allowedStyles: GrammarTableTextStyle[] = [
+                'bold', 'italic', 'underline', 'text-blue', 'text-red', 'text-green', 'highlight',
+              ]
+              const styles = Array.isArray(value?.styles)
+                ? value.styles.filter((style): style is GrammarTableTextStyle =>
+                    allowedStyles.includes(style as GrammarTableTextStyle))
+                : []
+              return Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && styles.length > 0
+                ? [{ start, end, styles }]
+                : []
+            })
+          : undefined
+        out.push({ type, text: asString(rec.text), tone, textMarks })
+        break
+      }
       case 'tip':
-        out.push({ type, text: asString(rec.text) })
+        out.push({ type, text: asString(rec.text), textMarks: normalizeTextMarkList(rec.textMarks) })
         break
       case 'spelling_rule':
         out.push({
           type,
           text: asString(rec.text),
+          textMarks: normalizeTextMarkList(rec.textMarks),
           examples: Array.isArray(rec.examples)
             ? (rec.examples as unknown[]).map((e) => {
                 const er = asRecord(e)
@@ -414,7 +565,7 @@ export function normalizeBlocks(raw: unknown): GrammarBlock[] {
         })
         break
       case 'image_description':
-        out.push({ type, text: asString(rec.text) })
+        out.push({ type, text: asString(rec.text), textMarks: normalizeTextMarkList(rec.textMarks) })
         break
       case 'cross_reference':
         // 误放入 blocks 的交叉引用：降级为 tip 展示，不丢失信息

@@ -490,6 +490,7 @@ function GrammarUnitPageInner({
                 {lessonEditing && (
                   <GrammarLessonEditorModal
                     lesson={detail.lesson}
+                    pageImages={detail.pageImages}
                     onSave={handleSaveLesson}
                     onClose={() => setLessonEditing(false)}
                   />

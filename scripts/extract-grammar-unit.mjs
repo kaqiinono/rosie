@@ -290,22 +290,27 @@ const EXTRACTION_PROMPT = `你是一位英语语法教材内容的**逐字转录
         // block 类型如下（用 type 字段区分）：
 
         // 1) 情境对话/例句列表（通常配有人物插图）
-        { "type": "example_set", "context": "<场景描述，如'Lisa 自我介绍'>", "items": [
+        { "type": "example_set", "displayType": "cards|paragraph", "context": "<场景描述，如'Lisa 自我介绍'>", "items": [
           { "en": "<逐字英文>", "zh": "<逐字中文翻译>", "bold": ["<加粗的词>"] }
         ]},
 
         // 2) 语法表格（动词变位表等）
-        { "type": "grammar_table", "title": "<表格标题，如'肯定式'/'否定式'>", "headers": ["<列标题>"], "rows": [["<单元格内容>"]] },
+        { "type": "grammar_table", "displayType": "standard|timeline", "title": "<表格标题，如'肯定式'/'否定式'>", "headers": ["<列标题>"], "rows": [["<单元格内容>"]] },
 
         // 3) 语法规则说明（中文段落）
-        { "type": "rule_text", "text": "<逐字抄写中文语法说明，保留原文用词>" },
+        { "type": "rule_text", "tone": "info|success|warning|error", "text": "<逐字抄写中文语法说明，保留原文用词>" },
 
         // 4) 散列例句（带方块符号的例句列表）
         { "type": "examples", "items": [
           { "en": "<逐字英文>", "zh": "<逐字中文>", "note": "<括号内注释或 null>" }
         ]},
 
-        // 5) 拼写/特殊规则
+        // 5) 紧凑词汇清单（原书成排罗列单词，不是完整例句）
+        { "type": "vocabulary_list", "items": [
+          { "en": "<单词>", "zh": "<中文辅助>", "note": null }
+        ]},
+
+        // 6) 拼写/特殊规则
         { "type": "spelling_rule", "text": "<逐字抄写>", "examples": [
           { "base": "come", "form": "coming" }
         ]},
@@ -391,11 +396,13 @@ const APPENDIX_PROMPT = `你是一位英语语法教材**附录内容**的逐字
 }
 
 **block 类型与选择规则**（用 type 字段区分）：
-- grammar_table：对照表/动词表等表格，**必须保留原书列结构与行列顺序**。headers 为列标题数组，rows 为单元格二维数组；空单元格用 "" 表示。每一行原书例句对应 rows 中一行（同一格内多条例句拆成多行，不要用 \n 塞进一个单元格）；行首的分组标签（如时态名）作为该行第一个单元格文本或独立 section title。并列排布的多张表（如左右两套三列动词表）拆为多个 grammar_table 按原书阅读顺序排列
+- example_set：情境对话/连续例句组。独立可扫读的例句用 `cards`；原书以连续叙述段落排版时用 `paragraph`。context 只存真正的场景说明，不要重复拼接 items 英文
+- grammar_table：对照表/动词表等表格，**必须保留原书列结构与行列顺序**。displayType 默认为 `standard`；原书明确以“过去 / 现在 / 将来”三段时间轴表达时使用 `timeline`。headers 为列标题数组，rows 为单元格二维数组；空单元格用 "" 表示。每一行原书例句对应 rows 中一行（同一格内多条例句拆成多行，不要用 \n 塞进一个单元格）；行首的分组标签（如时态名）作为该行第一个单元格文本或独立 section title。并列排布的多张表（如左右两套三列动词表）拆为多个 grammar_table 按原书阅读顺序排列
 - contraction_note：缩略形式对照（items: [{ full, short }]）
 - spelling_rule：拼写规则（text = 规则说明逐字，examples: [{ base, form }]）
-- examples：例句列表（items: [{ en, zh, note }]，加粗词记入 bold）
-- rule_text：中文语法说明段落，原文照抄
+- examples：完整例句列表（items: [{ en, zh, note }]，加粗词记入 bold）
+- vocabulary_list：原书以多列/多行紧凑排列的单词清单，不得用 examples 代替；items 仍使用 [{ en, zh, note }]，便于管理员无损切换展示类型
+- rule_text：中文语法说明段落，原文照抄。tone 默认 `info`；明确表示正确结果用 `success`，需注意/避免的规则用 `warning`，错误形式或禁止信息用 `error`
 - tip：注意事项/提示框文字
 - image_description：有教学内容的插图（如短语动词配图）逐字描述，含图中标注文字
 
