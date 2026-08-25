@@ -30,6 +30,7 @@ import {
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-plan-shared'
 import AdaptivePlanCardCalendar from './AdaptivePlanCardCalendar'
+import { simulateAdaptivePlan } from '../../utils/adaptivePlanSimulate'
 
 interface Props {
   vocab: WordEntry[]
@@ -170,6 +171,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
   const {
     plans: adaptivePlans,
     isLoading: adaptiveLoading,
+    loadProgress,
     loadProgressForPlans,
   } = useAdaptiveWordPlan(user)
   const [showOldReview, setShowOldReview] = useState(false)
@@ -277,13 +279,13 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     [vocab, masteryMap, currentAndNextWeekPlans],
   )
 
-  const visibleAdaptiveIds = useMemo(
-    () => visibleAdaptivePlans.map((plan) => plan.id),
+  const activeAdaptiveIds = useMemo(
+    () => visibleAdaptivePlans.filter((plan) => plan.status === 'active').map((plan) => plan.id),
     [visibleAdaptivePlans],
   )
 
   useEffect(() => {
-    if (visibleAdaptiveIds.length === 0) {
+    if (activeAdaptiveIds.length === 0) {
       setDayByPlanId({})
       setRowsByPlanId({})
       return
@@ -293,7 +295,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     const today = todayStr()
     const activePlans = visibleAdaptivePlans.filter((p) => p.status === 'active')
 
-    void loadProgressForPlans(visibleAdaptiveIds)
+    void loadProgressForPlans(activeAdaptiveIds)
       .then((rowsMap) => {
         if (cancelled) return
         const entries = activePlans.map((plan) => {
@@ -319,7 +321,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     return () => {
       cancelled = true
     }
-  }, [loadProgressForPlans, visibleAdaptiveIds, visibleAdaptivePlans])
+  }, [activeAdaptiveIds, loadProgressForPlans, visibleAdaptivePlans])
 
   if (showOldReview) {
     return (
@@ -409,6 +411,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
                       vocab={vocab}
                       masteryMap={masteryMap}
                       userId={user?.id}
+                      loadCalendarRows={() => loadProgress(card.adaptive!.id)}
                       onOpen={() => router.push(`/english/words/adaptive/${card.adaptive!.id}`)}
                     />
                   )
@@ -520,6 +523,7 @@ function AdaptivePlanCard({
   vocab,
   masteryMap,
   userId,
+  loadCalendarRows,
   onOpen,
 }: {
   plan: AdaptiveWordPlan
@@ -529,13 +533,45 @@ function AdaptivePlanCard({
   vocab: WordEntry[]
   masteryMap: WordMasteryMap
   userId: string | undefined
+  loadCalendarRows: () => Promise<AdaptivePlanWordProgress[]>
   onOpen: () => void
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false)
+  const [calendarRows, setCalendarRows] = useState<AdaptivePlanWordProgress[] | null>(null)
+  const [calendarLoading, setCalendarLoading] = useState(false)
+  const [calendarError, setCalendarError] = useState<string | null>(null)
   const capsules =
     plan.status === 'active' && daySnapshot && rows
       ? buildDailyWordCapsules(daySnapshot.dailyTask, rows, vocab)
       : []
+
+  const effectiveCalendarRows = calendarRows ?? rows ?? null
+  const calendarSimulation = useMemo(() => {
+    if (!effectiveCalendarRows) return null
+    const activeRows = effectiveCalendarRows.filter((row) => row.archivedAt == null)
+    return simulateAdaptivePlan({
+      plan,
+      wordKeys: activeRows.map((row) => row.wordKey),
+      initialRows: activeRows,
+      startDate: todayStr(),
+      maxDays: 500,
+      allCorrect: true,
+    })
+  }, [effectiveCalendarRows, plan])
+
+  const openCalendar = () => {
+    setCalendarOpen(true)
+    if (calendarRows || rows || calendarLoading) return
+    setCalendarLoading(true)
+    setCalendarError(null)
+    void loadCalendarRows()
+      .then(setCalendarRows)
+      .catch((error) => {
+        console.error('[adaptive_word_plan] calendar progress load failed', error)
+        setCalendarError('计划日历加载失败，请稍后重试。')
+      })
+      .finally(() => setCalendarLoading(false))
+  }
 
   return (
     <div className={cardShellClass('adaptive', isCurrent)}>
@@ -609,10 +645,10 @@ function AdaptivePlanCard({
         <button
           type="button"
           aria-expanded={calendarOpen}
-          onClick={() => setCalendarOpen((open) => !open)}
+          onClick={openCalendar}
           className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#93c5fd] transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
         >
-          {calendarOpen ? '收起日历' : '🗓️ 计划日历'}
+          {calendarLoading ? '加载日历…' : '🗓️ 计划日历'}
         </button>
         {plan.status === 'active' && capsules.length > 0 && (
           <Link
@@ -645,8 +681,17 @@ function AdaptivePlanCard({
           vocab={vocab}
           masteryMap={masteryMap}
           userId={userId}
+          trajectoryDays={calendarSimulation?.days ?? []}
+          rangeStart={plan.createdAt.slice(0, 10)}
+          rangeEnd={
+            calendarSimulation?.days.at(-1)?.date
+            ?? (plan.status === 'completed' ? plan.updatedAt.slice(0, 10) : todayStr())
+          }
           onClose={() => setCalendarOpen(false)}
         />
+      )}
+      {calendarError && (
+        <div className="px-4 pb-3 text-right text-[.68rem] font-bold text-rose-300">{calendarError}</div>
       )}
     </div>
   )

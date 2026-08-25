@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import type { WordEntry, WordMasteryMap } from '@rosie/core'
+import type { QuizType, WordEntry, WordMasteryMap } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import {
   loadAdaptivePracticeLogs,
@@ -9,6 +9,7 @@ import {
   type AdaptivePracticeWordLog,
 } from '../../utils/adaptivePlanPracticeLog'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
+import type { SimDaySnapshot } from '../../utils/adaptivePlanSimulate'
 import { findWordByKey } from '../../utils/english-helpers'
 import TodayWordDetailModal from './TodayWordDetailModal'
 
@@ -37,6 +38,9 @@ type CalendarWord = {
   outcomes: AdaptivePracticeWordLog['outcomes']
   nextReviewDate: string | null
   projected: boolean
+  quizTypes: QuizType[]
+  phases: string[]
+  stageLabels: string[]
 }
 
 type CalendarDay = {
@@ -45,6 +49,12 @@ type CalendarDay = {
   words: CalendarWord[]
   projected: boolean
   inferred: boolean
+  note: string | null
+  newCount: number
+  reviewCount: number
+  promotedCount: number | null
+  masteredCount: number | null
+  cumulative: SimDaySnapshot['cumulative'] | null
 }
 
 type Props = {
@@ -53,6 +63,9 @@ type Props = {
   masteryMap: WordMasteryMap
   userId: string
   onClose: () => void
+  trajectoryDays?: SimDaySnapshot[]
+  rangeStart?: string
+  rangeEnd?: string
 }
 
 function pad2(value: number): string {
@@ -113,6 +126,15 @@ function actualDays(sessions: AdaptivePracticeSessionLog[]): CalendarDay[] {
           outcomes: [...(previous?.outcomes ?? []), ...item.outcomes],
           nextReviewDate: item.nextReviewAfter,
           projected: false,
+          quizTypes: [...new Set([
+            ...(previous?.quizTypes ?? []),
+            ...item.outcomes.flatMap((outcome) => outcome.quizType ? [outcome.quizType] : []),
+          ])],
+          phases: [...new Set([
+            ...(previous?.phases ?? []),
+            ...item.outcomes.map((outcome) => outcome.phase),
+          ])],
+          stageLabels: [],
         })
       }
     }
@@ -122,6 +144,61 @@ function actualDays(sessions: AdaptivePracticeSessionLog[]): CalendarDay[] {
       words: [...byWord.values()],
       projected: false,
       inferred: daySessions.some((session) => session.recordKind === 'inferred'),
+      note: null,
+      newCount: daySessions.reduce((sum, session) => sum + session.newWordCount, 0),
+      reviewCount: daySessions.reduce((sum, session) => sum + session.reviewWordCount, 0),
+      promotedCount: null,
+      masteredCount: [...byWord.values()].filter((word) => word.statusAfter === 'MASTERED').length,
+      cumulative: null,
+    }
+  })
+}
+
+function projectedDays(days: SimDaySnapshot[]): CalendarDay[] {
+  return days.map((day) => {
+    const byWord = new Map<string, CalendarWord>()
+    for (const touch of day.touches) {
+      const previous = byWord.get(touch.wordKey)
+      byWord.set(touch.wordKey, {
+        wordKey: touch.wordKey,
+        kind:
+          previous?.kind === 'new' || touch.phase === 'study'
+            ? 'new'
+            : touch.phase === 'boss'
+              ? 'boss'
+              : 'review',
+        stage: stageKey(touch.boxAfter, touch.statusAfter),
+        boxBefore: previous?.boxBefore ?? touch.boxBefore,
+        boxAfter: touch.boxAfter,
+        statusAfter: touch.statusAfter,
+        questionCount: (previous?.questionCount ?? 0) + touch.questionCount,
+        correctCount: (previous?.correctCount ?? 0) + touch.questionCount,
+        outcomes: previous?.outcomes ?? [],
+        nextReviewDate: null,
+        projected: true,
+        quizTypes: [...new Set([
+          ...(previous?.quizTypes ?? []),
+          ...touch.quizTypes,
+        ])],
+        phases: [...new Set([...(previous?.phases ?? []), touch.phase])],
+        stageLabels: [...new Set([
+          ...(previous?.stageLabels ?? []),
+          ...(touch.stageLabel ? [touch.stageLabel] : []),
+        ])],
+      })
+    }
+    return {
+      date: day.date,
+      mode: day.mode,
+      words: [...byWord.values()],
+      projected: true,
+      inferred: false,
+      note: day.note,
+      newCount: day.newWordKeys.length,
+      reviewCount: day.reviewWordKeys.length,
+      promotedCount: day.promotedCount,
+      masteredCount: day.masteredToday.length,
+      cumulative: day.cumulative,
     }
   })
 }
@@ -132,11 +209,24 @@ function stageCounts(words: CalendarWord[]): Map<StageKey, number> {
   return counts
 }
 
+function totalQuestions(words: CalendarWord[]): number {
+  return words.reduce((sum, word) => sum + word.questionCount, 0)
+}
+
 function wordLabel(key: string, vocab: WordEntry[]): string {
   return findWordByKey(vocab, key)?.word ?? key.split('::').at(-1) ?? key
 }
 
 const KIND_LABEL: Record<DayWordKind, string> = { new: '新学', review: '复习', boss: 'Boss' }
+const QUIZ_LABEL: Record<QuizType, string> = { A: 'A认读', B: 'B选择', C: 'C默写', D: 'D听写' }
+const PHASE_LABEL: Record<string, string> = {
+  study: '认读',
+  step1_review: '复习',
+  step3_final: '闯关',
+  boss: 'Boss',
+  boss_sink: 'Boss补练',
+  unknown: '练习',
+}
 
 export default function AdaptivePlanCardCalendar({
   plan,
@@ -144,12 +234,21 @@ export default function AdaptivePlanCardCalendar({
   masteryMap,
   userId,
   onClose,
+  trajectoryDays,
+  rangeStart,
+  rangeEnd,
 }: Props) {
+  const isTrajectory = trajectoryDays != null
   const today = todayStr()
-  const initial = parseIso(today)
+  const initialDate = isTrajectory
+    ? rangeStart && rangeEnd && today >= rangeStart && today <= rangeEnd
+      ? today
+      : (rangeEnd ?? rangeStart ?? today)
+    : today
+  const initial = parseIso(initialDate)
   const [year, setYear] = useState(initial.year)
   const [month, setMonth] = useState(initial.month)
-  const [selectedDate, setSelectedDate] = useState<string | null>(today)
+  const [selectedDate, setSelectedDate] = useState<string | null>(initialDate)
   const [logs, setLogs] = useState<AdaptivePracticeSessionLog[] | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [detailWord, setDetailWord] = useState<WordEntry | null>(null)
@@ -165,7 +264,7 @@ export default function AdaptivePlanCardCalendar({
           (latest, session) => (!latest || session.practiceDate > latest ? session.practiceDate : latest),
           null,
         )
-        if (latestPracticeDate) {
+        if (!isTrajectory && latestPracticeDate) {
           const latest = parseIso(latestPracticeDate)
           setYear(latest.year)
           setMonth(latest.month)
@@ -181,7 +280,7 @@ export default function AdaptivePlanCardCalendar({
     return () => {
       cancelled = true
     }
-  }, [plan.id, userId])
+  }, [isTrajectory, plan.id, userId])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -193,9 +292,10 @@ export default function AdaptivePlanCardCalendar({
 
   const days = useMemo(() => {
     const map = new Map<string, CalendarDay>()
+    for (const day of projectedDays(trajectoryDays ?? [])) map.set(day.date, day)
     for (const day of actualDays(logs ?? [])) map.set(day.date, day)
     return map
-  }, [logs])
+  }, [logs, trajectoryDays])
 
   const grid = useMemo(() => monthGrid(year, month), [month, year])
   const selectedDay = selectedDate ? days.get(selectedDate) : undefined
@@ -231,7 +331,7 @@ export default function AdaptivePlanCardCalendar({
           <div>
             <div className="font-fredoka text-xl text-[#c4b5fd]">🗓️ 计划日历</div>
             <div className="mt-0.5 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
-              {plan.title} · 仅显示已练习数据
+              {plan.title} · {isTrajectory ? `${rangeStart ?? '计划开始'} 至 ${rangeEnd ?? '计划结束'}` : '仅显示已练习数据'}
             </div>
           </div>
           <button
@@ -281,32 +381,57 @@ export default function AdaptivePlanCardCalendar({
           {grid.map((cell, index) => {
             if (!cell) return <div key={`pad-${index}`} className="min-h-[4.8rem]" />
             const day = days.get(cell.date)
+            const questionCount = day ? totalQuestions(day.words) : 0
+            const inRange = isTrajectory && rangeStart != null && rangeEnd != null
+              ? cell.date >= rangeStart && cell.date <= rangeEnd
+              : false
             const counts = day ? stageCounts(day.words) : new Map<StageKey, number>()
             const selected = selectedDate === cell.date
             const isToday = cell.date === today
+            const stateClass = !day
+              ? ''
+              : day.projected
+                ? day.mode === 'boss'
+                  ? 'border-amber-500/35 bg-amber-950/20'
+                  : day.mode === 'review_only'
+                    ? 'border-rose-500/30 bg-rose-950/15'
+                    : 'border-sky-500/28 bg-sky-950/15'
+                : day.mode === 'boss'
+                  ? 'border-amber-300/85 bg-gradient-to-br from-amber-400/28 to-orange-500/12 shadow-[0_0_14px_rgba(245,158,11,.16),inset_0_0_18px_rgba(245,158,11,.15)]'
+                  : day.mode === 'review_only'
+                    ? 'border-rose-300/80 bg-gradient-to-br from-rose-400/25 to-red-500/10 shadow-[0_0_14px_rgba(244,63,94,.14),inset_0_0_18px_rgba(244,63,94,.13)]'
+                    : 'border-sky-300/75 bg-gradient-to-br from-sky-400/24 to-blue-500/10 shadow-[0_0_14px_rgba(56,189,248,.14),inset_0_0_18px_rgba(56,189,248,.12)]'
             return (
               <button
                 key={cell.date}
                 type="button"
-                disabled={!day}
+                disabled={!day && !inRange}
                 onClick={() => setSelectedDate(selected ? null : cell.date)}
-                className={`flex min-h-[4.8rem] min-w-0 cursor-pointer flex-col rounded-lg border border-solid px-1 py-1 text-left transition disabled:cursor-default disabled:border-transparent disabled:bg-transparent disabled:opacity-35 sm:min-h-[5.6rem] ${
-                  day?.mode === 'boss'
-                    ? 'border-amber-400/45 bg-amber-400/[.08]'
-                    : day
-                      ? 'border-sky-400/30 bg-sky-400/[.06]'
-                      : ''
-                } ${selected ? 'ring-2 ring-[#c4b5fd]' : ''} ${isToday ? 'shadow-[inset_0_0_0_1px_rgba(147,197,253,.55)]' : ''}`}
+                className={`relative flex min-h-[4.8rem] min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border px-1.5 py-1.5 text-left transition hover:-translate-y-0.5 disabled:cursor-default disabled:border-transparent disabled:bg-transparent disabled:opacity-35 disabled:hover:translate-y-0 sm:min-h-[5.6rem] ${stateClass} ${selected ? 'ring-2 ring-[#c4b5fd]' : ''} ${isToday && !day ? 'shadow-[inset_0_0_0_1px_rgba(147,197,253,.55)]' : ''}`}
               >
-                <span className={`text-[.68rem] font-black ${isToday ? 'text-[#93c5fd]' : 'text-white/70'}`}>
+                <span className={`text-[.68rem] font-black ${isToday ? 'text-[#93c5fd]' : 'text-white/80'}`}>
                   {cell.day}
                 </span>
                 {day && (
                   <>
-                    <span className="mt-0.5 text-[.56rem] font-extrabold text-[#86efac] sm:text-[.62rem]">
-                      {day.words.length}词
+                    <span className={`mt-0.5 text-[.43rem] font-black leading-none ${day.projected ? 'text-violet-300/75' : 'text-emerald-300/80'}`}>
+                      {day.projected ? '计划' : '实际'}
                     </span>
-                    <span className="mt-auto flex flex-wrap gap-x-1 text-[.48rem] font-bold leading-tight sm:text-[.55rem]">
+                    <span
+                      className={`absolute top-1 right-1 rounded-full border px-1 py-0.5 text-[.45rem] font-black leading-none sm:text-[.5rem] ${
+                        day.mode === 'boss'
+                          ? 'border-amber-200/45 bg-amber-300/20 text-amber-200'
+                          : day.mode === 'review_only'
+                            ? 'border-rose-200/40 bg-rose-300/20 text-rose-200'
+                            : 'border-sky-200/40 bg-sky-300/15 text-sky-200'
+                      }`}
+                    >
+                      {day.mode === 'boss' ? '👹 BOSS' : day.mode === 'review_only' ? '🔥 熔断' : '✦ 练习'}
+                    </span>
+                    <span className="mt-auto whitespace-nowrap text-[.5rem] font-extrabold text-white/90 sm:text-[.58rem]">
+                      {day.words.length}词/{questionCount}题
+                    </span>
+                    <span className="mt-1 flex flex-wrap gap-x-1 text-[.48rem] font-bold leading-tight sm:text-[.55rem]">
                       {STAGES.filter((stage) => (counts.get(stage.key) ?? 0) > 0).map((stage) => (
                         <span key={stage.key} style={{ color: stage.color }}>
                           {stage.emoji}{counts.get(stage.key)}
@@ -316,13 +441,42 @@ export default function AdaptivePlanCardCalendar({
                     </span>
                   </>
                 )}
+                {!day && inRange && (
+                  <span className="mt-auto text-[.55rem] font-bold text-white/30">休息</span>
+                )}
               </button>
             )
           })}
         </div>
 
+        {isTrajectory && (
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[.62rem] font-bold text-[var(--wm-text-dim)]">
+            <span className="inline-flex items-center gap-1 text-emerald-200/80">
+              <span className="h-2.5 w-2.5 rounded border border-emerald-200/80 bg-emerald-300/35 shadow-[0_0_7px_rgba(110,231,183,.55)]" />
+              已执行（点亮）
+            </span>
+            <span className="inline-flex items-center gap-1 text-white/45">
+              <span className="h-2.5 w-2.5 rounded border border-white/25 bg-white/[.04]" />
+              未执行（未点亮）
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="rounded-full border border-sky-300/55 bg-sky-300/15 px-1.5 py-0.5 text-sky-200">✦</span>
+              有练习
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="rounded-full border border-amber-300/60 bg-amber-300/20 px-1.5 py-0.5 text-amber-200">👹</span>
+              Boss 日
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="rounded-full border border-rose-300/55 bg-rose-300/20 px-1.5 py-0.5 text-rose-200">🔥</span>
+              复习熔断
+            </span>
+            <span>点击日期查看单词信息</span>
+          </div>
+        )}
+
         {logs == null && <div className="mt-3 text-center text-[.68rem] font-bold text-white/35">加载真实练习记录…</div>}
-        {logs?.length === 0 && !loadError && (
+        {logs?.length === 0 && !loadError && !isTrajectory && (
           <div className="mt-3 rounded-xl border border-dashed border-violet-300/25 bg-violet-950/20 px-4 py-6 text-center text-sm font-bold text-violet-200/65">
             还没有已完成的练习记录
           </div>
@@ -334,10 +488,42 @@ export default function AdaptivePlanCardCalendar({
             <div className="flex flex-wrap items-center gap-2 text-[.72rem] font-extrabold text-white/75">
               <span>{selectedDay.date}</span>
               <span className="text-white/25">·</span>
-              <span className="text-[#86efac]">共 {selectedDay.words.length} 词</span>
+              <span className="text-[#86efac]">
+                {selectedDay.words.length}词/{totalQuestions(selectedDay.words)}题
+              </span>
               {selectedDay.mode === 'boss' && <span className="text-amber-300">Boss</span>}
+              {selectedDay.mode === 'review_only' && <span className="text-rose-300">复习熔断</span>}
               {selectedDay.inferred && <span className="text-amber-300">推定记录</span>}
+              {selectedDay.projected && <span className="text-violet-300">计划排程</span>}
+              {!selectedDay.projected && !selectedDay.inferred && <span className="text-emerald-300">实际记录</span>}
             </div>
+            {selectedDay.note && (
+              <div className="mt-2 text-[.68rem] font-bold leading-relaxed text-white/45">
+                {selectedDay.note}
+              </div>
+            )}
+            <div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+              {[
+                ['新学', selectedDay.newCount, '#93c5fd'],
+                ['复习', selectedDay.reviewCount, '#c4b5fd'],
+                ['答题', totalQuestions(selectedDay.words), '#86efac'],
+                ['新掌握', selectedDay.masteredCount ?? '—', '#fbbf24'],
+              ].map(([label, value, color]) => (
+                <div key={String(label)} className="rounded-lg border border-white/[.07] bg-white/[.025] px-2 py-1.5">
+                  <div className="text-[.55rem] font-extrabold text-white/35">{label}</div>
+                  <div className="font-fredoka text-base" style={{ color: String(color) }}>{value}</div>
+                </div>
+              ))}
+            </div>
+            {selectedDay.cumulative && (
+              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[.62rem] font-bold text-white/45">
+                <span>学习中 {selectedDay.cumulative.learning}</span>
+                <span>已掌握 {selectedDay.cumulative.mastered}</span>
+                <span>未开始 {selectedDay.cumulative.notStarted}</span>
+                <span>累计激活 {selectedDay.cumulative.totalActivated}</span>
+                <span>成长 +{selectedDay.promotedCount ?? 0}</span>
+              </div>
+            )}
             <div className="mt-2 flex flex-wrap gap-1.5">
               {STAGES.map((stage) => {
                 const count = stageCounts(selectedDay.words).get(stage.key) ?? 0
@@ -370,6 +556,15 @@ export default function AdaptivePlanCardCalendar({
                           : ` · ${word.questionCount}题`}
                         {word.nextReviewDate ? ` · 下次 ${word.nextReviewDate}` : ''}
                       </span>
+                      {(word.phases.length > 0 || word.quizTypes.length > 0) && (
+                        <span className="mt-0.5 block text-[.56rem] font-bold text-white/40">
+                          {word.phases.map((phase) => PHASE_LABEL[phase] ?? phase).join(' + ')}
+                          {word.quizTypes.length > 0
+                            ? ` · ${word.quizTypes.map((type) => QUIZ_LABEL[type]).join(' + ')}`
+                            : ''}
+                          {word.stageLabels.length > 0 ? ` · ${word.stageLabels.join(' + ')}` : ''}
+                        </span>
+                      )}
                     </span>
                     <span className="text-[.68rem] font-extrabold text-[#c4b5fd]">
                       {word.boxBefore ?? '—'} → {word.statusAfter === 'MASTERED' ? '👑' : (word.boxAfter ?? '?')}
@@ -378,6 +573,12 @@ export default function AdaptivePlanCardCalendar({
                 )
               })}
             </div>
+          </div>
+        )}
+        {isTrajectory && selectedDate && !selectedDay && rangeStart && rangeEnd
+          && selectedDate >= rangeStart && selectedDate <= rangeEnd && (
+          <div className="mt-4 rounded-xl border border-white/[.08] bg-white/[.03] p-4 text-center text-sm font-bold text-white/45">
+            {selectedDate} · 休息日，无练习安排
           </div>
         )}
       </div>

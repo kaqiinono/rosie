@@ -22,9 +22,7 @@ import {
 } from '../../utils/adaptivePlanPracticeLog'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanPreviewOverview from './AdaptivePlanPreviewOverview'
-import AdaptivePlanPreviewCalendar from './AdaptivePlanPreviewCalendar'
-
-type DetailViewMode = 'list' | 'calendar'
+import AdaptivePlanCardCalendar from './AdaptivePlanCardCalendar'
 
 type AdaptivePlanPreviewProps = {
   planId: string
@@ -131,7 +129,7 @@ function groupTouchesByWord(touches: SimWordTouch[]): DayWordRow[] {
   })
 }
 
-function DayCard({
+function UnusedDayCard({
   day,
   vocab,
   defaultOpen = false,
@@ -143,9 +141,6 @@ function DayCard({
   const [open, setOpen] = useState(defaultOpen)
   const [wordsOpen, setWordsOpen] = useState(false)
 
-  useEffect(() => {
-    if (defaultOpen) setOpen(true)
-  }, [defaultOpen, day.date])
   const hasWork =
     day.newWordKeys.length > 0 ||
     day.reviewWordKeys.length > 0 ||
@@ -548,16 +543,15 @@ function StageTrajectoryMatrix({
 
 export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPreviewProps) {
   const { user } = useAuth()
-  const { vocab } = useWordsContext()
+  const { vocab, masteryMap } = useWordsContext()
   const { plans, isLoading: plansLoading, loadProgress } = useAdaptiveWordPlan(user)
 
   const [rows, setRows] = useState<AdaptivePlanWordProgress[]>([])
   const [isLoadingRows, setIsLoadingRows] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState(0)
-  const [detailView, setDetailView] = useState<DetailViewMode>('list')
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [practiceLogs, setPracticeLogs] = useState<AdaptivePracticeSessionLog[]>([])
+  const [calendarOpen, setCalendarOpen] = useState(false)
 
   const today = todayStr()
   const plan = useMemo(() => plans.find((p) => p.id === planId) ?? null, [plans, planId])
@@ -753,7 +747,6 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
 
   const { baseline, days } = simulation
   const lastDay = days.at(-1)
-  const selectedDay = selectedDate ? (days.find((d) => d.date === selectedDate) ?? null) : null
 
   return (
     <div className="mx-auto max-w-[1120px] px-4 py-6">
@@ -775,8 +768,18 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
       </div>
 
       <div className="mb-5 rounded-[24px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6">
-        <div className="font-fredoka mb-1 bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
-          {plan.title} · 学习轨迹预览
+        <div className="mb-1 flex flex-wrap items-start justify-between gap-3">
+          <div className="font-fredoka bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
+            {plan.title} · 学习轨迹预览
+          </div>
+          <button
+            type="button"
+            aria-expanded={calendarOpen}
+            onClick={() => setCalendarOpen(true)}
+            className="font-nunito shrink-0 cursor-pointer rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-3 py-2 text-[.75rem] font-extrabold whitespace-nowrap text-[#93c5fd] transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
+          >
+            🗓️ 计划日历
+          </button>
         </div>
         <div className="mb-4 text-sm font-bold text-[var(--wm-text-dim)]">
           {scopeLabel(plan)} · 每日新词 {plan.newWordsPerDay} · 复习上限 {plan.reviewCap} · 熔断{' '}
@@ -820,6 +823,19 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
         </div>
       </div>
 
+      {calendarOpen && user && (
+        <AdaptivePlanCardCalendar
+          plan={plan}
+          vocab={vocab}
+          masteryMap={masteryMap}
+          userId={user.id}
+          trajectoryDays={days}
+          rangeStart={actualProgress?.planStartDate ?? localDateFromTimestamp(plan.createdAt)}
+          rangeEnd={lastDay?.date ?? (plan.status === 'completed' ? plan.updatedAt.slice(0, 10) : today)}
+          onClose={() => setCalendarOpen(false)}
+        />
+      )}
+
       {fullTrajectory && (
         <StageTrajectoryMatrix
           matrix={fullTrajectory.matrix}
@@ -830,71 +846,6 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
       )}
 
       <PracticeHistory sessions={practiceLogs} vocab={vocab} />
-
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="text-[.8rem] font-extrabold tracking-wide text-[var(--wm-text-dim)] uppercase">
-          后续每日详情（承接实际进度）
-        </div>
-        <div
-          className="inline-flex rounded-full border border-[var(--wm-border)] bg-white/[.03] p-0.5"
-          role="tablist"
-          aria-label="每日详情视图"
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={detailView === 'list'}
-            onClick={() => {
-              setDetailView('list')
-              setSelectedDate(null)
-            }}
-            className={`cursor-pointer rounded-full px-3.5 py-1.5 text-[.72rem] font-extrabold transition-colors ${
-              detailView === 'list'
-                ? 'bg-[rgba(96,165,250,.15)] text-[#93c5fd]'
-                : 'text-[var(--wm-text-dim)] hover:text-[#93c5fd]'
-            }`}
-          >
-            列表
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={detailView === 'calendar'}
-            onClick={() => setDetailView('calendar')}
-            className={`cursor-pointer rounded-full px-3.5 py-1.5 text-[.72rem] font-extrabold transition-colors ${
-              detailView === 'calendar'
-                ? 'bg-[rgba(139,92,246,.15)] text-[#c4b5fd]'
-                : 'text-[var(--wm-text-dim)] hover:text-[#c4b5fd]'
-            }`}
-          >
-            日历
-          </button>
-        </div>
-      </div>
-
-      {days.length === 0 ? (
-        <div className="rounded-[16px] border border-[rgba(74,222,128,.3)] bg-[rgba(74,222,128,.08)] px-4 py-6 text-center text-sm font-bold text-[#86efac]">
-          计划已全部完成，无需后续预览。
-        </div>
-      ) : detailView === 'calendar' ? (
-        <div className="flex flex-col gap-3">
-          <AdaptivePlanPreviewCalendar
-            days={days}
-            today={today}
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-          />
-          {selectedDay && (
-            <DayCard key={selectedDay.date} day={selectedDay} vocab={vocab} defaultOpen />
-          )}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          {days.map((day) => (
-            <DayCard key={day.date} day={day} vocab={vocab} />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
