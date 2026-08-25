@@ -8,7 +8,6 @@ import {
   type AdaptivePracticeSessionLog,
   type AdaptivePracticeWordLog,
 } from '../../utils/adaptivePlanPracticeLog'
-import { simulateAdaptivePlan, type SimDaySnapshot } from '../../utils/adaptivePlanSimulate'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { findWordByKey } from '../../utils/english-helpers'
 import TodayWordDetailModal from './TodayWordDetailModal'
@@ -50,10 +49,10 @@ type CalendarDay = {
 
 type Props = {
   plan: AdaptiveWordPlan
-  rows: AdaptivePlanWordProgress[]
   vocab: WordEntry[]
   masteryMap: WordMasteryMap
   userId: string
+  onClose: () => void
 }
 
 function pad2(value: number): string {
@@ -127,29 +126,6 @@ function actualDays(sessions: AdaptivePracticeSessionLog[]): CalendarDay[] {
   })
 }
 
-function projectedDay(day: SimDaySnapshot): CalendarDay {
-  return {
-    date: day.date,
-    mode: day.mode,
-    projected: true,
-    inferred: false,
-    words: day.touches.map((touch) => ({
-      wordKey: touch.wordKey,
-      kind:
-        touch.phase === 'study' ? 'new' : touch.phase === 'boss' ? 'boss' : 'review',
-      stage: stageKey(touch.boxAfter, touch.statusAfter),
-      boxBefore: touch.boxBefore,
-      boxAfter: touch.boxAfter,
-      statusAfter: touch.statusAfter,
-      questionCount: touch.questionCount,
-      correctCount: touch.questionCount,
-      outcomes: [],
-      nextReviewDate: null,
-      projected: true,
-    })),
-  }
-}
-
 function stageCounts(words: CalendarWord[]): Map<StageKey, number> {
   const counts = new Map<StageKey, number>()
   for (const word of words) counts.set(word.stage, (counts.get(word.stage) ?? 0) + 1)
@@ -164,10 +140,10 @@ const KIND_LABEL: Record<DayWordKind, string> = { new: '新学', review: '复习
 
 export default function AdaptivePlanCardCalendar({
   plan,
-  rows,
   vocab,
   masteryMap,
   userId,
+  onClose,
 }: Props) {
   const today = todayStr()
   const initial = parseIso(today)
@@ -182,7 +158,19 @@ export default function AdaptivePlanCardCalendar({
     let cancelled = false
     void loadAdaptivePracticeLogs(userId, plan.id)
       .then((loaded) => {
-        if (!cancelled) setLogs(loaded)
+        if (cancelled) return
+        setLogs(loaded)
+
+        const latestPracticeDate = loaded.reduce<string | null>(
+          (latest, session) => (!latest || session.practiceDate > latest ? session.practiceDate : latest),
+          null,
+        )
+        if (latestPracticeDate) {
+          const latest = parseIso(latestPracticeDate)
+          setYear(latest.year)
+          setMonth(latest.month)
+          setSelectedDate(latestPracticeDate)
+        }
       })
       .catch((error) => {
         if (cancelled) return
@@ -195,25 +183,19 @@ export default function AdaptivePlanCardCalendar({
     }
   }, [plan.id, userId])
 
-  const projection = useMemo(() => {
-    const activeRows = rows.filter((row) => row.archivedAt == null)
-    if (activeRows.length === 0 || plan.status !== 'active') return []
-    return simulateAdaptivePlan({
-      plan,
-      wordKeys: activeRows.map((row) => row.wordKey),
-      initialRows: activeRows,
-      startDate: today,
-      maxDays: 500,
-      allCorrect: true,
-    }).days
-  }, [plan, rows, today])
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   const days = useMemo(() => {
     const map = new Map<string, CalendarDay>()
-    for (const day of projection) map.set(day.date, projectedDay(day))
     for (const day of actualDays(logs ?? [])) map.set(day.date, day)
     return map
-  }, [logs, projection])
+  }, [logs])
 
   const grid = useMemo(() => monthGrid(year, month), [month, year])
   const selectedDay = selectedDate ? days.get(selectedDate) : undefined
@@ -233,8 +215,35 @@ export default function AdaptivePlanCardCalendar({
   }
 
   return (
-    <div className="border-t border-[var(--wm-border)] bg-black/10 px-3 py-4 sm:px-5">
-      <div className="rounded-2xl border border-[rgba(139,92,246,.25)] bg-[rgba(15,23,42,.42)] p-3 sm:p-4">
+    <div
+      className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${plan.title}计划日历`}
+        onClick={(event) => event.stopPropagation()}
+        className="animate-pop-in max-h-[94dvh] w-full max-w-[1000px] overflow-y-auto rounded-t-[26px] border border-[rgba(139,92,246,.4)] bg-[#111126] p-3 shadow-[0_24px_90px_rgba(0,0,0,.65)] sm:rounded-[26px] sm:p-5"
+      >
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <div className="font-fredoka text-xl text-[#c4b5fd]">🗓️ 计划日历</div>
+            <div className="mt-0.5 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
+              {plan.title} · 仅显示已练习数据
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="关闭计划日历"
+            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[.06] text-lg text-white/55 transition hover:bg-white/[.12] hover:text-white"
+          >
+            ×
+          </button>
+        </div>
+        <div className="rounded-2xl border border-[rgba(139,92,246,.25)] bg-[rgba(15,23,42,.42)] p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <button
             type="button"
@@ -248,9 +257,7 @@ export default function AdaptivePlanCardCalendar({
             <div className="font-fredoka text-base text-[#c4b5fd]">
               {year}年{month + 1}月
             </div>
-            <div className="text-[.6rem] font-bold text-[var(--wm-text-dim)]">
-              实线为真实练习 · 虚线为未来预计
-            </div>
+            <div className="text-[.6rem] font-bold text-[var(--wm-text-dim)]">已结算的真实练习记录</div>
           </div>
           <button
             type="button"
@@ -283,9 +290,7 @@ export default function AdaptivePlanCardCalendar({
                 type="button"
                 disabled={!day}
                 onClick={() => setSelectedDate(selected ? null : cell.date)}
-                className={`flex min-h-[4.8rem] min-w-0 cursor-pointer flex-col rounded-lg border px-1 py-1 text-left transition disabled:cursor-default disabled:border-transparent disabled:bg-transparent disabled:opacity-35 sm:min-h-[5.6rem] ${
-                  day?.projected ? 'border-dashed' : 'border-solid'
-                } ${
+                className={`flex min-h-[4.8rem] min-w-0 cursor-pointer flex-col rounded-lg border border-solid px-1 py-1 text-left transition disabled:cursor-default disabled:border-transparent disabled:bg-transparent disabled:opacity-35 sm:min-h-[5.6rem] ${
                   day?.mode === 'boss'
                     ? 'border-amber-400/45 bg-amber-400/[.08]'
                     : day
@@ -317,6 +322,11 @@ export default function AdaptivePlanCardCalendar({
         </div>
 
         {logs == null && <div className="mt-3 text-center text-[.68rem] font-bold text-white/35">加载真实练习记录…</div>}
+        {logs?.length === 0 && !loadError && (
+          <div className="mt-3 rounded-xl border border-dashed border-violet-300/25 bg-violet-950/20 px-4 py-6 text-center text-sm font-bold text-violet-200/65">
+            还没有已完成的练习记录
+          </div>
+        )}
         {loadError && <div className="mt-3 text-center text-[.68rem] font-bold text-rose-300">{loadError}</div>}
 
         {selectedDay && (
@@ -326,7 +336,6 @@ export default function AdaptivePlanCardCalendar({
               <span className="text-white/25">·</span>
               <span className="text-[#86efac]">共 {selectedDay.words.length} 词</span>
               {selectedDay.mode === 'boss' && <span className="text-amber-300">Boss</span>}
-              {selectedDay.projected && <span className="text-[#c4b5fd]">预计</span>}
               {selectedDay.inferred && <span className="text-amber-300">推定记录</span>}
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -381,6 +390,7 @@ export default function AdaptivePlanCardCalendar({
           onClose={() => setDetailWord(null)}
         />
       )}
+      </div>
     </div>
   )
 }

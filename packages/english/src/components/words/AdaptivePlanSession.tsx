@@ -101,6 +101,42 @@ type RoundSummary = {
   note: string
 }
 
+type SettleErrorInfo = {
+  reason: string
+  detail: string | null
+}
+
+function describeSettleError(error: unknown): SettleErrorInfo {
+  const record =
+    error && typeof error === 'object' ? (error as Record<string, unknown>) : null
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof record?.message === 'string'
+        ? record.message
+        : ''
+  const details = typeof record?.details === 'string' ? record.details : ''
+  const hint = typeof record?.hint === 'string' ? record.hint : ''
+  const code = typeof record?.code === 'string' ? record.code : ''
+  const searchable = `${message} ${details} ${hint} ${code}`.toLowerCase()
+
+  let reason = '服务器未能完成本轮结算。'
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    reason = '设备当前处于离线状态。'
+  } else if (/failed to fetch|network|load failed|connection/.test(searchable)) {
+    reason = '网络连接中断，保存请求没有成功到达服务器。'
+  } else if (/timeout|timed out|57014/.test(searchable)) {
+    reason = '服务器响应超时，本轮结算尚未完成。'
+  } else if (/jwt|auth|permission|row-level security|42501/.test(searchable)) {
+    reason = '登录状态或数据权限已失效，服务器拒绝了保存请求。'
+  }
+
+  const technical = [code ? `错误码 ${code}` : '', message, details, hint]
+    .filter(Boolean)
+    .join(' · ')
+  return { reason, detail: technical || null }
+}
+
 function newLogSessionId(): string {
   return globalThis.crypto.randomUUID()
 }
@@ -277,6 +313,7 @@ export default function AdaptivePlanSession({
   const [stashToast, setStashToast] = useState<string | null>(null)
   // Set when remote saves fail during settle — done screen offers a retry.
   const [settleFailed, setSettleFailed] = useState<'normal' | 'boss' | null>(null)
+  const [settleError, setSettleError] = useState<SettleErrorInfo | null>(null)
   const [activationApplied, setActivationApplied] = useState(false)
   const [newStudyDone, setNewStudyDone] = useState(0)
   // Session-scoped study list restored from a snapshot. Needed because after a
@@ -505,6 +542,7 @@ export default function AdaptivePlanSession({
       setHelpClicks({})
       setNewStudyDone(0)
       setSettleFailed(null)
+      setSettleError(null)
       setRoundSummary(null)
       reviewOutcomesRef.current = []
       finalOutcomesRef.current = []
@@ -528,6 +566,8 @@ export default function AdaptivePlanSession({
     autoStartDoneRef.current = false
     unappliedSnapshotRef.current = false
     setLoadError(null)
+    setSettleFailed(null)
+    setSettleError(null)
     setRestoredActivateKeys(null)
   }, [planId])
 
@@ -901,6 +941,7 @@ export default function AdaptivePlanSession({
 
   const settleSession = useCallback(async () => {
     if (!user || !plan || settling) return
+    setSettleError(null)
     setSettling(true)
     try {
       const roundOutcomes = [...reviewOutcomesRef.current, ...finalOutcomesRef.current]
@@ -965,6 +1006,7 @@ export default function AdaptivePlanSession({
       patchMasteryPatches(user.id, settleResult.masteryPatches)
       setRows(nextRows)
       setSettleFailed(null)
+      setSettleError(null)
 
       if (isPlanCompletable(nextRows, false)) {
         const completed = await completePlanIfEligible(plan.id)
@@ -1017,7 +1059,10 @@ export default function AdaptivePlanSession({
       setPhase('done')
     } catch (err) {
       console.error('[adaptive_word_plan] settle failed', err)
+      const snapshot = buildCurrentAdaptiveSnapshot()
+      if (snapshot) writeAdaptiveSessionSnapshot(snapshot)
       setSettleFailed('normal')
+      setSettleError(describeSettleError(err))
       setRoundSummary(null)
       setDoneTitle('保存失败')
       setDoneMessage('本轮结果还没有保存成功，请检查网络后点「重试保存」。')
@@ -1027,6 +1072,7 @@ export default function AdaptivePlanSession({
       setSettling(false)
     }
   }, [
+    buildCurrentAdaptiveSnapshot,
     completePlanIfEligible,
     hasMoreWorkToday,
     masteryMap,
@@ -1044,6 +1090,7 @@ export default function AdaptivePlanSession({
 
   const settleBossSession = useCallback(async () => {
     if (!user || !plan || !task || settling) return
+    setSettleError(null)
     setSettling(true)
     try {
       const firstPassResults = bossFirstPassOutcomesRef.current
@@ -1153,6 +1200,7 @@ export default function AdaptivePlanSession({
       patchMasteryPatches(user.id, settleResult.masteryPatches)
       setRows(nextRows)
       setSettleFailed(null)
+      setSettleError(null)
 
       if (isPlanCompletable(nextRows, false)) {
         const completed = await completePlanIfEligible(plan.id)
@@ -1220,7 +1268,10 @@ export default function AdaptivePlanSession({
       setPhase('done')
     } catch (err) {
       console.error('[adaptive_word_plan] boss settle failed', err)
+      const snapshot = buildCurrentAdaptiveSnapshot()
+      if (snapshot) writeAdaptiveSessionSnapshot(snapshot)
       setSettleFailed('boss')
+      setSettleError(describeSettleError(err))
       setRoundSummary(null)
       setDoneTitle('保存失败')
       setDoneMessage('Boss 结果还没有保存成功，请检查网络后点「重试保存」。')
@@ -1230,6 +1281,7 @@ export default function AdaptivePlanSession({
       setSettling(false)
     }
   }, [
+    buildCurrentAdaptiveSnapshot,
     completePlanIfEligible,
     hasMoreWorkToday,
     masteryMap,
@@ -1700,6 +1752,105 @@ export default function AdaptivePlanSession({
     )
   }
 
+  if (settling) {
+    return (
+      <div
+        className="mx-auto flex min-h-[60vh] max-w-[520px] flex-col items-center justify-center px-4 text-center"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <div className="rounded-[22px] border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-6 py-8 sm:px-10">
+          <svg
+            className="mx-auto mb-4 size-10 animate-spin text-[#60a5fa] motion-reduce:animate-none"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" opacity=".2" />
+            <path
+              d="M21 12a9 9 0 0 0-9-9"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="font-fredoka text-2xl text-[#bfdbfe]">正在保存本轮结果</div>
+          <div className="mt-2 text-sm font-bold leading-relaxed text-[var(--wm-text-dim)]">
+            正在同步答题记录、单词箱位和今日进度，请稍候，不要关闭页面。
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (phase === 'done' && settleFailed != null) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-[620px] items-center px-4 py-8">
+        <div
+          className="w-full rounded-[22px] border border-[rgba(248,113,113,.42)] bg-[rgba(127,29,29,.16)] p-6 sm:p-8"
+          role="alert"
+        >
+          <div className="mb-5 flex items-start gap-3">
+            <svg
+              className="mt-0.5 size-8 shrink-0 text-[#f87171]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v6M12 17h.01" strokeLinecap="round" />
+            </svg>
+            <div className="min-w-0">
+              <h2 className="font-fredoka text-2xl text-[#fca5a5]">本轮结果尚未保存</h2>
+              <p className="mt-1 text-sm font-bold leading-relaxed text-[#fecaca]">
+                {settleError?.reason ?? '服务器未能完成本轮结算。'}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/[.08] bg-black/10 p-4">
+            <div className="text-sm font-extrabold text-[var(--wm-text)]">请这样处理</div>
+            <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm font-bold leading-relaxed text-[var(--wm-text-dim)]">
+              <li>确认网络正常；如登录已过期，请重新登录。</li>
+              <li>点击“重新保存”，等待出现绿色完成总结后再返回。</li>
+              <li>暂时离开也不会丢失答题缓存；之后进入同一计划可以继续处理。</li>
+            </ol>
+          </div>
+
+          {settleError?.detail && (
+            <details className="mt-3 rounded-xl border border-white/[.06] px-3 py-2 text-[.72rem] text-[var(--wm-text-dim)]">
+              <summary className="cursor-pointer font-bold text-[#fca5a5]">查看技术原因</summary>
+              <div className="mt-2 [overflow-wrap:anywhere] leading-relaxed">{settleError.detail}</div>
+            </details>
+          )}
+
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => {
+                if (settleFailed === 'boss') void settleBossSession()
+                else void settleSession()
+              }}
+              className="font-nunito min-h-11 flex-1 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#f97316] to-[#ef4444] px-6 py-3 text-sm font-extrabold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fb923c]"
+            >
+              重新保存
+            </button>
+            <button
+              type="button"
+              onClick={onBack}
+              className="font-nunito min-h-11 cursor-pointer rounded-xl border border-white/[.14] bg-transparent px-6 py-3 text-sm font-extrabold text-[var(--wm-text-dim)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fca5a5]"
+            >
+              稍后再处理
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (task.mode === 'boss' && phase === 'hub') {
     return (
       <div className="mx-auto max-w-[980px] px-4 py-8">
@@ -2042,19 +2193,6 @@ export default function AdaptivePlanSession({
           )}
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {settleFailed != null && (
-              <button
-                type="button"
-                disabled={settling}
-                onClick={() => {
-                  if (settleFailed === 'boss') void settleBossSession()
-                  else void settleSession()
-                }}
-                className="font-nunito cursor-pointer rounded-[12px] border-0 bg-gradient-to-br from-[#f97316] to-[#ef4444] px-6 py-3 text-sm font-extrabold text-white disabled:opacity-60"
-              >
-                {settling ? '保存中…' : '重试保存'}
-              </button>
-            )}
             {settleFailed == null && canContinue && (
               <button
                 type="button"

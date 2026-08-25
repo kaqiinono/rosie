@@ -639,13 +639,13 @@ function AdaptivePlanCard({
           开始练习 →
         </Link>
       </div>
-      {calendarOpen && userId && rows && (
+      {calendarOpen && userId && (
         <AdaptivePlanCardCalendar
           plan={plan}
-          rows={rows}
           vocab={vocab}
           masteryMap={masteryMap}
           userId={userId}
+          onClose={() => setCalendarOpen(false)}
         />
       )}
     </div>
