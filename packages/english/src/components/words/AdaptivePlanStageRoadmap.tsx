@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import {
   ADAPTIVE_BOX_STAGES,
   ADAPTIVE_MASTERED_STAGE,
@@ -31,6 +31,18 @@ type RoadmapNode = {
   focus: boolean
   dimmed: boolean
   hint: string
+}
+
+function displayWord(wordKey: string): string {
+  const parts = wordKey.split('::')
+  return parts[parts.length - 1] || wordKey
+}
+
+function rowStageKey(row: AdaptivePlanWordProgress): string {
+  if (row.status === 'MASTERED') return 'mastered'
+  if (row.status === 'LEARNING_PENDING') return 'pending'
+  if (row.status === 'LEARNING') return `box-${Math.min(5, Math.max(1, row.boxIndex ?? 1))}`
+  return 'not_started'
 }
 
 function focusLabel(focus: AdaptivePlanFocusStage): string {
@@ -105,11 +117,20 @@ export default function AdaptivePlanStageRoadmap({
   title = '通关路线图',
   footer,
 }: AdaptivePlanStageRoadmapProps) {
+  const [selectedStage, setSelectedStage] = useState<string | null>(null)
   const counts = useMemo(() => computeAdaptivePlanStageCounts(rows, today), [rows, today])
 
   const showPreStages = counts.queue > 0 || counts.learning === 0
   const nodes = useMemo(() => buildNodes(counts, showPreStages), [counts, showPreStages])
   const remaining = Math.max(0, counts.total - counts.mastered)
+  const selectedNode = nodes.find((node) => node.key === selectedStage) ?? null
+  const selectedWords = useMemo(() => {
+    if (!selectedStage || selectedStage === 'not_started') return []
+    return rows
+      .filter((row) => row.archivedAt == null && rowStageKey(row) === selectedStage)
+      .map((row) => ({ key: row.wordKey, word: displayWord(row.wordKey) }))
+      .sort((a, b) => a.word.localeCompare(b.word, 'en'))
+  }, [rows, selectedStage])
 
   if (counts.total === 0) return null
 
@@ -148,10 +169,23 @@ export default function AdaptivePlanStageRoadmap({
                     当前
                   </div>
                 )}
-                <div
+                <button
+                  type="button"
+                  disabled={node.count === 0 || node.key === 'not_started'}
+                  aria-pressed={node.key === selectedStage}
+                  aria-label={`${node.name}，${node.count}个单词${node.key === 'not_started' ? '' : '，点击查看'}`}
+                  onClick={() =>
+                    setSelectedStage((current) => (current === node.key ? null : node.key))
+                  }
                   title={`${node.name}：${node.count} 词${node.dueToday > 0 ? `，今日到期 ${node.dueToday}` : ''}`}
                   className={`flex w-[4.6rem] flex-col items-center rounded-xl border px-1.5 py-2 text-center transition sm:w-[5.2rem] ${
-                    node.focus
+                    node.count > 0 && node.key !== 'not_started'
+                      ? 'cursor-pointer touch-manipulation hover:-translate-y-0.5 hover:border-[rgba(167,139,250,.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa] active:translate-y-0'
+                      : 'cursor-default'
+                  } ${
+                    node.key === selectedStage
+                      ? 'border-[rgba(167,139,250,.75)] bg-[rgba(139,92,246,.2)] shadow-[0_0_0_2px_rgba(167,139,250,.22)]'
+                      : node.focus
                       ? 'border-[rgba(167,139,250,.55)] bg-[rgba(139,92,246,.12)] shadow-[0_0_0_1px_rgba(167,139,250,.2)]'
                       : node.dimmed
                         ? 'border-white/[.06] bg-white/[.02] opacity-55'
@@ -178,12 +212,39 @@ export default function AdaptivePlanStageRoadmap({
                       <div className="mt-1 text-[.55rem] font-bold text-white/25">{node.hint}</div>
                     )
                   )}
-                </div>
+                </button>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {selectedNode && selectedWords.length > 0 && (
+        <div className="mt-3 rounded-xl border border-[rgba(167,139,250,.22)] bg-[rgba(139,92,246,.06)] p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="text-[.72rem] font-extrabold text-[#e9d5ff]">
+              {selectedNode.emoji} {selectedNode.name} · {selectedWords.length} 词
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedStage(null)}
+              className="min-h-8 cursor-pointer touch-manipulation rounded-lg px-2 text-[.68rem] font-bold text-[var(--wm-text-dim)] hover:bg-white/[.06] hover:text-[var(--wm-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa]"
+            >
+              收起
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-1.5" aria-live="polite">
+            {selectedWords.map(({ key, word }) => (
+              <span
+                key={key}
+                className="rounded-lg border border-white/[.08] bg-white/[.04] px-2 py-1 text-[.72rem] font-bold text-[var(--wm-text)]"
+              >
+                {word}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
         <span>

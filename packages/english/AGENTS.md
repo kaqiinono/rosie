@@ -39,8 +39,9 @@ audio, flipbook).
   Boss question pressure follows `stats.bossQuestionTier` via `bossQuizTypesForWord` (3 = floor);
   any failed Boss submission increments `bossFailStreak` (tier downgrade only < 60%). Settle does
   remote writes before local state and surfaces a「重试保存」button on failure. In-progress rounds
-  are snapshotted to sessionStorage (`adaptivePlanSessionSnapshot.ts`, same-day restore; kept on
-  settle failure so answers survive a reload). Plan list views use the batched
+  are snapshotted to localStorage + `practice_pending_sessions`
+  (`adaptivePlanSessionSnapshot.ts`; retained across calendar days until successful settlement or
+  explicit discard, so answers survive reloads and device changes). Plan list views use the batched
   `loadProgressForPlans`. Completed rounds settle progress, mastery, exact logs, and
   `adaptive_daily_progress` atomically through `settle_adaptive_practice_round`; homepage cards
   prefer that immutable daily ledger over mutable box-state inference. **Vocab↔plan consistency is maintained at the write side**: `useWordData`'s

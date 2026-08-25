@@ -1,6 +1,6 @@
 import type { QuizType, WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
 import { advanceStage, regressStage } from '@rosie/core'
-import { applyBoxAnswer } from './adaptivePlanBoxes'
+import { addCalendarDays, applyBoxAnswer, BOX_INTERVALS_DAYS } from './adaptivePlanBoxes'
 import type { AdaptivePlanStats, AdaptivePlanWordProgress } from './adaptivePlanTypes'
 import { classifyPlanWords } from './english-helpers'
 
@@ -9,6 +9,21 @@ export type SessionOutcome = {
   correct: boolean
   quizType?: QuizType
   usedRetry?: boolean
+  usedHelp?: boolean
+}
+
+/** Correct writing without retry or letter-reveal help is strong mastery evidence. */
+export function isIndependentCorrectOutcome(result: SessionOutcome): boolean {
+  if (!result.correct) return false
+  if (result.quizType !== 'C' && result.quizType !== 'D') return true
+  return result.usedRetry !== true && result.usedHelp !== true
+}
+
+function currentBoxInterval(boxIndex: number | null): number {
+  if (boxIndex === 2 || boxIndex === 3 || boxIndex === 4 || boxIndex === 5) {
+    return BOX_INTERVALS_DAYS[boxIndex]
+  }
+  return BOX_INTERVALS_DAYS[1]
 }
 
 export type AdaptiveMasteryPatch = { wordKey: string; info: WordMasteryInfo }
@@ -61,6 +76,7 @@ function buildMasteryPatches(
   masteryByKey: WordMasteryMap,
   consolidateExemptSet: Set<string>,
   today: string,
+  blockedAdvanceKeys: Set<string> = new Set(),
 ): AdaptiveMasteryPatch[] {
   const patches: AdaptiveMasteryPatch[] = []
 
@@ -69,7 +85,8 @@ function buildMasteryPatches(
     if (!row) continue
 
     const cur = masteryByKey[wordKey] ?? { correct: 0, incorrect: 0, lastSeen: '' }
-    const shouldAdvance = finalCorrect && shouldAdvanceMastery(row)
+    const shouldAdvance =
+      finalCorrect && !blockedAdvanceKeys.has(wordKey) && shouldAdvanceMastery(row)
     const shouldRegress =
       !finalCorrect && row.streakWrong >= 2 && !consolidateExemptSet.has(wordKey)
 
@@ -108,11 +125,31 @@ export function settleStep3(args: SettleStep3Args): SettleResult {
   const collapsed = collapseSessionOutcomes(results)
   const erred = wrongOnceKeys(results)
   const byKey = progressMap(progressRows)
+  const assistedWritingKeys = new Set<string>()
 
   for (const wordKey of collapsed.keys()) {
     const row = byKey.get(wordKey)
     if (!row) continue
-    byKey.set(wordKey, applyBoxAnswer(row, !erred.has(wordKey), today))
+    const wordOutcomes = results.filter((result) => result.wordKey === wordKey)
+    const hasAssistedWriting = wordOutcomes.some(
+      (result) =>
+        (result.quizType === 'C' || result.quizType === 'D') &&
+        result.correct &&
+        !isIndependentCorrectOutcome(result),
+    )
+    if (erred.has(wordKey)) {
+      byKey.set(wordKey, applyBoxAnswer(row, false, today))
+    } else if (hasAssistedWriting) {
+      assistedWritingKeys.add(wordKey)
+      byKey.set(wordKey, {
+        ...row,
+        // Assisted writing completes today's practice but keeps the learner in
+        // the same box until an independent spelling pass.
+        nextReviewDate: addCalendarDays(today, currentBoxInterval(row.boxIndex)),
+      })
+    } else {
+      byKey.set(wordKey, applyBoxAnswer(row, true, today))
+    }
   }
 
   const progressUpdates = [...collapsed.keys()]
@@ -121,7 +158,14 @@ export function settleStep3(args: SettleStep3Args): SettleResult {
 
   return {
     progressUpdates,
-    masteryPatches: buildMasteryPatches(collapsed, byKey, masteryByKey, consolidateExemptSet, today),
+    masteryPatches: buildMasteryPatches(
+      collapsed,
+      byKey,
+      masteryByKey,
+      consolidateExemptSet,
+      today,
+      assistedWritingKeys,
+    ),
     planStatsPatch: {},
   }
 }
@@ -146,9 +190,10 @@ function buildBossPlanStatsPatch(
   const total = firstPassResults.length
   if (total === 0) return {}
 
-  const correct = firstPassResults.filter(r => r.correct).length
+  const correct = firstPassResults.filter(isIndependentCorrectOutcome).length
   const firstPassPct = (correct / total) * 100
-  const sinkCleared = sinkResults.length === 0 || sinkResults.every(r => r.correct)
+  const sinkCleared =
+    sinkResults.length === 0 || sinkResults.every(isIndependentCorrectOutcome)
 
   if (firstPassPct >= 85 && sinkCleared) {
     return { bossFailStreak: 0 }
@@ -180,10 +225,30 @@ export function settleBossFirstPass(args: SettleBossFirstPassArgs): SettleResult
 
   const byKey = progressMap(progressRows)
 
-  for (const { wordKey, correct } of firstPassResults) {
+  const collapsedFirstPass = collapseSessionOutcomes(firstPassResults)
+  const erred = wrongOnceKeys(firstPassResults)
+  const assistedWritingKeys = new Set<string>()
+  for (const wordKey of collapsedFirstPass.keys()) {
     const row = byKey.get(wordKey)
     if (!row) continue
-    byKey.set(wordKey, applyBoxAnswer(row, correct, today))
+    const outcomes = firstPassResults.filter((result) => result.wordKey === wordKey)
+    const hasAssistedWriting = outcomes.some(
+      (result) =>
+        (result.quizType === 'C' || result.quizType === 'D') &&
+        result.correct &&
+        !isIndependentCorrectOutcome(result),
+    )
+    if (erred.has(wordKey)) {
+      byKey.set(wordKey, applyBoxAnswer(row, false, today))
+    } else if (hasAssistedWriting) {
+      assistedWritingKeys.add(wordKey)
+      byKey.set(wordKey, {
+        ...row,
+        nextReviewDate: addCalendarDays(today, currentBoxInterval(row.boxIndex)),
+      })
+    } else {
+      byKey.set(wordKey, applyBoxAnswer(row, true, today))
+    }
   }
 
   const touchedKeys = new Set([
@@ -199,7 +264,14 @@ export function settleBossFirstPass(args: SettleBossFirstPassArgs): SettleResult
 
   return {
     progressUpdates,
-    masteryPatches: buildMasteryPatches(collapsed, byKey, masteryByKey, consolidateExemptSet, today),
+    masteryPatches: buildMasteryPatches(
+      collapsed,
+      byKey,
+      masteryByKey,
+      consolidateExemptSet,
+      today,
+      assistedWritingKeys,
+    ),
     planStatsPatch: buildBossPlanStatsPatch(currentStats, firstPassResults, sinkResults),
   }
 }

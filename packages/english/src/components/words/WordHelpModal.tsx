@@ -18,23 +18,37 @@ const MYSTERY_GLYPHS = ['🍬', '🌟', '🎈', '🎁', '🍭', '🪄', '🦄', 
 
 interface Tile {
   ch: string
-  isLetter: boolean
   revealedIdx: number // 0-based index among revealed letters; -1 if not yet
+  decoy: boolean
 }
 
-function tilesOf(word: string, revealed: number): Tile[] {
-  const out: Tile[] = []
-  let lettersShown = 0
+const DESKTOP_MYSTERY_COUNT = 8
+const MOBILE_MYSTERY_COUNT = 6
+
+function helpTiles(word: string, revealed: number): Tile[] {
+  const letters = [...word].filter((ch) => /[a-zA-Z]/.test(ch))
+  // Keep eight mystery objects on larger screens regardless of word length.
+  // Longer spellings grow only when the learner explicitly reveals past eight.
+  const visibleCount = Math.max(DESKTOP_MYSTERY_COUNT, Math.min(letters.length, revealed))
+  return Array.from({ length: visibleCount }, (_, i) => ({
+    ch: letters[i] ?? '',
+    revealedIdx: i < revealed && i < letters.length ? i : -1,
+    decoy: i >= letters.length,
+  }))
+}
+
+function revealedExampleWord(word: string, revealed: number): string {
+  if (revealed <= 0) return '🎁神秘单词'
+  let lettersSeen = 0
+  let prefix = ''
   for (const ch of word) {
     if (/[a-zA-Z]/.test(ch)) {
-      const isShown = lettersShown < revealed
-      out.push({ ch, isLetter: true, revealedIdx: isShown ? lettersShown : -1 })
-      lettersShown++
-    } else {
-      out.push({ ch, isLetter: false, revealedIdx: -1 })
+      if (lettersSeen >= revealed) break
+      lettersSeen++
     }
+    prefix += ch
   }
-  return out
+  return lettersSeen >= letterCount(word) ? prefix : `${prefix}✨`
 }
 
 /** Split an example sentence around the first whole-word occurrence of `word`. */
@@ -64,12 +78,12 @@ export default function WordHelpModal({
   const totalLetters = letterCount(word.word)
   const canReveal = revealed < totalLetters
   const example = word.example ?? ''
-  const bigTiles = tilesOf(word.word, revealed)
+  const safeRevealed = Math.min(revealed, totalLetters)
+  const bigTiles = helpTiles(word.word, safeRevealed)
   const split = example ? splitExampleAroundWord(example, word.word) : null
   // Use the matched form's actual casing if the word appears in the example
   // (preserves "Apple" capitalization etc.). Fall back to the canonical word.
   const inlineWordForm = split?.match ?? word.word
-  const inlineTiles = tilesOf(inlineWordForm, revealed)
 
   return (
     <div
@@ -117,47 +131,44 @@ export default function WordHelpModal({
               <span>单词小帮手</span>
             </div>
             <span className="ml-auto rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-extrabold whitespace-nowrap text-amber-700">
-              已揭 {revealed} / {totalLetters}
+              已经揭开 {safeRevealed} 个
             </span>
           </div>
 
           {/* Big letter tiles — the main attraction */}
-          <div className="mb-4 flex flex-wrap items-end justify-center gap-1.5 sm:gap-2">
+          <div className="mb-4 flex max-w-full flex-nowrap items-end justify-start gap-1.5 overflow-x-auto px-1 pb-2 sm:justify-center sm:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {bigTiles.map((t, i) => {
-              if (!t.isLetter) {
-                return (
-                  <div
-                    key={i}
-                    aria-hidden
-                    className="h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(.4rem,2vw,.7rem)] shrink-0"
-                  />
-                )
-              }
               const rot = TILE_ROT[i % TILE_ROT.length]
               if (t.revealedIdx < 0) {
                 return (
-                  <JellyTile
+                  <div
                     key={i}
-                    size="big"
-                    mystery
-                    rotation={rot}
-                    animationDelay={i * 120}
+                    aria-hidden={t.decoy}
+                    className={i >= MOBILE_MYSTERY_COUNT ? 'max-sm:hidden' : undefined}
                   >
-                    {MYSTERY_GLYPHS[i % MYSTERY_GLYPHS.length]}
-                  </JellyTile>
+                    <JellyTile
+                      size="big"
+                      mystery
+                      rotation={rot}
+                      animationDelay={i * 120}
+                    >
+                      {MYSTERY_GLYPHS[i % MYSTERY_GLYPHS.length]}
+                    </JellyTile>
+                  </div>
                 )
               }
               const presetKey = DEFAULT_JELLY_ORDER[t.revealedIdx % DEFAULT_JELLY_ORDER.length]
               return (
-                <JellyTile
-                  key={i}
-                  size="big"
-                  preset={presetKey}
-                  rotation={rot}
-                  animationDelay={t.revealedIdx * 30}
-                >
-                  {t.ch}
-                </JellyTile>
+                <div key={i} className={i >= MOBILE_MYSTERY_COUNT ? 'max-sm:block' : undefined}>
+                  <JellyTile
+                    size="big"
+                    preset={presetKey}
+                    rotation={rot}
+                    animationDelay={t.revealedIdx * 30}
+                  >
+                    {t.ch}
+                  </JellyTile>
+                </div>
               )
             })}
           </div>
@@ -171,40 +182,8 @@ export default function WordHelpModal({
               <div className="text-[clamp(.95rem,3vw,1.05rem)] leading-[2] font-bold text-sky-950">
                 {split.before}
                 {split.match !== null ? (
-                  <span className="inline-flex items-baseline gap-[2px] align-baseline">
-                    {inlineTiles.map((t, i) => {
-                      if (!t.isLetter) {
-                        return (
-                          <span key={i} aria-hidden className="inline-block w-1.5">
-                            {t.ch === ' ' ? ' ' : t.ch}
-                          </span>
-                        )
-                      }
-                      if (t.revealedIdx < 0) {
-                        return (
-                          <JellyTile
-                            key={i}
-                            size="inline"
-                            mystery
-                            animationDelay={i * 90}
-                          >
-                            {MYSTERY_GLYPHS[(i + 3) % MYSTERY_GLYPHS.length]}
-                          </JellyTile>
-                        )
-                      }
-                      const presetKey =
-                        DEFAULT_JELLY_ORDER[t.revealedIdx % DEFAULT_JELLY_ORDER.length]
-                      return (
-                        <JellyTile
-                          key={i}
-                          size="inline"
-                          preset={presetKey}
-                          animationDelay={t.revealedIdx * 30}
-                        >
-                          {t.ch}
-                        </JellyTile>
-                      )
-                    })}
+                  <span className="mx-1 inline-flex rounded-lg bg-white/75 px-2 py-0.5 align-baseline font-black tracking-wide text-indigo-600 shadow-sm">
+                    {revealedExampleWord(inlineWordForm, safeRevealed)}
                   </span>
                 ) : null}
                 {split.after}

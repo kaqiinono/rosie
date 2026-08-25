@@ -9,7 +9,6 @@ import SpeakButton from './SpeakButton'
 import SpellTiles, { type SpellButtonStyle } from './SpellTiles'
 import PassageHintModal from './PassageHintModal'
 import WordHelpModal from './WordHelpModal'
-import { letterCount } from '../../utils/english-helpers'
 import type { QuizQuestion } from '@rosie/core'
 import type { QuizRunnerState } from './useQuizRunner'
 
@@ -257,11 +256,10 @@ export default function QuizQuestionBody({
           open={runner.showHelp}
           word={question.word}
           revealed={(() => {
-            // 累加揭示：第 N 次点击 → 多揭 N 个字母 → 累计揭示 1+2+...+N = N(N+1)/2 个
-            // 若超过总字母数（或剩余 < 本次量），一次给完整个单词。
-            const total = letterCount(question.word.word)
-            const triangular = (helpRevealed * (helpRevealed + 1)) / 2
-            return Math.min(triangular, total)
+            // One click reveals exactly one letter. The help modal supplies
+            // fixed-count mystery tiles, so the click count no longer leaks
+            // the answer length before the whole spelling is visible.
+            return helpRevealed
           })()}
           onReveal={onHelpReveal}
           onClose={runner.closeHelp}

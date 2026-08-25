@@ -52,6 +52,23 @@ describe('practice pending — local envelopes', () => {
     expect(localStorage.getItem(key)).toBeNull()
   })
 
+  it('keeps adaptive-plan envelopes across calendar days until settlement', () => {
+    const key = practicePendingLocalKey('english_adaptive', 'plan-cross-day')
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        savedAt: '2026-07-09T12:00:00.000Z',
+        date: '2026-07-09',
+        stash: { phase: 'review' },
+      }),
+    )
+
+    expect(readLocalPending('english_adaptive', 'plan-cross-day')).not.toBeNull()
+    expect(countLocalPendingSessions()).toEqual({ total: 1, unsynced: 1 })
+    expect(getTodayPlanSyncStatus().english).toBe('unsynced')
+  })
+
   it('counts same-day pending sessions and their unsynced subset', () => {
     const a = envelope({ n: 1 })
     const b = envelope({ n: 2 })

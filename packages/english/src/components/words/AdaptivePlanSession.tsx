@@ -14,6 +14,7 @@ import { activateWord, isUnfinishedSameDayActivation } from '../../utils/adaptiv
 import {
   buildConsolidateExemptSet,
   collapseSessionOutcomes,
+  isIndependentCorrectOutcome,
   settleBossFirstPass,
   settleStep3,
   type AdaptiveMasteryPatch,
@@ -25,7 +26,11 @@ import {
   isPlanCompletable,
   summarizeAdaptiveTodayProgress,
 } from '../../utils/adaptivePlanScheduler'
-import { bossQuizTypesForWord, quizTypesForWord } from '../../utils/adaptivePlanQuizTypes'
+import {
+  bossQuizTypesForWord,
+  quizTypesForWord,
+  resolveFamiliarityBox,
+} from '../../utils/adaptivePlanQuizTypes'
 import {
   settleAdaptivePracticeRound,
   type AdaptiveLoggedOutcome,
@@ -65,6 +70,14 @@ type QuizSlot = {
   type: QuizQuestion['type']
 }
 
+type QuizSlotGroup = {
+  slots: QuizSlot[]
+  cursor: number
+  minGap: number
+  forcePair: boolean
+  lastPick: number
+}
+
 type RoundWordStatus = {
   wordKey: string
   word: string
@@ -97,6 +110,15 @@ const BOSS_FORCE_UNLOCK_STREAK = 3
 /** How long the loading screen waits before offering a manual retry. */
 const LOAD_STALL_MS = 8000
 
+function adaptiveQuestionReward(
+  type: QuizQuestion['type'],
+  result?: { usedRetry?: boolean; usedHelp?: boolean },
+): number {
+  const base = type === 'C' || type === 'D' ? 2 : 1
+  if (base === 2 && (result?.usedRetry === true || result?.usedHelp === true)) return 1
+  return base
+}
+
 function uniqueKeys(keys: string[]): string[] {
   return [...new Set(keys)]
 }
@@ -107,12 +129,12 @@ function hasStatsPatch(patch: Partial<AdaptiveWordPlan['stats']>): boolean {
 
 function firstPassPct(results: SessionOutcome[]): number {
   if (results.length === 0) return 0
-  const correct = results.filter((item) => item.correct).length
+  const correct = results.filter(isIndependentCorrectOutcome).length
   return (correct / results.length) * 100
 }
 
 function sinkCleared(results: SessionOutcome[]): boolean {
-  return results.length === 0 || results.every((item) => item.correct)
+  return results.length === 0 || results.every(isIndependentCorrectOutcome)
 }
 
 function displayWordFromKey(key: string, vocab: WordEntry[]): string {
@@ -574,14 +596,15 @@ export default function AdaptivePlanSession({
             ? planSnapshot
             : { ...planSnapshot, mode: dailyTask.mode }
 
-        // Resume an interrupted round from localStorage + cloud (same day only).
+        // Resume an interrupted round from localStorage + cloud. Adaptive rounds
+        // are progress-driven and remain resumable across calendar days.
         // Requires vocab to build questions; without it fall back to hub and
         // keep the snapshot for when vocab arrives (see effect below).
         //
         // Commit NOTHING before this await that would re-trigger this effect
         // (plan/rows/task). A mid-await cancel + bail used to leave the page on
         // 「加载中…」forever.
-        const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id, today)
+        const snap = await resolveAdaptiveSessionSnapshot(user?.id, planSnapshot.id)
         // Another network hop happened above — bail before touching app-wide state
         // (setIsImmersive in particular would follow the user to the next page).
         // Safe now: nothing was committed, so the re-run redoes the whole load.
@@ -700,7 +723,7 @@ export default function AdaptivePlanSession({
   }, [buildCurrentAdaptiveSnapshot, phase, plan, settleFailed, user?.id])
 
   const buildSlots = useCallback(
-    (keys: string[], opts?: { preferLight?: boolean; bossTier?: number }): QuizSlot[] => {
+    (keys: string[], opts?: { bossTier?: number }): QuizSlot[] => {
       const progressByKey = new Map(rows.map((row) => [row.wordKey, row]))
       // Seeded rank per key gives a consistent comparator (hashing both sides
       // with different seeds is not a total order and breaks Array.sort).
@@ -713,16 +736,49 @@ export default function AdaptivePlanSession({
       const ranks = new Map(keys.map((key) => [key, rankOf(key)]))
       const shuffledKeys = [...keys].sort((a, b) => ranks.get(a)! - ranks.get(b)!)
 
-      const ordered: QuizSlot[] = []
+      let choiceIndex = 0
+      const groups: QuizSlotGroup[] = []
       for (const key of shuffledKeys) {
         if (!findWordByKey(vocab, key)) continue
+        const row = progressByKey.get(key)
+        const box = resolveFamiliarityBox(row, masteryMap[key])
+        const choiceType: 'A' | 'B' = choiceIndex % 2 === 0 ? 'A' : 'B'
+        if (box === 2 || box === 3) choiceIndex += 1
         const types =
           opts?.bossTier != null
-            ? bossQuizTypesForWord(progressByKey.get(key), masteryMap[key], opts.bossTier)
-            : quizTypesForWord(progressByKey.get(key), masteryMap[key], {
-                preferLight: opts?.preferLight === true,
-              })
-        for (const type of types) ordered.push({ key, type })
+            ? bossQuizTypesForWord(row, masteryMap[key], opts.bossTier)
+            : quizTypesForWord(row, masteryMap[key], { choiceType })
+        groups.push({
+          slots: types.map((type) => ({ key, type })),
+          cursor: 0,
+          // Box 3 is the delayed-recall bridge. A downgraded Boss is an
+          // explicit scaffold, so its choice + writing pair stays immediate.
+          minGap: opts?.bossTier == null && box === 3 ? 3 : 0,
+          forcePair: types.length > 1 && (box === 2 || opts?.bossTier != null),
+          lastPick: -100,
+        })
+      }
+
+      const ordered: QuizSlot[] = []
+      let forcedGroup: QuizSlotGroup | null = null
+      while (groups.some((group) => group.cursor < group.slots.length)) {
+        const available = groups.filter((group) => group.cursor < group.slots.length)
+        const eligibleFollowups = available.filter(
+          (group) => group.cursor > 0 && ordered.length - group.lastPick - 1 >= group.minGap,
+        )
+        const unstarted = available.filter((group) => group.cursor === 0)
+        const pool: QuizSlotGroup[] = forcedGroup
+          ? [forcedGroup]
+          : eligibleFollowups.length > 0
+            ? eligibleFollowups
+            : unstarted.length > 0
+              ? unstarted
+              : available
+        const group: QuizSlotGroup = pool[(seed + ordered.length * 17) % pool.length]!
+        ordered.push(group.slots[group.cursor]!)
+        group.cursor += 1
+        group.lastPick = ordered.length - 1
+        forcedGroup = group.forcePair && group.cursor < group.slots.length ? group : null
       }
       return ordered
     },
@@ -731,7 +787,7 @@ export default function AdaptivePlanSession({
 
   const startReview = useCallback(() => {
     const firstKeys = dayReviewKeys.slice(0, reviewCursor)
-    setQuizSlots(buildSlots(firstKeys, { preferLight: true }))
+    setQuizSlots(buildSlots(firstKeys))
     setCurQ(0)
     setScore(0)
     setHelpClicks({})
@@ -1216,7 +1272,17 @@ export default function AdaptivePlanSession({
       .map(([key]) => key)
     const finalKeys = uniqueKeys([...activateKeys, ...wrongReviewKeys])
     if (finalKeys.length === 0) {
-      // Truly nothing to do today — show hub message, do NOT auto-settle as "completed day"
+      // An all-correct review-only round has no wrong words to send into the
+      // final phase, but it still has completed work that must be settled.
+      // Treating this as an empty day used to award per-question stars while
+      // dropping the session log, daily ledger, and box advancement.
+      if (reviewOutcomesRef.current.length > 0) {
+        void settleSession()
+        return
+      }
+
+      // Truly nothing was practiced today — show the empty-task message
+      // without creating a completed-day record.
       const note =
         task?.mode === 'review_only'
           ? '当前为纯复习模式，但今天没有到期复习词。明天再来，或先在管理页调整每日新词。'
@@ -1248,6 +1314,7 @@ export default function AdaptivePlanSession({
     newStudyDone,
     previewEntries.length,
     setIsImmersive,
+    settleSession,
     startFinalQuiz,
     task,
   ])
@@ -1302,7 +1369,7 @@ export default function AdaptivePlanSession({
     }
     if (dayReviewKeys.length > 0) {
       const firstKeys = dayReviewKeys.slice(0, Math.max(reviewCursor, batchSize))
-      const slots = buildSlots(firstKeys, { preferLight: true })
+      const slots = buildSlots(firstKeys)
       if (slots.length === 0) {
         if (vocab.length === 0) {
           sessionStartedRef.current = false
@@ -1384,7 +1451,6 @@ export default function AdaptivePlanSession({
                 .map(([key]) => key),
             ])
     const slots = buildSlots(keys, {
-      preferLight: phase === 'review',
       bossTier:
         phase === 'boss' || phase === 'boss_sink' ? plan?.stats.bossQuestionTier : undefined,
     })
@@ -1422,11 +1488,13 @@ export default function AdaptivePlanSession({
       const q = currentQuestion
       if (!q) return
       const key = wordKey(q.word)
+      const usedHelp = (helpClicks[key] ?? 0) > 0
       const outcome = {
         wordKey: key,
         correct: info.finalCorrect,
         quizType: q.type,
         usedRetry: info.usedRetry,
+        usedHelp,
       }
 
       if (phase === 'review') {
@@ -1447,12 +1515,13 @@ export default function AdaptivePlanSession({
       }
 
       if (info.finalCorrect) {
+        const reward = adaptiveQuestionReward(q.type, { ...info, usedHelp })
         setScore((prev) => prev + 1)
-        starsAwardedThisRoundRef.current += 1
-        void awardStars('red', 1, { soundOnly: true })
+        starsAwardedThisRoundRef.current += reward
+        void awardStars('red', reward, { soundOnly: true })
       }
     },
-    [awardStars, currentQuestion, phase],
+    [awardStars, currentQuestion, helpClicks, phase],
   )
 
   const advanceQuiz = useCallback(() => {
@@ -1467,7 +1536,7 @@ export default function AdaptivePlanSession({
         const nextCursor = Math.min(reviewCursor + batchSize, dayReviewKeys.length)
         const nextKeys = dayReviewKeys.slice(reviewCursor, nextCursor)
         setReviewCursor(nextCursor)
-        setQuizSlots((prev) => [...prev, ...buildSlots(nextKeys, { preferLight: true })])
+        setQuizSlots((prev) => [...prev, ...buildSlots(nextKeys)])
         setCurQ(next)
         return
       }
@@ -1790,9 +1859,13 @@ export default function AdaptivePlanSession({
             ? 'Boss · 首轮挑战'
             : 'Boss · 沉底清空'
     const possibleStars = quizSlots.reduce(
-      (sum, slot) => sum + (slot.type === 'C' || slot.type === 'D' ? 2 : 1),
+      (sum, slot) => sum + adaptiveQuestionReward(slot.type),
       0,
     )
+    const currentReward = adaptiveQuestionReward(currentQuestion.type, {
+      usedRetry: runner.attempt === 'retry',
+      usedHelp: (helpClicks[wordKey(currentQuestion.word)] ?? 0) > 0,
+    })
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-3 py-2">
@@ -1848,8 +1921,7 @@ export default function AdaptivePlanSession({
             <span>本次已得 {starSession.red} 红🌙</span>
             <span>本轮目标 {possibleStars} 红🌙</span>
             <span>
-              题型 {currentQuestion.type} ·{' '}
-              {currentQuestion.type === 'C' || currentQuestion.type === 'D' ? '+2⭐/题' : '+1⭐/题'}
+              题型 {currentQuestion.type} · +{currentReward}⭐/题
             </span>
           </div>
         </div>

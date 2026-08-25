@@ -242,7 +242,7 @@ function buildTouches(args: {
   for (const key of args.reviewKeys) {
     const before = args.rowsBefore.get(key)
     if (!before) continue
-    const types = quizTypesForWord(before, undefined, { preferLight: true })
+    const types = quizTypesForWord(before, undefined, { choiceType: 'A' })
     const after = args.rowsAfter.get(key) ?? before
     touches.push({
       wordKey: key,
@@ -266,7 +266,7 @@ function buildTouches(args: {
       args.activateKeys.includes(key) && before.status !== 'LEARNING'
         ? activateWord(before, args.today)
         : before
-    const types = quizTypesForWord(rowForQuiz, undefined, { preferLight: false })
+    const types = quizTypesForWord(rowForQuiz, undefined, { choiceType: 'B' })
     const after = args.rowsAfter.get(key) ?? before
     touches.push({
       wordKey: key,

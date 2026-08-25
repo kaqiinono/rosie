@@ -11,7 +11,6 @@ import {
   writeLocalPending,
   type PracticePendingEnvelope,
 } from '@rosie/core'
-import { todayStr } from '@rosie/core'
 import type { SessionOutcome } from './adaptivePlanSettle'
 
 export const ADAPTIVE_SESSION_SNAPSHOT_VERSION = 1
@@ -77,8 +76,8 @@ export function wrapAdaptiveEnvelope(
   return {
     version: 1,
     savedAt: new Date().toISOString(),
-    date: todayStr(),
-    stash: { ...snap, date: todayStr() },
+    date: snap.date,
+    stash: snap,
   }
 }
 
@@ -99,10 +98,9 @@ export async function clearAdaptivePendingEverywhere(
 
 export function readAdaptiveSessionSnapshot(
   planId: string,
-  today: string,
 ): AdaptiveSessionSnapshot | null {
-  const env = readLocalPending<AdaptiveSessionSnapshot>(ADAPTIVE_PENDING_KIND, planId, today)
-  if (!env || !isValidSnap(env.stash) || env.stash.planId !== planId || env.stash.date !== today) {
+  const env = readLocalPending<AdaptiveSessionSnapshot>(ADAPTIVE_PENDING_KIND, planId)
+  if (!env || !isValidSnap(env.stash) || env.stash.planId !== planId) {
     if (env) clearAdaptiveSessionSnapshot(planId)
     return null
   }
@@ -112,10 +110,9 @@ export function readAdaptiveSessionSnapshot(
 export async function resolveAdaptiveSessionSnapshot(
   userId: string | null | undefined,
   planId: string,
-  today = todayStr(),
 ): Promise<AdaptiveSessionSnapshot | null> {
   const env = await resolvePending<AdaptiveSessionSnapshot>(userId, ADAPTIVE_PENDING_KIND, planId)
-  if (!env || !isValidSnap(env.stash) || env.stash.planId !== planId || env.stash.date !== today) {
+  if (!env || !isValidSnap(env.stash) || env.stash.planId !== planId) {
     return null
   }
   mirrorResolvedPending(ADAPTIVE_PENDING_KIND, planId, env)

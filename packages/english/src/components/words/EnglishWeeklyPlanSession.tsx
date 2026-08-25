@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { WeeklyPlan, WordEntry } from '@rosie/core'
+import type { WeeklyPlan, WordEntry, WordMasteryMap } from '@rosie/core'
 import {
   fmtDate,
   findWordByKey,
@@ -29,6 +29,7 @@ import {
 } from '../../utils/adaptivePlanStages'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-plan-shared'
+import AdaptivePlanCardCalendar from './AdaptivePlanCardCalendar'
 
 interface Props {
   vocab: WordEntry[]
@@ -276,13 +277,13 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     [vocab, masteryMap, currentAndNextWeekPlans],
   )
 
-  const activeAdaptiveIds = useMemo(
-    () => visibleAdaptivePlans.filter((p) => p.status === 'active').map((p) => p.id),
+  const visibleAdaptiveIds = useMemo(
+    () => visibleAdaptivePlans.map((plan) => plan.id),
     [visibleAdaptivePlans],
   )
 
   useEffect(() => {
-    if (activeAdaptiveIds.length === 0) {
+    if (visibleAdaptiveIds.length === 0) {
       setDayByPlanId({})
       setRowsByPlanId({})
       return
@@ -292,7 +293,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     const today = todayStr()
     const activePlans = visibleAdaptivePlans.filter((p) => p.status === 'active')
 
-    void loadProgressForPlans(activeAdaptiveIds)
+    void loadProgressForPlans(visibleAdaptiveIds)
       .then((rowsMap) => {
         if (cancelled) return
         const entries = activePlans.map((plan) => {
@@ -318,7 +319,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     return () => {
       cancelled = true
     }
-  }, [activeAdaptiveIds, loadProgressForPlans, visibleAdaptivePlans])
+  }, [loadProgressForPlans, visibleAdaptiveIds, visibleAdaptivePlans])
 
   if (showOldReview) {
     return (
@@ -406,6 +407,8 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
                       daySnapshot={dayByPlanId[card.adaptive.id]}
                       rows={rowsByPlanId[card.adaptive.id]}
                       vocab={vocab}
+                      masteryMap={masteryMap}
+                      userId={user?.id}
                       onOpen={() => router.push(`/english/words/adaptive/${card.adaptive!.id}`)}
                     />
                   )
@@ -515,6 +518,8 @@ function AdaptivePlanCard({
   daySnapshot,
   rows,
   vocab,
+  masteryMap,
+  userId,
   onOpen,
 }: {
   plan: AdaptiveWordPlan
@@ -522,8 +527,11 @@ function AdaptivePlanCard({
   daySnapshot: PlanDaySnapshot | undefined
   rows: AdaptivePlanWordProgress[] | undefined
   vocab: WordEntry[]
+  masteryMap: WordMasteryMap
+  userId: string | undefined
   onOpen: () => void
 }) {
+  const [calendarOpen, setCalendarOpen] = useState(false)
   const capsules =
     plan.status === 'active' && daySnapshot && rows
       ? buildDailyWordCapsules(daySnapshot.dailyTask, rows, vocab)
@@ -598,6 +606,14 @@ function AdaptivePlanCard({
         )}
       </button>
       <div className="mt-auto flex flex-wrap items-center justify-end gap-1.5 px-4 pb-4">
+        <button
+          type="button"
+          aria-expanded={calendarOpen}
+          onClick={() => setCalendarOpen((open) => !open)}
+          className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#93c5fd] transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
+        >
+          {calendarOpen ? '收起日历' : '🗓️ 计划日历'}
+        </button>
         {plan.status === 'active' && capsules.length > 0 && (
           <Link
             href={`/english/words/adaptive/${plan.id}/practice`}
@@ -623,6 +639,15 @@ function AdaptivePlanCard({
           开始练习 →
         </Link>
       </div>
+      {calendarOpen && userId && rows && (
+        <AdaptivePlanCardCalendar
+          plan={plan}
+          rows={rows}
+          vocab={vocab}
+          masteryMap={masteryMap}
+          userId={userId}
+        />
+      )}
     </div>
   )
 }

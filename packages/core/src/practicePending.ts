@@ -30,6 +30,11 @@ export type PracticePendingEnvelope<T = unknown> = {
   syncedAt?: string
 }
 
+/** Adaptive plans advance by completed rounds, so unfinished work never expires at midnight. */
+function pendingPersistsAcrossDays(kind: PracticePendingKind): boolean {
+  return kind === 'english_adaptive'
+}
+
 export function isPendingUnsynced(env: PracticePendingEnvelope): boolean {
   return env.syncedAt !== env.savedAt
 }
@@ -174,7 +179,7 @@ export function readLocalPending<T>(
       !env ||
       typeof env.savedAt !== 'string' ||
       typeof env.version !== 'number' ||
-      env.date !== today ||
+      (!pendingPersistsAcrossDays(kind) && env.date !== today) ||
       env.stash == null
     ) {
       clearLocalPending(kind, scopeKey)
@@ -243,7 +248,7 @@ export async function fetchCloudPending<T>(
     !env ||
     typeof env.savedAt !== 'string' ||
     typeof env.version !== 'number' ||
-    env.date !== today ||
+    (!pendingPersistsAcrossDays(kind) && env.date !== today) ||
     env.stash == null
   ) {
     // Stale or corrupt cloud row — drop so it cannot resurrect after local expiry.
@@ -358,13 +363,17 @@ function parsePendingKey(key: string): { kind: PracticePendingKind; scopeKey: st
   return { kind, scopeKey }
 }
 
-function isEnvelopeForToday(raw: unknown, today: string): PracticePendingEnvelope | null {
+function isActiveEnvelope(
+  raw: unknown,
+  today: string,
+  kind: PracticePendingKind,
+): PracticePendingEnvelope | null {
   if (!raw || typeof raw !== 'object') return null
   const env = raw as PracticePendingEnvelope
   if (
     typeof env.savedAt !== 'string' ||
     typeof env.version !== 'number' ||
-    env.date !== today ||
+    (!pendingPersistsAcrossDays(kind) && env.date !== today) ||
     env.stash == null
   ) {
     return null
@@ -420,7 +429,7 @@ export type LocalPendingCounts = {
   unsynced: number
 }
 
-/** How many same-day local pending sessions exist (total + unsynced). */
+/** How many active local pending sessions exist (adaptive snapshots may predate today). */
 export function countLocalPendingSessions(today = todayStr()): LocalPendingCounts {
   if (typeof window === 'undefined') return { total: 0, unsynced: 0 }
   let total = 0
@@ -434,7 +443,11 @@ export function countLocalPendingSessions(today = todayStr()): LocalPendingCount
         const parsed = parsePendingKey(key)
         if (!parsed) continue
         try {
-          const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
+          const env = isActiveEnvelope(
+            JSON.parse(localStorage.getItem(key) ?? ''),
+            today,
+            parsed.kind,
+          )
           if (!env) continue
           total += 1
           if (isPendingUnsynced(env)) unsynced += 1
@@ -488,7 +501,11 @@ export function getTodayPlanSyncStatus(
       if (parsed.kind === 'chinese' && isChineseFreePracticeScope(parsed.scopeKey)) continue
       if (parsed.kind === 'math' && !isMathTodayPlanScope(parsed.scopeKey)) continue
       try {
-        const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
+        const env = isActiveEnvelope(
+          JSON.parse(localStorage.getItem(key) ?? ''),
+          today,
+          parsed.kind,
+        )
         if (!env) continue
         bumpSubjectSync(map, subject, isPendingUnsynced(env))
         if (parsed.kind === 'english_weekly') seenWeekly.add(parsed.scopeKey)
@@ -524,7 +541,7 @@ function subjectMatchesKind(subject: TodayPlanSubjectKey, kind: PracticePendingK
   return mapped === subject
 }
 
-/** Same-day pending refs that light the today-plan card for `subject`. */
+/** Active pending refs that light the today-plan card for `subject`. */
 export function listTodayPendingForSubject(
   subject: TodayPlanSubjectKey,
   today = todayStr(),
@@ -541,7 +558,11 @@ export function listTodayPendingForSubject(
       if (parsed.kind === 'chinese' && isChineseFreePracticeScope(parsed.scopeKey)) continue
       if (parsed.kind === 'math' && !isMathTodayPlanScope(parsed.scopeKey)) continue
       try {
-        const env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
+        const env = isActiveEnvelope(
+          JSON.parse(localStorage.getItem(key) ?? ''),
+          today,
+          parsed.kind,
+        )
         if (!env) continue
         out.push(parsed)
         if (parsed.kind === 'english_weekly') seenWeekly.add(parsed.scopeKey)
@@ -631,7 +652,7 @@ export async function clearTodayPlanSubjectPending(
 }
 
 /**
- * Push unsynced same-day localStorage pending sessions to Supabase.
+ * Push unsynced active localStorage pending sessions to Supabase.
  * - calc / chinese / math / english_adaptive → practice_pending_sessions
  * - english_weekly → weekly_plans.progress_data.__rosie_session
  * Already-synced revisions are skipped.
@@ -669,7 +690,7 @@ export async function syncAllLocalPendingToCloud(
     if (!parsed) continue
     let env: PracticePendingEnvelope | null = null
     try {
-      env = isEnvelopeForToday(JSON.parse(localStorage.getItem(key) ?? ''), today)
+      env = isActiveEnvelope(JSON.parse(localStorage.getItem(key) ?? ''), today, parsed.kind)
     } catch {
       failed += 1
       continue

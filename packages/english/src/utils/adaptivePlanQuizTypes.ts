@@ -5,25 +5,21 @@ import type { AdaptivePlanWordProgress } from './adaptivePlanTypes'
  * Auto-match quiz types by plan-local box (primary) with global mastery fallback.
  * Progression toward writing (C 释义→默写):
  *   Box 1 / new     → A          认读
- *   Box 2           → A, B       双向选择
- *   Box 3           → B, C       开始默写
+ *   Box 2           → A/B, C     选择后立即默写强化
+ *   Box 3           → A/B, C     选择后延迟默写检测
  *   Box 4–5         → C          会写考核
- *
- * Step1 温故可传 `preferLight: true`：高箱仍保留一道选择题垫手，再考默写。
  */
 export function quizTypesForWord(
   row: AdaptivePlanWordProgress | undefined,
   mastery?: WordMasteryInfo,
-  opts?: { preferLight?: boolean },
+  opts?: { choiceType?: 'A' | 'B' },
 ): QuizType[] {
   const box = resolveFamiliarityBox(row, mastery)
-  const light = opts?.preferLight === true
+  const choiceType = opts?.choiceType ?? 'A'
 
   if (box <= 1) return ['A']
-  if (box === 2) return light ? ['A'] : ['A', 'B']
-  if (box === 3) return light ? ['A', 'C'] : ['B', 'C']
-  // box 4–5
-  return light ? ['B', 'C'] : ['C']
+  if (box === 2 || box === 3) return [choiceType, 'C']
+  return ['C']
 }
 
 /**
@@ -38,8 +34,8 @@ export function bossQuizTypesForWord(
   tier: number,
 ): QuizType[] {
   const t = tier <= 1 ? 1 : tier >= 3 ? 3 : 2
-  if (t === 1) return quizTypesForWord(row, mastery, { preferLight: false })
-  if (t === 2) return quizTypesForWord(row, mastery, { preferLight: true })
+  if (t === 1) return quizTypesForWord(row, mastery, { choiceType: 'B' })
+  if (t === 2) return quizTypesForWord(row, mastery, { choiceType: 'A' })
 
   const box = resolveFamiliarityBox(row, mastery)
   if (box >= 4) return ['A', 'C']

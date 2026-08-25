@@ -48,44 +48,45 @@ beforeEach(() => {
 describe('adaptive plan session snapshot', () => {
   it('round-trips write → read', () => {
     writeAdaptiveSessionSnapshot(snapshot())
-    const restored = readAdaptiveSessionSnapshot(PLAN_ID, TODAY)
+    const restored = readAdaptiveSessionSnapshot(PLAN_ID)
     expect(restored).not.toBeNull()
     expect(restored!.phase).toBe('review')
     expect(restored!.roundActivateKeys).toEqual(['U1::L1::dog'])
     expect(restored!.reviewOutcomes).toEqual([{ wordKey: 'U1::L1::cat', correct: true }])
   })
 
-  it('discards stale-day snapshots and removes them from storage', () => {
-    writeAdaptiveSessionSnapshot(snapshot())
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, '2026-07-09')).toBeNull()
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull()
+  it('restores unfinished snapshots across calendar days', () => {
+    writeAdaptiveSessionSnapshot(snapshot({ date: '2026-07-09' }))
+    const restored = readAdaptiveSessionSnapshot(PLAN_ID)
+    expect(restored?.date).toBe('2026-07-09')
+    expect(localStorage.getItem(STORAGE_KEY)).not.toBeNull()
   })
 
   it('discards version mismatches', () => {
     writeAdaptiveSessionSnapshot(snapshot({ version: 999 }))
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+    expect(readAdaptiveSessionSnapshot(PLAN_ID)).toBeNull()
   })
 
   it('discards invalid phases and corrupt JSON', () => {
     writeAdaptiveSessionSnapshot(
       snapshot({ phase: 'done' as unknown as AdaptiveSessionSnapshot['phase'] }),
     )
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+    expect(readAdaptiveSessionSnapshot(PLAN_ID)).toBeNull()
 
     localStorage.setItem(STORAGE_KEY, '{not json')
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+    expect(readAdaptiveSessionSnapshot(PLAN_ID)).toBeNull()
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull()
   })
 
   it('returns null for missing snapshots and clears cleanly', () => {
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+    expect(readAdaptiveSessionSnapshot(PLAN_ID)).toBeNull()
     writeAdaptiveSessionSnapshot(snapshot())
     clearAdaptiveSessionSnapshot(PLAN_ID)
-    expect(readAdaptiveSessionSnapshot(PLAN_ID, TODAY)).toBeNull()
+    expect(readAdaptiveSessionSnapshot(PLAN_ID)).toBeNull()
   })
 
   it('does not resurrect a snapshot for a different plan', () => {
     writeAdaptiveSessionSnapshot(snapshot())
-    expect(readAdaptiveSessionSnapshot('plan-2', TODAY)).toBeNull()
+    expect(readAdaptiveSessionSnapshot('plan-2')).toBeNull()
   })
 })
