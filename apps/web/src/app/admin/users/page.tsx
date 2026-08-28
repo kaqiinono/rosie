@@ -10,6 +10,7 @@ interface ManagedUser {
   recoveryEmail: string
   isAdmin: boolean
   isCurrent: boolean
+  hasCustomParentPin: boolean
   createdAt: string
   lastSignInAt: string | null
 }
@@ -21,7 +22,7 @@ interface UsersResponse {
   total: number
 }
 
-type EditMode = 'profile' | 'password' | null
+type EditMode = 'profile' | 'password' | 'parentPin' | null
 
 const ERROR_MESSAGES: Record<string, string> = {
   forbidden: '没有管理员权限，请重新登录后再试。',
@@ -32,6 +33,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   user_not_found: '用户不存在或已被删除。',
   role_update_failed: '管理员角色更新未生效，请刷新后重试。',
   missing_admin_env: '服务端缺少 Supabase Service Role 配置。',
+  invalid_parent_pin: '家长 PIN 必须是 6 位数字。',
 }
 
 function formatTime(value: string | null): string {
@@ -78,6 +80,7 @@ export default function UsersAdminPage() {
   const [email, setEmail] = useState('')
   const [recoveryEmail, setRecoveryEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [parentPin, setParentPin] = useState('')
 
   const loadUsers = useCallback(async () => {
     setLoading(true)
@@ -135,11 +138,18 @@ export default function UsersAdminPage() {
     setPassword('')
   }
 
+  const openParentPin = (user: ManagedUser) => {
+    setEditing(user)
+    setEditMode('parentPin')
+    setParentPin('')
+  }
+
   const closeEditor = () => {
     if (busyId) return
     setEditing(null)
     setEditMode(null)
     setPassword('')
+    setParentPin('')
   }
 
   return (
@@ -246,6 +256,13 @@ export default function UsersAdminPage() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => openParentPin(user)}
+                      className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                    >
+                      {user.hasCustomParentPin ? '修改家长 PIN' : '设置家长 PIN'}
+                    </button>
+                    <button
+                      type="button"
                       disabled={user.isCurrent || busyId === user.id}
                       onClick={() => {
                         const nextAdmin = !user.isAdmin
@@ -319,7 +336,7 @@ export default function UsersAdminPage() {
                     }),
                   })
                   setNotice('用户邮箱已更新。')
-                } else {
+                } else if (editMode === 'password') {
                   await adminFetch('/api/admin/users', {
                     method: 'PATCH',
                     body: JSON.stringify({
@@ -329,18 +346,28 @@ export default function UsersAdminPage() {
                     }),
                   })
                   setNotice('密码已重置，请通过安全方式告知用户。')
+                } else {
+                  await adminFetch('/api/admin/users', {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                      action: 'parent_pin',
+                      userId: editing.id,
+                      pin: parentPin,
+                    }),
+                  })
+                  setNotice('家长 PIN 已更新。')
                 }
                 closeEditor()
               })
             }}
           >
             <h2 className="text-lg font-extrabold text-slate-900">
-              {editMode === 'profile' ? '修改用户邮箱' : '重置用户密码'}
+              {editMode === 'profile' ? '修改用户邮箱' : editMode === 'password' ? '重置用户密码' : '设置家长 PIN'}
             </h2>
             <p className="mt-1 text-xs text-slate-500">{editing.email}</p>
 
             {editMode === 'profile' ? (
-              <div className="mt-5 grid gap-4">
+              <div className="mt-5">
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   登录邮箱
                   <input
@@ -364,7 +391,7 @@ export default function UsersAdminPage() {
                   />
                 </label>
               </div>
-            ) : (
+            ) : editMode === 'password' ? (
               <label className="mt-5 grid gap-1.5 text-sm font-semibold text-slate-700">
                 新密码
                 <input
@@ -379,6 +406,25 @@ export default function UsersAdminPage() {
                 />
                 <span className="text-[11px] font-normal text-slate-500">至少 8 位。</span>
               </label>
+            ) : (
+              <div className="mt-5 grid gap-4">
+                <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+                  新家长 PIN
+                  <input
+                    type="password"
+                    required
+                    inputMode="numeric"
+                    pattern="[0-9]{6}"
+                    minLength={6}
+                    maxLength={6}
+                    autoComplete="new-password"
+                    value={parentPin}
+                    onChange={(event) => setParentPin(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="rounded-xl border border-slate-200 px-3 py-2 font-mono text-lg tracking-[0.3em] outline-none focus:border-emerald-400"
+                  />
+                  <span className="text-[11px] font-normal text-slate-500">仅限 6 位数字；默认 PIN 为 666666。</span>
+                </label>
+              </div>
             )}
 
             <div className="mt-6 flex justify-end gap-2">

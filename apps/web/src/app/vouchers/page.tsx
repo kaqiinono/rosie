@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { PageBreadcrumb } from '@rosie/ui'
-import { useAuth } from '@rosie/core'
+import { supabase, todayStr, useAuth } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcVouchers } from '@rosie/rewards'
 import { templateTotalPrice, useVoucherCatalog } from '@rosie/rewards'
@@ -13,6 +13,7 @@ import { launchConfetti } from '@rosie/core'
 import type { VoucherCategory, VoucherTemplate } from '@rosie/core'
 import { ColoredStar } from '@rosie/rewards'
 import {
+  StarAdjustmentPanel,
   STAR_COLOR_HEX,
   STAR_UNIT_PRICE_LABEL,
   formatYuan,
@@ -21,12 +22,19 @@ import {
   type StarColor,
 } from '@rosie/rewards'
 
+const COLOR_TO_SOURCE: Record<StarColor, 'calc' | 'english' | 'math'> = {
+  yellow: 'calc',
+  red: 'english',
+  blue: 'math',
+}
+
 export default function VouchersPage() {
   const { user } = useAuth()
   const wallet = useCalcWallet(user)
   const { vouchers, redeem, markUsed, isLoading } = useCalcVouchers(user)
   const catalog = useVoucherCatalog(user)
   const [redeeming, setRedeeming] = useState<VoucherCategory | null>(null)
+  const [spendNotice, setSpendNotice] = useState<string | null>(null)
 
   // Catalog shown in shop: active (non-archived) templates, sorted by total price
   const shopTemplates = useMemo(
@@ -93,6 +101,30 @@ export default function VouchersPage() {
     } finally {
       setRedeeming(null)
     }
+  }
+
+  const handleSpendStars = async (color: StarColor, amount: number) => {
+    if (!user || amount <= 0) return
+    setSpendNotice(null)
+    const balance = balancesByColor[color]
+    const shapeLabel = STAR_COLOR_HEX[color].shapeLabel
+    if (amount > balance) {
+      setSpendNotice(`余额不足，当前只有 ${balance} 颗${shapeLabel}`)
+      return
+    }
+    const { error } = await supabase.from('star_sessions').insert({
+      user_id: user.id,
+      date: todayStr(),
+      source: COLOR_TO_SOURCE[color],
+      coins_earned: -amount,
+    })
+    if (error) {
+      console.error('[star_sessions] vouchers spend failed', { color, amount, error })
+      setSpendNotice('消费失败，请重试')
+      return
+    }
+    await wallet.refresh()
+    setSpendNotice(`已消费 ${amount} 颗${shapeLabel}`)
   }
 
   return (
@@ -286,6 +318,22 @@ export default function VouchersPage() {
             </div>
           </div>
         </section>
+
+        <StarAdjustmentPanel
+          balances={balancesByColor}
+          showAdd={false}
+          title="消费星星"
+          helperText="手工扣除当前账户的星星余额"
+          onAdjust={(color, amount) => handleSpendStars(color, amount)}
+        />
+        {spendNotice && (
+          <div
+            role="status"
+            className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm font-semibold text-amber-800"
+          >
+            {spendNotice}
+          </div>
+        )}
 
         {/* ── Redeem shop ── */}
         <section>

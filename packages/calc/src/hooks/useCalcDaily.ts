@@ -5,6 +5,7 @@ import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, supabase, todayStr } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { calcSettingsStore } from './useCalcSettings'
+import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
 
 export type CalcSessionSummaryRow = {
   date: string
@@ -34,8 +35,6 @@ export const calcSessionSummariesStore = createUserSessionStore<CalcDailyData>(
   },
 )
 
-const DEFAULT_TARGET = 20
-
 export function useCalcDaily(user: User | null, date?: string) {
   const { data: dailyData, isLoading: sessionsLoading } =
     calcSessionSummariesStore.useSessionData(user)
@@ -55,13 +54,13 @@ export function useCalcDaily(user: User | null, date?: string) {
     return {
       todayDone: done,
       todayCorrect: correct,
-      todayTarget: settings.lastCount ?? DEFAULT_TARGET,
+      todayTarget: calcPlannedQuestionCount(settings),
       todayCoins: wallet.todayCoinsEarned,
       isLoading: sessionsLoading || settingsLoading || wallet.isLoading,
     }
   }, [
     dailyData,
-    settings.lastCount,
+    settings,
     sessionsLoading,
     settingsLoading,
     wallet.todayCoinsEarned,
@@ -84,9 +83,9 @@ export function useCalcSessionSummaries(user: User | null) {
   return useMemo(
     () => ({
       sessions: dailyData.sessions,
-      target: settings.lastCount ?? DEFAULT_TARGET,
+      target: calcPlannedQuestionCount(settings),
       isLoading: sessionsLoading || settingsLoading,
     }),
-    [dailyData, settings.lastCount, sessionsLoading, settingsLoading],
+    [dailyData, settings, sessionsLoading, settingsLoading],
   )
 }

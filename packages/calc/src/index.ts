@@ -10,6 +10,7 @@ export {
 export type { CalcTodaySessionRow } from './hooks/useCalcTodaySessions'
 export { useCalcPracticeStats } from './hooks/useCalcPracticeStats'
 export { todayProgressFromSummaries } from './utils/calc-today-from-summaries'
+export { calcPlannedQuestionCount } from './utils/calc-planned-question-count'
 export { useCalcMistakes } from './hooks/useCalcMistakes'
 export { categoryLabel, buildSession } from './utils/calc-helpers'
 export {

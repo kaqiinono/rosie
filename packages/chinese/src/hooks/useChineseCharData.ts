@@ -11,7 +11,7 @@ import type {
 } from '../types/chineseCharData'
 import type { CharTier } from '../utils/g1b/types'
 
-const CACHE_VER = 'chinese_char_data_v4'
+const CACHE_VER = 'chinese_char_data_v6'
 const FETCH_PAGE_SIZE = 1000
 
 export interface ChineseCharDataPayload {

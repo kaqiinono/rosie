@@ -181,6 +181,10 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 Global admin sub-pages include:
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
+- `/admin/users` — account management plus per-user parent PIN reset. Parent PIN hashes live in
+  server-only `user_parent_pins`; missing rows use the default PIN `666666`. On `/setting/awards`,
+  spending is unrestricted while manual star grants and free vouchers require admin status or
+  successful server-side verification of the current user's parent PIN.
 - `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.
 - `/admin/word-images` — Pexels auto-match + match-score review / replace / upload for vocabulary illustrations (Storage bucket `word-images`).
 - `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。

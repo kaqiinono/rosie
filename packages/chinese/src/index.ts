@@ -97,6 +97,12 @@ export {
   getBookPinyinWriteWords,
 } from './utils/chinese-book-content'
 export { default as ChinesePoemsPage } from './components/ChinesePoemsPage'
+export { ChinesePageHeader, ChinesePageShell } from './components/ChinesePageLayout'
+export type {
+  ChinesePageHeaderProps,
+  ChinesePageShellProps,
+  ChinesePageWidth,
+} from './components/ChinesePageLayout'
 
 // Components
 export { default as CharFlashCard } from './components/chars/CharFlashCard'

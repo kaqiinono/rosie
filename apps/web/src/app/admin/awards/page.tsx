@@ -4,14 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { isAdminUser, useAuth } from '@rosie/core'
-import { useCalcWallet } from '@rosie/rewards'
+import { StarAdjustmentPanel, useCalcWallet } from '@rosie/rewards'
 import { useStarEarning } from '@rosie/rewards'
 import { useCalcVouchers } from '@rosie/rewards'
 import { useVoucherCatalog } from '@rosie/rewards'
 import { supabase } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import { ColoredStar } from '@rosie/rewards'
-import { STAR_COLOR_HEX, STAR_UNIT_PRICE_LABEL, STAR_UNIT_PRICE_YUAN, formatYuan, starBalanceValueYuan, type StarColor } from '@rosie/rewards'
+import { STAR_COLOR_HEX, STAR_UNIT_PRICE_LABEL, formatYuan, starBalanceValueYuan, type StarColor } from '@rosie/rewards'
 import type { VoucherCategory, VoucherTemplate } from '@rosie/core'
 import VoucherTemplateModal from '@/components/admin/VoucherTemplateModal'
 
@@ -41,6 +41,10 @@ type TodayLogEntry =
   | { kind: 'voucher'; id: string; time: string; category: VoucherCategory; free: boolean | null }
   | { kind: 'star'; id: string; time: string; color: StarColor; amount: number }
 
+type ParentAction =
+  | { kind: 'addStars'; color: StarColor; amount: number }
+  | { kind: 'grantVoucher'; template: VoucherTemplate }
+
 const LOG_PAGE_SIZE = 10
 
 export default function AwardsAdminPage() {
@@ -53,11 +57,6 @@ export default function AwardsAdminPage() {
   const { grantFree } = useCalcVouchers(user)
   const catalog = useVoucherCatalog(user)
 
-  const [amounts, setAmounts] = useState<Record<StarColor, number | ''>>({
-    yellow: 10,
-    red: 10,
-    blue: 10,
-  })
   const [busy, setBusy] = useState<string | null>(null)
   const [todayStars, setTodayStars] = useState<TodayStarRow[]>([])
   const [todayVouchers, setTodayVouchers] = useState<TodayVoucherRow[]>([])
@@ -66,6 +65,9 @@ export default function AwardsAdminPage() {
   const [logPage, setLogPage] = useState(1)
   /** Modal mode: null = closed, 'new' = create, VoucherTemplate = edit that one */
   const [modalMode, setModalMode] = useState<null | 'new' | VoucherTemplate>(null)
+  const [parentAction, setParentAction] = useState<ParentAction | null>(null)
+  const [parentPin, setParentPin] = useState('')
+  const [pinError, setPinError] = useState<string | null>(null)
 
   const loadToday = useCallback(async () => {
     if (!user) return
@@ -105,7 +107,6 @@ export default function AwardsAdminPage() {
 
   const handleAdjustStars = useCallback(
     async (color: StarColor, amount: number, mode: 'add' | 'spend') => {
-      if (!isAdmin) return
       if (busy || amount <= 0) return
       const hex = STAR_COLOR_HEX[color]
       if (mode === 'spend' && amount > getBalance(color)) {
@@ -113,6 +114,12 @@ export default function AwardsAdminPage() {
         return
       }
       const key = `star:${mode}:${color}:${amount}`
+      if (mode === 'add' && !isAdmin) {
+        setParentAction({ kind: 'addStars', color, amount })
+        setParentPin('')
+        setPinError(null)
+        return
+      }
       setBusy(key)
       try {
         if (mode === 'add') {
@@ -151,6 +158,12 @@ export default function AwardsAdminPage() {
   const handleGrantVoucher = useCallback(
     async (template: VoucherTemplate) => {
       if (busy) return
+      if (!isAdmin) {
+        setParentAction({ kind: 'grantVoucher', template })
+        setParentPin('')
+        setPinError(null)
+        return
+      }
       const key = `voucher:${template.category}`
       setBusy(key)
       try {
@@ -166,8 +179,48 @@ export default function AwardsAdminPage() {
         setBusy(null)
       }
     },
-    [busy, grantFree, wallet, loadToday],
+    [busy, grantFree, wallet, loadToday, isAdmin],
   )
+
+  const submitParentAction = useCallback(async () => {
+    if (!parentAction || parentPin.length !== 6 || busy) return
+    setBusy('parent-action')
+    setPinError(null)
+    try {
+      const { data } = await supabase.auth.getSession()
+      const token = data.session?.access_token
+      if (!token) {
+        setPinError('登录已失效，请重新登录')
+        return
+      }
+      const payload = parentAction.kind === 'addStars'
+        ? {
+            action: 'add_stars', pin: parentPin,
+            source: COLOR_TO_SOURCE[parentAction.color], amount: parentAction.amount,
+          }
+        : { action: 'grant_voucher', pin: parentPin, category: parentAction.template.category }
+      const response = await fetch('/api/rewards/parent-action', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const result = (await response.json().catch(() => ({}))) as { error?: string }
+      if (!response.ok) {
+        setPinError(result.error === 'invalid_parent_pin' ? '家长 PIN 不正确' : '操作失败，请稍后重试')
+        return
+      }
+      const message = parentAction.kind === 'addStars'
+        ? `已添加 ${parentAction.amount} 颗${STAR_COLOR_HEX[parentAction.color].shapeLabel}`
+        : `已赠送【${parentAction.template.label}】`
+      setParentAction(null)
+      setParentPin('')
+      await wallet.refresh()
+      await loadToday()
+      triggerFlash(message)
+    } finally {
+      setBusy(null)
+    }
+  }, [parentAction, parentPin, busy, wallet, loadToday])
 
   const handleSaveTemplate = useCallback(
     async (draft: Parameters<typeof catalog.create>[0]) => {
@@ -437,93 +490,12 @@ export default function AwardsAdminPage() {
           </div>
         </section>
 
-        {/* Add or spend stars (admin only) */}
-        {isAdmin && <section>
-          <div className="mb-3 flex items-baseline gap-2">
-            <h2 className="text-[15px] font-extrabold text-slate-800">添加或消费</h2>
-            <span className="text-[11px] text-slate-500">输入数量后点击添加或消费，当天可多次操作</span>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {COLORS.map((c) => {
-              const hex = STAR_COLOR_HEX[c]
-              const amount = Number(amounts[c]) || 1
-              const draftValue = amount * STAR_UNIT_PRICE_YUAN[c]
-              return (
-                <div
-                  key={c}
-                  className="rounded-2xl bg-white/85 p-4 shadow-sm"
-                  style={{ border: `1.5px solid ${hex.border}` }}
-                >
-                  <div className="mb-1 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <ColoredStar color={c} size={20} glow={6} />
-                      <span className="text-[14px] font-extrabold" style={{ color: hex.outline }}>
-                        {hex.shapeLabel}
-                      </span>
-                    </div>
-                    <span
-                      className="rounded-full px-2 py-0.5 text-[10px] font-extrabold tabular-nums"
-                      style={{ background: `${hex.primary}14`, color: hex.outline, border: `1px solid ${hex.border}` }}
-                    >
-                      {STAR_UNIT_PRICE_LABEL[c]}
-                    </span>
-                  </div>
-                  <input
-                    type="number"
-                    min={1}
-                    value={amounts[c]}
-                    onChange={(e) => {
-                      const raw = e.target.value
-                      setAmounts((prev) => ({
-                        ...prev,
-                        [c]: raw === '' ? '' : Math.max(1, Number(raw) || 1),
-                      }))
-                    }}
-                    onBlur={() =>
-                      setAmounts((prev) => ({ ...prev, [c]: prev[c] === '' ? 1 : prev[c] }))
-                    }
-                    className="font-fredoka mb-1 w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-center text-[18px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
-                    style={{ color: hex.outline }}
-                  />
-                  <div className="mb-2 text-center text-[11px] font-bold text-slate-500 tabular-nums">
-                    本次 {amount} 颗 ≈ {formatYuan(draftValue)}
-                  </div>
-                  <div className="flex gap-2">
-                    {(['add', 'spend'] as const).map((mode) => {
-                      const amount = Number(amounts[c]) || 1
-                      const busyKey = `star:${mode}:${c}:${amount}`
-                      const isBusy = busy === busyKey
-                      return (
-                        <button
-                          key={mode}
-                          type="button"
-                          disabled={!!busy}
-                          onClick={() => handleAdjustStars(c, amount, mode)}
-                          className="flex-1 cursor-pointer rounded-lg py-2 text-[13px] font-extrabold shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                          style={
-                            mode === 'add'
-                              ? {
-                                  background: `linear-gradient(135deg,${hex.primary},${hex.outline})`,
-                                  boxShadow: `0 3px 12px ${hex.glow}`,
-                                  color: '#fff',
-                                }
-                              : {
-                                  background: 'rgba(255,255,255,0.9)',
-                                  border: `1.5px solid ${hex.outline}`,
-                                  color: hex.outline,
-                                }
-                          }
-                        >
-                          {isBusy ? (mode === 'add' ? '添加中…' : '消费中…') : mode === 'add' ? '添加' : '消费'}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </section>}
+        <StarAdjustmentPanel
+          balances={balancesByColor}
+          disabled={!!busy}
+          helperText="消费无需验证；添加需要管理员权限或家长 PIN"
+          onAdjust={handleAdjustStars}
+        />
 
         {/* Grant vouchers */}
         <section>
@@ -763,6 +735,53 @@ export default function AwardsAdminPage() {
           onCancel={() => setModalMode(null)}
           onSubmit={handleSaveTemplate}
         />
+      )}
+      {parentAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4" role="presentation">
+          <form
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="parent-pin-title"
+            className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl"
+            onSubmit={(event) => { event.preventDefault(); void submitParentAction() }}
+          >
+            <h2 id="parent-pin-title" className="text-lg font-extrabold text-slate-900">需要家长确认</h2>
+            <p className="mt-1 text-sm leading-relaxed text-slate-500">
+              {parentAction.kind === 'addStars'
+                ? `添加 ${parentAction.amount} 颗${STAR_COLOR_HEX[parentAction.color].shapeLabel}`
+                : `免费赠送【${parentAction.template.label}】`}
+            </p>
+            <label className="mt-5 grid gap-1.5 text-sm font-semibold text-slate-700">
+              家长 PIN
+              <input
+                autoFocus
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                value={parentPin}
+                onChange={(event) => { setParentPin(event.target.value.replace(/\D/g, '').slice(0, 6)); setPinError(null) }}
+                aria-describedby={pinError ? 'parent-pin-error' : undefined}
+                className="min-h-12 rounded-xl border-2 border-slate-200 px-3 text-center font-mono text-xl tracking-[0.35em] outline-none focus:border-amber-400"
+              />
+            </label>
+            {pinError && <p id="parent-pin-error" className="mt-2 text-sm font-semibold text-red-600">{pinError}</p>}
+            <div className="mt-6 flex gap-2">
+              <button
+                type="button"
+                disabled={busy === 'parent-action'}
+                onClick={() => setParentAction(null)}
+                className="min-h-11 flex-1 rounded-xl border border-slate-200 font-semibold text-slate-600 disabled:opacity-50"
+              >取消</button>
+              <button
+                type="submit"
+                disabled={parentPin.length !== 6 || busy === 'parent-action'}
+                className="min-h-11 flex-1 rounded-xl bg-amber-500 font-extrabold text-white shadow disabled:cursor-not-allowed disabled:opacity-50"
+              >{busy === 'parent-action' ? '验证中…' : '确认操作'}</button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   )

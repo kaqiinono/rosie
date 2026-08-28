@@ -9,6 +9,7 @@ import AccumulationQuizRunner from './accumulation/AccumulationQuizRunner'
 import PoemList from './poems/PoemList'
 import { getGardenLessonGroups } from '../utils/chinese-garden-helpers'
 import { useChineseContext } from '../context/ChineseContext'
+import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
 
 export default function ChineseAccumulationPage() {
   const searchParams = useSearchParams()
@@ -58,20 +59,17 @@ export default function ChineseAccumulationPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <header>
-        <h1 className="text-xl font-extrabold text-slate-900">日积月累</h1>
-        <p className="mt-1 text-sm text-slate-500">园地积累 · 词语 · 谚语 · 名言</p>
-      </header>
+    <ChinesePageShell width="wide">
+      <ChinesePageHeader title="日积月累" description="园地积累 · 词语 · 谚语 · 名言" />
 
-      <section className="mt-6 space-y-3">
+      <section className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))] gap-3 sm:gap-4">
         {accumulation.map((block) => (
           <div
             key={`${block.unit}-${block.kind}`}
-            className="rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50 to-cyan-50 p-4"
+            className="rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50 to-cyan-50 p-4 shadow-sm sm:p-5"
           >
-            <div className="flex items-center justify-between gap-2">
-              <div>
+            <div className="flex h-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-teal-700">
                   第 {block.unit} 单元 · {ACCUMULATION_KIND_LABEL[block.kind]}
                 </p>
@@ -93,7 +91,7 @@ export default function ChineseAccumulationPage() {
                   setActiveUnit(block.unit)
                   setQuizzing(true)
                 }}
-                className="shrink-0 rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white"
+                className="min-h-11 shrink-0 cursor-pointer rounded-xl bg-teal-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-teal-700 focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2"
               >
                 练习
               </button>
@@ -107,12 +105,12 @@ export default function ChineseAccumulationPage() {
           <h2 className="mb-3 text-sm font-bold tracking-wide text-emerald-600 uppercase">
             识字加油站
           </h2>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-3 sm:gap-4">
             {gardenGroups.map((g) => (
               <Link
                 key={g.lessonKey}
                 href={`/chinese/garden?lesson=${g.lessonKey}`}
-                className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900 no-underline transition hover:border-emerald-400"
+                className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900 no-underline transition hover:border-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2"
               >
                 <span>第{g.unit}单元 · {g.lessonTitle}</span>
                 <span className="text-xs text-emerald-600">{g.recognize.length} 字 →</span>
@@ -135,17 +133,11 @@ export default function ChineseAccumulationPage() {
           setActiveUnit('all')
           setQuizzing(true)
         }}
-        className="mt-6 w-full rounded-xl border-2 border-teal-400 py-3 text-sm font-bold text-teal-800"
+        className="mt-6 min-h-12 w-full cursor-pointer rounded-xl border-2 border-teal-400 bg-white/60 px-4 py-3 text-sm font-bold text-teal-800 transition hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2"
       >
         全部练习（{buildAccumulationQuizItems(accumulation).length} 题）
       </button>
 
-      <Link
-        href="/chinese"
-        className="mt-6 block text-center text-xs font-semibold text-slate-500 no-underline"
-      >
-        ← 返回语文首页
-      </Link>
-    </div>
+    </ChinesePageShell>
   )
 }

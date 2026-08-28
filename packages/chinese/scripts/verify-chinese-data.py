@@ -94,7 +94,10 @@ def main() -> int:
             print(" -", e)
         return 1
 
-    print(f"OK: 数据校验通过（{', '.join(args.books)}）")
+    print(
+        f"OK: 结构校验通过（{', '.join(args.books)}；"
+        "组词完整性请运行 audit-card-phrases）"
+    )
     return 0
 
 

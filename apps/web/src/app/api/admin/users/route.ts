@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminSupabase, forbiddenResponse, requireAdminFromRequest } from '@/lib/api-auth'
 import { isValidManagedEmail, isValidManagedUserId, selfMutationError } from '@/lib/user-admin'
+import { hashParentPin, isValidParentPin } from '@/lib/parent-pin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -25,6 +26,12 @@ export async function GET(req: Request) {
     const admin = createAdminSupabase()
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage })
     if (error) throw error
+    const userIds = data.users.map((user) => user.id)
+    const { data: pinRows, error: pinError } = userIds.length
+      ? await admin.from('user_parent_pins').select('user_id').in('user_id', userIds)
+      : { data: [], error: null }
+    if (pinError) throw pinError
+    const customizedPins = new Set((pinRows ?? []).map((row) => row.user_id as string))
 
     return NextResponse.json({
       users: data.users.map((user) => ({
@@ -36,6 +43,7 @@ export async function GET(req: Request) {
             : '',
         isAdmin: user.app_metadata?.role === 'admin',
         isCurrent: user.id === actor.id,
+        hasCustomParentPin: customizedPins.has(user.id),
         createdAt: user.created_at,
         lastSignInAt: user.last_sign_in_at ?? null,
       })),
@@ -125,6 +133,23 @@ export async function PATCH(req: Request) {
         return NextResponse.json({ error: 'invalid_password' }, { status: 400 })
       }
       const { error } = await admin.auth.admin.updateUserById(userId, { password })
+      if (error) throw error
+      return NextResponse.json({ ok: true })
+    }
+
+    if (action === 'parent_pin') {
+      const pin = body.pin
+      if (!isValidParentPin(pin)) {
+        return NextResponse.json({ error: 'invalid_parent_pin' }, { status: 400 })
+      }
+      const credential = await hashParentPin(pin)
+      const { error } = await admin.from('user_parent_pins').upsert({
+        user_id: userId,
+        pin_hash: credential.hash,
+        pin_salt: credential.salt,
+        updated_by: actor.id,
+        updated_at: new Date().toISOString(),
+      })
       if (error) throw error
       return NextResponse.json({ ok: true })
     }

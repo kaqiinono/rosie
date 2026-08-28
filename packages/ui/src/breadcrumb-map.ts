@@ -15,6 +15,38 @@ export interface BreadcrumbRoute {
 }
 
 export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
+  { pattern: ['chinese'], label: '语文' },
+  {
+    pattern: ['chinese', '[bookSlug]'],
+    label: '{bookSlug}',
+    labelMap: {
+      bookSlug: {
+        g1b: '一年级下册',
+        g2a: '二年级上册',
+        g2b: '二年级下册',
+      },
+    },
+  },
+  { pattern: ['chinese', '[bookSlug]', 'chars'], label: '生字库' },
+  { pattern: ['chinese', '[bookSlug]', 'daily'], label: '今日' },
+  { pattern: ['chinese', '[bookSlug]', 'reading'], label: '阅读' },
+  { pattern: ['chinese', '[bookSlug]', 'reading', '[lessonKey]'], label: '课文' },
+  { pattern: ['chinese', '[bookSlug]', 'poems'], label: '古诗' },
+  { pattern: ['chinese', '[bookSlug]', 'accumulation'], label: '日积月累' },
+  { pattern: ['chinese', '[bookSlug]', 'recordings'], label: '朗读记录' },
+  { pattern: ['chinese', '[bookSlug]', 'units', '[unit]'], label: '第 {unit} 单元' },
+  { pattern: ['chinese', '[bookSlug]', 'wrong'], label: '错题本' },
+  { pattern: ['chinese', 'chars'], label: '生字库' },
+  { pattern: ['chinese', 'daily'], label: '今日' },
+  { pattern: ['chinese', 'reading'], label: '阅读' },
+  { pattern: ['chinese', 'reading', '[lessonKey]'], label: '课文' },
+  { pattern: ['chinese', 'poems'], label: '古诗' },
+  { pattern: ['chinese', 'poems', '[id]'], label: '古诗背诵' },
+  { pattern: ['chinese', 'accumulation'], label: '日积月累' },
+  { pattern: ['chinese', 'units', '[unit]'], label: '第 {unit} 单元' },
+  { pattern: ['chinese', 'weekly'], label: '周计划' },
+  { pattern: ['chinese', 'wrong'], label: '错题本' },
+  { pattern: ['chinese', 'garden'], label: '识字加油站' },
   { pattern: ['english'], label: '英语' },
   { pattern: ['english', 'grammar'], label: '语法' },
   {

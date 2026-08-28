@@ -1,17 +1,16 @@
 import Link from 'next/link'
 import { CHINESE_BOOKS, ChineseDailyCard } from '@rosie/chinese'
+import { PageBreadcrumb } from '@rosie/ui'
 
 export default function ChinesePage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6">
-      <header className="flex items-start justify-between gap-3">
-        <div>
+      <header>
+        <PageBreadcrumb variant="inline" />
+        <div className="mt-4">
           <h1 className="text-2xl font-extrabold text-slate-900">语文学习</h1>
           <p className="mt-1 text-sm text-slate-500">先选择年级，再进入对应学习页面。</p>
         </div>
-        <Link href="/" className="shrink-0 pt-1 text-xs font-semibold text-slate-400 no-underline hover:text-slate-600">
-          ← 乐园
-        </Link>
       </header>
 
       <div className="mt-6">

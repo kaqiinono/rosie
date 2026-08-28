@@ -29,6 +29,7 @@ import ChineseWordsCardsGrid from './chars/ChineseWordsCardsGrid'
 import { buildWordCardItems } from '../utils/chinese-pinyin-write-helpers'
 import { setActiveChineseBook } from '../hooks/useActiveChineseBook'
 import { chineseRoute } from '../utils/chinese-routes'
+import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
 
 export default function ChineseCharsPage() {
   const router = useRouter()
@@ -233,6 +234,18 @@ export default function ChineseCharsPage() {
 
   return (
     <>
+      <ChinesePageShell width="wide" className="pb-4 sm:pb-5">
+        <ChinesePageHeader
+          title="生字库"
+          description={
+            cardPreviewEnabled
+              ? '选择单元和课文，浏览学习内容后开始练习'
+              : '选择单元和课文，开始练习后将直接进入测验'
+          }
+          className="mb-0 sm:mb-0"
+        />
+      </ChinesePageShell>
+
       <ChineseCharsFilterBar
         units={units}
         lessons={visibleLessons}
@@ -253,18 +266,7 @@ export default function ChineseCharsPage() {
         canPrint={canPrint}
       />
 
-      <div className="mx-auto max-w-[1280px] px-4 py-5">
-        <div className="mb-4">
-          <div>
-            <h1 className="text-xl font-extrabold text-stone-900">生字库</h1>
-            <p className="mt-0.5 text-sm text-amber-900/50">
-              {cardPreviewEnabled
-                ? '先选单元和课文，浏览卡片后开始练习'
-                : '先选单元和课文，开始练习后将直接进入测验'}
-            </p>
-          </div>
-        </div>
-
+      <ChinesePageShell width="wide" className="py-5 sm:py-6">
         {(selDisplayType === 'library' || selDisplayType === 'all') && (
           <ChineseCharsContentPreview blocks={contentBlocks} />
         )}
@@ -273,7 +275,7 @@ export default function ChineseCharsPage() {
           cardPreviewEnabled &&
           cards.length > 0 && (
           <section className="mt-6">
-            <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm font-extrabold tracking-wide text-amber-900/55 uppercase">
                 生字卡片
               </h2>
@@ -281,14 +283,14 @@ export default function ChineseCharsPage() {
                 <button
                   type="button"
                   onClick={() => openPrint('chars')}
-                  className="cursor-pointer rounded-lg border-[1.5px] border-amber-200/80 bg-white/80 px-3 py-1 text-xs font-bold text-amber-900/55 transition hover:border-emerald-300"
+                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-amber-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-amber-900/55 transition hover:border-emerald-300"
                 >
                   打印
                 </button>
                 <button
                   type="button"
                   onClick={toggleAllFlipped}
-                  className="cursor-pointer rounded-lg border-[1.5px] border-amber-200/80 bg-white/80 px-3 py-1 text-xs font-bold text-amber-900/55 transition hover:border-emerald-300"
+                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-amber-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-amber-900/55 transition hover:border-emerald-300"
                 >
                   {allFlipped ? '全部正面' : '全部翻面'}
                 </button>
@@ -307,7 +309,7 @@ export default function ChineseCharsPage() {
           cardPreviewEnabled &&
           wordCards.length > 0 && (
           <section className="mt-6">
-            <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm font-extrabold tracking-wide text-teal-800/55 uppercase">
                 词语卡片
               </h2>
@@ -315,14 +317,14 @@ export default function ChineseCharsPage() {
                 <button
                   type="button"
                   onClick={() => openPrint('words')}
-                  className="cursor-pointer rounded-lg border-[1.5px] border-teal-200/80 bg-white/80 px-3 py-1 text-xs font-bold text-teal-900/55 transition hover:border-emerald-300"
+                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-teal-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-teal-900/55 transition hover:border-emerald-300"
                 >
                   打印
                 </button>
                 <button
                   type="button"
                   onClick={toggleAllWordsFlipped}
-                  className="cursor-pointer rounded-lg border-[1.5px] border-teal-200/80 bg-white/80 px-3 py-1 text-xs font-bold text-teal-900/55 transition hover:border-emerald-300"
+                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-teal-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-teal-900/55 transition hover:border-emerald-300"
                 >
                   {allWordsFlipped ? '全部正面' : '全部翻面'}
                 </button>
@@ -335,7 +337,7 @@ export default function ChineseCharsPage() {
             />
           </section>
         )}
-      </div>
+      </ChinesePageShell>
     </>
   )
 }

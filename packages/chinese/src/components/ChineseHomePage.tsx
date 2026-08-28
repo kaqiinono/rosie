@@ -7,6 +7,7 @@ import { chineseRoute } from '../utils/chinese-routes'
 import { useChineseContext } from '../context/ChineseContext'
 import ChineseDailyCard from './ChineseDailyCard'
 import ChineseMasteryStatsBar from './ChineseMasteryStatsBar'
+import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
 
 function bookQuickLinks(bookSlug: ChineseBookSlug) {
   return [
@@ -55,82 +56,82 @@ export default function ChineseHomePage({ bookSlug: bookSlugProp }: ChineseHomeP
   const quickLinks = bookQuickLinks(bookSlug)
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-6">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">语文 · {book?.label ?? bookSlug}</h1>
-          <p className="mt-1 text-sm text-slate-500">部编版 · 生字与古诗</p>
-        </div>
-        <div className="flex shrink-0 gap-3 pt-1 text-xs font-semibold">
-          <Link href="/chinese" className="text-slate-400 no-underline hover:text-slate-600">
-            换册
-          </Link>
-          <Link href="/" className="text-slate-400 no-underline hover:text-slate-600">
-            ← 乐园
-          </Link>
-        </div>
-      </header>
+    <ChinesePageShell width="wide">
+      <ChinesePageHeader
+        eyebrow="语文学习"
+        title={book?.label ?? bookSlug}
+        description="部编版 · 生字、阅读、古诗与日积月累"
+      />
 
-      <ChineseDailyCard />
+      <div className="space-y-8">
+        <ChineseDailyCard />
 
-      <ChineseMasteryStatsBar />
+        <ChineseMasteryStatsBar />
 
-      <section>
-        <h2 className="mb-3 text-sm font-bold tracking-wide text-slate-400 uppercase">快捷入口</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border-2 bg-gradient-to-br p-4 text-center no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${link.className}`}
-            >
-              <span className="text-sm font-extrabold">{link.label}</span>
-              <span className="text-[10px] leading-snug opacity-75">{link.description}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {unresolvedWrong.length > 0 && (
-        <Link
-          href={chineseRoute(bookSlug, 'wrong')}
-          className="block rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-center text-sm font-bold text-rose-800 no-underline"
-        >
-          错题本（{unresolvedWrong.length}）
-        </Link>
-      )}
-
-      <section>
-        <h2 className="mb-3 text-sm font-bold tracking-wide text-slate-400 uppercase">
-          {units.length} 个单元
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {units.map((unit: ChineseUnitEntry) => (
-            <Link
-              key={unit.unit}
-              href={chineseRoute(bookSlug, 'units', String(unit.unit))}
-              className="block rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:border-amber-300 hover:shadow-md"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-extrabold text-slate-800">{unit.title}</h3>
-                <span className="shrink-0 text-xs font-semibold text-amber-600">
-                  {unit.unitType === 'literacy' ? '识字' : '阅读'}
+        <section>
+          <h2 className="mb-3 text-sm font-bold tracking-wide text-slate-400 uppercase">
+            快捷入口
+          </h2>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,10rem),1fr))] gap-3 sm:gap-4">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 bg-gradient-to-br p-4 text-center no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 ${link.className}`}
+              >
+                <span className="text-sm font-extrabold">{link.label}</span>
+                <span className="text-[10px] leading-snug opacity-75">{link.description}</span>
+              </Link>
+            ))}
+            {unresolvedWrong.length > 0 && (
+              <Link
+                href="/chinese/wrong"
+                className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-pink-50 p-4 text-center text-rose-900 no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2"
+              >
+                <span className="text-sm font-extrabold">错题本</span>
+                <span className="text-[10px] leading-snug opacity-75">
+                  {unresolvedWrong.length} 道待复习
                 </span>
-              </div>
-              <ul className="mt-2 space-y-0.5">
-                {unit.lessons.slice(0, 4).map((lesson: ChineseLessonMeta) => (
-                  <li key={`${unit.unit}-${lesson.lesson}-${lesson.title}`} className="text-xs text-slate-500">
-                    {lesson.title}
-                  </li>
-                ))}
-                {unit.lessons.length > 4 && (
-                  <li className="text-xs text-slate-400">…共 {unit.lessons.length} 课</li>
-                )}
-              </ul>
-            </Link>
-          ))}
-        </div>
-      </section>
-    </div>
+              </Link>
+            )}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-sm font-bold tracking-wide text-slate-400 uppercase">
+            {units.length} 个单元
+          </h2>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-3 sm:gap-4">
+            {units.map((unit: ChineseUnitEntry) => (
+              <Link
+                key={unit.unit}
+                href={chineseRoute(bookSlug, 'units', String(unit.unit))}
+                className="block min-h-32 rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-extrabold text-slate-800">{unit.title}</h3>
+                  <span className="shrink-0 text-xs font-semibold text-amber-600">
+                    {unit.unitType === 'literacy' ? '识字' : '阅读'}
+                  </span>
+                </div>
+                <ul className="mt-2 space-y-0.5">
+                  {unit.lessons.slice(0, 4).map((lesson: ChineseLessonMeta) => (
+                    <li
+                      key={`${unit.unit}-${lesson.lesson}-${lesson.title}`}
+                      className="text-xs text-slate-500"
+                    >
+                      {lesson.title}
+                    </li>
+                  ))}
+                  {unit.lessons.length > 4 && (
+                    <li className="text-xs text-slate-400">…共 {unit.lessons.length} 课</li>
+                  )}
+                </ul>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+    </ChinesePageShell>
   )
 }

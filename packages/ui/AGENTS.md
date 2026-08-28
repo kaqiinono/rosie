@@ -2,7 +2,8 @@
 
 Shared **presentational** components used across modules. No data fetching, no business logic.
 
-**Contents:** `CandyButton`/`JellyButton` (+ presets/tiles), `PageBreadcrumb`, `ArrowIcon`,
+**Contents:** `CandyButton`/`JellyButton` (+ presets/tiles), `BrandLogo`, `SelectControl`,
+`PageBreadcrumb`, `ArrowIcon`,
 `OrbBackground`, `LoadingOverlay`, `ModuleCard`, `AccountBar`, `AuthGuard`, `NavigationLink`,
 `TopRightBar`, `ServiceWorkerRegistrar`.
 

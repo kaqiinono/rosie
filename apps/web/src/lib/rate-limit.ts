@@ -15,6 +15,7 @@ const CLEANUP_INTERVAL = 60_000
 export function getRateLimitPolicy(pathname: string): RateLimitPolicy {
   if (pathname === '/api/word-enrich') return { maxRequests: 10, windowMs: 60_000 }
   if (pathname === '/api/forgot-password') return { maxRequests: 3, windowMs: 60_000 }
+  if (pathname === '/api/rewards/parent-action') return { maxRequests: 8, windowMs: 60_000 }
   if (pathname === '/api/ai/chat') return { maxRequests: 20, windowMs: 60_000 }
   if (pathname === '/api/ai/transcribe') return { maxRequests: 15, windowMs: 60_000 }
   if (pathname.startsWith('/api/ai/knowledge')) {

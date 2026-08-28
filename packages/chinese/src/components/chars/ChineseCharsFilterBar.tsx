@@ -44,7 +44,7 @@ function PreviewToggle({
   onToggle: () => void
 }) {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-2 select-none">
+    <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 select-none">
       <span className="text-[11px] font-extrabold tracking-wide text-amber-900/50">卡片预览</span>
       <button
         type="button"
@@ -93,7 +93,7 @@ function PillButton({
       type="button"
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
-      className={`rounded-lg border-[1.5px] px-2.5 py-1 text-[13px] font-bold whitespace-nowrap transition-all select-none ${
+      className={`min-h-9 rounded-lg border-[1.5px] px-2.5 py-1 text-[13px] font-bold whitespace-nowrap transition-all select-none sm:min-h-10 ${
         disabled
           ? 'cursor-not-allowed opacity-40'
           : 'cursor-pointer'
@@ -143,10 +143,10 @@ export default function ChineseCharsFilterBar({
         }))
 
   return (
-    <div className="cn-filter-bar px-4 py-3">
-      <div className="mx-auto max-w-[1280px] rounded-2xl border border-amber-200/60 bg-white/70 p-3">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
+    <div className="cn-filter-bar px-4 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1280px] rounded-3xl border border-amber-200/60 bg-white/80 p-3 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <FilterLabel>单元</FilterLabel>
             {units.map((u) => (
               <PillButton
@@ -160,11 +160,11 @@ export default function ChineseCharsFilterBar({
             ))}
           </div>
 
-          <div className="flex flex-wrap items-start gap-1.5">
+          <div className="flex flex-wrap items-start gap-2">
             <FilterLabel>课文</FilterLabel>
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
               {visibleLessons.map(({ unit, title, lessons: unitLessons }) => (
-                <div key={unit} className="flex flex-wrap items-center gap-1.5">
+                <div key={unit} className="flex flex-wrap items-center gap-2">
                   {visibleLessons.length > 1 && (
                     <span className="min-w-[64px] text-[10px] font-bold text-amber-900/40">
                       {title}
@@ -186,8 +186,8 @@ export default function ChineseCharsFilterBar({
           </div>
         </div>
 
-        <div className="mt-2.5 flex flex-col gap-2 border-t border-amber-900/[0.06] pt-2.5">
-          <div className="flex w-full flex-wrap items-center gap-1.5">
+        <div className="mt-4 flex flex-col gap-3 border-t border-amber-900/[0.06] pt-4">
+          <div className="flex w-full flex-wrap items-center gap-2">
             <FilterLabel>题型</FilterLabel>
             {ALL_CHAR_QUIZ_TYPES.map((type) => {
               const disabled = type === 'blank' && quizTypes.has('passage')
@@ -209,7 +209,7 @@ export default function ChineseCharsFilterBar({
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-2">
               <FilterLabel>展示</FilterLabel>
               <PillButton
                 active={selDisplayType === 'cards'}
@@ -236,26 +236,26 @@ export default function ChineseCharsFilterBar({
 
             <PreviewToggle enabled={cardPreviewEnabled} onToggle={onToggleCardPreview} />
 
-            <div className="ml-auto flex items-center gap-2">
-            <span className="rounded-lg border border-amber-200/70 bg-white/80 px-2.5 py-1 text-[13px] font-bold text-amber-900/55">
-              {contentCount} 项内容
-            </span>
-            <button
-              type="button"
-              disabled={!canStart}
-              onClick={onStartPractice}
-              className="cn-start-btn cursor-pointer rounded-xl border-0 px-5 py-1.5 text-[13px] font-extrabold text-white transition hover:-translate-y-px disabled:translate-y-0"
-            >
-              开始练习
-            </button>
-            <button
-              type="button"
-              disabled={!canPrint}
-              onClick={onPrintAll}
-              className="cursor-pointer rounded-xl border-[1.5px] border-amber-300/80 bg-white/90 px-4 py-1.5 text-[13px] font-extrabold text-amber-900/70 transition hover:border-amber-400 hover:text-amber-900 disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              打印
-            </button>
+            <div className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-2 sm:ml-auto sm:flex sm:w-auto">
+              <span className="inline-flex min-h-11 items-center rounded-lg border border-amber-200/70 bg-white/80 px-2.5 py-1 text-[13px] font-bold whitespace-nowrap text-amber-900/55">
+                {contentCount} 项内容
+              </span>
+              <button
+                type="button"
+                disabled={!canStart}
+                onClick={onStartPractice}
+                className="cn-start-btn min-h-11 cursor-pointer rounded-xl border-0 px-4 py-2 text-[13px] font-extrabold text-white transition hover:-translate-y-px disabled:translate-y-0 sm:px-5"
+              >
+                开始练习
+              </button>
+              <button
+                type="button"
+                disabled={!canPrint}
+                onClick={onPrintAll}
+                className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-amber-300/80 bg-white/90 px-3 py-2 text-[13px] font-extrabold text-amber-900/70 transition hover:border-amber-400 hover:text-amber-900 disabled:cursor-not-allowed disabled:opacity-45 sm:px-4"
+              >
+                打印
+              </button>
             </div>
           </div>
         </div>

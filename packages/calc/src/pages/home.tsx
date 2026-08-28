@@ -15,6 +15,7 @@ import { playSfx } from '../components/audio'
 import { BLOCK_GROUPS, blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildSessionSummaryProps } from '../utils/calc-session-summary'
+import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
 
 const GROUP_LABEL = Object.fromEntries(BLOCK_GROUPS.map((g) => [g.group, g.label])) as Record<
   string,
@@ -85,10 +86,7 @@ export default function CalcHomePage() {
       kind: 'mixed' as const,
     })),
   ]
-  const manualTotal =
-    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
-    enabledMixed.reduce((s, m) => s + m.count, 0)
-  const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
+  const totalQuestions = calcPlannedQuestionCount(settings)
 
   const todayTarget = totalQuestions
 

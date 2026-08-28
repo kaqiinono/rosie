@@ -44,7 +44,6 @@ export default function CharFlashCard({
     unit,
     unitLessonNo,
     bookLessonNo,
-    lessonTitle,
     radical,
     radicalName,
     structure,
@@ -120,9 +119,9 @@ export default function CharFlashCard({
       </div>
     ) : null
 
-  const caption = lessonTitle ? (
-    <p className="max-w-full truncate text-center text-[10px] font-medium text-amber-900/45">
-      {lessonTitle}
+  const frontPhrases = displayPhrases.length > 0 ? (
+    <p className="max-w-full truncate text-center text-[11px] font-bold text-amber-800/70">
+      {displayPhrases.join(' · ')}
     </p>
   ) : null
 
@@ -142,7 +141,7 @@ export default function CharFlashCard({
 
       {charStage(false)}
 
-      <div className="relative z-[1] shrink-0">{caption}</div>
+      <div className="relative z-[1] shrink-0">{frontPhrases}</div>
 
       <span className="absolute right-2 bottom-1 text-[9px] font-bold text-amber-900/20 select-none">
         翻转
@@ -166,18 +165,10 @@ export default function CharFlashCard({
       <div className="flex shrink-0 flex-col items-center gap-0.5 px-1 pt-0.5 text-center">
         <p className="text-base leading-none font-black text-indigo-900">{pinyin}</p>
         {metaLine}
-        {phraseBlock}
       </div>
 
       {charStage(true)}
-
-      <div className="shrink-0">
-        {lessonTitle && (
-          <p className="max-w-full truncate text-center text-[9px] font-medium text-indigo-900/40">
-            {lessonTitle}
-          </p>
-        )}
-      </div>
+      <div className="relative z-[1] shrink-0">{phraseBlock}</div>
       <span className="absolute right-2 bottom-1 text-[9px] font-bold text-indigo-900/20 select-none">
         ↩
       </span>

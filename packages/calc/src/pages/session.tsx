@@ -23,6 +23,7 @@ import ChallengeBanner from '../components/ChallengeBanner'
 import SessionSummary from '../components/SessionSummary'
 import DrillSummary from '../components/DrillSummary'
 import { buildSession, buildDrillSession, coinReward, type DrillParams } from '../utils/calc-helpers'
+import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
 import {
   applySessionStarMultiplier,
   clampBonusSec,
@@ -166,10 +167,7 @@ export default function CalcSessionPage() {
     if (resumeFromSnap) setPrepConfirmed(true)
   }, [resumeFromSnap])
 
-  const manualTotalEstimate =
-    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
-    settings.mixedOps.filter((m) => m.enabled).reduce((s, m) => s + m.count, 0)
-  const plannedEstimate = settings.countMode === 'manual' ? manualTotalEstimate : settings.lastCount
+  const plannedEstimate = calcPlannedQuestionCount(settings)
 
   const handlePrepStart = useCallback(() => {
     sessionTimingModeRef.current = prepTimingMode

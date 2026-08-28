@@ -851,6 +851,7 @@ export default function ChineseCharsPracticeSession() {
               卡片 {cardIdx + 1} / {plan.cards.length}
             </p>
             <CharFlashCard
+              key={currentCard.charKey}
               data={{
                 char: currentCard.char,
                 pinyin: currentCard.pinyin,

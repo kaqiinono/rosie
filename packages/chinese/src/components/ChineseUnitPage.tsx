@@ -166,10 +166,7 @@ export default function ChineseUnitPage({ unit, lessonGroups, lessons, isLoading
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
-      <Link href="/chinese" className="text-xs font-semibold text-amber-700 no-underline">
-        ← 语文首页
-      </Link>
-      <header className="mt-3">
+      <header>
         <h1 className="text-xl font-extrabold text-slate-900">{unit.title}</h1>
         <p className="mt-1 text-sm text-slate-500">
           {unit.unitType === 'literacy' ? '识字单元' : '阅读单元'} · {unit.lessons.length} 篇

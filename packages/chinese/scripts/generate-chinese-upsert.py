@@ -418,6 +418,17 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
     inferred_count = 0
 
     char_rows: list[str] = []
+
+    # chars.ts is the authoritative backup for per-character compounds.
+    # phrases.ts contains lesson-level phrase/recall material and may add more.
+    for entry in char_backup:
+        ck = entry.get("charKey")
+        if not ck:
+            continue
+        for phrase in entry.get("phrases", []):
+            if phrase:
+                char_phrases[ck].add(phrase)
+
     for ck in all_char_keys:
         ch = ck.split("::")[-1]
         mm = mm_dict.get(ch)

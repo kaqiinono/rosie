@@ -11,6 +11,7 @@ import {
   sortLessonsPedagogically,
 } from '../../utils/chinese-lesson-display'
 import { chineseRoute } from '../../utils/chinese-routes'
+import { ChinesePageHeader, ChinesePageShell } from '../ChinesePageLayout'
 
 export default function ChineseReadingIndexPage() {
   const { lessons, lessonGroups, getMastery, isCharDataLoading, isCharDataReady, bookSlug, charKeyForBook } =
@@ -54,23 +55,19 @@ export default function ChineseReadingIndexPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-4 pt-5 pb-24">
-      <header className="mb-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-extrabold text-slate-900">📖 课文阅读</h1>
-            <p className="mt-0.5 text-sm text-amber-900/50">
-              读课文 · 会认字会写字高亮 · 读完做回想测试
-            </p>
-          </div>
+    <ChinesePageShell width="wide">
+      <ChinesePageHeader
+        title="课文阅读"
+        description="读课文 · 会认字会写字高亮 · 读完做回想测试"
+        action={
           <Link
             href={chineseRoute(bookSlug, 'recordings')}
-            className="shrink-0 rounded-full bg-amber-50 px-3 py-1.5 text-[12px] font-bold text-amber-800 no-underline ring-1 ring-amber-200 transition hover:bg-amber-100"
+            className="inline-flex min-h-11 items-center rounded-xl bg-amber-50 px-4 text-sm font-bold text-amber-800 no-underline ring-1 ring-amber-200 transition hover:bg-amber-100 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
           >
             我的朗读
           </Link>
-        </div>
-      </header>
+        }
+      />
 
       {cards.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
@@ -79,14 +76,14 @@ export default function ChineseReadingIndexPage() {
           <div className="mt-1 text-[12px] text-slate-500">课文正文录入后会在这里出现。</div>
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),1fr))] gap-3 sm:gap-4">
           {cards.map((c) => {
             const pct = c.total > 0 ? Math.round((c.mastered / c.total) * 100) : 0
             return (
               <li key={c.lessonKey}>
                 <Link
                   href={chineseRoute(bookSlug, 'reading', localLessonKey(c.lessonKey))}
-                  className="block rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md"
+                  className="block h-full min-h-40 rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 sm:p-5"
                 >
                   <div className="mb-1.5 flex items-center gap-1.5">
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200">
@@ -124,6 +121,6 @@ export default function ChineseReadingIndexPage() {
           })}
         </ul>
       )}
-    </main>
+    </ChinesePageShell>
   )
 }

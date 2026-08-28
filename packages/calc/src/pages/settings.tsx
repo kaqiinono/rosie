@@ -16,6 +16,7 @@ import CustomCountInput, { COUNT_OPTIONS } from '../components/CustomCountInput'
 import { playSfx } from '../components/audio'
 import { blocksByGroup, blockById, BLOCK_GROUPS, type CalcBlock } from '../utils/calc-blocks'
 import { skeletonMeta, SKELETONS } from '../utils/calc-mixed'
+import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
 
 interface PerTypeCardProps {
   label: string
@@ -408,10 +409,7 @@ export default function CalcSettingsPage() {
   const blockCount = settings.selectedBlocks.length
 
   const enabledMixed = settings.mixedOps.filter((m) => m.enabled)
-  const manualTotal =
-    settings.selectedBlocks.reduce((s, b) => s + b.count, 0) +
-    enabledMixed.reduce((s, m) => s + m.count, 0)
-  const totalQuestions = settings.countMode === 'manual' ? manualTotal : settings.lastCount
+  const totalQuestions = calcPlannedQuestionCount(settings)
 
   // 全量运算档位一览：按组排列所有单运算 + 混合骨架
   const allTierItems: TierTargetItem[] = [

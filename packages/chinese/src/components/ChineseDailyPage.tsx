@@ -19,6 +19,7 @@ import {
 import { chineseRoute } from '../utils/chinese-routes'
 import type { CharTrack } from '../utils/chinese-helpers'
 import { formatPlanQuizTypes } from './plans/chinese-roadmap-plan-shared'
+import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
 
 interface LessonChar {
   char: string
@@ -196,13 +197,11 @@ export default function ChineseDailyPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-6">
-      <header>
-        <h1 className="text-xl font-extrabold text-slate-900">今日语文</h1>
-        <p className="mt-1 text-sm text-slate-500">{today}</p>
-      </header>
+    <ChinesePageShell width="wide">
+      <ChinesePageHeader title="今日语文" description={today} />
 
-      <section className="rounded-2xl border border-amber-200 bg-white/85 p-5 shadow-sm">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)] lg:gap-8">
+        <section className="rounded-3xl border border-amber-200 bg-white/85 p-4 shadow-sm sm:p-6 lg:min-h-full">
         <p className="text-xs font-semibold tracking-wide text-amber-700">{headerMeta}</p>
         <h2 className="mt-1 text-lg font-extrabold text-slate-900">{headerTitle}</h2>
         {activePlan && (
@@ -259,7 +258,7 @@ export default function ChineseDailyPage() {
         <button
           type="button"
           onClick={startPractice}
-          className="mt-5 block w-full rounded-xl bg-amber-600 py-3 text-center text-sm font-bold text-white transition hover:bg-amber-700"
+          className="mt-5 block min-h-12 w-full cursor-pointer rounded-xl bg-amber-600 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-amber-700 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
         >
           {activePlan ? '开始练习本批' : '开始练习本课'}
         </button>
@@ -268,75 +267,79 @@ export default function ChineseDailyPage() {
             ? '完成本批计划题型后，将自动推进下一关'
             : '本课生字全部答对后，将自动解锁下一课'}
         </p>
-      </section>
-
-      {preview && (
-        <section>
-          <h2 className="mb-2 text-sm font-bold text-slate-500">本课生字预览</h2>
-          <CharFlashCard
-            data={{
-              char: preview.char,
-              pinyin: preview.pinyin,
-              unit: planLesson?.unit ?? currentNode?.unit ?? 0,
-              unitLessonNo: (planDisplay ?? display)?.unitLessonNo ?? undefined,
-              bookLessonNo: (planDisplay ?? display)?.bookLessonNo ?? undefined,
-              lessonTitle: headerTitle,
-              radical: previewProfile?.radical,
-              radicalName: previewProfile?.radicalName,
-              structure: previewProfile?.structure,
-              phrases: previewProfile?.phrases,
-              strokeCount: previewProfile?.strokeCount,
-            }}
-            flipped={flipped}
-            onFlip={() => setFlipped((f) => !f)}
-          />
-          {lessonChars.length > 1 && (
-            <div className="mt-3 flex justify-center gap-2">
-              <button
-                type="button"
-                disabled={previewIdx === 0}
-                onClick={() => {
-                  setPreviewIdx((i) => i - 1)
-                  setFlipped(false)
-                }}
-                className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold disabled:opacity-40"
-              >
-                上一字
-              </button>
-              <span className="self-center text-xs text-slate-400">
-                {previewIdx + 1} / {lessonChars.length}
-              </span>
-              <button
-                type="button"
-                disabled={previewIdx >= lessonChars.length - 1}
-                onClick={() => {
-                  setPreviewIdx((i) => i + 1)
-                  setFlipped(false)
-                }}
-                className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold disabled:opacity-40"
-              >
-                下一字
-              </button>
-            </div>
-          )}
         </section>
-      )}
 
-      <Link
-        href="/chinese/weekly"
-        className="text-center text-xs font-semibold text-amber-700 no-underline"
-      >
-        查看学习路线 →
-      </Link>
+        {preview && (
+          <section className="min-w-0">
+            <h2 className="mb-3 text-sm font-bold text-slate-500">本课生字预览</h2>
+            <CharFlashCard
+              key={preview.charKey}
+              data={{
+                char: preview.char,
+                pinyin: preview.pinyin,
+                unit: planLesson?.unit ?? currentNode?.unit ?? 0,
+                unitLessonNo: (planDisplay ?? display)?.unitLessonNo ?? undefined,
+                bookLessonNo: (planDisplay ?? display)?.bookLessonNo ?? undefined,
+                lessonTitle: headerTitle,
+                radical: previewProfile?.radical,
+                radicalName: previewProfile?.radicalName,
+                structure: previewProfile?.structure,
+                phrases: previewProfile?.phrases,
+                strokeCount: previewProfile?.strokeCount,
+              }}
+              flipped={flipped}
+              onFlip={() => setFlipped((f) => !f)}
+            />
+            {lessonChars.length > 1 && (
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  disabled={previewIdx === 0}
+                  onClick={() => {
+                    setPreviewIdx((i) => i - 1)
+                    setFlipped(false)
+                  }}
+                  className="min-h-11 cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  上一字
+                </button>
+                <span className="self-center text-xs text-slate-400">
+                  {previewIdx + 1} / {lessonChars.length}
+                </span>
+                <button
+                  type="button"
+                  disabled={previewIdx >= lessonChars.length - 1}
+                  onClick={() => {
+                    setPreviewIdx((i) => i + 1)
+                    setFlipped(false)
+                  }}
+                  className="min-h-11 cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  下一字
+                </button>
+              </div>
+            )}
+          </section>
+        )}
 
-      {unresolvedWrong.length > 0 && (
-        <Link
-          href="/chinese/wrong"
-          className="text-center text-xs font-semibold text-rose-600 no-underline"
-        >
-          错题本（{unresolvedWrong.length}）→
-        </Link>
-      )}
-    </div>
+        <div className="flex flex-wrap items-center justify-center gap-3 lg:col-span-2">
+          <Link
+            href="/chinese/weekly"
+            className="inline-flex min-h-11 items-center rounded-xl border border-amber-200 bg-white/70 px-4 text-sm font-bold text-amber-700 no-underline transition hover:bg-amber-50"
+          >
+            查看学习路线 →
+          </Link>
+
+          {unresolvedWrong.length > 0 && (
+            <Link
+              href="/chinese/wrong"
+              className="inline-flex min-h-11 items-center rounded-xl border border-rose-200 bg-white/70 px-4 text-sm font-bold text-rose-600 no-underline transition hover:bg-rose-50"
+            >
+              错题本（{unresolvedWrong.length}）→
+            </Link>
+          )}
+        </div>
+      </div>
+    </ChinesePageShell>
   )
 }

@@ -9,6 +9,9 @@ workspace package.
 ## What's inside
 
 - **Chars (`components/chars/`)** — flash cards, pinyin quiz, **hanzi-writer 笔顺书写** (`CharWriter`).
+- **Page chrome (`components/ChinesePageLayout.tsx`)** — shared responsive page shell and heading
+  specification for book home / 今日 / 生字 / 阅读 / 古诗 / 积累 pages. Use a width variant instead
+  of introducing one-off page gutters or heading sizes.
 - **Poems (`components/poems/`)** — poem list + fill-in-blank recite flow.
 - **`ChineseContext`** — aggregates `useCharMastery`, `useChineseCharData`, `useChineseWeeklyPlan` (legacy).
 - **Roadmap plans (`hooks/useChineseRoadmapPlan.ts`, `components/plans/`)** — parent-managed study plans; `/today` prefers active plan over mastery roadmap.
@@ -113,6 +116,8 @@ Add `@source` for `packages/chinese/src` in `apps/web/src/app/globals.css` when 
 ```bash
 pnpm --filter @rosie/chinese typecheck
 pnpm --filter @rosie/chinese lint
+pnpm --filter @rosie/chinese audit-card-phrases
+pnpm --filter @rosie/chinese enrich-card-phrases -- --apply
 pnpm --filter @rosie/chinese verify-data
 pnpm --filter @rosie/chinese generate-sql
 ```

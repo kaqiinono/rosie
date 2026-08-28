@@ -19,7 +19,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "解冻",
+      "天寒地冻"
+    ],
     "strokeCount": 0
   },
   {
@@ -37,7 +40,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "夹子",
+      "夹层"
+    ],
     "strokeCount": 0
   },
   {
@@ -55,7 +61,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "暴躁",
+      "暴雨"
+    ],
     "strokeCount": 0
   },
   {
@@ -73,7 +82,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "晴朗",
+      "朗读"
+    ],
     "strokeCount": 0
   },
   {
@@ -91,7 +103,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "转身",
+      "转眼"
+    ],
     "strokeCount": 0
   },
   {
@@ -109,7 +124,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一阵",
+      "阵雨"
+    ],
     "strokeCount": 0
   },
   {
@@ -127,7 +145,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "打雷",
+      "雷电"
+    ],
     "strokeCount": 0
   },
   {
@@ -145,7 +166,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "云雾",
+      "烟雾"
+    ],
     "strokeCount": 0
   },
   {
@@ -163,7 +187,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "两旁",
+      "两岸"
+    ],
     "strokeCount": 0
   },
   {
@@ -181,7 +208,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哪里",
+      "哪个"
+    ],
     "strokeCount": 0
   },
   {
@@ -199,7 +229,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "嘴巴",
+      "嘴里"
+    ],
     "strokeCount": 0
   },
   {
@@ -217,7 +250,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "孩子",
+      "小孩"
+    ],
     "strokeCount": 0
   },
   {
@@ -235,7 +271,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "宽阔",
+      "宽敞"
+    ],
     "strokeCount": 0
   },
   {
@@ -253,7 +292,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "成长",
+      "成熟"
+    ],
     "strokeCount": 0
   },
   {
@@ -271,7 +313,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "披风",
+      "披肩"
+    ],
     "strokeCount": 0
   },
   {
@@ -289,7 +334,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "教室",
+      "教训"
+    ],
     "strokeCount": 0
   },
   {
@@ -307,7 +355,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "纸条",
+      "便条"
+    ],
     "strokeCount": 0
   },
   {
@@ -343,7 +394,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "灰色",
+      "灰尘"
+    ],
     "strokeCount": 0
   },
   {
@@ -361,7 +415,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "甩手",
+      "甩开"
+    ],
     "strokeCount": 0
   },
   {
@@ -379,7 +436,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "短期",
+      "短信"
+    ],
     "strokeCount": 0
   },
   {
@@ -397,7 +457,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "肚皮",
+      "肚子"
+    ],
     "strokeCount": 0
   },
   {
@@ -433,7 +496,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "腿脚",
+      "双腿"
+    ],
     "strokeCount": 0
   },
   {
@@ -451,7 +517,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蝌蚪",
+      "蝌蚪"
+    ],
     "strokeCount": 0
   },
   {
@@ -469,7 +538,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蝌蚪",
+      "蝌蚪"
+    ],
     "strokeCount": 0
   },
   {
@@ -505,7 +577,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蹲下",
+      "蹲伏"
+    ],
     "strokeCount": 0
   },
   {
@@ -541,7 +616,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "那么",
+      "那些"
+    ],
     "strokeCount": 0
   },
   {
@@ -559,7 +637,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "鼓励",
+      "鼓掌"
+    ],
     "strokeCount": 0
   },
   {
@@ -577,7 +658,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "海龟",
+      "龟壳"
+    ],
     "strokeCount": 0
   },
   {
@@ -595,7 +679,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "工作",
+      "当作"
+    ],
     "strokeCount": 0
   },
   {
@@ -613,7 +700,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "办法",
+      "办事"
+    ],
     "strokeCount": 0
   },
   {
@@ -631,7 +721,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "升旗",
+      "上升"
+    ],
     "strokeCount": 0
   },
   {
@@ -649,7 +742,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "发现",
+      "发明"
+    ],
     "strokeCount": 0
   },
   {
@@ -667,7 +763,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "坏事",
+      "损坏"
+    ],
     "strokeCount": 0
   },
   {
@@ -685,7 +784,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "奔跑",
+      "奔波"
+    ],
     "strokeCount": 0
   },
   {
@@ -703,7 +805,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "房屋",
+      "屋子"
+    ],
     "strokeCount": 0
   },
   {
@@ -721,7 +826,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "带领",
+      "带来"
+    ],
     "strokeCount": 0
   },
   {
@@ -739,7 +847,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "庄稼",
+      "村庄"
+    ],
     "strokeCount": 0
   },
   {
@@ -757,7 +868,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "汽车",
+      "汽水"
+    ],
     "strokeCount": 0
   },
   {
@@ -775,7 +889,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "没有",
+      "淹没"
+    ],
     "strokeCount": 0
   },
   {
@@ -793,7 +910,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "办法",
+      "方法"
+    ],
     "strokeCount": 0
   },
   {
@@ -811,7 +931,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "懒洋洋",
+      "暖洋洋"
+    ],
     "strokeCount": 0
   },
   {
@@ -829,7 +952,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "海鸥",
+      "海底"
+    ],
     "strokeCount": 0
   },
   {
@@ -847,7 +973,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "温暖",
+      "体温"
+    ],
     "strokeCount": 0
   },
   {
@@ -865,7 +994,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "水滴",
+      "滴答"
+    ],
     "strokeCount": 0
   },
   {
@@ -883,7 +1015,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "灾难",
+      "水灾"
+    ],
     "strokeCount": 0
   },
   {
@@ -919,7 +1054,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "庄稼",
+      "庄稼地"
+    ],
     "strokeCount": 0
   },
   {
@@ -937,7 +1075,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "尽管",
+      "吸管"
+    ],
     "strokeCount": 0
   },
   {
@@ -955,7 +1096,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "许多",
+      "也许"
+    ],
     "strokeCount": 0
   },
   {
@@ -973,7 +1117,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "起来",
+      "一起"
+    ],
     "strokeCount": 0
   },
   {
@@ -991,7 +1138,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "越来越",
+      "翻越"
+    ],
     "strokeCount": 0
   },
   {
@@ -1009,7 +1159,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "连忙",
+      "一连"
+    ],
     "strokeCount": 0
   },
   {
@@ -1027,7 +1180,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "准备",
+      "准时"
+    ],
     "strokeCount": 0
   },
   {
@@ -1045,7 +1201,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "别人",
+      "特别"
+    ],
     "strokeCount": 0
   },
   {
@@ -1063,7 +1222,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "准备",
+      "储备"
+    ],
     "strokeCount": 0
   },
   {
@@ -1081,7 +1243,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "如果",
+      "比如"
+    ],
     "strokeCount": 0
   },
   {
@@ -1099,7 +1264,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "已经",
+      "早已"
+    ],
     "strokeCount": 0
   },
   {
@@ -1117,7 +1285,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "底下",
+      "海底"
+    ],
     "strokeCount": 0
   },
   {
@@ -1135,7 +1306,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "觉得",
+      "显得"
+    ],
     "strokeCount": 0
   },
   {
@@ -1153,7 +1327,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "挂起",
+      "挂念"
+    ],
     "strokeCount": 0
   },
   {
@@ -1171,7 +1348,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "挺拔",
+      "挺立"
+    ],
     "strokeCount": 0
   },
   {
@@ -1189,7 +1369,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "旅行",
+      "旅游"
+    ],
     "strokeCount": 0
   },
   {
@@ -1207,7 +1390,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "更加",
+      "更改"
+    ],
     "strokeCount": 0
   },
   {
@@ -1225,7 +1411,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "植物",
+      "植树"
+    ],
     "strokeCount": 0
   },
   {
@@ -1243,7 +1432,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "炸酱面",
+      "炸弹"
+    ],
     "strokeCount": 0
   },
   {
@@ -1261,7 +1453,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "离开",
+      "距离"
+    ],
     "strokeCount": 0
   },
   {
@@ -1279,7 +1474,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "粗心",
+      "粗糙"
+    ],
     "strokeCount": 0
   },
   {
@@ -1297,7 +1495,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "纷纷",
+      "纷乱"
+    ],
     "strokeCount": 0
   },
   {
@@ -1315,7 +1516,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "经常",
+      "经过"
+    ],
     "strokeCount": 0
   },
   {
@@ -1333,7 +1537,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "胆子",
+      "胆小"
+    ],
     "strokeCount": 0
   },
   {
@@ -1351,7 +1558,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "脚下",
+      "脚步"
+    ],
     "strokeCount": 0
   },
   {
@@ -1369,7 +1579,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "知识",
+      "认识"
+    ],
     "strokeCount": 0
   },
   {
@@ -1387,7 +1600,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "年轻",
+      "轻轻"
+    ],
     "strokeCount": 0
   },
   {
@@ -1405,7 +1621,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "送给",
+      "送货"
+    ],
     "strokeCount": 0
   },
   {
@@ -1423,7 +1642,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钻进",
+      "钻研"
+    ],
     "strokeCount": 0
   },
   {
@@ -1441,7 +1663,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "丑恶",
+      "出丑"
+    ],
     "strokeCount": 0
   },
   {
@@ -1459,7 +1684,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "放假",
+      "暑假"
+    ],
     "strokeCount": 0
   },
   {
@@ -1477,7 +1705,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "帮助",
+      "互助"
+    ],
     "strokeCount": 0
   },
   {
@@ -1495,7 +1726,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "丰富",
+      "富裕"
+    ],
     "strokeCount": 0
   },
   {
@@ -1513,7 +1747,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "恨不得",
+      "仇恨"
+    ],
     "strokeCount": 0
   },
   {
@@ -1531,7 +1768,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "沙漠",
+      "荒漠"
+    ],
     "strokeCount": 0
   },
   {
@@ -1549,7 +1789,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "虚假",
+      "虚弱"
+    ],
     "strokeCount": 0
   },
   {
@@ -1567,7 +1810,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "诚实",
+      "真诚"
+    ],
     "strokeCount": 0
   },
   {
@@ -1585,7 +1831,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "贫困",
+      "贫穷"
+    ],
     "strokeCount": 0
   },
   {
@@ -1603,7 +1852,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "饥饿",
+      "如饥似渴"
+    ],
     "strokeCount": 0
   },
   {
@@ -1621,7 +1873,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "花丛",
+      "树丛"
+    ],
     "strokeCount": 0
   },
   {
@@ -1639,7 +1894,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "号召",
+      "号码"
+    ],
     "strokeCount": 0
   },
   {
@@ -1657,7 +1915,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "公园",
+      "花园"
+    ],
     "strokeCount": 0
   },
   {
@@ -1675,7 +1936,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一块",
+      "石块"
+    ],
     "strokeCount": 0
   },
   {
@@ -1693,7 +1957,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "垂柳",
+      "垂下"
+    ],
     "strokeCount": 0
   },
   {
@@ -1711,7 +1978,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "鱼塘",
+      "水塘"
+    ],
     "strokeCount": 0
   },
   {
@@ -1729,7 +1999,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "远处",
+      "四处"
+    ],
     "strokeCount": 0
   },
   {
@@ -1747,7 +2020,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "帆船",
+      "风帆"
+    ],
     "strokeCount": 0
   },
   {
@@ -1765,7 +2041,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "座位",
+      "插座"
+    ],
     "strokeCount": 0
   },
   {
@@ -1783,7 +2062,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "港口",
+      "港区"
+    ],
     "strokeCount": 0
   },
   {
@@ -1801,7 +2083,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "海湾",
+      "河湾"
+    ],
     "strokeCount": 0
   },
   {
@@ -1819,7 +2104,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "溪流"
+    ],
     "strokeCount": 0
   },
   {
@@ -1837,7 +2124,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "稻田",
+      "稻子"
+    ],
     "strokeCount": 0
   },
   {
@@ -1855,7 +2145,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "人群",
+      "群山"
+    ],
     "strokeCount": 0
   },
   {
@@ -1873,7 +2166,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "翡翠",
+      "葱翠"
+    ],
     "strokeCount": 0
   },
   {
@@ -1891,7 +2187,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "行走",
+      "旅行"
+    ],
     "strokeCount": 0
   },
   {
@@ -1909,7 +2208,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "铜钱",
+      "铜器"
+    ],
     "strokeCount": 0
   },
   {
@@ -1927,7 +2229,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "队伍",
+      "队员"
+    ],
     "strokeCount": 0
   },
   {
@@ -1945,7 +2250,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "领导",
+      "带领"
+    ],
     "strokeCount": 0
   },
   {
@@ -1963,7 +2271,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "之间",
+      "之后"
+    ],
     "strokeCount": 0
   },
   {
@@ -1981,7 +2292,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "化石",
+      "变化"
+    ],
     "strokeCount": 0
   },
   {
@@ -1999,7 +2313,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "茁壮",
+      "壮观"
+    ],
     "strokeCount": 0
   },
   {
@@ -2017,7 +2334,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "守卫",
+      "遵守"
+    ],
     "strokeCount": 0
   },
   {
@@ -2035,7 +2355,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "手掌",
+      "掌声"
+    ],
     "strokeCount": 0
   },
   {
@@ -2053,7 +2376,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "水杉",
+      "铁杉"
+    ],
     "strokeCount": 0
   },
   {
@@ -2071,7 +2397,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "杏子",
+      "杏树"
+    ],
     "strokeCount": 0
   },
   {
@@ -2089,7 +2418,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "垂杨柳"
+    ],
     "strokeCount": 0
   },
   {
@@ -2107,7 +2438,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "松鼠",
+      "松果"
+    ],
     "strokeCount": 0
   },
   {
@@ -2125,7 +2459,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "枫树",
+      "枫叶"
+    ],
     "strokeCount": 0
   },
   {
@@ -2143,7 +2480,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "柏树",
+      "松柏"
+    ],
     "strokeCount": 0
   },
   {
@@ -2161,7 +2501,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "树木",
+      "树枝"
+    ],
     "strokeCount": 0
   },
   {
@@ -2179,7 +2522,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "桂皮",
+      "肉桂"
+    ],
     "strokeCount": 0
   },
   {
@@ -2197,7 +2543,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "梧桐",
+      "泡桐"
+    ],
     "strokeCount": 0
   },
   {
@@ -2215,7 +2564,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "桦树"
+    ],
     "strokeCount": 0
   },
   {
@@ -2233,7 +2584,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "梧桐"
+    ],
     "strokeCount": 0
   },
   {
@@ -2251,7 +2604,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "榕树"
+    ],
     "strokeCount": 0
   },
   {
@@ -2269,7 +2624,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "黄金",
+      "金子"
+    ],
     "strokeCount": 0
   },
   {
@@ -2287,7 +2645,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "银子",
+      "银河"
+    ],
     "strokeCount": 0
   },
   {
@@ -2305,7 +2666,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "世界",
+      "世纪"
+    ],
     "strokeCount": 0
   },
   {
@@ -2323,7 +2687,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "休息",
+      "休假"
+    ],
     "strokeCount": 0
   },
   {
@@ -2341,7 +2708,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "保护",
+      "保证"
+    ],
     "strokeCount": 0
   },
   {
@@ -2359,7 +2729,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "朋友",
+      "友好"
+    ],
     "strokeCount": 0
   },
   {
@@ -2377,7 +2750,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "鼻孔",
+      "面孔"
+    ],
     "strokeCount": 0
   },
   {
@@ -2395,7 +2771,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "彩色",
+      "彩云"
+    ],
     "strokeCount": 0
   },
   {
@@ -2413,7 +2792,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "保护",
+      "爱护"
+    ],
     "strokeCount": 0
   },
   {
@@ -2431,7 +2813,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "拍手",
+      "拍照"
+    ],
     "strokeCount": 0
   },
   {
@@ -2449,7 +2834,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "朋友",
+      "小朋友"
+    ],
     "strokeCount": 0
   },
   {
@@ -2467,7 +2855,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "深处",
+      "深夜"
+    ],
     "strokeCount": 0
   },
   {
@@ -2485,7 +2876,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "百灵",
+      "机灵"
+    ],
     "strokeCount": 0
   },
   {
@@ -2503,7 +2897,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "猛兽",
+      "凶猛"
+    ],
     "strokeCount": 0
   },
   {
@@ -2521,7 +2918,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "小猫",
+      "猫头鹰"
+    ],
     "strokeCount": 0
   },
   {
@@ -2539,7 +2939,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "世界",
+      "界限"
+    ],
     "strokeCount": 0
   },
   {
@@ -2557,7 +2960,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "翱翔"
+    ],
     "strokeCount": 0
   },
   {
@@ -2575,7 +2980,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "锦缎",
+      "锦绣"
+    ],
     "strokeCount": 0
   },
   {
@@ -2593,7 +3001,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "山雀",
+      "麻雀"
+    ],
     "strokeCount": 0
   },
   {
@@ -2611,7 +3022,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "大雁"
+    ],
     "strokeCount": 0
   },
   {
@@ -2629,7 +3042,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "雄伟",
+      "雄壮"
+    ],
     "strokeCount": 0
   },
   {
@@ -2647,7 +3063,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "雄鹰",
+      "猫头鹰"
+    ],
     "strokeCount": 0
   },
   {
@@ -2665,7 +3084,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "事情",
+      "故事"
+    ],
     "strokeCount": 0
   },
   {
@@ -2683,7 +3105,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "身体",
+      "体温"
+    ],
     "strokeCount": 0
   },
   {
@@ -2701,7 +3126,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "农民",
+      "农具"
+    ],
     "strokeCount": 0
   },
   {
@@ -2719,7 +3147,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "起初",
+      "最初"
+    ],
     "strokeCount": 0
   },
   {
@@ -2737,7 +3168,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "特制",
+      "制造"
+    ],
     "strokeCount": 0
   },
   {
@@ -2755,7 +3189,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "勤劳",
+      "勤奋"
+    ],
     "strokeCount": 0
   },
   {
@@ -2773,7 +3210,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "广场",
+      "操场"
+    ],
     "strokeCount": 0
   },
   {
@@ -2791,7 +3231,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "嫩芽",
+      "嫩叶"
+    ],
     "strokeCount": 0
   },
   {
@@ -2809,7 +3252,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "春季",
+      "夏季"
+    ],
     "strokeCount": 0
   },
   {
@@ -2827,7 +3273,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "归来",
+      "归还"
+    ],
     "strokeCount": 0
   },
   {
@@ -2845,7 +3294,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "穿戴",
+      "佩戴"
+    ],
     "strokeCount": 0
   },
   {
@@ -2863,7 +3315,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "肥料",
+      "肥皂"
+    ],
     "strokeCount": 0
   },
   {
@@ -2881,7 +3336,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "辛苦",
+      "痛苦"
+    ],
     "strokeCount": 0
   },
   {
@@ -2899,7 +3357,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "虽然",
+      "虽说"
+    ],
     "strokeCount": 0
   },
   {
@@ -2917,7 +3378,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蝴蝶",
+      "蝴蝶花"
+    ],
     "strokeCount": 0
   },
   {
@@ -2935,7 +3399,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蝴蝶",
+      "蝴蝶花"
+    ],
     "strokeCount": 0
   },
   {
@@ -2971,7 +3438,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "辛苦",
+      "艰辛"
+    ],
     "strokeCount": 0
   },
   {
@@ -3007,7 +3477,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "围巾",
+      "周围"
+    ],
     "strokeCount": 0
   },
   {
@@ -3025,7 +3498,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "图画",
+      "图案"
+    ],
     "strokeCount": 0
   },
   {
@@ -3043,7 +3519,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "弹弓",
+      "子弹"
+    ],
     "strokeCount": 0
   },
   {
@@ -3061,7 +3540,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "捏造",
+      "捏合"
+    ],
     "strokeCount": 0
   },
   {
@@ -3079,7 +3561,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "楼梯",
+      "电梯"
+    ],
     "strokeCount": 0
   },
   {
@@ -3097,7 +3582,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "泥土",
+      "泥泞"
+    ],
     "strokeCount": 0
   },
   {
@@ -3115,7 +3603,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "滑溜",
+      "光滑"
+    ],
     "strokeCount": 0
   },
   {
@@ -3133,7 +3624,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "滚动",
+      "翻滚"
+    ],
     "strokeCount": 0
   },
   {
@@ -3151,7 +3645,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "环绕",
+      "环境"
+    ],
     "strokeCount": 0
   },
   {
@@ -3169,7 +3666,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钢琴",
+      "琴弦"
+    ],
     "strokeCount": 0
   },
   {
@@ -3187,7 +3687,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钢铁",
+      "钢笔"
+    ],
     "strokeCount": 0
   },
   {
@@ -3205,7 +3708,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钢铁",
+      "铁锹"
+    ],
     "strokeCount": 0
   },
   {
@@ -3223,7 +3729,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "美丽",
+      "秀丽"
+    ],
     "strokeCount": 0
   },
   {
@@ -3241,7 +3750,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好吗",
+      "是吗"
+    ],
     "strokeCount": 0
   },
   {
@@ -3259,7 +3771,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哥哥",
+      "大哥"
+    ],
     "strokeCount": 0
   },
   {
@@ -3277,7 +3792,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好啊",
+      "是啊"
+    ],
     "strokeCount": 0
   },
   {
@@ -3295,7 +3813,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "圆形",
+      "团圆"
+    ],
     "strokeCount": 0
   },
   {
@@ -3313,7 +3834,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "水壶",
+      "茶壶"
+    ],
     "strokeCount": 0
   },
   {
@@ -3331,7 +3855,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "拿起",
+      "拿走"
+    ],
     "strokeCount": 0
   },
   {
@@ -3349,7 +3876,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "挑水",
+      "挑选"
+    ],
     "strokeCount": 0
   },
   {
@@ -3367,7 +3897,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "提着",
+      "提起"
+    ],
     "strokeCount": 0
   },
   {
@@ -3385,7 +3918,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "洒水",
+      "洒落"
+    ],
     "strokeCount": 0
   },
   {
@@ -3403,7 +3939,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "浇花",
+      "浇水"
+    ],
     "strokeCount": 0
   },
   {
@@ -3421,7 +3960,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "秋天",
+      "秋季"
+    ],
     "strokeCount": 0
   },
   {
@@ -3439,7 +3981,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "系着",
+      "系在"
+    ],
     "strokeCount": 0
   },
   {
@@ -3457,7 +4002,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "荡秋千",
+      "荡来荡去"
+    ],
     "strokeCount": 0
   },
   {
@@ -3475,7 +4023,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "彩虹",
+      "霓虹"
+    ],
     "strokeCount": 0
   },
   {
@@ -3493,7 +4044,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "裙子",
+      "花裙"
+    ],
     "strokeCount": 0
   },
   {
@@ -3511,7 +4065,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "镜子",
+      "眼镜"
+    ],
     "strokeCount": 0
   },
   {
@@ -3529,7 +4086,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "这些",
+      "一些"
+    ],
     "strokeCount": 0
   },
   {
@@ -3547,7 +4107,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "月份",
+      "身份"
+    ],
     "strokeCount": 0
   },
   {
@@ -3565,7 +4128,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "时候",
+      "小时候"
+    ],
     "strokeCount": 0
   },
   {
@@ -3583,7 +4149,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "名字",
+      "名胜"
+    ],
     "strokeCount": 0
   },
   {
@@ -3601,7 +4170,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "喂养",
+      "喂食"
+    ],
     "strokeCount": 0
   },
   {
@@ -3619,7 +4191,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "外婆",
+      "婆婆"
+    ],
     "strokeCount": 0
   },
   {
@@ -3637,7 +4212,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "宝物",
+      "财宝"
+    ],
     "strokeCount": 0
   },
   {
@@ -3655,7 +4233,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "总是",
+      "总理"
+    ],
     "strokeCount": 0
   },
   {
@@ -3673,7 +4254,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "或者",
+      "或许"
+    ],
     "strokeCount": 0
   },
   {
@@ -3691,7 +4275,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "扑通",
+      "扑灭"
+    ],
     "strokeCount": 0
   },
   {
@@ -3709,7 +4296,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "小曲",
+      "歌曲"
+    ],
     "strokeCount": 0
   },
   {
@@ -3727,7 +4317,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "衣服",
+      "舒服"
+    ],
     "strokeCount": 0
   },
   {
@@ -3745,7 +4338,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "留下",
+      "留心"
+    ],
     "strokeCount": 0
   },
   {
@@ -3763,7 +4359,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "送给",
+      "递给"
+    ],
     "strokeCount": 0
   },
   {
@@ -3781,7 +4380,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "或者",
+      "记者"
+    ],
     "strokeCount": 0
   },
   {
@@ -3799,7 +4401,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "舅舅",
+      "舅母"
+    ],
     "strokeCount": 0
   },
   {
@@ -3817,7 +4422,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "告诉",
+      "诉说"
+    ],
     "strokeCount": 0
   },
   {
@@ -3835,7 +4443,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "有趣",
+      "乐趣"
+    ],
     "strokeCount": 0
   },
   {
@@ -3853,7 +4464,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "逃走",
+      "逃跑"
+    ],
     "strokeCount": 0
   },
   {
@@ -3871,7 +4485,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "香蕉",
+      "香皂"
+    ],
     "strokeCount": 0
   },
   {
@@ -3889,7 +4506,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "鼻子",
+      "鼻孔"
+    ],
     "strokeCount": 0
   },
   {
@@ -3907,7 +4527,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "仰望",
+      "仰慕"
+    ],
     "strokeCount": 0
   },
   {
@@ -3925,7 +4548,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "刻苦",
+      "时刻"
+    ],
     "strokeCount": 0
   },
   {
@@ -3943,7 +4569,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "勺子",
+      "漏勺"
+    ],
     "strokeCount": 0
   },
   {
@@ -3961,7 +4590,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "变成",
+      "变化"
+    ],
     "strokeCount": 0
   },
   {
@@ -3979,7 +4611,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "奶奶",
+      "牛奶"
+    ],
     "strokeCount": 0
   },
   {
@@ -3997,7 +4632,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "慌张",
+      "紧张"
+    ],
     "strokeCount": 0
   },
   {
@@ -4015,7 +4653,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "很好",
+      "很多"
+    ],
     "strokeCount": 0
   },
   {
@@ -4033,7 +4674,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "您好"
+    ],
     "strokeCount": 0
   },
   {
@@ -4051,7 +4694,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "撒谎",
+      "撒娇"
+    ],
     "strokeCount": 0
   },
   {
@@ -4069,7 +4715,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "无数",
+      "数学"
+    ],
     "strokeCount": 0
   },
   {
@@ -4087,7 +4736,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "晚上",
+      "夜晚"
+    ],
     "strokeCount": 0
   },
   {
@@ -4105,7 +4757,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "清楚",
+      "苦楚"
+    ],
     "strokeCount": 0
   },
   {
@@ -4123,7 +4778,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好汉",
+      "男子汉"
+    ],
     "strokeCount": 0
   },
   {
@@ -4141,7 +4799,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "爷爷",
+      "姥爷"
+    ],
     "strokeCount": 0
   },
   {
@@ -4159,7 +4820,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "珍贵",
+      "珍珠"
+    ],
     "strokeCount": 0
   },
   {
@@ -4177,7 +4841,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钻研",
+      "研究"
+    ],
     "strokeCount": 0
   },
   {
@@ -4195,7 +4862,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "碧绿",
+      "碧空"
+    ],
     "strokeCount": 0
   },
   {
@@ -4213,7 +4883,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "祖国",
+      "祖父"
+    ],
     "strokeCount": 0
   },
   {
@@ -4231,7 +4904,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "环绕",
+      "围绕"
+    ],
     "strokeCount": 0
   },
   {
@@ -4249,7 +4925,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "距离",
+      "差距"
+    ],
     "strokeCount": 0
   },
   {
@@ -4267,7 +4946,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "依靠",
+      "靠近"
+    ],
     "strokeCount": 0
   },
   {
@@ -4285,7 +4967,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "颗粒"
+    ],
     "strokeCount": 0
   },
   {
@@ -4303,7 +4987,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "丰收",
+      "丰盛"
+    ],
     "strokeCount": 0
   },
   {
@@ -4321,7 +5008,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "支付",
+      "对付"
+    ],
     "strokeCount": 0
   },
   {
@@ -4339,7 +5029,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "卧室",
+      "卧铺"
+    ],
     "strokeCount": 0
   },
   {
@@ -4357,7 +5050,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "改变",
+      "改正"
+    ],
     "strokeCount": 0
   },
   {
@@ -4375,7 +5071,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "效果",
+      "有效"
+    ],
     "strokeCount": 0
   },
   {
@@ -4393,7 +5092,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "繁荣昌盛"
+    ],
     "strokeCount": 0
   },
   {
@@ -4411,7 +5112,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "码头",
+      "号码"
+    ],
     "strokeCount": 0
   },
   {
@@ -4429,7 +5133,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "签名",
+      "书签"
+    ],
     "strokeCount": 0
   },
   {
@@ -4447,7 +5154,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "维护",
+      "维持"
+    ],
     "strokeCount": 0
   },
   {
@@ -4465,7 +5175,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "订立",
+      "预订"
+    ],
     "strokeCount": 0
   },
   {
@@ -4483,7 +5196,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "后退",
+      "退还"
+    ],
     "strokeCount": 0
   },
   {
@@ -4501,7 +5217,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "铺子",
+      "店铺"
+    ],
     "strokeCount": 0
   },
   {
@@ -4519,7 +5238,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "依靠",
+      "依然"
+    ],
     "strokeCount": 0
   },
   {
@@ -4537,7 +5259,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "荒唐"
+    ],
     "strokeCount": 0
   },
   {
@@ -4609,7 +5333,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "布置",
+      "瀑布"
+    ],
     "strokeCount": 0
   },
   {
@@ -4627,7 +5354,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "食欲"
+    ],
     "strokeCount": 0
   },
   {
@@ -4645,7 +5374,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "瀑布"
+    ],
     "strokeCount": 0
   },
   {
@@ -4663,7 +5394,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "炉子",
+      "火炉"
+    ],
     "strokeCount": 0
   },
   {
@@ -4699,7 +5433,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "按照",
+      "照片"
+    ],
     "strokeCount": 0
   },
   {
@@ -4717,7 +5454,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "登记",
+      "登机"
+    ],
     "strokeCount": 0
   },
   {
@@ -4735,7 +5475,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一直",
+      "直接"
+    ],
     "strokeCount": 0
   },
   {
@@ -4771,7 +5514,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "紫色"
+    ],
     "strokeCount": 0
   },
   {
@@ -4789,7 +5534,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "遥远"
+    ],
     "strokeCount": 0
   },
   {
@@ -4807,7 +5554,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "仙女",
+      "神仙"
+    ],
     "strokeCount": 0
   },
   {
@@ -4825,7 +5575,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "伸展"
+    ],
     "strokeCount": 0
   },
   {
@@ -4843,7 +5595,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "座位",
+      "各位"
+    ],
     "strokeCount": 0
   },
   {
@@ -4861,7 +5616,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "景区",
+      "区别"
+    ],
     "strokeCount": 0
   },
   {
@@ -4879,7 +5637,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "岩石"
+    ],
     "strokeCount": 0
   },
   {
@@ -4897,7 +5657,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "巨大",
+      "巨人"
+    ],
     "strokeCount": 0
   },
   {
@@ -4915,7 +5678,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "形状",
+      "形成"
+    ],
     "strokeCount": 0
   },
   {
@@ -4933,7 +5699,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "抢救",
+      "抢夺"
+    ],
     "strokeCount": 0
   },
   {
@@ -4951,7 +5720,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "指南",
+      "指南针"
+    ],
     "strokeCount": 0
   },
   {
@@ -4969,7 +5741,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "景色",
+      "风景"
+    ],
     "strokeCount": 0
   },
   {
@@ -4987,7 +5762,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "状态",
+      "形状"
+    ],
     "strokeCount": 0
   },
   {
@@ -5005,7 +5783,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "狗熊",
+      "猎狗"
+    ],
     "strokeCount": 0
   },
   {
@@ -5023,7 +5804,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "盘子",
+      "方向盘"
+    ],
     "strokeCount": 0
   },
   {
@@ -5041,7 +5825,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "节省",
+      "省略"
+    ],
     "strokeCount": 0
   },
   {
@@ -5059,7 +5846,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "神奇",
+      "神秘"
+    ],
     "strokeCount": 0
   },
   {
@@ -5077,7 +5867,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "秀丽",
+      "优秀"
+    ],
     "strokeCount": 0
   },
   {
@@ -5095,7 +5888,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "著名",
+      "著作"
+    ],
     "strokeCount": 0
   },
   {
@@ -5113,7 +5909,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "首都",
+      "全都"
+    ],
     "strokeCount": 0
   },
   {
@@ -5131,7 +5930,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "闪电",
+      "闪烁"
+    ],
     "strokeCount": 0
   },
   {
@@ -5149,7 +5951,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "闻名",
+      "新闻"
+    ],
     "strokeCount": 0
   },
   {
@@ -5167,7 +5972,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "头顶",
+      "山顶"
+    ],
     "strokeCount": 0
   },
   {
@@ -5185,7 +5993,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "倒映",
+      "倒影"
+    ],
     "strokeCount": 0
   },
   {
@@ -5203,7 +6014,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "吸引",
+      "吸取"
+    ],
     "strokeCount": 0
   },
   {
@@ -5221,7 +6035,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "外面",
+      "外婆"
+    ],
     "strokeCount": 0
   },
   {
@@ -5239,7 +6056,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "中央",
+      "央求"
+    ],
     "strokeCount": 0
   },
   {
@@ -5257,7 +6077,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "就是",
+      "就要"
+    ],
     "strokeCount": 0
   },
   {
@@ -5275,7 +6098,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "小岛",
+      "岛屿"
+    ],
     "strokeCount": 0
   },
   {
@@ -5293,7 +6119,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "吸引",
+      "引人注目"
+    ],
     "strokeCount": 0
   },
   {
@@ -5311,7 +6140,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "弯曲",
+      "拐弯"
+    ],
     "strokeCount": 0
   },
   {
@@ -5329,7 +6161,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "整个",
+      "整天"
+    ],
     "strokeCount": 0
   },
   {
@@ -5347,7 +6182,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "倒映",
+      "反映"
+    ],
     "strokeCount": 0
   },
   {
@@ -5365,7 +6203,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "湖边",
+      "湖光山色"
+    ],
     "strokeCount": 0
   },
   {
@@ -5383,7 +6224,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "潭水",
+      "水潭"
+    ],
     "strokeCount": 0
   },
   {
@@ -5401,7 +6245,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "现在",
+      "出现"
+    ],
     "strokeCount": 0
   },
   {
@@ -5419,7 +6266,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "盛开",
+      "茂盛"
+    ],
     "strokeCount": 0
   },
   {
@@ -5437,7 +6287,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "童话",
+      "童年"
+    ],
     "strokeCount": 0
   },
   {
@@ -5455,7 +6308,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "隐约",
+      "约定"
+    ],
     "strokeCount": 0
   },
   {
@@ -5473,7 +6329,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "名胜",
+      "胜利"
+    ],
     "strokeCount": 0
   },
   {
@@ -5491,7 +6350,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "茂密",
+      "茂盛"
+    ],
     "strokeCount": 0
   },
   {
@@ -5509,7 +6371,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "隐隐",
+      "隐藏"
+    ],
     "strokeCount": 0
   },
   {
@@ -5527,7 +6392,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "十分",
+      "水分"
+    ],
     "strokeCount": 0
   },
   {
@@ -5545,7 +6413,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "味道",
+      "气味"
+    ],
     "strokeCount": 0
   },
   {
@@ -5563,7 +6434,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "斜坡",
+      "坡路"
+    ],
     "strokeCount": 0
   },
   {
@@ -5581,7 +6455,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "城外",
+      "城门"
+    ],
     "strokeCount": 0
   },
   {
@@ -5599,7 +6476,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "足够",
+      "能够"
+    ],
     "strokeCount": 0
   },
   {
@@ -5617,7 +6497,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好像",
+      "好多"
+    ],
     "strokeCount": 0
   },
   {
@@ -5635,7 +6518,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "做客",
+      "好客"
+    ],
     "strokeCount": 0
   },
   {
@@ -5653,7 +6539,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "茂密",
+      "秘密"
+    ],
     "strokeCount": 0
   },
   {
@@ -5671,7 +6560,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "市场",
+      "超市"
+    ],
     "strokeCount": 0
   },
   {
@@ -5689,7 +6581,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "树干",
+      "能干"
+    ],
     "strokeCount": 0
   },
   {
@@ -5707,7 +6602,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "收拾",
+      "收获"
+    ],
     "strokeCount": 0
   },
   {
@@ -5725,7 +6623,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "民族",
+      "族群"
+    ],
     "strokeCount": 0
   },
   {
@@ -5743,7 +6644,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "树枝",
+      "枝叶"
+    ],
     "strokeCount": 0
   },
   {
@@ -5761,7 +6665,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "水沟",
+      "沟渠"
+    ],
     "strokeCount": 0
   },
   {
@@ -5779,7 +6686,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "淡水",
+      "淡淡"
+    ],
     "strokeCount": 0
   },
   {
@@ -5797,7 +6707,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "葡萄",
+      "葡萄酒"
+    ],
     "strokeCount": 0
   },
   {
@@ -5815,7 +6728,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "葡萄",
+      "葡萄牙人"
+    ],
     "strokeCount": 0
   },
   {
@@ -5833,7 +6749,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钉子",
+      "图钉"
+    ],
     "strokeCount": 0
   },
   {
@@ -5851,7 +6770,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "五颜六色",
+      "颜色"
+    ],
     "strokeCount": 0
   },
   {
@@ -5869,7 +6791,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "观察",
+      "察看"
+    ],
     "strokeCount": 0
   },
   {
@@ -5887,7 +6812,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "托付",
+      "委托"
+    ],
     "strokeCount": 0
   },
   {
@@ -5905,7 +6833,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "摩擦",
+      "按摩"
+    ],
     "strokeCount": 0
   },
   {
@@ -5923,7 +6854,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "救命",
+      "救助"
+    ],
     "strokeCount": 0
   },
   {
@@ -5941,7 +6875,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "渔民",
+      "渔网"
+    ],
     "strokeCount": 0
   },
   {
@@ -5959,7 +6896,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "科学",
+      "教科书"
+    ],
     "strokeCount": 0
   },
   {
@@ -5977,7 +6917,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "考试",
+      "思考"
+    ],
     "strokeCount": 0
   },
   {
@@ -5995,7 +6938,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "货物",
+      "送货"
+    ],
     "strokeCount": 0
   },
   {
@@ -6013,7 +6959,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "轿车",
+      "轿子"
+    ],
     "strokeCount": 0
   },
   {
@@ -6031,7 +6980,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "防止",
+      "防护"
+    ],
     "strokeCount": 0
   },
   {
@@ -6049,7 +7001,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "相信",
+      "信心"
+    ],
     "strokeCount": 0
   },
   {
@@ -6067,7 +7022,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哎呀",
+      "啊呀"
+    ],
     "strokeCount": 0
   },
   {
@@ -6085,7 +7043,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "弄错",
+      "弄懂"
+    ],
     "strokeCount": 0
   },
   {
@@ -6103,7 +7064,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "抬头",
+      "抬起"
+    ],
     "strokeCount": 0
   },
   {
@@ -6121,7 +7085,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "沿着",
+      "沿海"
+    ],
     "strokeCount": 0
   },
   {
@@ -6139,7 +7106,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "口渴",
+      "解渴"
+    ],
     "strokeCount": 0
   },
   {
@@ -6157,7 +7127,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "回答",
+      "答案"
+    ],
     "strokeCount": 0
   },
   {
@@ -6175,7 +7148,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "能干",
+      "才能"
+    ],
     "strokeCount": 0
   },
   {
@@ -6193,7 +7169,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "观察",
+      "观看"
+    ],
     "strokeCount": 0
   },
   {
@@ -6211,7 +7190,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "说话",
+      "童话"
+    ],
     "strokeCount": 0
   },
   {
@@ -6229,7 +7211,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "错误",
+      "弄错"
+    ],
     "strokeCount": 0
   },
   {
@@ -6247,7 +7232,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "无边无际",
+      "实际"
+    ],
     "strokeCount": 0
   },
   {
@@ -6265,7 +7253,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "而且",
+      "况且"
+    ],
     "strokeCount": 0
   },
   {
@@ -6283,7 +7274,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "漂亮",
+      "月亮"
+    ],
     "strokeCount": 0
   },
   {
@@ -6301,7 +7295,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "做事",
+      "做客"
+    ],
     "strokeCount": 0
   },
   {
@@ -6319,7 +7316,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好像",
+      "像样"
+    ],
     "strokeCount": 0
   },
   {
@@ -6337,7 +7337,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "冰箱",
+      "冰激凌"
+    ],
     "strokeCount": 0
   },
   {
@@ -6355,7 +7358,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "寒冷",
+      "冷饮"
+    ],
     "strokeCount": 0
   },
   {
@@ -6373,7 +7379,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "刮风",
+      "刮脸"
+    ],
     "strokeCount": 0
   },
   {
@@ -6391,7 +7400,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "劝告",
+      "劝说"
+    ],
     "strokeCount": 0
   },
   {
@@ -6409,7 +7421,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "却是",
+      "退却"
+    ],
     "strokeCount": 0
   },
   {
@@ -6427,7 +7442,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哀求",
+      "哀伤"
+    ],
     "strokeCount": 0
   },
   {
@@ -6445,7 +7463,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "唤醒",
+      "叫唤"
+    ],
     "strokeCount": 0
   },
   {
@@ -6463,7 +7484,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "复习",
+      "反复"
+    ],
     "strokeCount": 0
   },
   {
@@ -6481,7 +7505,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "寻找",
+      "寻觅"
+    ],
     "strokeCount": 0
   },
   {
@@ -6499,7 +7526,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "将来",
+      "将要"
+    ],
     "strokeCount": 0
   },
   {
@@ -6517,7 +7547,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "当时",
+      "当然"
+    ],
     "strokeCount": 0
   },
   {
@@ -6535,7 +7568,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "枯草",
+      "干枯"
+    ],
     "strokeCount": 0
   },
   {
@@ -6553,7 +7589,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "打死",
+      "淹死"
+    ],
     "strokeCount": 0
   },
   {
@@ -6571,7 +7610,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "狂风",
+      "狂奔"
+    ],
     "strokeCount": 0
   },
   {
@@ -6589,7 +7631,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "第一",
+      "第二天"
+    ],
     "strokeCount": 0
   },
   {
@@ -6607,7 +7652,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "严重",
+      "尊重"
+    ],
     "strokeCount": 0
   },
   {
@@ -6625,7 +7673,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "喜鹊",
+      "灰喜鹊"
+    ],
     "strokeCount": 0
   },
   {
@@ -6643,7 +7694,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "以后",
+      "以前"
+    ],
     "strokeCount": 0
   },
   {
@@ -6661,7 +7715,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好吧",
+      "走吧"
+    ],
     "strokeCount": 0
   },
   {
@@ -6679,7 +7736,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "奇怪",
+      "神奇"
+    ],
     "strokeCount": 0
   },
   {
@@ -6697,7 +7757,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "邻居",
+      "居民"
+    ],
     "strokeCount": 0
   },
   {
@@ -6715,7 +7778,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "奇怪",
+      "责怪"
+    ],
     "strokeCount": 0
   },
   {
@@ -6733,7 +7799,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "想念",
+      "想起"
+    ],
     "strokeCount": 0
   },
   {
@@ -6751,7 +7820,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "慢慢",
+      "缓慢"
+    ],
     "strokeCount": 0
   },
   {
@@ -6769,7 +7841,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一棵"
+    ],
     "strokeCount": 0
   },
   {
@@ -6787,7 +7861,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一次",
+      "多次"
+    ],
     "strokeCount": 0
   },
   {
@@ -6805,7 +7882,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "盯住",
+      "紧盯"
+    ],
     "strokeCount": 0
   },
   {
@@ -6823,7 +7903,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "葫芦",
+      "芦苇"
+    ],
     "strokeCount": 0
   },
   {
@@ -6841,7 +7924,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "葫芦",
+      "冰糖葫芦"
+    ],
     "strokeCount": 0
   },
   {
@@ -6859,7 +7945,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "感谢",
+      "谢绝"
+    ],
     "strokeCount": 0
   },
   {
@@ -6877,7 +7966,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "赛跑",
+      "比赛"
+    ],
     "strokeCount": 0
   },
   {
@@ -6895,7 +7987,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "邻居"
+    ],
     "strokeCount": 0
   },
   {
@@ -6913,7 +8007,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "斗争",
+      "战争"
+    ],
     "strokeCount": 0
   },
   {
@@ -6931,7 +8028,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "坟墓",
+      "扫墓"
+    ],
     "strokeCount": 0
   },
   {
@@ -6949,7 +8049,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "峰峦",
+      "峰会"
+    ],
     "strokeCount": 0
   },
   {
@@ -6967,7 +8070,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "夜幕",
+      "开幕"
+    ],
     "strokeCount": 0
   },
   {
@@ -6985,7 +8091,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "羡慕"
+    ],
     "strokeCount": 0
   },
   {
@@ -7003,7 +8111,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "抄写"
+    ],
     "strokeCount": 0
   },
   {
@@ -7021,7 +8131,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "炒饭",
+      "蛋炒饭"
+    ],
     "strokeCount": 0
   },
   {
@@ -7039,7 +8152,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "爆发",
+      "爆炸"
+    ],
     "strokeCount": 0
   },
   {
@@ -7057,7 +8173,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蜜蜂",
+      "蜂蜜"
+    ],
     "strokeCount": 0
   },
   {
@@ -7075,7 +8194,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蜜蜂",
+      "蜂蜜"
+    ],
     "strokeCount": 0
   },
   {
@@ -7093,7 +8215,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "锋利",
+      "先锋"
+    ],
     "strokeCount": 0
   },
   {
@@ -7111,7 +8236,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "降临",
+      "来临"
+    ],
     "strokeCount": 0
   },
   {
@@ -7129,7 +8257,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "年代",
+      "古代"
+    ],
     "strokeCount": 0
   },
   {
@@ -7147,7 +8278,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "红军",
+      "军舰"
+    ],
     "strokeCount": 0
   },
   {
@@ -7165,7 +8299,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "凝视",
+      "凝固"
+    ],
     "strokeCount": 0
   },
   {
@@ -7183,7 +8320,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "利用",
+      "胜利"
+    ],
     "strokeCount": 0
   },
   {
@@ -7201,7 +8341,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "革命",
+      "救命"
+    ],
     "strokeCount": 0
   },
   {
@@ -7219,7 +8362,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "掌握",
+      "握手"
+    ],
     "strokeCount": 0
   },
   {
@@ -7237,7 +8383,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "斗争",
+      "斗笠"
+    ],
     "strokeCount": 0
   },
   {
@@ -7255,7 +8404,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "楼上",
+      "楼梯"
+    ],
     "strokeCount": 0
   },
   {
@@ -7273,7 +8425,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "绿油油",
+      "加油"
+    ],
     "strokeCount": 0
   },
   {
@@ -7291,7 +8446,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "穿着",
+      "穿过"
+    ],
     "strokeCount": 0
   },
   {
@@ -7309,7 +8467,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "文章",
+      "章程"
+    ],
     "strokeCount": 0
   },
   {
@@ -7327,7 +8488,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "腊月",
+      "腊肉"
+    ],
     "strokeCount": 0
   },
   {
@@ -7345,7 +8509,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "艰苦",
+      "艰难"
+    ],
     "strokeCount": 0
   },
   {
@@ -7363,7 +8530,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "薄弱",
+      "薄雾"
+    ],
     "strokeCount": 0
   },
   {
@@ -7381,7 +8551,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "审视",
+      "注视"
+    ],
     "strokeCount": 0
   },
   {
@@ -7399,7 +8572,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "觉得",
+      "睡觉"
+    ],
     "strokeCount": 0
   },
   {
@@ -7417,7 +8593,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "路上",
+      "路过"
+    ],
     "strokeCount": 0
   },
   {
@@ -7435,7 +8614,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "辉煌"
+    ],
     "strokeCount": 0
   },
   {
@@ -7453,7 +8634,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "革命",
+      "改革"
+    ],
     "strokeCount": 0
   },
   {
@@ -7471,7 +8655,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "队伍"
+    ],
     "strokeCount": 0
   },
   {
@@ -7489,7 +8675,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "同学",
+      "同志"
+    ],
     "strokeCount": 0
   },
   {
@@ -7507,7 +8696,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "战士",
+      "士兵"
+    ],
     "strokeCount": 0
   },
   {
@@ -7525,7 +8717,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "常常",
+      "非常"
+    ],
     "strokeCount": 0
   },
   {
@@ -7543,7 +8738,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "品德",
+      "公德"
+    ],
     "strokeCount": 0
   },
   {
@@ -7561,7 +8759,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "同志",
+      "标志"
+    ],
     "strokeCount": 0
   },
   {
@@ -7579,7 +8780,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "战士",
+      "战争"
+    ],
     "strokeCount": 0
   },
   {
@@ -7597,7 +8801,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "扁担",
+      "扁平"
+    ],
     "strokeCount": 0
   },
   {
@@ -7615,7 +8822,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "抽出",
+      "抽屉"
+    ],
     "strokeCount": 0
   },
   {
@@ -7633,7 +8843,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "担心",
+      "扁担"
+    ],
     "strokeCount": 0
   },
   {
@@ -7651,7 +8864,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "据说",
+      "根据"
+    ],
     "strokeCount": 0
   },
   {
@@ -7669,7 +8885,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "敌人",
+      "敌对"
+    ],
     "strokeCount": 0
   },
   {
@@ -7687,7 +8906,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "敬意",
+      "尊敬"
+    ],
     "strokeCount": 0
   },
   {
@@ -7705,7 +8927,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "朱红",
+      "朱德"
+    ],
     "strokeCount": 0
   },
   {
@@ -7723,7 +8948,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "根据",
+      "根本"
+    ],
     "strokeCount": 0
   },
   {
@@ -7741,7 +8969,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "每个",
+      "每天"
+    ],
     "strokeCount": 0
   },
   {
@@ -7759,7 +8990,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "疼痛",
+      "头疼"
+    ],
     "strokeCount": 0
   },
   {
@@ -7777,7 +9011,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "陡峭",
+      "陡然"
+    ],
     "strokeCount": 0
   },
   {
@@ -7795,7 +9032,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "非常",
+      "非法"
+    ],
     "strokeCount": 0
   },
   {
@@ -7813,7 +9053,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "草鞋",
+      "鞋子"
+    ],
     "strokeCount": 0
   },
   {
@@ -7831,7 +9074,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "串串",
+      "一连串"
+    ],
     "strokeCount": 0
   },
   {
@@ -7849,7 +9095,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "命令",
+      "下令"
+    ],
     "strokeCount": 0
   },
   {
@@ -7867,7 +9116,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "周围",
+      "周末"
+    ],
     "strokeCount": 0
   },
   {
@@ -7885,7 +9137,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "因为",
+      "因此"
+    ],
     "strokeCount": 0
   },
   {
@@ -7903,7 +9158,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "开始",
+      "始终"
+    ],
     "strokeCount": 0
   },
   {
@@ -7921,7 +9179,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "容易",
+      "笑容"
+    ],
     "strokeCount": 0
   },
   {
@@ -7939,7 +9200,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "寿命",
+      "寿险"
+    ],
     "strokeCount": 0
   },
   {
@@ -7957,7 +9221,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一度",
+      "一年一度"
+    ],
     "strokeCount": 0
   },
   {
@@ -7975,7 +9242,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "难忘",
+      "忘记"
+    ],
     "strokeCount": 0
   },
   {
@@ -7993,7 +9263,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "周恩来",
+      "感恩"
+    ],
     "strokeCount": 0
   },
   {
@@ -8011,7 +9284,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "敲打",
+      "敲击"
+    ],
     "strokeCount": 0
   },
   {
@@ -8029,7 +9305,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "民族",
+      "农民"
+    ],
     "strokeCount": 0
   },
   {
@@ -8047,7 +9326,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "泼水",
+      "泼水节"
+    ],
     "strokeCount": 0
   },
   {
@@ -8065,7 +9347,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "特别",
+      "特制"
+    ],
     "strokeCount": 0
   },
   {
@@ -8083,7 +9368,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "总理",
+      "道理"
+    ],
     "strokeCount": 0
   },
   {
@@ -8101,7 +9389,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "碗筷",
+      "饭碗"
+    ],
     "strokeCount": 0
   },
   {
@@ -8119,7 +9410,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "祝愿",
+      "庆祝"
+    ],
     "strokeCount": 0
   },
   {
@@ -8137,7 +9431,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "裤头",
+      "长裤"
+    ],
     "strokeCount": 0
   },
   {
@@ -8155,7 +9452,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "踩水",
+      "踩高跷"
+    ],
     "strokeCount": 0
   },
   {
@@ -8173,7 +9473,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "难过",
+      "难忘"
+    ],
     "strokeCount": 0
   },
   {
@@ -8191,7 +9494,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "龙船",
+      "水龙头"
+    ],
     "strokeCount": 0
   },
   {
@@ -8209,7 +9515,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "买卖",
+      "购买"
+    ],
     "strokeCount": 0
   },
   {
@@ -8227,7 +9536,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "于是",
+      "终于"
+    ],
     "strokeCount": 0
   },
   {
@@ -8245,7 +9557,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "似的",
+      "似乎"
+    ],
     "strokeCount": 0
   },
   {
@@ -8263,7 +9578,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "兰花",
+      "玉兰"
+    ],
     "strokeCount": 0
   },
   {
@@ -8281,7 +9599,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "刘胡兰",
+      "姓刘"
+    ],
     "strokeCount": 0
   },
   {
@@ -8299,7 +9620,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "买卖",
+      "叫卖"
+    ],
     "strokeCount": 0
   },
   {
@@ -8317,7 +9641,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "反而",
+      "反对"
+    ],
     "strokeCount": 0
   },
   {
@@ -8335,7 +9662,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "邮递员",
+      "队员"
+    ],
     "strokeCount": 0
   },
   {
@@ -8353,7 +9683,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "铃声",
+      "声音"
+    ],
     "strokeCount": 0
   },
   {
@@ -8371,7 +9704,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "压岁钱",
+      "年岁"
+    ],
     "strokeCount": 0
   },
   {
@@ -8389,7 +9725,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "休息",
+      "消息"
+    ],
     "strokeCount": 0
   },
   {
@@ -8407,7 +9746,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "捕食",
+      "捕捉"
+    ],
     "strokeCount": 0
   },
   {
@@ -8425,7 +9767,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "村子",
+      "村里"
+    ],
     "strokeCount": 0
   },
   {
@@ -8443,7 +9788,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "派遣",
+      "派出"
+    ],
     "strokeCount": 0
   },
   {
@@ -8461,7 +9809,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "消息",
+      "消失"
+    ],
     "strokeCount": 0
   },
   {
@@ -8479,7 +9830,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "烈火",
+      "烈日"
+    ],
     "strokeCount": 0
   },
   {
@@ -8497,7 +9851,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "由于",
+      "理由"
+    ],
     "strokeCount": 0
   },
   {
@@ -8515,7 +9872,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "繁荣"
+    ],
     "strokeCount": 0
   },
   {
@@ -8533,7 +9892,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "被子",
+      "被动"
+    ],
     "strokeCount": 0
   },
   {
@@ -8551,7 +9913,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "踏实",
+      "脚踏实地"
+    ],
     "strokeCount": 0
   },
   {
@@ -8569,7 +9934,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "问题",
+      "题目"
+    ],
     "strokeCount": 0
   },
   {
@@ -8587,7 +9955,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "宁愿",
+      "宁死不屈"
+    ],
     "strokeCount": 0
   },
   {
@@ -8605,7 +9976,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "水库",
+      "仓库"
+    ],
     "strokeCount": 0
   },
   {
@@ -8623,7 +9997,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "栏杆",
+      "旗杆"
+    ],
     "strokeCount": 0
   },
   {
@@ -8641,7 +10018,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "杠铃",
+      "单杠"
+    ],
     "strokeCount": 0
   },
   {
@@ -8659,7 +10039,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "栋梁",
+      "雕梁画栋"
+    ],
     "strokeCount": 0
   },
   {
@@ -8677,7 +10060,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "沼泽",
+      "沼泽地"
+    ],
     "strokeCount": 0
   },
   {
@@ -8695,7 +10081,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "沼泽",
+      "光泽"
+    ],
     "strokeCount": 0
   },
   {
@@ -8713,7 +10102,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "漱口",
+      "洗漱"
+    ],
     "strokeCount": 0
   },
   {
@@ -8731,7 +10123,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "羔羊",
+      "羊羔"
+    ],
     "strokeCount": 0
   },
   {
@@ -8749,7 +10144,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蝗虫",
+      "飞蝗"
+    ],
     "strokeCount": 0
   },
   {
@@ -8767,7 +10165,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "闸门",
+      "水闸"
+    ],
     "strokeCount": 0
   },
   {
@@ -8785,7 +10186,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "饥饿",
+      "挨饿"
+    ],
     "strokeCount": 0
   },
   {
@@ -8803,7 +10207,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "低头",
+      "低矮"
+    ],
     "strokeCount": 0
   },
   {
@@ -8821,7 +10228,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "庐山",
+      "草庐"
+    ],
     "strokeCount": 0
   },
   {
@@ -8839,7 +10249,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "路径",
+      "直径"
+    ],
     "strokeCount": 0
   },
   {
@@ -8857,7 +10270,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "扑灭",
+      "消灭"
+    ],
     "strokeCount": 0
   },
   {
@@ -8875,7 +10291,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "独自",
+      "单独"
+    ],
     "strokeCount": 0
   },
   {
@@ -8893,7 +10312,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "锅盖",
+      "盖房"
+    ],
     "strokeCount": 0
   },
   {
@@ -8911,7 +10333,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "笼子",
+      "灯笼"
+    ],
     "strokeCount": 0
   },
   {
@@ -8929,7 +10354,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "拒绝",
+      "绝对"
+    ],
     "strokeCount": 0
   },
   {
@@ -8947,7 +10375,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "刻舟求剑",
+      "同舟共济"
+    ],
     "strokeCount": 0
   },
   {
@@ -8965,7 +10396,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "苍白",
+      "苍蝇"
+    ],
     "strokeCount": 0
   },
   {
@@ -8983,7 +10417,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "茫茫",
+      "白茫茫"
+    ],
     "strokeCount": 0
   },
   {
@@ -9001,7 +10438,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "踪迹",
+      "跟踪"
+    ],
     "strokeCount": 0
   },
   {
@@ -9019,7 +10459,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "野外",
+      "原野"
+    ],
     "strokeCount": 0
   },
   {
@@ -9037,7 +10480,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "钓鱼",
+      "钓竿"
+    ],
     "strokeCount": 0
   },
   {
@@ -9055,7 +10501,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "阴沉",
+      "阴天"
+    ],
     "strokeCount": 0
   },
   {
@@ -9073,7 +10522,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一切",
+      "亲切"
+    ],
     "strokeCount": 0
   },
   {
@@ -9091,7 +10543,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "失败",
+      "失望"
+    ],
     "strokeCount": 0
   },
   {
@@ -9109,7 +10564,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "河岸",
+      "岸边"
+    ],
     "strokeCount": 0
   },
   {
@@ -9127,7 +10585,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "悠久",
+      "悠闲"
+    ],
     "strokeCount": 0
   },
   {
@@ -9145,7 +10606,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "散步",
+      "分散"
+    ],
     "strokeCount": 0
   },
   {
@@ -9163,7 +10627,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "黑暗",
+      "昏暗"
+    ],
     "strokeCount": 0
   },
   {
@@ -9181,7 +10648,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "桥梁",
+      "房梁"
+    ],
     "strokeCount": 0
   },
   {
@@ -9199,7 +10669,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "步行",
+      "步子"
+    ],
     "strokeCount": 0
   },
   {
@@ -9217,7 +10690,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "甚至",
+      "甚微"
+    ],
     "strokeCount": 0
   },
   {
@@ -9235,7 +10711,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "至少",
+      "至于"
+    ],
     "strokeCount": 0
   },
   {
@@ -9253,7 +10732,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "船只",
+      "帆船"
+    ],
     "strokeCount": 0
   },
   {
@@ -9271,7 +10753,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "大街小巷",
+      "街头"
+    ],
     "strokeCount": 0
   },
   {
@@ -9289,7 +10774,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "无论",
+      "讨论"
+    ],
     "strokeCount": 0
   },
   {
@@ -9307,7 +10795,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "应该",
+      "不该"
+    ],
     "strokeCount": 0
   },
   {
@@ -9325,7 +10816,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "躲藏",
+      "躲避"
+    ],
     "strokeCount": 0
   },
   {
@@ -9343,7 +10837,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "空闲",
+      "闲谈"
+    ],
     "strokeCount": 0
   },
   {
@@ -9361,7 +10858,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "伙伴",
+      "大伙"
+    ],
     "strokeCount": 0
   },
   {
@@ -9379,7 +10879,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "伙伴",
+      "同伴"
+    ],
     "strokeCount": 0
   },
   {
@@ -9397,7 +10900,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "冲出",
+      "冲击"
+    ],
     "strokeCount": 0
   },
   {
@@ -9415,7 +10921,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哇哇",
+      "哇塞"
+    ],
     "strokeCount": 0
   },
   {
@@ -9433,7 +10942,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哎呀"
+    ],
     "strokeCount": 0
   },
   {
@@ -9451,7 +10962,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "一堆"
+    ],
     "strokeCount": 0
   },
   {
@@ -9469,7 +10982,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "急忙",
+      "帮忙"
+    ],
     "strokeCount": 0
   },
   {
@@ -9487,7 +11003,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "旁边",
+      "偏旁"
+    ],
     "strokeCount": 0
   },
   {
@@ -9505,7 +11024,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "旺盛",
+      "旺季"
+    ],
     "strokeCount": 0
   },
   {
@@ -9523,7 +11045,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "晒太阳",
+      "晾晒"
+    ],
     "strokeCount": 0
   },
   {
@@ -9541,7 +11066,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "打柴"
+    ],
     "strokeCount": 0
   },
   {
@@ -9559,7 +11086,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "唱歌",
+      "歌唱"
+    ],
     "strokeCount": 0
   },
   {
@@ -9577,7 +11107,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "浑身",
+      "浑浊"
+    ],
     "strokeCount": 0
   },
   {
@@ -9595,7 +11128,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "淋雨",
+      "淋湿"
+    ],
     "strokeCount": 0
   },
   {
@@ -9613,7 +11149,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "增添",
+      "画蛇添足"
+    ],
     "strokeCount": 0
   },
   {
@@ -9631,7 +11170,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "发烧",
+      "燃烧"
+    ],
     "strokeCount": 0
   },
   {
@@ -9649,7 +11191,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "积累",
+      "劳累"
+    ],
     "strokeCount": 0
   },
   {
@@ -9667,7 +11212,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "终于"
+    ],
     "strokeCount": 0
   },
   {
@@ -9685,7 +11232,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "要是",
+      "只要"
+    ],
     "strokeCount": 0
   },
   {
@@ -9703,7 +11253,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "谁知",
+      "谁料"
+    ],
     "strokeCount": 0
   },
   {
@@ -9721,7 +11274,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "关闭",
+      "闭眼"
+    ],
     "strokeCount": 0
   },
   {
@@ -9739,7 +11295,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "狮子"
+    ],
     "strokeCount": 0
   },
   {
@@ -9757,7 +11315,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "大灰狼"
+    ],
     "strokeCount": 0
   },
   {
@@ -9775,7 +11335,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "猩猩",
+      "黑猩猩"
+    ],
     "strokeCount": 0
   },
   {
@@ -9793,7 +11356,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蚯蚓"
+    ],
     "strokeCount": 0
   },
   {
@@ -9811,7 +11376,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蚕茧",
+      "蚕丝"
+    ],
     "strokeCount": 0
   },
   {
@@ -9829,7 +11397,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "蚯蚓"
+    ],
     "strokeCount": 0
   },
   {
@@ -9847,7 +11417,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "毒蛇"
+    ],
     "strokeCount": 0
   },
   {
@@ -9865,7 +11437,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "骆驼"
+    ],
     "strokeCount": 0
   },
   {
@@ -9883,7 +11457,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "骆驼"
+    ],
     "strokeCount": 0
   },
   {
@@ -9901,7 +11477,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "鸽子"
+    ],
     "strokeCount": 0
   },
   {
@@ -9919,7 +11497,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "仙鹤",
+      "纸鹤"
+    ],
     "strokeCount": 0
   },
   {
@@ -9937,7 +11518,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "仔细"
+    ],
     "strokeCount": 0
   },
   {
@@ -9955,7 +11538,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "但是"
+    ],
     "strokeCount": 0
   },
   {
@@ -9973,7 +11558,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "傍晚"
+    ],
     "strokeCount": 0
   },
   {
@@ -9991,7 +11578,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "板凳"
+    ],
     "strokeCount": 0
   },
   {
@@ -10009,7 +11598,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "刺猬"
+    ],
     "strokeCount": 0
   },
   {
@@ -10027,7 +11618,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "劳动"
+    ],
     "strokeCount": 0
   },
   {
@@ -10045,7 +11638,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "怎么",
+      "怎样"
+    ],
     "strokeCount": 0
   },
   {
@@ -10063,7 +11659,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "耷拉",
+      "拉链"
+    ],
     "strokeCount": 0
   },
   {
@@ -10099,7 +11698,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "板凳",
+      "跷跷板"
+    ],
     "strokeCount": 0
   },
   {
@@ -10117,7 +11719,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "极了",
+      "北极星"
+    ],
     "strokeCount": 0
   },
   {
@@ -10135,7 +11740,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "椅子",
+      "轮椅"
+    ],
     "strokeCount": 0
   },
   {
@@ -10153,7 +11761,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "泄露",
+      "泄气"
+    ],
     "strokeCount": 0
   },
   {
@@ -10171,7 +11782,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "刺猬"
+    ],
     "strokeCount": 0
   },
   {
@@ -10189,7 +11802,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "疲劳",
+      "疲倦"
+    ],
     "strokeCount": 0
   },
   {
@@ -10207,7 +11823,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "称呼",
+      "称赞"
+    ],
     "strokeCount": 0
   },
   {
@@ -10225,7 +11844,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "苹果"
+    ],
     "strokeCount": 0
   },
   {
@@ -10243,7 +11864,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "称赞"
+    ],
     "strokeCount": 0
   },
   {
@@ -10279,7 +11902,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "乘坐",
+      "乘法"
+    ],
     "strokeCount": 0
   },
   {
@@ -10297,7 +11923,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "咱俩"
+    ],
     "strokeCount": 0
   },
   {
@@ -10315,7 +11943,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "吸取",
+      "取消"
+    ],
     "strokeCount": 0
   },
   {
@@ -10333,7 +11964,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "受伤",
+      "接受"
+    ],
     "strokeCount": 0
   },
   {
@@ -10351,7 +11985,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "句子",
+      "句号"
+    ],
     "strokeCount": 0
   },
   {
@@ -10369,7 +12006,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "吵架",
+      "吵闹"
+    ],
     "strokeCount": 0
   },
   {
@@ -10387,7 +12027,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "哭泣",
+      "痛哭"
+    ],
     "strokeCount": 0
   },
   {
@@ -10405,7 +12048,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "愿意",
+      "愿望"
+    ],
     "strokeCount": 0
   },
   {
@@ -10423,7 +12069,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "挣扎",
+      "包扎"
+    ],
     "strokeCount": 0
   },
   {
@@ -10441,7 +12090,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "抓住",
+      "一把抓"
+    ],
     "strokeCount": 0
   },
   {
@@ -10459,7 +12111,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "打折",
+      "折叠"
+    ],
     "strokeCount": 0
   },
   {
@@ -10477,7 +12132,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "朝着"
+    ],
     "strokeCount": 0
   },
   {
@@ -10495,7 +12152,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "架子",
+      "打架"
+    ],
     "strokeCount": 0
   },
   {
@@ -10513,7 +12173,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "漂亮",
+      "漂浮"
+    ],
     "strokeCount": 0
   },
   {
@@ -10531,7 +12194,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "风筝"
+    ],
     "strokeCount": 0
   },
   {
@@ -10549,7 +12214,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "纸条",
+      "报纸"
+    ],
     "strokeCount": 0
   },
   {
@@ -10567,7 +12235,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "线路",
+      "电线"
+    ],
     "strokeCount": 0
   },
   {
@@ -10585,7 +12256,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "草莓"
+    ],
     "strokeCount": 0
   },
   {
@@ -10621,7 +12294,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "呜呜"
+    ],
     "strokeCount": 0
   },
   {
@@ -10639,7 +12314,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "好呢",
+      "你呢"
+    ],
     "strokeCount": 0
   },
   {
@@ -10657,7 +12335,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "咱们"
+    ],
     "strokeCount": 0
   },
   {
@@ -10675,7 +12355,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "坚持",
+      "坚固"
+    ],
     "strokeCount": 0
   },
   {
@@ -10693,7 +12376,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "抱怨"
+    ],
     "strokeCount": 0
   },
   {
@@ -10711,7 +12396,9 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "慈悲"
+    ],
     "strokeCount": 0
   },
   {
@@ -10729,7 +12416,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "游戏",
+      "嬉戏"
+    ],
     "strokeCount": 0
   },
   {
@@ -10747,7 +12437,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "推车",
+      "手推车"
+    ],
     "strokeCount": 0
   },
   {
@@ -10765,7 +12458,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "摔倒",
+      "摔跤"
+    ],
     "strokeCount": 0
   },
   {
@@ -10783,7 +12479,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "撞见",
+      "横冲直撞"
+    ],
     "strokeCount": 0
   },
   {
@@ -10801,7 +12500,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "摩擦",
+      "擦拭"
+    ],
     "strokeCount": 0
   },
   {
@@ -10819,7 +12521,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "游戏",
+      "游泳"
+    ],
     "strokeCount": 0
   },
   {
@@ -10837,7 +12542,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "爱心",
+      "爱护"
+    ],
     "strokeCount": 0
   },
   {
@@ -10855,7 +12563,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "硬币",
+      "坚硬"
+    ],
     "strokeCount": 0
   },
   {
@@ -10873,7 +12584,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "吉祥",
+      "祥和"
+    ],
     "strokeCount": 0
   },
   {
@@ -10891,7 +12605,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "跌倒",
+      "下跌"
+    ],
     "strokeCount": 0
   },
   {
@@ -10909,7 +12626,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "跳舞",
+      "跳绳"
+    ],
     "strokeCount": 0
   },
   {
@@ -10927,7 +12647,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "柔软",
+      "松软"
+    ],
     "strokeCount": 0
   },
   {
@@ -10945,7 +12668,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "力量",
+      "打量"
+    ],
     "strokeCount": 0
   },
   {
@@ -10963,7 +12689,10 @@ export const CHARS: CharEntry[] = [
     "radical": "",
     "radicalName": "",
     "structure": "",
-    "phrases": [],
+    "phrases": [
+      "驾驶",
+      "行驶"
+    ],
     "strokeCount": 0
   }
 ]
