@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { useStarHud, StarProgressBar, ColoredStar } from '@rosie/rewards'
+import { CandyButton, CANDY_PRESETS, type CandyButtonConfig } from '@rosie/ui'
 import { useChineseContext } from '../../context/ChineseContext'
 import { useChineseRoadmapPlan } from '../../hooks/useChineseRoadmapPlan'
 import {
@@ -134,6 +135,60 @@ function WrongAnswerPanel({
         下一题
       </button>
     </div>
+  )
+}
+
+const ANSWER_CANDY_PRESETS = ['strawberry', 'blueberry', 'love', 'candy', 'marshmallow'] as const
+
+function CandyChoiceButton({
+  value,
+  index,
+  presetSeed,
+  locked,
+  isCorrect,
+  isChosen,
+  onClick,
+  compact = false,
+}: {
+  value: string
+  index: number
+  /** Stable per-question seed: all choices share one shape; the next question changes it. */
+  presetSeed: number
+  locked: boolean
+  isCorrect: boolean
+  isChosen: boolean
+  onClick: () => void
+  compact?: boolean
+}) {
+  const preset = CANDY_PRESETS[
+    ANSWER_CANDY_PRESETS[Math.abs(presetSeed) % ANSWER_CANDY_PRESETS.length]
+  ]
+  const feedbackColors: Partial<CandyButtonConfig> = locked
+    ? isCorrect
+      ? { light: '#bbf7d0', mid: '#22c55e', dark: '#15803d' }
+      : isChosen
+        ? { light: '#fecdd3', mid: '#fb7185', dark: '#be123c' }
+        : { light: '#e2e8f0', mid: '#94a3b8', dark: '#64748b' }
+    : {}
+  const textSize = value.length >= 5 ? 16 : value.length >= 3 ? 19 : compact ? 26 : 23
+
+  return (
+    <CandyButton
+      config={{
+        ...preset,
+        ...feedbackColors,
+        id: `answer-${index}-${value}`,
+        emoji: value,
+        textSize,
+        textColor: '#ffffff',
+        textWeight: 900,
+      }}
+      showLabel={false}
+      size={compact ? 72 : 88}
+      disabled={locked}
+      onClick={onClick}
+      className="mx-auto"
+    />
   )
 }
 
@@ -901,7 +956,7 @@ export default function ChineseCharsPracticeSession() {
         )}
 
         {phase === 'chars' && currentCharQ && (
-          <div className="flex flex-1 flex-col gap-4">
+          <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
               文字练习 {charQIdx + 1} / {plan.charQuestions.length}
             </p>
@@ -914,7 +969,7 @@ export default function ChineseCharsPracticeSession() {
                     <span className="cn-grid-cell">{currentCharQ.char}</span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="cn-candy-choice-grid">
                   {(() => {
                     const pool = [...new Set(plan.cards.map((c) => c.pinyin))]
                     const seed = hashSeed(currentCharQ.id, 7)
@@ -924,15 +979,19 @@ export default function ChineseCharsPracticeSession() {
                     ).slice(0, 3)
                     while (distractors.length < 3) distractors.push(currentCharQ.pinyin)
                     const opts = shuffle([currentCharQ.pinyin, ...distractors.slice(0, 3)], seed + 1)
-                    return opts.map((opt) => {
+                    return opts.map((opt, optionIdx) => {
                       const locked = wrongFeedback !== null
                       const isCorrect = opt === currentCharQ.pinyin
                       const isChosen = wrongFeedback?.selected === opt
                       return (
-                        <button
+                        <CandyChoiceButton
                           key={opt}
-                          type="button"
-                          disabled={locked}
+                          value={opt}
+                          index={optionIdx}
+                          presetSeed={hashSeed(currentCharQ.id, 31)}
+                          locked={locked}
+                          isCorrect={isCorrect}
+                          isChosen={isChosen}
                           onClick={() => {
                             const correct = opt === currentCharQ.pinyin
                             void handleCharAnswer(
@@ -941,16 +1000,7 @@ export default function ChineseCharsPracticeSession() {
                               correct ? undefined : { selected: opt, correct: currentCharQ.pinyin },
                             )
                           }}
-                          className={clsx(
-                            'rounded-xl border-2 px-4 py-3 text-lg font-semibold',
-                            !locked && 'border-amber-200 bg-white hover:border-sky-300',
-                            locked && isCorrect && 'border-emerald-400 bg-emerald-50',
-                            locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
-                            locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-                          )}
-                        >
-                          {opt}
-                        </button>
+                        />
                       )
                     })
                   })()}
@@ -1013,16 +1063,21 @@ export default function ChineseCharsPracticeSession() {
                     <QuizBlankSentence display={currentCharQ.item.display} size="lg" />
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-3">
-                  {phraseCharOptions.map((opt) => {
+                <div className="cn-candy-choice-grid cn-candy-choice-grid--compact">
+                  {phraseCharOptions.map((opt, optionIdx) => {
                     const locked = wrongFeedback !== null
                     const isCorrect = opt === currentCharQ.item.answer
                     const isChosen = wrongFeedback?.selected === opt
                     return (
-                      <button
+                      <CandyChoiceButton
                         key={opt}
-                        type="button"
-                        disabled={locked}
+                        value={opt}
+                        index={optionIdx}
+                        presetSeed={hashSeed(currentCharQ.id, 37)}
+                        locked={locked}
+                        isCorrect={isCorrect}
+                        isChosen={isChosen}
+                        compact
                         onClick={() => {
                           const correct = opt === currentCharQ.item.answer
                           void handleCharAnswer(
@@ -1031,16 +1086,7 @@ export default function ChineseCharsPracticeSession() {
                             correct ? undefined : { selected: opt, correct: currentCharQ.item.answer },
                           )
                         }}
-                        className={clsx(
-                          'rounded-xl border-2 py-3 text-xl font-bold',
-                          !locked && 'border-amber-200 bg-white',
-                          locked && isCorrect && 'border-emerald-400 bg-emerald-50',
-                          locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
-                          locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-                        )}
-                      >
-                        {opt}
-                      </button>
+                      />
                     )
                   })}
                 </div>
@@ -1056,21 +1102,26 @@ export default function ChineseCharsPracticeSession() {
         )}
 
         {phase === 'phrases' && currentPhrase && (
-          <div className="flex flex-1 flex-col gap-4">
+          <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
               词汇练习 {phraseIdx + 1} / {plan.phraseItems.length}
             </p>
             <QuizBlankSentence display={currentPhrase.display} size="lg" />
-            <div className="grid grid-cols-4 gap-3">
-              {phraseOptions.map((opt) => {
+            <div className="cn-candy-choice-grid cn-candy-choice-grid--compact">
+              {phraseOptions.map((opt, optionIdx) => {
                 const locked = wrongFeedback !== null
                 const isCorrect = opt === currentPhrase.answer
                 const isChosen = wrongFeedback?.selected === opt
                 return (
-                  <button
+                  <CandyChoiceButton
                     key={opt}
-                    type="button"
-                    disabled={locked}
+                    value={opt}
+                    index={optionIdx}
+                    presetSeed={hashSeed(currentPhrase.id, 41)}
+                    locked={locked}
+                    isCorrect={isCorrect}
+                    isChosen={isChosen}
+                    compact
                     onClick={() => {
                       void handleChoiceAnswer(
                         opt === currentPhrase.answer,
@@ -1082,16 +1133,7 @@ export default function ChineseCharsPracticeSession() {
                         { lessonKey: currentPhrase.lessonKey, phaseName: 'phrase' },
                       )
                     }}
-                    className={clsx(
-                      'rounded-xl border-2 py-3 text-xl font-bold',
-                      !locked && 'border-violet-200 bg-white',
-                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
-                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
-                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-                    )}
-                  >
-                    {opt}
-                  </button>
+                  />
                 )
               })}
             </div>
@@ -1227,7 +1269,7 @@ export default function ChineseCharsPracticeSession() {
         )}
 
         {phase === 'passage' && currentPassageBlank && passageStep === 'blank' && currentReading && (
-          <div className="flex flex-1 flex-col gap-4">
+          <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
               回想 {passageBlankIdx + 1} / {currentReading.blankItems.length}
               {' · '}
@@ -1241,16 +1283,21 @@ export default function ChineseCharsPracticeSession() {
             <div className="rounded-2xl border border-amber-200/70 bg-white/85 p-4 shadow-sm">
               <QuizBlankSentence display={currentPassageBlank.prompt} size="md" align="start" />
             </div>
-            <div className="grid grid-cols-4 gap-3">
-              {passageBlankOptions.map((opt) => {
+            <div className="cn-candy-choice-grid cn-candy-choice-grid--compact">
+              {passageBlankOptions.map((opt, optionIdx) => {
                 const locked = wrongFeedback !== null
                 const isCorrect = opt === currentPassageBlank.answer
                 const isChosen = wrongFeedback?.selected === opt
                 return (
-                  <button
+                  <CandyChoiceButton
                     key={opt}
-                    type="button"
-                    disabled={locked}
+                    value={opt}
+                    index={optionIdx}
+                    presetSeed={hashSeed(currentPassageBlank.id, 43)}
+                    locked={locked}
+                    isCorrect={isCorrect}
+                    isChosen={isChosen}
+                    compact
                     onClick={() => {
                       void handleChoiceAnswer(
                         opt === currentPassageBlank.answer,
@@ -1262,16 +1309,7 @@ export default function ChineseCharsPracticeSession() {
                         { lessonKey: currentReading.lessonKey, phaseName: 'passage' },
                       )
                     }}
-                    className={clsx(
-                      'rounded-xl border-2 py-3 text-xl font-bold',
-                      !locked && 'border-amber-300 bg-white',
-                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
-                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
-                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-                    )}
-                  >
-                    {opt}
-                  </button>
+                  />
                 )
               })}
             </div>

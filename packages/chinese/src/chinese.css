@@ -216,7 +216,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  vertical-align: -0.12em;
+  /* Align the slot's visual center with the surrounding glyphs instead of
+     hanging it from the text baseline. */
+  vertical-align: middle;
   margin: 0 0.1em;
   min-width: calc(var(--cn-blank-chars) * 1.28em + 0.55rem);
   height: calc(1.28em + 0.45rem);
@@ -254,5 +256,30 @@
 @media (prefers-reduced-motion: reduce) {
   .cn-blank-slot {
     animation: none;
+  }
+}
+
+/* Answer choices react to their own available width (not the viewport): exactly
+   2×2 until all four candy buttons + gaps fit, then a single 1×4 row. */
+.cn-candy-choice-container {
+  container-type: inline-size;
+}
+
+.cn-candy-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  justify-content: center;
+  gap: 1rem;
+}
+
+@container (min-width: 25rem) {
+  .cn-candy-choice-grid {
+    grid-template-columns: repeat(4, max-content);
+  }
+}
+
+@container (min-width: 21rem) {
+  .cn-candy-choice-grid--compact {
+    grid-template-columns: repeat(4, max-content);
   }
 }

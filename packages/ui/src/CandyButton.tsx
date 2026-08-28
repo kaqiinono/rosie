@@ -483,6 +483,8 @@ export interface CandyButtonProps {
   size?: number
   /** 点击回调 */
   onClick?: (id: string) => void
+  /** Disable interaction while preserving the candy shape for answer feedback. */
+  disabled?: boolean
   className?: string
 }
 
@@ -512,6 +514,7 @@ const CandyButton: FC<CandyButtonProps> = ({
   showLabel = true,
   size = 80,
   onClick,
+  disabled = false,
   className = '',
 }) => {
   const cfg = config ?? (preset ? CANDY_PRESETS[preset] : null)
@@ -535,19 +538,21 @@ const CandyButton: FC<CandyButtonProps> = ({
   }, [])
 
   const handleClick = useCallback(() => {
+    if (disabled) return
     handleBurst()
     onClick?.(cfg.id)
-  }, [cfg.id, handleBurst, onClick])
+  }, [cfg.id, disabled, handleBurst, onClick])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
+        if (disabled) return
         e.preventDefault()
         handleBurst()
         onClick?.(cfg.id)
       }
     },
-    [cfg.id, handleBurst, onClick],
+    [cfg.id, disabled, handleBurst, onClick],
   )
 
   return (
@@ -558,12 +563,13 @@ const CandyButton: FC<CandyButtonProps> = ({
       <button
         ref={btnRef}
         type="button"
+        disabled={disabled}
         aria-label={label ?? cfg.emoji ?? cfg.id}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         onAnimationEnd={() => setPopping(false)}
         style={{
-          cursor: 'pointer',
+          cursor: disabled ? 'default' : 'pointer',
           border: 'none',
           outline: 'none',
           background: 'none',
@@ -572,11 +578,13 @@ const CandyButton: FC<CandyButtonProps> = ({
           userSelect: 'none',
           WebkitTapHighlightColor: 'transparent',
           animation: popping ? 'candy-pop 0.26s ease' : undefined,
-          transition: 'filter 0.15s',
+          transition: 'filter 0.15s, opacity 0.15s',
+          opacity: disabled ? 0.82 : 1,
           borderRadius: 0,
           // hover 效果在 SVG 上处理
         }}
         onMouseEnter={(e) => {
+          if (disabled) return
           ;(e.currentTarget.firstChild as SVGElement | null)?.style.setProperty(
             'transform',
             'scale(1.08)',
