@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import QuestionFeedbackHint from './QuestionFeedbackHint'
 import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
 import { type FeedbackKind } from './FeedbackOverlay'
@@ -25,6 +25,7 @@ type MultiplicationVerticalProps = {
   autoSubmitOnMatch?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
+  modeSwitch?: ReactNode
 }
 
 // Same cell geometry vocabulary as VerticalCalc/DivisionVertical so all 竖式
@@ -37,9 +38,9 @@ type Geo = {
   digitFont: string | number
 }
 const FILL_GEO: Geo = {
-  cell: { width: 'clamp(22px, 11cqh, 46px)', height: 'clamp(26px, 13cqh, 52px)' },
-  lead: 'clamp(18px, 9cqh, 40px)',
-  digitFont: 'clamp(15px, 6.5cqh, 26px)',
+  cell: { width: 'clamp(25px, 12.5cqh, 50px)', height: 'clamp(29px, 14.5cqh, 58px)' },
+  lead: 'clamp(21px, 10cqh, 44px)',
+  digitFont: 'clamp(18px, 7.5cqh, 30px)',
 }
 const COMPACT_GEO: Geo = {
   cell: { width: 48, height: 56 },
@@ -82,6 +83,7 @@ function MultiplicationVertical({
   immersive = false,
   autoSubmitOnMatch = false,
   fill = false,
+  modeSwitch,
 }: MultiplicationVerticalProps) {
   // ── Correct layout (memoised) ────────────────────────────────────────────
   const layout = useMemo(() => {
@@ -294,10 +296,11 @@ function MultiplicationVertical({
         }
         style={fill ? { containerType: 'size' } : undefined}
       >
-        <div
-          className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
+        <div className="flex items-center justify-center gap-2.5">
+          <div
+            className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
           {/* Factors */}
           {fixedRow(aPad, '')}
           {fixedRow(bPad, '×')}
@@ -332,6 +335,8 @@ function MultiplicationVertical({
               </div>
             </>
           )}
+          </div>
+          {modeSwitch}
         </div>
       </div>
 

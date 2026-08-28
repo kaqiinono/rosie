@@ -79,9 +79,48 @@ export function AnswerBox({ value }: { value: string }) {
   )
 }
 
+function AnswerModeButton({ mode, onClick }: { mode: 'vertical' | 'pad'; onClick: () => void }) {
+  const isVertical = mode === 'vertical'
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={isVertical ? '切换为竖式计算' : '切换为横式录入答案'}
+      className="flex h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl px-2.5 text-[13px] font-extrabold text-violet-200 transition-all hover:bg-violet-400/15 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 active:scale-95"
+      style={{
+        border: '1px solid rgba(167,139,250,0.35)',
+        background: 'rgba(139,92,246,0.09)',
+      }}
+    >
+      <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none">
+        {isVertical ? (
+          <>
+            <path d="M5 3.5h10M5 8h10M5 12.5h10M5 17h10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            <path d="M7.5 2v16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          </>
+        ) : (
+          <>
+            <path d="M3 6.5h14M3 13.5h14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            <path d="M6 3v7M14 10v7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          </>
+        )}
+      </svg>
+      {isVertical ? '竖式' : '横式'}
+    </button>
+  )
+}
+
 // ── Equation line with the answer box placed where the unknown sits ────────────
 
-export function EquationLine({ display, input }: { display: string; input: string }) {
+export function EquationLine({
+  display,
+  input,
+  onSwitchToVertical,
+}: {
+  display: string
+  input: string
+  onSwitchToVertical?: () => void
+}) {
   const bigNum = (text: string) => (
     <span
       className="font-fredoka leading-none font-black tracking-tight"
@@ -107,7 +146,12 @@ export function EquationLine({ display, input }: { display: string; input: strin
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 px-2">
       {bigNum(left)}
-      <AnswerBox value={input} />
+      <span className="flex items-center gap-2">
+        <AnswerBox value={input} />
+        {onSwitchToVertical && (
+          <AnswerModeButton mode="vertical" onClick={onSwitchToVertical} />
+        )}
+      </span>
       {right && bigNum(right)}
     </div>
   )
@@ -203,6 +247,10 @@ type Props = {
   immersive?: boolean
   /** 答对即过：竖式结果格填满且正确则自动提交。 */
   autoSubmitOnMatch?: boolean
+  /** 当前横式题可手动改用竖式时显示快捷入口。 */
+  onSwitchToVertical?: () => void
+  /** 当前竖式题可改回横式录入答案时显示快捷入口。 */
+  onSwitchToPad?: () => void
 }
 
 export default function CalcQuestionStage({
@@ -222,6 +270,8 @@ export default function CalcQuestionStage({
   attempt = 0,
   immersive = false,
   autoSubmitOnMatch = false,
+  onSwitchToVertical,
+  onSwitchToPad,
 }: Props) {
   const outer = `flex min-h-0 flex-1 flex-col ${className}`
 
@@ -247,6 +297,11 @@ export default function CalcQuestionStage({
       revealAnswer={immersive ? null : revealAnswer}
       immersive={immersive}
       autoSubmitOnMatch={autoSubmitOnMatch}
+      modeSwitch={
+        onSwitchToPad && !disabled
+          ? <AnswerModeButton mode="pad" onClick={onSwitchToPad} />
+          : undefined
+      }
     />
   )
 
@@ -256,7 +311,11 @@ export default function CalcQuestionStage({
       <div className={outer}>
         <div className="relative flex flex-1 flex-col items-center justify-center">
           {isChallenge && <ChallengeBadge />}
-          <EquationLine display={question.display} input={input} />
+          <EquationLine
+            display={question.display}
+            input={input}
+            onSwitchToVertical={disabled ? undefined : onSwitchToVertical}
+          />
           <InlineQuestionFeedback feedback={feedback} revealAnswer={revealAnswer} />
         </div>
         <div className="mx-auto w-full max-w-[320px]">

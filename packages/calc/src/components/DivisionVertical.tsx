@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import QuestionFeedbackHint from './QuestionFeedbackHint'
 import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
 import { type FeedbackKind } from './FeedbackOverlay'
@@ -18,6 +18,7 @@ type DivisionVerticalProps = {
   autoSubmitOnMatch?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
+  modeSwitch?: ReactNode
 }
 
 interface Step {
@@ -85,6 +86,7 @@ function DivisionVertical({
   immersive = false,
   autoSubmitOnMatch = false,
   fill = false,
+  modeSwitch,
 }: DivisionVerticalProps) {
   const { digits, n, quotient, steps, remainder } = useMemo(
     () => longDivision(dividend, divisor),
@@ -104,9 +106,9 @@ function DivisionVertical({
 
   const activeCol = quotientCols[activeIdx]
 
-  const cellPx = fill ? 'clamp(34px, 16cqh, 64px)' : 68
+  const cellPx = fill ? 'clamp(38px, 18cqh, 70px)' : 68
   const cellSize = { width: cellPx, height: cellPx }
-  const cellFont = fill ? 'clamp(20px, 9cqh, 36px)' : 36
+  const cellFont = fill ? 'clamp(23px, 10cqh, 40px)' : 36
   // 商 row height + bracket pt-1 (4) + border-t-2 (2) → keeps 除数 aligned with 被除数.
   const divisorPad = fill ? `calc(${cellPx} + 6px)` : 74
 
@@ -208,10 +210,11 @@ function DivisionVertical({
         style={fill ? { containerType: 'size' } : undefined}
       >
       {/* 厂字形 long division */}
-      <div
-        className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-      >
+      <div className="flex items-center justify-center gap-2.5">
+        <div
+          className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
         <div className="flex items-start">
           {/* 除数 — pushed down to line up with the 被除数 row */}
           <div className="flex flex-col">
@@ -299,6 +302,8 @@ function DivisionVertical({
             </div>
           </div>
         </div>
+        </div>
+        {modeSwitch}
       </div>
       </div>
 

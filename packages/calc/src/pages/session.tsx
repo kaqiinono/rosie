@@ -37,6 +37,7 @@ import { tierOf, nextTierGap, suggestedTiers } from '../utils/calc-time-targets'
 import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-limit'
 import { checkAnswer, formatAnswer, shouldAutoSubmitNumberPad } from '../utils/calc-answer'
 import { diagnose } from '../utils/calc-diagnose'
+import { parseSignature } from '../utils/calc-ast'
 import { blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
 import {
@@ -155,6 +156,10 @@ export default function CalcSessionPage() {
   // overrides them for this run only (admin settings page owns persisted defaults).
   const [prepModeOverride, setPrepModeOverride] = useState<CalcTimingMode | null>(null)
   const [prepBonusOverride, setPrepBonusOverride] = useState<number | null>(null)
+  const [answerModeOverride, setAnswerModeOverride] = useState<{
+    idx: number
+    mode: 'pad' | 'vertical'
+  } | null>(null)
   const prepTimingMode = prepModeOverride ?? settings.timingMode
   const prepBonusSec = prepBonusOverride ?? settings.bonusSec
   // Frozen at confirm time — the session's timing authority for its whole run,
@@ -1086,7 +1091,6 @@ export default function CalcSessionPage() {
     if (!questions || done) return
     const q = questions[idx]
     if (!q) return
-    if (q.answerMode === 'vertical') return
     if (q.answer.kind !== 'int' && q.answer.kind !== 'decimal') return
     if (feedback) return
     if (settleLockRef.current) return
@@ -1181,9 +1185,23 @@ export default function CalcSessionPage() {
   }
 
   const currentQ = questions[idx]
+  const canSwitchAnswerMode = (() => {
+    if (currentQ.answer.kind !== 'int' || currentQ.display.includes('□')) {
+      return false
+    }
+    try {
+      const ast = parseSignature(currentQ.signature)
+      return typeof ast !== 'number' && typeof ast.left === 'number' && typeof ast.right === 'number'
+    } catch {
+      return false
+    }
+  })()
+  const questionForStage = answerModeOverride?.idx === idx
+    ? { ...currentQ, answerMode: answerModeOverride.mode }
+    : currentQ
   const planned = plannedCount || questions.length
-  const stageDisabled = done || (!settings.immersiveMode && (currentQ.answerMode === 'vertical' ? feedback === 'wrong' : !!feedback))
-  const padKey = settings.immersiveMode || currentQ.answerMode === 'vertical'
+  const stageDisabled = done || (!settings.immersiveMode && (questionForStage.answerMode === 'vertical' ? feedback === 'wrong' : !!feedback))
+  const padKey = settings.immersiveMode || questionForStage.answerMode === 'vertical'
     ? String(idx)
     : `${idx}:${attemptsForCurrent}`
 
@@ -1246,7 +1264,7 @@ export default function CalcSessionPage() {
 
         <CalcQuestionStage
           padKey={padKey}
-          question={currentQ}
+          question={questionForStage}
           isChallenge={currentQ.isChallenge}
           disabled={stageDisabled}
           immersive={settings.immersiveMode}
@@ -1261,6 +1279,14 @@ export default function CalcSessionPage() {
           feedback={feedback}
           revealAnswer={revealAnswer}
           attempt={attemptsForCurrent}
+          onSwitchToVertical={canSwitchAnswerMode ? () => {
+            setInput('')
+            setAnswerModeOverride({ idx, mode: 'vertical' })
+          } : undefined}
+          onSwitchToPad={canSwitchAnswerMode ? () => {
+            setInput('')
+            setAnswerModeOverride({ idx, mode: 'pad' })
+          } : undefined}
         />
       </main>
 

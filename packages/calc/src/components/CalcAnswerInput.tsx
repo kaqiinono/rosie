@@ -1,5 +1,7 @@
 'use client'
 
+import type { ReactNode } from 'react'
+
 /**
  * Shared answer-input surface for every calc practice path.
  *
@@ -87,6 +89,8 @@ type Props = {
   immersive?: boolean
   /** When true, 竖式 auto-submits once the answer cells are complete and correct. */
   autoSubmitOnMatch?: boolean
+  /** Optional answer-mode control rendered immediately beside the vertical grid. */
+  modeSwitch?: ReactNode
 }
 
 export default function CalcAnswerInput({
@@ -105,6 +109,7 @@ export default function CalcAnswerInput({
   revealAnswer = null,
   immersive = false,
   autoSubmitOnMatch = false,
+  modeSwitch,
 }: Props) {
   if (question.answer.kind === 'fraction') {
     const spec = fractionPieSpec(question)
@@ -142,6 +147,7 @@ export default function CalcAnswerInput({
           revealAnswer={revealAnswer}
           immersive={immersive}
           autoSubmitOnMatch={autoSubmitOnMatch}
+          modeSwitch={modeSwitch}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.quotient.join(''))}
         />
       )
@@ -161,6 +167,7 @@ export default function CalcAnswerInput({
           revealAnswer={revealAnswer}
           immersive={immersive}
           autoSubmitOnMatch={autoSubmitOnMatch}
+          modeSwitch={modeSwitch}
           onSubmit={(r) => onVerticalSubmit(r.correct, r.userResult.join(''))}
         />
       )
@@ -178,6 +185,7 @@ export default function CalcAnswerInput({
         revealAnswer={revealAnswer}
         immersive={immersive}
         autoSubmitOnMatch={autoSubmitOnMatch}
+        modeSwitch={modeSwitch}
         onSubmit={(r) => onVerticalSubmit(r.resultCorrect, r.userResult.join(''))}
       />
     )

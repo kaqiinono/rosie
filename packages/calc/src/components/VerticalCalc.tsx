@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import QuestionFeedbackHint from './QuestionFeedbackHint'
 import { editableCellStyle, VERTICAL_KEYPAD_LOCKED_CLASS } from './vertical-cell-style'
 import { type FeedbackKind } from './FeedbackOverlay'
@@ -28,6 +28,7 @@ type VerticalCalcProps = {
   autoSubmitOnMatch?: boolean
   /** Fill parent height: grid centered above, keypad pinned to the bottom (full width). */
   fill?: boolean
+  modeSwitch?: ReactNode
 }
 
 // Shared cell geometry — every row uses the same widths so columns stay aligned.
@@ -42,9 +43,9 @@ type Geo = {
   carryFont: string | number
 }
 const FILL_GEO: Geo = {
-  cell: { width: 'clamp(26px, 13cqh, 52px)', height: 'clamp(30px, 16cqh, 60px)' },
-  lead: 'clamp(22px, 11cqh, 46px)',
-  digitFont: 'clamp(17px, 7.5cqh, 30px)',
+  cell: { width: 'clamp(30px, 15cqh, 58px)', height: 'clamp(34px, 18cqh, 66px)' },
+  lead: 'clamp(25px, 12.5cqh, 50px)',
+  digitFont: 'clamp(20px, 8.5cqh, 34px)',
   carryH: 'clamp(14px, 5cqh, 22px)',
   carryFont: 'clamp(9px, 3cqh, 12px)',
 }
@@ -149,6 +150,7 @@ function VerticalCalc({
   immersive = false,
   autoSubmitOnMatch = false,
   fill = false,
+  modeSwitch,
 }: VerticalCalcProps) {
   const { carries: correctCarries, resultDigits: correctResult } = useMemo(() => {
     if (op === '+') return computeAddition(a, b)
@@ -331,14 +333,15 @@ function VerticalCalc({
           {showCarry ? `✓ ${carryLabel}` : `＋ ${carryLabel}`}
         </button>
 
-        {/* Vertical layout */}
-        <div
-          className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
+        {/* Vertical layout + nearby answer-mode switch */}
+        <div className="flex items-center justify-center gap-2.5">
+          <div
+            className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
           {/* First operand row */}
           <div className="flex justify-end gap-1">
             <div style={{ width: geo.lead }} />
@@ -467,6 +470,8 @@ function VerticalCalc({
               )
             })}
           </div>
+          </div>
+          {modeSwitch}
         </div>
       </div>
 
