@@ -53,9 +53,9 @@ describe('learningStatusFromEvidence transitions', () => {
     expect(learningStatusFromEvidence(two)).toBe('learning')
   })
 
-  it('fluent across >=2 dates becomes mastered', () => {
-    const mastered = state([ind(1, '2026-01-01'), ind(2, '2026-01-01'), ind(3, '2026-01-02')])
-    expect(learningStatusFromEvidence(mastered)).toBe('mastered')
+  it('ordinary independent practice on a later date stays fluent', () => {
+    const fluent = state([ind(1, '2026-01-01'), ind(2, '2026-01-01'), ind(3, '2026-01-02')])
+    expect(learningStatusFromEvidence(fluent)).toBe('fluent')
   })
 
   it('fluent on a single date stays fluent', () => {
@@ -92,7 +92,8 @@ describe('recall as mastery evidence', () => {
     const s = state([
       ind(1, '2026-01-01'),
       ind(2, '2026-01-01'),
-      ind(3, '2026-01-02', { evidenceKind: 'recall' }),
+      ind(3, '2026-01-01'),
+      ind(4, '2026-01-02', { evidenceKind: 'recall' }),
     ])
     expect(learningStatusFromEvidence(s)).toBe('mastered')
   })
@@ -101,7 +102,7 @@ describe('recall as mastery evidence', () => {
 describe('coverage vs mastery distinction', () => {
   const universe = coverageUniverse('add:10')!
 
-  it('recall-only state is mastered but NOT counted as covered', () => {
+  it('recall-only state is not mastered and is NOT counted as covered', () => {
     const sig = universe.signatureAt(0)
     const recallOnly = state(
       [
@@ -112,8 +113,7 @@ describe('coverage vs mastery distinction', () => {
       { signature: sig },
     )
     const result = calculateBlockCoverage(universe, new Map([[sig, recallOnly]]))
-    // recall establishes mastery evidence but is not a coverage event
-    expect(result.mastered).toBe(1)
+    expect(result.mastered).toBe(0)
     expect(result.covered).toBe(0)
     expect(result.missingSignatures).toContain(sig)
   })

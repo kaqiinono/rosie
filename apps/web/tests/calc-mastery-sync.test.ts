@@ -85,10 +85,10 @@ describe('reconcileMistakesAndStates', () => {
 })
 
 describe('foldAttempts', () => {
-  it('reaches mastered after 3 within-limit corrects', () => {
+  it('does not reach mastered from 3 same-session corrects', () => {
     const attempts = Array.from({ length: 3 }, () => ({ correct: true, timeMs: 2000, withinLimit: true }))
     const out = foldAttempts(state(), attempts, 1, '2026-07-09')
-    expect(out.status).toBe('mastered')
+    expect(out.status).toBe('active')
     expect(out.consecutiveCorrect).toBe(3)
   })
 

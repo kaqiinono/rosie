@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useCalcSettings } from '../hooks/useCalcSettings'
-import { useCalcWallet } from '@rosie/rewards'
+import { useCalcWallet, loadWalletSessions, calcWalletStore } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
@@ -43,6 +43,7 @@ import { effectiveLimitSec, sourceIdForLimit } from '../utils/calc-effective-lim
 import { checkAnswer, formatAnswer, shouldAutoSubmitNumberPad } from '../utils/calc-answer'
 import { diagnose } from '../utils/calc-diagnose'
 import { parseSignature } from '../utils/calc-ast'
+import { presentationKeyOf } from '../utils/calc-concept-key'
 import { blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildBySourceFromLog, buildNewWeakFromLog } from '../utils/calc-session-summary'
@@ -54,6 +55,7 @@ import SessionPrepScreen from '../components/SessionPrepScreen'
 import type {
   CalcLevel,
   CalcMode,
+  CalcPresentationKey,
   CalcProblemState,
   CalcQuestion,
   CalcTimingMode,
@@ -88,6 +90,8 @@ interface AttemptStat {
   sourceMixedOpId?: string
   /** Question display with trailing "= ?" stripped, for wrong-answer review. */
   display?: string
+  /** Presentation mode the question was answered in (drives the limit coefficient). */
+  presentationKey?: CalcPresentationKey
 }
 
 export default function CalcSessionPage() {
@@ -203,7 +207,11 @@ export default function CalcSessionPage() {
         explicit = op?.seconds
         if (op) sourceId = op.skeleton
       }
-      const targetSec = resolveTargetSec({ explicitSeconds: explicit, sourceId })
+      const targetSec = resolveTargetSec({
+        explicitSeconds: explicit,
+        sourceId,
+        presentationKey: presentationKeyOf(q),
+      })
       return resolveClockSec({
         mode: sessionTimingModeRef.current,
         targetSec,
@@ -234,6 +242,7 @@ export default function CalcSessionPage() {
           timedAnswerEnabled: settings.timedAnswerEnabled,
           explicitSeconds: explicit,
           sourceId,
+          presentationKey: presentationKeyOf(q),
         }) *
           1000
       )
@@ -416,6 +425,7 @@ export default function CalcSessionPage() {
       sourceBlockId: a.sourceBlockId,
       sourceMixedOpId: a.sourceMixedOpId,
       display: a.display,
+      presentationKey: a.presentationKey,
     }))
     return {
       version: 1,
@@ -595,15 +605,22 @@ export default function CalcSessionPage() {
         const carried = unresolvedMistakes(mistakesNow, loadedStates).filter(
           (m) => m.sessionNo === settings.sessionCounter,
         )
+        // Recent session history for adaptive recovery debounce (no-op if already loaded).
+        await loadWalletSessions(user.id)
+        const historySessions = calcWalletStore.getSessionData(user.id)?.sessions ?? []
         const session = buildSession(
           settings,
-          { problemStates: loadedStates, recallCandidates },
+          { problemStates: loadedStates, recallCandidates, sessions: historySessions },
           carried,
         )
         setQuestions(session)
         plannedCountRef.current = session.length
         setPlannedCount(session.length)
-        maxRetryRef.current = maxRetryCeiling(session.length)
+        const carriedCount = session.filter(
+          (question) => question.selectionReason === 'carried-mistake',
+        ).length
+        const baseCount = Math.max(0, session.length - carriedCount)
+        maxRetryRef.current = Math.max(0, maxRetryCeiling(baseCount) - carriedCount)
       }
       setStartedAtIso(new Date().toISOString())
       setStartedTsMs(Date.now())
@@ -747,6 +764,7 @@ export default function CalcSessionPage() {
           a.withinLimit,
           nextSessionNo,
           today,
+          a.presentationKey,
         )
       }
       // Only (re)assign attribution when this question carried a source. Carried
@@ -928,6 +946,7 @@ export default function CalcSessionPage() {
                 : 'independent',
           sourceBlockId: q.sourceBlockId,
           sourceMixedOpId: q.sourceMixedOpId,
+          presentationKey: presentationKeyOf(q),
         })
         if (wasMistake) void recordCorrect(q.signature, settings.sessionCounter + 1)
         goNext()
@@ -965,6 +984,7 @@ export default function CalcSessionPage() {
         sourceBlockId: q.sourceBlockId,
         sourceMixedOpId: q.sourceMixedOpId,
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
+        presentationKey: presentationKeyOf(q),
       })
       const inMakeup = isInMakeupPhase(idx, plannedCountRef.current)
       if (!q.isChallenge && mode !== 'mistakes') {

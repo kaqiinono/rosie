@@ -4,6 +4,7 @@
 import type {
   CalcLevel,
   CalcMode,
+  CalcPresentationKey,
   CalcQuestion,
   CalcTimingMode,
   QuestionLogEntry,
@@ -35,6 +36,7 @@ export type CalcAttemptStatSnapshot = {
   sourceBlockId?: string
   sourceMixedOpId?: string
   display?: string
+  presentationKey?: CalcPresentationKey
 }
 
 export type CalcSessionSnapshot = {

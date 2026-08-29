@@ -1,6 +1,7 @@
 import type { CalcProblemState } from '@rosie/core'
 import { parseSignature } from './calc-ast'
 import { learningStatusOf } from './calc-coverage'
+import { hasIndependentAttempt } from './calc-evidence'
 
 export interface RuleCoverage {
   key: string
@@ -44,7 +45,7 @@ export function classifyRuleSignature(signature: string): string | null {
 export function calculateRuleCoverage(states: Map<string, CalcProblemState>): RuleCoverage[] {
   return RULES.map((rule) => {
     const matching = [...states.values()].filter(
-      (state) => state.appearanceCount > 0 && classifyRuleSignature(state.signature) === rule.key,
+      (state) => hasIndependentAttempt(state) && classifyRuleSignature(state.signature) === rule.key,
     )
     return {
       ...rule,

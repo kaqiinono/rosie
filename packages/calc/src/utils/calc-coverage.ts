@@ -1,5 +1,6 @@
 import type { CalcProblemState } from '@rosie/core'
 import { conceptKeyOf } from './calc-concept-key'
+import { hasIndependentAttempt, hasWithinTargetAttempt } from './calc-evidence'
 import { learningStatusFromEvidence } from './calc-mastery'
 import { parseSignature, signatureOf, type AstNode } from './calc-ast'
 import { enumerateFinite } from './calc-finite'
@@ -52,6 +53,7 @@ export interface ConceptCoverage {
   blockId: string
   totalConcepts: number
   coveredConcepts: number
+  withinTargetConcepts: number
   fluentConcepts: number
   masteredConcepts: number
   reviewDueConcepts: number
@@ -247,24 +249,6 @@ export function learningStatusOf(state: CalcProblemState | undefined): LearningS
   return state ? learningStatusFromEvidence(state) : 'unseen'
 }
 
-function hasWithinTarget(state: CalcProblemState | undefined): boolean {
-  return (
-    state?.recentResults.some((result) => result.correct && result.withinLimit === true) ?? false
-  )
-}
-
-/**
- * 独立首答判定：存在非补练、非间隔复习的作答记录。
- * 兼容旧数据：无 recentResults 时回退到 appearanceCount（旧记录无 evidenceKind 标记）。
- */
-function hasIndependentAttempt(state: CalcProblemState | undefined): boolean {
-  if (!state || state.appearanceCount <= 0) return false
-  if (state.recentResults.length === 0) return true
-  return state.recentResults.some(
-    (attempt) => attempt.evidenceKind !== 'makeup' && attempt.evidenceKind !== 'recall',
-  )
-}
-
 export function calculateBlockCoverage(
   universe: FiniteUniverse,
   states: Map<string, CalcProblemState>,
@@ -282,7 +266,7 @@ export function calculateBlockCoverage(
     const state = states.get(signature)
     const status = learningStatusOf(state)
     const isCovered = hasIndependentAttempt(state)
-    const isWithin = hasWithinTarget(state)
+    const isWithin = hasWithinTargetAttempt(state)
     const isFluent = status === 'fluent' || status === 'mastered'
     const isMastered = status === 'mastered'
     const isReviewDue = status === 'review-due'
@@ -339,25 +323,37 @@ export function calculateConceptCoverage(
   universe: FiniteUniverse,
   states: Map<string, CalcProblemState>,
 ): ConceptCoverage {
-  const conceptBest = new Map<string, LearningStatus>()
+  const concepts = new Map<
+    string,
+    { covered: boolean; withinTarget: boolean; bestStatus: LearningStatus }
+  >()
 
   for (let index = 0; index < universe.size; index++) {
     const signature = universe.signatureAt(index)
     const conceptKey = conceptKeyOf(signature)
-    const status = learningStatusOf(states.get(signature))
-    const current = conceptBest.get(conceptKey)
-    if (!current || statusRank(status) > statusRank(current)) {
-      conceptBest.set(conceptKey, status)
+    const state = states.get(signature)
+    const status = learningStatusOf(state)
+    const current = concepts.get(conceptKey) ?? {
+      covered: false,
+      withinTarget: false,
+      bestStatus: 'unseen' as LearningStatus,
     }
+    current.covered ||= hasIndependentAttempt(state)
+    current.withinTarget ||= hasWithinTargetAttempt(state)
+    if (statusRank(status) > statusRank(current.bestStatus)) current.bestStatus = status
+    concepts.set(conceptKey, current)
   }
 
   let coveredConcepts = 0
+  let withinTargetConcepts = 0
   let fluentConcepts = 0
   let masteredConcepts = 0
   let reviewDueConcepts = 0
 
-  for (const status of conceptBest.values()) {
-    if (status !== 'unseen') coveredConcepts++
+  for (const concept of concepts.values()) {
+    const status = concept.bestStatus
+    if (concept.covered) coveredConcepts++
+    if (concept.withinTarget) withinTargetConcepts++
     if (status === 'fluent' || status === 'mastered') fluentConcepts++
     if (status === 'mastered') masteredConcepts++
     if (status === 'review-due') reviewDueConcepts++
@@ -365,8 +361,9 @@ export function calculateConceptCoverage(
 
   return {
     blockId: universe.blockId,
-    totalConcepts: conceptBest.size,
+    totalConcepts: concepts.size,
     coveredConcepts,
+    withinTargetConcepts,
     fluentConcepts,
     masteredConcepts,
     reviewDueConcepts,

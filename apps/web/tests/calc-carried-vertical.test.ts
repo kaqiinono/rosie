@@ -23,6 +23,31 @@ function baseSettings(over: Partial<CalcSettings> = {}): CalcSettings {
 }
 
 describe('buildSession carried 竖式 restore', () => {
+  it('caps carried mistakes inside the shared remediation budget', () => {
+    const carried: CalcMistake[] = Array.from({ length: 5 }, (_, index) => ({
+      signature: `add(${index + 1},1)`,
+      display: `${index + 1} + 1`,
+      answer: { kind: 'int' as const, value: index + 2 },
+      level: 1,
+      category: 'addsub' as const,
+      lastWrongAt: '',
+      consecutiveCorrect: 0,
+      resolved: false,
+      sessionNo: 1,
+    }))
+    const session = buildSession(
+      baseSettings({
+        selectedBlocks: [{ id: 'add:10', count: 20, seconds: 0 }],
+        lastCount: 20,
+      }),
+      { problemStates: new Map() },
+      carried,
+    )
+    expect(
+      session.filter((question) => question.selectionReason === 'carried-mistake'),
+    ).toHaveLength(3)
+  })
+
   it('restores vertical from problem_state.blockId', () => {
     const sig = 'mul(346,7)'
     const states = new Map<string, CalcProblemState>([
@@ -131,8 +156,10 @@ describe('buildSession carried 竖式 restore', () => {
     ]
     const session = buildSession(
       baseSettings({
-        selectedBlocks: [{ id: 'add:10', count: 4, seconds: 0 }],
-        lastCount: 4,
+        // 27 planned questions gives a remediation ceiling of 4, so all four
+        // fixtures remain available for this presentation-mode assertion.
+        selectedBlocks: [{ id: 'add:10', count: 27, seconds: 0 }],
+        lastCount: 27,
       }),
       { problemStates: states },
       carried,

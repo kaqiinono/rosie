@@ -172,8 +172,9 @@ function BlockCard({ block, concept }: { block: BlockCoverage; concept?: Concept
         )}
 
         {showConcept && concept ? (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             <Stat label="已练习" value={concept.coveredConcepts} total={concept.totalConcepts} color="#67e8f9" />
+            <Stat label="限时答对" value={concept.withinTargetConcepts} total={concept.totalConcepts} color="#facc15" />
             <Stat label="已熟练" value={concept.fluentConcepts} total={concept.totalConcepts} color="#4ade80" />
             <Stat label="已掌握" value={concept.masteredConcepts} total={concept.totalConcepts} color="#c084fc" />
             <Stat label="待复核" value={concept.reviewDueConcepts} total={concept.totalConcepts} color="#fb7185" />

@@ -6,6 +6,7 @@ import { toInverseQuestion } from './calc-inverse'
 import { coverageUniverse } from './calc-coverage'
 import {
   evaluateBlockProgression,
+  allocateMixingCounts,
   MIXING_STAGES,
   mixingStageFromProgression,
   progressionFactor,
@@ -13,6 +14,7 @@ import {
   type MixingRatios,
 } from './calc-progression'
 import { CALC_FEATURES } from './calc-features'
+import { maxRetryCeiling } from './calc-session-policy'
 import {
   COLD_START_MIN,
   isFiniteBlock,
@@ -130,7 +132,31 @@ export function buildSession(
               : 1)
         : weakness
     })
-    alloc = allocate(settings.lastCount, weights)
+    const nextIndexes = sources
+      .map((source, index) => ({ source, index }))
+      .filter(({ source }) => source.kind === 'block' && source.adaptiveLane === 'next')
+      .map(({ index }) => index)
+    if (nextIndexes.length > 0) {
+      const nextSet = new Set(nextIndexes)
+      const currentIndexes = sources.map((_, index) => index).filter((index) => !nextSet.has(index))
+      const nextCount = allocateMixingCounts(
+        settings.lastCount,
+        MIXING_STAGES.initial,
+        true,
+      ).nextExploration
+      const currentCount = settings.lastCount - nextCount
+      alloc = new Array<number>(sources.length).fill(0)
+      const currentAlloc = allocate(currentCount, currentIndexes.map((index) => weights[index]))
+      const nextAlloc = allocate(nextCount, nextIndexes.map((index) => weights[index]))
+      currentIndexes.forEach((sourceIndex, index) => {
+        alloc[sourceIndex] = currentAlloc[index]
+      })
+      nextIndexes.forEach((sourceIndex, index) => {
+        alloc[sourceIndex] = nextAlloc[index]
+      })
+    } else {
+      alloc = allocate(settings.lastCount, weights)
+    }
   }
   // Never produce an empty session (e.g. manual mode with all-zero counts, or no
   // sources selected → only the 兜底 block with count 0). Fall back to lastCount.
@@ -142,12 +168,25 @@ export function buildSession(
 
   // 3. Generate per source
   const out: CalcQuestion[] = []
+  const hasAdaptiveNext = sources.some(
+    (source) => source.kind === 'block' && source.adaptiveLane === 'next',
+  )
   sources.forEach((src, i) => {
     const n = alloc[i]
     if (n <= 0) return
     if (src.kind === 'block') {
       const progression = evaluateBlockProgression(src.block.id, ctx.problemStates)
-      const mixing = MIXING_STAGES[mixingStageFromProgression(progression)]
+      const stageMixing = MIXING_STAGES[mixingStageFromProgression(progression)]
+      const mixing = src.adaptiveLane === 'next'
+        ? { currentMaintenance: 1, nextExploration: 0, weakReinforcement: 0 }
+        : hasAdaptiveNext
+          ? stageMixing
+          : {
+              currentMaintenance:
+                stageMixing.currentMaintenance + stageMixing.nextExploration,
+              nextExploration: 0,
+              weakReinforcement: stageMixing.weakReinforcement,
+            }
       const generated = generateBlock(src.block, n, states, ctx.recallCandidates, mixing)
       const recovering = progression.recovery
       out.push(
@@ -252,9 +291,10 @@ export function buildSession(
     }
   }
 
-  // 5. Append carried-over make-up questions (capped at `count` for safety).
+  // 5. Append carried-over make-up questions. Carried and same-session make-up
+  // share one capped remediation budget; carried mistakes get first priority.
   // Restore source + 竖式 from problem-state attribution (mistakes table has neither).
-  const carry = carried.slice(0, count)
+  const carry = carried.slice(0, maxRetryCeiling(count))
   for (const m of carry) {
     // Inverse mistakes are stored as a complete blank equation ("48 + □ = 105");
     // normal mistakes are stored as a bare LHS needing "= ?". Detect by the blank glyph.
@@ -403,14 +443,15 @@ function generateBlock(
     : (recallCandidates ?? []).filter((s) => s.blockId === block.id && s.status === 'mastered')
   const recallN = blockRecallPool.length > 0 && n >= 2 ? Math.max(1, Math.floor(0.05 * n)) : 0
   const nWork = Math.max(0, n - recallN)
-  // With an auto-expanded successor lane taking ~20% of the session, 12.5%
-  // weak work inside the current lane yields ~10% overall; the rest maintains
-  // and expands current coverage (the documented 70/20/10 policy).
-  const coverScale = mixing.currentMaintenance / MIXING_STAGES.initial.currentMaintenance
-  const weakScale = mixing.weakReinforcement / MIXING_STAGES.initial.weakReinforcement
-  let nCover = Math.round(0.45 * coverScale * nWork)
-  let nWeak = Math.round(0.125 * weakScale * nWork)
-  let nMaint = nWork - nCover - nWeak
+  // `nextExploration` is allocated at whole-session level. Inside the current
+  // lane, preserve the exact maintenance:weak ratio for the active stage.
+  const currentLaneTotal = mixing.currentMaintenance + mixing.weakReinforcement
+  let nWeak =
+    currentLaneTotal > 0
+      ? Math.round((mixing.weakReinforcement / currentLaneTotal) * nWork)
+      : 0
+  let nCover = finite ? nWork - nWeak : 0
+  let nMaint = finite ? 0 : nWork - nWeak
 
   if (!finite) {
     nWeak += nCover

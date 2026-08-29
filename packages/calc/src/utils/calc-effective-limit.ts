@@ -1,4 +1,5 @@
 import type { CalcQuestion } from '@rosie/core'
+import type { PresentationKey } from './calc-concept-key'
 import { resolveTargetSec } from './calc-session-policy'
 
 /** Consecutive within-limit corrects required to enter mastered. */
@@ -10,6 +11,8 @@ export type EffectiveLimitInput = {
   explicitSeconds: number | null | undefined
   /** block id or mixed skeleton / op id used to look up TIME_TARGETS. */
   sourceId: string | undefined
+  /** 作答展示模式；提供时限时按系数放宽（竖式/逆向填空等）。 */
+  presentationKey?: PresentationKey
 }
 
 /**
@@ -22,6 +25,7 @@ export function effectiveLimitSec(input: EffectiveLimitInput): number {
   return resolveTargetSec({
     explicitSeconds: input.timedAnswerEnabled ? input.explicitSeconds : null,
     sourceId: input.sourceId,
+    presentationKey: input.presentationKey,
   })
 }
 

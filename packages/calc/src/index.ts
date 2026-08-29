@@ -70,6 +70,7 @@ export {
 } from './utils/calc-coverage'
 export {
   BLOCK_DEPENDENCIES,
+  allocateMixingCounts,
   evaluateBlockProgression,
   progressionFactor,
   recoverySessionCount,
@@ -82,6 +83,7 @@ export {
   type BlockTier,
   type MixingStage,
   type MixingRatios,
+  type MixingCounts,
 } from './utils/calc-progression'
 export { normalizeMixedOps, normalizeSelectedBlocks } from './utils/calc-settings-normalize'
 export {

@@ -36,11 +36,18 @@ describe('calc mastery v2', () => {
     expect(learningStatusOf(state)).toBe('learning')
   })
 
-  it('requires cross-session and cross-day evidence for mastery', () => {
+  it('requires fluent status followed by a later-day recall for mastery', () => {
     let state = defaultProblemState('add(2,3)', 0)
     state = applyAttempt(state, attempt(1, '2026-08-28'), true, 1, '2026-08-28')
     state = applyAttempt(state, attempt(2, '2026-08-28'), true, 2, '2026-08-28')
-    state = applyAttempt(state, attempt(2, '2026-08-29'), true, 2, '2026-08-29')
+    state = applyAttempt(state, attempt(3, '2026-08-28'), true, 3, '2026-08-28')
+    state = applyAttempt(
+      state,
+      { ...attempt(4, '2026-08-29'), evidenceKind: 'recall' },
+      true,
+      4,
+      '2026-08-29',
+    )
     expect(learningStatusOf(state)).toBe('mastered')
   })
 })
@@ -106,11 +113,54 @@ describe('block progression', () => {
       adaptiveExpansionEnabled: true,
     }
     const expanded = buildSession(settings, { problemStates: states })
-    expect(expanded.some((question) => question.selectionReason === 'next-difficulty')).toBe(true)
+    expect(expanded.filter((question) => question.selectionReason === 'next-difficulty')).toHaveLength(4)
     const locked = buildSession(
       { ...settings, adaptiveExpansionEnabled: false },
       { problemStates: states },
     )
     expect(locked.some((question) => question.selectionReason === 'next-difficulty')).toBe(false)
+  })
+
+  it('shares the 20% exploration lane across multiple successors', () => {
+    const universe = coverageUniverse('add:20b')!
+    const states = new Map<string, CalcProblemState>()
+    for (let index = 0; index < universe.size; index++) {
+      const signature = universe.signatureAt(index)
+      states.set(signature, {
+        ...defaultProblemState(signature, 0),
+        blockId: 'add:20b',
+        appearanceCount: 3,
+        attemptCount: 3,
+        proficiency: 4,
+        recentResults: [
+          attempt(1, '2026-08-28'),
+          attempt(2, '2026-08-28'),
+          attempt(3, '2026-08-29'),
+        ],
+        status: 'mastered',
+      })
+    }
+    const settings: CalcSettings = {
+      countMode: 'auto',
+      selectedBlocks: [{ id: 'add:20b', count: 20, seconds: 0 }],
+      mixedOps: [],
+      soundEnabled: false,
+      includeInverse: false,
+      verticalForBigNumbers: false,
+      timedAnswerEnabled: false,
+      immersiveMode: false,
+      lastCount: 20,
+      sessionCounter: 0,
+      timingMode: 'relaxed',
+      bonusSec: 0,
+      autoSubmitOnMatch: true,
+      adaptiveExpansionEnabled: true,
+    }
+    const expanded = buildSession(settings, { problemStates: states })
+    const exploration = expanded.filter(
+      (question) => question.selectionReason === 'next-difficulty',
+    )
+    expect(exploration).toHaveLength(4)
+    expect(new Set(exploration.map((question) => question.sourceBlockId)).size).toBe(2)
   })
 })

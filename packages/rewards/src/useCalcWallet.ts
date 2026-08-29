@@ -239,7 +239,7 @@ async function fetchWalletData(userId: string): Promise<WalletData> {
 
 const sessionsInflight = new Map<string, Promise<void>>()
 
-async function loadWalletSessions(userId: string, force = false): Promise<void> {
+export async function loadWalletSessions(userId: string, force = false): Promise<void> {
   const existing = calcWalletStore.getSessionData(userId)
   if (!force && (existing?.sessionsReady || existing?.sessionsFailed)) return
 

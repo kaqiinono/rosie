@@ -1,5 +1,6 @@
 import type { CalcTimingMode } from '@rosie/core'
-import { TIME_TARGETS } from './calc-time-targets'
+import type { PresentationKey } from './calc-concept-key'
+import { presentationCoefficientFor, TIME_TARGETS } from './calc-time-targets'
 
 export type { CalcTimingMode }
 
@@ -23,11 +24,14 @@ export function clampBonusSec(n: number): number {
 export function resolveTargetSec(args: {
   explicitSeconds: number | null | undefined
   sourceId: string | undefined
+  /** 提供时按展示模式系数放宽限时（竖式/逆向填空等更费时）。 */
+  presentationKey?: PresentationKey
 }): number {
-  const { explicitSeconds, sourceId } = args
+  const { explicitSeconds, sourceId, presentationKey } = args
   if (explicitSeconds != null && explicitSeconds > 0) return explicitSeconds
-  if (sourceId && TIME_TARGETS[sourceId]) return TIME_TARGETS[sourceId].fluent[1]
-  return groupDefaultLimitSec(sourceId)
+  const coefficient = presentationCoefficientFor(sourceId, presentationKey)
+  if (sourceId && TIME_TARGETS[sourceId]) return TIME_TARGETS[sourceId].fluent[1] * coefficient
+  return groupDefaultLimitSec(sourceId) * coefficient
 }
 
 export function resolveClockSec(args: {

@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 
-import type { CalcSettings } from '@rosie/core'
+import { createHash } from 'node:crypto'
+import type { CalcProblemState, CalcSettings, QuestionAttempt } from '@rosie/core'
 import { blockById } from '../packages/calc/src/utils/calc-blocks'
 import { buildSession } from '../packages/calc/src/utils/calc-helpers'
-import { coverageUniverse, finiteCoverageUniverses } from '../packages/calc/src/utils/calc-coverage'
+import {
+  calculateAllCoverage,
+  coverageUniverse,
+  finiteCoverageUniverses,
+  learningStatusOf,
+} from '../packages/calc/src/utils/calc-coverage'
+import { conceptKeyOf } from '../packages/calc/src/utils/calc-concept-key'
 import { structureCoverageModels } from '../packages/calc/src/utils/calc-structure-coverage'
 import { classifyRuleSignature } from '../packages/calc/src/utils/calc-rule-coverage'
 
@@ -47,6 +54,34 @@ function auditUniverses(): void {
       seen.add(signature)
     }
   }
+}
+
+function auditConceptKeys(): Record<string, unknown>[] {
+  return finiteCoverageUniverses().map((universe) => {
+    const concepts = new Map<string, string[]>()
+    for (let i = 0; i < universe.size; i++) {
+      const signature = universe.signatureAt(i)
+      const concept = conceptKeyOf(signature)
+      if (conceptKeyOf(concept) !== concept) {
+        throw new Error(`${universe.blockId} conceptKey 非幂等：${signature} → ${concept}`)
+      }
+      const members = concepts.get(concept) ?? []
+      members.push(signature)
+      if (members.length > 2) {
+        throw new Error(
+          `${universe.blockId} 概念 ${concept} 聚合了 ${members.length} 个形式（${members.join('、')}）`,
+        )
+      }
+      concepts.set(concept, members)
+    }
+    const pairs = [...concepts.values()].filter((members) => members.length === 2).length
+    return {
+      blockId: universe.blockId,
+      universeSize: universe.size,
+      concepts: concepts.size,
+      collapsedPairs: pairs,
+    }
+  })
 }
 
 function auditStructures(samples: number, seed: number): Record<string, unknown>[] {
@@ -159,27 +194,89 @@ function simulate(options: AuditOptions): Record<string, unknown> {
 }
 
 function auditSessionLogs(
-  rows: { question_log: Array<{ signature?: string; intentionalRepeat?: boolean }> | null }[],
+  rows: {
+    finished_at?: string
+    mode?: string
+    question_log: Array<{
+      signature?: string
+      intentionalRepeat?: boolean
+      selectionReason?: string
+    }> | null
+  }[],
 ) {
   let questions = 0
   let repeats = 0
   let intentional = 0
   let accidental = 0
   let consecutive = 0
+  let newFormatSessions = 0
+  let currentMaintenance = 0
+  let nextExploration = 0
+  let weakReinforcement = 0
+  let makeup = 0
+  let unclassifiedSelection = 0
+  const recentNewSessions: Array<Record<string, unknown>> = []
   for (const row of rows) {
     const seen = new Set<string>()
     let previous: string | null = null
-    for (const entry of row.question_log ?? []) {
+    const entries = row.question_log ?? []
+    const isNewFormat = entries.some((entry) => !!entry.signature)
+    if (isNewFormat) newFormatSessions++
+    let sessionCurrent = 0
+    let sessionNext = 0
+    let sessionWeak = 0
+    let sessionMakeup = 0
+    let sessionRepeats = 0
+    for (const entry of entries) {
       if (!entry.signature) continue
       questions++
       if (seen.has(entry.signature)) {
         repeats++
+        sessionRepeats++
         if (entry.intentionalRepeat) intentional++
         else accidental++
       }
       if (previous === entry.signature) consecutive++
       seen.add(entry.signature)
       previous = entry.signature
+      if (entry.selectionReason === 'next-difficulty') {
+        nextExploration++
+        sessionNext++
+      }
+      else if (
+        entry.selectionReason === 'weak' ||
+        entry.selectionReason === 'lagging' ||
+        entry.selectionReason === 'prerequisite-recovery'
+      ) {
+        weakReinforcement++
+        sessionWeak++
+      } else if (
+        entry.selectionReason === 'same-session-makeup' ||
+        entry.selectionReason === 'carried-mistake'
+      ) {
+        makeup++
+        sessionMakeup++
+      } else if (entry.selectionReason) {
+        currentMaintenance++
+        sessionCurrent++
+      }
+      else unclassifiedSelection++
+    }
+    if (isNewFormat && recentNewSessions.length < 10) {
+      const sessionPlanned = sessionCurrent + sessionNext + sessionWeak
+      const sessionQuestions = sessionPlanned + sessionMakeup
+      const sessionPercent = (value: number) =>
+        sessionPlanned > 0 ? `${((value / sessionPlanned) * 100).toFixed(1)}%` : '0%'
+      recentNewSessions.push({
+        finishedAt: row.finished_at,
+        mode: row.mode,
+        questions: sessionQuestions,
+        repeats: sessionRepeats,
+        currentMaintenance: sessionPercent(sessionCurrent),
+        nextExploration: sessionPercent(sessionNext),
+        weakReinforcement: sessionPercent(sessionWeak),
+        appendedMakeup: sessionMakeup,
+      })
     }
   }
   const percent = (value: number) =>
@@ -193,6 +290,34 @@ function auditSessionLogs(
     accidental,
     accidentalRate: percent(accidental),
     consecutive,
+    calibration: {
+      newFormatSessions,
+      requiredSessions: 5,
+      ready: newFormatSessions >= 5,
+      remainingSessions: Math.max(0, 5 - newFormatSessions),
+      selectionCounts: {
+        currentMaintenance,
+        nextExploration,
+        weakReinforcement,
+        appendedMakeup: makeup,
+        unclassified: unclassifiedSelection,
+      },
+      selectionRatios: {
+        currentMaintenance:
+          currentMaintenance + nextExploration + weakReinforcement > 0
+            ? `${((currentMaintenance / (currentMaintenance + nextExploration + weakReinforcement)) * 100).toFixed(2)}%`
+            : '0%',
+        nextExploration:
+          currentMaintenance + nextExploration + weakReinforcement > 0
+            ? `${((nextExploration / (currentMaintenance + nextExploration + weakReinforcement)) * 100).toFixed(2)}%`
+            : '0%',
+        weakReinforcement:
+          currentMaintenance + nextExploration + weakReinforcement > 0
+            ? `${((weakReinforcement / (currentMaintenance + nextExploration + weakReinforcement)) * 100).toFixed(2)}%`
+            : '0%',
+      },
+      recentNewSessions,
+    },
   }
 }
 
@@ -207,28 +332,108 @@ async function auditUserSessions(userId: string, limit: number): Promise<Record<
   const client = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
-  const { data, error } = await client
+  const [{ data, error }, { data: stateRows, error: stateError }] = await Promise.all([
+    client
     .from('calc_sessions')
-    .select('question_log')
+    .select('finished_at,mode,question_log')
     .eq('user_id', userId)
     .order('finished_at', { ascending: false })
-    .limit(limit)
+    .limit(limit),
+    client
+      .from('calc_problem_state')
+      .select(
+        'signature,level,proficiency,attempt_count,appearance_count,recent_results,status,consecutive_wrong,consecutive_correct,last_within_limit,updated_at,block_id,mixed_op_id',
+      )
+      .eq('user_id', userId),
+  ])
   if (error) throw new Error(`读取用户会话失败：${error.message}`)
-  return { userId, ...auditSessionLogs(data ?? []) }
+  if (stateError) throw new Error(`读取用户掌握状态失败：${stateError.message}`)
+  const states = new Map<string, CalcProblemState>()
+  for (const row of stateRows ?? []) {
+    const recentResults = Array.isArray(row.recent_results)
+      ? (row.recent_results as unknown as QuestionAttempt[])
+      : []
+    states.set(row.signature, {
+      signature: row.signature,
+      level: row.level === 99 ? 'C' : row.level,
+      proficiency: row.proficiency,
+      attemptCount: row.attempt_count,
+      appearanceCount: row.appearance_count,
+      recentResults,
+      status: row.status,
+      consecutiveWrong: row.consecutive_wrong,
+      consecutiveCorrect: row.consecutive_correct ?? 0,
+      lastWithinLimit: row.last_within_limit,
+      updatedAt: row.updated_at,
+      blockId: row.block_id ?? undefined,
+      mixedOpId: row.mixed_op_id ?? undefined,
+    })
+  }
+  const learningCounts = { unseen: 0, learning: 0, fluent: 0, mastered: 0, 'review-due': 0 }
+  for (const state of states.values()) learningCounts[learningStatusOf(state)]++
+  const coverage = calculateAllCoverage(states)
+  const coverageTotal = coverage.reduce((sum, item) => sum + item.total, 0)
+  const independentCovered = coverage.reduce((sum, item) => sum + item.covered, 0)
+  const legacyCovered = coverage.reduce((sum, item) => {
+    let covered = 0
+    const universe = coverageUniverse(item.blockId)
+    if (!universe) return sum
+    for (let index = 0; index < universe.size; index++) {
+      if ((states.get(universe.signatureAt(index))?.appearanceCount ?? 0) > 0) covered++
+    }
+    return sum + covered
+  }, 0)
+  return {
+    user: createHash('sha256').update(userId).digest('hex').slice(0, 12),
+    ...auditSessionLogs(data ?? []),
+    problemStates: states.size,
+    learningCounts,
+    finiteCoverage: {
+      denominator: coverageTotal,
+      legacyAppearanceCovered: legacyCovered,
+      independentCovered,
+      delta: independentCovered - legacyCovered,
+    },
+  }
+}
+
+async function latestCalcUserId(): Promise<string> {
+  const { createClient } = await import('../packages/core/node_modules/@supabase/supabase-js')
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key)
+    throw new Error('用户审计需要 NEXT_PUBLIC_SUPABASE_URL 和 SUPABASE_SERVICE_ROLE_KEY')
+  const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
+  const { data, error } = await client
+    .from('calc_sessions')
+    .select('user_id')
+    .order('finished_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error || !data?.user_id) throw new Error(`无法定位最近口算用户：${error?.message ?? '无会话'}`)
+  return data.user_id
 }
 
 async function main(): Promise<void> {
   if (process.argv.includes('--help')) {
     console.log('pnpm calc:audit -- --block mul:29 --count 20 --sessions 10000 --seed 20260829')
+    console.log('pnpm calc:audit -- --latest-user --limit 100  # 只读真实数据校准')
     return
   }
   auditUniverses()
+  const conceptAudit = auditConceptKeys()
   const count = numberArg('--count', 20)
   const sessions = numberArg('--sessions', 10000)
   const seed = numberArg('--seed', 20260829)
-  const userId = stringArg('--user-id', '')
+  const userId = process.argv.includes('--latest-user')
+    ? await latestCalcUserId()
+    : stringArg('--user-id', '')
   if (userId) {
     console.log(JSON.stringify(await auditUserSessions(userId, numberArg('--limit', 30)), null, 2))
+    return
+  }
+  if (process.argv.includes('--concepts')) {
+    console.log(JSON.stringify(conceptAudit, null, 2))
     return
   }
   if (process.argv.includes('--structures')) {

@@ -1,7 +1,8 @@
 import type { CalcMixingStage, CalcProblemState, CalcSession } from '@rosie/core'
 import { calculateBlockCoverage, coverageUniverse, learningStatusOf } from './calc-coverage'
 import { calculateStructureCoverage, structureCoverageModels } from './calc-structure-coverage'
-import { suggestedTiers, tierOf } from './calc-time-targets'
+import { presentationCoefficientFor, suggestedTiers, tierOf } from './calc-time-targets'
+import { isIndependentEvidence } from './calc-evidence'
 
 export const BLOCK_DEPENDENCIES: Record<string, string[]> = {
   'add:20a': ['add:10'],
@@ -79,9 +80,13 @@ export function evaluateBlockProgression(
   blockId: string,
   states: Map<string, CalcProblemState>,
 ): BlockProgression {
-  const matching = [...states.values()].filter((state) => state.blockId === blockId)
   const finite = coverageUniverse(blockId)
   const structure = structureCoverageModels().find((model) => model.id === blockId)
+  const matching = finite
+    ? Array.from({ length: finite.size }, (_, index) => states.get(finite.signatureAt(index))).filter(
+        (state): state is CalcProblemState => state !== undefined,
+      )
+    : [...states.values()].filter((state) => state.blockId === blockId)
   const coverage = finite
     ? calculateBlockCoverage(finite, states)
     : structure
@@ -108,7 +113,7 @@ export function evaluateBlockProgression(
     )
   // 独立首答：排除补练与间隔复习（旧数据无 evidenceKind 标记时仍计入）
   const independent = recent.filter(
-    (attempt) => attempt.evidenceKind !== 'makeup' && attempt.evidenceKind !== 'recall',
+    isIndependentEvidence,
   )
   const recentAccuracy = ratio(
     independent.filter((attempt) => attempt.correct).length,
@@ -119,34 +124,39 @@ export function evaluateBlockProgression(
   let stable = 0
   let fluent = 0
   for (const state of matching) {
-    const correct = state.recentResults
-      .filter((a) => a.correct && a.evidenceKind !== 'makeup')
-      .slice(-5)
+    const independentAttempts = state.recentResults.filter(isIndependentEvidence).slice(-5)
+    const correct = independentAttempts.filter((attempt) => attempt.correct)
     if (correct.length === 0) continue
-    const times = correct.map((a) => a.timeMs).sort((a, b) => a - b)
+    const times = correct
+      .map(
+        (attempt) =>
+          attempt.timeMs / presentationCoefficientFor(blockId, attempt.presentationKey),
+      )
+      .sort((a, b) => a - b)
     const medianSec = times[Math.floor(times.length / 2)] / 1000
-    const accuracy = ratio(correct.filter((a) => a.correct).length, correct.length)
+    const accuracy = ratio(correct.length, independentAttempts.length)
     const tier = tierOf(medianSec, accuracy, target)
     if (tier === 'stable' || tier === 'fluent' || tier === 'auto') stable++
     if (tier === 'fluent' || tier === 'auto') fluent++
   }
-  const stableRatio = ratio(stable, matching.length)
-  const fluentRatio = ratio(fluent, matching.length)
+  const evaluatedTotal = finite?.size ?? matching.length
+  const stableRatio = ratio(stable, evaluatedTotal)
+  const fluentRatio = ratio(fluent, evaluatedTotal)
   const reviewDueRatio = ratio(
     matching.filter((state) => learningStatusOf(state) === 'review-due').length,
-    matching.length,
+    evaluatedTotal,
   )
   const masteredRatio = ratio(
     matching.filter((state) => learningStatusOf(state) === 'mastered').length,
-    matching.length,
+    evaluatedTotal,
   )
   const reasons: string[] = []
   if (exposure < 0.9) reasons.push(`覆盖率${Math.round(exposure * 100)}%＜90%`)
   if (recentAccuracy < 0.85)
     reasons.push(`近3场首答正确率${Math.round(recentAccuracy * 100)}%＜85%`)
-  const minimumFor = (target: number) => Math.ceil(matching.length * target)
+  const minimumFor = (target: number) => Math.ceil(evaluatedTotal * target)
   const formatProgress = (value: number, count: number, target: number) =>
-    `当前 ${(value * 100).toFixed(1)}%（${count}/${matching.length}），目标 ${(target * 100).toFixed(0)}%（至少 ${minimumFor(target)}/${matching.length}）`
+    `当前 ${(value * 100).toFixed(1)}%（${count}/${evaluatedTotal}），目标 ${(target * 100).toFixed(0)}%（至少 ${minimumFor(target)}/${evaluatedTotal}）`
   if (stableRatio < 0.75) reasons.push(`进阶达标率：${formatProgress(stableRatio, stable, 0.75)}`)
   if (fluentRatio < 0.6) reasons.push(`高级达标率：${formatProgress(fluentRatio, fluent, 0.6)}`)
   const ready = reasons.length === 0
@@ -161,7 +171,7 @@ export function evaluateBlockProgression(
     masteredRatio,
     stableCount: stable,
     fluentCount: fluent,
-    evaluatedCount: matching.length,
+    evaluatedCount: evaluatedTotal,
     coveredCount: coverage?.covered ?? matching.length,
     coverageTotal: coverage?.total ?? matching.length,
     accuracyCorrect,
@@ -248,10 +258,51 @@ export interface MixingRatios {
   weakReinforcement: number
 }
 
+export interface MixingCounts {
+  currentMaintenance: number
+  nextExploration: number
+  weakReinforcement: number
+}
+
 export const MIXING_STAGES: Record<MixingStage, MixingRatios> = {
   initial: { currentMaintenance: 0.7, nextExploration: 0.2, weakReinforcement: 0.1 },
   stabilized: { currentMaintenance: 0.6, nextExploration: 0.2, weakReinforcement: 0.2 },
   graduated: { currentMaintenance: 0.5, nextExploration: 0.2, weakReinforcement: 0.3 },
+}
+
+/** Integer whole-session allocation using largest remainder; total is always `count`. */
+export function allocateMixingCounts(
+  count: number,
+  ratios: MixingRatios,
+  hasSuccessor: boolean,
+): MixingCounts {
+  const safeCount = Math.max(0, Math.floor(count))
+  const effective = hasSuccessor
+    ? ratios
+    : {
+        currentMaintenance: ratios.currentMaintenance + ratios.nextExploration,
+        nextExploration: 0,
+        weakReinforcement: ratios.weakReinforcement,
+      }
+  const keys = [
+    'currentMaintenance',
+    'nextExploration',
+    'weakReinforcement',
+  ] as const
+  const ideals = keys.map((key) => safeCount * effective[key])
+  const values = ideals.map(Math.floor)
+  let remaining = safeCount - values.reduce((sum, value) => sum + value, 0)
+  const order = ideals
+    .map((ideal, index) => ({ index, fraction: ideal - Math.floor(ideal) }))
+    .sort((left, right) => right.fraction - left.fraction || left.index - right.index)
+  for (let index = 0; remaining > 0; index++, remaining--) {
+    values[order[index % order.length].index]++
+  }
+  return {
+    currentMaintenance: values[0],
+    nextExploration: values[1],
+    weakReinforcement: values[2],
+  }
 }
 
 export function mixingStageFromProgression(p: BlockProgression): MixingStage {

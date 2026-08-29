@@ -7,6 +7,7 @@ import {
   progressionFactor,
   recoverySessionCount,
   MIXING_STAGES,
+  allocateMixingCounts,
   type BlockProgression,
 } from '@rosie/calc'
 import type { CalcProblemState, CalcSession, QuestionAttempt } from '@rosie/core'
@@ -135,6 +136,37 @@ describe('MIXING_STAGES ratios', () => {
       expect(sum).toBeCloseTo(1, 10)
     }
   })
+
+  it('allocates exact 20-question stage counts', () => {
+    expect(allocateMixingCounts(20, MIXING_STAGES.initial, true)).toEqual({
+      currentMaintenance: 14,
+      nextExploration: 4,
+      weakReinforcement: 2,
+    })
+    expect(allocateMixingCounts(20, MIXING_STAGES.stabilized, true)).toEqual({
+      currentMaintenance: 12,
+      nextExploration: 4,
+      weakReinforcement: 4,
+    })
+    expect(allocateMixingCounts(20, MIXING_STAGES.graduated, true)).toEqual({
+      currentMaintenance: 10,
+      nextExploration: 4,
+      weakReinforcement: 6,
+    })
+  })
+
+  it('returns unavailable exploration slots to maintenance', () => {
+    expect(allocateMixingCounts(20, MIXING_STAGES.initial, false)).toEqual({
+      currentMaintenance: 18,
+      nextExploration: 0,
+      weakReinforcement: 2,
+    })
+    expect(allocateMixingCounts(7, MIXING_STAGES.graduated, false)).toEqual({
+      currentMaintenance: 5,
+      nextExploration: 0,
+      weakReinforcement: 2,
+    })
+  })
 })
 
 describe('mixingStageFromProgression', () => {
@@ -239,7 +271,7 @@ describe('evaluateBlockProgression', () => {
       [learning.signature, learning],
     ])
     const p = evaluateBlockProgression('add:10', states)
-    expect(p.masteredRatio).toBe(0.5)
+    expect(p.masteredRatio).toBeCloseTo(1 / 45, 10)
   })
 
   it('accuracy ignores makeup and recall attempts', () => {

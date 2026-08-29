@@ -103,6 +103,14 @@ is required before selected-scope expansion; it defaults off. `calc-features.ts`
 release switches: `NEXT_PUBLIC_CALC_COVERAGE_REPORT`, `NEXT_PUBLIC_CALC_SESSION_DEDUPE`,
 `NEXT_PUBLIC_CALC_MASTERY_V2`, and `NEXT_PUBLIC_CALC_ADAPTIVE_PROGRESSION` (`0`/`false` disables).
 
+Coverage evidence is centralized in `calc-evidence.ts`: formula, concept, rule, structure, speed,
+and progression coverage use independent attempts only; make-up never raises coverage or mastery,
+and recall participates only in durable mastery verification. A formula becomes fluent from the
+latest independent evidence across sessions; mastered additionally requires a successful recall on
+a later day. Finite-block progression always uses the versioned universe as its denominator rather
+than mutable `problem_state.blockId` attribution. Presentation coefficients normalize system
+targets only; an explicit parent-configured seconds value is final.
+
 **Home:** `/calc` is practice-only for children. The recent sessions list lazy-loads wallet
 sessions only after the accordion is opened, then reuses the session cache while mounted.
 
@@ -118,7 +126,8 @@ Three modes in `calc-session-policy.ts`:
 | `bonus`   | `T_target + bonusSec`          | final wrong                                               | `max(1, 1.2 − 0.05×bonusSec)` |
 
 `withinLimit` always uses `T_target` (never inflated by bonus). `maxRetryCeiling(N) = max(3, floor(N×0.15))`;
-daily sessions use a capped retry pool + single-pass makeup (no re-enqueue from makeup).
+daily sessions use one shared remediation budget for carried mistakes plus same-session retries,
+with carried mistakes taking priority. Makeup is single-pass and is never re-enqueued.
 
 Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Session init
 awaits `calcMistakesStore.ensureLoaded` before reconcile/carry (no cold-visit race). Proficiency is
@@ -145,6 +154,7 @@ Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md
 ```bash
 pnpm --filter @rosie/calc typecheck   # scoped — type-checks ONLY calc
 pnpm --filter @rosie/calc lint
+pnpm --filter @rosie/calc test        # package + apps/web/tests/calc-* regression suite
 ```
 
 ## Parent-facing FAQ

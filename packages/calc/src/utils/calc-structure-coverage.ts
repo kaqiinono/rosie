@@ -4,6 +4,7 @@ import { addHasCarry, subHasBorrow } from './calc-block-gens'
 import { BLOCKS } from './calc-blocks'
 import { SKELETONS } from './calc-mixed'
 import { learningStatusOf, type LearningStatus } from './calc-coverage'
+import { hasIndependentAttempt } from './calc-evidence'
 
 export interface StructureCell {
   key: string
@@ -548,7 +549,7 @@ export function calculateStructureCoverage(
     const expectedSource = model.id.startsWith('mixed:')
       ? state.mixedOpId === model.id.slice(6)
       : state.blockId === model.id
-    if (!expectedSource || state.appearanceCount <= 0) continue
+    if (!expectedSource || !hasIndependentAttempt(state)) continue
     const status = learningStatusOf(state)
     const flags = statusFlags(status)
     for (const key of model.classify(state.signature)) {

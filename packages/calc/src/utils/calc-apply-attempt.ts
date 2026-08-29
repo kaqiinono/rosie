@@ -1,4 +1,4 @@
-import type { CalcLevel, CalcProblemState, QuestionAttempt } from '@rosie/core'
+import type { CalcLevel, CalcPresentationKey, CalcProblemState, QuestionAttempt } from '@rosie/core'
 import { nextMasteryTransition } from './calc-mastery'
 import { CALC_FEATURES } from './calc-features'
 
@@ -10,8 +10,16 @@ export function applyAttempt(
   withinLimit: boolean,
   sessionNo: number,
   today: string,
+  /** 作答时的展示模式；记录到证据上，限时放宽已在上游 withinLimit 中体现。 */
+  presentationKey?: CalcPresentationKey,
 ): CalcProblemState {
-  const attemptWithLimit: QuestionAttempt = { ...attempt, withinLimit, sessionNo, date: today }
+  const attemptWithLimit: QuestionAttempt = {
+    ...attempt,
+    withinLimit,
+    sessionNo,
+    date: today,
+    ...(presentationKey ? { presentationKey } : {}),
+  }
   const nextRecent = [...prev.recentResults, attemptWithLimit].slice(-RECENT_CAP)
   const nextAttemptCount = prev.attemptCount + 1
 

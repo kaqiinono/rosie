@@ -667,8 +667,6 @@ export interface CalcSession {
   questionTimesMs?: number[]
   /** Per-question tagged log: source key, first-attempt ms, first-try correctness. */
   questionLog?: QuestionLogEntry[]
-  /** 本场会话使用的渐进混合阶段（内存元数据，不落库）。 */
-  mixingStage?: CalcMixingStage
 }
 
 export interface CalcMistake {
