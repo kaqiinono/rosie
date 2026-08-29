@@ -1,6 +1,5 @@
 import type { CalcProblemState, CalcProblemStatus, QuestionAttempt } from '@rosie/core'
-
-export type LearningStatus = 'unseen' | 'learning' | 'fluent' | 'mastered' | 'review-due'
+import type { LearningStatus } from './calc-coverage'
 
 export interface MasteryTransition {
   proficiency: number
@@ -10,7 +9,12 @@ export interface MasteryTransition {
   learningStatus: LearningStatus
 }
 
-function isFullEvidence(attempt: QuestionAttempt): boolean {
+/**
+ * 掌握证据判定：补练（makeup）不计入；独立首答与间隔复习（recall）均计入。
+ * 注意：此函数仅用于掌握状态转换，不用于覆盖计数——
+ * recall 验证记忆保持，是掌握证据，但不是覆盖事件。
+ */
+function isMasteryEvidence(attempt: QuestionAttempt): boolean {
   return attempt.evidenceKind !== 'makeup'
 }
 
@@ -24,7 +28,7 @@ export function learningStatusFromEvidence(
   const recent = state.recentResults
   const latest = recent.at(-1)
   const qualified = recent.filter(
-    (attempt) => attempt.correct && attempt.withinLimit === true && isFullEvidence(attempt),
+    (attempt) => attempt.correct && attempt.withinLimit === true && isMasteryEvidence(attempt),
   )
   const hasV2 = recent.some(
     (attempt) => attempt.sessionNo !== undefined || attempt.date !== undefined,
@@ -59,7 +63,7 @@ export function nextMasteryTransition(
   recentResults: QuestionAttempt[],
   attempt: QuestionAttempt,
 ): MasteryTransition {
-  const fullEvidence = isFullEvidence(attempt)
+  const fullEvidence = isMasteryEvidence(attempt)
   let proficiency = previous.proficiency
   let consecutiveCorrect = previous.consecutiveCorrect ?? 0
   let consecutiveWrong = previous.consecutiveWrong

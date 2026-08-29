@@ -516,6 +516,8 @@ export interface QuestionAttempt {
   sessionNo?: number
   /** Local practice date (YYYY-MM-DD) for cross-day mastery evidence. */
   date?: string
+  /** 作答时的展示模式（竖式/逆向填空等）；缺省视为 standard。旧数据无此字段。 */
+  presentationKey?: CalcPresentationKey
 }
 
 export interface CalcProblemState {
@@ -601,6 +603,15 @@ export interface Voucher {
 }
 
 export type CalcMode = 'daily' | 'free' | 'mistakes'
+/** 渐进混合阶段（口算自适应：维护/探索/补练比例随题型档位演化） */
+export type CalcMixingStage = 'initial' | 'stabilized' | 'graduated'
+/** 口算题展示模式（影响限时系数：竖式/逆向填空/分数/余数输入比标准输入更费时） */
+export type CalcPresentationKey =
+  | 'standard'
+  | 'inverse-blank'
+  | 'vertical'
+  | 'fraction-input'
+  | 'remainder-input'
 
 /** One question's atomic record. key = "block:<id>" | "mixed:<id>". */
 export interface QuestionLogEntry {
@@ -656,6 +667,8 @@ export interface CalcSession {
   questionTimesMs?: number[]
   /** Per-question tagged log: source key, first-attempt ms, first-try correctness. */
   questionLog?: QuestionLogEntry[]
+  /** 本场会话使用的渐进混合阶段（内存元数据，不落库）。 */
+  mixingStage?: CalcMixingStage
 }
 
 export interface CalcMistake {

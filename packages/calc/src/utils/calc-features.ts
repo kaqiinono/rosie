@@ -8,4 +8,5 @@ export const CALC_FEATURES = {
   sessionDedupe: enabled(process.env.NEXT_PUBLIC_CALC_SESSION_DEDUPE, true),
   masteryV2: enabled(process.env.NEXT_PUBLIC_CALC_MASTERY_V2, true),
   adaptiveProgression: enabled(process.env.NEXT_PUBLIC_CALC_ADAPTIVE_PROGRESSION, true),
+  conceptCoverage: enabled(process.env.NEXT_PUBLIC_CALC_CONCEPT_COVERAGE, true),
 } as const
