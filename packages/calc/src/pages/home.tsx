@@ -18,11 +18,25 @@ import { buildSessionSummaryProps } from '../utils/calc-session-summary'
 import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
 import { calculateAllCoverage } from '../utils/calc-coverage'
+import { calculateAllStructureCoverage } from '../utils/calc-structure-coverage'
+import { calculateRuleCoverage } from '../utils/calc-rule-coverage'
+import {
+  evaluateBlockProgression,
+  blockTierFromProgression,
+  type BlockTier,
+} from '../utils/calc-progression'
 
 const GROUP_LABEL = Object.fromEntries(BLOCK_GROUPS.map((g) => [g.group, g.label])) as Record<
   string,
   string
 >
+
+const TIER_CHIP: Record<BlockTier, { label: string; className: string }> = {
+  auto: { label: '自动化', className: 'bg-violet-400/15 text-violet-200' },
+  fluent: { label: '熟练', className: 'bg-cyan-400/15 text-cyan-200' },
+  stable: { label: '稳固', className: 'bg-emerald-400/15 text-emerald-200' },
+  entry: { label: '起步', className: 'bg-slate-400/15 text-slate-300' },
+}
 
 export default function CalcHomePage() {
   const { user } = useAuth()
@@ -99,6 +113,16 @@ export default function CalcHomePage() {
   const coverageTotal = coverageSummary.reduce((sum, item) => sum + item.total, 0)
   const coverageDone = coverageSummary.reduce((sum, item) => sum + item.covered, 0)
   const coveragePct = coverageTotal > 0 ? Math.round((coverageDone / coverageTotal) * 100) : 0
+  const structureSummary = calculateAllStructureCoverage(problemStates, settings.mixedOps)
+  const structureTotal = structureSummary.reduce((sum, item) => sum + item.total, 0)
+  const structureDone = structureSummary.reduce((sum, item) => sum + item.covered, 0)
+  const ruleSummary = calculateRuleCoverage(problemStates)
+  const ruleTotal = ruleSummary.reduce((sum, item) => sum + item.target, 0)
+  const ruleDone = ruleSummary.reduce((sum, item) => sum + item.covered, 0)
+  const tierCounts: Record<BlockTier, number> = { entry: 0, stable: 0, fluent: 0, auto: 0 }
+  for (const sel of settings.selectedBlocks) {
+    tierCounts[blockTierFromProgression(evaluateBlockProgression(sel.id, problemStates))]++
+  }
 
   const handleStart = () => {
     playSfx('coin', settings.soundEnabled)
@@ -142,6 +166,40 @@ export default function CalcHomePage() {
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
             <div className="h-full rounded-full bg-cyan-400" style={{ width: `${coveragePct}%` }} />
           </div>
+          {(structureTotal > 0 || ruleTotal > 0) && (
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400">
+              {structureTotal > 0 && (
+                <span>
+                  结构覆盖{' '}
+                  <span className="font-bold text-slate-300 tabular-nums">
+                    {structureDone}/{structureTotal}
+                  </span>
+                </span>
+              )}
+              {ruleTotal > 0 && (
+                <span>
+                  规则覆盖{' '}
+                  <span className="font-bold text-slate-300 tabular-nums">
+                    {ruleDone}/{ruleTotal}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
+          {settings.selectedBlocks.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {(['auto', 'fluent', 'stable', 'entry'] as const).map((tier) =>
+                tierCounts[tier] > 0 ? (
+                  <span
+                    key={tier}
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${TIER_CHIP[tier].className}`}
+                  >
+                    {TIER_CHIP[tier].label} ×{tierCounts[tier]}
+                  </span>
+                ) : null,
+              )}
+            </div>
+          )}
         </Link>
         {/* Level + Stats card */}
         <section

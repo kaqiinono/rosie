@@ -47,7 +47,42 @@ export {
   isFiniteBlock,
   enumerateFinite,
 } from './utils/calc-finite'
-export { missingTargetIds } from './utils/calc-time-targets'
+export { missingTargetIds, presentationCoefficientFor } from './utils/calc-time-targets'
+export {
+  conceptKeyOf,
+  presentationKeyOf,
+  isSelfConcept,
+  PRESENTATION_COEFFICIENTS,
+  type PresentationKey,
+} from './utils/calc-concept-key'
+export {
+  finiteCoverageUniverses,
+  coverageUniverse,
+  calculateBlockCoverage,
+  calculateAllCoverage,
+  calculateConceptCoverage,
+  type FiniteUniverse,
+  type BlockCoverage,
+  type ConceptCoverage,
+  type CoverageBucket,
+  type FormulaFamily,
+  type LearningStatus,
+} from './utils/calc-coverage'
+export {
+  BLOCK_DEPENDENCIES,
+  evaluateBlockProgression,
+  progressionFactor,
+  recoverySessionCount,
+  suggestedSuccessors,
+  blockTierFromProgression,
+  determineMixingStage,
+  mixingStageFromProgression,
+  MIXING_STAGES,
+  type BlockProgression,
+  type BlockTier,
+  type MixingStage,
+  type MixingRatios,
+} from './utils/calc-progression'
 export { normalizeMixedOps, normalizeSelectedBlocks } from './utils/calc-settings-normalize'
 export {
   type CalcTimingMode,

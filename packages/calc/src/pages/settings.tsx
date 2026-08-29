@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import type { CalcTimingMode } from '@rosie/core'
@@ -436,19 +437,32 @@ export default function CalcSettingsPage() {
         backHref="/admin"
         backLabel="管理"
         rightExtra={
-          // 档位标准 — 全量运算四档建议耗时一览
-          <button
-            type="button"
-            onClick={() => setTierSheetOpen(true)}
-            className="shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all active:scale-95"
-            style={{
-              background: 'rgba(139,92,246,0.14)',
-              border: '1px solid rgba(139,92,246,0.35)',
-              color: '#c4b5fd',
-            }}
-          >
-            🎯 档位标准
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/calc/report"
+              className="shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all active:scale-95"
+              style={{
+                background: 'rgba(34,211,238,0.12)',
+                border: '1px solid rgba(34,211,238,0.32)',
+                color: '#67e8f9',
+              }}
+            >
+              📊 学习报告
+            </Link>
+            {/* 档位标准 — 全量运算四档建议耗时一览 */}
+            <button
+              type="button"
+              onClick={() => setTierSheetOpen(true)}
+              className="shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all active:scale-95"
+              style={{
+                background: 'rgba(139,92,246,0.14)',
+                border: '1px solid rgba(139,92,246,0.35)',
+                color: '#c4b5fd',
+              }}
+            >
+              🎯 档位标准
+            </button>
+          </div>
         }
       />
 

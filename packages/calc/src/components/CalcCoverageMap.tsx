@@ -4,13 +4,25 @@ import { useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { CalcProblemState, CalcSession, MixedOp } from '@rosie/core'
 import { signatureToDisplay } from '../utils/calc-ast'
-import { calculateAllCoverage, type BlockCoverage } from '../utils/calc-coverage'
+import {
+  calculateAllCoverage,
+  calculateConceptCoverage,
+  finiteCoverageUniverses,
+  type BlockCoverage,
+  type ConceptCoverage,
+} from '../utils/calc-coverage'
 import {
   calculateAllStructureCoverage,
   type StructureCoverage,
 } from '../utils/calc-structure-coverage'
 import { calculateRuleCoverage } from '../utils/calc-rule-coverage'
-import { evaluateBlockProgression, suggestedSuccessors } from '../utils/calc-progression'
+import { CALC_FEATURES } from '../utils/calc-features'
+import {
+  evaluateBlockProgression,
+  suggestedSuccessors,
+  blockTierFromProgression,
+  type BlockTier,
+} from '../utils/calc-progression'
 import { blockById } from '../utils/calc-blocks'
 
 const GROUP_LABEL: Record<BlockCoverage['group'], string> = {
@@ -18,6 +30,13 @@ const GROUP_LABEL: Record<BlockCoverage['group'], string> = {
   sub: '减法',
   mul: '乘法',
   div: '除法',
+}
+
+const TIER_BADGE: Record<BlockTier, { label: string; className: string }> = {
+  entry: { label: '起步', className: 'bg-slate-400/15 text-slate-300' },
+  stable: { label: '稳固', className: 'bg-emerald-400/15 text-emerald-200' },
+  fluent: { label: '熟练', className: 'bg-cyan-400/15 text-cyan-200' },
+  auto: { label: '自动化', className: 'bg-violet-400/15 text-violet-200' },
 }
 
 const STRUCTURE_GROUP_LABEL: Record<StructureCoverage['group'], string> = {
@@ -87,8 +106,11 @@ function ProgressMetric({
   )
 }
 
-function BlockCard({ block }: { block: BlockCoverage }) {
+function BlockCard({ block, concept }: { block: BlockCoverage; concept?: ConceptCoverage }) {
   const [familyMode, setFamilyMode] = useState<'left' | 'right' | 'result' | 'structure'>('left')
+  const [viewMode, setViewMode] = useState<'formula' | 'concept'>('formula')
+  const conceptEnabled = CALC_FEATURES.conceptCoverage && concept != null
+  const showConcept = conceptEnabled && viewMode === 'concept'
   const familyPrefixes =
     block.group === 'add'
       ? { left: 'left:', right: 'right:', result: 'result:', structure: 'structure:' }
@@ -127,71 +149,104 @@ function BlockCard({ block }: { block: BlockCoverage }) {
       </summary>
 
       <div className="border-t border-white/8 px-4 pt-4 pb-4">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-          <Stat label="已练习" value={block.covered} total={block.total} color="#67e8f9" />
-          <Stat label="限时答对" value={block.withinTarget} total={block.total} color="#facc15" />
-          <Stat label="已熟练" value={block.fluent} total={block.total} color="#4ade80" />
-          <Stat label="已掌握" value={block.mastered} total={block.total} color="#c084fc" />
-          <Stat label="待复核" value={block.reviewDue} total={block.total} color="#fb7185" />
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {(['left', 'right', 'result', 'structure'] as const).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => setFamilyMode(mode)}
-              className={`rounded-full px-3 py-1.5 text-xs ${familyMode === mode ? 'bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-300/30' : 'bg-white/5 text-slate-400'}`}
-            >
-              {
-                {
-                  left: block.group === 'div' ? '按除数' : '按左数',
-                  right: block.group === 'div' ? '按商' : '按右数',
-                  result: '按结果',
-                  structure: '按结构',
-                }[mode]
-              }
-            </button>
-          ))}
-        </div>
-
-        {families.length > 0 && (
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {families.map((family) => (
-              <div key={family.key} className="rounded-xl bg-white/[0.035] px-3 py-2">
-                <div className="flex items-center justify-between gap-2 text-xs">
-                  <span className="truncate text-slate-300">{family.label}</span>
-                  <span className="font-semibold text-cyan-300">
-                    {family.covered}/{family.total}
-                  </span>
-                </div>
-                <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8">
-                  <div
-                    className="h-full bg-cyan-400"
-                    style={{ width: percent(family.covered, family.total) }}
-                  />
-                </div>
-              </div>
-            ))}
+        {conceptEnabled && concept && (
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <div className="flex gap-1 rounded-full bg-white/5 p-1">
+              {(['formula', 'concept'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setViewMode(mode)}
+                  className={`rounded-full px-3 py-1 text-xs ${viewMode === mode ? 'bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-300/30' : 'text-slate-400'}`}
+                >
+                  {mode === 'formula' ? '按算式' : '按知识事实'}
+                </button>
+              ))}
+            </div>
+            {showConcept && (
+              <span className="text-[10px] text-slate-500">
+                交换律归一：3+5 与 5+3 计为同一知识事实
+              </span>
+            )}
           </div>
         )}
 
-        {block.missingSignatures.length > 0 && (
-          <details className="mt-4 rounded-xl bg-amber-400/[0.06] p-3">
-            <summary className="cursor-pointer text-xs font-semibold text-amber-200">
-              还没练过 {block.missingSignatures.length} 道
-            </summary>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {block.missingSignatures.map((signature) => (
-                <span
-                  key={signature}
-                  className="rounded-md bg-black/20 px-2 py-1 text-xs text-slate-300"
+        {showConcept && concept ? (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Stat label="已练习" value={concept.coveredConcepts} total={concept.totalConcepts} color="#67e8f9" />
+            <Stat label="已熟练" value={concept.fluentConcepts} total={concept.totalConcepts} color="#4ade80" />
+            <Stat label="已掌握" value={concept.masteredConcepts} total={concept.totalConcepts} color="#c084fc" />
+            <Stat label="待复核" value={concept.reviewDueConcepts} total={concept.totalConcepts} color="#fb7185" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              <Stat label="已练习" value={block.covered} total={block.total} color="#67e8f9" />
+              <Stat label="限时答对" value={block.withinTarget} total={block.total} color="#facc15" />
+              <Stat label="已熟练" value={block.fluent} total={block.total} color="#4ade80" />
+              <Stat label="已掌握" value={block.mastered} total={block.total} color="#c084fc" />
+              <Stat label="待复核" value={block.reviewDue} total={block.total} color="#fb7185" />
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {(['left', 'right', 'result', 'structure'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setFamilyMode(mode)}
+                  className={`rounded-full px-3 py-1.5 text-xs ${familyMode === mode ? 'bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-300/30' : 'bg-white/5 text-slate-400'}`}
                 >
-                  {signatureToDisplay(signature)}
-                </span>
+                  {
+                    {
+                      left: block.group === 'div' ? '按除数' : '按左数',
+                      right: block.group === 'div' ? '按商' : '按右数',
+                      result: '按结果',
+                      structure: '按结构',
+                    }[mode]
+                  }
+                </button>
               ))}
             </div>
-          </details>
+
+            {families.length > 0 && (
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {families.map((family) => (
+                  <div key={family.key} className="rounded-xl bg-white/[0.035] px-3 py-2">
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <span className="truncate text-slate-300">{family.label}</span>
+                      <span className="font-semibold text-cyan-300">
+                        {family.covered}/{family.total}
+                      </span>
+                    </div>
+                    <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8">
+                      <div
+                        className="h-full bg-cyan-400"
+                        style={{ width: percent(family.covered, family.total) }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {block.missingSignatures.length > 0 && (
+              <details className="mt-4 rounded-xl bg-amber-400/[0.06] p-3">
+                <summary className="cursor-pointer text-xs font-semibold text-amber-200">
+                  还没练过 {block.missingSignatures.length} 道
+                </summary>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {block.missingSignatures.map((signature) => (
+                    <span
+                      key={signature}
+                      className="rounded-md bg-black/20 px-2 py-1 text-xs text-slate-300"
+                    >
+                      {signatureToDisplay(signature)}
+                    </span>
+                  ))}
+                </div>
+              </details>
+            )}
+          </>
         )}
       </div>
     </details>
@@ -291,12 +346,26 @@ export function CalcCoverageMap({
     [states, mixedOps],
   )
   const ruleCoverage = useMemo(() => calculateRuleCoverage(states), [states])
+  const conceptByBlock = useMemo(() => {
+    const map = new Map<string, ConceptCoverage>()
+    if (!CALC_FEATURES.conceptCoverage) return map
+    for (const universe of finiteCoverageUniverses()) {
+      map.set(universe.blockId, calculateConceptCoverage(universe, states))
+    }
+    return map
+  }, [states])
   const progression = useMemo(
-    () => selectedBlockIds.map((blockId) => evaluateBlockProgression(blockId, states)),
+    () =>
+      CALC_FEATURES.adaptiveProgression
+        ? selectedBlockIds.map((blockId) => evaluateBlockProgression(blockId, states))
+        : [],
     [selectedBlockIds, states],
   )
   const successors = useMemo(
-    () => suggestedSuccessors(new Set(selectedBlockIds), states),
+    () =>
+      CALC_FEATURES.adaptiveProgression
+        ? suggestedSuccessors(new Set(selectedBlockIds), states)
+        : [],
     [selectedBlockIds, states],
   )
   const groups = useMemo(() => {
@@ -378,6 +447,7 @@ export function CalcCoverageMap({
       </div>
 
       <div className="mt-5 space-y-5">
+        {CALC_FEATURES.adaptiveProgression && (
         <div className="rounded-2xl border border-emerald-300/10 bg-emerald-400/[0.04] p-4">
           <div>
             <div className="flex items-center justify-between gap-3">
@@ -398,10 +468,15 @@ export function CalcCoverageMap({
             </>}
           </div>
           {progressionOpen && <div className="mt-3 space-y-2">
-            {progression.map((item) => (
+            {progression.map((item) => {
+              const tier = TIER_BADGE[blockTierFromProgression(item)]
+              return (
               <div key={item.blockId} className="rounded-xl bg-black/15 px-3 py-2 text-xs">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-slate-200">{blockById(item.blockId)?.label ?? item.blockId}</span>
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="truncate font-semibold text-slate-200">{blockById(item.blockId)?.label ?? item.blockId}</span>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${tier.className}`}>{tier.label}</span>
+                  </span>
                   <span className={item.recovery ? 'text-rose-300' : item.ready ? 'text-emerald-300' : 'text-amber-300'}>{item.recovery ? '需要回补' : item.ready ? '达到升级门槛' : '继续练习'}</span>
                 </div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -411,12 +486,14 @@ export function CalcCoverageMap({
                   <ProgressMetric label="高级达标率" value={item.fluentRatio} target={0.6} color="#c084fc" detail={`实际：${item.fluentCount}/${item.evaluatedCount} 道 · 目标 ${Math.ceil(item.evaluatedCount * 0.6)}/${item.evaluatedCount} 道`} />
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>}
           {successors.length > 0 && (
             <div className="mt-3 text-xs text-emerald-200">建议解锁：{successors.map((id) => blockById(id)?.label ?? id).join('、')}</div>
           )}
         </div>
+        )}
         <div className="flex flex-wrap gap-2">
           {([
             ['all', '全部题型'],
@@ -471,7 +548,7 @@ export function CalcCoverageMap({
             <div className="space-y-2">
               {blocks.map((block) => (
                 <div key={block.blockId}>
-                  <BlockCard block={block} />
+                  <BlockCard block={block} concept={conceptByBlock.get(block.blockId)} />
                   {block.covered < block.total && (
                     <Link
                       href={`/calc/session?drill=breakthrough&blockId=${encodeURIComponent(block.blockId)}`}

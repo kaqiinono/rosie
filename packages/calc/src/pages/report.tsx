@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
@@ -1615,7 +1615,20 @@ function Section6({ sessions }: { sessions: CalcSession[] }) {
 
 export default function CalcReportPage() {
   const router = useRouter()
-  const [reportTab, setReportTab] = useState<'overview' | 'coverage' | 'weakness'>('overview')
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const reportTab: 'overview' | 'coverage' | 'weakness' =
+    tabParam === 'coverage' || tabParam === 'weakness' ? tabParam : 'overview'
+  const setReportTab = useCallback(
+    (value: 'overview' | 'coverage' | 'weakness') => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value === 'overview') params.delete('tab')
+      else params.set('tab', value)
+      const qs = params.toString()
+      router.replace(qs ? `/calc/report?${qs}` : '/calc/report', { scroll: false })
+    },
+    [router, searchParams],
+  )
   const { user } = useAuth()
   const wallet = useCalcWallet(user, { loadSessions: true })
   const { settings } = useCalcSettings(user)
