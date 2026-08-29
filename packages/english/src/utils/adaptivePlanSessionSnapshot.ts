@@ -21,6 +21,8 @@ export type AdaptiveSnapshotPhase = 'review' | 'study' | 'final' | 'boss' | 'bos
 export type AdaptiveQuizSlotSnapshot = {
   key: string
   type: QuizQuestion['type']
+  revealedHalf?: number
+  reinforcement?: boolean
 }
 
 export interface AdaptiveSessionSnapshot {

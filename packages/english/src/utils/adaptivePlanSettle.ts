@@ -10,6 +10,7 @@ export type SessionOutcome = {
   quizType?: QuizType
   usedRetry?: boolean
   usedHelp?: boolean
+  usedHelpCount?: number
 }
 
 /** Correct writing without retry or letter-reveal help is strong mastery evidence. */
@@ -131,12 +132,12 @@ export function settleStep3(args: SettleStep3Args): SettleResult {
     const row = byKey.get(wordKey)
     if (!row) continue
     const wordOutcomes = results.filter((result) => result.wordKey === wordKey)
-    const hasAssistedWriting = wordOutcomes.some(
-      (result) =>
-        (result.quizType === 'C' || result.quizType === 'D') &&
-        result.correct &&
-        !isIndependentCorrectOutcome(result),
-    )
+    const latestOutcome = wordOutcomes.at(-1)
+    const hasAssistedWriting =
+      latestOutcome != null &&
+      (latestOutcome.quizType === 'C' || latestOutcome.quizType === 'D') &&
+      latestOutcome.correct &&
+      !isIndependentCorrectOutcome(latestOutcome)
     if (erred.has(wordKey)) {
       byKey.set(wordKey, applyBoxAnswer(row, false, today))
     } else if (hasAssistedWriting) {
@@ -192,8 +193,11 @@ function buildBossPlanStatsPatch(
 
   const correct = firstPassResults.filter(isIndependentCorrectOutcome).length
   const firstPassPct = (correct / total) * 100
+  const latestSinkOutcomes = new Map<string, SessionOutcome>()
+  for (const result of sinkResults) latestSinkOutcomes.set(result.wordKey, result)
   const sinkCleared =
-    sinkResults.length === 0 || sinkResults.every(isIndependentCorrectOutcome)
+    latestSinkOutcomes.size === 0 ||
+    [...latestSinkOutcomes.values()].every(isIndependentCorrectOutcome)
 
   if (firstPassPct >= 85 && sinkCleared) {
     return { bossFailStreak: 0 }

@@ -68,6 +68,8 @@ type Phase = 'hub' | 'review' | 'study' | 'final' | 'boss' | 'boss_sink' | 'done
 type QuizSlot = {
   key: string
   type: QuizQuestion['type']
+  revealedHalf?: number
+  reinforcement?: boolean
 }
 
 type QuizSlotGroup = {
@@ -157,6 +159,15 @@ function adaptiveQuestionReward(
 
 function uniqueKeys(keys: string[]): string[] {
   return [...new Set(keys)]
+}
+
+/** Latest assisted/wrong result per word still needs an independent clean answer. */
+function pendingReinforcementOutcomes(results: SessionOutcome[]): SessionOutcome[] {
+  const latest = new Map<string, SessionOutcome>()
+  for (const result of results) latest.set(result.wordKey, result)
+  return [...latest.values()].filter(
+    (result) => !result.correct || result.usedRetry === true || result.usedHelp === true,
+  )
 }
 
 function hasStatsPatch(patch: Partial<AdaptiveWordPlan['stats']>): boolean {
@@ -521,11 +532,15 @@ export default function AdaptivePlanSession({
         synced ? '已暂存到云端，换设备也可继续' : '已暂存在本机，云端备份失败，可稍后在首页重试',
       )
       setIsImmersive(false)
-      setPhase('hub')
+      // The dedicated practice route must leave the session after stashing.
+      // Keeping it on its internal hub makes a Boss-mode plan render the Boss
+      // landing page, which looks like the interrupted round was completed.
+      if (autoStart) onBack()
+      else setPhase('hub')
     } finally {
       setIsStashing(false)
     }
-  }, [plan, flushCloudNow, setIsImmersive])
+  }, [plan, flushCloudNow, setIsImmersive, autoStart, onBack])
 
   const restartCardPreview = useCallback(async () => {
     if (!plan || previewEntries.length === 0 || isRestarting) return
@@ -866,9 +881,9 @@ export default function AdaptivePlanSession({
   }, [activationApplied, plan, rows, saveProgressBatch, task, today, updatePlan])
 
   const startFinalQuiz = useCallback(
-    (keys: string[]) => {
+    (keys: string[], slots?: QuizSlot[]) => {
       finalPassWrongKeysRef.current = new Set()
-      setQuizSlots(buildSlots(keys))
+      setQuizSlots(slots ?? buildSlots(keys))
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
@@ -879,7 +894,7 @@ export default function AdaptivePlanSession({
   )
 
   const startBossQuiz = useCallback(
-    (keys: string[], phaseName: 'boss' | 'boss_sink') => {
+    (keys: string[], phaseName: 'boss' | 'boss_sink', slots?: QuizSlot[]) => {
       if (phaseName === 'boss') {
         bossFirstPassOutcomesRef.current = []
         bossSinkOutcomesRef.current = []
@@ -890,7 +905,9 @@ export default function AdaptivePlanSession({
       }
       // §5.3.1: question pressure follows the current downgrade tier
       // (1 = full writing, 2 = light pad, 3 = floor — no further downgrade).
-      setQuizSlots(buildSlots(keys, { bossTier: plan?.stats.bossQuestionTier ?? 1 }))
+      setQuizSlots(
+        slots ?? buildSlots(keys, { bossTier: plan?.stats.bossQuestionTier ?? 1 }),
+      )
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
@@ -898,6 +915,26 @@ export default function AdaptivePlanSession({
       setPhase(phaseName)
     },
     [buildSlots, plan?.stats.bossQuestionTier, setIsImmersive],
+  )
+
+  const buildReinforcementSlots = useCallback(
+    (outcomes: SessionOutcome[]): QuizSlot[] =>
+      pendingReinforcementOutcomes(outcomes).flatMap((outcome) => {
+        const entry = findWordByKey(vocab, outcome.wordKey)
+        if (!entry) return []
+        const type = outcome.usedHelp === true ? 'C' : (outcome.quizType ?? 'A')
+        const repetitions = Math.max(1, outcome.usedHelpCount ?? 0)
+        return Array.from({ length: repetitions }, () => ({
+          key: outcome.wordKey,
+          type,
+          reinforcement: true,
+          // A fully missed spelling word gets the same gentle half-letter
+          // bridge used by the standalone/weekly rescue flow.
+          revealedHalf:
+            !outcome.correct && type === 'C' ? Math.ceil(entry.word.length / 2) : undefined,
+        }))
+      }),
+    [vocab],
   )
 
   const resetRoundState = useCallback(
@@ -1319,10 +1356,10 @@ export default function AdaptivePlanSession({
       return
     }
 
-    const wrongReviewKeys = [...collapseSessionOutcomes(reviewOutcomesRef.current)]
-      .filter(([, correct]) => !correct)
-      .map(([key]) => key)
-    const finalKeys = uniqueKeys([...activateKeys, ...wrongReviewKeys])
+    const reviewReinforcementKeys = pendingReinforcementOutcomes(
+      reviewOutcomesRef.current,
+    ).map((outcome) => outcome.wordKey)
+    const finalKeys = uniqueKeys([...activateKeys, ...reviewReinforcementKeys])
     if (finalKeys.length === 0) {
       // An all-correct review-only round has no wrong words to send into the
       // final phase, but it still has completed work that must be settled.
@@ -1479,7 +1516,9 @@ export default function AdaptivePlanSession({
     const slot = quizSlots[curQ]
     if (!slot) return null
     const entry = findWordByKey(vocab, slot.key)
-    return entry ? { word: entry, type: slot.type } : null
+    return entry
+      ? { word: entry, type: slot.type, revealedHalf: slot.revealedHalf }
+      : null
   }, [curQ, quizSlots, vocab])
 
   // Recover a race that already entered quiz/final with empty slots (vocab was
@@ -1540,13 +1579,15 @@ export default function AdaptivePlanSession({
       const q = currentQuestion
       if (!q) return
       const key = wordKey(q.word)
-      const usedHelp = (helpClicks[key] ?? 0) > 0
+      const usedHelpCount = helpClicks[key] ?? 0
+      const usedHelp = usedHelpCount > 0
       const outcome = {
         wordKey: key,
         correct: info.finalCorrect,
         quizType: q.type,
         usedRetry: info.usedRetry,
         usedHelp,
+        usedHelpCount,
       }
 
       if (phase === 'review') {
@@ -1559,11 +1600,8 @@ export default function AdaptivePlanSession({
         bossFirstPassOutcomesRef.current.push(outcome)
         if (!info.finalCorrect) bossPassWrongKeysRef.current.add(key)
       } else if (phase === 'boss_sink') {
-        if (info.finalCorrect) {
-          bossSinkOutcomesRef.current.push(outcome)
-        } else {
-          bossSinkWrongKeysRef.current.add(key)
-        }
+        bossSinkOutcomesRef.current.push(outcome)
+        if (!info.finalCorrect) bossSinkWrongKeysRef.current.add(key)
       }
 
       if (info.finalCorrect) {
@@ -1598,9 +1636,12 @@ export default function AdaptivePlanSession({
     }
 
     if (phase === 'final') {
-      const wrongKeys = [...finalPassWrongKeysRef.current]
-      if (wrongKeys.length > 0) {
-        startFinalQuiz(wrongKeys)
+      const reinforcementSlots = buildReinforcementSlots(finalOutcomesRef.current)
+      if (reinforcementSlots.length > 0) {
+        startFinalQuiz(
+          reinforcementSlots.map((slot) => slot.key),
+          reinforcementSlots,
+        )
         return
       }
       void settleSession()
@@ -1608,9 +1649,13 @@ export default function AdaptivePlanSession({
     }
 
     if (phase === 'boss') {
-      const wrongKeys = [...bossPassWrongKeysRef.current]
-      if (wrongKeys.length > 0) {
-        startBossQuiz(wrongKeys, 'boss_sink')
+      const reinforcementSlots = buildReinforcementSlots(bossFirstPassOutcomesRef.current)
+      if (reinforcementSlots.length > 0) {
+        startBossQuiz(
+          reinforcementSlots.map((slot) => slot.key),
+          'boss_sink',
+          reinforcementSlots,
+        )
         return
       }
       void settleBossSession()
@@ -1618,15 +1663,20 @@ export default function AdaptivePlanSession({
     }
 
     if (phase === 'boss_sink') {
-      const wrongKeys = [...bossSinkWrongKeysRef.current]
-      if (wrongKeys.length > 0) {
-        startBossQuiz(wrongKeys, 'boss_sink')
+      const reinforcementSlots = buildReinforcementSlots(bossSinkOutcomesRef.current)
+      if (reinforcementSlots.length > 0) {
+        startBossQuiz(
+          reinforcementSlots.map((slot) => slot.key),
+          'boss_sink',
+          reinforcementSlots,
+        )
         return
       }
       void settleBossSession()
     }
   }, [
     batchSize,
+    buildReinforcementSlots,
     buildSlots,
     curQ,
     dayReviewKeys,
@@ -1910,10 +1960,10 @@ export default function AdaptivePlanSession({
             type="button"
             className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
             onClick={() => {
-              const wrongReviewKeys = [...collapseSessionOutcomes(reviewOutcomesRef.current)]
-                .filter(([, correct]) => !correct)
-                .map(([key]) => key)
-              const keys = uniqueKeys([...activateKeys, ...wrongReviewKeys])
+              const reviewReinforcementKeys = pendingReinforcementOutcomes(
+                reviewOutcomesRef.current,
+              ).map((outcome) => outcome.wordKey)
+              const keys = uniqueKeys([...activateKeys, ...reviewReinforcementKeys])
               if (keys.length === 0) {
                 setPhase('hub')
                 return
@@ -1966,10 +2016,10 @@ export default function AdaptivePlanSession({
             startReview()
             return
           }
-          const wrongReviewKeys = [...collapseSessionOutcomes(reviewOutcomesRef.current)]
-            .filter(([, correct]) => !correct)
-            .map(([key]) => key)
-          startFinalQuiz(uniqueKeys([...activateKeys, ...wrongReviewKeys]))
+          const reviewReinforcementKeys = pendingReinforcementOutcomes(
+            reviewOutcomesRef.current,
+          ).map((outcome) => outcome.wordKey)
+          startFinalQuiz(uniqueKeys([...activateKeys, ...reviewReinforcementKeys]))
         }}
         completeButtonText="开始闯关 →"
       />
@@ -2005,7 +2055,9 @@ export default function AdaptivePlanSession({
       phase === 'review'
         ? 'Step 1 · 今日复习'
         : phase === 'final'
-          ? 'Step 3 · 混合闯关'
+          ? quizSlots.some((slot) => slot.reinforcement)
+            ? 'Step 3 · 补练巩固'
+            : 'Step 3 · 混合闯关'
           : phase === 'boss'
             ? 'Boss · 首轮挑战'
             : 'Boss · 沉底清空'
