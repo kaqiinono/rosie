@@ -6,8 +6,11 @@ import { toInverseQuestion } from './calc-inverse'
 import { coverageUniverse } from './calc-coverage'
 import {
   evaluateBlockProgression,
+  MIXING_STAGES,
+  mixingStageFromProgression,
   progressionFactor,
   suggestedSuccessors,
+  type MixingRatios,
 } from './calc-progression'
 import { CALC_FEATURES } from './calc-features'
 import {
@@ -23,6 +26,7 @@ import type {
   CalcMistake,
   CalcProblemState,
   CalcQuestion,
+  CalcSession,
   CalcSettings,
   MixedOp,
 } from '@rosie/core'
@@ -44,6 +48,8 @@ export interface BuildCtx {
    * full mastered set in memory.
    */
   recallCandidates?: CalcProblemState[]
+  /** 最近会话历史（新→旧），用于自适应回补防抖；缺省时防抖不生效。 */
+  sessions?: CalcSession[]
 }
 
 type Source =
@@ -120,7 +126,7 @@ export function buildSession(
       return src.kind === 'block'
         ? Math.max(0.75, weakness) *
             (CALC_FEATURES.adaptiveProgression
-              ? progressionFactor(src.block.id, ctx.problemStates)
+              ? progressionFactor(src.block.id, ctx.problemStates, ctx.sessions)
               : 1)
         : weakness
     })
@@ -140,8 +146,10 @@ export function buildSession(
     const n = alloc[i]
     if (n <= 0) return
     if (src.kind === 'block') {
-      const generated = generateBlock(src.block, n, states, ctx.recallCandidates)
-      const recovering = evaluateBlockProgression(src.block.id, ctx.problemStates).recovery
+      const progression = evaluateBlockProgression(src.block.id, ctx.problemStates)
+      const mixing = MIXING_STAGES[mixingStageFromProgression(progression)]
+      const generated = generateBlock(src.block, n, states, ctx.recallCandidates, mixing)
+      const recovering = progression.recovery
       out.push(
         ...generated.map((question) =>
           recovering
@@ -371,6 +379,7 @@ function generateBlock(
   n: number,
   states: CalcProblemState[],
   recallCandidates?: CalcProblemState[],
+  mixing: MixingRatios = MIXING_STAGES.initial,
 ): CalcQuestion[] {
   const category: CalcCategory =
     block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
@@ -397,8 +406,10 @@ function generateBlock(
   // With an auto-expanded successor lane taking ~20% of the session, 12.5%
   // weak work inside the current lane yields ~10% overall; the rest maintains
   // and expands current coverage (the documented 70/20/10 policy).
-  let nCover = Math.round(0.45 * nWork)
-  let nWeak = Math.round(0.125 * nWork)
+  const coverScale = mixing.currentMaintenance / MIXING_STAGES.initial.currentMaintenance
+  const weakScale = mixing.weakReinforcement / MIXING_STAGES.initial.weakReinforcement
+  let nCover = Math.round(0.45 * coverScale * nWork)
+  let nWeak = Math.round(0.125 * weakScale * nWork)
   let nMaint = nWork - nCover - nWeak
 
   if (!finite) {

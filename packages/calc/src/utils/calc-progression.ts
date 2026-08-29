@@ -1,4 +1,4 @@
-import type { CalcProblemState } from '@rosie/core'
+import type { CalcMixingStage, CalcProblemState, CalcSession } from '@rosie/core'
 import { calculateBlockCoverage, coverageUniverse, learningStatusOf } from './calc-coverage'
 import { calculateStructureCoverage, structureCoverageModels } from './calc-structure-coverage'
 import { suggestedTiers, tierOf } from './calc-time-targets'
@@ -58,6 +58,7 @@ export interface BlockProgression {
   stableRatio: number
   fluentRatio: number
   reviewDueRatio: number
+  masteredRatio: number
   stableCount: number
   fluentCount: number
   evaluatedCount: number
@@ -105,7 +106,10 @@ export function evaluateBlockProgression(
     .filter(
       (attempt) => attempt.sessionNo === undefined || recentSessionNos.includes(attempt.sessionNo),
     )
-  const independent = recent.filter((attempt) => attempt.evidenceKind !== 'makeup')
+  // 独立首答：排除补练与间隔复习（旧数据无 evidenceKind 标记时仍计入）
+  const independent = recent.filter(
+    (attempt) => attempt.evidenceKind !== 'makeup' && attempt.evidenceKind !== 'recall',
+  )
   const recentAccuracy = ratio(
     independent.filter((attempt) => attempt.correct).length,
     independent.length,
@@ -132,6 +136,10 @@ export function evaluateBlockProgression(
     matching.filter((state) => learningStatusOf(state) === 'review-due').length,
     matching.length,
   )
+  const masteredRatio = ratio(
+    matching.filter((state) => learningStatusOf(state) === 'mastered').length,
+    matching.length,
+  )
   const reasons: string[] = []
   if (exposure < 0.9) reasons.push(`覆盖率${Math.round(exposure * 100)}%＜90%`)
   if (recentAccuracy < 0.85)
@@ -150,6 +158,7 @@ export function evaluateBlockProgression(
     stableRatio,
     fluentRatio,
     reviewDueRatio,
+    masteredRatio,
     stableCount: stable,
     fluentCount: fluent,
     evaluatedCount: matching.length,
@@ -163,11 +172,47 @@ export function evaluateBlockProgression(
   }
 }
 
-export function progressionFactor(blockId: string, states: Map<string, CalcProblemState>): number {
+/**
+ * 回补防抖：统计某题型自最近一次「回补场次」以来的连续正常场次。
+ * 正常场 = 该场次中此题型首答正确率 ≥ 0.7；回补场 = 正确率 < 0.7。
+ * 返回 null 表示历史里没有回补事件（无需冷却）。
+ */
+export function recoverySessionCount(
+  blockId: string,
+  sessions: CalcSession[],
+): number | null {
+  const key = `block:${blockId}`
+  const ordered = [...sessions]
+    .filter((s) => Array.isArray(s.questionLog) && s.questionLog.some((e) => e.key === key))
+    .sort((a, b) => (b.finishedAt || '').localeCompare(a.finishedAt || ''))
+  let normal = 0
+  for (const session of ordered) {
+    const entries = (session.questionLog ?? []).filter((e) => e.key === key)
+    const correct = entries.filter((e) => e.ok).length
+    const accuracy = entries.length > 0 ? correct / entries.length : 1
+    if (accuracy < 0.7) return normal
+    normal++
+  }
+  return null
+}
+
+export function progressionFactor(
+  blockId: string,
+  states: Map<string, CalcProblemState>,
+  sessions?: CalcSession[],
+): number {
   const dependencies = BLOCK_DEPENDENCIES[blockId] ?? []
   if (dependencies.length === 0) return 1
   const progress = dependencies.map((id) => evaluateBlockProgression(id, states))
   if (progress.some((item) => item.recovery)) return 0.1
+  // 防抖：依赖题型刚恢复（连续正常场 < 2）进入冷却期，避免立刻满权重回补
+  if (sessions && sessions.length > 0) {
+    const justRecovered = dependencies.some((id) => {
+      const n = recoverySessionCount(id, sessions)
+      return n !== null && n < 2
+    })
+    if (justRecovered) return 0.5
+  }
   return progress.every((item) => item.ready) ? 1 : 0.2
 }
 
@@ -182,4 +227,43 @@ export function suggestedSuccessors(
         dependencies.every((id) => selected.has(id) && evaluateBlockProgression(id, states).ready),
     )
     .map(([blockId]) => blockId)
+}
+
+/** 题型四档评级：entry → stable → fluent → auto */
+export type BlockTier = 'entry' | 'stable' | 'fluent' | 'auto'
+
+export function blockTierFromProgression(p: BlockProgression): BlockTier {
+  if (p.exposure >= 1.0 && p.masteredRatio >= 0.9 && p.fluentRatio >= 0.8) return 'auto'
+  if (p.exposure >= 0.9 && p.stableRatio >= 0.8 && p.fluentRatio >= 0.6) return 'fluent'
+  if (p.exposure >= 0.8 && p.stableRatio >= 0.7) return 'stable'
+  return 'entry'
+}
+
+/** 渐进混合三阶段：维护 / 探索 / 补练比例随题型档位演化 */
+export type MixingStage = CalcMixingStage
+
+export interface MixingRatios {
+  currentMaintenance: number
+  nextExploration: number
+  weakReinforcement: number
+}
+
+export const MIXING_STAGES: Record<MixingStage, MixingRatios> = {
+  initial: { currentMaintenance: 0.7, nextExploration: 0.2, weakReinforcement: 0.1 },
+  stabilized: { currentMaintenance: 0.6, nextExploration: 0.2, weakReinforcement: 0.2 },
+  graduated: { currentMaintenance: 0.5, nextExploration: 0.2, weakReinforcement: 0.3 },
+}
+
+export function mixingStageFromProgression(p: BlockProgression): MixingStage {
+  const tier = blockTierFromProgression(p)
+  if ((tier === 'fluent' || tier === 'auto') && p.masteredRatio >= 0.6) return 'graduated'
+  if (tier !== 'entry' && p.recentAccuracy >= 0.8) return 'stabilized'
+  return 'initial'
+}
+
+export function determineMixingStage(
+  blockId: string,
+  states: Map<string, CalcProblemState>,
+): MixingStage {
+  return mixingStageFromProgression(evaluateBlockProgression(blockId, states))
 }
