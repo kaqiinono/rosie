@@ -517,6 +517,12 @@ export default function CalcSettingsPage() {
               value={settings.autoSubmitOnMatch}
               onChange={(v) => update({ autoSubmitOnMatch: v })}
             />
+            <ToggleRow
+              label="允许自动扩展下一题型"
+              description="达到覆盖、正确率和速度门槛后，可在已选范围外加入约20%的下一难度探索；关闭时只在已选题型内自适应。"
+              value={settings.adaptiveExpansionEnabled}
+              onChange={(v) => update({ adaptiveExpansionEnabled: v })}
+            />
           </div>
         </section>
 
@@ -566,11 +572,19 @@ export default function CalcSettingsPage() {
                     color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
                   }}
                 >
-                  {m === 'auto' ? '自动分配（往难处倾斜）' : '精准设置（按题型）'}
+                  {m === 'auto' ? '自适应分配' : '强定制（按题型）'}
                 </button>
               )
             })}
           </div>
+          <p
+            className="mb-3 text-[11px] leading-relaxed"
+            style={{ color: 'rgba(245,243,255,0.38)' }}
+          >
+            {settings.countMode === 'auto'
+              ? '只在已选择题型内，根据覆盖、薄弱和前置掌握自动调整比例；下一难度未准备好时仅少量探索。'
+              : '严格遵守每个题型的题量；系统只在题型内部选择未覆盖、薄弱和到期复习算式。'}
+          </p>
           {settings.countMode === 'auto' && (
             <CalcConfigBar
               count={settings.lastCount}

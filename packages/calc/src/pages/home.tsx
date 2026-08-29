@@ -16,6 +16,8 @@ import { BLOCK_GROUPS, blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildSessionSummaryProps } from '../utils/calc-session-summary'
 import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
+import { useCalcProblemState } from '../hooks/useCalcProblemState'
+import { calculateAllCoverage } from '../utils/calc-coverage'
 
 const GROUP_LABEL = Object.fromEntries(BLOCK_GROUPS.map((g) => [g.group, g.label])) as Record<
   string,
@@ -37,6 +39,7 @@ export default function CalcHomePage() {
     isLoading: practiceStatsLoading,
   } = useCalcPracticeStats(user)
   const { unresolved: unresolvedMistakes } = useCalcMistakes(user)
+  const { states: problemStates } = useCalcProblemState(user)
 
   const [recentOpen, setRecentOpen] = useState(false)
   const [sessionsRequested, setSessionsRequested] = useState(false)
@@ -92,6 +95,10 @@ export default function CalcHomePage() {
 
   const todayProgressPct =
     todayTarget > 0 ? Math.min(100, Math.round((todayProblems / todayTarget) * 100)) : 0
+  const coverageSummary = calculateAllCoverage(problemStates)
+  const coverageTotal = coverageSummary.reduce((sum, item) => sum + item.total, 0)
+  const coverageDone = coverageSummary.reduce((sum, item) => sum + item.covered, 0)
+  const coveragePct = coverageTotal > 0 ? Math.round((coverageDone / coverageTotal) * 100) : 0
 
   const handleStart = () => {
     playSfx('coin', settings.soundEnabled)
@@ -119,6 +126,23 @@ export default function CalcHomePage() {
       <CalcAppHeader />
 
       <main className="relative mx-auto max-w-[640px] space-y-5 px-4 pt-5 pb-12">
+        <Link
+          href="/calc/report"
+          className="block rounded-2xl border border-cyan-300/15 bg-cyan-400/[0.06] p-4"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-extrabold text-cyan-100">我的口算进度</div>
+              <div className="mt-1 text-xs text-slate-400">
+                核心算式已覆盖 {coverageDone}/{coverageTotal}
+              </div>
+            </div>
+            <div className="text-xl font-black text-cyan-300">{coveragePct}%</div>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-cyan-400" style={{ width: `${coveragePct}%` }} />
+          </div>
+        </Link>
         {/* Level + Stats card */}
         <section
           className="rounded-2xl p-5"

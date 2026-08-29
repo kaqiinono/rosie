@@ -23,7 +23,8 @@
     "ai:sync-all": "node scripts/ai-sync-all.mjs",
     "grammar:extract": "node scripts/extract-grammar-unit.mjs",
     "grammar:render-pdf": "node scripts/extract-grammar-pdf.mjs",
-    "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs"
+    "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs",
+    "calc:audit": "node --import jiti/register scripts/calc-audit.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -32,6 +33,7 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "jiti": "^2.6.1",
     "turbo": "^2.3.3",
     "typescript": "^5.8.2"
   }

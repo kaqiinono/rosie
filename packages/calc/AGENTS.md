@@ -77,6 +77,32 @@ weakness weight. Per-signature state in `calc_problem_state`:
 | **Sync**          | `applyMasterySideEffects`: dual `patchSessionData` same stack, then remote upsert                                                                                                                                          |
 | **Grandfather**   | On-load memory: old `prof≥4 && attempt≥3` → mastered; upsert on next settle                                                                                                                                                |
 
+**Coverage + adaptive scheduling:** `calc-coverage.ts` defines versioned core finite universes
+for early add/sub, 2–9 mul/div, and complements. Coverage membership is derived from `signature`
+(not the mutable source `blockId`) and reports covered / within-target / fluent / mastered /
+review-due plus family drill-down. `countMode='auto'` is adaptive within the parent-selected
+scope: prerequisite-not-ready selected blocks retain a 20% exploration weight; manual mode is
+strict per-type authority. `buildSession` reserves carried mistakes, performs whole-session
+bounded dedupe, and tags every question with a `selectionReason`; logs persist the signature,
+reason, occurrence, and intentional-repeat flag. Child practice only surfaces friendly `新题` /
+`补练` badges; the growth report shows the detailed coverage and repeat audit.
+
+Large or effectively unbounded blocks use a separate, versioned **ability-structure coverage**
+denominator in `calc-structure-coverage.ts`; it never pretends to enumerate every formula.
+It covers operand bands, carry/borrow positions for multi-digit vertical arithmetic, factor/divisor
+families, quotient/remainder structure, decimal operation/magnitude, fraction denominator/operation,
+and mixed-operation root/depth. Only generator-reachable cells belong to the denominator. Run
+`pnpm calc:audit -- --structures --samples 20000` after changing a generator or structure model;
+every static model must report zero missing cells, zero unclassified samples, and zero unknown keys.
+
+Adaptive progression is implemented in `calc-progression.ts`: explicit dependencies gate the next
+block at 90% exposure, 85% recent independent accuracy, 75% stable-tier ratio and 60% fluent-tier
+ratio. Recovery is triggered by recent accuracy below 70% or review-due ratio above 15%. The parent
+setting `adaptiveExpansionEnabled` (migration `20260829160000_add_calc_adaptive_expansion.sql`)
+is required before selected-scope expansion; it defaults off. `calc-features.ts` provides emergency
+release switches: `NEXT_PUBLIC_CALC_COVERAGE_REPORT`, `NEXT_PUBLIC_CALC_SESSION_DEDUPE`,
+`NEXT_PUBLIC_CALC_MASTERY_V2`, and `NEXT_PUBLIC_CALC_ADAPTIVE_PROGRESSION` (`0`/`false` disables).
+
 **Home:** `/calc` is practice-only for children. The recent sessions list lazy-loads wallet
 sessions only after the accordion is opened, then reuses the session cache while mounted.
 
@@ -85,11 +111,11 @@ Settings defaults (`timingMode`, `bonusSec`) preload from `/admin/calc`; user ca
 for the current session only.
 Three modes in `calc-session-policy.ts`:
 
-| Mode      | Clock (`T_clock`)       | At 0                                                           | Star multiplier               |
-| --------- | ----------------------- | -------------------------------------------------------------- | ----------------------------- |
+| Mode      | Clock (`T_clock`)              | At 0                                                      | Star multiplier               |
+| --------- | ------------------------------ | --------------------------------------------------------- | ----------------------------- |
 | `relaxed` | `T_target` (hidden soft clock) | no auto-advance; elapsed time continues in the background | ×1.0                          |
-| `strict`  | `T_target`              | final wrong                                                    | ×1.2                          |
-| `bonus`   | `T_target + bonusSec`   | final wrong                                                    | `max(1, 1.2 − 0.05×bonusSec)` |
+| `strict`  | `T_target`                     | final wrong                                               | ×1.2                          |
+| `bonus`   | `T_target + bonusSec`          | final wrong                                               | `max(1, 1.2 − 0.05×bonusSec)` |
 
 `withinLimit` always uses `T_target` (never inflated by bonus). `maxRetryCeiling(N) = max(3, floor(N×0.15))`;
 daily sessions use a capped retry pool + single-pass makeup (no re-enqueue from makeup).

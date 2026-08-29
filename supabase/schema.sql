@@ -583,6 +583,7 @@ CREATE TABLE public.calc_settings (
     timing_mode text DEFAULT 'relaxed'::text NOT NULL,
     bonus_sec integer DEFAULT 3 NOT NULL,
     auto_submit_on_match boolean DEFAULT true NOT NULL,
+    adaptive_expansion_enabled boolean DEFAULT false NOT NULL,
     CONSTRAINT calc_settings_current_level_check CHECK (((current_level >= 1) AND (current_level <= 18)))
 );
 

@@ -3,6 +3,13 @@ import { addHasCarry, hasAnyCarry, subHasBorrow } from './calc-block-gens'
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
 import { toInverseQuestion } from './calc-inverse'
+import { coverageUniverse } from './calc-coverage'
+import {
+  evaluateBlockProgression,
+  progressionFactor,
+  suggestedSuccessors,
+} from './calc-progression'
+import { CALC_FEATURES } from './calc-features'
 import {
   COLD_START_MIN,
   isFiniteBlock,
@@ -40,7 +47,7 @@ export interface BuildCtx {
 }
 
 type Source =
-  | { kind: 'block'; block: CalcBlock }
+  | { kind: 'block'; block: CalcBlock; adaptiveLane?: 'next' }
   | { kind: 'mixed'; op: MixedOp }
 
 /**
@@ -73,6 +80,17 @@ export function buildSession(
   for (const op of settings.mixedOps) {
     if (op.enabled && isMixedOpValid(op)) sources.push({ kind: 'mixed', op })
   }
+  if (
+    CALC_FEATURES.adaptiveProgression &&
+    settings.countMode === 'auto' &&
+    settings.adaptiveExpansionEnabled
+  ) {
+    const selected = new Set(settings.selectedBlocks.map((item) => item.id))
+    for (const blockId of suggestedSuccessors(selected, ctx.problemStates)) {
+      const block = blockById(blockId)
+      if (block) sources.push({ kind: 'block', block, adaptiveLane: 'next' })
+    }
+  }
   if (sources.length === 0) sources.push({ kind: 'block', block: BLOCKS[0] }) // 兜底 add:10
 
   const states = [...ctx.problemStates.values()]
@@ -84,18 +102,27 @@ export function buildSession(
   if (settings.countMode === 'manual') {
     alloc = sources.map((src) =>
       src.kind === 'block'
-        ? settings.selectedBlocks.find((b) => b.id === src.block.id)?.count ?? 0
+        ? (settings.selectedBlocks.find((b) => b.id === src.block.id)?.count ?? 0)
         : src.op.count,
     )
   } else {
     const weights = sources.map((src) => {
-      const matching = src.kind === 'block'
-        ? states.filter((s) => s.blockId === src.block.id)
-        : states.filter((s) => s.mixedOpId === src.op.id)
-      const p = matching.length > 0
-        ? matching.reduce((acc, s) => acc + s.proficiency, 0) / matching.length
-        : 0
-      return Math.max(0.05, 1 - p / 5)
+      const matching =
+        src.kind === 'block'
+          ? states.filter((s) => s.blockId === src.block.id)
+          : states.filter((s) => s.mixedOpId === src.op.id)
+      const p =
+        matching.length > 0
+          ? matching.reduce((acc, s) => acc + s.proficiency, 0) / matching.length
+          : 0
+      const weakness = Math.max(0.05, 1 - p / 5)
+      if (src.kind === 'block' && src.adaptiveLane === 'next') return 0.25
+      return src.kind === 'block'
+        ? Math.max(0.75, weakness) *
+            (CALC_FEATURES.adaptiveProgression
+              ? progressionFactor(src.block.id, ctx.problemStates)
+              : 1)
+        : weakness
     })
     alloc = allocate(settings.lastCount, weights)
   }
@@ -113,14 +140,89 @@ export function buildSession(
     const n = alloc[i]
     if (n <= 0) return
     if (src.kind === 'block') {
-      out.push(...generateBlock(src.block, n, states, ctx.recallCandidates))
+      const generated = generateBlock(src.block, n, states, ctx.recallCandidates)
+      const recovering = evaluateBlockProgression(src.block.id, ctx.problemStates).recovery
+      out.push(
+        ...generated.map((question) =>
+          recovering
+            ? { ...question, selectionReason: 'prerequisite-recovery' as const }
+            : src.adaptiveLane === 'next'
+              ? { ...question, selectionReason: 'next-difficulty' as const }
+              : question,
+        ),
+      )
     } else {
       for (let k = 0; k < n; k++) {
         const q = assembleMixed(src.op)
-        out.push({ ...q, sourceMixedOpId: src.op.id })
+        out.push({ ...q, sourceMixedOpId: src.op.id, selectionReason: 'random-fill' })
       }
     }
   })
+
+  // 3.5 Whole-session dedupe. Reserve carried mistakes first so normal generation
+  // cannot accidentally duplicate the deliberate carry-over occurrence.
+  const carriedSignatures = new Set(carried.slice(0, count).map((m) => m.signature))
+  const usedSignatures = new Set(carriedSignatures)
+  for (let i = 0; CALC_FEATURES.sessionDedupe && i < out.length; i++) {
+    const original = out[i]
+    if (!usedSignatures.has(original.signature)) {
+      usedSignatures.add(original.signature)
+      continue
+    }
+    const source = original.sourceBlockId
+      ? sources.find(
+          (candidate): candidate is Extract<Source, { kind: 'block' }> =>
+            candidate.kind === 'block' && candidate.block.id === original.sourceBlockId,
+        )
+      : sources.find(
+          (candidate): candidate is Extract<Source, { kind: 'mixed' }> =>
+            candidate.kind === 'mixed' && candidate.op.id === original.sourceMixedOpId,
+        )
+    let replacement: CalcQuestion | null = null
+    if (source?.kind === 'block') {
+      const universe = coverageUniverse(source.block.id)
+      if (universe) {
+        const start = Math.floor(Math.random() * universe.size)
+        for (let offset = 0; offset < universe.size; offset++) {
+          const signature = universe.signatureAt((start + offset) % universe.size)
+          if (usedSignatures.has(signature)) continue
+          const category: CalcCategory =
+            source.block.group === 'add' || source.block.group === 'sub' ? 'addsub' : 'muldiv'
+          replacement = {
+            ...makeQuestion(parseSignature(signature), 0, category, category === 'addsub' ? 1 : 2),
+            sourceBlockId: source.block.id,
+            selectionReason: 'coverage',
+          }
+          break
+        }
+      }
+    }
+    for (let attempt = 0; attempt < 12 && source; attempt++) {
+      if (replacement) break
+      const candidate =
+        source.kind === 'block'
+          ? {
+              ...source.block.generateSingle(),
+              sourceBlockId: source.block.id,
+              selectionReason: 'random-fill' as const,
+            }
+          : {
+              ...assembleMixed(source.op),
+              sourceMixedOpId: source.op.id,
+              selectionReason: 'random-fill' as const,
+            }
+      if (!usedSignatures.has(candidate.signature)) {
+        replacement = candidate
+        break
+      }
+    }
+    if (replacement) {
+      out[i] = replacement
+      usedSignatures.add(replacement.signature)
+    } else {
+      out[i] = { ...original, selectionReason: 'fallback' }
+    }
+  }
 
   // 4.4 Tag questions from vertical-capable blocks so the session renders a 竖式 layout.
   if (settings.verticalForBigNumbers) {
@@ -164,10 +266,9 @@ export function buildSession(
       coinBase: 1,
       sourceBlockId,
       sourceMixedOpId: state?.mixedOpId,
+      selectionReason: 'carried-mistake',
     }
-    out.push(
-      settings.verticalForBigNumbers && !isInverse ? applyVerticalAnswerMode(q) : q,
-    )
+    out.push(settings.verticalForBigNumbers && !isInverse ? applyVerticalAnswerMode(q) : q)
   }
 
   // 6. Shuffle the WHOLE thing (Fisher-Yates) so carried ones aren't predictably first.
@@ -187,7 +288,11 @@ function applyVerticalAnswerMode(q: CalcQuestion): CalcQuestion {
   if (q.sourceBlockId === 'add:1000' || q.sourceBlockId === 'sub:1000') {
     try {
       const ast = parseSignature(q.signature)
-      if (typeof ast === 'number' || typeof ast.left !== 'number' || typeof ast.right !== 'number') {
+      if (
+        typeof ast === 'number' ||
+        typeof ast.left !== 'number' ||
+        typeof ast.right !== 'number'
+      ) {
         return q
       }
       if (q.sourceBlockId === 'add:1000' && !addHasCarry(ast.left, ast.right)) return q
@@ -254,9 +359,7 @@ function allocate(count: number, weights: number[]): number[] {
     }
   } else {
     // fewer slots than sources: give 1 each to the `count` weakest (highest w)
-    const order = weights
-      .map((w, i) => ({ i, w }))
-      .sort((a, b) => b.w - a.w)
+    const order = weights.map((w, i) => ({ i, w })).sort((a, b) => b.w - a.w)
     for (let k = 0; k < count; k++) alloc[order[k].i] = 1
   }
   return alloc
@@ -269,7 +372,8 @@ function generateBlock(
   states: CalcProblemState[],
   recallCandidates?: CalcProblemState[],
 ): CalcQuestion[] {
-  const category: CalcCategory = block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
+  const category: CalcCategory =
+    block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
   const coinBase = category === 'addsub' ? 1 : 2
   const tag = (q: CalcQuestion): CalcQuestion => ({ ...q, sourceBlockId: block.id })
   const blockStates = states.filter((s) => s.blockId === block.id)
@@ -277,21 +381,24 @@ function generateBlock(
 
   // Infinite cold-start: explore until pool has enough rows
   if (!finite && blockStates.length < COLD_START_MIN) {
-    return Array.from({ length: n }, () => tag(block.generateSingle()))
+    return Array.from({ length: n }, () => ({
+      ...tag(block.generateSingle()),
+      selectionReason: 'coverage',
+    }))
   }
 
   // Spec: recallSlot = max(1, floor(0.05*n)) — but only when SQL-truncated
   // candidates for this block are actually available (and n leaves room).
   const blockRecallPool = block.noResurface
     ? []
-    : (recallCandidates ?? []).filter(
-        (s) => s.blockId === block.id && s.status === 'mastered',
-      )
-  const recallN =
-    blockRecallPool.length > 0 && n >= 2 ? Math.max(1, Math.floor(0.05 * n)) : 0
+    : (recallCandidates ?? []).filter((s) => s.blockId === block.id && s.status === 'mastered')
+  const recallN = blockRecallPool.length > 0 && n >= 2 ? Math.max(1, Math.floor(0.05 * n)) : 0
   const nWork = Math.max(0, n - recallN)
-  let nCover = Math.round(0.4 * nWork)
-  let nWeak = Math.round(0.4 * nWork)
+  // With an auto-expanded successor lane taking ~20% of the session, 12.5%
+  // weak work inside the current lane yields ~10% overall; the rest maintains
+  // and expands current coverage (the documented 70/20/10 policy).
+  let nCover = Math.round(0.45 * nWork)
+  let nWeak = Math.round(0.125 * nWork)
   let nMaint = nWork - nCover - nWeak
 
   if (!finite) {
@@ -314,7 +421,7 @@ function generateBlock(
       if (used.has(sig)) continue
       try {
         const ast = parseSignature(sig)
-        out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+        out.push({ ...tag(makeQuestion(ast, 0, category, coinBase)), selectionReason: 'coverage' })
         used.add(sig)
       } catch {
         /* skip bad sig */
@@ -329,7 +436,9 @@ function generateBlock(
     .filter((s) => s.status === 'active' || s.status === 'lagging')
     .sort((a, b) => {
       const lag = (x: CalcProblemState) => (x.status === 'lagging' ? 0 : 1)
-      return lag(a) - lag(b) || a.proficiency - b.proficiency || b.consecutiveWrong - a.consecutiveWrong
+      return (
+        lag(a) - lag(b) || a.proficiency - b.proficiency || b.consecutiveWrong - a.consecutiveWrong
+      )
     })
   let weakTaken = 0
   for (const s of weakPool) {
@@ -338,7 +447,10 @@ function generateBlock(
     if (block.noResurface) break
     try {
       const ast = parseSignature(s.signature)
-      out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+      out.push({
+        ...tag(makeQuestion(ast, 0, category, coinBase)),
+        selectionReason: s.status === 'lagging' ? 'lagging' : 'weak',
+      })
       used.add(s.signature)
       weakTaken++
     } catch {
@@ -360,21 +472,24 @@ function generateBlock(
     const idx = eligible.indexOf(s)
     eligible.splice(idx, 1)
     if (block.noResurface) {
-      out.push(tag(block.generateSingle()))
+      out.push({ ...tag(block.generateSingle()), selectionReason: 'random-fill' })
     } else {
       try {
         const ast = parseSignature(s.signature)
-        out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+        out.push({
+          ...tag(makeQuestion(ast, 0, category, coinBase)),
+          selectionReason: 'maintenance',
+        })
         used.add(s.signature)
       } catch {
-        out.push(tag(block.generateSingle()))
+        out.push({ ...tag(block.generateSingle()), selectionReason: 'fallback' })
       }
     }
     maintTaken++
   }
   // Pool empty → single generateSingle per remaining slot (no reject loop)
   while (maintTaken < nMaint) {
-    out.push(tag(block.generateSingle()))
+    out.push({ ...tag(block.generateSingle()), selectionReason: 'random-fill' })
     maintTaken++
   }
 
@@ -388,7 +503,10 @@ function generateBlock(
     for (const s of mastered) {
       try {
         const ast = parseSignature(s.signature)
-        out.push(tag(makeQuestion(ast, 0, category, coinBase)))
+        out.push({
+          ...tag(makeQuestion(ast, 0, category, coinBase)),
+          selectionReason: 'mastered-recall',
+        })
         used.add(s.signature)
       } catch {
         /* skip */
@@ -398,7 +516,7 @@ function generateBlock(
 
   // Pad if still short
   while (out.length < n) {
-    out.push(tag(block.generateSingle()))
+    out.push({ ...tag(block.generateSingle()), selectionReason: 'fallback' })
   }
 
   return out.slice(0, n)
@@ -480,8 +598,7 @@ export function buildDrillSession(
 
   if (params.type === 'weak-formulas') {
     const weak = [...problemStates.values()].filter(
-      (s) =>
-        (s.proficiency <= 2 && s.attemptCount >= 3) || s.status === 'lagging',
+      (s) => (s.proficiency <= 2 && s.attemptCount >= 3) || s.status === 'lagging',
     )
     if (weak.length === 0) return []
 
@@ -491,7 +608,8 @@ export function buildDrillSession(
       const block = blockById(state.blockId)
       if (!block || block.noResurface) continue
       const ast = parseSignature(state.signature)
-      const category: CalcCategory = (block.group === 'add' || block.group === 'sub') ? 'addsub' : 'muldiv'
+      const category: CalcCategory =
+        block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
       const q = makeQuestion(ast, state.level as CalcLevel, category, 1, false)
       out.push(tagVertical({ ...q, sourceBlockId: block.id }))
     }

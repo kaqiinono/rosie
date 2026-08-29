@@ -5,33 +5,35 @@ import { skeletonMeta } from './calc-mixed'
 import { suggestedTiers, tierOf, nextTierGap, type Tier } from './calc-time-targets'
 
 export interface PeriodPoint {
-  label: string           // "6/W2" | "6/15" | "6月"
-  avgSec: number | null   // null = no practice in this period
+  label: string // "6/W2" | "6/15" | "6月"
+  avgSec: number | null // null = no practice in this period
   totalCount: number
   daysActive: number
 }
 
 export interface PeriodData {
-  week: PeriodPoint[]   // 最近 12 周
-  day: PeriodPoint[]    // 最近 30 天
-  month: PeriodPoint[]  // 最近 12 个月
+  week: PeriodPoint[] // 最近 12 周
+  day: PeriodPoint[] // 最近 30 天
+  month: PeriodPoint[] // 最近 12 个月
 }
 
 export type OpGroup = 'add' | 'sub' | 'mul' | 'div' | 'mixed'
 
 export interface OpGroupStat {
   op: OpGroup
-  label: string          // 加 / 减 / 乘 / 除 / 混合
+  label: string // 加 / 减 / 乘 / 除 / 混合
   avgSec: number
   /** Worst tier in the group (entry < stable < fluent < auto). null if all insufficient. */
   tier: Tier | null
   /** Weighted avg deltaSec across blocks. +ve = faster. null if no prior data. */
   deltaSec: number | null
   blocks: SourceStat[]
-  insufficient: boolean  // true when ALL blocks are insufficient
+  insufficient: boolean // true when ALL blocks are insufficient
 }
 
-function padTwo(n: number) { return String(n).padStart(2, '0') }
+function padTwo(n: number) {
+  return String(n).padStart(2, '0')
+}
 
 /** Returns ISO date string (YYYY-MM-DD) of the Thursday that starts the week containing `date`. Uses local time. */
 function thursdayWeekStart(date: Date): string {
@@ -55,21 +57,34 @@ const WINDOW = 20
 const MIN_SAMPLE = 8
 
 export interface SourceStat {
-  key: string            // "block:<id>" | "mixed:<id>"
+  key: string // "block:<id>" | "mixed:<id>"
   label: string
-  targetId: string       // block id or skeleton id (for TIME_TARGETS lookup)
-  count: number          // first-attempt questions in the recent window
+  targetId: string // block id or skeleton id (for TIME_TARGETS lookup)
+  count: number // first-attempt questions in the recent window
+  /** Representative speed: median of recent correct first attempts (fallback: all). */
   avgSec: number
-  accuracy: number       // 0..1
-  perMinute: number      // 题/分钟
+  accuracy: number // 0..1
+  perMinute: number // 题/分钟
   tier: Tier | null
-  gapSec: number         // 离下一档还差
-  insufficient: boolean  // 首做样本 < MIN_SAMPLE，不下结论
+  gapSec: number // 离下一档还差
+  insufficient: boolean // 首做样本 < MIN_SAMPLE，不下结论
   /** +ve = faster than the prior window (进步); null if no prior window. */
   deltaSec: number | null
 }
 
-interface Entry { ms: number; ok: boolean }
+interface Entry {
+  ms: number
+  ok: boolean
+}
+
+function medianMs(entries: Entry[]): number {
+  const correct = entries.filter((entry) => entry.ok)
+  const source = correct.length > 0 ? correct : entries
+  const values = source.map((entry) => entry.ms).sort((a, b) => a - b)
+  if (values.length === 0) return 0
+  const mid = Math.floor(values.length / 2)
+  return values.length % 2 === 1 ? values[mid] : (values[mid - 1] + values[mid]) / 2
+}
 
 /**
  * Aggregate per-source stats from sessions (newest-first).
@@ -97,7 +112,7 @@ export function sourceStats(
     if (recent.length === 0) continue
     const prior = entries.slice(WINDOW, WINDOW * 2)
 
-    const avgSec = recent.reduce((a, e) => a + e.ms, 0) / recent.length / 1000
+    const avgSec = medianMs(recent) / 1000
     const accuracy = recent.filter((e) => e.ok).length / recent.length
     const totalMin = recent.reduce((a, e) => a + e.ms, 0) / 60000
     const perMinute = totalMin > 0 ? +(recent.length / totalMin).toFixed(1) : 0
@@ -106,8 +121,9 @@ export function sourceStats(
     const targetId = kind === 'block' ? id : (mixedSkeletons.get(id) ?? id)
     const label =
       kind === 'block'
-        ? blockById(id)?.label ?? id
-        : mixedLabels.get(id) ?? (mixedSkeletons.has(id) ? skeletonMeta(mixedSkeletons.get(id)! as never).label : id)
+        ? (blockById(id)?.label ?? id)
+        : (mixedLabels.get(id) ??
+          (mixedSkeletons.has(id) ? skeletonMeta(mixedSkeletons.get(id)! as never).label : id))
 
     const target = suggestedTiers(targetId)
     const insufficient = recent.length < MIN_SAMPLE
@@ -116,11 +132,23 @@ export function sourceStats(
 
     let deltaSec: number | null = null
     if (prior.length >= 5) {
-      const priorAvg = prior.reduce((a, e) => a + e.ms, 0) / prior.length / 1000
+      const priorAvg = medianMs(prior) / 1000
       deltaSec = +(priorAvg - avgSec).toFixed(1) // +ve = faster now
     }
 
-    out.push({ key, label, targetId, count: recent.length, avgSec: +avgSec.toFixed(1), accuracy, perMinute, tier, gapSec, deltaSec, insufficient })
+    out.push({
+      key,
+      label,
+      targetId,
+      count: recent.length,
+      avgSec: +avgSec.toFixed(1),
+      accuracy,
+      perMinute,
+      tier,
+      gapSec,
+      deltaSec,
+      insufficient,
+    })
   }
   return out
 }
@@ -128,10 +156,10 @@ export function sourceStats(
 export interface SessionVerdict {
   /** 'up' | 'down' | 'flat' | null(no prior) */
   trend: 'up' | 'down' | 'flat' | null
-  deltaSec: number | null   // overall avg秒/题 delta (+ve faster)
-  perMinute: number          // this session
-  improved: number           // # sources faster
-  regressed: number          // # sources slower
+  deltaSec: number | null // overall avg秒/题 delta (+ve faster)
+  perMinute: number // this session
+  improved: number // # sources faster
+  regressed: number // # sources slower
 }
 
 /** This-session verdict: latest session vs the one before it. */
@@ -158,17 +186,21 @@ export function sessionVerdict(sessions: CalcSession[]): SessionVerdict {
     const m = new Map<string, { sum: number; n: number }>()
     for (const e of log) {
       const a = m.get(e.key) ?? { sum: 0, n: 0 }
-      a.sum += e.ms; a.n += 1; m.set(e.key, a)
+      a.sum += e.ms
+      a.n += 1
+      m.set(e.key, a)
     }
     return m
   }
   const curBy = avgByKey(curLog)
   const prevBy = avgByKey(prevLog)
-  let improved = 0, regressed = 0
+  let improved = 0,
+    regressed = 0
   for (const [key, c] of curBy) {
     const p = prevBy.get(key)
     if (!p) continue
-    const cAvg = c.sum / c.n, pAvg = p.sum / p.n
+    const cAvg = c.sum / c.n,
+      pAvg = p.sum / p.n
     if (cAvg < pAvg - 100) improved++
     else if (cAvg > pAvg + 100) regressed++
   }
@@ -186,8 +218,8 @@ export function weeklyAggregates(sessions: CalcSession[]): PeriodData {
   type Acc = { msSum: number; count: number; days: Set<string> }
 
   const byWeek = new Map<string, Acc>()
-  const byDay  = new Map<string, Acc>()
-  const byMonth= new Map<string, Acc>()
+  const byDay = new Map<string, Acc>()
+  const byMonth = new Map<string, Acc>()
 
   for (const s of sessions) {
     if (!s.date) continue
@@ -198,17 +230,17 @@ export function weeklyAggregates(sessions: CalcSession[]): PeriodData {
 
     const logs = s.questionLog ?? []
     const ms = logs.reduce((a, e) => a + e.ms, 0)
-    const n  = logs.length
+    const n = logs.length
 
     const add = (map: Map<string, Acc>, key: string) => {
       const acc = map.get(key) ?? { msSum: 0, count: 0, days: new Set<string>() }
-      acc.msSum  += ms
-      acc.count  += n
+      acc.msSum += ms
+      acc.count += n
       if (n > 0) acc.days.add(dKey)
       map.set(key, acc)
     }
-    add(byWeek,  wKey)
-    add(byDay,   dKey)
+    add(byWeek, wKey)
+    add(byDay, dKey)
     add(byMonth, mKey)
   }
 
@@ -275,7 +307,11 @@ function worstTier(tiers: (Tier | null)[]): Tier | null {
 }
 
 const OP_LABEL: Record<OpGroup, string> = {
-  add: '加', sub: '减', mul: '乘', div: '除', mixed: '混合',
+  add: '加',
+  sub: '减',
+  mul: '乘',
+  div: '除',
+  mixed: '混合',
 }
 
 /**
@@ -285,9 +321,7 @@ const OP_LABEL: Record<OpGroup, string> = {
  * Returns only groups that have at least one source.
  * Sorted by avgSec descending (slowest first).
  */
-export function opGroupStats(
-  stats: SourceStat[],
-): OpGroupStat[] {
+export function opGroupStats(stats: SourceStat[]): OpGroupStat[] {
   const groups = new Map<OpGroup, SourceStat[]>()
 
   for (const s of stats) {
@@ -301,10 +335,14 @@ export function opGroupStats(
       const block = blockById(id)
       if (!block) continue
       const g = block.group
-      op = g === 'add' ? 'add'
-         : g === 'sub' ? 'sub'
-         : g === 'mul' || g === 'decimal' || g === 'fraction' ? 'mul'
-         : 'div'
+      op =
+        g === 'add'
+          ? 'add'
+          : g === 'sub'
+            ? 'sub'
+            : g === 'mul' || g === 'decimal' || g === 'fraction'
+              ? 'mul'
+              : 'div'
     }
     const arr = groups.get(op) ?? []
     arr.push(s)
@@ -317,9 +355,10 @@ export function opGroupStats(
     const insufficient = sufficient.length === 0
 
     const totalCount = blocks.reduce((a, b) => a + b.count, 0)
-    const avgSec = totalCount > 0
-      ? +(blocks.reduce((a, b) => a + b.avgSec * b.count, 0) / totalCount).toFixed(1)
-      : 0
+    const avgSec =
+      totalCount > 0
+        ? +(blocks.reduce((a, b) => a + b.avgSec * b.count, 0) / totalCount).toFixed(1)
+        : 0
 
     const tier = insufficient ? null : worstTier(sufficient.map((b) => b.tier))
 
@@ -328,9 +367,10 @@ export function opGroupStats(
     let deltaSec: number | null = null
     if (withDelta.length > 0) {
       const dCount = withDelta.reduce((a, b) => a + b.count, 0)
-      deltaSec = dCount > 0
-        ? +(withDelta.reduce((a, b) => a + (b.deltaSec ?? 0) * b.count, 0) / dCount).toFixed(1)
-        : null
+      deltaSec =
+        dCount > 0
+          ? +(withDelta.reduce((a, b) => a + (b.deltaSec ?? 0) * b.count, 0) / dCount).toFixed(1)
+          : null
     }
 
     result.push({ op, label: OP_LABEL[op], avgSec, tier, deltaSec, blocks, insufficient })
@@ -346,10 +386,7 @@ export function opGroupStats(
  * Each signature needs max(1, targetProficiency - current) correct answers, buffered by 1.5x.
  * Result is clamped to [10, 60].
  */
-export function estimateDrillCount(
-  targets: CalcProblemState[],
-  targetProficiency: number,
-): number {
+export function estimateDrillCount(targets: CalcProblemState[], targetProficiency: number): number {
   if (targets.length === 0) return 10
   const raw = targets.reduce((acc, t) => {
     return acc + Math.max(1, targetProficiency - t.proficiency) * 1.5

@@ -31,6 +31,7 @@ export type CalcAttemptStatSnapshot = {
   wasMistake: boolean
   timeMs: number
   withinLimit: boolean
+  evidenceKind?: 'independent' | 'makeup' | 'recall'
   sourceBlockId?: string
   sourceMixedOpId?: string
   display?: string
@@ -65,7 +66,11 @@ export type CalcSessionSnapshot = {
   drillTargetSignatures: string[]
 }
 
-function drillKeyFromParams(drill: string | null, blockId: string | null, mode: CalcMode): string | null {
+function drillKeyFromParams(
+  drill: string | null,
+  blockId: string | null,
+  mode: CalcMode,
+): string | null {
   if (mode === 'mistakes') return 'mistakes'
   if (!drill) return null
   if (drill === 'weak-formulas') return 'weak-formulas'
@@ -101,7 +106,9 @@ function isValidCalcSnap(snap: unknown): snap is CalcSessionSnapshot {
   )
 }
 
-export function wrapCalcEnvelope(snap: CalcSessionSnapshot): PracticePendingEnvelope<CalcSessionSnapshot> {
+export function wrapCalcEnvelope(
+  snap: CalcSessionSnapshot,
+): PracticePendingEnvelope<CalcSessionSnapshot> {
   return {
     version: 1,
     savedAt: new Date().toISOString(),

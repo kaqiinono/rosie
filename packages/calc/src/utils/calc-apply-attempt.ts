@@ -1,10 +1,6 @@
-import type {
-  CalcLevel,
-  CalcProblemState,
-  CalcProblemStatus,
-  QuestionAttempt,
-} from '@rosie/core'
-import { MASTERY_STREAK_K } from './calc-effective-limit'
+import type { CalcLevel, CalcProblemState, QuestionAttempt } from '@rosie/core'
+import { nextMasteryTransition } from './calc-mastery'
+import { CALC_FEATURES } from './calc-features'
 
 const RECENT_CAP = 10
 
@@ -12,48 +8,36 @@ export function applyAttempt(
   prev: CalcProblemState,
   attempt: QuestionAttempt,
   withinLimit: boolean,
-  _sessionNo: number,
-  _today: string,
+  sessionNo: number,
+  today: string,
 ): CalcProblemState {
-  const attemptWithLimit: QuestionAttempt = { ...attempt, withinLimit }
+  const attemptWithLimit: QuestionAttempt = { ...attempt, withinLimit, sessionNo, date: today }
   const nextRecent = [...prev.recentResults, attemptWithLimit].slice(-RECENT_CAP)
   const nextAttemptCount = prev.attemptCount + 1
 
-  let nextProf = prev.proficiency
-  let nextConsecutiveWrong = prev.consecutiveWrong
-  let nextConsecutiveCorrect = prev.consecutiveCorrect ?? 0
-  let nextStatus: CalcProblemStatus = prev.status === 'forced' ? 'forced' : 'active'
-
-  if (attempt.correct && withinLimit) {
-    nextProf = Math.min(5, nextProf + 1)
-    nextConsecutiveWrong = 0
-    nextConsecutiveCorrect = nextConsecutiveCorrect + 1
-    if (nextConsecutiveCorrect >= MASTERY_STREAK_K && nextAttemptCount >= MASTERY_STREAK_K) {
-      nextStatus = 'mastered'
-    } else {
-      nextStatus = 'active'
-    }
-  } else if (attempt.correct && !withinLimit) {
-    nextProf = Math.max(0, nextProf - 1)
-    nextConsecutiveWrong = 0
-    nextConsecutiveCorrect = 0
-    nextStatus = 'lagging'
-  } else {
-    nextProf = Math.max(0, nextProf - 2)
-    nextConsecutiveWrong = prev.consecutiveWrong + 1
-    nextConsecutiveCorrect = 0
-    nextStatus = 'active'
-  }
+  const transition = CALC_FEATURES.masteryV2
+    ? nextMasteryTransition(prev, nextRecent, attemptWithLimit)
+    : {
+        proficiency: attempt.correct
+          ? Math.min(5, prev.proficiency + (withinLimit ? 1 : 0))
+          : Math.max(0, prev.proficiency - 2),
+        consecutiveCorrect: attempt.correct && withinLimit ? prev.consecutiveCorrect + 1 : 0,
+        consecutiveWrong: attempt.correct ? 0 : prev.consecutiveWrong + 1,
+        status:
+          attempt.correct && withinLimit && prev.consecutiveCorrect >= 2
+            ? ('mastered' as const)
+            : ('active' as const),
+      }
 
   return {
     ...prev,
-    proficiency: nextProf,
+    proficiency: transition.proficiency,
     attemptCount: nextAttemptCount,
     appearanceCount: prev.appearanceCount + 1,
     recentResults: nextRecent,
-    status: nextStatus,
-    consecutiveWrong: nextConsecutiveWrong,
-    consecutiveCorrect: nextConsecutiveCorrect,
+    status: transition.status,
+    consecutiveWrong: transition.consecutiveWrong,
+    consecutiveCorrect: transition.consecutiveCorrect,
     lastWithinLimit: withinLimit,
     updatedAt: new Date().toISOString(),
   }

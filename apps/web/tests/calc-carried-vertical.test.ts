@@ -17,6 +17,7 @@ function baseSettings(over: Partial<CalcSettings> = {}): CalcSettings {
     timingMode: 'relaxed',
     bonusSec: 0,
     autoSubmitOnMatch: true,
+    adaptiveExpansionEnabled: false,
     ...over,
   }
 }

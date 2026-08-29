@@ -12,13 +12,13 @@ import type { AdaptivePlanWordProgress } from './adaptivePlanTypes'
 export function quizTypesForWord(
   row: AdaptivePlanWordProgress | undefined,
   mastery?: WordMasteryInfo,
-  opts?: { choiceType?: 'A' | 'B' },
+  opts?: { choiceType?: 'A' | 'B'; preferLight?: boolean },
 ): QuizType[] {
   const box = resolveFamiliarityBox(row, mastery)
   const choiceType = opts?.choiceType ?? 'A'
 
   if (box <= 1) return ['A']
-  if (box === 2 || box === 3) return [choiceType, 'C']
+  if (box === 2 || box === 3) return opts?.preferLight ? ['A'] : [choiceType, 'C']
   return ['C']
 }
 

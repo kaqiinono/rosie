@@ -22,7 +22,12 @@ import { type FeedbackKind } from '../components/FeedbackOverlay'
 import ChallengeBanner from '../components/ChallengeBanner'
 import SessionSummary from '../components/SessionSummary'
 import DrillSummary from '../components/DrillSummary'
-import { buildSession, buildDrillSession, coinReward, type DrillParams } from '../utils/calc-helpers'
+import {
+  buildSession,
+  buildDrillSession,
+  coinReward,
+  type DrillParams,
+} from '../utils/calc-helpers'
 import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
 import {
   applySessionStarMultiplier,
@@ -40,16 +45,20 @@ import { diagnose } from '../utils/calc-diagnose'
 import { parseSignature } from '../utils/calc-ast'
 import { blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
-import {
-  buildBySourceFromLog,
-  buildNewWeakFromLog,
-} from '../utils/calc-session-summary'
+import { buildBySourceFromLog, buildNewWeakFromLog } from '../utils/calc-session-summary'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import { usePracticePendingLifecycle } from '@rosie/core'
 import SessionPrepScreen from '../components/SessionPrepScreen'
-import type { CalcLevel, CalcMode, CalcProblemState, CalcQuestion, CalcTimingMode, QuestionLogEntry } from '@rosie/core'
+import type {
+  CalcLevel,
+  CalcMode,
+  CalcProblemState,
+  CalcQuestion,
+  CalcTimingMode,
+  QuestionLogEntry,
+} from '@rosie/core'
 import {
   calcPendingScopeKey,
   calcSessionDrillKey,
@@ -72,6 +81,7 @@ interface AttemptStat {
   timeMs: number
   /** Whether the first attempt was within the configured time limit. */
   withinLimit: boolean
+  evidenceKind?: 'independent' | 'makeup' | 'recall'
   /** Attribution: which single-op block this question came from. */
   sourceBlockId?: string
   /** Attribution: which mixed-op generator this question came from. */
@@ -79,7 +89,6 @@ interface AttemptStat {
   /** Question display with trailing "= ?" stripped, for wrong-answer review. */
   display?: string
 }
-
 
 export default function CalcSessionPage() {
   const params = useSearchParams()
@@ -219,17 +228,25 @@ export default function CalcSessionPage() {
         // TIME_TARGETS keys are skeleton ids for mixed ops
         if (op) sourceId = op.skeleton
       }
-      return elapsedMs <= effectiveLimitSec({
-        timedAnswerEnabled: settings.timedAnswerEnabled,
-        explicitSeconds: explicit,
-        sourceId,
-      }) * 1000
+      return (
+        elapsedMs <=
+        effectiveLimitSec({
+          timedAnswerEnabled: settings.timedAnswerEnabled,
+          explicitSeconds: explicit,
+          sourceId,
+        }) *
+          1000
+      )
     },
     [settings.timedAnswerEnabled, settings.selectedBlocks, settings.mixedOps],
   )
 
   const sourceKeyForLog = (q: CalcQuestion): string =>
-    q.sourceBlockId ? `block:${q.sourceBlockId}` : q.sourceMixedOpId ? `mixed:${q.sourceMixedOpId}` : 'unknown'
+    q.sourceBlockId
+      ? `block:${q.sourceBlockId}`
+      : q.sourceMixedOpId
+        ? `mixed:${q.sourceMixedOpId}`
+        : 'unknown'
 
   const targetSecForLog = useCallback(
     (q: CalcQuestion): number | null => {
@@ -260,6 +277,18 @@ export default function CalcSessionPage() {
 
   const pushQuestionLog = useCallback(
     (q: CalcQuestion, elapsedMs: number, ok: boolean) => {
+      const previousOccurrences = questionLogRef.current.filter(
+        (entry) => entry.signature === q.signature,
+      ).length
+      const occurrenceInSession = previousOccurrences + 1
+      const previousIndex = questionLogRef.current.findLastIndex(
+        (entry) => entry.signature === q.signature,
+      )
+      const intentionalRepeat =
+        occurrenceInSession > 1 &&
+        (q.selectionReason === 'carried-mistake' ||
+          q.selectionReason === 'same-session-makeup' ||
+          q.selectionReason === 'mastered-recall')
       const entry: QuestionLogEntry = {
         key: sourceKeyForLog(q),
         ms: elapsedMs,
@@ -267,6 +296,12 @@ export default function CalcSessionPage() {
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
         targetSec: targetSecForLog(q),
         label: labelForLog(q),
+        signature: q.signature,
+        selectionReason: q.selectionReason,
+        occurrenceInSession,
+        intentionalRepeat,
+        previousDistance:
+          previousIndex >= 0 ? questionLogRef.current.length - previousIndex - 1 : null,
       }
       questionLogRef.current.push(entry)
     },
@@ -347,7 +382,14 @@ export default function CalcSessionPage() {
     /** Mean per-question time of the PREVIOUS session, in ms (null if none). */
     prevAvgMs: number | null
     /** Per-source performance breakdown for this session. */
-    bySource: { label: string; total: number; firstTryCorrect: number; perMinute: number; avgSec: number; targetSec: number | null }[]
+    bySource: {
+      label: string
+      total: number
+      firstTryCorrect: number
+      perMinute: number
+      avgSec: number
+      targetSec: number | null
+    }[]
     /** Distinct wrong-question displays from this session (final answer wrong), capped. */
     newWeak: string[]
     /** Source labels to focus on next time, weakest-first. */
@@ -545,11 +587,7 @@ export default function CalcSessionPage() {
         // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
         const blockIds = settings.selectedBlocks.map((b) => b.id)
         const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
-        const recallCandidates = await fetchMasteredRecallCandidates(
-          user.id,
-          blockIds,
-          recallSlot,
-        )
+        const recallCandidates = await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot)
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
         // Read from the store snapshot (post-reconcile), not the hook's state.
@@ -576,8 +614,17 @@ export default function CalcSessionPage() {
       attemptsLogRef.current = []
     }
     void init()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, settingsLoading, drillParams, sessionKey, needsPrep, prepConfirmed, snapChecked, pendingSnap])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    user,
+    settingsLoading,
+    drillParams,
+    sessionKey,
+    needsPrep,
+    prepConfirmed,
+    snapChecked,
+    pendingSnap,
+  ])
 
   // Persist in-progress session so mid-exit / refresh can resume.
   useEffect(() => {
@@ -613,12 +660,12 @@ export default function CalcSessionPage() {
     }
   }, [questions, idx, settings.soundEnabled])
 
-  const currentSeconds = questions && idx < questions.length ? secondsForQuestion(questions[idx]) : null
+  const currentSeconds =
+    questions && idx < questions.length ? secondsForQuestion(questions[idx]) : null
   // Clock must be bound to the current idx — otherwise a just-advanced question
   // briefly inherits the previous question's wall and looks already timed out.
   const clockReady = questionStartWall !== 0 && clockBoundIdxRef.current === idx
-  const elapsedSec =
-    clockReady && !feedback ? Math.floor((now - questionStartWall) / 1000) : 0
+  const elapsedSec = clockReady && !feedback ? Math.floor((now - questionStartWall) / 1000) : 0
   const isRelaxedClock = sessionTimingModeRef.current === 'relaxed'
   const remainingSec =
     currentSeconds && currentSeconds > 0
@@ -691,7 +738,12 @@ export default function CalcSessionPage() {
       for (const a of group) {
         state = applyAttempt(
           state,
-          { correct: a.finallyCorrect, timeMs: a.timeMs, withinLimit: a.withinLimit },
+          {
+            correct: a.finallyCorrect,
+            timeMs: a.timeMs,
+            withinLimit: a.withinLimit,
+            evidenceKind: a.evidenceKind,
+          },
           a.withinLimit,
           nextSessionNo,
           today,
@@ -720,7 +772,10 @@ export default function CalcSessionPage() {
     const bySource = buildBySourceFromLog(questionLogRef.current)
     const newWeak = buildNewWeakFromLog(questionLogRef.current)
     const nextFocus = [...bySource]
-      .sort((a, b) => a.firstTryCorrect / Math.max(1, a.total) - b.firstTryCorrect / Math.max(1, b.total))
+      .sort(
+        (a, b) =>
+          a.firstTryCorrect / Math.max(1, a.total) - b.firstTryCorrect / Math.max(1, b.total),
+      )
       .slice(0, 5)
       .map((s) => s.label)
 
@@ -742,7 +797,11 @@ export default function CalcSessionPage() {
     // never confirmed a prep mode, so they stay at the ×1.0 default).
     if (!drillParams && mode === 'daily') {
       const raw = coinsTotalRef.current
-      const finalStars = applySessionStarMultiplier(raw, sessionTimingModeRef.current, sessionBonusSecRef.current)
+      const finalStars = applySessionStarMultiplier(
+        raw,
+        sessionTimingModeRef.current,
+        sessionBonusSecRef.current,
+      )
       coinsTotalRef.current = finalStars
       setCoinsTotal(finalStars)
     }
@@ -861,6 +920,12 @@ export default function CalcSessionPage() {
           wasMistake,
           timeMs: elapsedMs,
           withinLimit: isFirstTry ? withinLimit : false,
+          evidenceKind:
+            q.selectionReason === 'same-session-makeup' || q.selectionReason === 'carried-mistake'
+              ? 'makeup'
+              : q.selectionReason === 'mastered-recall'
+                ? 'recall'
+                : 'independent',
           sourceBlockId: q.sourceBlockId,
           sourceMixedOpId: q.sourceMixedOpId,
         })
@@ -891,6 +956,12 @@ export default function CalcSessionPage() {
         wasMistake,
         timeMs: elapsedMs,
         withinLimit: false,
+        evidenceKind:
+          q.selectionReason === 'same-session-makeup' || q.selectionReason === 'carried-mistake'
+            ? 'makeup'
+            : q.selectionReason === 'mastered-recall'
+              ? 'recall'
+              : 'independent',
         sourceBlockId: q.sourceBlockId,
         sourceMixedOpId: q.sourceMixedOpId,
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
@@ -898,11 +969,11 @@ export default function CalcSessionPage() {
       const inMakeup = isInMakeupPhase(idx, plannedCountRef.current)
       if (!q.isChallenge && mode !== 'mistakes') {
         if (drillParams) {
-          wrongQueueRef.current.push({ ...q })
+          wrongQueueRef.current.push({ ...q, selectionReason: 'same-session-makeup' })
         } else if (!inMakeup) {
           const { pool } = tryEnqueueRetry(
             wrongQueueRef.current,
-            { ...q },
+            { ...q, selectionReason: 'same-session-makeup' },
             maxRetryRef.current,
           )
           wrongQueueRef.current = pool
@@ -955,7 +1026,18 @@ export default function CalcSessionPage() {
     }
     const wasMistake = unresolved.some((m) => m.signature === q.signature)
     settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, '')
-  }, [done, questions, idx, feedback, remainingSec, attemptsForCurrent, unresolved, withinLimitForQuestion, settleQuestion, pushQuestionLog])
+  }, [
+    done,
+    questions,
+    idx,
+    feedback,
+    remainingSec,
+    attemptsForCurrent,
+    unresolved,
+    withinLimitForQuestion,
+    settleQuestion,
+    pushQuestionLog,
+  ])
 
   // Self-grading pads (竖式 / 余数 / 分数) lock + show inline 红/绿 on submit. They
   // run the SAME two-try loop as the number pad: first wrong → retry (竖式 keeps the
@@ -971,7 +1053,15 @@ export default function CalcSessionPage() {
       const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
       if (isCorrect) {
-        settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, userAnswer)
+        settleQuestion(
+          q,
+          true,
+          attemptsForCurrent === 0,
+          elapsedMs,
+          withinLimit,
+          wasMistake,
+          userAnswer,
+        )
         return
       }
       if (settings.immersiveMode) {
@@ -990,7 +1080,15 @@ export default function CalcSessionPage() {
         settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, userAnswer)
       }
     },
-    [idx, attemptsForCurrent, unresolved, settings, settleQuestion, withinLimitForQuestion, pushQuestionLog],
+    [
+      idx,
+      attemptsForCurrent,
+      unresolved,
+      settings,
+      settleQuestion,
+      withinLimitForQuestion,
+      pushQuestionLog,
+    ],
   )
 
   // 竖式: VerticalCalc/DivisionVertical self-grade and emit the typed answer.
@@ -1026,58 +1124,61 @@ export default function CalcSessionPage() {
   // Shared NumberPad settle path — takes an explicit `raw` string rather than closing over
   // `input` state, so the auto-submit path (which fires from onInputChange with the just-typed
   // value) never races a stale `input` that hasn't re-rendered yet.
-  const submitNumberPadAnswer = useCallback((raw: string) => {
-    if (!questions || done || feedback) return
-    const q = questions[idx]
-    const userAns = Number(raw)
-    if (!Number.isFinite(userAns)) return
+  const submitNumberPadAnswer = useCallback(
+    (raw: string) => {
+      if (!questions || done || feedback) return
+      const q = questions[idx]
+      const userAns = Number(raw)
+      if (!Number.isFinite(userAns)) return
 
-    const isCorrect = checkAnswer(raw, q.answer)
-    const wasMistake = unresolved.some((m) => m.signature === q.signature)
+      const isCorrect = checkAnswer(raw, q.answer)
+      const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
-    const elapsedMs = Math.round(performance.now() - questionStartRef.current)
-    const withinLimit = withinLimitForQuestion(q, elapsedMs)
-    if (attemptsForCurrent === 0) {
-      questionTimesRef.current.push(elapsedMs)
-      pushQuestionLog(q, elapsedMs, isCorrect)
-    }
+      const elapsedMs = Math.round(performance.now() - questionStartRef.current)
+      const withinLimit = withinLimitForQuestion(q, elapsedMs)
+      if (attemptsForCurrent === 0) {
+        questionTimesRef.current.push(elapsedMs)
+        pushQuestionLog(q, elapsedMs, isCorrect)
+      }
 
-    if (isCorrect) {
-      settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, raw)
-      return
-    }
+      if (isCorrect) {
+        settleQuestion(q, true, attemptsForCurrent === 0, elapsedMs, withinLimit, wasMistake, raw)
+        return
+      }
 
-    if (settings.immersiveMode) {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
-      return
-    }
+      if (settings.immersiveMode) {
+        settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
+        return
+      }
 
-    // wrong: first miss → retry; second miss → settle as final wrong.
-    // makeup is single-pass: no soft retry when idx >= plannedCount.
-    if (!isInMakeupPhase(idx, plannedCountRef.current) && attemptsForCurrent === 0) {
-      setFeedback('retry')
-      setStreak(0)
-      playSfx('retry', settings.soundEnabled)
-      window.setTimeout(() => {
-        setFeedback(null)
-        setInput('')
-        setAttemptsForCurrent(1)
-      }, 700)
-    } else {
-      settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
-    }
-  }, [
-    questions,
-    done,
-    feedback,
-    idx,
-    attemptsForCurrent,
-    unresolved,
-    settings,
-    settleQuestion,
-    withinLimitForQuestion,
-    pushQuestionLog,
-  ])
+      // wrong: first miss → retry; second miss → settle as final wrong.
+      // makeup is single-pass: no soft retry when idx >= plannedCount.
+      if (!isInMakeupPhase(idx, plannedCountRef.current) && attemptsForCurrent === 0) {
+        setFeedback('retry')
+        setStreak(0)
+        playSfx('retry', settings.soundEnabled)
+        window.setTimeout(() => {
+          setFeedback(null)
+          setInput('')
+          setAttemptsForCurrent(1)
+        }, 700)
+      } else {
+        settleQuestion(q, false, false, elapsedMs, withinLimit, wasMistake, raw)
+      }
+    },
+    [
+      questions,
+      done,
+      feedback,
+      idx,
+      attemptsForCurrent,
+      unresolved,
+      settings,
+      settleQuestion,
+      withinLimitForQuestion,
+      pushQuestionLog,
+    ],
+  )
 
   const handleSubmit = useCallback(() => {
     submitNumberPadAnswer(input)
@@ -1085,24 +1186,27 @@ export default function CalcSessionPage() {
 
   // NumberPad only: as the child types, auto-settle once the input matches the answer
   // (gated by settings.autoSubmitOnMatch) so a correct entry doesn't need an explicit tap.
-  const handleNumberPadInputChange = useCallback((next: string) => {
-    setInput(next)
-    if (!settings.autoSubmitOnMatch) return
-    if (!questions || done) return
-    const q = questions[idx]
-    if (!q) return
-    if (q.answer.kind !== 'int' && q.answer.kind !== 'decimal') return
-    if (feedback) return
-    if (settleLockRef.current) return
-    if (!shouldAutoSubmitNumberPad(next, q.answer)) return
-    settleLockRef.current = true
-    submitNumberPadAnswer(next)
-  }, [settings.autoSubmitOnMatch, questions, done, idx, feedback, submitNumberPadAnswer])
+  const handleNumberPadInputChange = useCallback(
+    (next: string) => {
+      setInput(next)
+      if (!settings.autoSubmitOnMatch) return
+      if (!questions || done) return
+      const q = questions[idx]
+      if (!q) return
+      if (q.answer.kind !== 'int' && q.answer.kind !== 'decimal') return
+      if (feedback) return
+      if (settleLockRef.current) return
+      if (!shouldAutoSubmitNumberPad(next, q.answer)) return
+      settleLockRef.current = true
+      submitNumberPadAnswer(next)
+    },
+    [settings.autoSubmitOnMatch, questions, done, idx, feedback, submitNumberPadAnswer],
+  )
 
   // Compute breakthrough drill summary values from the just-completed session's log.
   // Must use questionLogRef.current — wallet.sessions[0] is stale at this point because
   // recordSession() is async and wallet hasn't re-fetched yet when DrillSummary renders.
-  const breakthroughLog = (done && drillParams?.type === 'breakthrough') ? questionLogRef.current : []
+  const breakthroughLog = done && drillParams?.type === 'breakthrough' ? questionLogRef.current : []
   const btAvgSec =
     breakthroughLog.length > 0
       ? +(breakthroughLog.reduce((a, e) => a + e.ms, 0) / breakthroughLog.length / 1000).toFixed(1)
@@ -1122,18 +1226,19 @@ export default function CalcSessionPage() {
     const avgSecVal = breakthroughLog.reduce((a, e) => a + e.ms, 0) / breakthroughLog.length / 1000
     const accuracy = breakthroughLog.filter((e) => e.ok).length / breakthroughLog.length
     const currentTier = tierOf(avgSecVal, accuracy, tiers)
-    const nextT: Record<string, string> = { entry: '进阶', stable: '高级', fluent: '超高级', auto: '超高级' }
+    const nextT: Record<string, string> = {
+      entry: '进阶',
+      stable: '高级',
+      fluent: '超高级',
+      auto: '超高级',
+    }
     return nextT[currentTier ?? 'entry'] ?? '进阶'
   })()
 
   if (settingsLoading || !snapChecked) {
     return (
       <>
-        <CalcAppHeader
-          title="练习中"
-          backHref="/calc"
-          backLabel="返回"
-        />
+        <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
         <div
           className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
           style={{ color: 'rgba(196,181,253,0.5)' }}
@@ -1147,11 +1252,7 @@ export default function CalcSessionPage() {
   if (needsPrep && !prepConfirmed) {
     return (
       <>
-        <CalcAppHeader
-          title="准备练习"
-          backHref="/calc"
-          backLabel="返回"
-        />
+        <CalcAppHeader title="准备练习" backHref="/calc" backLabel="返回" />
         <SessionPrepScreen
           plannedEstimate={plannedEstimate}
           maxRetry={maxRetryCeiling(plannedEstimate)}
@@ -1169,11 +1270,7 @@ export default function CalcSessionPage() {
   if (!questions || questions.length === 0) {
     return (
       <>
-        <CalcAppHeader
-          title="练习中"
-          backHref="/calc"
-          backLabel="返回"
-        />
+        <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
         <div
           className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
           style={{ color: 'rgba(196,181,253,0.5)' }}
@@ -1191,19 +1288,26 @@ export default function CalcSessionPage() {
     }
     try {
       const ast = parseSignature(currentQ.signature)
-      return typeof ast !== 'number' && typeof ast.left === 'number' && typeof ast.right === 'number'
+      return (
+        typeof ast !== 'number' && typeof ast.left === 'number' && typeof ast.right === 'number'
+      )
     } catch {
       return false
     }
   })()
-  const questionForStage = answerModeOverride?.idx === idx
-    ? { ...currentQ, answerMode: answerModeOverride.mode }
-    : currentQ
+  const questionForStage =
+    answerModeOverride?.idx === idx
+      ? { ...currentQ, answerMode: answerModeOverride.mode }
+      : currentQ
   const planned = plannedCount || questions.length
-  const stageDisabled = done || (!settings.immersiveMode && (questionForStage.answerMode === 'vertical' ? feedback === 'wrong' : !!feedback))
-  const padKey = settings.immersiveMode || questionForStage.answerMode === 'vertical'
-    ? String(idx)
-    : `${idx}:${attemptsForCurrent}`
+  const stageDisabled =
+    done ||
+    (!settings.immersiveMode &&
+      (questionForStage.answerMode === 'vertical' ? feedback === 'wrong' : !!feedback))
+  const padKey =
+    settings.immersiveMode || questionForStage.answerMode === 'vertical'
+      ? String(idx)
+      : `${idx}:${attemptsForCurrent}`
 
   return (
     <>
@@ -1262,6 +1366,14 @@ export default function CalcSessionPage() {
           lastResult={lastResult}
         />
 
+        {(currentQ.selectionReason === 'coverage' ||
+          currentQ.selectionReason === 'carried-mistake' ||
+          currentQ.selectionReason === 'same-session-makeup') && (
+          <div className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 text-[11px] font-bold text-cyan-200">
+            {currentQ.selectionReason === 'coverage' ? '新题' : '补练'}
+          </div>
+        )}
+
         <CalcQuestionStage
           padKey={padKey}
           question={questionForStage}
@@ -1279,66 +1391,84 @@ export default function CalcSessionPage() {
           feedback={feedback}
           revealAnswer={revealAnswer}
           attempt={attemptsForCurrent}
-          onSwitchToVertical={canSwitchAnswerMode ? () => {
-            setInput('')
-            setAnswerModeOverride({ idx, mode: 'vertical' })
-          } : undefined}
-          onSwitchToPad={canSwitchAnswerMode ? () => {
-            setInput('')
-            setAnswerModeOverride({ idx, mode: 'pad' })
-          } : undefined}
+          onSwitchToVertical={
+            canSwitchAnswerMode
+              ? () => {
+                  setInput('')
+                  setAnswerModeOverride({ idx, mode: 'vertical' })
+                }
+              : undefined
+          }
+          onSwitchToPad={
+            canSwitchAnswerMode
+              ? () => {
+                  setInput('')
+                  setAnswerModeOverride({ idx, mode: 'pad' })
+                }
+              : undefined
+          }
         />
       </main>
 
       {showChallengeBanner && <ChallengeBanner coins={currentQ.coinBase} />}
 
-      {done && finalStats && (
-        drillParams ? (
+      {done &&
+        finalStats &&
+        (drillParams ? (
           <DrillSummary
-            {...(drillParams.type === 'weak-formulas' ? {
-              type: 'weak-formulas' as const,
-              problemStates: loadedStatesRef.current,
-              targetSignatures: drillTargetSignatures,
-              round: drillRound,
-              onContinue: () => {
-                // Reset session state so the init useEffect re-runs for the next round.
-                void clearCalcPendingEverywhere(user?.id, mode, drillKey)
-                // Init reads this state, not storage — without it the next round
-                // restores the round that just finished.
-                setPendingSnap(null)
-                initRef.current = false
-                clockBoundIdxRef.current = -1
-                setQuestions(null)
-                setIdx(0)
-                setDone(false)
-                const next = new URLSearchParams({ drill: 'weak-formulas', round: String(drillRound + 1) })
-                router.replace(`/calc/session?${next.toString()}`)
-              },
-              onExit: () => router.push('/calc/report'),
-            } : {
-              type: 'breakthrough' as const,
-              blockLabel: drillParams.blockId ? (blockById(drillParams.blockId)?.label ?? '') : '',
-              avgSec: btAvgSec,
-              targetSec: btTargetSec,
-              tierLabel: btTierLabel,
-              onRetry: () => {
-                if (drillParams.blockId) {
-                  // Reset session state so the init useEffect re-runs.
-                  // sessionKey bump is required here because URL doesn't change (same blockId),
-                  // so drillParams won't change and the useEffect won't re-fire without it.
-                  void clearCalcPendingEverywhere(user?.id, mode, drillKey)
-                  setPendingSnap(null)
-                  initRef.current = false
-                  clockBoundIdxRef.current = -1
-                  setQuestions(null)
-                  setIdx(0)
-                  setDone(false)
-                  setSessionKey((k) => k + 1)
-                  router.replace(`/calc/session?drill=breakthrough&blockId=${drillParams.blockId}`)
+            {...(drillParams.type === 'weak-formulas'
+              ? {
+                  type: 'weak-formulas' as const,
+                  problemStates: loadedStatesRef.current,
+                  targetSignatures: drillTargetSignatures,
+                  round: drillRound,
+                  onContinue: () => {
+                    // Reset session state so the init useEffect re-runs for the next round.
+                    void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+                    // Init reads this state, not storage — without it the next round
+                    // restores the round that just finished.
+                    setPendingSnap(null)
+                    initRef.current = false
+                    clockBoundIdxRef.current = -1
+                    setQuestions(null)
+                    setIdx(0)
+                    setDone(false)
+                    const next = new URLSearchParams({
+                      drill: 'weak-formulas',
+                      round: String(drillRound + 1),
+                    })
+                    router.replace(`/calc/session?${next.toString()}`)
+                  },
+                  onExit: () => router.push('/calc/report'),
                 }
-              },
-              onExit: () => router.push('/calc/report'),
-            })}
+              : {
+                  type: 'breakthrough' as const,
+                  blockLabel: drillParams.blockId
+                    ? (blockById(drillParams.blockId)?.label ?? '')
+                    : '',
+                  avgSec: btAvgSec,
+                  targetSec: btTargetSec,
+                  tierLabel: btTierLabel,
+                  onRetry: () => {
+                    if (drillParams.blockId) {
+                      // Reset session state so the init useEffect re-runs.
+                      // sessionKey bump is required here because URL doesn't change (same blockId),
+                      // so drillParams won't change and the useEffect won't re-fire without it.
+                      void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+                      setPendingSnap(null)
+                      initRef.current = false
+                      clockBoundIdxRef.current = -1
+                      setQuestions(null)
+                      setIdx(0)
+                      setDone(false)
+                      setSessionKey((k) => k + 1)
+                      router.replace(
+                        `/calc/session?drill=breakthrough&blockId=${drillParams.blockId}`,
+                      )
+                    }
+                  },
+                  onExit: () => router.push('/calc/report'),
+                })}
           />
         ) : (
           <SessionSummary
@@ -1397,8 +1527,7 @@ export default function CalcSessionPage() {
               setSessionKey((k) => k + 1)
             }}
           />
-        )
-      )}
+        ))}
     </>
   )
 }

@@ -416,6 +416,19 @@ export type ErrorTag =
   | 'formula_misuse'
   | 'estimation_off'
 
+export type CalcSelectionReason =
+  | 'coverage'
+  | 'weak'
+  | 'lagging'
+  | 'maintenance'
+  | 'next-difficulty'
+  | 'prerequisite-recovery'
+  | 'mastered-recall'
+  | 'carried-mistake'
+  | 'same-session-makeup'
+  | 'random-fill'
+  | 'fallback'
+
 export interface CalcQuestion {
   display: string // "3 + 5 × 2 = ?"
   signature: string // canonical: "add(3,mul(5,2))"
@@ -430,26 +443,28 @@ export interface CalcQuestion {
   sourceBlockId?: string
   /** Attribution: which mixed-op generator produced this question (set by buildSession). */
   sourceMixedOpId?: string
+  /** Why the adaptive scheduler selected this question. */
+  selectionReason?: CalcSelectionReason
   /** How this question is answered. Absent/'pad' = number pad; 'vertical' = column (竖式) layout. */
   answerMode?: 'pad' | 'vertical'
 }
 
 export type CalcSkeletonId =
-  | 'as'          // 加减混合
-  | 'md'          // 乘除混合
-  | 'asm'         // 加减与乘法
-  | 'asmd'        // 加减乘除全混合
-  | 'as_m_paren'  // 加减与乘法·带括号
-  | 'md_paren'    // 乘除·带括号
-  | 'asmd_paren'  // 加减乘除·带括号
+  | 'as' // 加减混合
+  | 'md' // 乘除混合
+  | 'asm' // 加减与乘法
+  | 'asmd' // 加减乘除全混合
+  | 'as_m_paren' // 加减与乘法·带括号
+  | 'md_paren' // 乘除·带括号
+  | 'asmd_paren' // 加减乘除·带括号
 
 export interface MixedOp {
-  id: string            // uuid
+  id: string // uuid
   skeleton: CalcSkeletonId
-  blockIds: string[]    // 选中的积木块 ID
+  blockIds: string[] // 选中的积木块 ID
   enabled: boolean
   label?: string
-  count: number         // 精准模式下的题量
+  count: number // 精准模式下的题量
   seconds: number | null // 每题目标秒数；null=未确认 · 0=不限 · >0=限时
 }
 
@@ -465,19 +480,21 @@ export type CalcCountMode = 'auto' | 'manual'
 export type CalcTimingMode = 'relaxed' | 'strict' | 'bonus'
 
 export interface CalcSettings {
-  countMode: CalcCountMode   // 'auto' 全局总量加权 / 'manual' 按题型
+  countMode: CalcCountMode // 'auto' 全局总量加权 / 'manual' 按题型
   selectedBlocks: BlockSel[] // 单运算练习选中的积木块（内联 count/seconds）
-  mixedOps: MixedOp[]        // 编排出的混合运算
+  mixedOps: MixedOp[] // 编排出的混合运算
   soundEnabled: boolean
   includeInverse: boolean
   verticalForBigNumbers: boolean
   timedAnswerEnabled: boolean // 总开关：关闭时不限时、设置页不显示每题型限时
-  immersiveMode: boolean     // 沉浸：无答题反馈，提交后直接下一题（错题仍进补练）
-  lastCount: number          // auto 模式的全局总题量 (10/20/30/50/100)
-  sessionCounter: number     // 每次 session 完成自增
+  immersiveMode: boolean // 沉浸：无答题反馈，提交后直接下一题（错题仍进补练）
+  lastCount: number // auto 模式的全局总题量 (10/20/30/50/100)
+  sessionCounter: number // 每次 session 完成自增
   timingMode: CalcTimingMode // 默认会话计时模式：宽松 / 严格 / 自定义加成
-  bonusSec: number           // 自定义加成秒数（0–15，仅 bonus 模式）
-  autoSubmitOnMatch: boolean   // 数字键盘答对即过；默认 true
+  bonusSec: number // 自定义加成秒数（0–15，仅 bonus 模式）
+  autoSubmitOnMatch: boolean // 数字键盘答对即过；默认 true
+  /** Parent-authorized expansion beyond selected blocks after prerequisites are ready. */
+  adaptiveExpansionEnabled: boolean
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -490,9 +507,15 @@ export type CalcProblemStatus = 'active' | 'lagging' | 'mastered' | 'forced' | '
 export interface QuestionAttempt {
   correct: boolean
   timeMs: number
+  /** Independent first exposure, deliberate make-up, or spaced mastered recall. */
+  evidenceKind?: 'independent' | 'makeup' | 'recall'
   /** Whether the first attempt landed within the configured time limit.
    *  Optional for backward compat with rows written before Phase 4. */
   withinLimit?: boolean
+  /** Session ordinal for cross-session evidence; absent on legacy attempts. */
+  sessionNo?: number
+  /** Local practice date (YYYY-MM-DD) for cross-day mastery evidence. */
+  date?: string
 }
 
 export interface CalcProblemState {
@@ -596,6 +619,16 @@ export interface QuestionLogEntry {
    * `ok=false`, `finallyOk=true`. Weak list must use `!finallyOk`, not `!ok`.
    */
   finallyOk?: boolean
+  /** Canonical formula identity for coverage and repeat auditing. */
+  signature?: string
+  /** Why the scheduler selected this question. */
+  selectionReason?: CalcSelectionReason
+  /** 1-based occurrence of this signature in the session log. */
+  occurrenceInSession?: number
+  /** True when a repeated occurrence was pedagogically scheduled. */
+  intentionalRepeat?: boolean
+  /** Number of intervening questions since the previous same signature. */
+  previousDistance?: number | null
 }
 
 export interface CalcSession {
@@ -660,9 +693,9 @@ export type ReinforcementPhase = false | 'half-only' | 'eaten-only' | 'both'
 
 export type RescueRole =
   | 'flashcard'
-  | 'reinforce-step1'   // 被吃阶梯：A 类识别桥
-  | 'reinforce-step2'   // 被吃阶梯：原题型再考
-  | 'reinforce-half'    // 半对补练（同题型）
+  | 'reinforce-step1' // 被吃阶梯：A 类识别桥
+  | 'reinforce-step2' // 被吃阶梯：原题型再考
+  | 'reinforce-half' // 半对补练（同题型）
 
 export interface QuizQuestion {
   word: WordEntry
