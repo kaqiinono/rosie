@@ -91,3 +91,4 @@ export {
   findManifestByHref,
   findManifestByProblemId,
 } from './server/tools/resolve-links'
+export { resolveMathProblemId } from './server/tools/lookup-passage'

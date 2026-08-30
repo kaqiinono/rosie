@@ -57,16 +57,16 @@ export function lookupMathProblem(problemId: string): MathProblemLookup | undefi
   if (parts.length >= 3 && /^\d+$/.test(parts[0]!) && /^\d+$/.test(parts[1]!)) {
     const lessonKey = `${parts[0]}-${parts[1]}`
     const shortId = parts.slice(2).join('-')
-    const short = MATH_PROBLEM_BY_ID.get(shortId)
-    if (short?.lessonId === lessonKey) return short
+    const normalized = MATH_PROBLEM_BY_ID.get(`${lessonKey}-${shortId}`)
+    if (normalized) return normalized
   }
 
   const legacyPrefix = parts[0]!
   const lessonKey = LEGACY_TO_LESSON_KEY[legacyPrefix]
   if (lessonKey && parts.length >= 2) {
     const shortId = parts.slice(1).join('-')
-    const short = MATH_PROBLEM_BY_ID.get(shortId)
-    if (short?.lessonId === lessonKey) return short
+    const normalized = MATH_PROBLEM_BY_ID.get(`${lessonKey}-${shortId}`)
+    if (normalized) return normalized
   }
 
   return undefined

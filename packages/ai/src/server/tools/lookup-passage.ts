@@ -1,6 +1,28 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { KnowledgeSearchHit, AgentBlock } from '../../types'
 
+export function resolveMathProblemId(hit: KnowledgeSearchHit): string {
+  const sourceRef =
+    typeof hit.metadata.sourceRef === 'string' ? hit.metadata.sourceRef : undefined
+  const sourceProblemId = sourceRef?.startsWith('math:problem:')
+    ? sourceRef.slice('math:problem:'.length)
+    : undefined
+  const metadataProblemId =
+    typeof hit.metadata.problemId === 'string' ? hit.metadata.problemId : undefined
+  const rawProblemId = metadataProblemId ?? sourceProblemId
+
+  if (rawProblemId) {
+    const unwrapped = rawProblemId.startsWith('math:problem:')
+      ? rawProblemId.slice('math:problem:'.length)
+      : rawProblemId
+    const lessonId = typeof hit.metadata.lessonId === 'string' ? hit.metadata.lessonId : undefined
+    if (lessonId && !unwrapped.includes('-')) return `${lessonId}-${unwrapped}`
+    return unwrapped
+  }
+
+  return sourceRef ?? `document:${hit.documentId}`
+}
+
 export function buildPassageBlockFromHit(hit: KnowledgeSearchHit): AgentBlock | null {
   const sourceRef =
     typeof hit.metadata.sourceRef === 'string'
@@ -82,7 +104,7 @@ export async function buildMathSolutionFromHit(
       ? hit.metadata.sourceRef
       : `document:${hit.documentId}`
 
-  const problemId = typeof hit.metadata.problemId === 'string' ? hit.metadata.problemId : sourceRef
+  const problemId = resolveMathProblemId(hit)
 
   const title = typeof hit.metadata.title === 'string' ? hit.metadata.title : '数学题解'
 
@@ -129,8 +151,8 @@ export function buildMathProblemBlockFromHit(hit: KnowledgeSearchHit): AgentBloc
     typeof hit.metadata.sourceRef === 'string'
       ? hit.metadata.sourceRef
       : `document:${hit.documentId}`
-  const problemId = typeof hit.metadata.problemId === 'string' ? hit.metadata.problemId : undefined
-  if (!problemId) return null
+  const problemId = resolveMathProblemId(hit)
+  if (problemId.startsWith('document:')) return null
   return {
     type: 'math_problem',
     sourceRef,
