@@ -653,7 +653,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "fèn",
       "wèi",
       "táo",
-      "qū",
+      "qǔ",
       "zhě",
       "fú",
       "pū",
@@ -677,7 +677,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "zǒng",
       "gěi",
       "sù",
-      "qū",
+      "qǔ",
       "míng",
       "xiāng"
     ]

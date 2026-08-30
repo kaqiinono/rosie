@@ -8,6 +8,7 @@ export interface CharQuizItem {
   char: string
   pinyin: string
   charKey: string
+  phrases?: string[]
 }
 
 interface CharQuizRunnerProps {
@@ -91,8 +92,20 @@ export default function CharQuizRunner({ items, pinyinPool, onComplete }: CharQu
         </p>
         <p className="mt-3 text-sm text-slate-500">选出正确的拼音</p>
         <div className="mt-4 flex justify-center">
-          <span className="cn-grid-cell">{current.char}</span>
+          <span className="cn-grid-cell cn-grid-cell-quiz">{current.char}</span>
         </div>
+        {current.phrases && current.phrases.length > 0 && (
+          <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="组词提示">
+            {current.phrases.slice(0, 3).map((phrase) => (
+              <span
+                key={phrase}
+                className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-base font-extrabold text-sky-900"
+              >
+                {phrase}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">

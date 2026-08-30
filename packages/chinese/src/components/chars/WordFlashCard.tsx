@@ -11,7 +11,7 @@ interface WordFlashCardProps {
   index?: number
 }
 
-const CARD_MIN_H = 200
+const CARD_MIN_H = 260
 
 const FRONT_BG: CSSProperties = { background: 'linear-gradient(160deg, #f0fdf4 0%, #dcfce7 100%)' }
 const BACK_BG: CSSProperties = { background: 'linear-gradient(160deg, #fdf4ff 0%, #fae8ff 100%)' }
@@ -33,7 +33,7 @@ export default function WordFlashCard({
   }, [unit, unitLessonNo, bookLessonNo])
 
   const wordSize =
-    word.length >= 4 ? 'text-2xl' : word.length === 3 ? 'text-3xl' : 'text-4xl'
+    word.length >= 4 ? 'text-3xl' : word.length === 3 ? 'text-4xl' : 'text-5xl'
 
   const frontFace = (
     <div
@@ -48,10 +48,10 @@ export default function WordFlashCard({
       }}
     >
       <div className="flex shrink-0 flex-wrap gap-1">
-        <span className="min-w-0 rounded-full border border-emerald-300/50 bg-emerald-100/80 px-2 py-0.5 text-[9.5px] leading-tight font-extrabold tracking-wide text-emerald-800">
+        <span className="min-w-0 rounded-full border border-emerald-300/50 bg-emerald-100/80 px-2.5 py-1 text-xs leading-tight font-extrabold tracking-wide text-emerald-800">
           {infoLabel}
         </span>
-        <span className="shrink-0 rounded-full bg-teal-100 px-2 py-0.5 text-[9.5px] font-bold whitespace-nowrap text-teal-700">
+        <span className="shrink-0 rounded-full bg-teal-100 px-2.5 py-1 text-xs font-bold whitespace-nowrap text-teal-700">
           词语
         </span>
       </div>
@@ -87,8 +87,8 @@ export default function WordFlashCard({
       }}
     >
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-1 text-center">
-        <p className="text-lg leading-relaxed font-black text-fuchsia-900">{pinyin}</p>
-        <p className="text-[10px] font-semibold text-fuchsia-800/60">看拼音写词语</p>
+        <p className="text-2xl leading-relaxed font-black text-fuchsia-900">{pinyin}</p>
+        <p className="text-sm font-semibold text-fuchsia-800/60">看拼音写词语</p>
       </div>
 
       {lessonTitle && (

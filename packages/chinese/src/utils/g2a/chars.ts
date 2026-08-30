@@ -4283,7 +4283,7 @@ export const CHARS: CharEntry[] = [
   },
   {
     "char": "曲",
-    "pinyin": "qū",
+    "pinyin": "qǔ",
     "pinyinInitial": "Q",
     "grade": 2,
     "semester": "上",

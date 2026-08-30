@@ -172,6 +172,7 @@ export interface DayQuizItem {
   char: string
   pinyin: string
   charKey: string
+  phrases: string[]
   track: CharTrack
   lessonTitle: string
   isReview?: boolean
@@ -251,7 +252,16 @@ export function buildDayQuizItems(
     seen.add(dedupe)
     const ch = charFromKey(key)
     const py = resolvePinyin(lessonGroups, charByKey, lessonKey, key, ch, track, isReview)
-    items.push({ char: ch, pinyin: py, charKey: key, track, lessonTitle, isReview })
+    const profile = charByKey.get(key) ?? findCharProfile(charByKey, ch)
+    items.push({
+      char: ch,
+      pinyin: py,
+      charKey: key,
+      phrases: profile?.phrases ?? [],
+      track,
+      lessonTitle,
+      isReview,
+    })
   }
 
   for (const key of newRecognizeKeys) push(key, 'recognize', false)

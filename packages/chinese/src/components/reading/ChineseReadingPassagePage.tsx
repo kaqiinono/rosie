@@ -123,7 +123,9 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
         bookLessonNo={display?.bookLessonNo ?? null}
         paragraphs={passage.paragraphs}
         recognize={group?.recognize ?? []}
+        recognizePinyin={group?.recognizePinyin ?? []}
         write={group?.write ?? []}
+        writePinyin={group?.writePinyin ?? []}
         recallPhrases={lessonRow?.recallPhrases ?? []}
         headerStart={
           <Link

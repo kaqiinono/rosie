@@ -382,7 +382,7 @@ const CandySVG: FC<CandySVGProps> = ({ cfg, size = 80 }) => {
       height={size}
       viewBox="0 0 80 80"
       xmlns={ns}
-      style={{ display: 'block', overflow: 'visible' }}
+      style={{ display: 'block', overflow: 'visible', pointerEvents: 'none' }}
       aria-hidden="true"
     >
       <defs>
@@ -543,18 +543,6 @@ const CandyButton: FC<CandyButtonProps> = ({
     onClick?.(cfg.id)
   }, [cfg.id, disabled, handleBurst, onClick])
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        if (disabled) return
-        e.preventDefault()
-        handleBurst()
-        onClick?.(cfg.id)
-      }
-    },
-    [cfg.id, disabled, handleBurst, onClick],
-  )
-
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
@@ -566,9 +554,14 @@ const CandyButton: FC<CandyButtonProps> = ({
         disabled={disabled}
         aria-label={label ?? cfg.emoji ?? cfg.id}
         onClick={handleClick}
-        onKeyDown={handleKeyDown}
         onAnimationEnd={() => setPopping(false)}
         style={{
+          position: 'relative',
+          zIndex: 1,
+          width: size,
+          height: size,
+          minWidth: size,
+          minHeight: size,
           cursor: disabled ? 'default' : 'pointer',
           border: 'none',
           outline: 'none',
@@ -576,6 +569,7 @@ const CandyButton: FC<CandyButtonProps> = ({
           padding: 0,
           display: 'block',
           userSelect: 'none',
+          touchAction: 'manipulation',
           WebkitTapHighlightColor: 'transparent',
           animation: popping ? 'candy-pop 0.26s ease' : undefined,
           transition: 'filter 0.15s, opacity 0.15s',

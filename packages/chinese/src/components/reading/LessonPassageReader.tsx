@@ -1,13 +1,15 @@
 'use client'
 
-import { useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import clsx from 'clsx'
+import { useChineseContext } from '../../context/ChineseContext'
 import type { ChineseBookSlug } from '../../utils/chinese-books'
 import {
   annotatePassageParagraph,
   type CharMarkKind,
 } from '../../utils/chinese-lesson-passage-helpers'
 import { speakChinese } from '../../utils/speak-chinese'
+import CharFlashCard from '../chars/CharFlashCard'
 
 const MARK_CLASS: Record<CharMarkKind, string> = {
   plain: '',
@@ -24,7 +26,9 @@ export type LessonPassageReaderProps = {
   bookLessonNo: number | null
   paragraphs: string[]
   recognize: string[]
+  recognizePinyin?: string[]
   write: string[]
+  writePinyin?: string[]
   recallPhrases: string[]
   /** Optional left control in header (e.g. back link). If omitted, only speak button shows. */
   headerStart?: ReactNode
@@ -38,13 +42,28 @@ export default function LessonPassageReader({
   bookLessonNo,
   paragraphs,
   recognize,
+  recognizePinyin = [],
   write,
+  writePinyin = [],
   recallPhrases,
   headerStart,
   footer,
 }: LessonPassageReaderProps) {
+  const { getCharProfile, charKeyForBook } = useChineseContext()
+  const [selectedChar, setSelectedChar] = useState<string | null>(null)
+  const [cardFlipped, setCardFlipped] = useState(true)
   const recognizeSet = useMemo(() => new Set(recognize), [recognize])
   const writeSet = useMemo(() => new Set(write), [write])
+
+  const selectedProfile = selectedChar
+    ? getCharProfile(charKeyForBook(selectedChar))
+    : undefined
+  const selectedPinyin = selectedChar
+    ? recognizePinyin[recognize.indexOf(selectedChar)] ||
+      writePinyin[write.indexOf(selectedChar)] ||
+      selectedProfile?.pinyin ||
+      ''
+    : ''
 
   const speakAll = useCallback(() => {
     speakChinese(paragraphs.join('，'))
@@ -90,32 +109,39 @@ export default function LessonPassageReader({
         </div>
       </div>
 
-      {/* Passage body — tap a highlighted char run to hear it */}
+      {/* Passage body — highlighted chars open their full character card. */}
       <article className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
-        <div className="space-y-3.5">
+        <div className="space-y-5">
           {paragraphs.map((para, i) => {
             const segments = annotatePassageParagraph(para, recognizeSet, writeSet)
             return (
               <p
                 key={`${lessonKey}-p-${i}`}
-                className="text-lg leading-loose tracking-wide text-slate-800"
+                className="text-xl leading-[2.15] tracking-wide text-slate-800 sm:text-2xl sm:leading-[2.05]"
               >
                 {segments.map((seg, j) =>
                   seg.kind === 'plain' ? (
                     <span key={`${i}-${j}`}>{seg.text}</span>
                   ) : (
-                    <button
-                      key={`${i}-${j}`}
-                      type="button"
-                      onClick={() => speakChinese(seg.text)}
-                      className={clsx(
-                        MARK_CLASS[seg.kind],
-                        'cursor-pointer rounded px-0.5 transition hover:brightness-95',
-                      )}
-                      title={`朗读「${seg.text}」`}
-                    >
-                      {seg.text}
-                    </button>
+                    [...seg.text].map((char, charIndex) => (
+                      <button
+                        key={`${i}-${j}-${charIndex}`}
+                        type="button"
+                        onClick={() => {
+                          setSelectedChar(char)
+                          setCardFlipped(true)
+                          speakChinese(char)
+                        }}
+                        className={clsx(
+                          MARK_CLASS[seg.kind],
+                          'mx-0.5 inline-flex min-h-[1.65em] min-w-[1.65em] cursor-pointer items-center justify-center rounded-lg px-1 align-middle font-extrabold transition hover:brightness-95 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2',
+                        )}
+                        title={`查看「${char}」的生字卡片`}
+                        aria-label={`查看生字「${char}」详情`}
+                      >
+                        {char}
+                      </button>
+                    ))
                   ),
                 )}
               </p>
@@ -126,7 +152,7 @@ export default function LessonPassageReader({
         {recallPhrases.length > 0 && (
           <div className="mt-4 rounded-xl bg-amber-50 px-3 py-2">
             <p className="text-[10px] font-bold text-amber-800">读一读，记一记</p>
-            <p className="mt-1 text-sm leading-relaxed text-amber-900">
+            <p className="mt-1 text-lg leading-relaxed font-semibold text-amber-900">
               {recallPhrases.join(' · ')}
             </p>
           </div>
@@ -134,6 +160,48 @@ export default function LessonPassageReader({
       </article>
 
       {footer}
+
+      {selectedChar && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`生字「${selectedChar}」详情`}
+          onClick={() => setSelectedChar(null)}
+        >
+          <div className="w-full max-w-sm" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedChar(null)}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white text-xl font-black text-slate-700 shadow-lg"
+                aria-label="关闭生字卡片"
+              >
+                ×
+              </button>
+            </div>
+            <CharFlashCard
+              data={{
+                char: selectedChar,
+                pinyin: selectedPinyin,
+                unit: unit ?? 0,
+                bookLessonNo,
+                lessonTitle,
+                radical: selectedProfile?.radical,
+                radicalName: selectedProfile?.radicalName,
+                structure: selectedProfile?.structure,
+                phrases: selectedProfile?.phrases,
+                strokeCount: selectedProfile?.strokeCount,
+              }}
+              flipped={cardFlipped}
+              onFlip={() => setCardFlipped((value) => !value)}
+            />
+            <p className="mt-3 text-center text-sm font-bold text-white">
+              点击卡片可查看正反面
+            </p>
+          </div>
+        </div>
+      )}
     </>
   )
 }

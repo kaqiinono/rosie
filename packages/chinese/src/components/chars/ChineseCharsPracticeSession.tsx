@@ -197,7 +197,7 @@ export default function ChineseCharsPracticeSession() {
   const searchParams = useSearchParams()
   const { user } = useAuth()
   const { setIsImmersive } = useImmersive()
-  const { awardStars, session: starSession } = useStarHud()
+  const { awardStars } = useStarHud()
   const { lessons, lessonGroups, charByKey, getCharProfile, recordBatch, isCharDataReady, bookSlug } =
     useChineseContext()
   const { plans, appendLessonRuns, advanceAfterSession } = useChineseRoadmapPlan(user)
@@ -253,6 +253,7 @@ export default function ChineseCharsPracticeSession() {
   const [plan, setPlan] = useState<PracticeSessionPlan | null>(null)
   const hydrateDoneRef = useRef(false)
   const planSettleDoneRef = useRef(false)
+  const rewardSettleDoneRef = useRef(false)
   const sessionStartedAtRef = useRef<string>(new Date().toISOString())
 
   const [phase, setPhase] = useState<PracticePhase>(() =>
@@ -260,6 +261,8 @@ export default function ChineseCharsPracticeSession() {
   )
   const [cardIdx, setCardIdx] = useState(0)
   const [charQIdx, setCharQIdx] = useState(0)
+  const [charRetryIds, setCharRetryIds] = useState<string[]>([])
+  const [isCharRetryRound, setIsCharRetryRound] = useState(false)
   const [phraseIdx, setPhraseIdx] = useState(0)
   const [poemIdx, setPoemIdx] = useState(0)
   const [accIdx, setAccIdx] = useState(0)
@@ -284,6 +287,7 @@ export default function ChineseCharsPracticeSession() {
   useEffect(() => {
     hydrateDoneRef.current = false
     planSettleDoneRef.current = false
+    rewardSettleDoneRef.current = false
     setPlan(null)
   }, [scopeKey, bookSlug])
 
@@ -297,6 +301,8 @@ export default function ChineseCharsPracticeSession() {
     setPhase(cardPreviewEnabled ? 'cards' : 'chars')
     setCardIdx(0)
     setCharQIdx(0)
+    setCharRetryIds([])
+    setIsCharRetryRound(false)
     setPhraseIdx(0)
     setPoemIdx(0)
     setAccIdx(0)
@@ -310,6 +316,7 @@ export default function ChineseCharsPracticeSession() {
     setByLessonStats({})
     sessionStartedAtRef.current = new Date().toISOString()
     planSettleDoneRef.current = false
+    rewardSettleDoneRef.current = false
 
     void (async () => {
       const snap = await resolveChinesePracticeSnapshot(
@@ -412,10 +419,7 @@ export default function ChineseCharsPracticeSession() {
 
   // Persist mid-session progress (same browser tab / refresh).
   useEffect(() => {
-    if (!plan || phase === 'done') {
-      if (phase === 'done') void clearChinesePendingEverywhere(user?.id, scopeKey)
-      return
-    }
+    if (!plan || phase === 'done') return
     writeChinesePracticeSnapshot({
       version: CHINESE_PRACTICE_SNAPSHOT_VERSION,
       date: todayStr(),
@@ -503,18 +507,36 @@ export default function ChineseCharsPracticeSession() {
   }, [])
 
   const awardMoon = useCallback(
-    async (amount: number, correct: boolean) => {
+    (amount: number, correct: boolean) => {
       setCorrectCounts((prev) => ({
         total: prev.total + 1,
         correct: prev.correct + (correct ? 1 : 0),
       }))
       if (correct && amount > 0) {
         setEarnedMoons((m) => m + amount)
-        await awardStars('red', amount, { silent: true })
       }
     },
-    [awardStars],
+    [],
   )
+
+  // Rewards stay in the local practice snapshot while answering. Persist the
+  // whole session in one request only after every phase is complete.
+  useEffect(() => {
+    if (phase !== 'done' || !plan || rewardSettleDoneRef.current) return
+    rewardSettleDoneRef.current = true
+
+    void (async () => {
+      try {
+        if (earnedMoons > 0) {
+          await awardStars('red', earnedMoons, { silent: true })
+        }
+        await clearChinesePendingEverywhere(user?.id, scopeKey)
+      } catch (err) {
+        console.error('[chinese_practice] reward settle failed', err)
+        rewardSettleDoneRef.current = false
+      }
+    })()
+  }, [awardStars, earnedMoons, phase, plan, scopeKey, user?.id])
 
   // Plan settle: write lesson runs + advance pointer once when reaching done.
   useEffect(() => {
@@ -662,7 +684,13 @@ export default function ChineseCharsPracticeSession() {
   }, [isCharDataReady, plan, phase, goNextPhase, cardPreviewEnabled])
 
   const currentCard = plan?.cards[cardIdx]
-  const currentCharQ = plan?.charQuestions[charQIdx] as CharPracticeQuestion | undefined
+  const activeCharQuestions = useMemo(() => {
+    if (!plan) return []
+    if (!isCharRetryRound) return plan.charQuestions
+    const retrySet = new Set(charRetryIds)
+    return plan.charQuestions.filter((question) => retrySet.has(question.id))
+  }, [charRetryIds, isCharRetryRound, plan])
+  const currentCharQ = activeCharQuestions[charQIdx] as CharPracticeQuestion | undefined
   const currentPhrase = plan?.phraseItems[phraseIdx]
   const currentPoem = plan?.poems[poemIdx]
   const currentAcc = plan?.accumulationItems[accIdx]
@@ -713,13 +741,20 @@ export default function ChineseCharsPracticeSession() {
   const advanceCharQuestion = useCallback(() => {
     if (!plan) return
     clearQuestionFeedback()
-    if (charQIdx + 1 >= plan.charQuestions.length) {
+    if (charQIdx + 1 >= activeCharQuestions.length) {
+      if (!isCharRetryRound && charRetryIds.length > 0) {
+        setIsCharRetryRound(true)
+        setCharQIdx(0)
+        return
+      }
       goNextPhase('chars')
       setCharQIdx(0)
+      setIsCharRetryRound(false)
+      setCharRetryIds([])
     } else {
       setCharQIdx((i) => i + 1)
     }
-  }, [charQIdx, clearQuestionFeedback, goNextPhase, plan])
+  }, [activeCharQuestions.length, charQIdx, charRetryIds.length, clearQuestionFeedback, goNextPhase, isCharRetryRound, plan])
 
   const advancePhraseQuestion = useCallback(() => {
     if (!plan) return
@@ -790,7 +825,7 @@ export default function ChineseCharsPracticeSession() {
   }, [accIdx, clearQuestionFeedback, goNextPhase, plan])
 
   const handleChoiceAnswer = useCallback(
-    async (
+    (
       correct: boolean,
       reward: number,
       advance: () => void,
@@ -798,7 +833,7 @@ export default function ChineseCharsPracticeSession() {
       track?: { lessonKey: string | null; phaseName: string },
     ) => {
       if (track) recordLessonAnswer(track.lessonKey, track.phaseName, correct)
-      await awardMoon(reward, correct)
+      void awardMoon(reward, correct)
       if (correct) {
         advance()
       } else if (wrong) {
@@ -809,7 +844,7 @@ export default function ChineseCharsPracticeSession() {
   )
 
   const handleCharAnswer = useCallback(
-    async (
+    (
       correct: boolean,
       q: CharPracticeQuestion,
       wrong?: { selected: string; correct: string },
@@ -819,6 +854,11 @@ export default function ChineseCharsPracticeSession() {
       } else if (q.kind === 'stroke') {
         recordBatch([{ charKey: q.charKey, track: 'write', correct }])
       }
+      if (!correct && !isCharRetryRound) {
+        setCharRetryIds((previous) =>
+          previous.includes(q.id) ? previous : [...previous, q.id],
+        )
+      }
       if (plan) {
         recordLessonAnswer(
           lessonKeyForCharQuestion(q, plan.cards),
@@ -826,14 +866,14 @@ export default function ChineseCharsPracticeSession() {
           correct,
         )
       }
-      await awardMoon(MOON_REWARDS.char, correct)
+      void awardMoon(MOON_REWARDS.char, correct)
       if (correct) {
         advanceCharQuestion()
       } else if (wrong) {
         setWrongFeedback(wrong)
       }
     },
-    [advanceCharQuestion, awardMoon, plan, recordBatch, recordLessonAnswer],
+    [advanceCharQuestion, awardMoon, isCharRetryRound, plan, recordBatch, recordLessonAnswer],
   )
 
   if (!isCharDataReady || !plan) {
@@ -882,10 +922,12 @@ export default function ChineseCharsPracticeSession() {
               {isStashing ? '暂存中…' : '💾 暂存'}
             </button>
           )}
-          <span className="text-sm font-extrabold text-stone-800">{PHASE_LABEL[phase]}</span>
+          <span className="text-sm font-extrabold text-stone-800">
+            {phase === 'chars' && isCharRetryRound ? '错题补练' : PHASE_LABEL[phase]}
+          </span>
           <div className="ml-auto flex items-center gap-1 text-xs font-bold text-rose-700">
             <ColoredStar color="red" size={16} />
-            {starSession.red}
+            {earnedMoons}
           </div>
         </header>
 
@@ -958,16 +1000,34 @@ export default function ChineseCharsPracticeSession() {
         {phase === 'chars' && currentCharQ && (
           <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
-              文字练习 {charQIdx + 1} / {plan.charQuestions.length}
+              {isCharRetryRound ? '错题补练' : '文字练习'} {charQIdx + 1} / {activeCharQuestions.length}
             </p>
+
+            {isCharRetryRound && (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/90 px-4 py-2 text-center text-sm font-extrabold text-rose-700">
+                再练一次刚才做错的题，加深记忆
+              </div>
+            )}
 
             {currentCharQ.kind === 'recognize' && (
               <>
                 <div className="text-center">
                   <p className="text-sm text-stone-500">选出正确的拼音</p>
                   <div className="mt-4 flex justify-center">
-                    <span className="cn-grid-cell">{currentCharQ.char}</span>
+                    <span className="cn-grid-cell cn-grid-cell-quiz">{currentCharQ.char}</span>
                   </div>
+                  {getCharProfile(currentCharQ.charKey)?.phrases.length ? (
+                    <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="组词提示">
+                      {getCharProfile(currentCharQ.charKey)?.phrases.slice(0, 3).map((phrase) => (
+                        <span
+                          key={phrase}
+                          className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-base font-extrabold text-sky-900"
+                        >
+                          {phrase}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="cn-candy-choice-grid">
                   {(() => {
@@ -1244,7 +1304,9 @@ export default function ChineseCharsPracticeSession() {
               bookLessonNo={currentReadingMeta.bookLessonNo}
               paragraphs={currentReadingMeta.paragraphs}
               recognize={currentReadingMeta.group?.recognize ?? []}
+              recognizePinyin={currentReadingMeta.group?.recognizePinyin ?? []}
               write={currentReadingMeta.group?.write ?? []}
+              writePinyin={currentReadingMeta.group?.writePinyin ?? []}
               recallPhrases={currentReadingMeta.lessonRow?.recallPhrases ?? []}
               footer={
                 <div className="mt-6 flex flex-col gap-4">

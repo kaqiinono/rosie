@@ -119,6 +119,15 @@
   border-radius: 0.375rem;
 }
 
+/* 拼音选择题的主生字：保持田字格比例，并在手机与平板上都足够醒目。 */
+.cn-grid-cell-quiz {
+  width: clamp(6.5rem, 30vw, 8rem);
+  height: clamp(6.5rem, 30vw, 8rem);
+  font-size: clamp(3.5rem, 16vw, 4.75rem);
+  border-width: 2.5px;
+  border-radius: 0.75rem;
+}
+
 /* 生字卡片用紧凑田字格 */
 .cn-grid-cell-sm {
   display: inline-flex;

@@ -27,7 +27,7 @@ interface CharFlashCardProps {
   index?: number
 }
 
-const CARD_MIN_H = 200
+const CARD_MIN_H = 260
 
 const FRONT_BG: CSSProperties = { background: 'linear-gradient(160deg, #fff7ed 0%, #ffedd5 100%)' }
 const BACK_BG: CSSProperties = { background: 'linear-gradient(160deg, #eef2ff 0%, #e0e7ff 100%)' }
@@ -64,11 +64,11 @@ export default function CharFlashCard({
 
   const infoBadges: ReactNode = (
     <>
-      <span className="min-w-0 rounded-full border border-amber-300/50 bg-amber-100/80 px-2 py-0.5 text-[9.5px] leading-tight font-extrabold tracking-wide text-amber-800">
+      <span className="min-w-0 rounded-full border border-amber-300/50 bg-amber-100/80 px-2.5 py-1 text-xs leading-tight font-extrabold tracking-wide text-amber-800">
         {infoLabel}
       </span>
       {isReview && (
-        <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[9.5px] font-bold whitespace-nowrap text-violet-700">
+        <span className="shrink-0 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-bold whitespace-nowrap text-violet-700">
           复习
         </span>
       )}
@@ -94,7 +94,7 @@ export default function CharFlashCard({
 
   const hasMeta = Boolean(structure || (strokeCount && strokeCount > 0) || radicalName)
   const metaLine = hasMeta ? (
-    <p className="flex flex-wrap items-center justify-center gap-x-1 text-[10.5px] font-bold text-indigo-800/70">
+    <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-sm font-bold text-indigo-800/70">
       {structure && <span>{structure}结构</span>}
       {structure && (strokeCount || radicalName) && <span className="text-indigo-300">·</span>}
       {Boolean(strokeCount && strokeCount > 0) && <span>{strokeCount}画</span>}
@@ -107,11 +107,11 @@ export default function CharFlashCard({
 
   const phraseBlock =
     displayPhrases.length > 0 ? (
-      <div className="flex flex-wrap justify-center gap-1">
+      <div className="flex flex-wrap justify-center gap-2">
         {displayPhrases.map((p) => (
           <span
             key={p}
-            className="rounded border border-indigo-100 bg-white/60 px-1.5 py-0.5 text-[11px] font-bold text-indigo-900"
+            className="rounded-lg border border-indigo-100 bg-white/70 px-2.5 py-1.5 text-base leading-tight font-extrabold text-indigo-900"
           >
             {p}
           </span>
@@ -120,7 +120,7 @@ export default function CharFlashCard({
     ) : null
 
   const frontPhrases = displayPhrases.length > 0 ? (
-    <p className="max-w-full truncate text-center text-[11px] font-bold text-amber-800/70">
+    <p className="max-w-full truncate text-center text-sm font-extrabold text-amber-800/75">
       {displayPhrases.join(' · ')}
     </p>
   ) : null
@@ -163,7 +163,7 @@ export default function CharFlashCard({
       }}
     >
       <div className="flex shrink-0 flex-col items-center gap-0.5 px-1 pt-0.5 text-center">
-        <p className="text-base leading-none font-black text-indigo-900">{pinyin}</p>
+        <p className="text-xl leading-none font-black text-indigo-900">{pinyin}</p>
         {metaLine}
       </div>
 
