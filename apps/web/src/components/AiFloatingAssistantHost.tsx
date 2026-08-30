@@ -548,7 +548,9 @@ function EmbeddedEnglishPassage({ block }: { block: PassageBlock }) {
   const { user } = useAuth()
   const passage = block.passageKey ? findPassageByKey(block.passageKey) : undefined
   const audioUrl = useReadingPassageAudio(user, block.passageKey ?? '')
-  const { vocab, isLoading } = useWordData(user, { stage: block.stage ?? null })
+  const { vocab, isLoading } = useWordData(user, {
+    stage: passage?.stage ?? block.stage ?? null,
+  })
   const { masteryMap, recordRecallAttempt } = useWordMastery(user)
 
   if (!passage) {

@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { classifyIntent } from '@rosie/ai'
+import {
+  classifyIntent,
+  findDefaultEnglishPassageSourceRef,
+  resolveContextualIntentMessage,
+  selectEnglishPassageEntry,
+} from '@rosie/ai'
 
 describe('AI embedded content-card intent', () => {
   const grammarQuestions = [
@@ -112,6 +117,39 @@ describe('AI embedded content-card intent', () => {
       intent: 'passage_lookup',
       subject: 'english',
     })
+  })
+
+  it('carries a short choice reply into the previous passage request', () => {
+    const resolved = resolveContextualIntentMessage('随便', [
+      { role: 'user', content: '我想阅读一篇英文课文' },
+      { role: 'assistant', content: '想读哪篇课文？' },
+    ])
+
+    expect(classifyIntent(resolved)).toMatchObject({
+      intent: 'passage_lookup',
+      subject: 'english',
+    })
+  })
+
+  it('carries repeated next-passage requests back to the original reading intent', () => {
+    const history = [
+      { role: 'user' as const, content: '我想阅读一篇英文课文' },
+      { role: 'assistant' as const, content: '《Letters to HelpMe Hal》内容在这里。' },
+      { role: 'user' as const, content: '换一篇' },
+      { role: 'assistant' as const, content: '《A School on a Nature Reserve》内容在这里。' },
+    ]
+
+    expect(classifyIntent(resolveContextualIntentMessage('再来一篇', history))).toMatchObject({
+      intent: 'passage_lookup',
+      subject: 'english',
+    })
+    expect(selectEnglishPassageEntry('再来一篇', history)?.title).not.toBe(
+      'A School on a Nature Reserve',
+    )
+  })
+
+  it('has a stable catalog passage for generic English reading requests', () => {
+    expect(findDefaultEnglishPassageSourceRef()).toMatch(/^english:reading:/)
   })
 
   it('recognizes subject-specific and three-subject status requests', () => {

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { classifyIntent } from './classify-intent'
 import { fallbackAgentResponse, parseAgentResponse } from './agent-response.schema'
-import type { AgentResponse, ChatContext, KnowledgeSearchHit } from '../types'
+import type { AgentResponse, ChatContext, KnowledgeSearchHit, LinkManifestEntry } from '../types'
 import { searchKnowledge } from '../server/search'
 import { lookupWord } from '../server/tools/lookup-word'
 import { lookupChar } from '../server/tools/lookup-char'
@@ -11,21 +11,82 @@ import {
   buildPassageBlockFromHit,
   buildPoemReciteBlockFromHit,
 } from '../server/tools/lookup-passage'
-import { resolveActionsForHits, resolveProblemAction } from '../server/tools/resolve-links'
+import {
+  getLinkManifest,
+  resolveActionsForHits,
+  resolveProblemAction,
+} from '../server/tools/resolve-links'
 import type { LessonNote, SimilarProblem } from '../types'
+import type { ChatHistoryMessage } from '../server/conversation-history'
 
 export interface OrchestratorInput {
   message: string
   context?: ChatContext
   lessonNotes?: LessonNote[]
   similarProblem?: SimilarProblem
+  history?: ChatHistoryMessage[]
+}
+
+const CONTEXTUAL_FOLLOW_UP_RE =
+  /^(?:随便|都行|都可以|你选|你选吧|选一篇|来一篇|换一篇|再来一篇|下一篇|可以|好的|好呀)[。！!？?~～]*$/
+const GENERIC_ENGLISH_PASSAGE_RE =
+  /(?:一篇|随便|都行|都可以|你选|选一篇|来一篇|换一篇|再来一篇|下一篇).*(?:英文|英语|课文)|(?:英文|英语).*(?:一篇|课文)/
+
+function englishPassageEntries(): LinkManifestEntry[] {
+  return getLinkManifest().filter(
+    (entry) =>
+      entry.subject === 'english' && entry.sourceRef.startsWith('english:reading:'),
+  )
+}
+
+export function findDefaultEnglishPassageSourceRef(): string | undefined {
+  return englishPassageEntries()[0]?.sourceRef
+}
+
+export function selectEnglishPassageEntry(
+  message: string,
+  history: ChatHistoryMessage[] = [],
+): LinkManifestEntry | undefined {
+  const entries = englishPassageEntries()
+  if (entries.length === 0) return undefined
+  if (!/(?:换一篇|再来一篇|下一篇)/.test(message)) return entries[0]
+
+  const latestAssistantText = [...history]
+    .reverse()
+    .find((item) => item.role === 'assistant')
+    ?.content
+  const currentIndex = latestAssistantText
+    ? entries.findIndex((entry) => latestAssistantText.includes(entry.title))
+    : -1
+  return entries[(currentIndex + 1 + entries.length) % entries.length]
+}
+
+export function resolveContextualIntentMessage(
+  message: string,
+  history: ChatHistoryMessage[] = [],
+): string {
+  const trimmed = message.trim()
+  if (!CONTEXTUAL_FOLLOW_UP_RE.test(trimmed)) return trimmed
+
+  const previousUserMessage = [...history]
+    .reverse()
+    .find(
+      (item) => item.role === 'user' && classifyIntent(item.content).intent === 'passage_lookup',
+    )
+    ?.content.trim()
+  if (!previousUserMessage) return trimmed
+
+  const previousIntent = classifyIntent(previousUserMessage)
+  if (previousIntent.intent !== 'passage_lookup') return trimmed
+  return `${previousUserMessage}；${trimmed}，请选一篇课文`
 }
 
 export async function runAgentOrchestrator(
   supabase: SupabaseClient,
   input: OrchestratorInput,
 ): Promise<AgentResponse> {
-  const classified = classifyIntent(input.message, input.context)
+  const intentMessage = resolveContextualIntentMessage(input.message, input.history)
+  const classified = classifyIntent(intentMessage, input.context)
   const blocks: AgentResponse['blocks'] = []
   let hits: KnowledgeSearchHit[] = []
   let searchUnavailable = false
@@ -83,7 +144,24 @@ export async function runAgentOrchestrator(
   }
 
   try {
-    if (classified.intent === 'math_similar_example' && input.context?.activeContent?.sourceRef) {
+    if (
+      classified.intent === 'passage_lookup' &&
+      classified.subject === 'english' &&
+      GENERIC_ENGLISH_PASSAGE_RE.test(intentMessage)
+    ) {
+      const passageEntry = selectEnglishPassageEntry(input.message, input.history)
+      if (passageEntry) {
+        hits = await searchKnowledge(supabase, {
+          query: passageEntry.title,
+          subject: 'english',
+          matchCount: 2,
+          metadata: { sourceRef: passageEntry.sourceRef },
+        })
+      }
+    } else if (
+      classified.intent === 'math_similar_example' &&
+      input.context?.activeContent?.sourceRef
+    ) {
       const currentHits = await searchKnowledge(supabase, {
         query: input.message,
         subject: 'math',
@@ -103,10 +181,10 @@ export async function runAgentOrchestrator(
     } else {
       const activeSourceRef = input.context?.activeContent?.sourceRef
       hits = await searchKnowledge(supabase, {
-        query: input.message,
+        query: intentMessage,
         subject: classified.subject,
         grade: input.context?.grade,
-        matchCount: 6,
+        matchCount: classified.intent === 'passage_lookup' ? 24 : 6,
         metadata: activeSourceRef
           ? { sourceRef: activeSourceRef }
           : classified.intent === 'grammar_qa'
@@ -133,7 +211,16 @@ export async function runAgentOrchestrator(
   }
 
   if (classified.intent === 'passage_lookup') {
-    const passageHit = hits.find((h) => h.subject === 'chinese') ?? hits[0]
+    const passageHit =
+      hits.find((hit) => {
+        if (classified.subject && hit.subject !== classified.subject) return false
+        if (classified.subject !== 'english') return true
+        return (
+          typeof hit.metadata.passageKey === 'string' ||
+          (typeof hit.metadata.sourceRef === 'string' &&
+            hit.metadata.sourceRef.startsWith('english:reading:'))
+        )
+      }) ?? hits.find((hit) => hit.subject === classified.subject)
     if (passageHit) {
       const block = buildPassageBlockFromHit(passageHit)
       if (block) {
@@ -193,6 +280,25 @@ export async function runAgentOrchestrator(
   }
 
   const actions = resolveActionsForHits(hits)
+
+  const passageBlock = blocks.find((block) => block.type === 'passage_excerpt')
+  if (passageBlock?.type === 'passage_excerpt' && passageBlock.subject === 'english') {
+    const entries = englishPassageEntries()
+    const currentIndex = entries.findIndex((entry) => entry.sourceRef === passageBlock.sourceRef)
+    const startIndex = currentIndex >= 0 ? currentIndex + 1 : 0
+    for (let offset = 0; offset < Math.min(3, Math.max(0, entries.length - 1)); offset += 1) {
+      const entry = entries[(startIndex + offset) % entries.length]
+      if (!entry || entry.sourceRef === passageBlock.sourceRef) continue
+      if (actions.some((action) => action.type === 'open_reading' && action.href === entry.href)) {
+        continue
+      }
+      actions.push({
+        type: 'open_reading',
+        href: entry.href,
+        label: `推荐：${entry.title}`,
+      })
+    }
+  }
 
   // For blocks with problemId, replace navigate actions with open_problem (supports inline rendering)
   const mathBlock = blocks.find((b) => b.type === 'math_solution')

@@ -58,6 +58,7 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
         context: input.context,
         lessonNotes: input.lessonNotes,
         similarProblem: input.similarProblem,
+        history,
       }),
       loadStudentProfile(input.supabase, input.user.id).catch(() => null),
     ])
@@ -69,14 +70,15 @@ export async function* runChatStream(input: RunChatInput): AsyncGenerator<string
     // For review / similar-problem intents, the orchestrator already produced the
     // full formatted answer. Skip LLM rephrasing to avoid overwriting the notes/problem.
     const isDirectEnrichment =
-      input.context?.subject === 'math' &&
-      ((input.lessonNotes?.length &&
-        (input.message.includes('复习') || input.message.includes('重点') ||
-         input.message.includes('讲次') || input.message.includes('笔记') ||
-         input.message.includes('易错点'))) ||
-       (input.similarProblem &&
-        (input.message.includes('相似') || input.message.includes('类似') ||
-         input.message.includes('例题') || input.message.includes('讲解完整过程'))))
+      envelope.blocks.some((block) => block.type === 'passage_excerpt') ||
+      (input.context?.subject === 'math' &&
+        ((input.lessonNotes?.length &&
+          (input.message.includes('复习') || input.message.includes('重点') ||
+           input.message.includes('讲次') || input.message.includes('笔记') ||
+           input.message.includes('易错点'))) ||
+         (input.similarProblem &&
+          (input.message.includes('相似') || input.message.includes('类似') ||
+           input.message.includes('例题') || input.message.includes('讲解完整过程')))))
 
     if (isDirectEnrichment) {
       // Stream the orchestrator's text directly as tokens (no LLM rewrite)

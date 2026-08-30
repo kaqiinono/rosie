@@ -31,7 +31,12 @@ export {
   fallbackAgentResponse,
 } from './agent/agent-response.schema'
 export { classifyIntent } from './agent/classify-intent'
-export { runAgentOrchestrator } from './agent/orchestrator'
+export {
+  findDefaultEnglishPassageSourceRef,
+  resolveContextualIntentMessage,
+  runAgentOrchestrator,
+  selectEnglishPassageEntry,
+} from './agent/orchestrator'
 
 export { upsertKnowledgeDocument } from './server/ingest-upsert'
 export { runChatStream } from './server/chat'
