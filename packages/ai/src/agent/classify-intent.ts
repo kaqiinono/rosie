@@ -10,6 +10,7 @@ export type AgentIntent =
   | 'math_problem'
   | 'math_similar_example'
   | 'math_practice'
+  | 'grammar_qa'
   | 'general_qa'
 
 export interface ClassifiedIntent {
@@ -33,8 +34,145 @@ const CHAR_CARD_HINTS = ['生字卡', '汉字卡', '文字卡', '字卡', '展�
 const POEM_RECITE_HINTS = ['背诵', '背古诗', '古诗填空', '考我古诗']
 const STATUS_HINTS = ['掌握度', '掌握情况', '错题统计', '错题情况', '学习情况', '学习概况']
 const TODAY_TASK_HINTS = ['今日任务', '今天学什么', '今天的计划', '今天要学', '今日计划']
-// 英语语法术语：无页面上下文时据此把语法提问归到英语学科（知识库 grammar chunks）
-const GRAMMAR_HINTS = ['语法', '时态', '进行时', '完成时', '过去式', '一般现在', 'be动词']
+// Keep this taxonomy aligned with the registered grammar TOC. Multi-word English
+// phrases deliberately run before word lookup so questions such as
+// "What is present perfect?" are not mistaken for a lookup of the word "What".
+const GRAMMAR_HINTS_ZH = [
+  '语法',
+  '时态',
+  '现在时',
+  '进行时',
+  '完成时',
+  '将来时',
+  '过去式',
+  '一般现在',
+  '一般过去',
+  '过去进行',
+  'be动词',
+  '情态动词',
+  '被动语态',
+  '比较级',
+  '最高级',
+  '不定式',
+  '过去时',
+  '动词形式',
+  '祈使句',
+  '祈使语气',
+  'there be',
+  '助动词',
+  '疑问句',
+  '疑问词',
+  '间接引语',
+  '动名词',
+  'ing形式',
+  '-ing形式',
+  '人称代词',
+  '主格',
+  '宾格',
+  '物主代词',
+  '所有格',
+  '反身代词',
+  '限定词',
+  '冠词',
+  '可数名词',
+  '不可数名词',
+  '名词复数',
+  '形容词',
+  '副词',
+  '词序',
+  '连词',
+  '条件句',
+  '定语从句',
+  '关系从句',
+  '从句',
+  '介词',
+  '短语动词',
+  '主谓一致',
+  '肯定句',
+  '否定句',
+]
+
+const GRAMMAR_HINTS_EN = [
+  'present tense',
+  'present simple',
+  'simple present',
+  'present continuous',
+  'present progressive',
+  'present perfect',
+  'past tense',
+  'past simple',
+  'simple past',
+  'past continuous',
+  'past progressive',
+  'past perfect',
+  'future tense',
+  'future simple',
+  'passive voice',
+  'active voice',
+  'verb form',
+  'modal verb',
+  'auxiliary verb',
+  'helping verb',
+  'imperative sentence',
+  'question form',
+  'question word',
+  'reported speech',
+  'indirect speech',
+  'infinitive',
+  'gerund',
+  'personal pronoun',
+  'subject pronoun',
+  'object pronoun',
+  'possessive adjective',
+  'possessive pronoun',
+  'reflexive pronoun',
+  'determiner',
+  'definite article',
+  'indefinite article',
+  'countable noun',
+  'uncountable noun',
+  'plural noun',
+  'adjective',
+  'adverb',
+  'word order',
+  'conjunction',
+  'conditional sentence',
+  'relative clause',
+  'relative pronoun',
+  'preposition',
+  'phrasal verb',
+  'comparative',
+  'superlative',
+  'subject-verb agreement',
+]
+
+const GRAMMAR_PATTERNS = [
+  /\bthere\s+(?:is|are|was|were)\b/i,
+  /\b(?:am|is|are)\s*\/\s*(?:is|are)\b/i,
+  /\bdo\s*\/\s*does\b/i,
+  /\bhave\s*\/\s*has\b/i,
+  /\bwas\s*\/\s*were\b/i,
+  /\ba\s*\/\s*an\b/i,
+  /\bsome\s*\/\s*any\b/i,
+  /\bmuch\s*\/\s*many\b/i,
+  /\b(?:verb|动词)\s*[-–]?ing\b/i,
+]
+
+function hasGrammarHint(message: string): boolean {
+  const lower = message.toLowerCase()
+  return (
+    GRAMMAR_HINTS_ZH.some((hint) => lower.includes(hint.toLowerCase())) ||
+    GRAMMAR_HINTS_EN.some((hint) => lower.includes(hint)) ||
+    GRAMMAR_PATTERNS.some((pattern) => pattern.test(message))
+  )
+}
+
+function isGrammarContext(context?: ChatContext): boolean {
+  return (
+    context?.activeContent?.sourceRef.startsWith('grammar_units:') === true ||
+    context?.lessonId?.startsWith('/english/grammar/') === true
+  )
+}
 
 function looksLikeMathWordProblem(message: string): boolean {
   const numbers = message.match(/\d+(?:\.\d+)?/g) ?? []
@@ -45,7 +183,7 @@ function subjectFromMessage(message: string, fallback?: AiSubject): AiSubject | 
   if (
     message.includes('英语') ||
     message.includes('单词') ||
-    GRAMMAR_HINTS.some((hint) => message.includes(hint))
+    hasGrammarHint(message)
   )
     return 'english'
   if (message.includes('数学') || message.includes('题目')) return 'math'
@@ -63,6 +201,14 @@ function extractRequestedChar(message: string): string | undefined {
 export function classifyIntent(message: string, context?: ChatContext): ClassifiedIntent {
   const trimmed = message.trim()
   const lower = trimmed.toLowerCase()
+
+  if (isGrammarContext(context) || hasGrammarHint(trimmed)) {
+    return {
+      intent: 'grammar_qa',
+      subject: 'english',
+      entities: {},
+    }
+  }
 
   if (trimmed.includes('掌握')) {
     const wordMatch = trimmed.match(ENGLISH_WORD_RE)

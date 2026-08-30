@@ -2,6 +2,65 @@ import { describe, expect, it } from 'vitest'
 import { classifyIntent } from '@rosie/ai'
 
 describe('AI embedded content-card intent', () => {
+  const grammarQuestions = [
+    '现在时应该怎么用？',
+    '过去时和过去式有什么区别？',
+    '什么是现在完成时？',
+    '被动语态怎么造句？',
+    '动词形式为什么会变化？',
+    '将来时怎么表达？',
+    '祈使句是什么？',
+    'there be 句型怎么用？',
+    '助动词有什么作用？',
+    '一般疑问句怎么回答？',
+    '间接引语是什么？',
+    '动名词和不定式有什么区别？',
+    '人称代词的主格和宾格怎么区分？',
+    '限定词和物主代词有什么区别？',
+    '形容词和副词放在哪里？',
+    '英语词序有什么规律？',
+    '连词怎样连接从句？',
+    '介词 in、on、at 怎么区分？',
+    '什么是短语动词？',
+    'What is present perfect?',
+    'How does the passive voice work?',
+    'When should I use a gerund?',
+    'What is a possessive pronoun?',
+    'Where does an adverb go?',
+    'Explain subject-verb agreement.',
+    'Should I use a/an here?',
+  ]
+
+  it.each(grammarQuestions)('recognizes grammar coverage: %s', (message) => {
+    expect(classifyIntent(message)).toMatchObject({
+      intent: 'grammar_qa',
+      subject: 'english',
+    })
+  })
+
+  it('recognizes a plain present-tense question as English grammar', () => {
+    expect(classifyIntent('现在时应该怎么用？')).toMatchObject({
+      intent: 'grammar_qa',
+      subject: 'english',
+    })
+  })
+
+  it('keeps questions on a grammar unit in grammar search', () => {
+    expect(
+      classifyIntent('这里为什么要用 is？', {
+        subject: 'english',
+        lessonId: '/english/grammar/essential/1',
+        activeContent: {
+          sourceRef: 'grammar_units:essential:1',
+          title: 'Unit 1 · am/is/are',
+        },
+      }),
+    ).toMatchObject({
+      intent: 'grammar_qa',
+      subject: 'english',
+    })
+  })
+
   it('recognizes an English word-card request', () => {
     expect(classifyIntent('帮我展示 apple 的单词卡')).toMatchObject({
       intent: 'word_lookup',

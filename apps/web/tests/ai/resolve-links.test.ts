@@ -44,6 +44,9 @@ describe('resolve-links', () => {
     expect(findManifestByHref('/english/words/reading/4a-u5l1')).toMatchObject({
       sourceRef: 'english:reading:4A:Unit 5:Lesson 1',
     })
+    expect(findManifestByHref('/english/grammar/essential/1')).toMatchObject({
+      sourceRef: 'grammar_units:essential:1',
+    })
   })
 
   it('resolves a visible practice problem without relying on the page route', () => {

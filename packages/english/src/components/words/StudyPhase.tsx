@@ -6,6 +6,7 @@ import { hilite, highlightExample } from '../../utils/english-helpers'
 import { getWordImagePublicUrl } from '../../utils/word-image'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
+import ZoomableWordImage from './ZoomableWordImage'
 
 interface StudyPhaseProps {
   entry: WordEntry
@@ -333,14 +334,12 @@ export default function StudyPhase({
         >
           <div className="flex w-full max-w-[420px] flex-col items-start gap-2">
             {imageSrc && (
-              <div className="mb-1 flex h-[min(20dvh,150px)] min-h-[96px] w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-black/20">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageSrc}
-                  alt={`${entry.word} 配图`}
-                  className="h-full w-full object-contain"
-                />
-              </div>
+              <ZoomableWordImage
+                src={imageSrc}
+                word={entry.word}
+                containerClassName="mb-1 flex h-[min(20dvh,150px)] min-h-[96px] w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-black/20"
+                imageClassName="h-full w-full object-contain"
+              />
             )}
             <div className="text-[.6rem] font-extrabold tracking-widest text-[rgba(96,165,250,.6)] uppercase">
               释义

@@ -19,6 +19,12 @@ export function findManifestByProblemId(problemId: string): LinkManifestEntry | 
 
 export function findManifestByHref(href: string): LinkManifestEntry | undefined {
   const normalized = href.length > 1 ? href.replace(/\/$/, '') : href
+  const grammarMatch = normalized.match(
+    /^\/english\/grammar\/(essential|intermediate|advanced)\/(\d+)$/,
+  )
+  if (grammarMatch) {
+    return findManifestBySourceRef(`grammar_units:${grammarMatch[1]}:${grammarMatch[2]}`)
+  }
   return entries.find((entry) => {
     const entryHref = entry.href.length > 1 ? entry.href.replace(/\/$/, '') : entry.href
     return entryHref === normalized

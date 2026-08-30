@@ -28,6 +28,7 @@ export async function runAgentOrchestrator(
   const classified = classifyIntent(input.message, input.context)
   const blocks: AgentResponse['blocks'] = []
   let hits: KnowledgeSearchHit[] = []
+  let searchUnavailable = false
 
   if (classified.intent === 'learning_status') {
     const view = input.message.includes('错题')
@@ -100,17 +101,22 @@ export async function runAgentOrchestrator(
         (hit) => hit.metadata.sourceRef !== input.context?.activeContent?.sourceRef,
       )
     } else {
+      const activeSourceRef = input.context?.activeContent?.sourceRef
       hits = await searchKnowledge(supabase, {
         query: input.message,
         subject: classified.subject,
         grade: input.context?.grade,
         matchCount: 6,
-        metadata: input.context?.activeContent?.sourceRef
-          ? { sourceRef: input.context.activeContent.sourceRef }
-          : undefined,
+        metadata: activeSourceRef
+          ? { sourceRef: activeSourceRef }
+          : classified.intent === 'grammar_qa'
+            ? { knowledgeType: 'grammar' }
+            : undefined,
       })
     }
-  } catch {
+  } catch (error) {
+    searchUnavailable = true
+    console.error('[ai/search] knowledge retrieval failed', error)
     hits = []
   }
 
@@ -220,7 +226,9 @@ export async function runAgentOrchestrator(
 
   if (blocks.length === 0) {
     return fallbackAgentResponse(
-      hits.length > 0
+      searchUnavailable
+        ? '知识检索暂时不可用，请让爸爸妈妈检查 AI 配置。'
+        : hits.length > 0
         ? summaryText
         : '我在知识库里还没找到相关内容。换个问法试试，或让爸爸妈妈帮忙导入资料。',
     )

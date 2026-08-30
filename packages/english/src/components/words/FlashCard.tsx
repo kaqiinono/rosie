@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import { getWordSizeClass } from '../../utils/phonics'
 import { hilite } from '../../utils/english-helpers'
@@ -9,6 +9,7 @@ import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@rosie/core'
 import { findPassage, findSentenceForWord } from '../../utils/reading-data'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
+import ZoomableWordImage from './ZoomableWordImage'
 
 interface FlashCardProps {
   entry: WordEntry
@@ -36,7 +37,6 @@ function highlightWordInSentence(sentence: string, word: string) {
 
 export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, dualMode }: FlashCardProps) {
   const [sentenceExpanded, setSentenceExpanded] = useState(false)
-  const [imagePreview, setImagePreview] = useState(false)
   const sz = getWordSizeClass(entry.word)
   const level = getWordMasteryLevel(masteryInfo?.correct ?? 0)
   // Bumped ~15% across the scale so the word reads as the clear focal point.
@@ -51,20 +51,6 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
   const delay = Math.min(index * 0.03, 0.25)
   const explHtml = hilite(entry.explanation, entry.keywords)
   const imageSrc = entry.imagePath ? getWordImagePublicUrl(entry.imagePath) : ''
-
-  useEffect(() => {
-    if (!imagePreview) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setImagePreview(false)
-    }
-    document.addEventListener('keydown', onKey)
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevOverflow
-    }
-  }, [imagePreview])
 
   // Show 课文原句 for any word whose lesson has a passage — independent of
   // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;
@@ -247,22 +233,12 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
       style={backFaceStyle}
     >
       {imageSrc && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            setImagePreview(true)
-          }}
-          className="group mb-3 flex max-h-[168px] w-full shrink-0 cursor-zoom-in items-center justify-center overflow-hidden rounded-xl bg-black/20"
-          aria-label={`放大预览 ${entry.word}`}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageSrc}
-            alt=""
-            className="max-h-[168px] w-auto max-w-full object-contain"
-          />
-        </button>
+        <ZoomableWordImage
+          src={imageSrc}
+          word={entry.word}
+          containerClassName="group mb-3 flex max-h-[168px] w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black/20"
+          imageClassName="max-h-[168px] w-auto max-w-full object-contain"
+        />
       )}
 
       {/* English definition */}
@@ -289,38 +265,6 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
       )}
     </div>
   )
-
-  const imageLightbox = imagePreview && imageSrc ? (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${entry.word} 配图预览`}
-      onClick={(e) => {
-        e.stopPropagation()
-        setImagePreview(false)
-      }}
-      className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={imageSrc}
-        alt={entry.word}
-        onClick={(e) => e.stopPropagation()}
-        className="max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain shadow-2xl"
-      />
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation()
-          setImagePreview(false)
-        }}
-        className="absolute top-4 right-4 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/95 text-xl font-bold text-gray-700 shadow-lg transition hover:bg-white"
-        aria-label="关闭"
-      >
-        ×
-      </button>
-    </div>
-  ) : null
 
   if (dualMode) {
     // Ticket-stub layout: both faces sit flush inside ONE outer card so the
@@ -349,7 +293,6 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
             →
           </span>
         </div>
-        {imageLightbox}
       </>
     )
   }
@@ -374,7 +317,6 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
           {backFace}
         </div>
       </div>
-      {imageLightbox}
     </>
   )
 }

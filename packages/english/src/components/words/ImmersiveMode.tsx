@@ -22,6 +22,7 @@ import { useQuizRunner } from './useQuizRunner'
 import type { QuizCommitInfo } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'
 import type { SpellButtonStyle } from './SpellTiles'
+import ZoomableWordImage from './ZoomableWordImage'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -523,14 +524,12 @@ export default function ImmersiveMode({
             >
               <div className="flex w-full max-w-[640px] flex-col items-center gap-3.5 text-center">
                 {v.imagePath && (
-                  <div className="flex h-[clamp(200px,32dvh,360px)] w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black/20">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={getWordImagePublicUrl(v.imagePath)}
-                      alt={`${v.word} 配图`}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
+                  <ZoomableWordImage
+                    src={getWordImagePublicUrl(v.imagePath)}
+                    word={v.word}
+                    containerClassName="flex h-[clamp(200px,32dvh,360px)] w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black/20"
+                    imageClassName="h-full w-full object-contain"
+                  />
                 )}
                 <div className="text-[.75rem] font-extrabold tracking-[.14em] text-[rgba(167,139,250,.5)] uppercase">
                   释义

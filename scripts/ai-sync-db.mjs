@@ -467,7 +467,7 @@ async function syncGrammarUnits() {
     const isBackmatter = row.unit_number > 115
     return {
       sourceRef: `grammar_units:${row.book}:${row.unit_number}`,
-      href: `/english/grammar/${row.unit_number}`,
+      href: `/english/grammar/${row.book}/${row.unit_number}`,
       title: isBackmatter
         ? row.title_zh || row.title
         : `Unit ${row.unit_number} · ${row.title_zh || row.title}`,
@@ -506,7 +506,7 @@ async function syncGrammarUnits() {
         unitNumber: row.unit_number,
         category: row.category,
         difficulty: row.difficulty,
-        href: `/english/grammar/${row.unit_number}`,
+        href: `/english/grammar/${row.book}/${row.unit_number}`,
       },
     })
     processed++
