@@ -1,6 +1,7 @@
 import type { CalcSkeletonId, MixedOp, CalcQuestion } from '@rosie/core'
 import { AstNode, evalAst, makeQuestion, pickOne, randInt } from './calc-ast'
 import { blockById, type CalcBlock } from './calc-blocks'
+import { curriculumForBlock } from './calc-curriculum'
 
 export interface SkeletonMeta {
   id: CalcSkeletonId
@@ -38,14 +39,31 @@ interface BlockBuckets {
   multiplicative: CalcBlock[]
 }
 
-function bucketize(op: MixedOp): BlockBuckets {
+function bucketize(op: MixedOp, completed?: Map<string, Set<number>>): BlockBuckets {
   const add: CalcBlock[] = []
   const sub: CalcBlock[] = []
   const mul: CalcBlock[] = []
   const div: CalcBlock[] = []
   for (const id of op.blockIds) {
-    const b = blockById(id)
-    if (!b) continue
+    const original = blockById(id)
+    if (!original) continue
+    const curriculum = curriculumForBlock(id)
+    const completedIndices = completed?.get(id) ?? new Set<number>()
+    let pointer = 0
+    if (curriculum) while (pointer < curriculum.count() && completedIndices.has(pointer)) pointer++
+    const b: CalcBlock = curriculum ? {
+      ...original,
+      sampleTerm() {
+        const radius = Math.min(10, Math.max(0, curriculum.count() - 1))
+        const low = Math.max(0, Math.min(pointer, curriculum.count() - 1) - radius)
+        const high = Math.min(curriculum.count() - 1, Math.max(pointer, 0) + radius)
+        const fact = curriculum.unrank(randInt(low, high))
+        if (fact.op === 'mul' || fact.op === 'div') {
+          return { ast: { op: fact.op, left: fact.left, right: fact.right }, value: fact.op === 'mul' ? fact.left * fact.right : fact.left / fact.right }
+        }
+        return { ast: fact.left, value: fact.left }
+      },
+    } : original
     if (b.group === 'add') add.push(b)
     else if (b.group === 'sub') sub.push(b)
     else if (b.group === 'mul') mul.push(b)
@@ -287,30 +305,6 @@ function buildAsmdParen(b: BlockBuckets): AstNode | null {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Fallbacks (always clean, correct shape, parens where required)
-// ---------------------------------------------------------------------------
-
-function fallback(id: CalcSkeletonId): AstNode {
-  switch (id) {
-    case 'as':         return { op: 'add', left: 3, right: 4 }
-    case 'md':         return { op: 'mul', left: { op: 'div', left: 6, right: 2 }, right: 3 }
-    case 'asm':        return { op: 'add', left: 1, right: { op: 'mul', left: 2, right: 3 } }
-    case 'asmd':       return {
-      op: 'sub',
-      left: { op: 'add', left: 10, right: { op: 'mul', left: 2, right: 3 } },
-      right: { op: 'div', left: 8, right: 4 },
-    }
-    case 'as_m_paren': return { op: 'mul', left: { op: 'add', left: 2, right: 3 }, right: 4 }
-    case 'md_paren':   return { op: 'div', left: 12, right: { op: 'mul', left: 2, right: 3 } }
-    case 'asmd_paren': return {
-      op: 'div',
-      left: { op: 'mul', left: { op: 'add', left: 2, right: 4 }, right: 3 },
-      right: 2,
-    }
-  }
-}
-
 const BUILDERS: Record<CalcSkeletonId, (b: BlockBuckets) => AstNode | null> = {
   as: buildAs,
   md: buildMd,
@@ -325,20 +319,20 @@ const BUILDERS: Record<CalcSkeletonId, (b: BlockBuckets) => AstNode | null> = {
 // Public API
 // ---------------------------------------------------------------------------
 
-/** 组装一道混合题。内部按 op.blockIds 取块,分加减/乘除两组,重试至非负整数,兜底保证总能返回。 */
-export function assembleMixed(op: MixedOp): CalcQuestion {
-  const buckets = bucketize(op)
+/** 从基础题型当前指针邻域组合混合题；无法形成合法题时显式失败。 */
+export function assembleMixed(op: MixedOp, completed?: Map<string, Set<number>>): CalcQuestion {
+  const buckets = bucketize(op, completed)
   const meta = skeletonMeta(op.skeleton)
   const build = BUILDERS[op.skeleton]
   let ast: AstNode | null = null
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 64; i++) {
     const candidate = build(buckets)
     if (candidate && isClean(candidate)) {
       ast = candidate
       break
     }
   }
-  if (!ast) ast = fallback(op.skeleton)
+  if (!ast) throw new Error(`Unable to compose a valid mixed question from indexed bases: ${op.id}`)
   return makeQuestion(ast, 'C', 'mixed', meta.coinBase)
 }
 

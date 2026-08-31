@@ -48,6 +48,18 @@ export {
   enumerateFinite,
 } from './utils/calc-finite'
 export { missingTargetIds } from './utils/calc-time-targets'
+export {
+  INTEGER_CURRICULUM_VERSION,
+  canonicalizeIntegerFact,
+  coverageSignature,
+  curriculumForBlock,
+  evaluateIntegerFact,
+  factFromSignature,
+  integerDifficultyKey,
+  isGloballyEligible,
+  questionFromCurriculum,
+} from './utils/calc-curriculum'
+export type { IntegerCurriculum, IntegerFact } from './utils/calc-curriculum'
 export { normalizeMixedOps, normalizeSelectedBlocks } from './utils/calc-settings-normalize'
 export {
   type CalcTimingMode,

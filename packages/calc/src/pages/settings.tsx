@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import type { CalcTimingMode } from '@rosie/core'
 import { useCalcSettings } from '../hooks/useCalcSettings'
+import { useCalcProblemState } from '../hooks/useCalcProblemState'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
 import CalcAppHeader from '../components/CalcAppHeader'
 import BlockPicker from '../components/BlockPicker'
@@ -17,6 +18,9 @@ import { playSfx } from '../components/audio'
 import { blocksByGroup, blockById, BLOCK_GROUPS, type CalcBlock } from '../utils/calc-blocks'
 import { skeletonMeta, SKELETONS } from '../utils/calc-mixed'
 import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
+import { coverageSignature, curriculumForBlock, factFromSignature } from '../utils/calc-curriculum'
+import { fetchCurriculumCompleted, type CompletedCurriculumMap } from '../utils/calc-curriculum-progress'
+import { signatureToDisplay } from '../utils/calc-ast'
 
 interface PerTypeCardProps {
   label: string
@@ -337,8 +341,15 @@ export default function CalcSettingsPage() {
   const { user } = useAuth()
   const router = useRouter()
   const { settings, update, setSettings, isLoading } = useCalcSettings(user)
+  const { states: problemStates } = useCalcProblemState(user)
+  const [completedCurriculum, setCompletedCurriculum] = useState<CompletedCurriculumMap>(new Map())
   const [saved, setSaved] = useState(false)
   const [tierSheetOpen, setTierSheetOpen] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    void fetchCurriculumCompleted(user.id).then(setCompletedCurriculum)
+  }, [user])
 
   // Settings already persist on every `update()`; this button is an explicit
   // "save now" affordance that re-upserts the current snapshot and confirms.
@@ -631,6 +642,67 @@ export default function CalcSettingsPage() {
               )}
             </div>
           )}
+        </section>
+
+        <section>
+          <SectionHeading>课程地图与覆盖审计</SectionHeading>
+          <div className="space-y-2">
+            {settings.selectedBlocks.map((selected) => {
+              const curriculum = curriculumForBlock(selected.id)
+              const label = blockById(selected.id)?.label ?? selected.id
+              if (!curriculum) {
+                return (
+                  <div key={selected.id} className="rounded-xl border border-amber-400/25 bg-amber-400/8 p-3 text-sm text-amber-100">
+                    <div className="font-extrabold">{label}</div>
+                    <div className="mt-1 text-xs text-amber-200/70">尚未注册精确整数课程；当前不计算覆盖率。</div>
+                  </div>
+                )
+              }
+              const completed = new Set<number>(completedCurriculum.get(selected.id) ?? [])
+              let legacyExcluded = 0
+              for (const state of problemStates.values()) {
+                if (state.blockId !== selected.id) continue
+                if (state.appearanceCount <= 0) continue
+                const fact = factFromSignature(state.signature)
+                const rank = fact ? curriculum.rank(fact) : null
+                if (rank === null) { legacyExcluded++; continue }
+                completed.add(rank)
+              }
+              let pointer = 0
+              while (pointer < curriculum.count() && completed.has(pointer)) pointer++
+              const nearby = curriculum.neighbors(pointer, 2, 3)
+              const percent = curriculum.count() > 0 ? Math.round(completed.size / curriculum.count() * 1000) / 10 : 0
+              return (
+                <details key={selected.id} className="rounded-xl border border-violet-300/20 bg-violet-400/8 p-3 open:bg-violet-400/10">
+                  <summary className="min-h-11 cursor-pointer list-none rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-extrabold text-violet-100">{label}</div>
+                        <div className="mt-1 text-xs text-violet-200/60">指针 {pointer.toLocaleString()} / {curriculum.count().toLocaleString()} · 版本 {curriculum.version}</div>
+                      </div>
+                      <div className="shrink-0 text-right tabular-nums">
+                        <div className="text-lg font-black text-violet-200">{percent}%</div>
+                        <div className="text-[11px] text-violet-200/50">已覆盖 {completed.size}</div>
+                      </div>
+                    </div>
+                  </summary>
+                  <div className="mt-3 border-t border-violet-200/10 pt-3 text-xs text-violet-100/70">
+                    <div>规范化：加法/乘法按较小操作数在前；零、一和结果为0/1的题全部排除。</div>
+                    <div className="mt-2">当前邻域：</div>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      {nearby.map((fact) => {
+                        const sig = coverageSignature(fact)
+                        const rank = curriculum.rank(fact)!
+                        return <span key={sig} className={`rounded-md border px-2 py-1 tabular-nums ${rank === pointer ? 'border-fuchsia-300/60 bg-fuchsia-300/15 text-fuchsia-100' : 'border-white/10 bg-white/5'}`}>{rank}: {signatureToDisplay(sig)}</span>
+                      })}
+                    </div>
+                    <div className="mt-2">当前阶段：{pointer < curriculum.count() ? curriculum.stageOf(curriculum.unrank(pointer)) : '已完成'}</div>
+                    {legacyExcluded > 0 && <div className="mt-2 text-amber-200">历史排除题：{legacyExcluded} 条（不进入新覆盖率）</div>}
+                  </div>
+                </details>
+              )
+            })}
+          </div>
         </section>
 
         {/* 音效 */}

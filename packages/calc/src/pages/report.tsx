@@ -19,6 +19,13 @@ import {
 } from '../utils/calc-report-stats'
 import { TIER_LABEL, TIER_ORDER, suggestedTiers, type Tier } from '../utils/calc-time-targets'
 import { signatureToDisplay } from '../utils/calc-ast'
+import { curriculumForBlock, factFromSignature } from '../utils/calc-curriculum'
+import {
+  backfillCurriculumHistory,
+  fetchCurriculumCompleted,
+  type CompletedCurriculumMap,
+  type CurriculumHistoryBackfillResult,
+} from '../utils/calc-curriculum-progress'
 import { ERROR_TAG_LABELS } from '../utils/calc-diagnose'
 import type { CalcProblemState, CalcSession, ErrorTag } from '@rosie/core'
 import { todayStr } from '@rosie/core'
@@ -908,6 +915,15 @@ export default function CalcReportPage() {
   const { states: problemStates } = useCalcProblemState(user)
   // Same session stores — no bare supabase select; skip duplicate problem-state load
   const { mistakes } = useCalcMistakes(user, { loadProblemState: false })
+  const [completedCurriculum, setCompletedCurriculum] = useState<CompletedCurriculumMap>(new Map())
+  const [historyRebuild, setHistoryRebuild] = useState<CurriculumHistoryBackfillResult | null>(null)
+  const [historyRebuildError, setHistoryRebuildError] = useState<string | null>(null)
+  const [historyRebuilding, setHistoryRebuilding] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    void fetchCurriculumCompleted(user.id).then(setCompletedCurriculum)
+  }, [user])
 
   const mixedLabels = useMemo(() => {
     const m = new Map<string, string>()
@@ -937,6 +953,44 @@ export default function CalcReportPage() {
     const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7)
     return [...problemStates.values()].filter(s => s.status === 'mastered' && s.updatedAt && new Date(s.updatedAt) >= cutoff)
   }, [problemStates])
+  const curriculumSummary = useMemo(() => {
+    let total = 0, covered = 0, pointerSum = 0, indexedBlocks = 0
+    for (const selected of settings.selectedBlocks) {
+      const curriculum = curriculumForBlock(selected.id)
+      if (!curriculum) continue
+      indexedBlocks++
+      total += curriculum.count()
+      const indices = new Set<number>(completedCurriculum.get(selected.id) ?? [])
+      for (const state of problemStates.values()) {
+        if (state.blockId !== selected.id) continue
+        if (state.appearanceCount <= 0) continue
+        const fact = factFromSignature(state.signature)
+        const rank = fact ? curriculum.rank(fact) : null
+        if (rank !== null) indices.add(rank)
+      }
+      covered += indices.size
+      let pointer = 0
+      while (pointer < curriculum.count() && indices.has(pointer)) pointer++
+      pointerSum += pointer
+    }
+    return { total, covered, pointerSum, indexedBlocks }
+  }, [completedCurriculum, problemStates, settings.selectedBlocks])
+
+  const handleHistoryRebuild = useCallback(async () => {
+    if (!user) return
+    setHistoryRebuilding(true)
+    setHistoryRebuildError(null)
+    try {
+      const result = await backfillCurriculumHistory(user.id, wallet.sessions)
+      setHistoryRebuild(result)
+      setCompletedCurriculum(await fetchCurriculumCompleted(user.id))
+    } catch (error) {
+      console.error('[calc curriculum] history rebuild failed', error)
+      setHistoryRebuildError('历史指针重建失败，请稍后重试。')
+    } finally {
+      setHistoryRebuilding(false)
+    }
+  }, [user, wallet.sessions])
 
   const mistakeStats = useMemo(() => {
     const weekCutoff = new Date(weekStart + 'T00:00:00')
@@ -987,6 +1041,25 @@ export default function CalcReportPage() {
             breakthroughSource={breakthroughSource}
             onDrill={handleDrill}
           />
+        </div>
+        <div style={{ ...ani(0.22), borderRadius: 18, padding: 16, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(196,181,253,0.18)' }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: C.text }}>精确课程进度</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 8, marginTop: 12, textAlign: 'center' }}>
+            <div><div style={{ fontSize: 22, fontWeight: 900, color: C.violet }}>{curriculumSummary.covered.toLocaleString()}</div><div style={{ fontSize: 11, color: C.textFaint }}>已覆盖基础式</div></div>
+            <div><div style={{ fontSize: 22, fontWeight: 900, color: C.green }}>{curriculumSummary.total ? `${Math.round(curriculumSummary.covered / curriculumSummary.total * 1000) / 10}%` : '—'}</div><div style={{ fontSize: 11, color: C.textFaint }}>可索引覆盖率</div></div>
+            <div><div style={{ fontSize: 22, fontWeight: 900, color: C.yellow }}>{curriculumSummary.pointerSum.toLocaleString()}</div><div style={{ fontSize: 11, color: C.textFaint }}>连续完成指针</div></div>
+          </div>
+          <div style={{ marginTop: 10, fontSize: 11, color: C.textFaint }}>统计 {curriculumSummary.indexedBlocks} 个已注册整数题型；交换式合并，零/一恒等题已排除。</div>
+          <button
+            type="button"
+            onClick={() => void handleHistoryRebuild()}
+            disabled={historyRebuilding}
+            style={{ minHeight: 44, marginTop: 12, width: '100%', borderRadius: 12, border: `1px solid ${C.violetBorder}`, background: C.violetGlass, color: C.violet, fontWeight: 800, cursor: historyRebuilding ? 'wait' : 'pointer' }}
+          >
+            {historyRebuilding ? '正在重建历史指针…' : '用全部历史练习重建指针'}
+          </button>
+          {historyRebuild && <div role="status" style={{ marginTop: 8, fontSize: 11, color: C.green }}>已标记 {historyRebuild.tagged} 个基础式；历史排除 {historyRebuild.legacyExcluded} 条；暂不可索引 {historyRebuild.unsupported} 条。</div>}
+          {historyRebuildError && <div role="alert" style={{ marginTop: 8, fontSize: 11, color: C.red }}>{historyRebuildError}</div>}
         </div>
         <div style={ani(0.25)}><Section4 weakStates={weakStates} recentMastered={recentMastered} onDrill={() => router.push('/calc/session?drill=weak-formulas')} /></div>
         <div style={ani(0.32)}><Section5 mistakeStats={mistakeStats} /></div>

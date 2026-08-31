@@ -1,4 +1,4 @@
-import { BLOCKS, blockById, VERTICAL_BLOCK_IDS, type CalcBlock } from './calc-blocks'
+import { blockById, VERTICAL_BLOCK_IDS, type CalcBlock } from './calc-blocks'
 import { addHasCarry, hasAnyCarry, subHasBorrow } from './calc-block-gens'
 import { makeQuestion, parseSignature } from './calc-ast'
 import { assembleMixed, isMixedOpValid } from './calc-mixed'
@@ -10,6 +10,13 @@ import {
   shuffleInPlace,
   unseenSignatures,
 } from './calc-finite'
+import {
+  coverageSignature,
+  curriculumForBlock,
+  factFromSignature,
+  isGloballyEligible,
+  questionFromCurriculum,
+} from './calc-curriculum'
 import type {
   CalcCategory,
   CalcLevel,
@@ -30,6 +37,7 @@ export function coinReward(question: CalcQuestion, streak: number): number {
 
 export interface BuildCtx {
   problemStates: Map<string, CalcProblemState>
+  completedCurriculum?: Map<string, Set<number>>
   /**
    * Pre-truncated mastered rows for the recall slot (fetched via a LIMITed
    * SQL query — see fetchMasteredRecallCandidates). When absent (drills,
@@ -73,7 +81,7 @@ export function buildSession(
   for (const op of settings.mixedOps) {
     if (op.enabled && isMixedOpValid(op)) sources.push({ kind: 'mixed', op })
   }
-  if (sources.length === 0) sources.push({ kind: 'block', block: BLOCKS[0] }) // 兜底 add:10
+  if (sources.length === 0) throw new Error('No valid calculation source is configured')
 
   const states = [...ctx.problemStates.values()]
 
@@ -113,10 +121,10 @@ export function buildSession(
     const n = alloc[i]
     if (n <= 0) return
     if (src.kind === 'block') {
-      out.push(...generateBlock(src.block, n, states, ctx.recallCandidates))
+      out.push(...generateBlock(src.block, n, states, ctx.recallCandidates, ctx.completedCurriculum?.get(src.block.id)))
     } else {
       for (let k = 0; k < n; k++) {
-        const q = assembleMixed(src.op)
+        const q = assembleMixed(src.op, ctx.completedCurriculum)
         out.push({ ...q, sourceMixedOpId: src.op.id })
       }
     }
@@ -268,8 +276,14 @@ function generateBlock(
   n: number,
   states: CalcProblemState[],
   recallCandidates?: CalcProblemState[],
+  persistedCompleted?: Set<number>,
 ): CalcQuestion[] {
+  const curriculum = curriculumForBlock(block.id)
+  if (curriculum) return generateCurriculumBlock(block, n, states, curriculum, persistedCompleted)
   const category: CalcCategory = block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
+  if (block.group === 'add' || block.group === 'sub' || block.group === 'mul' || block.group === 'div') {
+    throw new Error(`Integer block is not exactly indexable: ${block.id}`)
+  }
   const coinBase = category === 'addsub' ? 1 : 2
   const tag = (q: CalcQuestion): CalcQuestion => ({ ...q, sourceBlockId: block.id })
   const blockStates = states.filter((s) => s.blockId === block.id)
@@ -277,7 +291,7 @@ function generateBlock(
 
   // Infinite cold-start: explore until pool has enough rows
   if (!finite && blockStates.length < COLD_START_MIN) {
-    return Array.from({ length: n }, () => tag(block.generateSingle()))
+    return Array.from({ length: n }, () => tag(generateEligibleSingle(block)))
   }
 
   // Spec: recallSlot = max(1, floor(0.05*n)) — but only when SQL-truncated
@@ -360,21 +374,21 @@ function generateBlock(
     const idx = eligible.indexOf(s)
     eligible.splice(idx, 1)
     if (block.noResurface) {
-      out.push(tag(block.generateSingle()))
+      out.push(tag(generateEligibleSingle(block)))
     } else {
       try {
         const ast = parseSignature(s.signature)
         out.push(tag(makeQuestion(ast, 0, category, coinBase)))
         used.add(s.signature)
       } catch {
-        out.push(tag(block.generateSingle()))
+        out.push(tag(generateEligibleSingle(block)))
       }
     }
     maintTaken++
   }
   // Pool empty → single generateSingle per remaining slot (no reject loop)
   while (maintTaken < nMaint) {
-    out.push(tag(block.generateSingle()))
+    out.push(tag(generateEligibleSingle(block)))
     maintTaken++
   }
 
@@ -398,10 +412,82 @@ function generateBlock(
 
   // Pad if still short
   while (out.length < n) {
-    out.push(tag(block.generateSingle()))
+    out.push(tag(generateEligibleSingle(block)))
   }
 
   return out.slice(0, n)
+}
+
+function generateEligibleSingle(block: CalcBlock): CalcQuestion {
+  for (let attempt = 0; attempt < 64; attempt++) {
+    const question = block.generateSingle()
+    const fact = factFromSignature(question.signature)
+    // Decimal/fraction/open-ended blocks are outside the integer curriculum gate.
+    if (!fact || !Number.isInteger(fact.left) || !Number.isInteger(fact.right)) return question
+    if (isGloballyEligible(fact)) return question
+  }
+  throw new Error(`Integer block ${block.id} could not produce an eligible question`)
+}
+
+/** Pointer curriculum: 60% current window, 20% forward, 20% review. */
+function generateCurriculumBlock(
+  block: CalcBlock,
+  n: number,
+  states: CalcProblemState[],
+  curriculum: NonNullable<ReturnType<typeof curriculumForBlock>>,
+  persistedCompleted?: Set<number>,
+): CalcQuestion[] {
+  const completed = new Set<number>(persistedCompleted ?? [])
+  const weak: number[] = []
+  for (const state of states) {
+    if (state.blockId !== block.id) continue
+    const fact = factFromSignature(state.signature)
+    if (!fact) continue
+    const rank = curriculum.rank(fact)
+    if (rank === null) continue
+    if (state.appearanceCount > 0) completed.add(rank)
+    if ((state.status === 'active' || state.status === 'lagging') && state.proficiency < 4) weak.push(rank)
+  }
+
+  let pointer = 0
+  while (pointer < curriculum.count() && completed.has(pointer)) pointer++
+  const windowSize = Math.max(10, n * 2)
+  const currentN = Math.round(n * 0.6)
+  const forwardN = Math.round(n * 0.2)
+  const reviewN = n - currentN - forwardN
+  const chosen: number[] = []
+  const used = new Set<number>()
+  const take = (candidates: number[], amount: number) => {
+    for (const index of candidates) {
+      if (chosen.length >= n || amount <= 0) break
+      if (index < 0 || index >= curriculum.count() || used.has(index)) continue
+      used.add(index); chosen.push(index); amount--
+    }
+  }
+  const range = (start: number, end: number) => {
+    const out: number[] = []
+    for (let i = Math.max(0, start); i < Math.min(curriculum.count(), end); i++) out.push(i)
+    return out
+  }
+  take(shuffleInPlace(range(pointer, pointer + windowSize)), currentN)
+  take(shuffleInPlace(range(pointer + windowSize, pointer + windowSize * 2)), forwardN)
+  take([...new Set([...weak, ...range(Math.max(0, pointer - windowSize), pointer)])], reviewN)
+  take(range(pointer, curriculum.count()), n - chosen.length)
+  take(range(0, pointer), n - chosen.length)
+
+  return chosen.map((index, order) => {
+    const q = questionFromCurriculum(block.id, index, index + order)
+    if (!q) throw new Error(`Missing curriculum question for ${block.id}#${index}`)
+    const fact = curriculum.unrank(index)
+    return {
+      ...q,
+      sourceBlockId: block.id,
+      coverageSignature: coverageSignature(fact),
+      curriculumVersion: curriculum.version,
+      curriculumIndex: index,
+      curriculumStageId: curriculum.stageOf(fact),
+    }
+  })
 }
 
 function recallScore(s: CalcProblemState): number {
@@ -509,7 +595,7 @@ export function buildDrillSession(
     if (!block) return []
     const out: CalcQuestion[] = []
     for (let i = 0; i < count; i++) {
-      const q = block.generateSingle()
+      const q = generateEligibleSingle(block)
       out.push(tagVertical({ ...q, sourceBlockId: block.id }))
     }
     return out

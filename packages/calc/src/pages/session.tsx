@@ -15,6 +15,10 @@ import {
   calcProblemStateStore,
   fetchMasteredRecallCandidates,
 } from '../utils/calc-problem-state-store'
+import {
+  fetchCurriculumCompleted,
+  recordCurriculumCompletions,
+} from '../utils/calc-curriculum-progress'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcQuestionStage from '../components/CalcQuestionStage'
 import CalcSessionStatusBar from '../components/CalcSessionStatusBar'
@@ -267,6 +271,12 @@ export default function CalcSessionPage() {
         display: q.display.replace(/\s*=\s*\?\s*$/, ''),
         targetSec: targetSecForLog(q),
         label: labelForLog(q),
+        displaySignature: q.signature,
+        coverageSignature: q.coverageSignature,
+        curriculumVersion: q.curriculumVersion,
+        curriculumIndex: q.curriculumIndex,
+        stageId: q.curriculumStageId,
+        isMakeup: q.isMakeup ?? false,
       }
       questionLogRef.current.push(entry)
     },
@@ -550,6 +560,7 @@ export default function CalcSessionPage() {
           blockIds,
           recallSlot,
         )
+        const completedCurriculum = await fetchCurriculumCompleted(user.id)
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
         // Read from the store snapshot (post-reconcile), not the hook's state.
@@ -559,7 +570,7 @@ export default function CalcSessionPage() {
         )
         const session = buildSession(
           settings,
-          { problemStates: loadedStates, recallCandidates },
+          { problemStates: loadedStates, recallCandidates, completedCurriculum },
           carried,
         )
         setQuestions(session)
@@ -713,6 +724,13 @@ export default function CalcSessionPage() {
       // Refresh loadedStatesRef so DrillSummary reads updated proficiency (not pre-drill snapshot).
       for (const state of nextStates) {
         loadedStatesRef.current.set(state.signature, state)
+      }
+      try {
+        await recordCurriculumCompletions(user.id, nextStates)
+      } catch (error) {
+        // The permanent session log remains the recovery source. A later history
+        // rebuild can safely recreate these derived completion markers.
+        console.error('[calc curriculum] failed to persist completion markers', error)
       }
     }
 

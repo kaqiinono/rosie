@@ -432,6 +432,13 @@ export interface CalcQuestion {
   sourceMixedOpId?: string
   /** How this question is answered. Absent/'pad' = number pad; 'vertical' = column (竖式) layout. */
   answerMode?: 'pad' | 'vertical'
+  /** Normalized single-op identity used by curriculum coverage (add/mul are commutative). */
+  coverageSignature?: string
+  curriculumVersion?: number
+  curriculumIndex?: number
+  curriculumStageId?: string
+  /** True only for a retry/make-up occurrence, which may repeat within one session. */
+  isMakeup?: boolean
 }
 
 export type CalcSkeletonId =
@@ -596,6 +603,14 @@ export interface QuestionLogEntry {
    * `ok=false`, `finallyOk=true`. Weak list must use `!finallyOk`, not `!ok`.
    */
   finallyOk?: boolean
+  /** Exact displayed expression identity and normalized curriculum identity. */
+  displaySignature?: string
+  coverageSignature?: string
+  curriculumVersion?: number
+  curriculumIndex?: number
+  stageId?: string
+  isMakeup?: boolean
+  legacyExcluded?: boolean
 }
 
 export interface CalcSession {
