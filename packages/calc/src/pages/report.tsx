@@ -22,6 +22,8 @@ import { signatureToDisplay } from '../utils/calc-ast'
 import { ERROR_TAG_LABELS } from '../utils/calc-diagnose'
 import { CalcCoverageMap } from '../components/CalcCoverageMap'
 import { CALC_FEATURES } from '../utils/calc-features'
+import { getCalcReportSummary } from '../utils/calc-server-api'
+import type { CalcReportSummaryResponse } from '../utils/calc-server-read-contract'
 import {
   calcCurriculumSnapshotStore,
   rebuildCurriculumSnapshots,
@@ -1636,7 +1638,24 @@ export default function CalcReportPage() {
   const { user } = useAuth()
   const wallet = useCalcWallet(user, { loadSessions: true })
   const { settings } = useCalcSettings(user)
-  const { states: problemStates } = useCalcProblemState(user)
+  const { states: problemStates } = useCalcProblemState(user, {
+    autoLoad: !CALC_FEATURES.serverReport || reportTab === 'weakness',
+  })
+  const [serverSummary, setServerSummary] = useState<CalcReportSummaryResponse | null>(null)
+  useEffect(() => {
+    if (!user || !CALC_FEATURES.serverReport) return
+    let cancelled = false
+    void getCalcReportSummary()
+      .then((summary) => {
+        if (!cancelled) setServerSummary(summary)
+      })
+      .catch((error: unknown) => {
+        console.warn('[calc report] server summary unavailable; using compatibility view', error)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
   const { data: curriculumSnapshots } = calcCurriculumSnapshotStore.useSessionData(user)
   const snapshotBootstrapRef = useRef<string | null>(null)
   useEffect(() => {
@@ -1814,6 +1833,19 @@ export default function CalcReportPage() {
         </nav>
         {reportTab === 'coverage' && CALC_FEATURES.coverageReport && (
           <div style={ani(0.02)}>
+            {serverSummary && (
+              <div
+                style={{
+                  ...baseCard,
+                  marginBottom: 12,
+                  color: C.textDim,
+                  fontSize: 12,
+                }}
+              >
+                服务端汇总 · {serverSummary.blocks.length} 个题型 · revision{' '}
+                {serverSummary.revision}
+              </div>
+            )}
             <CalcCoverageMap
               states={problemStates}
               sessions={wallet.sessions}

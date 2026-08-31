@@ -48,17 +48,18 @@ sql/
 └── calc-autosubmit-on-match.sql  # ADD COLUMN auto_submit_on_match on calc_settings
 ```
 
-`calc_curriculum_snapshots` and its migration are an unverified rollout prototype: do not assume
-the migration has run remotely and do not rewrite it until every environment's migration ledger is
-checked. The additive unified-state foundation introduces the final registry/runtime/
-`calc_block_progress` contract behind default-off feature flags. During the compatibility window,
-the prototype read/write path remains available and legacy writes are not removed.
+`calc_curriculum_snapshots` was an unverified rollout prototype and was confirmed absent from the
+remote migration ledger. Its local migration and client request were removed on 2026-09-01;
+`calc_block_progress` is the only compact progress projection. It is read through the legacy-named
+in-memory snapshot adapter so the arithmetic engine can keep using finite-index sets without a
+second database writer. During the compatibility window, legacy mistake writes remain available.
 `calc_sessions.question_log` is the permanent practice fact; `calc_problem_state` and block
 progress are rebuildable current projections.
-Production received the additive foundation, registry v1 activation, reward idempotency index, and
-settlement/report/details RPCs on 2026-08-31. The unified client path remains default-off until the
-matching web build is deployed and authenticated smoke-tested. Do not drop legacy tables merely
-because the RPC exists; the cutover/observation gate still applies.
+Production received the additive foundation, registry v1 activation, reward idempotency index,
+settlement/report/details RPCs on 2026-08-31 and bounded `prepare_calc_session` on 2026-09-01.
+Unified settlement has passed authenticated Preview smoke tests. Server selection and report remain
+independent rollback flags; do not drop legacy tables merely because the RPCs exist—the production
+observation gate still applies.
 
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not
 introduce a path alias — Next compiles this package via `transpilePackages` and only the app's

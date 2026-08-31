@@ -53,7 +53,11 @@ import { coverageUniverse } from '../utils/calc-coverage'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildBySourceFromLog, buildNewWeakFromLog } from '../utils/calc-session-summary'
 import { CALC_FEATURES } from '../utils/calc-features'
-import { getCalcRuntimeRevision, settleCalcSession } from '../utils/calc-server-api'
+import {
+  getCalcRuntimeRevision,
+  prepareCalcSession,
+  settleCalcSession,
+} from '../utils/calc-server-api'
 import { CALC_SETTLEMENT_SCHEMA_VERSION } from '../utils/calc-settlement-contract'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
@@ -116,7 +120,7 @@ export default function CalcSessionPage() {
     recordCorrect,
     refresh: refreshMistakes,
   } = useCalcMistakes(user)
-  const problemState = useCalcProblemState(user)
+  const problemState = useCalcProblemState(user, { autoLoad: !CALC_FEATURES.serverSelection })
 
   const mode: CalcMode = useMemo(() => {
     const m = params.get('mode')
@@ -590,15 +594,44 @@ export default function CalcSessionPage() {
         return
       }
 
-      // Load all of the user's problem states so buildSession can weight toward weak ones.
-      // Use the returned map directly — `problemState.states` is still the stale
-      // pre-load value within this same closure (React state updates async).
-      const loadedStates = await problemState.loadAll()
+      // Server mode loads only bounded hot candidates; compatibility mode loads
+      // the full projection. Use the returned map directly because React state
+      // updates are asynchronous inside this closure.
+      let loadedStates: Map<string, CalcProblemState>
+      let preparedRecallCandidates: CalcProblemState[] | null = null
+      if (CALC_FEATURES.serverSelection) {
+        try {
+          const blockIds = settings.selectedBlocks.map((block) => block.id)
+          const revision = await getCalcRuntimeRevision()
+          const prepared = await prepareCalcSession({
+            blockIds,
+            mode,
+            count: Math.min(200, Math.max(1, settings.lastCount * 4)),
+            expectedRevision: revision,
+          })
+          loadedStates = new Map(
+            prepared.candidates.map(({ state }) => [state.signature, state] as const),
+          )
+          preparedRecallCandidates = prepared.candidates
+            .filter(({ state }) => state.status === 'mastered')
+            .map(({ state }) => state)
+        } catch (error: unknown) {
+          console.warn(
+            '[calc session] server preparation unavailable; using compatibility load',
+            error,
+          )
+          loadedStates = await problemState.loadAll()
+        }
+      } else {
+        loadedStates = await problemState.loadAll()
+      }
       // Mistakes MUST be in the store before reconcile / carry — the hook's
       // `mistakes` state may still be empty on a cold visit to /calc/session.
       await calcMistakesStore.ensureLoaded(user.id)
       // Reconcile hanging mistakes vs mastered (deadlock repair)
-      await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+      if (!CALC_FEATURES.serverSelection) {
+        await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+      }
       // Reconcile may have resolved/demoted rows — refresh the local snapshot.
       const reconciledStates = calcProblemStateStore.getSessionData(user.id) ?? {}
       for (const [sig, st] of Object.entries(reconciledStates)) {
@@ -628,7 +661,9 @@ export default function CalcSessionPage() {
         // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
         const blockIds = settings.selectedBlocks.map((b) => b.id)
         const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
-        const recallCandidates = await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot)
+        const recallCandidates =
+          preparedRecallCandidates ??
+          (await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot))
         await calcCurriculumSnapshotStore.ensureLoaded(user.id)
         const curriculumSnapshots = calcCurriculumSnapshotStore.getSessionData(user.id) ?? new Map()
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
@@ -790,7 +825,9 @@ export default function CalcSessionPage() {
     const nextStates: CalcProblemState[] = []
     for (const group of grouped.values()) {
       const first = group[0]
-      let state = problemState.getState(first.signature, first.level)
+      let state =
+        loadedStatesRef.current.get(first.signature) ??
+        problemState.getState(first.signature, first.level)
       for (const a of group) {
         state = applyAttempt(
           state,

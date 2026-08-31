@@ -60,6 +60,102 @@ function usage(): void {
   console.log('pnpm calc:progress -- registry-sql')
   console.log('pnpm calc:progress -- audit-registry scripts/calc-curriculum-registry.json')
   console.log('pnpm calc:progress -- compare-legacy-mistakes --user <uuid>  # read-only')
+  console.log('pnpm calc:progress -- audit --user <uuid>  # read-only')
+}
+
+async function serviceClient() {
+  const { createClient } = await import('../packages/core/node_modules/@supabase/supabase-js')
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    throw new Error('需要 NEXT_PUBLIC_SUPABASE_URL 和 SUPABASE_SERVICE_ROLE_KEY')
+  }
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
+}
+
+async function auditUser(userId: string): Promise<void> {
+  const client = await serviceClient()
+  const [runtimeResult, progressResult, sessionResult, mistakeResult, stateResult] =
+    await Promise.all([
+      client
+        .from('calc_user_runtime')
+        .select('state_revision,last_session_no')
+        .eq('user_id', userId)
+        .maybeSingle(),
+      client
+        .from('calc_block_progress')
+        .select(
+          'block_id,curriculum_version,universe_size,covered_count,within_target_count,fluent_count,mastered_count,applied_revision,health_status',
+        )
+        .eq('user_id', userId),
+      client
+        .from('calc_sessions')
+        .select('id,session_no,state_revision,idempotency_key,question_log')
+        .eq('user_id', userId)
+        .not('idempotency_key', 'is', null)
+        .order('session_no', { ascending: false })
+        .limit(500),
+      client.from('calc_mistakes').select('signature,resolved').eq('user_id', userId),
+      client
+        .from('calc_problem_state')
+        .select('signature,needs_remediation,applied_revision')
+        .eq('user_id', userId),
+    ])
+  for (const result of [runtimeResult, progressResult, sessionResult, mistakeResult, stateResult]) {
+    if (result.error) throw new Error(result.error.message)
+  }
+  const sessions = sessionResult.data ?? []
+  const duplicateKeys = new Set<string>()
+  const seenKeys = new Set<string>()
+  let incompleteFacts = 0
+  for (const session of sessions) {
+    if (session.idempotency_key) {
+      if (seenKeys.has(session.idempotency_key)) duplicateKeys.add(session.idempotency_key)
+      seenKeys.add(session.idempotency_key)
+    }
+    if (
+      !Array.isArray(session.question_log) ||
+      session.question_log.some(
+        (entry) =>
+          typeof entry !== 'object' ||
+          entry === null ||
+          !('signature' in entry) ||
+          !('ms' in entry),
+      )
+    ) {
+      incompleteFacts += 1
+    }
+  }
+  const unresolved = new Set(
+    (mistakeResult.data ?? []).filter((row) => !row.resolved).map((row) => row.signature),
+  )
+  const remediation = new Set(
+    (stateResult.data ?? [])
+      .filter((row) => row.needs_remediation)
+      .map((row) => row.signature),
+  )
+  const projectionMismatch = new Set([...unresolved, ...remediation].filter(
+    (signature) => unresolved.has(signature) !== remediation.has(signature),
+  ))
+  console.log(
+    JSON.stringify(
+      {
+        user: sha256(userId).slice(0, 12),
+        runtime: runtimeResult.data,
+        unifiedSessions: sessions.length,
+        incompleteSessionFacts: incompleteFacts,
+        duplicateIdempotencyKeys: duplicateKeys.size,
+        progressRows: progressResult.data?.length ?? 0,
+        unhealthyProgressRows: (progressResult.data ?? []).filter(
+          (row) => row.health_status !== 'healthy',
+        ).length,
+        remediationProjectionMismatch: projectionMismatch.size,
+        rebuildSafe: incompleteFacts === 0 && duplicateKeys.size === 0,
+      },
+      null,
+      2,
+    ),
+  )
 }
 
 function option(args: string[], name: string): string | undefined {
@@ -176,6 +272,12 @@ async function main(): Promise<void> {
     const userId = option(args, '--user')
     if (!userId) throw new Error('compare-legacy-mistakes 必须显式提供 --user <uuid>')
     await compareLegacyMistakes(userId)
+    return
+  }
+  if (command === 'audit') {
+    const userId = option(args, '--user')
+    if (!userId) throw new Error('audit 必须显式提供 --user <uuid>；禁止默认全量扫描')
+    await auditUser(userId)
     return
   }
   throw new Error(`未知命令：${command}`)

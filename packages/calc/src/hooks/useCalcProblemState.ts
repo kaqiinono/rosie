@@ -25,9 +25,14 @@ export interface UseCalcProblemStateReturn {
   upsertStates: (next: CalcProblemState[]) => Promise<void>
 }
 
-export function useCalcProblemState(user: User | null): UseCalcProblemStateReturn {
+export function useCalcProblemState(
+  user: User | null,
+  options: { autoLoad?: boolean } = {},
+): UseCalcProblemStateReturn {
   const userId = user?.id ?? null
-  const { data: stateRecord, isLoading } = calcProblemStateStore.useSessionData(user)
+  const { data: stateRecord, isLoading } = calcProblemStateStore.useSessionData(
+    options.autoLoad === false ? null : user,
+  )
 
   const states = useMemo(() => new Map(Object.entries(stateRecord)), [stateRecord])
 

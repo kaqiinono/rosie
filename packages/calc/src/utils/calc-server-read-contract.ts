@@ -1,4 +1,4 @@
-import type { CalcProblemState, CalcQuestion, CalcSelectionReason } from '@rosie/core'
+import type { CalcProblemState, CalcSelectionReason } from '@rosie/core'
 
 export const CALC_PREPARE_MAX_BLOCKS = 50
 export const CALC_PREPARE_MAX_QUESTIONS = 200
@@ -21,7 +21,7 @@ export interface PrepareCalcSessionRequest {
 }
 
 export interface PreparedCalcCandidate {
-  question: CalcQuestion
+  state: CalcProblemState
   selectionReason: CalcSelectionReason
 }
 

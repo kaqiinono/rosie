@@ -10,7 +10,10 @@ export const CALC_FEATURES = {
   adaptiveProgression: enabled(process.env.NEXT_PUBLIC_CALC_ADAPTIVE_PROGRESSION, true),
   conceptCoverage: enabled(process.env.NEXT_PUBLIC_CALC_CONCEPT_COVERAGE, true),
   unifiedSettlement: enabled(process.env.NEXT_PUBLIC_CALC_UNIFIED_SETTLEMENT, false),
-  blockProgress: enabled(process.env.NEXT_PUBLIC_CALC_BLOCK_PROGRESS, false),
+  blockProgress: enabled(
+    process.env.NEXT_PUBLIC_CALC_BLOCK_PROGRESS,
+    enabled(process.env.NEXT_PUBLIC_CALC_UNIFIED_SETTLEMENT, false),
+  ),
   serverSelection: enabled(process.env.NEXT_PUBLIC_CALC_SERVER_SELECTION, false),
   serverReport: enabled(process.env.NEXT_PUBLIC_CALC_SERVER_REPORT, false),
 } as const

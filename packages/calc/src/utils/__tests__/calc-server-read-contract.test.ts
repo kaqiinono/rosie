@@ -32,7 +32,7 @@ describe('bounded calc server read contracts', () => {
       validatePreparedResponse({
         revision: 1,
         candidates: Array.from({ length: CALC_PREPARE_MAX_QUESTIONS + 1 }, () => ({
-          question: {} as never,
+          state: {} as never,
           selectionReason: 'coverage',
         })),
         blocks: [],
