@@ -12,6 +12,7 @@ import {
   pickNonAdjacentJellyPresets,
   type JellyPresetKey,
 } from '@rosie/ui'
+import { acceptedSpellings, normalizeSpelling } from '../../utils/english-helpers'
 
 export type SpellButtonStyle = 'candy' | 'jelly'
 
@@ -60,7 +61,23 @@ export default function SpellTiles({
   onRetryAcknowledged,
   revealedHalf,
 }: SpellTilesProps) {
-  const segments = useMemo(() => word.split(''), [word])
+  // The catalog may store a British spelling plus an AmE alternative. Do not
+  // make the learner spell the annotation itself; size the board for either
+  // real spelling and allow submission as soon as one is complete.
+  const spellingAnswers = useMemo(
+    () => acceptedSpellings(word).filter((answer) => !/[()]/.test(answer)),
+    [word],
+  )
+  const slotTemplate = useMemo(
+    () =>
+      spellingAnswers.reduce(
+        (longest, answer) => (answer.length > longest.length ? answer : longest),
+        spellingAnswers[0] ?? word,
+      ),
+    [spellingAnswers, word],
+  )
+  const primarySpelling = spellingAnswers[0] ?? word
+  const segments = useMemo(() => slotTemplate.split(''), [slotTemplate])
 
   const segmentSlots = useMemo(() => {
     const result: { start: number; end: number }[] = []
@@ -72,10 +89,10 @@ export default function SpellTiles({
     return result
   }, [segments])
 
-  const lockedCount = revealedHalf && revealedHalf > 0 ? Math.min(revealedHalf, word.length) : 0
+  const lockedCount = revealedHalf && revealedHalf > 0 ? Math.min(revealedHalf, primarySpelling.length) : 0
 
   const [poolState] = useState<PoolState>(() => {
-    const letters = word.replace(/ /g, '').split('')
+    const letters = spellingAnswers.join('').replace(/ /g, '').split('')
     const uniqueLetters = [...new Set(letters)].sort()
     const wordLetterSet = new Set(uniqueLetters)
     const alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -162,12 +179,18 @@ export default function SpellTiles({
   const pool = poolState.pool
 
   const [placed, setPlaced] = useState<(string | null)[]>(() => {
-    const arr: (string | null)[] = Array(word.length).fill(null)
-    for (let i = 0; i < lockedCount; i++) arr[i] = word[i]
+    const arr: (string | null)[] = Array(slotTemplate.length).fill(null)
+    for (let i = 0; i < lockedCount; i++) arr[i] = primarySpelling[i]
     return arr
   })
 
-  const allFilled = placed.length === word.length && placed.every((p) => p !== null)
+  const enteredSpelling = placed.filter((letter) => letter !== null).join('')
+  const minimumAnswerLength = spellingAnswers.reduce(
+    (minimum, answer) => Math.min(minimum, normalizeSpelling(answer).length),
+    Number.POSITIVE_INFINITY,
+  )
+  const canSubmit = normalizeSpelling(enteredSpelling).length >= minimumAnswerLength
+  const allFilled = placed.length === slotTemplate.length && placed.every((p) => p !== null)
 
   const tileSizeSmall =
     'w-12 h-12 text-[1.1rem] sm:w-14 sm:h-14 sm:text-[1.25rem] md:w-16 md:h-16 md:text-[1.4rem]'
@@ -210,10 +233,20 @@ export default function SpellTiles({
     if (attempt === 'retry') {
       const correct = new Set<number>()
       const wrong = new Set<number>()
-      for (let i = 0; i < word.length; i++) {
+      const submitted = placed.filter((letter) => letter !== null).join('')
+      const comparisonAnswer = spellingAnswers.reduce((best, answer) => {
+        const bestMatches = Array.from(best).filter(
+          (char, index) => submitted[index]?.toLowerCase() === char.toLowerCase(),
+        ).length
+        const answerMatches = Array.from(answer).filter(
+          (char, index) => submitted[index]?.toLowerCase() === char.toLowerCase(),
+        ).length
+        return answerMatches > bestMatches ? answer : best
+      }, spellingAnswers[0] ?? primarySpelling)
+      for (let i = 0; i < slotTemplate.length; i++) {
         const ch = placed[i]
         if (ch == null) continue
-        if (ch.toLowerCase() === word[i].toLowerCase()) correct.add(i)
+        if (ch.toLowerCase() === comparisonAnswer[i]?.toLowerCase()) correct.add(i)
         else wrong.add(i)
       }
       setRetryFeedback({ correct, wrong })
@@ -366,7 +399,7 @@ export default function SpellTiles({
         ))}
 
       {/* Confirm button — warm honey amber, encouraging not alarming */}
-      {allFilled && !answered && (
+      {canSubmit && !answered && (
         <button
           type="button"
           onClick={handleConfirm}

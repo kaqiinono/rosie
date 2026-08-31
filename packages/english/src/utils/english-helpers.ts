@@ -1,6 +1,36 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from '@rosie/core'
 import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 
+/**
+ * Return every spelling accepted for a vocabulary entry.
+ *
+ * Entries such as `honour (AmE honor)` accept the British spelling, the
+ * American spelling, and the full catalog value. The AmE text may itself be a
+ * phrase, for example `do a favour (AmE do a favor)`.
+ */
+export function acceptedSpellings(word: string): string[] {
+  const clean = (value: string) => value.replace(/\s+/g, ' ').trim()
+  const parentheticals = Array.from(word.matchAll(/\(([^)]+)\)/g), (match) => match[1].trim())
+  const primary = clean(word.replace(/\s*\([^)]+\)\s*/g, ' '))
+  const aliases = parentheticals
+    .map((content) => content.match(/^(?:AmE|also)\s+(.+)$/i)?.[1]?.trim())
+    .filter((value): value is string => Boolean(value))
+  const optionalText = parentheticals.some((content) => !/^(?:AmE|also)\s+/i.test(content) && !/^(?:verb|noun|adjective|adverb)$/i.test(content))
+    ? clean(word.replace(/\(([^)]+)\)/g, '$1'))
+    : ''
+
+  return Array.from(new Set([primary, ...aliases, optionalText, clean(word)].filter(Boolean)))
+}
+
+export function normalizeSpelling(value: string): string {
+  return value.trim().replace(/\s+/g, ' ').toLowerCase()
+}
+
+export function isAcceptedSpelling(value: string, word: string): boolean {
+  const normalized = normalizeSpelling(value)
+  return acceptedSpellings(word).some((answer) => normalizeSpelling(answer) === normalized)
+}
+
 export function escHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }

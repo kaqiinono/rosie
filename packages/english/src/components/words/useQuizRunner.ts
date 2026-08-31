@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { QuizQuestion } from '@rosie/core'
+import { isAcceptedSpelling } from '../../utils/english-helpers'
 
 export type QuizAttempt = 'first' | 'retry' | 'done'
 
@@ -117,7 +118,7 @@ export function useQuizRunner({
   const handleSpellSubmit = useCallback(
     (val: string) => {
       if (!question || attempt === 'done') return
-      const correct = val.trim().toLowerCase() === question.word.word.toLowerCase()
+      const correct = isAcceptedSpelling(val, question.word.word)
       setSpellOk(correct)
       if (correct) {
         finish(true, attempt === 'retry')
