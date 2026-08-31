@@ -248,6 +248,14 @@ BEGIN
         CASE WHEN COALESCE((progress_item->>'fluent')::boolean, false) THEN 1 ELSE 0 END),
       formula_mastered_bits = set_bit(formula_mastered_bits, target_index,
         CASE WHEN COALESCE((progress_item->>'mastered')::boolean, false) THEN 1 ELSE 0 END),
+      covered_count = bit_count(CASE WHEN COALESCE((progress_item->>'covered')::boolean, false)
+        THEN set_bit(formula_covered_bits, target_index, 1) ELSE formula_covered_bits END)::integer,
+      within_target_count = bit_count(CASE WHEN COALESCE((progress_item->>'within_target')::boolean, false)
+        THEN set_bit(formula_within_target_bits, target_index, 1) ELSE formula_within_target_bits END)::integer,
+      fluent_count = bit_count(set_bit(formula_fluent_bits, target_index,
+        CASE WHEN COALESCE((progress_item->>'fluent')::boolean, false) THEN 1 ELSE 0 END))::integer,
+      mastered_count = bit_count(set_bit(formula_mastered_bits, target_index,
+        CASE WHEN COALESCE((progress_item->>'mastered')::boolean, false) THEN 1 ELSE 0 END))::integer,
       applied_revision = next_revision, health_status = 'healthy', updated_at = now()
     WHERE user_id = owner_id AND block_id = target_block
       AND curriculum_version = target_version
