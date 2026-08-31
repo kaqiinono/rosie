@@ -4,6 +4,7 @@ import { hasIndependentAttempt, hasWithinTargetAttempt } from './calc-evidence'
 import { learningStatusFromEvidence } from './calc-mastery'
 import { parseSignature, signatureOf, type AstNode } from './calc-ast'
 import { enumerateFinite } from './calc-finite'
+import type { CurriculumSnapshot, CurriculumSnapshotMap } from './calc-curriculum-snapshot'
 
 export type LearningStatus = 'unseen' | 'learning' | 'fluent' | 'mastered' | 'review-due'
 
@@ -252,6 +253,7 @@ export function learningStatusOf(state: CalcProblemState | undefined): LearningS
 export function calculateBlockCoverage(
   universe: FiniteUniverse,
   states: Map<string, CalcProblemState>,
+  snapshot?: CurriculumSnapshot,
 ): BlockCoverage {
   let covered = 0
   let withinTarget = 0
@@ -260,15 +262,23 @@ export function calculateBlockCoverage(
   let reviewDue = 0
   const missingSignatures: string[] = []
   const buckets = new Map<string, CoverageBucket>()
+  const compatibleSnapshot =
+    snapshot?.version === universe.version && snapshot.universeSize === universe.size
+      ? snapshot
+      : undefined
 
   for (let index = 0; index < universe.size; index++) {
     const signature = universe.signatureAt(index)
     const state = states.get(signature)
     const status = learningStatusOf(state)
-    const isCovered = hasIndependentAttempt(state)
-    const isWithin = hasWithinTargetAttempt(state)
-    const isFluent = status === 'fluent' || status === 'mastered'
-    const isMastered = status === 'mastered'
+    // A loaded hot state is newer and may represent regression. Otherwise the
+    // compact snapshot supplies durable coverage and the last settled tier.
+    const isCovered = hasIndependentAttempt(state) || !!compatibleSnapshot?.covered.has(index)
+    const isWithin = hasWithinTargetAttempt(state) || !!compatibleSnapshot?.withinTarget.has(index)
+    const isFluent = state
+      ? status === 'fluent' || status === 'mastered'
+      : !!compatibleSnapshot?.fluent.has(index)
+    const isMastered = state ? status === 'mastered' : !!compatibleSnapshot?.mastered.has(index)
     const isReviewDue = status === 'review-due'
 
     if (isCovered) covered++
@@ -315,8 +325,13 @@ export function calculateBlockCoverage(
   }
 }
 
-export function calculateAllCoverage(states: Map<string, CalcProblemState>): BlockCoverage[] {
-  return UNIVERSES.map((universe) => calculateBlockCoverage(universe, states))
+export function calculateAllCoverage(
+  states: Map<string, CalcProblemState>,
+  snapshots?: CurriculumSnapshotMap,
+): BlockCoverage[] {
+  return UNIVERSES.map((universe) =>
+    calculateBlockCoverage(universe, states, snapshots?.get(universe.blockId)),
+  )
 }
 
 export function calculateConceptCoverage(

@@ -24,7 +24,8 @@
     "grammar:extract": "node scripts/extract-grammar-unit.mjs",
     "grammar:render-pdf": "node scripts/extract-grammar-pdf.mjs",
     "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs",
-    "calc:audit": "node --import jiti/register scripts/calc-audit.ts"
+    "calc:audit": "node --import jiti/register scripts/calc-audit.ts",
+    "calc:progress": "node --import jiti/register scripts/calc-progress-maintenance.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

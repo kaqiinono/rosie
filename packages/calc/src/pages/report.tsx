@@ -22,6 +22,10 @@ import { signatureToDisplay } from '../utils/calc-ast'
 import { ERROR_TAG_LABELS } from '../utils/calc-diagnose'
 import { CalcCoverageMap } from '../components/CalcCoverageMap'
 import { CALC_FEATURES } from '../utils/calc-features'
+import {
+  calcCurriculumSnapshotStore,
+  rebuildCurriculumSnapshots,
+} from '../utils/calc-curriculum-snapshot'
 import type { CalcProblemState, CalcSession, ErrorTag } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
@@ -1633,6 +1637,14 @@ export default function CalcReportPage() {
   const wallet = useCalcWallet(user, { loadSessions: true })
   const { settings } = useCalcSettings(user)
   const { states: problemStates } = useCalcProblemState(user)
+  const { data: curriculumSnapshots } = calcCurriculumSnapshotStore.useSessionData(user)
+  const snapshotBootstrapRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!user || problemStates.size === 0 || curriculumSnapshots.size > 0) return
+    if (snapshotBootstrapRef.current === user.id) return
+    snapshotBootstrapRef.current = user.id
+    void rebuildCurriculumSnapshots(user.id, problemStates.values())
+  }, [curriculumSnapshots.size, problemStates, user])
   // Same session stores — no bare supabase select; skip duplicate problem-state load
   const { mistakes } = useCalcMistakes(user, { loadProblemState: false })
 
@@ -1748,17 +1760,56 @@ export default function CalcReportPage() {
           gap: 20,
         }}
       >
-        <nav aria-label="报告功能" role="tablist" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, padding: 4, borderRadius: 16, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}` }}>
-          {([
-            ['overview', '总览', '趋势与完成情况'],
-            ['coverage', '覆盖地图', '看清练过哪些'],
-            ['weakness', '薄弱分析', '集中解决问题'],
-          ] as const).map(([value, label, hint]) => {
+        <nav
+          aria-label="报告功能"
+          role="tablist"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: 6,
+            padding: 4,
+            borderRadius: 16,
+            background: 'rgba(255,255,255,0.05)',
+            border: `1px solid ${C.border}`,
+          }}
+        >
+          {(
+            [
+              ['overview', '总览', '趋势与完成情况'],
+              ['coverage', '覆盖地图', '看清练过哪些'],
+              ['weakness', '薄弱分析', '集中解决问题'],
+            ] as const
+          ).map(([value, label, hint]) => {
             const active = reportTab === value
-            return <button key={value} type="button" role="tab" aria-selected={active} onClick={() => setReportTab(value)} style={{ border: 0, borderRadius: 12, padding: '10px 6px', background: active ? 'rgba(196,181,253,0.16)' : 'transparent', color: active ? C.violet : C.textDim, cursor: 'pointer' }}>
-              <span style={{ display: 'block', fontSize: 13, fontWeight: 800 }}>{label}</span>
-              <span style={{ display: 'block', marginTop: 3, fontSize: 10, color: active ? C.text : C.textFaint }}>{hint}</span>
-            </button>
+            return (
+              <button
+                key={value}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setReportTab(value)}
+                style={{
+                  border: 0,
+                  borderRadius: 12,
+                  padding: '10px 6px',
+                  background: active ? 'rgba(196,181,253,0.16)' : 'transparent',
+                  color: active ? C.violet : C.textDim,
+                  cursor: 'pointer',
+                }}
+              >
+                <span style={{ display: 'block', fontSize: 13, fontWeight: 800 }}>{label}</span>
+                <span
+                  style={{
+                    display: 'block',
+                    marginTop: 3,
+                    fontSize: 10,
+                    color: active ? C.text : C.textFaint,
+                  }}
+                >
+                  {hint}
+                </span>
+              </button>
+            )
           })}
         </nav>
         {reportTab === 'coverage' && CALC_FEATURES.coverageReport && (
@@ -1769,40 +1820,53 @@ export default function CalcReportPage() {
               mixedOps={settings.mixedOps}
               selectedBlockIds={settings.selectedBlocks.map((block) => block.id)}
               adaptiveExpansionEnabled={settings.adaptiveExpansionEnabled}
+              curriculumSnapshots={curriculumSnapshots}
             />
           </div>
         )}
-        {reportTab === 'overview' && <div style={ani(0.04)}>
-          <Section1
-            breakthroughSource={breakthroughSource}
-            slowestGroup={slowestGroup}
-            onDrill={handleDrill}
-          />
-        </div>}
-        {reportTab === 'overview' && <div style={ani(0.11)}>
-          <Section2 sessions={wallet.sessions} periodData={periodData} weekStart={weekStart} />
-        </div>}
-        {reportTab === 'overview' && <div style={ani(0.18)}>
-          <Section3
-            groupStats={groupStats}
-            stats={stats}
-            breakthroughSource={breakthroughSource}
-            onDrill={handleDrill}
-          />
-        </div>}
-        {reportTab === 'weakness' && <div style={ani(0.25)}>
-          <Section4
-            weakStates={weakStates}
-            recentMastered={recentMastered}
-            onDrill={() => router.push('/calc/session?drill=weak-formulas')}
-          />
-        </div>}
-        {reportTab === 'weakness' && <div style={ani(0.32)}>
-          <Section5 mistakeStats={mistakeStats} />
-        </div>}
-        {reportTab === 'weakness' && <div style={ani(0.39)}>
-          <Section6 sessions={wallet.sessions} />
-        </div>}
+        {reportTab === 'overview' && (
+          <div style={ani(0.04)}>
+            <Section1
+              breakthroughSource={breakthroughSource}
+              slowestGroup={slowestGroup}
+              onDrill={handleDrill}
+            />
+          </div>
+        )}
+        {reportTab === 'overview' && (
+          <div style={ani(0.11)}>
+            <Section2 sessions={wallet.sessions} periodData={periodData} weekStart={weekStart} />
+          </div>
+        )}
+        {reportTab === 'overview' && (
+          <div style={ani(0.18)}>
+            <Section3
+              groupStats={groupStats}
+              stats={stats}
+              breakthroughSource={breakthroughSource}
+              onDrill={handleDrill}
+            />
+          </div>
+        )}
+        {reportTab === 'weakness' && (
+          <div style={ani(0.25)}>
+            <Section4
+              weakStates={weakStates}
+              recentMastered={recentMastered}
+              onDrill={() => router.push('/calc/session?drill=weak-formulas')}
+            />
+          </div>
+        )}
+        {reportTab === 'weakness' && (
+          <div style={ani(0.32)}>
+            <Section5 mistakeStats={mistakeStats} />
+          </div>
+        )}
+        {reportTab === 'weakness' && (
+          <div style={ani(0.39)}>
+            <Section6 sessions={wallet.sessions} />
+          </div>
+        )}
       </div>
     </>
   )

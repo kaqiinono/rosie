@@ -48,6 +48,18 @@ sql/
 └── calc-autosubmit-on-match.sql  # ADD COLUMN auto_submit_on_match on calc_settings
 ```
 
+`calc_curriculum_snapshots` and its migration are an unverified rollout prototype: do not assume
+the migration has run remotely and do not rewrite it until every environment's migration ledger is
+checked. The additive unified-state foundation introduces the final registry/runtime/
+`calc_block_progress` contract behind default-off feature flags. During the compatibility window,
+the prototype read/write path remains available and legacy writes are not removed.
+`calc_sessions.question_log` is the permanent practice fact; `calc_problem_state` and block
+progress are rebuildable current projections.
+Production received the additive foundation, registry v1 activation, reward idempotency index, and
+settlement/report/details RPCs on 2026-08-31. The unified client path remains default-off until the
+matching web build is deployed and authenticated smoke-tested. Do not drop legacy tables merely
+because the RPC exists; the cutover/observation gate still applies.
+
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not
 introduce a path alias — Next compiles this package via `transpilePackages` and only the app's
 tsconfig aliases are honored at build time.
@@ -86,6 +98,10 @@ strict per-type authority. `buildSession` reserves carried mistakes, performs wh
 bounded dedupe, and tags every question with a `selectionReason`; logs persist the signature,
 reason, occurrence, and intentional-repeat flag. Child practice only surfaces friendly `新题` /
 `补练` badges; the growth report shows the detailed coverage and repeat audit.
+Session settlement atomically merges only touched finite indices. Reports combine compact history
+with newer hot states and can rebuild snapshots idempotently from existing problem states. When a
+compatible snapshot exists, finite-block selection excludes covered indices without loading a
+separate completion table; a newer hot state always wins for regressible fluent/mastered status.
 
 Large or effectively unbounded blocks use a separate, versioned **ability-structure coverage**
 denominator in `calc-structure-coverage.ts`; it never pretends to enumerate every formula.
@@ -155,6 +171,8 @@ Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md
 pnpm --filter @rosie/calc typecheck   # scoped — type-checks ONLY calc
 pnpm --filter @rosie/calc lint
 pnpm --filter @rosie/calc test        # package + apps/web/tests/calc-* regression suite
+pnpm calc:progress -- registry-manifest # deterministic registry rows + SHA-256 hashes
+pnpm calc:progress -- registry-sql      # draft-only idempotent seed SQL (stdout)
 ```
 
 ## Parent-facing FAQ

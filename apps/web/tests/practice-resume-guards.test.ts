@@ -36,7 +36,7 @@ beforeEach(() => {
 })
 
 describe('english weekly stash — same-day guard', () => {
-  it("resumes a stash saved today", () => {
+  it('resumes a stash saved today', () => {
     writeLocalSessionSnapshot(PLAN_ID, stash(new Date().toISOString()))
     expect(loadLocalSessionSnapshot(PLAN_ID)).not.toBeNull()
   })
@@ -106,6 +106,14 @@ function calcSnap(overrides: Partial<CalcSessionSnapshot> = {}): CalcSessionSnap
 }
 
 describe('calc snapshot — requires real progress', () => {
+  it('adds one stable idempotency key to resumable pending state', () => {
+    writeCalcSessionSnapshot(calcSnap({ idx: 1 }))
+    const first = readCalcSessionSnapshot('daily', null)?.idempotencyKey
+    const second = readCalcSessionSnapshot('daily', null)?.idempotencyKey
+    expect(first).toMatch(/^[0-9a-f-]{36}$/)
+    expect(second).toBe(first)
+  })
+
   it('does not treat a zero-progress peek as resumable', () => {
     // Otherwise merely opening 口算 and backing out skips the prep screen and
     // replays that frozen question list for the rest of the day.

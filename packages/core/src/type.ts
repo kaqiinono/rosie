@@ -548,6 +548,16 @@ export interface CalcProblemState {
   lastSeenSession?: number | null
   timesSeenThisRound?: number
   forcedNext?: boolean
+  /** Unified remediation projection; detailed wrong-answer history stays in session logs. */
+  needsRemediation?: boolean
+  lastWrongAt?: string | null
+  lastWrongSessionNo?: number | null
+  lastErrorTag?: ErrorTag | null
+  lastUserAnswer?: string | null
+  lastAnswerJson?: CalcAnswer | null
+  remediationCorrectCount?: number
+  /** Monotonic settlement revision that last changed this projection. */
+  appliedRevision?: number
 }
 
 export type CalcLevelStatus =
@@ -640,10 +650,26 @@ export interface QuestionLogEntry {
   intentionalRepeat?: boolean
   /** Number of intervening questions since the previous same signature. */
   previousDistance?: number | null
+  sourceBlockId?: string
+  sourceMixedOpId?: string
+  curriculumVersion?: string
+  curriculumIndex?: number
+  evidenceKind?: QuestionAttempt['evidenceKind']
+  presentationKey?: CalcPresentationKey
+  firstAnswer?: string
+  finalAnswer?: string
+  answerJson?: CalcAnswer
+  withinLimit?: boolean
+  errorTag?: ErrorTag | null
 }
 
 export interface CalcSession {
   id?: string
+  /** Stable across offline/network retries; populated by unified settlement. */
+  idempotencyKey?: string
+  sessionNo?: number
+  stateRevision?: number
+  clientSchemaVersion?: number
   date: string // YYYY-MM-DD
   startedAt: string
   finishedAt: string

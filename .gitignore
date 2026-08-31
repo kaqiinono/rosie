@@ -48,3 +48,4 @@ old-html/
 supabase/.temp/
 /output/
 /scripts/tmp/
+.vercel

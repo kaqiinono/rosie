@@ -17,6 +17,7 @@ import {
 } from '../utils/calc-structure-coverage'
 import { calculateRuleCoverage } from '../utils/calc-rule-coverage'
 import { CALC_FEATURES } from '../utils/calc-features'
+import type { CurriculumSnapshotMap } from '../utils/calc-curriculum-snapshot'
 import {
   evaluateBlockProgression,
   suggestedSuccessors,
@@ -96,10 +97,15 @@ function ProgressMetric({
     <div className="rounded-xl bg-black/15 px-3 py-2.5">
       <div className="flex items-center justify-between gap-2 text-xs">
         <span className="font-semibold text-slate-200">{label}</span>
-        <span className="font-bold" style={{ color }}>{current}% <span className="font-normal text-slate-500">/ {threshold}%</span></span>
+        <span className="font-bold" style={{ color }}>
+          {current}% <span className="font-normal text-slate-500">/ {threshold}%</span>
+        </span>
       </div>
       <div className="relative mt-2 h-2 rounded-full bg-white/10">
-        <div className="h-full rounded-full" style={{ width: `${Math.min(100, current)}%`, background: color }} />
+        <div
+          className="h-full rounded-full"
+          style={{ width: `${Math.min(100, current)}%`, background: color }}
+        />
       </div>
       {detail && <div className="mt-1 text-[10px] leading-4 text-slate-500">{detail}</div>}
     </div>
@@ -123,7 +129,10 @@ function BlockCard({ block, concept }: { block: BlockCoverage; concept?: Concept
   const families = block.buckets.filter((bucket) => bucket.key.startsWith(prefix))
 
   return (
-    <details data-coverage-detail className="rounded-2xl border border-white/10 bg-[#121225] open:border-cyan-400/25">
+    <details
+      data-coverage-detail
+      className="rounded-2xl border border-white/10 bg-[#121225] open:border-cyan-400/25"
+    >
       <summary className="cursor-pointer list-none p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -138,7 +147,9 @@ function BlockCard({ block, concept }: { block: BlockCoverage; concept?: Concept
             </div>
             <div className="text-[11px] text-slate-500">已练习</div>
           </div>
-          <span aria-hidden="true" className="text-lg leading-none text-slate-500">⌄</span>
+          <span aria-hidden="true" className="text-lg leading-none text-slate-500">
+            ⌄
+          </span>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
           <div
@@ -173,17 +184,47 @@ function BlockCard({ block, concept }: { block: BlockCoverage; concept?: Concept
 
         {showConcept && concept ? (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-            <Stat label="已练习" value={concept.coveredConcepts} total={concept.totalConcepts} color="#67e8f9" />
-            <Stat label="限时答对" value={concept.withinTargetConcepts} total={concept.totalConcepts} color="#facc15" />
-            <Stat label="已熟练" value={concept.fluentConcepts} total={concept.totalConcepts} color="#4ade80" />
-            <Stat label="已掌握" value={concept.masteredConcepts} total={concept.totalConcepts} color="#c084fc" />
-            <Stat label="待复核" value={concept.reviewDueConcepts} total={concept.totalConcepts} color="#fb7185" />
+            <Stat
+              label="已练习"
+              value={concept.coveredConcepts}
+              total={concept.totalConcepts}
+              color="#67e8f9"
+            />
+            <Stat
+              label="限时答对"
+              value={concept.withinTargetConcepts}
+              total={concept.totalConcepts}
+              color="#facc15"
+            />
+            <Stat
+              label="已熟练"
+              value={concept.fluentConcepts}
+              total={concept.totalConcepts}
+              color="#4ade80"
+            />
+            <Stat
+              label="已掌握"
+              value={concept.masteredConcepts}
+              total={concept.totalConcepts}
+              color="#c084fc"
+            />
+            <Stat
+              label="待复核"
+              value={concept.reviewDueConcepts}
+              total={concept.totalConcepts}
+              color="#fb7185"
+            />
           </div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               <Stat label="已练习" value={block.covered} total={block.total} color="#67e8f9" />
-              <Stat label="限时答对" value={block.withinTarget} total={block.total} color="#facc15" />
+              <Stat
+                label="限时答对"
+                value={block.withinTarget}
+                total={block.total}
+                color="#facc15"
+              />
               <Stat label="已熟练" value={block.fluent} total={block.total} color="#4ade80" />
               <Stat label="已掌握" value={block.mastered} total={block.total} color="#c084fc" />
               <Stat label="待复核" value={block.reviewDue} total={block.total} color="#fb7185" />
@@ -256,7 +297,10 @@ function BlockCard({ block, concept }: { block: BlockCoverage; concept?: Concept
 
 function StructureCard({ coverage }: { coverage: StructureCoverage }) {
   return (
-    <details data-coverage-detail className="rounded-2xl border border-violet-300/10 bg-[#121225] open:border-violet-300/30">
+    <details
+      data-coverage-detail
+      className="rounded-2xl border border-violet-300/10 bg-[#121225] open:border-violet-300/30"
+    >
       <summary className="cursor-pointer list-none p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -276,7 +320,9 @@ function StructureCard({ coverage }: { coverage: StructureCoverage }) {
             </div>
             <div className="text-[11px] text-slate-500">能力结构</div>
           </div>
-          <span aria-hidden="true" className="text-lg leading-none text-slate-500">⌄</span>
+          <span aria-hidden="true" className="text-lg leading-none text-slate-500">
+            ⌄
+          </span>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
           <div
@@ -330,14 +376,19 @@ export function CalcCoverageMap({
   mixedOps,
   selectedBlockIds,
   adaptiveExpansionEnabled,
+  curriculumSnapshots,
 }: {
   states: Map<string, CalcProblemState>
   sessions: CalcSession[]
   mixedOps: MixedOp[]
   selectedBlockIds: string[]
   adaptiveExpansionEnabled: boolean
+  curriculumSnapshots?: CurriculumSnapshotMap
 }) {
-  const coverage = useMemo(() => calculateAllCoverage(states), [states])
+  const coverage = useMemo(
+    () => calculateAllCoverage(states, curriculumSnapshots),
+    [states, curriculumSnapshots],
+  )
   const [statusFilter, setStatusFilter] = useState<'all' | 'missing' | 'review' | 'mastered'>('all')
   const [progressionOpen, setProgressionOpen] = useState(true)
   const coverageMapRef = useRef<HTMLElement>(null)
@@ -383,6 +434,9 @@ export function CalcCoverageMap({
 
   const total = coverage.reduce((sum, block) => sum + block.total, 0)
   const covered = coverage.reduce((sum, block) => sum + block.covered, 0)
+  const withinTarget = coverage.reduce((sum, block) => sum + block.withinTarget, 0)
+  const fluent = coverage.reduce((sum, block) => sum + block.fluent, 0)
+  const mastered = coverage.reduce((sum, block) => sum + block.mastered, 0)
   const filteredGroups = useMemo(() => {
     const next = new Map<BlockCoverage['group'], BlockCoverage[]>()
     for (const [group, blocks] of groups) {
@@ -398,7 +452,11 @@ export function CalcCoverageMap({
   }, [groups, statusFilter])
   const selectedState = selectedSignature ? states.get(selectedSignature) : undefined
   const formulaOptions = useMemo(
-    () => [...states.values()].filter((state) => state.appearanceCount > 0).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 300),
+    () =>
+      [...states.values()]
+        .filter((state) => state.appearanceCount > 0)
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        .slice(0, 300),
     [states],
   )
   const repeatAudit = useMemo(() => {
@@ -427,18 +485,52 @@ export function CalcCoverageMap({
   }, [sessions])
 
   return (
-    <section ref={coverageMapRef} className="rounded-[24px] border border-white/10 bg-[#0d0d1e] p-4 sm:p-5">
+    <section
+      ref={coverageMapRef}
+      className="rounded-[24px] border border-white/10 bg-[#0d0d1e] p-4 sm:p-5"
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-extrabold text-slate-100">覆盖地图</h2>
           <p className="mt-1 text-xs leading-5 text-slate-400">
-            从运算大类下钻到算式家族和具体未练习算式。规则题不计入核心分母。
+            从运算大类下钻到算式家族和具体未练习算式。有限题库使用版本化精确分母，规则题不计入核心分母。
           </p>
+          {curriculumSnapshots && curriculumSnapshots.size > 0 && (
+            <p className="mt-1 text-[11px] text-emerald-300/70">
+              已启用 {curriculumSnapshots.size} 个紧凑课程快照；当前热状态会覆盖较旧快照。
+            </p>
+          )}
         </div>
         <div className="flex shrink-0 items-start gap-2">
           <div className="flex items-center gap-1">
-            <button type="button" onClick={() => { setProgressionOpen(true); coverageMapRef.current?.querySelectorAll<HTMLDetailsElement>('[data-coverage-detail]').forEach((item) => { item.open = true }) }} className="rounded-lg bg-white/5 px-2 py-1.5 text-[11px] text-slate-400 hover:bg-white/10 hover:text-slate-200">全部展开</button>
-            <button type="button" onClick={() => { setProgressionOpen(false); coverageMapRef.current?.querySelectorAll<HTMLDetailsElement>('[data-coverage-detail]').forEach((item) => { item.open = false }) }} className="rounded-lg bg-white/5 px-2 py-1.5 text-[11px] text-slate-400 hover:bg-white/10 hover:text-slate-200">全部收起</button>
+            <button
+              type="button"
+              onClick={() => {
+                setProgressionOpen(true)
+                coverageMapRef.current
+                  ?.querySelectorAll<HTMLDetailsElement>('[data-coverage-detail]')
+                  .forEach((item) => {
+                    item.open = true
+                  })
+              }}
+              className="rounded-lg bg-white/5 px-2 py-1.5 text-[11px] text-slate-400 hover:bg-white/10 hover:text-slate-200"
+            >
+              全部展开
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setProgressionOpen(false)
+                coverageMapRef.current
+                  ?.querySelectorAll<HTMLDetailsElement>('[data-coverage-detail]')
+                  .forEach((item) => {
+                    item.open = false
+                  })
+              }}
+              className="rounded-lg bg-white/5 px-2 py-1.5 text-[11px] text-slate-400 hover:bg-white/10 hover:text-slate-200"
+            >
+              全部收起
+            </button>
           </div>
           <div className="text-right">
             <div className="text-xl font-black text-cyan-300">{percent(covered, total)}</div>
@@ -447,61 +539,132 @@ export function CalcCoverageMap({
         </div>
       </div>
 
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Stat label="课程覆盖" value={covered} total={total} color="#67e8f9" />
+        <Stat label="限时达标" value={withinTarget} total={total} color="#facc15" />
+        <Stat label="已经熟练" value={fluent} total={total} color="#4ade80" />
+        <Stat label="跨日掌握" value={mastered} total={total} color="#c084fc" />
+      </div>
+
       <div className="mt-5 space-y-5">
         {CALC_FEATURES.adaptiveProgression && (
-        <div className="rounded-2xl border border-emerald-300/10 bg-emerald-400/[0.04] p-4">
-          <div>
-            <div className="flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => setProgressionOpen((open) => !open)}
-                aria-expanded={progressionOpen}
-                className="flex min-w-0 flex-1 items-center gap-2 text-left"
-              >
-                <span className="text-sm font-extrabold text-emerald-100">自适应升级状态</span>
-              </button>
-              <Link href="/setting/calc" className="shrink-0 text-xs whitespace-nowrap text-cyan-300">调整权限</Link>
-              <button type="button" onClick={() => setProgressionOpen((open) => !open)} aria-label={progressionOpen ? '收起自适应升级状态' : '展开自适应升级状态'} className="shrink-0 px-1 text-lg leading-none text-slate-400">{progressionOpen ? '⌃' : '⌄'}</button>
-            </div>
-            {progressionOpen && <>
-              <p className="mt-1 text-xs text-slate-400">{adaptiveExpansionEnabled ? '已允许自动扩展下一题型' : '只在家长已选题型内调整'}</p>
-              <p className="mt-1 text-[11px] leading-5 text-slate-500">覆盖率达到90%、近3场首答正确率达到85%、进阶达标率达到75%、高级达标率达到60%后，才会建议自适应升级。覆盖率指练过的核心算式占比；首答正确率不含补练。</p>
-            </>}
-          </div>
-          {progressionOpen && <div className="mt-3 space-y-2">
-            {progression.map((item) => {
-              const tier = TIER_BADGE[blockTierFromProgression(item)]
-              return (
-              <div key={item.blockId} className="rounded-xl bg-black/15 px-3 py-2 text-xs">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span className="truncate font-semibold text-slate-200">{blockById(item.blockId)?.label ?? item.blockId}</span>
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${tier.className}`}>{tier.label}</span>
-                  </span>
-                  <span className={item.recovery ? 'text-rose-300' : item.ready ? 'text-emerald-300' : 'text-amber-300'}>{item.recovery ? '需要回补' : item.ready ? '达到升级门槛' : '继续练习'}</span>
-                </div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <ProgressMetric label="覆盖率" value={item.exposure} target={0.9} color="#67e8f9" detail={`实际 ${item.coveredCount}/${item.coverageTotal} 道 · 目标 ${Math.ceil(item.coverageTotal * 0.9)}/${item.coverageTotal} 道`} />
-                  <ProgressMetric label="近3场首答正确率" value={item.recentAccuracy} target={0.85} color="#facc15" detail={`实际 ${item.accuracyCorrect}/${item.accuracyTotal} 道 · 目标 ${Math.ceil(item.accuracyTotal * 0.85)}/${item.accuracyTotal} 道`} />
-                  <ProgressMetric label="进阶达标率" value={item.stableRatio} target={0.75} color="#4ade80" detail={`实际：${item.stableCount}/${item.evaluatedCount} 道 · 目标 ${Math.ceil(item.evaluatedCount * 0.75)}/${item.evaluatedCount} 道`} />
-                  <ProgressMetric label="高级达标率" value={item.fluentRatio} target={0.6} color="#c084fc" detail={`实际：${item.fluentCount}/${item.evaluatedCount} 道 · 目标 ${Math.ceil(item.evaluatedCount * 0.6)}/${item.evaluatedCount} 道`} />
-                </div>
+          <div className="rounded-2xl border border-emerald-300/10 bg-emerald-400/[0.04] p-4">
+            <div>
+              <div className="flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setProgressionOpen((open) => !open)}
+                  aria-expanded={progressionOpen}
+                  className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                >
+                  <span className="text-sm font-extrabold text-emerald-100">自适应升级状态</span>
+                </button>
+                <Link
+                  href="/setting/calc"
+                  className="shrink-0 text-xs whitespace-nowrap text-cyan-300"
+                >
+                  调整权限
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setProgressionOpen((open) => !open)}
+                  aria-label={progressionOpen ? '收起自适应升级状态' : '展开自适应升级状态'}
+                  className="shrink-0 px-1 text-lg leading-none text-slate-400"
+                >
+                  {progressionOpen ? '⌃' : '⌄'}
+                </button>
               </div>
-              )
-            })}
-          </div>}
-          {successors.length > 0 && (
-            <div className="mt-3 text-xs text-emerald-200">建议解锁：{successors.map((id) => blockById(id)?.label ?? id).join('、')}</div>
-          )}
-        </div>
+              {progressionOpen && (
+                <>
+                  <p className="mt-1 text-xs text-slate-400">
+                    {adaptiveExpansionEnabled ? '已允许自动扩展下一题型' : '只在家长已选题型内调整'}
+                  </p>
+                  <p className="mt-1 text-[11px] leading-5 text-slate-500">
+                    覆盖率达到90%、近3场首答正确率达到85%、进阶达标率达到75%、高级达标率达到60%后，才会建议自适应升级。覆盖率指练过的核心算式占比；首答正确率不含补练。
+                  </p>
+                </>
+              )}
+            </div>
+            {progressionOpen && (
+              <div className="mt-3 space-y-2">
+                {progression.map((item) => {
+                  const tier = TIER_BADGE[blockTierFromProgression(item)]
+                  return (
+                    <div key={item.blockId} className="rounded-xl bg-black/15 px-3 py-2 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex min-w-0 items-center gap-2">
+                          <span className="truncate font-semibold text-slate-200">
+                            {blockById(item.blockId)?.label ?? item.blockId}
+                          </span>
+                          <span
+                            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${tier.className}`}
+                          >
+                            {tier.label}
+                          </span>
+                        </span>
+                        <span
+                          className={
+                            item.recovery
+                              ? 'text-rose-300'
+                              : item.ready
+                                ? 'text-emerald-300'
+                                : 'text-amber-300'
+                          }
+                        >
+                          {item.recovery ? '需要回补' : item.ready ? '达到升级门槛' : '继续练习'}
+                        </span>
+                      </div>
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        <ProgressMetric
+                          label="覆盖率"
+                          value={item.exposure}
+                          target={0.9}
+                          color="#67e8f9"
+                          detail={`实际 ${item.coveredCount}/${item.coverageTotal} 道 · 目标 ${Math.ceil(item.coverageTotal * 0.9)}/${item.coverageTotal} 道`}
+                        />
+                        <ProgressMetric
+                          label="近3场首答正确率"
+                          value={item.recentAccuracy}
+                          target={0.85}
+                          color="#facc15"
+                          detail={`实际 ${item.accuracyCorrect}/${item.accuracyTotal} 道 · 目标 ${Math.ceil(item.accuracyTotal * 0.85)}/${item.accuracyTotal} 道`}
+                        />
+                        <ProgressMetric
+                          label="进阶达标率"
+                          value={item.stableRatio}
+                          target={0.75}
+                          color="#4ade80"
+                          detail={`实际：${item.stableCount}/${item.evaluatedCount} 道 · 目标 ${Math.ceil(item.evaluatedCount * 0.75)}/${item.evaluatedCount} 道`}
+                        />
+                        <ProgressMetric
+                          label="高级达标率"
+                          value={item.fluentRatio}
+                          target={0.6}
+                          color="#c084fc"
+                          detail={`实际：${item.fluentCount}/${item.evaluatedCount} 道 · 目标 ${Math.ceil(item.evaluatedCount * 0.6)}/${item.evaluatedCount} 道`}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+            {successors.length > 0 && (
+              <div className="mt-3 text-xs text-emerald-200">
+                建议解锁：{successors.map((id) => blockById(id)?.label ?? id).join('、')}
+              </div>
+            )}
+          </div>
         )}
         <div className="flex flex-wrap gap-2">
-          {([
-            ['all', '全部题型'],
-            ['missing', '有未覆盖'],
-            ['review', '待复核'],
-            ['mastered', '已掌握'],
-          ] as const).map(([value, label]) => (
+          {(
+            [
+              ['all', '全部题型'],
+              ['missing', '有未覆盖'],
+              ['review', '待复核'],
+              ['mastered', '已掌握'],
+            ] as const
+          ).map(([value, label]) => (
             <button
               key={value}
               type="button"
@@ -511,7 +674,10 @@ export function CalcCoverageMap({
               {label}
             </button>
           ))}
-          <Link href="/calc/session?drill=weak-formulas" className="rounded-full bg-rose-400/10 px-3 py-1.5 text-xs text-rose-200">
+          <Link
+            href="/calc/session?drill=weak-formulas"
+            className="rounded-full bg-rose-400/10 px-3 py-1.5 text-xs text-rose-200"
+          >
             薄弱专项
           </Link>
         </div>
@@ -572,16 +738,22 @@ export function CalcCoverageMap({
         </div>
         <div className="border-t border-white/10 pt-5">
           <h3 className="text-base font-extrabold text-slate-100">规则家族覆盖</h3>
-          <p className="mt-1 text-xs text-slate-400">0和1相关规则不进入核心算式分母，每条规则用3个不同数量级代表题验证。</p>
+          <p className="mt-1 text-xs text-slate-400">
+            0和1相关规则不进入核心算式分母，每条规则用3个不同数量级代表题验证。
+          </p>
           <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {ruleCoverage.map((rule) => (
               <div key={rule.key} className="rounded-xl bg-white/[0.035] p-3">
                 <div className="flex items-center justify-between gap-2 text-xs">
                   <span className="font-semibold text-slate-200">{rule.label}</span>
-                  <span className="text-cyan-300">{rule.covered}/{rule.target}</span>
+                  <span className="text-cyan-300">
+                    {rule.covered}/{rule.target}
+                  </span>
                 </div>
                 <div className="mt-1 text-[10px] text-slate-500">
-                  {rule.signatures.length > 0 ? rule.signatures.map(signatureToDisplay).join('、') : '尚未验证'}
+                  {rule.signatures.length > 0
+                    ? rule.signatures.map(signatureToDisplay).join('、')
+                    : '尚未验证'}
                 </div>
               </div>
             ))}
@@ -602,7 +774,9 @@ export function CalcCoverageMap({
 
         <div className="border-t border-white/10 pt-5">
           <h3 className="text-base font-extrabold text-slate-100">具体算式时间线</h3>
-          <p className="mt-1 text-xs text-slate-400">选择最近练过的算式，查看跨场、跨天掌握证据。</p>
+          <p className="mt-1 text-xs text-slate-400">
+            选择最近练过的算式，查看跨场、跨天掌握证据。
+          </p>
           <select
             value={selectedSignature}
             onChange={(event) => setSelectedSignature(event.target.value)}
@@ -617,12 +791,26 @@ export function CalcCoverageMap({
           </select>
           {selectedState && (
             <div className="mt-3 rounded-xl bg-white/[0.035] p-3">
-              <div className="text-sm font-bold text-slate-100">{signatureToDisplay(selectedState.signature)}</div>
+              <div className="text-sm font-bold text-slate-100">
+                {signatureToDisplay(selectedState.signature)}
+              </div>
               <div className="mt-2 space-y-1">
                 {selectedState.recentResults.map((attempt, index) => (
-                  <div key={`${attempt.sessionNo ?? 'legacy'}-${index}`} className="flex items-center justify-between gap-2 text-xs text-slate-400">
-                    <span>{attempt.date ?? '历史记录'} · 第{attempt.sessionNo ?? '—'}场 · {attempt.evidenceKind === 'makeup' ? '补练' : attempt.evidenceKind === 'recall' ? '间隔复习' : '独立首答'}</span>
-                    <span className={attempt.correct ? 'text-emerald-300' : 'text-rose-300'}>{attempt.correct ? '正确' : '错误'} · {(attempt.timeMs / 1000).toFixed(1)}秒</span>
+                  <div
+                    key={`${attempt.sessionNo ?? 'legacy'}-${index}`}
+                    className="flex items-center justify-between gap-2 text-xs text-slate-400"
+                  >
+                    <span>
+                      {attempt.date ?? '历史记录'} · 第{attempt.sessionNo ?? '—'}场 ·{' '}
+                      {attempt.evidenceKind === 'makeup'
+                        ? '补练'
+                        : attempt.evidenceKind === 'recall'
+                          ? '间隔复习'
+                          : '独立首答'}
+                    </span>
+                    <span className={attempt.correct ? 'text-emerald-300' : 'text-rose-300'}>
+                      {attempt.correct ? '正确' : '错误'} · {(attempt.timeMs / 1000).toFixed(1)}秒
+                    </span>
                   </div>
                 ))}
               </div>
