@@ -255,12 +255,7 @@ export default function QuizQuestionBody({
         <WordHelpModal
           open={runner.showHelp}
           word={question.word}
-          revealed={(() => {
-            // One click reveals exactly one letter. The help modal supplies
-            // fixed-count mystery tiles, so the click count no longer leaks
-            // the answer length before the whole spelling is visible.
-            return helpRevealed
-          })()}
+          helpClicks={helpRevealed}
           onReveal={onHelpReveal}
           onClose={runner.closeHelp}
         />
