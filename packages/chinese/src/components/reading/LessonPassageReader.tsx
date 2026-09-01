@@ -54,6 +54,15 @@ export default function LessonPassageReader({
   const [cardFlipped, setCardFlipped] = useState(true)
   const recognizeSet = useMemo(() => new Set(recognize), [recognize])
   const writeSet = useMemo(() => new Set(write), [write])
+  const passageChars = useMemo(() => {
+    const seen = new Set<string>()
+    return [...paragraphs.join('')].filter((char) => {
+      if ((!recognizeSet.has(char) && !writeSet.has(char)) || seen.has(char)) return false
+      seen.add(char)
+      return true
+    })
+  }, [paragraphs, recognizeSet, writeSet])
+  const selectedCharIndex = selectedChar ? passageChars.indexOf(selectedChar) : -1
 
   const selectedProfile = selectedChar
     ? getCharProfile(charKeyForBook(selectedChar))
@@ -68,6 +77,17 @@ export default function LessonPassageReader({
   const speakAll = useCallback(() => {
     speakChinese(paragraphs.join('，'))
   }, [paragraphs])
+
+  const selectCardAt = useCallback(
+    (index: number) => {
+      const char = passageChars[index]
+      if (!char) return
+      setSelectedChar(char)
+      setCardFlipped(true)
+      speakChinese(char)
+    },
+    [passageChars],
+  )
 
   return (
     <>
@@ -196,7 +216,30 @@ export default function LessonPassageReader({
               flipped={cardFlipped}
               onFlip={() => setCardFlipped((value) => !value)}
             />
-            <p className="mt-3 text-center text-sm font-bold text-white">
+            <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+              <button
+                type="button"
+                onClick={() => selectCardAt(selectedCharIndex - 1)}
+                disabled={selectedCharIndex <= 0}
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-sm font-extrabold text-slate-700 shadow-lg transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="上一页生字卡片"
+              >
+                ← 上一页
+              </button>
+              <span className="text-sm font-bold text-white" aria-live="polite">
+                {selectedCharIndex + 1} / {passageChars.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => selectCardAt(selectedCharIndex + 1)}
+                disabled={selectedCharIndex < 0 || selectedCharIndex >= passageChars.length - 1}
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-sm font-extrabold text-slate-700 shadow-lg transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="下一页生字卡片"
+              >
+                下一页 →
+              </button>
+            </div>
+            <p className="mt-2 text-center text-xs font-bold text-white/85">
               点击卡片可查看正反面
             </p>
           </div>

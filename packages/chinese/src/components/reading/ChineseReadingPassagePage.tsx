@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { LoadingOverlay } from '@rosie/ui'
 import { useChineseContext } from '../../context/ChineseContext'
 import { findLessonRow, getLessonGroup } from '../../utils/chinese-helpers'
 import { getLessonPassage } from '../../utils/chinese-lesson-passage-helpers'
@@ -90,7 +91,7 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
   )
 
   if (isCharDataLoading && !isCharDataReady) {
-    return <p className="p-6 text-center text-sm text-slate-500">加载中…</p>
+    return <LoadingOverlay visible />
   }
 
   if (!passage?.paragraphs.length) {

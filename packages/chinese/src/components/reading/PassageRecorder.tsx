@@ -34,6 +34,18 @@ function preferredMimeType(): string | undefined {
   return undefined
 }
 
+function createAudioRecorder(stream: MediaStream, mimeType: string | undefined): MediaRecorder {
+  const options: MediaRecorderOptions = {
+    ...(mimeType ? { mimeType } : {}),
+    audioBitsPerSecond: 48_000,
+  }
+  try {
+    return new MediaRecorder(stream, options)
+  } catch {
+    return mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream)
+  }
+}
+
 export default function PassageRecorder({
   bookSlug,
   lessonKey,
@@ -201,7 +213,14 @@ export default function PassageRecorder({
         window.speechSynthesis.cancel()
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: { ideal: 1 },
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      })
       if (!mountedRef.current) {
         stream.getTracks().forEach((t) => t.stop())
         return
@@ -210,9 +229,7 @@ export default function PassageRecorder({
       chunksRef.current = []
 
       const preferred = preferredMimeType()
-      const recorder = preferred
-        ? new MediaRecorder(stream, { mimeType: preferred })
-        : new MediaRecorder(stream)
+      const recorder = createAudioRecorder(stream, preferred)
       mediaRecorderRef.current = recorder
       const type = recorder.mimeType || preferred || 'audio/webm'
       mimeTypeRef.current = type

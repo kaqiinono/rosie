@@ -55,12 +55,15 @@ registerRoute(
 // the stale cache.
 registerRoute(
   ({ url, request }) =>
-    request.destination === 'audio' ||
-    /\.(mp3|m4a|wav|aac|ogg)(\?|$)/i.test(url.pathname + url.search),
+    !url.pathname.includes('/storage/v1/object/sign/chinese-reading-recordings/') &&
+    (request.destination === 'audio' ||
+      /\.(mp3|m4a|wav|aac|ogg|webm)(\?|$)/i.test(url.pathname + url.search)),
   new CacheFirst({
-    cacheName: 'audio',
+    cacheName: 'audio-v2',
     plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200, 206] }),
+      // RangeRequestsPlugin slices a cached complete response. Caching a 206
+      // response would preserve only one fragment and can stall later ranges.
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
       new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 30 * 24 * 60 * 60 }),
       new RangeRequestsPlugin(),
     ],
@@ -81,5 +84,10 @@ registerRoute(
 
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim())
+  event.waitUntil(
+    Promise.all([
+      caches.delete('audio'),
+      self.clients.claim(),
+    ])
+  )
 })

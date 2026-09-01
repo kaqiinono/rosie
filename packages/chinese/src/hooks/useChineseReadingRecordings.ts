@@ -11,6 +11,17 @@ import {
   type RawRecordingRow,
 } from '../utils/chinese-reading-recording-helpers'
 
+const SIGNED_URL_TTL_SECONDS = 60 * 60
+const SIGNED_URL_REFRESH_MARGIN_MS = 5 * 60 * 1000
+
+type CachedSignedUrl = {
+  url: string
+  expiresAt: number
+}
+
+const signedPlaybackUrlCache = new Map<string, CachedSignedUrl>()
+const signedPlaybackUrlRequests = new Map<string, Promise<string | null>>()
+
 async function fetchChineseReadingRecordings(userId: string): Promise<ChineseReadingRecording[]> {
   const { data, error } = await supabase
     .from('chinese_reading_recordings')
@@ -104,12 +115,32 @@ export function useChineseReadingRecordings(user: User | null) {
     [user, recordings],
   )
 
-  const getSignedPlaybackUrl = useCallback(async (storagePath: string): Promise<string | null> => {
-    const { data, error } = await supabase.storage
+  const getSignedPlaybackUrl = useCallback((storagePath: string): Promise<string | null> => {
+    const cached = signedPlaybackUrlCache.get(storagePath)
+    if (cached && cached.expiresAt - Date.now() > SIGNED_URL_REFRESH_MARGIN_MS) {
+      return Promise.resolve(cached.url)
+    }
+
+    const pending = signedPlaybackUrlRequests.get(storagePath)
+    if (pending) return pending
+
+    const request = supabase.storage
       .from(CHINESE_READING_RECORDINGS_BUCKET)
-      .createSignedUrl(storagePath, 3600)
-    if (error || !data?.signedUrl) return null
-    return data.signedUrl
+      .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS)
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) return null
+        signedPlaybackUrlCache.set(storagePath, {
+          url: data.signedUrl,
+          expiresAt: Date.now() + SIGNED_URL_TTL_SECONDS * 1000,
+        })
+        return data.signedUrl
+      })
+      .finally(() => {
+        signedPlaybackUrlRequests.delete(storagePath)
+      })
+
+    signedPlaybackUrlRequests.set(storagePath, request)
+    return request
   }, [])
 
   return { recordings, isLoading, uploadRecording, deleteRecording, getSignedPlaybackUrl }
