@@ -57,9 +57,10 @@ second database writer. During the compatibility window, legacy mistake writes r
 progress are rebuildable current projections.
 Production received the additive foundation, registry v1 activation, reward idempotency index,
 settlement/report/details RPCs on 2026-08-31 and bounded `prepare_calc_session` on 2026-09-01.
-Unified settlement has passed authenticated Preview smoke tests. Server selection and report remain
-independent rollback flags; do not drop legacy tables merely because the RPCs exist—the production
-observation gate still applies.
+Unified settlement has passed authenticated Preview smoke tests. Unified settlement, block progress,
+server selection, and server report default on as of 2026-09-01; their environment variables are
+optional emergency overrides only. Do not drop legacy tables merely because the RPCs exist—the
+production observation gate still applies.
 
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not
 introduce a path alias — Next compiles this package via `transpilePackages` and only the app's

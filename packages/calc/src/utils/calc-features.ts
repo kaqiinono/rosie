@@ -9,11 +9,11 @@ export const CALC_FEATURES = {
   masteryV2: enabled(process.env.NEXT_PUBLIC_CALC_MASTERY_V2, true),
   adaptiveProgression: enabled(process.env.NEXT_PUBLIC_CALC_ADAPTIVE_PROGRESSION, true),
   conceptCoverage: enabled(process.env.NEXT_PUBLIC_CALC_CONCEPT_COVERAGE, true),
-  unifiedSettlement: enabled(process.env.NEXT_PUBLIC_CALC_UNIFIED_SETTLEMENT, false),
+  unifiedSettlement: enabled(process.env.NEXT_PUBLIC_CALC_UNIFIED_SETTLEMENT, true),
   blockProgress: enabled(
     process.env.NEXT_PUBLIC_CALC_BLOCK_PROGRESS,
-    enabled(process.env.NEXT_PUBLIC_CALC_UNIFIED_SETTLEMENT, false),
+    enabled(process.env.NEXT_PUBLIC_CALC_UNIFIED_SETTLEMENT, true),
   ),
-  serverSelection: enabled(process.env.NEXT_PUBLIC_CALC_SERVER_SELECTION, false),
-  serverReport: enabled(process.env.NEXT_PUBLIC_CALC_SERVER_REPORT, false),
+  serverSelection: enabled(process.env.NEXT_PUBLIC_CALC_SERVER_SELECTION, true),
+  serverReport: enabled(process.env.NEXT_PUBLIC_CALC_SERVER_REPORT, true),
 } as const
