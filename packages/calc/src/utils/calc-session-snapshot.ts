@@ -66,6 +66,16 @@ export type CalcSessionSnapshot = {
   timingMode: CalcTimingMode
   bonusSec: number
   drillTargetSignatures: string[]
+  /** Stable across local/cloud resume and future settlement retries. */
+  idempotencyKey?: string
+}
+
+function newIdempotencyKey(): string {
+  return crypto.randomUUID()
+}
+
+export function ensureCalcSettlementIdentity(snap: CalcSessionSnapshot): CalcSessionSnapshot {
+  return snap.idempotencyKey ? snap : { ...snap, idempotencyKey: newIdempotencyKey() }
 }
 
 function drillKeyFromParams(
@@ -111,11 +121,12 @@ function isValidCalcSnap(snap: unknown): snap is CalcSessionSnapshot {
 export function wrapCalcEnvelope(
   snap: CalcSessionSnapshot,
 ): PracticePendingEnvelope<CalcSessionSnapshot> {
+  const identified = ensureCalcSettlementIdentity(snap)
   return {
     version: 1,
     savedAt: new Date().toISOString(),
     date: todayStr(),
-    stash: { ...snap, date: todayStr() },
+    stash: { ...identified, date: todayStr() },
   }
 }
 
@@ -155,7 +166,9 @@ export function readCalcSessionSnapshot(
     clearCalcSessionSnapshot(mode, drillKey)
     return null
   }
-  return env.stash
+  const identified = ensureCalcSettlementIdentity(env.stash)
+  if (identified !== env.stash) writeCalcSessionSnapshot(identified)
+  return identified
 }
 
 export async function resolveCalcSessionSnapshot(
@@ -171,6 +184,8 @@ export async function resolveCalcSessionSnapshot(
   if (!env || !isValidCalcSnap(env.stash)) return null
   if (env.stash.mode !== mode || (env.stash.drillKey ?? null) !== (drillKey ?? null)) return null
   // Mirror winning snapshot to local for fast next open.
-  mirrorResolvedPending(CALC_PENDING_KIND, calcPendingScopeKey(mode, drillKey), env)
-  return env.stash
+  const identified = ensureCalcSettlementIdentity(env.stash)
+  const identifiedEnv = { ...env, stash: identified }
+  mirrorResolvedPending(CALC_PENDING_KIND, calcPendingScopeKey(mode, drillKey), identifiedEnv)
+  return identified
 }

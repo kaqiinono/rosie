@@ -3,6 +3,7 @@ import type { CalcProblemState } from '@rosie/core'
 import { coverageUniverse } from './calc-coverage'
 import { hasIndependentAttempt, hasWithinTargetAttempt } from './calc-evidence'
 import { learningStatusFromEvidence } from './calc-mastery'
+import { CALC_FEATURES } from './calc-features'
 
 export interface CurriculumSnapshot {
   blockId: string
@@ -21,14 +22,14 @@ interface CurriculumSnapshotRow {
   block_id: string
   curriculum_version: string
   universe_size: number
-  covered_bits: string
-  within_target_bits: string
-  fluent_bits: string
-  mastered_bits: string
+  formula_covered_bits: string | null
+  formula_within_target_bits: string | null
+  formula_fluent_bits: string | null
+  formula_mastered_bits: string | null
   updated_at: string
 }
 
-interface SnapshotMutationItem {
+export interface SnapshotMutationItem {
   block_id: string
   curriculum_version: string
   universe_size: number
@@ -40,7 +41,7 @@ interface SnapshotMutationItem {
 }
 
 const SNAPSHOT_SELECT =
-  'block_id,curriculum_version,universe_size,covered_bits,within_target_bits,fluent_bits,mastered_bits,updated_at'
+  'block_id,curriculum_version,universe_size,formula_covered_bits,formula_within_target_bits,formula_fluent_bits,formula_mastered_bits,updated_at'
 
 /** PostgREST returns bytea in PostgreSQL hex form (`\\x...`). */
 export function decodeSnapshotBits(value: string, size: number): Set<number> {
@@ -62,22 +63,22 @@ function rowToSnapshot(row: CurriculumSnapshotRow): CurriculumSnapshot {
     blockId: row.block_id,
     version: row.curriculum_version,
     universeSize: row.universe_size,
-    covered: decodeSnapshotBits(row.covered_bits, row.universe_size),
-    withinTarget: decodeSnapshotBits(row.within_target_bits, row.universe_size),
-    fluent: decodeSnapshotBits(row.fluent_bits, row.universe_size),
-    mastered: decodeSnapshotBits(row.mastered_bits, row.universe_size),
+    covered: decodeSnapshotBits(row.formula_covered_bits ?? '', row.universe_size),
+    withinTarget: decodeSnapshotBits(row.formula_within_target_bits ?? '', row.universe_size),
+    fluent: decodeSnapshotBits(row.formula_fluent_bits ?? '', row.universe_size),
+    mastered: decodeSnapshotBits(row.formula_mastered_bits ?? '', row.universe_size),
     updatedAt: row.updated_at,
   }
 }
 
 async function fetchCurriculumSnapshots(userId: string): Promise<CurriculumSnapshotMap> {
+  if (!CALC_FEATURES.blockProgress) return new Map()
   const { data, error } = await supabase
-    .from('calc_curriculum_snapshots')
+    .from('calc_block_progress')
     .select(SNAPSHOT_SELECT)
     .eq('user_id', userId)
   if (error) {
-    // Safe rollout: older deployments may not have applied the migration yet.
-    console.warn('[calc curriculum snapshots] unavailable; using problem-state evidence', error)
+    console.warn('[calc block progress] unavailable; using problem-state evidence', error)
     return new Map()
   }
   return new Map(
@@ -89,7 +90,7 @@ async function fetchCurriculumSnapshots(userId: string): Promise<CurriculumSnaps
 }
 
 export const calcCurriculumSnapshotStore = createUserSessionStore<CurriculumSnapshotMap>(
-  'calc_curriculum_snapshots',
+  'calc_block_progress_snapshots',
   {
     fetch: fetchCurriculumSnapshots,
     empty: new Map(),
@@ -123,19 +124,11 @@ export async function syncCurriculumSnapshots(
   userId: string,
   states: CalcProblemState[],
 ): Promise<void> {
-  const items = snapshotMutationItems(states)
-  if (items.length === 0) return
-  for (let start = 0; start < items.length; start += 400) {
-    const { error } = await supabase.rpc('merge_calc_curriculum_snapshot', {
-      p_items: items.slice(start, start + 400),
-    })
-    if (error) {
-      // Snapshots are rebuildable acceleration data. Never fail session settlement for them.
-      console.warn('[calc curriculum snapshots] merge failed', error)
-      return
-    }
-  }
-  await calcCurriculumSnapshotStore.refreshInBackground(userId).catch(() => undefined)
+  // The unverified calc_curriculum_snapshots prototype was never deployed.
+  // Final progress is written only by settle_calc_session; legacy settlement
+  // safely falls back to problem-state evidence rather than creating a second writer.
+  void userId
+  void states
 }
 
 /** Idempotent bootstrap from existing problem-state evidence; no per-formula rows are created. */

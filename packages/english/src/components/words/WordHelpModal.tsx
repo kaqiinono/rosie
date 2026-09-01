@@ -1,13 +1,13 @@
 'use client'
 
 import type { WordEntry } from '@rosie/core'
-import { letterCount } from '../../utils/english-helpers'
+import { helpRevealCount, letterCount } from '../../utils/english-helpers'
 import { JellyTile, DEFAULT_JELLY_ORDER } from '@rosie/ui'
 
 interface WordHelpModalProps {
   open: boolean
   word: WordEntry
-  revealed: number
+  helpClicks: number
   onReveal: () => void
   onClose: () => void
 }
@@ -70,12 +70,13 @@ function splitExampleAroundWord(
 export default function WordHelpModal({
   open,
   word,
-  revealed,
+  helpClicks,
   onReveal,
   onClose,
 }: WordHelpModalProps) {
   if (!open) return null
   const totalLetters = letterCount(word.word)
+  const revealed = helpRevealCount(helpClicks, totalLetters)
   const canReveal = revealed < totalLetters
   const example = word.example ?? ''
   const safeRevealed = Math.min(revealed, totalLetters)
@@ -136,7 +137,7 @@ export default function WordHelpModal({
           </div>
 
           {/* Big letter tiles — the main attraction */}
-          <div className="mb-4 flex max-w-full flex-nowrap items-end justify-start gap-1.5 overflow-x-auto px-1 pb-2 sm:justify-center sm:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mb-4 flex max-w-full flex-wrap items-end justify-center gap-1.5 px-1 pb-2 sm:gap-2">
             {bigTiles.map((t, i) => {
               const rot = TILE_ROT[i % TILE_ROT.length]
               if (t.revealedIdx < 0) {

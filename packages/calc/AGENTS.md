@@ -48,6 +48,20 @@ sql/
 └── calc-autosubmit-on-match.sql  # ADD COLUMN auto_submit_on_match on calc_settings
 ```
 
+`calc_curriculum_snapshots` was an unverified rollout prototype and was confirmed absent from the
+remote migration ledger. Its local migration and client request were removed on 2026-09-01;
+`calc_block_progress` is the only compact progress projection. It is read through the legacy-named
+in-memory snapshot adapter so the arithmetic engine can keep using finite-index sets without a
+second database writer. During the compatibility window, legacy mistake writes remain available.
+`calc_sessions.question_log` is the permanent practice fact; `calc_problem_state` and block
+progress are rebuildable current projections.
+Production received the additive foundation, registry v1 activation, reward idempotency index,
+settlement/report/details RPCs on 2026-08-31 and bounded `prepare_calc_session` on 2026-09-01.
+Unified settlement has passed authenticated Preview smoke tests. Unified settlement, block progress,
+server selection, and server report default on as of 2026-09-01; their environment variables are
+optional emergency overrides only. Do not drop legacy tables merely because the RPCs exist—the
+production observation gate still applies.
+
 Imports within this package are **relative** (`../utils/calc-helpers`, `./NumberPad`). Do not
 introduce a path alias — Next compiles this package via `transpilePackages` and only the app's
 tsconfig aliases are honored at build time.
@@ -86,6 +100,10 @@ strict per-type authority. `buildSession` reserves carried mistakes, performs wh
 bounded dedupe, and tags every question with a `selectionReason`; logs persist the signature,
 reason, occurrence, and intentional-repeat flag. Child practice only surfaces friendly `新题` /
 `补练` badges; the growth report shows the detailed coverage and repeat audit.
+Session settlement atomically merges only touched finite indices. Reports combine compact history
+with newer hot states and can rebuild snapshots idempotently from existing problem states. When a
+compatible snapshot exists, finite-block selection excludes covered indices without loading a
+separate completion table; a newer hot state always wins for regressible fluent/mastered status.
 
 Large or effectively unbounded blocks use a separate, versioned **ability-structure coverage**
 denominator in `calc-structure-coverage.ts`; it never pretends to enumerate every formula.
@@ -129,12 +147,15 @@ Three modes in `calc-session-policy.ts`:
 daily sessions use one shared remediation budget for carried mistakes plus same-session retries,
 with carried mistakes taking priority. Makeup is single-pass and is never re-enqueued.
 
-Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Session init
+The mistakes UI is a compatibility-shaped projection derived exclusively from remediation fields in
+`calc_problem_state`; there is no separate mistake-state table. It uses
+`unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Session init
 awaits `calcMistakesStore.ensureLoaded` before reconcile/carry (no cold-visit race). Proficiency is
 settled ONLY by the finish fold (`applyAttempt`): a wrong answer at answer-time uses
 `pullBackFromMastered` (streak/status reset, no −2) so a single wrong costs −2, not −4; the −2 in
 `demoteFromMastered` applies only to cross-session reconcile repair. Tables:
-`calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
+`calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_block_progress`,
+`calc_curriculum_registry`, `calc_user_runtime`.
 
 **NumberPad / 竖式 auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).
 `shouldAutoSubmitNumberPad` in `calc-answer.ts` gates int/decimal number-pad; vertical surfaces
@@ -155,6 +176,8 @@ Design/plan: `docs/superpowers/specs/2026-07-09-calc-cognitive-metrics-design.md
 pnpm --filter @rosie/calc typecheck   # scoped — type-checks ONLY calc
 pnpm --filter @rosie/calc lint
 pnpm --filter @rosie/calc test        # package + apps/web/tests/calc-* regression suite
+pnpm calc:progress -- registry-manifest # deterministic registry rows + SHA-256 hashes
+pnpm calc:progress -- registry-sql      # draft-only idempotent seed SQL (stdout)
 ```
 
 ## Parent-facing FAQ

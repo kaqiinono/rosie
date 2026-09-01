@@ -362,6 +362,18 @@ export function letterCount(s: string): number {
   return n
 }
 
+/**
+ * Progressive help reveal: successive clicks reveal 1, 2, 4, 8, ... new
+ * letters, so the cumulative visible counts are 0, 1, 3, 7, 15, ... . The
+ * result is capped at the word's actual letter count.
+ * The click count itself remains unchanged so one help click still creates one
+ * reinforcement question.
+ */
+export function helpRevealCount(helpClicks: number, totalLetters: number): number {
+  if (helpClicks <= 0 || totalLetters <= 0) return 0
+  return Math.min(totalLetters, 2 ** Math.min(helpClicks, 30) - 1)
+}
+
 /** Mask all-but-first-`revealed`-letters of `word`, preserving spaces/punctuation/case. */
 export function maskWord(word: string, revealed: number): string {
   let shown = 0

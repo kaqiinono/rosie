@@ -444,15 +444,15 @@ export async function loadStudentProfile(
       .order('added_at', { ascending: false })
       .limit(8),
     supabase
-      .from('calc_mistakes')
+      .from('calc_problem_state')
       .select('signature', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .eq('resolved', false),
+      .eq('needs_remediation', true),
     supabase
-      .from('calc_mistakes')
+      .from('calc_problem_state')
       .select('signature')
       .eq('user_id', userId)
-      .eq('resolved', false)
+      .eq('needs_remediation', true)
       .order('last_wrong_at', { ascending: false })
       .limit(8),
   ])

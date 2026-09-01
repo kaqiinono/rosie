@@ -15,6 +15,10 @@ import {
   calcProblemStateStore,
   fetchMasteredRecallCandidates,
 } from '../utils/calc-problem-state-store'
+import {
+  calcCurriculumSnapshotStore,
+  syncCurriculumSnapshots,
+} from '../utils/calc-curriculum-snapshot'
 import CalcAppHeader from '../components/CalcAppHeader'
 import CalcQuestionStage from '../components/CalcQuestionStage'
 import CalcSessionStatusBar from '../components/CalcSessionStatusBar'
@@ -45,8 +49,16 @@ import { diagnose } from '../utils/calc-diagnose'
 import { parseSignature } from '../utils/calc-ast'
 import { presentationKeyOf } from '../utils/calc-concept-key'
 import { blockById } from '../utils/calc-blocks'
+import { coverageUniverse } from '../utils/calc-coverage'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildBySourceFromLog, buildNewWeakFromLog } from '../utils/calc-session-summary'
+import { CALC_FEATURES } from '../utils/calc-features'
+import {
+  getCalcRuntimeRevision,
+  prepareCalcSession,
+  settleCalcSession,
+} from '../utils/calc-server-api'
+import { CALC_SETTLEMENT_SCHEMA_VERSION } from '../utils/calc-settlement-contract'
 import { playSfx } from '../components/audio'
 import { launchConfetti } from '@rosie/core'
 import { todayStr } from '@rosie/core'
@@ -108,7 +120,7 @@ export default function CalcSessionPage() {
     recordCorrect,
     refresh: refreshMistakes,
   } = useCalcMistakes(user)
-  const problemState = useCalcProblemState(user)
+  const problemState = useCalcProblemState(user, { autoLoad: !CALC_FEATURES.serverSelection })
 
   const mode: CalcMode = useMemo(() => {
     const m = params.get('mode')
@@ -285,7 +297,7 @@ export default function CalcSessionPage() {
   )
 
   const pushQuestionLog = useCallback(
-    (q: CalcQuestion, elapsedMs: number, ok: boolean) => {
+    (q: CalcQuestion, elapsedMs: number, ok: boolean, firstAnswer = '') => {
       const previousOccurrences = questionLogRef.current.filter(
         (entry) => entry.signature === q.signature,
       ).length
@@ -298,6 +310,14 @@ export default function CalcSessionPage() {
         (q.selectionReason === 'carried-mistake' ||
           q.selectionReason === 'same-session-makeup' ||
           q.selectionReason === 'mastered-recall')
+      const universe = q.sourceBlockId ? coverageUniverse(q.sourceBlockId) : null
+      const curriculumIndex = universe?.indexOf(q.signature) ?? null
+      const evidenceKind =
+        q.selectionReason === 'same-session-makeup' || q.selectionReason === 'carried-mistake'
+          ? 'makeup'
+          : q.selectionReason === 'mastered-recall'
+            ? 'recall'
+            : 'independent'
       const entry: QuestionLogEntry = {
         key: sourceKeyForLog(q),
         ms: elapsedMs,
@@ -311,22 +331,34 @@ export default function CalcSessionPage() {
         intentionalRepeat,
         previousDistance:
           previousIndex >= 0 ? questionLogRef.current.length - previousIndex - 1 : null,
+        sourceBlockId: q.sourceBlockId,
+        sourceMixedOpId: q.sourceMixedOpId,
+        curriculumVersion: curriculumIndex === null ? undefined : universe?.version,
+        curriculumIndex: curriculumIndex ?? undefined,
+        evidenceKind,
+        presentationKey: presentationKeyOf(q),
+        firstAnswer,
+        answerJson: q.answer,
+        withinLimit: ok && withinLimitForQuestion(q, elapsedMs),
       }
       questionLogRef.current.push(entry)
     },
-    [targetSecForLog, labelForLog],
+    [targetSecForLog, labelForLog, withinLimitForQuestion],
   )
 
-  const patchQuestionLogFinallyOk = useCallback((q: CalcQuestion, finallyOk: boolean) => {
-    const key = sourceKeyForLog(q)
-    const log = questionLogRef.current
-    for (let i = log.length - 1; i >= 0; i--) {
-      if (log[i].key === key && log[i].finallyOk === undefined) {
-        log[i] = { ...log[i], finallyOk }
-        return
+  const patchQuestionLogFinallyOk = useCallback(
+    (q: CalcQuestion, finallyOk: boolean, finalAnswer: string) => {
+      const key = sourceKeyForLog(q)
+      const log = questionLogRef.current
+      for (let i = log.length - 1; i >= 0; i--) {
+        if (log[i].key === key && log[i].finallyOk === undefined) {
+          log[i] = { ...log[i], finallyOk, finalAnswer }
+          return
+        }
       }
-    }
-  }, [])
+    },
+    [],
+  )
 
   // ── Session state ────────────────────────────────────────────────
   const [questions, setQuestions] = useState<CalcQuestion[] | null>(null)
@@ -360,6 +392,7 @@ export default function CalcSessionPage() {
   const questionTimesRef = useRef<number[]>([])
   // Tagged per-question first-attempt log (atomic per-题型 records).
   const questionLogRef = useRef<QuestionLogEntry[]>([])
+  const settlementIdRef = useRef<string>('')
   const questionStartRef = useRef<number>(0)
   /** Which `idx` the countdown wall/ref are bound to. Prevents stale wall from
    *  the previous question from zeroing `remainingSec` on the advance render. */
@@ -449,6 +482,7 @@ export default function CalcSessionPage() {
       timingMode: sessionTimingModeRef.current,
       bonusSec: sessionBonusSecRef.current,
       drillTargetSignatures,
+      idempotencyKey: settlementIdRef.current || undefined,
     }
   }, [
     done,
@@ -549,6 +583,7 @@ export default function CalcSessionPage() {
         attemptsLogRef.current = pendingSnap.attemptsLog as AttemptStat[]
         questionTimesRef.current = pendingSnap.questionTimesMs
         questionLogRef.current = pendingSnap.questionLog
+        settlementIdRef.current = pendingSnap.idempotencyKey ?? crypto.randomUUID()
         setStartedAtIso(pendingSnap.startedAtIso)
         // Restart the clock and carry the earlier active time, so the hours between
         // stash and resume don't land in `time_spent_sec`.
@@ -559,15 +594,44 @@ export default function CalcSessionPage() {
         return
       }
 
-      // Load all of the user's problem states so buildSession can weight toward weak ones.
-      // Use the returned map directly — `problemState.states` is still the stale
-      // pre-load value within this same closure (React state updates async).
-      const loadedStates = await problemState.loadAll()
+      // Server mode loads only bounded hot candidates; compatibility mode loads
+      // the full projection. Use the returned map directly because React state
+      // updates are asynchronous inside this closure.
+      let loadedStates: Map<string, CalcProblemState>
+      let preparedRecallCandidates: CalcProblemState[] | null = null
+      if (CALC_FEATURES.serverSelection) {
+        try {
+          const blockIds = settings.selectedBlocks.map((block) => block.id)
+          const revision = await getCalcRuntimeRevision()
+          const prepared = await prepareCalcSession({
+            blockIds,
+            mode,
+            count: Math.min(200, Math.max(1, settings.lastCount * 4)),
+            expectedRevision: revision,
+          })
+          loadedStates = new Map(
+            prepared.candidates.map(({ state }) => [state.signature, state] as const),
+          )
+          preparedRecallCandidates = prepared.candidates
+            .filter(({ state }) => state.status === 'mastered')
+            .map(({ state }) => state)
+        } catch (error: unknown) {
+          console.warn(
+            '[calc session] server preparation unavailable; using compatibility load',
+            error,
+          )
+          loadedStates = await problemState.loadAll()
+        }
+      } else {
+        loadedStates = await problemState.loadAll()
+      }
       // Mistakes MUST be in the store before reconcile / carry — the hook's
       // `mistakes` state may still be empty on a cold visit to /calc/session.
       await calcMistakesStore.ensureLoaded(user.id)
       // Reconcile hanging mistakes vs mastered (deadlock repair)
-      await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+      if (!CALC_FEATURES.serverSelection) {
+        await applyMasterySideEffects(user.id, { kind: 'reconcile' })
+      }
       // Reconcile may have resolved/demoted rows — refresh the local snapshot.
       const reconciledStates = calcProblemStateStore.getSessionData(user.id) ?? {}
       for (const [sig, st] of Object.entries(reconciledStates)) {
@@ -597,7 +661,11 @@ export default function CalcSessionPage() {
         // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
         const blockIds = settings.selectedBlocks.map((b) => b.id)
         const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
-        const recallCandidates = await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot)
+        const recallCandidates =
+          preparedRecallCandidates ??
+          (await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot))
+        await calcCurriculumSnapshotStore.ensureLoaded(user.id)
+        const curriculumSnapshots = calcCurriculumSnapshotStore.getSessionData(user.id) ?? new Map()
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
         // Read from the store snapshot (post-reconcile), not the hook's state.
@@ -610,7 +678,12 @@ export default function CalcSessionPage() {
         const historySessions = calcWalletStore.getSessionData(user.id)?.sessions ?? []
         const session = buildSession(
           settings,
-          { problemStates: loadedStates, recallCandidates, sessions: historySessions },
+          {
+            problemStates: loadedStates,
+            recallCandidates,
+            sessions: historySessions,
+            curriculumSnapshots,
+          },
           carried,
         )
         setQuestions(session)
@@ -623,6 +696,7 @@ export default function CalcSessionPage() {
         maxRetryRef.current = Math.max(0, maxRetryCeiling(baseCount) - carriedCount)
       }
       setStartedAtIso(new Date().toISOString())
+      settlementIdRef.current = crypto.randomUUID()
       setStartedTsMs(Date.now())
       carriedElapsedMsRef.current = 0
       questionStartRef.current = performance.now()
@@ -751,7 +825,9 @@ export default function CalcSessionPage() {
     const nextStates: CalcProblemState[] = []
     for (const group of grouped.values()) {
       const first = group[0]
-      let state = problemState.getState(first.signature, first.level)
+      let state =
+        loadedStatesRef.current.get(first.signature) ??
+        problemState.getState(first.signature, first.level)
       for (const a of group) {
         state = applyAttempt(
           state,
@@ -783,6 +859,9 @@ export default function CalcSessionPage() {
       // Refresh loadedStatesRef so DrillSummary reads updated proficiency (not pre-drill snapshot).
       for (const state of nextStates) {
         loadedStatesRef.current.set(state.signature, state)
+      }
+      if (!CALC_FEATURES.unifiedSettlement) {
+        await syncCurriculumSnapshots(user.id, nextStates)
       }
     }
 
@@ -824,11 +903,11 @@ export default function CalcSessionPage() {
       setCoinsTotal(finalStars)
     }
 
-    // 1. Persist session row (unchanged)
-    await wallet.recordSession({
+    const finishedAt = new Date().toISOString()
+    const sessionRecord = {
       date: todayStr(),
       startedAt: startedAtIso,
-      finishedAt: new Date().toISOString(),
+      finishedAt,
       count: log.length,
       correctCount,
       retryCount,
@@ -841,7 +920,22 @@ export default function CalcSessionPage() {
       topLevel,
       questionTimesMs: qTimes,
       questionLog: questionLogRef.current,
-    })
+    }
+    // Unified mode makes session, state, progress and reward one transaction.
+    // Legacy mode remains intact as the emergency rollback path.
+    if (CALC_FEATURES.unifiedSettlement && user) {
+      const expectedRevision = await getCalcRuntimeRevision()
+      await settleCalcSession(user.id, {
+        idempotencyKey: settlementIdRef.current || crypto.randomUUID(),
+        expectedRevision,
+        clientSchemaVersion: CALC_SETTLEMENT_SCHEMA_VERSION,
+        session: sessionRecord,
+        problemStates: nextStates,
+      })
+      await wallet.refresh()
+    } else {
+      await wallet.recordSession(sessionRecord)
+    }
     // Only now — clearing before the row is persisted would leave a failed insert
     // with neither a session row nor a resumable snapshot.
     void clearCalcPendingEverywhere(user?.id, mode, drillKey)
@@ -885,7 +979,7 @@ export default function CalcSessionPage() {
       wasMistake: boolean,
       userAnswer: string,
     ) => {
-      patchQuestionLogFinallyOk(q, isCorrect)
+      patchQuestionLogFinallyOk(q, isCorrect, userAnswer)
 
       const goNext = () => {
         settleLockRef.current = false
@@ -1068,7 +1162,7 @@ export default function CalcSessionPage() {
       const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
         questionTimesRef.current.push(elapsedMs)
-        pushQuestionLog(q, elapsedMs, isCorrect)
+        pushQuestionLog(q, elapsedMs, isCorrect, userAnswer)
       }
       const wasMistake = unresolved.some((m) => m.signature === q.signature)
 
@@ -1158,7 +1252,7 @@ export default function CalcSessionPage() {
       const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
         questionTimesRef.current.push(elapsedMs)
-        pushQuestionLog(q, elapsedMs, isCorrect)
+        pushQuestionLog(q, elapsedMs, isCorrect, raw)
       }
 
       if (isCorrect) {

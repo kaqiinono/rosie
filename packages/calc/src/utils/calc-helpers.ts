@@ -14,6 +14,8 @@ import {
   type MixingRatios,
 } from './calc-progression'
 import { CALC_FEATURES } from './calc-features'
+import { hasIndependentAttempt } from './calc-evidence'
+import type { CurriculumSnapshot, CurriculumSnapshotMap } from './calc-curriculum-snapshot'
 import { maxRetryCeiling } from './calc-session-policy'
 import {
   COLD_START_MIN,
@@ -43,6 +45,8 @@ export function coinReward(question: CalcQuestion, streak: number): number {
 
 export interface BuildCtx {
   problemStates: Map<string, CalcProblemState>
+  /** Compact exact coverage for finite curricula; avoids re-serving archived formulas. */
+  curriculumSnapshots?: CurriculumSnapshotMap
   /**
    * Pre-truncated mastered rows for the recall slot (fetched via a LIMITed
    * SQL query — see fetchMasteredRecallCandidates). When absent (drills,
@@ -146,8 +150,14 @@ export function buildSession(
       ).nextExploration
       const currentCount = settings.lastCount - nextCount
       alloc = new Array<number>(sources.length).fill(0)
-      const currentAlloc = allocate(currentCount, currentIndexes.map((index) => weights[index]))
-      const nextAlloc = allocate(nextCount, nextIndexes.map((index) => weights[index]))
+      const currentAlloc = allocate(
+        currentCount,
+        currentIndexes.map((index) => weights[index]),
+      )
+      const nextAlloc = allocate(
+        nextCount,
+        nextIndexes.map((index) => weights[index]),
+      )
       currentIndexes.forEach((sourceIndex, index) => {
         alloc[sourceIndex] = currentAlloc[index]
       })
@@ -177,17 +187,24 @@ export function buildSession(
     if (src.kind === 'block') {
       const progression = evaluateBlockProgression(src.block.id, ctx.problemStates)
       const stageMixing = MIXING_STAGES[mixingStageFromProgression(progression)]
-      const mixing = src.adaptiveLane === 'next'
-        ? { currentMaintenance: 1, nextExploration: 0, weakReinforcement: 0 }
-        : hasAdaptiveNext
-          ? stageMixing
-          : {
-              currentMaintenance:
-                stageMixing.currentMaintenance + stageMixing.nextExploration,
-              nextExploration: 0,
-              weakReinforcement: stageMixing.weakReinforcement,
-            }
-      const generated = generateBlock(src.block, n, states, ctx.recallCandidates, mixing)
+      const mixing =
+        src.adaptiveLane === 'next'
+          ? { currentMaintenance: 1, nextExploration: 0, weakReinforcement: 0 }
+          : hasAdaptiveNext
+            ? stageMixing
+            : {
+                currentMaintenance: stageMixing.currentMaintenance + stageMixing.nextExploration,
+                nextExploration: 0,
+                weakReinforcement: stageMixing.weakReinforcement,
+              }
+      const generated = generateBlock(
+        src.block,
+        n,
+        states,
+        ctx.recallCandidates,
+        mixing,
+        ctx.curriculumSnapshots?.get(src.block.id),
+      )
       const recovering = progression.recovery
       out.push(
         ...generated.map((question) =>
@@ -238,7 +255,11 @@ export function buildSession(
           replacement = {
             ...makeQuestion(parseSignature(signature), 0, category, category === 'addsub' ? 1 : 2),
             sourceBlockId: source.block.id,
-            selectionReason: 'coverage',
+            selectionReason:
+              original.selectionReason === 'next-difficulty' ||
+              original.selectionReason === 'prerequisite-recovery'
+                ? original.selectionReason
+                : 'coverage',
           }
           break
         }
@@ -259,7 +280,11 @@ export function buildSession(
               selectionReason: 'random-fill' as const,
             }
       if (!usedSignatures.has(candidate.signature)) {
-        replacement = candidate
+        replacement =
+          original.selectionReason === 'next-difficulty' ||
+          original.selectionReason === 'prerequisite-recovery'
+            ? { ...candidate, selectionReason: original.selectionReason }
+            : candidate
         break
       }
     }
@@ -420,6 +445,7 @@ function generateBlock(
   states: CalcProblemState[],
   recallCandidates?: CalcProblemState[],
   mixing: MixingRatios = MIXING_STAGES.initial,
+  curriculumSnapshot?: CurriculumSnapshot,
 ): CalcQuestion[] {
   const category: CalcCategory =
     block.group === 'add' || block.group === 'sub' ? 'addsub' : 'muldiv'
@@ -447,9 +473,7 @@ function generateBlock(
   // lane, preserve the exact maintenance:weak ratio for the active stage.
   const currentLaneTotal = mixing.currentMaintenance + mixing.weakReinforcement
   let nWeak =
-    currentLaneTotal > 0
-      ? Math.round((mixing.weakReinforcement / currentLaneTotal) * nWork)
-      : 0
+    currentLaneTotal > 0 ? Math.round((mixing.weakReinforcement / currentLaneTotal) * nWork) : 0
   let nCover = finite ? nWork - nWeak : 0
   let nMaint = finite ? 0 : nWork - nWeak
 
@@ -467,7 +491,28 @@ function generateBlock(
 
   // 1) Coverage — finite unseen first
   if (finite && nCover > 0) {
-    const unseen = shuffleInPlace(unseenSignatures(block.id, blockStates))
+    const universe = coverageUniverse(block.id)
+    const compatibleSnapshot =
+      universe &&
+      curriculumSnapshot?.version === universe.version &&
+      curriculumSnapshot.universeSize === universe.size
+        ? curriculumSnapshot
+        : undefined
+    const stateBySignature = new Map(blockStates.map((state) => [state.signature, state]))
+    const unseen = shuffleInPlace(
+      universe && compatibleSnapshot
+        ? Array.from({ length: universe.size }, (_, index) => ({
+            index,
+            signature: universe.signatureAt(index),
+          }))
+            .filter(
+              ({ index, signature }) =>
+                !compatibleSnapshot.covered.has(index) &&
+                !hasIndependentAttempt(stateBySignature.get(signature)),
+            )
+            .map(({ signature }) => signature)
+        : unseenSignatures(block.id, blockStates),
+    )
     for (const sig of unseen) {
       if (out.length >= nCover) break
       if (used.has(sig)) continue

@@ -1,10 +1,5 @@
 import { createUserSessionStore, supabase } from '@rosie/core'
-import type {
-  CalcLevel,
-  CalcProblemState,
-  CalcProblemStatus,
-  QuestionAttempt,
-} from '@rosie/core'
+import type { CalcLevel, CalcProblemState, CalcProblemStatus, QuestionAttempt } from '@rosie/core'
 import { defaultProblemState } from './calc-apply-attempt'
 import { MASTERY_STREAK_K } from './calc-effective-limit'
 
@@ -24,10 +19,18 @@ interface ProblemStateRow {
   updated_at: string
   block_id?: string | null
   mixed_op_id?: string | null
+  needs_remediation?: boolean | null
+  last_wrong_at?: string | null
+  last_wrong_session_no?: number | null
+  last_error_tag?: CalcProblemState['lastErrorTag']
+  last_user_answer?: string | null
+  last_answer_json?: CalcProblemState['lastAnswerJson']
+  remediation_correct_count?: number | null
+  applied_revision?: number | null
 }
 
 export const PROBLEM_STATE_SELECT_COLS =
-  'signature,level,proficiency,attempt_count,appearance_count,recent_results,status,consecutive_wrong,consecutive_correct,last_within_limit,updated_at,block_id,mixed_op_id'
+  'signature,level,proficiency,attempt_count,appearance_count,recent_results,status,consecutive_wrong,consecutive_correct,last_within_limit,updated_at,block_id,mixed_op_id,needs_remediation,last_wrong_at,last_wrong_session_no,last_error_tag,last_user_answer,last_answer_json,remediation_correct_count,applied_revision'
 
 /** On-load lazy grandfather — memory only; upsert on next settle. */
 export function grandfatherInMemory(s: CalcProblemState): CalcProblemState {
@@ -59,6 +62,14 @@ export function rowToProblemState(r: ProblemStateRow): CalcProblemState {
     updatedAt: r.updated_at,
     blockId: r.block_id ?? undefined,
     mixedOpId: r.mixed_op_id ?? undefined,
+    needsRemediation: r.needs_remediation ?? false,
+    lastWrongAt: r.last_wrong_at ?? null,
+    lastWrongSessionNo: r.last_wrong_session_no ?? null,
+    lastErrorTag: r.last_error_tag ?? null,
+    lastUserAnswer: r.last_user_answer ?? null,
+    lastAnswerJson: r.last_answer_json ?? null,
+    remediationCorrectCount: r.remediation_correct_count ?? 0,
+    appliedRevision: r.applied_revision ?? 0,
   })
 }
 
@@ -82,6 +93,14 @@ export function problemStateToRow(s: CalcProblemState, userId: string) {
     updated_at: new Date().toISOString(),
     block_id: s.blockId ?? null,
     mixed_op_id: s.mixedOpId ?? null,
+    needs_remediation: s.needsRemediation ?? false,
+    last_wrong_at: s.lastWrongAt ?? null,
+    last_wrong_session_no: s.lastWrongSessionNo ?? null,
+    last_error_tag: s.lastErrorTag ?? null,
+    last_user_answer: s.lastUserAnswer ?? null,
+    last_answer_json: s.lastAnswerJson ?? null,
+    remediation_correct_count: s.remediationCorrectCount ?? 0,
+    applied_revision: s.appliedRevision ?? 0,
   }
 }
 
@@ -125,15 +144,13 @@ export async function fetchMasteredRecallCandidates(
     .order('updated_at', { ascending: true })
     .limit(limit)
   if (error || !data) return []
-  return (data as ProblemStateRow[])
-    .map(rowToProblemState)
-    .sort((a, b) => {
-      const score = (s: CalcProblemState) => {
-        const ageDays = Math.max(0, (Date.now() - new Date(s.updatedAt).getTime()) / 86400000)
-        return ageDays * 2 + Math.max(0, 12 - s.attemptCount) * 3
-      }
-      return score(b) - score(a)
-    })
+  return (data as ProblemStateRow[]).map(rowToProblemState).sort((a, b) => {
+    const score = (s: CalcProblemState) => {
+      const ageDays = Math.max(0, (Date.now() - new Date(s.updatedAt).getTime()) / 86400000)
+      return ageDays * 2 + Math.max(0, 12 - s.attemptCount) * 3
+    }
+    return score(b) - score(a)
+  })
 }
 
 export { defaultProblemState }
