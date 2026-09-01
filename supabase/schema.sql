@@ -474,29 +474,6 @@ CREATE TABLE public.audio_playlists (
 
 
 --
--- Name: calc_mistakes; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.calc_mistakes (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
-    signature text NOT NULL,
-    display text NOT NULL,
-    answer integer NOT NULL,
-    level text NOT NULL,
-    category text NOT NULL,
-    last_wrong_at timestamp with time zone DEFAULT now() NOT NULL,
-    consecutive_correct smallint DEFAULT 0 NOT NULL,
-    resolved boolean DEFAULT false NOT NULL,
-    session_no integer,
-    answer_json jsonb,
-    user_answer text,
-    error_tag text,
-    CONSTRAINT calc_mistakes_category_check CHECK ((category = ANY (ARRAY['addsub'::text, 'muldiv'::text, 'mixed'::text])))
-);
-
-
---
 -- Name: calc_problem_state; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1390,22 +1367,6 @@ ALTER TABLE ONLY public.audio_playlists
 
 
 --
--- Name: calc_mistakes calc_mistakes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.calc_mistakes
-    ADD CONSTRAINT calc_mistakes_pkey PRIMARY KEY (id);
-
-
---
--- Name: calc_mistakes calc_mistakes_user_id_signature_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.calc_mistakes
-    ADD CONSTRAINT calc_mistakes_user_id_signature_key UNIQUE (user_id, signature);
-
-
---
 -- Name: calc_problem_state calc_problem_state_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1917,13 +1878,6 @@ CREATE INDEX audio_playlists_user_id_idx ON public.audio_playlists USING btree (
 
 
 --
--- Name: calc_mistakes_user_resolved_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX calc_mistakes_user_resolved_idx ON public.calc_mistakes USING btree (user_id, resolved, last_wrong_at DESC);
-
-
---
 -- Name: calc_problem_state_user_level_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2379,14 +2333,6 @@ ALTER TABLE ONLY public.audio_playlist_items
 
 ALTER TABLE ONLY public.audio_playlists
     ADD CONSTRAINT audio_playlists_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
-
-
---
--- Name: calc_mistakes calc_mistakes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.calc_mistakes
-    ADD CONSTRAINT calc_mistakes_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 
 --
@@ -3057,19 +3003,6 @@ CREATE POLICY "authenticated can read audio_playlist_items" ON public.audio_play
 --
 
 CREATE POLICY "authenticated can read audio_playlists" ON public.audio_playlists FOR SELECT TO authenticated USING (true);
-
-
---
--- Name: calc_mistakes; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.calc_mistakes ENABLE ROW LEVEL SECURITY;
-
---
--- Name: calc_mistakes calc_mistakes_modify_own; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY calc_mistakes_modify_own ON public.calc_mistakes TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 
 --
