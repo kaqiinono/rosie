@@ -11,7 +11,7 @@ import type {
 } from '../types/chineseCharData'
 import type { CharTier } from '../utils/g1b/types'
 
-const CACHE_VER = 'chinese_char_data_v6'
+const CACHE_VER = 'chinese_char_data_v7'
 const FETCH_PAGE_SIZE = 1000
 
 export interface ChineseCharDataPayload {
@@ -55,6 +55,7 @@ function fromCharRow(row: Record<string, unknown>): ChineseCharProfile {
     structure: (row.structure as string) ?? '',
     strokeCount: row.stroke_count as number,
     phrases: (row.phrases as string[]) ?? [],
+    phraseSources: (row.phrase_sources as Record<string, string>) ?? {},
     tiers: (row.tiers as CharTier[]) ?? [],
   }
 }
@@ -113,7 +114,7 @@ async function fetchChineseCharData(userId: string): Promise<ChineseCharDataPayl
   const [charRows, lessonRows, lcRows] = await Promise.all([
     fetchAllRows<Record<string, unknown>>(
       'chinese_char_entries',
-      'char_key,char,grade,semester,pinyin,pinyin_alt,radical,radical_name,structure,stroke_count,phrases,tiers',
+      'char_key,char,grade,semester,pinyin,pinyin_alt,radical,radical_name,structure,stroke_count,phrases,tiers,phrase_sources',
       'char_key',
     ),
     fetchAllRows<Record<string, unknown>>(

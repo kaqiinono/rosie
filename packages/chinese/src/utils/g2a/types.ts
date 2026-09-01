@@ -22,6 +22,12 @@ export interface ChineseLessonMeta {
   subPoems?: string[]
 }
 
+/** 打标组词：{ text, source }；source='teacher' 表示来自教师材料（如课课贴） */
+export interface TaggedPhrase {
+  text: string
+  source: 'teacher'
+}
+
 export interface CharEntry {
   char: string
   pinyin: string
@@ -37,7 +43,7 @@ export interface CharEntry {
   radical: string
   radicalName: string
   structure: string
-  phrases: string[]
+  phrases: Array<string | TaggedPhrase>
   strokeCount: number
 }
 

@@ -49,3 +49,6 @@ supabase/.temp/
 /output/
 /scripts/tmp/
 .vercel
+
+# Python bytecode cache (scripts)
+__pycache__/

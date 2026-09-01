@@ -246,9 +246,37 @@ def load_radical_names(data_dir: Path) -> dict[str, str]:
         "龙": "龙字旁",
         "龟": "龟字旁",
         "龠": "龠字旁",
+        # 教材部首表写法（与 makemeahanzi 部首字形不同的常见变体）
+        "⺮": "竹字头",
+        "攵": "反文旁",
+        "爫": "爪字头",
+        "刂": "立刀旁",
+        "冫": "两点水",
+        "彳": "双人旁",
+        "彡": "三撇",
+        "夂": "折文",
+        "勹": "包字头",
+        "匚": "三框儿",
+        "囗": "国字框",
+        "丬": "将字旁",
+        "亠": "京字头",
+        "厶": "私字儿",
+        "礻": "示字旁",
+        "衤": "衣字旁",
+        "阝": "耳刀旁",
+        "丿": "撇",
+        "丨": "竖",
+        "丶": "点",
     }
     names.update(extra)
     return names
+
+
+def normalize_phrase(phrase) -> tuple[str, str | None]:
+    """chars.ts phrases may be plain strings or tagged objects ({text, source})."""
+    if isinstance(phrase, dict):
+        return str(phrase.get("text", "")).strip(), phrase.get("source") or None
+    return str(phrase).strip(), None
 
 
 def infer_structure(ch: str, ck: str, char_structure: dict[str, str], mm: dict | None) -> str:
@@ -377,6 +405,17 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
     phrases = load_json_export(data_dir / "phrases.ts", "PHRASES")
     units = load_json_export(data_dir / "units.ts", "UNITS")
     char_structure: dict[str, str] = {c["charKey"]: c.get("structure", "") for c in char_backup}
+    # chars.ts 优先：部首/笔画以教材备份为准，缺失时回退 makemeahanzi / hanzi-writer
+    char_radical_override: dict[str, str] = {
+        c["charKey"]: (c.get("radical") or "").strip()
+        for c in char_backup
+        if (c.get("radical") or "").strip()
+    }
+    char_stroke_override: dict[str, int] = {
+        c["charKey"]: c["strokeCount"]
+        for c in char_backup
+        if isinstance(c.get("strokeCount"), int) and c["strokeCount"] > 0
+    }
     unit_type_by_num = {u["unit"]: u["unitType"] for u in units}
     radical_names = load_radical_names(data_dir)
 
@@ -384,6 +423,7 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
     char_pinyin_alt: dict[str, set[str]] = defaultdict(set)
     char_tiers: dict[str, set[str]] = defaultdict(set)
     char_phrases: dict[str, set[str]] = defaultdict(set)
+    char_phrase_sources: dict[str, dict[str, str]] = defaultdict(dict)
     lesson_recall: dict[str, set[str]] = defaultdict(set)
 
     for g in lesson_groups:
@@ -426,8 +466,12 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
         if not ck:
             continue
         for phrase in entry.get("phrases", []):
-            if phrase:
-                char_phrases[ck].add(phrase)
+            text, source = normalize_phrase(phrase)
+            if not text:
+                continue
+            char_phrases[ck].add(text)
+            if source:
+                char_phrase_sources[ck][text] = source
 
     for ck in all_char_keys:
         ch = ck.split("::")[-1]
@@ -442,7 +486,7 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
         if not strokes or not medians:
             errors.append(f"empty hanzi-writer-data for {ch}")
             continue
-        radical = (mm or {}).get("radical") or ch
+        radical = char_radical_override.get(ck) or (mm or {}).get("radical") or ch
         rname = radical_name_for(radical, radical_names)
         tiers = sorted(char_tiers.get(ck, set()))
         pinyin = char_pinyin.get(ck, "")
@@ -451,9 +495,11 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
             continue
         alt = sorted(char_pinyin_alt.get(ck, set()) - {pinyin})
         phrases_list = sorted(char_phrases.get(ck, set()))
+        sources = {p: s for p, s in sorted(char_phrase_sources.get(ck, {}).items()) if p in char_phrases.get(ck, set())}
         structure = infer_structure(ch, ck, char_structure, mm)
         if not (char_structure.get(ck) or "").strip():
             inferred_count += 1
+        stroke_count = char_stroke_override.get(ck) or len(strokes)
         char_rows.append(
             "  ("
             + ", ".join(
@@ -467,9 +513,10 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
                     sql_str(radical),
                     sql_str(rname),
                     sql_str(structure),
-                    str(len(strokes)),
+                    str(stroke_count),
                     sql_text_array(phrases_list),
                     sql_text_array(tiers),
+                    sql_json(sources),
                 ]
             )
             + ")"
@@ -556,7 +603,7 @@ def generate_book(book_slug: str, hanzi_dir: Path, mm_dict: dict[str, dict]) -> 
 
     char_cols = (
         "  char_key, char, grade, semester, pinyin, pinyin_alt, radical, radical_name,\n"
-        "  structure, stroke_count, phrases, tiers"
+        "  structure, stroke_count, phrases, tiers, phrase_sources"
     )
     char_batch_size = max(1, (len(char_rows) + CHAR_BATCH_COUNT - 1) // CHAR_BATCH_COUNT)
     char_paths = write_batched_inserts(

@@ -16,6 +16,7 @@ workspace package.
 - **`ChineseContext`** — aggregates `useCharMastery`, `useChineseCharData`, `useChineseWeeklyPlan` (legacy).
 - **Roadmap plans (`hooks/useChineseRoadmapPlan.ts`, `components/plans/`)** — parent-managed study plans; `/today` prefers active plan over mastery roadmap.
 - **`utils/g1b/` · `utils/g2a/` · `utils/g2b/`** — per-book textbook TS (一下 / 二上 / 二下). 生字/组词数据（`chars.ts`/`phrases.ts`）是 **备份**，用于生成 SQL upsert（运行时字表读 Supabase）；单元/课文/古诗/日积月累/类型（`units.ts`/`lesson-passages.ts`/`poems.ts`/`accumulation.ts`/`types.ts`/`stats.json`）在**运行时**通过 barrel 消费。
+- **看拼写字词库（`pinyin-write-words.ts`）** — 运行时静态数据（不入 DB），由 `scripts/generate-*` 从教材答案页生成，勿手改。外部词语表（如老师提供的）放独立文件（如 `g2a/pinyin-write-words-teacher.ts`）并标 `source: 'teacher'`，在 `chinese-book-content.ts` 用 `mergePinyinWriteWords` 合并（同词以带标记条目覆盖，保证文档内全部词可按来源筛选且不重复出题）；筛选链：生字库页「老师词语」开关 → `?teacher=1` → 练习/打印/词语卡 `teacherOnly`（快照 scopeKey 含 `|tw=1` 隔离）。
 - **`utils/chinese-helpers.ts`** — `charKey`, lesson char lookups, shuffle; re-exports `getWeekStart`.
 
 ## Data model (DB-first)

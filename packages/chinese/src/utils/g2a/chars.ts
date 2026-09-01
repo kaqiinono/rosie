@@ -10,20 +10,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "D",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 0,
-    "lessonTitle": "语文园地一",
-    "lessonKind": "garden",
+    "unit": 5,
+    "lesson": 12,
+    "lessonTitle": "寒号鸟",
+    "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::冻",
-    "radical": "",
+    "radical": "冫",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "解冻",
-      "天寒地冻"
+      {
+        "text": "冷冻",
+        "source": "teacher"
+      },
+      {
+        "text": "天寒地冻",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "夹",
@@ -115,20 +121,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "Z",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 0,
-    "lessonTitle": "语文园地一",
-    "lessonKind": "garden",
+    "unit": 5,
+    "lesson": 12,
+    "lessonTitle": "寒号鸟",
+    "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::阵",
-    "radical": "",
+    "radical": "阝",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "一阵",
-      "阵雨"
+      {
+        "text": "阵雨",
+        "source": "teacher"
+      },
+      {
+        "text": "轻装上阵",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "雷",
@@ -184,14 +196,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::两",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "两旁",
-      "两岸"
+      {
+        "text": "两天",
+        "source": "teacher"
+      },
+      {
+        "text": "三言两语",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "哪",
@@ -205,14 +223,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::哪",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "哪里",
-      "哪个"
+      {
+        "text": "哪里",
+        "source": "teacher"
+      },
+      {
+        "text": "哪年哪月",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "嘴",
@@ -247,14 +271,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::孩",
-    "radical": "",
+    "radical": "子",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "孩子",
-      "小孩"
+      {
+        "text": "男孩",
+        "source": "teacher"
+      },
+      {
+        "text": "女孩",
+        "source": "teacher"
+      },
+      {
+        "text": "小孩",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "宽",
@@ -268,14 +302,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::宽",
-    "radical": "",
+    "radical": "宀",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "宽阔",
-      "宽敞"
+      {
+        "text": "宽广",
+        "source": "teacher"
+      },
+      {
+        "text": "宽容大度",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "成",
@@ -289,14 +329,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::成",
-    "radical": "",
+    "radical": "戈",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "成长",
-      "成熟"
+      {
+        "text": "成为",
+        "source": "teacher"
+      },
+      {
+        "text": "成百上千",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "披",
@@ -352,14 +398,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::条",
-    "radical": "",
+    "radical": "夂",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "纸条",
-      "便条"
+      {
+        "text": "面条",
+        "source": "teacher"
+      },
+      {
+        "text": "井井有条",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "活",
@@ -367,17 +419,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "H",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 1,
-    "lessonTitle": "小蝌蚪找妈妈",
+    "unit": 3,
+    "lesson": 5,
+    "lessonTitle": "去外婆家",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::活",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "左右",
+    "phrases": [
+      {
+        "text": "生活",
+        "source": "teacher"
+      },
+      {
+        "text": "生龙活虎",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 9
   },
   {
     "char": "灰",
@@ -433,14 +494,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::短",
-    "radical": "",
+    "radical": "矢",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "短期",
-      "短信"
+      {
+        "text": "短小",
+        "source": "teacher"
+      },
+      {
+        "text": "取长补短",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "肚",
@@ -449,19 +516,25 @@ export const CHARS: CharEntry[] = [
     "grade": 2,
     "semester": "上",
     "unit": 1,
-    "lesson": 1,
-    "lessonTitle": "小蝌蚪找妈妈",
+    "lesson": 3,
+    "lessonTitle": "植物妈妈有办法",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::肚",
-    "radical": "",
+    "radical": "月",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "肚皮",
-      "肚子"
+      {
+        "text": "肚子",
+        "source": "teacher"
+      },
+      {
+        "text": "小肚鸡肠",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "脑",
@@ -613,14 +686,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::那",
-    "radical": "",
+    "radical": "阝",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "那么",
-      "那些"
+      {
+        "text": "那边",
+        "source": "teacher"
+      },
+      {
+        "text": "那时",
+        "source": "teacher"
+      },
+      {
+        "text": "那么",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "鼓",
@@ -676,14 +759,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::作",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "工作",
-      "当作"
+      {
+        "text": "作业",
+        "source": "teacher"
+      },
+      {
+        "text": "一鼓作气",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "办",
@@ -697,14 +786,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::办",
-    "radical": "",
+    "radical": "力",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "办法",
-      "办事"
+      {
+        "text": "办法",
+        "source": "teacher"
+      },
+      {
+        "text": "公事公办",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "升",
@@ -718,14 +813,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::升",
-    "radical": "",
+    "radical": "丿",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "升旗",
-      "上升"
+      {
+        "text": "升高",
+        "source": "teacher"
+      },
+      {
+        "text": "旭日东升",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "发",
@@ -734,19 +835,25 @@ export const CHARS: CharEntry[] = [
     "grade": 2,
     "semester": "上",
     "unit": 1,
-    "lesson": 2,
-    "lessonTitle": "我是什么",
+    "lesson": 3,
+    "lessonTitle": "植物妈妈有办法",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::发",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "发现",
-      "发明"
+      {
+        "text": "出发",
+        "source": "teacher"
+      },
+      {
+        "text": "发扬光大",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "坏",
@@ -859,20 +966,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "Q",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 2,
-    "lessonTitle": "我是什么",
+    "unit": 7,
+    "lesson": 20,
+    "lessonTitle": "雪孩子",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::汽",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "汽车",
-      "汽水"
+      {
+        "text": "汽车",
+        "source": "teacher"
+      },
+      {
+        "text": "冰镇汽水",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "没",
@@ -907,14 +1020,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::法",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "办法",
-      "方法"
+      {
+        "text": "书法",
+        "source": "teacher"
+      },
+      {
+        "text": "想方设法",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "洋",
@@ -928,14 +1047,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::洋",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "懒洋洋",
-      "暖洋洋"
+      {
+        "text": "海洋",
+        "source": "teacher"
+      },
+      {
+        "text": "洋洋自得",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "海",
@@ -949,14 +1074,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::海",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "海鸥",
-      "海底"
+      {
+        "text": "大海",
+        "source": "teacher"
+      },
+      {
+        "text": "海阔天空",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "温",
@@ -1023,21 +1154,30 @@ export const CHARS: CharEntry[] = [
   },
   {
     "char": "种",
-    "pinyin": "zhǒng",
+    "pinyin": "zhòng",
     "pinyinInitial": "Z",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 2,
-    "lessonTitle": "我是什么",
+    "unit": 5,
+    "lesson": 13,
+    "lessonTitle": "我要的是葫芦",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::种",
-    "radical": "",
+    "radical": "禾",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "左右",
+    "phrases": [
+      {
+        "text": "种田",
+        "source": "teacher"
+      },
+      {
+        "text": "刀耕火种",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 9
   },
   {
     "char": "稼",
@@ -1093,14 +1233,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::许",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "许多",
-      "也许"
+      {
+        "text": "许久",
+        "source": "teacher"
+      },
+      {
+        "text": "许许多多",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "起",
@@ -1114,14 +1260,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::起",
-    "radical": "",
+    "radical": "走",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "起来",
-      "一起"
+      {
+        "text": "一起",
+        "source": "teacher"
+      },
+      {
+        "text": "东山再起",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "越",
@@ -1156,14 +1308,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::连",
-    "radical": "",
+    "radical": "辶",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "连忙",
-      "一连"
+      {
+        "text": "连忙",
+        "source": "teacher"
+      },
+      {
+        "text": "连成一片",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "准",
@@ -1198,14 +1356,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::别",
-    "radical": "",
+    "radical": "刂",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "别人",
-      "特别"
+      {
+        "text": "别人",
+        "source": "teacher"
+      },
+      {
+        "text": "别具一格",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "备",
@@ -1240,14 +1404,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::如",
-    "radical": "",
+    "radical": "女",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "如果",
-      "比如"
+      {
+        "text": "如果",
+        "source": "teacher"
+      },
+      {
+        "text": "泪如雨下",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "已",
@@ -1261,14 +1431,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::已",
-    "radical": "",
+    "radical": "己",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "已经",
-      "早已"
+      {
+        "text": "已经",
+        "source": "teacher"
+      },
+      {
+        "text": "万不得已",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 3
   },
   {
     "char": "底",
@@ -1293,24 +1469,30 @@ export const CHARS: CharEntry[] = [
   },
   {
     "char": "得",
-    "pinyin": "dé",
+    "pinyin": "de",
     "pinyinInitial": "D",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 3,
-    "lessonTitle": "植物妈妈有办法",
+    "unit": 7,
+    "lesson": 20,
+    "lessonTitle": "雪孩子",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::得",
-    "radical": "",
+    "radical": "彳",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "觉得",
-      "显得"
+      {
+        "text": "飞得高",
+        "source": "teacher"
+      },
+      {
+        "text": "跑得快",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "挂",
@@ -1318,20 +1500,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "G",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 3,
-    "lessonTitle": "植物妈妈有办法",
+    "unit": 3,
+    "lesson": 4,
+    "lessonTitle": "彩虹",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::挂",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "挂起",
-      "挂念"
+      {
+        "text": "挂念",
+        "source": "teacher"
+      },
+      {
+        "text": "不足挂齿",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "挺",
@@ -1387,14 +1575,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::更",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "更加",
-      "更改"
+      {
+        "text": "更加",
+        "source": "teacher"
+      },
+      {
+        "text": "更进一步",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "植",
@@ -1513,14 +1707,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::经",
-    "radical": "",
+    "radical": "纟",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "经常",
-      "经过"
+      {
+        "text": "经过",
+        "source": "teacher"
+      },
+      {
+        "text": "漫不经心",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "胆",
@@ -1534,14 +1734,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::胆",
-    "radical": "",
+    "radical": "月",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "胆子",
-      "胆小"
+      {
+        "text": "胆子",
+        "source": "teacher"
+      },
+      {
+        "text": "提心吊胆",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "脚",
@@ -1576,14 +1782,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::识",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "知识",
-      "认识"
+      {
+        "text": "知识",
+        "source": "teacher"
+      },
+      {
+        "text": "见多识广",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "轻",
@@ -1597,14 +1809,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::轻",
-    "radical": "",
+    "radical": "车",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "年轻",
-      "轻轻"
+      {
+        "text": "轻松",
+        "source": "teacher"
+      },
+      {
+        "text": "轻而易举",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "送",
@@ -1612,20 +1830,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "S",
     "grade": 2,
     "semester": "上",
-    "unit": 1,
-    "lesson": 3,
-    "lessonTitle": "植物妈妈有办法",
+    "unit": 8,
+    "lesson": 21,
+    "lessonTitle": "称赞",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::送",
-    "radical": "",
+    "radical": "辶",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "送给",
-      "送货"
+      {
+        "text": "送给",
+        "source": "teacher"
+      },
+      {
+        "text": "雪中送炭",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "钻",
@@ -1660,14 +1884,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::丑",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "丑恶",
-      "出丑"
+      {
+        "text": "小丑",
+        "source": "teacher"
+      },
+      {
+        "text": "家丑",
+        "source": "teacher"
+      },
+      {
+        "text": "丑化",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "假",
@@ -1807,14 +2041,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::诚",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "诚实",
-      "真诚"
+      {
+        "text": "真诚",
+        "source": "teacher"
+      },
+      {
+        "text": "诚实守信",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "贫",
@@ -1843,20 +2083,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "J",
     "grade": 2,
     "semester": "上",
-    "unit": 2,
+    "unit": 7,
     "lesson": 0,
-    "lessonTitle": "语文园地二",
+    "lessonTitle": "语文园地七",
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::饥",
-    "radical": "",
+    "radical": "饣",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "饥饿",
-      "如饥似渴"
+      {
+        "text": "饥饿",
+        "source": "teacher"
+      },
+      {
+        "text": "饥寒交迫",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "丛",
@@ -1865,19 +2111,25 @@ export const CHARS: CharEntry[] = [
     "grade": 2,
     "semester": "上",
     "unit": 2,
-    "lesson": 1,
-    "lessonTitle": "场景歌",
+    "lesson": 3,
+    "lessonTitle": "拍手歌",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::丛",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "花丛",
-      "树丛"
+      {
+        "text": "花丛",
+        "source": "teacher"
+      },
+      {
+        "text": "荆棘丛生",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "号",
@@ -1885,20 +2137,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "H",
     "grade": 2,
     "semester": "上",
-    "unit": 2,
-    "lesson": 1,
-    "lessonTitle": "场景歌",
-    "lessonKind": "lesson",
+    "unit": 4,
+    "lesson": 0,
+    "lessonTitle": "语文园地四",
+    "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::号",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "号召",
-      "号码"
+      {
+        "text": "口号",
+        "source": "teacher"
+      },
+      {
+        "text": "号令如山",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "园",
@@ -1912,14 +2170,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::园",
-    "radical": "",
+    "radical": "囗",
     "radicalName": "",
-    "structure": "",
+    "structure": "全包围",
     "phrases": [
-      "公园",
-      "花园"
+      {
+        "text": "花园",
+        "source": "teacher"
+      },
+      {
+        "text": "满园春色",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "块",
@@ -1933,14 +2197,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::块",
-    "radical": "",
+    "radical": "土",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "一块",
-      "石块"
+      {
+        "text": "方块",
+        "source": "teacher"
+      },
+      {
+        "text": "铁板一块",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "垂",
@@ -1996,14 +2266,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::处",
-    "radical": "",
+    "radical": "夂",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "远处",
-      "四处"
+      {
+        "text": "好处",
+        "source": "teacher"
+      },
+      {
+        "text": "一无是处",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "帆",
@@ -2038,14 +2314,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::座",
-    "radical": "",
+    "radical": "广",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "座位",
-      "插座"
+      {
+        "text": "一座",
+        "source": "teacher"
+      },
+      {
+        "text": "高朋满座",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "港",
@@ -2142,14 +2424,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::群",
-    "radical": "",
+    "radical": "羊",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "人群",
-      "群山"
+      {
+        "text": "羊群",
+        "source": "teacher"
+      },
+      {
+        "text": "三五成群",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "翠",
@@ -2226,14 +2514,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::队",
-    "radical": "",
+    "radical": "阝",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "队伍",
-      "队员"
+      {
+        "text": "队员",
+        "source": "teacher"
+      },
+      {
+        "text": "成群结队",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "领",
@@ -2247,14 +2541,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::领",
-    "radical": "",
+    "radical": "页",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "领导",
-      "带领"
+      {
+        "text": "领带",
+        "source": "teacher"
+      },
+      {
+        "text": "心领神会",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "之",
@@ -2268,14 +2568,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::之",
-    "radical": "",
+    "radical": "丶",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "之间",
-      "之后"
+      {
+        "text": "总之",
+        "source": "teacher"
+      },
+      {
+        "text": "光荣之家",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 3
   },
   {
     "char": "化",
@@ -2289,14 +2595,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::化",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "化石",
-      "变化"
+      {
+        "text": "化肥",
+        "source": "teacher"
+      },
+      {
+        "text": "千变万化",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "壮",
@@ -2415,13 +2727,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::杨",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "垂杨柳"
+      {
+        "text": "杨树",
+        "source": "teacher"
+      },
+      {
+        "text": "百步穿杨",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "松",
@@ -2435,14 +2754,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::松",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "松鼠",
-      "松果"
+      {
+        "text": "松手",
+        "source": "teacher"
+      },
+      {
+        "text": "苍松翠柏",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "枫",
@@ -2477,14 +2802,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::柏",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "柏树",
-      "松柏"
+      {
+        "text": "柏树",
+        "source": "teacher"
+      },
+      {
+        "text": "松柏之志",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "树",
@@ -2498,14 +2829,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::树",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "树木",
-      "树枝"
+      {
+        "text": "树木",
+        "source": "teacher"
+      },
+      {
+        "text": "树大根深",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "桂",
@@ -2519,14 +2856,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::桂",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "桂皮",
-      "肉桂"
+      {
+        "text": "桂花",
+        "source": "teacher"
+      },
+      {
+        "text": "丹桂飘香",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "桐",
@@ -2621,14 +2964,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::金",
-    "radical": "",
+    "radical": "金",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "黄金",
-      "金子"
+      {
+        "text": "金色",
+        "source": "teacher"
+      },
+      {
+        "text": "拾金不昧",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "银",
@@ -2636,20 +2985,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "Y",
     "grade": 2,
     "semester": "上",
-    "unit": 2,
-    "lesson": 2,
-    "lessonTitle": "树之歌",
+    "unit": 4,
+    "lesson": 7,
+    "lessonTitle": "古诗二首",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::银",
-    "radical": "",
+    "radical": "钅",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "银子",
-      "银河"
+      {
+        "text": "银发",
+        "source": "teacher"
+      },
+      {
+        "text": "火树银花",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "世",
@@ -2663,14 +3018,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::世",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "世界",
-      "世纪"
+      {
+        "text": "世人",
+        "source": "teacher"
+      },
+      {
+        "text": "生生世世",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "休",
@@ -2684,14 +3045,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::休",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "休息",
-      "休假"
+      {
+        "text": "午休",
+        "source": "teacher"
+      },
+      {
+        "text": "休养生息",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "保",
@@ -2705,14 +3072,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::保",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "保护",
-      "保证"
+      {
+        "text": "保护",
+        "source": "teacher"
+      },
+      {
+        "text": "保家卫国",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "友",
@@ -2726,14 +3099,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::友",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "朋友",
-      "友好"
+      {
+        "text": "友好",
+        "source": "teacher"
+      },
+      {
+        "text": "良师益友",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "孔",
@@ -2741,20 +3120,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "K",
     "grade": 2,
     "semester": "上",
-    "unit": 2,
-    "lesson": 3,
-    "lessonTitle": "拍手歌",
+    "unit": 4,
+    "lesson": 10,
+    "lessonTitle": "葡萄沟",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::孔",
-    "radical": "",
+    "radical": "子",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "鼻孔",
-      "面孔"
+      {
+        "text": "毛孔",
+        "source": "teacher"
+      },
+      {
+        "text": "无孔不入",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "彩",
@@ -2768,14 +3153,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::彩",
-    "radical": "",
+    "radical": "彡",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "彩色",
-      "彩云"
+      {
+        "text": "云彩",
+        "source": "teacher"
+      },
+      {
+        "text": "喝彩",
+        "source": "teacher"
+      },
+      {
+        "text": "彩虹",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "护",
@@ -2789,14 +3184,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::护",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "保护",
-      "爱护"
+      {
+        "text": "呵护",
+        "source": "teacher"
+      },
+      {
+        "text": "保驾护航",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "拍",
@@ -2810,14 +3211,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::拍",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "拍手",
-      "拍照"
+      {
+        "text": "拍手",
+        "source": "teacher"
+      },
+      {
+        "text": "一拍即合",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "朋",
@@ -2831,14 +3238,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::朋",
-    "radical": "",
+    "radical": "月",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "朋友",
-      "小朋友"
+      {
+        "text": "朋友",
+        "source": "teacher"
+      },
+      {
+        "text": "高朋满座",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "深",
@@ -2909,20 +3322,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "M",
     "grade": 2,
     "semester": "上",
-    "unit": 2,
-    "lesson": 3,
-    "lessonTitle": "拍手歌",
+    "unit": 7,
+    "lesson": 19,
+    "lessonTitle": "雾在哪里",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::猫",
-    "radical": "",
+    "radical": "犭",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "小猫",
-      "猫头鹰"
+      {
+        "text": "熊猫",
+        "source": "teacher"
+      },
+      {
+        "text": "照猫画虎",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "界",
@@ -2936,14 +3355,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::界",
-    "radical": "",
+    "radical": "田",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "世界",
-      "界限"
+      {
+        "text": "边界",
+        "source": "teacher"
+      },
+      {
+        "text": "花花世界",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "翔",
@@ -3081,14 +3506,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::事",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "事情",
-      "故事"
+      {
+        "text": "事业",
+        "source": "teacher"
+      },
+      {
+        "text": "事半功倍",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "体",
@@ -3102,14 +3533,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::体",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "身体",
-      "体温"
+      {
+        "text": "体育",
+        "source": "teacher"
+      },
+      {
+        "text": "身体力行",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "农",
@@ -3123,14 +3560,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::农",
-    "radical": "",
+    "radical": "丶",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "农民",
-      "农具"
+      {
+        "text": "农民",
+        "source": "teacher"
+      },
+      {
+        "text": "士农工商",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "初",
@@ -3144,14 +3587,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::初",
-    "radical": "",
+    "radical": "衣",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "起初",
-      "最初"
+      {
+        "text": "初一",
+        "source": "teacher"
+      },
+      {
+        "text": "初来乍到",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "制",
@@ -3249,14 +3698,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::季",
-    "radical": "",
+    "radical": "禾",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "春季",
-      "夏季"
+      {
+        "text": "季节",
+        "source": "teacher"
+      },
+      {
+        "text": "四季如春",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "归",
@@ -3285,20 +3740,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "D",
     "grade": 2,
     "semester": "上",
-    "unit": 2,
-    "lesson": 4,
-    "lessonTitle": "田家四季歌",
+    "unit": 6,
+    "lesson": 15,
+    "lessonTitle": "朱德的扁担",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::戴",
-    "radical": "",
+    "radical": "戈",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "穿戴",
-      "佩戴"
+      {
+        "text": "爱戴",
+        "source": "teacher"
+      },
+      {
+        "text": "披星戴月",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 17
   },
   {
     "char": "肥",
@@ -3312,14 +3773,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::肥",
-    "radical": "",
+    "radical": "月",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "肥料",
-      "肥皂"
+      {
+        "text": "肥胖",
+        "source": "teacher"
+      },
+      {
+        "text": "肥头大耳",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "苦",
@@ -3333,14 +3800,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::苦",
-    "radical": "",
+    "radical": "艹",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "辛苦",
-      "痛苦"
+      {
+        "text": "苦瓜",
+        "source": "teacher"
+      },
+      {
+        "text": "苦尽甘来",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "虽",
@@ -3354,14 +3827,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::虽",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "虽然",
-      "虽说"
+      {
+        "text": "虽然",
+        "source": "teacher"
+      },
+      {
+        "text": "虽败犹荣",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "蝴",
@@ -3417,11 +3896,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::谷",
-    "radical": "",
+    "radical": "谷",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "上下",
+    "phrases": [
+      {
+        "text": "山谷",
+        "source": "teacher"
+      },
+      {
+        "text": "五谷丰登",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 7
   },
   {
     "char": "辛",
@@ -3435,14 +3923,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::辛",
-    "radical": "",
+    "radical": "辛",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "辛苦",
-      "艰辛"
+      {
+        "text": "辛劳",
+        "source": "teacher"
+      },
+      {
+        "text": "千辛万苦",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "麦",
@@ -3495,14 +3989,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::图",
-    "radical": "",
+    "radical": "囗",
     "radicalName": "",
-    "structure": "",
+    "structure": "全包围",
     "phrases": [
-      "图画",
-      "图案"
+      {
+        "text": "图片",
+        "source": "teacher"
+      },
+      {
+        "text": "发奋图强",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "弹",
@@ -3579,14 +4079,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::泥",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "泥土",
-      "泥泞"
+      {
+        "text": "泥土",
+        "source": "teacher"
+      },
+      {
+        "text": "拖泥带水",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "滑",
@@ -3642,14 +4148,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::环",
-    "radical": "",
+    "radical": "王",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "环绕",
-      "环境"
+      {
+        "text": "光环",
+        "source": "teacher"
+      },
+      {
+        "text": "环环相扣",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "琴",
@@ -3705,14 +4217,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::铁",
-    "radical": "",
+    "radical": "钅",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "钢铁",
-      "铁锹"
+      {
+        "text": "铁丝",
+        "source": "teacher"
+      },
+      {
+        "text": "铁面无私",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "丽",
@@ -3726,14 +4244,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::丽",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "美丽",
-      "秀丽"
+      {
+        "text": "美丽",
+        "source": "teacher"
+      },
+      {
+        "text": "风和日丽",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "吗",
@@ -3747,14 +4271,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::吗",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "好吗",
-      "是吗"
+      {
+        "text": "好吗",
+        "source": "teacher"
+      },
+      {
+        "text": "行吗",
+        "source": "teacher"
+      },
+      {
+        "text": "是吗",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "哥",
@@ -3768,14 +4302,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::哥",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "哥哥",
-      "大哥"
+      {
+        "text": "哥哥",
+        "source": "teacher"
+      },
+      {
+        "text": "帅哥",
+        "source": "teacher"
+      },
+      {
+        "text": "大哥",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "啊",
@@ -3789,14 +4333,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::啊",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "好啊",
-      "是啊"
+      {
+        "text": "盼啊盼",
+        "source": "teacher"
+      },
+      {
+        "text": "飘啊飘",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "圆",
@@ -3810,14 +4360,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::圆",
-    "radical": "",
+    "radical": "囗",
     "radicalName": "",
-    "structure": "",
+    "structure": "全包围",
     "phrases": [
-      "圆形",
-      "团圆"
+      {
+        "text": "圆形",
+        "source": "teacher"
+      },
+      {
+        "text": "花好月圆",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "壶",
@@ -3846,20 +4402,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "N",
     "grade": 2,
     "semester": "上",
-    "unit": 3,
-    "lesson": 4,
-    "lessonTitle": "彩虹",
+    "unit": 8,
+    "lesson": 21,
+    "lessonTitle": "称赞",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::拿",
-    "radical": "",
+    "radical": "人",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "拿起",
-      "拿走"
+      {
+        "text": "拿起",
+        "source": "teacher"
+      },
+      {
+        "text": "拿手好戏",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "挑",
@@ -3894,14 +4456,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::提",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "提着",
-      "提起"
+      {
+        "text": "提手",
+        "source": "teacher"
+      },
+      {
+        "text": "提心吊胆",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "洒",
@@ -3957,14 +4525,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::秋",
-    "radical": "",
+    "radical": "禾",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "秋天",
-      "秋季"
+      {
+        "text": "秋千",
+        "source": "teacher"
+      },
+      {
+        "text": "一叶知秋",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "系",
@@ -4083,14 +4657,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::些",
-    "radical": "",
+    "radical": "止",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "这些",
-      "一些"
+      {
+        "text": "一些",
+        "source": "teacher"
+      },
+      {
+        "text": "这些",
+        "source": "teacher"
+      },
+      {
+        "text": "好些",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "份",
@@ -4098,20 +4682,30 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "F",
     "grade": 2,
     "semester": "上",
-    "unit": 3,
-    "lesson": 5,
-    "lessonTitle": "去外婆家",
+    "unit": 4,
+    "lesson": 10,
+    "lessonTitle": "葡萄沟",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::份",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "月份",
-      "身份"
+      {
+        "text": "一份",
+        "source": "teacher"
+      },
+      {
+        "text": "月份",
+        "source": "teacher"
+      },
+      {
+        "text": "年份",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "候",
@@ -4146,14 +4740,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::名",
-    "radical": "",
+    "radical": "夕",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "名字",
-      "名胜"
+      {
+        "text": "姓名",
+        "source": "teacher"
+      },
+      {
+        "text": "举世闻名",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "喂",
@@ -4209,14 +4809,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::宝",
-    "radical": "",
+    "radical": "宀",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "宝物",
-      "财宝"
+      {
+        "text": "宝贝",
+        "source": "teacher"
+      },
+      {
+        "text": "如获至宝",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "总",
@@ -4230,14 +4836,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::总",
-    "radical": "",
+    "radical": "心",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "总是",
-      "总理"
+      {
+        "text": "总是",
+        "source": "teacher"
+      },
+      {
+        "text": "林林总总",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "或",
@@ -4293,14 +4905,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::曲",
-    "radical": "",
+    "radical": "丨",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "小曲",
-      "歌曲"
+      {
+        "text": "歌曲",
+        "source": "teacher"
+      },
+      {
+        "text": "异曲同工",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "服",
@@ -4356,14 +4974,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::给",
-    "radical": "",
+    "radical": "纟",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "送给",
-      "递给"
+      {
+        "text": "让给",
+        "source": "teacher"
+      },
+      {
+        "text": "带给",
+        "source": "teacher"
+      },
+      {
+        "text": "送给",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "者",
@@ -4419,14 +5047,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::诉",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "告诉",
-      "诉说"
+      {
+        "text": "告诉",
+        "source": "teacher"
+      },
+      {
+        "text": "如泣如诉",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "趣",
@@ -4482,14 +5116,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::香",
-    "radical": "",
+    "radical": "香",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "香蕉",
-      "香皂"
+      {
+        "text": "香味",
+        "source": "teacher"
+      },
+      {
+        "text": "鸟语花香",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "鼻",
@@ -4566,14 +5206,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::勺",
-    "radical": "",
+    "radical": "勹",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "勺子",
-      "漏勺"
+      {
+        "text": "勺子",
+        "source": "teacher"
+      },
+      {
+        "text": "汤勺",
+        "source": "teacher"
+      },
+      {
+        "text": "饭勺",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 3
   },
   {
     "char": "变",
@@ -4587,14 +5237,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::变",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "变成",
-      "变化"
+      {
+        "text": "变化",
+        "source": "teacher"
+      },
+      {
+        "text": "谈虎色变",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "奶",
@@ -4608,14 +5264,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::奶",
-    "radical": "",
+    "radical": "女",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "奶奶",
-      "牛奶"
+      {
+        "text": "奶奶",
+        "source": "teacher"
+      },
+      {
+        "text": "奶声奶气",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "张",
@@ -4629,14 +5291,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::张",
-    "radical": "",
+    "radical": "弓",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "慌张",
-      "紧张"
+      {
+        "text": "张开",
+        "source": "teacher"
+      },
+      {
+        "text": "张灯结彩",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "很",
@@ -4650,14 +5318,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::很",
-    "radical": "",
+    "radical": "彳",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "很好",
-      "很多"
+      {
+        "text": "很多",
+        "source": "teacher"
+      },
+      {
+        "text": "很好",
+        "source": "teacher"
+      },
+      {
+        "text": "很快",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "您",
@@ -4671,13 +5349,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::您",
-    "radical": "",
+    "radical": "心",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "您好"
+      {
+        "text": "您好",
+        "source": "teacher"
+      },
+      {
+        "text": "您说",
+        "source": "teacher"
+      },
+      {
+        "text": "您看",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "撒",
@@ -4712,14 +5401,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::数",
-    "radical": "",
+    "radical": "攵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "无数",
-      "数学"
+      {
+        "text": "数学",
+        "source": "teacher"
+      },
+      {
+        "text": "数一数二",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "晚",
@@ -4733,14 +5428,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::晚",
-    "radical": "",
+    "radical": "日",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "晚上",
-      "夜晚"
+      {
+        "text": "晚上",
+        "source": "teacher"
+      },
+      {
+        "text": "早出晚归",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "楚",
@@ -4775,14 +5476,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::汉",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "好汉",
-      "男子汉"
+      {
+        "text": "汉语",
+        "source": "teacher"
+      },
+      {
+        "text": "绿林好汉",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "爷",
@@ -4796,14 +5503,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::爷",
-    "radical": "",
+    "radical": "父",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "爷爷",
-      "姥爷"
+      {
+        "text": "爷爷",
+        "source": "teacher"
+      },
+      {
+        "text": "太爷",
+        "source": "teacher"
+      },
+      {
+        "text": "王爷",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "珍",
@@ -4984,14 +5701,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::丰",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "丰收",
-      "丰盛"
+      {
+        "text": "丰收",
+        "source": "teacher"
+      },
+      {
+        "text": "丰衣足食",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "付",
@@ -5235,14 +5958,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::依",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "依靠",
-      "依然"
+      {
+        "text": "依次",
+        "source": "teacher"
+      },
+      {
+        "text": "依依不舍",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "唐",
@@ -5266,7 +5995,7 @@ export const CHARS: CharEntry[] = [
   },
   {
     "char": "尽",
-    "pinyin": "jǐn",
+    "pinyin": "jìn",
     "pinyinInitial": "J",
     "grade": 2,
     "semester": "上",
@@ -5276,11 +6005,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::尽",
-    "radical": "",
+    "radical": "尸",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "上下",
+    "phrases": [
+      {
+        "text": "尽头",
+        "source": "teacher"
+      },
+      {
+        "text": "山穷水尽",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 6
   },
   {
     "char": "层",
@@ -5294,11 +6032,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::层",
-    "radical": "",
+    "radical": "尸",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "半包围",
+    "phrases": [
+      {
+        "text": "层次",
+        "source": "teacher"
+      },
+      {
+        "text": "层出不穷",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 7
   },
   {
     "char": "川",
@@ -5312,11 +6059,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::川",
-    "radical": "",
+    "radical": "丿",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "独体",
+    "phrases": [
+      {
+        "text": "四川",
+        "source": "teacher"
+      },
+      {
+        "text": "川流不息",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 3
   },
   {
     "char": "布",
@@ -5391,14 +6147,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::炉",
-    "radical": "",
+    "radical": "火",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "炉子",
-      "火炉"
+      {
+        "text": "火炉",
+        "source": "teacher"
+      },
+      {
+        "text": "炉火纯青",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "烟",
@@ -5412,11 +6174,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::烟",
-    "radical": "",
+    "radical": "火",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "左右",
+    "phrases": [
+      {
+        "text": "烟花",
+        "source": "teacher"
+      },
+      {
+        "text": "烟消云散",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 10
   },
   {
     "char": "照",
@@ -5430,14 +6201,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::照",
-    "radical": "",
+    "radical": "灬",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "按照",
-      "照片"
+      {
+        "text": "照明",
+        "source": "teacher"
+      },
+      {
+        "text": "阳光普照",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "登",
@@ -5472,14 +6249,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::直",
-    "radical": "",
+    "radical": "十",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "一直",
-      "直接"
+      {
+        "text": "一直",
+        "source": "teacher"
+      },
+      {
+        "text": "心直口快",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "穷",
@@ -5493,11 +6276,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::穷",
-    "radical": "",
+    "radical": "穴",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "上下",
+    "phrases": [
+      {
+        "text": "贫穷",
+        "source": "teacher"
+      },
+      {
+        "text": "人穷志短",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 7
   },
   {
     "char": "紫",
@@ -5551,14 +6343,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::仙",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "仙女",
-      "神仙"
+      {
+        "text": "仙女",
+        "source": "teacher"
+      },
+      {
+        "text": "八仙过海",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "伸",
@@ -5592,14 +6390,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::位",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "座位",
-      "各位"
+      {
+        "text": "座位",
+        "source": "teacher"
+      },
+      {
+        "text": "虚位以待",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "区",
@@ -5608,19 +6412,29 @@ export const CHARS: CharEntry[] = [
     "grade": 2,
     "semester": "上",
     "unit": 4,
-    "lesson": 8,
-    "lessonTitle": "黄山奇石",
+    "lesson": 9,
+    "lessonTitle": "日月潭",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::区",
-    "radical": "",
+    "radical": "匚",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "景区",
-      "区别"
+      {
+        "text": "山区",
+        "source": "teacher"
+      },
+      {
+        "text": "城区",
+        "source": "teacher"
+      },
+      {
+        "text": "区别",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "岩",
@@ -5654,14 +6468,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::巨",
-    "radical": "",
+    "radical": "匚",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "巨大",
-      "巨人"
+      {
+        "text": "巨人",
+        "source": "teacher"
+      },
+      {
+        "text": "事无巨细",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "形",
@@ -5675,14 +6495,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::形",
-    "radical": "",
+    "radical": "彡",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "形状",
-      "形成"
+      {
+        "text": "形状",
+        "source": "teacher"
+      },
+      {
+        "text": "形影不离",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "抢",
@@ -5759,14 +6585,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::状",
-    "radical": "",
+    "radical": "丬",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "状态",
-      "形状"
+      {
+        "text": "现状",
+        "source": "teacher"
+      },
+      {
+        "text": "奇形怪状",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "狗",
@@ -5780,14 +6612,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::狗",
-    "radical": "",
+    "radical": "犭",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "狗熊",
-      "猎狗"
+      {
+        "text": "小狗",
+        "source": "teacher"
+      },
+      {
+        "text": "狗仗人势",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "盘",
@@ -5927,14 +6765,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::闪",
-    "radical": "",
+    "radical": "门",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "闪电",
-      "闪烁"
+      {
+        "text": "闪电",
+        "source": "teacher"
+      },
+      {
+        "text": "金光闪闪",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "闻",
@@ -5969,14 +6813,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::顶",
-    "radical": "",
+    "radical": "页",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "头顶",
-      "山顶"
+      {
+        "text": "山顶",
+        "source": "teacher"
+      },
+      {
+        "text": "顶天立地",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "倒",
@@ -6032,14 +6882,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::外",
-    "radical": "",
+    "radical": "夕",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "外面",
-      "外婆"
+      {
+        "text": "外地",
+        "source": "teacher"
+      },
+      {
+        "text": "喜出望外",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "央",
@@ -6074,14 +6930,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::就",
-    "radical": "",
+    "radical": "亠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "就是",
-      "就要"
+      {
+        "text": "就是",
+        "source": "teacher"
+      },
+      {
+        "text": "功成名就",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "岛",
@@ -6095,14 +6957,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::岛",
-    "radical": "",
+    "radical": "山",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "小岛",
-      "岛屿"
+      {
+        "text": "小岛",
+        "source": "teacher"
+      },
+      {
+        "text": "郊寒岛瘦",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "引",
@@ -6137,14 +7005,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::弯",
-    "radical": "",
+    "radical": "弓",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "弯曲",
-      "拐弯"
+      {
+        "text": "弯曲",
+        "source": "teacher"
+      },
+      {
+        "text": "弯弓",
+        "source": "teacher"
+      },
+      {
+        "text": "转弯",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "整",
@@ -6200,14 +7078,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::湖",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "湖边",
-      "湖光山色"
+      {
+        "text": "湖面",
+        "source": "teacher"
+      },
+      {
+        "text": "湖光山色",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "潭",
@@ -6242,14 +7126,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::现",
-    "radical": "",
+    "radical": "王",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "现在",
-      "出现"
+      {
+        "text": "现在",
+        "source": "teacher"
+      },
+      {
+        "text": "活灵活现",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "盛",
@@ -6326,14 +7216,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::胜",
-    "radical": "",
+    "radical": "月",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "名胜",
-      "胜利"
+      {
+        "text": "胜利",
+        "source": "teacher"
+      },
+      {
+        "text": "引人入胜",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "茂",
@@ -6410,14 +7306,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::味",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "味道",
-      "气味"
+      {
+        "text": "口味",
+        "source": "teacher"
+      },
+      {
+        "text": "五味杂陈",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "坡",
@@ -6452,14 +7354,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::城",
-    "radical": "",
+    "radical": "土",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "城外",
-      "城门"
+      {
+        "text": "城市",
+        "source": "teacher"
+      },
+      {
+        "text": "价值连城",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "够",
@@ -6515,14 +7423,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::客",
-    "radical": "",
+    "radical": "宀",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "做客",
-      "好客"
+      {
+        "text": "客人",
+        "source": "teacher"
+      },
+      {
+        "text": "不速之客",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "密",
@@ -6557,14 +7471,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::市",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "市场",
-      "超市"
+      {
+        "text": "市长",
+        "source": "teacher"
+      },
+      {
+        "text": "门庭若市",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "干",
@@ -6593,20 +7513,26 @@ export const CHARS: CharEntry[] = [
     "pinyinInitial": "S",
     "grade": 2,
     "semester": "上",
-    "unit": 4,
-    "lesson": 10,
-    "lessonTitle": "葡萄沟",
+    "unit": 8,
+    "lesson": 21,
+    "lessonTitle": "称赞",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::收",
-    "radical": "",
+    "radical": "攵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "收拾",
-      "收获"
+      {
+        "text": "回收",
+        "source": "teacher"
+      },
+      {
+        "text": "美不胜收",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "族",
@@ -6641,14 +7567,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::枝",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "树枝",
-      "枝叶"
+      {
+        "text": "枝干",
+        "source": "teacher"
+      },
+      {
+        "text": "枝繁叶茂",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "沟",
@@ -6736,7 +7668,7 @@ export const CHARS: CharEntry[] = [
   },
   {
     "char": "钉",
-    "pinyin": "dīng",
+    "pinyin": "dìng",
     "pinyinInitial": "D",
     "grade": 2,
     "semester": "上",
@@ -6746,14 +7678,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::钉",
-    "radical": "",
+    "radical": "钅",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "钉子",
-      "图钉"
+      {
+        "text": "钉牢",
+        "source": "teacher"
+      },
+      {
+        "text": "板上钉钉",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "颜",
@@ -6893,14 +7831,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::科",
-    "radical": "",
+    "radical": "禾",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "科学",
-      "教科书"
+      {
+        "text": "科学",
+        "source": "teacher"
+      },
+      {
+        "text": "五子登科",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "考",
@@ -6935,14 +7879,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::货",
-    "radical": "",
+    "radical": "贝",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "货物",
-      "送货"
+      {
+        "text": "货船",
+        "source": "teacher"
+      },
+      {
+        "text": "货真价实",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "轿",
@@ -6998,14 +7948,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::信",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "相信",
-      "信心"
+      {
+        "text": "相信",
+        "source": "teacher"
+      },
+      {
+        "text": "信以为真",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "呀",
@@ -7019,14 +7975,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::呀",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "哎呀",
-      "啊呀"
+      {
+        "text": "好呀",
+        "source": "teacher"
+      },
+      {
+        "text": "来呀",
+        "source": "teacher"
+      },
+      {
+        "text": "哎呀",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "弄",
@@ -7061,14 +8027,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::抬",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "抬头",
-      "抬起"
+      {
+        "text": "抬头",
+        "source": "teacher"
+      },
+      {
+        "text": "高抬贵手",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "沿",
@@ -7124,14 +8096,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::答",
-    "radical": "",
+    "radical": "⺮",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "回答",
-      "答案"
+      {
+        "text": "问答",
+        "source": "teacher"
+      },
+      {
+        "text": "答非所问",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "能",
@@ -7145,14 +8123,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::能",
-    "radical": "",
+    "radical": "厶",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "能干",
-      "才能"
+      {
+        "text": "可能",
+        "source": "teacher"
+      },
+      {
+        "text": "能言善辩",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "观",
@@ -7166,14 +8150,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::观",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "观察",
-      "观看"
+      {
+        "text": "观看",
+        "source": "teacher"
+      },
+      {
+        "text": "坐井观天",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "话",
@@ -7187,14 +8177,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::话",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "说话",
-      "童话"
+      {
+        "text": "话语",
+        "source": "teacher"
+      },
+      {
+        "text": "长话短说",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "错",
@@ -7271,14 +8267,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::亮",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "漂亮",
-      "月亮"
+      {
+        "text": "明亮",
+        "source": "teacher"
+      },
+      {
+        "text": "心明眼亮",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "做",
@@ -7292,14 +8294,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::做",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "做事",
-      "做客"
+      {
+        "text": "做人",
+        "source": "teacher"
+      },
+      {
+        "text": "小题大做",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "像",
@@ -7313,14 +8321,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::像",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "好像",
-      "像样"
+      {
+        "text": "好像",
+        "source": "teacher"
+      },
+      {
+        "text": "像模像样",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "冰",
@@ -7334,14 +8348,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::冰",
-    "radical": "",
+    "radical": "冫",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "冰箱",
-      "冰激凌"
+      {
+        "text": "冰山",
+        "source": "teacher"
+      },
+      {
+        "text": "冰天雪地",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "冷",
@@ -7355,14 +8375,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::冷",
-    "radical": "",
+    "radical": "冫",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "寒冷",
-      "冷饮"
+      {
+        "text": "冷清",
+        "source": "teacher"
+      },
+      {
+        "text": "冷暖自知",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "刮",
@@ -7628,14 +8654,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::第",
-    "radical": "",
+    "radical": "⺮",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "第一",
-      "第二天"
+      {
+        "text": "第一",
+        "source": "teacher"
+      },
+      {
+        "text": "书香门第",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "重",
@@ -7691,14 +8723,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::以",
-    "radical": "",
+    "radical": "人",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "以后",
-      "以前"
+      {
+        "text": "以前",
+        "source": "teacher"
+      },
+      {
+        "text": "以假乱真",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "吧",
@@ -7712,14 +8750,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::吧",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "好吧",
-      "走吧"
+      {
+        "text": "好吧",
+        "source": "teacher"
+      },
+      {
+        "text": "行吧",
+        "source": "teacher"
+      },
+      {
+        "text": "走吧",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "奇",
@@ -7733,14 +8781,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::奇",
-    "radical": "",
+    "radical": "大",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "奇怪",
-      "神奇"
+      {
+        "text": "好奇",
+        "source": "teacher"
+      },
+      {
+        "text": "千奇百怪",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "居",
@@ -7754,14 +8808,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::居",
-    "radical": "",
+    "radical": "尸",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "邻居",
-      "居民"
+      {
+        "text": "居住",
+        "source": "teacher"
+      },
+      {
+        "text": "居安思危",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "怪",
@@ -7775,14 +8835,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::怪",
-    "radical": "",
+    "radical": "忄",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "奇怪",
-      "责怪"
+      {
+        "text": "古怪",
+        "source": "teacher"
+      },
+      {
+        "text": "大惊小怪",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "想",
@@ -7796,14 +8862,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::想",
-    "radical": "",
+    "radical": "心",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "想念",
-      "想起"
+      {
+        "text": "想法",
+        "source": "teacher"
+      },
+      {
+        "text": "胡思乱想",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "慢",
@@ -7838,13 +8910,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::棵",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "一棵"
+      {
+        "text": "几棵",
+        "source": "teacher"
+      },
+      {
+        "text": "一棵草",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "次",
@@ -7858,14 +8937,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::次",
-    "radical": "",
+    "radical": "丶",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "一次",
-      "多次"
+      {
+        "text": "再次",
+        "source": "teacher"
+      },
+      {
+        "text": "三番五次",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "盯",
@@ -7984,13 +9069,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::邻",
-    "radical": "",
+    "radical": "阝",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "邻居"
+      {
+        "text": "邻居",
+        "source": "teacher"
+      },
+      {
+        "text": "左邻右舍",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "争",
@@ -8108,13 +9200,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::抄",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "抄写"
+      {
+        "text": "抄写",
+        "source": "teacher"
+      },
+      {
+        "text": "摘抄",
+        "source": "teacher"
+      },
+      {
+        "text": "抄书",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "炒",
@@ -8128,14 +9231,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::炒",
-    "radical": "",
+    "radical": "火",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "炒饭",
-      "蛋炒饭"
+      {
+        "text": "炒菜",
+        "source": "teacher"
+      },
+      {
+        "text": "炒面",
+        "source": "teacher"
+      },
+      {
+        "text": "小炒",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "爆",
@@ -8254,14 +9367,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::代",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "年代",
-      "古代"
+      {
+        "text": "古代",
+        "source": "teacher"
+      },
+      {
+        "text": "世世代代",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "军",
@@ -8270,19 +9389,25 @@ export const CHARS: CharEntry[] = [
     "grade": 2,
     "semester": "上",
     "unit": 6,
-    "lesson": 14,
-    "lessonTitle": "八角楼上",
+    "lesson": 15,
+    "lessonTitle": "朱德的扁担",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::军",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "红军",
-      "军舰"
+      {
+        "text": "军人",
+        "source": "teacher"
+      },
+      {
+        "text": "千军万马",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "凝",
@@ -8317,14 +9442,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::利",
-    "radical": "",
+    "radical": "刂",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "利用",
-      "胜利"
+      {
+        "text": "胜利",
+        "source": "teacher"
+      },
+      {
+        "text": "急功近利",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "命",
@@ -8401,14 +9532,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::楼",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "楼上",
-      "楼梯"
+      {
+        "text": "楼上",
+        "source": "teacher"
+      },
+      {
+        "text": "高楼大厦",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "油",
@@ -8443,14 +9580,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::穿",
-    "radical": "",
+    "radical": "穴",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "穿着",
-      "穿过"
+      {
+        "text": "穿衣",
+        "source": "teacher"
+      },
+      {
+        "text": "滴水石穿",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "章",
@@ -8548,14 +9691,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::视",
-    "radical": "",
+    "radical": "礻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "审视",
-      "注视"
+      {
+        "text": "电视",
+        "source": "teacher"
+      },
+      {
+        "text": "视而不见",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "觉",
@@ -8590,14 +9739,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::路",
-    "radical": "",
+    "radical": "足",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "路上",
-      "路过"
+      {
+        "text": "路口",
+        "source": "teacher"
+      },
+      {
+        "text": "走投无路",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "辉",
@@ -8672,14 +9827,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::同",
-    "radical": "",
+    "radical": "门",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "同学",
-      "同志"
+      {
+        "text": "同时",
+        "source": "teacher"
+      },
+      {
+        "text": "情同手足",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "士",
@@ -8693,14 +9854,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::士",
-    "radical": "",
+    "radical": "士",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "战士",
-      "士兵"
+      {
+        "text": "将士",
+        "source": "teacher"
+      },
+      {
+        "text": "有识之士",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 3
   },
   {
     "char": "常",
@@ -8714,14 +9881,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::常",
-    "radical": "",
+    "radical": "巾",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "常常",
-      "非常"
+      {
+        "text": "非常",
+        "source": "teacher"
+      },
+      {
+        "text": "习以为常",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "德",
@@ -8756,14 +9929,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::志",
-    "radical": "",
+    "radical": "士",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "同志",
-      "标志"
+      {
+        "text": "志向",
+        "source": "teacher"
+      },
+      {
+        "text": "专心致志",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "战",
@@ -8777,14 +9956,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::战",
-    "radical": "",
+    "radical": "戈",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "战士",
-      "战争"
+      {
+        "text": "战士",
+        "source": "teacher"
+      },
+      {
+        "text": "南征北战",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "扁",
@@ -8882,14 +10067,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::敌",
-    "radical": "",
+    "radical": "舌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "敌人",
-      "敌对"
+      {
+        "text": "敌人",
+        "source": "teacher"
+      },
+      {
+        "text": "势均力敌",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "敬",
@@ -8966,14 +10157,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::每",
-    "radical": "",
+    "radical": "母",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "每个",
-      "每天"
+      {
+        "text": "每当",
+        "source": "teacher"
+      },
+      {
+        "text": "每况愈下",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "疼",
@@ -9029,14 +10226,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::非",
-    "radical": "",
+    "radical": "非",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "非常",
-      "非法"
+      {
+        "text": "是非",
+        "source": "teacher"
+      },
+      {
+        "text": "非同小可",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "鞋",
@@ -9071,14 +10274,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::串",
-    "radical": "",
+    "radical": "丨",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "串串",
-      "一连串"
+      {
+        "text": "串通",
+        "source": "teacher"
+      },
+      {
+        "text": "走街串巷",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "令",
@@ -9092,14 +10301,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::令",
-    "radical": "",
+    "radical": "人",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "命令",
-      "下令"
+      {
+        "text": "命令",
+        "source": "teacher"
+      },
+      {
+        "text": "三令五申",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "周",
@@ -9134,14 +10349,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::因",
-    "radical": "",
+    "radical": "囗",
     "radicalName": "",
-    "structure": "",
+    "structure": "全包围",
     "phrases": [
-      "因为",
-      "因此"
+      {
+        "text": "因为",
+        "source": "teacher"
+      },
+      {
+        "text": "因小失大",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "始",
@@ -9239,14 +10460,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::忘",
-    "radical": "",
+    "radical": "心",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "难忘",
-      "忘记"
+      {
+        "text": "忘记",
+        "source": "teacher"
+      },
+      {
+        "text": "过目不忘",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "恩",
@@ -9302,14 +10529,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::民",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "民族",
-      "农民"
+      {
+        "text": "人民",
+        "source": "teacher"
+      },
+      {
+        "text": "国泰民安",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "泼",
@@ -9365,14 +10598,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::理",
-    "radical": "",
+    "radical": "王",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "总理",
-      "道理"
+      {
+        "text": "理由",
+        "source": "teacher"
+      },
+      {
+        "text": "言之有理",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "碗",
@@ -9428,14 +10667,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::裤",
-    "radical": "",
+    "radical": "衤",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "裤头",
-      "长裤"
+      {
+        "text": "裤子",
+        "source": "teacher"
+      },
+      {
+        "text": "裤带",
+        "source": "teacher"
+      },
+      {
+        "text": "衣裤",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "踩",
@@ -9470,14 +10719,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::难",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "难过",
-      "难忘"
+      {
+        "text": "难过",
+        "source": "teacher"
+      },
+      {
+        "text": "一言难尽",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "龙",
@@ -9533,35 +10788,47 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::于",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "于是",
-      "终于"
+      {
+        "text": "于是",
+        "source": "teacher"
+      },
+      {
+        "text": "言归于好",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 3
   },
   {
     "char": "似",
-    "pinyin": "shì",
+    "pinyin": "sì",
     "pinyinInitial": "S",
     "grade": 2,
     "semester": "上",
-    "unit": 6,
-    "lesson": 17,
-    "lessonTitle": "刘胡兰",
+    "unit": 7,
+    "lesson": 18,
+    "lessonTitle": "古诗二首",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::似",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "似的",
-      "似乎"
+      {
+        "text": "相似",
+        "source": "teacher"
+      },
+      {
+        "text": "似是而非",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "兰",
@@ -9638,14 +10905,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::反",
-    "radical": "",
+    "radical": "厂",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "反而",
-      "反对"
+      {
+        "text": "反正",
+        "source": "teacher"
+      },
+      {
+        "text": "举一反三",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "员",
@@ -9659,14 +10932,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::员",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "邮递员",
-      "队员"
+      {
+        "text": "党员",
+        "source": "teacher"
+      },
+      {
+        "text": "演员",
+        "source": "teacher"
+      },
+      {
+        "text": "学员",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "声",
@@ -9680,14 +10963,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::声",
-    "radical": "",
+    "radical": "士",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "铃声",
-      "声音"
+      {
+        "text": "声音",
+        "source": "teacher"
+      },
+      {
+        "text": "不动声色",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "岁",
@@ -9701,14 +10990,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::岁",
-    "radical": "",
+    "radical": "山",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "压岁钱",
-      "年岁"
+      {
+        "text": "岁月",
+        "source": "teacher"
+      },
+      {
+        "text": "长命百岁",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "息",
@@ -9722,14 +11017,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::息",
-    "radical": "",
+    "radical": "自",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "休息",
-      "消息"
+      {
+        "text": "消息",
+        "source": "teacher"
+      },
+      {
+        "text": "息息相关",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "捕",
@@ -9764,14 +11065,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::村",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "村子",
-      "村里"
+      {
+        "text": "村民",
+        "source": "teacher"
+      },
+      {
+        "text": "千村万落",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "派",
@@ -9806,14 +11113,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::消",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "消息",
-      "消失"
+      {
+        "text": "消失",
+        "source": "teacher"
+      },
+      {
+        "text": "烟消云散",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "烈",
@@ -9848,14 +11161,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::由",
-    "radical": "",
+    "radical": "丨",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "由于",
-      "理由"
+      {
+        "text": "由于",
+        "source": "teacher"
+      },
+      {
+        "text": "不由自主",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "荣",
@@ -9889,14 +11208,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::被",
-    "radical": "",
+    "radical": "衤",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "被子",
-      "被动"
+      {
+        "text": "被捕",
+        "source": "teacher"
+      },
+      {
+        "text": "被动",
+        "source": "teacher"
+      },
+      {
+        "text": "被迫",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "踏",
@@ -9952,14 +11281,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::宁",
-    "radical": "",
+    "radical": "宀",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "宁愿",
-      "宁死不屈"
+      {
+        "text": "安宁",
+        "source": "teacher"
+      },
+      {
+        "text": "鸡犬不宁",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "库",
@@ -9973,14 +11308,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::库",
-    "radical": "",
+    "radical": "广",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "水库",
-      "仓库"
+      {
+        "text": "车库",
+        "source": "teacher"
+      },
+      {
+        "text": "千仓万库",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "杆",
@@ -10174,7 +11515,7 @@ export const CHARS: CharEntry[] = [
   {
     "char": "饿",
     "pinyin": "è",
-    "pinyinInitial": "È",
+    "pinyinInitial": "E",
     "grade": 2,
     "semester": "上",
     "unit": 7,
@@ -10183,14 +11524,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::饿",
-    "radical": "",
+    "radical": "饣",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "饥饿",
-      "挨饿"
+      {
+        "text": "饥饿",
+        "source": "teacher"
+      },
+      {
+        "text": "忍饥挨饿",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "低",
@@ -10204,14 +11551,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::低",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "低头",
-      "低矮"
+      {
+        "text": "高低",
+        "source": "teacher"
+      },
+      {
+        "text": "低三下四",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "庐",
@@ -10267,14 +11620,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::灭",
-    "radical": "",
+    "radical": "一",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "扑灭",
-      "消灭"
+      {
+        "text": "灭绝",
+        "source": "teacher"
+      },
+      {
+        "text": "自生自灭",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "独",
@@ -10288,14 +11647,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::独",
-    "radical": "",
+    "radical": "犭",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "独自",
-      "单独"
+      {
+        "text": "孤独",
+        "source": "teacher"
+      },
+      {
+        "text": "独来独往",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "盖",
@@ -10351,14 +11716,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::绝",
-    "radical": "",
+    "radical": "纟",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "拒绝",
-      "绝对"
+      {
+        "text": "绝对",
+        "source": "teacher"
+      },
+      {
+        "text": "绝无仅有",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "舟",
@@ -10372,14 +11743,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::舟",
-    "radical": "",
+    "radical": "舟",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "刻舟求剑",
-      "同舟共济"
+      {
+        "text": "小舟",
+        "source": "teacher"
+      },
+      {
+        "text": "刻舟求剑",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "苍",
@@ -10456,14 +11833,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::野",
-    "radical": "",
+    "radical": "里",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "野外",
-      "原野"
+      {
+        "text": "田野",
+        "source": "teacher"
+      },
+      {
+        "text": "野心勃勃",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "钓",
@@ -10498,14 +11881,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::阴",
-    "radical": "",
+    "radical": "阝",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "阴沉",
-      "阴天"
+      {
+        "text": "阴山",
+        "source": "teacher"
+      },
+      {
+        "text": "阴差阳错",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "切",
@@ -10519,14 +11908,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::切",
-    "radical": "",
+    "radical": "刀",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "一切",
-      "亲切"
+      {
+        "text": "一切",
+        "source": "teacher"
+      },
+      {
+        "text": "救人心切",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 4
   },
   {
     "char": "失",
@@ -10540,14 +11935,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::失",
-    "radical": "",
+    "radical": "丿",
     "radicalName": "",
-    "structure": "",
+    "structure": "独体",
     "phrases": [
-      "失败",
-      "失望"
+      {
+        "text": "消失",
+        "source": "teacher"
+      },
+      {
+        "text": "大惊失色",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "岸",
@@ -10603,14 +12004,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::散",
-    "radical": "",
+    "radical": "攵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "散步",
-      "分散"
+      {
+        "text": "散步",
+        "source": "teacher"
+      },
+      {
+        "text": "开枝散叶",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "暗",
@@ -10666,14 +12073,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::步",
-    "radical": "",
+    "radical": "止",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "步行",
-      "步子"
+      {
+        "text": "步行",
+        "source": "teacher"
+      },
+      {
+        "text": "平步青云",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "甚",
@@ -10729,14 +12142,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::船",
-    "radical": "",
+    "radical": "舟",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "船只",
-      "帆船"
+      {
+        "text": "船只",
+        "source": "teacher"
+      },
+      {
+        "text": "草船借箭",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "街",
@@ -10771,14 +12190,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::论",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "无论",
-      "讨论"
+      {
+        "text": "无论",
+        "source": "teacher"
+      },
+      {
+        "text": "相提并论",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "该",
@@ -10792,14 +12217,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::该",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "应该",
-      "不该"
+      {
+        "text": "应该",
+        "source": "teacher"
+      },
+      {
+        "text": "该当何罪",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "躲",
@@ -10855,14 +12286,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::伙",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "伙伴",
-      "大伙"
+      {
+        "text": "伙计",
+        "source": "teacher"
+      },
+      {
+        "text": "成群结伙",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "伴",
@@ -10876,14 +12313,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::伴",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "伙伴",
-      "同伴"
+      {
+        "text": "伙伴",
+        "source": "teacher"
+      },
+      {
+        "text": "呼朋引伴",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "冲",
@@ -10979,14 +12422,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::忙",
-    "radical": "",
+    "radical": "忄",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "急忙",
-      "帮忙"
+      {
+        "text": "连忙",
+        "source": "teacher"
+      },
+      {
+        "text": "不慌不忙",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "旁",
@@ -11083,14 +12532,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::歌",
-    "radical": "",
+    "radical": "欠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "唱歌",
-      "歌唱"
+      {
+        "text": "唱歌",
+        "source": "teacher"
+      },
+      {
+        "text": "能歌善舞",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 14
   },
   {
     "char": "浑",
@@ -11229,14 +12684,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::要",
-    "radical": "",
+    "radical": "西",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "要是",
-      "只要"
+      {
+        "text": "不要",
+        "source": "teacher"
+      },
+      {
+        "text": "无关紧要",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "谁",
@@ -11250,14 +12711,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::谁",
-    "radical": "",
+    "radical": "讠",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "谁知",
-      "谁料"
+      {
+        "text": "谁的",
+        "source": "teacher"
+      },
+      {
+        "text": "舍我其谁",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "闭",
@@ -11271,14 +12738,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::闭",
-    "radical": "",
+    "radical": "门",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "关闭",
-      "闭眼"
+      {
+        "text": "关闭",
+        "source": "teacher"
+      },
+      {
+        "text": "闭门造车",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "狮",
@@ -11312,13 +12785,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::狼",
-    "radical": "",
+    "radical": "犭",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "大灰狼"
+      {
+        "text": "狼牙",
+        "source": "teacher"
+      },
+      {
+        "text": "狼子野心",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "猩",
@@ -11414,13 +12894,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "garden",
     "tier": "write",
     "charKey": "g2a::蛇",
-    "radical": "",
+    "radical": "虫",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "毒蛇"
+      {
+        "text": "毒蛇",
+        "source": "teacher"
+      },
+      {
+        "text": "虎头蛇尾",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 11
   },
   {
     "char": "驼",
@@ -11505,7 +12992,7 @@ export const CHARS: CharEntry[] = [
   },
   {
     "char": "仔",
-    "pinyin": "zǎi",
+    "pinyin": "zǐ",
     "pinyinInitial": "Z",
     "grade": 2,
     "semester": "上",
@@ -11515,13 +13002,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::仔",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "仔细"
+      {
+        "text": "仔鸡",
+        "source": "teacher"
+      },
+      {
+        "text": "仔仔细细",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "但",
@@ -11530,18 +13024,25 @@ export const CHARS: CharEntry[] = [
     "grade": 2,
     "semester": "上",
     "unit": 8,
-    "lesson": 21,
-    "lessonTitle": "称赞",
+    "lesson": 22,
+    "lessonTitle": "纸船和风筝",
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::但",
-    "radical": "",
+    "radical": "亻",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "但是"
+      {
+        "text": "但是",
+        "source": "teacher"
+      },
+      {
+        "text": "但愿如此",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "傍",
@@ -11635,14 +13136,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::怎",
-    "radical": "",
+    "radical": "心",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "怎么",
-      "怎样"
+      {
+        "text": "怎么",
+        "source": "teacher"
+      },
+      {
+        "text": "怎样",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "拉",
@@ -11656,14 +13163,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::拉",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "耷拉",
-      "拉链"
+      {
+        "text": "拉面",
+        "source": "teacher"
+      },
+      {
+        "text": "东拉西扯",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "接",
@@ -11677,11 +13190,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::接",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
-    "phrases": [],
-    "strokeCount": 0
+    "structure": "左右",
+    "phrases": [
+      {
+        "text": "接住",
+        "source": "teacher"
+      },
+      {
+        "text": "再接再厉",
+        "source": "teacher"
+      }
+    ],
+    "strokeCount": 11
   },
   {
     "char": "板",
@@ -11716,14 +13238,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::极",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "极了",
-      "北极星"
+      {
+        "text": "北极",
+        "source": "teacher"
+      },
+      {
+        "text": "登峰造极",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "椅",
@@ -11737,14 +13265,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::椅",
-    "radical": "",
+    "radical": "木",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "椅子",
-      "轮椅"
+      {
+        "text": "椅子",
+        "source": "teacher"
+      },
+      {
+        "text": "桌椅",
+        "source": "teacher"
+      },
+      {
+        "text": "椅背",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "泄",
@@ -11961,14 +13499,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::受",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "上中下",
     "phrases": [
-      "受伤",
-      "接受"
+      {
+        "text": "忍受",
+        "source": "teacher"
+      },
+      {
+        "text": "感同身受",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "句",
@@ -11982,14 +13526,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::句",
-    "radical": "",
+    "radical": "勹",
     "radicalName": "",
-    "structure": "",
+    "structure": "半包围",
     "phrases": [
-      "句子",
-      "句号"
+      {
+        "text": "句子",
+        "source": "teacher"
+      },
+      {
+        "text": "名言警句",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 5
   },
   {
     "char": "吵",
@@ -12003,14 +13553,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::吵",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "吵架",
-      "吵闹"
+      {
+        "text": "吵架",
+        "source": "teacher"
+      },
+      {
+        "text": "吵吵闹闹",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "哭",
@@ -12024,14 +13580,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::哭",
-    "radical": "",
+    "radical": "犬",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "哭泣",
-      "痛哭"
+      {
+        "text": "哭泣",
+        "source": "teacher"
+      },
+      {
+        "text": "哭笑不得",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "愿",
@@ -12087,14 +13649,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::抓",
-    "radical": "",
+    "radical": "扌",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "抓住",
-      "一把抓"
+      {
+        "text": "抓住",
+        "source": "teacher"
+      },
+      {
+        "text": "抓耳挠腮",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "折",
@@ -12211,14 +13779,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::纸",
-    "radical": "",
+    "radical": "纟",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "纸条",
-      "报纸"
+      {
+        "text": "白纸",
+        "source": "teacher"
+      },
+      {
+        "text": "纸上谈兵",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 7
   },
   {
     "char": "线",
@@ -12232,14 +13806,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::线",
-    "radical": "",
+    "radical": "纟",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "线路",
-      "电线"
+      {
+        "text": "毛线",
+        "source": "teacher"
+      },
+      {
+        "text": "穿针引线",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "莓",
@@ -12311,14 +13891,20 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::呢",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "好呢",
-      "你呢"
+      {
+        "text": "你呢",
+        "source": "teacher"
+      },
+      {
+        "text": "念念呢呢",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 8
   },
   {
     "char": "咱",
@@ -12332,13 +13918,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::咱",
-    "radical": "",
+    "radical": "口",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "咱们"
+      {
+        "text": "咱们",
+        "source": "teacher"
+      },
+      {
+        "text": "咱俩",
+        "source": "teacher"
+      },
+      {
+        "text": "咱家",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 9
   },
   {
     "char": "坚",
@@ -12413,14 +14010,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::戏",
-    "radical": "",
+    "radical": "又",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "游戏",
-      "嬉戏"
+      {
+        "text": "儿戏",
+        "source": "teacher"
+      },
+      {
+        "text": "唱戏",
+        "source": "teacher"
+      },
+      {
+        "text": "戏曲",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 6
   },
   {
     "char": "推",
@@ -12518,19 +14125,25 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::游",
-    "radical": "",
+    "radical": "氵",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "游戏",
-      "游泳"
+      {
+        "text": "游戏",
+        "source": "teacher"
+      },
+      {
+        "text": "游山玩水",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 12
   },
   {
     "char": "爱",
     "pinyin": "ài",
-    "pinyinInitial": "À",
+    "pinyinInitial": "A",
     "grade": 2,
     "semester": "上",
     "unit": 8,
@@ -12539,14 +14152,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::爱",
-    "radical": "",
+    "radical": "爫",
     "radicalName": "",
-    "structure": "",
+    "structure": "上下",
     "phrases": [
-      "爱心",
-      "爱护"
+      {
+        "text": "可爱",
+        "source": "teacher"
+      },
+      {
+        "text": "相亲",
+        "source": "teacher"
+      },
+      {
+        "text": "相爱",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 10
   },
   {
     "char": "硬",
@@ -12623,14 +14246,24 @@ export const CHARS: CharEntry[] = [
     "lessonKind": "lesson",
     "tier": "write",
     "charKey": "g2a::跳",
-    "radical": "",
+    "radical": "足",
     "radicalName": "",
-    "structure": "",
+    "structure": "左右",
     "phrases": [
-      "跳舞",
-      "跳绳"
+      {
+        "text": "跳高",
+        "source": "teacher"
+      },
+      {
+        "text": "跳远",
+        "source": "teacher"
+      },
+      {
+        "text": "心跳",
+        "source": "teacher"
+      }
     ],
-    "strokeCount": 0
+    "strokeCount": 13
   },
   {
     "char": "软",

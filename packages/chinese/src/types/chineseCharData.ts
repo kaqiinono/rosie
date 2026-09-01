@@ -12,6 +12,8 @@ export interface ChineseCharProfile {
   structure: string
   strokeCount: number
   phrases: string[]
+  /** 组词来源标注：词 → 'teacher'（教师材料，如课课贴）；无标注的词为默认来源 */
+  phraseSources: Record<string, string>
   tiers: CharTier[]
 }
 

@@ -207,6 +207,7 @@ export default function ChineseCharsPracticeSession() {
   const typesParam = searchParams.get('types')
   const planId = searchParams.get('planId')
   const cardPreviewEnabled = searchParams.get('cardPreview') !== '0'
+  const teacherOnly = searchParams.get('teacher') === '1'
 
   const selUnits = useMemo(() => parseUnits(unitsParam), [unitsParam])
   const selLessons = useMemo(() => parseLessons(lessonsParam), [lessonsParam])
@@ -219,9 +220,10 @@ export default function ChineseCharsPracticeSession() {
         lessons: [...selLessons].join(','),
         types: typesParam ?? '',
         cardPreview: cardPreviewEnabled ? '1' : '0',
+        teacherOnly,
         planId,
       }),
-    [bookSlug, selUnits, selLessons, typesParam, cardPreviewEnabled, planId],
+    [bookSlug, selUnits, selLessons, typesParam, cardPreviewEnabled, teacherOnly, planId],
   )
   const legacyScopeKey = useMemo(
     () =>
@@ -244,8 +246,8 @@ export default function ChineseCharsPracticeSession() {
   )
 
   const builtPlan = useMemo(
-    () => buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug),
-    [filtered, charByKey, quizTypes, lessons, bookSlug],
+    () => buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug, teacherOnly),
+    [filtered, charByKey, quizTypes, lessons, bookSlug, teacherOnly],
   )
 
   // Frozen at hydrate from builtPlan. Mid-exit restore keeps this plan (not snap.plan):

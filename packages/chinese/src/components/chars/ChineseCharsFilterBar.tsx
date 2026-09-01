@@ -24,6 +24,9 @@ interface ChineseCharsFilterBarProps {
   selDisplayType: 'library' | 'cards' | 'all'
   quizTypes: Set<CharQuizType>
   contentCount: number
+  hasTeacherWords: boolean
+  teacherOnly: boolean
+  onToggleTeacherOnly: () => void
   onToggleUnit: (unit: number) => void
   onToggleLesson: (lessonKey: string) => void
   onSelectDisplayType: (type: 'library' | 'cards' | 'all') => void
@@ -116,6 +119,9 @@ export default function ChineseCharsFilterBar({
   selDisplayType,
   quizTypes,
   contentCount,
+  hasTeacherWords,
+  teacherOnly,
+  onToggleTeacherOnly,
   onToggleUnit,
   onToggleLesson,
   onSelectDisplayType,
@@ -205,6 +211,23 @@ export default function ChineseCharsFilterBar({
             })}
             {quizTypes.has('passage') && (
               <span className="text-[10px] font-bold text-amber-900/40">填空已含在阅读题中</span>
+            )}
+            {hasTeacherWords && (
+              <>
+                <FilterLabel>词库</FilterLabel>
+                <PillButton
+                  active={teacherOnly}
+                  onClick={onToggleTeacherOnly}
+                  activeClass="border-fuchsia-500 bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-[0_2px_8px_rgba(217,70,239,.25)]"
+                >
+                  老师词语 📝
+                </PillButton>
+                {teacherOnly && (
+                  <span className="text-[10px] font-bold text-amber-900/40">
+                    看拼写字 / 词语卡 / 打印仅用老师词语表（建议题型只选「看拼写字」）
+                  </span>
+                )}
+              </>
             )}
           </div>
 

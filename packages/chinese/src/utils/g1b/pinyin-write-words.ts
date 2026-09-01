@@ -7,6 +7,8 @@ export interface PinyinWriteWordEntry {
   unit: number
   word: string
   pinyin: string
+  /** 词语来源：teacher = 老师提供的词语表；缺省为内置词库 */
+  source?: 'teacher'
 }
 
 export const PINYIN_WRITE_WORDS: PinyinWriteWordEntry[] = [

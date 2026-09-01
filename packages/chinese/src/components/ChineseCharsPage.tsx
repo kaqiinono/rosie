@@ -22,6 +22,7 @@ import {
   writeCharsFilter,
 } from '../utils/chinese-chars-filter-storage'
 import { getChineseBook } from '../utils/chinese-books'
+import { getBookPinyinWriteWords } from '../utils/chinese-book-content'
 import ChineseCharsFilterBar from './chars/ChineseCharsFilterBar'
 import ChineseCharsContentPreview from './chars/ChineseCharsContentPreview'
 import ChineseCharsCardsGrid from './chars/ChineseCharsCardsGrid'
@@ -47,6 +48,12 @@ export default function ChineseCharsPage() {
   )
   const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set())
   const [wordFlippedSet, setWordFlippedSet] = useState<Set<number>>(new Set())
+  const [teacherOnly, setTeacherOnly] = useState(false)
+
+  const hasTeacherWords = useMemo(
+    () => getBookPinyinWriteWords(bookSlug).some((w) => w.source === 'teacher'),
+    [bookSlug],
+  )
 
   const units = useMemo(() => getUnitOptions(book?.units ?? []), [book?.units])
   const visibleLessons = useMemo(
@@ -66,12 +73,12 @@ export default function ChineseCharsPage() {
 
   const cards = useMemo(() => buildCharCardItems(filtered, lessons, bookSlug), [filtered, lessons, bookSlug])
   const wordCards = useMemo(
-    () => buildWordCardItems(filtered, lessons, bookSlug),
-    [filtered, lessons, bookSlug],
+    () => buildWordCardItems(filtered, lessons, bookSlug, teacherOnly),
+    [filtered, lessons, bookSlug, teacherOnly],
   )
 
   const contentCount = useMemo(() => {
-    const plan = buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug)
+    const plan = buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug, teacherOnly)
     const readingBlankCount = plan.readingLessons.reduce((n, l) => n + l.blankItems.length, 0)
     return (
       plan.cards.length +
@@ -82,7 +89,7 @@ export default function ChineseCharsPage() {
       readingBlankCount +
       plan.pinyinWriteItems.length
     )
-  }, [filtered, charByKey, quizTypes, lessons, bookSlug])
+  }, [filtered, charByKey, quizTypes, lessons, bookSlug, teacherOnly])
 
   useEffect(() => {
     if (!isCharDataReady || lessons.length === 0) return
@@ -162,6 +169,11 @@ export default function ChineseCharsPage() {
     })
   }, [bookSlug])
 
+  const toggleTeacherOnly = useCallback(() => {
+    setTeacherOnly((prev) => !prev)
+    setWordFlippedSet(new Set())
+  }, [])
+
   const flipCard = useCallback((index: number) => {
     setFlippedSet((prev) => {
       const next = new Set(prev)
@@ -203,18 +215,20 @@ export default function ChineseCharsPage() {
     if (selLessons.size > 0) params.set('lessons', [...selLessons].join(','))
     params.set('types', serializeQuizTypes(quizTypes))
     if (!cardPreviewEnabled) params.set('cardPreview', '0')
+    if (teacherOnly) params.set('teacher', '1')
     setActiveChineseBook(bookSlug)
     router.push(`${chineseRoute(bookSlug, 'chars/practice')}?${params.toString()}`)
-  }, [router, bookSlug, selUnits, selLessons, quizTypes, cardPreviewEnabled])
+  }, [router, bookSlug, selUnits, selLessons, quizTypes, cardPreviewEnabled, teacherOnly])
 
   const openPrint = useCallback(
     (type: 'words' | 'chars' | 'all') => {
       const params = new URLSearchParams({ type })
       if (selUnits.size > 0) params.set('units', [...selUnits].sort((a, b) => a - b).join(','))
       if (selLessons.size > 0) params.set('lessons', [...selLessons].join(','))
+      if (teacherOnly) params.set('teacher', '1')
       window.open(`${chineseRoute(bookSlug, 'chars/print')}?${params.toString()}`, '_blank')
     },
-    [bookSlug, selUnits, selLessons],
+    [bookSlug, selUnits, selLessons, teacherOnly],
   )
 
   const canPrint = cards.length > 0 || wordCards.length > 0
@@ -254,6 +268,9 @@ export default function ChineseCharsPage() {
         selDisplayType={selDisplayType}
         quizTypes={quizTypes}
         contentCount={contentCount}
+        hasTeacherWords={hasTeacherWords}
+        teacherOnly={teacherOnly}
+        onToggleTeacherOnly={toggleTeacherOnly}
         onToggleUnit={toggleUnit}
         onToggleLesson={toggleLesson}
         onSelectDisplayType={selectDisplayType}

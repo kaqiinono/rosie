@@ -599,6 +599,7 @@ CREATE TABLE public.chinese_char_entries (
     tiers text[] DEFAULT '{}'::text[] NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     structure text,
+    phrase_sources jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT chinese_char_entries_char_check CHECK (("char" ~ '^.$'::text)),
     CONSTRAINT chinese_char_entries_semester_check CHECK ((semester = ANY (ARRAY['上'::text, '下'::text]))),
     CONSTRAINT chinese_char_entries_stroke_count_check CHECK ((stroke_count > 0)),

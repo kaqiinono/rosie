@@ -833,7 +833,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "shōu",
       "shì",
       "gàn",
-      "dīng",
+      "dìng",
       "fēn",
       "yán",
       "wèi"
@@ -855,7 +855,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "chéng",
       "shì",
       "kǒng",
-      "dīng",
+      "dìng",
       "wèi"
     ]
   },
@@ -884,7 +884,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "dēng",
       "táng",
       "yī",
-      "jǐn",
+      "jìn",
       "yù",
       "qióng",
       "céng",
@@ -909,7 +909,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
     ],
     "writePinyin": [
       "yī",
-      "jǐn",
+      "jìn",
       "qióng",
       "céng",
       "zhào",
@@ -1234,7 +1234,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "怪"
     ],
     "writePinyin": [
-      "zhǒng",
+      "zhòng",
       "kē",
       "yǐ",
       "cì",
@@ -1617,7 +1617,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "miè",
       "zhōu",
       "diào",
-      "shì",
+      "sì",
       "lú",
       "lóng",
       "gài",
@@ -1640,7 +1640,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "zhōu",
       "dú",
       "yīn",
-      "shì",
+      "sì",
       "yě",
       "dī"
     ]
@@ -1760,7 +1760,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
       "huǒ",
       "bàn",
       "gē",
-      "dé",
+      "de",
       "bì",
       "máng",
       "shuí",
@@ -1861,7 +1861,7 @@ export const LESSON_CHARS: LessonCharGroup[] = [
     ],
     "writePinyin": [
       "ná",
-      "zǎi",
+      "zǐ",
       "jí",
       "sòng",
       "yǐ",

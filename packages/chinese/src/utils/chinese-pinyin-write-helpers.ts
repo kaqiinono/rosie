@@ -30,6 +30,7 @@ export function buildPinyinWriteItems(
   filtered: FilteredLesson[],
   allLessons: ChineseLessonRow[],
   bookSlug: ChineseBookSlug = 'g1b',
+  teacherOnly = false,
 ): PinyinWriteQuizItem[] {
   const filteredLocalKeys = new Set(
     filtered.map((f) => localLessonKey(f.lesson.lessonKey)),
@@ -42,6 +43,7 @@ export function buildPinyinWriteItems(
 
   return words
     .filter((w) => filteredLocalKeys.has(w.lessonKey))
+    .filter((w) => !teacherOnly || w.source === 'teacher')
     .map((w, index) => {
       const lesson = lessonByLocalKey.get(w.lessonKey)
       const display = lesson ? displayMap.get(lesson.lessonKey) : undefined
@@ -62,8 +64,9 @@ export function buildWordCardItems(
   filtered: FilteredLesson[],
   allLessons: ChineseLessonRow[],
   bookSlug: ChineseBookSlug = 'g1b',
+  teacherOnly = false,
 ): WordCardItem[] {
-  return buildPinyinWriteItems(filtered, allLessons, bookSlug).map(
+  return buildPinyinWriteItems(filtered, allLessons, bookSlug, teacherOnly).map(
     ({ word, pinyin, lessonKey, lessonTitle, unit, unitLessonNo, bookLessonNo }) => ({
       word,
       pinyin,

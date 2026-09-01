@@ -384,6 +384,7 @@ export function buildPracticeSessionPlan(
   quizTypes: Set<CharQuizType>,
   allLessons: ChineseLessonRow[],
   bookSlug: ChineseBookSlug = 'g1b',
+  teacherOnly = false,
 ): PracticeSessionPlan {
   const cards = buildCharCardItems(filtered, allLessons, bookSlug)
   const charQuestions = buildCharPracticeQuestions(filtered, charByKey, quizTypes, allLessons, bookSlug)
@@ -406,7 +407,7 @@ export function buildPracticeSessionPlan(
     : []
 
   const pinyinWriteItems = quizTypes.has('pinyin-write')
-    ? buildPinyinWriteItems(filtered, allLessons, bookSlug)
+    ? buildPinyinWriteItems(filtered, allLessons, bookSlug, teacherOnly)
     : []
 
   const blankQuestionCount = wantPassage

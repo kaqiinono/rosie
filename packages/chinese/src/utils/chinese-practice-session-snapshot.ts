@@ -55,6 +55,8 @@ type ChinesePracticeScopeArgs = {
   lessons: string
   types: string
   cardPreview: string
+  /** 仅练老师词语表（看拼写字）；隔离快照，避免与普通练习混用 */
+  teacherOnly?: boolean
 }
 
 /** Pre-|p= format — used only to migrate same-day mid-session restores. */
@@ -70,7 +72,8 @@ export function chinesePracticeScopeKey(
   args: ChinesePracticeScopeArgs & { planId?: string | null },
 ): string {
   const planSeg = args.planId && args.planId.length > 0 ? args.planId : 'free'
-  return `${chinesePracticeLegacyScopeKey(args)}|p=${planSeg}`
+  const teacherSeg = args.teacherOnly ? '|tw=1' : ''
+  return `${chinesePracticeLegacyScopeKey(args)}|p=${planSeg}${teacherSeg}`
 }
 
 function isValidSnap(snap: unknown): snap is ChinesePracticeSnapshot {

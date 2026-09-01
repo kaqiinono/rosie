@@ -143,6 +143,7 @@ export default function ChinesePinyinWritePrintPage() {
   const book = getChineseBook(bookSlug)
 
   const kind = parsePrintKind(searchParams.get('type'))
+  const teacherOnly = searchParams.get('teacher') === '1'
   const selUnits = useMemo(() => parseUnits(searchParams.get('units')), [searchParams])
   const selLessons = useMemo(() => parseLessons(searchParams.get('lessons')), [searchParams])
 
@@ -162,21 +163,21 @@ export default function ChinesePinyinWritePrintPage() {
 
   const wordSections = useMemo(() => {
     if (kind !== 'words') return []
-    const words = buildWordCardItems(filtered, lessons, bookSlug)
+    const words = buildWordCardItems(filtered, lessons, bookSlug, teacherOnly)
     return buildWordPrintSections(words, lessons)
-  }, [kind, filtered, lessons, bookSlug])
+  }, [kind, filtered, lessons, bookSlug, teacherOnly])
 
   const combinedBlocks = useMemo(() => {
     if (kind !== 'all') return []
     const cards = buildCharCardItems(filtered, lessons, bookSlug)
-    const words = buildWordCardItems(filtered, lessons, bookSlug)
+    const words = buildWordCardItems(filtered, lessons, bookSlug, teacherOnly)
     const lessonKeys = filtered.map((f) => f.lesson.lessonKey)
     return buildCombinedPrintLessonBlocks(
       lessonKeys,
       buildCharPrintSections(cards, lessons),
       buildWordPrintSections(words, lessons),
     )
-  }, [kind, filtered, lessons, bookSlug])
+  }, [kind, filtered, lessons, bookSlug, teacherOnly])
 
   const title = useMemo(() => {
     const unitNums =
@@ -186,6 +187,8 @@ export default function ChinesePinyinWritePrintPage() {
       .filter((t): t is string => Boolean(t))
     return buildPinyinWritePrintTitle(kind, book?.label ?? '', unitTitles)
   }, [kind, book, selUnits, filtered])
+
+  const pageTitle = teacherOnly && kind !== 'chars' ? `${title}（老师词语表）` : title
 
   const backHref = chineseRoute(bookSlug, 'chars')
   const kindLabel = kind === 'words' ? '词语' : kind === 'chars' ? '生字' : '生字和词语'
@@ -226,7 +229,7 @@ export default function ChinesePinyinWritePrintPage() {
             ← 返回
           </Link>
           <h1 className="min-w-0 flex-1 truncate text-center text-sm font-bold text-stone-800">
-            打印预览 · {title}
+            打印预览 · {pageTitle}
           </h1>
           <button
             type="button"
@@ -241,7 +244,7 @@ export default function ChinesePinyinWritePrintPage() {
       <div className="mx-auto max-w-[800px] px-4 py-6 print:max-w-none print:p-0">
         <div className="cn-print-sheet rounded-lg bg-white p-8 shadow-sm print:rounded-none print:p-0 print:shadow-none">
           <header className="cn-print-doc-header">
-            <h1 className="cn-print-doc-title">{title}</h1>
+            <h1 className="cn-print-doc-title">{pageTitle}</h1>
           </header>
 
           {kind === 'all'
