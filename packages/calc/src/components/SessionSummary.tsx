@@ -368,29 +368,65 @@ export default function SessionSummary({
               📊 本次各项表现
             </div>
             <div className="mt-2 flex flex-col gap-2">
-              {bySource.map((s) => (
-                <div key={s.label}>
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="min-w-0 flex-1 truncate text-[12px] font-bold" style={{ color: '#e9d5ff' }}>
-                      {s.label}
+              {bySource.map((s) => {
+                const needsAttention = s.firstTryCorrect < s.total
+                const missedCount = s.total - s.firstTryCorrect
+
+                return (
+                  <div
+                    key={s.label}
+                    className="rounded-lg px-2.5 py-2"
+                    style={needsAttention ? {
+                      background: 'linear-gradient(90deg, rgba(245,158,11,0.16), rgba(239,68,68,0.07))',
+                      border: '1px solid rgba(251,191,36,0.38)',
+                      boxShadow: 'inset 3px 0 0 #fbbf24, 0 3px 12px rgba(245,158,11,0.08)',
+                    } : {
+                      background: 'rgba(255,255,255,0.015)',
+                      border: '1px solid transparent',
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div
+                          className="truncate text-[12px] font-bold"
+                          style={{ color: needsAttention ? '#fef3c7' : '#e9d5ff' }}
+                        >
+                          {s.label}
+                        </div>
+                        {needsAttention && (
+                          <span
+                            className="mt-1 inline-block rounded-full px-1.5 py-0.5 text-[9px] font-black leading-none"
+                            style={{
+                              color: '#fde68a',
+                              background: 'rgba(245,158,11,0.2)',
+                              border: '1px solid rgba(251,191,36,0.38)',
+                            }}
+                          >
+                            需留意 · 少对{missedCount}题
+                          </span>
+                        )}
+                      </div>
+                      <div
+                        className="shrink-0 text-[11px] font-extrabold tabular-nums"
+                        style={{ color: needsAttention ? '#fbbf24' : 'rgba(245,243,255,0.5)' }}
+                      >
+                        {s.firstTryCorrect}/{s.total} 对
+                      </div>
+                      <div className="shrink-0 text-[11px] font-extrabold tabular-nums" style={{ color: '#7dd3fc' }}>
+                        {s.perMinute} 题/分
+                      </div>
+                      <div className="shrink-0 text-[10px] tabular-nums" style={{ color: 'rgba(245,243,255,0.45)' }}>
+                        {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
+                      </div>
                     </div>
-                    <div className="shrink-0 text-[11px] font-semibold tabular-nums" style={{ color: 'rgba(245,243,255,0.5)' }}>
-                      {s.firstTryCorrect}/{s.total} 对
-                    </div>
-                    <div className="shrink-0 text-[11px] font-extrabold tabular-nums" style={{ color: '#7dd3fc' }}>
-                      {s.perMinute} 题/分
-                    </div>
-                    <div className="shrink-0 text-[10px] tabular-nums" style={{ color: 'rgba(245,243,255,0.45)' }}>
-                      {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
-                    </div>
+                    {s.targetSec != null && s.targetSec > 0 && s.avgSec > 0 && (
+                      <div className="mt-1.5">
+                        <ActualVsTargetBar actualSec={s.avgSec} targetSec={s.targetSec} />
+                      </div>
+                    )}
                   </div>
-                  {s.targetSec != null && s.targetSec > 0 && s.avgSec > 0 && (
-                    <div className="mt-1.5">
-                      <ActualVsTargetBar actualSec={s.avgSec} targetSec={s.targetSec} />
-                    </div>
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}
