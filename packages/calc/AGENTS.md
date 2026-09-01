@@ -147,12 +147,15 @@ Three modes in `calc-session-policy.ts`:
 daily sessions use one shared remediation budget for carried mistakes plus same-session retries,
 with carried mistakes taking priority. Makeup is single-pass and is never re-enqueued.
 
-Mistakes use `unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Session init
+The mistakes UI is a compatibility-shaped projection derived exclusively from remediation fields in
+`calc_problem_state`; there is no separate mistake-state table. It uses
+`unresolvedMistakes(mistakes, states)` (reconcile hanging vs mastered). Session init
 awaits `calcMistakesStore.ensureLoaded` before reconcile/carry (no cold-visit race). Proficiency is
 settled ONLY by the finish fold (`applyAttempt`): a wrong answer at answer-time uses
 `pullBackFromMastered` (streak/status reset, no −2) so a single wrong costs −2, not −4; the −2 in
 `demoteFromMastered` applies only to cross-session reconcile repair. Tables:
-`calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_mistakes`.
+`calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_block_progress`,
+`calc_curriculum_registry`, `calc_user_runtime`.
 
 **NumberPad / 竖式 auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).
 `shouldAutoSubmitNumberPad` in `calc-answer.ts` gates int/decimal number-pad; vertical surfaces

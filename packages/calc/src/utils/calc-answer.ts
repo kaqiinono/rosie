@@ -60,7 +60,7 @@ export function checkAnswer(input: string, a: CalcAnswer): boolean {
   }
 }
 
-/** Best-effort numeric projection for the legacy `calc_mistakes.answer` column. */
+/** Best-effort numeric projection for compatibility exports and diagnostics. */
 export function answerToNumeric(a: CalcAnswer): number {
   switch (a.kind) {
     case 'int':
@@ -70,7 +70,7 @@ export function answerToNumeric(a: CalcAnswer): number {
   }
 }
 
-/** Reconstruct a CalcAnswer from a calc_mistakes row: prefer answer_json, else legacy int. */
+/** Reconstruct a CalcAnswer from JSON, falling back to a numeric compatibility value. */
 export function answerFromRow(answerJson: CalcAnswer | null, legacyNumeric: number): CalcAnswer {
   return answerJson ?? { kind: 'int', value: legacyNumeric }
 }

@@ -1,7 +1,5 @@
 import { supabase } from '@rosie/core'
 import type { CalcLevel, CalcMistake, CalcProblemState, CalcQuestion, ErrorTag } from '@rosie/core'
-import { answerToNumeric } from './calc-answer'
-import { levelKey } from './calc-helpers'
 import { MASTERY_STREAK_K } from './calc-effective-limit'
 import { applyAttempt, defaultProblemState } from './calc-apply-attempt'
 import { recordRemediationCorrect, recordRemediationWrong } from './calc-remediation'
@@ -142,20 +140,7 @@ export async function applyMasterySideEffects(
     nextMistakes = r.mistakes
     nextStates = r.states
     for (const sig of r.dirtySignatures) {
-      const m = nextMistakes.find((x) => x.signature === sig)
       const st = nextStates[sig]
-      if (m?.resolved) {
-        remoteWrites.push(async () => {
-          await supabase
-            .from('calc_mistakes')
-            .update({
-              consecutive_correct: m.consecutiveCorrect,
-              resolved: true,
-            })
-            .eq('user_id', userId)
-            .eq('signature', sig)
-        })
-      }
       if (st) {
         remoteWrites.push(async () => {
           await supabase
@@ -217,24 +202,6 @@ export async function applyMasterySideEffects(
     )
     const st = nextStates[q.signature]
     remoteWrites.push(async () => {
-      await supabase.from('calc_mistakes').upsert(
-        {
-          user_id: userId,
-          signature: q.signature,
-          display: q.display,
-          answer: answerToNumeric(q.answer),
-          answer_json: q.answer,
-          level: levelKey(q.level),
-          category: q.category,
-          last_wrong_at: now,
-          consecutive_correct: 0,
-          resolved: false,
-          session_no: mutation.sessionNo,
-          user_answer: mutation.userAnswer ?? null,
-          error_tag: mutation.errorTag ?? null,
-        },
-        { onConflict: 'user_id,signature' },
-      )
       await supabase
         .from('calc_problem_state')
         .upsert(problemStateToRow(st, userId), { onConflict: 'user_id,signature' })
@@ -260,15 +227,6 @@ export async function applyMasterySideEffects(
     nextStates[mutation.signature] = nextResolved ? promoteToMastered(remediated) : remediated
     const st = nextStates[mutation.signature]
     remoteWrites.push(async () => {
-      await supabase
-        .from('calc_mistakes')
-        .update({
-          consecutive_correct: nextCount,
-          resolved: nextResolved,
-          session_no: mutation.sessionNo,
-        })
-        .eq('user_id', userId)
-        .eq('signature', mutation.signature)
       if (st) {
         await supabase
           .from('calc_problem_state')
@@ -291,17 +249,6 @@ export async function applyMasterySideEffects(
                 }
               : x,
           )
-          remoteWrites.push(async () => {
-            await supabase
-              .from('calc_mistakes')
-              .update({
-                consecutive_correct: MASTERY_STREAK_K,
-                resolved: true,
-                session_no: mutation.sessionNo,
-              })
-              .eq('user_id', userId)
-              .eq('signature', s.signature)
-          })
         }
       }
     }

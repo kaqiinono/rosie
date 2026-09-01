@@ -59,7 +59,6 @@ function usage(): void {
   console.log('pnpm calc:progress -- registry-manifest')
   console.log('pnpm calc:progress -- registry-sql')
   console.log('pnpm calc:progress -- audit-registry scripts/calc-curriculum-registry.json')
-  console.log('pnpm calc:progress -- compare-legacy-mistakes --user <uuid>  # read-only')
   console.log('pnpm calc:progress -- audit --user <uuid>  # read-only')
 }
 
@@ -75,7 +74,7 @@ async function serviceClient() {
 
 async function auditUser(userId: string): Promise<void> {
   const client = await serviceClient()
-  const [runtimeResult, progressResult, sessionResult, mistakeResult, stateResult] =
+  const [runtimeResult, progressResult, sessionResult, stateResult] =
     await Promise.all([
       client
         .from('calc_user_runtime')
@@ -95,13 +94,12 @@ async function auditUser(userId: string): Promise<void> {
         .not('idempotency_key', 'is', null)
         .order('session_no', { ascending: false })
         .limit(500),
-      client.from('calc_mistakes').select('signature,resolved').eq('user_id', userId),
       client
         .from('calc_problem_state')
         .select('signature,needs_remediation,applied_revision')
         .eq('user_id', userId),
     ])
-  for (const result of [runtimeResult, progressResult, sessionResult, mistakeResult, stateResult]) {
+  for (const result of [runtimeResult, progressResult, sessionResult, stateResult]) {
     if (result.error) throw new Error(result.error.message)
   }
   const sessions = sessionResult.data ?? []
@@ -126,17 +124,6 @@ async function auditUser(userId: string): Promise<void> {
       incompleteFacts += 1
     }
   }
-  const unresolved = new Set(
-    (mistakeResult.data ?? []).filter((row) => !row.resolved).map((row) => row.signature),
-  )
-  const remediation = new Set(
-    (stateResult.data ?? [])
-      .filter((row) => row.needs_remediation)
-      .map((row) => row.signature),
-  )
-  const projectionMismatch = new Set([...unresolved, ...remediation].filter(
-    (signature) => unresolved.has(signature) !== remediation.has(signature),
-  ))
   console.log(
     JSON.stringify(
       {
@@ -149,7 +136,7 @@ async function auditUser(userId: string): Promise<void> {
         unhealthyProgressRows: (progressResult.data ?? []).filter(
           (row) => row.health_status !== 'healthy',
         ).length,
-        remediationProjectionMismatch: projectionMismatch.size,
+        remediationRows: (stateResult.data ?? []).filter((row) => row.needs_remediation).length,
         rebuildSafe: incompleteFacts === 0 && duplicateKeys.size === 0,
       },
       null,
@@ -161,80 +148,6 @@ async function auditUser(userId: string): Promise<void> {
 function option(args: string[], name: string): string | undefined {
   const index = args.indexOf(name)
   return index >= 0 ? args[index + 1] : undefined
-}
-
-async function compareLegacyMistakes(userId: string): Promise<void> {
-  const { createClient } = await import('../packages/core/node_modules/@supabase/supabase-js')
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) {
-    throw new Error(
-      '只读对比需要 NEXT_PUBLIC_SUPABASE_URL 和 SUPABASE_SERVICE_ROLE_KEY；不会执行写入',
-    )
-  }
-  const client = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  })
-  const [{ data: mistakes, error: mistakeError }, { data: states, error: stateError }] =
-    await Promise.all([
-      client
-        .from('calc_mistakes')
-        .select('signature,resolved,consecutive_correct,last_wrong_at,session_no')
-        .eq('user_id', userId),
-      client
-        .from('calc_problem_state')
-        .select(
-          'signature,needs_remediation,remediation_correct_count,last_wrong_at,last_wrong_session_no',
-        )
-        .eq('user_id', userId),
-    ])
-  if (mistakeError) throw new Error(`读取 calc_mistakes 失败：${mistakeError.message}`)
-  if (stateError) {
-    throw new Error(
-      `读取统一 problem state 失败（可能尚未应用 additive migration）：${stateError.message}`,
-    )
-  }
-  const stateBySignature = new Map((states ?? []).map((row) => [row.signature, row]))
-  const unresolved = (mistakes ?? []).filter((row) => !row.resolved)
-  const missingProjection = unresolved
-    .filter((row) => !stateBySignature.get(row.signature)?.needs_remediation)
-    .map((row) => row.signature)
-  const orphanProjection = (states ?? [])
-    .filter(
-      (row) =>
-        row.needs_remediation &&
-        !(mistakes ?? []).some(
-          (mistake) => mistake.signature === row.signature && !mistake.resolved,
-        ),
-    )
-    .map((row) => row.signature)
-  const countMismatch = unresolved
-    .filter((row) => {
-      const state = stateBySignature.get(row.signature)
-      return state?.needs_remediation && state.remediation_correct_count !== row.consecutive_correct
-    })
-    .map((row) => row.signature)
-  const digest = (values: string[]) =>
-    values.map((value) => sha256(`${userId}:${value}`).slice(0, 12)).sort()
-  console.log(
-    JSON.stringify(
-      {
-        user: sha256(userId).slice(0, 12),
-        legacyRows: mistakes?.length ?? 0,
-        legacyUnresolved: unresolved.length,
-        projectedRemediation: (states ?? []).filter((row) => row.needs_remediation).length,
-        missingProjection: digest(missingProjection),
-        orphanProjection: digest(orphanProjection),
-        countMismatch: digest(countMismatch),
-        consistent:
-          missingProjection.length === 0 &&
-          orphanProjection.length === 0 &&
-          countMismatch.length === 0,
-      },
-      null,
-      2,
-    ),
-  )
 }
 
 async function auditManifest(path: string): Promise<void> {
@@ -266,12 +179,6 @@ async function main(): Promise<void> {
     const path = args[1]
     if (!path) throw new Error('audit-registry 需要 manifest 路径')
     await auditManifest(path)
-    return
-  }
-  if (command === 'compare-legacy-mistakes') {
-    const userId = option(args, '--user')
-    if (!userId) throw new Error('compare-legacy-mistakes 必须显式提供 --user <uuid>')
-    await compareLegacyMistakes(userId)
     return
   }
   if (command === 'audit') {
