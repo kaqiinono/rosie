@@ -79,3 +79,58 @@ describe('Stage 5A Unit 1 Lesson 1 reading course', () => {
     expect(writing?.modelAnswer).toHaveLength(5)
   })
 })
+
+describe('Stage 5A Unit 1 Lesson 2 reading course', () => {
+  const passage = findPassageByKey('5a-u1l2')
+  const sections = passage?.learningSections ?? []
+
+  it('registers the article and keeps the callout heading outside its paragraph', () => {
+    expect(passage).toBeDefined()
+    expect(findPassage('5A', 'Unit 1', 'Lesson 2')?.key).toBe('5a-u1l2')
+    expect(passage?.paragraphs).toHaveLength(4)
+    expect(passage?.paragraphTitles).toEqual(['', '', '', 'Guess what!'])
+    expect(passage?.paragraphs[3]).not.toContain('Guess what!')
+    expect(passage?.paragraphs[3]).toContain('Supai Village')
+  })
+
+  it('keeps every glossary entry outside the entire 5A vocabulary library', () => {
+    const existing = new Set(SAMPLE_WORDS_5A.map((word) => word.word.toLowerCase()))
+    for (const entry of passage?.glossary ?? []) {
+      expect(existing.has(entry.word.toLowerCase())).toBe(false)
+    }
+  })
+
+  it('resolves every lesson word reference with its full tuple', () => {
+    const refs = sections.flatMap((section) =>
+      section.type === 'exercises' ? (section.wordRefs ?? []) : [],
+    )
+    expect(refs.length).toBeGreaterThan(0)
+    for (const ref of refs) {
+      expect(ref).toMatchObject({ stage: '5A', unit: 'Unit 1', lesson: 'Lesson 2' })
+      expect(resolveReadingWordRef(ref, SAMPLE_WORDS_5A)?.word).toBe(ref.word)
+    }
+  })
+
+  it('keeps every selectable answer inside its supplied options', () => {
+    const groups = sections.flatMap((section) =>
+      section.type === 'writing' ? [] : section.groups,
+    )
+    for (const item of groups.flatMap((group) => group.items).filter((item) => item.options)) {
+      expect(item.options).toContain(item.answer)
+    }
+  })
+
+  it('provides textbook-backed summary, grammar and vocabulary tabs without invented writing', () => {
+    expect(sections.map((section) => section.id)).toEqual([
+      'reading-comprehension',
+      'stative-verbs',
+      'place-vocabulary',
+    ])
+    const grammar = sections.find((section) => section.type === 'grammar')
+    expect(grammar?.grammarRefs.find((ref) => ref.role === 'primary')?.unitNumber).toBe(8)
+    expect(grammar?.summary.cards.flatMap((card) => card.points).map((point) => point.text)).toContain(
+      'What do you think of the view?',
+    )
+    expect(sections.some((section) => section.type === 'writing')).toBe(false)
+  })
+})

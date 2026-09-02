@@ -23,7 +23,9 @@ audio, flipbook).
   duplicating answer checking. Existing vocabulary is referenced with the full
   `(stage, unit, lesson, word)` tuple and resolved at runtime; only out-of-library reading aids
   belong in `glossary`. Contextual grammar exercises stay separate from `grammar_mastery` and link
-  to the canonical Cambridge unit through `grammarRefs`.
+  to the canonical Cambridge unit through `grammarRefs`. Each grammar section also supplies a
+  data-driven `summary` (cards, contrasts, decision guide, reminders); `ReadingGrammarSummary`
+  must stay lesson-agnostic rather than hard-code one lesson's tense rules.
 - **Grammar (`grammar/`)** — 剑桥英语语法系列（essential/intermediate/advanced，按 book 维度分书；
   目前仅 essential 入库）：内容存 Supabase jsonb，渲染层是 type → 组件注册表（未知块型降级为
   unsupported）；讲解/练习/原文三 tab + mastery 进度。详见下方 Grammar 小节。

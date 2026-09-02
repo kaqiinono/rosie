@@ -35,6 +35,13 @@ export default function ReadingLearningSections({ sections, vocab, defaultOpen, 
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '')
   const handleResult = useCallback(() => undefined, [])
   const handlePreview = useCallback(() => undefined, [])
+  const tabColumns = sections.length >= 4
+    ? 'grid-cols-4'
+    : sections.length === 3
+      ? 'grid-cols-3'
+      : sections.length === 2
+        ? 'grid-cols-2'
+        : 'grid-cols-1'
 
   if (sections.length === 0) return null
 
@@ -58,7 +65,7 @@ export default function ReadingLearningSections({ sections, vocab, defaultOpen, 
           <div
             role="tablist"
             aria-label="本课学习内容"
-            className="mb-4 grid grid-cols-4 gap-1.5 rounded-2xl bg-surface p-1.5 shadow-sm ring-1 ring-border-light sm:gap-2 sm:p-2"
+            className={`mb-4 grid gap-1.5 rounded-2xl bg-surface p-1.5 shadow-sm ring-1 ring-border-light sm:gap-2 sm:p-2 ${tabColumns}`}
           >
             {sections.map((section) => {
               const index = sections.findIndex((candidate) => candidate.id === section.id)
@@ -115,7 +122,9 @@ export default function ReadingLearningSections({ sections, vocab, defaultOpen, 
                 )}
               </div>
 
-              {section.type === 'grammar' && <ReadingGrammarSummary refs={section.grammarRefs} />}
+              {section.type === 'grammar' && (
+                <ReadingGrammarSummary refs={section.grammarRefs} summary={section.summary} />
+              )}
 
               {(section.type === 'exercises' || section.type === 'grammar') && (
                 <div className={section.type === 'grammar' ? 'mt-5' : ''}>

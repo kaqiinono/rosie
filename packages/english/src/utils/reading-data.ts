@@ -50,6 +50,31 @@ export interface ReadingGrammarReference {
   label: string
 }
 
+export interface ReadingGrammarSummaryPoint {
+  label: string
+  text: string
+}
+
+export interface ReadingGrammarSummaryCard {
+  title: string
+  formula?: string
+  signals?: string
+  points: ReadingGrammarSummaryPoint[]
+}
+
+export interface ReadingGrammarSummaryContrast {
+  example: string
+  note: string
+}
+
+export interface ReadingGrammarSummary {
+  cards: ReadingGrammarSummaryCard[]
+  contrastTitle: string
+  contrasts: ReadingGrammarSummaryContrast[]
+  decisionGuide: string[]
+  reminders?: string[]
+}
+
 export interface ReadingExerciseSection {
   type: 'exercises'
   id: string
@@ -68,6 +93,7 @@ export interface ReadingGrammarSection {
   title: string
   groups: GrammarExerciseGroup[]
   grammarRefs: ReadingGrammarReference[]
+  summary: ReadingGrammarSummary
 }
 
 export interface ReadingWritingSection {
@@ -418,6 +444,46 @@ export const readingPassages: ReadingPassage[] = [
           { book: 'essential', unitNumber: 7, role: 'foundation', label: '一般现在时疑问句' },
           { book: 'essential', unitNumber: 25, role: 'extension', label: '现在进行时表示未来安排' },
         ],
+        summary: {
+          cards: [
+            {
+              title: '一般现在时 · Present simple',
+              formula: '主语 + 动词原形 / 第三人称单数',
+              signals: 'every day · on Mondays · usually · always',
+              points: [
+                { label: '普遍事实', text: 'In Peru, people speak Spanish.' },
+                { label: '经常发生', text: 'Do you write in your diary every day?' },
+                { label: '长期状态', text: 'Cusco is high in the mountains.' },
+                { label: '公共时刻表', text: 'The bus leaves at 12.30.' },
+              ],
+            },
+            {
+              title: '现在进行时 · Present continuous',
+              formula: '主语 + am / is / are + doing',
+              signals: 'now · today · at the moment · this year',
+              points: [
+                { label: '正在发生', text: "I'm reading a book." },
+                { label: '当前阶段的临时情况', text: "I'm not sending any postcards this year." },
+                { label: '已确定的个人安排', text: "We're meeting Laura at 1.00." },
+              ],
+            },
+          ],
+          contrastTitle: '本课最重要的区别',
+          contrasts: [
+            { example: 'The bus leaves at 12.30.', note: '公共时刻表 → 一般现在时' },
+            { example: "We're meeting Laura at 1.00.", note: '个人已安排的计划 → 现在进行时' },
+          ],
+          decisionGuide: [
+            '事实、习惯、长期状态、时刻表 → 一般现在时。',
+            '正在发生、临时情况、个人已安排的未来计划 → 现在进行时。',
+          ],
+          reminders: [
+            '现在进行时必须包含 am/is/are + doing。',
+            '一般现在时疑问句通常使用 do/does。',
+            '句子有未来时间，不代表一定要用 will。',
+            'be going to 和 will 在课文中出现，但不是本课 Grammar 框的重点。',
+          ],
+        },
         groups: [
           {
             section: '快速检查',
@@ -551,6 +617,234 @@ export const readingPassages: ReadingPassage[] = [
           'It is ancient and very long.',
           'People visit it because it is historic and fascinating.',
           'I like it because the views from the wall are beautiful.',
+        ],
+      },
+    ],
+  },
+  {
+    key: '5a-u1l2',
+    stage: '5A',
+    unit: 'Unit 1',
+    lesson: 'Lesson 2',
+    title: 'The Grand Canyon',
+    paragraphTitles: ['', '', '', 'Guess what!'],
+    paragraphs: [
+      "The Grand Canyon is a massive gorge located in the US state of Arizona, and it's considered one of the seven wonders of the natural world. Scientists think the Colorado River, which still runs through the canyon, has created the gorge slowly over the past six million years. However, new research suggests that this started happening as far back as 70 million years ago. Today, the canyon is 446 km (277 mi.) long, up to 29 km (18 mi.) wide and nearly 1.6 km (1 mi.) deep at certain points.",
+      "Millions of visitors come to the Grand Canyon each year. In fact, the Grand Canyon received over six million tourists in 2016, the most it's ever seen. Camping is very popular around the canyon. Some visitors love to hike through it, while others prefer to explore the canyon on a mule. The paths can be rocky, steep and narrow. It's best to have some experience if you plan to explore on foot. Lots of visitors go rafting on the Colorado River. The fast, powerful waters of the river make for an exciting ride! If you want a different kind of adventure, visit the 'Skywalk', a glass pathway over the western side of the canyon. As you walk on the glass, you can see the bottom of the canyon, which is 1,200 m (4,000 ft.) below!",
+      "If you go, plan your visit carefully. Check the weather and bring the right clothing. It can get as hot as 47°C (120°F) in the summer, and there's little shade. Bring sunscreen and lots of water to drink. The Grand Canyon is beautiful, but it can be dangerous. It's easier to stay safe if you're prepared.",
+      'Supai Village — a village of approximately 200 people — is the only town in the Grand Canyon. No roads go in and out of the village, so people travel mainly by mule.',
+    ],
+    glossary: [
+      {
+        word: 'canyon',
+        ipa: '/ˈkænjən/',
+        meaningCn: 'n. 峡谷',
+        meaningEn: 'a deep valley with very steep sides, often with a river below',
+        category: '超纲词汇',
+      },
+      {
+        word: 'massive',
+        ipa: '/ˈmæsɪv/',
+        meaningCn: 'adj. 巨大的；非常大的',
+        meaningEn: 'very large and heavy',
+        category: '超纲词汇',
+      },
+      {
+        word: 'mule',
+        ipa: '/mjuːl/',
+        meaningCn: 'n. 骡子',
+        meaningEn: 'an animal whose parents are a horse and a donkey',
+        category: '文化与旅行',
+      },
+      {
+        word: 'glass pathway',
+        meaningCn: 'n. 玻璃步道',
+        meaningEn: 'a walking path made with a glass floor',
+        category: '文化与旅行',
+      },
+      {
+        word: 'shade',
+        ipa: '/ʃeɪd/',
+        meaningCn: 'n. 阴凉处；背阴',
+        meaningEn: 'an area protected from direct sunlight',
+        category: '超纲词汇',
+      },
+      {
+        word: 'the Grand Canyon',
+        meaningCn: '大峡谷（美国亚利桑那州的著名峡谷）',
+        meaningEn: 'a vast canyon in Arizona in the United States',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Arizona',
+        meaningCn: '亚利桑那州（美国州名）',
+        meaningEn: 'a state in the southwestern United States',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'the Colorado River',
+        meaningCn: '科罗拉多河',
+        meaningEn: 'the river that runs through the Grand Canyon',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Skywalk',
+        meaningCn: '大峡谷天空步道',
+        meaningEn: 'a glass walkway over the western side of the Grand Canyon',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Supai Village',
+        meaningCn: '苏派村（大峡谷内的村庄）',
+        meaningEn: 'the only village inside the Grand Canyon',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+    ],
+    learningSections: [
+      {
+        type: 'exercises',
+        id: 'reading-comprehension',
+        eyebrow: '课文理解',
+        title: '读懂大峡谷',
+        description: '根据课文选择 C（正确）、I（错误）或 DS（文中未提及）。',
+        groups: [
+          {
+            section: '3',
+            instruction: "Write C (Correct), I (Incorrect) or DS (Doesn't say).",
+            items: [
+              { number: 1, type: 'multiple_choice', prompt: 'The Colorado River is very deep. ______', answer: 'DS', options: ['C', 'I', 'DS'], explanation: '课文说明峡谷的深度，但没有说明科罗拉多河本身有多深。' },
+              { number: 2, type: 'multiple_choice', prompt: 'Scientists agree that the canyon began forming 70 million years ago. ______', answer: 'I', options: ['C', 'I', 'DS'], explanation: '课文说科学家认为河流在过去六百万年形成峡谷；新研究才提出可能早至七千万年前。' },
+              { number: 3, type: 'multiple_choice', prompt: 'The waters of the Colorado River are powerful. ______', answer: 'C', options: ['C', 'I', 'DS'], explanation: '第二段明确写到 the fast, powerful waters。' },
+              { number: 4, type: 'multiple_choice', prompt: 'Over six million visitors came to the Grand Canyon in 2016. ______', answer: 'C', options: ['C', 'I', 'DS'], explanation: '第二段明确给出了 2016 年超过六百万游客。' },
+              { number: 5, type: 'multiple_choice', prompt: 'The glass pathway is at the bottom of the canyon. ______', answer: 'I', options: ['C', 'I', 'DS'], explanation: 'Skywalk 在峡谷西侧上方，脚下约 1,200 m 才是谷底。' },
+              { number: 6, type: 'multiple_choice', prompt: 'Some people fall and get hurt in the Grand Canyon. ______', answer: 'DS', options: ['C', 'I', 'DS'], explanation: '课文提醒峡谷可能危险，但没有说有人跌倒受伤。' },
+              { number: 7, type: 'multiple_choice', prompt: "Many visitors don't wear the right clothes. ______", answer: 'DS', options: ['C', 'I', 'DS'], explanation: '课文建议带合适衣物，但没有说明许多游客穿错衣服。' },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'grammar',
+        id: 'stative-verbs',
+        eyebrow: '本课语法',
+        title: 'Stative verbs',
+        grammarRefs: [
+          { book: 'essential', unitNumber: 8, role: 'primary', label: '现在进行时与一般现在时' },
+          { book: 'essential', unitNumber: 3, role: 'foundation', label: '现在进行时陈述句' },
+          { book: 'essential', unitNumber: 5, role: 'foundation', label: '一般现在时陈述句' },
+        ],
+        summary: {
+          cards: [
+            {
+              title: '静态动词通常不用进行时',
+              formula: '状态、感受、拥有、想法和感官 → 通常用一般现在时',
+              signals: '即使有 now / at the moment，也要先判断动词表达“状态”还是“动作”',
+              points: [
+                { label: '感受', text: 'like, hate, admire, prefer, want' },
+                { label: '拥有', text: 'belong to, own' },
+                { label: '理解和观点', text: 'believe, remember, understand, know' },
+                { label: '感官', text: 'feel, hear, see, smell' },
+              ],
+            },
+            {
+              title: 'see 和 think 会随意思改变',
+              formula: '状态意义 → 一般现在时；动作意义 → 可用现在进行时',
+              signals: 'at the moment 常提示正在进行，但不能单独决定时态',
+              points: [
+                { label: 'see = 理解', text: "The path goes down there. I see." },
+                { label: 'see = 会面', text: 'The doctor is seeing someone at the moment.' },
+                { label: 'think = 认为', text: 'What do you think of the view?' },
+                { label: 'think = 考虑', text: "We're thinking about going to see the Grand Canyon." },
+              ],
+            },
+          ],
+          contrastTitle: '同一个动词，意思决定时态',
+          contrasts: [
+            { example: 'I see.', note: 'see = understand，是状态 → 一般现在时' },
+            { example: 'The doctor is seeing someone.', note: 'see = have an appointment，是正在进行的动作 → 现在进行时' },
+            { example: 'What do you think of the view?', note: 'think = have an opinion，是观点 → 一般现在时' },
+            { example: "We're thinking about going.", note: 'think = consider，是正在考虑 → 现在进行时' },
+          ],
+          decisionGuide: [
+            '先判断动词是在描述稳定状态，还是正在发生的动作。',
+            'like / prefer / remember / know 等静态意义通常用一般现在时。',
+            'see / think 意思变成“会面 / 考虑”时，可以使用现在进行时。',
+          ],
+          reminders: [
+            '不要看到 at the moment 就机械地选择现在进行时。',
+            'have 表示“拥有”时通常不用进行时；have a great time 表示活动时可用进行时。',
+          ],
+        },
+        groups: [
+          {
+            section: '7',
+            instruction: 'Complete the sentences with the present simple or present continuous of the verbs in brackets.',
+            items: [
+              { number: 1, type: 'fill_blank', prompt: 'Tom and Dan ______ about climbing Mount Everest! (think)', answer: 'are thinking', explanation: 'think about 表示“考虑”，是当前正在进行的思考。' },
+              { number: 2, type: 'fill_blank', prompt: '______ you ______ camping by the beach? (remember)', answer: 'Do, remember', explanation: 'remember 表示记忆状态，通常用一般现在时。' },
+              { number: 3, type: 'fill_blank', prompt: 'I ______ hiking to skiing. (prefer)', answer: 'prefer', explanation: 'prefer 表示喜好，是静态动词。' },
+              { number: 4, type: 'fill_blank', prompt: "Helen can't come out with us because she ______ Ana tonight. (see)", answer: 'is seeing', explanation: 'see 表示“与某人见面”，这里是已安排的活动。' },
+              { number: 5, type: 'fill_blank', prompt: '______ anybody ______ about going to the beach? (think)', answer: 'Is, thinking', explanation: 'think about 表示“考虑”，可用现在进行时。' },
+              { number: 6, type: 'fill_blank', prompt: 'They ______ a great time at the Grand Canyon. (have)', answer: 'are having', explanation: 'have a great time 表示正在经历的活动，不是“拥有”状态。' },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'exercises',
+        id: 'place-vocabulary',
+        eyebrow: '词汇应用',
+        title: 'Landforms and travel',
+        description: '复习地貌形容词、课文重点词和旅行短语动词。',
+        wordRefs: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky', 'flat', 'narrow', 'shallow', 'steep', 'wide'].map((word) => ({
+          stage: '5A',
+          unit: 'Unit 1',
+          lesson: 'Lesson 2',
+          word,
+        })),
+        groups: [
+          {
+            section: '4',
+            instruction: 'Complete the sentences with these words: gorge, past, point, powerful, rafting, rocky.',
+            items: [
+              { number: 1, type: 'fill_blank', prompt: 'The path is very ______, so be careful while you are walking.', answer: 'rocky', options: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky'] },
+              { number: 2, type: 'fill_blank', prompt: "I haven't been hiking for the ______ few years.", answer: 'past', options: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky'] },
+              { number: 3, type: 'fill_blank', prompt: '______ on that river without a helmet is too dangerous!', answer: 'rafting', options: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky'] },
+              { number: 4, type: 'fill_blank', prompt: 'At one ______, the river is 3 m (10 ft.) deep.', answer: 'point', options: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky'] },
+              { number: 5, type: 'fill_blank', prompt: 'The view from the top of the ______ is fantastic.', answer: 'gorge', options: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky'] },
+              { number: 6, type: 'fill_blank', prompt: 'You need a ______ torch to see in the mountains at night.', answer: 'powerful', options: ['gorge', 'past', 'point', 'powerful', 'rafting', 'rocky'] },
+            ],
+          },
+          {
+            section: '6',
+            instruction: 'Complete the sentences with the words from Activity 5: flat, narrow, shallow, steep, wide.',
+            items: [
+              { number: 1, type: 'fill_blank', prompt: "It's easier to ride a bicycle on ______ land.", answer: 'flat', options: ['flat', 'narrow', 'shallow', 'steep', 'wide'] },
+              { number: 2, type: 'fill_blank', prompt: 'This chair is too ______ to fit through the doorway.', answer: 'wide', options: ['flat', 'narrow', 'shallow', 'steep', 'wide'] },
+              { number: 3, type: 'fill_blank', prompt: "This is a ______ hill. I'm getting tired climbing it.", answer: 'steep', options: ['flat', 'narrow', 'shallow', 'steep', 'wide'] },
+              { number: 4, type: 'fill_blank', prompt: "The streets are only for pedestrians. They're too ______ for cars.", answer: 'narrow', options: ['flat', 'narrow', 'shallow', 'steep', 'wide'] },
+              { number: 5, type: 'fill_blank', prompt: "We can't fish in this river. It's too ______.", answer: 'shallow', options: ['flat', 'narrow', 'shallow', 'steep', 'wide'] },
+            ],
+          },
+          {
+            section: 'Phrasal verbs',
+            instruction: 'Circle the correct words.',
+            items: [
+              { number: 1, type: 'multiple_choice', prompt: "My dad's car often ______ because it's 18 years old.", answer: 'breaks down', options: ['breaks into', 'breaks down'] },
+              { number: 2, type: 'multiple_choice', prompt: "Julia isn't here at the moment. She's ______ later.", answer: 'coming back', options: ['coming back', 'coming across'] },
+              { number: 3, type: 'multiple_choice', prompt: "Let's ______ early tomorrow so we get there by lunchtime.", answer: 'set off', options: ['set about', 'set off'] },
+              { number: 4, type: 'multiple_choice', prompt: '______ the train! It leaves in one minute!', answer: 'Get on', options: ['Get on', 'Get over'] },
+              { number: 5, type: 'multiple_choice', prompt: 'We had a great view when the plane ______.', answer: 'took off', options: ['took after', 'took off'] },
+              { number: 6, type: 'multiple_choice', prompt: 'Kate and her family are ______ for the weekend.', answer: 'going away', options: ['going away', 'going about'] },
+              { number: 7, type: 'multiple_choice', prompt: 'Where do we have to ______ for our flight?', answer: 'check in', options: ['check in', 'check up'] },
+              { number: 8, type: 'multiple_choice', prompt: 'Can we all ______ a taxi and go to the museum?', answer: 'get in', options: ['get on', 'get in'] },
+            ],
+          },
         ],
       },
     ],
