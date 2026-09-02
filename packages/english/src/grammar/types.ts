@@ -247,6 +247,8 @@ export interface GrammarExerciseItem {
   /** 空字符串 = 开放题，展示不判分；单空题允许每行填写一个可接受答案 */
   answer: string
   options?: string[] | null
+  /** 作答后展示的简短解析；旧剑桥数据未设置时不显示。 */
+  explanation?: string
   /** 学习指导题目右侧标注的相关学习单元（可多个） */
   studyUnits?: number[]
 }

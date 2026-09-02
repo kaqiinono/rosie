@@ -1,4 +1,5 @@
 import type { WordEntry } from '@rosie/core'
+import type { GrammarExerciseGroup } from '../grammar/types'
 
 /**
  * Auxiliary reading-only vocabulary. Distinct from `lessonWords` (which feed
@@ -28,8 +29,75 @@ export interface ReadingPassage {
   unit: string
   lesson: string
   title: string
+  /** Optional heading aligned by index with `paragraphs` (e.g. diary dates). */
+  paragraphTitles?: string[]
   paragraphs: string[]
   glossary?: GlossaryWord[]
+  learningSections?: ReadingLearningSection[]
+}
+
+export interface ReadingWordRef {
+  stage: string
+  unit: string
+  lesson: string
+  word: string
+}
+
+export interface ReadingGrammarReference {
+  book: 'essential' | 'intermediate' | 'advanced'
+  unitNumber: number
+  role: 'primary' | 'foundation' | 'extension'
+  label: string
+}
+
+export interface ReadingExerciseSection {
+  type: 'exercises'
+  id: string
+  eyebrow: string
+  title: string
+  description?: string
+  groups: GrammarExerciseGroup[]
+  wordRefs?: ReadingWordRef[]
+  evidenceByItem?: Record<number, number>
+}
+
+export interface ReadingGrammarSection {
+  type: 'grammar'
+  id: string
+  eyebrow: string
+  title: string
+  groups: GrammarExerciseGroup[]
+  grammarRefs: ReadingGrammarReference[]
+}
+
+export interface ReadingWritingSection {
+  type: 'writing'
+  id: string
+  eyebrow: string
+  title: string
+  prompt: string
+  questions: string[]
+  suggestedWords: string[]
+  modelAnswer: string[]
+}
+
+export type ReadingLearningSection =
+  | ReadingExerciseSection
+  | ReadingGrammarSection
+  | ReadingWritingSection
+
+export function resolveReadingWordRef(
+  ref: ReadingWordRef,
+  vocab: WordEntry[],
+): WordEntry | undefined {
+  const expected = ref.word.toLowerCase()
+  return vocab.find(
+    (entry) =>
+      entry.stage === ref.stage &&
+      entry.unit === ref.unit &&
+      entry.lesson === ref.lesson &&
+      entry.word.toLowerCase() === expected,
+  )
 }
 
 /** Stable key built from stage + unit + lesson — used for storage paths and DB rows. */
@@ -62,6 +130,431 @@ export function parseFocusLessonKey(
 }
 
 export const readingPassages: ReadingPassage[] = [
+  {
+    key: '5a-u1l1',
+    stage: '5A',
+    unit: 'Unit 1',
+    lesson: 'Lesson 1',
+    title: 'A Trip to Peru',
+    paragraphTitles: [
+      'Friday, 10 July',
+      'Sunday, 12 July',
+      'Monday, 13 July',
+      'Tuesday, 14 July',
+      'Friday, 17 July',
+      'Sunday, 19 July',
+    ],
+    paragraphs: [
+      "I'm so excited: we're leaving for Peru tomorrow! Our first stop is the capital, Lima. We'll be visiting some of Lima's beautiful churches. We'll also see the monument honouring Peru's national hero, José de San Martín.",
+      "Today, we're going to Cusco, the oldest city on the continent. It's also among the highest, at 3,400 m (11,150 ft.) above sea level. We're visiting Cusco Cathedral, which took almost 100 years to build. We're also eating some Peruvian dishes, including ceviche, raw fish in lime juice.",
+      "We're going to Machu Picchu today. This is a city of Incan ruins, found high in the Andes Mountains. Machu Picchu was very important during the Incan empire, but was forgotten until 1911, when an explorer named Hiram Bingham found the city. Today, it's one of the most popular tourist destinations in the world.",
+      "Today, we're visiting Ollantaytambo. This historic fort is made from huge fifty-ton stones. What's fascinating is that the blocks came from an area over 5 km (3.1 mi.) away. People moved the blocks down a mountain, across a river, and up another mountain to build the fort — with no trucks or trains!",
+      "Today, we're in Puno, a small town near the Bolivian border. From Puno, we're taking a boat to the Uros Islands. People live in straw houses on these floating islands. Some of the straw houses are simple, but others are quite modern: they've even got satellite TV and WiFi!",
+      "Unfortunately, our next destination is Lima's airport. It's time to go home. Goodbye, Peru!",
+    ],
+    glossary: [
+      {
+        word: 'ceviche',
+        ipa: '/səˈviːtʃeɪ/',
+        meaningCn: 'n. 酸橘汁腌鱼；秘鲁特色生鱼料理',
+        meaningEn: 'a South American dish of raw fish prepared with lime or lemon juice',
+        category: '超纲词汇',
+      },
+      {
+        word: 'explorer',
+        ipa: '/ɪkˈsplɔːrə(r)/',
+        meaningCn: 'n. 探险家；探索者',
+        meaningEn: 'a person who travels to places to learn about or discover them',
+        category: '超纲词汇',
+      },
+      {
+        word: 'national hero',
+        meaningCn: 'n. 民族英雄；国家英雄',
+        meaningEn: 'a person admired by a country for important or brave actions',
+        category: '超纲词汇',
+      },
+      {
+        word: 'tourist destination',
+        meaningCn: 'n. 旅游目的地',
+        meaningEn: 'a place that many tourists travel to visit',
+        category: '超纲词汇',
+      },
+      {
+        word: 'floating island',
+        meaningCn: 'n. 浮岛；漂浮的岛屿',
+        meaningEn: 'an island that floats on the surface of water',
+        category: '超纲词汇',
+      },
+      {
+        word: 'Peru',
+        meaningCn: '秘鲁（南美洲国家）',
+        meaningEn: 'a country in western South America',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Lima',
+        meaningCn: '利马（秘鲁首都）',
+        meaningEn: 'the capital city of Peru',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'José de San Martín',
+        meaningCn: '何塞·德·圣马丁（南美洲独立运动领袖）',
+        meaningEn: 'a national hero associated with the independence of Peru',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Cusco',
+        meaningCn: '库斯科（秘鲁历史名城）',
+        meaningEn: 'a historic city in Peru and a former centre of the Incan Empire',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Cusco Cathedral',
+        meaningCn: '库斯科大教堂',
+        meaningEn: 'a historic cathedral in the city of Cusco',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Machu Picchu',
+        meaningCn: '马丘比丘（秘鲁印加古城遗址）',
+        meaningEn: 'an ancient Incan city high in the Andes Mountains',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'the Andes Mountains',
+        meaningCn: '安第斯山脉',
+        meaningEn: 'a major mountain range in South America',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Incan',
+        meaningCn: 'adj. 印加人的；印加帝国的',
+        meaningEn: 'connected with the Inca people or their empire',
+        category: '超纲词汇',
+      },
+      {
+        word: 'Hiram Bingham',
+        meaningCn: '海勒姆·宾厄姆（美国探险家）',
+        meaningEn: 'an American explorer associated with Machu Picchu',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Ollantaytambo',
+        meaningCn: '奥扬泰坦博（秘鲁印加古镇和遗址）',
+        meaningEn: 'a historic Incan town and archaeological site in Peru',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Puno',
+        meaningCn: '普诺（秘鲁城市）',
+        meaningEn: 'a city in southeastern Peru near Lake Titicaca',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+      {
+        word: 'Bolivian',
+        meaningCn: 'adj. 玻利维亚的',
+        meaningEn: 'connected with Bolivia',
+        category: '超纲词汇',
+      },
+      {
+        word: 'the Uros Islands',
+        meaningCn: '乌鲁斯群岛（当地居民用芦苇建造的浮岛）',
+        meaningEn: 'floating islands made from reeds near Puno in Peru',
+        category: '专有名词',
+        isProperNoun: true,
+      },
+    ],
+    learningSections: [
+      {
+        type: 'exercises',
+        id: 'reading-comprehension',
+        eyebrow: '课文理解',
+        title: '读懂这趟秘鲁之旅',
+        description: '先完成词义匹配，再根据旅行日记找出每项活动发生的地点。',
+        wordRefs: ['border', 'monument', 'ruin', 'fascinating', 'historic'].map((word) => ({
+          stage: '5A',
+          unit: 'Unit 1',
+          lesson: 'Lesson 1',
+          word,
+        })),
+        evidenceByItem: { 1: 2, 2: 3, 3: 1, 4: 5, 5: 4 },
+        groups: [
+          {
+            section: '3',
+            instruction: 'Match each word with its meaning. 括号里是教材中的乱序字母。',
+            items: [
+              {
+                number: 1,
+                type: 'matching',
+                prompt: 'border (dberor)',
+                answer: 'The area where two countries meet.',
+                options: [
+                  'Very interesting.',
+                  'What remains of an old building.',
+                  'From a long time ago.',
+                  'A statue or building to honour a person or event.',
+                  'The area where two countries meet.',
+                ],
+              },
+              {
+                number: 2,
+                type: 'matching',
+                prompt: 'monument (nmoeunmt)',
+                answer: 'A statue or building to honour a person or event.',
+                options: [
+                  'Very interesting.',
+                  'What remains of an old building.',
+                  'From a long time ago.',
+                  'A statue or building to honour a person or event.',
+                  'The area where two countries meet.',
+                ],
+              },
+              {
+                number: 3,
+                type: 'matching',
+                prompt: 'ruin (uinr)',
+                answer: 'What remains of an old building.',
+                options: [
+                  'Very interesting.',
+                  'What remains of an old building.',
+                  'From a long time ago.',
+                  'A statue or building to honour a person or event.',
+                  'The area where two countries meet.',
+                ],
+              },
+              {
+                number: 4,
+                type: 'matching',
+                prompt: 'fascinating (ntfnscailaig)',
+                answer: 'Very interesting.',
+                options: [
+                  'Very interesting.',
+                  'What remains of an old building.',
+                  'From a long time ago.',
+                  'A statue or building to honour a person or event.',
+                  'The area where two countries meet.',
+                ],
+              },
+              {
+                number: 5,
+                type: 'matching',
+                prompt: 'historic (coishtir)',
+                answer: 'From a long time ago.',
+                options: [
+                  'Very interesting.',
+                  'What remains of an old building.',
+                  'From a long time ago.',
+                  'A statue or building to honour a person or event.',
+                  'The area where two countries meet.',
+                ],
+              },
+            ],
+          },
+          {
+            section: '4',
+            instruction: 'Match each activity with the place where it happened.',
+            items: [
+              {
+                number: 1,
+                type: 'matching',
+                prompt: 'Eating ceviche',
+                answer: 'Cusco',
+                options: ['Lima', 'Cusco', 'Machu Picchu', 'Ollantaytambo', 'the Uros Islands'],
+              },
+              {
+                number: 2,
+                type: 'matching',
+                prompt: 'Seeing Incan ruins',
+                answer: 'Machu Picchu',
+                options: ['Lima', 'Cusco', 'Machu Picchu', 'Ollantaytambo', 'the Uros Islands'],
+              },
+              {
+                number: 3,
+                type: 'matching',
+                prompt: "Visiting a monument to Peru's national hero",
+                answer: 'Lima',
+                options: ['Lima', 'Cusco', 'Machu Picchu', 'Ollantaytambo', 'the Uros Islands'],
+              },
+              {
+                number: 4,
+                type: 'matching',
+                prompt: 'Seeing straw houses',
+                answer: 'the Uros Islands',
+                options: ['Lima', 'Cusco', 'Machu Picchu', 'Ollantaytambo', 'the Uros Islands'],
+              },
+              {
+                number: 5,
+                type: 'matching',
+                prompt: 'Visiting an enormous stone fort',
+                answer: 'Ollantaytambo',
+                options: ['Lima', 'Cusco', 'Machu Picchu', 'Ollantaytambo', 'the Uros Islands'],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'grammar',
+        id: 'present-simple-vs-continuous',
+        eyebrow: '本课语法',
+        title: 'Present simple and present continuous',
+        grammarRefs: [
+          { book: 'essential', unitNumber: 8, role: 'primary', label: '两种时态对比' },
+          { book: 'essential', unitNumber: 3, role: 'foundation', label: '现在进行时陈述句' },
+          { book: 'essential', unitNumber: 4, role: 'foundation', label: '现在进行时疑问句' },
+          { book: 'essential', unitNumber: 5, role: 'foundation', label: '一般现在时陈述句' },
+          { book: 'essential', unitNumber: 6, role: 'foundation', label: '一般现在时否定句' },
+          { book: 'essential', unitNumber: 7, role: 'foundation', label: '一般现在时疑问句' },
+          { book: 'essential', unitNumber: 25, role: 'extension', label: '现在进行时表示未来安排' },
+        ],
+        groups: [
+          {
+            section: '快速检查',
+            instruction: 'Choose the best answer.',
+            items: [
+              {
+                number: 1,
+                type: 'multiple_choice',
+                prompt: 'Which sentence describes a timetable? ______',
+                answer: 'The bus leaves at twelve thirty.',
+                options: ["We're meeting Laura at one.", 'The bus leaves at twelve thirty.'],
+                explanation: '公共班次和时刻表用一般现在时。',
+              },
+              {
+                number: 2,
+                type: 'multiple_choice',
+                prompt: 'Which sentence describes something happening now? ______',
+                answer: "I'm reading a book now.",
+                options: ['I read a book every day.', "I'm reading a book now."],
+                explanation: 'now 表示此刻正在发生，用现在进行时。',
+              },
+              {
+                number: 3,
+                type: 'multiple_choice',
+                prompt: 'Which expression usually goes with the present simple? ______',
+                answer: 'every day',
+                options: ['every day', 'at the moment'],
+                explanation: 'every day 表示规律发生的事情，通常用一般现在时。',
+              },
+            ],
+          },
+          {
+            section: '5',
+            instruction: 'Complete the sentences with the present simple or present continuous.',
+            items: [
+              {
+                number: 1,
+                type: 'fill_blank',
+                prompt: 'We ______ for a walk this evening. (go)',
+                answer: 'are going',
+                explanation: '已经安排好的未来计划，用现在进行时。',
+              },
+              {
+                number: 2,
+                type: 'fill_blank',
+                prompt: "My train ______ Cusco at 7 o'clock. (leave)",
+                answer: 'leaves',
+                explanation: '火车时刻表用一般现在时。',
+              },
+              {
+                number: 3,
+                type: 'fill_blank',
+                prompt: "Why ______ you ______ in this photo? What's so funny? (laugh)",
+                answer: 'are, laughing',
+                explanation: '描述照片中正在发生的动作，用现在进行时。',
+              },
+              {
+                number: 4,
+                type: 'fill_blank',
+                prompt: "I ______ any postcards this year. (not send)",
+                answer: 'am not sending',
+                explanation: 'this year 表示当前阶段的临时情况，用现在进行时。',
+              },
+              {
+                number: 5,
+                type: 'fill_blank',
+                prompt: "Tourists ______ their cameras inside the cathedral because photos aren't allowed. (not use)",
+                answer: "don't use",
+                explanation: '这是长期有效的一般规定，用一般现在时。',
+              },
+            ],
+          },
+          {
+            section: '6',
+            instruction: 'Complete the dialogue with the correct form of the verbs in brackets.',
+            items: [
+              { number: 1, type: 'fill_blank', prompt: 'Tito: What ______ you ______? (do)', answer: 'are, doing' },
+              { number: 2, type: 'fill_blank', prompt: 'Clara: I ______ at a website. (look)', answer: 'am looking' },
+              { number: 3, type: 'fill_blank', prompt: 'It ______ lots of interesting information about Peru. (have got)', answer: 'has got' },
+              { number: 4, type: 'fill_blank', prompt: 'The most common name in Peru ______ José. (be)', answer: 'is' },
+              { number: 5, type: 'fill_blank', prompt: 'Clara: Why ______ you ______ my phone off? (switch)', answer: 'are, switching' },
+              { number: 6, type: 'fill_blank', prompt: 'Tito: We ______ Laura at 1.00. (meet)', answer: 'are meeting' },
+              { number: 7, type: 'fill_blank', prompt: 'The bus ______ at 12.30. (leave)', answer: 'leaves' },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'exercises',
+        id: 'place-vocabulary',
+        eyebrow: '词汇应用',
+        title: 'Places in a city',
+        description: '使用本课词库中的五个场所词完成句子。',
+        wordRefs: ['bridge', 'fountain', 'market', 'palace', 'sculpture'].map((word) => ({
+          stage: '5A',
+          unit: 'Unit 1',
+          lesson: 'Lesson 1',
+          word,
+        })),
+        groups: [
+          {
+            section: '8',
+            instruction: 'Complete the sentences with these words.',
+            items: [
+              { number: 1, type: 'fill_blank', prompt: 'The artist created a large ______ in the park.', answer: 'sculpture', options: ['bridge', 'fountain', 'market', 'palace', 'sculpture'] },
+              { number: 2, type: 'fill_blank', prompt: 'We must walk across the ______ to get to the island.', answer: 'bridge', options: ['bridge', 'fountain', 'market', 'palace', 'sculpture'] },
+              { number: 3, type: 'fill_blank', prompt: 'The king lives in a large ______.', answer: 'palace', options: ['bridge', 'fountain', 'market', 'palace', 'sculpture'] },
+              { number: 4, type: 'fill_blank', prompt: "Sometimes when it's hot, tourists put their feet in the ______.", answer: 'fountain', options: ['bridge', 'fountain', 'market', 'palace', 'sculpture'] },
+              { number: 5, type: 'fill_blank', prompt: "If you want to buy a present for Mum, let's go to the ______.", answer: 'market', options: ['bridge', 'fountain', 'market', 'palace', 'sculpture'] },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'writing',
+        id: 'famous-place-writing',
+        eyebrow: '说一说，写一写',
+        title: 'A famous place in China',
+        prompt: 'Write five sentences about a famous place in your country.',
+        questions: [
+          "What's its name?",
+          'Where is it?',
+          'Is it ancient or modern?',
+          'Why do people visit it?',
+          'Why do you like or not like it?',
+        ],
+        suggestedWords: ['ancient', 'beautiful', 'fascinating', 'historic', 'interesting', 'modern', 'ugly'],
+        modelAnswer: [
+          'The Great Wall is a famous place in China.',
+          'It is in the north of China, near Beijing.',
+          'It is ancient and very long.',
+          'People visit it because it is historic and fascinating.',
+          'I like it because the views from the wall are beautiful.',
+        ],
+      },
+    ],
+  },
   {
     key: '4a-u5l1',
     stage: '4A',
@@ -629,6 +1122,11 @@ const INFLECTION_SUFFIX = '(?:ies|ied|ing|ed|es|s)?'
  * verbs (`try` → also include `tri` so `tries` / `tried` match). Sorted by
  * length desc so the longest match wins in regex alternation.
  */
+function wordForms(word: string): string[] {
+  const labelled = /^(.+?)\s*\((?:AmE\s+)?([^)]+)\)$/i.exec(word.trim())
+  return labelled ? [labelled[1].trim(), labelled[2].trim()] : [word]
+}
+
 function expandStems(word: string): string[] {
   const out = [word]
   if (word.endsWith('e') && word.length > 1) {
@@ -676,7 +1174,7 @@ function deinflectCandidates(matchedText: string): string[] {
  */
 export function buildWordMatchRegex(words: string[]): RegExp | null {
   if (words.length === 0) return null
-  const stems = words.flatMap(expandStems)
+  const stems = words.flatMap((word) => wordForms(word).flatMap(expandStems))
   const sorted = stems.slice().sort((a, b) => b.length - a.length)
   const pattern = sorted.map(escapeRegex).join('|')
   return new RegExp(`\\b(${pattern})${INFLECTION_SUFFIX}\\b`, 'gi')
@@ -691,8 +1189,8 @@ export function resolveMatchedWord(matchedText: string, candidates: WordEntry[])
   const stems = deinflectCandidates(matchedText)
   let best: WordEntry | null = null
   for (const c of candidates) {
-    const w = c.word.toLowerCase()
-    if (stems.includes(w)) {
+    const forms = wordForms(c.word).map((word) => word.toLowerCase())
+    if (forms.some((word) => stems.includes(word))) {
       if (!best || c.word.length > best.word.length) best = c
     }
   }
@@ -703,7 +1201,7 @@ const SENTENCE_SPLIT = /(?<=[.!?])\s+/
 
 /** Per-word inflection-tolerant regex source (shared by single-word lookups). */
 function inflectedSource(word: string): string {
-  const stems = expandStems(word)
+  const stems = wordForms(word).flatMap(expandStems)
   const pattern = stems.map(escapeRegex).join('|')
   return `\\b(?:${pattern})${INFLECTION_SUFFIX}\\b`
 }

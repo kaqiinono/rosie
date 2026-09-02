@@ -17,6 +17,13 @@ audio, flipbook).
   **their own audio** stored in `reading_passage_media` (hooks `useReadingPassageMedia` /
   `useReadingPassageAudio`). Reading playback was **decoupled from the audio module**: it builds its
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
+  A passage may also carry optional `learningSections` for textbook comprehension, contextual
+  grammar practice, vocabulary application, and guided writing. Exercise sections reuse the
+  grammar `ExerciseView` engine (`fill_blank` / `multiple_choice` / `matching`) rather than
+  duplicating answer checking. Existing vocabulary is referenced with the full
+  `(stage, unit, lesson, word)` tuple and resolved at runtime; only out-of-library reading aids
+  belong in `glossary`. Contextual grammar exercises stay separate from `grammar_mastery` and link
+  to the canonical Cambridge unit through `grammarRefs`.
 - **Grammar (`grammar/`)** — 剑桥英语语法系列（essential/intermediate/advanced，按 book 维度分书；
   目前仅 essential 入库）：内容存 Supabase jsonb，渲染层是 type → 组件注册表（未知块型降级为
   unsupported）；讲解/练习/原文三 tab + mastery 进度。详见下方 Grammar 小节。

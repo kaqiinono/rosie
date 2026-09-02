@@ -16,8 +16,10 @@ import SpeakButton from '../words/SpeakButton'
 
 interface WordPopupProps {
   entry: WordEntry | null
+  entries?: WordEntry[]
   passage: ReadingPassage
   mastery: WordMasteryInfo | undefined
+  onEntryChange?: (entry: WordEntry) => void
   onClose: () => void
 }
 
@@ -59,15 +61,36 @@ function highlightSentence(sentence: string, word: string) {
   )
 }
 
-export default function WordPopup({ entry, passage, mastery, onClose }: WordPopupProps) {
+export default function WordPopup({
+  entry,
+  entries = [],
+  passage,
+  mastery,
+  onEntryChange,
+  onClose,
+}: WordPopupProps) {
+  const currentIndex = entry
+    ? entries.findIndex((candidate) => wordKey(candidate) === wordKey(entry))
+    : -1
+  const canGoPrevious = currentIndex > 0
+  const canGoNext = currentIndex >= 0 && currentIndex < entries.length - 1
+
   useEffect(() => {
     if (!entry) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft' && canGoPrevious) {
+        e.preventDefault()
+        onEntryChange?.(entries[currentIndex - 1])
+      }
+      if (e.key === 'ArrowRight' && canGoNext) {
+        e.preventDefault()
+        onEntryChange?.(entries[currentIndex + 1])
+      }
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [entry, onClose])
+  }, [canGoNext, canGoPrevious, currentIndex, entries, entry, onClose, onEntryChange])
 
   if (!entry) return null
 
@@ -85,7 +108,7 @@ export default function WordPopup({ entry, passage, mastery, onClose }: WordPopu
       onClick={onClose}
     >
       <div
-        className="font-nunito relative w-full max-w-md overflow-hidden rounded-t-2xl bg-white shadow-2xl animate-[slide-up_.2s_cubic-bezier(.4,0,.2,1)] sm:rounded-2xl"
+        className="font-nunito relative max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto rounded-t-2xl bg-white shadow-2xl animate-[slide-up_.2s_cubic-bezier(.4,0,.2,1)] sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`h-1.5 w-full bg-gradient-to-r ${LEVEL_ACCENT_BG[level]}`} />
@@ -174,6 +197,32 @@ export default function WordPopup({ entry, passage, mastery, onClose }: WordPopu
             )}
           </div>
         </div>
+
+        {currentIndex >= 0 && entries.length > 1 && (
+          <div className="sticky bottom-0 grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t border-gray-100 bg-white/95 px-5 py-3 backdrop-blur-sm">
+            <button
+              type="button"
+              disabled={!canGoPrevious}
+              onClick={() => onEntryChange?.(entries[currentIndex - 1])}
+              className="min-h-11 justify-self-start rounded-full px-3 text-sm font-bold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
+              aria-label="上一张单词卡"
+            >
+              ← 上一张
+            </button>
+            <span className="text-xs font-bold tabular-nums text-gray-500" aria-live="polite">
+              {currentIndex + 1} / {entries.length}
+            </span>
+            <button
+              type="button"
+              disabled={!canGoNext}
+              onClick={() => onEntryChange?.(entries[currentIndex + 1])}
+              className="min-h-11 justify-self-end rounded-full px-3 text-sm font-bold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
+              aria-label="下一张单词卡"
+            >
+              下一张 →
+            </button>
+          </div>
+        )}
       </div>
 
       <style jsx>{`

@@ -114,7 +114,7 @@ export default function ReadingIndexPage() {
 
   return (
     <main
-      className="font-nunito relative z-[1] mx-auto max-w-3xl px-4 pt-6 pb-32"
+      className="font-nunito relative z-[1] mx-auto w-full max-w-[1280px] px-3 pt-6 pb-32 md:px-4"
       style={{ colorScheme: 'light' }}
     >
       <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
@@ -165,7 +165,7 @@ export default function ReadingIndexPage() {
           </div>
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {cards.map(({ passage: p, wordCount, masteredCount, glossaryCount, paragraphCount, isFocus }) => {
             const passageHasAudio = hasAudio(p.key)
             const track = trackByKey.get(p.key)
@@ -207,7 +207,7 @@ export default function ReadingIndexPage() {
                     href={`/english/words/reading/${p.key}`}
                     className="group min-w-0 flex-1 no-underline"
                   >
-                    <h2 className="font-fredoka text-lg font-bold text-gray-900 group-hover:text-orange-700 sm:text-xl">
+                    <h2 className="font-fredoka text-lg font-bold text-gray-900 group-hover:text-orange-700 xl:text-xl">
                       {p.title}
                     </h2>
                     <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-gray-600">
@@ -226,8 +226,10 @@ export default function ReadingIndexPage() {
                       'relative flex shrink-0 flex-col items-end justify-between gap-1.5 self-stretch py-0.5 pl-3',
                       'before:absolute before:inset-y-1 before:left-0 before:w-px',
                       'before:bg-gradient-to-b before:from-transparent before:via-orange-200/70 before:to-transparent',
-                      'sm:flex-row sm:items-center sm:justify-end sm:self-auto sm:py-0 sm:pl-0',
-                      'sm:before:hidden',
+                      // 多列网格下卡片变窄，只有 xl（三列，单卡约 400px）才横排操作按钮，
+                      // 否则标题会被挤到换行过多。
+                      'xl:flex-row xl:items-center xl:justify-end xl:self-auto xl:py-0 xl:pl-0',
+                      'xl:before:hidden',
                     )}
                   >
                     {passageHasAudio && (
