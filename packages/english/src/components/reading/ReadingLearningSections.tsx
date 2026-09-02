@@ -46,12 +46,12 @@ export default function ReadingLearningSections({ sections, vocab, defaultOpen, 
   if (sections.length === 0) return null
 
   return (
-    <section className="mt-8">
+    <section className="mt-8 overflow-hidden rounded-3xl bg-surface shadow-sm ring-1 ring-border-light">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between rounded-2xl bg-gradient-to-r from-orange-400 to-amber-400 px-5 py-4 text-left text-white shadow-sm"
+        className="flex w-full items-center justify-between bg-gradient-to-r from-orange-400 to-amber-400 px-5 py-4 text-left text-white"
       >
         <span>
           <span className="block text-xs font-black tracking-widest uppercase opacity-80">Lesson workshop</span>
@@ -61,11 +61,11 @@ export default function ReadingLearningSections({ sections, vocab, defaultOpen, 
       </button>
 
       {open && (
-        <div className="mt-4">
+        <div className="p-3 sm:p-4">
           <div
             role="tablist"
             aria-label="本课学习内容"
-            className={`mb-4 grid gap-1.5 rounded-2xl bg-surface p-1.5 shadow-sm ring-1 ring-border-light sm:gap-2 sm:p-2 ${tabColumns}`}
+            className={`mb-3 grid gap-1.5 rounded-2xl bg-surface-dim p-1.5 sm:mb-4 sm:gap-2 sm:p-2 ${tabColumns}`}
           >
             {sections.map((section) => {
               const index = sections.findIndex((candidate) => candidate.id === section.id)

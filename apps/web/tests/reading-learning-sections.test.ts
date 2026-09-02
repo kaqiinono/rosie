@@ -134,3 +134,61 @@ describe('Stage 5A Unit 1 Lesson 2 reading course', () => {
     expect(sections.some((section) => section.type === 'writing')).toBe(false)
   })
 })
+
+describe('Stage 5A Unit 1 Lesson 3 reading course', () => {
+  const passage = findPassageByKey('5a-u1l3')
+  const sections = passage?.learningSections ?? []
+
+  it('registers the three speaker passages with headings separated from the text', () => {
+    expect(passage).toBeDefined()
+    expect(findPassage('5A', 'Unit 1', 'Lesson 3')?.key).toBe('5a-u1l3')
+    expect(passage?.paragraphs).toHaveLength(3)
+    expect(passage?.paragraphTitles).toEqual([
+      'Ahmad, 17, India',
+      'Tina, 16, New Zealand',
+      'Petros, 13, Greece',
+    ])
+    expect(passage?.paragraphs.join(' ')).not.toContain('Ahmad, 17, India')
+  })
+
+  it('keeps every glossary entry outside the complete 5A vocabulary library', () => {
+    const existing = new Set(SAMPLE_WORDS_5A.map((word) => word.word.toLowerCase()))
+    for (const entry of passage?.glossary ?? []) {
+      expect(existing.has(entry.word.toLowerCase())).toBe(false)
+    }
+  })
+
+  it('resolves every Lesson 3 vocabulary reference with its full tuple', () => {
+    const refs = sections.flatMap((section) =>
+      section.type === 'exercises' ? (section.wordRefs ?? []) : [],
+    )
+    expect(refs).toHaveLength(5)
+    for (const ref of refs) {
+      expect(ref).toMatchObject({ stage: '5A', unit: 'Unit 1', lesson: 'Lesson 3' })
+      expect(resolveReadingWordRef(ref, SAMPLE_WORDS_5A)?.word).toBe(ref.word)
+    }
+  })
+
+  it('keeps every selectable answer inside its supplied options', () => {
+    const groups = sections.flatMap((section) =>
+      section.type === 'writing' ? [] : section.groups,
+    )
+    for (const item of groups.flatMap((group) => group.items).filter((item) => item.options)) {
+      expect(item.options).toContain(item.answer)
+    }
+  })
+
+  it('preserves the textbook section order and relative-clause references', () => {
+    expect(sections.map((section) => section.id)).toEqual([
+      'reading-comprehension',
+      'relative-clauses',
+      'there-it-they',
+      'place-description-writing',
+    ])
+    const grammar = sections.find((section) => section.type === 'grammar')
+    expect(grammar?.grammarRefs.find((ref) => ref.role === 'primary')?.unitNumber).toBe(95)
+    expect(grammar?.summary.reminders).toContain('非限定性关系从句不能用 that。')
+    const writing = sections.find((section) => section.type === 'writing')
+    expect(writing?.modelAnswer).toHaveLength(5)
+  })
+})
