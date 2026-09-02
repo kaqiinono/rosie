@@ -1,0 +1,4 @@
+interface:
+  display_name: "添加英文 Lesson"
+  short_description: "Add complete Rosie English textbook lessons"
+  default_prompt: "Use $add-english-lesson to add an English lesson from the provided textbook images or text."
