@@ -10,7 +10,6 @@ import { useReadingPassageAudio } from '@rosie/english'
 import { ReadingAudioButton } from '@rosie/english'
 import {
   findPassageByKey,
-  findSentenceForWord,
   parseFocusLessonKey,
   readingPassages,
 } from '@rosie/english'
@@ -24,6 +23,7 @@ import { ParagraphRecallQuiz } from '@rosie/english'
 import { UncoveredWordsReview } from '@rosie/english'
 import { PreReadingRecall } from '@rosie/english'
 import { GlossaryPanel } from '@rosie/english'
+import { ReadingLearningSections } from '@rosie/english'
 
 const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 0, label: '未掌握', dot: 'bg-amber-400' },
@@ -88,7 +88,12 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
 
   const lessonWords = useMemo(() => {
     if (!passage) return [] as WordEntry[]
-    return vocab.filter((w) => w.unit === passage.unit && w.lesson === passage.lesson)
+    return vocab.filter(
+      (w) =>
+        w.stage === passage.stage &&
+        w.unit === passage.unit &&
+        w.lesson === passage.lesson,
+    )
   }, [vocab, passage])
 
   // Recall outcomes drive the cute in-passage decorations (🌸 for correct,
@@ -313,24 +318,14 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
         />
       )}
 
-      {/* 3C: 沉浸模式语境版入口 — 读完课文后开始 Type D 沉浸练习 */}
-      {lessonWords.some((w) => {
-        const p = passage
-        return p && findSentenceForWord(p, w.word) !== null
-      }) && (
-        <Link
-          href={`/english/words/practice?context=${passage.key}`}
-          className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 px-6 py-4 text-white no-underline shadow-[0_4px_14px_rgba(245,158,11,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(245,158,11,.5)]"
-        >
-          <span className="text-[20px]">🧠</span>
-          <div className="text-center">
-            <div className="text-[15px] leading-tight font-extrabold">开始语境练习</div>
-            <div className="mt-0.5 text-[11px] font-medium opacity-90">
-              用本课课文原句挖空，检验你的语境理解
-            </div>
-          </div>
-          <span className="text-[18px] font-extrabold">→</span>
-        </Link>
+      {passage.learningSections && passage.learningSections.length > 0 && (
+        <ReadingLearningSections
+          key={readingMode}
+          sections={passage.learningSections}
+          vocab={vocab}
+          defaultOpen={readingMode === 'learn'}
+          onWordClick={setStripSelected}
+        />
       )}
 
       <WordPopup

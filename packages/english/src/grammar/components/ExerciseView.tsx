@@ -584,6 +584,11 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
           参考答案：<span className="font-semibold text-text-primary">{item.answer}</span>
         </div>
       )}
+      {status !== 'idle' && item.explanation && (
+        <div className="mt-2 rounded-lg bg-app-blue-light/55 px-3 py-2 text-[13px] leading-relaxed text-app-blue-dark sm:ml-7">
+          💡 {item.explanation}
+        </div>
+      )}
     </div>
   )
 }

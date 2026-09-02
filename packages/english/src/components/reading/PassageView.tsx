@@ -222,6 +222,11 @@ export default function PassageView({
       <article className="space-y-6 text-[17px] leading-[1.85] text-gray-800 sm:text-[18px] sm:leading-[2]">
         {passage.paragraphs.map((p, i) => (
           <div key={i}>
+            {passage.paragraphTitles?.[i] && (
+              <h2 className="font-fredoka mb-2 text-base font-black tracking-wide text-app-blue-dark sm:text-lg">
+                {passage.paragraphTitles[i]}
+              </h2>
+            )}
             <p className="break-words">{renderParagraph(p, i)}</p>
             {renderParagraphFooter && (
               <div className="mt-4">{renderParagraphFooter(i)}</div>
