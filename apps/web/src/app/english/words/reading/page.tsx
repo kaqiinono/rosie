@@ -15,6 +15,7 @@ import { READING_AUDIO_BUCKET, readingPassageAudioPath } from '@rosie/english'
 import { wordKey } from '@rosie/english'
 import { getWordMasteryLevel } from '@rosie/core'
 import { type PlayerTrack } from '@rosie/player'
+import { StoryShelf } from '@rosie/english'
 
 export default function ReadingIndexPage() {
   const { user } = useAuth()
@@ -111,6 +112,8 @@ export default function ReadingIndexPage() {
   )
 
   const current = player.current
+
+  if (selStage.toLowerCase() === 'story') return <StoryShelf />
 
   return (
     <main

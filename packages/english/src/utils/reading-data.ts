@@ -1,5 +1,6 @@
 import type { WordEntry } from '@rosie/core'
 import type { GrammarExerciseGroup } from '../grammar/types'
+import { getWordFormCandidates, type WordFormMatch } from './word-forms'
 
 /**
  * Auxiliary reading-only vocabulary. Distinct from `lessonWords` (which feed
@@ -1680,12 +1681,56 @@ export function buildWordMatchRegex(words: string[]): RegExp | null {
   return new RegExp(`\\b(${pattern})${INFLECTION_SUFFIX}\\b`, 'gi')
 }
 
+/** Build the passage matcher from complete entries, including explicit word_forms. */
+export function buildEntryMatchRegex(entries: WordEntry[]): RegExp | null {
+  if (entries.length === 0) return null
+  const forms = entries.flatMap(getWordFormCandidates).map((candidate) => candidate.text)
+  const pattern = [...new Set(forms.map((form) => form.toLowerCase()))]
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegex)
+    .join('|')
+  return pattern ? new RegExp(`\\b(${pattern})\\b`, 'gi') : null
+}
+
 /**
  * Given a matched text fragment from {@link buildWordMatchRegex} and the
  * candidate word entries, return the entry whose `word` is the base form of
  * the match (case-insensitive, plural- and inflection-tolerant).
  */
 export function resolveMatchedWord(matchedText: string, candidates: WordEntry[]): WordEntry | null {
+  return resolveWordFormMatch(matchedText, candidates)?.entry ?? null
+}
+
+/** Resolve a surface form and retain the relation shown by reading popups/quizzes. */
+export function resolveWordFormMatch(
+  matchedText: string,
+  candidates: WordEntry[],
+): WordFormMatch | null {
+  const normalized = matchedText.trim().toLowerCase()
+  let best: WordFormMatch | null = null
+  for (const entry of candidates) {
+    const candidate = getWordFormCandidates(entry).find(
+      (form) => form.text.toLowerCase() === normalized,
+    )
+    if (!candidate) continue
+    const match = { ...candidate, entry, matchedText }
+    if (
+      !best ||
+      candidate.source === 'base' ||
+      (candidate.source === 'explicit' && best.source === 'generated')
+    ) {
+      best = match
+    }
+    if (candidate.source === 'base') break
+  }
+  return best
+}
+
+/** Legacy resolver for callers that still use the suffix-only matcher. */
+export function resolveLegacyMatchedWord(
+  matchedText: string,
+  candidates: WordEntry[],
+): WordEntry | null {
   const stems = deinflectCandidates(matchedText)
   let best: WordEntry | null = null
   for (const c of candidates) {
@@ -1706,15 +1751,24 @@ function inflectedSource(word: string): string {
   return `\\b(?:${pattern})${INFLECTION_SUFFIX}\\b`
 }
 
+export function buildEntryRegex(entry: WordEntry): RegExp {
+  const pattern = getWordFormCandidates(entry)
+    .map((candidate) => candidate.text)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegex)
+    .join('|')
+  return new RegExp(`\\b(?:${pattern})\\b`, 'i')
+}
+
 /**
  * Find the first sentence (across all paragraphs) that contains `word`.
  * Inflection-tolerant — matches `interviewing` against `interview`, etc.
  */
 export function findSentenceForWord(
   passage: ReadingPassage,
-  word: string,
+  word: string | WordEntry,
 ): { sentence: string; paragraphIndex: number } | null {
-  const regex = new RegExp(inflectedSource(word), 'i')
+  const regex = typeof word === 'string' ? new RegExp(inflectedSource(word), 'i') : buildEntryRegex(word)
   for (let pi = 0; pi < passage.paragraphs.length; pi++) {
     const sentences = passage.paragraphs[pi].split(SENTENCE_SPLIT)
     for (const s of sentences) {
@@ -1732,8 +1786,8 @@ export function findSentenceForWord(
  * {@link findSentenceForWord} so that sentences found by that function are
  * always blanked correctly (e.g. `interviewing` → `_______`).
  */
-export function blankWordInSentence(sentence: string, word: string): string {
-  const re = new RegExp(inflectedSource(word), 'i')
+export function blankWordInSentence(sentence: string, word: string | WordEntry): string {
+  const re = typeof word === 'string' ? new RegExp(inflectedSource(word), 'i') : buildEntryRegex(word)
   return sentence.replace(re, '_______')
 }
 
@@ -1767,8 +1821,11 @@ export function resolveGlossaryMatch(
 }
 
 /** Locate the paragraph that contains a given word (inflection-tolerant). */
-export function findParagraphIndexForWord(passage: ReadingPassage, word: string): number | null {
-  const regex = new RegExp(inflectedSource(word), 'i')
+export function findParagraphIndexForWord(
+  passage: ReadingPassage,
+  word: string | WordEntry,
+): number | null {
+  const regex = typeof word === 'string' ? new RegExp(inflectedSource(word), 'i') : buildEntryRegex(word)
   for (let i = 0; i < passage.paragraphs.length; i++) {
     if (regex.test(passage.paragraphs[i])) return i
   }

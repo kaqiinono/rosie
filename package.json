@@ -23,6 +23,7 @@
     "ai:sync-all": "node scripts/ai-sync-all.mjs",
     "grammar:extract": "node scripts/extract-grammar-unit.mjs",
     "grammar:render-pdf": "node scripts/extract-grammar-pdf.mjs",
+    "story:import": "node scripts/import-story-pdf.mjs",
     "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs",
     "calc:audit": "node --import jiti/register scripts/calc-audit.ts",
     "calc:progress": "node --import jiti/register scripts/calc-progress-maintenance.ts"

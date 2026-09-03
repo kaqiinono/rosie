@@ -13,7 +13,10 @@ interface EnrichInput {
   explanation: string
   chineseDef: string
   example: string
+  wordForms: unknown
 }
+
+const FORM_ARRAY = { type: 'array' as const, items: { type: 'string' as const } }
 
 const TOOL = {
   type: 'function' as const,
@@ -27,8 +30,24 @@ const TOOL = {
         explanation: { type: 'string', description: '简短的英文释义，用小学生能懂的简单英语。' },
         chineseDef: { type: 'string', description: '简洁的中文释义，只给最常用义项，不加拼音。' },
         example: { type: 'string', description: '一句简单、贴近儿童生活的英文例句，包含该单词。' },
+        wordForms: {
+          type: 'object' as const,
+          description: '只填写普通拼写规则无法生成的特殊词形；规则词返回空对象。短语填写完整表面形式。',
+          properties: {
+            plural: FORM_ARRAY,
+            thirdPerson: FORM_ARRAY,
+            presentParticiple: FORM_ARRAY,
+            past: FORM_ARRAY,
+            pastParticiple: FORM_ARRAY,
+            comparative: FORM_ARRAY,
+            superlative: FORM_ARRAY,
+            other: FORM_ARRAY,
+            disableGenerated: FORM_ARRAY,
+          },
+          additionalProperties: false,
+        },
       },
-      required: ['ipa', 'explanation', 'chineseDef', 'example'],
+      required: ['ipa', 'explanation', 'chineseDef', 'example', 'wordForms'],
     },
   },
 }
@@ -105,7 +124,7 @@ export async function POST(req: Request) {
   const prompt =
     `请为英文单词/短语「${word}」生成词典信息。` +
     (stage ? `它属于教材阶段 ${stage}。` : '') +
-    '面向中国小学生（约 7 岁）。务必调用 provide_word_info 工具返回结果。'
+    '面向中国小学生（约 7 岁）。同时判断词形：climb 等规则词的 wordForms 返回空对象；think、child、have、can 等规则外或需禁用自动生成的词必须填写分类数组。务必调用 provide_word_info 工具返回结果。'
 
   let resp: Response
   try {
@@ -124,7 +143,7 @@ export async function POST(req: Request) {
           {
             role: 'system',
             content:
-              '你是面向中国小学生的英语词典助手。只通过 provide_word_info 工具返回结构化结果。',
+              '你是面向中国小学生的英语词典助手。wordForms 只存规则无法生成的完整表面形式，不重复规则形式；不应自动派生的类别写入 disableGenerated。只通过 provide_word_info 工具返回结构化结果。',
           },
           { role: 'user', content: prompt },
         ],
@@ -152,5 +171,9 @@ export async function POST(req: Request) {
     explanation: typeof input.explanation === 'string' ? input.explanation : '',
     chineseDef: typeof input.chineseDef === 'string' ? input.chineseDef : '',
     example: typeof input.example === 'string' ? input.example : '',
+    wordForms:
+      input.wordForms && typeof input.wordForms === 'object' && !Array.isArray(input.wordForms)
+        ? input.wordForms
+        : {},
   })
 }

@@ -133,6 +133,7 @@ export type Database = {
           ipa: string | null
           example: string | null
           phonics: string | null
+          word_forms: unknown | null
         }
         Insert: {
           user_id: string
@@ -143,6 +144,7 @@ export type Database = {
           ipa?: string | null
           example?: string | null
           phonics?: string | null
+          word_forms?: unknown | null
         }
       }
       daily_progress: {

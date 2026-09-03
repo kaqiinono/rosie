@@ -3,6 +3,7 @@ import path from 'node:path'
 import { upsertKnowledgeDocument, stripHtml, updateKnowledgeSyncState } from '@rosie/ai'
 import type { LinkManifestEntry } from '@rosie/ai'
 import { readingPassages } from '@rosie/english/utils/reading-data'
+import { storySeries } from '@rosie/english/utils/story-data'
 import {
   getBookLessonPassages,
   getBookPoems,
@@ -394,6 +395,39 @@ export async function syncEnglishCatalog(onProgress?: CatalogProgressCallback): 
       title: passage.title,
       subject: 'english',
     })
+  }
+
+  const storyChapters = storySeries.flatMap((series) =>
+    series.volumes.flatMap((volume) =>
+      volume.chapters.map((chapter) => ({ series, volume, chapter })),
+    ),
+  )
+  for (const { series, volume, chapter } of storyChapters) {
+    const sourceRef = `english:story:${series.slug}:${volume.slug}:${chapter.key}`
+    const href = `/english/words/reading/story/${series.slug}/${volume.slug}/${chapter.key}`
+    const title = `${volume.title} — Chapter ${chapter.number}: ${chapter.title}`
+    await ingestOne(
+      {
+        subject: 'english',
+        sourceType: 'catalog_sync',
+        sourceRef,
+        title,
+        content: [`系列: ${series.title}`, `第 ${volume.number} 辑: ${volume.title}`, `Chapter ${chapter.number}: ${chapter.title}`, ...chapter.paragraphs].join('\n\n'),
+        metadata: {
+          sourceRef,
+          title,
+          seriesSlug: series.slug,
+          volumeSlug: volume.slug,
+          volumeNumber: volume.number,
+          chapterKey: chapter.key,
+          chapterNumber: chapter.number,
+          href,
+        },
+      },
+      stats,
+    )
+    await onProgress?.(stats.documents, readingPassages.length + storyChapters.length)
+    manifest.push({ sourceRef, href, title, subject: 'english' })
   }
 
   return {

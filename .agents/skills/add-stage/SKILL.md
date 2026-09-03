@@ -21,6 +21,7 @@ DB schema 关键事实：
 - 唯一约束：`UNIQUE (unit, lesson, word, stage)`（约束名 `word_entries_business_key`）
 - `syllables` 列：**`jsonb`**（不是 text[]）
 - `keywords` 列：**`jsonb`**
+- `word_forms` 列：**`jsonb`**，只保存规则生成器无法可靠生成的特殊形式；按语法角色存字符串数组
 - `creator` 列：必填 UUID，对应 `auth.users.id`
 
 ## 本 skill 产出 3 个文件
@@ -107,7 +108,7 @@ SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint
 
 派 6 个 `general-purpose` subagent 并行（在**同一个消息**里发 6 个 Agent tool calls 才能并行），每个负责一个 Unit。
 
-Subagent 任务：为每个 word 生成 `ipa`、`example`、`chineseDef`。完整 prompt 模板（关键 hard rules 节选）：
+Subagent 任务：为每个 word 生成 `ipa`、`example`、`chineseDef`，并判断是否需要 `wordForms`。完整 prompt 模板（关键 hard rules 节选）：
 
 ```
 HARD RULES:
@@ -118,6 +119,10 @@ HARD RULES:
 - `example` MUST match the sense in the explanation (e.g. "active" U7L1 = active volcano, NOT energetic person)
 - `ipa` MUST be British English, wrapped in /.../
 - `chineseDef` Simplified Chinese, "义项1；义项2" with 半角分号
+- 先按 `packages/english/src/utils/word-forms.ts` 的规则生成器检查词形；规则可正确生成时不要写 wordForms
+- 不规则过去式/过去分词、不规则复数、不规则第三人称、特殊比较级/最高级、英美双形式，必须写 wordForms
+- 情态动词、不可数名词或其他不应自动派生的类别，用 disableGenerated 禁止错误形式
+- wordForms 内每个语法角色必须是完整表面形式的 string[]；短语保存完整形式，例如 take off → took off / taken off
 - Output: ```json fenced single object with `entries[]` + `chineseDefs{}`
 ```
 
@@ -184,6 +189,7 @@ OUTPUT: { "syllables": {...}, "keywords": {...} }
    - entries 数 = 第二步用户确认的数
    - 每个 word 在 chineseDefs 都有 key
    - 每个唯一 word 在 syllables / keywords 都有 key
+   - 每个词都已完成词形审计：特殊形式有 `wordForms`，纯规则词不重复存可生成形式
    - keywords 的 phrase **不应**以 `a ` / `an ` / `the ` / `to ` 开头（违反 VOCABULARY_KEYWORD_GUIDE_1.md 第一节清洗规则）
    - keywords 的 phrase **不应**包含 `something` / `someone` / `somebody` 这类占位词
    - 没有 (unit, lesson, word) 重复
@@ -230,17 +236,18 @@ WITH me AS (
   SELECT id FROM auth.users WHERE email = 'YOUR_LOGIN_EMAIL_HERE' LIMIT 1
 )
 INSERT INTO word_entries
-  (creator, stage, unit, lesson, word, explanation, ipa, example, chinese_def)
-SELECT me.id, d.stage, d.unit, d.lesson, d.word, d.explanation, d.ipa, d.example, d.chinese_def
+  (creator, stage, unit, lesson, word, explanation, ipa, example, chinese_def, word_forms)
+SELECT me.id, d.stage, d.unit, d.lesson, d.word, d.explanation, d.ipa, d.example, d.chinese_def, d.word_forms
 FROM me, (VALUES
-  ($$4C$$, $$Unit X$$, $$Lesson Y$$, $$word$$, $$explanation$$, $$/ipa/$$, $$example$$, $$chinese$$),
+  ($$4C$$, $$Unit X$$, $$Lesson Y$$, $$think$$, $$explanation$$, $$/ipa/$$, $$example$$, $$chinese$$, '{"past":["thought"],"pastParticiple":["thought"]}'::jsonb),
   ...
-) AS d(stage, unit, lesson, word, explanation, ipa, example, chinese_def);
+) AS d(stage, unit, lesson, word, explanation, ipa, example, chinese_def, word_forms);
 COMMIT;
 ```
 
 关键点：
 - `$$...$$` dollar quoting，字符串里有 `'` 或 `"` 都不用转义
+- 规则词的 `word_forms` 写 `NULL::jsonb`；不得把可自动生成的 `climbs/climbed/climbing` 冗余入库
 - `WITH me AS (...)` 自动查用户 UUID，用户只需替换邮箱
 - 单事务，要么全成功要么全回滚
 
@@ -306,6 +313,8 @@ FROM word_entries WHERE stage = '{STAGE}';
 | `syllables` 不分特殊后缀（如把 `na-tion` 拆成 `nat-ion`） | 违反 phonics_rules.md 标注优先级 | 特殊后缀整体不拆开 |
 | 把 `chineseDef` / `syllables` / `keywords` 写进 `_RAW_WORDS` 对象 | 被 SAMPLE_WORDS 的 spread 派生覆盖为 undefined | 只写进对应的独立 Map |
 | 例句不含 word 本身 | 学习场景下学生看不到用法 | 例句必须出现 word 的某种形态 |
+| 所有词都填完整变形表 | 数据冗余且规则升级后漂移 | 只保存规则外特殊形式；规则词保持 NULL |
+| `think/take/child/have/can` 等特殊词未填 word_forms | 阅读高亮和挖空无法归回原词或产生错误形式 | 逐词运行词形审计，必要时配置数组和 disableGenerated |
 | 没去重跨 Unit 重复 word 就调 subagent 生成 syllables/keywords | 两个 subagent 给同一 word 不同输出，合并冲突 | 第五步去重，让最先出现的 Unit 处理 |
 | 跳过第二步用户确认 | 漏了词都不知道 | 强制 checkpoint，不能跳 |
 | 写完 SQL 就告诉用户"完成" | 用户没跑 SQL，DB 没变化 | 必须明确指引"先跑 upsert 再跑 update-maps，每步验证" |

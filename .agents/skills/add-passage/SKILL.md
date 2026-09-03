@@ -69,8 +69,14 @@ grep -n '"unit": "Unit X"' packages/english/src/utils/english-data.ts  # 替换 
   - 过去式 `-ed`: `interview` → `interviewed`、`solve` → `solved`(silent-e 自动处理)
   - 进行时 `-ing`: `interview` → `interviewing`、`solve` → `solving`
   - `-y → -ies / -ied`: `try` → `tries` / `tried`
-- **不会**自动匹配:
-  - 辅音重写形式: `run` → `running`、`swim` → `swimming`
+- 辅音双写和 `ie → y` 也由规则生成器处理：`run → running`、`swim → swimming`、`lie → lying`
+- **规则外形式依赖 `word_entries.word_forms`**:
+  - 不规则动词：`think → thought`、`take → took/taken`
+  - 不规则复数：`child → children`
+  - 特殊第三人称：`have → has`、`be → is`
+  - 特殊比较级：`good → better/best`
+- 如果正文出现规则外形式而词条没有 `wordForms`，先补全词条数据再录入课文；不要复制一个变形词条，也不要降级为 glossary。
+- **不会**自动匹配派生词:
   - 名词派生: `solve` → `solution`、`care` → `careful`
   - 派生名词/形容词: `act` → `active`、`interest` → `interesting`(*实际能匹配,因为 `interest` + `-ing` 走简单后缀*)
 
@@ -134,6 +140,7 @@ pnpm dev                        # 启动开发服务器
 - [ ] 标题卡顶部出现「📋 前测」+ (如果有 glossary) 「📒 难点词 N」芯片
 - [ ] 大部分（>80%）lesson words 在文中被彩色胶囊高亮(若全部未出现见 step 3 说明)
 - [ ] 多词短语作为**一个** pill 高亮，没有被拆成两个
+- [ ] 特殊变形显示原文表面形式，点击后归回原词并显示词形关系；挖空能挖掉实际表面形式
 - [ ] 课文里 glossary 词被灰色虚线下划线标注（专有名词额外 italic）
 - [ ] 点击灰色虚线词弹出难点词卡(EN/中 双语释义 + IPA + 🔊)
 - [ ] 点击「📒 难点词」芯片展开分组面板(按 category 分组,每组带 emoji)

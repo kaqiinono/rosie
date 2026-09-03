@@ -158,7 +158,7 @@ export default function BatchAddModal({ defaultStage, onCancel, onConfirm }: Pro
                 <>
                   <div className="mb-1 text-[28px]">📂</div>
                   <div className="text-[13px] font-bold text-slate-500">点击选择 .xlsx 文件</div>
-                  <div className="mt-0.5 text-[11px] text-slate-400">列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节 / 关键词高亮</div>
+                  <div className="mt-0.5 text-[11px] text-slate-400">列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节 / 关键词高亮 / 特殊词形 JSON</div>
                 </>
               )}
               <input
@@ -176,7 +176,7 @@ export default function BatchAddModal({ defaultStage, onCancel, onConfirm }: Pro
           <div>
             <div className="mb-1 text-[12px] text-slate-500">
               每行一个单词，推荐从表格直接复制（Tab 分隔，单元格内逗号不会误拆）。列顺序：
-              <span className="font-bold">单元 · 课次 · 单词 · 英文释义 · 中文释义 · 音标 · 例句 · phonics · 音节 · 关键词高亮</span>
+              <span className="font-bold">单元 · 课次 · 单词 · 英文释义 · 中文释义 · 音标 · 例句 · phonics · 音节 · 关键词高亮 · 特殊词形 JSON</span>
               （靠后的列可留空；词库默认 = {defaultStage || '未选'}）
             </div>
             <textarea

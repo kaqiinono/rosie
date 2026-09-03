@@ -25,7 +25,7 @@ function highlightedSentence(sentence: string, word: string): ReactNode {
 
 /** Pick a sentence for a word: in-passage if available, else its general example. */
 function sentenceFor(passage: ReadingPassage, entry: WordEntry): string | null {
-  const hit = findSentenceForWord(passage, entry.word)
+  const hit = findSentenceForWord(passage, entry)
   if (hit) return hit.sentence
   if (entry.example) return entry.example
   return null
@@ -136,7 +136,7 @@ export default function RecallQuizStack({
                 {result ? (
                   <>&ldquo;{highlightedSentence(sentence, entry.word)}&rdquo;</>
                 ) : (
-                  <>&ldquo;{blankWordInSentence(sentence, entry.word)}&rdquo;</>
+                  <>&ldquo;{blankWordInSentence(sentence, entry)}&rdquo;</>
                 )}
               </div>
             ) : (

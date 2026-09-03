@@ -1,5 +1,6 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from '@rosie/core'
 import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
+import { parseWordFormsCell } from './word-forms'
 
 /**
  * Return every spelling accepted for a vocabulary entry.
@@ -143,6 +144,7 @@ export const WORD_TEMPLATE_HEADERS = [
   'phonics',
   '音节 (syllables, 逗号分隔)',
   '关键词高亮 (词|颜色; 颜色=red/gold/blue)',
+  '特殊词形 word_forms (JSON)',
 ]
 
 /**
@@ -172,6 +174,7 @@ export function parseWordRows(
     if (!unit || !lesson || !word) continue
     const syllables = parseSyllablesCell(cell(r, off + 8))
     const keywords = parseKeywordsCell(cell(r, off + 9))
+    const wordForms = parseWordFormsCell(cell(r, off + 10))
     out.push({
       stage: stage || defaultStage || undefined,
       unit,
@@ -184,6 +187,7 @@ export function parseWordRows(
       phonics: cell(r, off + 7) || undefined,
       syllables: syllables.length ? syllables : undefined,
       keywords: keywords.length ? keywords : undefined,
+      wordForms,
     })
   }
   return out

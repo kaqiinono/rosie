@@ -56,7 +56,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
   // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;
   // here we just key off "is there a passage for this lesson?".
   const passage = findPassage(entry.stage, entry.unit, entry.lesson)
-  const passageSentence = passage ? findSentenceForWord(passage, entry.word) : null
+  const passageSentence = passage ? findSentenceForWord(passage, entry) : null
 
   // Positioning differs between flip mode (faces overlaid with backface-hidden)
   // and dual mode (faces sit flush inside a shared outer card, joined by a

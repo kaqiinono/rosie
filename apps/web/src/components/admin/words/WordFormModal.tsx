@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { WordEntry, WordVocabType } from '@rosie/core'
-import { enrichWord, type EnrichResult } from '@rosie/english'
+import { enrichWord, parseWordFormsCell, type EnrichResult } from '@rosie/english'
 import { getWordImagePublicUrl, hilite } from '@rosie/english'
 import { KW_COLORS, DEFAULT_KW_COLOR, type StageTree } from './types'
 
@@ -117,6 +117,10 @@ export default function WordFormModal({
   const [phonics, setPhonics] = useState(initial?.phonics ?? '')
   const [syllables, setSyllables] = useState((initial?.syllables ?? []).join(', '))
   const [keywords, setKeywords] = useState<[string, string][]>(initial?.keywords ?? [])
+  const [wordFormsJson, setWordFormsJson] = useState(
+    initial?.wordForms ? JSON.stringify(initial.wordForms, null, 2) : '',
+  )
+  const [wordFormsError, setWordFormsError] = useState('')
   const [showAdvanced, setShowAdvanced] = useState(false)
 
   const [submitting, setSubmitting] = useState(false)
@@ -155,6 +159,7 @@ export default function WordFormModal({
       if (r.explanation) setExplanation(r.explanation)
       if (r.chineseDef) setChineseDef(r.chineseDef)
       if (r.example) setExample(r.example)
+      if (r.wordForms) setWordFormsJson(JSON.stringify(r.wordForms, null, 2))
       setEnrichInfo(r)
     } finally {
       setEnriching(false)
@@ -163,6 +168,14 @@ export default function WordFormModal({
 
   const handleSave = async () => {
     if (!canSubmit) return
+    let wordForms: WordEntry['wordForms']
+    try {
+      wordForms = parseWordFormsCell(wordFormsJson)
+      setWordFormsError('')
+    } catch (error) {
+      setWordFormsError(error instanceof Error ? error.message : '特殊词形 JSON 无效')
+      return
+    }
     setSubmitting(true)
     try {
       const cleanedKeywords = keywords
@@ -185,6 +198,7 @@ export default function WordFormModal({
         syllables: cleanedSyllables.length ? cleanedSyllables : undefined,
         keywords: cleanedKeywords.length ? cleanedKeywords : undefined,
         vocabType: vocabType || undefined,
+        wordForms,
         // Preserve image metadata — toRow nulls omitted optional fields
         imagePath: initial?.imagePath,
         imageMatchScore: initial?.imageMatchScore,
@@ -358,10 +372,28 @@ export default function WordFormModal({
             onClick={() => setShowAdvanced((v) => !v)}
             className="cursor-pointer text-[12px] font-bold text-slate-500 transition hover:text-slate-700"
           >
-            {showAdvanced ? '▾' : '▸'} 高级字段（音节 / 关键词高亮 / phonics，选填）
+            {showAdvanced ? '▾' : '▸'} 高级字段（特殊词形 / 音节 / 关键词高亮 / phonics，选填）
           </button>
           {showAdvanced && (
             <div className="space-y-3 rounded-xl bg-slate-50 p-3">
+              <div>
+                <label className={labelCls}>特殊词形 word_forms（JSON）</label>
+                <textarea
+                  className={`${inputCls} min-h-28 font-mono text-[12px]`}
+                  value={wordFormsJson}
+                  onChange={(event) => {
+                    setWordFormsJson(event.target.value)
+                    setWordFormsError('')
+                  }}
+                  placeholder={'{"past":["thought"],"pastParticiple":["thought"]}'}
+                />
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                  仅填写规则无法生成的形式；每类使用字符串数组。支持 plural、thirdPerson、presentParticiple、past、pastParticiple、comparative、superlative、other 和 disableGenerated。
+                </p>
+                {wordFormsError && (
+                  <p className="mt-1 text-[11px] font-bold text-red-600">{wordFormsError}</p>
+                )}
+              </div>
               <div>
                 <label className={labelCls}>phonics</label>
                 <input className={inputCls} value={phonics} onChange={(e) => setPhonics(e.target.value)} placeholder="a-pp-le" />

@@ -3,7 +3,12 @@
 import { useEffect } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import type { ReadingPassage } from '../../utils/reading-data'
-import { findSentenceForWord } from '../../utils/reading-data'
+import {
+  buildEntryRegex,
+  findSentenceForWord,
+  resolveWordFormMatch,
+} from '../../utils/reading-data'
+import { WORD_FORM_LABELS, type WordFormMatch } from '../../utils/word-forms'
 import { wordKey } from '../../utils/english-helpers'
 import {
   getWordMasteryLevel,
@@ -16,6 +21,7 @@ import SpeakButton from '../words/SpeakButton'
 
 interface WordPopupProps {
   entry: WordEntry | null
+  matchedForm?: WordFormMatch | null
   entries?: WordEntry[]
   passage: ReadingPassage
   mastery: WordMasteryInfo | undefined
@@ -44,9 +50,8 @@ const LEVEL_ACCENT_BG: Record<MasteryLevel, string> = {
   3: 'from-emerald-300 to-green-400',
 }
 
-function highlightSentence(sentence: string, word: string) {
-  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const re = new RegExp(`\\b(${escaped})s?\\b`, 'i')
+function highlightSentence(sentence: string, entry: WordEntry) {
+  const re = buildEntryRegex(entry)
   const m = sentence.match(re)
   if (!m || m.index === undefined) return <>{sentence}</>
   const before = sentence.slice(0, m.index)
@@ -63,6 +68,7 @@ function highlightSentence(sentence: string, word: string) {
 
 export default function WordPopup({
   entry,
+  matchedForm,
   entries = [],
   passage,
   mastery,
@@ -100,7 +106,10 @@ export default function WordPopup({
   const maxStage = isHard ? GRADUATED_STAGE_HARD : GRADUATED_STAGE_NORMAL
   const stagePercent = Math.min(100, Math.round((stage / maxStage) * 100))
 
-  const found = findSentenceForWord(passage, entry.word)
+  const found = findSentenceForWord(passage, entry)
+  const sentenceMatch = found?.sentence.match(buildEntryRegex(entry))?.[0]
+  const effectiveMatch = matchedForm ?? (sentenceMatch ? resolveWordFormMatch(sentenceMatch, [entry]) : null)
+  const isInflected = effectiveMatch && effectiveMatch.source !== 'base'
 
   return (
     <div
@@ -144,9 +153,30 @@ export default function WordPopup({
           {entry.ipa && (
             <div className="mt-0.5 text-sm italic text-gray-500">{entry.ipa}</div>
           )}
+          {isInflected && (
+            <div className="mt-2 rounded-lg bg-indigo-50 px-3 py-2 text-sm text-indigo-800 ring-1 ring-indigo-200">
+              <span className="font-extrabold">{effectiveMatch.matchedText}</span>
+              <span className="mx-1.5 text-indigo-400">←</span>
+              <span>
+                {entry.word} 的
+                {effectiveMatch.formTypes.map((type) => WORD_FORM_LABELS[type]).join(' / ')}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="space-y-3 px-5 pb-5">
+          <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+            <span className="rounded-full bg-sky-50 px-2.5 py-1 text-sky-700 ring-1 ring-sky-200">
+              词库来源 · {entry.stage ?? '未分级'} · {entry.unit} · {entry.lesson}
+            </span>
+            {passage.stage === 'story' && (
+              <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 ring-1 ring-amber-200">
+                故事来源 · {passage.unit} · {passage.title}
+              </span>
+            )}
+          </div>
+
           <div>
             <div className="mb-1 text-[11px] font-bold tracking-wider text-gray-400 uppercase">释义</div>
             <p className="text-[15px] leading-relaxed text-gray-800">{entry.explanation}</p>
@@ -163,7 +193,7 @@ export default function WordPopup({
                 <span>📖</span> 课文原句
               </div>
               <p className="text-[14px] leading-relaxed text-gray-800">
-                {highlightSentence(found.sentence, entry.word)}
+                {highlightSentence(found.sentence, entry)}
               </p>
             </div>
           )}

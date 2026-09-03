@@ -102,7 +102,7 @@ export default function PracticePage() {
     () =>
       filteredWords.some((w) => {
         const passage = findPassage(w.stage, w.unit, w.lesson)
-        return passage !== undefined && findSentenceForWord(passage, w.word) !== null
+        return passage !== undefined && findSentenceForWord(passage, w) !== null
       }),
     [filteredWords],
   )

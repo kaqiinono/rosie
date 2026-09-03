@@ -1,4 +1,6 @@
 import { supabase } from '@rosie/core'
+import type { WordForms } from '@rosie/core'
+import { normalizeWordForms } from './word-forms'
 
 // 单词自动填充：优先走服务端百炼路由（/api/word-enrich），
 // 失败时兜底到免费词典 dictionaryapi.dev。返回结果会标注 source，
@@ -14,6 +16,8 @@ export interface EnrichResult {
   explanation: string
   chineseDef: string
   example: string
+  /** Explicit rule-external forms only; absent/empty for regular words. */
+  wordForms?: WordForms
   /** 兜底/异常时的提示信息，供 UI 展示 */
   note?: string
 }
@@ -99,6 +103,7 @@ export async function enrichWord(word: string, stage?: string): Promise<EnrichRe
         explanation: d.explanation || '',
         chineseDef: d.chineseDef || '',
         example: d.example || '',
+        wordForms: normalizeWordForms(d.wordForms),
       }
     }
   } catch {

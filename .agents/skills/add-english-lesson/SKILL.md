@@ -60,6 +60,7 @@ description: Add or update a complete English textbook lesson in Rosie from page
 3. 只把理解课文确实需要、且全阶段词库不存在的超纲词、专名和文化词加入 `glossary`。`glossary` 只用于阅读辅助，不进入 mastery、前测或回想。
 4. 专名设置 `isProperNoun: true`；提供准确的 `meaningCn`，尽量补简短 `meaningEn` 和可靠 IPA。不要为了“词表更丰富”加入普通易懂词。
 5. 新增 glossary category 时检查 `GlossaryPanel` 的 emoji 映射。
+6. 若本课需要新增 `word_entries`，逐词对照 `utils/word-forms.ts`：规则可生成的形式不入库；不规则动词、名词复数、第三人称、比较级/最高级、英美双形式或禁止自动生成的词，必须提供结构化 `wordForms`。短语中的特殊形式保存完整表面文本。
 
 ## 4. 录入课文
 
@@ -71,6 +72,7 @@ description: Add or update a complete English textbook lesson in Rosie from page
 - 将日期、小标题等按索引放入 `paragraphTitles`，绝不混进段落正文；
 - 保持段落边界符合教材，不为追求固定段数任意合并；
 - 核对重点词和多词短语在正文中的匹配效果。
+- 核对正文实际变形能归回词库原形；若出现 `thought/took/children/has` 等规则外形式，确认对应词条已有 `wordForms`，不要把它降级为 glossary。
 
 保留每段后的 `ParagraphRecallQuiz` 能力。不要在阅读详情页新增或挂载 `InlineContextPractice` / “课文语境练习”，因为它与段落回想重复。Type D 在系统其他既有练习入口继续保留，不删除其公共能力。
 
@@ -112,12 +114,28 @@ description: Add or update a complete English textbook lesson in Rosie from page
 5. 保留当前页面的阅读模式、`ParagraphRecallQuiz`、词汇弹层、glossary、预习和音频公共能力。
 6. 遵循 Tailwind v4、移动优先、无 `any`、客户端组件标记及包依赖 DAG。
 
+### Story 系列/分辑/章节
+
+纯故事书不伪造成教材 Unit/Lesson。现有命名 stage `story` 在 reading 首页渲染系列书架，
+数据使用 `StorySeries → StoryVolume → StoryChapter`，正文由
+`scripts/import-story-pdf.mjs` 提取后逐页校对。章节正文运行时匹配完整 `word_entries`；重复
+spelling 只高亮一次，真正未入库的必要难词和专名才写入章节 glossary。Story 不进入教材
+周计划、前测或段落回想。
+
+连续故事阅读使用完整句子稳定锚点，不制造响应式分页。用户主动标记时保存视口首尾完整
+句子，再次进入将首句恢复到 sticky header 下方。学生麦克风朗读属于私有用户数据，使用
+`story_reading_progress`、`reading_recordings` 和私有 `english-story-recordings` bucket；保存前
+复用 `@rosie/player` 压缩，播放/下载使用 signed URL，不得复用公共课文 narration 表。录音
+按章节保存为可追加的独立片段，同一章节允许多条；不要建立整辑唯一录音。
+
 ## 7. 数据质量检查
 
 - [ ] 教材正文与用户指令已分离，页序和段落无遗漏。
 - [ ] stage / Unit / Lesson / key 唯一且与词库一致。
 - [ ] `paragraphTitles.length` 与需标题的段落对齐，标题未混入正文。
 - [ ] 已搜索该 stage 全阶段词库，无重复词条；所有 `ReadingWordRef` 均能解析。
+- [ ] 所有新增词均完成词形审计：规则词未冗余存储，特殊词已填写 `wordForms` / `disableGenerated`。
+- [ ] 正文中的规则和特殊变形均能高亮、打开原词卡并用于段落回想/挖空。
 - [ ] glossary 只含必要的超纲词、专名和文化词，且不与全阶段词库重复。
 - [ ] 选择/连线题答案存在于 options；填空答案和题干可判定；题号无冲突。
 - [ ] 语法归纳含语法点、对比、时间标志、教材例句，Cambridge 引用准确。

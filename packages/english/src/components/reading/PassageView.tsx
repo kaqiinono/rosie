@@ -3,12 +3,15 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '../../utils/reading-data'
+import type { StorySentence } from '../../utils/story-types'
 import {
+  buildEntryMatchRegex,
+  buildEntryRegex,
   buildGlossaryRegex,
-  buildWordMatchRegex,
   resolveGlossaryMatch,
-  resolveMatchedWord,
+  resolveWordFormMatch,
 } from '../../utils/reading-data'
+import type { WordFormMatch } from '../../utils/word-forms'
 import { wordKey } from '../../utils/english-helpers'
 import { getWordMasteryLevel, type MasteryLevel } from '@rosie/core'
 import WordPopup from './WordPopup'
@@ -31,6 +34,8 @@ interface PassageViewProps {
   mode?: 'learn' | 'focus'
   /** Optional render slot injected at the end of each paragraph (e.g. recall quiz). */
   renderParagraphFooter?: (paragraphIndex: number) => ReactNode
+  /** Optional sentence anchors for continuous Story reading/bookmarks. */
+  sentenceGroups?: StorySentence[][]
 }
 
 const LEVEL_CLASS: Record<MasteryLevel, string> = {
@@ -71,14 +76,16 @@ export default function PassageView({
   recallCounts,
   mode = 'learn',
   renderParagraphFooter,
+  sentenceGroups,
 }: PassageViewProps) {
   const levelClass = mode === 'focus' ? LEVEL_CLASS_FOCUS : LEVEL_CLASS
   const [selected, setSelected] = useState<WordEntry | null>(null)
+  const [selectedMatch, setSelectedMatch] = useState<WordFormMatch | null>(null)
   const [glossarySelected, setGlossarySelected] = useState<GlossaryWord | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const regex = useMemo(
-    () => buildWordMatchRegex(lessonWords.map((w) => w.word)),
+    () => buildEntryMatchRegex(lessonWords),
     [lessonWords],
   )
 
@@ -92,10 +99,9 @@ export default function PassageView({
     if (!focusWord || !containerRef.current) return
     const target = lessonWords.find((w) => w.word.toLowerCase() === focusWord.toLowerCase())
     if (!target) return
-    const lower = target.word.toLowerCase()
     let id: string | null = null
     for (let pi = 0; pi < passage.paragraphs.length; pi++) {
-      const test = new RegExp(`\\b${lower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}s?\\b`, 'i')
+      const test = buildEntryRegex(target)
       if (test.test(passage.paragraphs[pi])) {
         id = slugForWord(target.word, pi, 0)
         break
@@ -173,8 +179,9 @@ export default function PassageView({
         )
       }
       const matched = m[0]
-      const entry = resolveMatchedWord(matched, lessonWords)
-      if (!entry) {
+      const wordFormMatch = resolveWordFormMatch(matched, lessonWords)
+      const entry = wordFormMatch?.entry
+      if (!entry || !wordFormMatch) {
         parts.push(...renderGlossary(matched, `p${paragraphIndex}-m${m.index}`))
       } else {
         const level = getWordMasteryLevel(masteryMap[wordKey(entry)]?.correct ?? 0)
@@ -192,7 +199,10 @@ export default function PassageView({
           <button
             key={`${id}-${m.index}`}
             id={id}
-            onClick={() => setSelected(entry)}
+            onClick={() => {
+              setSelected(entry)
+              setSelectedMatch(wordFormMatch)
+            }}
             className={`relative inline cursor-pointer rounded-md px-1 py-0.5 font-bold transition-colors ${levelClass[level]} ${outcomeClass}`}
           >
             {matched}
@@ -227,7 +237,22 @@ export default function PassageView({
                 {passage.paragraphTitles[i]}
               </h2>
             )}
-            <p className="break-words">{renderParagraph(p, i)}</p>
+            <p className="break-words">
+              {sentenceGroups?.[i]
+                ? sentenceGroups[i].map((sentence) => (
+                    <span
+                      key={sentence.id}
+                      id={sentence.id}
+                      data-story-sentence
+                      data-sentence-index={sentence.index}
+                      data-sentence-text={sentence.text}
+                      className="scroll-mt-48 md:scroll-mt-36"
+                    >
+                      {renderParagraph(sentence.text, i * 1000 + sentence.index)}{' '}
+                    </span>
+                  ))
+                : renderParagraph(p, i)}
+            </p>
             {renderParagraphFooter && (
               <div className="mt-4">{renderParagraphFooter(i)}</div>
             )}
@@ -237,11 +262,18 @@ export default function PassageView({
 
       <WordPopup
         entry={selected}
+        matchedForm={selectedMatch}
         entries={lessonWords}
         passage={passage}
         mastery={selected ? masteryMap[wordKey(selected)] : undefined}
-        onEntryChange={setSelected}
-        onClose={() => setSelected(null)}
+        onEntryChange={(entry) => {
+          setSelected(entry)
+          setSelectedMatch(null)
+        }}
+        onClose={() => {
+          setSelected(null)
+          setSelectedMatch(null)
+        }}
       />
 
       <GlossaryPopup

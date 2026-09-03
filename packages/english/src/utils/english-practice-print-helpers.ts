@@ -65,7 +65,7 @@ export function serializePrintTypes(types: QuizType[]): string {
 
 export function isEligibleForTypeD(entry: WordEntry): boolean {
   const passage = findPassage(entry.stage, entry.unit, entry.lesson)
-  return passage !== undefined && findSentenceForWord(passage, entry.word) !== null
+  return passage !== undefined && findSentenceForWord(passage, entry) !== null
 }
 
 export function buildPracticePrintTitle(
@@ -162,13 +162,13 @@ export function buildPrintSections(
       }
 
       const passage = findPassage(word.stage, word.unit, word.lesson)!
-      const sentence = findSentenceForWord(passage, word.word)!.sentence
+      const sentence = findSentenceForWord(passage, word)!.sentence
       const options = buildQuizOptions(word, vocabPool, qSeed)
       return {
         num,
         type,
         word,
-        prompt: blankWordInSentence(sentence, word.word),
+        prompt: blankWordInSentence(sentence, word),
         options: options.map((o, idx) => ({
           label: ['A', 'B', 'C', 'D'][idx] ?? String(idx + 1),
           text: o.word,

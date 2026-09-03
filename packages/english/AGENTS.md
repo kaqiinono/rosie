@@ -26,6 +26,22 @@ audio, flipbook).
   to the canonical Cambridge unit through `grammarRefs`. Each grammar section also supplies a
   data-driven `summary` (cards, contrasts, decision guide, reminders); `ReadingGrammarSummary`
   must stay lesson-agnostic rather than hard-code one lesson's tense rules.
+  The final named stage `story` is a series shelf rather than a textbook lesson list. Story data
+  lives in `utils/story-data.ts` as series → volume → chapter; chapter pages match against the full
+  `word_entries` library, but each `PassageView` receives only words actually found in that chapter
+  so card navigation stays chapter-local. Word cards show both word-library and story-chapter source;
+  reviewed out-of-library aids remain chapter-local glossary entries.
+  Reading word matching is centralized in `utils/word-forms.ts`: safe regular forms are generated
+  at runtime, while `word_entries.word_forms` stores only explicit exceptions as categorized arrays
+  (`past`, `pastParticiple`, `plural`, `thirdPerson`, etc.). All highlighting, focus navigation,
+  sentence lookup and recall blanking must use the entry-aware matcher. New-word ingestion must
+  audit morphology and add `wordForms` only for rule-external forms or `disableGenerated` cases.
+  Story reading is continuous (no synthetic pagination). A learner explicitly bookmarks the first
+  and last visible complete sentences; `story_reading_progress` restores the first sentence below
+  the sticky header. Personal microphone recordings use private bucket `english-story-recordings`
+  plus `reading_recordings`: recording is chapter-scoped, each chapter may own multiple independent
+  clips, and there is no whole-volume recorder. Clips are compressed with `@rosie/player` and never
+  reuse public narration.
 - **Grammar (`grammar/`)** — 剑桥英语语法系列（essential/intermediate/advanced，按 book 维度分书；
   目前仅 essential 入库）：内容存 Supabase jsonb，渲染层是 type → 组件注册表（未知块型降级为
   unsupported）；讲解/练习/原文三 tab + mastery 进度。详见下方 Grammar 小节。
@@ -35,6 +51,8 @@ audio, flipbook).
   `getWeekStart` from `@rosie/core`), `english-data*`, `phonics`, `reading-data`
   (`readingPassages`/`buildWordMatchRegex`/`resolveMatchedWord`/`findPassage`/`parseFocusLessonKey`),
   `reading-audio-types`, weekly-plan payload/progress/report builders, `word-enrich`, `speak`.
+  New Story PDFs are normalized with `scripts/import-story-pdf.mjs`; always review the generated
+  text against rendered pages and populate only genuinely difficult unmatched glossary terms.
 - **Adaptive word plan (`utils/adaptivePlan*` + `components/words/AdaptivePlan*`)** — task-oriented
   Leitner 5-box plan (spec `docs/superpowers/specs/2026-07-09-adaptive-word-plan-design.md`, gitignored).
   Plan lifecycle statuses: `active` | `paused` | `completed` | `archived`. At most one `active` per

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import { buildQuizOptions, wordKey } from '../../utils/english-helpers'
-import { blankWordInSentence } from '../../utils/reading-data'
+import { blankWordInSentence, buildEntryRegex } from '../../utils/reading-data'
 import { getWordMasteryLevel } from '@rosie/core'
 import SpeakButton from '../words/SpeakButton'
 import { READING_RETRY_MESSAGE } from '@rosie/core'
@@ -22,8 +22,6 @@ interface ParagraphRecallQuizProps {
 }
 
 const SENTENCE_RE = /(?<=[.!?])\s+/
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
 function pickQuizTarget(
   paragraph: string,
   lessonWords: WordEntry[],
@@ -42,7 +40,7 @@ function pickQuizTarget(
     const m = masteryMap[wordKey(entry)]
     const level = getWordMasteryLevel(m?.correct ?? 0)
     const recalls = recallCounts?.[wordKey(entry)] ?? 0
-    const re = new RegExp(`\\b${escapeRe(entry.word)}s?\\b`, 'i')
+    const re = buildEntryRegex(entry)
     const hit = sentences.find((s) => re.test(s))
     if (hit) candidates.push({ entry, sentence: hit, level, correct: m?.correct ?? 0, recalls })
   }
@@ -57,7 +55,7 @@ function pickQuizTarget(
 }
 
 function highlightedSentence(sentence: string, word: string, tone: 'emerald' | 'rose'): ReactNode {
-  const re = new RegExp(`\\b${escapeRe(word)}s?\\b`, 'i')
+  const re = buildEntryRegex({ word, unit: '', lesson: '', explanation: '' })
   const m = sentence.match(re)
   if (!m || m.index === undefined) return sentence
   const cls =
@@ -259,7 +257,7 @@ export default function ParagraphRecallQuiz({
                   </div>
                 )}
                 <div className="mb-4 rounded-xl bg-amber-50/70 px-3 py-3 text-[15px] leading-relaxed text-gray-800 ring-1 ring-amber-200">
-                  &ldquo;{blankWordInSentence(target.sentence, target.entry.word)}&rdquo;
+                  &ldquo;{blankWordInSentence(target.sentence, target.entry)}&rdquo;
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {options.map((o) => {

@@ -54,7 +54,7 @@ export default function QuizQuestionBody({
   const retryHintMC = useMemo(() => pickMessage(RETRY_MC_MESSAGES), [questionKey])
 
   const passage = findPassage(question.word.stage, question.word.unit, question.word.lesson)
-  const passageSentence = passage ? findSentenceForWord(passage, question.word.word) : null
+  const passageSentence = passage ? findSentenceForWord(passage, question.word) : null
   const hasPassageContext = passage !== undefined && passageSentence !== null
   const dSentence = isD ? passageSentence : null
 
@@ -110,7 +110,7 @@ export default function QuizQuestionBody({
               📖 来自 {question.word.unit} · {question.word.lesson} 课文
             </div>
             <div className="text-[clamp(1.1rem,3.2cqi,1.7rem)] leading-relaxed font-bold text-amber-950">
-              “{blankWordInSentence(dSentence.sentence, question.word.word)}”
+              “{blankWordInSentence(dSentence.sentence, question.word)}”
             </div>
           </div>
         ) : (

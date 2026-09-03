@@ -9,11 +9,12 @@ import {
   archiveAdaptiveProgressForDeletedKeys,
   migrateAdaptiveProgressKey,
 } from './useAdaptiveWordPlan'
+import { normalizeWordForms } from '../utils/word-forms'
 
 const SELECT_COLS =
-  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
+  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
 
-const CACHE_VER = 'word_cache_v5'
+const CACHE_VER = 'word_cache_v6'
 /** v4 cached the entire word library locally; purge it on first use. */
 const LEGACY_CACHE_PREFIX = 'word_cache_v4_'
 const NULL_STAGE = '__null__'
@@ -304,6 +305,7 @@ function toRow(creator: string, w: WordEntry) {
     syllables: w.syllables ?? null,
     keywords: w.keywords ?? null,
     vocab_type: w.vocabType ?? null,
+    word_forms: w.wordForms ?? null,
     image_path: w.imagePath ?? null,
     image_match_score: w.imageMatchScore ?? null,
     image_match_query: w.imageMatchQuery ?? null,
@@ -329,6 +331,7 @@ function fromRow(row: Record<string, unknown>): WordEntry {
     keywords: (row.keywords as [string, string][]) ?? undefined,
     vocabType:
       vt === 'Target' || vt === 'Context' || vt === 'Extension' ? vt : undefined,
+    wordForms: normalizeWordForms(row.word_forms),
     imagePath: (row.image_path as string) ?? undefined,
     imageMatchScore: (row.image_match_score as number) ?? undefined,
     imageMatchQuery: (row.image_match_query as string) ?? undefined,

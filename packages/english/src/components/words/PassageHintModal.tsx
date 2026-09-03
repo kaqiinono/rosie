@@ -38,7 +38,7 @@ export default function PassageHintModal({ open, word, sentence, onClose }: Pass
             </span>
           </div>
           <div className="rounded-xl border border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 px-4 py-4 text-[1.1rem] leading-relaxed font-bold text-amber-950">
-            &ldquo;{blankWordInSentence(sentence, word.word)}&rdquo;
+            &ldquo;{blankWordInSentence(sentence, word)}&rdquo;
           </div>
           <div className="mt-3 text-center text-[11px] text-gray-500">
             根据课文情境，选出最合适的答案 ✨

@@ -82,12 +82,12 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
     const xlsx = await import('xlsx')
     const { utils, writeFile } = xlsx.default || xlsx
     const sample = [
-      ['4A', 'Unit 1', 'Lesson 1', 'apple', 'a round fruit', '苹果', '/ˈæpəl/', 'I eat an apple.', 'a-pp-le', 'ap, ple', 'round|red; fruit|gold'],
+      ['4A', 'Unit 1', 'Lesson 1', 'think', 'to use your mind', '思考', '/θɪŋk/', 'I thought about it.', 'th-i-nk', 'think', 'mind|blue', '{"past":["thought"],"pastParticiple":["thought"]}'],
     ]
     const ws = utils.aoa_to_sheet([WORD_TEMPLATE_HEADERS, ...sample])
     ws['!cols'] = [
       { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 18 }, { wch: 34 }, { wch: 14 },
-      { wch: 16 }, { wch: 40 }, { wch: 14 }, { wch: 18 }, { wch: 34 },
+      { wch: 16 }, { wch: 40 }, { wch: 14 }, { wch: 18 }, { wch: 34 }, { wch: 48 },
     ]
     const wb = utils.book_new()
     utils.book_append_sheet(wb, ws, '单词数据')
@@ -115,7 +115,7 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
           📥 导入单词表
         </div>
         <div className="mb-1 text-[.8rem] text-white/40">
-          列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节 / 关键词高亮
+          列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节 / 关键词高亮 / 特殊词形 JSON
         </div>
         <button
           onClick={downloadTemplate}

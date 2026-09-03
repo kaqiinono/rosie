@@ -1255,6 +1255,7 @@ CREATE TABLE public.word_entries (
     keywords jsonb,
     chinese_def text,
     vocab_type text,
+    word_forms jsonb,
     image_path text,
     image_match_score integer,
     image_match_query text,
@@ -1268,6 +1269,13 @@ CREATE TABLE public.word_entries (
 --
 
 COMMENT ON COLUMN public.word_entries.vocab_type IS 'Oxford flashcard band: Target | Context | Extension';
+
+
+--
+-- Name: COLUMN word_entries.word_forms; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.word_entries.word_forms IS 'Explicit irregular/special surface forms only. Keys are grammatical roles; values are text arrays.';
 
 
 --
@@ -1781,6 +1789,14 @@ ALTER TABLE ONLY public.weekly_plans
 
 ALTER TABLE ONLY public.weekly_plans
     ADD CONSTRAINT weekly_plans_user_id_week_start_key UNIQUE (user_id, week_start);
+
+
+--
+-- Name: word_entries word_entries_word_forms_is_object; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.word_entries
+    ADD CONSTRAINT word_entries_word_forms_is_object CHECK (((word_forms IS NULL) OR (jsonb_typeof(word_forms) = 'object'::text)));
 
 
 --
