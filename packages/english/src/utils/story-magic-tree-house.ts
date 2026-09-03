@@ -1,6 +1,7 @@
 // Generated from 01 Dinosaurs Before Dark - Mary Pope Osborne.pdf by scripts/import-story-pdf.mjs.
 // Review OCR cleanup and glossary entries before committing.
 import type { StorySeries } from './story-types'
+import { knightAtDawn } from './story-knight-at-dawn'
 
 export const magicTreeHouse: StorySeries = {
   slug: 'magic-tree-house',
@@ -577,5 +578,6 @@ export const magicTreeHouse: StorySeries = {
         },
       ],
     },
+    knightAtDawn,
   ],
 }

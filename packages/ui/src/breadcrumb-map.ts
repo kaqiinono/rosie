@@ -51,7 +51,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['english', 'words', 'reading'], label: '阅读' },
   { pattern: ['english', 'words', 'reading', 'story'], label: 'Story' },
   { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]'], label: '{seriesSlug}', labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House' } } },
-  { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]'], label: '{volumeSlug}', labelMap: { volumeSlug: { 'dinosaurs-before-dark': 'Dinosaurs Before Dark' } } },
+  { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]'], label: '{volumeSlug}', labelMap: { volumeSlug: { 'dinosaurs-before-dark': 'Dinosaurs Before Dark', 'the-knight-at-dawn': 'The Knight at Dawn' } } },
   { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]', 'full'], label: '整辑阅读' },
   { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]', '[chapterKey]'], label: '章节' },
   { pattern: ['english', 'grammar'], label: '语法' },

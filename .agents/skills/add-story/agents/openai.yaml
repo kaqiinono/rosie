@@ -1,0 +1,4 @@
+interface:
+  display_name: "添加英文 Story"
+  short_description: "Import English story books into Rosie reading"
+  default_prompt: "使用 $add-story 把这本英文故事书按 series、volume 和 chapters 添加到 Rosie。"
