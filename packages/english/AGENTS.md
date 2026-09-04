@@ -17,6 +17,15 @@ audio, flipbook).
   **their own audio** stored in `reading_passage_media` (hooks `useReadingPassageMedia` /
   `useReadingPassageAudio`). Reading playback was **decoupled from the audio module**: it builds its
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
+  The reading shelf groups textbook stages `4A` and `5A` under the top-level **厚海** collection;
+  learners choose the collection, then the volume, then a passage. 厚海 passage highlighting
+  matches vocabulary across all 厚海 volumes (currently 4A + 5A), while recall exercises remain
+  scoped to the passage's own lesson. Story highlighting continues to match the full word library.
+  When a passage contains matches from multiple word libraries, `PassageView` includes a source
+  legend and keeps the current lesson visually identifiable without underlining; `WordPopup` shows
+  the exact stage / unit / lesson source. The passage-level 专注 switch controls whether text
+  highlighting and word-card navigation use only the current lesson or all matched 厚海 words;
+  recall exercises always remain current-lesson-only.
   A passage may also carry optional `learningSections` for textbook comprehension, contextual
   grammar practice, vocabulary application, and guided writing. Exercise sections reuse the
   grammar `ExerciseView` engine (`fill_blank` / `multiple_choice` / `matching`) rather than

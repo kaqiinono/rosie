@@ -7,9 +7,11 @@ import { useWordsContext } from '@rosie/english'
 import { useAuth } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
 import { useReadingPassageAudio } from '@rosie/english'
+import { useWordData } from '@rosie/english'
 import { ReadingAudioButton } from '@rosie/english'
 import {
   findPassageByKey,
+  buildEntryRegex,
   parseFocusLessonKey,
   readingPassages,
 } from '@rosie/english'
@@ -32,10 +34,13 @@ const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 3, label: '已掌握', dot: 'bg-emerald-400' },
 ]
 
+const HOUHAI_STAGES = new Set(['4A', '5A'])
+
 export default function ReadingPassagePage({ params }: { params: Promise<{ key: string }> }) {
   const { key } = use(params)
-  const { vocab, masteryMap, recordRecallAttempt } = useWordsContext()
+  const { masteryMap, recordRecallAttempt } = useWordsContext()
   const { user } = useAuth()
+  const { vocab: fullVocab } = useWordData(user)
   const { weeklyPlan, updateDayProgress } = useWeeklyPlan(user)
   const audioUrl = useReadingPassageAudio(user, key)
   const searchParams = useSearchParams()
@@ -45,6 +50,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const [stripSelected, setStripSelected] = useState<WordEntry | null>(null)
   /** Two reading modes per design 2C. Defaults to 专注模式 (distraction-free reading). */
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
+  const [lessonFocus, setLessonFocus] = useState(false)
   const [preReadingOpen, setPreReadingOpen] = useState(false)
   const [glossaryOpen, setGlossaryOpen] = useState(false)
 
@@ -88,13 +94,35 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
 
   const lessonWords = useMemo(() => {
     if (!passage) return [] as WordEntry[]
-    return vocab.filter(
-      (w) =>
-        w.stage === passage.stage &&
-        w.unit === passage.unit &&
-        w.lesson === passage.lesson,
+    return fullVocab.filter(
+      (w) => w.stage === passage.stage && w.unit === passage.unit && w.lesson === passage.lesson,
     )
-  }, [vocab, passage])
+  }, [fullVocab, passage])
+
+  // 厚海阅读跨 4A/5A 两个分辑匹配；StoryReader 继续独立匹配全部词库。
+  // 回想练习仍只考当前课，避免跨分辑词意外进入本课测验。
+  const highlightedWords = useMemo(() => {
+    if (!passage) return [] as WordEntry[]
+    const passageText = passage.paragraphs.join('\n')
+    const houhaiVocab = fullVocab.filter((entry) => entry.stage && HOUHAI_STAGES.has(entry.stage))
+    const sourceVocab = houhaiVocab.length > 0 ? houhaiVocab : lessonWords
+    const ordered = [...sourceVocab].sort((a, b) => {
+      const aIsCurrent = a.stage === passage.stage ? 0 : 1
+      const bIsCurrent = b.stage === passage.stage ? 0 : 1
+      return aIsCurrent - bIsCurrent
+    })
+    const seen = new Set<string>()
+    return ordered.filter((entry) => {
+      const normalized = entry.word.trim().toLowerCase()
+      if (!normalized || seen.has(normalized) || !buildEntryRegex(entry).test(passageText)) {
+        return false
+      }
+      seen.add(normalized)
+      return true
+    })
+  }, [fullVocab, lessonWords, passage])
+
+  const visibleWords = lessonFocus ? lessonWords : highlightedWords
 
   // Recall outcomes drive the cute in-passage decorations (🌸 for correct,
   // 💩 for wrong). Distinct from masteryMap because we want a per-attempt visual
@@ -255,15 +283,37 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
         </div>
 
         <div className="flex items-start justify-between gap-3">
-          <h1 className="min-w-0 flex-1 font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h1 className="font-fredoka min-w-0 flex-1 text-2xl font-bold text-gray-900 sm:text-3xl">
             {passage.title}
           </h1>
-          <ReadingAudioButton
-            src={audioUrl}
-            mode="once"
-            size="md"
-            className="mt-0.5"
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setLessonFocus((current) => !current)}
+              aria-pressed={lessonFocus}
+              title={lessonFocus ? '关闭后显示厚海全部匹配词' : '开启后只显示本课词'}
+              className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-3 text-xs font-extrabold ring-1 transition ${
+                lessonFocus
+                  ? 'bg-orange-100 text-orange-800 ring-orange-300'
+                  : 'bg-white/80 text-gray-600 ring-gray-200 hover:bg-white'
+              }`}
+            >
+              <span
+                aria-hidden
+                className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full transition-colors ${
+                  lessonFocus ? 'bg-orange-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                    lessonFocus ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </span>
+              <span className="hidden whitespace-nowrap sm:inline">专注</span>
+            </button>
+            <ReadingAudioButton src={audioUrl} mode="once" size="md" className="mt-0.5" />
+          </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
           {LEGEND.map((l) => (
@@ -298,7 +348,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
       <div className="rounded-2xl bg-white p-5 ring-1 ring-gray-200 sm:p-7">
         <PassageView
           passage={passage}
-          lessonWords={lessonWords}
+          lessonWords={visibleWords}
           masteryMap={masteryMap}
           focusWord={focusWord}
           recallOutcomes={recallOutcomes}
@@ -322,7 +372,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
         <ReadingLearningSections
           key={readingMode}
           sections={passage.learningSections}
-          vocab={vocab}
+          vocab={fullVocab}
           defaultOpen={readingMode === 'learn'}
           onWordClick={setStripSelected}
         />

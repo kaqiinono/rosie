@@ -54,6 +54,21 @@ const LEVEL_CLASS_FOCUS: Record<MasteryLevel, string> = {
   3: 'font-extrabold text-emerald-700 hover:bg-emerald-50',
 }
 
+const SOURCE_STYLES = [
+  { dot: 'bg-rose-400' },
+  { dot: 'bg-sky-400' },
+  { dot: 'bg-violet-400' },
+  { dot: 'bg-orange-400' },
+  { dot: 'bg-teal-400' },
+] as const
+
+function sourceStyle(stage: string | undefined) {
+  const source = stage?.trim() || '未分级'
+  let hash = 0
+  for (const char of source) hash = (hash * 31 + char.charCodeAt(0)) >>> 0
+  return SOURCE_STYLES[hash % SOURCE_STYLES.length]
+}
+
 function slugForWord(word: string, paragraphIndex: number, occurrence: number): string {
   const slug = word.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   return `pw-${paragraphIndex}-${slug}-${occurrence}`
@@ -91,6 +106,10 @@ export default function PassageView({
 
   const glossary = passage.glossary ?? []
   const glossaryRegex = useMemo(() => buildGlossaryRegex(glossary), [glossary])
+  const sourceStages = useMemo(
+    () => [...new Set(lessonWords.map((word) => word.stage?.trim() || '未分级'))],
+    [lessonWords],
+  )
 
   // Handle ?focus=<word> scroll-to-paragraph + flash.
   // Uses DOM class manipulation rather than React state to avoid a cascading
@@ -195,6 +214,12 @@ export default function PassageView({
         const outcomeClass =
           outcome === 'correct' ? 'recall-mark-correct' : outcome === 'wrong' ? 'recall-mark-wrong' : ''
         const recalls = recallCounts?.[wordKey(entry)] ?? 0
+        const source = entry.stage?.trim() || '未分级'
+        const isCurrentLesson =
+          entry.stage === passage.stage &&
+          entry.unit === passage.unit &&
+          entry.lesson === passage.lesson
+        const lessonEmphasisClass = isCurrentLesson ? 'font-black' : 'opacity-80 hover:opacity-100'
         parts.push(
           <button
             key={`${id}-${m.index}`}
@@ -203,9 +228,16 @@ export default function PassageView({
               setSelected(entry)
               setSelectedMatch(wordFormMatch)
             }}
-            className={`relative inline cursor-pointer rounded-md px-1 py-0.5 font-bold transition-colors ${levelClass[level]} ${outcomeClass}`}
+            className={`relative inline cursor-pointer rounded-md px-1 py-0.5 font-bold transition-colors ${levelClass[level]} ${lessonEmphasisClass} ${outcomeClass}`}
+            title={`${isCurrentLesson ? '本课重点词' : `来自 ${source} 词库`} · 点击查看词卡`}
           >
             {matched}
+            {isCurrentLesson && mode === 'focus' && (
+              <span
+                aria-hidden
+                className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-orange-400/50"
+              />
+            )}
             {recalls > 0 && (
               <span
                 aria-hidden
@@ -229,6 +261,20 @@ export default function PassageView({
 
   return (
     <div ref={containerRef} className="font-nunito">
+      {sourceStages.length > 1 && (
+        <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">
+          <span className="font-bold text-slate-500">词库来源</span>
+          {sourceStages.map((stage) => (
+            <span key={stage} className="inline-flex items-center gap-1.5 font-bold">
+              <span
+                aria-hidden
+                className={`inline-block h-2 w-2 rounded-full ${sourceStyle(stage).dot}`}
+              />
+              {stage}
+            </span>
+          ))}
+        </div>
+      )}
       <article className="space-y-6 text-[17px] leading-[1.85] text-gray-800 sm:text-[18px] sm:leading-[2]">
         {passage.paragraphs.map((p, i) => (
           <div key={i}>

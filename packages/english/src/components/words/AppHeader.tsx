@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -17,10 +17,16 @@ const TABS = [
 export default function AppHeader() {
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const { availableStages, selStage, setSelStage, isVocabLoading } = useWordsContext()
   const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
+  const isReading = pathname.includes('/reading')
+  const readingCollection =
+    pathname.includes('/reading/story') || searchParams.get('collection') === 'story'
+      ? 'story'
+      : 'houhai'
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--wm-border)] bg-[var(--wm-bg)]/95 px-3 py-2.5 backdrop-blur-xl md:px-4">
@@ -31,7 +37,39 @@ export default function AppHeader() {
           </div>
         </Link>
 
-        {availableStages.length > 0 && (
+        {isReading && (
+          <div
+            className="flex items-center gap-1 justify-self-end rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1"
+            role="group"
+            aria-label="切换阅读分类"
+          >
+            <span className="hidden px-1.5 text-[.7rem] font-extrabold text-[var(--wm-text-dim)] sm:inline">
+              📚 分类
+            </span>
+            {([
+              { id: 'houhai', label: '厚海', href: `${BASE}/reading?collection=houhai` },
+              { id: 'story', label: 'Story', href: `${BASE}/reading?collection=story` },
+            ] as const).map((collection) => {
+              const active = collection.id === readingCollection
+              return (
+                <button
+                  key={collection.id}
+                  type="button"
+                  onClick={() => router.push(collection.href)}
+                  className={`font-nunito min-h-9 cursor-pointer rounded-[9px] px-3 text-[0.8rem] font-bold transition-all ${
+                    active
+                      ? 'bg-gradient-to-br from-[#0ea5e9] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(99,102,241,.35)]'
+                      : 'text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]'
+                  }`}
+                >
+                  {collection.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {!isReading && availableStages.length > 0 && (
           <>
             <label className="relative flex items-center justify-self-end md:hidden">
               <span className="sr-only">切换教材</span>

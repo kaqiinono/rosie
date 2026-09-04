@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { conceptKeyOf, presentationKeyOf, isSelfConcept } from '@rosie/calc'
+import { CalcQuestion } from '@rosie/core'
 
 describe('conceptKeyOf', () => {
   it('normalizes commutative add: smaller operand first', () => {
@@ -58,12 +59,12 @@ describe('isSelfConcept', () => {
 
 describe('presentationKeyOf', () => {
   it('detects vertical mode', () => {
-    expect(presentationKeyOf({ answerMode: 'vertical' } as any)).toBe('vertical')
+    expect(presentationKeyOf({ answerMode: 'vertical' } as CalcQuestion)).toBe('vertical')
   })
 
   it('detects inverse-blank from display', () => {
     expect(
-      presentationKeyOf({ display: '7+□=9', answer: { kind: 'int', value: 2 } } as any),
+      presentationKeyOf({ display: '7+□=9', answer: { kind: 'int', value: 2 } } as CalcQuestion),
     ).toBe('inverse-blank')
   })
 
@@ -72,7 +73,7 @@ describe('presentationKeyOf', () => {
       presentationKeyOf({
         display: '1/2+1/2',
         answer: { kind: 'fraction', num: 1, den: 2 },
-      } as any),
+      } as CalcQuestion),
     ).toBe('fraction-input')
   })
 
@@ -81,13 +82,13 @@ describe('presentationKeyOf', () => {
       presentationKeyOf({
         display: '7÷3',
         answer: { kind: 'remainder', quotient: 2, remainder: 1 },
-      } as any),
+      } as CalcQuestion),
     ).toBe('remainder-input')
   })
 
   it('defaults to standard', () => {
     expect(
-      presentationKeyOf({ display: '7+2', answer: { kind: 'int', value: 9 } } as any),
+      presentationKeyOf({ display: '7+2', answer: { kind: 'int', value: 9 } } as CalcQuestion),
     ).toBe('standard')
   })
 })

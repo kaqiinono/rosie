@@ -168,7 +168,10 @@ export default function WordPopup({
         <div className="space-y-3 px-5 pb-5">
           <div className="flex flex-wrap gap-2 text-[11px] font-bold">
             <span className="rounded-full bg-sky-50 px-2.5 py-1 text-sky-700 ring-1 ring-sky-200">
-              词库来源 · {entry.stage ?? '未分级'} · {entry.unit} · {entry.lesson}
+              所属词库 · {entry.stage ?? '未分级'}
+            </span>
+            <span className="rounded-full bg-slate-50 px-2.5 py-1 text-slate-600 ring-1 ring-slate-200">
+              {entry.unit} · {entry.lesson}
             </span>
             {passage.stage === 'story' && (
               <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 ring-1 ring-amber-200">
