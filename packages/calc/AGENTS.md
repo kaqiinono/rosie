@@ -110,9 +110,13 @@ bounded dedupe, and tags every question with a `selectionReason`; logs persist t
 reason, occurrence, and intentional-repeat flag. Child practice only surfaces friendly `新题` /
 `补练` badges; the growth report shows the detailed coverage and repeat audit.
 Session settlement atomically merges only touched finite indices. Reports combine compact history
-with newer hot states and can rebuild snapshots idempotently from existing problem states. When a
-compatible snapshot exists, finite-block selection excludes covered indices without loading a
-separate completion table; a newer hot state always wins for regressible fluent/mastered status.
+with same-row, versioned report facets on `calc_problem_state`. Revision-matched report RPCs return
+bounded formula bitmaps plus concept/rule/structure/progression aggregates; the coverage page never
+loads the full problem-state, session-detail, or remediation tables. Formula timelines use cursor-paginated
+`get_calc_formula_details`. Existing rows are backfilled idempotently with
+`pnpm calc:progress -- rebuild-report --all` (resumable via `--after <uuid>`). When a compatible
+bitmap exists, finite-block selection excludes covered indices without loading a separate
+completion table; regressible fluent/mastered bits are updated by the same settlement transaction.
 
 Large or effectively unbounded blocks use a separate, versioned **ability-structure coverage**
 denominator in `calc-structure-coverage.ts`; it never pretends to enumerate every formula.
@@ -190,6 +194,7 @@ pnpm --filter @rosie/calc lint
 pnpm --filter @rosie/calc test        # package + apps/web/tests/calc-* regression suite
 pnpm calc:progress -- registry-manifest # deterministic registry rows + SHA-256 hashes
 pnpm calc:progress -- registry-sql      # draft-only idempotent seed SQL (stdout)
+pnpm calc:progress -- rebuild-report --all # idempotent report-facet backfill
 ```
 
 ## Parent-facing FAQ

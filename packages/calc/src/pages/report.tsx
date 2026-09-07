@@ -24,10 +24,7 @@ import { CalcCoverageMap } from '../components/CalcCoverageMap'
 import { CALC_FEATURES } from '../utils/calc-features'
 import { getCalcReportSummary } from '../utils/calc-server-api'
 import type { CalcReportSummaryResponse } from '../utils/calc-server-read-contract'
-import {
-  calcCurriculumSnapshotStore,
-  rebuildCurriculumSnapshots,
-} from '../utils/calc-curriculum-snapshot'
+import { reportReadScope } from '../utils/calc-report-summary'
 import type { CalcProblemState, CalcSession, ErrorTag } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 
@@ -1636,39 +1633,36 @@ export default function CalcReportPage() {
     [router, searchParams],
   )
   const { user } = useAuth()
-  const wallet = useCalcWallet(user, { loadSessions: true })
+  const readScope = reportReadScope(reportTab)
+  const wallet = useCalcWallet(user, { loadSessions: readScope.loadSessionDetails })
   const { settings } = useCalcSettings(user)
   const { states: problemStates } = useCalcProblemState(user, {
-    // The coverage map still derives concept, rule, structure, and progression
-    // metrics from per-signature state. The bounded server summary currently
-    // supplies only block-level totals, so it cannot replace this data yet.
-    autoLoad: !CALC_FEATURES.serverReport || reportTab !== 'overview',
+    autoLoad: readScope.loadProblemStates,
   })
   const [serverSummary, setServerSummary] = useState<CalcReportSummaryResponse | null>(null)
+  const [serverSummaryError, setServerSummaryError] = useState<string | null>(null)
   useEffect(() => {
-    if (!user || !CALC_FEATURES.serverReport) return
+    if (!user) return
     let cancelled = false
     void getCalcReportSummary()
       .then((summary) => {
         if (!cancelled) setServerSummary(summary)
       })
       .catch((error: unknown) => {
-        console.warn('[calc report] server summary unavailable; using compatibility view', error)
+        console.warn('[calc report] server summary unavailable', error)
+        if (!cancelled) {
+          setServerSummaryError(error instanceof Error ? error.message : '服务端报告暂时不可用')
+        }
       })
     return () => {
       cancelled = true
     }
   }, [user])
-  const { data: curriculumSnapshots } = calcCurriculumSnapshotStore.useSessionData(user)
-  const snapshotBootstrapRef = useRef<string | null>(null)
-  useEffect(() => {
-    if (!user || problemStates.size === 0 || curriculumSnapshots.size > 0) return
-    if (snapshotBootstrapRef.current === user.id) return
-    snapshotBootstrapRef.current = user.id
-    void rebuildCurriculumSnapshots(user.id, problemStates.values())
-  }, [curriculumSnapshots.size, problemStates, user])
   // Same session stores — no bare supabase select; skip duplicate problem-state load
-  const { mistakes } = useCalcMistakes(user, { loadProblemState: false })
+  const { mistakes } = useCalcMistakes(user, {
+    loadProblemState: false,
+    autoLoad: readScope.loadMistakes,
+  })
 
   const mixedLabels = useMemo(() => {
     const m = new Map<string, string>()
@@ -1836,7 +1830,23 @@ export default function CalcReportPage() {
         </nav>
         {reportTab === 'coverage' && CALC_FEATURES.coverageReport && (
           <div style={ani(0.02)}>
-            {serverSummary && (
+            {!serverSummary && !serverSummaryError && (
+              <div style={{ ...baseCard, color: C.textDim, fontSize: 13 }}>加载覆盖报告…</div>
+            )}
+            {serverSummaryError && (
+              <div style={{ ...baseCard, color: C.red, fontSize: 13 }}>
+                覆盖报告加载失败：{serverSummaryError}
+              </div>
+            )}
+            {serverSummary && !serverSummary.projection.complete && (
+              <div style={{ ...baseCard, color: C.yellow, fontSize: 13 }}>
+                报告投影尚未完成重建（{serverSummary.projection.projectedStateCount}/
+                {serverSummary.projection.stateCount} 条算式，
+                {serverSummary.projection.projectedBlockCount}/
+                {serverSummary.projection.expectedBlockCount} 个课程题型），暂不展示可能失真的数据。
+              </div>
+            )}
+            {serverSummary?.projection.complete && (
               <div
                 style={{
                   ...baseCard,
@@ -1849,14 +1859,14 @@ export default function CalcReportPage() {
                 {serverSummary.revision}
               </div>
             )}
-            <CalcCoverageMap
-              states={problemStates}
-              sessions={wallet.sessions}
-              mixedOps={settings.mixedOps}
-              selectedBlockIds={settings.selectedBlocks.map((block) => block.id)}
-              adaptiveExpansionEnabled={settings.adaptiveExpansionEnabled}
-              curriculumSnapshots={curriculumSnapshots}
-            />
+            {serverSummary?.projection.complete && (
+              <CalcCoverageMap
+                summary={serverSummary}
+                mixedOps={settings.mixedOps}
+                selectedBlockIds={settings.selectedBlocks.map((block) => block.id)}
+                adaptiveExpansionEnabled={settings.adaptiveExpansionEnabled}
+              />
+            )}
           </div>
         )}
         {reportTab === 'overview' && (

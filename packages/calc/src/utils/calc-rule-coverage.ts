@@ -12,7 +12,7 @@ export interface RuleCoverage {
   signatures: string[]
 }
 
-const RULES = [
+export const CALC_RULE_DEFINITIONS = [
   { key: 'add-zero', label: '加0不变', target: 3 },
   { key: 'sub-zero', label: '减0不变', target: 3 },
   { key: 'self-sub', label: '相同数相减为0', target: 3 },
@@ -43,9 +43,10 @@ export function classifyRuleSignature(signature: string): string | null {
 }
 
 export function calculateRuleCoverage(states: Map<string, CalcProblemState>): RuleCoverage[] {
-  return RULES.map((rule) => {
+  return CALC_RULE_DEFINITIONS.map((rule) => {
     const matching = [...states.values()].filter(
-      (state) => hasIndependentAttempt(state) && classifyRuleSignature(state.signature) === rule.key,
+      (state) =>
+        hasIndependentAttempt(state) && classifyRuleSignature(state.signature) === rule.key,
     )
     return {
       ...rule,

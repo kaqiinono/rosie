@@ -26,7 +26,7 @@
     "story:import": "node scripts/import-story-pdf.mjs",
     "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs",
     "calc:audit": "node --import jiti/register scripts/calc-audit.ts",
-    "calc:progress": "node --import jiti/register scripts/calc-progress-maintenance.ts"
+    "calc:progress": "node --env-file-if-exists=apps/web/.env.local --import jiti/register scripts/calc-progress-maintenance.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

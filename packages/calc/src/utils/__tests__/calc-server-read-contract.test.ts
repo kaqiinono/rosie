@@ -5,6 +5,7 @@ import {
   validateDetailsRequest,
   validatePreparedResponse,
   validatePrepareRequest,
+  validateReportSummary,
 } from '../calc-server-read-contract'
 
 describe('bounded calc server read contracts', () => {
@@ -55,5 +56,30 @@ describe('bounded calc server read contracts', () => {
         limit: CALC_DETAILS_MAX_PAGE_SIZE + 1,
       }),
     ).toThrow('invalid calc detail page size')
+  })
+
+  it('rejects incomplete or unbounded report projections', () => {
+    expect(() =>
+      validateReportSummary({
+        revision: 1,
+        projection: {
+          version: 1,
+          stateCount: 0,
+          projectedStateCount: 0,
+          expectedBlockCount: 16,
+          projectedBlockCount: 16,
+          complete: true,
+        },
+        blocks: [],
+        concepts: [],
+        structures: [],
+        rules: [],
+        repeatAudit: { questions: 0, repeats: 0, intentional: 0, accidental: 0, consecutive: 0 },
+        detailSources: [],
+      }),
+    ).not.toThrow()
+    expect(() => validateReportSummary({ revision: 1 } as never)).toThrow(
+      'unsupported calc report projection',
+    )
   })
 })

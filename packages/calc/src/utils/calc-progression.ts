@@ -72,6 +72,20 @@ export interface BlockProgression {
   reasons: string[]
 }
 
+export function statePerformanceTier(
+  blockId: string,
+  state: CalcProblemState,
+): ReturnType<typeof tierOf> | null {
+  const independentAttempts = state.recentResults.filter(isIndependentEvidence).slice(-5)
+  const correct = independentAttempts.filter((attempt) => attempt.correct)
+  if (correct.length === 0) return null
+  const times = correct
+    .map((attempt) => attempt.timeMs / presentationCoefficientFor(blockId, attempt.presentationKey))
+    .sort((a, b) => a - b)
+  const medianSec = times[Math.floor(times.length / 2)] / 1000
+  return tierOf(medianSec, correct.length / independentAttempts.length, suggestedTiers(blockId))
+}
+
 function ratio(value: number, total: number): number {
   return total > 0 ? value / total : 0
 }
@@ -83,9 +97,9 @@ export function evaluateBlockProgression(
   const finite = coverageUniverse(blockId)
   const structure = structureCoverageModels().find((model) => model.id === blockId)
   const matching = finite
-    ? Array.from({ length: finite.size }, (_, index) => states.get(finite.signatureAt(index))).filter(
-        (state): state is CalcProblemState => state !== undefined,
-      )
+    ? Array.from({ length: finite.size }, (_, index) =>
+        states.get(finite.signatureAt(index)),
+      ).filter((state): state is CalcProblemState => state !== undefined)
     : [...states.values()].filter((state) => state.blockId === blockId)
   const coverage = finite
     ? calculateBlockCoverage(finite, states)
@@ -112,30 +126,17 @@ export function evaluateBlockProgression(
       (attempt) => attempt.sessionNo === undefined || recentSessionNos.includes(attempt.sessionNo),
     )
   // 独立首答：排除补练与间隔复习（旧数据无 evidenceKind 标记时仍计入）
-  const independent = recent.filter(
-    isIndependentEvidence,
-  )
+  const independent = recent.filter(isIndependentEvidence)
   const recentAccuracy = ratio(
     independent.filter((attempt) => attempt.correct).length,
     independent.length,
   )
   const accuracyCorrect = independent.filter((attempt) => attempt.correct).length
-  const target = suggestedTiers(blockId)
   let stable = 0
   let fluent = 0
   for (const state of matching) {
-    const independentAttempts = state.recentResults.filter(isIndependentEvidence).slice(-5)
-    const correct = independentAttempts.filter((attempt) => attempt.correct)
-    if (correct.length === 0) continue
-    const times = correct
-      .map(
-        (attempt) =>
-          attempt.timeMs / presentationCoefficientFor(blockId, attempt.presentationKey),
-      )
-      .sort((a, b) => a - b)
-    const medianSec = times[Math.floor(times.length / 2)] / 1000
-    const accuracy = ratio(correct.length, independentAttempts.length)
-    const tier = tierOf(medianSec, accuracy, target)
+    const tier = statePerformanceTier(blockId, state)
+    if (!tier) continue
     if (tier === 'stable' || tier === 'fluent' || tier === 'auto') stable++
     if (tier === 'fluent' || tier === 'auto') fluent++
   }
@@ -187,10 +188,7 @@ export function evaluateBlockProgression(
  * 正常场 = 该场次中此题型首答正确率 ≥ 0.7；回补场 = 正确率 < 0.7。
  * 返回 null 表示历史里没有回补事件（无需冷却）。
  */
-export function recoverySessionCount(
-  blockId: string,
-  sessions: CalcSession[],
-): number | null {
+export function recoverySessionCount(blockId: string, sessions: CalcSession[]): number | null {
   const key = `block:${blockId}`
   const ordered = [...sessions]
     .filter((s) => Array.isArray(s.questionLog) && s.questionLog.some((e) => e.key === key))
@@ -235,6 +233,19 @@ export function suggestedSuccessors(
       ([blockId, dependencies]) =>
         !selected.has(blockId) &&
         dependencies.every((id) => selected.has(id) && evaluateBlockProgression(id, states).ready),
+    )
+    .map(([blockId]) => blockId)
+}
+
+export function suggestedSuccessorsFromReady(
+  selected: Set<string>,
+  readyBlockIds: Set<string>,
+): string[] {
+  return Object.entries(BLOCK_DEPENDENCIES)
+    .filter(
+      ([blockId, dependencies]) =>
+        !selected.has(blockId) &&
+        dependencies.every((id) => selected.has(id) && readyBlockIds.has(id)),
     )
     .map(([blockId]) => blockId)
 }
@@ -284,11 +295,7 @@ export function allocateMixingCounts(
         nextExploration: 0,
         weakReinforcement: ratios.weakReinforcement,
       }
-  const keys = [
-    'currentMaintenance',
-    'nextExploration',
-    'weakReinforcement',
-  ] as const
+  const keys = ['currentMaintenance', 'nextExploration', 'weakReinforcement'] as const
   const ideals = keys.map((key) => safeCount * effective[key])
   const values = ideals.map(Math.floor)
   let remaining = safeCount - values.reduce((sum, value) => sum + value, 0)

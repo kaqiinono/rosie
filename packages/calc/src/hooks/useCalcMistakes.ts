@@ -5,10 +5,7 @@ import type { User } from '@supabase/supabase-js'
 import type { CalcLevel, CalcMistake, CalcQuestion, ErrorTag } from '@rosie/core'
 import { calcMistakesStore } from '../utils/calc-mistakes-store'
 import { calcProblemStateStore } from '../utils/calc-problem-state-store'
-import {
-  applyMasterySideEffects,
-  unresolvedMistakes,
-} from '../utils/calc-mastery-sync'
+import { applyMasterySideEffects, unresolvedMistakes } from '../utils/calc-mastery-sync'
 
 export { calcMistakesStore }
 
@@ -19,17 +16,15 @@ export type UseCalcMistakesOptions = {
    * Default true — session / mistakes pages need reconcile.
    */
   loadProblemState?: boolean
+  autoLoad?: boolean
 }
 
-export function useCalcMistakes(
-  user: User | null,
-  options: UseCalcMistakesOptions = {},
-) {
+export function useCalcMistakes(user: User | null, options: UseCalcMistakesOptions = {}) {
   const loadProblemState = options.loadProblemState !== false
-  const { data: mistakes, isLoading } = calcMistakesStore.useSessionData(user)
-  const { data: stateRecord } = calcProblemStateStore.useSessionData(
-    loadProblemState ? user : null,
+  const { data: mistakes, isLoading } = calcMistakesStore.useSessionData(
+    options.autoLoad === false ? null : user,
   )
+  const { data: stateRecord } = calcProblemStateStore.useSessionData(loadProblemState ? user : null)
 
   const states = useMemo(() => new Map(Object.entries(stateRecord)), [stateRecord])
 
@@ -40,12 +35,7 @@ export function useCalcMistakes(
   }, [user])
 
   const addMistake = useCallback(
-    async (
-      q: CalcQuestion,
-      sessionNo: number,
-      userAnswer?: string,
-      errorTag?: ErrorTag | null,
-    ) => {
+    async (q: CalcQuestion, sessionNo: number, userAnswer?: string, errorTag?: ErrorTag | null) => {
       if (!user) return
       await applyMasterySideEffects(user.id, {
         kind: 'mistake_added',
@@ -79,10 +69,7 @@ export function useCalcMistakes(
     [mistakes, states],
   )
 
-  const unresolved = useMemo(
-    () => unresolvedMistakes(mistakes, states),
-    [mistakes, states],
-  )
+  const unresolved = useMemo(() => unresolvedMistakes(mistakes, states), [mistakes, states])
 
   return {
     mistakes,

@@ -2,10 +2,11 @@ import { createUserSessionStore, supabase } from '@rosie/core'
 import type { CalcLevel, CalcProblemState, CalcProblemStatus, QuestionAttempt } from '@rosie/core'
 import { defaultProblemState } from './calc-apply-attempt'
 import { MASTERY_STREAK_K } from './calc-effective-limit'
+import { reportFieldsOf } from './calc-report-facets'
 
 export type ProblemStateRecord = Record<string, CalcProblemState>
 
-interface ProblemStateRow {
+export interface ProblemStateRow {
   signature: string
   level: number
   proficiency: number
@@ -101,6 +102,7 @@ export function problemStateToRow(s: CalcProblemState, userId: string) {
     last_answer_json: s.lastAnswerJson ?? null,
     remediation_correct_count: s.remediationCorrectCount ?? 0,
     applied_revision: s.appliedRevision ?? 0,
+    ...reportFieldsOf(s),
   }
 }
 

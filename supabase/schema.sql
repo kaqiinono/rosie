@@ -500,6 +500,18 @@ CREATE TABLE public.calc_problem_state (
     mixed_op_id text,
     consecutive_correct integer DEFAULT 0 NOT NULL,
     last_within_limit boolean,
+    report_facets_version integer,
+    report_concept_key text,
+    report_structure_facets jsonb DEFAULT '[]'::jsonb NOT NULL,
+    report_rule_key text,
+    report_covered boolean DEFAULT false NOT NULL,
+    report_within_target boolean DEFAULT false NOT NULL,
+    report_fluent boolean DEFAULT false NOT NULL,
+    report_mastered boolean DEFAULT false NOT NULL,
+    report_review_due boolean DEFAULT false NOT NULL,
+    report_stable boolean DEFAULT false NOT NULL,
+    CONSTRAINT calc_problem_state_report_facets_version_check CHECK (((report_facets_version IS NULL) OR ((report_facets_version >= 1) AND (report_facets_version <= 1000)))),
+    CONSTRAINT calc_problem_state_report_structure_facets_array CHECK ((jsonb_typeof(report_structure_facets) = 'array'::text)),
     CONSTRAINT calc_problem_state_proficiency_check CHECK (((proficiency >= 0) AND (proficiency <= 5))),
     CONSTRAINT calc_problem_state_status_check CHECK ((status = ANY (ARRAY['active'::text, 'review'::text, 'mastered'::text, 'forced'::text])))
 );
@@ -4197,6 +4209,13 @@ ALTER TABLE public.calc_block_progress ENABLE ROW LEVEL SECURITY;
 CREATE POLICY calc_block_progress_select_own ON public.calc_block_progress
   FOR SELECT TO authenticated USING ((SELECT auth.uid()) = user_id);
 GRANT SELECT ON public.calc_block_progress TO authenticated;
+
+CREATE INDEX calc_problem_state_user_report_concept_idx
+  ON public.calc_problem_state (user_id, block_id, report_concept_key)
+  WHERE report_concept_key IS NOT NULL;
+CREATE INDEX calc_problem_state_user_report_rule_idx
+  ON public.calc_problem_state (user_id, report_rule_key)
+  WHERE report_rule_key IS NOT NULL;
 
 --
 -- PostgreSQL database dump complete

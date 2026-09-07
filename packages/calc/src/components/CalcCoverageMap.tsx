@@ -1,30 +1,27 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import type { CalcProblemState, CalcSession, MixedOp } from '@rosie/core'
+import type { CalcProblemState, MixedOp } from '@rosie/core'
 import { signatureToDisplay } from '../utils/calc-ast'
-import {
-  calculateAllCoverage,
-  calculateConceptCoverage,
-  finiteCoverageUniverses,
-  type BlockCoverage,
-  type ConceptCoverage,
-} from '../utils/calc-coverage'
-import {
-  calculateAllStructureCoverage,
-  type StructureCoverage,
-} from '../utils/calc-structure-coverage'
-import { calculateRuleCoverage } from '../utils/calc-rule-coverage'
+import { type BlockCoverage, type ConceptCoverage } from '../utils/calc-coverage'
+import { type StructureCoverage } from '../utils/calc-structure-coverage'
 import { CALC_FEATURES } from '../utils/calc-features'
-import type { CurriculumSnapshotMap } from '../utils/calc-curriculum-snapshot'
 import {
-  evaluateBlockProgression,
-  suggestedSuccessors,
   blockTierFromProgression,
+  suggestedSuccessorsFromReady,
   type BlockTier,
 } from '../utils/calc-progression'
 import { blockById } from '../utils/calc-blocks'
+import { getCalcFormulaDetails } from '../utils/calc-server-api'
+import type { CalcReportSummaryResponse } from '../utils/calc-server-read-contract'
+import {
+  reportBlockCoverage,
+  reportBlockProgression,
+  reportConceptCoverage,
+  reportRuleCoverage,
+  reportStructureCoverage,
+} from '../utils/calc-report-summary'
 
 const GROUP_LABEL: Record<BlockCoverage['group'], string> = {
   add: '加法',
@@ -371,54 +368,54 @@ function StructureCard({ coverage }: { coverage: StructureCoverage }) {
 }
 
 export function CalcCoverageMap({
-  states,
-  sessions,
+  summary,
   mixedOps,
   selectedBlockIds,
   adaptiveExpansionEnabled,
-  curriculumSnapshots,
 }: {
-  states: Map<string, CalcProblemState>
-  sessions: CalcSession[]
+  summary: CalcReportSummaryResponse
   mixedOps: MixedOp[]
   selectedBlockIds: string[]
   adaptiveExpansionEnabled: boolean
-  curriculumSnapshots?: CurriculumSnapshotMap
 }) {
-  const coverage = useMemo(
-    () => calculateAllCoverage(states, curriculumSnapshots),
-    [states, curriculumSnapshots],
-  )
+  const coverage = useMemo(() => reportBlockCoverage(summary), [summary])
   const [statusFilter, setStatusFilter] = useState<'all' | 'missing' | 'review' | 'mastered'>('all')
   const [progressionOpen, setProgressionOpen] = useState(true)
   const coverageMapRef = useRef<HTMLElement>(null)
   const [selectedSignature, setSelectedSignature] = useState('')
+  const [timelineSourceKey, setTimelineSourceKey] = useState('')
+  const [formulaDetails, setFormulaDetails] = useState<CalcProblemState[]>([])
+  const [detailsCursor, setDetailsCursor] = useState<string | null>(null)
+  const [detailsLoading, setDetailsLoading] = useState(false)
+  const [detailsError, setDetailsError] = useState<string | null>(null)
   const structureCoverage = useMemo(
-    () => calculateAllStructureCoverage(states, mixedOps),
-    [states, mixedOps],
+    () => reportStructureCoverage(summary, mixedOps),
+    [summary, mixedOps],
   )
-  const ruleCoverage = useMemo(() => calculateRuleCoverage(states), [states])
-  const conceptByBlock = useMemo(() => {
-    const map = new Map<string, ConceptCoverage>()
-    if (!CALC_FEATURES.conceptCoverage) return map
-    for (const universe of finiteCoverageUniverses()) {
-      map.set(universe.blockId, calculateConceptCoverage(universe, states))
-    }
-    return map
-  }, [states])
+  const ruleCoverage = useMemo(() => reportRuleCoverage(summary), [summary])
+  const conceptByBlock = useMemo(
+    () => (CALC_FEATURES.conceptCoverage ? reportConceptCoverage(summary) : new Map()),
+    [summary],
+  )
   const progression = useMemo(
     () =>
       CALC_FEATURES.adaptiveProgression
-        ? selectedBlockIds.map((blockId) => evaluateBlockProgression(blockId, states))
+        ? selectedBlockIds.flatMap((blockId) => {
+            const block = summary.blocks.find((item) => item.blockId === blockId)
+            return block ? [reportBlockProgression(block)] : []
+          })
         : [],
-    [selectedBlockIds, states],
+    [selectedBlockIds, summary.blocks],
   )
   const successors = useMemo(
     () =>
       CALC_FEATURES.adaptiveProgression
-        ? suggestedSuccessors(new Set(selectedBlockIds), states)
+        ? suggestedSuccessorsFromReady(
+            new Set(selectedBlockIds),
+            new Set(summary.blocks.filter((block) => block.ready).map((block) => block.blockId)),
+          )
         : [],
-    [selectedBlockIds, states],
+    [selectedBlockIds, summary.blocks],
   )
   const groups = useMemo(() => {
     const map = new Map<BlockCoverage['group'], BlockCoverage[]>()
@@ -450,39 +447,49 @@ export function CalcCoverageMap({
     }
     return next
   }, [groups, statusFilter])
-  const selectedState = selectedSignature ? states.get(selectedSignature) : undefined
-  const formulaOptions = useMemo(
-    () =>
-      [...states.values()]
-        .filter((state) => state.appearanceCount > 0)
-        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-        .slice(0, 300),
-    [states],
-  )
-  const repeatAudit = useMemo(() => {
-    let questions = 0
-    let repeats = 0
-    let intentional = 0
-    let accidental = 0
-    let consecutive = 0
-    for (const session of sessions.slice(0, 30)) {
-      const seen = new Set<string>()
-      let previous: string | null = null
-      for (const entry of session.questionLog ?? []) {
-        if (!entry.signature) continue
-        questions++
-        if (seen.has(entry.signature)) {
-          repeats++
-          if (entry.intentionalRepeat) intentional++
-          else accidental++
+  const selectedState = selectedSignature
+    ? formulaDetails.find((state) => state.signature === selectedSignature)
+    : undefined
+  const formulaOptions = formulaDetails
+  const repeatAudit = summary.repeatAudit
+
+  const loadFormulaDetails = useCallback(
+    async (sourceKey: string, cursor?: string) => {
+      const separator = sourceKey.indexOf(':')
+      const sourceKind = sourceKey.slice(0, separator)
+      const sourceId = sourceKey.slice(separator + 1)
+      if ((sourceKind !== 'block' && sourceKind !== 'mixed') || !sourceId) return
+      setDetailsLoading(true)
+      setDetailsError(null)
+      try {
+        const response = await getCalcFormulaDetails({
+          blockId: sourceId,
+          sourceKind,
+          status: 'learning',
+          cursor,
+          limit: 100,
+        })
+        if (response.revision !== summary.revision) {
+          throw new Error('报告版本已更新，请刷新页面后重试')
         }
-        if (previous === entry.signature) consecutive++
-        seen.add(entry.signature)
-        previous = entry.signature
+        const states = response.items.flatMap((item) => (item.state ? [item.state] : []))
+        setFormulaDetails((current) => (cursor ? [...current, ...states] : states))
+        setDetailsCursor(response.nextCursor)
+      } catch (error: unknown) {
+        setDetailsError(error instanceof Error ? error.message : '算式明细加载失败')
+      } finally {
+        setDetailsLoading(false)
       }
-    }
-    return { questions, repeats, intentional, accidental, consecutive }
-  }, [sessions])
+    },
+    [summary.revision],
+  )
+
+  useEffect(() => {
+    setSelectedSignature('')
+    setFormulaDetails([])
+    setDetailsCursor(null)
+    if (timelineSourceKey) void loadFormulaDetails(timelineSourceKey)
+  }, [loadFormulaDetails, timelineSourceKey])
 
   return (
     <section
@@ -495,9 +502,9 @@ export function CalcCoverageMap({
           <p className="mt-1 text-xs leading-5 text-slate-400">
             从运算大类下钻到算式家族和具体未练习算式。有限题库使用版本化精确分母，规则题不计入核心分母。
           </p>
-          {curriculumSnapshots && curriculumSnapshots.size > 0 && (
+          {summary.blocks.length > 0 && (
             <p className="mt-1 text-[11px] text-emerald-300/70">
-              已启用 {curriculumSnapshots.size} 个紧凑课程快照；当前热状态会覆盖较旧快照。
+              已启用 {summary.blocks.length} 个服务端课程投影 · revision {summary.revision}
             </p>
           )}
         </div>
@@ -775,20 +782,49 @@ export function CalcCoverageMap({
         <div className="border-t border-white/10 pt-5">
           <h3 className="text-base font-extrabold text-slate-100">具体算式时间线</h3>
           <p className="mt-1 text-xs text-slate-400">
-            选择最近练过的算式，查看跨场、跨天掌握证据。
+            先选择题型，再按页加载算式，查看跨场、跨天掌握证据。
           </p>
+          <select
+            value={timelineSourceKey}
+            onChange={(event) => setTimelineSourceKey(event.target.value)}
+            className="mt-3 w-full rounded-xl border border-white/10 bg-[#17172c] px-3 py-2 text-sm text-slate-200"
+          >
+            <option value="">请选择题型</option>
+            {summary.detailSources.map((source) => (
+              <option key={`${source.kind}:${source.id}`} value={`${source.kind}:${source.id}`}>
+                {source.kind === 'block'
+                  ? (blockById(source.id)?.label ?? source.id)
+                  : (mixedOps.find((op) => op.id === source.id)?.label ?? source.id)}{' '}
+                ({source.formulaCount})
+              </option>
+            ))}
+          </select>
           <select
             value={selectedSignature}
             onChange={(event) => setSelectedSignature(event.target.value)}
+            disabled={!timelineSourceKey || detailsLoading}
             className="mt-3 w-full rounded-xl border border-white/10 bg-[#17172c] px-3 py-2 text-sm text-slate-200"
           >
-            <option value="">请选择算式</option>
+            <option value="">
+              {detailsLoading ? '加载中…' : timelineSourceKey ? '请选择算式' : '请先选择题型'}
+            </option>
             {formulaOptions.map((state) => (
               <option key={state.signature} value={state.signature}>
                 {signatureToDisplay(state.signature)}
               </option>
             ))}
           </select>
+          {detailsCursor && (
+            <button
+              type="button"
+              disabled={detailsLoading}
+              onClick={() => void loadFormulaDetails(timelineSourceKey, detailsCursor)}
+              className="mt-2 rounded-lg bg-white/5 px-3 py-1.5 text-xs text-cyan-200 disabled:opacity-50"
+            >
+              {detailsLoading ? '加载中…' : '加载更多算式'}
+            </button>
+          )}
+          {detailsError && <div className="mt-2 text-xs text-rose-300">{detailsError}</div>}
           {selectedState && (
             <div className="mt-3 rounded-xl bg-white/[0.035] p-3">
               <div className="text-sm font-bold text-slate-100">
