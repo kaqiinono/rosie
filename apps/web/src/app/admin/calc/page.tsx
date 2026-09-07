@@ -1,1 +1,5 @@
-export { default } from '@rosie/calc/pages/settings'
+import { redirect } from 'next/navigation'
+
+export default function LegacyCalcSettingsPage() {
+  redirect('/setting/calc')
+}

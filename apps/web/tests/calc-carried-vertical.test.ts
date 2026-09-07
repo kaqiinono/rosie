@@ -23,6 +23,23 @@ function baseSettings(over: Partial<CalcSettings> = {}): CalcSettings {
 }
 
 describe('buildSession carried 竖式 restore', () => {
+  it('uses a one-session count override without changing configured source proportions', () => {
+    const settings = baseSettings({
+      selectedBlocks: [
+        { id: 'add:10', count: 10, seconds: 0 },
+        { id: 'sub:10', count: 30, seconds: 0 },
+      ],
+      lastCount: 40,
+    })
+
+    const session = buildSession(settings, { problemStates: new Map() }, [], 20)
+
+    expect(session).toHaveLength(20)
+    expect(session.filter((question) => question.sourceBlockId === 'add:10')).toHaveLength(5)
+    expect(session.filter((question) => question.sourceBlockId === 'sub:10')).toHaveLength(15)
+    expect(settings.selectedBlocks.map((block) => block.count)).toEqual([10, 30])
+  })
+
   it('caps carried mistakes inside the shared remediation budget', () => {
     const carried: CalcMistake[] = Array.from({ length: 5 }, (_, index) => ({
       signature: `add(${index + 1},1)`,

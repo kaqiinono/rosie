@@ -66,8 +66,8 @@ type Source =
  * Build a session of `count` questions using a weakness-weighted strategy.
  *
  * Sources = selected single-op blocks + enabled/valid mixed ops. The `count`
- * is allocated across sources, weighted toward weak (low-proficiency / never
- * practiced) ones, with a per-source floor of 1 when `count >= sources.length`.
+ * is a target rather than a hard ceiling: allocation is weighted toward weak
+ * sources, while every configured source still receives at least one question.
  * Within a block source, ~35% of its allocation resurfaces its weakest specific
  * facts (via `parseSignature`); the rest is generated fresh. Mixed sources are
  * always generated fresh via `assembleMixed`. Every produced question is tagged
@@ -82,6 +82,7 @@ export function buildSession(
   settings: CalcSettings,
   ctx: BuildCtx,
   carried: CalcMistake[] = [],
+  countOverride?: number,
 ): CalcQuestion[] {
   // 1. Sources (blocks first, then enabled+valid mixed ops)
   const sources: Source[] = []
@@ -109,14 +110,15 @@ export function buildSession(
 
   // 2. Allocate counts per source.
   //    auto  → weakness-weighted allocate() of the global lastCount (原逻辑)
-  //    manual→ each source's own configured count
+  //    manual→ each source's configured percentage of the session total
   let alloc: number[]
   if (settings.countMode === 'manual') {
-    alloc = sources.map((src) =>
+    const percentages = sources.map((src) =>
       src.kind === 'block'
         ? (settings.selectedBlocks.find((b) => b.id === src.block.id)?.count ?? 0)
         : src.op.count,
     )
+    alloc = allocatePercentages(countOverride ?? settings.lastCount, percentages)
   } else {
     const weights = sources.map((src) => {
       const matching =
@@ -143,12 +145,13 @@ export function buildSession(
     if (nextIndexes.length > 0) {
       const nextSet = new Set(nextIndexes)
       const currentIndexes = sources.map((_, index) => index).filter((index) => !nextSet.has(index))
+      const targetCount = countOverride ?? settings.lastCount
       const nextCount = allocateMixingCounts(
-        settings.lastCount,
+        targetCount,
         MIXING_STAGES.initial,
         true,
       ).nextExploration
-      const currentCount = settings.lastCount - nextCount
+      const currentCount = targetCount - nextCount
       alloc = new Array<number>(sources.length).fill(0)
       const currentAlloc = allocate(
         currentCount,
@@ -165,7 +168,7 @@ export function buildSession(
         alloc[sourceIndex] = nextAlloc[index]
       })
     } else {
-      alloc = allocate(settings.lastCount, weights)
+      alloc = allocate(countOverride ?? settings.lastCount, weights)
     }
   }
   // Never produce an empty session (e.g. manual mode with all-zero counts, or no
@@ -405,7 +408,7 @@ function inferVerticalBlockId(signature: string): string | undefined {
   return undefined
 }
 
-/** Allocate `count` units across sources weighted by `weights`. Sum === count. */
+/** Allocate a target count with a one-question floor for every source. */
 function allocate(count: number, weights: number[]): number[] {
   const m = weights.length
   if (m === 0) return []
@@ -431,11 +434,57 @@ function allocate(count: number, weights: number[]): number[] {
       k++
     }
   } else {
-    // fewer slots than sources: give 1 each to the `count` weakest (highest w)
-    const order = weights.map((w, i) => ({ i, w })).sort((a, b) => b.w - a.w)
-    for (let k = 0; k < count; k++) alloc[order[k].i] = 1
+    // The requested count is a target, not a ceiling. Keep every configured
+    // source represented even when that expands the actual session total.
+    alloc.fill(1)
   }
   return alloc
+}
+
+/**
+ * Allocate a session total from percentage weights. Every configured source is
+ * guaranteed at least one question; when the requested total is smaller than
+ * the source count, the returned sum intentionally exceeds the request.
+ */
+export function allocatePercentages(count: number, percentages: number[]): number[] {
+  const sourceCount = percentages.length
+  if (sourceCount === 0) return []
+
+  const requested = Math.max(1, Math.floor(count))
+  const weights = percentages.map((value) =>
+    Number.isFinite(value) && value > 0 ? value : 1,
+  )
+  const weightTotal = weights.reduce((sum, value) => sum + value, 0)
+  const ideals = weights.map((weight) => (requested * weight) / weightTotal)
+  const allocation = ideals.map((ideal) => Math.max(1, Math.floor(ideal)))
+  let allocated = allocation.reduce((sum, value) => sum + value, 0)
+
+  if (allocated < requested) {
+    const order = ideals
+      .map((ideal, index) => ({ index, remainder: ideal - Math.floor(ideal) }))
+      .sort((a, b) => b.remainder - a.remainder)
+    let cursor = 0
+    while (allocated < requested) {
+      allocation[order[cursor % sourceCount].index] += 1
+      allocated += 1
+      cursor += 1
+    }
+  } else if (allocated > requested && requested >= sourceCount) {
+    const order = ideals
+      .map((ideal, index) => ({ index, excess: allocation[index] - ideal }))
+      .sort((a, b) => b.excess - a.excess)
+    let cursor = 0
+    while (allocated > requested) {
+      const candidate = order[cursor % sourceCount].index
+      if (allocation[candidate] > 1) {
+        allocation[candidate] -= 1
+        allocated -= 1
+      }
+      cursor += 1
+    }
+  }
+
+  return allocation
 }
 
 /** Generate `n` questions for a single block: coverage / weak / maintenance / cold-start. */

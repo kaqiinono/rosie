@@ -1,11 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import type { CalcTimingMode } from '@rosie/core'
-import { useCalcSettings } from '../hooks/useCalcSettings'
+import type { CalcSettings, CalcTimingMode } from '@rosie/core'
+import {
+  DEFAULT_CALC_SETTINGS,
+  useCalcStrategies,
+} from '../hooks/useCalcSettings'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
 import CalcAppHeader from '../components/CalcAppHeader'
 import BlockPicker from '../components/BlockPicker'
@@ -13,7 +16,6 @@ import MixedOpList from '../components/MixedOpList'
 import CalcConfigBar from '../components/CalcConfigBar'
 import PerTypeTimeChips from '../components/PerTypeTimeChips'
 import TierTargetsSheet, { type TierTargetItem } from '../components/TierTargetsSheet'
-import CustomCountInput, { COUNT_OPTIONS } from '../components/CustomCountInput'
 import { playSfx } from '../components/audio'
 import { blocksByGroup, blockById, BLOCK_GROUPS, type CalcBlock } from '../utils/calc-blocks'
 import { skeletonMeta, SKELETONS } from '../utils/calc-mixed'
@@ -24,7 +26,7 @@ interface PerTypeCardProps {
   targetId: string
   count: number
   seconds: number | null
-  /** 显示题量行（仅精准设置模式；自动分配时题量由系统分配，只显示目标时间）。 */
+  /** 显示占比行（仅按占比分配模式；自动分配时只显示目标时间）。 */
   showCount: boolean
   /** 显示目标时间行（仅限时答题总开关打开时）。 */
   showSeconds: boolean
@@ -35,7 +37,9 @@ interface PerTypeCardProps {
   onDelete?: () => void
 }
 
-// 每个选中题型一张卡：目标时间仅总开关打开时可设；题量仅在精准设置模式显示。默认 不限时 / 题量 20。
+const PERCENT_OPTIONS = [10, 20, 25, 30, 50]
+
+// 每个选中题型一张卡：目标时间仅总开关打开时可设；占比仅在手动模式显示。
 function PerTypeConfigCard({
   label,
   targetId,
@@ -75,9 +79,9 @@ function PerTypeConfigCard({
             className="mr-1 w-7 text-[10px] font-extrabold uppercase"
             style={{ color: 'rgba(196,181,253,0.5)' }}
           >
-            题量
+            占比
           </span>
-          {COUNT_OPTIONS.map((n) => {
+          {PERCENT_OPTIONS.map((n) => {
             const on = count === n
             return (
               <button
@@ -91,11 +95,26 @@ function PerTypeConfigCard({
                   color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
                 }}
               >
-                {n}
+                {n}%
               </button>
             )
           })}
-          <CustomCountInput count={count} onChange={onCount} size="sm" />
+          <label className="relative">
+            <span className="sr-only">自定义占比</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={100}
+              value={count}
+              onChange={(event) => {
+                const value = Math.min(100, Math.max(1, Math.floor(Number(event.target.value))))
+                if (Number.isFinite(value)) onCount(value)
+              }}
+              className="w-16 rounded-md border border-violet-400/35 bg-white/[.04] py-0.5 pr-5 pl-2 text-right text-[11px] font-extrabold text-violet-200 outline-none focus:border-violet-400"
+            />
+            <span className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[10px] font-bold text-violet-200/45">%</span>
+          </label>
         </div>
       )}
       {showSeconds && (
@@ -337,22 +356,84 @@ function TimingModeDefaults({
 export default function CalcSettingsPage() {
   const { user } = useAuth()
   const router = useRouter()
-  const { settings, update, setSettings, isLoading } = useCalcSettings(user)
+  const pathname = usePathname()
+  const pathSegment = pathname.split('/').filter(Boolean).at(-1)
+  const strategyId = pathSegment === 'new' ? null : (pathSegment ?? null)
+  const { strategies, createStrategy, saveStrategy, isLoading } = useCalcStrategies(user)
+  const [settings, setSettings] = useState<CalcSettings>(() => ({
+    ...DEFAULT_CALC_SETTINGS,
+    selectedBlocks: DEFAULT_CALC_SETTINGS.selectedBlocks.map((block) => ({ ...block })),
+    mixedOps: [],
+  }))
+  const [strategyName, setStrategyName] = useState('')
+  const initializedForRef = useRef<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [tierSheetOpen, setTierSheetOpen] = useState(false)
+  const configuredPercentageTotal =
+    settings.selectedBlocks.reduce((sum, block) => sum + block.count, 0) +
+    settings.mixedOps
+      .filter((operation) => operation.enabled)
+      .reduce((sum, operation) => sum + operation.count, 0)
 
-  // Settings already persist on every `update()`; this button is an explicit
-  // "save now" affordance that re-upserts the current snapshot and confirms.
-  const handleSave = async () => {
-    await setSettings(settings)
-    setSaved(true)
-    window.setTimeout(() => setSaved(false), 1800)
+  const strategy = strategyId ? strategies.find((item) => item.id === strategyId) : undefined
+
+  useEffect(() => {
+    if (isLoading) return
+    const initializationKey = strategyId ?? 'new'
+    if (initializedForRef.current === initializationKey) return
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled) return
+      initializedForRef.current = initializationKey
+      if (strategy) {
+        setStrategyName(strategy.name)
+        setSettings({
+          ...strategy.settings,
+          selectedBlocks: strategy.settings.selectedBlocks.map((block) => ({ ...block })),
+          mixedOps: strategy.settings.mixedOps.map((mixed) => ({
+            ...mixed,
+            blockIds: [...mixed.blockIds],
+          })),
+        })
+      } else {
+        setStrategyName('')
+        setSettings({
+          ...DEFAULT_CALC_SETTINGS,
+          selectedBlocks: DEFAULT_CALC_SETTINGS.selectedBlocks.map((block) => ({ ...block })),
+          mixedOps: [],
+        })
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [isLoading, strategy, strategyId])
+
+  const update = (patch: Partial<CalcSettings>) => {
+    setSettings((current) => ({ ...current, ...patch }))
   }
 
-  // Mirror /calc 「开始口算」: jump straight into a real, persisted session.
-  const handleStart = () => {
-    playSfx('coin', settings.soundEnabled)
-    router.push('/calc/session?mode=daily')
+  const handleSave = async () => {
+    if (!strategyName.trim()) {
+      setSaveError('请输入策略名称')
+      return
+    }
+    if (settings.countMode === 'manual' && configuredPercentageTotal !== 100) {
+      setSaveError(`各题型占比合计需要为 100%，当前为 ${configuredPercentageTotal}%`)
+      return
+    }
+    setSaveError('')
+    setSaved(false)
+    try {
+      if (strategyId) await saveStrategy(strategyId, strategyName, settings)
+      else await createStrategy(strategyName, settings)
+      setSaved(true)
+      playSfx('coin', settings.soundEnabled)
+      window.setTimeout(() => router.push('/setting/calc'), 450)
+    } catch (error: unknown) {
+      setSaveError(error instanceof Error ? error.message : '保存失败，请稍后重试')
+    }
   }
 
   const toggleBlock = (id: string) => {
@@ -396,13 +477,27 @@ export default function CalcSettingsPage() {
   if (isLoading) {
     return (
       <>
-        <CalcAppHeader title="设置" backHref="/admin" backLabel="管理" />
+        <CalcAppHeader title="策略设置" backHref="/setting/calc" backLabel="策略列表" />
         <div
           className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
           style={{ color: 'rgba(196,181,253,0.4)' }}
         >
           加载中…
         </div>
+      </>
+    )
+  }
+
+  if (strategyId && !strategy) {
+    return (
+      <>
+        <CalcAppHeader title="策略不存在" backHref="/setting/calc" backLabel="策略列表" />
+        <main className="mx-auto max-w-[640px] px-4 py-12 text-center">
+          <p className="text-sm text-violet-200/60">这条口算策略可能已被删除。</p>
+          <Link href="/setting/calc" className="mt-5 inline-flex rounded-xl bg-violet-500 px-4 py-2 font-bold text-white">
+            返回策略列表
+          </Link>
+        </main>
       </>
     )
   }
@@ -433,9 +528,9 @@ export default function CalcSettingsPage() {
   return (
     <>
       <CalcAppHeader
-        title="口算设置"
-        backHref="/admin"
-        backLabel="管理"
+        title={strategyId ? '编辑口算策略' : '新增口算策略'}
+        backHref="/setting/calc"
+        backLabel="策略列表"
         rightExtra={
           <div className="flex shrink-0 items-center gap-2">
             <Link
@@ -467,6 +562,29 @@ export default function CalcSettingsPage() {
       />
 
       <main className="relative mx-auto max-w-[640px] space-y-5 px-4 pt-5 pb-12">
+        <section>
+          <SectionHeading>策略名称</SectionHeading>
+          <label className="block">
+            <span className="sr-only">策略名称</span>
+            <input
+              type="text"
+              value={strategyName}
+              maxLength={40}
+              autoFocus={!strategyId}
+              onChange={(event) => {
+                setStrategyName(event.target.value)
+                if (saveError) setSaveError('')
+              }}
+              placeholder="例如：工作日 20 题"
+              className="h-12 w-full rounded-xl px-4 text-[15px] font-bold text-violet-50 outline-none transition-all placeholder:text-violet-200/25 focus:ring-2 focus:ring-violet-400/50"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(139,92,246,0.32)',
+              }}
+            />
+          </label>
+          <p className="mt-1.5 text-[11px] text-violet-200/35">名称会显示在策略列表中，最多 40 个字符。</p>
+        </section>
         {/* 单运算 — multi-select building blocks */}
         <section>
           <SectionHeading
@@ -586,7 +704,7 @@ export default function CalcSettingsPage() {
                     color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
                   }}
                 >
-                  {m === 'auto' ? '自适应分配' : '强定制（按题型）'}
+                {m === 'auto' ? '自适应分配' : '按占比分配'}
                 </button>
               )
             })}
@@ -597,16 +715,14 @@ export default function CalcSettingsPage() {
           >
             {settings.countMode === 'auto'
               ? '只在已选择题型内，根据覆盖、薄弱和前置掌握自动调整比例；下一难度未准备好时仅少量探索。'
-              : '严格遵守每个题型的题量；系统只在题型内部选择未覆盖、薄弱和到期复习算式。'}
+              : '按各题型占比分配本次总题量；不足 1 题的已启用题型按 1 题计算。'}
           </p>
-          {settings.countMode === 'auto' && (
-            <CalcConfigBar
-              count={settings.lastCount}
-              onChange={(count) => update({ lastCount: count })}
-            />
-          )}
+          <CalcConfigBar
+            count={settings.lastCount}
+            onChange={(count) => update({ lastCount: count })}
+          />
 
-          {/* 每个题型的设置：目标时间仅总开关打开时可设；题量仅精准设置（自动模式下题量由系统分配）。 */}
+          {/* 每个题型的设置：目标时间仅总开关打开时可设；占比仅手动模式显示。 */}
           {(settings.timedAnswerEnabled || settings.countMode === 'manual') && (
             <div className="mt-3">
               <div
@@ -615,10 +731,42 @@ export default function CalcSettingsPage() {
               >
                 {settings.countMode === 'manual'
                   ? settings.timedAnswerEnabled
-                    ? '每个题型的题量 · 目标时间'
-                    : '每个题型的题量'
+                ? '每个题型的占比 · 目标时间'
+                    : '每个题型的占比'
                   : '每个题型的目标时间'}
               </div>
+              {settings.countMode === 'manual' && (
+                <div
+                  aria-live="polite"
+                  className="sticky top-[60px] z-20 mb-2 flex items-center justify-between rounded-xl px-3 py-2.5 text-[11px] font-bold shadow-lg backdrop-blur-xl"
+                  style={{
+                    background:
+                      configuredPercentageTotal === 100
+                        ? 'rgba(13,35,31,0.96)'
+                        : 'rgba(39,27,14,0.96)',
+                    color: configuredPercentageTotal === 100 ? '#86efac' : '#fbbf24',
+                    border: `1px solid ${
+                      configuredPercentageTotal === 100
+                        ? 'rgba(34,197,94,0.3)'
+                        : 'rgba(251,191,36,0.32)'
+                    }`,
+                  }}
+                >
+                  <span>占比合计</span>
+                  <span className="flex items-center gap-2">
+                    <strong className="text-[15px] font-black tabular-nums">
+                      {configuredPercentageTotal}%
+                    </strong>
+                    <span className="text-[10px] opacity-75">
+                      {configuredPercentageTotal === 100
+                        ? '已完成 ✓'
+                        : configuredPercentageTotal < 100
+                          ? `还差 ${100 - configuredPercentageTotal}%`
+                          : `超出 ${configuredPercentageTotal - 100}%`}
+                    </span>
+                  </span>
+                </div>
+              )}
               {settings.selectedBlocks.length === 0 && enabledMixed.length === 0 ? (
                 <div className="text-[11px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
                   先在上方选择题型，这里会出现每个题型的设置。
@@ -673,31 +821,34 @@ export default function CalcSettingsPage() {
         </section>
 
         {/* Actions */}
-        <div className="flex gap-2.5">
-          <button
-            type="button"
-            onClick={handleStart}
-            className="min-w-0 flex-[2] rounded-2xl px-4 py-3.5 text-[16px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
-            style={{
-              background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
-              boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
-            }}
-          >
-            🚀 开始练习 →
-          </button>
-
+        <div className="space-y-2.5">
+          {saveError && (
+            <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-center text-xs font-bold text-red-300">
+              {saveError}
+            </p>
+          )}
+          <div className="flex gap-2.5">
+            <Link
+              href="/setting/calc"
+              className="flex min-w-0 flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-3.5 text-[13px] font-black text-violet-100/65 transition-all hover:bg-white/10"
+            >
+              取消
+            </Link>
           <button
             type="button"
             onClick={handleSave}
-            className="min-w-0 flex-1 rounded-2xl px-3 py-3.5 text-[13px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
+            className="min-w-0 flex-[2] rounded-2xl px-3 py-3.5 text-[15px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
             style={{
-              background: saved ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
-              color: saved ? '#4ade80' : 'rgba(245,243,255,0.7)',
+              background: saved
+                ? 'rgba(34,197,94,0.18)'
+                : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 55%, #d946ef 100%)',
+              boxShadow: saved ? 'none' : '0 6px 24px rgba(139,92,246,0.38)',
+              color: saved ? '#4ade80' : '#fff',
             }}
           >
-            {saved ? '已保存 ✓' : '💾 保存设置'}
+            {saved ? '已保存 ✓' : strategyId ? '💾 保存修改' : '✨ 创建策略'}
           </button>
+          </div>
         </div>
       </main>
 

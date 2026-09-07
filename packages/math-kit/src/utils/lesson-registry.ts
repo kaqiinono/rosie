@@ -46,6 +46,7 @@ const LESSON_ENTRIES: LessonEntry[] = [
   { lessonKey: '2-5', grade: 2, seq: 5 },
   { lessonKey: '2-6', grade: 2, seq: 6 },
   { lessonKey: '2-7', grade: 2, seq: 7 },
+  { lessonKey: '2-9', grade: 2, seq: 9 },
 ]
 
 export const LESSONS: readonly LessonEntry[] = LESSON_ENTRIES

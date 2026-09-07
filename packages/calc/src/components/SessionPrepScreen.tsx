@@ -3,13 +3,17 @@
 import { useState } from 'react'
 import type { CalcTimingMode } from '@rosie/core'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
+import CustomCountInput, { COUNT_OPTIONS } from './CustomCountInput'
+import { MAX_SESSION_QUESTION_COUNT } from '../utils/calc-planned-question-count'
 
 type Props = {
   plannedEstimate: number
+  questionCount: number
   maxRetry: number
   timingMode: CalcTimingMode
   bonusSec: number
   onChangeMode: (m: CalcTimingMode) => void
+  onChangeCount: (n: number) => void
   onChangeBonus: (n: number) => void
   onStart: () => void
   onBack: () => void
@@ -39,10 +43,12 @@ function starBonusLine(mode: CalcTimingMode, bonusSec: number): string {
 
 export default function SessionPrepScreen({
   plannedEstimate,
+  questionCount,
   maxRetry,
   timingMode,
   bonusSec,
   onChangeMode,
+  onChangeCount,
   onChangeBonus,
   onStart,
   onBack,
@@ -67,17 +73,44 @@ export default function SessionPrepScreen({
           本次练习
         </div>
         <div
-          className="font-fredoka text-[22px] font-black leading-none mb-2"
+          className="font-fredoka mb-3 text-[22px] leading-none font-black"
           style={{
             background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}
         >
-          约 {plannedEstimate} 题
+          {questionCount} 题
+        </div>
+        <div className="mb-3 flex flex-wrap gap-2" aria-label="选择本次练习题量">
+          {COUNT_OPTIONS.map((count) => {
+            const selected = questionCount === count
+            return (
+              <button
+                key={count}
+                type="button"
+                onClick={() => onChangeCount(count)}
+                aria-pressed={selected}
+                className="min-h-11 min-w-11 rounded-xl px-3 text-[13px] font-extrabold tabular-nums transition-all active:scale-95"
+                style={{
+                  background: selected ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
+                  border: `1.5px solid ${selected ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                  color: selected ? '#c4b5fd' : 'rgba(196,181,253,0.6)',
+                }}
+              >
+                {count}
+              </button>
+            )
+          })}
+          <CustomCountInput
+            count={questionCount}
+            onChange={onChangeCount}
+            max={MAX_SESSION_QUESTION_COUNT}
+            size="md"
+          />
         </div>
         <div className="text-[11px] font-semibold" style={{ color: 'rgba(196,181,253,0.55)' }}>
-          最多补练 {maxRetry} 题错题 · 补练一次机会，做完即结束
+          默认 {plannedEstimate} 题（来自口算配置）· 最多补练 {maxRetry} 题错题
         </div>
       </section>
 

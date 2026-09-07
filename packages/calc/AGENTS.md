@@ -17,6 +17,8 @@ primitives below. You should not need to read other subject modules (math, engli
 - **`@rosie/rewards`** — the shared gamification subsystem: `StarHudProvider`/`useStarHud`,
   `ColoredStar`, `useCalcWallet` (coin wallet), `useVoucherCatalog`/`useCalcVouchers`. Shared
   across admin/vouchers/today/math/english, so it is NOT part of calc.
+- **`@rosie/ui`** — shared presentational controls. Calc currently uses `SelectControl` for the
+  temporary strategy picker on the practice home page.
 - npm: `react`, `next`, `@supabase/supabase-js`.
 
 Calc must never depend on another subject-module package, and `core`/`rewards` must never
@@ -71,9 +73,11 @@ tsconfig aliases are honored at build time.
 - Routes stay in `apps/web/src/app/calc/` as thin shells:
   `export { default } from '@rosie/calc/pages/<name>'`. `layout.tsx` (pure dark chrome) and
   `vouchers/page.tsx` (redirect to `/vouchers`) remain in the app — they hold no calc logic.
-- Calc settings UI is parent/admin-hosted at `/admin/calc`; the child route `/calc/settings`
-  has been removed. Child pages read `settings.soundEnabled` for SFX but do not expose a sound
-  toggle.
+- Calc settings UI is parent-hosted at `/setting/calc` as named strategy CRUD. Each user may keep
+  multiple rows in `calc_settings`, while a partial unique index permits at most one `is_active`
+  row. The active row is the default consumed by calc home/session and the Today dashboard;
+  `/admin/calc` redirects to the settings route. The child route `/calc/settings` has been removed.
+  Child pages read `settings.soundEnabled` for SFX but do not expose a sound toggle.
 - External consumers of the public API: `today` dashboard (`useCalcDaily`) and the `/vouchers`
   page (`VoucherCard`, `playSfx`).
 
@@ -96,7 +100,12 @@ for early add/sub, 2–9 mul/div, and complements. Coverage membership is derive
 (not the mutable source `blockId`) and reports covered / within-target / fluent / mastered /
 review-due plus family drill-down. `countMode='auto'` is adaptive within the parent-selected
 scope: prerequisite-not-ready selected blocks retain a 20% exploration weight; manual mode is
-strict per-type authority. `buildSession` reserves carried mistakes, performs whole-session
+percentage-based per-type authority. In manual mode each block/mixed op stores an integer percentage
+weight in its legacy-named `count` field; weights total 100%, allocate against `lastCount`, and every
+enabled source receives at least one question even when its calculated share is below one.
+The same one-question floor applies in auto mode: `lastCount` and a per-session override are target
+counts rather than hard ceilings, so 14 configured sources expand a target of 10 to 14 base questions.
+`buildSession` reserves carried mistakes, performs whole-session
 bounded dedupe, and tags every question with a `selectionReason`; logs persist the signature,
 reason, occurrence, and intentional-repeat flag. Child practice only surfaces friendly `新题` /
 `补练` badges; the growth report shows the detailed coverage and repeat audit.
@@ -129,12 +138,15 @@ a later day. Finite-block progression always uses the versioned universe as its 
 than mutable `problem_state.blockId` attribution. Presentation coefficients normalize system
 targets only; an explicit parent-configured seconds value is final.
 
-**Home:** `/calc` is practice-only for children. The recent sessions list lazy-loads wallet
-sessions only after the accordion is opened, then reuses the session cache while mounted.
+**Home:** `/calc` is practice-only for children. Its practice-content card can select any named
+strategy for the next session without changing `is_active`. The start card owns the one-run question
+count and timing controls; it passes strategy/count/timing via query parameters and starts the session
+directly, bypassing the redundant prep screen. The recent sessions list lazy-loads wallet sessions
+only after the accordion is opened, then reuses the session cache while mounted.
 
 **Session prep (`mode=daily`):** `/calc/session` shows `SessionPrepScreen` before `buildSession`.
-Settings defaults (`timingMode`, `bonusSec`) preload from `/admin/calc`; user can override them
-for the current session only.
+Settings defaults (`timingMode`, `bonusSec`) preload from the selected named strategy; user can
+override them for the current session only.
 Three modes in `calc-session-policy.ts`:
 
 | Mode      | Clock (`T_clock`)              | At 0                                                      | Star multiplier               |
@@ -154,7 +166,7 @@ awaits `calcMistakesStore.ensureLoaded` before reconcile/carry (no cold-visit ra
 settled ONLY by the finish fold (`applyAttempt`): a wrong answer at answer-time uses
 `pullBackFromMastered` (streak/status reset, no −2) so a single wrong costs −2, not −4; the −2 in
 `demoteFromMastered` applies only to cross-session reconcile repair. Tables:
-`calc_settings`, `calc_problem_state`, `calc_sessions`, `calc_block_progress`,
+`calc_settings` (named strategies; zero or one active per user), `calc_problem_state`, `calc_sessions`, `calc_block_progress`,
 `calc_curriculum_registry`, `calc_user_runtime`.
 
 **NumberPad / 竖式 auto-submit:** `settings.autoSubmitOnMatch` (default `true`, toggle in settings).

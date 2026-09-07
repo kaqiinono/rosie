@@ -1639,7 +1639,10 @@ export default function CalcReportPage() {
   const wallet = useCalcWallet(user, { loadSessions: true })
   const { settings } = useCalcSettings(user)
   const { states: problemStates } = useCalcProblemState(user, {
-    autoLoad: !CALC_FEATURES.serverReport || reportTab === 'weakness',
+    // The coverage map still derives concept, rule, structure, and progression
+    // metrics from per-signature state. The bounded server summary currently
+    // supplies only block-level totals, so it cannot replace this data yet.
+    autoLoad: !CALC_FEATURES.serverReport || reportTab !== 'overview',
   })
   const [serverSummary, setServerSummary] = useState<CalcReportSummaryResponse | null>(null)
   useEffect(() => {

@@ -168,6 +168,10 @@ export const LESSON_SOURCE_BTNS: Record<string, LessonSourceBtn[]> = {
     { key: 'homework', label: '✏️ 课后' },
     { key: 'supplement', label: '📒 附加' },
   ],
+  '2-9': [
+    { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后' },
+  ],
 }
 
 export function lessonSourceButtons(lessonId: string): LessonSourceBtn[] | undefined {

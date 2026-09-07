@@ -1,1 +1,1 @@
-export { default } from '@/app/admin/calc/page'
+export { default } from '@rosie/calc/pages/strategy-list'

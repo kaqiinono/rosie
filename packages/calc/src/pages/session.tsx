@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useCalcSettings } from '../hooks/useCalcSettings'
+import { useCalcSettings, useCalcStrategies } from '../hooks/useCalcSettings'
 import { useCalcWallet, loadWalletSessions, calcWalletStore } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
@@ -32,7 +32,10 @@ import {
   coinReward,
   type DrillParams,
 } from '../utils/calc-helpers'
-import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
+import {
+  calcPlannedQuestionCount,
+  clampSessionQuestionCount,
+} from '../utils/calc-planned-question-count'
 import {
   applySessionStarMultiplier,
   clampBonusSec,
@@ -110,7 +113,22 @@ export default function CalcSessionPage() {
   const params = useSearchParams()
   const router = useRouter()
   const { user } = useAuth()
-  const { settings, update, isLoading: settingsLoading } = useCalcSettings(user)
+  const {
+    settings: defaultSettings,
+    update,
+    isLoading: settingsLoading,
+  } = useCalcSettings(user)
+  const {
+    strategies,
+    saveStrategy,
+    isLoading: strategiesLoading,
+  } = useCalcStrategies(user)
+  const requestedStrategyId = params.get('strategy')
+  const sessionStrategy =
+    strategies.find((strategy) => strategy.id === requestedStrategyId) ??
+    strategies.find((strategy) => strategy.isActive) ??
+    null
+  const settings = sessionStrategy?.settings ?? defaultSettings
   const wallet = useCalcWallet(user, { loadSessions: true })
   const { refresh: refreshStarHud } = useStarHud()
   const {
@@ -129,6 +147,16 @@ export default function CalcSessionPage() {
 
   /** Homepage「今日计划」口算卡：跳过准备页，直接开练 */
   const autoStart = params.get('start') === '1'
+  const requestedTimingMode = useMemo<CalcTimingMode | null>(() => {
+    const value = params.get('timing')
+    return value === 'relaxed' || value === 'strict' || value === 'bonus' ? value : null
+  }, [params])
+  const requestedBonusSec = useMemo<number | null>(() => {
+    const value = params.get('bonus')
+    if (value == null || value === '') return null
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? clampBonusSec(parsed) : null
+  }, [params])
   const drillKey = useMemo(
     () => calcSessionDrillKey(mode, params.get('drill'), params.get('blockId')),
     [mode, params],
@@ -181,6 +209,13 @@ export default function CalcSessionPage() {
   // overrides them for this run only (admin settings page owns persisted defaults).
   const [prepModeOverride, setPrepModeOverride] = useState<CalcTimingMode | null>(null)
   const [prepBonusOverride, setPrepBonusOverride] = useState<number | null>(null)
+  const requestedCount = useMemo(() => {
+    const raw = params.get('count')
+    if (!raw) return null
+    const parsed = Number(raw)
+    return Number.isFinite(parsed) && parsed > 0 ? clampSessionQuestionCount(parsed) : null
+  }, [params])
+  const [prepCountOverride, setPrepCountOverride] = useState<number | null>(requestedCount)
   const [answerModeOverride, setAnswerModeOverride] = useState<{
     idx: number
     mode: 'pad' | 'vertical'
@@ -198,6 +233,7 @@ export default function CalcSessionPage() {
   }, [resumeFromSnap])
 
   const plannedEstimate = calcPlannedQuestionCount(settings)
+  const sessionQuestionCount = prepCountOverride ?? plannedEstimate
 
   const handlePrepStart = useCallback(() => {
     sessionTimingModeRef.current = prepTimingMode
@@ -535,7 +571,7 @@ export default function CalcSessionPage() {
   useEffect(() => {
     if (initRef.current) return
     if (!snapChecked) return
-    if (settingsLoading) return
+    if (settingsLoading || strategiesLoading) return
     if (!user) return
     if (needsPrep && !prepConfirmed) return
     initRef.current = true
@@ -545,8 +581,8 @@ export default function CalcSessionPage() {
       sessionTimingModeRef.current = pendingSnap.timingMode
       sessionBonusSecRef.current = clampBonusSec(pendingSnap.bonusSec)
     } else if (autoStart) {
-      sessionTimingModeRef.current = settings.timingMode
-      sessionBonusSecRef.current = clampBonusSec(settings.bonusSec)
+      sessionTimingModeRef.current = requestedTimingMode ?? settings.timingMode
+      sessionBonusSecRef.current = requestedBonusSec ?? clampBonusSec(settings.bonusSec)
     }
     if (autoStart || pendingSnap) {
       // Drop ?start=1 so refresh doesn't re-trigger auto-start mid-session edge cases.
@@ -606,7 +642,7 @@ export default function CalcSessionPage() {
           const prepared = await prepareCalcSession({
             blockIds,
             mode,
-            count: Math.min(200, Math.max(1, settings.lastCount * 4)),
+            count: Math.min(200, Math.max(1, sessionQuestionCount * 4)),
             expectedRevision: revision,
           })
           loadedStates = new Map(
@@ -660,7 +696,7 @@ export default function CalcSessionPage() {
       } else {
         // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
         const blockIds = settings.selectedBlocks.map((b) => b.id)
-        const recallSlot = Math.max(1, Math.floor(0.05 * settings.lastCount))
+        const recallSlot = Math.max(1, Math.floor(0.05 * sessionQuestionCount))
         const recallCandidates =
           preparedRecallCandidates ??
           (await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot))
@@ -685,6 +721,7 @@ export default function CalcSessionPage() {
             curriculumSnapshots,
           },
           carried,
+          sessionQuestionCount,
         )
         setQuestions(session)
         plannedCountRef.current = session.length
@@ -944,7 +981,15 @@ export default function CalcSessionPage() {
 
     // 2. Bump global session counter (skip in drill mode — drills must not pollute carry-over queue)
     if (!drillParams) {
-      update({ sessionCounter: settings.sessionCounter + 1 })
+      const nextSessionCounter = settings.sessionCounter + 1
+      if (sessionStrategy && !sessionStrategy.isActive) {
+        await saveStrategy(sessionStrategy.id, sessionStrategy.name, {
+          ...settings,
+          sessionCounter: nextSessionCounter,
+        })
+      } else {
+        update({ sessionCounter: nextSessionCounter })
+      }
     }
 
     playSfx('complete', settings.soundEnabled)
@@ -955,8 +1000,9 @@ export default function CalcSessionPage() {
     wallet,
     refreshStarHud,
     mode,
-    settings.soundEnabled,
-    settings.sessionCounter,
+    settings,
+    sessionStrategy,
+    saveStrategy,
     update,
     startedTsMs,
     startedAtIso,
@@ -1349,7 +1395,7 @@ export default function CalcSessionPage() {
     return nextT[currentTier ?? 'entry'] ?? '进阶'
   })()
 
-  if (settingsLoading || !snapChecked) {
+  if (settingsLoading || strategiesLoading || !snapChecked) {
     return (
       <>
         <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
@@ -1369,10 +1415,12 @@ export default function CalcSessionPage() {
         <CalcAppHeader title="准备练习" backHref="/calc" backLabel="返回" />
         <SessionPrepScreen
           plannedEstimate={plannedEstimate}
-          maxRetry={maxRetryCeiling(plannedEstimate)}
+          questionCount={sessionQuestionCount}
+          maxRetry={maxRetryCeiling(sessionQuestionCount)}
           timingMode={prepTimingMode}
           bonusSec={prepBonusSec}
           onChangeMode={setPrepModeOverride}
+          onChangeCount={(count) => setPrepCountOverride(clampSessionQuestionCount(count))}
           onChangeBonus={setPrepBonusOverride}
           onStart={handlePrepStart}
           onBack={() => router.push('/calc')}

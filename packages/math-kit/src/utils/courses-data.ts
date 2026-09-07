@@ -4,6 +4,15 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/9',
+    title: '乘除法巧算探险',
+    description: '乘法凑整、乘除抵消、分配律与提取公因数 —— 学会观察数的特点，让复杂乘除计算更快更准。',
+    icon: '✖️',
+    lectureNum: '第 9 讲',
+    tags: ['乘除法巧算', '凑整·抵消·分配律', '54 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/2/7',
     title: '数字谜探险',
     description: '加法/减法/数字和分析 —— 方框、字母、汉字竖式推理，从个位进位退位逐位破解，含附加挑战。',

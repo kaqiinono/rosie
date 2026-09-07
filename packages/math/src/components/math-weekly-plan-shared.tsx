@@ -262,6 +262,16 @@ export const MATH_PLAN_LESSONS = [
     desc: '加法谜·减法谜·数字和分析',
   },
   {
+    id: '2-9',
+    label: '第9讲 · 乘除法巧算',
+    short: '乘除巧算',
+    emoji: '✖️',
+    color: 'rgba(217,119,6,1)',
+    bg: 'rgba(217,119,6,.08)',
+    border: 'rgba(217,119,6,.3)',
+    desc: '凑整·抵消·分配律·公因数',
+  },
+  {
     id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',

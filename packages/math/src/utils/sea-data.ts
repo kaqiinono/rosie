@@ -101,6 +101,7 @@ import {
 import { PROBLEMS as G2Lesson1PROBLEMS, PROBLEM_TYPES as G2Lesson1PT, TAG_STYLE as G2Lesson1TS } from '@rosie/math-content/utils/g2/lesson1-data'
 import { PROBLEMS as G2Lesson6PROBLEMS, PROBLEM_TYPES as G2Lesson6PT, TAG_STYLE as G2Lesson6TS } from '@rosie/math-content/utils/g2/lesson6-data'
 import { PROBLEMS as G2Lesson7PROBLEMS, PROBLEM_TYPES as G2Lesson7PT, TAG_STYLE as G2Lesson7TS } from '@rosie/math-content/utils/g2/lesson7-data'
+import { PROBLEMS as G2Lesson9PROBLEMS, PROBLEM_TYPES as G2Lesson9PT, TAG_STYLE as G2Lesson9TS } from '@rosie/math-content/utils/g2/lesson9-data'
 import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT, TAG_STYLE as G2Lesson5TS } from '@rosie/math-content/utils/g2/lesson5-data'
 import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT, TAG_STYLE as G2Lesson4TS } from '@rosie/math-content/utils/g2/lesson4-data'
 import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT, TAG_STYLE as G2Lesson3TS } from '@rosie/math-content/utils/g2/lesson3-data'
@@ -343,6 +344,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: G2Lesson7TS,
     types: G2Lesson7PT.map((t) => ({ tag: t.tag, label: (t as { tag: string; label: string }).label })),
     problems: G2Lesson7PROBLEMS,
+  },
+  {
+    id: '2-9',
+    title: '第9讲·乘除法巧算',
+    shortTitle: '9·乘除巧算',
+    icon: '✖️',
+    badgeClass: 'bg-amber-100 text-amber-700',
+    tagStyle: G2Lesson9TS,
+    types: G2Lesson9PT.map((t) => ({ tag: t.tag, label: t.label })),
+    problems: G2Lesson9PROBLEMS,
   },
   {
     id: '2-6',

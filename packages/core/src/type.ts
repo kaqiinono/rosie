@@ -482,14 +482,14 @@ export interface MixedOp {
   blockIds: string[] // 选中的积木块 ID
   enabled: boolean
   label?: string
-  count: number // 精准模式下的题量
+  count: number // 精准模式下的本次练习占比权重（百分比）
   seconds: number | null // 每题目标秒数；null=未确认 · 0=不限 · >0=限时
 }
 
 /** 单运算选择项：题型内联自己的题量与目标秒数。 */
 export interface BlockSel {
   id: string
-  count: number
+  count: number // 精准模式下的本次练习占比权重（百分比）
   seconds: number | null // null=未确认 · 0=不限 · >0=限时
 }
 
@@ -506,7 +506,7 @@ export interface CalcSettings {
   verticalForBigNumbers: boolean
   timedAnswerEnabled: boolean // 总开关：关闭时不限时、设置页不显示每题型限时
   immersiveMode: boolean // 沉浸：无答题反馈，提交后直接下一题（错题仍进补练）
-  lastCount: number // auto 模式的全局总题量 (10/20/30/50/100)
+  lastCount: number // 本次练习的全局总题量 (10/20/30/50/100)
   sessionCounter: number // 每次 session 完成自增
   timingMode: CalcTimingMode // 默认会话计时模式：宽松 / 严格 / 自定义加成
   bonusSec: number // 自定义加成秒数（0–15，仅 bonus 模式）

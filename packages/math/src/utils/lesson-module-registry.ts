@@ -251,6 +251,15 @@ import G2Lesson7BottomNav from '@rosie/math-content/components/lesson/g2/lesson7
 import G2Lesson7FilterPanel from '@rosie/math-content/components/lesson/g2/lesson7/FilterPanel'
 import G2Lesson7ProblemList from '@rosie/math-content/components/lesson/g2/lesson7/ProblemList'
 import G2Lesson7ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson7/ProblemDetail'
+import { PROBLEMS as G2Lesson9PROBLEMS, TAG_STYLE as G2Lesson9TAG_STYLE } from '@rosie/math-content/utils/g2/lesson9-data'
+import G2Lesson9Provider, { useG2Lesson9 } from '@rosie/math-content/components/lesson/g2/lesson9/G2Lesson9Provider'
+import G2Lesson9HomePage from '@rosie/math-content/components/lesson/g2/lesson9/HomePage'
+import G2Lesson9AppHeader from '@rosie/math-content/components/lesson/g2/lesson9/AppHeader'
+import G2Lesson9Sidebar from '@rosie/math-content/components/lesson/g2/lesson9/Sidebar'
+import G2Lesson9BottomNav from '@rosie/math-content/components/lesson/g2/lesson9/BottomNav'
+import G2Lesson9FilterPanel from '@rosie/math-content/components/lesson/g2/lesson9/FilterPanel'
+import G2Lesson9ProblemList from '@rosie/math-content/components/lesson/g2/lesson9/ProblemList'
+import G2Lesson9ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson9/ProblemDetail'
 
 export type LessonModule = {
   PROBLEMS: ProblemSet
@@ -660,6 +669,20 @@ export const LESSON_MODULES: Record<string, LessonModule> = {
     ProblemList: G2Lesson7ProblemList,
     ProblemDetail: G2Lesson7ProblemDetail,
     layoutBgClass: 'bg-[#f0f9ff]',
+  },
+  '2-9': {
+    PROBLEMS: G2Lesson9PROBLEMS,
+    TAG_STYLE: G2Lesson9TAG_STYLE,
+    Provider: G2Lesson9Provider,
+    useLesson: useG2Lesson9,
+    HomePage: G2Lesson9HomePage,
+    AppHeader: G2Lesson9AppHeader,
+    Sidebar: G2Lesson9Sidebar,
+    BottomNav: G2Lesson9BottomNav,
+    FilterPanel: G2Lesson9FilterPanel,
+    ProblemList: G2Lesson9ProblemList,
+    ProblemDetail: G2Lesson9ProblemDetail,
+    layoutBgClass: 'bg-[#fffbeb]',
   },
 }
 

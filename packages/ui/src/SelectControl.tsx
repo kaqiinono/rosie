@@ -17,6 +17,7 @@ type SelectControlProps = {
   disabled?: boolean
   className?: string
   selectClassName?: string
+  appearance?: 'amber' | 'violet-dark'
 }
 
 export default function SelectControl({
@@ -28,6 +29,7 @@ export default function SelectControl({
   disabled = false,
   className = '',
   selectClassName = '',
+  appearance = 'amber',
 }: SelectControlProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const listboxId = useId()
@@ -38,6 +40,7 @@ export default function SelectControl({
   )
   const [activeIndex, setActiveIndex] = useState(selectedIndex)
   const selectedOption = options[selectedIndex]
+  const dark = appearance === 'violet-dark'
 
   useEffect(() => {
     if (!open) return
@@ -113,7 +116,11 @@ export default function SelectControl({
             }
             if (event.key === 'Tab') setOpen(false)
           }}
-          className={`inline-flex min-h-11 w-full cursor-pointer items-center rounded-xl border border-amber-200 bg-white py-2 pr-8 pl-3 text-left text-xs font-extrabold whitespace-nowrap text-amber-950 shadow-sm outline-none transition hover:border-amber-300 hover:bg-amber-50/50 focus-visible:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 ${selectClassName}`}
+          className={`inline-flex min-h-11 w-full cursor-pointer items-center rounded-xl border py-2 pr-9 pl-3 text-left text-sm font-extrabold whitespace-nowrap shadow-sm outline-none transition focus-visible:ring-2 disabled:cursor-not-allowed ${
+            dark
+              ? 'border-violet-300/25 bg-slate-950/70 text-violet-100 shadow-violet-950/20 hover:border-violet-300/45 hover:bg-violet-950/40 focus-visible:border-violet-300/70 focus-visible:ring-violet-400/25 disabled:bg-slate-900 disabled:text-slate-500'
+              : 'border-amber-200 bg-white text-amber-950 hover:border-amber-300 hover:bg-amber-50/50 focus-visible:border-amber-400 focus-visible:ring-amber-300 focus-visible:ring-offset-1 disabled:bg-slate-100 disabled:text-slate-400'
+          } ${selectClassName}`}
         >
           {selectedOption?.label ?? '请选择'}
         </button>
@@ -125,7 +132,9 @@ export default function SelectControl({
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
-          className={`pointer-events-none absolute top-1/2 right-2.5 h-4 w-4 -translate-y-1/2 text-amber-700 transition-transform ${
+          className={`pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-transform ${
+            dark ? 'text-violet-300' : 'text-amber-700'
+          } ${
             open ? 'rotate-180' : ''
           }`}
         >
@@ -137,7 +146,12 @@ export default function SelectControl({
             id={listboxId}
             role="listbox"
             aria-label={ariaLabel}
-            className="absolute top-[calc(100%+0.5rem)] right-0 z-50 max-h-72 min-w-max overflow-y-auto rounded-2xl border border-amber-200 bg-white p-1.5 shadow-[0_16px_40px_rgba(120,53,15,0.18)]"
+            style={dark ? { backgroundColor: '#0f172a' } : undefined}
+            className={`absolute top-[calc(100%+0.5rem)] right-0 left-0 z-50 max-h-72 min-w-max overflow-y-auto rounded-2xl border p-1.5 ${
+              dark
+                ? 'isolate border-violet-300/30 bg-slate-950 shadow-[0_20px_52px_rgba(2,6,23,0.92)]'
+                : 'border-amber-200 bg-white shadow-[0_16px_40px_rgba(120,53,15,0.18)]'
+            }`}
           >
             {options.map((option, index) => {
               const selected = option.value === value
@@ -156,12 +170,20 @@ export default function SelectControl({
                   onClick={() => selectOption(index)}
                   className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold whitespace-nowrap transition ${
                     option.disabled
-                      ? 'cursor-not-allowed text-slate-300'
+                      ? dark
+                        ? 'cursor-not-allowed text-slate-600'
+                        : 'cursor-not-allowed text-slate-300'
                       : selected
-                        ? 'bg-amber-500 text-white'
+                        ? dark
+                          ? 'bg-violet-500 text-white'
+                          : 'bg-amber-500 text-white'
                         : active
-                          ? 'bg-amber-50 text-amber-900'
-                          : 'text-slate-700 hover:bg-amber-50'
+                          ? dark
+                            ? 'bg-violet-400/15 text-violet-100'
+                            : 'bg-amber-50 text-amber-900'
+                          : dark
+                            ? 'text-slate-300 hover:bg-violet-400/10 hover:text-violet-100'
+                            : 'text-slate-700 hover:bg-amber-50'
                   }`}
                 >
                   <span className="flex-1">{option.label}</span>

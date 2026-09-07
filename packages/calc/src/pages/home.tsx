@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { useAuth } from '@rosie/core'
-import { useCalcSettings } from '../hooks/useCalcSettings'
+import { useAuth, type CalcTimingMode } from '@rosie/core'
+import { SelectControl } from '@rosie/ui'
+import { useCalcSettings, useCalcStrategies } from '../hooks/useCalcSettings'
 import { useCalcPracticeStats } from '../hooks/useCalcPracticeStats'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
@@ -15,7 +16,14 @@ import { playSfx } from '../components/audio'
 import { BLOCK_GROUPS, blockById } from '../utils/calc-blocks'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildSessionSummaryProps } from '../utils/calc-session-summary'
-import { calcPlannedQuestionCount } from '../utils/calc-planned-question-count'
+import {
+  calcPlannedQuestionCount,
+  calcExpandedQuestionCount,
+  clampSessionQuestionCount,
+  MAX_SESSION_QUESTION_COUNT,
+} from '../utils/calc-planned-question-count'
+import CustomCountInput, { COUNT_OPTIONS } from '../components/CustomCountInput'
+import SessionTimingControls from '../components/SessionTimingControls'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
 import { calculateAllCoverage } from '../utils/calc-coverage'
 import { calculateAllStructureCoverage } from '../utils/calc-structure-coverage'
@@ -41,7 +49,8 @@ const TIER_CHIP: Record<BlockTier, { label: string; className: string }> = {
 export default function CalcHomePage() {
   const { user } = useAuth()
   const router = useRouter()
-  const { settings, isLoading: settingsLoading } = useCalcSettings(user)
+  const { settings: defaultSettings, isLoading: settingsLoading } = useCalcSettings(user)
+  const { strategies, isLoading: strategiesLoading } = useCalcStrategies(user)
   const {
     totalProblems,
     practiceDays,
@@ -59,7 +68,16 @@ export default function CalcHomePage() {
   const [sessionsRequested, setSessionsRequested] = useState(false)
   const [selectedRecentIdx, setSelectedRecentIdx] = useState<number | null>(null)
   const [tierSheetOpen, setTierSheetOpen] = useState(false)
+  const [sessionCount, setSessionCount] = useState<number | null>(null)
+  const [sessionTimingMode, setSessionTimingMode] = useState<CalcTimingMode | null>(null)
+  const [sessionBonusSec, setSessionBonusSec] = useState<number | null>(null)
+  const [selectedStrategyId, setSelectedStrategyId] = useState<string | null>(null)
   const wallet = useCalcWallet(user, { loadSessions: sessionsRequested })
+
+  const defaultStrategy = strategies.find((strategy) => strategy.isActive) ?? null
+  const selectedStrategy =
+    strategies.find((strategy) => strategy.id === selectedStrategyId) ?? defaultStrategy
+  const settings = selectedStrategy?.settings ?? defaultSettings
 
   const recentSessions = wallet.sessionsReady ? wallet.sessions.slice(0, 5) : []
   let selectedSummary: ReturnType<typeof buildSessionSummaryProps> | null = null
@@ -104,6 +122,10 @@ export default function CalcHomePage() {
     })),
   ]
   const totalQuestions = calcPlannedQuestionCount(settings)
+  const currentSessionCount = sessionCount ?? totalQuestions
+  const expandedSessionCount = calcExpandedQuestionCount(settings, currentSessionCount)
+  const currentTimingMode = sessionTimingMode ?? settings.timingMode
+  const currentBonusSec = sessionBonusSec ?? settings.bonusSec
 
   const todayTarget = totalQuestions
 
@@ -126,10 +148,18 @@ export default function CalcHomePage() {
 
   const handleStart = () => {
     playSfx('coin', settings.soundEnabled)
-    router.push('/calc/session?mode=daily')
+    const query = new URLSearchParams({
+      mode: 'daily',
+      start: '1',
+      count: String(currentSessionCount),
+      timing: currentTimingMode,
+      bonus: String(currentBonusSec),
+    })
+    if (selectedStrategy) query.set('strategy', selectedStrategy.id)
+    router.push(`/calc/session?${query.toString()}`)
   }
 
-  if (settingsLoading || practiceStatsLoading) {
+  if (settingsLoading || strategiesLoading || practiceStatsLoading) {
     return (
       <>
         <CalcAppHeader />
@@ -210,38 +240,40 @@ export default function CalcHomePage() {
             boxShadow: '0 4px 24px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
           }}
         >
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <div
-                className="mb-0.5 text-[10px] font-extrabold tracking-widest uppercase"
-                style={{ color: 'rgba(196,181,253,0.5)' }}
-              >
-                练习内容
-              </div>
-              <div
-                className="font-fredoka text-[22px] leading-none font-black"
-                style={{
-                  background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                已选 {blockCount} 种单运算
-              </div>
-              {mixedCount > 0 && (
-                <div
-                  className="mt-0.5 text-[11px] font-semibold"
-                  style={{ color: 'rgba(196,181,253,0.5)' }}
-                >
-                  {mixedCount} 种混合运算
-                </div>
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              {strategies.length > 0 ? (
+                <SelectControl
+                  value={selectedStrategy?.id ?? ''}
+                  options={strategies.map((strategy) => ({
+                    value: strategy.id,
+                    label: `${strategy.name}${strategy.isActive ? '（默认）' : ''}`,
+                  }))}
+                  onValueChange={(value) => {
+                    setSelectedStrategyId(value)
+                    setSessionCount(null)
+                    setSessionTimingMode(null)
+                    setSessionBonusSec(null)
+                  }}
+                  ariaLabel="选择本次口算策略"
+                  appearance="violet-dark"
+                  className="w-full"
+                  selectClassName="w-full"
+                />
+              ) : (
+                <div className="text-[16px] font-black text-violet-100">内置默认策略</div>
               )}
+              <div className="mt-1.5 text-[11px] font-semibold text-violet-200/50">
+                {blockCount} 种单运算
+                {mixedCount > 0 ? ` · ${mixedCount} 种混合运算` : ''}
+                {strategies.length > 1 ? ' · 切换仅本次有效' : ''}
+              </div>
             </div>
             {tierItems.length > 0 && (
               <button
                 type="button"
                 onClick={() => setTierSheetOpen(true)}
-                className="shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all active:scale-95"
+                className="inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-[11px] font-extrabold transition-all active:scale-95"
                 style={{
                   background: 'rgba(139,92,246,0.14)',
                   border: '1px solid rgba(139,92,246,0.35)',
@@ -426,18 +458,66 @@ export default function CalcHomePage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <button
-          type="button"
-          onClick={handleStart}
-          className="w-full rounded-2xl px-5 py-4 text-[17px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
-          style={{
-            background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
-            boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
-          }}
-        >
-          🚀 开始口算 →
-        </button>
+        {/* Per-session count + CTA. This does not persist over the parent-owned setting. */}
+        <section className="rounded-2xl border border-violet-300/20 bg-violet-400/[0.07] p-4">
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-[13px] font-extrabold text-violet-100">本次目标题量</h2>
+              <p className="mt-0.5 text-[11px] text-violet-200/50">
+                默认使用口算配置中的 {totalQuestions} 题，仅本次有效
+              </p>
+            </div>
+            <span className="shrink-0 text-lg font-black text-violet-300 tabular-nums">
+              {currentSessionCount} 题
+            </span>
+          </div>
+          <div className="mb-3 flex flex-wrap gap-2" aria-label="选择本次练习题量">
+            {COUNT_OPTIONS.map((count) => {
+              const selected = currentSessionCount === count
+              return (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() => setSessionCount(count)}
+                  aria-pressed={selected}
+                  className="min-h-11 min-w-11 rounded-xl px-3 text-[13px] font-extrabold tabular-nums transition-all active:scale-95"
+                  style={{
+                    background: selected ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
+                    border: `1.5px solid ${selected ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                    color: selected ? '#c4b5fd' : 'rgba(196,181,253,0.6)',
+                  }}
+                >
+                  {count}
+                </button>
+              )
+            })}
+            <CustomCountInput
+              count={currentSessionCount}
+              onChange={(count) => setSessionCount(clampSessionQuestionCount(count))}
+              max={MAX_SESSION_QUESTION_COUNT}
+              size="md"
+            />
+          </div>
+          <div className="mb-4 border-t border-white/10 pt-3">
+            <SessionTimingControls
+              timingMode={currentTimingMode}
+              bonusSec={currentBonusSec}
+              onChangeMode={setSessionTimingMode}
+              onChangeBonus={setSessionBonusSec}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleStart}
+            className="w-full rounded-2xl px-5 py-4 text-[17px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
+              boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
+            }}
+          >
+            🚀 开始口算 · 预计 {expandedSessionCount} 题 →
+          </button>
+        </section>
 
         {/* Secondary entries */}
         <div className="grid grid-cols-2 gap-3">

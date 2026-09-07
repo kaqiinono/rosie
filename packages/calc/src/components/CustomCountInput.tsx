@@ -8,6 +8,7 @@ export const COUNT_OPTIONS = [10, 20, 30, 50, 100]
 interface Props {
   count: number
   onChange: (n: number) => void
+  max?: number
   /** 'sm' for the per-type cards, 'md' for the prominent total bar. */
   size?: 'sm' | 'md'
 }
@@ -17,7 +18,7 @@ interface Props {
  * It is highlighted as "active" only when the current count is NOT one of the
  * presets, so a custom value is visually distinct from a chip selection.
  */
-export default function CustomCountInput({ count, onChange, size = 'sm' }: Props) {
+export default function CustomCountInput({ count, onChange, max, size = 'sm' }: Props) {
   const isCustom = count > 0 && !COUNT_OPTIONS.includes(count)
   // `draft` only drives what the user is actively typing. The displayed value is
   // derived: when the count is a preset (e.g. a chip was clicked) we show an empty
@@ -33,6 +34,7 @@ export default function CustomCountInput({ count, onChange, size = 'sm' }: Props
       type="number"
       inputMode="numeric"
       min={1}
+      max={max}
       value={value}
       placeholder="自定义"
       aria-label="自定义题量"
@@ -40,7 +42,11 @@ export default function CustomCountInput({ count, onChange, size = 'sm' }: Props
         const raw = e.target.value
         setDraft(raw)
         const v = Math.floor(Number(raw))
-        if (Number.isFinite(v) && v > 0) onChange(v)
+        if (Number.isFinite(v) && v > 0) {
+          const next = max == null ? v : Math.min(max, v)
+          if (next !== v) setDraft(String(next))
+          onChange(next)
+        }
       }}
       onBlur={() => {
         // If left empty/invalid while a custom count is active, show it again.

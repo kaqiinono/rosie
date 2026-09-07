@@ -17,6 +17,7 @@
   "dependencies": {
     "@rosie/core": "workspace:*",
     "@rosie/rewards": "workspace:*",
+    "@rosie/ui": "workspace:*",
     "@supabase/supabase-js": "^2.99.2"
   },
   "peerDependencies": {

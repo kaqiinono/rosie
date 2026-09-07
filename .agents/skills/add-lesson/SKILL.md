@@ -1,7 +1,7 @@
 ---
 name: add-lesson
-description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/{lessonKey}.md (template docs/math/new-lesson-template.md) — creating it from image sources when only photos are provided — confirms problem counts and grade before entering data, and generates package files + registry entries following docs/add-new-lesson/. Must complete full registration (not just the md file) or the grade homepage card will not appear.
-version: 5.3.0
+description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/{lessonKey}.md (template docs/math/new-lesson-template.md) — extracting complete questions and solutions from linked PDFs or supplied images when needed — confirms problem counts and grade before entering data, and generates package files + registry entries following docs/add-new-lesson/. Must complete full registration (not just the md file) or the grade homepage card will not appear.
+version: 5.4.0
 trigger: /add-lesson
 ---
 
@@ -100,7 +100,19 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 无则按 `docs/math/new-lesson-template.md` 创建（文件名 = lessonKey，如 `2-8.md`）。
 
-### 题目源 B：仅图片
+### 题目源 B：PDF（md 链接或用户直接提供）
+
+1. 解析 md 中的相对链接并确认文件存在；用户直接提供 PDF 时，以该文件为源。
+2. 用 `pdfinfo` 确认页数，再用 `pdftotext -layout` 做初步提取。
+3. **必须**用 `pdftoppm -png` 渲染所有相关页并逐页视觉核对；扫描件、手写批注、公式或图形不得只依赖文本提取。
+4. 同时提取题干与题解。多小题拆成独立题目；保留原题编号到 `title`，平台 ID 则连续使用 `{lessonKey}-L1` / `H1` 等。
+5. PDF 编号跳号时不得擅自补题；记录“源文件编号跳号”，但保证所有实际出现的题目都录入。
+6. 把核对后的逐题清单和题解回填到 `docs/math/lessons/{lessonKey}.md`，使 md 成为可审阅的文本底稿，再生成代码。
+7. 录入前报告每个模块题数和总数；纯数值、图形、竖式谜分别判断是否需要 figure/custom answer widget。
+
+中间渲染文件放 `tmp/pdfs/{lessonKey}/`；完成后不提交这些临时文件。
+
+### 题目源 C：仅图片
 
 1. HEIC → PNG（`sips`）
 2. 抄题写入 `docs/math/lessons/{lessonKey}.md`
