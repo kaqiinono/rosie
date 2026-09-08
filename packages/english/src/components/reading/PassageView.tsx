@@ -275,7 +275,7 @@ export default function PassageView({
           ))}
         </div>
       )}
-      <article className="space-y-6 text-[17px] leading-[1.85] text-gray-800 sm:text-[18px] sm:leading-[2]">
+      <article className="space-y-7 text-[20px] leading-[1.9] text-gray-800 sm:text-[22px] sm:leading-[2]">
         {passage.paragraphs.map((p, i) => (
           <div key={i}>
             {passage.paragraphTitles?.[i] && (
