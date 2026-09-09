@@ -1,5 +1,5 @@
-import type { MasteryLevel, QuizType, WordEntry } from '@rosie/core'
-import { buildQuizOptions, normalizeQuizTypes } from './english-helpers'
+import type { MasteryLevel, QuizType, WordEntry, WordVocabType } from '@rosie/core'
+import { buildQuizOptions, normalizeQuizTypes, sortWordsByVocabType } from './english-helpers'
 import { blankWordInSentence, findPassage, findSentenceForWord } from './reading-data'
 
 export type EnglishPrintOption = {
@@ -59,6 +59,17 @@ export function parsePrintMastery(raw: string | null): MasteryLevel | null {
   return null
 }
 
+export function parsePrintVocabTypes(raw: string | null): Set<WordVocabType> {
+  if (raw === null) return new Set(['Target', 'Context', 'Extension'])
+  return new Set(
+    raw
+      .split(',')
+      .filter((value): value is WordVocabType =>
+        value === 'Target' || value === 'Context' || value === 'Extension',
+      ),
+  )
+}
+
 export function serializePrintTypes(types: QuizType[]): string {
   return normalizeQuizTypes(types).join(',')
 }
@@ -93,7 +104,8 @@ export function sanitizePrintDocumentTitle(title: string): string {
 }
 
 function sortWords(words: WordEntry[]): WordEntry[] {
-  return [...words].sort((a, b) => {
+  return sortWordsByVocabType(words).sort((a, b) => {
+    if (a.vocabType !== b.vocabType) return 0
     const ka = `${a.unit}\0${a.lesson}\0${a.word}`
     const kb = `${b.unit}\0${b.lesson}\0${b.word}`
     return ka.localeCompare(kb)

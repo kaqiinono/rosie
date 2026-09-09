@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
-import type { WordEntry, WordMasteryMap } from '@rosie/core'
+import type { WordEntry, WordMasteryMap, WordVocabType } from '@rosie/core'
 import type { SpellButtonStyle } from './components/words/SpellTiles'
 import type { MasteryLevel } from '@rosie/core'
 import { getWordMasteryLevel } from '@rosie/core'
@@ -37,6 +37,8 @@ interface WordsContextValue {
   setSelWords: Dispatch<SetStateAction<Set<string>>>
   masteryFilter: MasteryLevel | null
   setMasteryFilter: Dispatch<SetStateAction<MasteryLevel | null>>
+  selVocabTypes: Set<WordVocabType>
+  setSelVocabTypes: Dispatch<SetStateAction<Set<WordVocabType>>>
   filteredWords: WordEntry[]
   // practice types (shared for immersive mode)
   practiceTypes: ('A' | 'B' | 'C' | 'D')[]
@@ -49,6 +51,7 @@ interface WordsContextValue {
 }
 
 const WordsContext = createContext<WordsContextValue | null>(null)
+const ALL_VOCAB_TYPES: WordVocabType[] = ['Target', 'Context', 'Extension']
 
 /**
  * `vocabScope="stage"` loads only the active textbook (per-stage request +
@@ -90,6 +93,9 @@ export function WordsProvider({
   })
   const [selWords, setSelWords] = useState<Set<string>>(new Set())
   const [masteryFilter, setMasteryFilter] = useState<MasteryLevel | null>(null)
+  const [selVocabTypes, setSelVocabTypes] = useState<Set<WordVocabType>>(
+    () => new Set(ALL_VOCAB_TYPES),
+  )
   const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C' | 'D')[]>(['A', 'B'])
   const [previewCards, setPreviewCards] = useState(false)
   const [practiceButtonStyle, setPracticeButtonStyle] = useState<SpellButtonStyle>('candy')
@@ -188,10 +194,15 @@ export function WordsProvider({
   }, [selLessons])
 
   const filteredWords = useMemo(() => {
-    const base = getFilteredWords(vocab, selStage, selUnits, selLessons, selWords)
-    if (masteryFilter === null) return base
-    return base.filter(v => getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter)
-  }, [vocab, selStage, selUnits, selLessons, selWords, masteryFilter, masteryMap])
+    let base = getFilteredWords(vocab, selStage, selUnits, selLessons, selWords)
+    if (selVocabTypes.size < ALL_VOCAB_TYPES.length) {
+      base = base.filter((v) => v.vocabType && selVocabTypes.has(v.vocabType))
+    }
+    if (masteryFilter !== null) {
+      base = base.filter(v => getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter)
+    }
+    return base
+  }, [vocab, selStage, selUnits, selLessons, selWords, selVocabTypes, masteryFilter, masteryMap])
 
   return (
     <WordsContext.Provider value={{
@@ -202,6 +213,7 @@ export function WordsProvider({
       selLessons, setSelLessons,
       selWords, setSelWords,
       masteryFilter, setMasteryFilter,
+      selVocabTypes, setSelVocabTypes,
       filteredWords,
       practiceTypes, setPracticeTypes,
       previewCards, setPreviewCards,

@@ -2,7 +2,7 @@
 
 import type { WordMasteryMap } from '@rosie/core'
 import type { MasteryLevel } from '@rosie/core'
-import type { WordEntry } from '@rosie/core'
+import type { WordEntry, WordVocabType } from '@rosie/core'
 import VocabRangeFilter from './vocab-range-filter/VocabRangeFilter'
 
 interface FilterBarProps {
@@ -28,6 +28,8 @@ interface FilterBarProps {
   masteryFilter?: MasteryLevel | null
   onMasteryFilter?: (level: MasteryLevel | null) => void
   masteryMap?: WordMasteryMap
+  selectedVocabTypes?: Set<WordVocabType>
+  onToggleVocabType?: (vocabType: WordVocabType) => void
 }
 
 export default function FilterBar({
@@ -51,6 +53,8 @@ export default function FilterBar({
   onShuffleOrder,
   masteryFilter,
   onMasteryFilter,
+  selectedVocabTypes,
+  onToggleVocabType,
 }: FilterBarProps) {
   return (
     <VocabRangeFilter
@@ -69,6 +73,9 @@ export default function FilterBar({
       showWords
       selectedWords={selWords}
       onToggleWord={onToggleWord}
+      showVocabTypes={!!onToggleVocabType}
+      selectedVocabTypes={selectedVocabTypes}
+      onToggleVocabType={onToggleVocabType}
       showMastery={!!onMasteryFilter}
       masteryFilter={masteryFilter}
       onMasteryFilter={onMasteryFilter}

@@ -23,6 +23,7 @@ export function shouldShowAiAssistant(pathname: string, isImmersive: boolean): b
   if (isImmersive) return false
   return !(
     pathname === '/calc/session' ||
+    pathname === '/english/words/practice/print' ||
     pathname === '/ai' ||
     pathname.startsWith('/ai/') ||
     pathname === '/auth' ||

@@ -23,6 +23,8 @@ export default function CardsPage() {
     setSelWords,
     masteryFilter,
     setMasteryFilter,
+    selVocabTypes,
+    setSelVocabTypes,
   } = useWordsContext()
 
   const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set())
@@ -129,6 +131,17 @@ export default function CardsPage() {
     resetCards()
   }, [resetCards])
 
+  const toggleVocabType = useCallback((vocabType: 'Target' | 'Context' | 'Extension') => {
+    setSelVocabTypes((prev) => {
+      const next = new Set(prev)
+      if (next.has(vocabType)) next.delete(vocabType)
+      else next.add(vocabType)
+      return next
+    })
+    setSelWords(new Set())
+    resetCards()
+  }, [setSelVocabTypes, setSelWords, resetCards])
+
   return (
     <>
       <FilterBar
@@ -151,6 +164,8 @@ export default function CardsPage() {
         masteryFilter={masteryFilter}
         onMasteryFilter={setMasteryFilter}
         masteryMap={masteryMap}
+        selectedVocabTypes={selVocabTypes}
+        onToggleVocabType={toggleVocabType}
       />
       <div className="relative z-[1] mx-auto max-w-[1280px] px-4 py-5">
         <PhonicsLegend />

@@ -187,6 +187,18 @@ describe('shuffle', () => {
     expect(a).toEqual(b)
   })
 
+  it('orders vocabulary groups as Target, Context, then Extension', () => {
+    const words: WordEntry[] = [
+      w({ word: 'extend', vocabType: 'Extension' }),
+      w({ word: 'target', vocabType: 'Target' }),
+      w({ word: 'context', vocabType: 'Context' }),
+    ]
+    const questions = buildQuizQuestions(words, ['A', 'B'], 42)
+    expect(questions.map((question) => question.word.vocabType)).toEqual([
+      'Target', 'Target', 'Context', 'Context', 'Extension', 'Extension',
+    ])
+  })
+
   it('returns same elements (permutation)', () => {
     const input = [1, 2, 3, 4, 5]
     const out = shuffle(input, 1)

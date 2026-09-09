@@ -12,6 +12,7 @@ import {
   parsePrintMastery,
   parsePrintTypes,
   parsePrintUnits,
+  parsePrintVocabTypes,
   parsePrintWords,
   sanitizePrintDocumentTitle,
 } from '../../utils/english-practice-print-helpers'
@@ -39,6 +40,7 @@ function PrintQuestionBlock({
   const isC = question.type === 'C'
   const isD = question.type === 'D'
   const lessonTag = lessonChipTag(question.word.unit, question.word.lesson)
+  const vocabType = question.word.vocabType
 
   if (isC) {
     const gridWidthRem = printFourLineWidthRem(question.word.word)
@@ -48,6 +50,11 @@ function PrintQuestionBlock({
           <div className="en-print-spell-def">
             <span className="en-print-qnum">{question.num}.</span>
             <span className="en-print-spell-prompt">{question.prompt}</span>
+            {vocabType && (
+              <span className={`en-print-vocab-type en-print-vocab-type-${vocabType.toLowerCase()}`}>
+                {vocabType}
+              </span>
+            )}
             <span className="en-print-lesson-tag">{lessonTag}</span>
           </div>
           <div
@@ -69,6 +76,11 @@ function PrintQuestionBlock({
         <span className={`en-print-prompt ${isD ? 'en-print-prompt-passage' : ''}`}>
           {isD ? `“${question.prompt}”` : question.prompt}
         </span>
+        {vocabType && (
+          <span className={`en-print-vocab-type en-print-vocab-type-${vocabType.toLowerCase()}`}>
+            {vocabType}
+          </span>
+        )}
         <span className="en-print-lesson-tag">{lessonTag}</span>
       </div>
 
@@ -146,9 +158,16 @@ export default function EnglishPracticePrintPage() {
     () => parsePrintMastery(searchParams.get('mastery')),
     [searchParams],
   )
+  const vocabTypes = useMemo(
+    () => parsePrintVocabTypes(searchParams.get('vocabTypes')),
+    [searchParams],
+  )
 
   const filteredWords = useMemo(() => {
     let base = getFilteredWords(vocab, stage, selUnits, selLessons, selWords)
+    if (vocabTypes.size < 3) {
+      base = base.filter((v) => v.vocabType && vocabTypes.has(v.vocabType))
+    }
     if (masteryFilter !== null) {
       base = base.filter(
         (v) =>
@@ -157,7 +176,7 @@ export default function EnglishPracticePrintPage() {
       )
     }
     return base
-  }, [vocab, stage, selUnits, selLessons, selWords, masteryFilter, masteryMap])
+  }, [vocab, stage, selUnits, selLessons, selWords, vocabTypes, masteryFilter, masteryMap])
 
   const sections = useMemo(
     () => buildPrintSections(filteredWords, types, vocab),
@@ -319,6 +338,20 @@ export default function EnglishPracticePrintPage() {
           letter-spacing: 0.02em;
           color: #a8a29e;
         }
+        .en-print-vocab-type {
+          flex-shrink: 0;
+          padding: 0.08rem 0.35rem;
+          border: 1px solid currentColor;
+          border-radius: 999px;
+          font-size: 0.58rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          line-height: 1.35;
+          text-transform: uppercase;
+        }
+        .en-print-vocab-type-target { color: #047857; }
+        .en-print-vocab-type-context { color: #a16207; }
+        .en-print-vocab-type-extension { color: #6d28d9; }
         .en-print-prompt {
           flex: 1 1 12rem;
           min-width: 0;
@@ -465,6 +498,9 @@ export default function EnglishPracticePrintPage() {
             print-color-adjust: exact;
           }
           .en-print-lesson-tag { color: #78716c !important; }
+          .en-print-vocab-type-target { color: #047857 !important; }
+          .en-print-vocab-type-context { color: #92400e !important; }
+          .en-print-vocab-type-extension { color: #5b21b6 !important; }
         }
 
         @media (max-width: 640px) {

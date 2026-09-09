@@ -73,6 +73,13 @@ export default function QuizQuestionBody({
         ? '📖 题型 D · 课文语境填空 (+2⭐/题)'
         : '题型 B · 看单词选释义'
 
+  const vocabTypeStyle =
+    question.word.vocabType === 'Target'
+      ? 'border-emerald-400/30 bg-emerald-400/[.12] text-emerald-300'
+      : question.word.vocabType === 'Context'
+        ? 'border-amber-400/30 bg-amber-400/[.12] text-amber-300'
+        : 'border-violet-400/30 bg-violet-400/[.12] text-violet-300'
+
   const promptText = isA
     ? '请选出对应的英文单词：'
     : isC
@@ -92,11 +99,21 @@ export default function QuizQuestionBody({
     <>
       <div className="@container flex w-full max-w-[1000px] flex-col gap-4 rounded-[20px] border border-white/[.08] bg-white/[.04] p-[clamp(1rem,3.5cqi,1.75rem)]">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span
-            className={`inline-block w-fit rounded-full px-3 py-1 text-[clamp(.62rem,1.8cqi,.72rem)] font-extrabold tracking-wider uppercase ${badgeStyle}`}
-          >
-            {badgeText}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-block w-fit rounded-full px-3 py-1 text-[clamp(.62rem,1.8cqi,.72rem)] font-extrabold tracking-wider uppercase ${badgeStyle}`}
+            >
+              {badgeText}
+            </span>
+            {question.word.vocabType && (
+              <span
+                className={`inline-block rounded-full border px-2.5 py-1 text-[clamp(.6rem,1.7cqi,.7rem)] font-extrabold tracking-wider uppercase ${vocabTypeStyle}`}
+                title="单词属性"
+              >
+                {question.word.vocabType}
+              </span>
+            )}
+          </div>
           <div className="text-[clamp(.72rem,2cqi,.82rem)] font-bold text-white/[.32]">
             ✓ {score} / {total}
           </div>

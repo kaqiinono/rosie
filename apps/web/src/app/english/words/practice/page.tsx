@@ -18,6 +18,7 @@ export default function PracticePage() {
     selLessons, setSelLessons,
     selWords, setSelWords,
     masteryFilter, setMasteryFilter,
+    selVocabTypes, setSelVocabTypes,
     masteryMap,
     setPracticeTypes,
     setPreviewCards,
@@ -53,6 +54,7 @@ export default function PracticePage() {
     setSelUnits(new Set([entry.unit]))
     setSelLessons(new Set([`${entry.unit}::${entry.lesson}`]))
     setSelWords(new Set([wordKey(entry)]))
+    setSelVocabTypes(new Set(['Target', 'Context', 'Extension']))
     setMasteryFilter(null)
     setPracticeTypes(['A', 'B', 'C'])
     setPreviewCards(false)
@@ -68,6 +70,7 @@ export default function PracticePage() {
     setSelUnits,
     setSelLessons,
     setSelWords,
+    setSelVocabTypes,
     setMasteryFilter,
     setPracticeTypes,
     setPreviewCards,
@@ -88,13 +91,14 @@ export default function PracticePage() {
     setSelUnits(new Set([passage.unit]))
     setSelLessons(new Set([`${passage.unit}::${passage.lesson}`]))
     setSelWords(new Set())
+    setSelVocabTypes(new Set(['Target', 'Context', 'Extension']))
     setMasteryFilter(null)
     setPracticeTypes(['D'])
     setPreviewCards(false)
     setIsImmersive(true)
     // Drop the query so a refresh doesn't re-launch.
     router.replace('/english/words/practice')
-  }, [contextPassageKey, isVocabLoading, lessonStage, selStage, setSelStage, setSelUnits, setSelLessons, setSelWords, setMasteryFilter, setPracticeTypes, setPreviewCards, setIsImmersive, router])
+  }, [contextPassageKey, isVocabLoading, lessonStage, selStage, setSelStage, setSelUnits, setSelLessons, setSelWords, setSelVocabTypes, setMasteryFilter, setPracticeTypes, setPreviewCards, setIsImmersive, router])
 
   // Type D is available whenever any filtered word's lesson has a passage
   // sentence for it — completely independent of the week-plan's ⭐ focus marker.
@@ -141,11 +145,22 @@ export default function PracticePage() {
       if (selLessons.size) params.set('lessons', [...selLessons].join(','))
       if (selWords.size) params.set('words', [...selWords].join(','))
       if (masteryFilter !== null) params.set('mastery', String(masteryFilter))
+      params.set('vocabTypes', [...selVocabTypes].join(','))
       params.set('types', serializePrintTypes(types))
       window.open(`/english/words/practice/print?${params.toString()}`, '_blank')
     },
-    [filteredWords.length, selStage, selUnits, selLessons, selWords, masteryFilter],
+    [filteredWords.length, selStage, selUnits, selLessons, selWords, masteryFilter, selVocabTypes],
   )
+
+  const toggleVocabType = useCallback((vocabType: 'Target' | 'Context' | 'Extension') => {
+    setSelVocabTypes((prev) => {
+      const next = new Set(prev)
+      if (next.has(vocabType)) next.delete(vocabType)
+      else next.add(vocabType)
+      return next
+    })
+    setSelWords(new Set())
+  }, [setSelVocabTypes, setSelWords])
 
   const toggleUnit = useCallback((unit: string) => {
     setSelUnits(prev => {
@@ -194,6 +209,8 @@ export default function PracticePage() {
         masteryFilter={masteryFilter}
         onMasteryFilter={setMasteryFilter}
         masteryMap={masteryMap}
+        selectedVocabTypes={selVocabTypes}
+        onToggleVocabType={toggleVocabType}
       />
       <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
         <PracticeSetup

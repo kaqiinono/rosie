@@ -232,13 +232,24 @@ export function getFilteredWords(
   selLessons: Set<string>,
   selWords: Set<string>,
 ): WordEntry[] {
-  return vocab.filter(v => {
+  return sortWordsByVocabType(vocab.filter(v => {
     if (selStage && v.stage && v.stage !== selStage) return false
     if (selUnits.size && !selUnits.has(v.unit)) return false
     if (selLessons.size && !selLessons.has(`${v.unit}::${v.lesson}`)) return false
     if (selWords.size && !selWords.has(v.word)) return false
     return true
-  })
+  }))
+}
+
+const VOCAB_TYPE_PRIORITY = { Target: 0, Context: 1, Extension: 2 } as const
+
+/** Target first, then Context and Extension; unlabelled legacy entries come last. */
+export function sortWordsByVocabType(words: WordEntry[]): WordEntry[] {
+  return [...words].sort(
+    (a, b) =>
+      (a.vocabType ? VOCAB_TYPE_PRIORITY[a.vocabType] : 3) -
+      (b.vocabType ? VOCAB_TYPE_PRIORITY[b.vocabType] : 3),
+  )
 }
 
 export interface DayPlan {
@@ -335,9 +346,9 @@ export interface DailySessionWord {
 }
 
 /**
- * Build quiz questions: per word, types run A → B → C → D (subset chosen); words are shuffled;
- * global order is a random interleaving so other words’ later types may appear before this
- * word’s A, but never this word’s later types before its A.
+ * Build quiz questions: vocabulary groups run Target → Context → Extension → unlabelled.
+ * Within each group, words are shuffled and their selected types run A → B → C → D;
+ * questions are interleaved without allowing a word's later type before its earlier type.
  *
  * Type D (课文语境填空) is only generated for words for which `eligibleForTypeD` returns
  * true. Words that don't satisfy the predicate simply skip the D slot.
@@ -350,13 +361,23 @@ export function buildQuizQuestions(
 ): QuizQuestion[] {
   const orderedTypes = normalizeQuizTypes(types)
   if (!orderedTypes.length || !words.length) return []
-  const shuffledWords = shuffle(words, seed)
-  const groups: QuizQuestion[][] = shuffledWords.map(w =>
-    orderedTypes
-      .filter(type => type !== 'D' || (eligibleForTypeD ? eligibleForTypeD(w) : false))
-      .map(type => ({ word: w, type })),
-  )
-  return interleaveOrderedQuizSlots(groups, seed + 1)
+  const orderedWords = sortWordsByVocabType(words)
+  const typeGroups: WordEntry[][] = []
+  for (const word of orderedWords) {
+    const current = typeGroups[typeGroups.length - 1]
+    if (current && current[0]?.vocabType === word.vocabType) current.push(word)
+    else typeGroups.push([word])
+  }
+
+  return typeGroups.flatMap((typeGroup, groupIndex) => {
+    const groupSeed = seed + groupIndex * 10_007
+    const questionGroups: QuizQuestion[][] = shuffle(typeGroup, groupSeed).map(w =>
+      orderedTypes
+        .filter(type => type !== 'D' || (eligibleForTypeD ? eligibleForTypeD(w) : false))
+        .map(type => ({ word: w, type })),
+    )
+    return interleaveOrderedQuizSlots(questionGroups, groupSeed + 1)
+  })
 }
 
 /** Count of alphabetic characters in `s` (spaces/punctuation excluded). */

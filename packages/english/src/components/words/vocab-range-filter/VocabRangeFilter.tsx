@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import type { MasteryLevel } from '@rosie/core'
 import { MASTERY_ICON } from '@rosie/core'
-import type { WordEntry } from '@rosie/core'
+import type { WordEntry, WordVocabType } from '@rosie/core'
 import FilterChip from './FilterChip'
 import FilterRow from './FilterRow'
 import { lessonCompositeKey, type LessonLayout, type StageMode, type VocabRangeFilterVariant } from './types'
@@ -34,6 +34,9 @@ type VocabRangeFilterProps = {
   showWords?: boolean
   selectedWords?: Set<string>
   onToggleWord?: (word: string) => void
+  showVocabTypes?: boolean
+  selectedVocabTypes?: Set<WordVocabType>
+  onToggleVocabType?: (vocabType: WordVocabType) => void
   showMastery?: boolean
   masteryFilter?: MasteryLevel | null
   onMasteryFilter?: (level: MasteryLevel | null) => void
@@ -73,6 +76,9 @@ export default function VocabRangeFilter({
   showWords = false,
   selectedWords = new Set(),
   onToggleWord,
+  showVocabTypes = false,
+  selectedVocabTypes = new Set(['Target', 'Context', 'Extension']),
+  onToggleVocabType,
   showMastery = false,
   masteryFilter = null,
   onMasteryFilter,
@@ -388,6 +394,25 @@ export default function VocabRangeFilter({
       </FilterRow>
     )
 
+  const vocabTypeSection =
+    showVocabTypes &&
+    onToggleVocabType && (
+      <FilterRow label="属性">
+        <div className="flex flex-1 flex-wrap gap-1.5">
+          {(['Target', 'Context', 'Extension'] as WordVocabType[]).map((vocabType) => (
+            <FilterChip
+              key={vocabType}
+              tone="word"
+              active={selectedVocabTypes.has(vocabType)}
+              onClick={() => onToggleVocabType(vocabType)}
+            >
+              {vocabType}
+            </FilterChip>
+          ))}
+        </div>
+      </FilterRow>
+    )
+
   const scopeSummary =
     scopeCount !== undefined ? (
       <div className="mt-0.5 flex flex-wrap items-center gap-2">
@@ -413,6 +438,7 @@ export default function VocabRangeFilter({
       {cascadeLessonSection}
       {groupedLessonSection}
       {wordSection}
+      {vocabTypeSection}
       {masterySection}
       {scopeSummary}
       {children}

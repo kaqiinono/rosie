@@ -6,6 +6,7 @@ describe('AI floating launcher visibility', () => {
     expect(shouldShowAiAssistant('/', false)).toBe(true)
     expect(shouldShowAiAssistant('/math/ny/3/12', false)).toBe(true)
     expect(shouldShowAiAssistant('/english/words/cards', false)).toBe(true)
+    expect(shouldShowAiAssistant('/english/words/practice/print', false)).toBe(false)
   })
 
   it('hides where the global entry would be distracting or redundant', () => {
