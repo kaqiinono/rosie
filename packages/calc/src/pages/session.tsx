@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useCalcSettings, useCalcStrategies } from '../hooks/useCalcSettings'
-import { useCalcWallet, loadWalletSessions, calcWalletStore } from '@rosie/rewards'
+import { useCalcWallet, loadCalcProgressionSessions } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
@@ -70,6 +70,7 @@ import SessionPrepScreen from '../components/SessionPrepScreen'
 import type {
   CalcLevel,
   CalcMode,
+  CalcSession,
   CalcPresentationKey,
   CalcProblemState,
   CalcQuestion,
@@ -129,7 +130,7 @@ export default function CalcSessionPage() {
     strategies.find((strategy) => strategy.isActive) ??
     null
   const settings = sessionStrategy?.settings ?? defaultSettings
-  const wallet = useCalcWallet(user, { loadSessions: true })
+  const wallet = useCalcWallet(user)
   const { refresh: refreshStarHud } = useStarHud()
   const {
     mistakes,
@@ -198,6 +199,7 @@ export default function CalcSessionPage() {
 
   const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
   const loadedStatesRef = useRef<Map<string, CalcProblemState>>(new Map())
+  const historySessionsRef = useRef<CalcSession[]>([])
 
   // ── Prep gate (daily only) ──────────────────────────────────────
   // Drills and mistakes-only sessions skip the prep screen entirely and keep
@@ -633,6 +635,16 @@ export default function CalcSessionPage() {
       // Server mode loads only bounded hot candidates; compatibility mode loads
       // the full projection. Use the returned map directly because React state
       // updates are asynchronous inside this closure.
+      // These inputs are independent. Start all network reads together so session
+      // preparation pays roughly one slow round-trip instead of a request waterfall.
+      const mistakesPromise = calcMistakesStore.ensureLoaded(user.id)
+      const snapshotsPromise = drillParams
+        ? Promise.resolve()
+        : calcCurriculumSnapshotStore.ensureLoaded(user.id)
+      const historyPromise = drillParams
+        ? Promise.resolve<CalcSession[]>([])
+        : loadCalcProgressionSessions(user.id)
+
       let loadedStates: Map<string, CalcProblemState>
       let preparedRecallCandidates: CalcProblemState[] | null = null
       if (CALC_FEATURES.serverSelection) {
@@ -663,7 +675,7 @@ export default function CalcSessionPage() {
       }
       // Mistakes MUST be in the store before reconcile / carry — the hook's
       // `mistakes` state may still be empty on a cold visit to /calc/session.
-      await calcMistakesStore.ensureLoaded(user.id)
+      await mistakesPromise
       // Reconcile hanging mistakes vs mastered (deadlock repair)
       if (!CALC_FEATURES.serverSelection) {
         await applyMasterySideEffects(user.id, { kind: 'reconcile' })
@@ -700,7 +712,7 @@ export default function CalcSessionPage() {
         const recallCandidates =
           preparedRecallCandidates ??
           (await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot))
-        await calcCurriculumSnapshotStore.ensureLoaded(user.id)
+        await snapshotsPromise
         const curriculumSnapshots = calcCurriculumSnapshotStore.getSessionData(user.id) ?? new Map()
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
@@ -709,9 +721,9 @@ export default function CalcSessionPage() {
         const carried = unresolvedMistakes(mistakesNow, loadedStates).filter(
           (m) => m.sessionNo === settings.sessionCounter,
         )
-        // Recent session history for adaptive recovery debounce (no-op if already loaded).
-        await loadWalletSessions(user.id)
-        const historySessions = calcWalletStore.getSessionData(user.id)?.sessions ?? []
+        // Lightweight recent history for adaptive recovery debounce.
+        const historySessions = await historyPromise
+        historySessionsRef.current = historySessions
         const session = buildSession(
           settings,
           {
@@ -831,8 +843,7 @@ export default function CalcSessionPage() {
     const qTimes = questionTimesRef.current
     const avgMs =
       qTimes.length > 0 ? Math.round(qTimes.reduce((s, t) => s + t, 0) / qTimes.length) : null
-    // wallet.sessions is the pre-recording list (closure captured at render) → [0] is the last session.
-    const prevSession = wallet.sessions[0]
+    const prevSession = historySessionsRef.current[0]
     const prevAvgMs = prevSession
       ? prevSession.questionTimesMs && prevSession.questionTimesMs.length > 0
         ? Math.round(

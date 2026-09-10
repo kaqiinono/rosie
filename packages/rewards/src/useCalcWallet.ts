@@ -285,6 +285,48 @@ export async function loadWalletSessions(userId: string, force = false): Promise
   return promise
 }
 
+/**
+ * Minimal history used while allocating a new adaptive calc session.
+ *
+ * Session preparation inspects each question's source key / correctness. The most
+ * recent row's aggregate timing is also used by the completion comparison.
+ * Keeping this separate from `loadWalletSessions` avoids downloading report-only
+ * identity, level, streak, and reward fields before the first question.
+ */
+export async function loadCalcProgressionSessions(userId: string): Promise<CalcSession[]> {
+  const { data, error } = await supabase
+    .from('calc_sessions')
+    .select('finished_at,count,time_spent_sec,question_times_ms,question_log')
+    .eq('user_id', userId)
+    .order('finished_at', { ascending: false })
+    .limit(50)
+  if (error) {
+    console.warn('[wallet] calc progression history unavailable', error)
+    return []
+  }
+
+  return ((data ?? []) as Pick<
+    SessionRow,
+    'finished_at' | 'count' | 'time_spent_sec' | 'question_times_ms' | 'question_log'
+  >[]).map((row) => ({
+    date: '',
+    startedAt: '',
+    finishedAt: row.finished_at,
+    count: row.count,
+    correctCount: 0,
+    retryCount: 0,
+    wrongCount: 0,
+    challengeCorrect: 0,
+    timeSpentSec: row.time_spent_sec,
+    coinsEarned: 0,
+    mode: 'daily',
+    maxStreak: 0,
+    topLevel: 1,
+    questionTimesMs: row.question_times_ms ?? [],
+    questionLog: row.question_log ?? [],
+  }))
+}
+
 export const calcWalletStore = createUserSessionStore<WalletData>('calc_wallet', {
   fetch: fetchWalletData,
   empty: EMPTY_WALLET,
