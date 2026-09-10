@@ -3,6 +3,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import {
   ADAPTIVE_BOX_STAGES,
+  ADAPTIVE_BOSS_STAGE,
   ADAPTIVE_MASTERED_STAGE,
   ADAPTIVE_NOT_STARTED_STAGE,
   ADAPTIVE_PENDING_STAGE,
@@ -15,6 +16,8 @@ import type { AdaptivePlanWordProgress } from '../../utils/adaptivePlanTypes'
 
 type AdaptivePlanStageRoadmapProps = {
   rows: AdaptivePlanWordProgress[]
+  /** Words reserved by the scheduler for the next main-line batch. */
+  activationKeys?: string[]
   today?: string
   compact?: boolean
   className?: string
@@ -27,7 +30,6 @@ type RoadmapNode = {
   emoji: string
   name: string
   count: number
-  dueToday: number
   focus: boolean
   dimmed: boolean
   hint: string
@@ -40,6 +42,7 @@ function displayWord(wordKey: string): string {
 
 function rowStageKey(row: AdaptivePlanWordProgress): string {
   if (row.status === 'MASTERED') return 'mastered'
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return 'boss'
   if (row.status === 'LEARNING_PENDING') return 'pending'
   if (row.status === 'LEARNING') return `box-${Math.min(5, Math.max(1, row.boxIndex ?? 1))}`
   return 'not_started'
@@ -49,6 +52,7 @@ function focusLabel(focus: AdaptivePlanFocusStage): string {
   if (focus === 'not_started') return ADAPTIVE_NOT_STARTED_STAGE.shortLabel
   if (focus === 'pending') return ADAPTIVE_PENDING_STAGE.shortLabel
   if (focus === 'mastered') return '全部毕业'
+  if (focus === 'boss') return ADAPTIVE_BOSS_STAGE.shortLabel
   const stage = ADAPTIVE_BOX_STAGES[focus - 1]
   return stage ? `${stage.emoji} ${stage.name}关` : '当前关卡'
 }
@@ -65,7 +69,6 @@ function buildNodes(
       emoji: ADAPTIVE_NOT_STARTED_STAGE.emoji,
       name: ADAPTIVE_NOT_STARTED_STAGE.name,
       count: counts.notStarted,
-      dueToday: 0,
       focus: counts.focus === 'not_started',
       dimmed: counts.notStarted === 0,
       hint: ADAPTIVE_NOT_STARTED_STAGE.hint,
@@ -75,7 +78,6 @@ function buildNodes(
       emoji: ADAPTIVE_PENDING_STAGE.emoji,
       name: ADAPTIVE_PENDING_STAGE.name,
       count: counts.pending,
-      dueToday: 0,
       focus: counts.focus === 'pending',
       dimmed: counts.pending === 0,
       hint: ADAPTIVE_PENDING_STAGE.hint,
@@ -88,7 +90,6 @@ function buildNodes(
       emoji: stage.emoji,
       name: stage.name,
       count: counts.byBox[stage.box],
-      dueToday: counts.byBoxDueToday[stage.box],
       focus: counts.focus === stage.box,
       dimmed: counts.byBox[stage.box] === 0,
       hint: stage.hint,
@@ -96,11 +97,20 @@ function buildNodes(
   }
 
   nodes.push({
+    key: 'boss',
+    emoji: ADAPTIVE_BOSS_STAGE.emoji,
+    name: ADAPTIVE_BOSS_STAGE.name,
+    count: counts.bossPending,
+    focus: counts.focus === 'boss',
+    dimmed: counts.bossPending === 0,
+    hint: ADAPTIVE_BOSS_STAGE.hint,
+  })
+
+  nodes.push({
     key: 'mastered',
     emoji: '👑',
     name: '毕业',
     count: counts.mastered,
-    dueToday: 0,
     focus: counts.focus === 'mastered',
     dimmed: counts.mastered === 0,
     hint: ADAPTIVE_MASTERED_STAGE.hint,
@@ -111,6 +121,7 @@ function buildNodes(
 
 export default function AdaptivePlanStageRoadmap({
   rows,
+  activationKeys = [],
   today,
   compact = false,
   className,
@@ -119,18 +130,49 @@ export default function AdaptivePlanStageRoadmap({
 }: AdaptivePlanStageRoadmapProps) {
   const [selectedStage, setSelectedStage] = useState<string | null>(null)
   const counts = useMemo(() => computeAdaptivePlanStageCounts(rows, today), [rows, today])
+  const scheduledActivationKeys = useMemo(() => {
+    const rowsByKey = new Map(rows.map((row) => [row.wordKey, row]))
+    return [...new Set(activationKeys)].filter((key) => {
+      const row = rowsByKey.get(key)
+      if (!row || row.archivedAt != null) return false
+      if (row.status === 'NOT_STARTED') return true
+      return row.status === 'LEARNING_PENDING' && !(row.targetBox == null && row.boxIndex === 5)
+    })
+  }, [activationKeys, rows])
+  const scheduledActivationSet = useMemo(
+    () => new Set(scheduledActivationKeys),
+    [scheduledActivationKeys],
+  )
+  const displayCounts = useMemo(
+    () => ({
+      ...counts,
+      notStarted: Math.max(
+        0,
+        counts.notStarted + counts.pending - scheduledActivationKeys.length,
+      ),
+      pending: scheduledActivationKeys.length,
+    }),
+    [counts, scheduledActivationKeys.length],
+  )
 
-  const showPreStages = counts.queue > 0 || counts.learning === 0
-  const nodes = useMemo(() => buildNodes(counts, showPreStages), [counts, showPreStages])
+  const showPreStages = displayCounts.queue > 0 || displayCounts.learning === 0
+  const nodes = useMemo(
+    () => buildNodes(displayCounts, showPreStages),
+    [displayCounts, showPreStages],
+  )
   const remaining = Math.max(0, counts.total - counts.mastered)
   const selectedNode = nodes.find((node) => node.key === selectedStage) ?? null
   const selectedWords = useMemo(() => {
     if (!selectedStage || selectedStage === 'not_started') return []
     return rows
-      .filter((row) => row.archivedAt == null && rowStageKey(row) === selectedStage)
+      .filter((row) => {
+        if (row.archivedAt != null) return false
+        if (selectedStage === 'pending') return scheduledActivationSet.has(row.wordKey)
+        return rowStageKey(row) === selectedStage
+      })
       .map((row) => ({ key: row.wordKey, word: displayWord(row.wordKey) }))
       .sort((a, b) => a.word.localeCompare(b.word, 'en'))
-  }, [rows, selectedStage])
+  }, [rows, scheduledActivationSet, selectedStage])
 
   if (counts.total === 0) return null
 
@@ -145,7 +187,7 @@ export default function AdaptivePlanStageRoadmap({
           </div>
           {!compact && (
             <div className="mt-0.5 text-[.75rem] font-bold text-[var(--wm-text-dim)]">
-              每词经历五关成长，数字为当前停在该关的单词数
+              激活为下一批已排入主线的新词，其余数字为当前停在该关的单词数
             </div>
           )}
         </div>
@@ -177,7 +219,7 @@ export default function AdaptivePlanStageRoadmap({
                   onClick={() =>
                     setSelectedStage((current) => (current === node.key ? null : node.key))
                   }
-                  title={`${node.name}：${node.count} 词${node.dueToday > 0 ? `，今日到期 ${node.dueToday}` : ''}`}
+                  title={`${node.name}：${node.count} 词`}
                   className={`flex w-[4.6rem] flex-col items-center rounded-xl border px-1.5 py-2 text-center transition sm:w-[5.2rem] ${
                     node.count > 0 && node.key !== 'not_started'
                       ? 'cursor-pointer touch-manipulation hover:-translate-y-0.5 hover:border-[rgba(167,139,250,.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa] active:translate-y-0'
@@ -203,14 +245,8 @@ export default function AdaptivePlanStageRoadmap({
                   >
                     {node.count}
                   </div>
-                  {node.dueToday > 0 ? (
-                    <div className="mt-1 rounded-full bg-[rgba(248,113,113,.18)] px-1.5 py-px text-[.55rem] font-extrabold text-[#f87171]">
-                      今 {node.dueToday}
-                    </div>
-                  ) : (
-                    !compact && (
-                      <div className="mt-1 text-[.55rem] font-bold text-white/25">{node.hint}</div>
-                    )
+                  {!compact && (
+                    <div className="mt-1 text-[.55rem] font-bold text-white/25">{node.hint}</div>
                   )}
                 </button>
               </div>
@@ -253,14 +289,14 @@ export default function AdaptivePlanStageRoadmap({
         <span>
           在学 <strong className="text-[#c4b5fd]">{counts.learning}</strong>
         </span>
-        {counts.notStarted > 0 && (
+        {displayCounts.notStarted > 0 && (
           <span>
-            待启程 <strong className="text-[#e2e8f0]">{counts.notStarted}</strong>
+            待启程 <strong className="text-[#e2e8f0]">{displayCounts.notStarted}</strong>
           </span>
         )}
-        {counts.pending > 0 && (
+        {displayCounts.pending > 0 && (
           <span>
-            激活 <strong className="text-[#fbbf24]">{counts.pending}</strong>
+            激活 <strong className="text-[#fbbf24]">{displayCounts.pending}</strong>
           </span>
         )}
         <span>

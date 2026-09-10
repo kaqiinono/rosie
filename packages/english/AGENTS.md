@@ -67,13 +67,20 @@ audio, flipbook).
   Plan lifecycle statuses: `active` | `paused` | `completed` | `archived`. At most one `active` per
   user; admin pause/resume via `pausePlan`/`activatePlan`; create-while-active yields `paused`;
   `/today` and practice only surface `active`.
-  Key semantics: `newWordsPerDay` is a **per-round batch size + daily goal** (not a hard
-  ceiling — after the goal is met, another round can still pull a fresh batch to get ahead;
-  unfinished same-day activations fill the batch first); box moves at settle use "wrong at
-  least once this session" (→ Box 1 +
-  `streakWrong++`, due today) while global mastery write-back uses the collapsed final outcome;
-  Boss question pressure follows `stats.bossQuestionTier` via `bossQuizTypesForWord` (3 = floor);
-  any failed Boss submission increments `bossFailStreak` (tier downgrade only < 60%). Settle does
+  Key V2 semantics: despite its compatibility name, `newWordsPerDay` is the configurable **new
+  words per completed main-line batch**. A batch may span days; completing one never prevents an
+  optional second batch on the same day. `reviewCap` is the historical-stage progression cap per
+  batch; selection interleaves Boxes 1–5 and prioritizes weak words. Calendar due dates,
+  `reviewBatchSize`, `review_only`, `bossStubbornThreshold`, and `bossPackLimit` do not gate V2
+  scheduling. `backlogFuse` is retained as the weak-word reminder threshold and never pauses the
+  main line. Stage 1 uses A+B choices (separated where the batch has enough other questions), Stage
+  2 uses choice then immediate C spelling, Stage 3 separates choice and C by at least three other
+  questions where possible, and Stages 4–5 use C spelling. Any wrong/help keeps a word at its stage.
+  Passing Stage 5 writes `LEARNING_PENDING + boxIndex=5 + targetBox=null` (Boss waiting); only Boss
+  can mark it `MASTERED`. Boss triggers from `totalActivatedCount - lastBossActivatedCount >=
+  bossEveryNNew` once at least one waiting word exists, freezes **all** waiting words, uses formal C
+  spelling only, and passes at first-pass independent accuracy ≥85% after the error sink is clear.
+  Failure preserves the frozen cohort and never demotes words or lowers Boss difficulty. Settle does
   remote writes before local state and surfaces a「重试保存」button on failure. In-progress rounds
   are snapshotted to localStorage + `practice_pending_sessions`
   (`adaptivePlanSessionSnapshot.ts`; retained across calendar days until successful settlement or

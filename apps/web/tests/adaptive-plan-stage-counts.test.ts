@@ -18,7 +18,7 @@ function row(
 }
 
 describe('computeAdaptivePlanStageCounts', () => {
-  it('groups learning words by box and highlights due-today focus', () => {
+  it('groups learning words by stage without calendar dates', () => {
     const counts = computeAdaptivePlanStageCounts(
       [
         row({ wordKey: 'a', status: 'NOT_STARTED' }),
@@ -33,9 +33,18 @@ describe('computeAdaptivePlanStageCounts', () => {
     expect(counts.total).toBe(5)
     expect(counts.queue).toBe(2)
     expect(counts.byBox).toEqual({ 1: 1, 2: 1, 3: 0, 4: 0, 5: 0 })
-    expect(counts.byBoxDueToday[1]).toBe(1)
     expect(counts.mastered).toBe(1)
     expect(counts.focus).toBe(1)
+  })
+
+  it('separates Boss waiting words from the activation queue', () => {
+    const counts = computeAdaptivePlanStageCounts([
+      row({ wordKey: 'boss', status: 'LEARNING_PENDING', boxIndex: 5, targetBox: null }),
+      row({ wordKey: 'new', status: 'NOT_STARTED' }),
+    ])
+    expect(counts.bossPending).toBe(1)
+    expect(counts.queue).toBe(1)
+    expect(counts.focus).toBe('boss')
   })
 
   it('focuses pending activation before not-started queue', () => {

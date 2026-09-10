@@ -7,9 +7,11 @@ import type {
 
 export type AdaptiveDailyTask = {
   mode: AdaptivePlanMode
-  /** Due today (nextReviewDate <= today). */
+  /** Historical stage words selected for this main-line batch. */
   reviewKeys: string[]
   reviewBatchKeys: string[]
+  stageReviewCount: number
+  queuedStageCount: number
   activateKeys: string[]
   bossKeys: string[]
   /**
@@ -20,21 +22,14 @@ export type AdaptiveDailyTask = {
   bossUnfinishedNewKeys: string[]
 }
 
-const BOSS_PACK_LIMIT_FALLBACK = 50
-
-function bossPackLimit(plan: AdaptiveWordPlan): number {
-  const n = plan.bossPackLimit
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : BOSS_PACK_LIMIT_FALLBACK
-}
-
 /** Active rows only — excludes soft-archived progress. */
 function activeRows(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
   return rows.filter((row) => row.archivedAt == null)
 }
 
-/** Due = LEARNING && nextReviewDate != null && nextReviewDate <= today (lexicographic DATE strings). */
-export function isDue(row: AdaptivePlanWordProgress, today: string): boolean {
-  return row.status === 'LEARNING' && row.nextReviewDate != null && row.nextReviewDate <= today
+/** V2 historical-stage eligibility is batch-based, never date-based. */
+export function isDue(row: AdaptivePlanWordProgress, _today: string): boolean {
+  return row.status === 'LEARNING'
 }
 
 export function countDueLearning(rows: AdaptivePlanWordProgress[], today: string): number {
@@ -72,10 +67,6 @@ export function countActivatedToday(rows: AdaptivePlanWordProgress[], today: str
   return activeRows(rows).filter((row) => row.introducedOn === today).length
 }
 
-function countStubbornLearning(rows: AdaptivePlanWordProgress[]): number {
-  return activeRows(rows).filter((row) => row.status === 'LEARNING' && row.streakWrong >= 2).length
-}
-
 function isQuantitativeBossTrigger(plan: AdaptiveWordPlan): boolean {
   // Require real progress — a brand-new plan (0 activated) must never enter Boss.
   const sinceBoss = plan.stats.totalActivatedCount - plan.stats.lastBossActivatedCount
@@ -84,11 +75,8 @@ function isQuantitativeBossTrigger(plan: AdaptiveWordPlan): boolean {
   )
 }
 
-function isQualitativeBossTrigger(
-  plan: AdaptiveWordPlan,
-  rows: AdaptivePlanWordProgress[],
-): boolean {
-  return countStubbornLearning(rows) >= plan.bossStubbornThreshold
+export function isBossPending(row: AdaptivePlanWordProgress): boolean {
+  return row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5
 }
 
 export function resolveMode(
@@ -96,78 +84,66 @@ export function resolveMode(
   rows: AdaptivePlanWordProgress[],
   today: string,
 ): AdaptivePlanMode {
+  // Boss never replaces an already-started main-line batch.
+  if (activeRows(rows).some((row) => isUnfinishedSameDayActivation(row, today))) {
+    return 'normal'
+  }
+  const hasBossPending = activeRows(rows).some(isBossPending)
   if (
-    plan.mode === 'boss' ||
-    isQuantitativeBossTrigger(plan) ||
-    isQualitativeBossTrigger(plan, rows)
+    (plan.mode === 'boss' && hasBossPending) ||
+    ((isQuantitativeBossTrigger(plan) ||
+      !activeRows(rows).some((row) => row.status === 'NOT_STARTED' || row.status === 'LEARNING')) &&
+      hasBossPending)
   ) {
     return 'boss'
-  }
-
-  if (countDueLearning(rows, today) > plan.backlogFuse) {
-    return 'review_only'
   }
 
   return 'normal'
 }
 
-function compareDateStrings(a: string | null, b: string | null): number {
-  if (a == null && b == null) return 0
-  if (a == null) return 1
-  if (b == null) return -1
-  return a.localeCompare(b)
-}
-
-/** Soonest due first for review pool. */
+/** Weak words first; otherwise keep activation order stable inside one stage. */
 function sortDueReviews(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
-  return [...rows].sort((a, b) => compareDateStrings(a.nextReviewDate, b.nextReviewDate))
-}
-
-/** Tier 1 (stubborn): high streakWrong, soonest nextReviewDate, then recently introduced. */
-function sortBossCandidates(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
   return [...rows].sort((a, b) => {
-    if (b.streakWrong !== a.streakWrong) {
-      return b.streakWrong - a.streakWrong
-    }
-    const dateCmp = compareDateStrings(a.nextReviewDate, b.nextReviewDate)
-    if (dateCmp !== 0) return dateCmp
-    // Recently introduced wins ties (descending introducedOn).
-    return compareDateStrings(b.introducedOn, a.introducedOn)
+    const weak = b.streakWrong - a.streakWrong
+    if (weak !== 0) return weak
+    const introduced = (a.introducedOn ?? '').localeCompare(b.introducedOn ?? '')
+    return introduced !== 0 ? introduced : a.wordKey.localeCompare(b.wordKey)
   })
 }
 
-/** Tier 2 (rest): soonest due first — overdue-ness outranks a mild wrong streak. */
-function sortBossRestCandidates(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
-  return [...rows].sort((a, b) => {
-    const dateCmp = compareDateStrings(a.nextReviewDate, b.nextReviewDate)
-    if (dateCmp !== 0) return dateCmp
-    if (b.streakWrong !== a.streakWrong) {
-      return b.streakWrong - a.streakWrong
+/**
+ * Fill the main-line history portion across boxes instead of letting one large high-box
+ * bucket occupy every slot.
+ */
+function interleaveDueReviews(rows: AdaptivePlanWordProgress[]): AdaptivePlanWordProgress[] {
+  const queues = ([1, 2, 3, 4, 5] as const).map((box) =>
+    sortDueReviews(rows.filter((row) => (row.boxIndex ?? 1) === box)),
+  )
+  const result: AdaptivePlanWordProgress[] = []
+  let added = true
+  while (added) {
+    added = false
+    for (const queue of queues) {
+      const row = queue.shift()
+      if (!row) continue
+      result.push(row)
+      added = true
     }
-    return compareDateStrings(b.introducedOn, a.introducedOn)
-  })
+  }
+  return result
 }
 
 function pickDueReviewKeys(
   rows: AdaptivePlanWordProgress[],
   today: string,
-  reviewCap: number,
+  limit: number,
 ): string[] {
-  const due = sortDueReviews(activeRows(rows).filter((row) => isDue(row, today)))
-  return due.slice(0, reviewCap).map((row) => row.wordKey)
+  const eligible = interleaveDueReviews(activeRows(rows).filter((row) => isDue(row, today)))
+  return eligible.slice(0, limit).map((row) => row.wordKey)
 }
 
-function pickBossKeys(rows: AdaptivePlanWordProgress[], limit: number): string[] {
-  const cap = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : BOSS_PACK_LIMIT_FALLBACK
-  const learning = activeRows(rows).filter((row) => row.status === 'LEARNING')
-  // Two tiers: stubborn words (streakWrong >= 2) are why boss exists, so they
-  // always get slots first; the remaining slots go soonest-due first so the
-  // most overdue words aren't crowded out by mildly-wrong fresh words.
-  const stubborn = learning.filter((row) => row.streakWrong >= 2)
-  const rest = learning.filter((row) => row.streakWrong < 2)
-  return [...sortBossCandidates(stubborn), ...sortBossRestCandidates(rest)]
-    .slice(0, cap)
-    .map((row) => row.wordKey)
+function pickBossKeys(rows: AdaptivePlanWordProgress[]): string[] {
+  return activeRows(rows).filter(isBossPending).map((row) => row.wordKey)
 }
 
 export function buildDailyTask(
@@ -176,64 +152,46 @@ export function buildDailyTask(
   today: string,
 ): AdaptiveDailyTask {
   const mode = resolveMode(plan, rows, today)
-  // New words activated earlier today but never settled (child left mid-round)
-  // must stay on today's plate — preferably as activateKeys so study → 闯关
-  // runs again, not buried as "due tomorrow".
+  // An interrupted batch always resumes before another batch starts.
   const unfinishedKeys = activeRows(rows)
     .filter((row) => isUnfinishedSameDayActivation(row, today))
     .map((row) => row.wordKey)
   const unfinishedSet = new Set(unfinishedKeys)
-  const dueReviewKeys = pickDueReviewKeys(rows, today, plan.reviewCap).filter(
+  const allStageReviewKeys = pickDueReviewKeys(rows, today, Number.MAX_SAFE_INTEGER).filter(
     (key) => !unfinishedSet.has(key),
   )
+  const mainReviewLimit = Math.max(1, plan.reviewCap)
+  const stageReviewKeys = allStageReviewKeys.slice(0, mainReviewLimit)
+  const stageReviewCount = stageReviewKeys.length
+  const queuedStageCount = Math.max(0, allStageReviewKeys.length - stageReviewKeys.length)
 
   if (mode === 'boss') {
-    // Same-day activations left unfinished by an interrupted normal round must
-    // be drilled here too — otherwise the boss round clears reviews while the
-    // new-word goal stays at 0 and the day splits into two rounds.
-    const packedBossKeys = pickBossKeys(rows, bossPackLimit(plan)).filter(
-      (key) => !unfinishedSet.has(key),
-    )
-    const bossKeys = [...unfinishedKeys, ...packedBossKeys].slice(0, bossPackLimit(plan))
+    const bossKeys = pickBossKeys(rows)
     return {
       mode,
-      reviewKeys: dueReviewKeys,
-      reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
+      reviewKeys: stageReviewKeys,
+      reviewBatchKeys: stageReviewKeys,
+      stageReviewCount,
+      queuedStageCount,
       activateKeys: [],
       bossKeys,
-      bossUnfinishedNewKeys: bossKeys.filter((key) => unfinishedSet.has(key)),
-    }
-  }
-
-  if (mode === 'review_only') {
-    // Can't pull brand-new words, but unfinished same-day activations still need practice.
-    const reviewKeys = [...unfinishedKeys, ...dueReviewKeys].slice(0, plan.reviewCap)
-    return {
-      mode,
-      reviewKeys,
-      reviewBatchKeys: reviewKeys.slice(0, plan.reviewBatchSize),
-      activateKeys: [],
-      bossKeys: [],
       bossUnfinishedNewKeys: [],
     }
   }
 
-  // newWordsPerDay is a per-round batch size + daily *goal*, not a hard ceiling.
-  // After today's goal is met, another round can still pull a fresh batch so the
-  // child can get ahead (提前学). Unfinished mid-round activations fill the
-  // batch first so「开始」resumes them instead of piling on more new words.
+  // Configured new-word count is per completed main-line batch, not per day.
   const perDay = Number.isFinite(plan.newWordsPerDay) ? plan.newWordsPerDay : 10
   const batchSize = Math.max(1, Math.floor(perDay))
   const freshSlots = Math.max(0, batchSize - unfinishedKeys.length)
   const freshKeys = pickActivations(rows, freshSlots).map((row) => row.wordKey)
   const activateKeys = [...unfinishedKeys, ...freshKeys]
 
-  // Reviews are due-date only — never pull future-box words forward on idle days
-  // (that collapses Leitner intervals, e.g. Box5 7-day gap).
   return {
     mode,
-    reviewKeys: dueReviewKeys,
-    reviewBatchKeys: dueReviewKeys.slice(0, plan.reviewBatchSize),
+    reviewKeys: stageReviewKeys,
+    reviewBatchKeys: stageReviewKeys,
+    stageReviewCount,
+    queuedStageCount,
     activateKeys,
     bossKeys: [],
     bossUnfinishedNewKeys: [],
@@ -241,12 +199,8 @@ export function buildDailyTask(
 }
 
 /**
- * Homepage / today-card progress for an adaptive plan's **mandatory** daily work.
- *
- * - New-word progress: settled activations today (「开始」but not settled → 0).
- * - Due reviews / Boss pack count toward `total` until cleared, so the card never
- *   shows e.g. 5/5 while reviews remain (done + remaining === total).
- * - Meeting the goal does not block 提前学; `allDone` ignores ahead batches.
+ * Compatibility summary for the homepage card. V2 practice is batch-driven;
+ * the daily ledger remains analytics only and never gates the next batch.
  */
 export function summarizeAdaptiveTodayProgress(
   plan: AdaptiveWordPlan,
@@ -270,8 +224,7 @@ export function summarizeAdaptiveTodayProgress(
   const settled = Math.max(0, activated - unfinishedCount)
   const task = buildDailyTask(plan, rows, today)
   const goalMet = settled >= newGoal && unfinishedCount === 0
-  // Goal met + no mandatory review/boss work. Extra activateKeys (提前学) do
-  // not keep the card in an incomplete state.
+  // Goal met + no mandatory review/boss work.
   const allDone =
     goalMet && unfinishedCount === 0 && task.reviewKeys.length === 0 && task.mode !== 'boss'
 
@@ -284,19 +237,15 @@ export function summarizeAdaptiveTodayProgress(
   const done = allDone ? newGoal : newDone
   const total = allDone ? newGoal : newDone + newRemaining + dueRemaining
 
-  const canAhead = allDone && task.activateKeys.length > 0
-
   let subtitle: string
-  if (canAhead) {
-    subtitle = '今日目标已完成，可提前继续学'
-  } else if (allDone) {
+  if (allDone) {
     subtitle = '今日任务已完成'
   } else if (unfinishedCount > 0) {
-    subtitle = `还有 ${unfinishedCount} 个新词待练完`
+    subtitle = `当前批次还有 ${unfinishedCount} 个新词待练完`
   } else if (task.mode === 'boss') {
     subtitle = `Boss 挑战 · ${task.bossKeys.length} 词`
   } else {
-    subtitle = `今日新学 ${task.activateKeys.length} · 复习 ${task.reviewKeys.length}`
+    subtitle = `本批新词 ${task.activateKeys.length} · 阶段推进 ${task.stageReviewCount} · 等待 ${task.queuedStageCount}`
   }
 
   return {

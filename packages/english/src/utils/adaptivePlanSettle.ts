@@ -1,6 +1,6 @@
 import type { QuizType, WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
 import { advanceStage, regressStage } from '@rosie/core'
-import { addCalendarDays, applyBoxAnswer, BOX_INTERVALS_DAYS } from './adaptivePlanBoxes'
+import { applyBoxAnswer } from './adaptivePlanBoxes'
 import type { AdaptivePlanStats, AdaptivePlanWordProgress } from './adaptivePlanTypes'
 import { classifyPlanWords } from './english-helpers'
 
@@ -13,18 +13,10 @@ export type SessionOutcome = {
   usedHelpCount?: number
 }
 
-/** Correct writing without retry or letter-reveal help is strong mastery evidence. */
+/** Any retry or help makes the answer assisted, regardless of question type. */
 export function isIndependentCorrectOutcome(result: SessionOutcome): boolean {
   if (!result.correct) return false
-  if (result.quizType !== 'C' && result.quizType !== 'D') return true
   return result.usedRetry !== true && result.usedHelp !== true
-}
-
-function currentBoxInterval(boxIndex: number | null): number {
-  if (boxIndex === 2 || boxIndex === 3 || boxIndex === 4 || boxIndex === 5) {
-    return BOX_INTERVALS_DAYS[boxIndex]
-  }
-  return BOX_INTERVALS_DAYS[1]
 }
 
 export type AdaptiveMasteryPatch = { wordKey: string; info: WordMasteryInfo }
@@ -68,7 +60,8 @@ function progressMap(rows: AdaptivePlanWordProgress[]): Map<string, AdaptivePlan
 }
 
 function shouldAdvanceMastery(row: AdaptivePlanWordProgress): boolean {
-  return row.status === 'MASTERED' || (row.boxIndex !== null && row.boxIndex >= 3)
+  return row.status === 'MASTERED' ||
+    (row.status === 'LEARNING' && row.boxIndex !== null && row.boxIndex >= 3 && row.boxIndex < 5)
 }
 
 function buildMasteryPatches(
@@ -115,38 +108,27 @@ export type SettleStep3Args = {
 /**
  * Step3打卡成功：批量更新计划箱 + 全局 mastery。
  *
- * 箱子流转按「本会话是否曾答错」判定（§5.4）：Step1/Step3 有任一次错 →
- * 打回 Box 1 + streakWrong++（否则 Step3 全对闭环会把每个词都折叠成
- * 「对」，降箱与顽固词统计永远不会发生）。
- * mastery 回写仍按终态折叠（§5.6：Step1 错 + Step3 对 → 只按「对」回写），
- * 且被打回 Box 1 的词自然不满足 shouldAdvanceMastery，不会升级。
+ * 只有全程独立正确才升阶。任一答错、重试或提示都会保留当前阶段，
+ * 并增加弱词计数，下一批主线优先验收。全局 mastery 同样不会因辅助答对而升级。
  */
 export function settleStep3(args: SettleStep3Args): SettleResult {
   const { progressRows, results, masteryByKey, consolidateExemptSet, today } = args
   const collapsed = collapseSessionOutcomes(results)
-  const erred = wrongOnceKeys(results)
+  const blockedAdvanceKeys = new Set(
+    results.filter((result) => !isIndependentCorrectOutcome(result)).map((result) => result.wordKey),
+  )
   const byKey = progressMap(progressRows)
-  const assistedWritingKeys = new Set<string>()
 
   for (const wordKey of collapsed.keys()) {
     const row = byKey.get(wordKey)
     if (!row) continue
-    const wordOutcomes = results.filter((result) => result.wordKey === wordKey)
-    const latestOutcome = wordOutcomes.at(-1)
-    const hasAssistedWriting =
-      latestOutcome != null &&
-      (latestOutcome.quizType === 'C' || latestOutcome.quizType === 'D') &&
-      latestOutcome.correct &&
-      !isIndependentCorrectOutcome(latestOutcome)
-    if (erred.has(wordKey)) {
-      byKey.set(wordKey, applyBoxAnswer(row, false, today))
-    } else if (hasAssistedWriting) {
-      assistedWritingKeys.add(wordKey)
+    if (blockedAdvanceKeys.has(wordKey)) {
       byKey.set(wordKey, {
         ...row,
-        // Assisted writing completes today's practice but keeps the learner in
-        // the same box until an independent spelling pass.
-        nextReviewDate: addCalendarDays(today, currentBoxInterval(row.boxIndex)),
+        // V2 keeps a failed word at its current stage. It receives priority in
+        // the next main-line batch instead of falling back to Stage 1.
+        streakWrong: row.streakWrong + 1,
+        nextReviewDate: null,
       })
     } else {
       byKey.set(wordKey, applyBoxAnswer(row, true, today))
@@ -165,7 +147,7 @@ export function settleStep3(args: SettleStep3Args): SettleResult {
       masteryByKey,
       consolidateExemptSet,
       today,
-      assistedWritingKeys,
+      blockedAdvanceKeys,
     ),
     planStatsPatch: {},
   }
@@ -181,6 +163,7 @@ export type SettleBossFirstPassArgs = {
   consolidateExemptSet: Set<string>
   currentStats: AdaptivePlanStats
   today: string
+  bossPassed: boolean
 }
 
 function buildBossPlanStatsPatch(
@@ -203,19 +186,13 @@ function buildBossPlanStatsPatch(
     return { bossFailStreak: 0 }
   }
 
-  // Any failed submission counts toward the force-unlock streak, otherwise a
-  // child stuck in the 60–85% band could stay in Boss forever with no relief.
-  // Question-tier downgrade stays gated on < 60% (§5.3.1).
-  const patch: Partial<AdaptivePlanStats> = {
+  // Failure keeps the frozen Boss cohort intact. Formal Boss difficulty never downgrades.
+  return {
     bossFailStreak: stats.bossFailStreak + 1,
   }
-  if (firstPassPct < 60) {
-    patch.bossQuestionTier = Math.min(3, stats.bossQuestionTier + 1)
-  }
-  return patch
 }
 
-/** Boss 交卷：首轮改箱；沉底答对不升箱；mastery 按折叠终态回写（§5.5–5.6）。 */
+/** Boss settlement: pass graduates the frozen cohort; failure keeps it frozen. */
 export function settleBossFirstPass(args: SettleBossFirstPassArgs): SettleResult {
   const {
     progressRows,
@@ -225,34 +202,18 @@ export function settleBossFirstPass(args: SettleBossFirstPassArgs): SettleResult
     consolidateExemptSet,
     currentStats,
     today,
+    bossPassed,
   } = args
 
   const byKey = progressMap(progressRows)
 
   const collapsedFirstPass = collapseSessionOutcomes(firstPassResults)
-  const erred = wrongOnceKeys(firstPassResults)
-  const assistedWritingKeys = new Set<string>()
   for (const wordKey of collapsedFirstPass.keys()) {
     const row = byKey.get(wordKey)
     if (!row) continue
-    const outcomes = firstPassResults.filter((result) => result.wordKey === wordKey)
-    const hasAssistedWriting = outcomes.some(
-      (result) =>
-        (result.quizType === 'C' || result.quizType === 'D') &&
-        result.correct &&
-        !isIndependentCorrectOutcome(result),
-    )
-    if (erred.has(wordKey)) {
-      byKey.set(wordKey, applyBoxAnswer(row, false, today))
-    } else if (hasAssistedWriting) {
-      assistedWritingKeys.add(wordKey)
-      byKey.set(wordKey, {
-        ...row,
-        nextReviewDate: addCalendarDays(today, currentBoxInterval(row.boxIndex)),
-      })
-    } else {
-      byKey.set(wordKey, applyBoxAnswer(row, true, today))
-    }
+    byKey.set(wordKey, bossPassed
+      ? { ...row, status: 'MASTERED', boxIndex: null, targetBox: null, streakWrong: 0, nextReviewDate: null }
+      : { ...row, status: 'LEARNING_PENDING', boxIndex: 5, targetBox: null, nextReviewDate: null })
   }
 
   const touchedKeys = new Set([
@@ -274,7 +235,7 @@ export function settleBossFirstPass(args: SettleBossFirstPassArgs): SettleResult
       masteryByKey,
       consolidateExemptSet,
       today,
-      assistedWritingKeys,
+      new Set(),
     ),
     planStatsPatch: buildBossPlanStatsPatch(currentStats, firstPassResults, sinkResults),
   }

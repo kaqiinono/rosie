@@ -3,7 +3,7 @@ export const ADAPTIVE_PLAN_DEFAULTS = {
   newWordsPerDay: 10,
   reviewCap: 40,
   reviewBatchSize: 20,
-  backlogFuse: 50,
+  backlogFuse: 20,
   bossEveryNNew: 50,
   bossStubbornThreshold: 15,
   bossPackLimit: 50,
@@ -13,6 +13,12 @@ export const ADAPTIVE_PLAN_DEFAULTS = {
 export function defaultReviewCap(newWordsPerDay: number): number {
   const n = Number.isFinite(newWordsPerDay) ? Math.max(1, Math.round(newWordsPerDay)) : 1
   return Math.max(ADAPTIVE_PLAN_DEFAULTS.reviewCap, n * 4)
+}
+
+/** Suggested reminder threshold for weak words; it never blocks the main line. */
+export function defaultWeakReminderThreshold(newWordsPerBatch: number): number {
+  const n = Number.isFinite(newWordsPerBatch) ? Math.max(1, Math.round(newWordsPerBatch)) : 1
+  return Math.max(10, n * 2)
 }
 
 export const NEW_WORDS_PER_DAY_PRESETS = [5, 10, 15, 20, 25, 30] as const
@@ -26,7 +32,7 @@ export function clampNewWordsPerDay(n: number): number {
 
 export const REVIEW_CAP_OPTIONS = [20, 30, 40, 50, 60, 80, 100] as const
 
-export const BACKLOG_FUSE_OPTIONS = [30, 40, 50, 60, 80, 100] as const
+export const BACKLOG_FUSE_OPTIONS = [10, 15, 20, 30, 40, 50] as const
 
 /** 0 = disable quantitative Boss trigger. */
 export const BOSS_EVERY_N_NEW_OPTIONS = [0, 25, 30, 40, 50, 75, 100] as const
@@ -67,47 +73,35 @@ export function bossEveryNNewLabel(n: number): string {
 
 /** Shared copy for review scheduling UI (create + manage). */
 export const REVIEW_SCHEDULE_HELP = {
-  title: '复习调度',
-  intro: '控制每天到期复习的规模，以及复习积压过多时是否暂停拉新词。',
+  title: '批次节奏',
+  intro: '控制每批主线的阶段推进量，并在弱词较多时给出加练提醒；都不会中断主线。',
   reviewCap: {
-    label: '复习上限',
+    label: '单批阶段推进上限',
     detail:
-      '每天最多安排多少个「已到期」复习词（nextReviewDate ≤ 今天）。只练到期的词，不会提前拉未来箱位。建议 ≥ 每日新词 × 4。',
+      '每完成一批主线，最多同时安排多少个已进入 1–5 阶段的词继续推进。各阶段轮流取词，弱词优先。建议 ≥ 每批新词 × 4。',
     example:
-      '例：每天 5 新词、复习上限 40 → 某天最多 40 个到期词进任务；未到期的树箱词不会因此被拉来练。',
+      '例：每批 5 个新词、上限 40 → 该批最多再安排 40 个历史词进阶。',
   },
   backlogFuse: {
-    label: '复习熔断',
+    label: '弱词提醒阈值',
     detail:
-      '当计划中「已到期」的学习中词超过 N 个时，当天进入「仅复习」模式：只练到期复习，不再拉新词，直到积压回落。',
-    example: '例：熔断 50 → 到期复习超过 50 个时暂停新学，先清积压。',
+      '当答错或使用提示的弱词达到 N 个时，提醒可选加练。只提醒，不暂停新词，也不代替主线验收。',
+    example: '例：阈值 10 → 弱词达到 10 个时显示加练建议，下一批主线仍照常进行。',
   },
 } as const
 
 /** Shared copy for Boss threshold UI (create + manage). */
-export function bossThresholdHelp(bossPackLimit: number) {
+export function bossThresholdHelp() {
   return {
-    title: 'Boss 日触发与题量',
-    intro: `满足以下任一触发条件时，当天进入 Boss 模式（👹）：当天不拉新词，从全部「学习中」单词抽最多 ${bossPackLimit} 题考核。通过（首轮正确率 ≥ 85%）后恢复普通模式，并重新累计新词计数。`,
+    title: 'Boss 挑战触发',
+    intro: '自上次 Boss 通过后，新词累积达标且已有通过第 5 阶段的词时，冻结全部 Boss 等待词进行独立默写验收。Boss 不取代主线，失败也不降阶。',
     everyNNew: {
       label: '累计新词',
       detail:
-        '自上次 Boss 通过后，再累计学完 N 个新词时触发。上次通过时会记录当时已激活总数；之后每新学 1 词，计数 +1，满 N 即触发。设为「关」可关闭此条件。',
+        '自上次 Boss 通过后，再累计学完 N 个新词时触发。若当时还没有 Boss 等待词，主线继续，直到至少有 1 词到达验收点。',
       example:
-        '例：每天 5 词、阈值 50 → 约在第 11 天（累计 50 词）出现第一次 Boss；词库不足 50 词则不会出现定量 Boss。',
+        '例：阈值 50 → 累计学完 50 个新词后，对当时所有 Boss 等待词进行一次完整默写。',
     },
-    stubborn: {
-      label: '顽固词数量',
-      detail:
-        '「顽固词」= 还在学习中、且至少在不同天里各答错过一次（还没被某次全对清零）的词。当这类词达到 N 个时也触发 Boss，与累计新词无关。',
-      example: '例：阈值 15 → 有 15 个词反复答错、降箱后仍学不会时，即使新词未满也会进入 Boss。',
-    },
-    packLimit: {
-      label: 'Boss 题包上限',
-      detail:
-        'Boss 日当天最多考核多少个「学习中」词。优先抽顽固词多、复习日更近的词。调小可减轻 Boss 日负担（如 56 词计划不必一次考满 50 个）。',
-      example: '例：上限 25 → D11 Boss 日最多练 25 词，其余留到下次 Boss 或正常复习。',
-    },
-    note: 'Boss 日练到的词在轨迹总览表显示 👹（箱位未变）或对应箱位/👑（有升箱或毕业）。',
+    note: '通过条件：首轮独立正确率 ≥ 85%，并完成当轮错词加练。失败后保留原 Boss 词组，加练后重新全量验收。',
   } as const
 }

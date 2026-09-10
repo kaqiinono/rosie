@@ -22,12 +22,12 @@ function row(partial: Partial<AdaptivePlanWordProgress>): AdaptivePlanWordProgre
 }
 
 describe('adaptivePlanQuizTypes', () => {
-  it('maps box 1 → A only', () => {
-    expect(quizTypesForWord(row({ boxIndex: 1 }))).toEqual(['A'])
+  it('maps Stage 1 → A and B', () => {
+    expect(quizTypesForWord(row({ boxIndex: 1 }))).toEqual(['A', 'B'])
   })
 
-  it('maps box 2 → A,B and light → A', () => {
-    expect(quizTypesForWord(row({ boxIndex: 2 }))).toEqual(['A', 'B'])
+  it('maps Stage 2 → one choice then immediate spelling', () => {
+    expect(quizTypesForWord(row({ boxIndex: 2 }))).toEqual(['A', 'C'])
     expect(quizTypesForWord(row({ boxIndex: 2 }), undefined, { preferLight: true })).toEqual(['A'])
   })
 
@@ -47,25 +47,11 @@ describe('adaptivePlanQuizTypes', () => {
   })
 })
 
-describe('bossQuizTypesForWord (§5.3.1 downgrade ladder)', () => {
-  it('tier 1 = full pressure (high box → pure writing)', () => {
-    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 1)).toEqual(['C'])
-    expect(bossQuizTypesForWord(row({ boxIndex: 3 }), undefined, 1)).toEqual(['B', 'C'])
-  })
-
-  it('tier 2 = light pad before writing', () => {
-    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 2)).toEqual(['B', 'C'])
-    expect(bossQuizTypesForWord(row({ boxIndex: 3 }), undefined, 2)).toEqual(['A', 'C'])
-  })
-
-  it('tier 3 = floor (recognition + regular writing for high boxes)', () => {
-    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 3)).toEqual(['A', 'C'])
-    expect(bossQuizTypesForWord(row({ boxIndex: 3 }), undefined, 3)).toEqual(['A', 'B'])
-    expect(bossQuizTypesForWord(row({ boxIndex: 1 }), undefined, 3)).toEqual(['A'])
-  })
-
-  it('clamps tiers outside 1–3 (no downgrade past the floor)', () => {
-    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 0)).toEqual(['C'])
-    expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, 7)).toEqual(['A', 'C'])
+describe('bossQuizTypesForWord', () => {
+  it('always uses formal spelling and ignores legacy tier', () => {
+    for (const tier of [0, 1, 2, 3, 7]) {
+      expect(bossQuizTypesForWord(row({ boxIndex: 1 }), undefined, tier)).toEqual(['C'])
+      expect(bossQuizTypesForWord(row({ boxIndex: 5 }), undefined, tier)).toEqual(['C'])
+    }
   })
 })

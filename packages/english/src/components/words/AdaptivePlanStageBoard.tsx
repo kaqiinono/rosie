@@ -5,6 +5,7 @@ import type { WordEntry } from '@rosie/core'
 import { findWordByKey } from '../../utils/english-helpers'
 import {
   ADAPTIVE_BOX_STAGES,
+  ADAPTIVE_BOSS_STAGE,
   ADAPTIVE_MASTERED_STAGE,
   ADAPTIVE_NOT_STARTED_STAGE,
   ADAPTIVE_PENDING_STAGE,
@@ -22,19 +23,6 @@ type AdaptivePlanStageBoardProps = {
   className?: string
   /** Rows per page when the table is expanded. Default 20. */
   pageSize?: number
-}
-
-function formatDue(
-  nextReviewDate: string | null | undefined,
-  today: string,
-  mastered: boolean,
-): { label: string; urgent: 'today' | 'tomorrow' | 'future' | 'none' } {
-  if (mastered) return { label: '已掌握', urgent: 'none' }
-  if (!nextReviewDate) return { label: '—', urgent: 'none' }
-  const diff = Math.floor((Date.parse(nextReviewDate) - Date.parse(today)) / 86400000)
-  if (diff <= 0) return { label: '今天', urgent: 'today' }
-  if (diff === 1) return { label: '明天', urgent: 'tomorrow' }
-  return { label: `${diff}天后`, urgent: 'future' }
 }
 
 function resolveWord(key: string, vocab: WordEntry[]): WordEntry | null {
@@ -60,9 +48,8 @@ type PanelRow = {
   entry: WordEntry | null
   stageEmoji: string
   stageName: string
-  due: { label: string; urgent: 'today' | 'tomorrow' | 'future' | 'none' }
   statusLabel: string
-  stubborn: boolean
+  weak: boolean
 }
 
 export default function AdaptivePlanStageBoard({
@@ -74,8 +61,6 @@ export default function AdaptivePlanStageBoard({
 }: AdaptivePlanStageBoardProps) {
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState(1)
-  const today = new Date().toISOString().slice(0, 10)
-
   const panelRows: PanelRow[] = useMemo(() => {
     const active = rows.filter((row) => row.archivedAt == null)
     return active
@@ -88,9 +73,8 @@ export default function AdaptivePlanStageBoard({
             entry,
             stageEmoji: ADAPTIVE_MASTERED_STAGE.emoji,
             stageName: ADAPTIVE_MASTERED_STAGE.name,
-            due: formatDue(null, today, true),
             statusLabel: '✓ 已掌握',
-            stubborn: false,
+            weak: false,
           }
         }
         if (progress.status === 'LEARNING') {
@@ -100,21 +84,20 @@ export default function AdaptivePlanStageBoard({
             entry,
             stageEmoji: stage.emoji,
             stageName: stage.name,
-            due: formatDue(progress.nextReviewDate, today, false),
-            statusLabel: progress.streakWrong >= 2 ? '🔥 顽固' : '学习中',
-            stubborn: progress.streakWrong >= 2,
+            statusLabel: progress.streakWrong > 0 ? '⚠️ 弱词' : '待主线推进',
+            weak: progress.streakWrong > 0,
           }
         }
         if (progress.status === 'LEARNING_PENDING') {
+          const bossPending = progress.targetBox == null && progress.boxIndex === 5
           const target = progress.targetBox != null ? adaptiveBoxStage(progress.targetBox) : null
           return {
             progress,
             entry,
-            stageEmoji: ADAPTIVE_PENDING_STAGE.emoji,
-            stageName: target ? `激活→${target.name}` : ADAPTIVE_PENDING_STAGE.name,
-            due: { label: '—', urgent: 'none' as const },
-            statusLabel: '排队中',
-            stubborn: false,
+            stageEmoji: bossPending ? ADAPTIVE_BOSS_STAGE.emoji : ADAPTIVE_PENDING_STAGE.emoji,
+            stageName: bossPending ? ADAPTIVE_BOSS_STAGE.name : target ? `激活→${target.name}` : ADAPTIVE_PENDING_STAGE.name,
+            statusLabel: bossPending ? '等待 Boss 验收' : '排队中',
+            weak: false,
           }
         }
         return {
@@ -122,32 +105,27 @@ export default function AdaptivePlanStageBoard({
           entry,
           stageEmoji: ADAPTIVE_NOT_STARTED_STAGE.emoji,
           stageName: ADAPTIVE_NOT_STARTED_STAGE.name,
-          due: { label: '—', urgent: 'none' as const },
           statusLabel: '未练习',
-          stubborn: false,
+          weak: false,
         }
       })
       .sort((a, b) => {
-        const urgentRank = (u: PanelRow['due']['urgent']) =>
-          u === 'today' ? 0 : u === 'tomorrow' ? 1 : u === 'future' ? 2 : 3
-        const urg = urgentRank(a.due.urgent) - urgentRank(b.due.urgent)
-        if (urg !== 0) return urg
+        if (a.weak !== b.weak) return a.weak ? -1 : 1
         const stageDiff = adaptiveStageSortKey(a.progress) - adaptiveStageSortKey(b.progress)
         if (stageDiff !== 0) return stageDiff
         const aw = a.entry?.word ?? fallbackWord(a.progress.wordKey)
         const bw = b.entry?.word ?? fallbackWord(b.progress.wordKey)
         return aw.localeCompare(bw)
       })
-  }, [rows, today, vocab])
+  }, [rows, vocab])
 
   const counts = useMemo(() => {
     const byBox = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
     let mastered = 0
     let learning = 0
     let queue = 0
-    let dueToday = 0
-    let dueTomorrow = 0
-    let stubborn = 0
+    let weak = 0
+    let bossPending = 0
     for (const row of panelRows) {
       if (row.progress.status === 'MASTERED') {
         mastered += 1
@@ -156,14 +134,16 @@ export default function AdaptivePlanStageBoard({
       if (row.progress.status === 'LEARNING') {
         learning += 1
         byBox[adaptiveBoxStage(row.progress.boxIndex).box] += 1
-        if (row.due.urgent === 'today') dueToday += 1
-        if (row.due.urgent === 'tomorrow') dueTomorrow += 1
-        if (row.stubborn) stubborn += 1
+        if (row.weak) weak += 1
         continue
       }
-      queue += 1
+      if (row.progress.status === 'LEARNING_PENDING' && row.progress.targetBox == null && row.progress.boxIndex === 5) {
+        bossPending += 1
+      } else {
+        queue += 1
+      }
     }
-    return { byBox, mastered, learning, queue, dueToday, dueTomorrow, stubborn, total: panelRows.length }
+    return { byBox, mastered, learning, queue, weak, bossPending, total: panelRows.length }
   }, [panelRows])
 
   const totalPages = Math.max(1, Math.ceil(panelRows.length / pageSize))
@@ -199,9 +179,6 @@ export default function AdaptivePlanStageBoard({
                 阶段
               </th>
               <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
-                下次复习
-              </th>
-              <th className="px-4 py-2 text-center text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
                 状态
               </th>
             </tr>
@@ -228,32 +205,10 @@ export default function AdaptivePlanStageBoard({
                   <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">
                     {row.stageEmoji} {row.stageName}
                   </td>
-                  <td className="px-3 py-2 text-center">
-                    {row.due.urgent === 'today' && (
-                      <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-bold text-red-400">
-                        {row.due.label}
-                      </span>
-                    )}
-                    {row.due.urgent === 'tomorrow' && (
-                      <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-[10px] font-bold text-orange-400">
-                        {row.due.label}
-                      </span>
-                    )}
-                    {row.due.urgent === 'future' && (
-                      <span className="text-[10px] font-bold text-[var(--wm-text-dim)]">{row.due.label}</span>
-                    )}
-                    {row.due.urgent === 'none' && (
-                      <span
-                        className={`text-[10px] font-bold ${mastered ? 'text-green-400' : 'text-[var(--wm-text-dim)]'}`}
-                      >
-                        {row.due.label}
-                      </span>
-                    )}
-                  </td>
                   <td className="px-4 py-2 text-center text-[10px] font-bold">
                     {mastered ? (
                       <span className="text-green-400">{row.statusLabel}</span>
-                    ) : row.stubborn ? (
+                    ) : row.weak ? (
                       <span className="text-red-400">{row.statusLabel}</span>
                     ) : row.progress.status === 'NOT_STARTED' || row.progress.status === 'LEARNING_PENDING' ? (
                       <span className="text-[var(--wm-text-dim)]">{row.statusLabel}</span>
@@ -266,7 +221,7 @@ export default function AdaptivePlanStageBoard({
             })}
             {panelRows.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-[12px] text-[var(--wm-text-dim)]">
+                <td colSpan={4} className="px-4 py-6 text-center text-[12px] text-[var(--wm-text-dim)]">
                   计划暂无单词进度
                 </td>
               </tr>
@@ -329,27 +284,19 @@ export default function AdaptivePlanStageBoard({
           </span>
         ) : null,
       )}
-      {counts.dueToday > 0 && (
+      {counts.bossPending > 0 && (
         <>
           <span className="text-[var(--wm-border)]">·</span>
           <span>
-            今日复习 <strong className="text-[#f87171]">{counts.dueToday}</strong>
+            Boss 等待 <strong className="text-[#fbbf24]">{counts.bossPending}</strong>
           </span>
         </>
       )}
-      {counts.dueTomorrow > 0 && (
+      {counts.weak > 0 && (
         <>
           <span className="text-[var(--wm-border)]">·</span>
           <span>
-            明日 <strong className="text-[#fb923c]">{counts.dueTomorrow}</strong>
-          </span>
-        </>
-      )}
-      {counts.stubborn > 0 && (
-        <>
-          <span className="text-[var(--wm-border)]">·</span>
-          <span>
-            顽固 <strong className="text-red-400">{counts.stubborn}</strong>
+            弱词 <strong className="text-red-400">{counts.weak}</strong>
           </span>
         </>
       )}

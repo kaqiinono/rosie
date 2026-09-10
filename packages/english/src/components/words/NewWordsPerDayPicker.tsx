@@ -61,7 +61,7 @@ export default function NewWordsPerDayPicker({
     <div>
       <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <span className="text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-          每日新词目标
+          每批新词
         </span>
         <span className="text-[.62rem] font-bold text-[var(--wm-text-dim)]">
           每轮批量 / 今日目标 · 默认 {ADAPTIVE_PLAN_DEFAULTS.newWordsPerDay} · 范围 1–{NEW_WORDS_PER_DAY_MAX}
@@ -103,7 +103,7 @@ export default function NewWordsPerDayPicker({
                 ? 'border-[#8b5cf6] text-[#c4b5fd]'
                 : 'border-[var(--wm-border)] text-[var(--wm-text)]'
             } disabled:cursor-wait disabled:opacity-60`}
-            aria-label="自定义每日新词数量"
+            aria-label="自定义每批新词数量"
           />
         </div>
       </div>

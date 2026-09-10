@@ -1,713 +1,122 @@
-import { describe, it, expect } from 'vitest'
-import type {
-  AdaptivePlanWordProgress,
-  AdaptiveWordPlan,
-} from '../../../packages/english/src/utils/adaptivePlanTypes'
-import {
-  isDue,
-  countDueLearning,
-  countActivatedToday,
-  pickActivations,
-  resolveMode,
-  buildDailyTask,
-  isPlanCompletable,
-  summarizeAdaptiveTodayProgress,
-  applyAdaptiveDailyProgress,
-} from '../../../packages/english/src/utils/adaptivePlanScheduler'
+import { describe, expect, it } from 'vitest'
+import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../../packages/english/src/utils/adaptivePlanTypes'
+import { buildDailyTask, countDueLearning, isBossPending, isDue, isPlanCompletable, pickActivations, resolveMode } from '../../../packages/english/src/utils/adaptivePlanScheduler'
 
 const TODAY = '2026-07-09'
-
-const basePlan = (overrides: Partial<AdaptiveWordPlan> = {}): AdaptiveWordPlan => ({
-  id: 'plan-1',
-  userId: 'user-1',
-  title: 'Test Plan',
-  scope: {},
-  newWordsPerDay: 10,
-  reviewCap: 40,
-  reviewBatchSize: 20,
-  backlogFuse: 50,
-  bossEveryNNew: 50,
-  bossStubbornThreshold: 15,
-  bossPackLimit: 50,
-  mode: 'normal',
-  status: 'active',
-  stats: {
-    bossFailStreak: 0,
-    bossQuestionTier: 1,
-    everActivatedCount: 0,
-    totalActivatedCount: 0,
-    lastBossActivatedCount: 0,
-  },
-  createdAt: '2026-07-01T00:00:00Z',
-  updatedAt: '2026-07-01T00:00:00Z',
-  ...overrides,
+const makePlan = (overrides: Partial<AdaptiveWordPlan> = {}): AdaptiveWordPlan => ({
+  id: 'p', userId: 'u', title: 'V2', scope: {}, newWordsPerDay: 5, reviewCap: 8,
+  reviewBatchSize: 2, backlogFuse: 10, bossEveryNNew: 10, bossStubbornThreshold: 15,
+  bossPackLimit: 3, mode: 'normal', status: 'active',
+  stats: { bossFailStreak: 0, bossQuestionTier: 1, everActivatedCount: 0, totalActivatedCount: 0, lastBossActivatedCount: 0 },
+  createdAt: '', updatedAt: '', ...overrides,
 })
-
-const row = (
-  wordKey: string,
-  overrides: Partial<AdaptivePlanWordProgress> = {},
-): AdaptivePlanWordProgress => ({
-  planId: 'plan-1',
-  userId: 'user-1',
-  wordKey,
-  status: 'NOT_STARTED',
-  boxIndex: null,
-  targetBox: null,
-  streakWrong: 0,
-  nextReviewDate: null,
-  introducedOn: null,
-  ...overrides,
+const makeRow = (wordKey: string, overrides: Partial<AdaptivePlanWordProgress> = {}): AdaptivePlanWordProgress => ({
+  planId: 'p', userId: 'u', wordKey, status: 'NOT_STARTED', boxIndex: null,
+  targetBox: null, streakWrong: 0, nextReviewDate: null, introducedOn: null, ...overrides,
 })
+const learning = (key: string, boxIndex: 1 | 2 | 3 | 4 | 5, streakWrong = 0) =>
+  makeRow(key, { status: 'LEARNING', boxIndex, streakWrong })
+const boss = (key: string) =>
+  makeRow(key, { status: 'LEARNING_PENDING', boxIndex: 5, targetBox: null })
 
-describe('isDue', () => {
-  it('is due when LEARNING and nextReviewDate <= today (string compare)', () => {
-    expect(isDue(row('a', { status: 'LEARNING', nextReviewDate: TODAY }), TODAY)).toBe(true)
-    expect(isDue(row('b', { status: 'LEARNING', nextReviewDate: '2026-07-08' }), TODAY)).toBe(true)
+describe('continuous batch eligibility', () => {
+  it('ignores legacy dates for learning rows', () => {
+    expect(isDue(makeRow('a', { status: 'LEARNING', boxIndex: 2, nextReviewDate: '2099-01-01' }), TODAY)).toBe(true)
+    expect(isDue(makeRow('b', { status: 'LEARNING', boxIndex: 2 }), TODAY)).toBe(true)
+    expect(isDue(makeRow('c'), TODAY)).toBe(false)
+    expect(countDueLearning([learning('a', 1), learning('b', 5), makeRow('c')], TODAY)).toBe(2)
   })
 
-  it('is not due when nextReviewDate is after today', () => {
-    expect(isDue(row('c', { status: 'LEARNING', nextReviewDate: '2026-07-10' }), TODAY)).toBe(false)
-  })
-
-  it('is not due for non-LEARNING or null nextReviewDate', () => {
-    expect(isDue(row('d', { status: 'NOT_STARTED' }), TODAY)).toBe(false)
-    expect(isDue(row('e', { status: 'LEARNING', nextReviewDate: null }), TODAY)).toBe(false)
-    expect(isDue(row('f', { status: 'LEARNING_PENDING' }), TODAY)).toBe(false)
-  })
-
-  it('uses lexicographic compare, not Date objects', () => {
-    // YYYY-MM-DD strings sort correctly; would fail if parsed as local midnight timestamps.
-    expect(
-      isDue(row('g', { status: 'LEARNING', nextReviewDate: '2026-07-09' }), '2026-07-09'),
-    ).toBe(true)
-    expect(
-      isDue(row('h', { status: 'LEARNING', nextReviewDate: '2026-07-09' }), '2026-07-08'),
-    ).toBe(false)
+  it('recognizes only the Stage-5 Boss waiting encoding', () => {
+    expect(isBossPending(boss('a'))).toBe(true)
+    expect(isBossPending(makeRow('b', { status: 'LEARNING_PENDING', boxIndex: 3, targetBox: 3 }))).toBe(false)
   })
 })
 
-describe('countDueLearning', () => {
-  it('counts only due LEARNING rows', () => {
-    const rows = [
-      row('due1', { status: 'LEARNING', nextReviewDate: TODAY }),
-      row('due2', { status: 'LEARNING', nextReviewDate: '2026-07-08' }),
-      row('future', { status: 'LEARNING', nextReviewDate: '2026-07-10' }),
-      row('pending', { status: 'LEARNING_PENDING' }),
-    ]
-    expect(countDueLearning(rows, TODAY)).toBe(2)
+describe('activation and main line', () => {
+  it('prioritizes pending target 3, pending target 1, then not-started', () => {
+    const picked = pickActivations([
+      makeRow('n1'),
+      makeRow('p1', { status: 'LEARNING_PENDING', targetBox: 1 }),
+      makeRow('p3', { status: 'LEARNING_PENDING', targetBox: 3 }),
+      makeRow('n2'),
+    ], 3)
+    expect(picked.map((item) => item.wordKey)).toEqual(['p3', 'p1', 'n1'])
   })
 
-  it('excludes archived rows', () => {
+  it('adds configured new words on every fresh batch on the same date', () => {
     const rows = [
-      row('due', { status: 'LEARNING', nextReviewDate: TODAY }),
-      row('archived', { status: 'LEARNING', nextReviewDate: TODAY, archivedAt: TODAY }),
+      ...Array.from({ length: 5 }, (_, i) => makeRow(`done-${i}`, { status: 'LEARNING', boxIndex: 2, introducedOn: TODAY })),
+      ...Array.from({ length: 6 }, (_, i) => makeRow(`new-${i}`)),
     ]
-    expect(countDueLearning(rows, TODAY)).toBe(1)
+    expect(buildDailyTask(makePlan(), rows, TODAY).activateKeys).toEqual(['new-0', 'new-1', 'new-2', 'new-3', 'new-4'])
+  })
+
+  it('caps stage progression by reviewCap, not legacy reviewBatchSize', () => {
+    const task = buildDailyTask(makePlan({ reviewCap: 4, reviewBatchSize: 1 }), Array.from({ length: 7 }, (_, i) => learning(`w${i}`, 1)), TODAY)
+    expect(task.reviewKeys).toHaveLength(4)
+    expect(task.reviewBatchKeys).toHaveLength(4)
+    expect(task.stageReviewCount).toBe(4)
+    expect(task.queuedStageCount).toBe(3)
+  })
+
+  it('interleaves stages and prioritizes weak words inside a stage', () => {
+    const task = buildDailyTask(makePlan({ reviewCap: 5 }), [
+      learning('s1-plain', 1), learning('s1-weak', 1, 2), learning('s2', 2),
+      learning('s3', 3), learning('s4', 4), learning('s5', 5),
+    ], TODAY)
+    expect(task.reviewKeys).toEqual(['s1-weak', 's2', 's3', 's4', 's5'])
+  })
+
+  it('resumes an interrupted activation and fills remaining new slots', () => {
+    const rows = [
+      makeRow('resume', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY }),
+      ...Array.from({ length: 6 }, (_, i) => makeRow(`new-${i}`)),
+    ]
+    expect(buildDailyTask(makePlan(), rows, TODAY).activateKeys).toEqual(['resume', 'new-0', 'new-1', 'new-2', 'new-3'])
   })
 })
 
-describe('pickActivations', () => {
-  it('prioritizes PENDING target 3, then target 1, then NOT_STARTED', () => {
+describe('Boss checkpoint', () => {
+  it('waits for both cumulative threshold and a Boss-ready word', () => {
+    const triggered = makePlan({ stats: { ...makePlan().stats, totalActivatedCount: 10 } })
+    expect(resolveMode(triggered, [learning('a', 4)], TODAY)).toBe('normal')
+    expect(resolveMode(triggered, [boss('a'), makeRow('new')], TODAY)).toBe('boss')
+  })
+
+  it('does not use weak-word count as a Boss trigger', () => {
+    const rows = [boss('ready'), ...Array.from({ length: 20 }, (_, i) => learning(`weak-${i}`, 2, 3))]
+    expect(resolveMode(makePlan(), rows, TODAY)).toBe('normal')
+  })
+
+  it('freezes every waiting word without the legacy pack limit', () => {
+    const rows = Array.from({ length: 7 }, (_, i) => boss(`boss-${i}`))
+    const task = buildDailyTask(makePlan({ mode: 'boss', bossPackLimit: 2 }), rows, TODAY)
+    expect(task.mode).toBe('boss')
+    expect(task.bossKeys).toHaveLength(7)
+  })
+
+  it('finishes an interrupted main-line batch before starting Boss', () => {
+    const triggered = makePlan({ mode: 'boss', stats: { ...makePlan().stats, totalActivatedCount: 10 } })
     const rows = [
-      row('ns1', { status: 'NOT_STARTED' }),
-      row('p1', { status: 'LEARNING_PENDING', targetBox: 1 }),
-      row('p3', { status: 'LEARNING_PENDING', targetBox: 3 }),
-      row('ns2', { status: 'NOT_STARTED' }),
-      row('p3b', { status: 'LEARNING_PENDING', targetBox: 3 }),
+      boss('ready'),
+      makeRow('unfinished', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY }),
     ]
-    const picked = pickActivations(rows, 4)
-    expect(picked.map((r) => r.wordKey)).toEqual(['p3', 'p3b', 'p1', 'ns1'])
-  })
-
-  it('respects n limit', () => {
-    const rows = [
-      row('p3', { status: 'LEARNING_PENDING', targetBox: 3 }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    expect(pickActivations(rows, 1)).toHaveLength(1)
-    expect(pickActivations(rows, 0)).toHaveLength(0)
-  })
-
-  it('treats NaN / non-finite n as zero (never dump the whole queue)', () => {
-    const rows = Array.from({ length: 33 }, (_, i) => row(`w${i}`, { status: 'NOT_STARTED' }))
-    expect(pickActivations(rows, Number.NaN)).toHaveLength(0)
-    expect(pickActivations(rows, Number.POSITIVE_INFINITY)).toHaveLength(0)
-  })
-})
-
-describe('resolveMode', () => {
-  it('returns boss when plan.mode is boss', () => {
-    const plan = basePlan({ mode: 'boss' })
-    expect(resolveMode(plan, [], TODAY)).toBe('boss')
-  })
-
-  it('returns boss on quantitative trigger', () => {
-    const plan = basePlan({
-      bossEveryNNew: 50,
-      stats: {
-        bossFailStreak: 0,
-        bossQuestionTier: 1,
-        everActivatedCount: 100,
-        totalActivatedCount: 100,
-        lastBossActivatedCount: 49,
-      },
-    })
-    expect(resolveMode(plan, [], TODAY)).toBe('boss')
-  })
-
-  it('returns boss on qualitative trigger (streakWrong >= 2 count)', () => {
-    const plan = basePlan({ bossStubbornThreshold: 2 })
-    const rows = [
-      row('a', { status: 'LEARNING', streakWrong: 2 }),
-      row('b', { status: 'LEARNING', streakWrong: 3 }),
-      row('c', { status: 'LEARNING', streakWrong: 1 }),
-    ]
-    expect(resolveMode(plan, rows, TODAY)).toBe('boss')
-  })
-
-  it('returns review_only when due count exceeds backlogFuse', () => {
-    const plan = basePlan({ backlogFuse: 2 })
-    const rows = [
-      row('a', { status: 'LEARNING', nextReviewDate: TODAY }),
-      row('b', { status: 'LEARNING', nextReviewDate: TODAY }),
-      row('c', { status: 'LEARNING', nextReviewDate: TODAY }),
-    ]
-    expect(resolveMode(plan, rows, TODAY)).toBe('review_only')
-  })
-
-  it('returns review_only at fuse boundary (> not >=)', () => {
-    const plan = basePlan({ backlogFuse: 3 })
-    const rows = Array.from({ length: 3 }, (_, i) =>
-      row(`w${i}`, { status: 'LEARNING', nextReviewDate: TODAY }),
-    )
-    expect(resolveMode(plan, rows, TODAY)).toBe('normal')
-    rows.push(row('extra', { status: 'LEARNING', nextReviewDate: TODAY }))
-    expect(resolveMode(plan, rows, TODAY)).toBe('review_only')
-  })
-
-  it('returns normal when no triggers fire', () => {
-    const plan = basePlan()
-    const rows = [row('ns', { status: 'NOT_STARTED' })]
-    expect(resolveMode(plan, rows, TODAY)).toBe('normal')
-  })
-
-  it('boss takes precedence over fuse', () => {
-    const plan = basePlan({ mode: 'boss', backlogFuse: 1 })
-    const rows = Array.from({ length: 10 }, (_, i) =>
-      row(`w${i}`, { status: 'LEARNING', nextReviewDate: TODAY }),
-    )
-    expect(resolveMode(plan, rows, TODAY)).toBe('boss')
-  })
-})
-
-describe('buildDailyTask', () => {
-  it('caps reviewKeys by reviewCap and slices reviewBatchKeys', () => {
-    const plan = basePlan({ reviewCap: 3, reviewBatchSize: 2 })
-    const rows = Array.from({ length: 5 }, (_, i) =>
-      row(`due${i}`, {
-        status: 'LEARNING',
-        nextReviewDate: `2026-07-0${i + 5}`, // 05..09 — soonest first
-        boxIndex: 1,
-      }),
-    )
-    const task = buildDailyTask(plan, rows, TODAY)
+    const task = buildDailyTask(triggered, rows, TODAY)
     expect(task.mode).toBe('normal')
-    expect(task.reviewKeys).toHaveLength(3)
-    expect(task.reviewBatchKeys).toHaveLength(2)
-    expect(task.reviewBatchKeys).toEqual(task.reviewKeys.slice(0, 2))
-  })
-
-  it('includes activateKeys in normal mode', () => {
-    const plan = basePlan({ newWordsPerDay: 2 })
-    const rows = [
-      row('p3', { status: 'LEARNING_PENDING', targetBox: 3 }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual(['p3', 'ns'])
+    expect(task.activateKeys).toContain('unfinished')
     expect(task.bossKeys).toEqual([])
   })
 
-  it("still offers a full fresh batch after today's goal was already settled (ahead learning)", () => {
-    const plan = basePlan({ newWordsPerDay: 3 })
-    const rows = [
-      // Settled earlier today — goal progress, but must not block the next round.
-      row('done1', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-      }),
-      row('done2', { status: 'MASTERED', introducedOn: TODAY }),
-      row('done3', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-      }),
-      row('ns1', { status: 'NOT_STARTED' }),
-      row('ns2', { status: 'NOT_STARTED' }),
-      row('ns3', { status: 'NOT_STARTED' }),
-      row('ns4', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual(['ns1', 'ns2', 'ns3'])
-  })
-
-  it("keeps unfinished same-day activations on today's activate list", () => {
-    // Unfinished fill the batch first — no room for fresh ns1.
-    const plan = basePlan({ newWordsPerDay: 2 })
-    const rows = [
-      // Legacy abandoned activate: still Box 1, next pushed to tomorrow, never settled.
-      row('stuck1', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-        streakWrong: 0,
-      }),
-      row('stuck2', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        introducedOn: TODAY,
-        nextReviewDate: TODAY,
-        streakWrong: 0,
-      }),
-      row('ns1', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual(['stuck1', 'stuck2'])
-    expect(task.reviewKeys).not.toContain('stuck1')
-    expect(task.reviewKeys).not.toContain('stuck2')
-  })
-
-  it('fills remaining batch slots with fresh words when some activations are unfinished', () => {
-    const plan = basePlan({ newWordsPerDay: 3 })
-    const rows = [
-      row('stuck', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        introducedOn: TODAY,
-        nextReviewDate: TODAY,
-        streakWrong: 0,
-      }),
-      row('ns1', { status: 'NOT_STARTED' }),
-      row('ns2', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual(['stuck', 'ns1', 'ns2'])
-  })
-
-  it("still pulls a fresh batch even when today's goal count is already met", () => {
-    const plan = basePlan({ newWordsPerDay: 2 })
-    const rows = [
-      row('done1', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-      }),
-      // Settled wrong earlier today — due again, but not an unfinished activation.
-      row('done2', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        introducedOn: TODAY,
-        nextReviewDate: TODAY,
-        streakWrong: 1,
-      }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.activateKeys).toEqual(['ns'])
-    expect(task.reviewKeys).toContain('done2')
-  })
-
-  it('counts activations only for today (yesterday does not consume quota)', () => {
-    const rows = [
-      row('yesterday', { status: 'LEARNING', boxIndex: 2, introducedOn: '2026-07-08' }),
-      row('today', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY }),
-      row('archived', { status: 'LEARNING', boxIndex: 1, introducedOn: TODAY, archivedAt: TODAY }),
-    ]
-    expect(countActivatedToday(rows, TODAY)).toBe(1)
-  })
-
-  it('clears activateKeys in review_only mode', () => {
-    const plan = basePlan({ backlogFuse: 1 })
-    const rows = [
-      row('due1', { status: 'LEARNING', nextReviewDate: TODAY }),
-      row('due2', { status: 'LEARNING', nextReviewDate: TODAY }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.mode).toBe('review_only')
-    expect(task.activateKeys).toEqual([])
-    expect(task.bossKeys).toEqual([])
-    expect(task.reviewKeys.length).toBeGreaterThan(0)
-  })
-
-  it('builds bossKeys from LEARNING pool with streak/date/intro sort', () => {
-    const plan = basePlan({ mode: 'boss' })
-    const rows = [
-      row('low', {
-        status: 'LEARNING',
-        streakWrong: 0,
-        nextReviewDate: '2026-07-10',
-        introducedOn: '2026-07-01',
-        boxIndex: 1,
-      }),
-      row('high', {
-        status: 'LEARNING',
-        streakWrong: 3,
-        nextReviewDate: '2026-07-08',
-        introducedOn: '2026-07-05',
-        boxIndex: 1,
-      }),
-      row('mid', {
-        status: 'LEARNING',
-        streakWrong: 3,
-        nextReviewDate: TODAY,
-        introducedOn: '2026-07-06',
-        boxIndex: 1,
-      }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.mode).toBe('boss')
-    expect(task.activateKeys).toEqual([])
-    expect(task.bossKeys[0]).toBe('high')
-    expect(task.bossKeys[1]).toBe('mid')
-    expect(task.bossKeys[2]).toBe('low')
-  })
-
-  it('leaves idle days empty when nothing is due and no new words remain', () => {
-    const plan = basePlan({ reviewCap: 2 })
-    const rows = [
-      row('future1', {
-        status: 'LEARNING',
-        boxIndex: 5,
-        nextReviewDate: '2026-07-12',
-        introducedOn: '2026-07-01',
-      }),
-      row('future2', {
-        status: 'LEARNING',
-        boxIndex: 4,
-        nextReviewDate: '2026-07-11',
-        introducedOn: '2026-07-02',
-      }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.mode).toBe('normal')
-    expect(task.activateKeys).toEqual([])
-    expect(task.reviewKeys).toEqual([])
-  })
-
-  it('only schedules due reviews — never pulls future-box words forward', () => {
-    const plan = basePlan({ reviewCap: 5 })
-    const rows = [
-      row('due', { status: 'LEARNING', boxIndex: 2, nextReviewDate: TODAY }),
-      row('future', { status: 'LEARNING', boxIndex: 5, nextReviewDate: '2026-07-12' }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.reviewKeys).toEqual(['due'])
-    expect(task.activateKeys).toEqual(['ns'])
-  })
-
-  it('caps bossKeys at plan bossPackLimit', () => {
-    const plan = basePlan({ mode: 'boss', bossPackLimit: 25 })
-    const rows = Array.from({ length: 60 }, (_, i) =>
-      row(`w${i}`, { status: 'LEARNING', boxIndex: 1, nextReviewDate: TODAY }),
-    )
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.bossKeys).toHaveLength(25)
-  })
-
-  it('caps bossKeys at 50 by default', () => {
-    const plan = basePlan({ mode: 'boss' })
-    const rows = Array.from({ length: 60 }, (_, i) =>
-      row(`w${i}`, { status: 'LEARNING', boxIndex: 1, nextReviewDate: TODAY }),
-    )
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.bossKeys).toHaveLength(50)
-  })
-
-  it('boss pack keeps stubborn words first, then fills remaining slots most-overdue-first', () => {
-    // Production repro: a quantity-triggered boss packed mildly-wrong fresh words
-    // and left the most overdue words (oldest nextReviewDate) out of the pack,
-    // so they stayed due after a passed boss. Overdue words must outrank
-    // mildly-wrong fresh ones; stubborn words (streakWrong >= 2) keep priority.
-    const plan = basePlan({ mode: 'boss', bossPackLimit: 3 })
-    const rows = [
-      row('stubborn', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        streakWrong: 2,
-        nextReviewDate: TODAY,
-        introducedOn: '2026-07-06',
-      }),
-      row('overdue1', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        streakWrong: 0,
-        nextReviewDate: '2026-07-03',
-        introducedOn: '2026-07-01',
-      }),
-      row('overdue2', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        streakWrong: 0,
-        nextReviewDate: '2026-07-05',
-        introducedOn: '2026-07-02',
-      }),
-      row('freshWrong', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        streakWrong: 1,
-        nextReviewDate: TODAY,
-        introducedOn: '2026-07-07',
-      }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.mode).toBe('boss')
-    expect(task.bossKeys).toEqual(['stubborn', 'overdue1', 'overdue2'])
-  })
-
-  it('boss mode folds unfinished same-day activations to the front of the pack', () => {
-    // An interrupted normal round can leave activated-but-unsettled new words.
-    // The boss pack must drill them too, or the day splits into two rounds
-    // (homepage card stuck at e.g. 20/25 after a passed boss).
-    const plan = basePlan({ mode: 'boss', bossPackLimit: 3 })
-    const rows = [
-      row('old1', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        nextReviewDate: '2026-07-05',
-        introducedOn: '2026-07-01',
-      }),
-      row('old2', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        nextReviewDate: '2026-07-06',
-        introducedOn: '2026-07-01',
-      }),
-      row('old3', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        nextReviewDate: '2026-07-07',
-        introducedOn: '2026-07-02',
-      }),
-      row('new1', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        nextReviewDate: TODAY,
-        introducedOn: TODAY,
-        streakWrong: 0,
-      }),
-      row('new2', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        nextReviewDate: TODAY,
-        introducedOn: TODAY,
-        streakWrong: 0,
-      }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.mode).toBe('boss')
-    expect(task.bossKeys).toEqual(['new1', 'new2', 'old1'])
-    expect(task.bossUnfinishedNewKeys).toEqual(['new1', 'new2'])
-    expect(task.activateKeys).toEqual([])
-  })
-
-  it('reports no bossUnfinishedNewKeys outside boss mode', () => {
-    const plan = basePlan({ newWordsPerDay: 2 })
-    const rows = [
-      row('stuck', {
-        status: 'LEARNING',
-        boxIndex: 1,
-        nextReviewDate: TODAY,
-        introducedOn: TODAY,
-        streakWrong: 0,
-      }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const task = buildDailyTask(plan, rows, TODAY)
-    expect(task.bossUnfinishedNewKeys).toEqual([])
+  it('runs a final Boss when no new or learning words remain', () => {
+    expect(resolveMode(makePlan(), [boss('last')], TODAY)).toBe('boss')
   })
 })
 
-describe('summarizeAdaptiveTodayProgress', () => {
-  it("counts 0 when today's activations were never settled", () => {
-    const plan = basePlan({ newWordsPerDay: 5 })
-    const rows = Array.from({ length: 5 }, (_, i) =>
-      row(`w${i}`, {
-        status: 'LEARNING',
-        boxIndex: 1,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-        streakWrong: 0,
-      }),
-    )
-    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
-    expect(summary.done).toBe(0)
-    expect(summary.total).toBe(5)
-    expect(summary.allDone).toBe(false)
-    expect(summary.unfinishedCount).toBe(5)
-    expect(summary.subtitle).toContain('待练完')
-  })
-
-  it('counts settled activations toward done', () => {
-    const plan = basePlan({ newWordsPerDay: 5 })
-    const rows = [
-      row('a', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-        streakWrong: 0,
-      }),
-      row('b', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-        streakWrong: 0,
-      }),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
-    expect(summary.done).toBe(2)
-    expect(summary.total).toBe(5)
-    expect(summary.allDone).toBe(false)
-  })
-
-  it('marks the daily goal done while still offering ahead-learning batches', () => {
-    const plan = basePlan({ newWordsPerDay: 2 })
-    const rows = [
-      row('a', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-        streakWrong: 0,
-      }),
-      row('b', {
-        status: 'LEARNING',
-        boxIndex: 2,
-        introducedOn: TODAY,
-        nextReviewDate: '2026-07-10',
-        streakWrong: 0,
-      }),
-      row('ns1', { status: 'NOT_STARTED' }),
-      row('ns2', { status: 'NOT_STARTED' }),
-    ]
-    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
-    expect(summary.done).toBe(2)
-    expect(summary.total).toBe(2)
-    expect(summary.allDone).toBe(true)
-    expect(summary.activateCount).toBe(2)
-    expect(summary.subtitle).toContain('可提前继续学')
-  })
-
-  it('includes due reviews in total so done/total stay consistent', () => {
-    const plan = basePlan({ newWordsPerDay: 5 })
-    const rows = [
-      // 5 new words settled today
-      ...Array.from({ length: 5 }, (_, i) =>
-        row(`new${i}`, {
-          status: 'LEARNING',
-          boxIndex: 2,
-          introducedOn: TODAY,
-          nextReviewDate: '2026-07-10',
-          streakWrong: 0,
-        }),
-      ),
-      // 5 older words due for review today
-      ...Array.from({ length: 5 }, (_, i) =>
-        row(`rev${i}`, {
-          status: 'LEARNING',
-          boxIndex: 2,
-          introducedOn: '2026-07-01',
-          nextReviewDate: TODAY,
-          streakWrong: 0,
-        }),
-      ),
-      row('ns', { status: 'NOT_STARTED' }),
-    ]
-    const summary = summarizeAdaptiveTodayProgress(plan, rows, TODAY)
-    expect(summary.allDone).toBe(false)
-    expect(summary.done).toBe(5)
-    expect(summary.total).toBe(10)
-    expect(summary.reviewCount).toBe(5)
-    expect(summary.done + summary.reviewCount).toBe(summary.total)
-  })
-})
-
-describe('applyAdaptiveDailyProgress', () => {
-  const inferred = {
-    done: 0,
-    total: 25,
-    allDone: false,
-    activateCount: 5,
-    reviewCount: 20,
-    unfinishedCount: 5,
-    subtitle: '还有 5 个新词待练完',
-  }
-
-  it('counts completed reviews and new words symmetrically', () => {
-    const summary = applyAdaptiveDailyProgress(inferred, {
-      newGoal: 5,
-      reviewGoal: 20,
-      newDone: 5,
-      reviewDone: 12,
-      allDone: false,
-    })
-    expect(summary.done).toBe(17)
-    expect(summary.total).toBe(25)
-    expect(summary.subtitle).toContain('17/25')
-  })
-
-  it('keeps a settled completed day complete even if mutable box state disagrees', () => {
-    const summary = applyAdaptiveDailyProgress(inferred, {
-      newGoal: 5,
-      reviewGoal: 20,
-      newDone: 5,
-      reviewDone: 20,
-      allDone: true,
-    })
-    expect(summary.done).toBe(25)
-    expect(summary.total).toBe(25)
-    expect(summary.allDone).toBe(true)
-    expect(summary.subtitle).toBe('今日任务已完成')
-  })
-})
-
-describe('isPlanCompletable', () => {
-  it('returns false when hasOpenSession', () => {
-    const rows = [row('m', { status: 'MASTERED' })]
-    expect(isPlanCompletable(rows, true)).toBe(false)
-  })
-
-  it('returns false when any NOT_STARTED, LEARNING_PENDING, or LEARNING remain', () => {
-    expect(isPlanCompletable([row('ns', { status: 'NOT_STARTED' })], false)).toBe(false)
-    expect(isPlanCompletable([row('p', { status: 'LEARNING_PENDING', targetBox: 1 })], false)).toBe(
-      false,
-    )
-    expect(
-      isPlanCompletable(
-        [row('l', { status: 'LEARNING', boxIndex: 1, nextReviewDate: TODAY })],
-        false,
-      ),
-    ).toBe(false)
-  })
-
-  it('returns true when only MASTERED remain and no open session', () => {
-    const rows = [row('a', { status: 'MASTERED' }), row('b', { status: 'MASTERED' })]
-    expect(isPlanCompletable(rows, false)).toBe(true)
-  })
-
-  it('returns true for empty active pipeline (all archived or empty)', () => {
-    expect(isPlanCompletable([], false)).toBe(true)
-    expect(isPlanCompletable([row('a', { status: 'LEARNING', archivedAt: TODAY })], false)).toBe(
-      true,
-    )
+describe('completion', () => {
+  it('requires all active rows mastered and no open session', () => {
+    expect(isPlanCompletable([makeRow('a', { status: 'MASTERED' })], false)).toBe(true)
+    expect(isPlanCompletable([boss('a')], false)).toBe(false)
+    expect(isPlanCompletable([makeRow('a', { status: 'MASTERED' })], true)).toBe(false)
   })
 })

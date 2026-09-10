@@ -648,7 +648,7 @@ function AdaptivePlanCard({
           onClick={openCalendar}
           className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#93c5fd] transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
         >
-          {calendarLoading ? '加载日历…' : '🗓️ 计划日历'}
+          {calendarLoading ? '加载轨迹…' : '🧭 批次轨迹'}
         </button>
         {plan.status === 'active' && capsules.length > 0 && (
           <Link

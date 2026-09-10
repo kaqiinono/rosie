@@ -36,44 +36,45 @@ describe('addCalendarDays', () => {
 })
 
 describe('applyBoxAnswer', () => {
-  it('wrong demotes to box 1, increments streakWrong, and stays due today', () => {
+  it('wrong keeps the current stage and marks the word weak', () => {
     const out = applyBoxAnswer(row({ boxIndex: 4, streakWrong: 1 }), false, TODAY)
-    expect(out.boxIndex).toBe(1)
+    expect(out.boxIndex).toBe(4)
     expect(out.streakWrong).toBe(2)
-    expect(out.nextReviewDate).toBe(TODAY)
+    expect(out.nextReviewDate).toBeNull()
   })
 
-  it('correct on box 4 promotes to box 5 with +7 days', () => {
+  it('correct on box 4 promotes to box 5 without a calendar gate', () => {
     const out = applyBoxAnswer(row({ boxIndex: 4 }), true, TODAY)
     expect(out.boxIndex).toBe(5)
     expect(out.streakWrong).toBe(0)
     expect(out.status).toBe('LEARNING')
-    expect(out.nextReviewDate).toBe(addCalendarDays(TODAY, BOX_INTERVALS_DAYS[5]))
+    expect(out.nextReviewDate).toBeNull()
   })
 
-  it('correct on box 5 before due date stays LEARNING in box 5', () => {
+  it('correct on box 5 enters Boss waiting regardless of legacy date', () => {
     const out = applyBoxAnswer(
       row({ boxIndex: 5, nextReviewDate: addCalendarDays(TODAY, 1) }),
       true,
       TODAY,
     )
-    expect(out.status).toBe('LEARNING')
+    expect(out.status).toBe('LEARNING_PENDING')
     expect(out.boxIndex).toBe(5)
-    expect(out.nextReviewDate).toBe(addCalendarDays(TODAY, 1))
+    expect(out.targetBox).toBeNull()
+    expect(out.nextReviewDate).toBeNull()
     expect(out.streakWrong).toBe(0)
   })
 
-  it('correct on due box 5 graduates to MASTERED and clears boxIndex', () => {
+  it('Stage 5 never graduates directly; Boss owns final mastery', () => {
     const out = applyBoxAnswer(row({ boxIndex: 5, nextReviewDate: TODAY }), true, TODAY)
-    expect(out.status).toBe('MASTERED')
-    expect(out.boxIndex).toBeNull()
+    expect(out.status).toBe('LEARNING_PENDING')
+    expect(out.boxIndex).toBe(5)
     expect(out.nextReviewDate).toBeNull()
     expect(out.streakWrong).toBe(0)
   })
 })
 
 describe('activateWord', () => {
-  it('activates NOT_STARTED at box 1 due today (until first settle)', () => {
+  it('activates NOT_STARTED at box 1 without a due date', () => {
     const out = activateWord(
       {
         ...row({ status: 'NOT_STARTED', boxIndex: null, nextReviewDate: null, introducedOn: null }),
@@ -85,11 +86,10 @@ describe('activateWord', () => {
     expect(out.boxIndex).toBe(1)
     expect(out.targetBox).toBeNull()
     expect(out.introducedOn).toBe(TODAY)
-    // Stay due today so abandoning mid-round doesn't hide the words until tomorrow.
-    expect(out.nextReviewDate).toBe(TODAY)
+    expect(out.nextReviewDate).toBeNull()
   })
 
-  it('activates LEARNING_PENDING with target_box 3 at box 3 due today', () => {
+  it('activates LEARNING_PENDING with target_box 3 at box 3', () => {
     const out = activateWord(
       row({
         status: 'LEARNING_PENDING',
@@ -101,6 +101,6 @@ describe('activateWord', () => {
       TODAY,
     )
     expect(out.boxIndex).toBe(3)
-    expect(out.nextReviewDate).toBe(TODAY)
+    expect(out.nextReviewDate).toBeNull()
   })
 })

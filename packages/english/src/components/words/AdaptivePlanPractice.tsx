@@ -14,6 +14,7 @@ import {
 } from '../../utils/adaptivePlanScheduler'
 import {
   ADAPTIVE_MASTERED_STAGE,
+  ADAPTIVE_BOSS_STAGE,
   ADAPTIVE_NOT_STARTED_STAGE,
   ADAPTIVE_PENDING_STAGE,
   adaptiveBoxStage,
@@ -31,6 +32,7 @@ type PlanDaySnapshot = {
   dailyTask: AdaptiveDailyTask
   mastered: number
   total: number
+  weakCount: number
 }
 
 type DailyWordCapsule = {
@@ -43,6 +45,7 @@ type DailyWordCapsule = {
 function boxEmojiForRow(row: AdaptivePlanWordProgress | undefined): string {
   if (!row) return ADAPTIVE_NOT_STARTED_STAGE.emoji
   if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.emoji
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return ADAPTIVE_BOSS_STAGE.emoji
   if (row.status === 'LEARNING_PENDING') return ADAPTIVE_PENDING_STAGE.emoji
   if (row.status === 'NOT_STARTED') return ADAPTIVE_NOT_STARTED_STAGE.emoji
   return adaptiveBoxStage(row.boxIndex).emoji
@@ -133,6 +136,7 @@ export default function AdaptivePlanPractice() {
               dailyTask,
               mastered: stats.mastered,
               total: stats.total,
+              weakCount: rows.filter((row) => row.archivedAt == null && row.status === 'LEARNING' && row.streakWrong > 0).length,
             } satisfies PlanDaySnapshot,
           ] as const
         })
@@ -212,17 +216,20 @@ export default function AdaptivePlanPractice() {
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 text-[.72rem] text-[var(--wm-text-dim)]">
-                      <span>每日目标 {plan.newWordsPerDay} 词/轮</span>
-                      <span>复习上限 {plan.reviewCap}</span>
+                      <span>每批新词 {plan.newWordsPerDay}</span>
+                      <span>阶段推进上限 {plan.reviewCap}</span>
                       {plan.status === 'active' && daySnapshot && (
                         <>
                           <span>
                             已掌握 {daySnapshot.mastered}/{daySnapshot.total}
                           </span>
                           <span>
-                            今日新学 {daySnapshot.dailyTask.activateKeys.length} · 复习{' '}
+                            本批新词 {daySnapshot.dailyTask.activateKeys.length} · 阶段推进{' '}
                             {daySnapshot.dailyTask.reviewKeys.length}
                           </span>
+                          {daySnapshot.weakCount >= plan.backlogFuse && (
+                            <span className="font-bold text-[#fbbf24]">弱词 {daySnapshot.weakCount} · 已在主线优先安排</span>
+                          )}
                         </>
                       )}
                     </div>
@@ -230,11 +237,11 @@ export default function AdaptivePlanPractice() {
                       <div className="mt-2.5">
                         {!daySnapshot || !rows ? (
                           <div className="text-[.72rem] text-[var(--wm-text-dim)]">
-                            加载今日单词…
+                            加载本批单词…
                           </div>
                         ) : capsules.length === 0 ? (
                           <div className="text-[.72rem] text-[var(--wm-text-dim)]">
-                            今日暂无待练单词
+                            当前暂无待练单词
                           </div>
                         ) : (
                           <div className="flex flex-wrap gap-1.5">

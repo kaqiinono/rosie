@@ -538,6 +538,7 @@ export function simulateAdaptivePlan(
           consolidateExemptSet: new Set(),
           currentStats: plan.stats,
           today: date,
+          bossPassed: allCorrect,
         })
         const updateByKey = new Map(settle.progressUpdates.map((r) => [r.wordKey, r]))
         nextRows = rows.map((r) => updateByKey.get(r.wordKey) ?? r)
@@ -602,11 +603,11 @@ export function simulateAdaptivePlan(
       }
 
       if (task.mode === 'review_only') {
-        note = '复习熔断：今日仅复习，不拉新词'
+        note = '兼容旧计划模式'
       } else if (activateKeys.length > 0) {
-        note = `新学 ${activateKeys.length} 词 + 复习 ${reviewKeys.length} 词`
+        note = `新学 ${activateKeys.length} 词 + 阶段推进 ${reviewKeys.length} 词`
       } else {
-        note = `仅复习 ${reviewKeys.length} 词`
+        note = `阶段推进 ${reviewKeys.length} 词`
       }
     }
 
@@ -707,6 +708,7 @@ const STAGE_CELL_EMOJI = ['🥚', '🐛', '🦋', '🌸', '🌳'] as const
 export function stageCellForRow(row: AdaptivePlanWordProgress | undefined): string {
   if (!row || row.status === 'NOT_STARTED') return '—'
   if (row.status === 'MASTERED') return '👑'
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return '👹'
   if (row.status === 'LEARNING_PENDING') return '⏳'
   if (row.status === 'LEARNING' && row.boxIndex != null) {
     const emoji = STAGE_CELL_EMOJI[row.boxIndex - 1]
@@ -718,7 +720,7 @@ export function stageCellForRow(row: AdaptivePlanWordProgress | undefined): stri
 function snapshotStageMatrix(
   wordKeys: string[],
   rows: AdaptivePlanWordProgress[],
-  labels: Map<string, string>,
+  _labels: Map<string, string>,
 ): string[][] {
   const byKey = new Map(rows.map((r) => [r.wordKey, r]))
   return wordKeys.map((key) => [stageCellForRow(byKey.get(key))])

@@ -144,7 +144,6 @@ function newLogSessionId(): string {
 }
 
 const BOSS_PASS_PCT = 85
-const BOSS_FORCE_UNLOCK_STREAK = 3
 /** How long the loading screen waits before offering a manual retry. */
 const LOAD_STALL_MS = 8000
 
@@ -181,7 +180,9 @@ function firstPassPct(results: SessionOutcome[]): number {
 }
 
 function sinkCleared(results: SessionOutcome[]): boolean {
-  return results.length === 0 || results.every(isIndependentCorrectOutcome)
+  const latest = new Map<string, SessionOutcome>()
+  for (const result of results) latest.set(result.wordKey, result)
+  return latest.size === 0 || [...latest.values()].every(isIndependentCorrectOutcome)
 }
 
 function displayWordFromKey(key: string, vocab: WordEntry[]): string {
@@ -251,26 +252,6 @@ function buildRoundSummary(args: {
     words,
     note: args.note,
   }
-}
-
-function demoteBossStubbornRows(
-  rows: AdaptivePlanWordProgress[],
-  firstPassWrongKeys: Set<string>,
-  today: string,
-): AdaptivePlanWordProgress[] {
-  return rows
-    .filter(
-      (row) =>
-        row.status === 'LEARNING' && (firstPassWrongKeys.has(row.wordKey) || row.streakWrong >= 2),
-    )
-    .map((row) => ({
-      ...row,
-      boxIndex: 1,
-      targetBox: null,
-      streakWrong: Math.max(row.streakWrong, 2),
-      // Stay due today so the next same-day session can keep drilling stubborn words.
-      nextReviewDate: today,
-    }))
 }
 
 function patchMasteryPatches(userId: string, patches: AdaptiveMasteryPatch[]): void {
@@ -778,7 +759,7 @@ export default function AdaptivePlanSession({
   }, [buildCurrentAdaptiveSnapshot, phase, plan, settleFailed, user?.id])
 
   const buildSlots = useCallback(
-    (keys: string[], opts?: { bossTier?: number }): QuizSlot[] => {
+    (keys: string[], opts?: { boss?: boolean }): QuizSlot[] => {
       const progressByKey = new Map(rows.map((row) => [row.wordKey, row]))
       // Seeded rank per key gives a consistent comparator (hashing both sides
       // with different seeds is not a total order and breaks Array.sort).
@@ -800,16 +781,17 @@ export default function AdaptivePlanSession({
         const choiceType: 'A' | 'B' = choiceIndex % 2 === 0 ? 'A' : 'B'
         if (box === 2 || box === 3) choiceIndex += 1
         const types =
-          opts?.bossTier != null
-            ? bossQuizTypesForWord(row, masteryMap[key], opts.bossTier)
+          opts?.boss
+            ? bossQuizTypesForWord(row, masteryMap[key], 1)
             : quizTypesForWord(row, masteryMap[key], { choiceType })
         groups.push({
           slots: types.map((type) => ({ key, type })),
           cursor: 0,
-          // Box 3 is the delayed-recall bridge. A downgraded Boss is an
-          // explicit scaffold, so its choice + writing pair stays immediate.
-          minGap: opts?.bossTier == null && box === 3 ? 3 : 0,
-          forcePair: types.length > 1 && (box === 2 || opts?.bossTier != null),
+          // Stage 1 tests both recognition directions with a small gap; Stage 2
+          // pairs choice+writing immediately; Stage 3 delays the writing check.
+          minGap:
+            opts?.boss ? 0 : box === 1 ? 2 : box === 3 ? 3 : 0,
+          forcePair: types.length > 1 && box === 2,
           lastPick: -100,
         })
       }
@@ -903,18 +885,14 @@ export default function AdaptivePlanSession({
       } else {
         bossSinkWrongKeysRef.current = new Set()
       }
-      // §5.3.1: question pressure follows the current downgrade tier
-      // (1 = full writing, 2 = light pad, 3 = floor — no further downgrade).
-      setQuizSlots(
-        slots ?? buildSlots(keys, { bossTier: plan?.stats.bossQuestionTier ?? 1 }),
-      )
+      setQuizSlots(slots ?? buildSlots(keys, { boss: true }))
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
       setIsImmersive(true)
       setPhase(phaseName)
     },
-    [buildSlots, plan?.stats.bossQuestionTier, setIsImmersive],
+    [buildSlots, setIsImmersive],
   )
 
   const buildReinforcementSlots = useCallback(
@@ -1001,8 +979,8 @@ export default function AdaptivePlanSession({
         }
       }
 
-      const noteIfMore = '今天还可以再练一轮：错词会继续出现，也可以提前学下一批新词。'
-      const noteIfDone = '今天没有到期复习，也没有更多可学的新词了。'
+      const noteIfMore = '本批主线已保存，可以立即开始下一批。'
+      const noteIfDone = '本批主线已完成，计划内暂时没有更多待推进词。'
       const starsEarned = starsAwardedThisRoundRef.current
       const activateSnapshot = [...roundActivateKeysRef.current]
       const reviewSnapshot = [...roundReviewKeysRef.current]
@@ -1143,16 +1121,16 @@ export default function AdaptivePlanSession({
         consolidateExemptSet: buildConsolidateExemptSet(weeklyPlan, vocab),
         currentStats: plan.stats,
         today,
+        bossPassed: passed,
       })
 
       const updateByKey = new Map(settleResult.progressUpdates.map((row) => [row.wordKey, row]))
-      let progressUpdates = settleResult.progressUpdates
-      let nextRows = rows.map((row) => updateByKey.get(row.wordKey) ?? row)
+      const progressUpdates = settleResult.progressUpdates
+      const nextRows = rows.map((row) => updateByKey.get(row.wordKey) ?? row)
       let nextPlan: AdaptiveWordPlan = {
         ...plan,
         stats: { ...plan.stats, ...settleResult.planStatsPatch },
       }
-      let shouldForceUnlock = false
 
       if (passed) {
         nextPlan = {
@@ -1163,29 +1141,6 @@ export default function AdaptivePlanSession({
             bossFailStreak: 0,
             lastBossActivatedCount: nextPlan.stats.totalActivatedCount,
           },
-        }
-      } else if ((nextPlan.stats.bossFailStreak ?? 0) >= BOSS_FORCE_UNLOCK_STREAK) {
-        shouldForceUnlock = window.confirm(
-          '已连续 3 次 Boss 未通过。强制解锁并恢复新词？顽固词将打回 Box 1 继续复习。',
-        )
-
-        if (shouldForceUnlock) {
-          const forcedRows = demoteBossStubbornRows(nextRows, bossPassWrongKeysRef.current, today)
-          const forcedByKey = new Map(forcedRows.map((row) => [row.wordKey, row]))
-          nextRows = nextRows.map((row) => forcedByKey.get(row.wordKey) ?? row)
-          progressUpdates = [
-            ...progressUpdates.filter((row) => !forcedByKey.has(row.wordKey)),
-            ...forcedRows,
-          ]
-          nextPlan = {
-            ...nextPlan,
-            mode: 'normal',
-            stats: {
-              ...nextPlan.stats,
-              bossFailStreak: 0,
-              lastBossActivatedCount: nextPlan.stats.totalActivatedCount,
-            },
-          }
         }
       }
 
@@ -1270,12 +1225,7 @@ export default function AdaptivePlanSession({
       await updatePlan(modePlan)
 
       let note: string
-      if (shouldForceUnlock) {
-        note = hasMoreWorkToday(dailyTask)
-          ? '连续 Boss 受阻，顽固单词已降到 1 号箱；今天还可以继续练。'
-          : '连续 Boss 受阻，顽固单词已降到 1 号箱；计划回到普通模式。'
-        setDoneTitle('已强制解锁')
-      } else if (passed) {
+      if (passed) {
         note = hasMoreWorkToday(dailyTask)
           ? `首轮正确率 ${Math.round(passPct)}%，计划回到普通模式。今天还可以再练一轮。`
           : `首轮正确率 ${Math.round(passPct)}%，沉底题已清空，计划回到普通模式。`
@@ -1373,9 +1323,7 @@ export default function AdaptivePlanSession({
       // Truly nothing was practiced today — show the empty-task message
       // without creating a completed-day record.
       const note =
-        task?.mode === 'review_only'
-          ? '当前为纯复习模式，但今天没有到期复习词。明天再来，或先在管理页调整每日新词。'
-          : '今天没有待复习词，也没有可新学的词（可能词库尚未加载，或计划内单词已全部引入）。请返回后刷新再试，或到管理页检查计划范围。'
+        '当前没有可进入本批的阶段词或新词。可能词库尚未加载，或剩余单词正在等待 Boss 验收。'
       setDoneTitle('今天暂无新任务')
       setDoneMessage(note)
       setRoundSummary({
@@ -1445,9 +1393,7 @@ export default function AdaptivePlanSession({
         setPhase('done')
         return
       }
-      const bossSlots = buildSlots(task.bossKeys, {
-        bossTier: plan?.stats.bossQuestionTier ?? 1,
-      })
+      const bossSlots = buildSlots(task.bossKeys, { boss: true })
       if (bossSlots.length === 0) {
         // Vocab still loading — stay on hub; autoStart retries when ready.
         sessionStartedRef.current = false
@@ -1478,7 +1424,6 @@ export default function AdaptivePlanSession({
     batchSize,
     buildSlots,
     dayReviewKeys,
-    plan?.stats.bossQuestionTier,
     newStudyDone,
     previewEntries.length,
     reviewCursor,
@@ -1542,8 +1487,7 @@ export default function AdaptivePlanSession({
                 .map(([key]) => key),
             ])
     const slots = buildSlots(keys, {
-      bossTier:
-        phase === 'boss' || phase === 'boss_sink' ? plan?.stats.bossQuestionTier : undefined,
+      boss: phase === 'boss' || phase === 'boss_sink',
     })
     if (slots.length > 0) {
       setQuizSlots(slots)
@@ -1561,7 +1505,6 @@ export default function AdaptivePlanSession({
     currentQuestion,
     dayReviewKeys,
     phase,
-    plan?.stats.bossQuestionTier,
     quizSlots.length,
     reviewCursor,
     setIsImmersive,
@@ -1741,7 +1684,7 @@ export default function AdaptivePlanSession({
         <div className="text-[1.05rem] font-extrabold text-[#f0abfc]">计划数据异常</div>
         <div className="text-sm leading-relaxed text-[var(--wm-text-dim)]">{loadError}</div>
         <div className="text-[.75rem] text-[var(--wm-text-dim)]">
-          新计划第一次执行本应有「今日新学」。若进度表为空，新词不会出现。
+          新计划第一批本应有「本批新词」。若进度表为空，新词不会出现。
         </div>
         <button
           type="button"
@@ -1913,11 +1856,11 @@ export default function AdaptivePlanSession({
           </button>
         </div>
         <div className="rounded-[22px] border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] p-8">
-          <div className="font-fredoka mb-3 text-center text-3xl text-[#fbbf24]">今日关卡 Boss</div>
+          <div className="font-fredoka mb-3 text-center text-3xl text-[#fbbf24]">Boss 验收</div>
           <div className="mx-auto mb-6 max-w-[620px] text-center text-sm font-bold text-[var(--wm-text-dim)]">
             首轮正确率达到 85%，并把沉底错题清空，就能退出 Boss 模式继续推进计划。
           </div>
-          <div className="mb-6 grid gap-3 md:grid-cols-3">
+          <div className="mb-6 grid gap-3 md:grid-cols-2">
             <div className="rounded-[16px] border border-white/[.08] bg-white/[.045] p-4 text-center">
               <div className="text-2xl font-black text-[#fbbf24]">{task.bossKeys.length}</div>
               <div className="mt-1 text-xs font-extrabold text-[var(--wm-text-dim)]">Boss 题数</div>
@@ -1925,12 +1868,6 @@ export default function AdaptivePlanSession({
             <div className="rounded-[16px] border border-white/[.08] bg-white/[.045] p-4 text-center">
               <div className="text-2xl font-black text-[#f0abfc]">{plan.stats.bossFailStreak}</div>
               <div className="mt-1 text-xs font-extrabold text-[var(--wm-text-dim)]">连续受阻</div>
-            </div>
-            <div className="rounded-[16px] border border-white/[.08] bg-white/[.045] p-4 text-center">
-              <div className="text-2xl font-black text-[#93c5fd]">
-                {plan.stats.bossQuestionTier}
-              </div>
-              <div className="mt-1 text-xs font-extrabold text-[var(--wm-text-dim)]">题目层级</div>
             </div>
           </div>
           <button
@@ -2106,9 +2043,9 @@ export default function AdaptivePlanSession({
               </>
             ) : (
               <>
-                今日新学 {previewedNewWordCount}/{activateKeys.length}
+                本批新词 {previewedNewWordCount}/{activateKeys.length}
                 <span className="mx-2 text-white/20">·</span>
-                今日复习 {reviewDoneKeys.size}/{visibleReviewKeys.length}
+                阶段推进 {reviewDoneKeys.size}/{visibleReviewKeys.length}
               </>
             )}
           </div>
@@ -2254,7 +2191,7 @@ export default function AdaptivePlanSession({
                 }}
                 className="font-nunito cursor-pointer rounded-[12px] border-0 bg-gradient-to-br from-[#2563eb] to-[#a855f7] px-6 py-3 text-sm font-extrabold text-white"
               >
-                再练一轮 →
+                {task.mode === 'boss' ? '继续 Boss 挑战 →' : '开始下一批主线 →'}
               </button>
             )}
             <button
@@ -2290,7 +2227,7 @@ export default function AdaptivePlanSession({
             学习轨迹预览
           </Link>
           <div className="rounded-full border border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.08)] px-3 py-1 text-[.72rem] font-extrabold text-[#93c5fd]">
-            {task.mode === 'review_only' ? 'Review Only' : 'Normal'}
+            {task.mode === 'boss' ? 'Boss' : '主线批次'}
           </div>
         </div>
       </div>
@@ -2306,14 +2243,15 @@ export default function AdaptivePlanSession({
             {plan.title}
           </div>
           <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
-            每日建议练一轮：复习 → 新学（每轮约 {plan.newWordsPerDay} 个新词）→
-            闯关；目标完成后还可提前学下一批
+            连续主线：阶段推进 → 新学（每批 {plan.newWordsPerDay} 个新词）→ 闯关；
+            完成后可立即进入下一批
             <span className="mt-1 block text-[.72rem] font-bold text-[#93c5fd]">
               成长阶段：🥚蛋 → 🐛虫 → 🦋蝴蝶 → 🌸花 → 🌳树；题型随阶段递进
             </span>
             <span className="mt-1 block text-[.72rem] font-bold text-[var(--wm-text-dim)]">
-              计划内 {rows.filter((r) => r.archivedAt == null).length} 词 · 本轮新学名额{' '}
-              {activateKeys.length} · 本轮复习 {dayReviewKeys.length}
+              计划内 {rows.filter((r) => r.archivedAt == null).length} 词 · 本批阶段词{' '}
+              {task.stageReviewCount} · 待推进 {task.queuedStageCount} · 本批新词{' '}
+              {activateKeys.length}
             </span>
           </div>
         </div>
@@ -2321,6 +2259,7 @@ export default function AdaptivePlanSession({
         <div className="mb-5">
           <AdaptivePlanStageRoadmap
             rows={rows}
+            activationKeys={activateKeys}
             className="mb-4"
             footer={
               <div>

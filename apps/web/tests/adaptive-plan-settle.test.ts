@@ -102,7 +102,21 @@ describe('settleStep3', () => {
     expect(out.progressUpdates[0].streakWrong).toBe(0)
   })
 
-  it('demotes wrong-then-correct words to Box 1 with streakWrong++ (due today)', () => {
+  it('does not promote after help or retry even when the answer is correct', () => {
+    const key = 'U1::L1::cat'
+    const out = settleStep3({
+      progressRows: [row(key, { boxIndex: 2 })],
+      results: [{ wordKey: key, correct: true, quizType: 'A', usedHelp: true }],
+      masteryByKey: {},
+      consolidateExemptSet: new Set(),
+      today: TODAY,
+    })
+    expect(out.progressUpdates[0].boxIndex).toBe(2)
+    expect(out.progressUpdates[0].streakWrong).toBe(1)
+    expect(out.masteryPatches).toHaveLength(0)
+  })
+
+  it('keeps wrong-then-correct words at the same stage for later main-line validation', () => {
     const key = 'U1::L1::cat'
     const out = settleStep3({
       progressRows: [row(key, { boxIndex: 3, streakWrong: 1 })],
@@ -115,9 +129,9 @@ describe('settleStep3', () => {
       today: TODAY,
     })
     expect(out.progressUpdates).toHaveLength(1)
-    expect(out.progressUpdates[0].boxIndex).toBe(1)
+    expect(out.progressUpdates[0].boxIndex).toBe(3)
     expect(out.progressUpdates[0].streakWrong).toBe(2)
-    expect(out.progressUpdates[0].nextReviewDate).toBe(TODAY)
+    expect(out.progressUpdates[0].nextReviewDate).toBeNull()
   })
 
   it('wrong-then-correct never regresses mastery (final outcome collapses to correct)', () => {
@@ -206,7 +220,7 @@ describe('settleStep3', () => {
 })
 
 describe('settleBossFirstPass', () => {
-  it('first-pass correct promotes; first-pass wrong demotes once', () => {
+  it('failed Boss keeps the entire frozen cohort in Boss waiting', () => {
     const good = 'U1::L1::cat'
     const bad = 'U1::L1::dog'
     const out = settleBossFirstPass({
@@ -222,12 +236,14 @@ describe('settleBossFirstPass', () => {
       consolidateExemptSet: new Set(),
       currentStats: stats(),
       today: TODAY,
+      bossPassed: false,
     })
     const goodRow = out.progressUpdates.find(r => r.wordKey === good)!
     const badRow = out.progressUpdates.find(r => r.wordKey === bad)!
-    expect(goodRow.boxIndex).toBe(3)
-    expect(badRow.boxIndex).toBe(1)
-    expect(badRow.streakWrong).toBe(1)
+    expect(goodRow.status).toBe('LEARNING_PENDING')
+    expect(goodRow.boxIndex).toBe(5)
+    expect(badRow.status).toBe('LEARNING_PENDING')
+    expect(badRow.boxIndex).toBe(5)
   })
 
   it('sink correct does not promote box', () => {
@@ -240,9 +256,10 @@ describe('settleBossFirstPass', () => {
       consolidateExemptSet: new Set(),
       currentStats: stats(),
       today: TODAY,
+      bossPassed: false,
     })
-    expect(out.progressUpdates[0].boxIndex).toBe(1)
-    expect(out.progressUpdates[0].streakWrong).toBe(1)
+    expect(out.progressUpdates[0].boxIndex).toBe(5)
+    expect(out.progressUpdates[0].status).toBe('LEARNING_PENDING')
   })
 
   it('sink correct after first-pass wrong collapses to advance-only mastery', () => {
@@ -258,12 +275,13 @@ describe('settleBossFirstPass', () => {
       consolidateExemptSet: new Set(),
       currentStats: stats(),
       today: TODAY,
+      bossPassed: false,
     })
     expect(out.masteryPatches).toHaveLength(0)
     expect(out.masteryPatches.some(p => p.info.isHard)).toBe(false)
   })
 
-  it('increments bossFailStreak and tier on first-pass <60%', () => {
+  it('increments bossFailStreak without lowering formal Boss difficulty', () => {
     const out = settleBossFirstPass({
       progressRows: [row('a'), row('b'), row('c'), row('d'), row('e')],
       firstPassResults: [
@@ -277,9 +295,10 @@ describe('settleBossFirstPass', () => {
       consolidateExemptSet: new Set(),
       currentStats: stats({ bossFailStreak: 1, bossQuestionTier: 2 }),
       today: TODAY,
+      bossPassed: false,
     })
     expect(out.planStatsPatch.bossFailStreak).toBe(2)
-    expect(out.planStatsPatch.bossQuestionTier).toBe(3)
+    expect(out.planStatsPatch.bossQuestionTier).toBeUndefined()
   })
 
   it('increments bossFailStreak (but not tier) in the 60–85% band', () => {
@@ -296,6 +315,7 @@ describe('settleBossFirstPass', () => {
       consolidateExemptSet: new Set(),
       currentStats: stats({ bossFailStreak: 1, bossQuestionTier: 2 }),
       today: TODAY,
+      bossPassed: false,
     })
     expect(out.planStatsPatch.bossFailStreak).toBe(2)
     expect(out.planStatsPatch.bossQuestionTier).toBeUndefined()
@@ -318,6 +338,7 @@ describe('settleBossFirstPass', () => {
       consolidateExemptSet: new Set(),
       currentStats: stats({ bossFailStreak: 2, bossQuestionTier: 2 }),
       today: TODAY,
+      bossPassed: true,
     })
     expect(out.planStatsPatch.bossFailStreak).toBe(0)
   })

@@ -323,13 +323,13 @@ export default function AdaptivePlanCardCalendar({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`${plan.title}计划日历`}
+        aria-label={`${plan.title}批次轨迹`}
         onClick={(event) => event.stopPropagation()}
         className="animate-pop-in max-h-[94dvh] w-full max-w-[1000px] overflow-y-auto rounded-t-[26px] border border-[rgba(139,92,246,.4)] bg-[#111126] p-3 shadow-[0_24px_90px_rgba(0,0,0,.65)] sm:rounded-[26px] sm:p-5"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <div className="font-fredoka text-xl text-[#c4b5fd]">🗓️ 计划日历</div>
+            <div className="font-fredoka text-xl text-[#c4b5fd]">🧭 批次轨迹</div>
             <div className="mt-0.5 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
               {plan.title} · {isTrajectory ? `${rangeStart ?? '计划开始'} 至 ${rangeEnd ?? '计划结束'}` : '仅显示已练习数据'}
             </div>
@@ -337,7 +337,7 @@ export default function AdaptivePlanCardCalendar({
           <button
             type="button"
             onClick={onClose}
-            aria-label="关闭计划日历"
+            aria-label="关闭批次轨迹"
             className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[.06] text-lg text-white/55 transition hover:bg-white/[.12] hover:text-white"
           >
             ×
@@ -465,11 +465,11 @@ export default function AdaptivePlanCardCalendar({
             </span>
             <span className="inline-flex items-center gap-1">
               <span className="rounded-full border border-amber-300/60 bg-amber-300/20 px-1.5 py-0.5 text-amber-200">👹</span>
-              Boss 日
+              Boss 验收
             </span>
             <span className="inline-flex items-center gap-1">
               <span className="rounded-full border border-rose-300/55 bg-rose-300/20 px-1.5 py-0.5 text-rose-200">🔥</span>
-              复习熔断
+              兼容旧模式
             </span>
             <span>点击日期查看单词信息</span>
           </div>
@@ -492,7 +492,7 @@ export default function AdaptivePlanCardCalendar({
                 {selectedDay.words.length}词/{totalQuestions(selectedDay.words)}题
               </span>
               {selectedDay.mode === 'boss' && <span className="text-amber-300">Boss</span>}
-              {selectedDay.mode === 'review_only' && <span className="text-rose-300">复习熔断</span>}
+              {selectedDay.mode === 'review_only' && <span className="text-rose-300">兼容旧模式</span>}
               {selectedDay.inferred && <span className="text-amber-300">推定记录</span>}
               {selectedDay.projected && <span className="text-violet-300">计划排程</span>}
               {!selectedDay.projected && !selectedDay.inferred && <span className="text-emerald-300">实际记录</span>}

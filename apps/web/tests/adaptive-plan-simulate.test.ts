@@ -59,7 +59,7 @@ describe('simulateAdaptivePlan', () => {
     expect(masteryDay).toBeGreaterThan(0)
   })
 
-  it('day-1 first word gets study + step3 type A only', () => {
+  it('first batch tests both Stage-1 choice directions', () => {
     const keys = ['U1::L1::alpha', 'U1::L1::beta']
     const result = simulateAdaptivePlan({
       plan: { ...PLAN, newWordsPerDay: 1 },
@@ -71,13 +71,13 @@ describe('simulateAdaptivePlan', () => {
     const alphaFinal = day1.touches.find(
       (t) => t.wordKey === 'U1::L1::alpha' && t.phase === 'step3_final',
     )
-    expect(alphaFinal?.quizTypes).toEqual(['A'])
+    expect(alphaFinal?.quizTypes).toEqual(['A', 'B'])
     expect(day1.touches.some((t) => t.wordKey === 'U1::L1::alpha' && t.phase === 'study')).toBe(
       true,
     )
   })
 
-  it('when today\'s goal is already done, replays today then projects from tomorrow', () => {
+  it('uses saved progress as baseline and can immediately run another batch', () => {
     const keys = Array.from({ length: 15 }, (_, i) => `U1::L1::w${i}`)
     const today = '2026-08-01'
     const tomorrow = '2026-08-02'
@@ -130,18 +130,15 @@ describe('simulateAdaptivePlan', () => {
     const day1 = result.days[0]
     expect(day1.date).toBe(today)
     expect(day1.newWordKeys).toHaveLength(5)
-    expect(day1.reviewWordKeys).toHaveLength(0)
-    expect(day1.note).toContain('已完成')
-    expect(day1.cumulative.totalActivated).toBe(5)
+    expect(day1.reviewWordKeys).toHaveLength(5)
+    expect(day1.cumulative.totalActivated).toBe(10)
 
     const day2 = result.days[1]
     expect(day2.date).toBe(tomorrow)
-    expect(day2.reviewWordKeys).toHaveLength(5)
+    expect(day2.reviewWordKeys).toHaveLength(10)
     expect(day2.newWordKeys).toHaveLength(5)
-    expect(day2.cumulative.totalActivated).toBe(10)
-    // 10 unique words × (study/review + step3) → 20 touch rows, not 20 words
-    expect(new Set(day2.touches.map((t) => t.wordKey)).size).toBe(10)
-    expect(day2.touches).toHaveLength(20)
+    expect(day2.cumulative.totalActivated).toBe(15)
+    expect(new Set(day2.touches.map((t) => t.wordKey)).size).toBe(15)
   })
 
   it('resumes from saved progress and projects fewer remaining days', () => {
@@ -215,8 +212,8 @@ describe('simulateAdaptivePlan', () => {
     expect(resumed.days.length).toBeLessThan(fresh.days.length)
   })
 
-  it('allows idle days when waiting for Leitner intervals (no early pull-forward)', () => {
-    const keys = SAMPLE_WORDS_4B.map((w) => wordKey(w))
+  it('has no artificial idle batches between stages', () => {
+    const keys = SAMPLE_WORDS_4B.slice(0, 1).map((w) => wordKey(w))
     const result = simulateAdaptivePlan({
       plan: PLAN,
       wordKeys: keys,
@@ -226,12 +223,11 @@ describe('simulateAdaptivePlan', () => {
     const idle = result.days.filter(
       (d) => d.totalQuestions === 0 && d.bossWordKeys.length === 0,
     )
-    // After new words run out, Box5's 7-day gap creates true idle days.
-    expect(idle.length).toBeGreaterThan(0)
+    expect(idle).toHaveLength(0)
     expect(result.completed).toBe(true)
   })
 
-  it('first batch follows 1/1/2/4/7 box intervals without mid-gap reviews', () => {
+  it('first batch progresses through all five stages continuously', () => {
     const keys = Array.from({ length: 10 }, (_, i) => `U1::L1::w${i}`)
     const result = simulateAdaptivePlan({
       plan: { ...PLAN, newWordsPerDay: 10 },
@@ -246,8 +242,8 @@ describe('simulateAdaptivePlan', () => {
       .filter((d) => d.reviewWordKeys.includes(first) || d.newWordKeys.includes(first))
       .map((d) => d.dayIndex)
 
-    // D1 activate+same-day promote → Box2; then +1/+2/+4/+7 → D2, D4, D8, D15
-    expect(touchDays).toEqual([1, 2, 4, 8, 15])
-    expect(result.wordMasteryDay.get(first)).toBe(15)
+    expect(touchDays).toEqual([1, 2, 3, 4, 5])
+    // The fifth main-line touch enters Boss waiting; the next batch is the Boss checkpoint.
+    expect(result.wordMasteryDay.get(first)).toBe(6)
   })
 })

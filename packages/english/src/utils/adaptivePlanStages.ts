@@ -27,7 +27,7 @@ export const ADAPTIVE_PENDING_STAGE = {
   emoji: '⏳',
   name: '激活',
   shortLabel: '⏳ 激活',
-  hint: '排队待认读',
+  hint: '下一批新词',
 } as const
 
 export const ADAPTIVE_MASTERED_STAGE = {
@@ -35,6 +35,13 @@ export const ADAPTIVE_MASTERED_STAGE = {
   name: '已掌握',
   shortLabel: '✨ 已掌握',
   hint: '毕业',
+} as const
+
+export const ADAPTIVE_BOSS_STAGE = {
+  emoji: '👹',
+  name: 'Boss 等待',
+  shortLabel: '👹 Boss 等待',
+  hint: '等待累积数量达标后统一验收',
 } as const
 
 export function clampAdaptiveBox(box: number | null | undefined): 1 | 2 | 3 | 4 | 5 {
@@ -52,6 +59,9 @@ export function adaptiveBoxStage(box: number | null | undefined): AdaptiveBoxSta
 export function adaptiveStageLabel(row: AdaptivePlanWordProgress | undefined): string {
   if (!row) return '未知'
   if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.shortLabel
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) {
+    return ADAPTIVE_BOSS_STAGE.shortLabel
+  }
   if (row.status === 'LEARNING_PENDING') return ADAPTIVE_PENDING_STAGE.shortLabel
   if (row.status === 'NOT_STARTED') return ADAPTIVE_NOT_STARTED_STAGE.shortLabel
   const stage = adaptiveBoxStage(row.boxIndex)
@@ -61,6 +71,7 @@ export function adaptiveStageLabel(row: AdaptivePlanWordProgress | undefined): s
 export function adaptiveStageSortKey(row: AdaptivePlanWordProgress): number {
   if (row.status === 'MASTERED') return 60
   if (row.status === 'LEARNING') return clampAdaptiveBox(row.boxIndex)
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return 6
   if (row.status === 'LEARNING_PENDING') return 70
   return 80
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { todayStr } from '@rosie/core'
-import { clampNewWordsPerDay, defaultReviewCap } from '../../utils/adaptivePlanDefaults'
+import { clampNewWordsPerDay, defaultReviewCap, defaultWeakReminderThreshold } from '../../utils/adaptivePlanDefaults'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { simulateAdaptivePlan } from '../../utils/adaptivePlanSimulate'
 import AdaptivePlanPreviewCalendar from './AdaptivePlanPreviewCalendar'
@@ -17,8 +17,6 @@ type Props = {
   onChangeReviewCap: (n: number) => void
   onChangeBacklogFuse: (n: number) => void
   onChangeBossEveryNNew: (n: number) => void
-  onChangeBossStubbornThreshold: (n: number) => void
-  onChangeBossPackLimit: (n: number) => void
   savingQuota: boolean
   savingTuning: boolean
 }
@@ -30,8 +28,6 @@ export default function AdaptivePlanSettingsPanel({
   onChangeReviewCap,
   onChangeBacklogFuse,
   onChangeBossEveryNNew,
-  onChangeBossStubbornThreshold,
-  onChangeBossPackLimit,
   savingQuota,
   savingTuning,
 }: Props) {
@@ -84,6 +80,7 @@ export default function AdaptivePlanSettingsPanel({
       ...prev,
       newWordsPerDay: next,
       reviewCap: Math.max(prev.reviewCap, defaultReviewCap(next)),
+      backlogFuse: Math.max(prev.backlogFuse, defaultWeakReminderThreshold(next)),
     }))
     onChangeNewWords(next)
   }
@@ -103,18 +100,7 @@ export default function AdaptivePlanSettingsPanel({
     onChangeBossEveryNNew(n)
   }
 
-  const handleBossStubbornThresholdChange = (n: number) => {
-    setDraft((prev) => ({ ...prev, bossStubbornThreshold: n }))
-    onChangeBossStubbornThreshold(n)
-  }
-
-  const handleBossPackLimitChange = (n: number) => {
-    setDraft((prev) => ({ ...prev, bossPackLimit: n }))
-    onChangeBossPackLimit(n)
-  }
-
   const simDays = simulation?.days ?? []
-  const lastDay = simDays.at(-1)
 
   return (
     <div className="border-t border-[var(--wm-border)] bg-[rgba(0,0,0,.12)] px-5 py-4">
@@ -137,20 +123,16 @@ export default function AdaptivePlanSettingsPanel({
       />
       <BossThresholdPicker
         bossEveryNNew={draft.bossEveryNNew}
-        bossStubbornThreshold={draft.bossStubbornThreshold}
-        bossPackLimit={draft.bossPackLimit}
         onBossEveryNNewChange={handleBossEveryNNewChange}
-        onBossStubbornThresholdChange={handleBossStubbornThresholdChange}
-        onBossPackLimitChange={handleBossPackLimitChange}
         disabled={savingTuning}
         savingLabel={savingTuning ? '保存中…' : undefined}
       />
 
       <div className="mt-5 border-t border-[var(--wm-border)] pt-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[13px] font-extrabold text-[#c4b5fd]">排程预览（日历）</p>
+          <p className="text-[13px] font-extrabold text-[#c4b5fd]">批次轨迹预览</p>
           <span className="text-[11px] font-bold text-[var(--wm-text-dim)]">
-            基于当前进度 · 假设每天全对
+            基于当前进度 · 假设每批全对
           </span>
         </div>
 
@@ -166,16 +148,11 @@ export default function AdaptivePlanSettingsPanel({
           <>
             <div className="mb-3 text-[12px] font-bold text-[var(--wm-text-dim)]">
               当前配置下预计{' '}
-              <span className="text-[#c4b5fd]">{simDays.length}</span> 个学习日
-              {lastDay && (
-                <>
-                  （至 {lastDay.date}）
-                </>
-              )}
+              <span className="text-[#c4b5fd]">{simDays.length}</span> 个批次
               {simDays.some((day) => day.mode === 'boss') && (
                 <>
                   {' '}
-                  · Boss 日{' '}
+                  · Boss 验收{' '}
                   <span className="text-[#fbbf24]">
                     {simDays.filter((day) => day.mode === 'boss').length}
                   </span>{' '}

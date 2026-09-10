@@ -4,7 +4,7 @@ import type { AdaptivePlanWordProgress } from './adaptivePlanTypes'
 /**
  * Auto-match quiz types by plan-local box (primary) with global mastery fallback.
  * Progression toward writing (C 释义→默写):
- *   Box 1 / new     → A          认读
+ *   Box 1 / new     → A, B       双向选择建立联结
  *   Box 2           → A/B, C     选择后立即默写强化
  *   Box 3           → A/B, C     选择后延迟默写检测
  *   Box 4–5         → C          会写考核
@@ -17,8 +17,9 @@ export function quizTypesForWord(
   const box = resolveFamiliarityBox(row, mastery)
   const choiceType = opts?.choiceType ?? 'A'
 
-  if (box <= 1) return ['A']
-  if (box === 2 || box === 3) return opts?.preferLight ? ['A'] : [choiceType, 'C']
+  if (box <= 1) return opts?.preferLight ? ['A'] : ['A', 'B']
+  if (box === 2) return opts?.preferLight ? [choiceType] : [choiceType, 'C']
+  if (box === 3) return opts?.preferLight ? [choiceType] : [opts?.choiceType ?? 'B', 'C']
   return ['C']
 }
 
@@ -33,14 +34,12 @@ export function bossQuizTypesForWord(
   mastery: WordMasteryInfo | undefined,
   tier: number,
 ): QuizType[] {
-  const t = tier <= 1 ? 1 : tier >= 3 ? 3 : 2
-  if (t === 1) return quizTypesForWord(row, mastery, { choiceType: 'B' })
-  if (t === 2) return quizTypesForWord(row, mastery, { choiceType: 'A' })
-
-  const box = resolveFamiliarityBox(row, mastery)
-  if (box >= 4) return ['A', 'C']
-  if (box === 3) return ['A', 'B']
-  return ['A']
+  void row
+  void mastery
+  void tier
+  // Formal Boss difficulty never downgrades. Scaffolding belongs only in the
+  // weak-word sink between full attempts.
+  return ['C']
 }
 
 /** Map plan row / mastery into a 1–5 familiarity band for quiz selection. */

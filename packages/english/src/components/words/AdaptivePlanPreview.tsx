@@ -22,7 +22,6 @@ import {
 } from '../../utils/adaptivePlanPracticeLog'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanPreviewOverview from './AdaptivePlanPreviewOverview'
-import AdaptivePlanCardCalendar from './AdaptivePlanCardCalendar'
 
 type AdaptivePlanPreviewProps = {
   planId: string
@@ -129,7 +128,7 @@ function groupTouchesByWord(touches: SimWordTouch[]): DayWordRow[] {
   })
 }
 
-function UnusedDayCard({
+function ProjectedDayCard({
   day,
   vocab,
   defaultOpen = false,
@@ -211,10 +210,12 @@ function UnusedDayCard({
 
               {wordsOpen && (
                 <div className="overflow-x-auto border-t border-[var(--wm-border)]">
-                  <table className="w-full min-w-[640px] text-left text-[.75rem]">
+                  <table className="w-full min-w-[760px] text-left text-[.75rem]">
                     <thead>
                       <tr className="border-b border-[var(--wm-border)] bg-white/[.03] text-[.68rem] font-extrabold tracking-wide text-[var(--wm-text-dim)] uppercase">
                         <th className="px-3 py-2">单词</th>
+                        <th className="px-3 py-2">Unit</th>
+                        <th className="px-3 py-2">Lesson</th>
                         <th className="px-3 py-2">环节</th>
                         <th className="px-3 py-2">阶段</th>
                         <th className="px-3 py-2">题型</th>
@@ -222,25 +223,34 @@ function UnusedDayCard({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/[.05]">
-                      {wordRows.map((row) => (
-                        <tr key={row.wordKey}>
-                          <td className="px-3 py-2 font-extrabold text-[var(--wm-text)]">
-                            {displayWord(row.wordKey, vocab)}
-                          </td>
-                          <td className="px-3 py-2 font-bold text-[#c4b5fd]">
-                            {joinStacked(row.phases.map((phase) => PHASE_LABELS[phase]))}
-                          </td>
-                          <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
-                            {joinStacked(row.stageLabels)}
-                          </td>
-                          <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
-                            {formatQuizTypes(row.quizTypes)}
-                          </td>
-                          <td className="px-3 py-2 text-right font-extrabold text-[#86efac]">
-                            {row.questionCount > 0 ? row.questionCount : '—'}
-                          </td>
-                        </tr>
-                      ))}
+                      {wordRows.map((row) => {
+                        const entry = findWordByKey(vocab, row.wordKey)
+                        return (
+                          <tr key={row.wordKey}>
+                            <td className="px-3 py-2 font-extrabold text-[var(--wm-text)]">
+                              {entry?.word ?? wordLabelFromKey(row.wordKey)}
+                            </td>
+                            <td className="px-3 py-2 font-bold whitespace-nowrap text-[#93c5fd]">
+                              {entry?.unit ?? '—'}
+                            </td>
+                            <td className="px-3 py-2 font-bold whitespace-nowrap text-[#93c5fd]">
+                              {entry?.lesson ?? '—'}
+                            </td>
+                            <td className="px-3 py-2 font-bold text-[#c4b5fd]">
+                              {joinStacked(row.phases.map((phase) => PHASE_LABELS[phase]))}
+                            </td>
+                            <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
+                              {joinStacked(row.stageLabels)}
+                            </td>
+                            <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
+                              {formatQuizTypes(row.quizTypes)}
+                            </td>
+                            <td className="px-3 py-2 text-right font-extrabold text-[#86efac]">
+                              {row.questionCount > 0 ? row.questionCount : '—'}
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -325,7 +335,7 @@ function PracticeHistory({
                       <th className="px-3 py-2">题目</th>
                       <th className="px-3 py-2">正确率</th>
                       <th className="px-3 py-2">箱位变化</th>
-                      <th className="px-3 py-2">下次复习</th>
+                      <th className="px-3 py-2">结算后状态</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/[.05]">
@@ -355,8 +365,13 @@ function PracticeHistory({
                             : `${word.boxBefore ?? '—'} → ${word.boxAfter ?? (word.statusAfter === 'MASTERED' ? '👑' : '—')}`}
                         </td>
                         <td className="px-3 py-2 font-bold text-[var(--wm-text-dim)]">
-                          {word.nextReviewAfter ??
-                            (session.recordKind === 'exact' ? '已完成' : '未知')}
+                          {word.statusAfter === 'MASTERED'
+                            ? '已掌握'
+                            : word.statusAfter === 'LEARNING_PENDING' && word.boxAfter === 5
+                              ? 'Boss 等待'
+                              : word.statusAfter === 'LEARNING'
+                                ? '待下批主线'
+                                : session.recordKind === 'exact' ? '已完成' : '未知'}
                         </td>
                       </tr>
                     ))}
@@ -543,7 +558,7 @@ function StageTrajectoryMatrix({
 
 export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPreviewProps) {
   const { user } = useAuth()
-  const { vocab, masteryMap } = useWordsContext()
+  const { vocab } = useWordsContext()
   const { plans, isLoading: plansLoading, loadProgress } = useAdaptiveWordPlan(user)
 
   const [rows, setRows] = useState<AdaptivePlanWordProgress[]>([])
@@ -551,7 +566,6 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
   const [loadError, setLoadError] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState(0)
   const [practiceLogs, setPracticeLogs] = useState<AdaptivePracticeSessionLog[]>([])
-  const [calendarOpen, setCalendarOpen] = useState(false)
 
   const today = todayStr()
   const plan = useMemo(() => plans.find((p) => p.id === planId) ?? null, [plans, planId])
@@ -703,6 +717,11 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     }
   }, [plan, practiceLogs, simulation, today])
 
+  const todayAndNextSevenDays = useMemo(
+    () => simulation?.days.filter((day) => day.date >= today).slice(0, 8) ?? [],
+    [simulation, today],
+  )
+
   // `isLoadingRows` only ever clears from the row load, which never runs when
   // the plan list resolves without this id — gate on the plan so a missing /
   // deleted plan lands on the not-found screen instead of a stuck spinner.
@@ -772,18 +791,10 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           <div className="font-fredoka bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
             {plan.title} · 学习轨迹预览
           </div>
-          <button
-            type="button"
-            aria-expanded={calendarOpen}
-            onClick={() => setCalendarOpen(true)}
-            className="font-nunito shrink-0 cursor-pointer rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-3 py-2 text-[.75rem] font-extrabold whitespace-nowrap text-[#93c5fd] transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
-          >
-            🗓️ 计划日历
-          </button>
         </div>
         <div className="mb-4 text-sm font-bold text-[var(--wm-text-dim)]">
-          {scopeLabel(plan)} · 每日新词 {plan.newWordsPerDay} · 复习上限 {plan.reviewCap} · 熔断{' '}
-          {plan.backlogFuse} · Boss 题包 {plan.bossPackLimit}
+          {scopeLabel(plan)} · 每批新词 {plan.newWordsPerDay} · 阶段推进上限 {plan.reviewCap} · 弱词提醒{' '}
+          {plan.backlogFuse} · Boss 累积阈值 {plan.bossEveryNNew}
         </div>
 
         <div className="mb-4">
@@ -817,24 +828,11 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           <span>当前模式 {MODE_LABELS[baseline.mode]}</span>
           {lastDay && (
             <span>
-              全对模拟至 {lastDay.date}（{days.length} 个学习日）
+              全对模拟共 {days.length} 个批次
             </span>
           )}
         </div>
       </div>
-
-      {calendarOpen && user && (
-        <AdaptivePlanCardCalendar
-          plan={plan}
-          vocab={vocab}
-          masteryMap={masteryMap}
-          userId={user.id}
-          trajectoryDays={days}
-          rangeStart={actualProgress?.planStartDate ?? localDateFromTimestamp(plan.createdAt)}
-          rangeEnd={lastDay?.date ?? (plan.status === 'completed' ? plan.updatedAt.slice(0, 10) : today)}
-          onClose={() => setCalendarOpen(false)}
-        />
-      )}
 
       {fullTrajectory && (
         <StageTrajectoryMatrix
@@ -844,6 +842,38 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           displayCells={fullTrajectory.displayCells}
         />
       )}
+
+      <div className="mb-5 rounded-[24px] border border-[rgba(96,165,250,.25)] bg-[var(--wm-surface)] p-6">
+        <div className="font-fredoka text-xl text-[#93c5fd]">今日及未来 7 天推演</div>
+        <div className="mt-1 mb-4 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+          今日从当前进度继续，未来按每天完成一批且全部答对推演；实际任务会随真实答题结果重新计算。
+        </div>
+
+        {todayAndNextSevenDays.length > 0 ? (
+          <div className="flex flex-col gap-2.5">
+            {todayAndNextSevenDays.map((day, index) => (
+              <ProjectedDayCard
+                key={day.date}
+                day={day}
+                vocab={vocab}
+                defaultOpen={index === 0}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-[rgba(74,222,128,.25)] bg-[rgba(74,222,128,.06)] px-4 py-3 text-sm font-bold text-[#86efac]">
+            按当前进度推演，今日起已没有待完成的练习。
+          </div>
+        )}
+
+        {todayAndNextSevenDays.length > 0 &&
+          todayAndNextSevenDays.length < 8 &&
+          simulation.completed && (
+          <div className="mt-3 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
+            计划预计在这 {todayAndNextSevenDays.length} 天内完成，因此不再生成后续空白日期。
+          </div>
+        )}
+      </div>
 
       <PracticeHistory sessions={practiceLogs} vocab={vocab} />
     </div>

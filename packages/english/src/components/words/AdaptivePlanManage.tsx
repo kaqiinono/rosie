@@ -5,7 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { todayStr, useAuth } from '@rosie/core'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { wordKey } from '../../utils/english-helpers'
-import { clampNewWordsPerDay, defaultReviewCap } from '../../utils/adaptivePlanDefaults'
+import { clampNewWordsPerDay, defaultReviewCap, defaultWeakReminderThreshold } from '../../utils/adaptivePlanDefaults'
+import { buildDailyTask } from '../../utils/adaptivePlanScheduler'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanSettingsPanel from './AdaptivePlanSettingsPanel'
@@ -151,9 +152,10 @@ export default function AdaptivePlanManage() {
   const handleChangeNewWords = async (plan: AdaptiveWordPlan, n: number) => {
     const next = clampNewWordsPerDay(n)
     const nextReviewCap = Math.max(plan.reviewCap, defaultReviewCap(next))
+    const nextWeakThreshold = Math.max(plan.backlogFuse, defaultWeakReminderThreshold(next))
     if (
       plan.status !== 'active' ||
-      (plan.newWordsPerDay === next && plan.reviewCap === nextReviewCap)
+      (plan.newWordsPerDay === next && plan.reviewCap === nextReviewCap && plan.backlogFuse === nextWeakThreshold)
     ) {
       return
     }
@@ -163,6 +165,7 @@ export default function AdaptivePlanManage() {
         ...plan,
         newWordsPerDay: next,
         reviewCap: nextReviewCap,
+        backlogFuse: nextWeakThreshold,
       })
     } finally {
       setSavingQuotaPlanId(null)
@@ -194,26 +197,6 @@ export default function AdaptivePlanManage() {
     setSavingTuningPlanId(plan.id)
     try {
       await updatePlan({ ...plan, bossEveryNNew: n })
-    } finally {
-      setSavingTuningPlanId(null)
-    }
-  }
-
-  const handleChangeBossStubbornThreshold = async (plan: AdaptiveWordPlan, n: number) => {
-    if (plan.status !== 'active' || plan.bossStubbornThreshold === n) return
-    setSavingTuningPlanId(plan.id)
-    try {
-      await updatePlan({ ...plan, bossStubbornThreshold: n })
-    } finally {
-      setSavingTuningPlanId(null)
-    }
-  }
-
-  const handleChangeBossPackLimit = async (plan: AdaptiveWordPlan, n: number) => {
-    if (plan.status !== 'active' || plan.bossPackLimit === n) return
-    setSavingTuningPlanId(plan.id)
-    try {
-      await updatePlan({ ...plan, bossPackLimit: n })
     } finally {
       setSavingTuningPlanId(null)
     }
@@ -268,6 +251,10 @@ export default function AdaptivePlanManage() {
             const planRows = (progressByPlanId[plan.id] ?? []).filter(
               (row) => row.archivedAt == null,
             )
+            const activationKeys =
+              plan.status === 'active'
+                ? buildDailyTask(plan, planRows, todayStr()).activateKeys
+                : []
             return (
             <article
               key={plan.id}
@@ -279,6 +266,7 @@ export default function AdaptivePlanManage() {
                   {planRows.length > 0 ? (
                     <AdaptivePlanStageRoadmap
                       rows={planRows}
+                      activationKeys={activationKeys}
                       today={todayStr()}
                       compact
                       className="border-0 bg-transparent px-0 py-0"
@@ -310,7 +298,7 @@ export default function AdaptivePlanManage() {
                         : '进行中'}
                   </span>
                   <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
-                    每日目标 {plan.newWordsPerDay} 词/轮
+                    每批新词 {plan.newWordsPerDay} 词
                   </span>
                   <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
                     更新 {fmtDateTime(plan.updatedAt)}
@@ -326,10 +314,6 @@ export default function AdaptivePlanManage() {
                   onChangeReviewCap={(n) => { void handleChangeReviewCap(plan, n) }}
                   onChangeBacklogFuse={(n) => { void handleChangeBacklogFuse(plan, n) }}
                   onChangeBossEveryNNew={(n) => { void handleChangeBossEveryNNew(plan, n) }}
-                  onChangeBossStubbornThreshold={(n) => {
-                    void handleChangeBossStubbornThreshold(plan, n)
-                  }}
-                  onChangeBossPackLimit={(n) => { void handleChangeBossPackLimit(plan, n) }}
                   savingQuota={savingQuotaPlanId === plan.id}
                   savingTuning={savingTuningPlanId === plan.id}
                 />

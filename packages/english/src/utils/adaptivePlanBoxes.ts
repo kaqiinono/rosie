@@ -1,6 +1,6 @@
 import type { AdaptivePlanWordProgress } from './adaptivePlanTypes'
 
-/** Days until next due after the word lands in this box (spec §4.3). */
+/** Legacy intervals retained for old rows/tests; V2 batch scheduling ignores dates. */
 export const BOX_INTERVALS_DAYS = { 1: 1, 2: 1, 3: 2, 4: 4, 5: 7 } as const
 
 type BoxIndex = keyof typeof BOX_INTERVALS_DAYS
@@ -16,32 +16,25 @@ export function addCalendarDays(isoDate: string, days: number): string {
 }
 
 /**
- * On correct: if due box===5 → MASTERED; else box+1 and set next_review_date.
- * On wrong: box=1, streakWrong++, due again today so same-day re-practice can progress.
+ * On correct: Stages 1–4 advance; Stage 5 enters Boss waiting.
+ * On wrong: stay at the current stage and increment the weak-word counter.
  */
 export function applyBoxAnswer(
   row: AdaptivePlanWordProgress,
   correct: boolean,
-  today: string,
+  _today: string,
 ): AdaptivePlanWordProgress {
   const box = row.boxIndex ?? 1
 
   if (correct) {
     if (box === 5) {
-      const isDue = row.nextReviewDate == null || row.nextReviewDate <= today
-      if (!isDue) {
-        return {
-          ...row,
-          status: 'LEARNING',
-          boxIndex: 5,
-          streakWrong: 0,
-        }
-      }
-
+      // V2: passing Stage 5 enters the Boss waiting area. Boss—not Stage 5—
+      // is the only path to final mastery.
       return {
         ...row,
-        status: 'MASTERED',
-        boxIndex: null,
+        status: 'LEARNING_PENDING',
+        boxIndex: 5,
+        targetBox: null,
         nextReviewDate: null,
         streakWrong: 0,
       }
@@ -51,16 +44,15 @@ export function applyBoxAnswer(
       ...row,
       boxIndex: newBox,
       streakWrong: 0,
-      nextReviewDate: addCalendarDays(today, BOX_INTERVALS_DAYS[newBox]),
+      nextReviewDate: null,
     }
   }
 
   return {
     ...row,
-    boxIndex: 1,
+    boxIndex: box as BoxIndex,
     streakWrong: row.streakWrong + 1,
-    // Keep due today so another session the same day can re-drill weak words.
-    nextReviewDate: today,
+    nextReviewDate: null,
   }
 }
 
@@ -81,7 +73,7 @@ export function activateWord(
     // Due today until the activating session settles. Writing tomorrow here used
     // to burn the daily quota on「开始」and then hide the words if the child
     // left before 闯关 — looking like「今天暂无新任务」with unpracticed new words.
-    nextReviewDate: today,
+    nextReviewDate: null,
     streakWrong: 0,
   }
 }
@@ -99,6 +91,6 @@ export function isUnfinishedSameDayActivation(
   if (row.introducedOn !== today || row.streakWrong !== 0) return false
   const box = row.boxIndex
   if (box !== 1 && box !== 3) return false
-  if (row.nextReviewDate === today) return true
+  if (row.nextReviewDate == null || row.nextReviewDate === today) return true
   return row.nextReviewDate === addCalendarDays(today, BOX_INTERVALS_DAYS[box])
 }

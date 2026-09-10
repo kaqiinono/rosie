@@ -7,7 +7,7 @@ import { useWordsContext } from '../../WordsContext'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { getAllStages, wordKey } from '../../utils/english-helpers'
 import { simulateAdaptivePlan } from '../../utils/adaptivePlanSimulate'
-import { ADAPTIVE_PLAN_DEFAULTS, clampNewWordsPerDay, defaultReviewCap } from '../../utils/adaptivePlanDefaults'
+import { ADAPTIVE_PLAN_DEFAULTS, clampNewWordsPerDay, defaultReviewCap, defaultWeakReminderThreshold } from '../../utils/adaptivePlanDefaults'
 import type { AdaptivePlanScope, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { lessonKey } from './english-weekly-plan-shared'
 import VocabRangeFilter from './vocab-range-filter/VocabRangeFilter'
@@ -58,12 +58,12 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
   const [forceChallenge, setForceChallenge] = useState(false)
   const [newWordsPerDay, setNewWordsPerDay] = useState(5)
   const [reviewCap, setReviewCap] = useState<number>(defaultReviewCap(5))
-  const [backlogFuse, setBacklogFuse] = useState<number>(ADAPTIVE_PLAN_DEFAULTS.backlogFuse)
+  const [backlogFuse, setBacklogFuse] = useState<number>(defaultWeakReminderThreshold(5))
   const [bossEveryNNew, setBossEveryNNew] = useState<number>(ADAPTIVE_PLAN_DEFAULTS.bossEveryNNew)
-  const [bossStubbornThreshold, setBossStubbornThreshold] = useState<number>(
+  const [bossStubbornThreshold] = useState<number>(
     ADAPTIVE_PLAN_DEFAULTS.bossStubbornThreshold,
   )
-  const [bossPackLimit, setBossPackLimit] = useState<number>(ADAPTIVE_PLAN_DEFAULTS.bossPackLimit)
+  const [bossPackLimit] = useState<number>(ADAPTIVE_PLAN_DEFAULTS.bossPackLimit)
   const [previewSelectedDate, setPreviewSelectedDate] = useState<string | null>(null)
 
   // Default to the newest textbook once vocab stages are known.
@@ -77,6 +77,7 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
     const next = clampNewWordsPerDay(n)
     setNewWordsPerDay(next)
     setReviewCap((prev) => Math.max(prev, defaultReviewCap(next)))
+    setBacklogFuse((prev) => Math.max(prev, defaultWeakReminderThreshold(next)))
   }
 
   const orderedLessons = useMemo(() => {
@@ -302,44 +303,35 @@ export default function AdaptivePlanEditor({ vocab }: Props) {
 
         <BossThresholdPicker
           bossEveryNNew={bossEveryNNew}
-          bossStubbornThreshold={bossStubbornThreshold}
-          bossPackLimit={bossPackLimit}
           onBossEveryNNewChange={setBossEveryNNew}
-          onBossStubbornThresholdChange={setBossStubbornThreshold}
-          onBossPackLimitChange={setBossPackLimit}
         />
 
         <div className="mb-5 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-4 py-3">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <div className="text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-              排程预览（日历）
+              批次轨迹预览
             </div>
             <span className="text-[.65rem] font-bold text-[var(--wm-text-dim)]">
-              基于当前配置 · 假设每天全对
+              基于当前配置 · 假设每批全对
             </span>
           </div>
           <div className="text-[1.15rem] font-extrabold text-[#c4b5fd]">{wordKeys.length} 个单词</div>
           <div className="mt-1 text-[.72rem] text-[var(--wm-text-dim)]">
             {selectedLessonKeys.size > 0
-              ? `已选 ${selectedLessonKeys.size} 个课程 · 新词 ${newWordsPerDay} · 复习上限 ${reviewCap} · Boss 题包 ${bossPackLimit}`
+              ? `已选 ${selectedLessonKeys.size} 个课程 · 每批新词 ${newWordsPerDay} · 阶段推进上限 ${reviewCap}`
               : selectedStage
-                ? `词库 ${selectedStage} · 新词 ${newWordsPerDay} · 复习上限 ${reviewCap} · Boss 题包 ${bossPackLimit}`
+                ? `词库 ${selectedStage} · 每批新词 ${newWordsPerDay} · 阶段推进上限 ${reviewCap}`
                 : '请选择词库或课程后查看预览'}
           </div>
           {draftSimulation && draftSimulation.days.length > 0 ? (
             <div className="mt-3 border-t border-[var(--wm-border)] pt-3">
               <div className="mb-3 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
                 预计{' '}
-                <span className="text-[#c4b5fd]">{draftSimulation.days.length}</span> 个学习日
-                {draftSimulation.days.at(-1) && (
-                  <>
-                    （至 {draftSimulation.days.at(-1)!.date}）
-                  </>
-                )}
+                <span className="text-[#c4b5fd]">{draftSimulation.days.length}</span> 个主线批次
                 {draftSimulation.days.some((d) => d.mode === 'boss') && (
                   <>
                     {' '}
-                    · Boss 日{' '}
+                    · Boss 验收{' '}
                     <span className="text-[#fbbf24]">
                       {draftSimulation.days.filter((d) => d.mode === 'boss').length}
                     </span>{' '}

@@ -18,11 +18,6 @@ type OverviewStat = {
   compactValue?: boolean
 }
 
-function formatShortDate(isoDate: string): string {
-  const [, m, d] = isoDate.split('-')
-  return `${m}-${d}`
-}
-
 function firstDayTaskLabel(
   day: SimulateAdaptivePlanResult['days'][number] | undefined,
 ): { text: string; color: string } {
@@ -37,15 +32,15 @@ function firstDayTaskLabel(
 
   if (day.mode === 'review_only') {
     return {
-      text: `复习熔断 · ${day.reviewWordKeys.length} 词`,
+      text: `兼容旧模式 · ${day.reviewWordKeys.length} 词`,
       color: '#f87171',
     }
   }
 
   const parts: string[] = []
   if (day.newWordKeys.length > 0) parts.push(`${day.newWordKeys.length} 新词`)
-  if (day.reviewWordKeys.length > 0) parts.push(`${day.reviewWordKeys.length} 复习`)
-  const base = parts.length > 0 ? parts.join(' · ') : '轻量日'
+  if (day.reviewWordKeys.length > 0) parts.push(`${day.reviewWordKeys.length} 阶段推进`)
+  const base = parts.length > 0 ? parts.join(' · ') : '空批次'
   const withQuestions =
     day.totalQuestions > 0 ? `${base} · 约 ${day.totalQuestions} 题` : base
 
@@ -55,6 +50,7 @@ function firstDayTaskLabel(
 function growthUnits(row: AdaptivePlanWordProgress): number {
   if (row.status === 'MASTERED') return 6
   if (row.status === 'LEARNING') return Math.min(5, Math.max(1, row.boxIndex ?? 1))
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return 5
   if (row.status === 'LEARNING_PENDING') return 0.5
   return 0
 }
@@ -64,20 +60,18 @@ function motivationalTagline(
   activated: number,
   total: number,
   growthPct: number,
-  projectedFinish: string | null,
+  projectedBatches: number,
 ): string {
   if (total <= 0) return '暂无单词'
   if (mastered >= total) return '🎉 全部毕业，计划通关！'
   if (activated === 0) {
-    return projectedFinish
-      ? `今日起步，按全对节奏预计 ${formatShortDate(projectedFinish)} 通关`
-      : '今日练起，踏上通关之旅'
+    return projectedBatches > 0 ? `从下一批起步，全对节奏约 ${projectedBatches} 批通关` : '踏上通关之旅'
   }
   if (mastered === 0) {
-    return `${activated} 词已经启程 · 成长 ${growthPct}%${projectedFinish ? ` · 预计 ${formatShortDate(projectedFinish)} 通关` : ''}`
+    return `${activated} 词已经启程 · 成长 ${growthPct}%${projectedBatches > 0 ? ` · 约 ${projectedBatches} 批通关` : ''}`
   }
-  return projectedFinish
-    ? `已毕业 ${mastered} 词 · 成长 ${growthPct}% · 预计 ${formatShortDate(projectedFinish)} 通关`
+  return projectedBatches > 0
+    ? `已毕业 ${mastered} 词 · 成长 ${growthPct}% · 约 ${projectedBatches} 批通关`
     : `已毕业 ${mastered} 词 · 成长 ${growthPct}% · 继续加油`
 }
 
@@ -88,26 +82,24 @@ function buildOverviewStats(
 ): OverviewStat[] {
   const total = rows.length
   const firstDay = simulation.days[0]
-  const lastDay = simulation.days.at(-1)
   const firstBossDay = simulation.days.find((day) => day.mode === 'boss')
   const todayTask = firstDayTaskLabel(firstDay)
 
   const projectedDays = simulation.days.length
-  const projectedFinish = lastDay?.date ?? null
 
   const bossEnabled = plan.bossEveryNNew > 0
   const milestoneStat: OverviewStat = bossEnabled && firstBossDay
     ? {
-        label: '首个 Boss 日',
+        label: '首个 Boss 验收',
         value: `D${firstBossDay.dayIndex}`,
         color: '#fbbf24',
-        hint: formatShortDate(firstBossDay.date),
+        hint: `第 ${firstBossDay.dayIndex} 批`,
       }
     : {
         label: '预计通关',
-        value: projectedFinish ? formatShortDate(projectedFinish) : '—',
+        value: projectedDays > 0 ? `${projectedDays} 批` : '—',
         color: '#f0abfc',
-        hint: projectedDays > 0 ? `${projectedDays} 个学习日` : undefined,
+        hint: projectedDays > 0 ? `${projectedDays} 个批次` : undefined,
       }
 
   return [
@@ -118,17 +110,17 @@ function buildOverviewStats(
       hint: total > 0 ? '本计划范围' : undefined,
     },
     {
-      label: '今日任务',
+      label: '下一批',
       value: todayTask.text,
       color: todayTask.color,
-      hint: firstDay ? formatShortDate(firstDay.date) : '暂无排程',
+      hint: firstDay ? `批次 ${firstDay.dayIndex}` : '暂无批次',
       compactValue: true,
     },
     {
-      label: '预计学习日',
+      label: '预计批次',
       value: projectedDays > 0 ? String(projectedDays) : '—',
       color: '#c4b5fd',
-      hint: '每天练且全对',
+      hint: '按每批全对模拟',
     },
     milestoneStat,
   ]
@@ -148,9 +140,7 @@ export default function AdaptivePlanPreviewOverview({
   const totalGrowthUnits = rows.reduce((sum, row) => sum + growthUnits(row), 0)
   const growthPct = total > 0 ? Math.round((totalGrowthUnits / (total * 6)) * 100) : 0
 
-  const lastDay = simulation.days.at(-1)
-  const projectedFinish = lastDay?.date ?? null
-  const tagline = motivationalTagline(mastered, activated, total, growthPct, projectedFinish)
+  const tagline = motivationalTagline(mastered, activated, total, growthPct, simulation.days.length)
   const stats = buildOverviewStats(rows, plan, simulation)
 
   const segments = [
@@ -212,7 +202,11 @@ export default function AdaptivePlanPreviewOverview({
         </div>
       </div>
 
-      <AdaptivePlanStageRoadmap rows={rows} className="mb-4" />
+      <AdaptivePlanStageRoadmap
+        rows={rows}
+        activationKeys={simulation.days[0]?.newWordKeys ?? []}
+        className="mb-4"
+      />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
