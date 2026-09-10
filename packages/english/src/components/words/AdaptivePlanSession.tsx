@@ -430,12 +430,48 @@ export default function AdaptivePlanSession({
   const autoStartDoneRef = useRef(false)
   /** A same-day snapshot exists but vocab wasn't ready to rebuild it. */
   const unappliedSnapshotRef = useRef(false)
+  /** Snapshot retained until the plan-scoped vocab finishes hydrating. */
+  const pendingSnapshotRef = useRef<AdaptiveSessionSnapshot | null>(null)
   // Keep latest vocab/setIsImmersive out of the load-effect dep list so a
   // background vocab refresh can't cancel an in-flight load and strand the spinner.
   const vocabRef = useRef(vocab)
   vocabRef.current = vocab
   const setIsImmersiveRef = useRef(setIsImmersive)
   setIsImmersiveRef.current = setIsImmersive
+
+  const restoreSnapshot = useCallback((snap: AdaptiveSessionSnapshot) => {
+    pendingSnapshotRef.current = null
+    unappliedSnapshotRef.current = false
+    autoStartDoneRef.current = true
+    setPhase(snap.phase)
+    setReviewCursor(snap.reviewCursor)
+    setReviewDoneKeys(new Set(snap.reviewDoneKeys))
+    setStudyIdx(snap.studyIdx)
+    setQuizSlots(snap.quizSlots)
+    setCurQ(Math.min(snap.curQ, Math.max(0, snap.quizSlots.length - 1)))
+    setScore(snap.score)
+    setHelpClicks({})
+    setActivationApplied(snap.activationApplied)
+    setNewStudyDone(snap.newStudyDone)
+    setRestoredActivateKeys(snap.roundActivateKeys)
+    setDoneTitle('本轮完成')
+    setDoneMessage('已保存自适应计划进度。')
+    setRoundSummary(null)
+    starsAwardedThisRoundRef.current = snap.starsAwarded
+    roundActivateKeysRef.current = snap.roundActivateKeys
+    roundReviewKeysRef.current = snap.roundReviewKeys
+    reviewOutcomesRef.current = snap.reviewOutcomes
+    finalOutcomesRef.current = snap.finalOutcomes
+    bossFirstPassOutcomesRef.current = snap.bossFirstPassOutcomes
+    bossSinkOutcomesRef.current = snap.bossSinkOutcomes
+    finalPassWrongKeysRef.current = new Set(snap.finalPassWrongKeys)
+    bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
+    bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
+    logSessionIdRef.current = snap.logSessionId ?? newLogSessionId()
+    logStartedAtRef.current = snap.startedAt ?? new Date().toISOString()
+    sessionStartedRef.current = true
+    setIsImmersiveRef.current(true)
+  }, [])
 
   useEffect(() => {
     if (!stashToast) return
@@ -561,6 +597,7 @@ export default function AdaptivePlanSession({
     loadedPlanIdRef.current = null
     autoStartDoneRef.current = false
     unappliedSnapshotRef.current = false
+    pendingSnapshotRef.current = null
     setLoadError(null)
     setSettleFailed(null)
     setSettleError(null)
@@ -657,38 +694,11 @@ export default function AdaptivePlanSession({
         // round it starts will overwrite the stash before the child sees it.
         const canResumeSnap = Boolean(autoStart && snap && vocabNow.length > 0)
         unappliedSnapshotRef.current = Boolean(autoStart && snap && vocabNow.length === 0)
+        // Detail/hub entries retain the snapshot too. Their explicit start
+        // button must continue the interrupted round instead of replacing it.
+        pendingSnapshotRef.current = snap
         if (canResumeSnap && snap) {
-          setPhase(snap.phase)
-          setReviewCursor(snap.reviewCursor)
-          setReviewDoneKeys(new Set(snap.reviewDoneKeys))
-          setStudyIdx(snap.studyIdx)
-          setQuizSlots(snap.quizSlots)
-          setCurQ(Math.min(snap.curQ, Math.max(0, snap.quizSlots.length - 1)))
-          setScore(snap.score)
-          setHelpClicks({})
-          setActivationApplied(snap.activationApplied)
-          setNewStudyDone(snap.newStudyDone)
-          setRestoredActivateKeys(snap.roundActivateKeys)
-          setDoneTitle('本轮完成')
-          setDoneMessage('已保存自适应计划进度。')
-          setRoundSummary(null)
-          starsAwardedThisRoundRef.current = snap.starsAwarded
-          roundActivateKeysRef.current = snap.roundActivateKeys
-          roundReviewKeysRef.current = snap.roundReviewKeys
-          reviewOutcomesRef.current = snap.reviewOutcomes
-          finalOutcomesRef.current = snap.finalOutcomes
-          bossFirstPassOutcomesRef.current = snap.bossFirstPassOutcomes
-          bossSinkOutcomesRef.current = snap.bossSinkOutcomes
-          finalPassWrongKeysRef.current = new Set(snap.finalPassWrongKeys)
-          bossPassWrongKeysRef.current = new Set(snap.bossPassWrongKeys)
-          bossSinkWrongKeysRef.current = new Set(snap.bossSinkWrongKeys)
-          logSessionIdRef.current = snap.logSessionId ?? newLogSessionId()
-          logStartedAtRef.current = snap.startedAt ?? new Date().toISOString()
-          sessionStartedRef.current = true
-          // Every resumable snapshot represents an in-progress practice phase,
-          // including the card-preview (`study`) phase. Restoring any of them
-          // must re-enter immersive mode just like a fresh practice start.
-          setIsImmersiveRef.current(true)
+          restoreSnapshot(snap)
           setIsLoadingRows(false)
           if (dailyTask.mode !== planSnapshot.mode) {
             void updatePlan(modePlan)
@@ -742,7 +752,19 @@ export default function AdaptivePlanSession({
     }
     // Intentionally omit plan/vocab/setIsImmersive: committing those mid-load
     // used to cancel this effect and leave isLoadingRows stuck true.
-  }, [loadProgress, plansLoading, sourcePlan, today, updatePlan, user?.id])
+  }, [autoStart, loadProgress, plansLoading, restoreSnapshot, sourcePlan, today, updatePlan, user?.id])
+
+  // The progress rows and pending snapshot can resolve before the plan-scoped
+  // vocabulary request. Keep that snapshot and apply it as soon as vocab is
+  // available; otherwise auto-start remains blocked and a manual start resets
+  // the child to question/card zero.
+  useEffect(() => {
+    if (!autoStart || isPlanVocabLoading || vocab.length === 0) return
+    const snap = pendingSnapshotRef.current
+    if (!snap || snap.planId !== planId || plan?.id !== planId || !task) return
+
+    restoreSnapshot(snap)
+  }, [autoStart, isPlanVocabLoading, plan?.id, planId, restoreSnapshot, task, vocab.length])
 
   // Persist the in-progress round so a refresh / accidental exit can resume.
   // Cleared only when a round settles successfully; kept on settle failure so
@@ -1358,6 +1380,11 @@ export default function AdaptivePlanSession({
 
   const beginSession = useCallback(() => {
     if (!task || settling) return
+    const pendingSnapshot = pendingSnapshotRef.current
+    if (pendingSnapshot && pendingSnapshot.planId === planId && vocab.length > 0) {
+      restoreSnapshot(pendingSnapshot)
+      return
+    }
     logSessionIdRef.current = newLogSessionId()
     logStartedAtRef.current = new Date().toISOString()
     sessionStartedRef.current = true
@@ -1427,6 +1454,8 @@ export default function AdaptivePlanSession({
     newStudyDone,
     previewEntries.length,
     reviewCursor,
+    planId,
+    restoreSnapshot,
     setIsImmersive,
     settling,
     startBossQuiz,
