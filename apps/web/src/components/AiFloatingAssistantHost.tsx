@@ -855,6 +855,11 @@ export default function AiFloatingAssistantHost() {
 
   const mathEnrichment = useMathEnrichment(pathname, activeProblemId)
 
+  // Print routes must contain only the printable document. Do not mount the
+  // floating launcher at all: some browser print engines capture fixed layers
+  // before @media print styles are applied.
+  if (pathname.endsWith('/print')) return null
+
   return (
     <AiFloatingAssistant
       {...renderers}

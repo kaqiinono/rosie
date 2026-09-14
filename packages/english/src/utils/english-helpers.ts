@@ -145,6 +145,7 @@ export const WORD_TEMPLATE_HEADERS = [
   '音节 (syllables, 逗号分隔)',
   '关键词高亮 (词|颜色; 颜色=red/gold/blue)',
   '特殊词形 word_forms (JSON)',
+  '词性 (part_of_speech，逗号分隔)',
 ]
 
 /**
@@ -175,6 +176,7 @@ export function parseWordRows(
     const syllables = parseSyllablesCell(cell(r, off + 8))
     const keywords = parseKeywordsCell(cell(r, off + 9))
     const wordForms = parseWordFormsCell(cell(r, off + 10))
+    const partOfSpeech = cell(r, off + 11).split(',').map((value) => value.trim()).filter(Boolean)
     out.push({
       stage: stage || defaultStage || undefined,
       unit,
@@ -188,6 +190,7 @@ export function parseWordRows(
       syllables: syllables.length ? syllables : undefined,
       keywords: keywords.length ? keywords : undefined,
       wordForms,
+      partOfSpeech: partOfSpeech.length ? partOfSpeech : undefined,
     })
   }
   return out

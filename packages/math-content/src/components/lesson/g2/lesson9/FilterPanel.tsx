@@ -1,6 +1,7 @@
 'use client'
 
 import { createFilterPanel } from '@rosie/math-kit/components/shared/FilterPanel'
+import { PROBLEM_TYPES, TAG_STYLE } from '@rosie/math-content/utils/g2/lesson9-data'
 import ProblemDetail from './ProblemDetail'
 
 export type { Filters, MasteryFilter, FilterPanelProps } from '@rosie/math-kit/components/shared/FilterPanel'
@@ -16,17 +17,10 @@ export default createFilterPanel({
     dotColor: 'text-amber-300', strongColor: 'text-amber-800', srcBadge: 'bg-amber-100 text-amber-800', accentClass: 'text-amber-700',
   },
   sourceBtns: [
+    { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后' },
   ],
-  typeBtns: [
-    { key: 'type1', label: '题型1·乘法凑整' },
-    { key: 'type2', label: '题型2·乘除抵消' },
-    { key: 'type3', label: '题型3·分配律' },
-    { key: 'type4', label: '题型4·提取公因数' },
-  ],
-  tagColors: {
-    type1: 'bg-amber-100 text-amber-800', type2: 'bg-cyan-100 text-cyan-800',
-    type3: 'bg-violet-100 text-violet-800', type4: 'bg-rose-100 text-rose-800',
-  },
+  typeBtns: PROBLEM_TYPES.map((type) => ({ key: type.tag, label: `${type.icon} ${type.label}` })),
+  tagColors: TAG_STYLE,
 }, ProblemDetail)

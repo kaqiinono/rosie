@@ -9,7 +9,7 @@ import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolut
 import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
-import { TAG_STYLE, TYPE_TIP } from '@rosie/math-content/utils/g2/lesson9-data'
+import { PROBLEM_TIP, TAG_STYLE, TYPE_TIP } from '@rosie/math-content/utils/g2/lesson9-data'
 import { useG2Lesson9 } from './G2Lesson9Provider'
 
 interface ProblemDetailProps {
@@ -29,7 +29,7 @@ export default function ProblemDetail({ problem, mode = 'full', tip, defaultSolu
     { handleSolve, addWrong },
     { wrongHint: '❌ 再观察一下：能否先凑整、抵消，或提取公因数？' },
   )
-  const tipText = tip ?? TYPE_TIP[problem.tag]
+  const tipText = tip ?? PROBLEM_TIP[problem.id] ?? TYPE_TIP[problem.tag]
   const question = (
     <div>
       <span className={`mb-2.5 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${TAG_STYLE[problem.tag] ?? 'bg-gray-100 text-gray-600'}`}>{problem.tagLabel}</span>

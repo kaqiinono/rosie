@@ -7,6 +7,7 @@ import { hilite } from '../../utils/english-helpers'
 import { getWordImagePublicUrl } from '../../utils/word-image'
 import { getWordMasteryLevel, MASTERY_ICON, MASTERY_BORDER } from '@rosie/core'
 import { findPassage, findSentenceForWord } from '../../utils/reading-data'
+import { getConfiguredCardVerbForms, WORD_FORM_LABELS } from '../../utils/word-forms'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
 import ZoomableWordImage from './ZoomableWordImage'
@@ -51,6 +52,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
   const delay = Math.min(index * 0.03, 0.25)
   const explHtml = hilite(entry.explanation, entry.keywords)
   const imageSrc = entry.imagePath ? getWordImagePublicUrl(entry.imagePath) : ''
+  const configuredVerbForms = getConfiguredCardVerbForms(entry)
 
   // Show 课文原句 for any word whose lesson has a passage — independent of
   // the week-plan's ⭐ focus marker. The marker is a plan-level annotation;
@@ -167,6 +169,24 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
         {entry.ipa && (
           <div className="font-mono text-center text-[.78rem] font-normal tracking-normal text-white/30">
             {entry.ipa}
+          </div>
+        )}
+        {entry.partOfSpeech && entry.partOfSpeech.length > 0 && (
+          <div className="rounded-full border border-violet-300/20 bg-violet-300/10 px-2 py-1 text-[.62rem] font-semibold text-violet-100/90">
+            词性 · {entry.partOfSpeech.join(' / ')}
+          </div>
+        )}
+        {configuredVerbForms.length > 0 && (
+          <div className="flex max-w-full flex-wrap justify-center gap-1.5 text-[.62rem] leading-tight">
+            {configuredVerbForms.map(({ type, forms }) => (
+              <span
+                key={type}
+                className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2 py-1 font-semibold text-sky-100/85"
+              >
+                <span className="mr-1 text-sky-200/60">{WORD_FORM_LABELS[type]}</span>
+                {forms.join(' / ')}
+              </span>
+            ))}
           </div>
         )}
       </div>

@@ -26,7 +26,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   }, [pathname, setIsImmersive, setPreviewCards])
 
   const isPracticePage = pathname.includes('/practice')
-  const isPrintPage = pathname.includes('/practice/print')
+  const isPrintPage = pathname.endsWith('/print')
   const isDaily = pathname.includes('/daily')
   const isWeeklyPage = pathname.includes('/weekly/')
   const isAdaptivePage = pathname.includes('/adaptive/')

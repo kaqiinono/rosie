@@ -52,3 +52,4 @@ supabase/.temp/
 
 # Python bytecode cache (scripts)
 __pycache__/
+scripts/word-pos-review.json

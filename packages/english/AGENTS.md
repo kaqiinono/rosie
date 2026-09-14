@@ -62,6 +62,7 @@ audio, flipbook).
   `reading-audio-types`, weekly-plan payload/progress/report builders, `word-enrich`, `speak`.
   New Story PDFs are normalized with `scripts/import-story-pdf.mjs`; always review the generated
   text against rendered pages and populate only genuinely difficult unmatched glossary terms.
+- **词性回填** — `pnpm word-pos:backfill` 只读取未填 `part_of_speech` 的词条，导出高置信候选与待审核清单；默认绝不写库。确认 overrides JSON 后才以 `--apply --overrides <path>` 写入，且只写人工确认项。
 - **Adaptive word plan (`utils/adaptivePlan*` + `components/words/AdaptivePlan*`)** — task-oriented
   Leitner 5-box plan (spec `docs/superpowers/specs/2026-07-09-adaptive-word-plan-design.md`, gitignored).
   Plan lifecycle statuses: `active` | `paused` | `completed` | `archived`. At most one `active` per

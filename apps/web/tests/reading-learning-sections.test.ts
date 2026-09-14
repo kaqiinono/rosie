@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { SAMPLE_WORDS_5A } from '../../../packages/english/src/utils/english-data-5a'
 import {
+  buildEntryMatchRegex,
   buildWordMatchRegex,
   findPassage,
   findPassageByKey,
@@ -63,6 +64,16 @@ describe('Stage 5A Unit 1 Lesson 1 reading course', () => {
     const regex = buildWordMatchRegex([entry!.word])
     expect("honouring Peru's national hero".match(regex!)).toContain('honouring')
     expect(resolveMatchedWord('honouring', [entry!])).toBe(entry)
+  })
+
+  it('generates considered, without falsely doubling the final consonant', () => {
+    const entry = SAMPLE_WORDS_5A.find((word) => word.word === 'consider')
+    expect(entry).toBeDefined()
+    if (!entry) return
+
+    const regex = buildEntryMatchRegex([entry])
+    expect("It's considered one of the seven wonders.".match(regex!)).toContain('considered')
+    expect('considerred').not.toMatch(regex!)
   })
 
   it('contains the planned exercise and writing sections', () => {

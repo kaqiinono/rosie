@@ -134,6 +134,7 @@ export type Database = {
           example: string | null
           phonics: string | null
           word_forms: unknown | null
+          part_of_speech: string[] | null
         }
         Insert: {
           user_id: string
@@ -145,6 +146,7 @@ export type Database = {
           example?: string | null
           phonics?: string | null
           word_forms?: unknown | null
+          part_of_speech?: string[] | null
         }
       }
       daily_progress: {

@@ -11,6 +11,13 @@ export const WORD_FORM_TYPES = [
   'other',
 ] as const satisfies readonly WordFormType[]
 
+/** Verb forms shown together on word cards when explicitly configured. */
+export const CARD_VERB_FORM_TYPES = [
+  'presentParticiple',
+  'past',
+  'pastParticiple',
+] as const satisfies readonly WordFormType[]
+
 export const WORD_FORM_LABELS: Record<WordFormType, string> = {
   plural: '复数',
   thirdPerson: '第三人称单数',
@@ -20,6 +27,19 @@ export const WORD_FORM_LABELS: Record<WordFormType, string> = {
   comparative: '比较级',
   superlative: '最高级',
   other: '其他特殊形式',
+}
+
+export interface ConfiguredCardVerbForm {
+  type: (typeof CARD_VERB_FORM_TYPES)[number]
+  forms: string[]
+}
+
+/** Return only the explicitly stored verb forms, in the card display order. */
+export function getConfiguredCardVerbForms(entry: WordEntry): ConfiguredCardVerbForm[] {
+  return CARD_VERB_FORM_TYPES.flatMap((type) => {
+    const forms = entry.wordForms?.[type] ?? []
+    return forms.length ? [{ type, forms }] : []
+  })
 }
 
 export interface WordFormCandidate {
@@ -33,14 +53,6 @@ export interface WordFormMatch extends WordFormCandidate {
   matchedText: string
 }
 
-const VOWELS = new Set(['a', 'e', 'i', 'o', 'u'])
-
-function isCvc(word: string): boolean {
-  if (word.length < 3) return false
-  const [a, b, c] = word.slice(-3).toLowerCase()
-  return !VOWELS.has(a) && VOWELS.has(b) && !VOWELS.has(c) && !['w', 'x', 'y'].includes(c)
-}
-
 function regularThirdPerson(word: string): string {
   if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ies`
   if (/(?:s|x|z|ch|sh|o)$/i.test(word)) return `${word}es`
@@ -50,25 +62,29 @@ function regularThirdPerson(word: string): string {
 function regularPast(word: string): string {
   if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ied`
   if (/e$/i.test(word)) return `${word}d`
-  return `${word}${isCvc(word) ? word.at(-1) : ''}ed`
+  // Whether an English word doubles its final consonant depends on stress, not
+  // just spelling: `stop` → `stopped`, but `consider` → `considered`.
+  // Generate only the unambiguous form here. Doubling cases are supplied as
+  // explicit `wordForms` on the entry, which is also how irregular forms work.
+  return `${word}ed`
 }
 
 function regularParticiple(word: string): string {
   if (/ie$/i.test(word)) return `${word.slice(0, -2)}ying`
   if (/e$/i.test(word) && !/(?:ee|ye|oe)$/i.test(word)) return `${word.slice(0, -1)}ing`
-  return `${word}${isCvc(word) ? word.at(-1) : ''}ing`
+  return `${word}ing`
 }
 
 function regularComparative(word: string): string {
   if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ier`
   if (/e$/i.test(word)) return `${word}r`
-  return `${word}${isCvc(word) ? word.at(-1) : ''}er`
+  return `${word}er`
 }
 
 function regularSuperlative(word: string): string {
   if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}iest`
   if (/e$/i.test(word)) return `${word}st`
-  return `${word}${isCvc(word) ? word.at(-1) : ''}est`
+  return `${word}est`
 }
 
 function wordAliases(word: string): string[] {

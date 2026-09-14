@@ -289,6 +289,15 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
+              onClick={() => window.open(`/english/words/reading/${passage.key}/print`, '_blank')}
+              title="打开适合打印的课文版"
+              className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-white/80 px-3 text-xs font-extrabold text-gray-600 ring-1 ring-gray-200 transition hover:bg-white"
+            >
+              <span aria-hidden className="text-sm">🖨️</span>
+              <span className="hidden whitespace-nowrap sm:inline">打印</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setLessonFocus((current) => !current)}
               aria-pressed={lessonFocus}
               title={lessonFocus ? '关闭后显示厚海全部匹配词' : '开启后只显示本课词'}

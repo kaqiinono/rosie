@@ -110,6 +110,7 @@ export default function WordFormModal({
   const [lesson, setLesson] = useState(initial?.lesson ?? '')
   const [word, setWord] = useState(initial?.word ?? '')
   const [vocabType, setVocabType] = useState<WordVocabType | ''>(initial?.vocabType ?? '')
+  const [partOfSpeech, setPartOfSpeech] = useState((initial?.partOfSpeech ?? []).join(', '))
   const [explanation, setExplanation] = useState(initial?.explanation ?? '')
   const [chineseDef, setChineseDef] = useState(initial?.chineseDef ?? '')
   const [ipa, setIpa] = useState(initial?.ipa ?? '')
@@ -185,6 +186,10 @@ export default function WordFormModal({
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean)
+      const cleanedPartOfSpeech = partOfSpeech
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
       const entry: WordEntry = {
         stage: stage.trim() || undefined,
         unit: unit.trim(),
@@ -198,6 +203,7 @@ export default function WordFormModal({
         syllables: cleanedSyllables.length ? cleanedSyllables : undefined,
         keywords: cleanedKeywords.length ? cleanedKeywords : undefined,
         vocabType: vocabType || undefined,
+        partOfSpeech: cleanedPartOfSpeech.length ? cleanedPartOfSpeech : undefined,
         wordForms,
         // Preserve image metadata — toRow nulls omitted optional fields
         imagePath: initial?.imagePath,
@@ -359,6 +365,11 @@ export default function WordFormModal({
               <label className={labelCls}>音标 (IPA)</label>
               <input className={inputCls} value={ipa} onChange={(e) => setIpa(e.target.value)} placeholder="/ˈæpəl/" />
             </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>词性（逗号分隔）</label>
+            <input className={inputCls} value={partOfSpeech} onChange={(e) => setPartOfSpeech(e.target.value)} placeholder="n., v." />
           </div>
 
           <div>

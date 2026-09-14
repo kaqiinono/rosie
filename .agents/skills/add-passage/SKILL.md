@@ -1,7 +1,7 @@
 ---
 name: add-passage
 description: Append a new reading passage to the Rosie English reading module — adds one entry to the readingPassages array in packages/english/src/utils/reading-data.ts (data only; all reading components read from it by (unit, lesson)). Use when the user provides passage text + a lesson key to add a 课文.
-version: 1.0.0
+version: 1.1.0
 trigger: /add-passage
 ---
 
@@ -69,13 +69,14 @@ grep -n '"unit": "Unit X"' packages/english/src/utils/english-data.ts  # 替换 
   - 过去式 `-ed`: `interview` → `interviewed`、`solve` → `solved`(silent-e 自动处理)
   - 进行时 `-ing`: `interview` → `interviewing`、`solve` → `solving`
   - `-y → -ies / -ied`: `try` → `tries` / `tried`
-- 辅音双写和 `ie → y` 也由规则生成器处理：`run → running`、`swim → swimming`、`lie → lying`
+- `ie → y` 由规则生成器处理：`lie → lying`。**尾辅音双写不由规则猜测**，因为是否双写取决于重音而非末尾拼写；例如 `consider → considered`，但 `run → running`。
 - **规则外形式依赖 `word_entries.word_forms`**:
   - 不规则动词：`think → thought`、`take → took/taken`
   - 不规则复数：`child → children`
   - 特殊第三人称：`have → has`、`be → is`
   - 特殊比较级：`good → better/best`
-- 如果正文出现规则外形式而词条没有 `wordForms`，先补全词条数据再录入课文；不要复制一个变形词条，也不要降级为 glossary。
+  - 需要尾辅音双写的规则动词/形容词：`run → running`、`stop → stopped`。在 `wordForms` 中填写实际形式，并在 `disableGenerated` 中关闭相应默认类别，避免错误的 `runing` / `stoped` 也被匹配。
+- 如果正文出现规则外形式而词条没有 `wordForms`，先补全词条数据再录入课文；新增或补全词条时同时填写结构化 `partOfSpeech`（如 `n.`、`v.`、`adj.`），不要复制一个变形词条，也不要降级为 glossary。
 - **不会**自动匹配派生词:
   - 名词派生: `solve` → `solution`、`care` → `careful`
   - 派生名词/形容词: `act` → `active`、`interest` → `interesting`(*实际能匹配,因为 `interest` + `-ing` 走简单后缀*)
@@ -86,7 +87,7 @@ grep -n '"unit": "Unit X"' packages/english/src/utils/english-data.ts  # 替换 
 
 把 `# 超纲词汇` + `## 专有名词` 转成 `glossary` 数组。每个条目至少要 `word`、`meaningCn`、`category`。鼓励补 `meaningEn`(短句英文释义) 和 `ipa`(若文档没给则查英汉词典或留空)。
 
-```ts
+```txt
 {
   word: 'advert',
   ipa: '/ˈædvɜːt/',
@@ -109,7 +110,7 @@ grep -n '"unit": "Unit X"' packages/english/src/utils/english-data.ts  # 替换 
 
 在 `packages/english/src/utils/reading-data.ts` 的 `readingPassages` 数组里加一项：
 
-```ts
+```txt
 {
   key: 'u6l1',                  // 短 slug,小写无空格
   unit: 'Unit 6',               // 必须与 english-data.ts 完全一致(带空格)
@@ -141,6 +142,7 @@ pnpm dev                        # 启动开发服务器
 - [ ] 大部分（>80%）lesson words 在文中被彩色胶囊高亮(若全部未出现见 step 3 说明)
 - [ ] 多词短语作为**一个** pill 高亮，没有被拆成两个
 - [ ] 特殊变形显示原文表面形式，点击后归回原词并显示词形关系；挖空能挖掉实际表面形式
+- [ ] 尾辅音双写词已在词库填写实际 `wordForms`，并用 `disableGenerated` 屏蔽同类别的错误默认形式
 - [ ] 课文里 glossary 词被灰色虚线下划线标注（专有名词额外 italic）
 - [ ] 点击灰色虚线词弹出难点词卡(EN/中 双语释义 + IPA + 🔊)
 - [ ] 点击「📒 难点词」芯片展开分组面板(按 category 分组,每组带 emoji)

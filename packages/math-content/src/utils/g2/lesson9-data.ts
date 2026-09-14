@@ -1,13 +1,20 @@
 import type { Problem, ProblemSet } from '@rosie/core'
 
 export const LESSON_TIP =
-  '乘除法巧算先观察：看到 25 找 4，看到 125 找 8；乘除混合可在同级运算中带着符号调整顺序。乘法分配律可以把整百、整千附近的数拆开；多个乘积相加减时，优先寻找或构造公因数。'
+  '先看数的结构再动笔：循环数用“走马灯”，12345679 用“缺8数”，全是1用“宝塔数”；乘11用“两边一拉，中间相加”，重复的 01/001 用“椅子数”；再识别 37、1001，以及头同尾合十、尾同头合十。没有这些特征时，再用凑整、分配律或提取公因数。'
 
 export const TYPE_TIP: Record<string, string> = {
   type1: '乘法凑整：2×5=10，4×25=100，8×125=1000，16×625=10000。',
   type2: '乘除抵消：同级运算可带着乘、除号调整顺序；去括号时，括号前是除号，括号里的乘除号要互换。',
   type3: '分配律：a×(b±c)=a×b±a×c；除法只能拆被除数，如 (a+b)÷c=a÷c+b÷c。',
   type4: '提取公因数：先把相同乘数圈出来；没有直接公因数时，利用倍数关系或相近数构造。',
+  type5: '走马灯：末位乘几，结果最后就是几；其余数字按 142857 的循环顺序移动。',
+  type6: '缺8数：12345679×9=111111111；先凑乘9，再结合重复数字或乘11规律。',
+  type7: '头同尾合十：前半=头×(头+1)，后半=尾×尾；后半不足两位补0。',
+  type8: '特殊数：牢记 3×37=111、27×37=999、7×11×13=1001，再分解重组。',
+  type9: '椅子数：从个位向左找重复的01、001；单把椅子的长度要和被重复数的位数相同。',
+  type10: '乘11：两边一拉，中间相加；从右向左处理进位。',
+  type11: '平方巧算：观察相同因数与整十、整百的距离，选择直接平方或平方差。',
 }
 
 type ProblemInput = {
@@ -25,6 +32,13 @@ const TAG_LABELS: Record<keyof typeof TYPE_TIP, string> = {
   type2: '乘除抵消',
   type3: '乘法与除法分配律',
   type4: '提取与构造公因数',
+  type5: '走马灯',
+  type6: '缺8数',
+  type7: '头同尾合十',
+  type8: '特殊数111·999·1001',
+  type9: '椅子数',
+  type10: '乘11',
+  type11: '平方巧算',
 }
 
 function problem({ id, title, tag, text, analysis, answer, difficulty = 2 }: ProblemInput): Problem {
@@ -41,6 +55,24 @@ function problem({ id, title, tag, text, analysis, answer, difficulty = 2 }: Pro
     finalUnit: '',
     finalAns: answer,
   }
+}
+
+function sourcedProblem(
+  id: string,
+  title: string,
+  tag: keyof typeof TYPE_TIP,
+  text: string,
+  answer: number,
+  analysis = '先观察数的结构，选择对应的巧算方法。',
+): Problem {
+  return problem({
+    id,
+    title,
+    tag,
+    text,
+    analysis: [analysis, '<strong>结果为 ' + answer + '。</strong>'],
+    answer,
+  })
 }
 
 const LESSON: Problem[] = [
@@ -106,19 +138,146 @@ const HOMEWORK: Problem[] = [
   problem({ id: 'H17', title: '练习10 · 相近数构造', tag: 'type4', text: '41 × 74 + 42 × 26', analysis: ['42=41+1，所以 42×26=41×26+26', '41×(74+26)+26=4100+26=<strong>4126</strong>'], answer: 4126, difficulty: 4 }),
 ]
 
+const PRETEST: Problem[] = [
+  sourcedProblem('P1', '小测验1 · 乘法凑整', 'type1', '125 × 17 × 32 × 25', 1700000, '32=8×4，分别凑成 125×8=1000、25×4=100。'),
+  sourcedProblem('P2', '小测验2 · 去括号抵消', 'type2', '111 ÷ (37 ÷ 125) × 8', 3000, '去括号后为 111÷37×125×8。'),
+  sourcedProblem('P3', '小测验3 · 连续抵消', 'type2', '1 ÷ (4 ÷ 7) ÷ (7 ÷ 10) ÷ (10 ÷ 13) ÷ …… ÷ (97 ÷ 100)', 25, '连续相邻因数抵消，只剩 100÷4。'),
+  sourcedProblem('P4', '小测验4 · 分配律', 'type3', '125 × (200 + 8)', 26000, '分别计算 125×200 和 125×8。'),
+  sourcedProblem('P5', '小测验5 · 乘999', 'type3', '357 × 999', 356643, '把 999 写成 1000−1。'),
+  sourcedProblem('P6', '小测验6 · 除以125', 'type3', '9375 ÷ 125', 75, '把被除数拆为 9000+375。'),
+  sourcedProblem('P7', '小测验7 · 提取公因数', 'type4', '17 × 446 − 34 × 119 + 51 × 264', 17000, '提取 17，括号内为 446−238+792=1000。'),
+]
+
+const SOURCE_LESSON: Problem[] = [
+  sourcedProblem('L38', '例题16 · 同除数合并', 'type2', '18 ÷ 4 + 45 ÷ 17 + 14 ÷ 4 + 23 ÷ 17', 12, '按相同除数合并为 (18+14)÷4+(45+23)÷17。'),
+  ...[11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((n, index) =>
+    sourcedProblem('L' + (39 + index), '例题17(' + (index + 1) + ') · 平方', 'type11', n + '²', n * n),
+  ),
+  ...[1, 2, 3, 4, 5, 6, 7].map((n, index) =>
+    sourcedProblem('L' + (49 + index), '例题18(' + (index + 1) + ') · 走马灯', 'type5', '142857 × ' + n, 142857 * n, '走马灯口诀：末位乘几，结果最后就是几；其余数字按 142857 的循环顺序走马灯。'),
+  ),
+  sourcedProblem('L56', '例题19(1) · 缺8数', 'type6', '12345679 × 9', 111111111, '缺8数口诀：12345679 乘几，答案就写几个 111；乘9得 9 个 1。'),
+  sourcedProblem('L57', '例题19(2) · 缺8数', 'type6', '12345679 × 81', 999999999, '先拆成 12345679×9×9；第一次得到 9 个1，再乘9得到 9 个9。'),
+  sourcedProblem('L58', '例题19(3) · 缺8数', 'type6', '12345679 × 99', 1222222221, '先拆成 12345679×9×11；先得 111111111，再用乘11的“两边一拉，中间相加”。'),
+  ...[
+    ['73 × 77', 5621],
+    ['84 × 86', 7224],
+    ['61 × 69', 4209],
+    ['52 × 58', 3016],
+    ['103 × 107', 11021],
+    ['101 × 109', 11009],
+  ].map(([text, answer], index) =>
+    sourcedProblem('L' + (59 + index), '例题20(' + (index + 1) + ') · 头同尾合十', 'type7', String(text), Number(answer), '头同尾合十口诀：前半部分=头×(头+1)，后半部分=尾×尾；后半不足两位补0。'),
+  ),
+  ...[25, 35, 45, 55, 65, 75, 85, 95, 205, 995].map((n, index) =>
+    sourcedProblem('L' + (65 + index), '例题21(' + (index + 1) + ') · 平方', 'type11', n + ' × ' + n, n * n, '把相同的两个数相乘，按平方计算；必要时可拆成整十（整百）加减一个数。'),
+  ),
+  sourcedProblem('L75', '例题22(1) · 特殊数1001', 'type8', '3 × 7 × 11 × 13 × 15 × 17', 765765, '特殊数口诀：7×11×13=1001；先凑出1001，再算剩下的 3×15×17。'),
+  sourcedProblem('L76', '例题22(2) · 特殊数111', 'type8', '37 × 3', 111, '特殊数口诀：3×37=111。'),
+  sourcedProblem('L77', '例题22(3) · 特殊数999', 'type8', '27 × 37', 999, '把27拆成9×3，利用3×37=111，得到9×111=999。'),
+  sourcedProblem('L78', '例题22(4) · 构造999', 'type8', '81 × 74 × 13', 77922, '分解后构造 999×78。'),
+  sourcedProblem('L79', '例题22(5) · 构造1001', 'type8', '5 × 7 × 22 × 39 × 49', 1471470, '分解、重组后构造 1001×10。'),
+  sourcedProblem('L80', '例题23(1) · 椅子数', 'type9', '56 × 101', 5656, '椅子数口诀：101=01 01，是两把椅子；56有两位，刚好每把椅子放一次56，得到5656。'),
+  sourcedProblem('L81', '例题23(2) · 椅子数', 'type9', '357 × 1001001', 357357357, '把1001001看作三个001组成的椅子数；357是三位数，每把椅子对应一组357。'),
+  sourcedProblem('L82', '例题23(3) · 椅子数', 'type9', '4869 × 10001', 48694869, '10001相当于两个0001组成的椅子数；4869有四位，结果重复两次4869。'),
+  sourcedProblem('L83', '例题23(4) · 特殊因数', 'type3', '1234 × 10002', 12342468),
+  sourcedProblem('L84', '例题24(1) · 两边一拉中间相加', 'type10', '123 × 11', 1353, '乘11口诀：两边一拉，中间相加；写两端1、3，中间写1+2=3、2+3=5。'),
+  sourcedProblem('L85', '例题24(2) · 两边一拉中间相加', 'type10', '1254 × 11', 13794, '乘11口诀：两边一拉，中间相加；从右向左处理进位。'),
+  sourcedProblem('L86', '例题24(3) · 两边一拉中间相加', 'type10', '456 × 11', 5016, '乘11口诀：两边一拉，中间相加；4、5、6两端保留，中间是4+5=9、5+6=11，需要进位。'),
+]
+
+const SOURCE_HOMEWORK: Problem[] = [
+  sourcedProblem('H18', '练习11 · 巧算', 'type4', '54 × 67 + 46 × 69 − 92', 6700, '69=67+2，凑出 67×100。'),
+  sourcedProblem('H19', '练习12 · 凑整', 'type3', '98 × 4 + 101 × 3 + 103 × 2 + 100', 1001, '把各数向 100 凑整。'),
+  sourcedProblem('H20', '练习13 · 提取公因数', 'type4', '53 × 38 + 71 × 62 + 82 × 62', 11500, '先合并含 62 的两项，再凑整。'),
+  sourcedProblem('H21', '练习14(1) · 提取公因数', 'type4', '29 × 36 + 11 × 65 − 40 × 11 − 11 × 29', 1000, '重组为 29×25+11×25。'),
+  sourcedProblem('H22', '练习14(2) · 相近数', 'type4', '75 × 36 − 74 × 24 − 73 × 12', 48, '将 75、73 分别写成 74+1、74−1。'),
+  sourcedProblem('H23', '练习15(1) · 同除数合并', 'type2', '13 ÷ 6 + 15 ÷ 7 + 35 ÷ 6 + 27 ÷ 7', 14),
+  sourcedProblem('H24', '练习15(2) · 同除数合并', 'type2', '25 ÷ 13 + 54 ÷ 26', 4, '54÷26 可化为 27÷13。'),
+  ...[21, 22, 23, 24, 25].map((n, index) =>
+    sourcedProblem('H' + (25 + index), '练习16(' + (index + 1) + ') · 平方', 'type11', n + ' × ' + n, n * n),
+  ),
+  sourcedProblem('H30', '练习17(1) · 头同尾合十', 'type7', '63 × 67', 4221, '头同尾合十：前半=6×7=42，后半=3×7=21，拼成4221。'),
+  sourcedProblem('H31', '练习17(2) · 头同尾合十', 'type7', '142 × 148', 21016, '头同尾合十：前半=14×15=210，后半=2×8=16，拼成21016。'),
+  ...[
+    ['68 × 101', 6868],
+    ['74 × 201', 14874],
+    ['256 × 1002', 256512],
+    ['154 × 601', 92554],
+  ].map(([text, answer], index) =>
+    sourcedProblem('H' + (32 + index), '练习18(' + (index + 1) + ') · 特殊因数', 'type3', String(text), Number(answer), '先识别101、201、1002、601等接近整百整千的特殊因数，再用分配律拆算。'),
+  ),
+  ...[
+    ['345 × 11', 3795],
+    ['2451 × 11', 26961],
+    ['268 × 11', 2948],
+  ].map(([text, answer], index) =>
+    sourcedProblem('H' + (36 + index), '练习19(' + (index + 1) + ') · 两边一拉中间相加', 'type10', String(text), Number(answer), '乘11口诀：两边一拉，中间相加；相加满十时从右向左进位。'),
+  ),
+  sourcedProblem('H39', '练习20(1) · 特殊数111', 'type8', '18 × 37', 666, '把18拆成6×3，利用3×37=111，得到6×111。'),
+  sourcedProblem('H40', '练习20(2) · 特殊数999', 'type8', '54 × 74 × 8', 31968, '先把54×8变成432；再将432×74拆为32×(27×37)，利用27×37=999。'),
+  sourcedProblem('H41', '练习20(3) · 特殊数1001', 'type8', '14 × 22 × 65 × 9', 180180, '分解为2×7×2×11×5×13×3×3，先凑7×11×13=1001，余下为180。'),
+]
+
+export const PROBLEM_TIP: Record<string, string> = {
+  ...Object.fromEntries(
+    ['L49', 'L50', 'L51', 'L52', 'L53', 'L54', 'L55'].map((id) => [
+      '2-9-' + id,
+      '走马灯：末位乘几，结果最后就是几；其余数字按 142857 的循环顺序依次移动。',
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['L56', 'L57', 'L58'].map((id) => [
+      '2-9-' + id,
+      '缺8数：先把 12345679 凑出乘9的结果；再继续用乘9或乘11的规律。',
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['L59', 'L60', 'L61', 'L62', 'L63', 'L64', 'H30', 'H31'].map((id) => [
+      '2-9-' + id,
+      '头同尾合十：前半=头×(头+1)，后半=尾×尾；后半不足两位要补0。',
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['L75', 'L76', 'L77', 'L78', 'L79', 'H39', 'H40', 'H41'].map((id) => [
+      '2-9-' + id,
+      '特殊数：牢记 3×37=111、27×37=999、7×11×13=1001，再分解重组来凑。',
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['L80', 'L81', 'L82'].map((id) => [
+      '2-9-' + id,
+      '椅子数：从个位向左找重复的 01、001 等；单把椅子的长度要和重复数位数相同。',
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['L84', 'L85', 'L86', 'H36', 'H37', 'H38'].map((id) => [
+      '2-9-' + id,
+      '乘11：两边一拉，中间相加；从右向左处理进位。',
+    ]),
+  ),
+}
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
-  lesson: LESSON,
-  homework: HOMEWORK,
+  pretest: PRETEST,
+  lesson: [...LESSON, ...SOURCE_LESSON],
+  homework: [...HOMEWORK, ...SOURCE_HOMEWORK],
   workbook: [],
   supplement: [],
 }
 
 export const PROBLEM_TYPES = [
-  { tag: 'type1', label: '乘法凑整', desc: '寻找 2×5、4×25、8×125 等凑整组合', example: '125×72' },
-  { tag: 'type2', label: '乘除抵消', desc: '同级运算调序与去括号抵消', example: '6÷(7÷11)÷…' },
-  { tag: 'type3', label: '分配律', desc: '乘法、除法分配律与整百整千拆分', example: '473×999' },
-  { tag: 'type4', label: '提取公因数', desc: '直接提取或利用倍数、相近数构造公因数', example: '26×44+37×88' },
+  { tag: 'type1', group: 'foundation', icon: '🧩', label: '乘法凑整', desc: '寻找2×5、4×25、8×125等搭档', example: '125×72' },
+  { tag: 'type2', group: 'foundation', icon: '🔗', label: '乘除抵消', desc: '调序、去括号，让连续因数约掉', example: '6÷(7÷11)÷…' },
+  { tag: 'type3', group: 'foundation', icon: '↔️', label: '分配律拆算', desc: '把整百、整千附近的数拆开计算', example: '473×999' },
+  { tag: 'type4', group: 'foundation', icon: '🎯', label: '提取公因数', desc: '直接提取，或用倍数和相近数构造', example: '26×44+37×88' },
+  { tag: 'type5', group: 'pattern', icon: '🎠', label: '走马灯', desc: '142857乘1至6，数字循环移动', example: '142857×4' },
+  { tag: 'type6', group: 'pattern', icon: '8️⃣', label: '缺8数', desc: '12345679先乘9，得到重复的1', example: '12345679×81' },
+  { tag: 'type9', group: 'pattern', icon: '🪑', label: '椅子数', desc: '识别重复的01、001，整组复制数字', example: '357×1001001' },
+  { tag: 'type10', group: 'pattern', icon: '👐', label: '乘11', desc: '两边一拉，中间相加，注意进位', example: '456×11' },
+  { tag: 'type7', group: 'structure', icon: '🔟', label: '头同尾合十', desc: '前算头×(头+1)，后算尾×尾', example: '63×67' },
+  { tag: 'type8', group: 'structure', icon: '💡', label: '特殊数', desc: '识记111、999、1001并分解重组', example: '7×11×13=1001' },
+  { tag: 'type11', group: 'structure', icon: '◻️', label: '平方巧算', desc: '相同因数直接平方或利用平方差', example: '95×95' },
 ] as const
 
 export const TAG_STYLE: Record<string, string> = {
@@ -126,6 +285,13 @@ export const TAG_STYLE: Record<string, string> = {
   type2: 'bg-cyan-100 text-cyan-800',
   type3: 'bg-violet-100 text-violet-800',
   type4: 'bg-rose-100 text-rose-800',
+  type5: 'bg-sky-100 text-sky-800',
+  type6: 'bg-yellow-100 text-yellow-800',
+  type7: 'bg-emerald-100 text-emerald-800',
+  type8: 'bg-indigo-100 text-indigo-800',
+  type9: 'bg-lime-100 text-lime-800',
+  type10: 'bg-orange-100 text-orange-800',
+  type11: 'bg-fuchsia-100 text-fuchsia-800',
 }
 
 export const TYPE_STYLE: Record<string, { bg: string; border: string; titleColor: string; textColor: string }> = {
@@ -133,4 +299,11 @@ export const TYPE_STYLE: Record<string, { bg: string; border: string; titleColor
   type2: { bg: 'bg-cyan-50', border: 'border-cyan-400', titleColor: 'text-cyan-800', textColor: 'text-cyan-700' },
   type3: { bg: 'bg-violet-50', border: 'border-violet-400', titleColor: 'text-violet-800', textColor: 'text-violet-700' },
   type4: { bg: 'bg-rose-50', border: 'border-rose-400', titleColor: 'text-rose-800', textColor: 'text-rose-700' },
+  type5: { bg: 'bg-sky-50', border: 'border-sky-400', titleColor: 'text-sky-800', textColor: 'text-sky-700' },
+  type6: { bg: 'bg-yellow-50', border: 'border-yellow-400', titleColor: 'text-yellow-800', textColor: 'text-yellow-700' },
+  type7: { bg: 'bg-emerald-50', border: 'border-emerald-400', titleColor: 'text-emerald-800', textColor: 'text-emerald-700' },
+  type8: { bg: 'bg-indigo-50', border: 'border-indigo-400', titleColor: 'text-indigo-800', textColor: 'text-indigo-700' },
+  type9: { bg: 'bg-lime-50', border: 'border-lime-400', titleColor: 'text-lime-800', textColor: 'text-lime-700' },
+  type10: { bg: 'bg-orange-50', border: 'border-orange-400', titleColor: 'text-orange-800', textColor: 'text-orange-700' },
+  type11: { bg: 'bg-fuchsia-50', border: 'border-fuchsia-400', titleColor: 'text-fuchsia-800', textColor: 'text-fuchsia-700' },
 }

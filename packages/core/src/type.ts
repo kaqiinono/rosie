@@ -172,6 +172,8 @@ export interface WordEntry {
   keywords?: [string, string][]
   /** Target / Context / Extension (from Oxford flashcard labels). */
   vocabType?: WordVocabType
+  /** Grammatical parts of speech, e.g. n. / v. / adj. */
+  partOfSpeech?: string[]
   /** Irregular/special surface forms grouped by grammatical role. */
   wordForms?: WordForms
   imagePath?: string

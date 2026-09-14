@@ -60,7 +60,7 @@ description: Add or update a complete English textbook lesson in Rosie from page
 3. 只把理解课文确实需要、且全阶段词库不存在的超纲词、专名和文化词加入 `glossary`。`glossary` 只用于阅读辅助，不进入 mastery、前测或回想。
 4. 专名设置 `isProperNoun: true`；提供准确的 `meaningCn`，尽量补简短 `meaningEn` 和可靠 IPA。不要为了“词表更丰富”加入普通易懂词。
 5. 新增 glossary category 时检查 `GlossaryPanel` 的 emoji 映射。
-6. 若本课需要新增 `word_entries`，逐词对照 `utils/word-forms.ts`：规则可生成的形式不入库；不规则动词、名词复数、第三人称、比较级/最高级、英美双形式或禁止自动生成的词，必须提供结构化 `wordForms`。短语中的特殊形式保存完整表面文本。
+6. 若本课需要新增 `word_entries`，逐词填写结构化 `partOfSpeech`（如 `n.`、`v.`、`adj.`），供单词卡展示；再对照 `utils/word-forms.ts`：规则可生成的形式不入库；不规则动词、名词复数、第三人称、比较级/最高级、英美双形式或禁止自动生成的词，必须提供结构化 `wordForms`。自动规则不会猜测末尾辅音双写——需要双写的过去式、现在分词或比较级/最高级必须显式填写对应形式，并以 `disableGenerated` 关闭同类别的错误默认形式。短语中的特殊形式保存完整表面文本。
 
 ## 4. 录入课文
 
@@ -72,7 +72,7 @@ description: Add or update a complete English textbook lesson in Rosie from page
 - 将日期、小标题等按索引放入 `paragraphTitles`，绝不混进段落正文；
 - 保持段落边界符合教材，不为追求固定段数任意合并；
 - 核对重点词和多词短语在正文中的匹配效果。
-- 核对正文实际变形能归回词库原形；若出现 `thought/took/children/has` 等规则外形式，确认对应词条已有 `wordForms`，不要把它降级为 glossary。
+- 核对正文实际变形能归回词库原形；若出现 `thought/took/children/has` 或 `running/stopped` 等规则外形式，确认对应词条已有 `wordForms`（双写形式同时配置 `disableGenerated`），不要把它降级为 glossary。
 
 保留每段后的 `ParagraphRecallQuiz` 能力。不要在阅读详情页新增或挂载 `InlineContextPractice` / “课文语境练习”，因为它与段落回想重复。Type D 在系统其他既有练习入口继续保留，不删除其公共能力。
 
@@ -134,7 +134,7 @@ spelling 只高亮一次，真正未入库的必要难词和专名才写入章�
 - [ ] stage / Unit / Lesson / key 唯一且与词库一致。
 - [ ] `paragraphTitles.length` 与需标题的段落对齐，标题未混入正文。
 - [ ] 已搜索该 stage 全阶段词库，无重复词条；所有 `ReadingWordRef` 均能解析。
-- [ ] 所有新增词均完成词形审计：规则词未冗余存储，特殊词已填写 `wordForms` / `disableGenerated`。
+- [ ] 所有新增词均完成词形审计：规则词未冗余存储；不规则、英美双形式和末尾辅音双写词已填写 `wordForms`，双写词同时以 `disableGenerated` 屏蔽错误默认形式。
 - [ ] 正文中的规则和特殊变形均能高亮、打开原词卡并用于段落回想/挖空。
 - [ ] glossary 只含必要的超纲词、专名和文化词，且不与全阶段词库重复。
 - [ ] 选择/连线题答案存在于 options；填空答案和题干可判定；题号无冲突。

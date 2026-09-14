@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 type SelectControlOption = {
   value: string
   label: string
+  swatchColor?: string
   disabled?: boolean
 }
 
@@ -116,13 +117,20 @@ export default function SelectControl({
             }
             if (event.key === 'Tab') setOpen(false)
           }}
-          className={`inline-flex min-h-11 w-full cursor-pointer items-center rounded-xl border py-2 pr-9 pl-3 text-left text-sm font-extrabold whitespace-nowrap shadow-sm outline-none transition focus-visible:ring-2 disabled:cursor-not-allowed ${
+          className={`inline-flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-xl border py-2 pr-9 pl-3 text-left text-sm font-extrabold whitespace-nowrap shadow-sm outline-none transition focus-visible:ring-2 disabled:cursor-not-allowed ${
             dark
               ? 'border-violet-300/25 bg-slate-950/70 text-violet-100 shadow-violet-950/20 hover:border-violet-300/45 hover:bg-violet-950/40 focus-visible:border-violet-300/70 focus-visible:ring-violet-400/25 disabled:bg-slate-900 disabled:text-slate-500'
               : 'border-amber-200 bg-white text-amber-950 hover:border-amber-300 hover:bg-amber-50/50 focus-visible:border-amber-400 focus-visible:ring-amber-300 focus-visible:ring-offset-1 disabled:bg-slate-100 disabled:text-slate-400'
           } ${selectClassName}`}
         >
-          {selectedOption?.label ?? '请选择'}
+          {selectedOption?.swatchColor && (
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 rounded-full border border-black/15"
+              style={{ backgroundColor: selectedOption.swatchColor }}
+            />
+          )}
+          <span className="min-w-0 truncate">{selectedOption?.label ?? '请选择'}</span>
         </button>
         <svg
           viewBox="0 0 20 20"
@@ -186,6 +194,13 @@ export default function SelectControl({
                             : 'text-slate-700 hover:bg-amber-50'
                   }`}
                 >
+                  {option.swatchColor && (
+                    <span
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 rounded-full border border-black/15"
+                      style={{ backgroundColor: option.swatchColor }}
+                    />
+                  )}
                   <span className="flex-1">{option.label}</span>
                   {selected && (
                     <svg

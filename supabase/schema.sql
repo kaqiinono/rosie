@@ -1268,6 +1268,7 @@ CREATE TABLE public.word_entries (
     chinese_def text,
     vocab_type text,
     word_forms jsonb,
+    part_of_speech text[],
     image_path text,
     image_match_score integer,
     image_match_query text,
@@ -1288,6 +1289,8 @@ COMMENT ON COLUMN public.word_entries.vocab_type IS 'Oxford flashcard band: Targ
 --
 
 COMMENT ON COLUMN public.word_entries.word_forms IS 'Explicit irregular/special surface forms only. Keys are grammatical roles; values are text arrays.';
+
+COMMENT ON COLUMN public.word_entries.part_of_speech IS 'Structured grammatical parts of speech, e.g. {"n.", "v."}. Maintained progressively by admins.';
 
 
 --

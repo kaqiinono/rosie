@@ -7,21 +7,28 @@ import {
   findSentenceForWord,
   resolveWordFormMatch,
 } from '../../../packages/english/src/utils/reading-data'
-import { getWordFormCandidates } from '../../../packages/english/src/utils/word-forms'
+import {
+  getConfiguredCardVerbForms,
+  getWordFormCandidates,
+} from '../../../packages/english/src/utils/word-forms'
 
 function entry(word: string, wordForms?: WordEntry['wordForms']): WordEntry {
   return { unit: 'Unit 1', lesson: 'Lesson 1', word, explanation: '', wordForms }
 }
 
 describe('reading word-form matching', () => {
-  it('generates regular verb forms including consonant doubling', () => {
+  it('generates safe regular forms and takes doubled forms from the entry', () => {
     const climb = entry('climb')
-    const run = entry('run')
+    const run = entry('run', {
+      presentParticiple: ['running'],
+      disableGenerated: ['presentParticiple'],
+    })
     const climbForms = getWordFormCandidates(climb).map((form) => form.text)
     const runForms = getWordFormCandidates(run).map((form) => form.text)
 
     expect(climbForms).toEqual(expect.arrayContaining(['climb', 'climbs', 'climbing', 'climbed']))
     expect(runForms).toContain('running')
+    expect(runForms).not.toContain('runing')
   })
 
   it('resolves an explicit irregular surface form to its base entry', () => {
@@ -34,6 +41,20 @@ describe('reading word-form matching', () => {
     expect(match?.entry).toBe(think)
     expect(match?.source).toBe('explicit')
     expect(match?.formTypes).toEqual(['past', 'pastParticiple'])
+  })
+
+  it('returns every explicitly configured verb form for the word card', () => {
+    const run = entry('run', {
+      presentParticiple: ['running'],
+      past: ['ran'],
+      pastParticiple: ['run'],
+    })
+
+    expect(getConfiguredCardVerbForms(run)).toEqual([
+      { type: 'presentParticiple', forms: ['running'] },
+      { type: 'past', forms: ['ran'] },
+      { type: 'pastParticiple', forms: ['run'] },
+    ])
   })
 
   it('matches irregular plurals and phrasal verbs', () => {

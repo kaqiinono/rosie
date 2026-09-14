@@ -12,7 +12,7 @@ import {
 import { normalizeWordForms } from '../utils/word-forms'
 
 const SELECT_COLS =
-  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
+  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, part_of_speech, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
 
 const CACHE_VER = 'word_cache_v6'
 /** v4 cached the entire word library locally; purge it on first use. */
@@ -305,6 +305,7 @@ function toRow(creator: string, w: WordEntry) {
     syllables: w.syllables ?? null,
     keywords: w.keywords ?? null,
     vocab_type: w.vocabType ?? null,
+    part_of_speech: w.partOfSpeech ?? null,
     word_forms: w.wordForms ?? null,
     image_path: w.imagePath ?? null,
     image_match_score: w.imageMatchScore ?? null,
@@ -331,6 +332,9 @@ function fromRow(row: Record<string, unknown>): WordEntry {
     keywords: (row.keywords as [string, string][]) ?? undefined,
     vocabType:
       vt === 'Target' || vt === 'Context' || vt === 'Extension' ? vt : undefined,
+    partOfSpeech: Array.isArray(row.part_of_speech)
+      ? row.part_of_speech.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      : undefined,
     wordForms: normalizeWordForms(row.word_forms),
     imagePath: (row.image_path as string) ?? undefined,
     imageMatchScore: (row.image_match_score as number) ?? undefined,
