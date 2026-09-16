@@ -873,6 +873,9 @@ export default function QuizPage() {
                           <span className="text-[11px] font-semibold text-indigo-600">
                             第{item.lessonId}讲
                           </span>
+                          <span className="text-[11px] font-semibold text-slate-700">
+                            {problem.title}
+                          </span>
                           <span className="text-[11px] text-slate-400">
                             {SECTION_INFO[section].icon}
                             {SECTION_INFO[section].label}
@@ -1182,6 +1185,9 @@ export default function QuizPage() {
                                       </span>
                                       <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
                                         {entry.problem.tagLabel}
+                                      </span>
+                                      <span className="text-[11px] font-semibold text-slate-700">
+                                        {entry.problem.title}
                                       </span>
                                       {inDraft && (
                                         <span className="text-[10px] font-semibold text-emerald-600">
@@ -1551,6 +1557,9 @@ export default function QuizPage() {
                           </span>
                           <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
                             {entry.problem.tagLabel}
+                          </span>
+                          <span className="text-[11px] font-semibold text-slate-700">
+                            {entry.problem.title}
                           </span>
                           {isCurrent && (
                             <span className="text-[10px] font-semibold text-indigo-600">当前</span>

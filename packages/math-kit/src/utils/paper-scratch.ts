@@ -188,6 +188,7 @@ export async function submitArchivedPaperScratchDraft(input: {
   blob: Blob
   correct: boolean
   section?: string
+  paperId?: string | null
 }): Promise<{ error: string | null }> {
   const lessonId = lessonIdFromProblemId(input.problemId)
   const file = new File([input.blob], `${input.problemId}.png`, { type: 'image/png' })
@@ -205,7 +206,7 @@ export async function submitArchivedPaperScratchDraft(input: {
     result: input.correct ? 'correct' : 'wrong',
     objects,
     answerSnapshot: null,
-    paperId: null,
+    paperId: input.paperId ?? null,
   })
 
   return { error: null }

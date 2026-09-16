@@ -203,3 +203,80 @@ describe('Stage 5A Unit 1 Lesson 3 reading course', () => {
     expect(writing?.modelAnswer).toHaveLength(5)
   })
 })
+
+describe('Stage 5A Unit 2 reading courses', () => {
+  const courseCases = [
+    {
+      key: '5a-u2l1',
+      lesson: 'Lesson 1',
+      paragraphs: 4,
+      sectionIds: ['power-in-the-path-reading', 'past-tenses-and-used-to'],
+      primaryGrammar: 8,
+    },
+    {
+      key: '5a-u2l2',
+      lesson: 'Lesson 2',
+      paragraphs: 4,
+      sectionIds: ['outer-space-reading', 'present-perfect-simple'],
+      primaryGrammar: 11,
+    },
+    {
+      key: '5a-u2l3',
+      lesson: 'Lesson 3',
+      paragraphs: 5,
+      sectionIds: ['technology-impact', 'so-and-such', 'new-gadget-email'],
+      primaryGrammar: 99,
+    },
+  ] as const
+
+  it.each(courseCases)('registers $key with its textbook section order', ({
+    key,
+    lesson,
+    paragraphs,
+    sectionIds,
+    primaryGrammar,
+  }) => {
+    const passage = findPassageByKey(key)
+    const sections = passage?.learningSections ?? []
+    expect(findPassage('5A', 'Unit 2', lesson)?.key).toBe(key)
+    expect(passage?.paragraphs).toHaveLength(paragraphs)
+    expect(sections.map((section) => section.id)).toEqual(sectionIds)
+    const grammar = sections.find((section) => section.type === 'grammar')
+    expect(grammar?.grammarRefs.find((ref) => ref.role === 'primary')?.unitNumber).toBe(primaryGrammar)
+  })
+
+  it('keeps Unit 2 glossary entries outside the complete 5A word library', () => {
+    const existing = new Set(SAMPLE_WORDS_5A.map((word) => word.word.toLowerCase()))
+    for (const key of courseCases.map((course) => course.key)) {
+      for (const entry of findPassageByKey(key)?.glossary ?? []) {
+        expect(existing.has(entry.word.toLowerCase())).toBe(false)
+      }
+    }
+  })
+
+  it('resolves every Unit 2 reading word reference and validates selectable answers', () => {
+    for (const { key, lesson } of courseCases) {
+      const sections = findPassageByKey(key)?.learningSections ?? []
+      const refs = sections.flatMap((section) =>
+        section.type === 'exercises' ? (section.wordRefs ?? []) : [],
+      )
+      expect(refs.length).toBeGreaterThan(0)
+      for (const ref of refs) {
+        expect(ref).toMatchObject({ stage: '5A', unit: 'Unit 2', lesson })
+        expect(resolveReadingWordRef(ref, SAMPLE_WORDS_5A)?.word).toBe(ref.word)
+      }
+      const groups = sections.flatMap((section) => section.type === 'writing' ? [] : section.groups)
+      for (const item of groups.flatMap((group) => group.items).filter((item) => item.options)) {
+        expect(item.options).toContain(item.answer)
+      }
+    }
+  })
+
+  it('keeps listening and Guess what! callout material out of the new passages', () => {
+    const content = courseCases
+      .map((course) => findPassageByKey(course.key)?.paragraphs.join(' '))
+      .join(' ')
+    expect(content).not.toContain('Listen to')
+    expect(content).not.toContain('Guess what!')
+  })
+})

@@ -174,7 +174,7 @@ export function QuizPaperPrintSheet({
               <div
                 className="problem-text text-[15px] text-slate-900"
                 dangerouslySetInnerHTML={{
-                  __html: `<span class="q-num">${i + 1}.</span><span class="q-pts">（${pts}分）</span> ${sanitizeProblemText(problem.text)}`,
+                  __html: `<span class="q-num">${i + 1}.</span><span class="q-title">${problem.title}</span><span class="q-pts">（${pts}分）</span> ${sanitizeProblemText(problem.text)}`,
                 }}
               />
               <QuizProblemPrintWidget
@@ -264,6 +264,12 @@ export const QUIZ_PRINT_STYLE = `
     font-size: 0.8em;
     color: #64748b;
     margin-right: 0.25rem;
+  }
+  .problem-text .q-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #334155;
+    margin-right: 0.35rem;
   }
   .problem-text p {
     display: inline;

@@ -1573,6 +1573,192 @@ export const readingPassages: ReadingPassage[] = [
       },
     ],
   },
+  {
+    key: '5a-u2l1',
+    stage: '5A',
+    unit: 'Unit 2',
+    lesson: 'Lesson 1',
+    title: 'Power in the Path',
+    paragraphs: [
+      'Have you ever taken a bike ride in the sun? It might make your ride a little hotter, but a cycle path in a sunny area can be a good thing. In fact, in the Netherlands, one company decided to build a cycle path that can create energy using the sun.',
+      "In the town of Krommenie, there’s a 70 m (230 ft.) cycle path with solar panels built into it. These panels absorb light from the sun’s rays. They then use that light to create electricity, which can power specific things (like street lights) or go right into the electrical grid. In its first year, this short path was creating enough energy to power one house for a whole year!",
+      "Developers are still doing research. They must make sure the path is strong enough for buses and trucks to drive over it. They must also make sure the path isn’t too smooth because that could get slippery, causing cyclists to fall. This test path must be just right before this type of path can be built in other places.",
+      "In another Dutch town, Eindhoven, there’s a cycle path that uses solar energy to make art. The path, which opened in 2014, is made up of thousands of tiny lights that absorb the sun during the day and glow at night. From above, these lights combine to look like the famous painting The Starry Night by Dutch artist Vincent van Gogh. This one-kilometre path is part of a larger cycle path that honours van Gogh, who lived in this area from 1883 to 1885. It’s a beautiful and creative way to use the power of the sun, and the path attracts many visitors.",
+    ],
+    glossary: [
+      { word: 'Krommenie', meaningCn: '克罗默尼（荷兰城镇）', meaningEn: 'a town in the Netherlands', category: '专有名词', isProperNoun: true },
+      { word: 'Eindhoven', meaningCn: '埃因霍温（荷兰城市）', meaningEn: 'a city in the Netherlands', category: '专有名词', isProperNoun: true },
+      { word: 'Vincent van Gogh', meaningCn: '文森特·梵高（荷兰画家）', meaningEn: 'a Dutch artist', category: '专有名词', isProperNoun: true },
+      { word: 'The Starry Night', meaningCn: '《星月夜》（梵高画作）', meaningEn: 'a famous painting by Vincent van Gogh', category: '专有名词', isProperNoun: true },
+      { word: 'electrical grid', meaningCn: 'n. 电网', meaningEn: 'a network that carries electricity to homes and businesses', category: '超纲词汇' },
+    ],
+    learningSections: [
+      {
+        type: 'exercises', id: 'power-in-the-path-reading', eyebrow: '课文理解', title: '读懂太阳能自行车道',
+        description: '完成教材第 3、4 题：选择正确词语并判断正误。',
+        wordRefs: ['absorb', 'electricity', 'smooth', 'glow', 'create'].map((word) => ({ stage: '5A', unit: 'Unit 2', lesson: 'Lesson 1', word })),
+        groups: [
+          { section: '3', instruction: 'Circle the correct words.', items: [
+            { number: 1, type: 'multiple_choice', prompt: "Solar panels ______ the sun's light to create power.", answer: 'absorb', options: ['absorb', 'glow'] },
+            { number: 2, type: 'multiple_choice', prompt: 'The sun gives off ______ of light.', answer: 'rays', options: ['electricity', 'rays'] },
+            { number: 3, type: 'multiple_choice', prompt: "Solar panels have a ______ top that isn't safe for cyclists to ride on.", answer: 'smooth', options: ['glow', 'smooth'] },
+            { number: 4, type: 'multiple_choice', prompt: 'The lights ______ at night to look like a famous painting.', answer: 'glow', options: ['glow', 'create'] },
+            { number: 5, type: 'multiple_choice', prompt: 'During the storm, we had no ______.', answer: 'electricity', options: ['electricity', 'rays'] },
+            { number: 6, type: 'multiple_choice', prompt: 'The lights work together to ______ a picture.', answer: 'create', options: ['absorb', 'create'] },
+          ] },
+          { section: '4', instruction: 'Read. Tick T for True or F for False.', items: [
+            { number: 1, type: 'multiple_choice', prompt: "The cycle path in Krommenie uses the sun's rays to create electricity.", answer: 'True', options: ['True', 'False'] },
+            { number: 2, type: 'multiple_choice', prompt: 'The electricity created by the cycle path can only power street lights.', answer: 'False', options: ['True', 'False'] },
+            { number: 3, type: 'multiple_choice', prompt: 'In the first year, the cycle path created enough energy to power one house for a whole year.', answer: 'True', options: ['True', 'False'] },
+            { number: 4, type: 'multiple_choice', prompt: 'The path should be very smooth so that cyclists can go on it.', answer: 'False', options: ['True', 'False'] },
+            { number: 5, type: 'multiple_choice', prompt: 'Both cycle paths mentioned in the article were built for the same reason.', answer: 'False', options: ['True', 'False'] },
+            { number: 6, type: 'multiple_choice', prompt: 'Vincent van Gogh probably rode his bike on the cycle path in Eindhoven.', answer: 'False', options: ['True', 'False'] },
+          ] },
+        ],
+      },
+      {
+        type: 'grammar', id: 'past-tenses-and-used-to', eyebrow: '本课语法', title: 'Past simple, past continuous and used to',
+        grammarRefs: [
+          { book: 'essential', unitNumber: 8, role: 'primary', label: '过去进行时' },
+          { book: 'essential', unitNumber: 7, role: 'foundation', label: '一般过去时' },
+          { book: 'essential', unitNumber: 18, role: 'extension', label: 'used to' },
+        ],
+        summary: { cards: [
+          { title: '一般过去时', formula: '动词过去式', signals: 'yesterday · last night · in 2014', points: [{ label: '完成的过去动作', text: 'The path opened in 2014.' }] },
+          { title: '过去进行时', formula: 'was / were + doing', signals: 'while · when', points: [{ label: '过去某时正在进行', text: 'She was working as a secretary.' }] },
+          { title: 'used to', formula: 'used to + 动词原形', signals: 'when I was young · in the past', points: [{ label: '过去常常发生、现在不再发生', text: 'Televisions used to be only black and white.' }] },
+        ], contrastTitle: '本课最重要的区别', contrasts: [
+          { example: 'She was writing a letter when the paint disappeared.', note: '长动作用过去进行时；发生并打断它的动作用一般过去时。' },
+          { example: "I didn't use to send many messages from my phone.", note: 'used to 描述过去状态或习惯。' },
+        ], decisionGuide: ['过去完成的动作 → 一般过去时。', '过去某时正在发生的动作或故事背景 → 过去进行时。', '过去经常发生、现在不再发生的习惯或状态 → used to。'], reminders: ['否定形式用 didn’t use to，不用 didn’t used to。'] },
+        groups: [
+          { section: '6', instruction: 'Complete the sentences with the correct form of do or make.', items: [
+            { number: 1, type: 'fill_blank', prompt: 'Last week in science, we ______ an experiment with solar energy.', answer: 'did', explanation: 'do an experiment' },
+            { number: 2, type: 'fill_blank', prompt: "It doesn't ______ a difference what anyone thinks.", answer: 'make', explanation: 'make a difference' },
+            { number: 3, type: 'fill_blank', prompt: 'Has Mum ______ a decision about where to have dinner?', answer: 'made', explanation: 'make a decision' },
+            { number: 4, type: 'fill_blank', prompt: '______ your parents a favour and clean up the house.', answer: 'Do', explanation: 'do a favour' },
+            { number: 5, type: 'fill_blank', prompt: "Please, don't ______ a sound!", answer: 'make', explanation: 'make a sound' },
+          ] },
+          { section: '7', instruction: 'Complete the paragraph with the past simple or the past continuous form of the verbs in brackets.', items: [
+            { number: 1, type: 'fill_blank', prompt: "Bette Nesmith Graham ______ to be an inventor. (not want)", answer: "didn't want" },
+            { number: 2, type: 'fill_blank', prompt: 'She ______ to become an artist when she ______ a job as a secretary after World War II. (hope / get)', answer: 'hoped / got' },
+            { number: 3, type: 'fill_blank', prompt: 'While she ______ as a secretary, she ______ of a good way to cover and correct the mistakes. (work / think)', answer: 'was working / thought' },
+            { number: 4, type: 'fill_blank', prompt: 'One day, she ______ a bottle and took it to work with her. (put)', answer: 'put' },
+            { number: 5, type: 'fill_blank', prompt: 'While she ______ a letter, she put the paint on the mistakes and they ______! (write / disappear)', answer: 'was writing / disappeared' },
+          ] },
+          { section: '8', instruction: 'Write sentences with a form of used to.', items: [
+            { number: 1, type: 'fill_blank', prompt: 'The Internet ______ very slow.', answer: 'used to be' },
+            { number: 2, type: 'fill_blank', prompt: 'Mobile phones ______ cameras.', answer: "didn't use to have" },
+            { number: 3, type: 'fill_blank', prompt: '______ cyclists ______ helmets?', answer: 'Did cyclists use to wear' },
+            { number: 4, type: 'fill_blank', prompt: 'People ______ emails.', answer: "didn't use to send" },
+          ] },
+        ],
+      },
+    ],
+  },
+  {
+    key: '5a-u2l2', stage: '5A', unit: 'Unit 2', lesson: 'Lesson 2', title: "What's Out There?",
+    paragraphs: [
+      'People have always wondered if life exists beyond Earth. Ever since the 17th century, when Galileo began using a telescope to study outer space, we have been curious about what – if anything – lives beyond our planet. Today, scientists are hoping to discover some life forms in outer space. Not creatures from the science fiction films, but rather microscopic life forms, which might be found in water.',
+      "Scientists have already spent much time and money looking for water on the surface of Mars. They’ve found water underneath Mars’s surface, but not like the lakes and rivers we have on Earth. Scientists feel that the Red Planet probably had water on its surface billions of years ago. Today, researchers continue to investigate whether the planet has ever been able to support life.",
+      "Two moons are also showing signs that life could be possible – Jupiter’s moon, Europa, and Saturn’s moon, Enceladus. Both moons have got icy surfaces with water underneath. Europa is billions of years older than Enceladus. For that reason, many scientists think it’s more likely than Enceladus to have life, because life forms take a long time to develop.",
+      "Scientists have also started studying the possibility of life on a planet outside our solar system. There’s a planet orbiting Proxima Centauri, the next closest star to Earth after the Sun. This rocky planet is about the same size as Earth and may be warm enough for liquid water. It’s too early to tell if life could exist on the planet, but scientists hope to learn more when the James Webb Space Telescope explores this area of space, starting in 2018. With exciting new missions planned, scientists are hoping that we’ll soon know if we’re alone in the universe, or if we’ve got some microscopic neighbours.",
+    ],
+    glossary: [
+      { word: 'Galileo', meaningCn: '伽利略（意大利天文学家）', meaningEn: 'an Italian scientist and astronomer', category: '专有名词', isProperNoun: true },
+      { word: 'Mars', meaningCn: '火星', meaningEn: 'the fourth planet from the Sun', category: '专有名词', isProperNoun: true },
+      { word: 'Europa', meaningCn: '欧罗巴（木星的卫星）', meaningEn: 'a moon of Jupiter', category: '专有名词', isProperNoun: true },
+      { word: 'Enceladus', meaningCn: '恩克拉多斯（土星的卫星）', meaningEn: 'a moon of Saturn', category: '专有名词', isProperNoun: true },
+      { word: 'Proxima Centauri', meaningCn: '比邻星', meaningEn: 'the closest star to the Sun', category: '专有名词', isProperNoun: true },
+      { word: 'James Webb Space Telescope', meaningCn: '詹姆斯·韦布空间望远镜', meaningEn: 'a space telescope used to observe the universe', category: '专有名词', isProperNoun: true },
+    ],
+    learningSections: [
+      { type: 'exercises', id: 'outer-space-reading', eyebrow: '课文理解', title: '寻找宇宙中的生命', wordRefs: ['discover', 'microscopic', 'investigate', 'orbit', 'exist', 'support', 'surface'].map((word) => ({ stage: '5A', unit: 'Unit 2', lesson: 'Lesson 2', word })), groups: [
+        { section: '3', instruction: 'Read. Answer the questions.', items: [
+          { number: 1, type: 'fill_blank', prompt: 'What type of life forms do scientists hope to discover?', answer: 'microscopic life forms' },
+          { number: 2, type: 'fill_blank', prompt: 'When do scientists believe Mars had water on its surface?', answer: 'billions of years ago' },
+          { number: 3, type: 'fill_blank', prompt: 'What do Europa and Enceladus have in common?', answer: 'They both have icy surfaces with water underneath.' },
+          { number: 4, type: 'fill_blank', prompt: 'Why is Europa more likely than Enceladus to have life on it?', answer: 'Because Europa is billions of years older.' },
+          { number: 5, type: 'fill_blank', prompt: 'Why might the planet orbiting Proxima Centauri support life?', answer: 'It may be warm enough for liquid water.' },
+          { number: 6, type: 'fill_blank', prompt: 'How will scientists learn more about this planet?', answer: 'The James Webb Space Telescope will explore the area.' },
+        ] },
+        { section: '4', instruction: 'Circle the correct meaning of each word.', items: [
+          { number: 1, type: 'multiple_choice', prompt: 'discover', answer: 'to find', options: ['to find', 'to give'] },
+          { number: 2, type: 'multiple_choice', prompt: 'microscopic', answer: 'very small', options: ['very large', 'very small'] },
+          { number: 3, type: 'multiple_choice', prompt: 'investigate', answer: 'to do research', options: ['to do research', 'to make a mistake'] },
+          { number: 4, type: 'multiple_choice', prompt: 'orbit', answer: 'to go around something', options: ['to absorb', 'to go around something'] },
+          { number: 5, type: 'multiple_choice', prompt: 'exist', answer: 'to be', options: ['to make', 'to be'] },
+          { number: 6, type: 'multiple_choice', prompt: 'support', answer: "to give what's needed", options: ["to give what's needed", 'to make an effort'] },
+          { number: 7, type: 'multiple_choice', prompt: 'surface', answer: 'the top of something', options: ['the inside of something', 'the top of something'] },
+        ] },
+      ] },
+      { type: 'grammar', id: 'present-perfect-simple', eyebrow: '本课语法', title: 'Present perfect simple', grammarRefs: [
+        { book: 'essential', unitNumber: 11, role: 'primary', label: '现在完成时（一）' }, { book: 'essential', unitNumber: 12, role: 'foundation', label: '现在完成时（二）' },
+      ], summary: { cards: [
+        { title: '构成', formula: 'have / has + 过去分词', signals: 'ever · never · already · just · for · since · yet', points: [{ label: '与现在有关的过去', text: 'Scientists have already spent much time looking for water.' }] },
+        { title: '时间', points: [{ label: '开始于过去并持续', text: 'How long have human beings lived on Earth?' }, { label: '过去发生、结果影响现在', text: 'I’ve just found a really good website about astronomy.' }] },
+      ], contrastTitle: '本课最重要的区别', contrasts: [{ example: 'He met Neil Armstrong.', note: '说清具体过去时间 → 一般过去时。' }, { example: "He’s met Neil Armstrong.", note: '不说具体时间、经历和现在有关 → 现在完成时。' }], decisionGuide: ['有 yesterday、last night、in 2018 等明确过去时间 → 一般过去时。', '强调经历、结果或延续到现在 → 现在完成时。'], reminders: ['have been 表示去过且已回来；have gone 表示去了还没回来。'] }, groups: [
+        { section: '6', instruction: 'Complete the sentences with the past simple or present perfect simple.', items: [
+          { number: 1, type: 'fill_blank', prompt: 'I ______ to go into outer space for years! (want)', answer: 'have wanted' },
+          { number: 2, type: 'fill_blank', prompt: 'We ______ the TV programme about space last night. (watch)', answer: 'watched' },
+          { number: 3, type: 'fill_blank', prompt: '______ people ______ Mars? (visit)', answer: 'Have people visited' },
+          { number: 4, type: 'fill_blank', prompt: 'The astronauts ______ special food during their trip last month. (eat)', answer: 'ate' },
+          { number: 5, type: 'fill_blank', prompt: 'Jack ______ to interview the scientists and he’ll be back later. (go)', answer: 'has gone' },
+          { number: 6, type: 'fill_blank', prompt: 'Powerful telescopes like the James Webb Telescope ______ for long. (not exist)', answer: "haven't existed" },
+        ] },
+        { section: 'Prepositions A', instruction: 'Write the prepositions: for, in, on or with.', items: [
+          { number: 1, type: 'fill_blank', prompt: 'concentrate ______', answer: 'on' }, { number: 2, type: 'fill_blank', prompt: 'congratulate ______', answer: 'on' }, { number: 3, type: 'fill_blank', prompt: 'deal ______', answer: 'with' }, { number: 4, type: 'fill_blank', prompt: 'depend ______', answer: 'on' }, { number: 5, type: 'fill_blank', prompt: 'search ______', answer: 'for' }, { number: 6, type: 'fill_blank', prompt: 'succeed ______', answer: 'in' },
+        ] },
+      ] },
+    ],
+  },
+  {
+    key: '5a-u2l3', stage: '5A', unit: 'Unit 2', lesson: 'Lesson 3', title: 'Technology Through Time',
+    paragraphs: [
+      "When people hear the word ‘technology’, many think of the newest, most modern robots or electronic gadgets. But technology is defined as the use of science to make new things and solve problems. People have always used technology to solve problems. Take a look at some technologies of the past that really changed how humans live.",
+      'Around 2.6 million years ago, our ancestors began using simple stone tools as hammers and knives. This may be considered the earliest use of technology. Around 25,000 years ago, the sewing needle was invented, which means that it’s much easier for people to make and wear clothes, something that they had begun doing about 170,000 years ago.',
+      'Around 5,500 years ago, the wheel was invented in Mesopotamia in 3500 BCE. This technology is originally developed for potters. It takes 300 years for the wheel to be used for transport. Around 600 years ago, in 1439, Johannes Gutenberg demonstrates the printing press. With this machine, it’s possible to create many copies of a paper in little time. The printing press leads to the spread of information through books and newspapers.',
+      'Around 150 years ago, by the late 1800s, different inventors are working on the automobile. Karl Friedrich Benz creates the first automobile powered by petrol. It looks more like a bike than a car! Around 100 years ago, on 25 March 1925, John Logie Baird shows the first televised images in motion at a London department store. The invention of the TV set brings the world into people’s homes.',
+      'Since the 1970s, the first mobile telephone call takes place in 1973, and mobile phones become more common by the mid-1980s. By 1993, the first smartphone is invented. These gadgets have since changed how we do almost everything!',
+    ],
+    glossary: [
+      { word: 'Mesopotamia', meaningCn: '美索不达米亚（古代地区）', meaningEn: 'an ancient region in the Middle East', category: '专有名词', isProperNoun: true },
+      { word: 'Johannes Gutenberg', meaningCn: '约翰内斯·古腾堡（印刷术发明者）', meaningEn: 'a German inventor of the printing press', category: '专有名词', isProperNoun: true },
+      { word: 'Karl Friedrich Benz', meaningCn: '卡尔·弗里德里希·本茨（汽车先驱）', meaningEn: 'a German automobile inventor', category: '专有名词', isProperNoun: true },
+      { word: 'John Logie Baird', meaningCn: '约翰·洛吉·贝尔德（电视先驱）', meaningEn: 'a television inventor', category: '专有名词', isProperNoun: true },
+    ],
+    learningSections: [
+      { type: 'exercises', id: 'technology-impact', eyebrow: '课文理解', title: '发明及其影响', wordRefs: ['ancestor', 'hammer', 'sewing needle', 'printing press', 'automobile', 'gadget'].map((word) => ({ stage: '5A', unit: 'Unit 2', lesson: 'Lesson 3', word })), groups: [
+        { section: '2', instruction: 'Match the invention with its impact.', items: [
+          { number: 1, type: 'matching', prompt: 'stone tools', answer: 'Considered the earliest technology.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+          { number: 2, type: 'matching', prompt: 'sewing needle', answer: 'Helped people make clothing.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+          { number: 3, type: 'matching', prompt: 'wheel', answer: 'Helped to develop transportation.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+          { number: 4, type: 'matching', prompt: 'printing press', answer: 'Helped spread information quickly in books and newspapers.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+          { number: 5, type: 'matching', prompt: 'car', answer: 'Made it easier to get from one place to another quickly.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+          { number: 6, type: 'matching', prompt: 'TV', answer: 'Brought the world into people’s living rooms.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+          { number: 7, type: 'matching', prompt: 'mobile phone', answer: 'Changed how people communicate and use the Internet.', options: ['Changed how people communicate and use the Internet.', 'Brought the world into people’s living rooms.', 'Considered the earliest technology.', 'Made it easier to get from one place to another quickly.', 'Helped people make clothing.', 'Helped to develop transportation.', 'Helped spread information quickly in books and newspapers.'] },
+        ] },
+      ] },
+      { type: 'grammar', id: 'so-and-such', eyebrow: '口语表达', title: 'Emphasising with so and such', grammarRefs: [{ book: 'essential', unitNumber: 99, role: 'primary', label: 'so 和 such' }], summary: { cards: [
+        { title: 'so', formula: 'so + adjective / adverb', points: [{ label: '强调形容词或副词', text: 'He’s so clever! He drove here so quickly!' }] },
+        { title: 'such', formula: 'such a/an + adjective + singular noun', points: [{ label: '强调名词短语', text: 'That’s such a nice phone!' }, { label: '不可数或复数名词', text: 'That’s such good news! They’re such smart robots!' }] },
+      ], contrastTitle: '本课最重要的区别', contrasts: [{ example: 'It works so quickly.', note: 'quickly 是副词，用 so。' }, { example: 'It has such a small screen.', note: 'a small screen 是名词短语，用 such。' }], decisionGuide: ['形容词或副词前 → so。', 'a/an + 形容词 + 单数名词，或形容词 + 不可数/复数名词前 → such。'], reminders: ['不要说 so a small screen。'] }, groups: [
+        { section: 'Say it like this', instruction: 'Use the dialogue pattern to make a new dialogue about a gadget.', items: [
+          { number: 1, type: 'fill_blank', prompt: 'Have you seen my new phone? It works ______ quickly!', answer: 'so' },
+          { number: 2, type: 'fill_blank', prompt: "And it's got ______ a small screen, too!", answer: 'such' },
+          { number: 3, type: 'fill_blank', prompt: "It's ______ useful because I can take it with me everywhere.", answer: 'so' },
+          { number: 4, type: 'fill_blank', prompt: "And it's got ______ fun games on it!", answer: 'such' },
+        ] },
+      ] },
+      { type: 'writing', id: 'new-gadget-email', eyebrow: '写作', title: 'Write an email about a new gadget', prompt: 'Write an email to a friend about a new gadget that you have got. Use ordering words and also / too to organise your ideas.', questions: ['Paragraph 1: Say hello, ask how your friend is, and say what you have been doing.', 'Paragraph 2: Introduce the new gadget; explain what it does and why you wanted it.', 'Paragraph 3: Describe it and give some details.', 'Paragraph 4: Say how much it cost and where you got it.', 'Closing: Say goodbye to your friend.'], suggestedWords: ['Firstly', 'First of all', 'To start with', 'Secondly', 'In addition', 'Finally', 'also', 'too', 'gadget', 'useful'], modelAnswer: [
+        'Hi Jiro,\n\nWhat have you been doing? I’ve been busy with my new gadget.',
+        'Firstly, I got a small drone. It comes with a camera, so I can fly it high in the sky and take photos from above.',
+        'Secondly, it has a video camera, too. It’s so useful because it is small and doesn’t use much power. In addition, I can control it with my smartphone.',
+        'Finally, it wasn’t very expensive. I bought it online with my own money. I can send you the link if you want one, too.',
+        'Talk soon,\nKen',
+      ] },
+    ],
+  },
 ]
 
 /**

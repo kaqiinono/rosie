@@ -52,7 +52,19 @@ import {
 } from '@rosie/math-kit/hooks/useMathProblemNotes'
 import { appendRichInlineImage, richInlineImageHtml, sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
 
-type Props = { user: User; lessonFilter: ReturnType<typeof useMathLessonFilter> }
+type QuizDraftContext = {
+  paperId: string
+  title: string
+  problemIds: string[]
+  lessonIds: string[]
+}
+
+type Props = {
+  user: User
+  lessonFilter: ReturnType<typeof useMathLessonFilter>
+  quizDraft?: QuizDraftContext
+  onComplete?: () => void
+}
 
 type PdfSlice = {
   id: string
@@ -135,7 +147,7 @@ function problemPreviewText(problem: SearchableProblem['problem']): string {
   return problem.title
 }
 
-export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
+export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onComplete }: Props) {
   const {
     grades,
     selectedGrade,
@@ -154,7 +166,9 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
     toggleAllFilters,
   } = lessonFilter
 
-  const [defaultKind, setDefaultKind] = useState<PdfSliceKind>(() => readPersistedPdfSliceKind())
+  const [defaultKind, setDefaultKind] = useState<PdfSliceKind>(() =>
+    quizDraft ? 'draft' : readPersistedPdfSliceKind(),
+  )
   const [pageUrls, setPageUrls] = useState<string[]>([])
   const [pageMeta, setPageMeta] = useState<PdfPageMeta[]>([])
   const [pdfLoading, setPdfLoading] = useState(false)
@@ -177,6 +191,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
   const [onlyMissingAnalysis, setOnlyMissingAnalysis] = useState(true)
 
   const materialInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   const drawState = useRef<{
     pageIndex: number
     startX: number
@@ -189,9 +204,15 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
   )
 
   const problemPool = useMemo(() => {
-    const raw = buildProblemPool(selectedLessons)
+    const lessonIds = quizDraft?.lessonIds ?? selectedLessons
+    const raw = buildProblemPool(lessonIds)
+    if (quizDraft) {
+      const problemIds = new Set(quizDraft.problemIds)
+      return raw.filter((item) => problemIds.has(item.problem.id))
+    }
     return filterProblemPool(raw, sourceFilter, typeFilter)
   }, [
+    quizDraft,
     selectedLessonsKey,
     selectedLessons,
     sourceFilterKey,
@@ -268,7 +289,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
   const allMatched = slices.length > 0 && matchedCount === slices.length
   const draftsMarked = draftSlicesFullyMarked(slices)
   const canSubmit = allMatched && draftsMarked
-  const canSlice = selectedLessons.length > 0 && pageUrls.length > 0
+  const canSlice = (quizDraft ? quizDraft.lessonIds.length > 0 : selectedLessons.length > 0) && pageUrls.length > 0
   const activeIsSummary = activeSlice?.sliceKind === 'summary'
 
   const showFlash = useCallback((msg: string) => {
@@ -278,9 +299,10 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
 
   /** Keep default + localStorage in sync so the next划片 inherits the same kind. */
   const applySessionSliceKind = useCallback((kind: PdfSliceKind) => {
+    if (quizDraft) return
     setDefaultKind(kind)
     persistPdfSliceKind(kind)
-  }, [])
+  }, [quizDraft])
 
   const setSliceKind = useCallback(
     (sliceId: string, kind: PdfSliceKind) => {
@@ -615,7 +637,8 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
           problemId: slice.problemId,
           blob: slice.cropBlob,
           correct: slice.draftCorrect,
-          section: 'paper',
+          section: quizDraft ? 'quiz' : 'paper',
+          paperId: quizDraft?.paperId ?? null,
         })
         error = result.error
       } else if (slice.sliceKind === 'summary') {
@@ -636,6 +659,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
       setSlices([])
       setActiveSliceId(null)
       invalidateLessonNotesCache()
+      onComplete?.()
     } else {
       showFlash(`成功 ${ok}，失败 ${fail}`)
     }
@@ -713,23 +737,32 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
       <div className="grid gap-4 lg:grid-cols-[260px_1fr_300px]">
         {/* Left: grade + lessons + filters + upload + slice list */}
         <div className="space-y-3">
-          <MathLessonFilterPanel
-            grades={grades}
-            selectedGrade={selectedGrade}
-            gradeLessonIds={gradeLessonIds}
-            selectedLessonSet={selectedLessonSet}
-            sourceBtns={lessonFilter.sourceBtns}
-            typeBtns={lessonFilter.typeBtns}
-            sourceFilter={sourceFilter}
-            typeFilter={typeFilter}
-            onSelectGrade={selectGrade}
-            onToggleLesson={toggleLesson}
-            onToggleAllLessons={toggleAllLessonsInGrade}
-            onToggleFilter={toggleFilter}
-            onToggleAllFilters={toggleAllFilters}
-          />
+          {quizDraft ? (
+            <section className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-3 shadow-sm">
+              <div className="text-[12px] font-bold text-indigo-800">试卷答案草稿</div>
+              <p className="mt-1 text-[11px] leading-relaxed text-indigo-700">
+                {quizDraft.title} · 仅可匹配本卷的 {quizDraft.problemIds.length} 道题
+              </p>
+            </section>
+          ) : (
+            <MathLessonFilterPanel
+              grades={grades}
+              selectedGrade={selectedGrade}
+              gradeLessonIds={gradeLessonIds}
+              selectedLessonSet={selectedLessonSet}
+              sourceBtns={lessonFilter.sourceBtns}
+              typeBtns={lessonFilter.typeBtns}
+              sourceFilter={sourceFilter}
+              typeFilter={typeFilter}
+              onSelectGrade={selectGrade}
+              onToggleLesson={toggleLesson}
+              onToggleAllLessons={toggleAllLessonsInGrade}
+              onToggleFilter={toggleFilter}
+              onToggleAllFilters={toggleAllFilters}
+            />
+          )}
 
-          <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
+          {!quizDraft && <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
             <div className="mb-2 text-[12px] font-bold text-slate-500">默认类型（新划片沿用）</div>
             <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
               {PDF_SLICE_KINDS.map((kind) => (
@@ -757,7 +790,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                   ? '。补录纸上练习时选「草稿」，匹配题目后须标记做对/做错。'
                   : null}
             </p>
-          </section>
+          </section>}
 
           <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
             <div className="mb-2 text-[12px] font-bold text-slate-500">上传素材</div>
@@ -766,6 +799,18 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
               type="file"
               accept="application/pdf,image/*"
               multiple
+              className="hidden"
+              onChange={(e) => {
+                const picked = Array.from(e.target.files ?? [])
+                e.target.value = ''
+                if (picked.length > 0) void handleMaterialUpload(picked)
+              }}
+            />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
               className="hidden"
               onChange={(e) => {
                 const picked = Array.from(e.target.files ?? [])
@@ -789,7 +834,17 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                   ? '更换素材（PDF / 图片）'
                   : '选择 PDF 或图片（可多选）'}
             </button>
-            {!canSlice && selectedLessons.length > 0 && pageUrls.length === 0 && (
+            {quizDraft && (
+              <button
+                type="button"
+                disabled={pdfLoading}
+                onClick={() => cameraInputRef.current?.click()}
+                className="mt-2 w-full rounded-xl border border-teal-200 bg-teal-50 py-2 text-[12px] font-bold text-teal-700 disabled:opacity-60"
+              >
+                用相机拍照
+              </button>
+            )}
+            {!canSlice && (quizDraft ? quizDraft.lessonIds.length > 0 : selectedLessons.length > 0) && pageUrls.length === 0 && (
               <p className="mt-2 text-[10px] text-slate-400">上传 PDF 或图片后即可划片</p>
             )}
             {selectedLessons.length === 0 && (
@@ -1054,7 +1109,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                 />
               </div>
 
-              <div>
+              {!quizDraft && <div>
                 <div className="mb-1 text-[11px] font-bold text-slate-500">类型</div>
                 <p className="mb-1.5 text-[10px] leading-relaxed text-teal-700">
                   {PDF_SLICE_KIND_HINT[activeSlice.sliceKind]}
@@ -1076,7 +1131,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                     </button>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               {activeSlice.sliceKind === 'draft' && (
                 <div>
@@ -1140,7 +1195,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={
-                    activeIsSummary ? '讲次号 / 标题搜索…' : '题号 / 标题 / 题干模糊搜索…'
+                    activeIsSummary ? '讲次号 / 标题搜索…' : '题目标题 / 题干模糊搜索…'
                   }
                   className="w-full rounded-xl border border-slate-200 px-3 py-2 text-[12px] outline-none focus:border-teal-400"
                 />
@@ -1217,8 +1272,8 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                             )}
                           >
                             <div className="flex flex-wrap items-center gap-1">
-                              <span className="font-mono text-[10px] font-bold text-teal-700">
-                                {item.problem.id}
+                              <span className="text-[12px] font-bold text-teal-800">
+                                {item.problem.title}
                               </span>
                               <span className="rounded bg-slate-100 px-1 text-[9px] text-slate-500">
                                 {item.lessonTitle} · {item.sectionLabel}
@@ -1231,9 +1286,6 @@ export default function MathPdfSliceMatcher({ user, lessonFilter }: Props) {
                                   笔记×{noteCount}
                                 </span>
                               )}
-                            </div>
-                            <div className="line-clamp-2 text-[11px] text-slate-700">
-                              {item.problem.title}
                             </div>
                           </button>
                         </li>

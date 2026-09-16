@@ -108,7 +108,7 @@ SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint
 
 派 6 个 `general-purpose` subagent 并行（在**同一个消息**里发 6 个 Agent tool calls 才能并行），每个负责一个 Unit。
 
-Subagent 任务：为每个 word 生成 `ipa`、`example`、`chineseDef`，并判断是否需要 `wordForms`。完整 prompt 模板（关键 hard rules 节选）：
+Subagent 任务：为每个 word 生成 `ipa`、`example`、`chineseDef`、准确的 `partOfSpeech`，并判断是否需要 `wordForms`。完整 prompt 模板（关键 hard rules 节选）：
 
 ```
 HARD RULES:
@@ -123,6 +123,7 @@ HARD RULES:
 - 不规则过去式/过去分词、不规则复数、不规则第三人称、特殊比较级/最高级、英美双形式，必须写 wordForms
 - 情态动词、不可数名词或其他不应自动派生的类别，用 disableGenerated 禁止错误形式
 - wordForms 内每个语法角色必须是完整表面形式的 string[]；短语保存完整形式，例如 take off → took off / taken off
+- 每个词必须提供结构化 `partOfSpeech`（如 `n.`、`v.`、`adj.`）；批量录入后若有缺失，用 `pnpm word-pos:backfill --stage <STAGE>` 生成待审核词性清单，不能用猜测结果直接写库
 - Output: ```json fenced single object with `entries[]` + `chineseDefs{}`
 ```
 
@@ -189,7 +190,7 @@ OUTPUT: { "syllables": {...}, "keywords": {...} }
    - entries 数 = 第二步用户确认的数
    - 每个 word 在 chineseDefs 都有 key
    - 每个唯一 word 在 syllables / keywords 都有 key
-   - 每个词都已完成词形审计：特殊形式有 `wordForms`，纯规则词不重复存可生成形式
+   - 每个词都已完成词形与词性审计：特殊形式有 `wordForms`，纯规则词不重复存可生成形式，且 `partOfSpeech` 已填写
    - keywords 的 phrase **不应**以 `a ` / `an ` / `the ` / `to ` 开头（违反 VOCABULARY_KEYWORD_GUIDE_1.md 第一节清洗规则）
    - keywords 的 phrase **不应**包含 `something` / `someone` / `somebody` 这类占位词
    - 没有 (unit, lesson, word) 重复

@@ -6,6 +6,8 @@ import { use, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useMathQuiz, computeQuizPoints } from '@rosie/math/hooks/useMathQuiz'
+import MathPdfSliceMatcher from '@rosie/math/admin/MathPdfSliceMatcher'
+import { useMathLessonFilter } from '@rosie/math/admin/useMathLessonFilter'
 import { supabase } from '@rosie/core'
 import { useStarHud } from '@rosie/rewards'
 import { StarProgressBar } from '@rosie/rewards'
@@ -170,6 +172,8 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   const [results, setResults] = useState<Record<string, boolean>>({})
   const [submitting, setSubmitting] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [answerUploadOpen, setAnswerUploadOpen] = useState(false)
+  const answerUploadLessonFilter = useMathLessonFilter()
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -496,6 +500,15 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
             </svg>
             <span className="hidden sm:inline">打印</span>
           </Link>
+          <button
+            type="button"
+            onClick={() => setAnswerUploadOpen(true)}
+            className="flex shrink-0 items-center gap-1 rounded-full bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-700 no-underline transition-colors hover:bg-teal-100"
+            title="上传纸质答案并按题目切片"
+          >
+            <span aria-hidden="true">📷</span>
+            <span className="hidden sm:inline">上传答案</span>
+          </button>
           {submitted && (
             <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-700">
               {finalScore}/{totalScore}分
@@ -628,6 +641,9 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                       style={{ background: '#eef2ff', color: '#4f46e5' }}
                     >
                       {i + 1}
+                    </span>
+                    <span className="text-[13px] font-bold text-slate-700">
+                      {problem.title}
                     </span>
                     {/* Lesson tag */}
                     <span
@@ -917,6 +933,37 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
           </div>
         )}
       </div>
+
+      {answerUploadOpen && user && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-100">
+          <div className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-slate-800">上传答案 · {paper.title}</p>
+              <p className="text-[11px] text-slate-500">划片后匹配本卷题目并批量提交草稿</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAnswerUploadOpen(false)}
+              className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+            >
+              关闭
+            </button>
+          </div>
+          <div className="mx-auto max-w-[1200px] p-4">
+            <MathPdfSliceMatcher
+              user={user}
+              lessonFilter={answerUploadLessonFilter}
+              quizDraft={{
+                paperId: paper.id,
+                title: paper.title,
+                problemIds: paper.problems.map((item) => item.problemId),
+                lessonIds: [...new Set(paper.problems.map((item) => item.lessonId))],
+              }}
+              onComplete={() => setAnswerUploadOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Hide number input arrows globally for this page */}
       <style>{`
