@@ -12,6 +12,8 @@ export type SearchableProblem = {
   lessonTitle: string
   setName: string
   sectionLabel: string
+  /** 最近一题例题的标题；仅用于给「练一练」标明所属例题。 */
+  relatedExampleTitle?: string
 }
 
 export function buildProblemPool(lessonIds: string[]): SearchableProblem[] {
@@ -19,13 +21,24 @@ export function buildProblemPool(lessonIds: string[]): SearchableProblem[] {
   const pool: SearchableProblem[] = []
   for (const lesson of SEA_LESSONS) {
     if (!idSet.has(lesson.id)) continue
+    const seenProblemIds = new Set<string>()
+    let relatedExampleTitle: string | undefined
     for (const { problem, setName } of enumerateProblemSet(lesson.problems)) {
+      if (seenProblemIds.has(problem.id)) continue
+      seenProblemIds.add(problem.id)
+
+      if (problem.title.startsWith('例题')) {
+        relatedExampleTitle = problem.title
+      }
       pool.push({
         problem,
         lessonId: lesson.id,
         lessonTitle: lesson.shortTitle,
         setName,
         sectionLabel: problemSectionLabel(problem.id, lesson.id),
+        relatedExampleTitle: problem.title.startsWith('练一练')
+          ? relatedExampleTitle
+          : undefined,
       })
     }
   }

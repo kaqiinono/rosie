@@ -254,7 +254,9 @@ export default function QuestionLayout({
           flex-direction: column;
           gap: 0;
           width: 100%;
-          min-width: 300px;
+          min-width: 0;
+          max-width: 100%;
+          box-sizing: border-box;
           margin: 0 auto;
           border-radius: 18px;
           overflow: hidden;
@@ -310,6 +312,9 @@ export default function QuestionLayout({
           border-bottom: 1.5px solid #f0ede8;
         }
         .ql-question-body {
+          min-width: 0;
+          max-width: 100%;
+          overflow-wrap: anywhere;
           font-size: 17px;
           line-height: 1.75;
           color: #1a1a1a;
@@ -371,9 +376,15 @@ export default function QuestionLayout({
           border-top: 1.5px solid #f5e8c0;
         }
         .ql-solution-inner {
+          min-width: 0;
+          max-width: 100%;
+          box-sizing: border-box;
           padding: 22px 28px 20px;
         }
         .ql-solution-body {
+          min-width: 0;
+          max-width: 100%;
+          overflow-wrap: anywhere;
           font-size: 15.5px;
           line-height: 1.8;
           color: #3a3222;

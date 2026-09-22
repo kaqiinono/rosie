@@ -1261,6 +1261,9 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                       const matched = activeSlice.problemId === item.problem.id
                       const hasAnalysis = problemHasAnalysisImage(item.problem, dbAnalysisIds)
                       const noteCount = existingNotes.get(item.problem.id)?.length ?? 0
+                      const displayTitle = item.relatedExampleTitle
+                        ? item.problem.title.replace(/^练一练/, `练一练（${item.relatedExampleTitle.split(' · ')[0]}）`)
+                        : item.problem.title
                       return (
                         <li key={`${item.lessonId}-${item.problem.id}`}>
                           <button
@@ -1273,7 +1276,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                           >
                             <div className="flex flex-wrap items-center gap-1">
                               <span className="text-[12px] font-bold text-teal-800">
-                                {item.problem.title}
+                                {displayTitle}
                               </span>
                               <span className="rounded bg-slate-100 px-1 text-[9px] text-slate-500">
                                 {item.lessonTitle} · {item.sectionLabel}
