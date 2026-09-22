@@ -104,7 +104,9 @@ function ExpandedProblemCard({
         </div>
       </div>
       {isOpen && (
-        <div className="border-t border-border-light px-4 pb-5 pt-3">
+        <div
+          className={`border-t border-border-light px-4 pb-5 pt-3 ${defaultSolutionOpen ? '[&_.ql-answer]:hidden' : ''}`}
+        >
           <SolutionAvailabilityOverride enabled={Boolean(defaultSolutionOpen)}>
             <ProblemDetail problem={problem} mode="inline" defaultSolutionOpen={defaultSolutionOpen} />
           </SolutionAvailabilityOverride>

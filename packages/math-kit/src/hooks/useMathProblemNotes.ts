@@ -123,7 +123,13 @@ export async function createMathProblemNote(
 
 export async function updateMathProblemNote(
   note: MathProblemNote,
-  patch: { title?: string | null; bodyHtml?: string; sortOrder?: number },
+  patch: {
+    title?: string | null
+    bodyHtml?: string
+    sortOrder?: number
+    /** Reject a stale editor save instead of overwriting newer note content. */
+    expectedUpdatedAt?: string
+  },
 ): Promise<{ error: string | null; note: MathProblemNote | null }> {
   const row: Record<string, unknown> = { updated_at: new Date().toISOString() }
 
@@ -135,14 +141,18 @@ export async function updateMathProblemNote(
     row.body_html = bodyHtml
   }
 
-  const { data, error } = await supabase
-    .from('math_problem_notes')
-    .update(row)
-    .eq('id', note.id)
-    .select()
-    .single()
+  let query = supabase.from('math_problem_notes').update(row).eq('id', note.id)
+  if (patch.expectedUpdatedAt) query = query.eq('updated_at', patch.expectedUpdatedAt)
 
-  if (error || !data) return { error: error?.message ?? '更新失败', note: null }
+  const { data, error } = await query.select().maybeSingle()
+
+  if (error) return { error: error.message, note: null }
+  if (!data) {
+    return {
+      error: patch.expectedUpdatedAt ? '内容已在别处更新，请刷新后再保存' : '更新失败',
+      note: null,
+    }
+  }
 
   invalidateLessonNotesCache(note.lessonId)
   return { error: null, note: rowToNote(data as RawRow) }

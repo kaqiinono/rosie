@@ -111,7 +111,7 @@ export function createFilterPanel(
     const { favorites } = useMathFavoritesContext()
     const startPractice = useStartPracticeQueue()
     const [favOnly, setFavOnly] = useState(false)
-    const [autoExpand, setAutoExpand] = useState(false)
+    const [autoExpand, setAutoExpand] = useState(true)
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
     const all: { p: Problem; setName: string; idx: number }[] = []
@@ -257,7 +257,7 @@ export function createFilterPanel(
             <div className="flex flex-wrap gap-1.5">
               <button onClick={toggleAutoExpand}
                 className={`${btnBase} ${autoExpand ? btnOn : btnOff}`}>
-                {autoExpand ? '✅ 自动展开题解' : '⭕ 自动展开题解'}
+                自动展开题解
               </button>
             </div>
           </div>

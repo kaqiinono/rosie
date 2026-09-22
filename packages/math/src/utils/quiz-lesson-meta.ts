@@ -23,6 +23,7 @@ import { PROBLEMS as G2Lesson2PROBLEMS, PROBLEM_TYPES as G2Lesson2PT } from '@ro
 import { PROBLEMS as G2Lesson6PROBLEMS, PROBLEM_TYPES as G2Lesson6PT } from '@rosie/math-content/utils/g2/lesson6-data'
 import { PROBLEMS as G2Lesson7PROBLEMS, PROBLEM_TYPES as G2Lesson7PT } from '@rosie/math-content/utils/g2/lesson7-data'
 import { PROBLEMS as G2Lesson9PROBLEMS, PROBLEM_TYPES as G2Lesson9PT } from '@rosie/math-content/utils/g2/lesson9-data'
+import { PROBLEMS as G2Lesson10PROBLEMS, PROBLEM_TYPES as G2Lesson10PT } from '@rosie/math-content/utils/g2/lesson10-data'
 import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT } from '@rosie/math-content/utils/g2/lesson5-data'
 import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT } from '@rosie/math-content/utils/g2/lesson4-data'
 import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT } from '@rosie/math-content/utils/g2/lesson3-data'
@@ -79,6 +80,7 @@ export const QUIZ_LESSON_META: Array<{
   { id: '2-6', name: '简单枚举', data: G2Lesson6PROBLEMS, types: G2Lesson6PT },
   { id: '2-7', name: '数字谜', data: G2Lesson7PROBLEMS, types: G2Lesson7PT },
   { id: '2-9', name: '乘除法巧算', data: G2Lesson9PROBLEMS, types: G2Lesson9PT },
+  { id: '2-10', name: '鸡兔同笼初步', data: G2Lesson10PROBLEMS, types: G2Lesson10PT },
   { id: '2-5', name: '找规律', data: G2Lesson5PROBLEMS, types: G2Lesson5PT },
   { id: '2-4', name: '差倍问题', data: G2Lesson4PROBLEMS, types: G2Lesson4PT },
   { id: '2-3', name: '等量代换与归一问题', data: G2Lesson3PROBLEMS, types: G2Lesson3PT },

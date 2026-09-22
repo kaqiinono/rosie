@@ -260,6 +260,15 @@ import G2Lesson9BottomNav from '@rosie/math-content/components/lesson/g2/lesson9
 import G2Lesson9FilterPanel from '@rosie/math-content/components/lesson/g2/lesson9/FilterPanel'
 import G2Lesson9ProblemList from '@rosie/math-content/components/lesson/g2/lesson9/ProblemList'
 import G2Lesson9ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson9/ProblemDetail'
+import { PROBLEMS as G2Lesson10PROBLEMS, TAG_STYLE as G2Lesson10TAG_STYLE } from '@rosie/math-content/utils/g2/lesson10-data'
+import G2Lesson10Provider, { useG2Lesson10 } from '@rosie/math-content/components/lesson/g2/lesson10/G2Lesson10Provider'
+import G2Lesson10HomePage from '@rosie/math-content/components/lesson/g2/lesson10/HomePage'
+import G2Lesson10AppHeader from '@rosie/math-content/components/lesson/g2/lesson10/AppHeader'
+import G2Lesson10Sidebar from '@rosie/math-content/components/lesson/g2/lesson10/Sidebar'
+import G2Lesson10BottomNav from '@rosie/math-content/components/lesson/g2/lesson10/BottomNav'
+import G2Lesson10FilterPanel from '@rosie/math-content/components/lesson/g2/lesson10/FilterPanel'
+import G2Lesson10ProblemList from '@rosie/math-content/components/lesson/g2/lesson10/ProblemList'
+import G2Lesson10ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson10/ProblemDetail'
 
 export type LessonModule = {
   PROBLEMS: ProblemSet
@@ -682,6 +691,20 @@ export const LESSON_MODULES: Record<string, LessonModule> = {
     FilterPanel: G2Lesson9FilterPanel,
     ProblemList: G2Lesson9ProblemList,
     ProblemDetail: G2Lesson9ProblemDetail,
+    layoutBgClass: 'bg-[#fffbeb]',
+  },
+  '2-10': {
+    PROBLEMS: G2Lesson10PROBLEMS,
+    TAG_STYLE: G2Lesson10TAG_STYLE,
+    Provider: G2Lesson10Provider,
+    useLesson: useG2Lesson10,
+    HomePage: G2Lesson10HomePage,
+    AppHeader: G2Lesson10AppHeader,
+    Sidebar: G2Lesson10Sidebar,
+    BottomNav: G2Lesson10BottomNav,
+    FilterPanel: G2Lesson10FilterPanel,
+    ProblemList: G2Lesson10ProblemList,
+    ProblemDetail: G2Lesson10ProblemDetail,
     layoutBgClass: 'bg-[#fffbeb]',
   },
 }

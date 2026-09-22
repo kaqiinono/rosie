@@ -4,6 +4,15 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/10',
+    title: '鸡兔同笼初步',
+    description: '头和腿和用假设法，倍数与差倍关系用分组法；遇到几倍多几、几倍少几，先调整成整数倍再还原。',
+    icon: '🐔',
+    lectureNum: '第 10 讲',
+    tags: ['鸡兔同笼', '假设法·分组法', '18 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/2/9',
     title: '乘除法巧算探险',
     description: '乘法凑整、乘除抵消、分配律与提取公因数 —— 学会观察数的特点，让复杂乘除计算更快更准。',

@@ -48,7 +48,9 @@ import HomePage28 from '@rosie/math-content/components/lesson/g2/lesson8/HomePag
 
 ---
 
-## 2. courses-data.ts
+## 2. 年级页 cards（`packages/math-kit/src/utils/courses-data.ts`）
+
+`/math/ny/{grade}` 只从这里的 `RAW_COURSES` 渲染课程卡片；registry 或 `SEA_LESSONS` 不会自动生成卡片。
 
 ```ts
 {
@@ -131,7 +133,7 @@ import { PROBLEMS as PROBLEMS_2_8, PROBLEM_TYPES as PT2_8, TAG_STYLE as TS2_8 } 
 [ ] components/lesson/g2/lesson8/*
 [ ] lesson-registry.ts
 [ ] lesson-module-registry.ts       — 键 '2-8'
-[ ] courses-data.ts
+[ ] packages/math-kit/src/utils/courses-data.ts — `RAW_COURSES` 含 href '/math/ny/2/8'
 [ ] sea-data.ts                     — id '2-8'
 [ ] lesson-source-btns.ts
 [ ] plan/page.tsx

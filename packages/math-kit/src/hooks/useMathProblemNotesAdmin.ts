@@ -88,7 +88,7 @@ export function useMathProblemNotesAdmin(
   const saveNote = useCallback(
     async (
       note: MathProblemNote,
-      patch: { title?: string | null; bodyHtml?: string },
+      patch: { title?: string | null; bodyHtml?: string; expectedUpdatedAt?: string },
     ): Promise<{ error: string | null }> => {
       setIsSaving(true)
       const { error, note: updated } = await updateMathProblemNote(note, patch)

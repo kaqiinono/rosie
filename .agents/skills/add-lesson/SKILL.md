@@ -73,8 +73,9 @@ packages/math-content/src/                  # 课程内容层（讲次文件都�
   utils/g{grade}/lesson{seq}-data.ts(x)     # 题目数据
   components/lesson/g{grade}/lesson{seq}/   # 8 个 wrapper + Figure/
 packages/math/src/utils/                    # 顶层聚合器（注册讲次改这里）
-  lesson-module-registry.ts · sea-data.ts · courses-data.ts · catalog-data.ts
-packages/math-kit/src/utils/lesson-registry.ts   # ← 已移到 math-kit
+  lesson-module-registry.ts · sea-data.ts · quiz-lesson-meta.ts · catalog-data.ts
+packages/math-kit/src/utils/                 # 讲次基础元数据与年级卡片
+  lesson-registry.ts · courses-data.ts
 apps/web/src/app/math/ny/[grade]/[seq]/     # 动态路由（勿新建 ny/N/）
 ```
 
@@ -165,6 +166,25 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 `PROBLEMS`、HomePage `MODULES`、Sidebar、FilterPanel、lesson-source-btns 同步去掉空模块。
 
+### 年级页卡片（强制登记）
+
+`/math/ny/{grade}` 的课程卡片**只读取** `packages/math-kit/src/utils/courses-data.ts` 中的
+`RAW_COURSES`，不会从 registry、SEA 或题目数据自动生成。每新增讲次必须添加一条卡片，至少包含：
+
+```ts
+{
+  href: '/math/ny/2/8',
+  title: '…',
+  description: '…',
+  icon: '…',
+  lectureNum: '第 8 讲',
+  tags: ['…', '…', '…'],
+  variant: 'amber',
+}
+```
+
+完成后核对 `COURSES.some((course) => course.href === basePath)` 为 `true`；这是注册完成的必检项。
+
 ### 禁止事项
 
 - **禁止** legacy 题目 ID（`56-L1`、`52-L1`）—— 一律 `{lessonKey}-L1`
@@ -184,6 +204,7 @@ pnpm build
 ```
 
 - `/math/ny/{grade}/{seq}` 全流程
+- `/math/ny/{grade}`：新讲次课程卡片出现，标题、讲次号和题目数量正确
 - `/admin/math` 题型/来源筛选
 - 分模块 **开始练习**、综合题库 **开始练习**、错题 **一键练习**（顶栏进度 + 答对自动下一题）
 - 可选：`/admin/math-lesson-id-audit` 源码脏数据为 0

@@ -18,6 +18,7 @@
 | 数据 | `packages/math-content/src/utils/g2/lesson8-data.ts(x)` |
 | 组件 | `packages/math-content/src/components/lesson/g2/lesson8/` |
 | registry | `{ lessonKey: '2-8', grade: 2, seq: 8 }` |
+| 年级页卡片 | `packages/math-kit/src/utils/courses-data.ts` 的 `RAW_COURSES` |
 | href | `/math/ny/2/8` |
 | 题目 ID | `2-8-L1` |
 
@@ -29,7 +30,7 @@
 
 每新增一个讲次需要：
 
-- **新建** registry 一行 + module-registry 模块 + 数据 + 8 个组件 wrapper
+- **新建** registry 一行 + 年级页卡片 + module-registry 模块 + 数据 + 8 个组件 wrapper
 - **修改** courses-data、sea-data、plan、quiz、source-btns（**键 = lessonKey**）
 - **不必**新建 App Router 路由 shell
 
@@ -80,6 +81,7 @@
 [ ] utils/g{grade}/lesson{seq}-data.ts(x)
 [ ] components/lesson/g{grade}/lesson{seq}/*   (8 wrappers)
 [ ] lesson-registry.ts
+[ ] packages/math-kit/src/utils/courses-data.ts — `RAW_COURSES` 新增卡片
 [ ] lesson-module-registry.ts                  — 键 = lessonKey
 [ ] courses-data.ts
 [ ] sea-data.ts                                — id = lessonKey

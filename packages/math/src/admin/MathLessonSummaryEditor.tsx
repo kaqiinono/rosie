@@ -91,9 +91,18 @@ export default function MathLessonSummaryEditor({
     }
 
     if (existing) {
-      const { error } = await admin.saveNote(existing, { bodyHtml: toSave })
-      if (error) onFlash(`保存失败：${error}`)
-      else {
+      const { error } = await admin.saveNote(existing, {
+        bodyHtml: toSave,
+        expectedUpdatedAt: existing.updatedAt,
+      })
+      if (error) {
+        if (error === '内容已在别处更新，请刷新后再保存') {
+          void admin.reload()
+          onFlash('总结已有新附加内容，已避免覆盖；请刷新后合并再保存')
+        } else {
+          onFlash(`保存失败：${error}`)
+        }
+      } else {
         onFlash('总结已保存')
         if (isControlled) onBodyHtmlChange!(toSave)
         else setInternalBodyHtml(toSave)

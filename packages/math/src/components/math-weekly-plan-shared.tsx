@@ -272,6 +272,16 @@ export const MATH_PLAN_LESSONS = [
     desc: '凑整·抵消·分配律·公因数',
   },
   {
+    id: '2-10',
+    label: '第10讲 · 鸡兔同笼初步',
+    short: '鸡兔同笼',
+    emoji: '🐔',
+    color: 'rgba(217,119,6,1)',
+    bg: 'rgba(217,119,6,.08)',
+    border: 'rgba(217,119,6,.3)',
+    desc: '假设法·分组法·单位差变型',
+  },
+  {
     id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',

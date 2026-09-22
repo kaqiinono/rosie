@@ -68,17 +68,26 @@ export function aggregateTypeButtons(
   return [...labels.entries()].map(([key, label]) => ({ key, label }))
 }
 
-export function searchProblems(pool: SearchableProblem[], query: string, limit = 40): SearchableProblem[] {
+/**
+ * Searches the complete supplied pool. Callers that render a type-ahead list may
+ * opt into a limit, but administrative matching must retain every filtered item.
+ */
+export function searchProblems(
+  pool: SearchableProblem[],
+  query: string,
+  limit?: number,
+): SearchableProblem[] {
   const q = query.trim().toLowerCase()
-  if (!q) return pool.slice(0, limit)
-  return pool
-    .filter(
-      (item) =>
-        item.problem.id.toLowerCase().includes(q) ||
-        item.problem.title.toLowerCase().includes(q) ||
-        item.problem.text.toLowerCase().includes(q) ||
-        item.problem.tagLabel.toLowerCase().includes(q) ||
-        item.sectionLabel.includes(q),
-    )
-    .slice(0, limit)
+  const results = q
+    ? pool.filter(
+        (item) =>
+          item.problem.id.toLowerCase().includes(q) ||
+          item.problem.title.toLowerCase().includes(q) ||
+          item.problem.text.toLowerCase().includes(q) ||
+          item.problem.tagLabel.toLowerCase().includes(q) ||
+          item.sectionLabel.includes(q),
+      )
+    : pool
+
+  return limit === undefined ? results : results.slice(0, limit)
 }

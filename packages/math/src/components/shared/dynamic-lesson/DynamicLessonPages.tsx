@@ -35,7 +35,7 @@ function SectionListPage({ section }: { section: SectionKey }) {
   const { practiceCount, correctCount } = module.useLesson()
   const startPractice = useStartPracticeQueue()
   const [showDetail, setShowDetail] = useState(false)
-  const [autoExpand, setAutoExpand] = useState(false)
+  const [autoExpand, setAutoExpand] = useState(true)
   const list = useMemo(
     () => (problemSet[section] ?? []) as typeof problemSet.lesson,
     [problemSet, section],
@@ -126,7 +126,7 @@ function SectionListPage({ section }: { section: SectionKey }) {
                   className={`h-2.5 w-2.5 shrink-0 rounded-full ${autoExpand ? 'bg-blue-600' : 'bg-slate-300'}`}
                   aria-hidden="true"
                 />
-                题解：{autoExpand ? '自动' : '手动'}
+                自动展开题解
               </button>
               <button
                 type="button"
