@@ -1,7 +1,7 @@
 ---
 name: add-lesson
 description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/{lessonKey}.md (template docs/math/new-lesson-template.md) — extracting complete questions and solutions from linked PDFs or supplied images when needed — confirms problem counts and grade before entering data, and generates package files + registry entries following docs/add-new-lesson/. Must complete full registration (not just the md file) or the grade homepage card will not appear.
-version: 5.4.0
+version: 5.5.0
 trigger: /add-lesson
 ---
 
@@ -25,6 +25,7 @@ trigger: /add-lesson
 | 点进去空/报错 | 缺 `g2/lesson8-data.ts` 或 Provider/组件 wrapper |
 | `/admin/math` 题型筛选为空 | 缺 `sea-data.ts` 项，或 `PROBLEM_TYPES[].tag` 与题目 `tag` 不一致 |
 | 计划/组卷选不到讲 | plan / quiz / MathWeeklyPractice 键不是 **lessonKey** |
+| 综合题库缺少某个来源 | `FilterPanel` 的 `sourceBtns` 或 `lesson-source-btns.ts` 未同步该非空模块 |
 | 草稿纸答题区空白 / 无竖式 | 自定义答题组件未按 [`custom-answer-widget.md`](../../../docs/add-new-lesson/custom-answer-widget.md) 挂 `verticalPuzzle` 或 `figureNode` + `checkAnswer` |
 | 分模块无「开始练习」 | 缺 `lesson-module-registry` 注册或 `PROBLEMS` 键与 Sidebar 不一致；分模块连刷由 `SectionListPage` 自动提供，见 [`practice-queue.md`](../../../docs/add-new-lesson/practice-queue.md) |
 
@@ -164,7 +165,9 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 ### 仅部分模块时
 
-`PROBLEMS`、HomePage `MODULES`、Sidebar、FilterPanel、lesson-source-btns 同步去掉空模块。
+`PROBLEMS`、HomePage `MODULES`、Sidebar、FilterPanel 与 `lesson-source-btns` 必须同步：每个**非空**模块都要有入口和来源按钮，每个空模块都不要展示。
+
+`FilterPanel` 内传给 `createFilterPanel` 的 `sourceBtns` 与 `packages/math-kit/src/utils/lesson-source-btns.ts` 中该 `lessonKey` 的配置必须使用相同的模块键和标签；否则讲次页或跨讲次/后台筛选会缺少来源。
 
 ### 年级页卡片（强制登记）
 
@@ -206,6 +209,7 @@ pnpm build
 - `/math/ny/{grade}/{seq}` 全流程
 - `/math/ny/{grade}`：新讲次课程卡片出现，标题、讲次号和题目数量正确
 - `/admin/math` 题型/来源筛选
+- 讲次综合题库：逐个确认每个非空模块均在「来源筛选」中出现，单选后题数等于该模块题数
 - 分模块 **开始练习**、综合题库 **开始练习**、错题 **一键练习**（顶栏进度 + 答对自动下一题）
 - 可选：`/admin/math-lesson-id-audit` 源码脏数据为 0
 - **有 custom-widget 题：** 详情页作答 + 草稿纸浮层答题区与「加入画布」（见 `custom-answer-widget.md`）

@@ -123,6 +123,8 @@ import { PROBLEMS as PROBLEMS_2_8, PROBLEM_TYPES as PT2_8, TAG_STYLE as TS2_8 } 
 ],
 ```
 
+同时更新讲次目录的 `FilterPanel.tsx`：传给 `createFilterPanel` 的 `sourceBtns` 必须与这里使用相同的非空模块键和标签。例如新增 `homework` 题目后，两处都要有 `{ key: 'homework', label: '✏️ 课后' }`。前者控制讲次综合题库，后者供跨讲次和后台筛选聚合；只改其中一处会导致来源筛选缺项。
+
 ---
 
 ## 核对表
@@ -136,6 +138,7 @@ import { PROBLEMS as PROBLEMS_2_8, PROBLEM_TYPES as PT2_8, TAG_STYLE as TS2_8 } 
 [ ] packages/math-kit/src/utils/courses-data.ts — `RAW_COURSES` 含 href '/math/ny/2/8'
 [ ] sea-data.ts                     — id '2-8'
 [ ] lesson-source-btns.ts
+[ ] `FilterPanel.tsx` 的 `sourceBtns` 与 `lesson-source-btns.ts` 同步，且覆盖全部非空模块
 [ ] plan/page.tsx
 [ ] MathWeeklyPractice.tsx
 [ ] quiz/page.tsx
