@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
-import { useCalcSettings, useCalcStrategies } from '../hooks/useCalcSettings'
+import {
+  calcSettingsStore,
+  calcStrategiesStore,
+  useCalcSettings,
+  useCalcStrategies,
+} from '../hooks/useCalcSettings'
 import { useCalcWallet, loadCalcProgressionSessions } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
@@ -56,6 +61,7 @@ import { coverageUniverse } from '../utils/calc-coverage'
 import { skeletonMeta } from '../utils/calc-mixed'
 import { buildBySourceFromLog, buildNewWeakFromLog } from '../utils/calc-session-summary'
 import { CALC_FEATURES } from '../utils/calc-features'
+import { calcSessionSourceScope } from '../utils/calc-session-source-scope'
 import {
   getCalcRuntimeRevision,
   prepareCalcSession,
@@ -110,6 +116,90 @@ interface AttemptStat {
   presentationKey?: CalcPresentationKey
 }
 
+interface SessionLoadProgress {
+  step: number
+  label: string
+  detail: string
+}
+
+const SESSION_LOAD_STEPS = 6
+const SESSION_LOAD_TIMEOUT_MS = 15_000
+
+function withSessionLoadTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      reject(new Error(`${label}超时`))
+    }, SESSION_LOAD_TIMEOUT_MS)
+    promise.then(
+      (value) => {
+        window.clearTimeout(timer)
+        resolve(value)
+      },
+      (error: unknown) => {
+        window.clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
+
+function SessionLoadingPanel({
+  progress,
+  error,
+  slow,
+  onRetry,
+}: {
+  progress: SessionLoadProgress
+  error: string | null
+  slow: boolean
+  onRetry: () => void
+}) {
+  const percent = Math.min(100, Math.round((progress.step / SESSION_LOAD_STEPS) * 100))
+  return (
+    <div className="mx-auto w-full max-w-[440px] px-5 py-10 text-center">
+      <div className="mb-5 text-[34px]" aria-hidden="true">
+        {error ? '⚠️' : '🧮'}
+      </div>
+      <p className="text-[15px] font-black text-violet-100">
+        {error ?? progress.label}
+      </p>
+      {!error && <p className="mt-2 text-[12px] text-violet-200/50">{progress.detail}</p>}
+
+      <div className="mt-6 overflow-hidden rounded-full bg-white/[.07]" aria-hidden="true">
+        <div
+          className="h-2 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-400 to-amber-300 transition-[width] duration-500 ease-out"
+          style={{ width: `${error ? 100 : percent}%` }}
+        />
+      </div>
+      <div
+        className="mt-2 flex items-center justify-between text-[11px] font-bold text-violet-200/40"
+        role="status"
+        aria-live="polite"
+      >
+        <span>{error ? '加载未完成' : `第 ${progress.step}/${SESSION_LOAD_STEPS} 步`}</span>
+        <span>{error ? '—' : `${percent}%`}</span>
+      </div>
+
+      {(error || slow) && (
+        <div className="mt-6 rounded-2xl border border-amber-300/20 bg-amber-300/[.06] p-4">
+          <p className="text-[12px] leading-5 text-amber-100/70">
+            {error
+              ? '没有丢失练习记录。请检查网络后重新加载。'
+              : '这一步比平时慢，可以继续等待，或立即重新加载。'}
+          </p>
+          <button
+            type="button"
+            onClick={onRetry}
+            className="mt-3 rounded-xl border border-violet-300/30 bg-violet-400/15 px-5 py-2 text-[13px] font-black text-violet-100 transition-colors hover:bg-violet-400/25"
+          >
+            重新加载
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CalcSessionPage() {
   const params = useSearchParams()
   const router = useRouter()
@@ -118,11 +208,13 @@ export default function CalcSessionPage() {
     settings: defaultSettings,
     update,
     isLoading: settingsLoading,
+    error: settingsError,
   } = useCalcSettings(user)
   const {
     strategies,
     saveStrategy,
     isLoading: strategiesLoading,
+    error: strategiesError,
   } = useCalcStrategies(user)
   const requestedStrategyId = params.get('strategy')
   const sessionStrategy =
@@ -133,13 +225,13 @@ export default function CalcSessionPage() {
   const wallet = useCalcWallet(user)
   const { refresh: refreshStarHud } = useStarHud()
   const {
-    mistakes,
     unresolved,
     addMistake,
     recordCorrect,
     refresh: refreshMistakes,
-  } = useCalcMistakes(user)
+  } = useCalcMistakes(user, { loadProblemState: !CALC_FEATURES.serverSelection })
   const problemState = useCalcProblemState(user, { autoLoad: !CALC_FEATURES.serverSelection })
+  const sourceScope = useMemo(() => calcSessionSourceScope(settings), [settings])
 
   const mode: CalcMode = useMemo(() => {
     const m = params.get('mode')
@@ -180,21 +272,44 @@ export default function CalcSessionPage() {
   }, [params])
 
   // Client-only peek for mid-exit resume (avoid SSR/hydration mismatch).
+  const [sessionKey, setSessionKey] = useState(0)
   const [snapChecked, setSnapChecked] = useState(false)
   const [pendingSnap, setPendingSnap] = useState<CalcSessionSnapshot | null>(null)
+  const [loadProgress, setLoadProgress] = useState<SessionLoadProgress>({
+    step: 1,
+    label: '正在读取口算策略',
+    detail: '同步本次题量、题型和计时方式',
+  })
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [loadSlow, setLoadSlow] = useState(false)
   useEffect(() => {
     if (!user) return
     let cancelled = false
+    setLoadProgress({
+      step: 2,
+      label: '正在检查练习进度',
+      detail: '查找今天是否有可继续的口算',
+    })
     void (async () => {
-      const snap = await resolveCalcSessionSnapshot(user.id, mode, drillKey)
-      if (cancelled) return
-      setPendingSnap(snap)
-      setSnapChecked(true)
+      try {
+        const snap = await withSessionLoadTimeout(
+          resolveCalcSessionSnapshot(user.id, mode, drillKey),
+          '检查练习进度',
+        )
+        if (!cancelled) setPendingSnap(snap)
+      } catch (error: unknown) {
+        // Snapshot restore is optional. A slow cloud mirror must never block a
+        // fresh practice session; the local copy was already considered first.
+        console.warn('[calc session] pending snapshot check unavailable', error)
+        if (!cancelled) setPendingSnap(null)
+      } finally {
+        if (!cancelled) setSnapChecked(true)
+      }
     })()
     return () => {
       cancelled = true
     }
-  }, [user, mode, drillKey])
+  }, [user, mode, drillKey, sessionKey])
   const resumeFromSnap = pendingSnap != null
 
   const [drillTargetSignatures, setDrillTargetSignatures] = useState<string[]>([])
@@ -204,8 +319,10 @@ export default function CalcSessionPage() {
   // ── Prep gate (daily only) ──────────────────────────────────────
   // Drills and mistakes-only sessions skip the prep screen entirely and keep
   // today's behavior (relaxed clock, no end-of-session star multiplier).
-  // autoStart (from homepage today cards) and mid-session resume also skip prep.
-  const needsPrep = mode === 'daily' && !drillParams && !autoStart && !resumeFromSnap
+  // `prepConfirmed` captures the one-shot auto-start intent. Keep `needsPrep`
+  // independent from the mutable URL so consuming `?start=1` cannot restart or
+  // cancel session initialization.
+  const needsPrep = mode === 'daily' && !drillParams && !resumeFromSnap
   const [prepConfirmed, setPrepConfirmed] = useState(autoStart)
   // Editable prep selections default to the persisted settings until the user
   // overrides them for this run only (admin settings page owns persisted defaults).
@@ -476,7 +593,6 @@ export default function CalcSessionPage() {
     nextFocus: string[]
   } | null>(null)
 
-  const [sessionKey, setSessionKey] = useState(0)
   const [stashToast, setStashToast] = useState<string | null>(null)
 
   const buildCurrentSnapshot = useCallback((): CalcSessionSnapshot | null => {
@@ -570,13 +686,58 @@ export default function CalcSessionPage() {
 
   // Initialize session ONCE after settings + mistakes ready, AND user is loaded
   const initRef = useRef(false)
+  const settingsLoadError = settingsError || strategiesError ? '口算策略加载失败' : null
+  const waitingForInitialLoad = settingsLoading || strategiesLoading || !snapChecked
+  const waitingForQuestions = (!needsPrep || prepConfirmed) && !questions && !loadError
+
+  useEffect(() => {
+    if (!waitingForInitialLoad && !waitingForQuestions) return
+    const timer = window.setTimeout(() => setLoadSlow(true), 8_000)
+    return () => window.clearTimeout(timer)
+  }, [waitingForInitialLoad, waitingForQuestions, sessionKey])
+
+  const handleLoadRetry = useCallback(() => {
+    initRef.current = false
+    setQuestions(null)
+    setPendingSnap(null)
+    setSnapChecked(false)
+    setLoadError(null)
+    setLoadSlow(false)
+    setLoadProgress({
+      step: 1,
+      label: '正在重新读取口算策略',
+      detail: '重新连接并同步本次练习设置',
+    })
+    if (user) {
+      calcSettingsStore.invalidate(user.id)
+      calcStrategiesStore.invalidate(user.id)
+      calcMistakesStore.invalidate(user.id)
+      calcProblemStateStore.invalidate(user.id)
+      calcCurriculumSnapshotStore.invalidate(user.id)
+      void Promise.all([
+        calcSettingsStore.ensureLoaded(user.id),
+        calcStrategiesStore.ensureLoaded(user.id),
+      ]).catch(() => undefined)
+    }
+    setSessionKey((key) => key + 1)
+  }, [user])
+
   useEffect(() => {
     if (initRef.current) return
     if (!snapChecked) return
     if (settingsLoading || strategiesLoading) return
+    if (settingsError || strategiesError) return
     if (!user) return
     if (needsPrep && !prepConfirmed) return
     initRef.current = true
+    let abandoned = false
+    setLoadError(null)
+    setLoadSlow(false)
+    setLoadProgress({
+      step: 3,
+      label: '正在匹配本次题型',
+      detail: '按当前策略获取有限范围的候选题',
+    })
 
     // Homepage auto-start / resume: freeze timing.
     if (pendingSnap) {
@@ -586,20 +747,16 @@ export default function CalcSessionPage() {
       sessionTimingModeRef.current = requestedTimingMode ?? settings.timingMode
       sessionBonusSecRef.current = requestedBonusSec ?? clampBonusSec(settings.bonusSec)
     }
-    if (autoStart || pendingSnap) {
-      // Drop ?start=1 so refresh doesn't re-trigger auto-start mid-session edge cases.
-      const next = new URLSearchParams(params.toString())
-      if (next.has('start')) {
-        next.delete('start')
-        const qs = next.toString()
-        router.replace(`/calc/session${qs ? `?${qs}` : ''}`, { scroll: false })
-      }
-    }
-
     const init = async () => {
       if (pendingSnap) {
+        setLoadProgress({
+          step: 4,
+          label: '正在恢复练习现场',
+          detail: '同步已答题目、错题和计时记录',
+        })
         await problemState.loadAll()
         await calcMistakesStore.ensureLoaded(user.id)
+        if (abandoned) return
         const reconciledStates = calcProblemStateStore.getSessionData(user.id) ?? {}
         const loadedStates = new Map<string, CalcProblemState>()
         for (const [sig, st] of Object.entries(reconciledStates)) {
@@ -649,14 +806,16 @@ export default function CalcSessionPage() {
       let preparedRecallCandidates: CalcProblemState[] | null = null
       if (CALC_FEATURES.serverSelection) {
         try {
-          const blockIds = settings.selectedBlocks.map((block) => block.id)
           const revision = await getCalcRuntimeRevision()
+          if (abandoned) return
           const prepared = await prepareCalcSession({
-            blockIds,
+            blockIds: sourceScope.blockIds,
+            mixedOpIds: sourceScope.mixedOpIds,
             mode,
             count: Math.min(200, Math.max(1, sessionQuestionCount * 4)),
             expectedRevision: revision,
           })
+          if (abandoned) return
           loadedStates = new Map(
             prepared.candidates.map(({ state }) => [state.signature, state] as const),
           )
@@ -668,14 +827,22 @@ export default function CalcSessionPage() {
             '[calc session] server preparation unavailable; using compatibility load',
             error,
           )
+          setLoadProgress({
+            step: 3,
+            label: '正在使用兼容模式',
+            detail: '服务端候选暂不可用，改为读取完整学习记录',
+          })
           loadedStates = await problemState.loadAll()
+          if (abandoned) return
         }
       } else {
         loadedStates = await problemState.loadAll()
+        if (abandoned) return
       }
       // Mistakes MUST be in the store before reconcile / carry — the hook's
       // `mistakes` state may still be empty on a cold visit to /calc/session.
       await mistakesPromise
+      if (abandoned) return
       // Reconcile hanging mistakes vs mastered (deadlock repair)
       if (!CALC_FEATURES.serverSelection) {
         await applyMasterySideEffects(user.id, { kind: 'reconcile' })
@@ -687,6 +854,11 @@ export default function CalcSessionPage() {
       }
 
       loadedStatesRef.current = loadedStates
+      setLoadProgress({
+        step: 4,
+        label: '正在合并学习记录',
+        detail: '整理错题、熟练度和最近练习表现',
+      })
 
       if (drillParams) {
         const session = buildDrillSession(
@@ -707,12 +879,12 @@ export default function CalcSessionPage() {
         setQuestions(session)
       } else {
         // SQL-truncated recall candidates (LIMIT recall*3) for the ~5% slot.
-        const blockIds = settings.selectedBlocks.map((b) => b.id)
         const recallSlot = Math.max(1, Math.floor(0.05 * sessionQuestionCount))
         const recallCandidates =
           preparedRecallCandidates ??
-          (await fetchMasteredRecallCandidates(user.id, blockIds, recallSlot))
+          (await fetchMasteredRecallCandidates(user.id, sourceScope.blockIds, recallSlot))
         await snapshotsPromise
+        if (abandoned) return
         const curriculumSnapshots = calcCurriculumSnapshotStore.getSessionData(user.id) ?? new Map()
         // Carry the PREVIOUS session's still-unresolved mistakes as make-up questions.
         // Previous session number == current sessionCounter (it bumps after finish).
@@ -723,7 +895,13 @@ export default function CalcSessionPage() {
         )
         // Lightweight recent history for adaptive recovery debounce.
         const historySessions = await historyPromise
+        if (abandoned) return
         historySessionsRef.current = historySessions
+        setLoadProgress({
+          step: 5,
+          label: '正在生成本次题目',
+          detail: `检查重复题并编排 ${sessionQuestionCount} 道口算`,
+        })
         const session = buildSession(
           settings,
           {
@@ -752,12 +930,33 @@ export default function CalcSessionPage() {
       questionTimesRef.current = []
       questionLogRef.current = []
       attemptsLogRef.current = []
+      setLoadProgress({
+        step: 6,
+        label: '准备完成',
+        detail: '马上开始口算',
+      })
     }
-    void init()
+    void withSessionLoadTimeout(init(), '准备口算题目').catch((error: unknown) => {
+      if (abandoned) return
+      abandoned = true
+      initRef.current = false
+      console.error('[calc session] initialization failed', error)
+      setLoadError(
+        error instanceof Error && error.message.includes('超时')
+          ? '准备题目超时，请重新加载'
+          : '准备题目失败，请重新加载',
+      )
+    })
+    return () => {
+      abandoned = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     user,
     settingsLoading,
+    strategiesLoading,
+    settingsError,
+    strategiesError,
     drillParams,
     sessionKey,
     needsPrep,
@@ -765,6 +964,18 @@ export default function CalcSessionPage() {
     snapChecked,
     pendingSnap,
   ])
+
+  // Consume the one-shot auto-start flag only after initialization has
+  // completed. Removing it while step 3 is still running changes `needsPrep`,
+  // which tears down the initialization effect and can leave the page waiting
+  // forever until a manual retry.
+  useEffect(() => {
+    if (!questions || !params.has('start')) return
+    const next = new URLSearchParams(params.toString())
+    next.delete('start')
+    const qs = next.toString()
+    router.replace(`/calc/session${qs ? `?${qs}` : ''}`, { scroll: false })
+  }, [params, questions, router])
 
   // Persist in-progress session so mid-exit / refresh can resume.
   useEffect(() => {
@@ -1406,16 +1617,32 @@ export default function CalcSessionPage() {
     return nextT[currentTier ?? 'entry'] ?? '进阶'
   })()
 
-  if (settingsLoading || strategiesLoading || !snapChecked) {
+  const visibleLoadProgress: SessionLoadProgress =
+    settingsLoading || strategiesLoading
+      ? {
+          step: 1,
+          label: '正在读取口算策略',
+          detail: '同步本次题量、题型和计时方式',
+        }
+      : !snapChecked
+        ? {
+            step: 2,
+            label: '正在检查练习进度',
+            detail: '查找今天是否有可继续的口算',
+          }
+        : loadProgress
+  const visibleLoadError = loadError ?? settingsLoadError
+
+  if (waitingForInitialLoad || visibleLoadError) {
     return (
       <>
         <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
-        <div
-          className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
-          style={{ color: 'rgba(196,181,253,0.5)' }}
-        >
-          准备题目中…
-        </div>
+        <SessionLoadingPanel
+          progress={visibleLoadProgress}
+          error={visibleLoadError}
+          slow={loadSlow}
+          onRetry={handleLoadRetry}
+        />
       </>
     )
   }
@@ -1444,12 +1671,12 @@ export default function CalcSessionPage() {
     return (
       <>
         <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
-        <div
-          className="mx-auto max-w-[640px] px-4 py-10 text-center text-[13px]"
-          style={{ color: 'rgba(196,181,253,0.5)' }}
-        >
-          准备题目中…
-        </div>
+        <SessionLoadingPanel
+          progress={visibleLoadProgress}
+          error={visibleLoadError}
+          slow={loadSlow}
+          onRetry={handleLoadRetry}
+        />
       </>
     )
   }

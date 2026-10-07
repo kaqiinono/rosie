@@ -13,6 +13,7 @@ describe('bounded calc server read contracts', () => {
     expect(() =>
       validatePrepareRequest({
         blockIds: ['add:10'],
+        mixedOpIds: [],
         mode: 'daily',
         count: 20,
         expectedRevision: 0,
@@ -20,15 +21,28 @@ describe('bounded calc server read contracts', () => {
     ).not.toThrow()
   })
 
-  it('rejects duplicate blocks and oversized candidate responses', () => {
+  it('accepts a mixed-only scope', () => {
+    expect(() =>
+      validatePrepareRequest({
+        blockIds: [],
+        mixedOpIds: ['mixed-op-1'],
+        mode: 'daily',
+        count: 60,
+        expectedRevision: 0,
+      }),
+    ).not.toThrow()
+  })
+
+  it('rejects duplicate sources and oversized candidate responses', () => {
     expect(() =>
       validatePrepareRequest({
         blockIds: ['add:10', 'add:10'],
+        mixedOpIds: [],
         mode: 'daily',
         count: 20,
         expectedRevision: 0,
       }),
-    ).toThrow('invalid calc block selection')
+    ).toThrow('invalid calc source selection')
     expect(() =>
       validatePreparedResponse({
         revision: 1,

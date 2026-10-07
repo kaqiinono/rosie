@@ -10,7 +10,7 @@ import { StarBurst as StarBurstOverlay } from '@rosie/rewards'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Rosie 的学习乐园',
+  title: 'Rosie 的炸弹乐园',
   description: '数学和英语互动学习平台',
   manifest: '/manifest.json',
   icons: {

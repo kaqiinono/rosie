@@ -1,6 +1,7 @@
 import type { CalcProblemState, CalcSelectionReason } from '@rosie/core'
 
 export const CALC_PREPARE_MAX_BLOCKS = 50
+export const CALC_PREPARE_MAX_MIXED_OPS = 50
 export const CALC_PREPARE_MAX_QUESTIONS = 200
 export const CALC_DETAILS_MAX_PAGE_SIZE = 100
 
@@ -15,6 +16,7 @@ export type CalcFormulaDetailStatus =
 
 export interface PrepareCalcSessionRequest {
   blockIds: string[]
+  mixedOpIds: string[]
   mode: 'daily' | 'free' | 'mistakes'
   count: number
   expectedRevision: number
@@ -223,12 +225,16 @@ function assertRevision(revision: number): void {
 }
 
 export function validatePrepareRequest(request: PrepareCalcSessionRequest): void {
+  const validIds = (ids: string[], max: number): boolean =>
+    ids.length <= max &&
+    new Set(ids).size === ids.length &&
+    ids.every((id) => typeof id === 'string' && id.length >= 1 && id.length <= 100)
   if (
-    request.blockIds.length === 0 ||
-    request.blockIds.length > CALC_PREPARE_MAX_BLOCKS ||
-    new Set(request.blockIds).size !== request.blockIds.length
+    request.blockIds.length + request.mixedOpIds.length === 0 ||
+    !validIds(request.blockIds, CALC_PREPARE_MAX_BLOCKS) ||
+    !validIds(request.mixedOpIds, CALC_PREPARE_MAX_MIXED_OPS)
   ) {
-    throw new Error('invalid calc block selection')
+    throw new Error('invalid calc source selection')
   }
   if (
     !Number.isInteger(request.count) ||

@@ -249,7 +249,9 @@ function ensureGlobalCanvas() {
   })
 }
 
-function spawnParticles(rect: DOMRect) {
+type ParticleSourceRect = Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>
+
+function spawnParticles(rect: ParticleSourceRect, particles = globalParticles) {
   const { left: rx, top: ry, width: rw, height: rh } = rect
   for (let i = 0; i < 28; i++) {
     const side = Math.floor(Math.random() * 4)
@@ -275,7 +277,7 @@ function spawnParticles(rect: DOMRect) {
       vx = 35 + Math.random() * 75
       vy = (Math.random() - 0.5) * 80
     }
-    globalParticles.push({
+    particles.push({
       x: sx,
       y: sy,
       vx,
@@ -292,6 +294,59 @@ function spawnParticles(rect: DOMRect) {
   }
 }
 
+function advanceAndDrawParticles(
+  ctx: CanvasRenderingContext2D,
+  particles: Particle[],
+  dt: number,
+) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i]
+    p.vy += p.ay * dt
+    p.x += p.vx * dt
+    p.y += p.vy * dt
+    p.rot += p.rotV * dt
+    p.life -= p.decay * dt
+    if (p.life <= 0) {
+      particles.splice(i, 1)
+      continue
+    }
+
+    ctx.save()
+    ctx.globalAlpha = Math.max(0, p.life)
+    ctx.translate(p.x, p.y)
+    ctx.rotate((p.rot * Math.PI) / 180)
+    ctx.fillStyle = p.color
+    const s = p.size
+    if (p.shape === 'circle') {
+      ctx.beginPath()
+      ctx.arc(0, 0, s / 2, 0, Math.PI * 2)
+      ctx.fill()
+    } else if (p.shape === 'rect') {
+      ctx.fillRect(-s / 2, -s * 0.4, s, s * 0.8)
+    } else {
+      ctx.beginPath()
+      // roundRect 兼容写法
+      const rx2 = s * 0.3,
+        w = s * 1.4,
+        h = s * 0.6,
+        x = -s * 0.7,
+        y = -s * 0.3
+      ctx.moveTo(x + rx2, y)
+      ctx.lineTo(x + w - rx2, y)
+      ctx.arcTo(x + w, y, x + w, y + h, rx2)
+      ctx.lineTo(x + w, y + h - rx2)
+      ctx.arcTo(x + w, y + h, x + w - rx2, y + h, rx2)
+      ctx.lineTo(x + rx2, y + h)
+      ctx.arcTo(x, y + h, x, y + h - rx2, rx2)
+      ctx.lineTo(x, y + rx2)
+      ctx.arcTo(x, y, x + rx2, y, rx2)
+      ctx.closePath()
+      ctx.fill()
+    }
+    ctx.restore()
+  }
+}
+
 function particleLoop(ts: number) {
   if (!lastTs) lastTs = ts
   const dt = Math.min((ts - lastTs) / 1000, 0.05)
@@ -299,53 +354,7 @@ function particleLoop(ts: number) {
 
   if (!globalCtx || !globalCanvas) return
   globalCtx.clearRect(0, 0, globalCanvas.width, globalCanvas.height)
-
-  for (let i = globalParticles.length - 1; i >= 0; i--) {
-    const p = globalParticles[i]
-    p.vy += p.ay * dt
-    p.x += p.vx * dt
-    p.y += p.vy * dt
-    p.rot += p.rotV * dt
-    p.life -= p.decay * dt
-    if (p.life <= 0) {
-      globalParticles.splice(i, 1)
-      continue
-    }
-
-    globalCtx.save()
-    globalCtx.globalAlpha = Math.max(0, p.life)
-    globalCtx.translate(p.x, p.y)
-    globalCtx.rotate((p.rot * Math.PI) / 180)
-    globalCtx.fillStyle = p.color
-    const s = p.size
-    if (p.shape === 'circle') {
-      globalCtx.beginPath()
-      globalCtx.arc(0, 0, s / 2, 0, Math.PI * 2)
-      globalCtx.fill()
-    } else if (p.shape === 'rect') {
-      globalCtx.fillRect(-s / 2, -s * 0.4, s, s * 0.8)
-    } else {
-      globalCtx.beginPath()
-      // roundRect 兼容写法
-      const rx2 = s * 0.3,
-        w = s * 1.4,
-        h = s * 0.6,
-        x = -s * 0.7,
-        y = -s * 0.3
-      globalCtx.moveTo(x + rx2, y)
-      globalCtx.lineTo(x + w - rx2, y)
-      globalCtx.arcTo(x + w, y, x + w, y + h, rx2)
-      globalCtx.lineTo(x + w, y + h - rx2)
-      globalCtx.arcTo(x + w, y + h, x + w - rx2, y + h, rx2)
-      globalCtx.lineTo(x + rx2, y + h)
-      globalCtx.arcTo(x, y + h, x, y + h - rx2, rx2)
-      globalCtx.lineTo(x, y + rx2)
-      globalCtx.arcTo(x, y, x + rx2, y, rx2)
-      globalCtx.closePath()
-      globalCtx.fill()
-    }
-    globalCtx.restore()
-  }
+  advanceAndDrawParticles(globalCtx, globalParticles, dt)
 
   if (globalParticles.length > 0) {
     rafId = requestAnimationFrame(particleLoop)
@@ -362,6 +371,66 @@ function triggerBurst(rect: DOMRect) {
     lastTs = null
     rafId = requestAnimationFrame(particleLoop)
   }
+}
+
+const LOCAL_BURST_MARGIN = 180
+
+/**
+ * Keep the candy particles, but constrain repainting to a short-lived canvas
+ * around the tapped button instead of compositing a full-viewport canvas.
+ */
+function triggerLocalBurst(rect: DOMRect) {
+  const width = Math.ceil(rect.width + LOCAL_BURST_MARGIN * 2)
+  const height = Math.ceil(rect.height + LOCAL_BURST_MARGIN * 2)
+  const canvas = document.createElement('canvas')
+  canvas.dataset.candyParticleCanvas = 'local'
+  canvas.setAttribute('aria-hidden', 'true')
+  canvas.width = width
+  canvas.height = height
+  canvas.style.cssText = [
+    'position:fixed',
+    `left:${Math.floor(rect.left - LOCAL_BURST_MARGIN)}px`,
+    `top:${Math.floor(rect.top - LOCAL_BURST_MARGIN)}px`,
+    `width:${width}px`,
+    `height:${height}px`,
+    'pointer-events:none',
+    'z-index:9999',
+    'contain:strict',
+  ].join(';')
+  document.body.appendChild(canvas)
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    canvas.remove()
+    return
+  }
+
+  const particles: Particle[] = []
+  spawnParticles(
+    {
+      left: LOCAL_BURST_MARGIN,
+      top: LOCAL_BURST_MARGIN,
+      width: rect.width,
+      height: rect.height,
+    },
+    particles,
+  )
+
+  let previousTs: number | null = null
+  const loop = (ts: number) => {
+    if (!canvas.isConnected) return
+    if (previousTs == null) previousTs = ts
+    const dt = Math.min((ts - previousTs) / 1000, 0.05)
+    previousTs = ts
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    advanceAndDrawParticles(ctx, particles, dt)
+    if (particles.length > 0) {
+      requestAnimationFrame(loop)
+    } else {
+      canvas.remove()
+    }
+  }
+  requestAnimationFrame(loop)
 }
 
 // ─── SVG 糖果按钮核心 ─────────────────────────────────────────────────────────
@@ -485,6 +554,8 @@ export interface CandyButtonProps {
   onClick?: (id: string) => void
   /** Disable interaction while preserving the candy shape for answer feedback. */
   disabled?: boolean
+  /** Particle mode: full-screen by default, local for repaint-sensitive surfaces, or false. */
+  particleBurst?: boolean | 'local'
   className?: string
 }
 
@@ -515,6 +586,7 @@ const CandyButton: FC<CandyButtonProps> = ({
   size = 80,
   onClick,
   disabled = false,
+  particleBurst = true,
   className = '',
 }) => {
   const cfg = config ?? (preset ? CANDY_PRESETS[preset] : null)
@@ -530,18 +602,20 @@ const CandyButton: FC<CandyButtonProps> = ({
   const btnRef = useRef<HTMLButtonElement>(null)
   const [popping, setPopping] = useState(false)
 
-  const handleBurst = useCallback(() => {
-    if (!btnRef.current) return
-    const rect = btnRef.current.getBoundingClientRect()
-    triggerBurst(rect)
+  const handlePressAnimation = useCallback(() => {
+    if (particleBurst && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect()
+      if (particleBurst === 'local') triggerLocalBurst(rect)
+      else triggerBurst(rect)
+    }
     setPopping(true)
-  }, [])
+  }, [particleBurst])
 
   const handleClick = useCallback(() => {
     if (disabled) return
-    handleBurst()
+    handlePressAnimation()
     onClick?.(cfg.id)
-  }, [cfg.id, disabled, handleBurst, onClick])
+  }, [cfg.id, disabled, handlePressAnimation, onClick])
 
   return (
     <div

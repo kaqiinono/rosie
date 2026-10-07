@@ -33,6 +33,32 @@ async function clickConfirm(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('SpellTiles', () => {
+  it('does not mount a full-screen particle canvas when a spelling letter is tapped', async () => {
+    const user = userEvent.setup()
+    const context = {} as CanvasRenderingContext2D
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockReturnValue(context)
+    const requestAnimationFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockReturnValue(1)
+    setup('abc')
+
+    expect(document.querySelector('canvas')).toBeNull()
+    await clickPoolLetter(user, 'a')
+
+    const canvas = document.querySelector<HTMLCanvasElement>(
+      'canvas[data-candy-particle-canvas="local"]',
+    )
+    expect(canvas).not.toBeNull()
+    expect(canvas?.style.width).not.toBe('100%')
+    expect(canvas?.style.height).not.toBe('100%')
+
+    canvas?.remove()
+    getContext.mockRestore()
+    requestAnimationFrame.mockRestore()
+  })
+
   it('REGRESSION: submits the user-placed letters, not the correct answer', async () => {
     // Bug fixed in c235796: handleConfirm was calling onSubmit(segments.join(''))
     // which always equals `word` regardless of what the user placed, so every

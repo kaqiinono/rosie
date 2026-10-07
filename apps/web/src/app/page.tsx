@@ -136,7 +136,7 @@ export default function HomePage() {
             {greeting}
           </div>
           <h1 className="mt-1.5 bg-gradient-to-br from-slate-800 via-indigo-500 to-emerald-500 bg-clip-text text-[clamp(28px,5vw,38px)] leading-tight font-black text-transparent">
-            {username ?? 'Rosie'} 的学习乐园
+            {username ?? 'Rosie'} 的炸弹乐园
           </h1>
         </section>
 

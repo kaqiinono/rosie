@@ -151,6 +151,11 @@ only after the accordion is opened, then reuses the session cache while mounted.
 **Session prep (`mode=daily`):** `/calc/session` shows `SessionPrepScreen` before `buildSession`.
 Settings defaults (`timingMode`, `bonusSec`) preload from the selected named strategy; user can
 override them for the current session only.
+Session initialization displays six concrete loading stages and exposes retry after slow/failed
+loads. Bounded `prepare_calc_session` requests include both curriculum `blockIds` and configured
+`mixedOpIds` (plus blocks referenced by mixed operations), so mixed-only strategies must never
+fall back merely because `selectedBlocks` is empty. Compatibility full-state loading remains an
+emergency fallback for an unavailable RPC, not the normal mixed-strategy path.
 Three modes in `calc-session-policy.ts`:
 
 | Mode      | Clock (`T_clock`)              | At 0                                                      | Star multiplier               |

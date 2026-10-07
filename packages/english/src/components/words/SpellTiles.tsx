@@ -345,6 +345,7 @@ export default function SpellTiles({
                     }}
                     showLabel={false}
                     size={72}
+                    particleBurst="local"
                     onClick={() => handlePoolTap(letter)}
                   />
                 </div>
@@ -367,6 +368,7 @@ export default function SpellTiles({
                 }}
                 showLabel={false}
                 size={72}
+                particleBurst="local"
                 onClick={() => handlePoolTap(' ')}
               />
             </div>

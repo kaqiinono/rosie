@@ -23,7 +23,7 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
           <Link
             href="/"
             className="flex size-11 items-center justify-center rounded-2xl border border-white/80 bg-white/75 text-xl text-slate-700 shadow-sm backdrop-blur-xl transition hover:-translate-x-0.5 hover:bg-white"
-            aria-label="返回学习乐园"
+            aria-label="返回炸弹乐园"
           >
             ←
           </Link>

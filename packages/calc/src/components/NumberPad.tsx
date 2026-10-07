@@ -9,6 +9,29 @@ interface Props {
   allowDecimal?: boolean
 }
 
+const keyPressAnimations = new WeakMap<HTMLButtonElement, Animation>()
+
+/** Keep the full candy-button squash and rebound visible after a quick tap. */
+function playKeyPressEffect(button: HTMLButtonElement) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+  keyPressAnimations.get(button)?.cancel()
+  const animation = button.animate(
+    [
+      { transform: 'scale(1)' },
+      { transform: 'scale(0.91, 1.1)', offset: 0.3 },
+      { transform: 'scale(1.08, 0.93)', offset: 0.6 },
+      { transform: 'scale(0.98, 1.02)', offset: 0.8 },
+      { transform: 'scale(1)' },
+    ],
+    { duration: 260, easing: 'ease-out' },
+  )
+  keyPressAnimations.set(button, animation)
+  animation.addEventListener('finish', () => {
+    if (keyPressAnimations.get(button) === animation) keyPressAnimations.delete(button)
+  })
+}
+
 export default function NumberPad({ value, onChange, onSubmit, disabled, allowDecimal = false }: Props) {
   const maxDigits = allowDecimal ? 6 : 4
   // In decimal mode the 12th grid slot is '.', and ✓ becomes a separate full-width button.
@@ -68,8 +91,14 @@ export default function NumberPad({ value, onChange, onSubmit, disabled, allowDe
         key={key}
         type="button"
         onClick={() => press(key)}
+        onPointerDown={(event) => playKeyPressEffect(event.currentTarget)}
+        onKeyDown={(event) => {
+          if (!event.repeat && (event.key === 'Enter' || event.key === ' ')) {
+            playKeyPressEffect(event.currentTarget)
+          }
+        }}
         disabled={inactive}
-        className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+        className="h-14 touch-manipulation rounded-2xl text-[24px] font-black transition-all select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.93]"
         style={keyStyle(key)}
       >
         {key}
@@ -84,8 +113,14 @@ export default function NumberPad({ value, onChange, onSubmit, disabled, allowDe
         <button
           type="button"
           onClick={() => press('✓')}
+          onPointerDown={(event) => playKeyPressEffect(event.currentTarget)}
+          onKeyDown={(event) => {
+            if (!event.repeat && (event.key === 'Enter' || event.key === ' ')) {
+              playKeyPressEffect(event.currentTarget)
+            }
+          }}
           disabled={disabled || value.length === 0}
-          className="h-14 w-full rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          className="h-14 w-full touch-manipulation rounded-2xl text-[24px] font-black transition-all select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.93]"
           style={keyStyle('✓')}
         >
           ✓
