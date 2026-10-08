@@ -147,6 +147,9 @@ export default function PracticePage() {
       if (masteryFilter !== null) params.set('mastery', String(masteryFilter))
       params.set('vocabTypes', [...selVocabTypes].join(','))
       params.set('types', serializePrintTypes(types))
+      const seed = new Uint32Array(1)
+      crypto.getRandomValues(seed)
+      params.set('seed', String(seed[0]))
       window.open(`/english/words/practice/print?${params.toString()}`, '_blank')
     },
     [filteredWords.length, selStage, selUnits, selLessons, selWords, masteryFilter, selVocabTypes],

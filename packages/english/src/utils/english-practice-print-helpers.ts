@@ -1,5 +1,5 @@
 import type { MasteryLevel, QuizType, WordEntry, WordVocabType } from '@rosie/core'
-import { buildQuizOptions, normalizeQuizTypes, sortWordsByVocabType } from './english-helpers'
+import { buildQuizOptions, normalizeQuizTypes, shuffle } from './english-helpers'
 import { blankWordInSentence, findPassage, findSentenceForWord } from './reading-data'
 
 export type EnglishPrintOption = {
@@ -103,13 +103,31 @@ export function sanitizePrintDocumentTitle(title: string): string {
     .slice(0, 120)
 }
 
-function sortWords(words: WordEntry[]): WordEntry[] {
-  return sortWordsByVocabType(words).sort((a, b) => {
-    if (a.vocabType !== b.vocabType) return 0
+const PRINT_VOCAB_TYPE_ORDER: (WordVocabType | undefined)[] = [
+  'Target',
+  'Context',
+  'Extension',
+  undefined,
+]
+
+/**
+ * Keep the learning priority between vocabulary groups, while shuffling words
+ * inside each group for every print run. Sorting before the seeded shuffle makes
+ * the result reproducible for a given seed regardless of the source array order.
+ */
+export function orderWordsForPrint(words: WordEntry[], seed: number): WordEntry[] {
+  const stableWords = [...words].sort((a, b) => {
     const ka = `${a.unit}\0${a.lesson}\0${a.word}`
     const kb = `${b.unit}\0${b.lesson}\0${b.word}`
     return ka.localeCompare(kb)
   })
+
+  return PRINT_VOCAB_TYPE_ORDER.flatMap((vocabType, groupIndex) =>
+    shuffle(
+      stableWords.filter((word) => word.vocabType === vocabType),
+      seed + groupIndex * 1009,
+    ),
+  )
 }
 
 export function buildPrintSections(
@@ -121,13 +139,13 @@ export function buildPrintSections(
   const orderedTypes = normalizeQuizTypes(types)
   if (!orderedTypes.length || !words.length) return []
 
-  const sortedWords = sortWords(words)
+  const orderedWords = orderWordsForPrint(words, seed)
   let globalNum = 1
   const sections: EnglishPrintSection[] = []
 
   for (const type of orderedTypes) {
     const typeWords =
-      type === 'D' ? sortedWords.filter(isEligibleForTypeD) : sortedWords
+      type === 'D' ? orderedWords.filter(isEligibleForTypeD) : orderedWords
     if (!typeWords.length) continue
 
     const questions: EnglishPrintQuestion[] = typeWords.map((word, i) => {
@@ -192,4 +210,40 @@ export function buildPrintSections(
   }
 
   return sections
+}
+
+function printQuestionOrder(sections: EnglishPrintSection[]): string {
+  return sections
+    .flatMap((section) =>
+      section.questions.map(
+        (question) =>
+          `${section.type}:${question.word.unit}:${question.word.lesson}:${question.word.word}`,
+      ),
+    )
+    .join('\0')
+}
+
+/** Find the next seed that actually changes the visible question order. */
+export function nextPrintSeed(
+  words: WordEntry[],
+  types: QuizType[],
+  vocabPool: WordEntry[],
+  currentSeed: number,
+): number {
+  const currentOrder = printQuestionOrder(
+    buildPrintSections(words, types, vocabPool, currentSeed),
+  )
+  const seedStep = 0x9e3779b9
+
+  for (let attempt = 1; attempt <= 64; attempt++) {
+    const candidate = (currentSeed + seedStep * attempt) >>> 0
+    const candidateOrder = printQuestionOrder(
+      buildPrintSections(words, types, vocabPool, candidate),
+    )
+    if (candidateOrder !== currentOrder) return candidate
+  }
+
+  // A different order is impossible when every printable priority group has
+  // at most one word. Still advance the seed so option ordering may vary.
+  return (currentSeed + seedStep) >>> 0
 }

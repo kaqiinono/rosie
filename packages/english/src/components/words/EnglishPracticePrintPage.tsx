@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getWordMasteryLevel } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -15,6 +15,7 @@ import {
   parsePrintVocabTypes,
   parsePrintWords,
   sanitizePrintDocumentTitle,
+  nextPrintSeed,
 } from '../../utils/english-practice-print-helpers'
 import { getFilteredWords, lessonChipTag, letterCount, wordKey } from '../../utils/english-helpers'
 
@@ -100,7 +101,7 @@ function PrintQuestionBlock({
   )
 }
 
-function runPrint(title: string) {
+function runPrint(title: string, prepareNextPrint: () => void) {
   // Mark <html> before the dialog opens so WebKit drops fixed chrome
   // even if @media print application is delayed on iOS.
   document.documentElement.classList.add('en-printing')
@@ -114,13 +115,32 @@ function runPrint(title: string) {
   }
   window.addEventListener('afterprint', cleanup)
   window.print()
+  // `window.print()` blocks until the print dialog closes in supported browsers,
+  // so the rendered sheet is unchanged while printing. Prepare a fresh ordering
+  // immediately afterwards for the next click on this preview page.
+  prepareNextPrint()
   // iOS sometimes never fires afterprint; keep class until dialog is long gone.
   window.setTimeout(cleanup, 60_000)
+}
+
+function parseSeed(raw: string | null): number {
+  if (!raw) return 42
+  const parsed = Number(raw)
+  return Number.isSafeInteger(parsed) ? parsed >>> 0 : 42
 }
 
 export default function EnglishPracticePrintPage() {
   const { vocab, masteryMap, selStage, setSelStage, isVocabLoading } = useWordsContext()
   const searchParams = useSearchParams()
+  const requestedSeed = useMemo(
+    () => parseSeed(searchParams.get('seed')),
+    [searchParams],
+  )
+  const [printSeed, setPrintSeed] = useState(requestedSeed)
+
+  useEffect(() => {
+    setPrintSeed(requestedSeed)
+  }, [requestedSeed])
 
   useEffect(() => {
     return () => {
@@ -179,8 +199,8 @@ export default function EnglishPracticePrintPage() {
   }, [vocab, stage, selUnits, selLessons, selWords, vocabTypes, masteryFilter, masteryMap])
 
   const sections = useMemo(
-    () => buildPrintSections(filteredWords, types, vocab),
-    [filteredWords, types, vocab],
+    () => buildPrintSections(filteredWords, types, vocab, printSeed),
+    [filteredWords, types, vocab, printSeed],
   )
 
   const title = useMemo(
@@ -244,7 +264,11 @@ export default function EnglishPracticePrintPage() {
           </h1>
           <button
             type="button"
-            onClick={() => runPrint(title)}
+            onClick={() =>
+              runPrint(title, () =>
+                setPrintSeed((seed) => nextPrintSeed(filteredWords, types, vocab, seed)),
+              )
+            }
             className="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 sm:px-4"
           >
             打印

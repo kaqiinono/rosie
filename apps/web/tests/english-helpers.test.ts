@@ -3,9 +3,11 @@ import {
   normalizeQuizTypes,
   buildQuizQuestions,
   buildQuizOptions,
+  buildPrintSections,
   hilite,
   highlightExample,
   getFilteredWords,
+  nextPrintSeed,
   shuffle,
   wordKey,
 } from '@rosie/english'
@@ -203,6 +205,39 @@ describe('shuffle', () => {
     const input = [1, 2, 3, 4, 5]
     const out = shuffle(input, 1)
     expect(out.sort()).toEqual(input)
+  })
+})
+
+describe('buildPrintSections', () => {
+  const PRINT_VOCAB: WordEntry[] = [
+    w({ word: 'target-a', vocabType: 'Target' }),
+    w({ word: 'target-b', vocabType: 'Target' }),
+    w({ word: 'target-c', vocabType: 'Target' }),
+    w({ word: 'context-a', vocabType: 'Context' }),
+    w({ word: 'context-b', vocabType: 'Context' }),
+    w({ word: 'context-c', vocabType: 'Context' }),
+    w({ word: 'extension-a', vocabType: 'Extension' }),
+    w({ word: 'extension-b', vocabType: 'Extension' }),
+    w({ word: 'extension-c', vocabType: 'Extension' }),
+  ]
+
+  it('keeps Target → Context → Extension priority after shuffling', () => {
+    const questions = buildPrintSections(PRINT_VOCAB, ['C'], PRINT_VOCAB, 17)[0].questions
+    expect(questions.map((question) => question.word.vocabType)).toEqual([
+      'Target', 'Target', 'Target',
+      'Context', 'Context', 'Context',
+      'Extension', 'Extension', 'Extension',
+    ])
+  })
+
+  it('uses the print seed to vary order within vocabulary groups', () => {
+    const wordsFor = (seed: number) =>
+      buildPrintSections(PRINT_VOCAB, ['C'], PRINT_VOCAB, seed)[0].questions
+        .map((question) => question.word.word)
+
+    const nextSeed = nextPrintSeed(PRINT_VOCAB, ['C'], PRINT_VOCAB, 17)
+    expect(wordsFor(17)).not.toEqual(wordsFor(nextSeed))
+    expect(wordsFor(17)).toEqual(wordsFor(17))
   })
 })
 
