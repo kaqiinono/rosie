@@ -548,6 +548,9 @@ export default function CalcSessionPage() {
   // Tagged per-question first-attempt log (atomic per-题型 records).
   const questionLogRef = useRef<QuestionLogEntry[]>([])
   const settlementIdRef = useRef<string>('')
+  // React state is not a synchronous lock: two completion callbacks can run
+  // before `done` re-renders. Keep settlement strictly single-flight.
+  const finishingRef = useRef(false)
   const questionStartRef = useRef<number>(0)
   /** Which `idx` the countdown wall/ref are bound to. Prevents stale wall from
    *  the previous question from zeroing `remainingSec` on the advance render. */
@@ -567,6 +570,7 @@ export default function CalcSessionPage() {
     setQuestionStartWall(Date.now())
   }, [])
   const [done, setDone] = useState(false)
+  const [finishError, setFinishError] = useState<string | null>(null)
   const [finalStats, setFinalStats] = useState<{
     correct: number
     retry: number
@@ -1039,7 +1043,9 @@ export default function CalcSessionPage() {
 
   // ── Finish handler ───────────────────────────────────────────────
   const finishSession = useCallback(async () => {
-    if (done) return
+    if (finishingRef.current) return
+    finishingRef.current = true
+    setFinishError(null)
     setDone(true)
     const finalElapsed = Math.floor(
       (carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs)) / 1000,
@@ -1182,18 +1188,25 @@ export default function CalcSessionPage() {
     }
     // Unified mode makes session, state, progress and reward one transaction.
     // Legacy mode remains intact as the emergency rollback path.
-    if (CALC_FEATURES.unifiedSettlement && user) {
-      const expectedRevision = await getCalcRuntimeRevision()
-      await settleCalcSession(user.id, {
-        idempotencyKey: settlementIdRef.current || crypto.randomUUID(),
-        expectedRevision,
-        clientSchemaVersion: CALC_SETTLEMENT_SCHEMA_VERSION,
-        session: sessionRecord,
-        problemStates: nextStates,
-      })
-      await wallet.refresh()
-    } else {
-      await wallet.recordSession(sessionRecord)
+    try {
+      if (CALC_FEATURES.unifiedSettlement && user) {
+        const expectedRevision = await getCalcRuntimeRevision()
+        await settleCalcSession(user.id, {
+          idempotencyKey: settlementIdRef.current || crypto.randomUUID(),
+          expectedRevision,
+          clientSchemaVersion: CALC_SETTLEMENT_SCHEMA_VERSION,
+          session: sessionRecord,
+          problemStates: nextStates,
+        })
+        await wallet.refresh()
+      } else {
+        await wallet.recordSession(sessionRecord)
+      }
+    } catch (error: unknown) {
+      console.error('[calc settlement] failed', error)
+      finishingRef.current = false
+      setFinishError('本次记录尚未保存，请检查网络后重试。不会重复发放星星。')
+      return
     }
     // Only now — clearing before the row is persisted would leave a failed insert
     // with neither a session row nor a resumable snapshot.
@@ -1217,7 +1230,6 @@ export default function CalcSessionPage() {
     playSfx('complete', settings.soundEnabled)
     launchConfetti(30)
   }, [
-    done,
     drillParams,
     wallet,
     refreshStarHud,
@@ -1814,7 +1826,21 @@ export default function CalcSessionPage() {
 
       {done &&
         finalStats &&
-        (drillParams ? (
+        (finishError ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-6">
+            <div className="w-full max-w-sm rounded-3xl border border-amber-300/30 bg-slate-900 p-6 text-center shadow-2xl">
+              <h2 className="text-xl font-black text-amber-200">保存未完成</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-300">{finishError}</p>
+              <button
+                type="button"
+                onClick={() => void finishSession()}
+                className="mt-5 min-h-11 w-full rounded-2xl bg-amber-300 px-4 py-3 font-black text-slate-950 transition hover:bg-amber-200"
+              >
+                重新保存
+              </button>
+            </div>
+          </div>
+        ) : drillParams ? (
           <DrillSummary
             {...(drillParams.type === 'weak-formulas'
               ? {
@@ -1832,6 +1858,7 @@ export default function CalcSessionPage() {
                     clockBoundIdxRef.current = -1
                     setQuestions(null)
                     setIdx(0)
+                    finishingRef.current = false
                     setDone(false)
                     const next = new URLSearchParams({
                       drill: 'weak-formulas',
@@ -1860,6 +1887,7 @@ export default function CalcSessionPage() {
                       clockBoundIdxRef.current = -1
                       setQuestions(null)
                       setIdx(0)
+                      finishingRef.current = false
                       setDone(false)
                       setSessionKey((k) => k + 1)
                       router.replace(
@@ -1895,6 +1923,7 @@ export default function CalcSessionPage() {
               setPendingSnap(null)
               setQuestions(null)
               setIdx(0)
+              finishingRef.current = false
               wrongQueueRef.current = []
               maxRetryRef.current = 0
               plannedCountRef.current = 0
