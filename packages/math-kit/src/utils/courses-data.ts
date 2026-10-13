@@ -9,7 +9,7 @@ const RAW_COURSES: CourseCardData[] = [
     description: '头和腿和用假设法，倍数与差倍关系用分组法；遇到几倍多几、几倍少几，先调整成整数倍再还原。',
     icon: '🐔',
     lectureNum: '第 10 讲',
-    tags: ['鸡兔同笼', '假设法·分组法', '18 道互动题'],
+    tags: ['鸡兔同笼', '假设法·分组法', '63 道互动题'],
     variant: 'amber',
   },
   {

@@ -137,7 +137,7 @@ export default function LessonPassageReader({
             return (
               <p
                 key={`${lessonKey}-p-${i}`}
-                className="text-xl leading-[2.15] tracking-wide text-slate-800 sm:text-2xl sm:leading-[2.05]"
+                className="whitespace-pre-line text-xl leading-[2.15] tracking-wide text-slate-800 sm:text-2xl sm:leading-[2.05]"
               >
                 {segments.map((seg, j) =>
                   seg.kind === 'plain' ? (

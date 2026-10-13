@@ -51,7 +51,7 @@ Regenerate upsert after editing TS backup:
 pnpm --filter @rosie/chinese generate-sql
 ```
 
-课文原文（单元页展示）：`lesson-passages.ts`，由 `python3 packages/chinese/scripts/extract-lesson-passages.py` 从 `curated_passages_data.py` 生成（28 课全文已校对，非 PDF 自动提取）。
+课文原文（单元页展示）：三册 `lesson-passages.ts` 统一由 `python3 packages/chinese/scripts/extract-lesson-passages.py` 生成；一下数据源为 `curated_passages_data.py`，二上/二下为 `curated_g2_passages.py`（含现行教材逐页校验修订）。生成结果必须通过 `pnpm --filter @rosie/chinese verify-data` 的课文覆盖率、分段和文本卫生检查。
 
 Requires `hanzi-writer-data` (devDependency) for stroke order.
 

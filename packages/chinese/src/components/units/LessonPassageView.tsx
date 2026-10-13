@@ -55,7 +55,7 @@ export default function LessonPassageView({ lessonKey, group }: Props) {
         return (
           <p
             key={`${lessonKey}-p-${i}`}
-            className="text-base leading-loose tracking-wide text-slate-800"
+            className="whitespace-pre-line text-base leading-loose tracking-wide text-slate-800"
           >
             {segments.map((seg, j) => (
               <span

@@ -7,8 +7,9 @@ import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g2/lesson10
 const BASE = '/math/ny/2/10'
 type Props = { problems: ProblemSet; practiceCount: Record<string, number>; correctCount: Record<string, number> }
 const MODULES = [
-  { path: `${BASE}/lesson`, icon: '📖', bg: 'bg-amber-50', title: '课堂讲解', desc: '18道 · 假设法、分组法与变型题' },
-  { path: `${BASE}/homework`, icon: '✏️', bg: 'bg-orange-50', title: '课后巩固', desc: '12道 · 习题册鸡兔同笼讲解' },
+  { path: `${BASE}/pretest`, icon: '📝', bg: 'bg-yellow-50', title: '课前测', desc: '6道 · 鸡兔同笼基础小测验' },
+  { path: `${BASE}/lesson`, icon: '📖', bg: 'bg-amber-50', title: '课堂讲解', desc: '33道 · 假设法、分组法与变型题' },
+  { path: `${BASE}/homework`, icon: '✏️', bg: 'bg-orange-50', title: '课后巩固', desc: '24道 · 习题册鸡兔同笼讲解' },
 ] as const
 export default function HomePage({ problems, practiceCount, correctCount }: Props) {
   const all = (Object.values(problems) as Problem[][]).flat()

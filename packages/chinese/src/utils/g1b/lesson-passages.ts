@@ -1,4 +1,4 @@
-// 部编版一年级下册课文原文 — 对照教材 PDF + 网络教辅人工校对
+// 部编版课文原文 — 对照现行教材页面 + 独立网络来源人工校对
 // 数据源: packages/chinese/scripts/curated_passages_data.py
 // 重新生成: python3 packages/chinese/scripts/extract-lesson-passages.py
 

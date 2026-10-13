@@ -10,6 +10,7 @@ from pathlib import Path
 PKG = Path(__file__).resolve().parents[1]
 
 POLYPHONIC_RELEARN = frozenset({"得", "乐", "背"})
+SUSPICIOUS_PASSAGE_RE = re.compile(r"[\u2000-\u200f\u2028-\u202f\ufeff]")
 
 
 def load_json_export(path: Path, const_name: str):
@@ -31,6 +32,8 @@ def verify_book(book_slug: str) -> list[str]:
     groups = load_json_export(data_dir / "lesson-chars.ts", "LESSON_CHARS")
     poems = load_json_export(data_dir / "poems.ts", "POEMS")
     phrases = load_json_export(data_dir / "phrases.ts", "PHRASES")
+    units = load_json_export(data_dir / "units.ts", "UNITS")
+    passages = load_json_export(data_dir / "lesson-passages.ts", "LESSON_PASSAGES")
     stats = json.loads(stats_path.read_text(encoding="utf-8")) if stats_path.exists() else {}
 
     all_r: list[str] = []
@@ -75,6 +78,41 @@ def verify_book(book_slug: str) -> list[str]:
 
     if book_slug == "g1b" and any(p.get("lessonKey") == "u3-l4" for p in phrases):
         errors.append("phrases wrongly on u3-l4")
+
+    expected_passage_keys = {
+        f"u{unit['unit']}-l{lesson['lesson']}"
+        for unit in units
+        for lesson in unit.get("lessons", [])
+        if lesson.get("lesson", 0) > 0
+    }
+    passage_keys = [entry.get("lessonKey") for entry in passages]
+    passage_by_key = {entry.get("lessonKey"): entry for entry in passages}
+    duplicate_passage_keys = sorted(
+        key for key in set(passage_keys) if passage_keys.count(key) > 1
+    )
+    missing_passages = sorted(expected_passage_keys - set(passage_by_key))
+    extra_passages = sorted(set(passage_by_key) - expected_passage_keys)
+    if missing_passages:
+        errors.append(f"[{book_slug}] missing passages: {', '.join(missing_passages)}")
+    if extra_passages:
+        errors.append(f"[{book_slug}] unknown passages: {', '.join(extra_passages)}")
+    if duplicate_passage_keys:
+        errors.append(
+            f"[{book_slug}] duplicate passages: {', '.join(duplicate_passage_keys)}"
+        )
+
+    for key, entry in passage_by_key.items():
+        paragraphs = entry.get("paragraphs", [])
+        if not paragraphs or any(not paragraph.strip() for paragraph in paragraphs):
+            errors.append(f"[{book_slug}] empty passage/paragraph: {key}")
+            continue
+        joined = "".join(paragraphs)
+        if SUSPICIOUS_PASSAGE_RE.search(joined):
+            errors.append(f"[{book_slug}] suspicious whitespace/control character: {key}")
+        if len(joined) >= 180 and len(paragraphs) == 1:
+            errors.append(f"[{book_slug}] long passage is not split into paragraphs: {key}")
+        if len(joined) >= 60 and not re.search(r"[。！？；…]", joined):
+            errors.append(f"[{book_slug}] long passage has no sentence punctuation: {key}")
 
     return errors
 
