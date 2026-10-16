@@ -22,6 +22,7 @@ import {
 } from '../../utils/adaptivePlanPracticeLog'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanPreviewOverview from './AdaptivePlanPreviewOverview'
+import AdaptivePlanUnitProgress from './AdaptivePlanUnitProgress'
 
 type AdaptivePlanPreviewProps = {
   planId: string
@@ -833,6 +834,8 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           )}
         </div>
       </div>
+
+      <AdaptivePlanUnitProgress rows={activeRows} simulation={simulation} />
 
       {fullTrajectory && (
         <StageTrajectoryMatrix

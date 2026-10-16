@@ -30,6 +30,7 @@ import {
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-plan-shared'
 import AdaptivePlanCardCalendar from './AdaptivePlanCardCalendar'
+import AdaptivePlanUnitProgress from './AdaptivePlanUnitProgress'
 import { simulateAdaptivePlan } from '../../utils/adaptivePlanSimulate'
 
 interface Props {
@@ -537,6 +538,7 @@ function AdaptivePlanCard({
   onOpen: () => void
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false)
+  const [unitProgressOpen, setUnitProgressOpen] = useState(false)
   const [calendarRows, setCalendarRows] = useState<AdaptivePlanWordProgress[] | null>(null)
   const [calendarLoading, setCalendarLoading] = useState(false)
   const [calendarError, setCalendarError] = useState<string | null>(null)
@@ -559,8 +561,7 @@ function AdaptivePlanCard({
     })
   }, [effectiveCalendarRows, plan])
 
-  const openCalendar = () => {
-    setCalendarOpen(true)
+  const loadDetailRows = () => {
     if (calendarRows || rows || calendarLoading) return
     setCalendarLoading(true)
     setCalendarError(null)
@@ -572,6 +573,25 @@ function AdaptivePlanCard({
       })
       .finally(() => setCalendarLoading(false))
   }
+
+  const openCalendar = () => {
+    setCalendarOpen(true)
+    loadDetailRows()
+  }
+
+  const openUnitProgress = () => {
+    setUnitProgressOpen(true)
+    loadDetailRows()
+  }
+
+  useEffect(() => {
+    if (!unitProgressOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setUnitProgressOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [unitProgressOpen])
 
   return (
     <div className={cardShellClass('adaptive', isCurrent)}>
@@ -658,6 +678,14 @@ function AdaptivePlanCard({
             📖 学习
           </Link>
         )}
+        <button
+          type="button"
+          aria-expanded={unitProgressOpen}
+          onClick={openUnitProgress}
+          className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#93c5fd] no-underline transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
+        >
+          📊 单元进度
+        </button>
         <Link
           href={`/english/words/adaptive/${plan.id}/preview`}
           className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline"
@@ -689,6 +717,46 @@ function AdaptivePlanCard({
           }
           onClose={() => setCalendarOpen(false)}
         />
+      )}
+      {unitProgressOpen && (
+        <div
+          role="presentation"
+          onClick={() => setUnitProgressOpen(false)}
+          className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${plan.title}单元进度`}
+            onClick={(event) => event.stopPropagation()}
+            className="animate-pop-in max-h-[94dvh] w-full max-w-[760px] overflow-y-auto rounded-t-[26px] border border-[rgba(96,165,250,.4)] bg-[#111126] p-3 shadow-[0_24px_90px_rgba(0,0,0,.65)] sm:rounded-[26px] sm:p-5"
+          >
+            <div className="mb-3 flex items-center justify-between gap-3 px-1">
+              <div className="min-w-0 truncate text-[.78rem] font-bold text-[var(--wm-text-dim)]">
+                {plan.title}
+              </div>
+              <button
+                type="button"
+                autoFocus
+                aria-label="关闭单元进度"
+                onClick={() => setUnitProgressOpen(false)}
+                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[.06] text-lg text-white/55 transition hover:bg-white/[.12] hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+            {calendarSimulation && effectiveCalendarRows ? (
+              <AdaptivePlanUnitProgress
+                rows={effectiveCalendarRows.filter((row) => row.archivedAt == null)}
+                simulation={calendarSimulation}
+              />
+            ) : (
+              <div className="px-4 py-8 text-center text-sm text-[var(--wm-text-dim)]">
+                {calendarError ?? (calendarLoading ? '加载单元进度…' : '暂无单元进度')}
+              </div>
+            )}
+          </div>
+        </div>
       )}
       {calendarError && (
         <div className="px-4 pb-3 text-right text-[.68rem] font-bold text-rose-300">{calendarError}</div>
