@@ -1070,6 +1070,26 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                         </button>
                       ))}
 
+                    {activeSlice?.pageIndex === pageIndex && (
+                      <button
+                        type="button"
+                        aria-label="删除当前划片"
+                        title="删除当前划片"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removeSlice(activeSlice.id)
+                        }}
+                        className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-bl-md bg-red-600 text-[11px] font-bold text-white hover:bg-red-700"
+                        style={{
+                          right: `${(1 - activeSlice.rect.x - activeSlice.rect.w) * 100}%`,
+                          top: `${activeSlice.rect.y * 100}%`,
+                        }}
+                      >
+                        删
+                      </button>
+                    )}
+
                     {draftRect?.pageIndex === pageIndex && (
                       <div
                         className="pointer-events-none absolute border-2 border-dashed border-teal-500 bg-teal-300/20"
