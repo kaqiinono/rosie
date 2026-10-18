@@ -102,12 +102,10 @@ AS $$
     ) ORDER BY kind, id) FROM detail_sources), '[]'::jsonb)
   )
   FROM runtime;
-$$;
-
-REVOKE ALL ON FUNCTION public.get_calc_report_auxiliary() FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.get_calc_report_auxiliary() FROM anon;
-GRANT EXECUTE ON FUNCTION public.get_calc_report_auxiliary() TO authenticated;
-
+$$
+REVOKE ALL ON FUNCTION public.get_calc_report_auxiliary() FROM PUBLIC
+REVOKE ALL ON FUNCTION public.get_calc_report_auxiliary() FROM anon
+GRANT EXECUTE ON FUNCTION public.get_calc_report_auxiliary() TO authenticated
 CREATE OR REPLACE FUNCTION public.get_calc_formula_details(p_request jsonb)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -165,8 +163,7 @@ BEGIN
     'revision', COALESCE((SELECT state_revision FROM public.calc_user_runtime WHERE user_id = auth.uid()), 0)
   );
 END;
-$$;
-
-REVOKE ALL ON FUNCTION public.get_calc_formula_details(jsonb) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.get_calc_formula_details(jsonb) FROM anon;
-GRANT EXECUTE ON FUNCTION public.get_calc_formula_details(jsonb) TO authenticated;
+$$
+REVOKE ALL ON FUNCTION public.get_calc_formula_details(jsonb) FROM PUBLIC
+REVOKE ALL ON FUNCTION public.get_calc_formula_details(jsonb) FROM anon
+GRANT EXECUTE ON FUNCTION public.get_calc_formula_details(jsonb) TO authenticated

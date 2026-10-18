@@ -1,0 +1,2 @@
+ALTER TABLE public.reading_recordings
+  DROP CONSTRAINT reading_recordings_user_id_content_key_scope_key;

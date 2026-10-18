@@ -76,8 +76,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
   约 47 张表）。数据 hook 走 `@rosie/core` 的 `createUserSessionStore`（per-user 缓存 + 写后 patch）。
 - **`localStorage` 只存 UI 偏好 / 筛选与选择项 / 少量瞬时会话态**（侧栏折叠、英语与生字筛选、
   周计划上次选择、绘本播放偏好、拯救队列等，见 `@rosie/core` 的 `STORAGE_KEYS`），**从不存持久用户数据**。
-- **数据库 schema**：`supabase/schema.sql` 是全量快照（重建真相），变更走 `supabase/migrations/`
-  + `scripts/apply-migrations.mjs`。详见 [`supabase/README.md`](supabase/README.md)。
+- **数据库迁移**：`supabase/migrations/` 与 Supabase 官方迁移历史对应；旧的自建迁移保存在
+  `supabase/legacy-migrations/`。`supabase/schema.sql` 是历史快照。详见 [`supabase/README.md`](supabase/README.md)。
 
 ## 部署到 Vercel
 

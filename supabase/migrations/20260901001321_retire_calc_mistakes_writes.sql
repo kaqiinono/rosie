@@ -1,22 +1,18 @@
 -- Retire the legacy calc_mistakes write projection while preserving a private rollback copy.
 -- The application reads remediation state from calc_problem_state before this migration is deployed.
 
-CREATE SCHEMA IF NOT EXISTS archive;
-REVOKE ALL ON SCHEMA archive FROM PUBLIC;
-REVOKE ALL ON SCHEMA archive FROM anon;
-REVOKE ALL ON SCHEMA archive FROM authenticated;
-
+CREATE SCHEMA IF NOT EXISTS archive
+REVOKE ALL ON SCHEMA archive FROM PUBLIC
+REVOKE ALL ON SCHEMA archive FROM anon
+REVOKE ALL ON SCHEMA archive FROM authenticated
 CREATE TABLE IF NOT EXISTS archive.calc_mistakes_20260901
-(LIKE public.calc_mistakes INCLUDING ALL);
-
+(LIKE public.calc_mistakes INCLUDING ALL)
 INSERT INTO archive.calc_mistakes_20260901
 SELECT * FROM public.calc_mistakes
-ON CONFLICT DO NOTHING;
-
-REVOKE ALL ON TABLE archive.calc_mistakes_20260901 FROM PUBLIC;
-REVOKE ALL ON TABLE archive.calc_mistakes_20260901 FROM anon;
-REVOKE ALL ON TABLE archive.calc_mistakes_20260901 FROM authenticated;
-
+ON CONFLICT DO NOTHING
+REVOKE ALL ON TABLE archive.calc_mistakes_20260901 FROM PUBLIC
+REVOKE ALL ON TABLE archive.calc_mistakes_20260901 FROM anon
+REVOKE ALL ON TABLE archive.calc_mistakes_20260901 FROM authenticated
 -- Forward fix: multiple formula mutations for one block share the same settlement revision.\n-- Atomic calc settlement and bounded server reads.
 -- Requires 20260831004809_add_calc_unified_state_foundation.sql.
 
@@ -274,8 +270,7 @@ BEGIN
     'revision', next_revision, 'idempotentReplay', false
   );
 END;
-$$;
-
-REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM anon;
-GRANT EXECUTE ON FUNCTION public.settle_calc_session(jsonb) TO authenticated;
+$$
+REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM PUBLIC
+REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM anon
+GRANT EXECUTE ON FUNCTION public.settle_calc_session(jsonb) TO authenticated

@@ -13,23 +13,20 @@ ALTER TABLE public.calc_problem_state
   ADD COLUMN report_review_due boolean NOT NULL DEFAULT false,
   ADD COLUMN report_stable boolean NOT NULL DEFAULT false,
   ADD CONSTRAINT calc_problem_state_report_structure_facets_array
-    CHECK (jsonb_typeof(report_structure_facets) = 'array');
-
+    CHECK (jsonb_typeof(report_structure_facets) = 'array')
 CREATE INDEX calc_problem_state_user_report_concept_idx
   ON public.calc_problem_state (user_id, block_id, report_concept_key)
-  WHERE report_concept_key IS NOT NULL;
+  WHERE report_concept_key IS NOT NULL
 CREATE INDEX calc_problem_state_user_report_rule_idx
   ON public.calc_problem_state (user_id, report_rule_key)
-  WHERE report_rule_key IS NOT NULL;
-
+  WHERE report_rule_key IS NOT NULL
 -- Preserve the proven settlement implementation and wrap it so report projection
 -- writes share the exact same transaction and revision.
 ALTER FUNCTION public.settle_calc_session(jsonb)
-  RENAME TO settle_calc_session_without_report_projection;
-REVOKE ALL ON FUNCTION public.settle_calc_session_without_report_projection(jsonb) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.settle_calc_session_without_report_projection(jsonb) FROM anon;
-REVOKE ALL ON FUNCTION public.settle_calc_session_without_report_projection(jsonb) FROM authenticated;
-
+  RENAME TO settle_calc_session_without_report_projection
+REVOKE ALL ON FUNCTION public.settle_calc_session_without_report_projection(jsonb) FROM PUBLIC
+REVOKE ALL ON FUNCTION public.settle_calc_session_without_report_projection(jsonb) FROM anon
+REVOKE ALL ON FUNCTION public.settle_calc_session_without_report_projection(jsonb) FROM authenticated
 CREATE OR REPLACE FUNCTION public.settle_calc_session(p_payload jsonb)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -82,12 +79,10 @@ BEGIN
 
   RETURN result;
 END;
-$$;
-
-REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM anon;
-GRANT EXECUTE ON FUNCTION public.settle_calc_session(jsonb) TO authenticated;
-
+$$
+REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM PUBLIC
+REVOKE ALL ON FUNCTION public.settle_calc_session(jsonb) FROM anon
+GRANT EXECUTE ON FUNCTION public.settle_calc_session(jsonb) TO authenticated
 CREATE OR REPLACE FUNCTION public.get_calc_report_summary()
 RETURNS jsonb
 LANGUAGE sql
@@ -275,8 +270,7 @@ AS $$
     )
   )
   FROM runtime CROSS JOIN counts CROSS JOIN repeat_audit;
-$$;
-
-REVOKE ALL ON FUNCTION public.get_calc_report_summary() FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.get_calc_report_summary() FROM anon;
-GRANT EXECUTE ON FUNCTION public.get_calc_report_summary() TO authenticated;
+$$
+REVOKE ALL ON FUNCTION public.get_calc_report_summary() FROM PUBLIC
+REVOKE ALL ON FUNCTION public.get_calc_report_summary() FROM anon
+GRANT EXECUTE ON FUNCTION public.get_calc_report_summary() TO authenticated

@@ -1,10 +1,4 @@
 -- Reduce write amplification on the two bounded calc-session lookup indexes.
---
--- The previous indexes included needs_remediation and updated_at. Both values
--- change during normal settlement, so every problem-state update had to write
--- two large secondary indexes. The prepare RPC still gets a selective lookup
--- from the stable owner/source prefix and sorts the small per-user candidate
--- set in memory.
 DROP INDEX IF EXISTS public.calc_problem_state_user_block_priority_idx;
 CREATE INDEX calc_problem_state_user_block_priority_idx
   ON public.calc_problem_state (user_id, block_id)
@@ -15,18 +9,10 @@ CREATE INDEX calc_problem_state_user_mixed_priority_idx
   ON public.calc_problem_state (user_id, mixed_op_id)
   WHERE mixed_op_id IS NOT NULL;
 
--- Hybrid vector/text search performs several small rank/merge sorts. The
--- project default is 4 MB and the query was spilling on every observed call.
--- Keep the override scoped to this function rather than raising work_mem for
--- every database connection.
 ALTER FUNCTION public.search_knowledge(
   vector(1536), text, text, smallint, jsonb, integer, double precision, integer
 ) SET work_mem = '8MB';
 
--- pg_cron connects as postgres and has no request JWT. The previous JWT-only
--- check therefore rejected every scheduled run. Keep browser roles revoked,
--- allow the postgres scheduler explicitly, and retain the service-role path
--- used by the admin API.
 CREATE OR REPLACE FUNCTION public.compact_star_sessions(cooldown_days integer DEFAULT 7)
 RETURNS integer
 LANGUAGE plpgsql

@@ -24,9 +24,8 @@ BEGIN
       prototype_count;
   END IF;
 END;
-$$;
-
-DROP TABLE public.calc_curriculum_completed;
-DROP TABLE public.calc_curriculum_history_audit;
-DROP TABLE public.calc_curriculum_progress;
-DROP TABLE public.calc_mistakes;
+$$
+DROP TABLE public.calc_curriculum_completed
+DROP TABLE public.calc_curriculum_history_audit
+DROP TABLE public.calc_curriculum_progress
+DROP TABLE public.calc_mistakes

@@ -155,11 +155,11 @@ pnpm test -- apps/web/tests/ai/
 
 Migration：
 
-- `supabase/migrations/0004_rag_knowledge_base.sql`（需启用 `vector` + `pg_trgm`）
-- `supabase/migrations/0015_add_ai_teaching_sessions.sql`（教学会话状态 + own-user RLS）
-- `supabase/migrations/0016_enforce_unique_active_ai_teaching_session.sql`（活动会话唯一性）
-- `supabase/migrations/0017_reconcile_ai_index_and_scratch_rpc_grants.sql`（索引/函数授权漂移修复）
-- `supabase/migrations/0018_make_scratch_working_rpc_security_invoker.sql`（恢复 RLS 执行语义）
+- `supabase/legacy-migrations/0004_rag_knowledge_base.sql`（早期基线，需启用 `vector` + `pg_trgm`）
+- `supabase/migrations/20260811031052_add_ai_teaching_sessions.sql`（教学会话状态 + own-user RLS）
+- `supabase/migrations/20260811034621_enforce_unique_active_ai_teaching_session.sql`（活动会话唯一性）
+- `supabase/migrations/20260811035934_reconcile_ai_index_and_scratch_rpc_grants.sql`（索引/函数授权漂移修复）
+- `supabase/migrations/20260811040131_make_scratch_working_rpc_security_invoker.sql`（恢复 RLS 执行语义）
 
 ## 本地维护脚本优先
 

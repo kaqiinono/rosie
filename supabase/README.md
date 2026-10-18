@@ -1,99 +1,54 @@
-# Database schema & migrations
+# Supabase database migrations
 
-Single source of truth for the Rosie Supabase (Postgres) schema. Before this
-folder existed, schema SQL was scattered across `packages/*/sql/`, a gitignored
-`docs/sql/` mirror, and `scripts/`, with **no run order, no applied-log, and no
-way to rebuild a fresh database**. This folder fixes that.
+`supabase/migrations/` follows the hosted project's
+`supabase_migrations.schema_migrations` history. The files through
+`20261018032420_prevent_calc_revision_retry_storm.sql` were recovered from
+the SQL stored in that history. A newer file in this directory is pending until
+its version appears in the hosted history.
 
-## Layout
+`supabase/legacy-migrations/` preserves the repository's earlier migration
+files verbatim. Those files used a separate `public.schema_migrations` table,
+and some share a name with hosted migrations while having different SQL or
+version numbers. **Never move them back into `supabase/migrations/` or run
+them with `supabase db push`.** The old custom runner has been retired.
 
-```
-supabase/
-  schema.sql              # full-schema snapshot (pg_dump --schema-only) that
-                          # INCLUDES every migration. The "rebuild truth": one
-                          # file recreates an empty DB.
-  audits/                 # durable database-advisor ledgers, including every
-                          # intentionally deferred finding and its rationale
-  migrations/
-    0001_baseline.sql     # frozen baseline == schema.sql BEFORE 0002+
-    0002_*.sql            # every change AFTER the baseline, in filename order
-  README.md               # this file
-```
+`supabase/schema.sql` is a historical schema snapshot, not a current export.
+The hosted migration history starts after the original database baseline, so
+`supabase db reset` cannot yet recreate this project from the canonical
+migration files alone. A fresh database needs a separately verified baseline
+or a current schema dump. Do not use production as a reset target.
 
-`scripts/apply-migrations.mjs` is the forward-only runner. Applied versions are
-tracked in `public.schema_migrations`.
+## Forward migrations
 
-## Golden rules
-
-1. **Never edit an applied migration.** Add a new higher-numbered file.
-2. **New schema change → new `migrations/NNNN_name.sql`** (zero-padded, next
-   number). Prefer idempotent DDL (`... IF NOT EXISTS`, `ADD COLUMN IF NOT
-   EXISTS`). Follow `.cursor/rules/sql-no-destructive-data-ops.mdc`: no
-   `DROP`/`TRUNCATE`/`DELETE` unless the change is explicitly a cleanup.
-3. **Data seeds are not migrations.** Content loads (word `*-upsert.sql`,
-   `scripts/tmp/add_chinese_def.sql`, etc.) stay in their existing per-stage locations and
-   are run manually — they are not applied by the runner.
-4. **`DATABASE_URL` never gets committed.** It is a Postgres URI (session pooler
-   or direct), not the anon/service key. Pass it inline per command.
-5. **Do not lose deferred advisor findings.** After a production advisor run,
-   update the dated ledger under `supabase/audits/` with fixed, deferred, and
-   accepted items plus the post-migration counts.
-
-## Historical SQL (frozen, do not move)
-
-The old scripts under `packages/*/sql/` and the gitignored `docs/sql/` mirror are
-**already applied to prod and fully captured by `0001_baseline.sql`**. They are
-left in place ONLY because several admin UI hint strings reference their paths
-(e.g. `MathLessonIdAuditPage.tsx`, adaptive-plan error messages). Do not move or
-delete them without updating those strings. Do not use them to rebuild — use the
-baseline.
-
-## Common tasks
-
-Get the connection URI from the Supabase dashboard → top-bar **Connect** →
-Session pooler. `psql`/`pg_dump` come from `brew install libpq`
-(`/opt/homebrew/opt/libpq/bin`). URL-encode special chars in the password
-(`@` → `%40`).
+Create a new timestamped SQL file with `supabase migration new <name>`.
+The direct database endpoint resets connections from this environment. Use
+`scripts/supabase-migrations.mjs`, which routes the CLI through the linked
+IPv4 session pooler without putting the password in the connection URL.
+Enter the existing database password without showing it or saving it in
+shell history:
 
 ```bash
-export DATABASE_URL='postgresql://postgres.<ref>:<pw>@aws-...pooler.supabase.com:5432/postgres'
-
-# See what is applied vs pending
-node scripts/apply-migrations.mjs status
-
-# Apply pending migrations (each in its own transaction)
-node scripts/apply-migrations.mjs up
-
-# ONE-TIME on the existing prod DB: mark all current files applied without
-# running them, so `up` never re-runs the baseline.
-node scripts/apply-migrations.mjs baseline
+read -rs 'SUPABASE_DB_PASSWORD?Supabase database password: '; echo
+export SUPABASE_DB_PASSWORD
+node scripts/supabase-migrations.mjs list
+node scripts/supabase-migrations.mjs dry-run
+# When the dry run contains only the intended migration:
+node scripts/supabase-migrations.mjs push
+unset SUPABASE_DB_PASSWORD
 ```
 
-### Add a new migration
+The dry run should show only the intended pending migration. Never use
+`--include-all` to force historical files through.
 
-```bash
-# create the next file, e.g.
-printf -- '-- add foo column\nALTER TABLE public.calc_settings ADD COLUMN IF NOT EXISTS foo int;\n' \
-  > supabase/migrations/0002_calc_settings_foo.sql
-node scripts/apply-migrations.mjs up
-```
+The CLI's default direct connection returns `ECONNRESET` here even with the
+correct password. The passwordless `cli_login_postgres` flow has also failed.
+The session pooler connection succeeds. The password is not visible in the
+Dashboard after creation; resetting it can interrupt clients using the old
+password. Keep credentials out of Git and command output.
 
-### Refresh the snapshot after schema changes
+If a migration is applied through Supabase's migration API, use the version
+recorded by that API for the local filename, and keep its SQL in this
+directory. Do not also run it through the retired custom runner.
 
-Keep `schema.sql` current so a fresh rebuild stays one-shot. The snapshot must
-reflect the baseline PLUS every applied migration (prefer a real `pg_dump`
-after running `up`; if the DB is unreachable, hand-edit the snapshot in
-pg_dump format and note the source migration).
-
-```bash
-/opt/homebrew/opt/libpq/bin/pg_dump --schema-only --no-owner --no-privileges \
-  --schema=public "$DATABASE_URL" \
-  | grep -vE '^\\(un)?restrict ' > supabase/schema.sql
-```
-
-### Rebuild an empty database from scratch
-
-```bash
-psql "$EMPTY_DB_URL" -v ON_ERROR_STOP=1 -f supabase/schema.sql
-# then load the data seeds you need (per-stage upsert scripts)
-```
+The legacy files and snapshot are retained for audit and recovery. Existing
+references to old file paths should point to `legacy-migrations/`.

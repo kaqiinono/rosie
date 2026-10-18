@@ -60,6 +60,12 @@ directly (连播 within their own scope, no ❤️favorites) so they don't depen
 miss: every new `packages/<x>/src` with JSX needs an `@source` line in `globals.css`, or its
 Tailwind classes won't be generated (a styling break that the build does NOT catch).
 
+**Database migration history:** `supabase/migrations/` mirrors the hosted
+Supabase migration history. Earlier files are archived in
+`supabase/legacy-migrations/`; the former `public.schema_migrations` runner
+is retired. Use `scripts/supabase-migrations.mjs` for remote migration
+list/dry-run/push through the session pooler. See `supabase/README.md`.
+
 **Styling ownership:** `apps/web/src/app/globals.css` holds ONLY global/shared styles — the Tailwind
 import + `@source` scan list, theme tokens (`@theme`, design-token `:root`), shared `@keyframes`
 exposed as `animate-*` utilities, and cross-package animations. **Module-specific CSS (custom

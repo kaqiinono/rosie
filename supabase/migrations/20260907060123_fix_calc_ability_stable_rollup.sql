@@ -26,8 +26,7 @@ AS $$
       'modelId', model_id, 'cellKey', cell_key
     ) ORDER BY model_id, cell_key) FROM stable_cells), '[]'::jsonb)
   );
-$$;
-
-REVOKE ALL ON FUNCTION public.get_calc_structure_stability() FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.get_calc_structure_stability() FROM anon;
-GRANT EXECUTE ON FUNCTION public.get_calc_structure_stability() TO authenticated;
+$$
+REVOKE ALL ON FUNCTION public.get_calc_structure_stability() FROM PUBLIC
+REVOKE ALL ON FUNCTION public.get_calc_structure_stability() FROM anon
+GRANT EXECUTE ON FUNCTION public.get_calc_structure_stability() TO authenticated

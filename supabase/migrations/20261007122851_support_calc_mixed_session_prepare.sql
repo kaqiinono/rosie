@@ -1,7 +1,6 @@
 -- Keep session preparation bounded for strategies made entirely from mixed
 -- operations. Previously an empty blockIds array failed client validation and
 -- forced a full calc_problem_state download.
--- The filename version matches the migration version recorded by Supabase.
 CREATE INDEX IF NOT EXISTS calc_problem_state_user_mixed_priority_idx
   ON public.calc_problem_state (user_id, mixed_op_id, needs_remediation DESC, updated_at DESC);
 
