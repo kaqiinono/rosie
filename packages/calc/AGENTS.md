@@ -117,6 +117,12 @@ loads the full problem-state, session-detail, or remediation tables. Formula tim
 `pnpm calc:progress -- rebuild-report --all` (resumable via `--after <uuid>`). When a compatible
 bitmap exists, finite-block selection excludes covered indices without loading a separate
 completion table; regressible fluent/mastered bits are updated by the same settlement transaction.
+The in-progress session and finish fold use one `questionLog` as answer evidence; legacy pending
+snapshots with `attemptsLog` are normalized on resume. Unified mode writes mistake projection only
+at finish, and report facets are stored in the same problem-state upsert as mastery evidence.
+Block progress accepts an `applied_revision` older than the global expected revision when that block
+was untouched by intervening sessions. Business revision conflicts return HTTP 409 (`PT409`), never
+SQLSTATE `40001`, which can make PostgREST retry a request indefinitely.
 
 Large or effectively unbounded blocks use a separate, versioned **ability-structure coverage**
 denominator in `calc-structure-coverage.ts`; it never pretends to enumerate every formula.

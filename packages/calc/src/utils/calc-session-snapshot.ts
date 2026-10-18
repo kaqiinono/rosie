@@ -19,6 +19,7 @@ import {
   type PracticePendingEnvelope,
 } from '@rosie/core'
 import { todayStr } from '@rosie/core'
+import { diagnose } from './calc-diagnose'
 
 export const CALC_SESSION_SNAPSHOT_VERSION = 1
 export const CALC_PENDING_KIND = 'calc' as const
@@ -53,8 +54,9 @@ export type CalcSessionSnapshot = {
   coinsTotal: number
   streak: number
   maxStreak: number
-  attemptsLog: CalcAttemptStatSnapshot[]
-  questionTimesMs: number[]
+  /** Legacy v1 fields; new snapshots derive both from questionLog. */
+  attemptsLog?: CalcAttemptStatSnapshot[]
+  questionTimesMs?: number[]
   questionLog: QuestionLogEntry[]
   startedAtIso: string
   startedTsMs: number
@@ -76,6 +78,31 @@ function newIdempotencyKey(): string {
 
 export function ensureCalcSettlementIdentity(snap: CalcSessionSnapshot): CalcSessionSnapshot {
   return snap.idempotencyKey ? snap : { ...snap, idempotencyKey: newIdempotencyKey() }
+}
+
+/** Upgrade in-flight v1 snapshots without discarding a child's unfinished round. */
+export function settlementLogFromSnapshot(snap: CalcSessionSnapshot): QuestionLogEntry[] {
+  let settledIndex = 0
+  return snap.questionLog.flatMap((entry, questionIndex) => {
+    // A paused first miss restarts the current question; its unfinished log
+    // must not become a phantom attempt in the eventual settlement.
+    if (entry.finallyOk === undefined) return []
+    const legacy = snap.attemptsLog?.[settledIndex++]
+    const question = snap.questions[questionIndex]
+    return [
+      {
+        ...entry,
+        level: entry.level ?? legacy?.level ?? question?.level,
+        isChallenge: entry.isChallenge ?? legacy?.isChallenge ?? question?.isChallenge,
+        finalMs: entry.finalMs ?? legacy?.timeMs ?? entry.ms,
+        errorTag:
+          entry.errorTag ??
+          (entry.finallyOk === false && question
+            ? diagnose(question, entry.finalAnswer ?? '')
+            : undefined),
+      },
+    ]
+  })
 }
 
 function drillKeyFromParams(
@@ -108,13 +135,16 @@ function isValidCalcSnap(snap: unknown): snap is CalcSessionSnapshot {
   return (
     s.version === CALC_SESSION_SNAPSHOT_VERSION &&
     Array.isArray(s.questions) &&
+    Array.isArray(s.questionLog) &&
     s.questions.length > 0 &&
     typeof s.idx === 'number' &&
     s.idx >= 0 &&
     s.idx < s.questions.length &&
     // Zero-progress snapshots are not resumable; ignore any already written by
     // an older build so they can't keep hijacking the prep screen.
-    (s.idx > 0 || (Array.isArray(s.attemptsLog) && s.attemptsLog.length > 0))
+    (s.idx > 0 ||
+      s.questionLog.some((entry) => entry.finallyOk !== undefined) ||
+      (Array.isArray(s.attemptsLog) && s.attemptsLog.length > 0))
   )
 }
 

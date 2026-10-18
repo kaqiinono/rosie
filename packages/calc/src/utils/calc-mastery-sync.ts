@@ -4,7 +4,7 @@ import { MASTERY_STREAK_K } from './calc-effective-limit'
 import { applyAttempt, defaultProblemState } from './calc-apply-attempt'
 import { recordRemediationCorrect, recordRemediationWrong } from './calc-remediation'
 import { CALC_FEATURES } from './calc-features'
-import { calcMistakesStore } from './calc-mistakes-store'
+import { calcMistakesStore, mistakeFromProblemState } from './calc-mistakes-store'
 import {
   calcProblemStateStore,
   problemStateToRow,
@@ -234,24 +234,16 @@ export async function applyMasterySideEffects(
       }
     })
   } else if (mutation.kind === 'main_path_states') {
+    const mistakesBySignature = new Map(nextMistakes.map((mistake) => [mistake.signature, mistake]))
     for (const s of mutation.states) {
       nextStates[s.signature] = s
-      if (s.status === 'mastered') {
-        const m = nextMistakes.find((x) => x.signature === s.signature && !x.resolved)
-        if (m) {
-          nextMistakes = nextMistakes.map((x) =>
-            x.signature === s.signature
-              ? {
-                  ...x,
-                  consecutiveCorrect: Math.max(x.consecutiveCorrect, MASTERY_STREAK_K),
-                  resolved: true,
-                  sessionNo: mutation.sessionNo,
-                }
-              : x,
-          )
-        }
-      }
+      const mistake = mistakeFromProblemState(s)
+      if (mistake) mistakesBySignature.set(s.signature, mistake)
+      else mistakesBySignature.delete(s.signature)
     }
+    nextMistakes = [...mistakesBySignature.values()].sort((a, b) =>
+      b.lastWrongAt.localeCompare(a.lastWrongAt),
+    )
     remoteWrites.push(async () => {
       const rows = mutation.states.map((st) => problemStateToRow(st, userId))
       await supabase.from('calc_problem_state').upsert(rows, { onConflict: 'user_id,signature' })

@@ -1,5 +1,5 @@
 import { createUserSessionStore, supabase } from '@rosie/core'
-import type { CalcAnswer, CalcCategory, CalcMistake, ErrorTag } from '@rosie/core'
+import type { CalcAnswer, CalcCategory, CalcMistake, CalcProblemState, ErrorTag } from '@rosie/core'
 import { blockById } from './calc-blocks'
 import { evalAst, parseSignature, signatureToDisplay } from './calc-ast'
 
@@ -47,6 +47,23 @@ function rowToMistake(r: RemediationRow): CalcMistake {
     userAnswer: r.last_user_answer ?? undefined,
     errorTag: (r.last_error_tag as ErrorTag | null) ?? null,
   }
+}
+
+export function mistakeFromProblemState(state: CalcProblemState): CalcMistake | null {
+  if (!state.lastWrongAt) return null
+  return rowToMistake({
+    signature: state.signature,
+    level: state.level === 'C' ? 99 : state.level,
+    block_id: state.blockId ?? null,
+    mixed_op_id: state.mixedOpId ?? null,
+    needs_remediation: state.needsRemediation ?? false,
+    last_wrong_at: state.lastWrongAt,
+    last_wrong_session_no: state.lastWrongSessionNo ?? null,
+    last_error_tag: state.lastErrorTag ?? null,
+    last_user_answer: state.lastUserAnswer ?? null,
+    last_answer_json: state.lastAnswerJson ?? null,
+    remediation_correct_count: state.remediationCorrectCount ?? 0,
+  })
 }
 
 async function fetchCalcMistakes(userId: string): Promise<CalcMistake[]> {

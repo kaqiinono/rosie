@@ -660,6 +660,10 @@ export interface QuestionLogEntry {
    * `ok=false`, `finallyOk=true`. Weak list must use `!finallyOk`, not `!ok`.
    */
   finallyOk?: boolean
+  /** New sessions keep settlement evidence on the same per-question record. */
+  level?: CalcLevel
+  isChallenge?: boolean
+  finalMs?: number
   /** Canonical formula identity for coverage and repeat auditing. */
   signature?: string
   /** Why the scheduler selected this question. */

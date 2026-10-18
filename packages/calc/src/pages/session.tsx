@@ -13,8 +13,8 @@ import { useCalcWallet, loadCalcProgressionSessions } from '@rosie/rewards'
 import { useStarHud } from '@rosie/rewards'
 import { useCalcMistakes } from '../hooks/useCalcMistakes'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
-import { applyAttempt } from '../utils/calc-apply-attempt'
 import { applyMasterySideEffects, unresolvedMistakes } from '../utils/calc-mastery-sync'
+import { foldCalcSettlement } from '../utils/calc-settlement-fold'
 import { calcMistakesStore } from '../utils/calc-mistakes-store'
 import {
   calcProblemStateStore,
@@ -77,10 +77,10 @@ import type {
   CalcLevel,
   CalcMode,
   CalcSession,
-  CalcPresentationKey,
   CalcProblemState,
   CalcQuestion,
   CalcTimingMode,
+  ErrorTag,
   QuestionLogEntry,
 } from '@rosie/core'
 import {
@@ -90,31 +90,9 @@ import {
   resolveCalcSessionSnapshot,
   writeCalcSessionSnapshot,
   wrapCalcEnvelope,
-  type CalcAttemptStatSnapshot,
   type CalcSessionSnapshot,
+  settlementLogFromSnapshot,
 } from '../utils/calc-session-snapshot'
-
-interface AttemptStat {
-  signature: string
-  level: CalcLevel
-  isChallenge: boolean
-  firstTryCorrect: boolean
-  finallyCorrect: boolean
-  wasMistake: boolean
-  /** Time from question display to first submission, in ms. */
-  timeMs: number
-  /** Whether the first attempt was within the configured time limit. */
-  withinLimit: boolean
-  evidenceKind?: 'independent' | 'makeup' | 'recall'
-  /** Attribution: which single-op block this question came from. */
-  sourceBlockId?: string
-  /** Attribution: which mixed-op generator this question came from. */
-  sourceMixedOpId?: string
-  /** Question display with trailing "= ?" stripped, for wrong-answer review. */
-  display?: string
-  /** Presentation mode the question was answered in (drives the limit coefficient). */
-  presentationKey?: CalcPresentationKey
-}
 
 interface SessionLoadProgress {
   step: number
@@ -491,6 +469,8 @@ export default function CalcSessionPage() {
         curriculumVersion: curriculumIndex === null ? undefined : universe?.version,
         curriculumIndex: curriculumIndex ?? undefined,
         evidenceKind,
+        level: q.level,
+        isChallenge: q.isChallenge,
         presentationKey: presentationKeyOf(q),
         firstAnswer,
         answerJson: q.answer,
@@ -502,12 +482,23 @@ export default function CalcSessionPage() {
   )
 
   const patchQuestionLogFinallyOk = useCallback(
-    (q: CalcQuestion, finallyOk: boolean, finalAnswer: string) => {
-      const key = sourceKeyForLog(q)
+    (
+      q: CalcQuestion,
+      finallyOk: boolean,
+      finalAnswer: string,
+      finalMs: number,
+      errorTag: ErrorTag | null,
+    ) => {
       const log = questionLogRef.current
       for (let i = log.length - 1; i >= 0; i--) {
-        if (log[i].key === key && log[i].finallyOk === undefined) {
-          log[i] = { ...log[i], finallyOk, finalAnswer }
+        if (log[i].signature === q.signature && log[i].finallyOk === undefined) {
+          log[i] = {
+            ...log[i],
+            finallyOk,
+            finalAnswer,
+            finalMs,
+            errorTag,
+          }
           return
         }
       }
@@ -542,12 +533,10 @@ export default function CalcSessionPage() {
   const maxStreakRef = useRef(0)
   const [lastResult, setLastResult] = useState<{ stars: number; bonus: number } | null>(null)
 
-  const attemptsLogRef = useRef<AttemptStat[]>([])
-  // First-attempt solve time (ms) per question, in order — persisted for timing analysis.
-  const questionTimesRef = useRef<number[]>([])
-  // Tagged per-question first-attempt log (atomic per-题型 records).
+  // One record per question owns answer evidence, timing, and settlement input.
   const questionLogRef = useRef<QuestionLogEntry[]>([])
   const settlementIdRef = useRef<string>('')
+  const finishClockRef = useRef<{ elapsedSec: number; finishedAt: string } | null>(null)
   // React state is not a synchronous lock: two completion callbacks can run
   // before `done` re-renders. Keep settlement strictly single-flight.
   const finishingRef = useRef(false)
@@ -603,21 +592,9 @@ export default function CalcSessionPage() {
     if (done || !questions || questions.length === 0 || !startedAtIso) return null
     // Nothing answered yet is not a resumable session — snapshotting it would skip
     // the prep screen and replay this frozen question list for the rest of the day.
-    if (idx === 0 && attemptsLogRef.current.length === 0) return null
-    const snapAttempts: CalcAttemptStatSnapshot[] = attemptsLogRef.current.map((a) => ({
-      signature: a.signature,
-      level: a.level,
-      isChallenge: a.isChallenge,
-      firstTryCorrect: a.firstTryCorrect,
-      finallyCorrect: a.finallyCorrect,
-      wasMistake: a.wasMistake,
-      timeMs: a.timeMs,
-      withinLimit: a.withinLimit,
-      sourceBlockId: a.sourceBlockId,
-      sourceMixedOpId: a.sourceMixedOpId,
-      display: a.display,
-      presentationKey: a.presentationKey,
-    }))
+    if (idx === 0 && !questionLogRef.current.some((entry) => entry.finallyOk !== undefined)) {
+      return null
+    }
     return {
       version: 1,
       date: todayStr(),
@@ -631,8 +608,6 @@ export default function CalcSessionPage() {
       coinsTotal: coinsTotalRef.current,
       streak,
       maxStreak: maxStreakRef.current,
-      attemptsLog: snapAttempts,
-      questionTimesMs: questionTimesRef.current,
       questionLog: questionLogRef.current,
       startedAtIso,
       startedTsMs,
@@ -779,10 +754,9 @@ export default function CalcSessionPage() {
         setStreak(pendingSnap.streak)
         maxStreakRef.current = pendingSnap.maxStreak
         setMaxStreak(pendingSnap.maxStreak)
-        attemptsLogRef.current = pendingSnap.attemptsLog as AttemptStat[]
-        questionTimesRef.current = pendingSnap.questionTimesMs
-        questionLogRef.current = pendingSnap.questionLog
+        questionLogRef.current = settlementLogFromSnapshot(pendingSnap)
         settlementIdRef.current = pendingSnap.idempotencyKey ?? crypto.randomUUID()
+        finishClockRef.current = null
         setStartedAtIso(pendingSnap.startedAtIso)
         // Restart the clock and carry the earlier active time, so the hours between
         // stash and resume don't land in `time_spent_sec`.
@@ -928,12 +902,11 @@ export default function CalcSessionPage() {
       }
       setStartedAtIso(new Date().toISOString())
       settlementIdRef.current = crypto.randomUUID()
+      finishClockRef.current = null
       setStartedTsMs(Date.now())
       carriedElapsedMsRef.current = 0
       questionStartRef.current = performance.now()
-      questionTimesRef.current = []
       questionLogRef.current = []
-      attemptsLogRef.current = []
       setLoadProgress({
         step: 6,
         label: '准备完成',
@@ -1047,17 +1020,21 @@ export default function CalcSessionPage() {
     finishingRef.current = true
     setFinishError(null)
     setDone(true)
-    const finalElapsed = Math.floor(
-      (carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs)) / 1000,
-    )
-    const log = attemptsLogRef.current
-    const correctCount = log.filter((a) => a.firstTryCorrect).length
-    const retryCount = log.filter((a) => !a.firstTryCorrect && a.finallyCorrect).length
-    const wrongCount = log.filter((a) => !a.finallyCorrect).length
-    const challengeCorrect = log.filter((a) => a.isChallenge && a.finallyCorrect).length
+    finishClockRef.current ??= {
+      elapsedSec: Math.floor(
+        (carriedElapsedMsRef.current + Math.max(0, Date.now() - startedTsMs)) / 1000,
+      ),
+      finishedAt: new Date().toISOString(),
+    }
+    const finalElapsed = finishClockRef.current.elapsedSec
+    const log = questionLogRef.current
+    const correctCount = log.filter((a) => a.ok).length
+    const retryCount = log.filter((a) => !a.ok && a.finallyOk).length
+    const wrongCount = log.filter((a) => a.finallyOk === false).length
+    const challengeCorrect = log.filter((a) => a.isChallenge && a.finallyOk).length
 
     // ── Timing analysis: this session's avg per-question time vs the previous session ──
-    const qTimes = questionTimesRef.current
+    const qTimes = log.map((entry) => entry.ms)
     const avgMs =
       qTimes.length > 0 ? Math.round(qTimes.reduce((s, t) => s + t, 0) / qTimes.length) : null
     const prevSession = historySessionsRef.current[0]
@@ -1073,63 +1050,14 @@ export default function CalcSessionPage() {
       : null
 
     const topLevel = log.reduce<CalcLevel>((max, a) => {
-      const av = a.level === 'C' ? 99 : (a.level as number)
+      const av = a.level === 'C' ? 99 : (a.level ?? 1)
       const mv = max === 'C' ? 99 : (max as number)
-      return av > mv ? a.level : max
+      return av > mv ? (a.level ?? max) : max
     }, 1)
 
     // ── Record lightweight per-signature proficiency with source attribution ──
     const nextSessionNo = settings.sessionCounter + 1
     const today = todayStr()
-    const grouped = new Map<string, AttemptStat[]>()
-    for (const a of log) {
-      const arr = grouped.get(a.signature)
-      if (arr) arr.push(a)
-      else grouped.set(a.signature, [a])
-    }
-    const nextStates: CalcProblemState[] = []
-    for (const group of grouped.values()) {
-      const first = group[0]
-      let state =
-        loadedStatesRef.current.get(first.signature) ??
-        problemState.getState(first.signature, first.level)
-      for (const a of group) {
-        state = applyAttempt(
-          state,
-          {
-            correct: a.finallyCorrect,
-            timeMs: a.timeMs,
-            withinLimit: a.withinLimit,
-            evidenceKind: a.evidenceKind,
-          },
-          a.withinLimit,
-          nextSessionNo,
-          today,
-          a.presentationKey,
-        )
-      }
-      // Only (re)assign attribution when this question carried a source. Carried
-      // make-up usually restores source from problem_state in buildSession; if a
-      // question still has none, keep the signature's existing block/mixed ids.
-      if (first.sourceBlockId) state.blockId = first.sourceBlockId
-      if (first.sourceMixedOpId) state.mixedOpId = first.sourceMixedOpId
-      nextStates.push(state)
-    }
-    if (nextStates.length && user) {
-      await applyMasterySideEffects(user.id, {
-        kind: 'main_path_states',
-        states: nextStates,
-        sessionNo: nextSessionNo,
-      })
-      // Refresh loadedStatesRef so DrillSummary reads updated proficiency (not pre-drill snapshot).
-      for (const state of nextStates) {
-        loadedStatesRef.current.set(state.signature, state)
-      }
-      if (!CALC_FEATURES.unifiedSettlement) {
-        await syncCurriculumSnapshots(user.id, nextStates)
-      }
-    }
-
     // Per-source / weak / next-focus — same helpers as home history replay
     const bySource = buildBySourceFromLog(questionLogRef.current)
     const newWeak = buildNewWeakFromLog(questionLogRef.current)
@@ -1157,18 +1085,16 @@ export default function CalcSessionPage() {
 
     // End-of-session star multiplier (daily main path only — drills/mistakes
     // never confirmed a prep mode, so they stay at the ×1.0 default).
-    if (!drillParams && mode === 'daily') {
-      const raw = coinsTotalRef.current
-      const finalStars = applySessionStarMultiplier(
-        raw,
-        sessionTimingModeRef.current,
-        sessionBonusSecRef.current,
-      )
-      coinsTotalRef.current = finalStars
-      setCoinsTotal(finalStars)
-    }
+    const finalCoins =
+      !drillParams && mode === 'daily'
+        ? applySessionStarMultiplier(
+            coinsTotalRef.current,
+            sessionTimingModeRef.current,
+            sessionBonusSecRef.current,
+          )
+        : coinsTotalRef.current
 
-    const finishedAt = new Date().toISOString()
+    const finishedAt = finishClockRef.current.finishedAt
     const sessionRecord = {
       date: todayStr(),
       startedAt: startedAtIso,
@@ -1179,16 +1105,23 @@ export default function CalcSessionPage() {
       wrongCount,
       challengeCorrect,
       timeSpentSec: finalElapsed,
-      coinsEarned: coinsTotalRef.current,
+      coinsEarned: finalCoins,
       mode,
       maxStreak: maxStreakRef.current,
       topLevel,
       questionTimesMs: qTimes,
-      questionLog: questionLogRef.current,
+      questionLog: log,
     }
     // Unified mode makes session, state, progress and reward one transaction.
     // Legacy mode remains intact as the emergency rollback path.
     try {
+      const nextStates = foldCalcSettlement(
+        log,
+        loadedStatesRef.current,
+        nextSessionNo,
+        today,
+        !drillParams,
+      )
       if (CALC_FEATURES.unifiedSettlement && user) {
         const expectedRevision = await getCalcRuntimeRevision()
         await settleCalcSession(user.id, {
@@ -1198,15 +1131,37 @@ export default function CalcSessionPage() {
           session: sessionRecord,
           problemStates: nextStates,
         })
-        await wallet.refresh()
       } else {
+        if (nextStates.length && user) {
+          await applyMasterySideEffects(user.id, {
+            kind: 'main_path_states',
+            states: nextStates,
+            sessionNo: nextSessionNo,
+          })
+          await syncCurriculumSnapshots(user.id, nextStates)
+        }
         await wallet.recordSession(sessionRecord)
       }
+      if (CALC_FEATURES.unifiedSettlement && user && nextStates.length) {
+        await applyMasterySideEffects(user.id, {
+          kind: 'main_path_states',
+          states: nextStates,
+          sessionNo: nextSessionNo,
+        })
+      }
+      for (const state of nextStates) loadedStatesRef.current.set(state.signature, state)
     } catch (error: unknown) {
       console.error('[calc settlement] failed', error)
       finishingRef.current = false
       setFinishError('本次记录尚未保存，请检查网络后重试。不会重复发放星星。')
       return
+    }
+    coinsTotalRef.current = finalCoins
+    setCoinsTotal(finalCoins)
+    if (CALC_FEATURES.unifiedSettlement) {
+      void wallet.refresh().catch((error: unknown) => {
+        console.warn('[calc wallet] refresh failed', error)
+      })
     }
     // Only now — clearing before the row is persisted would leave a failed insert
     // with neither a session row nor a resumable snapshot.
@@ -1240,7 +1195,6 @@ export default function CalcSessionPage() {
     update,
     startedTsMs,
     startedAtIso,
-    problemState,
     user,
     mode,
     drillKey,
@@ -1259,7 +1213,8 @@ export default function CalcSessionPage() {
       wasMistake: boolean,
       userAnswer: string,
     ) => {
-      patchQuestionLogFinallyOk(q, isCorrect, userAnswer)
+      const errorTag = isCorrect ? null : diagnose(q, userAnswer)
+      patchQuestionLogFinallyOk(q, isCorrect, userAnswer, elapsedMs, errorTag)
 
       const goNext = () => {
         settleLockRef.current = false
@@ -1303,26 +1258,9 @@ export default function CalcSessionPage() {
           maxStreakRef.current = nextStreak
           setMaxStreak(nextStreak)
         }
-        attemptsLogRef.current.push({
-          signature: q.signature,
-          level: q.level,
-          isChallenge: q.isChallenge,
-          firstTryCorrect: isFirstTry,
-          finallyCorrect: true,
-          wasMistake,
-          timeMs: elapsedMs,
-          withinLimit: isFirstTry ? withinLimit : false,
-          evidenceKind:
-            q.selectionReason === 'same-session-makeup' || q.selectionReason === 'carried-mistake'
-              ? 'makeup'
-              : q.selectionReason === 'mastered-recall'
-                ? 'recall'
-                : 'independent',
-          sourceBlockId: q.sourceBlockId,
-          sourceMixedOpId: q.sourceMixedOpId,
-          presentationKey: presentationKeyOf(q),
-        })
-        if (wasMistake) void recordCorrect(q.signature, settings.sessionCounter + 1)
+        if (wasMistake && !CALC_FEATURES.unifiedSettlement) {
+          void recordCorrect(q.signature, settings.sessionCounter + 1)
+        }
         goNext()
         return
       }
@@ -1334,32 +1272,11 @@ export default function CalcSessionPage() {
         playSfx('wrong', settings.soundEnabled)
       }
       setStreak(0)
-      const errorTag = diagnose(q, userAnswer)
-      // Gate DB mistake write behind !drillParams — drill wrong answers must not pollute the
-      // carry-over queue that normal sessions pick up on the next launch.
-      if (!drillParams) {
+      // Legacy settlement still writes mistakes per question. Unified mode folds
+      // this evidence with the final log so a failed session has no partial writes.
+      if (!drillParams && !CALC_FEATURES.unifiedSettlement) {
         void addMistake(q, settings.sessionCounter + 1, userAnswer, errorTag)
       }
-      attemptsLogRef.current.push({
-        signature: q.signature,
-        level: q.level,
-        isChallenge: q.isChallenge,
-        firstTryCorrect: false,
-        finallyCorrect: false,
-        wasMistake,
-        timeMs: elapsedMs,
-        withinLimit: false,
-        evidenceKind:
-          q.selectionReason === 'same-session-makeup' || q.selectionReason === 'carried-mistake'
-            ? 'makeup'
-            : q.selectionReason === 'mastered-recall'
-              ? 'recall'
-              : 'independent',
-        sourceBlockId: q.sourceBlockId,
-        sourceMixedOpId: q.sourceMixedOpId,
-        display: q.display.replace(/\s*=\s*\?\s*$/, ''),
-        presentationKey: presentationKeyOf(q),
-      })
       const inMakeup = isInMakeupPhase(idx, plannedCountRef.current)
       if (!q.isChallenge && mode !== 'mistakes') {
         if (drillParams) {
@@ -1415,7 +1332,6 @@ export default function CalcSessionPage() {
     const elapsedMs = Math.round(performance.now() - questionStartRef.current)
     const withinLimit = withinLimitForQuestion(q, elapsedMs)
     if (attemptsForCurrent === 0) {
-      questionTimesRef.current.push(elapsedMs)
       pushQuestionLog(q, elapsedMs, false)
     }
     const wasMistake = unresolved.some((m) => m.signature === q.signature)
@@ -1441,7 +1357,6 @@ export default function CalcSessionPage() {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
       const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
-        questionTimesRef.current.push(elapsedMs)
         pushQuestionLog(q, elapsedMs, isCorrect, userAnswer)
       }
       const wasMistake = unresolved.some((m) => m.signature === q.signature)
@@ -1531,7 +1446,6 @@ export default function CalcSessionPage() {
       const elapsedMs = Math.round(performance.now() - questionStartRef.current)
       const withinLimit = withinLimitForQuestion(q, elapsedMs)
       if (attemptsForCurrent === 0) {
-        questionTimesRef.current.push(elapsedMs)
         pushQuestionLog(q, elapsedMs, isCorrect, raw)
       }
 
@@ -1859,6 +1773,7 @@ export default function CalcSessionPage() {
                     setQuestions(null)
                     setIdx(0)
                     finishingRef.current = false
+                    finishClockRef.current = null
                     setDone(false)
                     const next = new URLSearchParams({
                       drill: 'weak-formulas',
@@ -1888,6 +1803,7 @@ export default function CalcSessionPage() {
                       setQuestions(null)
                       setIdx(0)
                       finishingRef.current = false
+                      finishClockRef.current = null
                       setDone(false)
                       setSessionKey((k) => k + 1)
                       router.replace(
@@ -1924,6 +1840,7 @@ export default function CalcSessionPage() {
               setQuestions(null)
               setIdx(0)
               finishingRef.current = false
+              finishClockRef.current = null
               wrongQueueRef.current = []
               maxRetryRef.current = 0
               plannedCountRef.current = 0
@@ -1933,7 +1850,6 @@ export default function CalcSessionPage() {
               setFeedback(null)
               setRevealAnswer(null)
               setShowChallengeBanner(false)
-              questionTimesRef.current = []
               questionLogRef.current = []
               coinsTotalRef.current = 0
               setCoinsTotal(0)
@@ -1941,7 +1857,6 @@ export default function CalcSessionPage() {
               maxStreakRef.current = 0
               setMaxStreak(0)
               setLastResult(null)
-              attemptsLogRef.current = []
               setStartedTsMs(0)
               setStartedAtIso('')
               setDone(false)

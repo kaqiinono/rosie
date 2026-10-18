@@ -9,6 +9,7 @@ import {
 import type { CalcQuestion, WeeklyPlanSessionStash } from '../../../packages/core/src/index'
 import {
   readCalcSessionSnapshot,
+  settlementLogFromSnapshot,
   writeCalcSessionSnapshot,
   type CalcSessionSnapshot,
 } from '../../../packages/calc/src/utils/calc-session-snapshot'
@@ -142,8 +143,38 @@ describe('calc snapshot — requires real progress', () => {
             display: '1+2',
           },
         ],
+        questionLog: [
+          {
+            key: 'block:add:10',
+            signature: 'add(1,2)',
+            ms: 900,
+            ok: false,
+            finallyOk: false,
+            evidenceKind: 'independent',
+            presentationKey: 'standard',
+            finalAnswer: '4',
+            answerJson: { kind: 'int', value: 3 },
+          },
+        ],
       }),
     )
-    expect(readCalcSessionSnapshot('daily', null)).not.toBeNull()
+    const snapshot = readCalcSessionSnapshot('daily', null)
+    expect(snapshot).not.toBeNull()
+    expect(settlementLogFromSnapshot(snapshot!)[0]).toMatchObject({
+      level: 1,
+      finalMs: 900,
+      finallyOk: false,
+    })
+  })
+
+  it('drops an unfinished first attempt when resuming the current question', () => {
+    const snapshot = calcSnap({
+      idx: 1,
+      questionLog: [
+        { key: 'block:add:10', signature: 'add(1,2)', ms: 800, ok: true, finallyOk: true },
+        { key: 'block:add:10', signature: 'add(2,3)', ms: 500, ok: false },
+      ],
+    })
+    expect(settlementLogFromSnapshot(snapshot)).toHaveLength(1)
   })
 })
