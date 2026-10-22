@@ -10,6 +10,16 @@ import type { ModuleCardData } from '@rosie/core'
 
 const baseModules: ModuleCardData[] = [
   {
+    href: '/tasks',
+    title: '任务管理',
+    description: '确认课程、规划作业时间，让每一项任务都有安排。',
+    tag: 'TASKS',
+    variant: 'today',
+    stats: ['每周课表', '作业安排', '到期提醒'],
+    enterText: '打开我的任务',
+    icon: '🗓️',
+  },
+  {
     href: '/calc',
     title: '口算天地',
     description: '加减乘除闯关，答对得金币，金币兑换心愿奖券。',

@@ -15,6 +15,11 @@ export interface BreadcrumbRoute {
 }
 
 export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
+  { pattern: ['tasks'], label: '任务管理' },
+  { pattern: ['tasks', 'schedule'], label: '时间安排' },
+  { pattern: ['tasks', 'timetable'], label: '周课表' },
+  { pattern: ['tasks', 'templates'], label: '任务模板' },
+  { pattern: ['tasks', 'materials'], label: '学习资料' },
   { pattern: ['chinese'], label: '语文' },
   {
     pattern: ['chinese', '[bookSlug]'],

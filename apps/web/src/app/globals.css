@@ -17,6 +17,7 @@
 @source "../../../../packages/audio/src";
 @source "../../../../packages/chinese/src";
 @source "../../../../packages/ai/src";
+@source "../../../../packages/tasks/src";
 
 /* This app is a fixed light theme (the genuinely-dark modules use their own
    scoped CSS). Rebind `dark:` to be class-based so accidental dark variants

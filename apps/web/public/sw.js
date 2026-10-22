@@ -55,6 +55,7 @@ registerRoute(
 // the stale cache.
 registerRoute(
   ({ url, request }) =>
+    !url.pathname.includes('/storage/v1/object/sign/task-audio/') &&
     !url.pathname.includes('/storage/v1/object/sign/chinese-reading-recordings/') &&
     (request.destination === 'audio' ||
       /\.(mp3|m4a|wav|aac|ogg|webm)(\?|$)/i.test(url.pathname + url.search)),
@@ -83,6 +84,7 @@ registerRoute(
 
 
 self.addEventListener('install', () => self.skipWaiting())
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     Promise.all([

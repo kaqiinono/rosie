@@ -29,6 +29,7 @@
     "@rosie/math-content": "workspace:*",
     "@rosie/player": "workspace:*",
     "@rosie/rewards": "workspace:*",
+    "@rosie/tasks": "workspace:*",
     "@rosie/ui": "workspace:*",
     "@supabase/supabase-js": "^2.99.2",
     "clsx": "^2.1.1",

@@ -4,6 +4,7 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./src/*"],
+      "@rosie/tasks": ["../../packages/tasks/src/index.ts"],
       "@rosie/english/*": ["../../packages/english/src/*"],
       "@rosie/math/*": ["../../packages/math/src/*"],
       "@rosie/math-kit/*": ["../../packages/math-kit/src/*"],

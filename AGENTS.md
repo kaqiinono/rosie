@@ -35,6 +35,7 @@ packages/
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
   chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一下 / 二上 / 二下）
   ai/        @rosie/ai — RAG 知识库 + Rosie Agent（/ai、ingest、STT）
+  tasks/     @rosie/tasks — 独立任务管理、周课表、课程确认、时间安排与提醒（不接入 /today）
 ```
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
@@ -215,6 +216,9 @@ module, **read that package's AGENTS.md** (scoped, up to date) instead of relyin
 
 Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils), `@rosie/ui`,
 `@rosie/rewards` (stars/wallet/vouchers), `@rosie/player` (playback engine + `PlayerDock`).
+`@rosie/tasks` only depends on core/player; `/tasks/**` uses application-owned catalog adapters
+to read subject catalogs. It never synchronizes existing subject progress or `/today`.
+See `packages/tasks/AGENTS.md` and `packages/tasks/README.md` for its migration and station-only task generation.
 Adding a new math lesson is a guided flow — see `.Codex/skills/add-lesson` + `docs/add-new-lesson.md`.
 
 ### Data Flow
