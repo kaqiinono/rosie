@@ -14,7 +14,7 @@ type OAuthResult = 'success' | 'invalid_state' | 'cancelled' | 'forbidden'
 
 export async function GET(req: NextRequest) {
   function finish(result: OAuthResult) {
-    const destination = new URL('/setting', req.url)
+    const destination = new URL('/admin/sync', req.url)
     destination.searchParams.set('baidu_oauth', result)
     destination.hash = 'baidu-oauth'
     const response = NextResponse.redirect(destination, 303)

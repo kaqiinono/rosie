@@ -2,9 +2,11 @@
 
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { supabase, type Problem } from '@rosie/core'
+import { supabase, useAuth, type Problem } from '@rosie/core'
+import { useProblemVideoCatalog } from '../../hooks/useProblemVideoCatalog'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
 import { problemVideoKey } from '../../utils/problem-video'
+import { lessonKeyFromProblemId } from '../../utils/lesson-registry'
 import ProblemActionIcon from './ProblemActionIcon'
 
 type Props = { problem: Pick<Problem, 'id' | 'displayId' | 'title'> }
@@ -90,9 +92,11 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
 }
 
 export default function ProblemVideoReplay({ problem }: Props) {
+  const { user } = useAuth()
+  const { hasVideo } = useProblemVideoCatalog(user, lessonKeyFromProblemId(problem.id))
   const [open, setOpen] = useState(false)
   const videoKey = problemVideoKey(problem)
-  if (!videoKey) return null
+  if (!videoKey || !hasVideo(videoKey)) return null
 
   return (
     <>

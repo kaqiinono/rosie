@@ -24,6 +24,9 @@ owning package’s hook file, then `store.useSessionData(user)`. Mutations: writ
 payload is unknown. After localStorage hydrate, use `refreshInBackground` to reconcile with the
 network without clearing `ready` or flipping `isLoading`. Do **not** add Zustand/TanStack Query for
 this unless explicitly requested.
+When choosing among stable scoped stores (for example, by lesson), `useSessionData` subscriptions,
+snapshot callbacks and initial-load effects follow both the user ID and the selected store's
+functions. Reuse each store instance; do not create a new store on every render.
 Agent rule: `.cursor/rules/session-store-data-fetch.mdc`. Design:
 `docs/superpowers/specs/2026-07-30-session-store-evolution-design.md`.
 

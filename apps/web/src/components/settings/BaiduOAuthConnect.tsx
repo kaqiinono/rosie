@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { isAdminUser, supabase, useAuth } from '@rosie/core'
+import BaiduMathVideoManager from './BaiduMathVideoManager'
 
 const ERROR_MESSAGES: Record<string, string> = {
   unauthorized: '当前登录凭证未通过验证，请退出后重新登录。',
@@ -91,7 +92,7 @@ export default function BaiduOAuthConnect() {
         <div>
           <h3 id="baidu-oauth-title" className="text-[16px] font-extrabold text-slate-800">百度网盘授权</h3>
           <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
-            连接存放课文音频的百度网盘账号。点击后前往百度登录并确认授权。
+            连接存放课文音频与数学视频的百度网盘账号。点击后前往百度登录并确认授权。
           </p>
         </div>
         <button type="button" onClick={() => void authorize()} disabled={pending} aria-busy={pending}
@@ -103,6 +104,7 @@ export default function BaiduOAuthConnect() {
         className={`mt-3 min-h-5 text-[13px] leading-relaxed ${success ? 'text-emerald-700' : 'text-red-700'}`}>
         {message}
       </p>
+      <BaiduMathVideoManager key={user?.id} />
     </section>
   )
 }

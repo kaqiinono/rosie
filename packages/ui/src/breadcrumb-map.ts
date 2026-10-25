@@ -90,6 +90,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['setting', 'calc', 'new'], label: '新增策略' },
   { pattern: ['setting', 'calc', '[strategyId]'], label: '编辑策略' },
   { pattern: ['admin'], label: '管理' },
+  { pattern: ['admin', 'sync'], label: '同步管理' },
   { pattern: ['admin', 'audio'], label: '音频管理' },
   { pattern: ['admin', 'word-audit'], label: '词库审计' },
 ]

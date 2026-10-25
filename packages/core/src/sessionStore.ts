@@ -252,12 +252,12 @@ export function createUserSessionStore<T>(
 
     const subscribeForUser = useCallback(
       (onChange: () => void) => subscribe(userId, onChange),
-      [userId],
+      [userId, subscribe],
     )
 
     const getSnapshotForUser = useCallback(
       () => getSnapshot(userId),
-      [userId],
+      [userId, getSnapshot],
     )
 
     const snapshot = useSyncExternalStore(
@@ -270,7 +270,7 @@ export function createUserSessionStore<T>(
       // The rejection is already recorded as `status: 'error'` on the slot;
       // swallow it here so a failed fetch isn't also an unhandled rejection.
       if (userId) void ensureLoaded(userId).catch(() => undefined)
-    }, [userId])
+    }, [userId, ensureLoaded])
 
     const isLoading =
       userId !== null &&

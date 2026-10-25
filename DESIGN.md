@@ -78,3 +78,26 @@ Retain the existing
 Chinese font and `app-blue-light`, `app-blue-dark`, `surface`, and text tokens from globals.css.
 The video opens in a native modal dialog with focus containment, Escape/close dismissal,
 loading and retry states; closing unmounts playback and restores focus to its trigger.
+
+Replay visibility is based on the last manually synchronized video catalog. Only confirmed
+matches show the blue replay button; missing, loading, unsynced and failed lookups show no
+button, text or placeholder. The other footer actions retain their positions.
+
+The settings/admin hubs show a “同步管理” navigation card. `/admin/sync` contains Baidu
+authorization, grade/lesson selectors, manual math-video synchronization and an inline,
+collapsible matching report. OAuth callbacks return here. Existing lesson snapshots are reused;
+“重新同步本讲” explicitly searches again. Reuse Chinese typography and surface/text/blue tokens;
+no new visual system. The report uses the shared `SelectControl`, 44px controls, readable
+wrapping file paths, explicit empty/error states and 20-row pagination. Filters/search are
+temporary local inspection state within this disclosure, not URL navigation state. The report
+shows its snapshot time in Asia/Shanghai; filtering never calls Baidu. Copy feedback uses a
+local live region alongside visible copyable paths. Report requests compare only the selected
+lesson and its saved snapshot; files without that lesson's filename prefix cannot be discovered
+in this report. Verification remains manual, per project policy.
+
+Matching reports open on unmatched files first, showing actual paths, parsed question numbers
+and reasons. Headline counts are per file, not per question; one video used by multiple questions
+counts once. A file can open the full-lesson ID/displayId/expected-name comparison with its path
+kept visible. Source checkboxes beside grade/lesson default to classroom questions and only filter
+the secondary question view and its counts. File matching always uses every source in the lesson.
+Source changes reuse the loaded report and never trigger synchronization.

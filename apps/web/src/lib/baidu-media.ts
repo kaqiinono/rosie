@@ -6,7 +6,7 @@ interface DirectoryCache { files: NetdiskFile[]; expires: number }
 const directories = new Map<string, DirectoryCache>()
 const pendingDirectories = new Map<string, Promise<NetdiskFile[]>>()
 
-async function baiduJson(path: string, parameters: Record<string, string>): Promise<Record<string, unknown>> {
+async function baiduJson(path: string, parameters: Record<string, string>, allowMissing = true): Promise<Record<string, unknown>> {
   const url = new URL(path, 'https://pan.baidu.com')
   url.search = new URLSearchParams({ ...parameters, access_token: await getBaiduAccessToken() }).toString()
   const response = await fetch(url, {
@@ -16,7 +16,7 @@ async function baiduJson(path: string, parameters: Record<string, string>): Prom
   const body: unknown = await response.json()
   if (!response.ok || !body || typeof body !== 'object') throw new Error('baidu_unavailable')
   const result = body as Record<string, unknown>
-  if (result.errno === -9) return { errno: 0, list: [] }
+  if (result.errno === -9 && allowMissing) return { errno: 0, list: [] }
   if (result.errno !== 0) throw new Error('baidu_api_error')
   return result
 }
@@ -51,6 +51,33 @@ export async function listBaiduDirectory(directory: string): Promise<NetdiskFile
   })().finally(() => { pendingDirectories.delete(cacheKey) })
   pendingDirectories.set(cacheKey, promise)
   return promise
+}
+
+/** Keyword search is scoped remotely, then exact prefix/path checks remove fuzzy matches.
+ * Never turn a truncated search into a complete catalog or fall back to a full listing. */
+export async function searchBaiduFilesByPrefix(directory: string, prefix: string): Promise<NetdiskFile[]> {
+  const result = await baiduJson('/rest/2.0/xpan/file', {
+    method: 'search', dir: directory, key: prefix, recursion: '0', num: '500', web: '0',
+  }, false)
+  if (!Array.isArray(result.list)) throw new Error('baidu_invalid_response')
+  if ((result.has_more !== 0 && result.has_more !== false) || result.list.length >= 500) {
+    throw new Error('baidu_search_incomplete')
+  }
+  const files: NetdiskFile[] = []
+  const seenPaths = new Set<string>()
+  for (const item of result.list) {
+    if (!item || typeof item !== 'object') throw new Error('baidu_invalid_response')
+    const file = item as Record<string, unknown>
+    if (file.isdir === 1) continue
+    if (file.isdir !== 0 || typeof file.path !== 'string' || typeof file.fs_id !== 'number' ||
+      !Number.isSafeInteger(file.fs_id) || file.fs_id <= 0) throw new Error('baidu_invalid_response')
+    if (file.path.slice(0, file.path.lastIndexOf('/')) !== directory ||
+      !file.path.slice(directory.length + 1).startsWith(prefix)) continue
+    if (seenPaths.has(file.path)) throw new Error('baidu_search_incomplete')
+    seenPaths.add(file.path)
+    files.push({ path: file.path, fs_id: file.fs_id, isdir: 0 })
+  }
+  return files
 }
 
 function safeDownloadUrl(value: string): URL {

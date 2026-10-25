@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { isAdminUser, useAuth } from '@rosie/core'
 import { PageBreadcrumb } from '@rosie/ui'
-import BaiduOAuthConnect from './BaiduOAuthConnect'
 
 interface SettingTool {
   href: string
@@ -48,6 +47,7 @@ export const ADMIN_TOOLS: SettingTool[] = [
   { href: '/admin/math', emoji: '📐', title: '数学题管理', description: '管理题解图、题面图与富文本笔记。', from: 'rgba(13,148,136,0.14)', to: 'rgba(59,130,246,0.08)', ring: 'rgba(13,148,136,0.28)' },
   { href: '/admin/math-lesson-id-audit', emoji: '🔀', title: '讲次 ID 迁移审计', description: '扫描 legacy → lessonKey 迁移影响的数据、冲突与引用。', from: 'rgba(99,102,241,0.14)', to: 'rgba(14,165,233,0.10)', ring: 'rgba(99,102,241,0.28)' },
   { href: '/admin/word-audit', emoji: '🔍', title: '单词审计', description: '检查数据库词条的缺漏与空字段并导出报告。', from: 'rgba(20,184,166,0.14)', to: 'rgba(59,130,246,0.08)', ring: 'rgba(20,184,166,0.28)' },
+  { href: '/admin/sync', emoji: '🔄', title: '同步管理', description: '授权百度网盘、按年级讲次同步数学回放并查看匹配报告。', from: 'rgba(59,130,246,0.14)', to: 'rgba(14,165,233,0.08)', ring: 'rgba(59,130,246,0.28)' },
 ]
 
 function ToolGrid({ tools }: { tools: SettingTool[] }) {
@@ -63,7 +63,7 @@ function ToolGrid({ tools }: { tools: SettingTool[] }) {
 }
 
 export function AdminSettingsCards() {
-  return <><ToolGrid tools={ADMIN_TOOLS} /><BaiduOAuthConnect /></>
+  return <ToolGrid tools={ADMIN_TOOLS} />
 }
 
 export default function SettingsHub() {

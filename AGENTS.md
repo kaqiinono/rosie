@@ -104,7 +104,8 @@ change, run `pnpm lint`/`pnpm typecheck` to catch type errors. Before merging UI
 
 ### Baidu Netdisk OAuth
 
-Administrator authorization is initiated from the global settings panel (`/setting` or `/admin`)
+Administrator authorization is initiated from `/admin/sync`, linked by the “同步管理” card in
+the global settings panel (`/setting` or `/admin`),
 using authenticated `POST /api/baidu/oauth/start`; `GET /api/baidu/oauth/callback` consumes a
 single-use, ten-minute state and saves the primary account's credentials server-side. Configure
 `BAIDU_APP_KEY`, `BAIDU_SECRET_KEY`, `BAIDU_REDIRECT_URI` and the existing
@@ -115,6 +116,16 @@ an HttpOnly cookie; each audio stream validates its Supabase session and support
 with public Storage fallback. Token refresh uses a database lease and compare-and-set persistence;
 ambiguous refresh failures require administrator reauthorization. Proxy audio is excluded from SW
 caching. See `docs/baidu-oauth.md` for migrations, setup and manual verification.
+
+Math replay visibility uses service-role-only `math_video_lesson_catalog` snapshots keyed by
+lessonKey. Explicit admin `POST /api/baidu/video/catalog/sync` takes `{ lessonKey, force? }`:
+reuse a saved lesson unless force is true; otherwise search `/airosie/math/ny/` for its filename
+prefix. Incomplete searches fail without replacing data or falling back to full-directory scans.
+Catalog and admin report GET require `?lessonKey=...`; the former returns lessonKey/keys/time,
+the latter compares saved paths against only the selected lesson's current question bank.
+`useProblemVideoCatalog` uses stable per-lesson user session stores and shared Sets; only
+confirmed matches render replay buttons. Uploads, deletions, or changing the authorized Baidu
+account require manually resyncing affected lessons. See `docs/baidu-oauth.md` for both migrations.
 
 Required for Supabase auth and cloud sync:
 
@@ -200,6 +211,9 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 `/admin/plans/**` URLs redirect to their `/setting/**` equivalents.
 
 Global admin sub-pages include:
+
+- `/admin/sync` — Baidu authorization, per-lesson math replay synchronization and matching reports.
+  The settings/admin hubs contain only the entry card; OAuth callbacks return to this detail page.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/users` — account management plus per-user parent PIN reset. Parent PIN hashes live in

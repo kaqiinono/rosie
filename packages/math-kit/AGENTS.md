@@ -64,6 +64,16 @@ with the correct problem index and source section. `ProblemVideoReplay` is the s
 Baidu video entry. `utils/problem-video.ts` resolves
 `{lessonKey}-{displayId}` when a nonempty displayId exists, otherwise the full real problem ID.
 The app owns `/api/baidu/video/**` and maps these keys to `/airosie/math/ny/{key}.mp4`.
+`useProblemVideoCatalog(user, lessonKey)` reads each lesson's persisted catalog once through
+stable per-lesson `createUserSessionStore` instances and shares a Set across its cards.
+Only confirmed matches render replay; missing, unsynced,
+loading, and failed catalog reads render no button or placeholder. These states remain
+distinct internally. The app's `/admin/sync` selects grade/lesson for both Baidu filename search
+and question comparison. Existing snapshots are reused; explicit resync atomically replaces only
+that lesson's `math_video_lesson_catalog` row and updates its current-user store. It never searches
+from question components or periodically. Sign-out invalidates all lesson stores. A page refresh
+loads changes made by another administrator session. The app owns report aggregation via
+the existing math question catalog; math-kit must not import the math aggregator.
 Card action controls use their `toolbar` variants and the shared `ProblemActionIcon`
 SVG family; replay always occupies the rightmost footer column. Default control variants
 remain available for other surfaces. Keep the analysis marker non-interactive.
