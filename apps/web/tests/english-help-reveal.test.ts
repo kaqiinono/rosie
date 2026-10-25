@@ -22,7 +22,7 @@ describe('English word help reveal', () => {
     expect(helpRevealCount(4, 8)).toBe(8)
   })
 
-  it('keeps reinforcement at one question per help click', () => {
+  it('keeps reinforcement at one question per assisted word per round', () => {
     const fountain = SAMPLE_WORDS_5A.find((entry) => entry.word === 'fountain')
     expect(fountain).toBeDefined()
     if (!fountain) return
@@ -34,7 +34,7 @@ describe('English word help reveal', () => {
       1,
     )
 
-    expect(questions).toHaveLength(4)
+    expect(questions).toHaveLength(1)
     expect(questions.every((question) => question.word.word === 'fountain')).toBe(true)
   })
 })

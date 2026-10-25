@@ -26,7 +26,7 @@ describe('lesson-grade', () => {
     expect(LESSON_GRADE['2-1']).toBe(2)
     // legacy 数字键已移出运行时注册表（仅 admin 审计页保留映射）
     expect(LESSON_GRADE['49']).toBeUndefined()
-    expect(lessonsForGrade(2)).toEqual(['2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '2-7'])
+    expect(lessonsForGrade(2)).toEqual(['2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '2-7', '2-9', '2-10'])
     expect(lessonDisplayNum('2-1')).toBe(1)
     expect(lessonDisplayNum('2-4')).toBe(4)
     expect(lessonDisplayLabel('2-1')).toBe('第 1 讲')

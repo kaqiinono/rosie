@@ -5,6 +5,7 @@ import {
   collectOverduePlanProblems,
   ensureMathPlanAssignmentIds,
   isPlanProblemDone,
+  normalizeMathPlanProgress,
 } from '@rosie/math-kit/utils/math-helpers'
 
 function stubProblem(id: string, tag = 'type1', difficulty = 1): Problem {
@@ -404,7 +405,12 @@ describe('math plan assignment occurrences and deferred overdue tasks', () => {
   it('gives legacy occurrences stable date-scoped assignment ids', () => {
     const days = ensureMathPlanAssignmentIds(baseDays)
     expect(days[0]!.problems[0]!.assignmentId).toBe('2026-08-01::1-99::a')
-    expect(isPlanProblemDone(days[0]!.problems[0]!, '2026-08-01', ['1-99::a'])).toBe(true)
+    expect(isPlanProblemDone(baseDays[0]!.problems[0]!, '2026-08-01', ['1-99::a'])).toBe(true)
+    expect(isPlanProblemDone(days[0]!.problems[0]!, '2026-08-01', ['1-99::a'])).toBe(false)
+    const progress = normalizeMathPlanProgress(
+      days, { '2026-08-01': { doneKeys: ['1-99::a'] } }, '2026-08-01',
+    )
+    expect(isPlanProblemDone(days[0]!.problems[0]!, '2026-08-01', progress['2026-08-01']!.doneKeys)).toBe(true)
     expect(
       isPlanProblemDone(
         days[0]!.problems[0]!,

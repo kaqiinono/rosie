@@ -104,18 +104,18 @@ describe('AiChatPanel teaching flow', () => {
       screen.queryByRole('button', { name: '我已经作答，请讲解这道题的完整题解' }),
     ).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: '帮我读懂这道题，不要告诉我答案' }))
+    fireEvent.click(screen.getByRole('button', { name: '帮我复习这个讲次的重点内容' }))
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
     const request = fetchMock.mock.calls[0]?.[1]
     const body = JSON.parse(String(request?.body)) as {
       message: string
       context: { activeContent?: { problemId?: string } }
     }
-    expect(body.message).toBe('帮我读懂这道题，不要告诉我答案')
+    expect(body.message).toBe('帮我复习这个讲次的重点内容')
     expect(body.context.activeContent?.problemId).toBe('1-12-H1')
   })
 
-  it('starts an explicit teaching session after a subject answer', async () => {
+  it('shows a subject answer without offering the disabled teaching entry', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce(
       sseResponse([
@@ -138,36 +138,13 @@ describe('AiChatPanel teaching flow', () => {
         },
       ]),
     )
-    fetchMock.mockResolvedValueOnce(
-      Response.json(
-        {
-          session: {
-            id: '00000000-0000-4000-8000-000000000002',
-            conversationId: '00000000-0000-4000-8000-000000000001',
-            subject: 'math',
-            contentRef: 'math:problem:35-L1',
-            teachingStage: 'understand',
-            hintLevel: 0,
-            attemptCount: 0,
-            state: {},
-            status: 'active',
-            createdAt: '2026-08-11T00:00:00.000Z',
-            updatedAt: '2026-08-11T00:00:00.000Z',
-          },
-        },
-        { status: 201 },
-      ),
-    )
-
     render(<AiChatPanel />)
     fireEvent.click(screen.getByRole('button', { name: '打字员那道题怎么做？' }))
 
-    const start = await screen.findByRole('button', { name: '开始引导学习' })
-    fireEvent.click(start)
-
-    expect(await screen.findByText('当前阶段：理解题意')).toBeInTheDocument()
-    expect(screen.getByText('已尝试 0 次 · 提示 0/3')).toBeInTheDocument()
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
-    expect(fetchMock.mock.calls[1]?.[0]).toBe('/api/ai/teaching-sessions')
+    expect(await screen.findByText('我们一步一步想。')).toBeInTheDocument()
+    await waitFor(() => expect(sessionStorage.getItem('ai-conversation-id-v1')).toBe('00000000-0000-4000-8000-000000000001'))
+    expect(screen.queryByRole('button', { name: '开始引导学习' })).not.toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/ai/chat')
   })
 })

@@ -66,6 +66,7 @@ function profile(char: string, pinyin: string, phrases: string[]): ChineseCharPr
     structure: '',
     strokeCount: 1,
     phrases,
+    phraseSources: {},
     tiers: ['recognize'],
   }
 }
